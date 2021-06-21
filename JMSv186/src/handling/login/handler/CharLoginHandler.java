@@ -286,31 +286,10 @@ public class CharLoginHandler {
         c.getSession().write(LoginPacket.deleteCharResponse(Character_ID, state));
     }
 
-    public static final void Character_WithoutSecondPassword(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-//        slea.skip(1);
+    public static final void Character_WithSecondPassword(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final int charId = slea.readInt();
-        final String currentpw = c.getSecondPassword();
 
-        if (slea.available() != 0) {
-            if (currentpw != null) { // Hack
-                c.getSession().close();
-                return;
-            }
-            final String setpassword = slea.readMapleAsciiString();
-
-            if (setpassword.length() >= 4 && setpassword.length() <= 16) {
-                c.setSecondPassword(setpassword);
-                c.updateSecondPassword();
-
-                if (!c.login_Auth(charId)) {
-                    c.getSession().close();
-                    return;
-                }
-            } else {
-                c.getSession().write(LoginPacket.secondPwError((byte) 0x14));
-                return;
-            }
-        } else if (loginFailCount(c) || currentpw != null || !c.login_Auth(charId)) {
+        if (loginFailCount(c) || !c.login_Auth(charId)) { // This should not happen unless player is hacking
             c.getSession().close();
             return;
         }
@@ -319,25 +298,5 @@ public class CharLoginHandler {
         }
         c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
         c.getSession().write(MaplePacketCreator.getServerIP(Integer.parseInt(ChannelServer.getInstance(c.getChannel()).getIP().split(":")[1]), charId));
-    }
-
-    public static final void Character_WithSecondPassword(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final String password = slea.readMapleAsciiString();
-        final int charId = slea.readInt();
-
-        if (loginFailCount(c) || c.getSecondPassword() == null || !c.login_Auth(charId)) { // This should not happen unless player is hacking
-            c.getSession().close();
-            return;
-        }
-
-        if (c.CheckSecondPassword(password)) {
-            if (c.getIdleTask() != null) {
-                c.getIdleTask().cancel(true);
-            }
-            c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
-            c.getSession().write(MaplePacketCreator.getServerIP(Integer.parseInt(ChannelServer.getInstance(c.getChannel()).getIP().split(":")[1]), charId));
-        } else {
-            c.getSession().write(LoginPacket.secondPwError((byte) 0x14));
-        }
     }
 }
