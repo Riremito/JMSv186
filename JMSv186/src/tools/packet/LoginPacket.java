@@ -243,7 +243,8 @@ public class LoginPacket {
         for (final MapleCharacter chr : chars) {
             addCharEntry(mplew, chr, !chr.isGM() && chr.getLevel() >= 10);
         }
-        mplew.writeShort(secondpw ? 1 : 0); // second pw request
+
+        mplew.writeShort(2); // second pw request
         mplew.writeLong(charslots);
         mplew.writeLong(0);
 

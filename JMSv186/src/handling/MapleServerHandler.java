@@ -478,8 +478,8 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 CharLoginHandler.DeleteChar(slea, c);
                 break;
             case CHAR_SELECT:
-                CharLoginHandler.Character_WithoutSecondPassword(slea, c);
-                break;
+                //CharLoginHandler.Character_WithoutSecondPassword(slea, c);
+                //break;
             case AUTH_SECOND_PASSWORD:
                 CharLoginHandler.Character_WithSecondPassword(slea, c);
                 break;
