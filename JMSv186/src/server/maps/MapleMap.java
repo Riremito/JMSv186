@@ -459,7 +459,8 @@ public final class MapleMap {
                     }
                 } else {
                     if (GameConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
-                        idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
+                        // 能力値調整, randomizeStatsを利用すると通常通り
+                        idrop = ii.RireSabaStats((Equip) ii.getEquipById(de.itemId));
                     } else {
                         final int range = Math.abs(de.Maximum - de.Minimum);
                         idrop = new Item(de.itemId, (byte) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(range <= 0 ? 1 : range) + de.Minimum : 1), (byte) 0);

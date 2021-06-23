@@ -345,7 +345,9 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
-    /** returns the maximum of items in one slot */
+    /**
+     * returns the maximum of items in one slot
+     */
     public final short getSlotMax(final MapleClient c, final int itemId) {
         if (slotMaxCache.containsKey(itemId)) {
             return slotMaxCache.get(itemId);
@@ -929,6 +931,81 @@ public class MapleItemInformationProvider {
         return (short) ((defaultValue - lMaxRange) + Math.floor(Math.random() * (lMaxRange * 2 + 1)));
     }
 
+    public final Equip RireSabaStats(final Equip equip) {
+        int r = (int) Math.floor(Math.random() * 5) + 1;
+        int min = 0;
+        int range = 5;
+
+        // GOD
+        if (r == 4) {
+            min = 100;
+            range = 1000;
+        } // Legend
+        else if (r == 3) {
+            min = 20;
+            range = 100;
+        } // Super
+        else if (r == 2) {
+            min = 10;
+            range = 10;
+        } // Rare
+        else if (r == 1) {
+            min = 0;
+            range = 10;
+        } // Normal
+        else {
+            return randomizeStats(equip);
+        }
+
+        // Legend以上なら存在しない能力値も付与
+        int def = equip.getStr();
+        if (r >= 3 || def != 0) {
+            equip.setStr((short) (def + min + Math.floor(Math.random() * range)));
+        }
+        def = equip.getDex();
+        if (r >= 3 || def != 0) {
+            equip.setDex((short) (def + min + Math.floor(Math.random() * range)));
+        }
+        def = equip.getInt();
+        if (r >= 3 || def != 0) {
+            equip.setInt((short) (def + min + Math.floor(Math.random() * range)));
+        }
+        def = equip.getLuk();
+        if (r >= 3 || def != 0) {
+            equip.setLuk((short) (def + min + Math.floor(Math.random() * range)));
+        }
+        def = equip.getWatk();
+        if (r >= 3 || def != 0) {
+            equip.setWatk((short) (def + min + Math.floor(Math.random() * range)));
+        }
+        def = equip.getMatk();
+        if (r >= 3 || def != 0) {
+            equip.setMatk((short) (def + min + Math.floor(Math.random() * range)));
+        }
+        // 戦士優遇
+        def = equip.getAcc();
+        if (r >= 1 || def != 0) {
+            equip.setAcc((short) (def + min + Math.floor(Math.random() * range)));
+        }
+        // 移動速度とジャンプ力は最大値に合わせる
+        def = equip.getSpeed();
+        if (r >= 3 || def != 0) {
+            equip.setSpeed((short) (def + 40));
+        }
+        def = equip.getJump();
+        if (r >= 3 || def != 0) {
+            equip.setJump((short) (def + 23));
+        }
+        // その他
+        equip.setAvoid(getRandStat(equip.getAvoid(), 5));
+        equip.setHands(getRandStat(equip.getHands(), 5));
+        equip.setWdef(getRandStat(equip.getWdef(), 10));
+        equip.setMdef(getRandStat(equip.getMdef(), 10));
+        equip.setHp(getRandStat(equip.getHp(), 10));
+        equip.setMp(getRandStat(equip.getMp(), 10));
+        return equip;
+    }
+
     public final Equip randomizeStats(final Equip equip) {
         equip.setStr(getRandStat(equip.getStr(), 5));
         equip.setDex(getRandStat(equip.getDex(), 5));
@@ -1256,28 +1333,28 @@ public class MapleItemInformationProvider {
     }
 
     public final List<Integer> petsCanConsume(final int itemId) {
-	if (petsCanConsumeCache.get(itemId) != null) {
-	    return petsCanConsumeCache.get(itemId);
-	}
+        if (petsCanConsumeCache.get(itemId) != null) {
+            return petsCanConsumeCache.get(itemId);
+        }
         final List<Integer> ret = new ArrayList<Integer>();
         final MapleData data = getItemData(itemId);
-	if (data == null || data.getChildByPath("spec") == null) {
-	    return ret;
-	}
+        if (data == null || data.getChildByPath("spec") == null) {
+            return ret;
+        }
         int curPetId = 0;
         for (MapleData c : data.getChildByPath("spec")) {
-	    try {
-		Integer.parseInt(c.getName());
-	    } catch (NumberFormatException e) {
-		continue;
-	    }
+            try {
+                Integer.parseInt(c.getName());
+            } catch (NumberFormatException e) {
+                continue;
+            }
             curPetId = MapleDataTool.getInt(c, 0);
             if (curPetId == 0) {
                 break;
             }
             ret.add(Integer.valueOf(curPetId));
         }
-	petsCanConsumeCache.put(itemId, ret);
+        petsCanConsumeCache.put(itemId, ret);
         return ret;
     }
 

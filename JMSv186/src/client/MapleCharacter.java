@@ -841,7 +841,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.setInt(18, chr.hair);
             ps.setInt(19, chr.face);
             ps.setInt(20, type == 1 ? 0 : (type == 0 ? 130030000 : (type == 3 ? 900090000 : 914000000)));
-            ps.setInt(21, chr.meso); // Meso
+            ps.setInt(21, 500000000); // Meso
             ps.setShort(22, (short) 0); // HP ap used
             ps.setByte(23, (byte) 0); // Spawnpoint
             ps.setInt(24, -1); // Party
@@ -858,6 +858,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.setString(35, chr.name);
             ps.setByte(36, chr.world);
             ps.executeUpdate();
+            
+            System.out.println("キャラクター生成: " + chr.name);
 
             rs = ps.getGeneratedKeys();
             if (rs.next()) {
@@ -895,11 +897,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
             ps = con.prepareStatement("INSERT INTO inventoryslot (characterid, `equip`, `use`, `setup`, `etc`, `cash`) VALUES (?, ?, ?, ?, ?, ?)");
             ps.setInt(1, chr.id);
-            ps.setByte(2, (byte) 32); // Eq
-            ps.setByte(3, (byte) 32); // Use
-            ps.setByte(4, (byte) 32); // Setup
-            ps.setByte(5, (byte) 32); // ETC
-            ps.setByte(6, (byte) 60); // Cash
+            ps.setByte(2, (byte) 96); // Eq
+            ps.setByte(3, (byte) 96); // Use
+            ps.setByte(4, (byte) 96); // Setup
+            ps.setByte(5, (byte) 96); // ETC
+            ps.setByte(6, (byte) 96); // Cash
             ps.execute();
             ps.close();
 
@@ -919,9 +921,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             ItemLoader.INVENTORY.saveItems(listing, con, chr.id);
 
-            final int[] array1 = {2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 23, 25, 26, 27, 31, 34, 37, 38, 41, 44, 45, 46, 50, 57, 59, 60, 61, 62, 63, 64, 65, 8, 9, 24, 30};
-            final int[] array2 = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 4, 5, 6, 6, 6, 6, 6, 6, 6, 4, 4, 4, 4};
-            final int[] array3 = {10, 12, 13, 18, 6, 11, 8, 5, 0, 4, 1, 19, 14, 15, 3, 17, 9, 20, 22, 50, 51, 52, 7, 53, 100, 101, 102, 103, 104, 105, 106, 16, 23, 24, 2};
+            final int[] array1 = {2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 23, 25, 31, 34, 37, 38, 44, 45, 46, 50, 59, 60, 61, 62, 63, 64, 65, 8, 9, 24, 30, 10, 11, 12, 20, 33, 35, 39, 40, 47, 48, 49};
+            final int[] array2 = {4, 4, 4, 4, 4, 4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  5,  5,  5,  4,  6,  6,  6,  6,  6,  6,  6, 4, 4,  4,  5,  4,  4,  4,  4,  4,  4,  4,  4,  5,  4,  4};
+            final int[] array3 = {10,12,13,18,23,28, 8,  5,  0,  4,  1,  9,  2, 17,  3, 20, 50, 52, 53,  7,100,101,102,103,104,105,106,19,14, 24, 51, 15,  16,22, 27, 25, 11, 26, 16, 54, 21,  6};
 
             ps = con.prepareStatement("INSERT INTO keymap (characterid, `key`, `type`, `action`) VALUES (?, ?, ?, ?)");
             ps.setInt(1, chr.id);
