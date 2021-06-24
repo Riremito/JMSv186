@@ -11,6 +11,7 @@ import handling.world.MaplePartyCharacter;
 
 /**
  * TODO : Make this a function for NPC instead.. cleaner
+ *
  * @author Rob
  */
 public class MapleCarnivalChallenge {
@@ -228,7 +229,6 @@ public class MapleCarnivalChallenge {
             case 3000:
                 return "Beginner";
 
-
             case 2100:
             case 2110:
             case 2111:
@@ -278,7 +278,6 @@ public class MapleCarnivalChallenge {
             case 231:
             case 232:
                 return "Magician";
-
 
             case 3300:
             case 3310:
@@ -331,7 +330,6 @@ public class MapleCarnivalChallenge {
             case 521:
             case 522:
                 return "Pirate";
-
 
             default:
                 return "Unknown Job";

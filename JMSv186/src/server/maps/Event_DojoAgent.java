@@ -142,7 +142,6 @@ public class Event_DojoAgent {
             final int thisStage = (int) (temp - ((temp / 100) * 100));
             final int points = getDojoPoints(thisStage);
 
-
             final ChannelServer ch = c.getClient().getChannelServer();
             if (!fromResting) {
                 clearMap(currentmap, true);
@@ -162,8 +161,6 @@ public class Event_DojoAgent {
                     c.setDojo(c.getDojo() + point);
                     c.getClient().getSession().write(MaplePacketCreator.Mulung_Pts(point, c.getDojo()));
                 }
-
-
 
             }
             if (currentmap.getId() >= 925023800 && currentmap.getId() <= 925023814) {
@@ -185,7 +182,6 @@ public class Event_DojoAgent {
             }
 
             //final int nextmapid = 925020000 + ((thisStage + 1) * 100);
-
             final MapleMap map = ch.getMapFactory().getMap(currentmap.getId() + 100);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);

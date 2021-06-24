@@ -23,7 +23,6 @@ package tools.packet;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 
-
 import java.util.List;
 import client.MapleClient;
 import client.MapleCharacter;
@@ -57,7 +56,7 @@ public class MTSCSPacket {
         PacketHelper.addCharacterInfo(mplew, c.getPlayer());
 
         mplew.writeZeroBytes(1500);
-/*        Collection<CashModInfo> cmi = CashItemFactory.getInstance().getAllModInfo();
+        /*        Collection<CashModInfo> cmi = CashItemFactory.getInstance().getAllModInfo();
         mplew.writeShort(cmi.size());
         for (CashModInfo cm : cmi) {
             addModCashItemInfo(mplew, cm);
@@ -584,7 +583,6 @@ public class MTSCSPacket {
             addMTSItemInfo(mplew, item);
         }
         mplew.write(0); //0 or 1?
-
 
         return mplew.getPacket();
     }

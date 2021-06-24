@@ -34,6 +34,7 @@ import server.maps.SavedLocationType;
 import tools.MaplePacketCreator;
 
 public abstract class MapleEvent {
+
     protected int[] mapid;
     protected int channel;
     protected boolean isRunning = false;
@@ -159,9 +160,9 @@ public abstract class MapleEvent {
     }
 
     public static final void mapLoad(final MapleCharacter chr, final int channel) {
-	if (chr == null) {
-	    return;
-	} //o_o
+        if (chr == null) {
+            return;
+        } //o_o
         for (MapleEventType t : MapleEventType.values()) {
             final MapleEvent e = ChannelServer.getInstance(channel).getEvent(t);
             if (e.isRunning) {

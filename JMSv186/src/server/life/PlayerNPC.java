@@ -95,7 +95,7 @@ public class PlayerNPC extends MapleNPC {
     }
 
     public static void loadAll() {
-	List<PlayerNPC> toAdd = new ArrayList<PlayerNPC>();
+        List<PlayerNPC> toAdd = new ArrayList<PlayerNPC>();
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM playernpcs");
@@ -108,9 +108,9 @@ public class PlayerNPC extends MapleNPC {
         } catch (Exception se) {
             se.printStackTrace();
         }
-	for (PlayerNPC npc : toAdd) {
-	    npc.addToServer();
-	}
+        for (PlayerNPC npc : toAdd) {
+            npc.addToServer();
+        }
     }
 
     public static void updateByCharId(MapleCharacter chr) {
@@ -156,7 +156,7 @@ public class PlayerNPC extends MapleNPC {
 
     public void destroy() {
         destroy(false); //just sql
-        }
+    }
 
     public void destroy(boolean remove) {
         Connection con = DatabaseConnection.getConnection();

@@ -11,11 +11,17 @@ import constants.ServerConstants.CommandType;
  */
 public class CommandObject {
 
-    /** the command */
+    /**
+     * the command
+     */
     private String command;
-    /** what {@link MapleCharacter#gm} level is required to use this command */
+    /**
+     * what {@link MapleCharacter#gm} level is required to use this command
+     */
     private int gmLevelReq;
-    /** what gets done when this command is used */
+    /**
+     * what gets done when this command is used
+     */
     private CommandExecute exe;
 
     public CommandObject(String com, CommandExecute c, int gmLevel) {
@@ -25,8 +31,8 @@ public class CommandObject {
     }
 
     /**
-     * Call this to apply this command to the specified {@link MapleClient}
-     * with the specified arguments.
+     * Call this to apply this command to the specified {@link MapleClient} with
+     * the specified arguments.
      *
      * @param c the MapleClient to apply this to
      * @param splitted the arguments

@@ -522,12 +522,12 @@ public class MapleInventoryManipulator {
         final short slotMax = ii.getSlotMax(c, source.getItemId());
         c.getPlayer().getInventory(type).move(src, dst, slotMax);
 
-        if (!type.equals(MapleInventoryType.EQUIP) && initialTarget != null &&
-                initialTarget.getItemId() == source.getItemId() &&
-                initialTarget.getOwner().equals(source.getOwner()) &&
-                initialTarget.getExpiration() == source.getExpiration() &&
-                !GameConstants.isRechargable(source.getItemId()) &&
-                !type.equals(MapleInventoryType.CASH)) {
+        if (!type.equals(MapleInventoryType.EQUIP) && initialTarget != null
+                && initialTarget.getItemId() == source.getItemId()
+                && initialTarget.getOwner().equals(source.getOwner())
+                && initialTarget.getExpiration() == source.getExpiration()
+                && !GameConstants.isRechargable(source.getItemId())
+                && !type.equals(MapleInventoryType.CASH)) {
             if ((olddstQ + oldsrcQ) > slotMax) {
                 c.getSession().write(MaplePacketCreator.moveAndMergeWithRestInventoryItem(type, src, dst, (short) ((olddstQ + oldsrcQ) - slotMax), slotMax));
             } else {

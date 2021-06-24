@@ -122,7 +122,6 @@ public class MapleStatEffect implements Serializable {
         MapleDataTool.getIntConvert("prop", data, 0)));
         }
         }*/
-
         if (!ret.skill && ret.duration > -1) {
             ret.overTime = true;
         } else {
@@ -495,8 +494,8 @@ public class MapleStatEffect implements Serializable {
                 case 33121002:
                 case 35101003:
                 case 35111015:
-		case 5111002: //energy blast
-		case 15101005:
+                case 5111002: //energy blast
+                case 15101005:
                 case 4331005:
                     monsterStatus.put(MonsterStatus.STUN, 1);
                     break;
@@ -754,7 +753,7 @@ public class MapleStatEffect implements Serializable {
     }
 
     private final boolean applyTo(final MapleCharacter applyfrom, final MapleCharacter applyto, final boolean primary, final Point pos) {
-	return applyTo(applyfrom, applyto, primary, pos, duration);
+        return applyTo(applyfrom, applyto, primary, pos, duration);
     }
 
     public final boolean applyTo(final MapleCharacter applyfrom, final MapleCharacter applyto, final boolean primary, final Point pos, int newDuration) {
@@ -1183,24 +1182,24 @@ public class MapleStatEffect implements Serializable {
             case 32120000: {
                 final List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.DARK_AURA, 1));
                 applyto.getMap().broadcastMessage(applyto, MaplePacketCreator.giveForeignBuff(applyto.getId(), stat, this), false);
-		applyto.cancelEffectFromBuffStat(MapleBuffStat.BLUE_AURA);
-		applyto.cancelEffectFromBuffStat(MapleBuffStat.YELLOW_AURA);
+                applyto.cancelEffectFromBuffStat(MapleBuffStat.BLUE_AURA);
+                applyto.cancelEffectFromBuffStat(MapleBuffStat.YELLOW_AURA);
                 break;
             }
             case 32101002: //blue aura
             case 32110000: {
                 final List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.BLUE_AURA, 1));
                 applyto.getMap().broadcastMessage(applyto, MaplePacketCreator.giveForeignBuff(applyto.getId(), stat, this), false);
-		applyto.cancelEffectFromBuffStat(MapleBuffStat.YELLOW_AURA);
-		applyto.cancelEffectFromBuffStat(MapleBuffStat.DARK_AURA);
+                applyto.cancelEffectFromBuffStat(MapleBuffStat.YELLOW_AURA);
+                applyto.cancelEffectFromBuffStat(MapleBuffStat.DARK_AURA);
                 break;
             }
             case 32101003: //yellow aura
             case 32120001: {
                 final List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.YELLOW_AURA, 1));
                 applyto.getMap().broadcastMessage(applyto, MaplePacketCreator.giveForeignBuff(applyto.getId(), stat, this), false);
-		applyto.cancelEffectFromBuffStat(MapleBuffStat.BLUE_AURA);
-		applyto.cancelEffectFromBuffStat(MapleBuffStat.DARK_AURA);
+                applyto.cancelEffectFromBuffStat(MapleBuffStat.BLUE_AURA);
+                applyto.cancelEffectFromBuffStat(MapleBuffStat.DARK_AURA);
                 break;
             }
             case 1211008:
@@ -1940,7 +1939,8 @@ public class MapleStatEffect implements Serializable {
 
     /**
      *
-     * @return true if the effect should happen based on it's probablity, false otherwise
+     * @return true if the effect should happen based on it's probablity, false
+     * otherwise
      */
     public final boolean makeChanceResult() {
         return prop == 100 || Randomizer.nextInt(99) < prop;

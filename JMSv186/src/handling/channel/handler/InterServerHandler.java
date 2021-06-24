@@ -119,7 +119,7 @@ public class InterServerHandler {
         channelServer.addPlayer(player);
 
         c.getSession().write(MaplePacketCreator.getCharInfo(player));
-/*        if (player.isGM()) {
+        /*        if (player.isGM()) {
             SkillFactory.getSkill(9001004).getEffect(1).applyTo(player);
         }*/
         c.getSession().write(MaplePacketCreator.temporaryStats_Reset()); // .
@@ -166,17 +166,17 @@ public class InterServerHandler {
                         }
                     }
                 } else { //guild not found, change guild id
-		    player.setGuildId(0);
-		    player.setGuildRank((byte)5);
-		    player.setAllianceRank((byte)5);
-		    player.saveGuildStatus();
-		}
+                    player.setGuildId(0);
+                    player.setGuildRank((byte) 5);
+                    player.setAllianceRank((byte) 5);
+                    player.saveGuildStatus();
+                }
             }
 
             if (player.getFamilyId() > 0) {
                 World.Family.setFamilyMemberOnline(player.getMFC(), true, c.getChannel());
-	    }
-	    c.getSession().write(FamilyPacket.getFamilyInfo(player));
+            }
+            c.getSession().write(FamilyPacket.getFamilyInfo(player));
         } catch (Exception e) {
             FileoutputUtil.outputFileError(FileoutputUtil.Login_Error, e);
         }
@@ -185,7 +185,7 @@ public class InterServerHandler {
         player.showNote();
         player.updatePartyMemberHP();
         player.startFairySchedule(false);
-	player.baseSkills(); //fix people who've lost skills.
+        player.baseSkills(); //fix people who've lost skills.
 
         c.getSession().write(MaplePacketCreator.getKeymap(player.getKeyLayout()));
 

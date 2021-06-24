@@ -30,4 +30,3 @@ public class ReactorDropEntry {
     public int itemId, chance, questid;
     public int assignedRangeStart, assignedRangeLength;
 }
-

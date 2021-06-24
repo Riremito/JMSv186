@@ -34,7 +34,6 @@ public class MapleSnowball extends MapleEvent {
 
     private MapleSnowballs[] balls = new MapleSnowballs[2];
 
-
     public MapleSnowball(final int channel, final int[] mapid) {
         super(channel, mapid);
     }
@@ -181,7 +180,6 @@ public class MapleSnowball extends MapleEvent {
             3 - top invis
             4 - move
              */
-
 
             int team = chr.getPosition().y > -80 ? 0 : 1;
             final MapleSnowball sb = ((MapleSnowball) chr.getClient().getChannelServer().getEvent(MapleEventType.Snowball));

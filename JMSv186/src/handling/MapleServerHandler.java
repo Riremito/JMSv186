@@ -76,9 +76,10 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
 
     //Note to Zero: Use an enumset. Don't iterate through an array.
     private static final EnumSet<RecvPacketOpcode> blocked = EnumSet.noneOf(RecvPacketOpcode.class);
+
     static {
         reloadLoggedIPs();
-        RecvPacketOpcode[] block = new RecvPacketOpcode[] {RecvPacketOpcode.NPC_ACTION, RecvPacketOpcode.MOVE_PLAYER, RecvPacketOpcode.MOVE_PET, RecvPacketOpcode.MOVE_SUMMON, RecvPacketOpcode.MOVE_DRAGON, RecvPacketOpcode.MOVE_LIFE, RecvPacketOpcode.HEAL_OVER_TIME, RecvPacketOpcode.STRANGE_DATA};
+        RecvPacketOpcode[] block = new RecvPacketOpcode[]{RecvPacketOpcode.NPC_ACTION, RecvPacketOpcode.MOVE_PLAYER, RecvPacketOpcode.MOVE_PET, RecvPacketOpcode.MOVE_SUMMON, RecvPacketOpcode.MOVE_DRAGON, RecvPacketOpcode.MOVE_LIFE, RecvPacketOpcode.HEAL_OVER_TIME, RecvPacketOpcode.STRANGE_DATA};
         blocked.addAll(Arrays.asList(block));
     }
 
@@ -119,6 +120,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
 //            IPLoggingLock.writeLock().unlock();
 //        }
     }
+
     //Return the Filewriter if the IP is logged. Null otherwise.
     private static FileWriter isLoggedIP(IoSession sess) {
         String a = sess.getRemoteAddress().toString();
@@ -130,7 +132,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
     private static final ArrayList<LoggedPacket> Packet_Log = new ArrayList<LoggedPacket>(Log_Size);
     private static final ReentrantReadWriteLock Packet_Log_Lock = new ReentrantReadWriteLock();
     private static final File Packet_Log_Output = new File("PacketLog.txt");
-    
 
     public static void log(SeekableLittleEndianAccessor packet, RecvPacketOpcode op, MapleClient c, IoSession io) {
         if (blocked.contains(op)) {
@@ -313,7 +314,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
         MaplePacketDecoder.DecoderState decoderState = new MaplePacketDecoder.DecoderState();
         session.setAttribute(MaplePacketDecoder.DECODER_STATE_KEY, decoderState);
 
-
         session.write(LoginPacket.getHello(ServerConstants.MAPLE_VERSION,
                 ServerConstants.Use_Fixed_IV ? serverSend : ivSend, ServerConstants.Use_Fixed_IV ? serverRecv : ivRecv));
         session.setAttribute(MapleClient.CLIENT_KEY, client);
@@ -379,7 +379,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
             final short header_num = slea.readShort();
             // Console output part
 
-
             for (final RecvPacketOpcode recv : RecvPacketOpcode.values()) {
                 if (recv.getValue() == header_num) {
                     final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
@@ -402,7 +401,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                     if (Log_Packets) {
                         log(slea, recv, c, session);
                     }
-/*                    final StringBuilder sb = new StringBuilder("Received data : ");
+                    /*                    final StringBuilder sb = new StringBuilder("Received data : ");
                     sb.append(recv.toString()).append("\n").append(HexTool.toString((byte[]) message)).append("\n").append(HexTool.toStringFromAscii((byte[]) message));
                     System.out.println(sb.toString());*/
                     handlePacket(recv, slea, c, cs);
@@ -410,13 +409,13 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                     FileWriter fw = isLoggedIP(session);
                     if (fw != null && !blocked.contains(recv)) {
                         if (recv == RecvPacketOpcode.PLAYER_LOGGEDIN && c != null) { // << This is why. Win.
-                            fw.write(">> [AccountName: " + 
-                                    (c.getAccountName() == null ? "null" : c.getAccountName())
-                                    + "] | [IGN: " +
-                                    (c.getPlayer() == null || c.getPlayer().getName() == null ? "null" : c.getPlayer().getName() )
-                                    + "] | [Time: " +
-				    FileoutputUtil.CurrentReadable_Time()
-				    + "]");
+                            fw.write(">> [AccountName: "
+                                    + (c.getAccountName() == null ? "null" : c.getAccountName())
+                                    + "] | [IGN: "
+                                    + (c.getPlayer() == null || c.getPlayer().getName() == null ? "null" : c.getPlayer().getName())
+                                    + "] | [Time: "
+                                    + FileoutputUtil.CurrentReadable_Time()
+                                    + "]");
                             fw.write(nl);
                         }
                         fw.write("[" + recv.toString() + "]" + slea.toString(true));
@@ -430,7 +429,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
             e.printStackTrace();
         }
-/*        final StringBuilder sb = new StringBuilder("Received data : (Unhandled)\n");
+        /*        final StringBuilder sb = new StringBuilder("Received data : (Unhandled)\n");
         sb.append(HexTool.toString((byte[]) message)).append("\n").append(HexTool.toStringFromAscii((byte[]) message));
         System.out.println(sb.toString());*/
     }
@@ -478,8 +477,8 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 CharLoginHandler.DeleteChar(slea, c);
                 break;
             case CHAR_SELECT:
-                //CharLoginHandler.Character_WithoutSecondPassword(slea, c);
-                //break;
+            //CharLoginHandler.Character_WithoutSecondPassword(slea, c);
+            //break;
             case AUTH_SECOND_PASSWORD:
                 CharLoginHandler.Character_WithSecondPassword(slea, c);
                 break;
@@ -773,7 +772,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 CashShopOperation.BuyCashItem(slea, c, c.getPlayer());
                 break;
             case COUPON_CODE:
-		FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "Coupon : \n" + slea.toString(true));
+                FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "Coupon : \n" + slea.toString(true));
                 System.out.println(slea.toString());
                 slea.skip(2);
                 CashShopOperation.CouponCode(slea.readMapleAsciiString(), c);
@@ -884,33 +883,33 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
             case RING_ACTION:
                 PlayersHandler.RingAction(slea, c);
                 break;
-    	    case REQUEST_FAMILY:
-		FamilyHandler.RequestFamily(slea, c);
-		break;
-    	    case OPEN_FAMILY:
-		FamilyHandler.OpenFamily(slea, c);
-		break;
-    	    case FAMILY_OPERATION:
-		FamilyHandler.FamilyOperation(slea, c);
-		break;
-    	    case DELETE_JUNIOR:
-		FamilyHandler.DeleteJunior(slea, c);
-		break;
-    	    case DELETE_SENIOR:
-		FamilyHandler.DeleteSenior(slea, c);
-		break;
-    	    case USE_FAMILY:
-		FamilyHandler.UseFamily(slea, c);
-		break;
-    	    case FAMILY_PRECEPT:
-		FamilyHandler.FamilyPrecept(slea, c);
-		break;
-    	    case FAMILY_SUMMON:
-		FamilyHandler.FamilySummon(slea, c);
-		break;
-    	    case ACCEPT_FAMILY:
-		FamilyHandler.AcceptFamily(slea, c);
-		break;
+            case REQUEST_FAMILY:
+                FamilyHandler.RequestFamily(slea, c);
+                break;
+            case OPEN_FAMILY:
+                FamilyHandler.OpenFamily(slea, c);
+                break;
+            case FAMILY_OPERATION:
+                FamilyHandler.FamilyOperation(slea, c);
+                break;
+            case DELETE_JUNIOR:
+                FamilyHandler.DeleteJunior(slea, c);
+                break;
+            case DELETE_SENIOR:
+                FamilyHandler.DeleteSenior(slea, c);
+                break;
+            case USE_FAMILY:
+                FamilyHandler.UseFamily(slea, c);
+                break;
+            case FAMILY_PRECEPT:
+                FamilyHandler.FamilyPrecept(slea, c);
+                break;
+            case FAMILY_SUMMON:
+                FamilyHandler.FamilySummon(slea, c);
+                break;
+            case ACCEPT_FAMILY:
+                FamilyHandler.AcceptFamily(slea, c);
+                break;
             default:
                 System.out.println("[UNHANDLED] Recv [" + header.toString() + "] found");
                 break;

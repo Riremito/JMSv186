@@ -50,4 +50,3 @@ public class ChairMovement extends AbstractLifeMovement {
         lew.writeShort(getDuration());
     }
 }
-

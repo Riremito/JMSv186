@@ -349,12 +349,12 @@ public class EventInstanceManager {
         wL.lock();
         try {
             if (disposed) {
-            	return;
+                return;
             }
             dced.add(idz);
-	    if (chr != null) {
-            	unregisterPlayer_NoLock(chr);
-	    }
+            if (chr != null) {
+                unregisterPlayer_NoLock(chr);
+            }
             if (ret == 0) {
                 if (getPlayerCount() <= 0) {
                     dispose_NoLock();
@@ -362,9 +362,9 @@ public class EventInstanceManager {
             } else if ((ret > 0 && getPlayerCount() < ret) || (ret < 0 && (isLeader(chr) || getPlayerCount() < (ret * -1)))) {
                 final List<MapleCharacter> chrs = new LinkedList<MapleCharacter>(chars);
                 for (MapleCharacter player : chrs) {
-		    if (player.getId() != idz) {
-                    	removePlayer(player);
-		    }
+                    if (player.getId() != idz) {
+                        removePlayer(player);
+                    }
                 }
                 dispose_NoLock();
             }

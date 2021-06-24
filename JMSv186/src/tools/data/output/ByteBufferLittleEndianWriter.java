@@ -23,8 +23,8 @@ package tools.data.output;
 import org.apache.mina.common.ByteBuffer;
 
 /**
- * Uses a <code>org.apache.mina.common.ByteBuffer</code> to implement
- * a generic little-endian sequence of bytes.
+ * Uses a <code>org.apache.mina.common.ByteBuffer</code> to implement a generic
+ * little-endian sequence of bytes.
  *
  * @author Frz
  * @version 1.0
@@ -51,7 +51,8 @@ public class ByteBufferLittleEndianWriter extends GenericLittleEndianWriter {
     }
 
     /**
-     * Constructor - Constructs this object as optionally fixed at size <code>size</code>.
+     * Constructor - Constructs this object as optionally fixed at size
+     * <code>size</code>.
      *
      * @param initialSize The size of the fixed bytebuffer.
      * @param autoExpand Expand if needed.

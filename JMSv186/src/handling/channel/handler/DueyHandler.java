@@ -98,7 +98,7 @@ public class DueyHandler {
         } catch (RemoteException re) {
         c.getChannelServer().reconnectWorld();
         }*/
-        /*
+ /*
         if (inventId > 0) {
         final MapleInventoryType inv = MapleInventoryType.getByType(inventId);
         final IItem item = c.getPlayer().getInventory(inv).getItem((byte) itemPos);

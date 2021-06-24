@@ -25,7 +25,7 @@ import java.io.InputStream;
 
 /**
  * Provides an abstract wrapper to a stream of bytes.
- * 
+ *
  * @author Frz
  * @version 1.0
  * @since Revision 323
@@ -36,8 +36,7 @@ public class InputStreamByteStream implements ByteInputStream {
     private long read = 0;
 
     /**
-     * Class constructor.
-     * Provide an input stream to wrap this around.
+     * Class constructor. Provide an input stream to wrap this around.
      *
      * @param is The input stream to wrap this object around.
      */

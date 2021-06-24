@@ -261,7 +261,6 @@ public class PlayerInteractionHandler {
                 if (shop != null && shop.isOwner(chr) && shop.getShopType() < 3) {
                     if (chr.getMap().allowPersonalShop()) {
 
-
                         if (shop.getShopType() == 1) {
                             final HiredMerchant merchant = (HiredMerchant) shop;
                             merchant.setStoreid(c.getChannelServer().addMerchant(merchant));
@@ -382,16 +381,16 @@ public class PlayerInteractionHandler {
             case BUY_ITEM_HIREDMERCHANT: { // Buy and Merchant buy
                 final int item = slea.readByte();
                 final short quantity = slea.readShort();
-		//slea.skip(4);
+                //slea.skip(4);
                 final IMaplePlayerShop shop = chr.getPlayerShop();
 
                 if (shop == null || shop.isOwner(chr) || shop instanceof MapleMiniGame) {
                     return;
                 }
                 final MaplePlayerShopItem tobuy = shop.getItems().get(item);
-		if (tobuy == null) {
-		    return;
-		}
+                if (tobuy == null) {
+                    return;
+                }
                 long check = tobuy.bundles * quantity;
                 long check2 = tobuy.price * quantity;
                 long check3 = tobuy.item.getQuantity() * quantity;
@@ -421,16 +420,16 @@ public class PlayerInteractionHandler {
                 if (item != null) {
                     if (item.bundles > 0) {
                         IItem item_get = item.item.copy();
-			long check = item.bundles * item.item.getQuantity();
-			if (check <= 0 || check > 32767) {
-			    return;
-			}
+                        long check = item.bundles * item.item.getQuantity();
+                        if (check <= 0 || check > 32767) {
+                            return;
+                        }
                         item_get.setQuantity((short) check);
                         if (item_get.getQuantity() >= 50 && GameConstants.isUpgradeScroll(item.item.getItemId())) {
                             c.setMonitored(true); //hack check
                         }
                         if (MapleInventoryManipulator.checkSpace(c, item_get.getItemId(), item_get.getQuantity(), item_get.getOwner())) {
-			    MapleInventoryManipulator.addFromDrop(c, item_get, false);
+                            MapleInventoryManipulator.addFromDrop(c, item_get, false);
                             item.bundles = 0;
                             shop.removeFromSlot(slot);
                         }
@@ -512,9 +511,9 @@ public class PlayerInteractionHandler {
                 final IMaplePlayerShop ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
-		    if (game.isOpen()) {
-			break;
-		    }
+                    if (game.isOpen()) {
+                        break;
+                    }
                     game.broadcastToVisitors(PlayerShopPacket.getMiniGameResult(game, 0, game.getVisitorSlot(chr)));
                     game.nextLoser();
                     game.setOpen(true);
@@ -526,9 +525,9 @@ public class PlayerInteractionHandler {
             case EXPEL: {
                 final IMaplePlayerShop ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
-		    if (!((MapleMiniGame)ips).isOpen()) {
-			break;
-		    }
+                    if (!((MapleMiniGame) ips).isOpen()) {
+                        break;
+                    }
                     ips.removeAllVisitors(3, 1); //no msg
                 }
                 break;
@@ -572,9 +571,9 @@ public class PlayerInteractionHandler {
                 final IMaplePlayerShop ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
-		    if (game.isOpen()) {
-			break;
-		    }
+                    if (game.isOpen()) {
+                        break;
+                    }
                     if (game.isOwner(chr)) {
                         game.broadcastToVisitors(PlayerShopPacket.getMiniGameRequestTie(), false);
                     } else {
@@ -588,9 +587,9 @@ public class PlayerInteractionHandler {
                 final IMaplePlayerShop ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
-		    if (game.isOpen()) {
-			break;
-		    }
+                    if (game.isOpen()) {
+                        break;
+                    }
                     if (game.getRequestedTie() > -1 && game.getRequestedTie() != game.getVisitorSlot(chr)) {
                         if (slea.readByte() > 0) {
                             game.broadcastToVisitors(PlayerShopPacket.getMiniGameResult(game, 1, game.getRequestedTie()));
@@ -609,10 +608,10 @@ public class PlayerInteractionHandler {
             case SKIP: {
                 final IMaplePlayerShop ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
-                    MapleMiniGame game = (MapleMiniGame)ips;
-		    if (game.isOpen()) {
-			break;
-		    }
+                    MapleMiniGame game = (MapleMiniGame) ips;
+                    if (game.isOpen()) {
+                        break;
+                    }
                     if (game.getLoser() != ips.getVisitorSlot(chr)) {
                         ips.broadcastToVisitors(PlayerShopPacket.shopChat("Turn could not be skipped by " + chr.getName() + ". Loser: " + game.getLoser() + " Visitor: " + ips.getVisitorSlot(chr), ips.getVisitorSlot(chr)));
                         return;
@@ -626,9 +625,9 @@ public class PlayerInteractionHandler {
                 final IMaplePlayerShop ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
-		    if (game.isOpen()) {
-			break;
-		    }
+                    if (game.isOpen()) {
+                        break;
+                    }
                     if (game.getLoser() != game.getVisitorSlot(chr)) {
                         game.broadcastToVisitors(PlayerShopPacket.shopChat("Omok could not be placed by " + chr.getName() + ". Loser: " + game.getLoser() + " Visitor: " + game.getVisitorSlot(chr), game.getVisitorSlot(chr)));
                         return;
@@ -641,9 +640,9 @@ public class PlayerInteractionHandler {
                 final IMaplePlayerShop ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
-		    if (game.isOpen()) {
-			break;
-		    }
+                    if (game.isOpen()) {
+                        break;
+                    }
                     if (game.getLoser() != game.getVisitorSlot(chr)) {
                         game.broadcastToVisitors(PlayerShopPacket.shopChat("Card could not be placed by " + chr.getName() + ". Loser: " + game.getLoser() + " Visitor: " + game.getVisitorSlot(chr), game.getVisitorSlot(chr)));
                         return;
@@ -683,16 +682,16 @@ public class PlayerInteractionHandler {
                 final IMaplePlayerShop ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
-		    if (game.isOpen()) {
-			break;
-		    }
+                    if (game.isOpen()) {
+                        break;
+                    }
                     game.setExitAfter(chr);
                     game.broadcastToVisitors(PlayerShopPacket.getMiniGameExitAfter(game.isExitAfter(chr)));
                 }
                 break;
             }
             default: {
-		//some idiots try to send huge amounts of data to this (:
+                //some idiots try to send huge amounts of data to this (:
                 //System.out.println("Unhandled interaction action by " + chr.getName() + " : " + action + ", " + slea.toString());
                 //19 (0x13) - 00 OR 01 -> itemid(maple leaf) ? who knows what this is
                 break;

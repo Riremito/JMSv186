@@ -1306,7 +1306,7 @@ public class World {
                 return;
             }
             boolean bDifferent = mc.getFamilyId() != familyid || mc.getSeniorId() != seniorid || mc.getJunior1() != junior1 || mc.getJunior2() != junior2;
-	    mc.setFamily(familyid, seniorid, junior1, junior2);
+            mc.setFamily(familyid, seniorid, junior1, junior2);
             mc.setCurrentRep(currentrep);
             mc.setTotalRep(totalrep);
             if (bDifferent) {
@@ -1360,16 +1360,16 @@ public class World {
     }
 
     public static void handleMap(final MapleMap map, final int numTimes, final int size) {
-	if (map.getItemsSize() > 0) {
-	    for (MapleMapItem item : map.getAllItemsThreadsafe()) {
-	        if (item.shouldExpire()) {
-		    item.expire(map);
-	        } else if (item.shouldFFA()) {
-		    item.setDropType((byte)2);
-	        }
-	    }
-	}
-	if (map.characterSize() > 0) {
+        if (map.getItemsSize() > 0) {
+            for (MapleMapItem item : map.getAllItemsThreadsafe()) {
+                if (item.shouldExpire()) {
+                    item.expire(map);
+                } else if (item.shouldFFA()) {
+                    item.setDropType((byte) 2);
+                }
+            }
+        }
+        if (map.characterSize() > 0) {
             if (map.canSpawn()) {
                 map.respawn(false);
             }
@@ -1377,7 +1377,7 @@ public class World {
             for (MapleCharacter chr : map.getCharactersThreadsafe()) {
                 handleCooldowns(chr, numTimes, hurt);
             }
-	}
+        }
     }
 
     public static void handleCooldowns(final MapleCharacter chr, final int numTimes, final boolean hurt) { //is putting it here a good idea? expensive?

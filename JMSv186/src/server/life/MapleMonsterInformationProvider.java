@@ -65,13 +65,13 @@ public class MapleMonsterInformationProvider {
             while (rs.next()) {
                 globaldrops.add(
                         new MonsterGlobalDropEntry(
-                        rs.getInt("itemid"),
-                        rs.getInt("chance"),
-                        rs.getInt("continent"),
-                        rs.getByte("dropType"),
-                        rs.getInt("minimum_quantity"),
-                        rs.getInt("maximum_quantity"),
-                        rs.getShort("questid")));
+                                rs.getInt("itemid"),
+                                rs.getInt("chance"),
+                                rs.getInt("continent"),
+                                rs.getByte("dropType"),
+                                rs.getInt("minimum_quantity"),
+                                rs.getInt("maximum_quantity"),
+                                rs.getShort("questid")));
             }
             rs.close();
             ps.close();

@@ -85,9 +85,9 @@ import tools.packet.PlayerShopPacket;
 public class InventoryHandler {
 
     public static final void ItemMove(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-	if (c.getPlayer().getPlayerShop() != null || c.getPlayer().getConversation() > 0 || c.getPlayer().getTrade() != null) { //hack
-	    return;
-	}
+        if (c.getPlayer().getPlayerShop() != null || c.getPlayer().getConversation() > 0 || c.getPlayer().getTrade() != null) { //hack
+            return;
+        }
         c.getPlayer().updateTick(slea.readInt());
         final MapleInventoryType type = MapleInventoryType.getByType(slea.readByte()); //04
         final short src = slea.readShort();                                            //01 00
@@ -524,7 +524,7 @@ public class InventoryHandler {
             if (CurrentLoopedSkillId == null) {
                 break; // End of data
             }
-	    final ISkill CurrSkillData = SkillFactory.getSkill(CurrentLoopedSkillId);
+            final ISkill CurrSkillData = SkillFactory.getSkill(CurrentLoopedSkillId);
             if (CurrSkillData != null && CurrSkillData.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(CurrSkillData) >= ReqSkillLevel && chr.getMasterLevel(CurrSkillData) < MasterLevel) {
                 canuse = true;
                 if (Randomizer.nextInt(100) <= SuccessRate && SuccessRate != 0) {
@@ -538,7 +538,7 @@ public class InventoryHandler {
             }
         }
         c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.useSkillBook(chr, skill, maxlevel, canuse, success));
-	c.getSession().write(MaplePacketCreator.enableActions());
+        c.getSession().write(MaplePacketCreator.enableActions());
         return canuse;
     }
 
@@ -645,7 +645,6 @@ public class InventoryHandler {
         final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
         long expiration_days = 0;
         int mountid = 0;
-
 
         if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId) {
             switch (toUse.getItemId()) {
@@ -1326,12 +1325,12 @@ public class InventoryHandler {
                 } //well i dont really care other than this o.o
                 int skill1 = slea.readInt();
                 int skill2 = slea.readInt();
-		for (int i : GameConstants.blockedSkills) {
-		    if (skill1 == i) {
-			c.getPlayer().dropMessage(1, "You may not add this skill.");
-			return;
-		    }
-		}
+                for (int i : GameConstants.blockedSkills) {
+                    if (skill1 == i) {
+                        c.getPlayer().dropMessage(1, "You may not add this skill.");
+                        return;
+                    }
+                }
 
                 ISkill skillSPTo = SkillFactory.getSkill(skill1);
                 ISkill skillSPFrom = SkillFactory.getSkill(skill2);
@@ -1980,9 +1979,9 @@ public class InventoryHandler {
     }
 
     public static final void Pickup_Player(final SeekableLittleEndianAccessor slea, MapleClient c, final MapleCharacter chr) {
-	if (c.getPlayer().getPlayerShop() != null || c.getPlayer().getConversation() > 0 || c.getPlayer().getTrade() != null) { //hack
-	    return;
-	}
+        if (c.getPlayer().getPlayerShop() != null || c.getPlayer().getConversation() > 0 || c.getPlayer().getTrade() != null) { //hack
+            return;
+        }
         chr.updateTick(slea.readInt());
         slea.skip(1); // [4] Seems to be tickcount, [1] always 0
         final Point Client_Reportedpos = slea.readPos();
@@ -2062,9 +2061,9 @@ public class InventoryHandler {
         if (chr == null) {
             return;
         }
-	if (c.getPlayer().getPlayerShop() != null || c.getPlayer().getConversation() > 0 || c.getPlayer().getTrade() != null) { //hack
-	    return;
-	}
+        if (c.getPlayer().getPlayerShop() != null || c.getPlayer().getConversation() > 0 || c.getPlayer().getTrade() != null) { //hack
+            return;
+        }
         int petz = slea.readInt();
         final MaplePet pet = chr.getPet(petz);
         chr.updateTick(slea.readInt());
@@ -2133,7 +2132,7 @@ public class InventoryHandler {
         } finally {
             lock.unlock();
         }
-/*        final MapleMapItem mapitem = (MapleMapItem) ob;
+        /*        final MapleMapItem mapitem = (MapleMapItem) ob;
         final Lock lock = mapitem.getLock();
         lock.lock();
         try {

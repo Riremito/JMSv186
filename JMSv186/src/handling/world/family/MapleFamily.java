@@ -397,7 +397,7 @@ public class MapleFamily implements java.io.Serializable {
         //happens when someone in newfam juniors LEADER in oldfam
         //update all the members.
         for (MapleFamilyCharacter mgc : oldfam.members.values()) {
-	    mgc.setFamilyId(newfam.getId());
+            mgc.setFamilyId(newfam.getId());
             if (mgc.isOnline()) {
                 World.Family.setFamily(newfam.getId(), mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
             } else {
@@ -430,7 +430,7 @@ public class MapleFamily implements java.io.Serializable {
             }
             for (MapleFamilyCharacter mgc : all) {
                 // need it for sql
-		mgc.setFamilyId(newId);
+                mgc.setFamilyId(newId);
                 setOfflineFamilyStatus(newId, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
                 members.remove(mgc.getId()); //clean remove
             }

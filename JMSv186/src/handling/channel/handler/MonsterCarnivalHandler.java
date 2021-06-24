@@ -45,7 +45,6 @@ public class MonsterCarnivalHandler {
         final int tab = slea.readByte();
         final int num = slea.readInt();
 
-
         if (tab == 0) {
             final List<Pair<Integer, Integer>> mobs = c.getPlayer().getMap().getMobsToSpawn();
             if (num >= mobs.size() || c.getPlayer().getAvailableCP() < mobs.get(num).right) {
@@ -68,12 +67,12 @@ public class MonsterCarnivalHandler {
             }
 
         } else if (tab == 1) { //debuff
-	    final List<Integer> skillid = c.getPlayer().getMap().getSkillIds();
-	    if (num >= skillid.size()) {
+            final List<Integer> skillid = c.getPlayer().getMap().getSkillIds();
+            if (num >= skillid.size()) {
                 c.getPlayer().dropMessage(5, "An error occurred.");
                 c.getSession().write(MaplePacketCreator.enableActions());
-		return;
-	    }
+                return;
+            }
             final MCSkill skil = MapleCarnivalFactory.getInstance().getSkill(skillid.get(num)); //ugh wtf
             if (skil == null || c.getPlayer().getAvailableCP() < skil.cpLoss) {
                 c.getPlayer().dropMessage(5, "You do not have the CP.");

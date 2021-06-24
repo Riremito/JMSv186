@@ -68,8 +68,8 @@ public class MapScriptMethods {
         easy_balog_summon,
         Sky_TrapFEnter,
         shammos_Fenter,
-	PRaid_D_Fenter,
-	PRaid_B_Fenter,
+        PRaid_D_Fenter,
+        PRaid_B_Fenter,
         NULL;
 
         private static onFirstUserEnter fromString(String Str) {
@@ -152,13 +152,12 @@ public class MapScriptMethods {
         summonIceWall,
         metro_firstSetting,
         start_itemTake,
-
-	PRaid_D_Enter,
-	PRaid_B_Enter,
-	PRaid_Revive,
-	PRaid_W_Enter,
-	PRaid_WinEnter,
-	PRaid_FailEnter,
+        PRaid_D_Enter,
+        PRaid_B_Enter,
+        PRaid_Revive,
+        PRaid_W_Enter,
+        PRaid_WinEnter,
+        PRaid_FailEnter,
         NULL;
 
         private static onUserEnter fromString(String Str) {
@@ -171,9 +170,9 @@ public class MapScriptMethods {
     };
 
     public static void startScript_FirstUser(MapleClient c, String scriptName) {
-	if (c.getPlayer() == null){
-	    return;
-	} //o_O
+        if (c.getPlayer() == null) {
+            return;
+        } //o_O
         switch (onFirstUserEnter.fromString(scriptName)) {
             case dojang_Eff: {
                 int temp = (c.getPlayer().getMapId() - 925000000) / 100;
@@ -419,7 +418,7 @@ public class MapScriptMethods {
                 }
                 break;
             }
-	    case PRaid_D_Fenter: {
+            case PRaid_D_Fenter: {
                 switch (c.getPlayer().getMapId() % 10) {
                     case 0:
                         c.getPlayer().getMap().startMapEffect("Eliminate all the monsters!", 5120033);
@@ -437,12 +436,12 @@ public class MapScriptMethods {
                         c.getPlayer().getMap().startMapEffect("Find the way to the other side!", 5120033);
                         break;
                 }
-		break;
-	    }
-	    case PRaid_B_Fenter: {
-		c.getPlayer().getMap().startMapEffect("Defeat the Ghost Ship Captain!", 5120033);
-		break;
-	    }
+                break;
+            }
+            case PRaid_B_Fenter: {
+                c.getPlayer().getMap().startMapEffect("Defeat the Ghost Ship Captain!", 5120033);
+                break;
+            }
             case balog_summon:
             case easy_balog_summon: { //we dont want to reset
                 break;
@@ -463,9 +462,9 @@ public class MapScriptMethods {
     }
 
     public static void startScript_User(MapleClient c, String scriptName) {
-	if (c.getPlayer() == null){
-	    return;
-	} //o_O
+        if (c.getPlayer() == null) {
+            return;
+        } //o_O
         String data = "";
         switch (onUserEnter.fromString(scriptName)) {
             case cygnusTest:
@@ -489,26 +488,26 @@ public class MapScriptMethods {
                 }
                 break;
             }
-	    case PRaid_W_Enter: {
-		c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_expPenalty", "0"));
-		c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_ElapssedTimeAtField", "0"));
-		c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_Point", "-1"));
-		c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_Bonus", "-1"));
-		c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_Total", "-1"));
-		c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_Team", ""));
-		c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_IsRevive", "0"));
-		c.getPlayer().writePoint("PRaid_Point", "-1");
-		c.getPlayer().writeStatus("Red_Stage", "1");
-		c.getPlayer().writeStatus("Blue_Stage", "1");
-		c.getPlayer().writeStatus("redTeamDamage", "0");
-		c.getPlayer().writeStatus("blueTeamDamage", "0");
-		break;
-	    }
-	    case PRaid_D_Enter:
-	    case PRaid_B_Enter:
-	    case PRaid_WinEnter: //handled by event
-	    case PRaid_FailEnter: //also
-	    case PRaid_Revive: //likely to subtract points or remove a life, but idc rly
+            case PRaid_W_Enter: {
+                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_expPenalty", "0"));
+                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_ElapssedTimeAtField", "0"));
+                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_Point", "-1"));
+                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_Bonus", "-1"));
+                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_Total", "-1"));
+                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_Team", ""));
+                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_IsRevive", "0"));
+                c.getPlayer().writePoint("PRaid_Point", "-1");
+                c.getPlayer().writeStatus("Red_Stage", "1");
+                c.getPlayer().writeStatus("Blue_Stage", "1");
+                c.getPlayer().writeStatus("redTeamDamage", "0");
+                c.getPlayer().writeStatus("blueTeamDamage", "0");
+                break;
+            }
+            case PRaid_D_Enter:
+            case PRaid_B_Enter:
+            case PRaid_WinEnter: //handled by event
+            case PRaid_FailEnter: //also
+            case PRaid_Revive: //likely to subtract points or remove a life, but idc rly
             case metro_firstSetting:
             case blackSDI:
             case summonIceWall:

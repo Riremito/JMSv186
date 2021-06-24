@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * Provides utilities for manipulating collections of objects.
- * 
+ *
  * @author Frz
  * @version 1.0
  * @since Revision 701
@@ -42,6 +42,7 @@ public class CollectionUtil {
 
     /**
      * Copies <code>count</code> items off of list, starting from the beginning.
+     *
      * @param <T> The type of the list.
      * @param list The list to copy from.
      * @param count The number of items to copy.

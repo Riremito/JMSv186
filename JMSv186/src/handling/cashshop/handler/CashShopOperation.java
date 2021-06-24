@@ -345,7 +345,7 @@ public class CashShopOperation {
             } else {
                 chr.dropMessage(1, "移動失敗。");
             }
-/*            int uniqueid = (int) slea.readLong();
+            /*            int uniqueid = (int) slea.readLong();
             MapleInventoryType type = MapleInventoryType.getByType(slea.readByte());
             IItem item = c.getPlayer().getInventory(type).findByUniqueId(uniqueid);
             if (item != null && item.getQuantity() > 0 && item.getUniqueId() > 0 && c.getPlayer().getCashInventory().getItemsSize() < 100) {
@@ -414,7 +414,6 @@ public class CashShopOperation {
                 //c.getSession().write(MTSCSPacket.showBoughtCSItem(itemz, item.getSN(), c.getAccID()));
                 c.getSession().write(MTSCSPacket.sendGift(item.getPrice(), item.getId(), item.getCount(), partnerName));
             }
-
 
         } else if (action == 31) {
             slea.skip(1);

@@ -46,7 +46,7 @@ public class CharacterTransfer implements Externalizable {
             meso, hair, face, mapid, guildid,
             partyid, messengerid, mBookCover, dojo, ACash, MaplePoints,
             mount_itemid, mount_exp, points, vpoints, marriageId,
-	    familyid, seniorid, junior1, junior2, currentrep, totalrep, battleshipHP;
+            familyid, seniorid, junior1, junior2, currentrep, totalrep, battleshipHP;
     public byte channel, dojoRecord, gender, gmLevel, guildrank, alliancerank, clonez, fairyExp, buddysize, world, initialSpawnPoint, skinColor, mount_level, mount_Fatigue, subcategory;
     public long lastfametime, TranferTime;
     public String name, accountname, BlessOfFairy, chalkboard;
@@ -107,13 +107,13 @@ public class CharacterTransfer implements Externalizable {
         this.clonez = chr.getNumClones();
         this.petStore = chr.getPetStores();
         this.subcategory = chr.getSubcategory();
-	this.currentrep = chr.getCurrentRep();
-	this.totalrep = chr.getTotalRep();
-	this.familyid = chr.getFamilyId();
-	this.seniorid = chr.getSeniorId();
-	this.junior1 = chr.getJunior1();
-	this.junior2 = chr.getJunior2();
-	this.battleshipHP = chr.currentBattleshipHP();
+        this.currentrep = chr.getCurrentRep();
+        this.totalrep = chr.getTotalRep();
+        this.familyid = chr.getFamilyId();
+        this.seniorid = chr.getSeniorId();
+        this.junior1 = chr.getJunior1();
+        this.junior2 = chr.getJunior2();
+        this.battleshipHP = chr.currentBattleshipHP();
         boolean uneq = false;
         for (int i = 0; i < this.petStore.length; i++) {
             final MaplePet pet = chr.getPet(i);
@@ -255,13 +255,13 @@ public class CharacterTransfer implements Externalizable {
         this.fairyExp = in.readByte();
         this.subcategory = in.readByte();
         this.marriageId = in.readInt();
-	this.familyid = in.readInt();
-	this.seniorid = in.readInt();
-	this.junior1 = in.readInt();
-	this.junior2 = in.readInt();
-	this.currentrep = in.readInt();
-	this.totalrep = in.readInt();
-	this.battleshipHP = in.readInt();
+        this.familyid = in.readInt();
+        this.seniorid = in.readInt();
+        this.junior1 = in.readInt();
+        this.junior2 = in.readInt();
+        this.currentrep = in.readInt();
+        this.totalrep = in.readInt();
+        this.battleshipHP = in.readInt();
 
         final int mbooksize = in.readShort();
         for (int i = 0; i < mbooksize; i++) {
@@ -402,19 +402,19 @@ public class CharacterTransfer implements Externalizable {
         out.writeByte(this.fairyExp);
         out.writeByte(this.subcategory);
         out.writeInt(this.marriageId);
-	out.writeInt(this.familyid);
-	out.writeInt(this.seniorid);
-	out.writeInt(this.junior1);
-	out.writeInt(this.junior2);
-	out.writeInt(this.currentrep);
-	out.writeInt(this.totalrep);
-	out.writeInt(this.battleshipHP);
+        out.writeInt(this.familyid);
+        out.writeInt(this.seniorid);
+        out.writeInt(this.junior1);
+        out.writeInt(this.junior2);
+        out.writeInt(this.currentrep);
+        out.writeInt(this.totalrep);
+        out.writeInt(this.battleshipHP);
 
-	out.writeShort(this.mbook.size());
-	for (Map.Entry<Integer, Integer> ms : this.mbook.entrySet()) {
-	    out.writeInt(ms.getKey());
-	    out.writeInt(ms.getValue());
-	}
+        out.writeShort(this.mbook.size());
+        for (Map.Entry<Integer, Integer> ms : this.mbook.entrySet()) {
+            out.writeInt(ms.getKey());
+            out.writeInt(ms.getValue());
+        }
 
         out.writeShort(this.Skills.size());
         for (final Map.Entry<Integer, SkillEntry> qs : this.Skills.entrySet()) {
@@ -432,7 +432,7 @@ public class CharacterTransfer implements Externalizable {
             out.writeUTF(qs.getKey().getName());
             out.writeInt(qs.getKey().getLevel());
             out.writeInt(qs.getKey().getJob());
-	    out.writeUTF(qs.getKey().getGroup());
+            out.writeUTF(qs.getKey().getGroup());
             out.writeBoolean(qs.getValue());
         }
 

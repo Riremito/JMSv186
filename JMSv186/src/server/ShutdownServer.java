@@ -32,8 +32,8 @@ public class ShutdownServer implements Runnable {
                 cs.setShutdown();
             }
             LoginServer.shutdown();
-            Integer[] chs =  ChannelServer.getAllInstance().toArray(new Integer[0]);
-        
+            Integer[] chs = ChannelServer.getAllInstance().toArray(new Integer[0]);
+
             for (int i : chs) {
                 try {
                     ChannelServer cs = ChannelServer.getInstance(i);
@@ -51,7 +51,7 @@ public class ShutdownServer implements Runnable {
             CashShopServer.shutdown();
             World.Guild.save();
             World.Alliance.save();
-	    World.Family.save();
+            World.Family.save();
             DatabaseConnection.closeAll();
         } catch (SQLException e) {
             System.err.println("THROW" + e);
@@ -62,11 +62,11 @@ public class ShutdownServer implements Runnable {
         BuffTimer.getInstance().stop();
         CloneTimer.getInstance().stop();
         EventTimer.getInstance().stop();
-	EtcTimer.getInstance().stop();
+        EtcTimer.getInstance().stop();
 
-        try{
+        try {
             Thread.sleep(5000);
-        }catch(Exception e) {
+        } catch (Exception e) {
             //shutdown
         }
         System.exit(0); //not sure if this is really needed for ChannelServer

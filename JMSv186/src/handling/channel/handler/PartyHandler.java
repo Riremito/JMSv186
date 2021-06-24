@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.channel.handler;
 
-
 import client.MapleCharacter;
 import client.MapleClient;
 import handling.world.MapleParty;

@@ -96,9 +96,9 @@ public class BuddyListHandler {
             }
             if (ble != null && (ble.getGroup().equals(groupName) || !ble.isVisible())) {
                 c.getSession().write(MaplePacketCreator.buddylistMessage((byte) 11));
-	    } else if (ble != null && ble.isVisible()) {
-	    	ble.setGroup(groupName);
-		c.getSession().write(MaplePacketCreator.updateBuddylist(buddylist.getBuddies()));
+            } else if (ble != null && ble.isVisible()) {
+                ble.setGroup(groupName);
+                c.getSession().write(MaplePacketCreator.updateBuddylist(buddylist.getBuddies()));
             } else if (buddylist.isFull()) {
                 c.getSession().write(MaplePacketCreator.buddylistMessage((byte) 11));
             } else {
@@ -107,7 +107,7 @@ public class BuddyListHandler {
                     int channel = World.Find.findChannel(addName);
                     MapleCharacter otherChar = null;
                     if (channel > 0) {
-			otherChar = ChannelServer.getInstance(channel).getPlayerStorage().getCharacterByName(addName);
+                        otherChar = ChannelServer.getInstance(channel).getPlayerStorage().getCharacterByName(addName);
                         if (!otherChar.isGM() || c.getPlayer().isGM()) {
                             charWithId = new CharacterIdNameBuddyCapacity(otherChar.getId(), otherChar.getName(), otherChar.getLevel(), otherChar.getJob(), groupName, otherChar.getBuddylist().getCapacity());
                         }
@@ -175,7 +175,7 @@ public class BuddyListHandler {
                     System.err.println("SQL THROW" + e);
                 }
             }
-	    nextPendingRequest(c);
+            nextPendingRequest(c);
         } else if (mode == 2) { // accept buddy
             int otherCid = slea.readInt();
             if (!buddylist.isFull()) {
@@ -196,10 +196,10 @@ public class BuddyListHandler {
                         rs.close();
                         ps.close();
                     } else {
-			final MapleCharacter otherChar = ChannelServer.getInstance(channel).getPlayerStorage().getCharacterById(otherCid);
+                        final MapleCharacter otherChar = ChannelServer.getInstance(channel).getPlayerStorage().getCharacterById(otherCid);
                         otherName = otherChar.getName();
-			otherLevel = otherChar.getLevel();
-			otherJob = otherChar.getJob();
+                        otherLevel = otherChar.getLevel();
+                        otherJob = otherChar.getJob();
                     }
                     if (otherName != null) {
                         buddylist.put(new BuddylistEntry(otherName, otherCid, "ETC", channel, true, otherLevel, otherJob));
@@ -215,7 +215,7 @@ public class BuddyListHandler {
             nextPendingRequest(c);
         } else if (mode == 3) { // delete
             final int otherCid = slea.readInt();
-	    final BuddylistEntry blz = buddylist.get(otherCid);
+            final BuddylistEntry blz = buddylist.get(otherCid);
             if (blz != null && blz.isVisible()) {
                 notifyRemoteChannel(c, World.Find.findChannel(otherCid), otherCid, blz.getGroup(), DELETED);
             }
@@ -223,8 +223,8 @@ public class BuddyListHandler {
             c.getSession().write(MaplePacketCreator.updateBuddylist(c.getPlayer().getBuddylist().getBuddies()));
             nextPendingRequest(c);
         } else {
-	    System.out.println("Unknown buddylist: " + slea.toString());
-	}
+            System.out.println("Unknown buddylist: " + slea.toString());
+        }
     }
 
     private static final void notifyRemoteChannel(final MapleClient c, final int remoteChannel, final int otherCid, final String group, final BuddyOperation operation) {

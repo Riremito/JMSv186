@@ -392,8 +392,8 @@ public class PlayerStats implements Serializable {
                             localdex += pot.incDEX;
                             localint_ += pot.incINT;
                             localluk += pot.incLUK;
-			    localmaxhp += pot.incMHP;
-			    localmaxmp += pot.incMMP;
+                            localmaxhp += pot.incMHP;
+                            localmaxmp += pot.incMMP;
                             watk += pot.incPAD;
                             magic += pot.incINT + pot.incMAD;
                             speed += pot.incSpeed;
@@ -801,7 +801,6 @@ public class PlayerStats implements Serializable {
             }
         }
         hands = this.localdex + this.localint_ + this.localluk;
-
 
         localmaxhp = (short) Math.min(30000, Math.abs(Math.max(-30000, localmaxhp_)));
         localmaxmp = (short) Math.min(30000, Math.abs(Math.max(-30000, localmaxmp_)));

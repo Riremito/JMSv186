@@ -28,10 +28,11 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * Provides cryptographic functions for password hashing.
- * 
- * Legacy purpose as the method done here is insecure by hashing multiple times and overly complicated. Will go away
- * when/if official oms has no more users with legacy passhashes.
- * 
+ *
+ * Legacy purpose as the method done here is insecure by hashing multiple times
+ * and overly complicated. Will go away when/if official oms has no more users
+ * with legacy passhashes.
+ *
  * @author Nol888
  * @version 0.1
  */
@@ -78,7 +79,8 @@ public class LoginCryptoLegacy {
      *
      * @param password The password to validate.
      * @param hash The hash to validate against.
-     * @return <code>true</code> if the password is correct, <code>false</code> otherwise.
+     * @return <code>true</code> if the password is correct, <code>false</code>
+     * otherwise.
      */
     public static final boolean checkPassword(String password, String hash) {
         return (myCrypt(password, hash).equals(hash));

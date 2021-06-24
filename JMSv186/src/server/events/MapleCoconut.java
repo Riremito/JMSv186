@@ -220,7 +220,7 @@ public class MapleCoconut extends MapleEvent {
                     if ((getMapleScore() > getStoryScore() && chr.getCoconutTeam() == 0) || (getStoryScore() > getMapleScore() && chr.getCoconutTeam() == 1)) {
                         givePrize(chr);
                     }
-		    warpBack(chr);
+                    warpBack(chr);
                 }
                 unreset();
             }

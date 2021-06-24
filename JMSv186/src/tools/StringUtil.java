@@ -66,8 +66,8 @@ public class StringUtil {
     }
 
     /**
-     * Joins an array of strings starting from string <code>start</code> with
-     * a space.
+     * Joins an array of strings starting from string <code>start</code> with a
+     * space.
      *
      * @param arr The array of strings to join.
      * @param start Starting from which string.

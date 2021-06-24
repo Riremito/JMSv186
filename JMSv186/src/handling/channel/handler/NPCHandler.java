@@ -175,11 +175,11 @@ public class NPCHandler {
                 break;
             }
             case 3: { // Forefit Quest
-		if (GameConstants.canForfeit(q.getId())) {
+                if (GameConstants.canForfeit(q.getId())) {
                     q.forfeit(chr);
-		} else {
-		    chr.dropMessage(1, "You may not forfeit this quest.");
-		}
+                } else {
+                    chr.dropMessage(1, "You may not forfeit this quest.");
+                }
                 break;
             }
             case 4: { // Scripted Start Quest
@@ -215,8 +215,8 @@ public class NPCHandler {
                         storage.store(item);
                         chr.dropMessage(1, "Your inventory is full");
                     } else {
-		    	MapleInventoryManipulator.addFromDrop(c, item, false);
-		    }
+                        MapleInventoryManipulator.addFromDrop(c, item, false);
+                    }
                     storage.sendTakenOut(c, GameConstants.getInventoryType(item.getItemId()));
                 } else {
                     //AutobanManager.getInstance().autoban(c, "Trying to take out item from storage which does not exist.");

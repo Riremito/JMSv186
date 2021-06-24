@@ -121,14 +121,14 @@ public class PetPacket {
         mplew.writeShort(SendPacketOpcode.PET_COMMAND.getValue());
         mplew.writeInt(cid);
         mplew.writeInt(slot);
-	mplew.write(command == 1 ? 1 : 0);
-	mplew.write(command);
+        mplew.write(command == 1 ? 1 : 0);
+        mplew.write(command);
         if (command == 1) {
-	    mplew.write(0);
+            mplew.write(0);
 
         } else {
             mplew.writeShort(success ? 1 : 0);
-	}
+        }
         return mplew.getPacket();
     }
 

@@ -352,12 +352,12 @@ public class PlayersHandler {
             c.getSession().write(MaplePacketCreator.enableActions());
             chr.setMarriageItemId(0);
         } else if (mode == 3) { //drop, only works for ETC
-	    final int itemId = slea.readInt();
-	    final MapleInventoryType type = GameConstants.getInventoryType(itemId);
-	    final IItem item = c.getPlayer().getInventory(type).findById(itemId);
-	    if (item != null && type == MapleInventoryType.ETC && itemId / 10000 == 421) {
-	    	MapleInventoryManipulator.drop(c, type, item.getPosition(), item.getQuantity());
-	    }
-	}
+            final int itemId = slea.readInt();
+            final MapleInventoryType type = GameConstants.getInventoryType(itemId);
+            final IItem item = c.getPlayer().getInventory(type).findById(itemId);
+            if (item != null && type == MapleInventoryType.ETC && itemId / 10000 == 421) {
+                MapleInventoryManipulator.drop(c, type, item.getPosition(), item.getQuantity());
+            }
+        }
     }
 }

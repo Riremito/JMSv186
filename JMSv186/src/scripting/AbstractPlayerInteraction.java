@@ -849,16 +849,16 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void summonMsg(final String msg) {
-	if (!c.getPlayer().hasSummon()) {
-	    playerSummonHint(true);
-	}
+        if (!c.getPlayer().hasSummon()) {
+            playerSummonHint(true);
+        }
         c.getSession().write(UIPacket.summonMessage(msg));
     }
 
     public final void summonMsg(final int type) {
-	if (!c.getPlayer().hasSummon()) {
-	    playerSummonHint(true);
-	}
+        if (!c.getPlayer().hasSummon()) {
+            playerSummonHint(true);
+        }
         c.getSession().write(UIPacket.summonMessage(type));
     }
 
@@ -867,7 +867,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void playerSummonHint(final boolean summon) {
-	c.getPlayer().setHasSummon(summon);
+        c.getPlayer().setHasSummon(summon);
         c.getSession().write(UIPacket.summonHelper(summon));
     }
 

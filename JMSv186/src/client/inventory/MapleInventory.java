@@ -36,7 +36,9 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
     private byte slotLimit = 0;
     private MapleInventoryType type;
 
-    /** Creates a new instance of MapleInventory */
+    /**
+     * Creates a new instance of MapleInventory
+     */
     public MapleInventory(MapleInventoryType type) {
         this.inventory = new LinkedHashMap<Short, IItem>();
         this.type = type;
@@ -61,7 +63,10 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         slotLimit = slot;
     }
 
-    /** Returns the item with its slot id if it exists within the inventory, otherwise null is returned */
+    /**
+     * Returns the item with its slot id if it exists within the inventory,
+     * otherwise null is returned
+     */
     public IItem findById(int itemId) {
         for (IItem item : inventory.values()) {
             if (item.getItemId() == itemId) {
@@ -110,7 +115,9 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         return inventory.values();
     }
 
-    /** Adds the item to the inventory and returns the assigned slot id */
+    /**
+     * Adds the item to the inventory and returns the assigned slot id
+     */
     public short addItem(IItem item) {
         short slotId = getNextFreeSlot();
         if (slotId < 0) {
@@ -201,7 +208,9 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         return inventory.size() + margin >= slotLimit;
     }
 
-    /** Returns the next empty slot id, -1 if the inventory is full */
+    /**
+     * Returns the next empty slot id, -1 if the inventory is full
+     */
     public short getNextFreeSlot() {
         if (isFull()) {
             return -1;

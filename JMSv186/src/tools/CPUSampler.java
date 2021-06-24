@@ -299,8 +299,8 @@ public class CPUSampler {
         }
 
         public String toString(int totalInvoations, int traceLength) {
-            return count + "/" + totalInvoations + " Sampled Invocations (" + getPercentage(totalInvoations) + "%) " +
-                    trace.toString(traceLength);
+            return count + "/" + totalInvoations + " Sampled Invocations (" + getPercentage(totalInvoations) + "%) "
+                    + trace.toString(traceLength);
         }
     }
 

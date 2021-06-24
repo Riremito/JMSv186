@@ -17,7 +17,7 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package handling.world.guild;
 
 public class MapleGuildSummary implements java.io.Serializable {
@@ -31,35 +31,35 @@ public class MapleGuildSummary implements java.io.Serializable {
     private int allianceid;
 
     public MapleGuildSummary(MapleGuild g) {
-	name = g.getName();
-	logoBG = (short) g.getLogoBG();
-	logoBGColor = (byte) g.getLogoBGColor();
-	logo = (short) g.getLogo();
-	logoColor = (byte) g.getLogoColor();
-	allianceid = g.getAllianceId();
+        name = g.getName();
+        logoBG = (short) g.getLogoBG();
+        logoBGColor = (byte) g.getLogoBGColor();
+        logo = (short) g.getLogo();
+        logoColor = (byte) g.getLogoColor();
+        allianceid = g.getAllianceId();
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public short getLogoBG() {
-	return logoBG;
+        return logoBG;
     }
 
     public byte getLogoBGColor() {
-	return logoBGColor;
+        return logoBGColor;
     }
 
     public short getLogo() {
-	return logo;
+        return logo;
     }
 
     public byte getLogoColor() {
-	return logoColor;
+        return logoColor;
     }
 
     public int getAllianceId() {
-	return allianceid;
+        return allianceid;
     }
 }

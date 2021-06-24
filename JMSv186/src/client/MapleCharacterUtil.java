@@ -39,7 +39,7 @@ public class MapleCharacterUtil {
         if (name.getBytes().length < 3 || name.getBytes().length > 12 /*|| !namePattern.matcher(name).matches()*/ || getIdByName(name) != -1) {
             return false;
         }
-/*        for (String z : GameConstants.RESERVED) {
+        /*        for (String z : GameConstants.RESERVED) {
             if (name.indexOf(z) != -1) {
                 return false;
             }
@@ -48,7 +48,7 @@ public class MapleCharacterUtil {
     }
 
     public static final boolean canChangePetName(final String name) {
-/*        if (petPattern.matcher(name).matches()) {
+        /*        if (petPattern.matcher(name).matches()) {
             for (String z : GameConstants.RESERVED) {
                 if (name.indexOf(z) != -1) {
                     return false;

@@ -171,17 +171,17 @@ public final class Eval {
          * Called when an operand is expected next.
          *
          * @return one of:
-         *         <UL>
-         *         <LI>a {@link BigDecimal} value;</LI>
-         *         <LI>the {@link String} name of a variable;</LI>
-         *         <LI>{@link Tokeniser#START_NEW_EXPRESSION} when an opening
-         *         parenthesis is found: </LI>
-         *         <LI>or {@link Operator} when a unary operator is found in front
-         *         of an operand</LI>
-         *         </UL>
+         * <UL>
+         * <LI>a {@link BigDecimal} value;</LI>
+         * <LI>the {@link String} name of a variable;</LI>
+         * <LI>{@link Tokeniser#START_NEW_EXPRESSION} when an opening
+         * parenthesis is found: </LI>
+         * <LI>or {@link Operator} when a unary operator is found in front of an
+         * operand</LI>
+         * </UL>
          *
-         * @throws RuntimeException
-         *             if the end of the string is reached unexpectedly.
+         * @throws RuntimeException if the end of the string is reached
+         * unexpectedly.
          */
         Object getOperand() {
             /* Skip whitespace */
@@ -508,8 +508,8 @@ public final class Eval {
             }
         },
         /**
-         * No operation - used internally when expression contains only a reference
-         * to a variable.
+         * No operation - used internally when expression contains only a
+         * reference to a variable.
          */
         NOP(4, 1, "", Type.ARITHMETIC, Type.ARITHMETIC) {
 
@@ -639,8 +639,8 @@ public final class Eval {
         }
 
         /**
-         * Validate that where operations are combined together that the types are
-         * as expected.
+         * Validate that where operations are combined together that the types
+         * are as expected.
          */
         private static void validateOperandType(Object operand, Type type) {
             Type operandType;
@@ -732,8 +732,8 @@ public final class Eval {
                          */
                         operand = Operation.binaryOperationfactory(operator,
                                 operand, compile(nextOperand, nextOperator,
-                                nestingLevel, endOfExpressionChar,
-                                operator.precedence));
+                                        nestingLevel, endOfExpressionChar,
+                                        operator.precedence));
                         operator = this.tokeniser.getOperator(endOfExpressionChar);
                         if (operator == Operator.END && preReadOperator != null && endOfExpressionChar != 0) {
                             /* The bracket also terminates an earlier expression. */
@@ -767,8 +767,7 @@ public final class Eval {
      * evaluate the expression using different sets of variables. This holds the
      * results of parsing the expression to minimise further work.
      *
-     * @param expression
-     *            the arithmetic expression to be parsed.
+     * @param expression the arithmetic expression to be parsed.
      */
     public Eval(String expression) {
         this.rootOperation = new Compiler(expression).compile();
@@ -777,8 +776,7 @@ public final class Eval {
     /**
      * Evaluate the expression with the given set of values.
      *
-     * @param variables
-     *            the values to use in the expression.
+     * @param variables the values to use in the expression.
      * @return the result of the evaluation
      */
     public BigDecimal eval(Map<String, BigDecimal> variables) {
@@ -798,10 +796,8 @@ public final class Eval {
      * A convenience method that constructs an {@link Expression} and evaluates
      * it.
      *
-     * @param expression
-     *            the expression to evaluate.
-     * @param variables
-     *            the values to use in the evaluation.
+     * @param expression the expression to evaluate.
+     * @param variables the values to use in the evaluation.
      * @return the result of the evaluation
      */
     public static BigDecimal eval(String expression,
@@ -813,8 +809,7 @@ public final class Eval {
      * A convenience method that constructs an {@link Expression} that
      * references no variables and evaluates it.
      *
-     * @param expression
-     *            the expression to evaluate.
+     * @param expression the expression to evaluate.
      * @return the result of the evaluation
      */
     public static BigDecimal eval(String expression) {

@@ -27,7 +27,9 @@ public class MapleQuestRequirement implements Serializable {
     private String stringStore;
     private List<Pair<Integer, Integer>> dataStore;
 
-    /** Creates a new instance of MapleQuestRequirement */
+    /**
+     * Creates a new instance of MapleQuestRequirement
+     */
     public MapleQuestRequirement(MapleQuest quest, MapleQuestRequirementType type, MapleData data) {
         this.type = type;
         this.quest = quest;
@@ -75,7 +77,7 @@ public class MapleQuestRequirement implements Serializable {
                 }
                 break;
             }
-	    case pettamenessmin:
+            case pettamenessmin:
             case npc:
             case questComplete:
             case pop:
@@ -241,7 +243,7 @@ public class MapleQuestRequirement implements Serializable {
                 return c.getNumQuest() >= intStore;
             case interval:
                 return c.getQuest(quest).getStatus() != 2 || c.getQuest(quest).getCompletionTime() <= System.currentTimeMillis() - intStore * 60 * 1000L;
-    	    case pet:
+            case pet:
                 for (Pair<Integer, Integer> a : dataStore) {
                     if (c.getPetById(a.getRight()) == -1) {
                         return false;
@@ -249,12 +251,12 @@ public class MapleQuestRequirement implements Serializable {
                 }
                 return true;
             case pettamenessmin:
-		for (MaplePet pet : c.getPets()) {
-		    if (pet.getSummoned() && pet.getCloseness() >= intStore) {
-			return true;
-		    }
-		}
-		return false;
+                for (MaplePet pet : c.getPets()) {
+                    if (pet.getSummoned() && pet.getCloseness() >= intStore) {
+                        return true;
+                    }
+                }
+                return false;
             default:
                 return true;
         }

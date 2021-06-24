@@ -81,7 +81,6 @@ public class HiredMerchantHandler {
             ps.setInt(2, charid);
             ResultSet rs = ps.executeQuery();
 
-
             if (rs.next()) {
                 ps.close();
                 rs.close();
@@ -247,7 +246,6 @@ public class HiredMerchantHandler {
                 }
                 pack.setItems(iters);
             }
-
 
             return pack;
         } catch (SQLException e) {

@@ -343,9 +343,9 @@ public class EventManager {
     }
 
     public boolean scheduleRandomEvent() {
-	if (getChannel() != eventChannel) {
-	    return false;
-	}
+        if (getChannel() != eventChannel) {
+            return false;
+        }
         MapleEventType t = null;
         while (t == null) {
             for (MapleEventType x : MapleEventType.values()) {
@@ -370,6 +370,6 @@ public class EventManager {
     }
 
     public void setWorldEvent() {
-	eventChannel = Randomizer.nextInt(7) + 2; //2-8
+        eventChannel = Randomizer.nextInt(7) + 2; //2-8
     }
 }

@@ -36,11 +36,11 @@ import org.apache.mina.common.support.BaseIoSession;
 /**
  * Represents a mock version of an IOSession to use a MapleClient instance
  * without an active connection (faekchar, etc).
- * 
+ *
  * Most methods return void, or when they return something, null. Therefore,
  * this class is mostly undocumented, due to the fact that each and every
  * function does squat.
- * 
+ *
  * @author Frz
  * @since Revision 518
  * @version 1.0

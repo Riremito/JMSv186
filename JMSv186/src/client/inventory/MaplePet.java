@@ -249,4 +249,3 @@ public class MaplePet implements Serializable {
         this.secondsLeft = sl;
     }
 }
-

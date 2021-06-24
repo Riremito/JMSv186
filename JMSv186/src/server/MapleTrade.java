@@ -48,7 +48,6 @@ public class MapleTrade {
         }
         exchangeMeso = 0;
 
-
         chr.get().getClient().getSession().write(MaplePacketCreator.TradeMessage(tradingslot, (byte) 0x07));
     }
 
@@ -67,7 +66,6 @@ public class MapleTrade {
             c.getPlayer().gainMeso(meso, false, true, false);
         }
         meso = 0;
-
 
         c.getSession().write(MaplePacketCreator.getTradeCancel(tradingslot, unsuccessful));
     }
@@ -263,9 +261,9 @@ public class MapleTrade {
     }
 
     public static final void inviteTrade(final MapleCharacter c1, final MapleCharacter c2) {
-	if (c1 == null || c1.getTrade() == null) {
-	    return;
-	}
+        if (c1 == null || c1.getTrade() == null) {
+            return;
+        }
         if (c2 != null && c2.getTrade() == null) {
             c2.setTrade(new MapleTrade((byte) 1, c2));
             c2.getTrade().setPartner(c1.getTrade());

@@ -62,14 +62,14 @@ public class SkillFactory {
                             if (data2 != null) {
                                 skillid = Integer.parseInt(data2.getName());
 
-				Skill skil = Skill.loadFromData(skillid, data2);
-				List<Integer> job = skillsByJob.get(skillid / 10000);
-				if (job == null) {
-				    job = new ArrayList<Integer>();
-				    skillsByJob.put(skillid / 10000, job);
-				}
-				job.add(skillid);
-				skil.setName(getName(skillid));
+                                Skill skil = Skill.loadFromData(skillid, data2);
+                                List<Integer> job = skillsByJob.get(skillid / 10000);
+                                if (job == null) {
+                                    job = new ArrayList<Integer>();
+                                    skillsByJob.put(skillid / 10000, job);
+                                }
+                                job.add(skillid);
+                                skil.setName(getName(skillid));
 
                                 skills.put(skillid, skil);
 
@@ -91,15 +91,15 @@ public class SkillFactory {
     }
 
     public static final List<Integer> getSkillsByJob(final int jobId) {
-	return skillsByJob.get(jobId);
+        return skillsByJob.get(jobId);
     }
 
     public static final String getSkillName(final int id) {
-	ISkill skil = getSkill(id);
-	if (skil != null) {
-	    return skil.getName();
-	}
-	return null;
+        ISkill skil = getSkill(id);
+        if (skil != null) {
+            return skil.getName();
+        }
+        return null;
     }
 
     public static final String getName(final int id) {

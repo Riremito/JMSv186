@@ -44,7 +44,7 @@ public class GuildHandler {
         if (name.getBytes().length < 3 || name.getBytes().length > 12) {
             return false;
         }
-/*        for (int i = 0; i < name.length(); i++) {
+        /*        for (int i = 0; i < name.length(); i++) {
             if (!Character.isLowerCase(name.charAt(i)) && !Character.isUpperCase(name.charAt(i))) {
                 return false;
             }
@@ -119,7 +119,7 @@ public class GuildHandler {
                 c.getPlayer().setGuildRank((byte) 1);
                 c.getPlayer().saveGuildStatus();
                 c.getSession().write(MaplePacketCreator.showGuildInfo(c.getPlayer()));
-		World.Guild.setGuildMemberOnline(c.getPlayer().getMGC(), true, c.getChannel());
+                World.Guild.setGuildMemberOnline(c.getPlayer().getMGC(), true, c.getChannel());
                 c.getPlayer().dropMessage(1, "You have successfully created a Guild.");
                 respawnPlayer(c.getPlayer());
                 break;

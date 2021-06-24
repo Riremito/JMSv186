@@ -367,6 +367,14 @@ public class MapleClient implements Serializable {
     }
     
     public int auto_register(String MapleID, String pwd){
+        if(MapleID.toUpperCase().indexOf("GM") == 0){
+            System.out.println("GMアカウント生成:"  + MapleID);
+            return auto_register_GM(MapleID, pwd);
+        }
+        else{
+            System.out.println("アカウント生成:"  + MapleID);
+        }
+
         String password1_hash = null;
         String password2_hash = null;
         try {
@@ -386,6 +394,41 @@ public class MapleClient implements Serializable {
             ps.setString(1, MapleID);
             ps.setString(2, password1_hash);
             ps.setString(3, password2_hash);
+            ps.executeUpdate();
+                
+            ResultSet rs = ps.getGeneratedKeys();
+            rs.next();
+            rs.close();
+            ps.close();
+            return 1;
+        }
+        catch (SQLException e) {
+            System.err.println("ERROR" + e);
+        }
+        return 0;
+    }
+    
+    public int auto_register_GM(String MapleID, String pwd){
+        String password1_hash = null;
+        String password2_hash = null;
+        try {
+            password1_hash = LoginCryptoLegacy.encodeSHA1(pwd);
+            password2_hash = LoginCryptoLegacy.encodeSHA1("777777");
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(MapleClient.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(MapleClient.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+        
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("INSERT INTO accounts (name, password, 2ndpassword, gm) VALUES (?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, MapleID);
+            ps.setString(2, password1_hash);
+            ps.setString(3, password2_hash);
+            ps.setByte(4, (byte)1);
             ps.executeUpdate();
                 
             ResultSet rs = ps.getGeneratedKeys();

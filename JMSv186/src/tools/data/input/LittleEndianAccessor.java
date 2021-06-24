@@ -24,7 +24,7 @@ import java.awt.Point;
 
 /**
  * Provides an abstract interface for a little-endian stream of bytes.
- * 
+ *
  * @author Frz
  * @version 1.0
  * @since Revision 323

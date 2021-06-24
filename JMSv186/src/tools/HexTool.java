@@ -48,11 +48,10 @@ public class HexTool {
     }
 
     /**
-     * Turns a <code>org.apache.mina.common.ByteBuffer</code> into a
-     * hexadecimal string.
+     * Turns a <code>org.apache.mina.common.ByteBuffer</code> into a hexadecimal
+     * string.
      *
-     * @param buf The <code>org.apache.mina.common.ByteBuffer</code> to
-     *            convert.
+     * @param buf The <code>org.apache.mina.common.ByteBuffer</code> to convert.
      * @return The hexadecimal representation of <code>buf</code>
      */
     public static final String toString(final ByteBuffer buf) {
@@ -112,7 +111,8 @@ public class HexTool {
             return "";
         }
     }
-/*    public static final String toStringFromAscii(final byte[] bytes) {
+
+    /*    public static final String toStringFromAscii(final byte[] bytes) {
         char[] ret = new char[bytes.length];
         for (int x = 0; x < bytes.length; x++) {
             if (bytes[x] < 32 && bytes[x] >= 0) {

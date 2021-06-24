@@ -45,7 +45,7 @@ public class Skill implements ISkill {
     }
 
     public void setName(final String name) {
-	this.name = name;
+        this.name = name;
     }
 
     @Override

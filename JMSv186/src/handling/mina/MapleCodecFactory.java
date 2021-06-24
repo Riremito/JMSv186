@@ -17,7 +17,7 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package handling.mina;
 
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
@@ -30,10 +30,10 @@ public class MapleCodecFactory implements ProtocolCodecFactory {
     private final ProtocolDecoder decoder = new MaplePacketDecoder();
 
     public ProtocolEncoder getEncoder() throws Exception {
-	return encoder;
+        return encoder;
     }
 
     public ProtocolDecoder getDecoder() throws Exception {
-	return decoder;
+        return decoder;
     }
 }

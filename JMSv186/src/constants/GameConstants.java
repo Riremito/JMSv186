@@ -1939,40 +1939,38 @@ public class GameConstants {
         }
     }
 
-
     public static boolean isForceRespawn(int mapid) {
-	switch (mapid) {
-	    case 925100100: //crocs and stuff
-		return true;
-	    default:
-		return mapid / 100000 == 9800 && (mapid % 10 == 1 || mapid % 1000 == 100);
-	}
+        switch (mapid) {
+            case 925100100: //crocs and stuff
+                return true;
+            default:
+                return mapid / 100000 == 9800 && (mapid % 10 == 1 || mapid % 1000 == 100);
+        }
     }
 
     public static int getFishingTime(boolean vip, boolean gm) {
-	return gm ? 1000 : (vip ? 30000 : 60000);
+        return gm ? 1000 : (vip ? 30000 : 60000);
     }
 
     public static int getCustomSpawnID(int summoner, int def) {
-	switch(summoner) {
-	    case 9400589:
-	    case 9400748: //MV
-		return 9400706; //jr
-	    default:
-		return def;
-	}
+        switch (summoner) {
+            case 9400589:
+            case 9400748: //MV
+                return 9400706; //jr
+            default:
+                return def;
+        }
     }
 
-
     public static boolean canForfeit(int questid) {
-	switch(questid) {
-	    case 20000:
-	    case 20010:
-	    case 20015: //cygnus quests
-	    case 20020:
-		return false;
-	    default:
-		return true;
-	}
+        switch (questid) {
+            case 20000:
+            case 20010:
+            case 20015: //cygnus quests
+            case 20020:
+                return false;
+            default:
+                return true;
+        }
     }
 }

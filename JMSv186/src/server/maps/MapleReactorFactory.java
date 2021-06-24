@@ -100,7 +100,7 @@ public class MapleReactorFactory {
                         }
                         foundState = true;
                         stats.addState(i, type, reactItem, (byte) MapleDataTool.getIntConvert("state", reactorInfoData), MapleDataTool.getIntConvert("timeOut", reactorInfoData_, -1));
-                    } else  {
+                    } else {
                         stats.addState(i, 999, null, (byte) (foundState ? -1 : (i + 1)), 0);
                     }
                 }

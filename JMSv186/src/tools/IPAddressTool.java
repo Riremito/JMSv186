@@ -31,8 +31,8 @@ package tools;
 public class IPAddressTool {
 
     /**
-     * Converts a dotted-quad IP (<code>127.0.0.1</code>) and turns it into
-     * a long integer IP.
+     * Converts a dotted-quad IP (<code>127.0.0.1</code>) and turns it into a
+     * long integer IP.
      *
      * @param dottedQuad The IP address in dotted-quad form.
      * @return The IP as a long integer.

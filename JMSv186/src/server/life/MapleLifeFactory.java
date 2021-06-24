@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
@@ -190,7 +189,6 @@ public class MapleLifeFactory {
             decodeElementalString(stats, MapleDataTool.getString("elemAttr", monsterInfoData, ""));
 
             // Other data which isn;t in the mob, but might in the linked data
-
             final int link = MapleDataTool.getIntConvert("link", monsterInfoData, 0);
             if (link != 0) { // Store another copy, for faster processing.
                 monsterData = data.getData(StringUtil.getLeftPaddedStr(link + ".img", '0', 11));

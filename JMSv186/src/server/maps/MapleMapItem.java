@@ -153,27 +153,27 @@ public class MapleMapItem extends AbstractMapleMapObject {
     }
 
     public void registerExpire(final long time) {
-	nextExpiry = System.currentTimeMillis() + time;
+        nextExpiry = System.currentTimeMillis() + time;
     }
 
     public void registerFFA(final long time) {
-	nextFFA = System.currentTimeMillis() + time;
+        nextFFA = System.currentTimeMillis() + time;
     }
 
     public boolean shouldExpire() {
-	return !pickedUp && nextExpiry > 0 && nextExpiry < System.currentTimeMillis();
+        return !pickedUp && nextExpiry > 0 && nextExpiry < System.currentTimeMillis();
     }
 
     public boolean shouldFFA() {
-	return !pickedUp && type < 2 && nextFFA > 0 && nextFFA < System.currentTimeMillis();
+        return !pickedUp && type < 2 && nextFFA > 0 && nextFFA < System.currentTimeMillis();
     }
 
     public void expire(final MapleMap map) {
-	pickedUp = true;
-	map.broadcastMessage(MaplePacketCreator.removeItemFromMap(getObjectId(), 0, 0));
-	map.removeMapObject(this);
-	if (randDrop) {
-	   map.spawnRandDrop();
-	}
+        pickedUp = true;
+        map.broadcastMessage(MaplePacketCreator.removeItemFromMap(getObjectId(), 0, 0));
+        map.removeMapObject(this);
+        if (randDrop) {
+            map.spawnRandDrop();
+        }
     }
 }

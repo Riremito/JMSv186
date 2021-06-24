@@ -26,7 +26,7 @@ import java.nio.charset.Charset;
 
 /**
  * Provides a generic interface to a Little Endian stream of bytes.
- * 
+ *
  * @version 1.0
  * @author Frz
  * @since Revision 323
@@ -112,8 +112,8 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
         final int byte7 = bs.readByte();
         final int byte8 = bs.readByte();
 
-        return (long) ((byte8 << 56) + (byte7 << 48) + (byte6 << 40) + (byte5 << 32) + (byte4 << 24) + (byte3 << 16) +
-                (byte2 << 8) + byte1);
+        return (long) ((byte8 << 56) + (byte7 << 48) + (byte6 << 40) + (byte5 << 32) + (byte4 << 24) + (byte3 << 16)
+                + (byte2 << 8) + byte1);
     }
 
     /**
@@ -144,11 +144,11 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
      */
     public final String readAsciiString(final int n) {
         final byte ret[] = new byte[n];
-	for (int x = 0; x < n; x++) {
-	    ret[x] = readByte();
-	}
-	return new String(ret, Charset.forName("Shift-JIS"));
-/*        final char ret[] = new char[n];
+        for (int x = 0; x < n; x++) {
+            ret[x] = readByte();
+        }
+        return new String(ret, Charset.forName("Shift-JIS"));
+        /*        final char ret[] = new char[n];
         for (int x = 0; x < n; x++) {
             ret[x] = (char) readByte();
         }
@@ -166,9 +166,8 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
     }
 
     /**
-     * Reads a MapleStory convention lengthed ASCII string.
-     * This consists of a short integer telling the length of the string,
-     * then the string itself.
+     * Reads a MapleStory convention lengthed ASCII string. This consists of a
+     * short integer telling the length of the string, then the string itself.
      *
      * @return The string read.
      */
@@ -178,8 +177,8 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
     }
 
     /**
-     * Reads a MapleStory Position information.
-     * This consists of 2 short integer.
+     * Reads a MapleStory Position information. This consists of 2 short
+     * integer.
      *
      * @return The Position read.
      */

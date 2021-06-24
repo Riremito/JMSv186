@@ -38,7 +38,7 @@ public class Start {
         System.out.println("[World Initialized]");
 
         WorldTimer.getInstance().start();
-	EtcTimer.getInstance().start();
+        EtcTimer.getInstance().start();
         MapTimer.getInstance().start();
         MobTimer.getInstance().start();
         CloneTimer.getInstance().start();
@@ -51,7 +51,7 @@ public class Start {
         System.out.println("[Login Initialized]");
 
         //WZ
-	MapleQuest.initQuests();
+        MapleQuest.initQuests();
         MapleLifeFactory.loadQuestCounts();
         ItemMakerFactory.getInstance();
         MapleItemInformationProvider.getInstance().load();
@@ -59,8 +59,8 @@ public class Start {
         SkillFactory.getSkill(99999999);
         MapleOxQuizFactory.getInstance().initialize();
         MapleCarnivalFactory.getInstance().initialize();
-	MapleGuildRanking.getInstance().getRank();
-	MapleFamilyBuff.getBuffEntry();
+        MapleGuildRanking.getInstance().getRank();
+        MapleFamilyBuff.getBuffEntry();
 
         MapleServerHandler.registerMBean();
 
@@ -83,9 +83,9 @@ public class Start {
             e.printStackTrace();
         }
         PlayerNPC.loadAll();// touch - so we see database problems early...
-	World.registerRespawn();
-	//ChannelServer.getInstance(1).getMapFactory().getMap(910000000).spawnRandDrop(); //start it off
-	LoginServer.setOn(); //now or later
+        World.registerRespawn();
+        //ChannelServer.getInstance(1).getMapFactory().getMap(910000000).spawnRandDrop(); //start it off
+        LoginServer.setOn(); //now or later
         System.out.println("[Fully Initialized]");
 //        RankingWorker.getInstance().run();
     }

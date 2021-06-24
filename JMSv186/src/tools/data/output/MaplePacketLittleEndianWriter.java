@@ -28,7 +28,7 @@ import tools.HexTool;
 
 /**
  * Writes a maplestory-packet little-endian stream of bytes.
- * 
+ *
  * @author Frz
  * @version 1.0
  * @since Revision 352
@@ -55,8 +55,8 @@ public class MaplePacketLittleEndianWriter extends GenericLittleEndianWriter {
     }
 
     /**
-     * Gets a <code>MaplePacket</code> instance representing this
-     * sequence of bytes.
+     * Gets a <code>MaplePacket</code> instance representing this sequence of
+     * bytes.
      *
      * @return A <code>MaplePacket</code> with the bytes in this stream.
      */

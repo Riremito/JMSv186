@@ -252,12 +252,12 @@ public class StatsHandling {
             }
         }
 
-	for (int i : GameConstants.blockedSkills) {
-	    if (skill.getId() == i) {
-		chr.dropMessage(1, "You may not add this skill.");
-		return;
-	    }
-	}
+        for (int i : GameConstants.blockedSkills) {
+            if (skill.getId() == i) {
+                chr.dropMessage(1, "You may not add this skill.");
+                return;
+            }
+        }
 
         if ((remainingSp > 0 && curLevel + 1 <= maxlevel) && skill.canBeLearnedBy(chr.getJob())) {
             if (!isBeginnerSkill) {
@@ -276,16 +276,16 @@ public class StatsHandling {
         slea.skip(4);
         if (slea.available() < 16) {
             System.out.println("AutoAssignAP : \n" + slea.toString(true));
-	    FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "AutoAssignAP : \n" + slea.toString(true));
+            FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "AutoAssignAP : \n" + slea.toString(true));
             return;
         }
         final int PrimaryStat = slea.readInt();
         final int amount = slea.readInt();
         final int SecondaryStat = slea.readInt();
         final int amount2 = slea.readInt();
-	if (amount < 0 || amount2 < 0) {
-	    return;
-	}
+        if (amount < 0 || amount2 < 0) {
+            return;
+        }
 
         final PlayerStats playerst = chr.getStat();
 

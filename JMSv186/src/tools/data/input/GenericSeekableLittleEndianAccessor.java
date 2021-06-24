@@ -25,7 +25,7 @@ import java.io.IOException;
 /**
  * Provides an abstract accessor to a generic Little Endian byte stream. This
  * accessor is seekable.
- * 
+ *
  * @author Frz
  * @version 1.0
  * @since Revision 323
@@ -36,8 +36,8 @@ public class GenericSeekableLittleEndianAccessor extends GenericLittleEndianAcce
     private final SeekableInputStreamBytestream bs;
 
     /**
-     * Class constructor
-     * Provide a seekable input stream to wrap this object around.
+     * Class constructor Provide a seekable input stream to wrap this object
+     * around.
      *
      * @param bs The byte stream to wrap this around.
      */
@@ -65,7 +65,8 @@ public class GenericSeekableLittleEndianAccessor extends GenericLittleEndianAcce
      * Get the current position of the pointer.
      *
      * @return The current position of the pointer as a long integer.
-     * @see net.sf.odinms.tools.data.input.SeekableInputStreamBytestream#getPosition
+     * @see
+     * net.sf.odinms.tools.data.input.SeekableInputStreamBytestream#getPosition
      */
     @Override
     public final long getPosition() {

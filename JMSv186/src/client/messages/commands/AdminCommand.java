@@ -1182,7 +1182,7 @@ public class AdminCommand {
         @Override
         public int execute(MapleClient c, String[] splitted) {
             MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
-                World.Broadcast.broadcastSmega(MaplePacketCreator.serverNotice(3, victim == null ? c.getChannel() : victim.getClient().getChannel(), victim == null ? splitted[1] : victim.getName() + " : " + StringUtil.joinStringFrom(splitted, 2), true).getBytes());
+            World.Broadcast.broadcastSmega(MaplePacketCreator.serverNotice(3, victim == null ? c.getChannel() : victim.getClient().getChannel(), victim == null ? splitted[1] : victim.getName() + " : " + StringUtil.joinStringFrom(splitted, 2), true).getBytes());
             return 1;
         }
     }
@@ -1288,10 +1288,10 @@ public class AdminCommand {
             dis = MapleDisease.getBySkill(type);
             if (splitted.length == 4) {
                 MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[2]);
-		if (victim == null) {
-		    c.getPlayer().dropMessage(5, "Not found.");
-		    return 0;
-		}
+                if (victim == null) {
+                    c.getPlayer().dropMessage(5, "Not found.");
+                    return 0;
+                }
                 victim.setChair(0);
                 victim.getClient().getSession().write(MaplePacketCreator.cancelChair(-1));
                 victim.getMap().broadcastMessage(victim, MaplePacketCreator.showChair(c.getPlayer().getId(), 0), false);
@@ -1466,8 +1466,6 @@ public class AdminCommand {
             builder.append(other.getStat().getMp());
             builder.append(" /");
             builder.append(other.getStat().getCurrentMaxMp());
-
-
 
             builder.append(" || WATK : ");
             builder.append(other.getStat().getTotalWatk());
@@ -2934,10 +2932,10 @@ public class AdminCommand {
                     } else {
                         victim = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(splitted[1]);
                         c.getPlayer().dropMessage(6, "Cross changing channel. Please wait.");
-			if (victim.getMapId() != c.getPlayer().getMapId()) {
+                        if (victim.getMapId() != c.getPlayer().getMapId()) {
                             final MapleMap mapp = c.getChannelServer().getMapFactory().getMap(victim.getMapId());
                             c.getPlayer().changeMap(mapp, mapp.getPortal(0));
-			}
+                        }
                         c.getPlayer().changeChannel(ch);
                     }
                 } catch (Exception e) {
@@ -2983,10 +2981,10 @@ public class AdminCommand {
                 victim = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(splitted[1]);
                 c.getPlayer().dropMessage(5, "Victim is cross changing channel.");
                 victim.dropMessage(5, "Cross changing channel.");
-		if (victim.getMapId() != c.getPlayer().getMapId()) {
+                if (victim.getMapId() != c.getPlayer().getMapId()) {
                     final MapleMap mapp = victim.getClient().getChannelServer().getMapFactory().getMap(c.getPlayer().getMapId());
                     victim.changeMap(mapp, mapp.getPortal(0));
-		}
+                }
                 victim.changeChannel(c.getChannel());
             }
             return 1;
@@ -3121,61 +3119,69 @@ public class AdminCommand {
     }
 
     public abstract static class TestTimer extends CommandExecute {
-	protected Timer toTest = null;
+
+        protected Timer toTest = null;
 
         @Override
         public int execute(final MapleClient c, String[] splitted) {
-	    final int sec = Integer.parseInt(splitted[1]);
+            final int sec = Integer.parseInt(splitted[1]);
             c.getPlayer().dropMessage(5, "Message will pop up in " + sec + " seconds.");
-	    final long oldMillis = System.currentTimeMillis();
-	    toTest.schedule(new Runnable() {
-		public void run() {
-		    c.getPlayer().dropMessage(5, "Message has popped up in " + ((System.currentTimeMillis() - oldMillis) / 1000) + " seconds, expected was " + sec + " seconds");
-		}
-	    }, sec * 1000);
+            final long oldMillis = System.currentTimeMillis();
+            toTest.schedule(new Runnable() {
+                public void run() {
+                    c.getPlayer().dropMessage(5, "Message has popped up in " + ((System.currentTimeMillis() - oldMillis) / 1000) + " seconds, expected was " + sec + " seconds");
+                }
+            }, sec * 1000);
             return 1;
         }
     }
 
     public static class TestEventTimer extends TestTimer {
-	public TestEventTimer() {
-	    toTest = EventTimer.getInstance();
-	}
+
+        public TestEventTimer() {
+            toTest = EventTimer.getInstance();
+        }
     }
 
     public static class TestCloneTimer extends TestTimer {
-	public TestCloneTimer() {
-	    toTest = CloneTimer.getInstance();
-	}
+
+        public TestCloneTimer() {
+            toTest = CloneTimer.getInstance();
+        }
     }
 
     public static class TestEtcTimer extends TestTimer {
-	public TestEtcTimer() {
-	    toTest = EtcTimer.getInstance();
-	}
+
+        public TestEtcTimer() {
+            toTest = EtcTimer.getInstance();
+        }
     }
 
     public static class TestMobTimer extends TestTimer {
-	public TestMobTimer() {
-	    toTest = MobTimer.getInstance();
-	}
+
+        public TestMobTimer() {
+            toTest = MobTimer.getInstance();
+        }
     }
 
     public static class TestMapTimer extends TestTimer {
-	public TestMapTimer() {
-	    toTest = MapTimer.getInstance();
-	}
+
+        public TestMapTimer() {
+            toTest = MapTimer.getInstance();
+        }
     }
 
     public static class TestWorldTimer extends TestTimer {
-	public TestWorldTimer() {
-	    toTest = WorldTimer.getInstance();
-	}
+
+        public TestWorldTimer() {
+            toTest = WorldTimer.getInstance();
+        }
     }
 
     public static class TestBuffTimer extends TestTimer {
-	public TestBuffTimer() {
-	    toTest = BuffTimer.getInstance();
-	}
+
+        public TestBuffTimer() {
+            toTest = BuffTimer.getInstance();
+        }
     }
 }

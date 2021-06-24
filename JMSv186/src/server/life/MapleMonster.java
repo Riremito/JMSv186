@@ -254,14 +254,14 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             }
             if (hp > 0) {
                 hp -= rDamage;
-        	if (eventInstance != null) {
-        	    eventInstance.monsterDamaged(from, this, (int)rDamage);
-        	} else {
-        	    final EventInstanceManager em = from.getEventInstance();
-        	    if (em != null) {
-        	        em.monsterDamaged(from, this, (int)rDamage);
-        	    }
-        	}
+                if (eventInstance != null) {
+                    eventInstance.monsterDamaged(from, this, (int) rDamage);
+                } else {
+                    final EventInstanceManager em = from.getEventInstance();
+                    if (em != null) {
+                        em.monsterDamaged(from, this, (int) rDamage);
+                    }
+                }
                 if (sponge.get() == null && hp > 0) {
                     switch (stats.getHPDisplayType()) {
                         case 0:
@@ -426,32 +426,32 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (killer != null && killer.getPyramidSubway() != null) {
             killer.getPyramidSubway().onKill(killer);
         }
-	MapleMonster oldSponge = getSponge();
+        MapleMonster oldSponge = getSponge();
         sponge = new WeakReference<MapleMonster>(null);
-	if (oldSponge != null && oldSponge.isAlive()) {
-	    boolean set = true;
+        if (oldSponge != null && oldSponge.isAlive()) {
+            boolean set = true;
             for (MapleMapObject mon : map.getAllMonstersThreadsafe()) {
                 MapleMonster mons = (MapleMonster) mon;
                 if (mons.getObjectId() != oldSponge.getObjectId() && mons.getObjectId() != this.getObjectId() && (mons.getSponge() == oldSponge || mons.getLinkOid() == oldSponge.getObjectId())) { //sponge was this, please update
                     set = false;
-		    break;
+                    break;
                 }
             }
-	    if (set) { //all sponge monsters are dead, please kill off the sponge
-		map.killMonster(oldSponge, killer, true, false, (byte)1);
-	    }
-	}
+            if (set) { //all sponge monsters are dead, please kill off the sponge
+                map.killMonster(oldSponge, killer, true, false, (byte) 1);
+            }
+        }
 
-	nodepack = null;
-	reflectpack = null;
-	stati.clear();
-	//attackers.clear();
-	cancelDropItem();
+        nodepack = null;
+        reflectpack = null;
+        stati.clear();
+        //attackers.clear();
+        cancelDropItem();
         if (listener != null) {
             listener.monsterKilled();
         }
-	int v1 = highestDamageChar;
-	this.highestDamageChar = 0; //reset so we dont kill twice
+        int v1 = highestDamageChar;
+        this.highestDamageChar = 0; //reset so we dont kill twice
         return v1;
     }
 
@@ -506,7 +506,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             case 8820012:
             case 8820013: {
                 final List<MapleMonster> mobs = new ArrayList<MapleMonster>();
-
 
                 for (final int i : toSpawn) {
                     final MapleMonster mob = MapleLifeFactory.getMonster(i);
@@ -1398,8 +1397,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 }
             }
         } else {
-	    stolen = 0; //failed once, may not go again
-	}
+            stolen = 0; //failed once, may not go again
+        }
     }
 
     public final void setLastNode(final int lastNode) {
@@ -1419,11 +1418,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public final void cancelStatus(final MonsterStatus stat) {
-	final MonsterStatusEffect mse = stati.get(stat);
+        final MonsterStatusEffect mse = stati.get(stat);
         if (mse == null || !isAlive()) {
             return;
         }
-	mse.cancelPoisonSchedule();
+        mse.cancelPoisonSchedule();
         map.broadcastMessage(MobPacket.cancelMonsterStatus(getObjectId(), stat), getPosition());
         if (getController() != null && !getController().isMapObjectVisible(MapleMonster.this)) {
             getController().getClient().getSession().write(MobPacket.cancelMonsterStatus(getObjectId(), stat));
@@ -1440,7 +1439,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public final void startDropItemSchedule() {
-	cancelDropItem();
+        cancelDropItem();
         if (stats.getDropItemPeriod() <= 0 || !isAlive()) {
             return;
         }
@@ -1468,10 +1467,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public MaplePacket getNodePacket() {
-	return nodepack;
+        return nodepack;
     }
 
     public void setNodePacket(final MaplePacket np) {
-	this.nodepack = np;
+        this.nodepack = np;
     }
 }

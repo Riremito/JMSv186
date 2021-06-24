@@ -63,7 +63,9 @@ public class MapleShop {
         rechargeableItems.add(2332000); // Capsules
     }
 
-    /** Creates a new instance of MapleShop */
+    /**
+     * Creates a new instance of MapleShop
+     */
     private MapleShop(int id, int npcId) {
         this.id = id;
         this.npcId = npcId;
@@ -85,7 +87,7 @@ public class MapleShop {
             return;
         }
         if (!GameConstants.isMountItemAvailable(itemId, c.getPlayer().getJob())) {
-	    c.getPlayer().dropMessage(1, "You may not buy this item.");
+            c.getPlayer().dropMessage(1, "You may not buy this item.");
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }
@@ -136,9 +138,9 @@ public class MapleShop {
             quantity = 1;
         }
         IItem item = c.getPlayer().getInventory(type).getItem(slot);
-	if (item == null) {
-	    return;
-	}
+        if (item == null) {
+            return;
+        }
 
         if (GameConstants.isThrowingStar(item.getItemId()) || GameConstants.isBullet(item.getItemId())) {
             quantity = item.getQuantity();

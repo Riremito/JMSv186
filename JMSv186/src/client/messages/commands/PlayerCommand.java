@@ -22,7 +22,6 @@ import server.RankingWorker.RankingInformation;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 
-
 import server.life.MapleMonsterInformationProvider;
 import server.life.MonsterDropEntry;
 import server.maps.MapleMap;
@@ -151,14 +150,14 @@ public class PlayerCommand {
             MapleMonster mob = null;
             for (final MapleMapObject monstermo : c.getPlayer().getMap().getMapObjectsInRange(c.getPlayer().getPosition(), 100000, Arrays.asList(MapleMapObjectType.MONSTER))) {
                 mob = (MapleMonster) monstermo;
-		if (mob.isAlive()) {
+                if (mob.isAlive()) {
                     c.getPlayer().dropMessage(6, "Monster " + mob.toString());
                     break; //only one
-		}
+                }
             }
-	    if (mob == null) {
-		c.getPlayer().dropMessage(6, "No monster was found.");
-	    }
+            if (mob == null) {
+                c.getPlayer().dropMessage(6, "No monster was found.");
+            }
             return 1;
         }
     }
@@ -168,7 +167,7 @@ public class PlayerCommand {
         protected int npc = -1;
         private static int[] npcs = { //Ish yur job to make sure these are in order and correct ;(
             9100205,
-//            9270035,
+            //            9270035,
             9010017,
             9000000,};
 

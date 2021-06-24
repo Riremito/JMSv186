@@ -52,14 +52,14 @@ public class MapleOxQuizFactory {
     }
 
     public Entry<Pair<Integer, Integer>, MapleOxQuizEntry> grabRandomQuestion() {
-	final int size = questionCache.size();
-	while(true) {
-	    for (Entry<Pair<Integer, Integer>, MapleOxQuizEntry> oxquiz : questionCache.entrySet()) {
-		if (Randomizer.nextInt(size) == 0) {
-		    return oxquiz;
-		}
-	    }
-	}
+        final int size = questionCache.size();
+        while (true) {
+            for (Entry<Pair<Integer, Integer>, MapleOxQuizEntry> oxquiz : questionCache.entrySet()) {
+                if (Randomizer.nextInt(size) == 0) {
+                    return oxquiz;
+                }
+            }
+        }
     }
 
     public void initialize() {

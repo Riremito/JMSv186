@@ -24,11 +24,11 @@ import java.io.Serializable;
 
 /**
  * Represents a pair of values.
- * 
+ *
  * @author Frz
  * @since Revision 333
  * @version 1.0
- * 
+ *
  * @param <E> The type of the left value.
  * @param <F> The type of the right value.
  */

@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.login;
 
-
-
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -57,7 +55,7 @@ public class LoginWorker {
                 load.put(entry.getKey(), Math.min(1200, (int) (entry.getValue() * loadFactor)));
             }
             LoginServer.setLoad(load, usersOn);
-	    lastUpdate = System.currentTimeMillis();
+            lastUpdate = System.currentTimeMillis();
         }
 
         if (c.finishLogin() == 0) {

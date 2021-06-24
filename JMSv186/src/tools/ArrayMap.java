@@ -30,11 +30,11 @@ import java.util.Set;
 
 /**
  * Provides a strongly-typed map of keys to values.
- * 
+ *
  * @author Frz
  * @since Revision 589
  * @version 1.0
- * 
+ *
  * @param <K> The type of the keys.
  * @param <V> The type of the values.
  */
@@ -102,7 +102,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
          * Compares two Entries for equality.
          *
          * @return <code>True</code> if the two Entries are equal,
-         *         <code>False</code> otherwise.
+         * <code>False</code> otherwise.
          */
         @Override
         @SuppressWarnings("unchecked")
@@ -111,8 +111,8 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
                 return false;
             }
             Map.Entry e = (Map.Entry) o;
-            return (key == null ? e.getKey() == null : key.equals(e.getKey())) &&
-                    (value == null ? e.getValue() == null : value.equals(e.getValue()));
+            return (key == null ? e.getKey() == null : key.equals(e.getKey()))
+                    && (value == null ? e.getValue() == null : value.equals(e.getValue()));
         }
 
         /**
@@ -147,7 +147,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
      * Class constructor.
      *
      * @param map The <code>java.util.Map</code> containing keys and values to
-     *            import.
+     * import.
      */
     public ArrayMap(Map<K, V> map) {
         list = new ArrayList<Entry<K, V>>();
@@ -199,7 +199,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
      * @param key The key of <code>value</code>
      * @param value The value to insert into the ArrayMap.
      * @return <code>null</code> if no entry was replaced, the value replaced
-     *         otherwise.
+     * otherwise.
      */
     @Override
     public V put(K key, V value) {

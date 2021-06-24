@@ -195,8 +195,7 @@ public class MapleAESOFB {
     }
 
     /**
-     * Generates a packet header for a packet that is <code>length</code>
-     * long.
+     * Generates a packet header for a packet that is <code>length</code> long.
      *
      * @param length How long the packet that this header is for is.
      * @return The header.
@@ -225,7 +224,7 @@ public class MapleAESOFB {
      *
      * @param packet The packet to check.
      * @return <code>True</code> if the packet has a correct header,
-     *         <code>false</code> otherwise.
+     * <code>false</code> otherwise.
      */
     public boolean checkPacket(byte[] packet) {
         return ((((packet[0] ^ iv[2]) & 0xFF) == ((mapleVersion >> 8) & 0xFF)) && (((packet[1] ^ iv[3]) & 0xFF) == (mapleVersion & 0xFF)));
@@ -236,7 +235,7 @@ public class MapleAESOFB {
      *
      * @param packetHeader The packet header to check.
      * @return <code>True</code> if the header is correct, <code>false</code>
-     *         otherwise.
+     * otherwise.
      */
     public boolean checkPacket(int packetHeader) {
         return checkPacket(new byte[]{(byte) ((packetHeader >> 24) & 0xFF), (byte) ((packetHeader >> 16) & 0xFF)});
@@ -267,9 +266,8 @@ public class MapleAESOFB {
     }
 
     /**
-     * Does funny stuff. <code>this.OldIV</code> must not equal
-     * <code>in</code> Modifies <code>in</code> and returns it for
-     * convenience.
+     * Does funny stuff. <code>this.OldIV</code> must not equal <code>in</code>
+     * Modifies <code>in</code> and returns it for convenience.
      *
      * @param inputByte The byte to apply the funny stuff to.
      * @param in Something needed for all this to occur.

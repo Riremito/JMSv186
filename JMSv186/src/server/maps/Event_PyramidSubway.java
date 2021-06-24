@@ -227,7 +227,6 @@ public class Event_PyramidSubway {
             }
         }
 
-
         int pt = 0;
         switch (type) {
             case 0:

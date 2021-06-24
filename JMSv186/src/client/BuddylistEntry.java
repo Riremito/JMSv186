@@ -45,7 +45,8 @@ public class BuddylistEntry {
     }
 
     /**
-     * @return the channel the character is on. If the character is offline returns -1.
+     * @return the channel the character is on. If the character is offline
+     * returns -1.
      */
     public int getChannel() {
         return channel;
@@ -92,7 +93,7 @@ public class BuddylistEntry {
     }
 
     public void setGroup(String g) {
-	this.group = g;
+        this.group = g;
     }
 
     @Override

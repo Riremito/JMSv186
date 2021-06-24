@@ -77,7 +77,6 @@ public class SummonHandler {
                                     final Point startPos = clone.getDragon().getPosition();
                                     MovementParse.updatePosition(res3, clone.getDragon(), 0);
 
-
                                     if (!clone.isHidden()) {
                                         map.broadcastMessage(clone, MaplePacketCreator.moveDragon(clone.getDragon(), startPos, res3), clone.getPosition());
                                     }

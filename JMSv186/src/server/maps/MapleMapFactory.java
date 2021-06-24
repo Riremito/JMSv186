@@ -89,7 +89,6 @@ public class MapleMapFactory {
                 }
                 map = new MapleMap(mapid, channel, MapleDataTool.getInt("info/returnMap", mapData), monsterRate);
 
-
                 PortalFactory portalFactory = new PortalFactory();
                 for (MapleData portal : mapData.getChildByPath("portal")) {
                     map.addPortal(portalFactory.makePortal(MapleDataTool.getInt(portal.getChildByPath("pt")), portal));
@@ -244,7 +243,6 @@ public class MapleMapFactory {
             }
         }
         MapleMap map = new MapleMap(mapid, channel, MapleDataTool.getInt("info/returnMap", mapData), monsterRate);
-
 
         PortalFactory portalFactory = new PortalFactory();
         for (MapleData portal : mapData.getChildByPath("portal")) {
@@ -709,29 +707,29 @@ public class MapleMapFactory {
                 }
                 nodeInfo.sortNodes();
             }
-	    for (int i = 1; i <= 7; i++) {
-            	if (mapData.getChildByPath(String.valueOf(i)) != null && mapData.getChildByPath(i + "/obj") != null) {
+            for (int i = 1; i <= 7; i++) {
+                if (mapData.getChildByPath(String.valueOf(i)) != null && mapData.getChildByPath(i + "/obj") != null) {
                     for (MapleData node : mapData.getChildByPath(i + "/obj")) {
-			int sn_count = MapleDataTool.getIntConvert("SN_count", node, 0);
-			String name = MapleDataTool.getString("name", node, "");
-			int speed = MapleDataTool.getIntConvert("speed", node, 0);
-			if (sn_count <= 0 || speed <= 0 || name.equals("")) {
-			    continue;
-			}
-                    	final List<Integer> SN = new ArrayList<Integer>();
-                    	for (int x = 0; x < sn_count; x++) {
+                        int sn_count = MapleDataTool.getIntConvert("SN_count", node, 0);
+                        String name = MapleDataTool.getString("name", node, "");
+                        int speed = MapleDataTool.getIntConvert("speed", node, 0);
+                        if (sn_count <= 0 || speed <= 0 || name.equals("")) {
+                            continue;
+                        }
+                        final List<Integer> SN = new ArrayList<Integer>();
+                        for (int x = 0; x < sn_count; x++) {
                             SN.add(MapleDataTool.getIntConvert("SN" + x, node, 0));
-                    	}
-                    	final MaplePlatform mni = new MaplePlatform(
-                            name, MapleDataTool.getIntConvert("start", node, 2), speed,
-                            MapleDataTool.getIntConvert("x1", node, 0),
-                            MapleDataTool.getIntConvert("y1", node, 0),
-                            MapleDataTool.getIntConvert("x2", node, 0),
-                            MapleDataTool.getIntConvert("y2", node, 0),
-                            MapleDataTool.getIntConvert("r", node, 0), SN);
+                        }
+                        final MaplePlatform mni = new MaplePlatform(
+                                name, MapleDataTool.getIntConvert("start", node, 2), speed,
+                                MapleDataTool.getIntConvert("x1", node, 0),
+                                MapleDataTool.getIntConvert("y1", node, 0),
+                                MapleDataTool.getIntConvert("x2", node, 0),
+                                MapleDataTool.getIntConvert("y2", node, 0),
+                                MapleDataTool.getIntConvert("r", node, 0), SN);
                         nodeInfo.addPlatform(mni);
-                   }
-		}
+                    }
+                }
             }
             // load areas (EG PQ platforms)
             if (mapData.getChildByPath("area") != null) {

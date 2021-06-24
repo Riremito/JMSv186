@@ -36,8 +36,8 @@ public class ByteBufferOutputstream implements ByteOutputStream {
     /**
      * Class constructor - Wraps this instance around ByteBuffer <code>bb</code>
      *
-     * @param bb The <code>org.apache.mina.common.ByteBuffer</code> to wrap
-     *            this stream around.
+     * @param bb The <code>org.apache.mina.common.ByteBuffer</code> to wrap this
+     * stream around.
      */
     public ByteBufferOutputstream(final ByteBuffer bb) {
         super();

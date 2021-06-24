@@ -144,4 +144,3 @@ public class MapleMessenger implements Serializable {
         return Arrays.asList(members);
     }
 }
-

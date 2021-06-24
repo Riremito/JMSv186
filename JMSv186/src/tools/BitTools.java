@@ -44,8 +44,8 @@ public class BitTools {
     }
 
     /**
-     * Reads a string from <code>array</code> at
-     * <code>index</code> <code>length</code> in length.
+     * Reads a string from <code>array</code> at <code>index</code>
+     * <code>length</code> in length.
      *
      * @param array The array to read the string from.
      * @param index Where reading begins.
@@ -113,7 +113,8 @@ public class BitTools {
     }
 
     /**
-     * Repeats <code>count</code> bytes of <code>in</code> <code>mul</code> times.
+     * Repeats <code>count</code> bytes of <code>in</code> <code>mul</code>
+     * times.
      *
      * @param in The array of bytes containing the bytes to multiply.
      * @param count The number of bytes to repeat.

@@ -52,7 +52,9 @@ public class MapleQuest implements Serializable {
         this.id = id;
     }
 
-    /** Creates a new instance of MapleQuest */
+    /**
+     * Creates a new instance of MapleQuest
+     */
     private static boolean loadQuest(MapleQuest ret, int id) throws NullPointerException {
         // read reqs
         final MapleData basedata1 = requirements.getChildByPath(String.valueOf(id));
@@ -64,49 +66,49 @@ public class MapleQuest implements Serializable {
         //-------------------------------------------------
         final MapleData startReqData = basedata1.getChildByPath("0");
         if (startReqData != null) {
-	    final List<MapleData> startC = startReqData.getChildren();
-	    if (startC != null && startC.size() > 0) {
-               for (MapleData startReq : startC) {
-                   final MapleQuestRequirementType type = MapleQuestRequirementType.getByWZName(startReq.getName());
-                   if (type.equals(MapleQuestRequirementType.interval)) {
-                       ret.repeatable = true;
-                   }
-                   final MapleQuestRequirement req = new MapleQuestRequirement(ret, type, startReq);
-                   if (req.getType().equals(MapleQuestRequirementType.mob)) {
-                       for (MapleData mob : startReq.getChildren()) {
-                           ret.relevantMobs.put(
-                                MapleDataTool.getInt(mob.getChildByPath("id")),
-                                MapleDataTool.getInt(mob.getChildByPath("count"), 0));
-                       }
-                   }
-                   ret.startReqs.add(req);
-               }
-	    }
+            final List<MapleData> startC = startReqData.getChildren();
+            if (startC != null && startC.size() > 0) {
+                for (MapleData startReq : startC) {
+                    final MapleQuestRequirementType type = MapleQuestRequirementType.getByWZName(startReq.getName());
+                    if (type.equals(MapleQuestRequirementType.interval)) {
+                        ret.repeatable = true;
+                    }
+                    final MapleQuestRequirement req = new MapleQuestRequirement(ret, type, startReq);
+                    if (req.getType().equals(MapleQuestRequirementType.mob)) {
+                        for (MapleData mob : startReq.getChildren()) {
+                            ret.relevantMobs.put(
+                                    MapleDataTool.getInt(mob.getChildByPath("id")),
+                                    MapleDataTool.getInt(mob.getChildByPath("count"), 0));
+                        }
+                    }
+                    ret.startReqs.add(req);
+                }
+            }
         }
         //-------------------------------------------------
         final MapleData completeReqData = basedata1.getChildByPath("1");
         if (completeReqData != null) {
-	    final List<MapleData> completeC = completeReqData.getChildren();
-	    if (completeC != null && completeC.size() > 0) {
+            final List<MapleData> completeC = completeReqData.getChildren();
+            if (completeC != null && completeC.size() > 0) {
                 for (MapleData completeReq : completeC) {
                     MapleQuestRequirement req = new MapleQuestRequirement(ret, MapleQuestRequirementType.getByWZName(completeReq.getName()), completeReq);
                     if (req.getType().equals(MapleQuestRequirementType.mob)) {
                         for (MapleData mob : completeReq.getChildren()) {
                             ret.relevantMobs.put(
-                                MapleDataTool.getInt(mob.getChildByPath("id")),
-                                MapleDataTool.getInt(mob.getChildByPath("count"), 0));
+                                    MapleDataTool.getInt(mob.getChildByPath("id")),
+                                    MapleDataTool.getInt(mob.getChildByPath("count"), 0));
                         }
                     } else if (req.getType().equals(MapleQuestRequirementType.endscript)) {
                         ret.customend = true;
                     }
                     ret.completeReqs.add(req);
                 }
-	    }
+            }
         }
         // read acts
         final MapleData startActData = basedata2.getChildByPath("0");
         if (startActData != null) {
-	    final List<MapleData> startC = startActData.getChildren();
+            final List<MapleData> startC = startActData.getChildren();
             for (MapleData startAct : startC) {
                 ret.startActs.add(new MapleQuestAction(MapleQuestActionType.getByWZName(startAct.getName()), startAct, ret));
             }
@@ -114,7 +116,7 @@ public class MapleQuest implements Serializable {
         final MapleData completeActData = basedata2.getChildByPath("1");
 
         if (completeActData != null) {
-	    final List<MapleData> completeC = completeActData.getChildren();
+            final List<MapleData> completeC = completeActData.getChildren();
             for (MapleData completeAct : completeC) {
                 ret.completeActs.add(new MapleQuestAction(MapleQuestActionType.getByWZName(completeAct.getName()), completeAct, ret));
             }
@@ -167,7 +169,7 @@ public class MapleQuest implements Serializable {
 
     public static void clearQuests() {
         quests.clear();
-	initQuests(); //test
+        initQuests(); //test
     }
 
     public static MapleQuest getInstance(int id) {
@@ -181,10 +183,10 @@ public class MapleQuest implements Serializable {
                 quests.put(id, ret);
             } catch (Exception ex) {
                 ex.printStackTrace();
-		FileoutputUtil.outputFileError(FileoutputUtil.ScriptEx_Log, ex);
-		FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Caused by questID " + id);
+                FileoutputUtil.outputFileError(FileoutputUtil.ScriptEx_Log, ex);
+                FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Caused by questID " + id);
                 System.out.println("Caused by questID " + id);
-		return new MapleCustomQuest(id);
+                return new MapleCustomQuest(id);
             }
         }
         return ret;

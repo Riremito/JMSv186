@@ -31,7 +31,7 @@ public class CharacterNameAndId {
         this.name = name;
         this.level = level;
         this.job = job;
-	this.group = group;
+        this.group = group;
     }
 
     public int getId() {

@@ -160,9 +160,9 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
             List<Pair<IItem, MapleInventoryType>> iters = new ArrayList<Pair<IItem, MapleInventoryType>>();
             IItem item;
             for (MaplePlayerShopItem pItems : items) {
-		if (pItems.item == null || pItems.bundles <= 0) {
-		    continue;
-		}
+                if (pItems.item == null || pItems.bundles <= 0) {
+                    continue;
+                }
                 if (pItems.item.getQuantity() <= 0 && !GameConstants.isRechargable(pItems.item.getItemId())) {
                     continue;
                 }

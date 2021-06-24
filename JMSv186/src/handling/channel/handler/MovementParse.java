@@ -62,8 +62,7 @@ public class MovementParse {
                 case 5:
                 case 0xE:
                 case 0x24:
-                case 0x25:
-                {
+                case 0x25: {
                     final short xpos = lea.readShort();
                     final short ypos = lea.readShort();
                     final short xwobble = lea.readShort();
@@ -90,8 +89,7 @@ public class MovementParse {
                 case 0x20:
                 case 0x21:
                 case 0x22:
-                case 0x23:
-                {
+                case 0x23: {
                     final short xmod = lea.readShort();
                     final short ymod = lea.readShort();
                     final byte newstate = lea.readByte();
@@ -115,8 +113,7 @@ public class MovementParse {
                 case 0x1C:
                 case 0x1D:
                 case 0x1E:
-                case 0x1F:
-                {
+                case 0x1F: {
                     final byte newstate = lea.readByte();
                     final short unk = lea.readShort();
                     final AranMovement am = new AranMovement(command, new Point(0, 0), unk, newstate);
@@ -129,8 +126,7 @@ public class MovementParse {
                 case 7:
                 case 8:
                 case 0xA:
-                case 0xB:
-                {
+                case 0xB: {
                     final short xpos = lea.readShort();
                     final short ypos = lea.readShort();
                     final short unk = lea.readShort();
@@ -173,7 +169,7 @@ public class MovementParse {
             }
         }
         if (numCommands != res.size()) {
-	    System.out.println("error in movement");
+            System.out.println("error in movement");
             return null; // Probably hack
         }
         return res;

@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.channel.handler;
 
-
 import client.MapleClient;
 import client.MapleCharacter;
 import client.messages.CommandProcessor;
@@ -199,9 +198,9 @@ public class ChatHandler {
                     int ch = World.Find.findChannel(recipient);
                     if (ch > 0) {
                         player = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(recipient);
-		        if (player == null) {
-			    break;
-		        }
+                        if (player == null) {
+                            break;
+                        }
                         if (player != null) {
                             if (!player.isGM() || (c.getPlayer().isGM() && player.isGM())) {
                                 c.getSession().write(MaplePacketCreator.getFindReply(recipient, (byte) ch, mode == 68));
@@ -232,9 +231,9 @@ public class ChatHandler {
                 final int ch = World.Find.findChannel(recipient);
                 if (ch > 0) {
                     MapleCharacter player = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(recipient);
-		    if (player == null) {
-			break;
-		    }
+                    if (player == null) {
+                        break;
+                    }
                     player.getClient().getSession().write(MaplePacketCreator.getWhisper(c.getPlayer().getName(), c.getChannel(), text));
                     if (!c.getPlayer().isGM() && player.isGM()) {
                         c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));

@@ -22,7 +22,7 @@ package tools;
 
 /**
  * Provides MapleStory's custom encryption routines.
- * 
+ *
  * @author Frz
  * @since Revision 211
  * @version 1.0

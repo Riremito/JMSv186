@@ -95,7 +95,7 @@ public class CheatTracker {
             Attack_tickResetCount = 0;
             Server_ClientAtkTickDiff = STime_TC;
         }
-	chr.get().updateTick(tickcount);
+        chr.get().updateTick(tickcount);
         lastAttackTickCount = tickcount;
     }
 
@@ -106,7 +106,6 @@ public class CheatTracker {
         // System.out.println("tb" + timeBetweenDamage);
         // System.out.println("ns" + numSequentialDamage);
         // System.out.println(timeBetweenDamage / 1500 + "(" + timeBetweenDamage / numSequentialDamage + ")");
-
         if (lastDamageTakenTime - takingDamageSince / 500 < numSequentialDamage) {
             registerOffense(CheatingOffense.FAST_TAKE_DAMAGE);
         }
@@ -279,16 +278,16 @@ public class CheatTracker {
     }
 
     public void updateTick(int newTick) {
-	if (newTick == lastTickCount) { //definitely packet spamming
-	    if (tickSame >= 5) {
-	        chr.get().getClient().getSession().close(); //i could also add a check for less than, but i'm not too worried at the moment :)
-	    } else {
-		tickSame++;
-	    }
-	} else {
-	    tickSame = 0;
-	}
-	lastTickCount = newTick;
+        if (newTick == lastTickCount) { //definitely packet spamming
+            if (tickSame >= 5) {
+                chr.get().getClient().getSession().close(); //i could also add a check for less than, but i'm not too worried at the moment :)
+            } else {
+                tickSame++;
+            }
+        } else {
+            tickSame = 0;
+        }
+        lastTickCount = newTick;
     }
 
     public final void expireEntry(final CheatingOffenseEntry coe) {

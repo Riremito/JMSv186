@@ -348,9 +348,12 @@ public class MaplePacketCreator {
      * Possible values for <code>type</code>:<br>
      * 1: You cannot move that channel. Please try again later.<br>
      * 2: You cannot go into the cash shop. Please try again later.<br>
-     * 3: The Item-Trading shop is currently unavailable, please try again later.<br>
-     * 4: You cannot go into the trade shop, due to the limitation of user count.<br>
-     * 5: You do not meet the minimum level requirement to access the Trade Shop.<br>
+     * 3: The Item-Trading shop is currently unavailable, please try again
+     * later.<br>
+     * 4: You cannot go into the trade shop, due to the limitation of user
+     * count.<br>
+     * 5: You do not meet the minimum level requirement to access the Trade
+     * Shop.<br>
      *
      * @param type The type
      * @return The "block" packet.
@@ -399,7 +402,6 @@ public class MaplePacketCreator {
          * 14: Green Gachapon box
          * 15: Red Gachapon box
          * 18: Blue Notice (again)*/
-
         mplew.writeShort(SendPacketOpcode.SERVERMESSAGE.getValue());
         mplew.write(type);
         if (type == 4) {
@@ -1069,7 +1071,7 @@ public class MaplePacketCreator {
                 }
             }
         }
-/*        if (charge > 0) {
+        /*        if (charge > 0) {
             mplew.writeInt(charge); //is it supposed to be here
         }*/
         return mplew.getPacket();
@@ -2552,7 +2554,6 @@ public class MaplePacketCreator {
          * 4: can't raise or drop fame for this character for this month anymore.<br>
          * 5: received fame, use receiveFame()<br>
          * 6: level of fame neither has been raised nor dropped due to an unexpected error*/
-
         mplew.writeShort(SendPacketOpcode.FAME_RESPONSE.getValue());
         mplew.write(status);
 
@@ -2606,7 +2607,6 @@ public class MaplePacketCreator {
          * 16: Already have joined a party.
          * 17: The party you're trying to join is already in full capacity.
          * 19: Unable to find the requested character in this channel.*/
-
         mplew.writeShort(SendPacketOpcode.PARTY_OPERATION.getValue());
         mplew.write(message);
 
@@ -4467,9 +4467,9 @@ public class MaplePacketCreator {
 
     public static final MaplePacket getNodeProperties(final MapleMonster objectid, final MapleMap map) {
         //idk.
-	if (objectid.getNodePacket() != null) {
-	    return objectid.getNodePacket();
-	}
+        if (objectid.getNodePacket() != null) {
+            return objectid.getNodePacket();
+        }
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.MONSTER_PROPERTIES.getValue());
@@ -4487,7 +4487,7 @@ public class MaplePacketCreator {
         }
         mplew.writeZeroBytes(6);
         objectid.setNodePacket(mplew.getPacket());
-	return objectid.getNodePacket();
+        return objectid.getNodePacket();
     }
 
     public static final MaplePacket getMovingPlatforms(final MapleMap map) {

@@ -9,7 +9,9 @@ import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 
 /**
- * Note for this class : MapleCharacter reference must be removed immediately after cpq or upon dc.
+ * Note for this class : MapleCharacter reference must be removed immediately
+ * after cpq or upon dc.
+ *
  * @author Rob
  */
 public class MapleCarnivalParty {

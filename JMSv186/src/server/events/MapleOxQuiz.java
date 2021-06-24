@@ -110,7 +110,7 @@ public class MapleOxQuiz extends MapleEvent {
                     //prizes here
                     return;
                 }
-		final Entry<Pair<Integer, Integer>, MapleOxQuizEntry> question = MapleOxQuizFactory.getInstance().grabRandomQuestion();
+                final Entry<Pair<Integer, Integer>, MapleOxQuizEntry> question = MapleOxQuizFactory.getInstance().grabRandomQuestion();
                 toSend.broadcastMessage(MaplePacketCreator.showOXQuiz(question.getKey().left, question.getKey().right, true));
                 toSend.broadcastMessage(MaplePacketCreator.getClock(12)); //quickly change to 12
                 if (oxSchedule != null) {

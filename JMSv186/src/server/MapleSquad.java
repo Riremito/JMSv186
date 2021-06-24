@@ -187,7 +187,7 @@ public class MapleSquad {
             members.remove(toban);
 
             getChar(toban).dropMessage(5, getLeaderName() + " has removed you from the squad.");
-	}
+        }
     }
 
     public void setStatus(byte status) {

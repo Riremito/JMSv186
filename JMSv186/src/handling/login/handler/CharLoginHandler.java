@@ -61,13 +61,13 @@ public class CharLoginHandler {
         final boolean macBan = c.hasBannedMac();
 
         int loginok = c.login(login, pwd, ipBan || macBan);
-        
-        if(loginok == 5){
-            if(c.auto_register(login, pwd) == 1){
+
+        if (loginok == 5) {
+            if (c.auto_register(login, pwd) == 1) {
                 loginok = c.login(login, pwd, ipBan || macBan);
             }
         }
-        
+
         final Calendar tempbannedTill = c.getTempBanCalendar();
 
         if (loginok == 0 && (ipBan || macBan) && !c.isGm()) {
@@ -93,7 +93,6 @@ public class CharLoginHandler {
 
     public static final void ServerListRequest(final MapleClient c) {
         c.getSession().write(LoginPacket.getServerList(0, LoginServer.getServerName(), LoginServer.getLoad()));
-        //c.getSession().write(MaplePacketCreator.getServerList(1, "Scania", LoginServer.getInstance().getChannels(), 1200));
         //c.getSession().write(MaplePacketCreator.getServerList(2, "Scania", LoginServer.getInstance().getChannels(), 1200));
         //c.getSession().write(MaplePacketCreator.getServerList(3, "Scania", LoginServer.getInstance().getChannels(), 1200));
         c.getSession().write(LoginPacket.getEndOfServerList());
@@ -149,7 +148,7 @@ public class CharLoginHandler {
         final int weapon = slea.readInt();
         final byte gender = c.getGender();
 
-/*        if (gender == 0) {
+        /*        if (gender == 0) {
             if (face != 20000 && face != 20001 && face != 20002 && face != 20100 && face != 20401 && face != 20402) {
                 return;
             }
@@ -190,7 +189,6 @@ public class CharLoginHandler {
         if (hairColor != 0 && hairColor != 2 && hairColor != 3 && hairColor != 7) {
             return;
         }*/
-
         MapleCharacter newchar = MapleCharacter.getDefault(c, JobType);
         newchar.setWorld((byte) c.getWorld());
         newchar.setFace(face);

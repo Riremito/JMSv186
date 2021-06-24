@@ -26,7 +26,7 @@ import tools.HexTool;
 
 /**
  * Provides for an abstraction layer for an array of bytes.
- * 
+ *
  * @author Frz
  * @version 1.0
  * @since Revision 326
@@ -50,7 +50,8 @@ public class ByteArrayByteStream implements SeekableInputStreamBytestream {
      * Gets the current position of the stream.
      *
      * @return The current position of the stream.
-     * @see net.sf.odinms.tools.data.input.SeekableInputStreamBytestream#getPosition()
+     * @see
+     * net.sf.odinms.tools.data.input.SeekableInputStreamBytestream#getPosition()
      */
     @Override
     public long getPosition() {
@@ -61,7 +62,8 @@ public class ByteArrayByteStream implements SeekableInputStreamBytestream {
      * Seeks the pointer the the specified position.
      *
      * @param offset The position you wish to seek to.
-     * @see net.sf.odinms.tools.data.input.SeekableInputStreamBytestream#seek(long)
+     * @see
+     * net.sf.odinms.tools.data.input.SeekableInputStreamBytestream#seek(long)
      */
     @Override
     public void seek(final long offset) throws IOException {
@@ -92,8 +94,8 @@ public class ByteArrayByteStream implements SeekableInputStreamBytestream {
     }
 
     /**
-     * Returns the current stream as a hexadecimal string of values.
-     * Shows the entire stream, and the remaining data at the current position.
+     * Returns the current stream as a hexadecimal string of values. Shows the
+     * entire stream, and the remaining data at the current position.
      *
      * @return The current stream as a string.
      * @see java.lang.Object#toString()

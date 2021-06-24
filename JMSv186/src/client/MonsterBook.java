@@ -44,21 +44,21 @@ public class MonsterBook implements Serializable {
     private Map<Integer, Integer> cards;
 
     public MonsterBook(Map<Integer, Integer> cards) {
-	this.cards = cards;
+        this.cards = cards;
 
-	for (Entry<Integer, Integer> card : cards.entrySet()) {
-	    if (GameConstants.isSpecialCard(card.getKey())) {
+        for (Entry<Integer, Integer> card : cards.entrySet()) {
+            if (GameConstants.isSpecialCard(card.getKey())) {
 
-		SpecialCard += card.getValue();
-	    } else {
-		NormalCard += card.getValue();
-	    }
-	}
-	calculateLevel();
+                SpecialCard += card.getValue();
+            } else {
+                NormalCard += card.getValue();
+            }
+        }
+        calculateLevel();
     }
 
     public Map<Integer, Integer> getCards() {
-	return cards;
+        return cards;
     }
 
     public final int getTotalCards() {
@@ -73,7 +73,7 @@ public class MonsterBook implements Serializable {
         final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM monsterbook WHERE charid = ? ORDER BY cardid ASC");
         ps.setInt(1, charid);
         final ResultSet rs = ps.executeQuery();
-	Map<Integer, Integer> cards = new LinkedHashMap<Integer, Integer>();
+        Map<Integer, Integer> cards = new LinkedHashMap<Integer, Integer>();
         int cardid, level;
 
         while (rs.next()) {
@@ -81,7 +81,7 @@ public class MonsterBook implements Serializable {
         }
         rs.close();
         ps.close();
-	return new MonsterBook(cards);
+        return new MonsterBook(cards);
     }
 
     public final void saveCards(final int charid) throws SQLException {

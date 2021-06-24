@@ -84,9 +84,9 @@ public class CommandProcessor {
     }
 
     private static void sendDisplayMessage(MapleClient c, String msg, CommandType type) {
-	if (c.getPlayer() == null) {
-	    return;
-	}
+        if (c.getPlayer() == null) {
+            return;
+        }
         switch (type) {
             case NORMAL:
                 c.getPlayer().dropMessage(6, msg);

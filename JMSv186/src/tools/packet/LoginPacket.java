@@ -88,7 +88,6 @@ public class LoginPacket {
          * 27: Some weird full client notice, probably for trial versions
          * 32: IP blocked
          * 84: please revisit website for pass change --> 0x07 recv with response 00/01*/
-
         mplew.writeShort(SendPacketOpcode.LOGIN_STATUS.getValue());
         mplew.write(reason);
         if (reason == 84) {
@@ -135,14 +134,14 @@ public class LoginPacket {
         mplew.write(client.getGender());
         mplew.write(client.isGm() ? 1 : 0); // Admin byte
         mplew.write(client.isGm() ? 1 : 0); // Admin byte
-	mplew.writeMapleAsciiString(client.getAccountName());
+        mplew.writeMapleAsciiString(client.getAccountName());
         mplew.writeMapleAsciiString(client.getAccountName());
         mplew.write(0);
         mplew.write(0); // 1 = banned account
         mplew.write(0);
         mplew.write(0);
         mplew.write(0); // 1 = login need pic
-	mplew.write(0);
+        mplew.write(0);
         mplew.writeLong(0);
         mplew.writeMapleAsciiString(client.getAccountName());
 

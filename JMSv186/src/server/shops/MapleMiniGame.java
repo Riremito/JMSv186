@@ -47,7 +47,7 @@ public class MapleMiniGame extends AbstractPlayerStore {
     int tie = -1;
 
     public MapleMiniGame(MapleCharacter owner, int itemId, String description, String pass, int GameType) {
-        super(owner, itemId, description, pass, slots-1); //?
+        super(owner, itemId, description, pass, slots - 1); //?
         this.GameType = GameType;
         this.points = new int[slots];
         this.exitAfter = new boolean[slots];
@@ -153,10 +153,10 @@ public class MapleMiniGame extends AbstractPlayerStore {
     }
 
     public void send(MapleClient c) {
-	if (getMCOwner() == null) {
-	    closeShop(false, false);
-	    return;
-	}
+        if (getMCOwner() == null) {
+            closeShop(false, false);
+            return;
+        }
         c.getSession().write(PlayerShopPacket.getMiniGame(c, this));
     }
 
@@ -172,7 +172,7 @@ public class MapleMiniGame extends AbstractPlayerStore {
         if (piece[move1][move2] == 0 && isOpen()) {
             piece[move1][move2] = type;
             this.broadcastToVisitors(PlayerShopPacket.getMiniGameMoveOmok(move1, move2, type));
-	    boolean found = false;
+            boolean found = false;
             for (int y = 0; y < 15; y++) {
                 for (int x = 0; x < 15; x++) {
                     if (!found && searchCombo(x, y, type)) {
@@ -180,7 +180,7 @@ public class MapleMiniGame extends AbstractPlayerStore {
                         this.setOpen(true);
                         update();
                         checkExitAfterGame();
-			found = true;
+                        found = true;
                     }
                 }
             }
@@ -222,7 +222,7 @@ public class MapleMiniGame extends AbstractPlayerStore {
         for (int i = 0; i < slots; i++) {
             if (exitAfter[i]) {
                 exitAfter[i] = false;
-                exit(i == 0 ? getMCOwner() : chrs[i-1].get());
+                exit(i == 0 ? getMCOwner() : chrs[i - 1].get());
             }
         }
     }
@@ -357,9 +357,9 @@ public class MapleMiniGame extends AbstractPlayerStore {
     @Override
     public void closeShop(boolean s, boolean z) {
         removeAllVisitors(3, 1);
-	if (getMCOwner() != null) {
+        if (getMCOwner() != null) {
             getMCOwner().setPlayerShop(null);
-	}
+        }
         update();
         getMap().removeMapObject(this);
     }

@@ -30,7 +30,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-
 import client.MapleCharacter;
 import constants.ServerConstants;
 import handling.ByteArrayMaplePacket;
@@ -124,7 +123,7 @@ public class ChannelServer implements Serializable {
             flags = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.flags", "0"));
             adminOnly = Boolean.parseBoolean(ServerProperties.getProperty("net.sf.odinms.world.admin", "false"));
             eventSM = new EventScriptManager(this, ServerProperties.getProperty("net.sf.odinms.channel.events").split(","));
-            port = Short.parseShort(ServerProperties.getProperty("net.sf.odinms.channel.net.port" + channel, String.valueOf(DEFAULT_PORT+channel)));
+            port = Short.parseShort(ServerProperties.getProperty("net.sf.odinms.channel.net.port" + channel, String.valueOf(DEFAULT_PORT + channel)));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -172,9 +171,9 @@ public class ChannelServer implements Serializable {
         acceptor.unbindAll();
         acceptor = null;
 
-	//temporary while we dont have !addchannel
+        //temporary while we dont have !addchannel
         instances.remove(channel);
-	LoginServer.removeChannel(channel);
+        LoginServer.removeChannel(channel);
         setFinishShutdown();
 //        if (threadToNotify != null) {
 //            synchronized (threadToNotify) {
@@ -209,9 +208,9 @@ public class ChannelServer implements Serializable {
     }
 
     public final PlayerStorage getPlayerStorage() {
-	if (players == null) { //wth
-	    players = new PlayerStorage(channel); //wthhhh
-	}
+        if (players == null) { //wth
+            players = new PlayerStorage(channel); //wthhhh
+        }
         return players;
     }
 

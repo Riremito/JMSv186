@@ -142,7 +142,7 @@ public class AramiaFireWorks {
     private final void broadcastSun(final MapleCharacter c) {
         broadcastServer(c, SUN_ID);
         // Henesys Park
-       EventTimer.getInstance().schedule(new Runnable() {
+        EventTimer.getInstance().schedule(new Runnable() {
 
             @Override
             public final void run() {

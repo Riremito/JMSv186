@@ -128,10 +128,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { //sendNext will dc otherwise!
-	    sendSimple(text);
-	    return;
-	}
+        if (text.contains("#L")) { //sendNext will dc otherwise!
+            sendSimple(text);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 01", (byte) 0));
         lastMsg = 0;
     }
@@ -140,10 +140,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimpleS(text, type);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimpleS(text, type);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 01", type));
         lastMsg = 0;
     }
@@ -152,10 +152,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimple(text);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimple(text);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "01 00", (byte) 0));
         lastMsg = 0;
     }
@@ -164,10 +164,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimpleS(text, type);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimpleS(text, type);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "01 00", type));
         lastMsg = 0;
     }
@@ -176,10 +176,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimple(text);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimple(text);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "01 01", (byte) 0));
         lastMsg = 0;
     }
@@ -196,10 +196,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimpleS(text, type);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimpleS(text, type);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "01 01", type));
         lastMsg = 0;
     }
@@ -208,10 +208,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimple(text);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimple(text);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 00", (byte) 0));
         lastMsg = 0;
     }
@@ -220,10 +220,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimpleS(text, type);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimpleS(text, type);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 00", type));
         lastMsg = 0;
     }
@@ -232,10 +232,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimple(text);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimple(text);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 2, text, "", (byte) 0));
         lastMsg = 2;
     }
@@ -244,10 +244,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimpleS(text, type);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimpleS(text, type);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 2, text, "", type));
         lastMsg = 2;
     }
@@ -264,10 +264,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimple(text);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimple(text);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0x0C, text, "", (byte) 0));
         lastMsg = 0xC;
     }
@@ -276,10 +276,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimple(text);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimple(text);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0x0D, text, "", (byte) 0));
         lastMsg = 0xD;
     }
@@ -296,10 +296,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (!text.contains("#L")) { //sendSimple will dc otherwise!
-	    sendNext(text);
-	    return;
-	}
+        if (!text.contains("#L")) { //sendSimple will dc otherwise!
+            sendNext(text);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 5, text, "", (byte) 0));
         lastMsg = 5;
     }
@@ -308,10 +308,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (!text.contains("#L")) { //sendSimple will dc otherwise!
-	    sendNextS(text, type);
-	    return;
-	}
+        if (!text.contains("#L")) { //sendSimple will dc otherwise!
+            sendNextS(text, type);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 5, text, "", (byte) type));
         lastMsg = 5;
     }
@@ -328,10 +328,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimple(text);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimple(text);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalkNum(npc, text, def, min, max));
         lastMsg = 4;
     }
@@ -340,10 +340,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-	if (text.contains("#L")) { // will dc otherwise!
-	    sendSimple(text);
-	    return;
-	}
+        if (text.contains("#L")) { // will dc otherwise!
+            sendSimple(text);
+            return;
+        }
         c.getSession().write(MaplePacketCreator.getNPCTalkText(npc, text));
         lastMsg = 3;
     }
@@ -1292,18 +1292,18 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                     setQuestRecord(chr, 160001, "2");
                     sendNPCText(getPlayer().getName() + " and " + chr.getName() + ", I wish you two all the best on your AsteriaSEA journey together!", 9201002);
                     getMap().startExtendedMapEffect("You may now kiss the bride, " + getPlayer().getName() + "!", 5120006);
-		    if (chr.getGuildId() > 0) {
-			World.Guild.guildPacket(chr.getGuildId(), MaplePacketCreator.sendMarriage(false, chr.getName()));
-		    }
-		    if (chr.getFamilyId() > 0) {
-			World.Family.familyPacket(chr.getFamilyId(), MaplePacketCreator.sendMarriage(true, chr.getName()), chr.getId());
-		    }
-		    if (getPlayer().getGuildId() > 0) {
-			World.Guild.guildPacket(getPlayer().getGuildId(), MaplePacketCreator.sendMarriage(false, getPlayer().getName()));
-		    }
-		    if (getPlayer().getFamilyId() > 0) {
-			World.Family.familyPacket(getPlayer().getFamilyId(), MaplePacketCreator.sendMarriage(true, chr.getName()), getPlayer().getId());
-		    }
+                    if (chr.getGuildId() > 0) {
+                        World.Guild.guildPacket(chr.getGuildId(), MaplePacketCreator.sendMarriage(false, chr.getName()));
+                    }
+                    if (chr.getFamilyId() > 0) {
+                        World.Family.familyPacket(chr.getFamilyId(), MaplePacketCreator.sendMarriage(true, chr.getName()), chr.getId());
+                    }
+                    if (getPlayer().getGuildId() > 0) {
+                        World.Guild.guildPacket(getPlayer().getGuildId(), MaplePacketCreator.sendMarriage(false, getPlayer().getName()));
+                    }
+                    if (getPlayer().getFamilyId() > 0) {
+                        World.Family.familyPacket(getPlayer().getFamilyId(), MaplePacketCreator.sendMarriage(true, chr.getName()), getPlayer().getId());
+                    }
                 }
             }
         }, 20000); //10 sec 10 sec

@@ -99,7 +99,6 @@ public class PacketHelper {
             mplew.writeInt(skill.getValue().skillevel);
             addExpirationTime(mplew, skill.getValue().expiration);
 
-
             if (skill.getKey().isFourthJob()) {
                 mplew.writeInt(skill.getValue().masterlevel);
             }
@@ -107,7 +106,7 @@ public class PacketHelper {
     }
 
     public static final void addCoolDownInfo(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
-	final List<MapleCoolDownValueHolder> cd = chr.getCooldowns();
+        final List<MapleCoolDownValueHolder> cd = chr.getCooldowns();
         mplew.writeShort(cd.size());
         for (final MapleCoolDownValueHolder cooling : cd) {
             mplew.writeInt(cooling.skillId);
@@ -135,12 +134,12 @@ public class PacketHelper {
 
     public static final void addRingInfo(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
         mplew.writeShort(0);
-	//01 00 = size
-	//01 00 00 00 = gametype?
-	//03 00 00 00 = win
-	//00 00 00 00 = tie/loss
-	//01 00 00 00 = tie/loss
-	//16 08 00 00 = points
+        //01 00 = size
+        //01 00 00 00 = gametype?
+        //03 00 00 00 = win
+        //00 00 00 00 = tie/loss
+        //01 00 00 00 = tie/loss
+        //16 08 00 00 = points
         Pair<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
         List<MapleRing> cRing = aRing.getLeft();
         mplew.writeShort(cRing.size());
@@ -311,7 +310,7 @@ public class PacketHelper {
     }
 
     public static final void addExpirationTime(final MaplePacketLittleEndianWriter mplew, final long time) {
-	mplew.write(0);
+        mplew.write(0);
         mplew.writeShort(1408); // 80 05
         if (time != -1) {
             mplew.writeInt(KoreanDateUtil.getItemTimestamp(time));

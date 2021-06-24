@@ -48,9 +48,8 @@ public class PlayerStorage {
     private final Map<Integer, CharacterTransfer> PendingCharacter = new HashMap<Integer, CharacterTransfer>();
     private int channel;
 
-
     public PlayerStorage(int channel) {
-	this.channel = channel;
+        this.channel = channel;
         // Prune once every 15 minutes
         PingTimer.getInstance().schedule(new PersistingTask(), 900000);
     }
@@ -72,7 +71,7 @@ public class PlayerStorage {
         } finally {
             wL.unlock();
         }
-	World.Find.register(chr.getId(), chr.getName(), channel);
+        World.Find.register(chr.getId(), chr.getName(), channel);
     }
 
     public final void registerPendingPlayer(final CharacterTransfer chr, final int playerid) {
@@ -195,7 +194,7 @@ public class PlayerStorage {
                 if (!chr.isGM() || !checkGM) {
                     chr.getClient().disconnect(false, false, true);
                     chr.getClient().getSession().close();
-		    World.Find.forceDeregister(chr.getId(), chr.getName());
+                    World.Find.forceDeregister(chr.getId(), chr.getName());
                     itr.remove();
                 }
             }

@@ -81,16 +81,16 @@ public class XMLDomMapleData implements MapleData, Serializable {
             NodeList childNodes = myNode.getChildNodes();
             boolean foundChild = false;
             for (int i = 0; i < childNodes.getLength(); i++) {
-		try {
+                try {
                     final Node childNode = childNodes.item(i);
                     if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segments[x])) {
                         myNode = childNode;
                         foundChild = true;
                         break;
                     }
-		} catch (NullPointerException e) {
-		    FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e); //ugh.
-		}
+                } catch (NullPointerException e) {
+                    FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e); //ugh.
+                }
             }
             if (!foundChild) {
                 return null;

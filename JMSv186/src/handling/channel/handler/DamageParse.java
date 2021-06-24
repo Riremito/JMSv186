@@ -86,7 +86,7 @@ public class DamageParse {
                     if (player.getPyramidSubway() == null || !player.getPyramidSubway().onSkillUse(player)) {
                         return;
                     }
-		}
+                }
             }
             if (attack.targets > effect.getMobCount()) { // Must be done here, since NPE with normal atk
                 player.getCheatTracker().registerOffense(CheatingOffense.MISMATCHING_BULLETCOUNT);
@@ -174,7 +174,7 @@ public class DamageParse {
 
             if (monster != null) {
                 totDamageToOneMonster = 0;
-		hpMob = monster.getHp();
+                hpMob = monster.getHp();
                 monsterstats = monster.getStats();
                 fixeddmg = monsterstats.getFixedDamage();
                 Tempest = monster.getStatusSourceID(MonsterStatus.FREEZE) == 21120006;
@@ -453,9 +453,9 @@ public class DamageParse {
                 }
             }
         }
-	if (attack.skill == 4331003 && totDamageToOneMonster < hpMob) {
-	    return;
-	}
+        if (attack.skill == 4331003 && totDamageToOneMonster < hpMob) {
+            return;
+        }
         if (attack.skill != 0 && (attack.targets > 0 || (attack.skill != 4331003 && attack.skill != 4341002)) && attack.skill != 21101003 && attack.skill != 5110001 && attack.skill != 15100004 && attack.skill != 11101002 && attack.skill != 13101002) {
             effect.applyTo(player, attack.position);
         }
@@ -491,7 +491,7 @@ public class DamageParse {
             } //lol
         }
         if (GameConstants.isMulungSkill(attack.skill)) {
-             if (player.getMapId() / 10000 != 92502) {
+            if (player.getMapId() / 10000 != 92502) {
                 //AutobanManager.getInstance().autoban(player.getClient(), "Using Mu Lung dojo skill out of dojo maps.");
                 return;
             } else {
@@ -506,7 +506,7 @@ public class DamageParse {
                 if (player.getPyramidSubway() == null || !player.getPyramidSubway().onSkillUse(player)) {
                     return;
                 }
-	    }
+            }
         }
         final PlayerStats stats = player.getStat();
 //	double minDamagePerHit;
@@ -770,7 +770,7 @@ public class DamageParse {
                     maximumDamageToMonster = 1;
                     defined = true;
                     break;
-		case 4331003: //Owl Spirit
+                case 4331003: //Owl Spirit
                     maximumDamageToMonster = (monster.getStats().isBoss() ? 199999 : monster.getHp());
                     defined = true;
                     break;

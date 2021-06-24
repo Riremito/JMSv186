@@ -374,5 +374,3 @@ public class MapleGuildAlliance implements java.io.Serializable {
         return false;
     }
 }
-		
-	

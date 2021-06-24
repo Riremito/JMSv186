@@ -49,7 +49,9 @@ public class MapleQuestAction implements Serializable {
     private MapleData data;
     private MapleQuest quest;
 
-    /** Creates a new instance of MapleQuestAction */
+    /**
+     * Creates a new instance of MapleQuestAction
+     */
     public MapleQuestAction(MapleQuestActionType type, MapleData data, MapleQuest quest) {
         this.type = type;
         this.data = data;
@@ -186,7 +188,7 @@ public class MapleQuestAction implements Serializable {
                 for (MapleData qEntry : data) {
                     c.updateQuest(
                             new MapleQuestStatus(MapleQuest.getInstance(MapleDataTool.getInt(qEntry.getChildByPath("id"))),
-                            (byte) MapleDataTool.getInt(qEntry.getChildByPath("state"), 0)));
+                                    (byte) MapleDataTool.getInt(qEntry.getChildByPath("state"), 0)));
                 }
                 break;
             case skill:
@@ -429,7 +431,7 @@ public class MapleQuestAction implements Serializable {
                 for (MapleData qEntry : data) {
                     c.updateQuest(
                             new MapleQuestStatus(MapleQuest.getInstance(MapleDataTool.getInt(qEntry.getChildByPath("id"))),
-                            (byte) MapleDataTool.getInt(qEntry.getChildByPath("state"), 0)));
+                                    (byte) MapleDataTool.getInt(qEntry.getChildByPath("state"), 0)));
                 }
                 break;
             }
