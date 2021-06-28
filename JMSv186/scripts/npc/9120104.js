@@ -9,7 +9,7 @@ function action(mode, type, selection) {
 	text += "Lv = " + level + "\r\n";
 
 	//cm.getPlayer().gainExp(500000000, true, false, true);
-	cm.openShop(npc);
+	cm.openShop(9030000);
 	//cm.sendOk(text);
 	cm.dispose();
 }

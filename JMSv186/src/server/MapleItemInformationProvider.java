@@ -666,6 +666,11 @@ public class MapleItemInformationProvider {
             final int succ = (GameConstants.isTablet(scrollId.getItemId()) ? GameConstants.getSuccessTablet(scrollId.getItemId(), nEquip.getLevel()) : ((GameConstants.isEquipScroll(scrollId.getItemId()) || GameConstants.isPotentialScroll(scrollId.getItemId()) ? 0 : stats.get("success"))));
             final int curse = (GameConstants.isTablet(scrollId.getItemId()) ? GameConstants.getCurseTablet(scrollId.getItemId(), nEquip.getLevel()) : ((GameConstants.isEquipScroll(scrollId.getItemId()) || GameConstants.isPotentialScroll(scrollId.getItemId()) ? 0 : stats.get("cursed"))));
             int success = succ + (vegas == 5610000 && succ == 10 ? 20 : (vegas == 5610001 && succ == 60 ? 30 : 0));
+
+            if (scrollId.getItemId() == 2049100) {
+                success = 100;
+            }
+
             if (GameConstants.isPotentialScroll(scrollId.getItemId()) || GameConstants.isEquipScroll(scrollId.getItemId()) || Randomizer.nextInt(100) <= success) {
                 switch (scrollId.getItemId()) {
                     case 2049000:
@@ -749,9 +754,12 @@ public class MapleItemInformationProvider {
                             break;
                         } else if (GameConstants.isEquipScroll(scrollId.getItemId())) {
                             final int chanc = Math.max((scrollId.getItemId() == 2049300 ? 100 : 80) - (nEquip.getEnhance() * 10), 10);
+                            // all success
+                            /*
                             if (Randomizer.nextInt(100) > chanc) {
                                 return null; //destroyed, nib
                             }
+                             */
                             if (nEquip.getStr() > 0 || Randomizer.nextInt(50) == 1) { //1/50
                                 nEquip.setStr((short) (nEquip.getStr() + Randomizer.nextInt(5)));
                             }
@@ -765,13 +773,21 @@ public class MapleItemInformationProvider {
                                 nEquip.setLuk((short) (nEquip.getLuk() + Randomizer.nextInt(5)));
                             }
                             if (nEquip.getWatk() > 0 && GameConstants.isWeapon(nEquip.getItemId())) {
-                                nEquip.setWatk((short) (nEquip.getWatk() + Randomizer.nextInt(5)));
+                                int add = (nEquip.getWatk() / 50);
+                                if (add == 0) {
+                                    add = 1;
+                                }
+                                nEquip.setWatk((short) (nEquip.getWatk() + add));
                             }
                             if (nEquip.getWdef() > 0 || Randomizer.nextInt(40) == 1) { //1/40
                                 nEquip.setWdef((short) (nEquip.getWdef() + Randomizer.nextInt(5)));
                             }
                             if (nEquip.getMatk() > 0 && GameConstants.isWeapon(nEquip.getItemId())) {
-                                nEquip.setMatk((short) (nEquip.getMatk() + Randomizer.nextInt(5)));
+                                int add = (nEquip.getMatk() / 50);
+                                if (add == 0) {
+                                    add = 1;
+                                }
+                                nEquip.setMatk((short) (nEquip.getMatk() + add));
                             }
                             if (nEquip.getMdef() > 0 || Randomizer.nextInt(40) == 1) { //1/40
                                 nEquip.setMdef((short) (nEquip.getMdef() + Randomizer.nextInt(5)));

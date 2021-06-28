@@ -11,7 +11,7 @@ function start() {
 			cm.dispose();
 			return;
 		}
-		if (cm.getPlayer().getClient().getChannel() != 4) {
+		if (0/*cm.getPlayer().getClient().getChannel() != 4*/) {
 			cm.sendOk("Horntail may only be attempted on channel 4");
 			cm.dispose();
 			return;

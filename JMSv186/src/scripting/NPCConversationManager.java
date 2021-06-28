@@ -72,6 +72,7 @@ import server.maps.SpeedRunType;
 import server.StructPotentialItem;
 import server.Timer.CloneTimer;
 import server.maps.Event_PyramidSubway;
+import tools.data.output.MaplePacketLittleEndianWriter;
 
 public class NPCConversationManager extends AbstractPlayerInteraction {
 
@@ -91,13 +92,29 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         this.type = type;
         this.iv = iv;
     }
+    
+    public int getNpc() {
+        return npc;
+    }
 
     public Invocable getIv() {
         return iv;
     }
 
-    public int getNpc() {
-        return npc;
+    public void WorldMessage(String text) {
+        World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, text).getBytes());
+    }
+    
+    public void BroadcastPacket(byte[] packet) {
+        World.Broadcast.broadcastMessage(packet);
+    }
+    
+    public MaplePacketLittleEndianWriter getOutPacket(){
+        return new MaplePacketLittleEndianWriter();
+    }
+
+    public void Broadcast(String text) {
+        World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, text).getBytes());
     }
 
     public int getQuest() {

@@ -193,6 +193,7 @@ public class CashShopOperation {
                     doCSPackets(c);
                     return;
                 }
+                /*
                 for (int i : GameConstants.cashBlock) {
                     if (item.getId() == i) {
                         c.getPlayer().dropMessage(1, GameConstants.getCashBlockedMsg(item.getId()));
@@ -200,6 +201,7 @@ public class CashShopOperation {
                         return;
                     }
                 }
+                */
                 chr.modifyCSPoints(1, -item.getPrice(), false);
                 IItem itemz = chr.getCashInventory().toItem(item);
                 if (itemz != null && itemz.getUniqueId() > 0 && itemz.getItemId() == item.getId() && itemz.getQuantity() == item.getCount()) {

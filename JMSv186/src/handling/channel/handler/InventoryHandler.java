@@ -1431,8 +1431,8 @@ public class InventoryHandler {
                         item.setUpgradeSlots((byte) (item.getUpgradeSlots() + 1));
 
                         c.getPlayer().forceReAddItem(item, MapleInventoryType.EQUIP);
-                        //c.getSession().write(MTSCSPacket.ViciousHammer(true, (byte) item.getViciousHammer()));
-                        //c.getSession().write(MTSCSPacket.ViciousHammer(false, (byte) 0));
+                        c.getSession().write(MTSCSPacket.ViciousHammer(true, (byte) item.getViciousHammer()));
+                        c.getSession().write(MTSCSPacket.ViciousHammer(false, (byte) 0));
                         used = true;
                         cc = true;
                     } else {
@@ -1549,30 +1549,7 @@ public class InventoryHandler {
                 }
                 break;
             }
-            case 5071000: { // Megaphone
-                if (c.getPlayer().getLevel() < 10) {
-                    c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
-                }
-                if (!c.getChannelServer().getMegaphoneMuteState()) {
-                    final String message = slea.readMapleAsciiString();
-
-                    if (message.length() > 65) {
-                        break;
-                    }
-                    final StringBuilder sb = new StringBuilder();
-                    addMedalString(c.getPlayer(), sb);
-                    sb.append(c.getPlayer().getName());
-                    sb.append(" : ");
-                    sb.append(message);
-
-                    c.getChannelServer().broadcastPacket(MaplePacketCreator.serverNotice(2, sb.toString()));
-                    used = true;
-                } else {
-                    c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
-                }
-                break;
-            }
+            /*
             case 5077000: { // 3 line Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
@@ -1601,57 +1578,10 @@ public class InventoryHandler {
                 }
                 break;
             }
-            case 5073000: { // Heart Megaphone
-                if (c.getPlayer().getLevel() < 10) {
-                    c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
-                }
-                if (!c.getChannelServer().getMegaphoneMuteState()) {
-                    final String message = slea.readMapleAsciiString();
-
-                    if (message.length() > 65) {
-                        break;
-                    }
-                    final StringBuilder sb = new StringBuilder();
-                    addMedalString(c.getPlayer(), sb);
-                    sb.append(c.getPlayer().getName());
-                    sb.append(" : ");
-                    sb.append(message);
-
-                    final boolean ear = slea.readByte() != 0;
-                    World.Broadcast.broadcastSmega(MaplePacketCreator.serverNotice(9, c.getChannel(), sb.toString(), ear).getBytes());
-                    used = true;
-                } else {
-                    c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
-                }
-                break;
-            }
-            case 5074000: { // Skull Megaphone
-                if (c.getPlayer().getLevel() < 10) {
-                    c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
-                }
-                if (!c.getChannelServer().getMegaphoneMuteState()) {
-                    final String message = slea.readMapleAsciiString();
-
-                    if (message.length() > 65) {
-                        break;
-                    }
-                    final StringBuilder sb = new StringBuilder();
-                    addMedalString(c.getPlayer(), sb);
-                    sb.append(c.getPlayer().getName());
-                    sb.append(" : ");
-                    sb.append(message);
-
-                    final boolean ear = slea.readByte() != 0;
-
-                    World.Broadcast.broadcastSmega(MaplePacketCreator.serverNotice(10, c.getChannel(), sb.toString(), ear).getBytes());
-                    used = true;
-                } else {
-                    c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
-                }
-                break;
-            }
+            */
+            case 5071000:
+            case 5073000:
+            case 5074000:
             case 5072000: { // Super Megaphone
                 if (c.getPlayer().getLevel() < 10) {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
@@ -1670,8 +1600,14 @@ public class InventoryHandler {
                     sb.append(message);
 
                     final boolean ear = slea.readByte() != 0;
-
-                    World.Broadcast.broadcastSmega(MaplePacketCreator.serverNotice(3, c.getChannel(), sb.toString(), ear).getBytes());
+                    int type = 3;
+                    if (itemId == 5073000){
+                        type = 12;
+                    }
+                    if(itemId == 5074000){
+                        type = 13;
+                    }
+                    World.Broadcast.broadcastSmega(MaplePacketCreator.serverNotice(type, c.getChannel(), sb.toString(), ear).getBytes());
                     used = true;
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
@@ -1968,6 +1904,7 @@ public class InventoryHandler {
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false, true);
         }
         c.getSession().write(MaplePacketCreator.enableActions());
+        /*
         if (cc) {
             if (!c.getPlayer().isAlive() || c.getPlayer().getEventInstance() != null || FieldLimitType.ChannelSwitch.check(c.getPlayer().getMap().getFieldLimit())) {
                 c.getPlayer().dropMessage(1, "Auto change channel failed.");
@@ -1976,6 +1913,7 @@ public class InventoryHandler {
             c.getPlayer().dropMessage(5, "Auto changing channels. Please wait.");
             c.getPlayer().changeChannel(c.getChannel() == ChannelServer.getChannelCount() ? 1 : (c.getChannel() + 1));
         }
+        */
     }
 
     public static final void Pickup_Player(final SeekableLittleEndianAccessor slea, MapleClient c, final MapleCharacter chr) {

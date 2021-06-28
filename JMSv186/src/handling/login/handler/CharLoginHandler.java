@@ -93,8 +93,7 @@ public class CharLoginHandler {
 
     public static final void ServerListRequest(final MapleClient c) {
         c.getSession().write(LoginPacket.getServerList(0, LoginServer.getServerName(), LoginServer.getLoad()));
-        //c.getSession().write(MaplePacketCreator.getServerList(2, "Scania", LoginServer.getInstance().getChannels(), 1200));
-        //c.getSession().write(MaplePacketCreator.getServerList(3, "Scania", LoginServer.getInstance().getChannels(), 1200));
+        c.getSession().write(LoginPacket.getServerList(1, "もみじ", LoginServer.getLoad()));
         c.getSession().write(LoginPacket.getEndOfServerList());
     }
 
@@ -253,34 +252,19 @@ public class CharLoginHandler {
     }
 
     public static final void DeleteChar(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        String Secondpw_Client = null;
-        if (slea.readByte() > 0) { // Specific if user have second password or not
-            Secondpw_Client = slea.readMapleAsciiString();
-        }
-        slea.readMapleAsciiString();
         final int Character_ID = slea.readInt();
 
         if (!c.login_Auth(Character_ID)) {
             c.getSession().close();
             return; // Attempting to delete other character
         }
-        byte state = 0;
 
-        if (c.getSecondPassword() != null) { // On the server, there's a second password
-            if (Secondpw_Client == null) { // Client's hacking
-                c.getSession().close();
-                return;
-            } else {
-                if (!c.CheckSecondPassword(Secondpw_Client)) { // Wrong Password
-                    state = 12;
-                }
-            }
-        }
-        // TODO, implement 13 digit Asiasoft passport too.
+        byte state = 0;
 
         if (state == 0) {
             state = (byte) c.deleteCharacter(Character_ID);
         }
+
         c.getSession().write(LoginPacket.deleteCharResponse(Character_ID, state));
     }
 

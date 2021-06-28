@@ -48,15 +48,20 @@ public class PortalScriptManager {
     }
 
     private final PortalScript getPortalScript(final String scriptName) {
+        /*
         if (scripts.containsKey(scriptName)) {
             return scripts.get(scriptName);
         }
+        */
 
         final File scriptFile = new File("scripts/portal/" + scriptName + ".js");
+        
+        /*
         if (!scriptFile.exists()) {
             scripts.put(scriptName, null);
             return null;
         }
+        */
 
         FileReader fr = null;
         final ScriptEngine portal = sef.getScriptEngine();
@@ -77,7 +82,7 @@ public class PortalScriptManager {
             }
         }
         final PortalScript script = ((Invocable) portal).getInterface(PortalScript.class);
-        scripts.put(scriptName, script);
+        //scripts.put(scriptName, script);
         return script;
     }
 

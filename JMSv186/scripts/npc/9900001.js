@@ -3,7 +3,7 @@
 	Map(s): 		Victoria Road : Ellinia (180000000)
 	Description: 		Maxes out your stats and able to modify your equipment stats
 */
-importPackage(java.lang);
+//importPackage(java.lang);
 
 var status = 0;
 var slot = Array();
@@ -27,9 +27,9 @@ function action(mode, type, selection) {
 	status--;
 
     if (status == 0) {
-	if (cm.getPlayerStat("ADMIN") == 1) {
+	if (0/*cm.getPlayerStat("ADMIN") == 1*/) {
 		cm.sendSimple("What do you want from me?#b\r\n#L0#Max my stats!#l\r\n#L1#Max my skills!#l\r\n#L2#Modify my equip's stats!#l\r\n#L3#Look at potential values#l\r\n#L4#Set AP/SP to 0#l#k");
-	} else if (cm.getPlayerStat("GM") == 1) {
+	} else if (1/*cm.getPlayerStat("GM") == 1*/) {
 		cm.sendSimple("What do you want from me?#b\r\n#L0#Max my stats!#l\r\n#L1#Max my skills!#l\r\n#L4#Set AP/SP to 0#l#k");
 	} else {
 	    cm.dispose();
@@ -43,7 +43,7 @@ function action(mode, type, selection) {
 	    cm.dispose();
 	} else if (selection == 1) {
 	    //Beginner
-	    if (cm.getPlayerStat("GM") == 1) {
+	    if (1/*cm.getPlayerStat("GM") == 1*/) {
 		cm.maxAllSkills();
 	    }
 	    cm.dispose();

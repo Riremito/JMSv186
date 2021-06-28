@@ -834,6 +834,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.setString(12, "0,0,0,0,0,0,0,0,0,0"); // Remaining SP
             ps.setShort(13, (short) 0); // Remaining AP
 
+            /*
             if (chr.name.toUpperCase().indexOf("GM") == 0) {
                 ps.setByte(14, (byte) 111); // GM Level
                 System.out.println("GMキャラクター作成:" + chr.name);
@@ -841,6 +842,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 ps.setByte(14, (byte) 0); // GM Level
                 System.out.println("キャラクター作成: " + chr.name);
             }
+            */
+            ps.setByte(14, (byte) 0); // GM Level
+            System.out.println("キャラクター作成: " + chr.name);
 
             ps.setByte(15, chr.skinColor);
             ps.setByte(16, chr.gender);
@@ -851,7 +855,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (chr.name.toUpperCase().indexOf("GM") == 0) {
                 ps.setInt(20, 100000000);
             } else {
-                ps.setInt(20, type == 1 ? 0 : (type == 0 ? 130030000 : (type == 3 ? 900090000 : 914000000)));
+                //ps.setInt(20, type == 1 ? 0 : (type == 0 ? 130030000 : (type == 3 ? 900090000 : 914000000)));
+                ps.setInt(20, 910000000);
             }
 
             ps.setInt(21, 500000000); // Meso

@@ -367,6 +367,7 @@ public class MapleClient implements Serializable {
     }
     
     public int auto_register(String MapleID, String pwd){
+        /*
         if(MapleID.toUpperCase().indexOf("GM") == 0){
             System.out.println("GMアカウント生成:"  + MapleID);
             return auto_register_GM(MapleID, pwd);
@@ -374,6 +375,8 @@ public class MapleClient implements Serializable {
         else{
             System.out.println("アカウント生成:"  + MapleID);
         }
+        */
+        System.out.println("アカウント生成:"  + MapleID);
 
         String password1_hash = null;
         String password2_hash = null;
@@ -390,10 +393,12 @@ public class MapleClient implements Serializable {
         
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO accounts (name, password, 2ndpassword) VALUES (?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = con.prepareStatement("INSERT INTO accounts (name, password, 2ndpassword, ACash, gender) VALUES (?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, MapleID);
             ps.setString(2, password1_hash);
             ps.setString(3, password2_hash);
+            ps.setInt(4, 10000000);
+            ps.setByte(5, (byte)1);
             ps.executeUpdate();
                 
             ResultSet rs = ps.getGeneratedKeys();

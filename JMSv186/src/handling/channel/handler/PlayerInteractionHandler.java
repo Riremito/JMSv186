@@ -55,8 +55,9 @@ public class PlayerInteractionHandler {
             SET_ITEMS = 0x0E,
             SET_MESO = 0x0F,
             CONFIRM_TRADE = 0x10,
-            TRADE_SOMETHING = 0x13,
-            PLAYER_SHOP_ADD_ITEM = 0x14,
+            //TRADE_SOMETHING = 0x13,
+            //PLAYER_SHOP_ADD_ITEM = 0x14,
+            PLAYER_SHOP_ADD_ITEM = 0x13,
             BUY_ITEM_PLAYER_SHOP = 0x15,
             MERCHANT_EXIT = 0x1C, //is this also updated
             ADD_ITEM = 0x1F,
@@ -474,7 +475,7 @@ public class PlayerInteractionHandler {
                 }
                 break;
             }
-            case TRADE_SOMETHING:
+            //case TRADE_SOMETHING:
             case ADMIN_STORE_NAMECHANGE: { // Changing store name, only Admin
                 // 01 00 00 00
                 break;

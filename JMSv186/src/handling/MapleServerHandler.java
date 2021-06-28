@@ -401,9 +401,12 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                     if (Log_Packets) {
                         log(slea, recv, c, session);
                     }
-                    /*                    final StringBuilder sb = new StringBuilder("Received data : ");
+                    
+                    /*
+                    final StringBuilder sb = new StringBuilder("Received data : ");
                     sb.append(recv.toString()).append("\n").append(HexTool.toString((byte[]) message)).append("\n").append(HexTool.toStringFromAscii((byte[]) message));
-                    System.out.println(sb.toString());*/
+                    System.out.println(sb.toString());
+                    */
                     handlePacket(recv, slea, c, cs);
                     //Log after the packet is handle. You'll see why =]
                     FileWriter fw = isLoggedIP(session);
@@ -448,13 +451,13 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
     }
 
     public static final void handlePacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor slea, final MapleClient c, final boolean cs) throws Exception {
+        //System.out.println(String.format("[Packet] %04X", (short)header.getValue()));
         switch (header) {
+            /*
             case PONG:
                 c.pongReceived();
                 break;
-            case STRANGE_DATA:
-                // Does nothing for now, HackShield's heartbeat
-                break;
+            */
             case LOGIN_PASSWORD:
                 CharLoginHandler.login(slea, c);
                 break;
@@ -477,8 +480,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 CharLoginHandler.DeleteChar(slea, c);
                 break;
             case CHAR_SELECT:
-            //CharLoginHandler.Character_WithoutSecondPassword(slea, c);
-            //break;
             case AUTH_SECOND_PASSWORD:
                 CharLoginHandler.Character_WithSecondPassword(slea, c);
                 break;
@@ -495,6 +496,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                     CashShopOperation.EnterCS(playerid, c);
                 } else {
                     InterServerHandler.Loggedin(playerid, c);
+                    System.out.println("[LogIn]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
                 }
                 break;
             case ENTER_CASH_SHOP:
@@ -568,6 +570,7 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                     CashShopOperation.LeaveCS(slea, c, c.getPlayer());
                 } else {
                     PlayerHandler.ChangeMap(slea, c, c.getPlayer());
+                    System.out.println("[EnterMap]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
                 }
                 break;
             case CHANGE_MAP_SPECIAL:

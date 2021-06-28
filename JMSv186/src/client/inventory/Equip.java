@@ -429,10 +429,17 @@ public class Equip extends Item implements IEquip, Serializable {
     }
 
     public void resetPotential() { //equip first receive
+        /*
         //0.04% chance unique, 4% chance epic, else rare
         final int rank = Randomizer.nextInt(100) < 4 ? (Randomizer.nextInt(100) < 4 ? -7 : -6) : -5;
         setPotential1((short) rank);
         setPotential2((short) (Randomizer.nextInt(10) == 1 ? rank : 0)); //1/10 chance of 3 line
+        setPotential3((short) 0); //just set it theoretically
+        */
+        //0.04% chance unique, 4% chance epic, else rare
+        final int rank = -7;
+        setPotential1((short) rank);
+        setPotential2((short) rank); //1/10 chance of 3 line
         setPotential3((short) 0); //just set it theoretically
     }
 

@@ -1,73 +1,63 @@
 var status = -1;
 
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	status--;
-    }
-    var em = cm.getEventManager("CWKPQ");
-    if (em == null) {
-	cm.sendNext("The event isn't started...");
+	if (mode == 1) {
+		status++;
+	} else {
+		status--;
+	}
+
+	if (cm.getMapId() == 803000505  || cm.getMapId() == 910000000) {
+		switch (status) {
+			case 0:
+				{
+					var text = "さぁ…何をするんだ？\r\n";
+					text += "#L" + 1 + "##b" + "ダンジョン入場（難易度：ノーマル・遠征隊用）" + "#l#k\r\n";
+					text += "#L" + 2 + "##b" + "ダンジョン入場（難易度：ハード・遠征隊用）" + "#l#k\r\n";
+					text += "#L" + 3 + "##b" + "ボスモンスター対戦（ソロ）" + "#l#k\r\n";
+					text += "#L" + 4 + "##b" + "ボスモンスター対戦（グループ）" + "#l#k\r\n";
+					text += "#L" + 5 + "##b" + "フリマ入口へ" + "#l#k\r\n";
+					cm.sendSimple(text);
+					return;
+				}
+			case 1:
+				{
+					if (selection == 3) {
+						cm.sendYesNo("クリムゾンウッドの聖地に眠る敵と一人で戦ってみるか？");
+						return;
+					}
+					else if (selection == 5) {
+						cm.warp(910000000, "out00");
+					}
+					else {
+						cm.sendOk("ボスモンスター対戦（ソロ）を選択してください");
+					}
+					break;
+				}
+			case 2:
+				{
+					var bossmap = cm.getMap(803100000);
+					if (cm.getPlayerCount(803100000) <= 0) {
+						bossmap.resetFully();
+					}
+					cm.warp(803100000, "sp");
+					break;
+				}
+			default:
+				break;
+		}
+	}
+	else {
+		var id = cm.getNpc();
+		var mapid = cm.getMapId();
+		var text = "デバッグ情報\r\n";
+		text += "#p" + id + "#\r\n";
+		text += "NPC ID = #b" + id + "#k\r\n";
+		text += "#m" + mapid + "#\r\n";
+		text += "Map ID = #b" + mapid + "#k\r\n";
+	
+		cm.sendOk(text);
+	}
+
 	cm.dispose();
-	return;
-    }
-    if (!cm.isLeader()) {
-	cm.sendNext("I wish for your leader to talk to me.");
-	cm.dispose();
-	return;
-    }
-    switch(cm.getPlayer().getMapId()) {
-	case 610030100:
-	    if (status == 0) {
-		cm.sendNext("Agh, you have made it in. Let me tell you real quick: they've caught us already. Master Guardians are about to come here in about a minute. We'd better hurry.");
-	    } else if (status == 1) {
-		cm.sendNext("The portal to the Twisted Masters is busted. We have to find an alternate way, one that will take us through many death traps.");
-	    } else if (status == 2) {
-		cm.sendNext("You can find the portal somewhere around here... you'd better find it, quick. I'll catch up.");
-		cm.dispose();
-		em.setProperty("glpq1", "1");
-	    }
-	    break;
-	case 610030200:
-	   if (status == 0) {
-		cm.sendNext("That was a success! Now, for this path, I do believe we need one of every Adventurer class to get past.");
-	   } else if (status == 1) {
-		cm.sendNext("They need to use their skills on each of these things called Sigils. Once all five have been done, we can get past.");
-		cm.dispose();
-	   }
-	   break;
-	case 610030300:
-	   if (status == 0) {
-		cm.sendNext("Now what we have here are more Sigils. All five Adventurers have to climb to the very top and go through the portal.");
-	   } else if (status == 1) {
-		cm.sendNext("Beware of these death traps: Menhirs. They really pack a punch.");
-		cm.dispose();
-	   }
-	   break;
-	case 610030400:
-	   if (status == 0) {
-		cm.sendNext("Now what we have here are more Sigils. However, some of them don't work.");
-	   } else if (status == 1) {
-		cm.sendNext("These Stirges will get in your way, but they're merely a distraction. Try every one of these Sigils until they work.");
-		cm.dispose();
-	   }
-	   break;
-	case 610030500:
-	   if (status == 0) {
-		cm.sendNext("Surprised you made it this far! What you see here is the statue of Crimsonwood Keep, but without any of it's weapons.");
-	   } else if (status == 1) {
-		cm.sendNext("There are five rooms, marked by a statue near each of them, around the statue.");
-	   } else if (status == 2) {
-		cm.sendNext("I suspect that each of these rooms have one of the statue's five weapons.");
-	   } else if (status == 3) {
-		cm.sendNext("Bring back the weapons and restore them to the Relic of Mastery!");
-		cm.dispose();
-	   }
-	   break;
-	case 610030700:
-	   cm.sendNext("That was some good work out there! This leads the way to the Twisted Masters' Armory.");
-	   cm.dispose();
-	   break;
-    }
 }

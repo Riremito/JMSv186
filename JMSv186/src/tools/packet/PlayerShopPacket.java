@@ -233,6 +233,10 @@ public class PlayerShopPacket {
             mplew.writeInt(item.price);
             PacketHelper.addItemInfo(mplew, item.item, true, true);
         }
+        mplew.writeInt(0);
+        mplew.writeInt(0);
+        mplew.writeInt(0);
+        mplew.writeInt(0);
         return mplew.getPacket();
     }
 

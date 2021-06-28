@@ -28,6 +28,7 @@ import handling.channel.ChannelServer;
 import server.Timer.PingTimer;
 import tools.packet.LoginPacket;
 import tools.MaplePacketCreator;
+import handling.login.handler.CharLoginHandler;
 
 public class LoginWorker {
 
@@ -71,7 +72,6 @@ public class LoginWorker {
             return;
         }
 
-        c.getSession().write(LoginPacket.getServerList(0, LoginServer.getServerName(), LoginServer.getLoad()));
-        c.getSession().write(LoginPacket.getEndOfServerList());
+        CharLoginHandler.ServerListRequest(c);
     }
 }

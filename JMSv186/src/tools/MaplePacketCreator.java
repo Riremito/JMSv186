@@ -397,8 +397,8 @@ public class MaplePacketCreator {
          * 9: Heart megaphone
          * 10: Skull Super megaphone
          * 11: Green megaphone message?
-         * 12: Three line of megaphone text
-         * 13: End of file =.="
+         * 12: Three line of megaphone text はーと
+         * 13: End of file =.=" どくろ
          * 14: Green Gachapon box
          * 15: Red Gachapon box
          * 18: Blue Notice (again)*/
@@ -411,8 +411,8 @@ public class MaplePacketCreator {
 
         switch (type) {
             case 3:
-            case 9:
-            case 10:
+            case 12:
+            case 13:
                 mplew.write(channel - 1); // channel
                 mplew.write(megaEar ? 1 : 0);
                 break;
@@ -423,6 +423,11 @@ public class MaplePacketCreator {
                 //with Ruby Exp Coupon being in yellow and with item info
                 break;
         }
+        
+        //mplew.writeInt(0);
+        //mplew.writeInt(0);
+        //mplew.writeInt(0);
+        
         return mplew.getPacket();
     }
 
@@ -443,7 +448,7 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.SERVERMESSAGE.getValue());
-        mplew.write(12);
+        mplew.write(14);
 
         if (message.get(0) != null) {
             mplew.writeMapleAsciiString(message.get(0));
@@ -1393,6 +1398,9 @@ public class MaplePacketCreator {
                 break;
         }
         mplew.write(0); //? pam's song?
+        
+        // テスト
+        mplew.writeInt(0);
         return mplew.getPacket();
     }
 
@@ -1403,6 +1411,14 @@ public class MaplePacketCreator {
         mplew.writeShort(SendPacketOpcode.SHOW_POTENTIAL_EFFECT.getValue());
         mplew.writeInt(chr);
         mplew.writeInt(itemid);
+        mplew.writeInt(0);
+        mplew.writeInt(0);
+        mplew.writeInt(0);
+        mplew.writeInt(0);
+        mplew.writeInt(0);
+        mplew.writeInt(0);
+        mplew.writeInt(0);
+        mplew.writeInt(0);
         return mplew.getPacket();
     }
 
