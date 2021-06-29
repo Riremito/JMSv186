@@ -564,17 +564,19 @@ public final class MapleMap {
         final int mobid = monster.getId();
         SpeedRunType type = SpeedRunType.NULL;
         final MapleSquad sqd = getSquadByMap();
-        if (mobid == 8810018 && mapid == 240060200) { // Horntail
-            World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, "To the crew that have finally conquered Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!").getBytes());
-            for (MapleCharacter c : getCharactersThreadsafe()) {
-                c.finishAchievement(16);
-            }
-            FileoutputUtil.log(FileoutputUtil.Horntail_Log, MapDebug_Log());
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Horntail;
-            }
-            if (sqd != null) {
-                doShrine(true);
+        if (mobid == 8810018) { // Horntail
+            World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, "大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！").getBytes());
+            if (mapid == 240060200) {
+                for (MapleCharacter c : getCharactersThreadsafe()) {
+                    c.finishAchievement(16);
+                }
+                FileoutputUtil.log(FileoutputUtil.Horntail_Log, MapDebug_Log());
+                if (speedRunStart > 0) {
+                    type = SpeedRunType.Horntail;
+                }
+                if (sqd != null) {
+                    doShrine(true);
+                }
             }
         } else if (mobid == 8810122 && mapid == 240060201) { // Horntail
             World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, "To the crew that have finally conquered Chaos Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!").getBytes());
@@ -588,9 +590,12 @@ public final class MapleMap {
             if (sqd != null) {
                 doShrine(true);
             }
-        } else if (mobid == 8500002 && mapid == 220080001) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Papulatus;
+        } else if (mobid == 8500002) {
+            World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, "ビシャスプラントが討伐されました").getBytes());
+            if (mapid == 220080001) {
+                if (speedRunStart > 0) {
+                    type = SpeedRunType.Papulatus;
+                }
             }
         } else if (mobid == 9400266 && mapid == 802000111) {
             if (speedRunStart > 0) {
@@ -650,28 +655,33 @@ public final class MapleMap {
                 }
             }
             //INSERT HERE: 2095_tokyo
-        } else if (mobid == 8820001 && mapid == 270050100) {
-            World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, "Expedition who defeated Pink Bean with invicible passion! You are the true timeless hero!").getBytes());
-            for (MapleCharacter c : getCharactersThreadsafe()) {
-                c.finishAchievement(17);
+        } else if (mobid == 8820001) {
+            World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, "不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！").getBytes());
+            if (mapid == 270050100) {
+                for (MapleCharacter c : getCharactersThreadsafe()) {
+                    c.finishAchievement(17);
+                }
+                if (speedRunStart > 0) {
+                    type = SpeedRunType.Pink_Bean;
+                }
+                if (sqd != null) {
+                    doShrine(true);
+                }
+                FileoutputUtil.log(FileoutputUtil.Pinkbean_Log, MapDebug_Log());
             }
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Pink_Bean;
-            }
-            if (sqd != null) {
-                doShrine(true);
-            }
-            FileoutputUtil.log(FileoutputUtil.Pinkbean_Log, MapDebug_Log());
-        } else if (mobid == 8800002 && mapid == 280030000) {
-            for (MapleCharacter c : getCharactersThreadsafe()) {
-                c.finishAchievement(15);
-            }
-            FileoutputUtil.log(FileoutputUtil.Zakum_Log, MapDebug_Log());
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Zakum;
-            }
-            if (sqd != null) {
-                doShrine(true);
+        } else if (mobid == 8800002) {
+            World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, "ジャクムが討伐されました").getBytes());
+            if (mapid == 280030000) {
+                for (MapleCharacter c : getCharactersThreadsafe()) {
+                    c.finishAchievement(15);
+                }
+                FileoutputUtil.log(FileoutputUtil.Zakum_Log, MapDebug_Log());
+                if (speedRunStart > 0) {
+                    type = SpeedRunType.Zakum;
+                }
+                if (sqd != null) {
+                    doShrine(true);
+                }
             }
         } else if (mobid == 8800102 && mapid == 280030001) {
             for (MapleCharacter c : getCharactersThreadsafe()) {
