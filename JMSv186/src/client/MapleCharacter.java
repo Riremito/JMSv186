@@ -3138,8 +3138,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (level == 200) {
             finishAchievement(5);
         }
-        if (level == 200 && !isGM()) {
-            final StringBuilder sb = new StringBuilder("[Congratulation] ");
+        if (level == 200/* && !isGM()*/) {
+            final StringBuilder sb = new StringBuilder("[お祝い] ");
             final IItem medal = getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -46);
             if (medal != null) { // Medal
                 sb.append("<");
@@ -3147,7 +3147,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 sb.append("> ");
             }
             sb.append(getName());
-            sb.append(" has achieved Level 200. Let us Celebrate Maplers!");
+            sb.append("様がレベル200になりました。おめでとうございます。");
             World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, sb.toString()).getBytes());
         }
         maxhp = (short) Math.min(30000, Math.abs(maxhp));
@@ -4430,6 +4430,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         } else {
             client.getSession().write(MaplePacketCreator.serverNotice(type, message));
         }
+    }
+    
+    public void Debug(String text) {
+        client.getSession().write(MaplePacketCreator.serverNotice(5, text));
+    }
+    
+    public void Notify(String text) {
+        World.Broadcast.broadcastMessage((MaplePacketCreator.serverNotice(6, text)).getBytes());
     }
 
     public IMaplePlayerShop getPlayerShop() {

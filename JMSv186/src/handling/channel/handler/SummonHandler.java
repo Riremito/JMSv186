@@ -200,7 +200,7 @@ public class SummonHandler {
                     }
                 }
             }
-            if (chr.isGM() || toDamage < 120000) {
+            if (/*chr.isGM() || */toDamage < 120000) {
                 mob.damage(chr, toDamage, true);
                 chr.checkMonsterAggro(mob);
                 if (!mob.isAlive()) {

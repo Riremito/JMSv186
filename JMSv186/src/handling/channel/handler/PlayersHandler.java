@@ -96,9 +96,9 @@ public class PlayersHandler {
                     target.addFame(famechange);
                     target.updateSingleStat(MapleStat.FAME, target.getFame());
                 }
-                if (!chr.isGM()) {
+                //if (!chr.isGM()) {
                     chr.hasGivenFame(target);
-                }
+                //}
                 c.getSession().write(MaplePacketCreator.giveFameResponse(mode, target.getName(), target.getFame()));
                 target.getClient().getSession().write(MaplePacketCreator.receiveFame(mode, chr.getName()));
                 break;

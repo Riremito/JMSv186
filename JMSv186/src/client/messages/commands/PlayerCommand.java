@@ -336,6 +336,7 @@ public class PlayerCommand {
     public static class FM extends CommandExecute {
 
         public int execute(MapleClient c, String[] splitted) {
+            /*
             for (int i : GameConstants.blockedMaps) {
                 if (c.getPlayer().getMapId() == i) {
                     c.getPlayer().dropMessage(5, "You may not use this command here.");
@@ -346,7 +347,7 @@ public class PlayerCommand {
                 c.getPlayer().dropMessage(5, "You must be over level 10 to use this command.");
                 return 0;
             }
-            if (c.getPlayer().getMap().getSquadByMap() != null || c.getPlayer().getEventInstance() != null || c.getPlayer().getMap().getEMByMap() != null || c.getPlayer().getMapId() >= 990000000/* || FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit())*/) {
+            if (c.getPlayer().getMap().getSquadByMap() != null || c.getPlayer().getEventInstance() != null || c.getPlayer().getMap().getEMByMap() != null || c.getPlayer().getMapId() >= 990000000) {
                 c.getPlayer().dropMessage(5, "You may not use this command here.");
                 return 0;
             }
@@ -354,6 +355,7 @@ public class PlayerCommand {
                 c.getPlayer().dropMessage(5, "You may not use this command here.");
                 return 0;
             }
+            */
             c.getPlayer().saveLocation(SavedLocationType.FREE_MARKET, c.getPlayer().getMap().getReturnMap().getId());
             MapleMap map = c.getChannelServer().getMapFactory().getMap(910000000);
             c.getPlayer().changeMap(map, map.getPortal(0));

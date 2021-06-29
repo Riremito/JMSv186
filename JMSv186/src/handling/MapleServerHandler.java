@@ -60,6 +60,7 @@ import org.apache.mina.common.IoSession;
 import server.MTSStorage;
 import tools.FileoutputUtil;
 import tools.HexTool;
+import handling.world.World;
 
 public class MapleServerHandler extends IoHandlerAdapter implements MapleServerHandlerMBean {
 
@@ -497,6 +498,8 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 } else {
                     InterServerHandler.Loggedin(playerid, c);
                     System.out.println("[LogIn]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
+                    Map<Integer, Integer> connected = World.getConnected();
+                    c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
                 }
                 break;
             case ENTER_CASH_SHOP:

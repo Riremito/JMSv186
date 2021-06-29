@@ -44,7 +44,7 @@ public class ChatHandler {
                     chr.getMap().broadcastGMMessage(chr, MaplePacketCreator.getChatText(chr.getId(), text, c.getPlayer().isGM(), unk), true);
                 } else {
                     chr.getCheatTracker().checkMsg();
-                    chr.getMap().broadcastMessage(MaplePacketCreator.getChatText(chr.getId(), text, c.getPlayer().isGM(), unk), c.getPlayer().getPosition());
+                    chr.getMap().broadcastMessage(MaplePacketCreator.getChatText(chr.getId(), text, false/*c.getPlayer().isGM()*/, unk), c.getPlayer().getPosition());
                 }
                 if (text.equalsIgnoreCase(c.getChannelServer().getServerName() + " rocks")) {
                     chr.finishAchievement(11);

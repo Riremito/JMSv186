@@ -98,6 +98,7 @@ public class AdminCommand {
         return PlayerGMRank.ADMIN;
     }
 
+    /*
     public static class LowHP extends CommandExecute {
 
         @Override
@@ -358,6 +359,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class Fame extends CommandExecute {
 
@@ -384,6 +386,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class HealHere extends CommandExecute {
 
         @Override
@@ -400,7 +403,8 @@ public class AdminCommand {
             return 1;
         }
     }
-
+    */
+    
     public static class Invincible extends CommandExecute {
 
         @Override
@@ -838,6 +842,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class Letter extends CommandExecute {
 
         @Override
@@ -930,6 +935,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class ItemCheck extends CommandExecute {
 
@@ -952,6 +958,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class Vac extends CommandExecute {
 
         @Override
@@ -999,6 +1006,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class CheckPoint extends CommandExecute {
 
@@ -1074,6 +1082,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class StartEvent extends CommandExecute {
 
         @Override
@@ -1109,6 +1118,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class RemoveItem extends CommandExecute {
 
@@ -1130,6 +1140,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class LockItem extends CommandExecute {
 
         @Override
@@ -1160,7 +1171,9 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
+    /*
     public static class KillMap extends CommandExecute {
 
         @Override
@@ -1176,7 +1189,9 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
+    /*
     public static class SpeakMega extends CommandExecute {
 
         @Override
@@ -1242,6 +1257,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class Disease extends CommandExecute {
 
@@ -1308,6 +1324,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class SQL extends CommandExecute {
 
         @Override
@@ -1363,6 +1380,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class MesoEveryone extends CommandExecute {
 
@@ -1396,6 +1414,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class Monitor extends CommandExecute {
 
         @Override
@@ -1438,6 +1457,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class CharInfo extends CommandExecute {
 
@@ -1663,6 +1683,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class Threads extends CommandExecute {
 
         @Override
@@ -1700,6 +1721,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class FakeRelog extends CommandExecute {
 
@@ -1713,6 +1735,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class ToggleOffense extends CommandExecute {
 
         @Override
@@ -1785,6 +1808,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class ResetReactor extends CommandExecute {
 
@@ -2027,6 +2051,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class DCAll extends CommandExecute {
 
         @Override
@@ -2145,6 +2170,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class KillAll extends CommandExecute {
 
@@ -2397,6 +2423,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class MakePNPC extends CommandExecute {
 
         @Override
@@ -2472,6 +2499,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class Notice extends CommandExecute {
 
@@ -2565,6 +2593,7 @@ public class AdminCommand {
     public static class Y extends Yellow {
     }
 
+    /*
     public static class ReloadOps extends CommandExecute {
 
         @Override
@@ -2613,6 +2642,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class ReloadQuests extends CommandExecute {
 
@@ -2763,6 +2793,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class Shutdown extends CommandExecute {
 
         private static Thread t = null;
@@ -2791,6 +2822,7 @@ public class AdminCommand {
 
         }
     }
+    */
 
     public static class Spawn extends CommandExecute {
 
@@ -2843,6 +2875,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class Test extends CommandExecute {
 
         @Override
@@ -2909,6 +2942,7 @@ public class AdminCommand {
             return 1;
         }
     }
+    */
 
     public static class Warp extends CommandExecute {
 
@@ -2991,6 +3025,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class LOLCastle extends CommandExecute {
 
         @Override
@@ -3184,4 +3219,5 @@ public class AdminCommand {
             toTest = BuffTimer.getInstance();
         }
     }
+    */
 }

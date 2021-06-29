@@ -190,9 +190,9 @@ public class PlayerHandler {
         final MapleCharacter player = c.getPlayer().getMap().getCharacterById(objectid);
         c.getSession().write(MaplePacketCreator.enableActions());
         if (player != null && !player.isClone()) {
-            if (!player.isGM() || c.getPlayer().isGM()) {
+            //if (!player.isGM() || c.getPlayer().isGM()) {
                 c.getSession().write(MaplePacketCreator.charInfo(player, c.getPlayer().getId() == objectid));
-            }
+            //}
         }
     }
 
@@ -218,7 +218,7 @@ public class PlayerHandler {
             return;
         }
 
-        if (chr.isGM() && chr.isInvincible()) {
+        if (/*chr.isGM() && */chr.isInvincible()) {
             return;
         }
         final PlayerStats stats = chr.getStat();
@@ -242,7 +242,7 @@ public class PlayerHandler {
                     }
                     final MobSkill skill = MobSkillFactory.getMobSkill(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
                     if (skill != null && (damage == -1 || damage > 0)) {
-                        skill.applyEffect(chr, attacker, false);
+                        //skill.applyEffect(chr, attacker, false);
                     }
                     attacker.setMp(attacker.getMp() - attackInfo.getMpCon());
                 }
@@ -268,7 +268,7 @@ public class PlayerHandler {
                 if (level > 0) {
                     final MobSkill skill = MobSkillFactory.getMobSkill(slea.readShort(), level);
                     if (skill != null) {
-                        skill.applyEffect(chr, attacker, false);
+                        //skill.applyEffect(chr, attacker, false);
                     }
                 }
             }
@@ -498,7 +498,7 @@ public class PlayerHandler {
         }
         final MapleStatEffect effect = skill.getEffect(chr.getSkillLevel(GameConstants.getLinkedAranSkill(skillid)));
 
-        if (effect.getCooldown() > 0 && !chr.isGM()) {
+        if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
             if (chr.skillisCooling(skillid)) {
                 c.getSession().write(MaplePacketCreator.enableActions());
                 return;
@@ -541,7 +541,7 @@ public class PlayerHandler {
                         }
                 } else {
                     final int mountid = MapleStatEffect.parseMountInfo(c.getPlayer(), skill.getId());
-                    if (mountid != 0 && mountid != GameConstants.getMountItem(skill.getId()) && !c.getPlayer().isGM() && c.getPlayer().getBuffedValue(MapleBuffStat.MONSTER_RIDING) == null && c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/) == null) {
+                    if (mountid != 0 && mountid != GameConstants.getMountItem(skill.getId()) /*&& !c.getPlayer().isGM()*/ && c.getPlayer().getBuffedValue(MapleBuffStat.MONSTER_RIDING) == null && c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/) == null) {
                         if (!GameConstants.isMountItemAvailable(mountid, c.getPlayer().getJob())) {
                             c.getSession().write(MaplePacketCreator.enableActions());
                             return;
@@ -578,7 +578,7 @@ public class PlayerHandler {
             maxdamage *= effect.getDamage() / 100.0;
             attackCount = effect.getAttackCount();
 
-            if (effect.getCooldown() > 0 && !chr.isGM()) {
+            if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
                 if (chr.skillisCooling(attack.skill)) {
                     c.getSession().write(MaplePacketCreator.enableActions());
                     return;
@@ -676,7 +676,7 @@ public class PlayerHandler {
                 final int attackCount2 = attackCount;
                 final double maxdamage2 = maxdamage;
                 final MapleStatEffect eff2 = effect;
-                final AttackInfo attack2 = DamageParse.DivideAttack(attack, chr.isGM() ? 1 : 4);
+                final AttackInfo attack2 = DamageParse.DivideAttack(attack, /*chr.isGM() ? 1 : 4*/4);
                 CloneTimer.getInstance().schedule(new Runnable() {
 
                     public void run() {
@@ -719,7 +719,7 @@ public class PlayerHandler {
                     bulletCount = effect.getBulletCount();
                     break;
             }
-            if (effect.getCooldown() > 0 && !chr.isGM()) {
+            if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
                 if (chr.skillisCooling(attack.skill)) {
                     c.getSession().write(MaplePacketCreator.enableActions());
                     return;
@@ -815,7 +815,7 @@ public class PlayerHandler {
                 final int bulletCount2 = bulletCount;
                 final int visProjectile2 = visProjectile;
                 final int skillLevel2 = skillLevel;
-                final AttackInfo attack2 = DamageParse.DivideAttack(attack, chr.isGM() ? 1 : 4);
+                final AttackInfo attack2 = DamageParse.DivideAttack(attack, 4/*chr.isGM() ? 1 : 4*/);
                 CloneTimer.getInstance().schedule(new Runnable() {
 
                     public void run() {
@@ -842,7 +842,7 @@ public class PlayerHandler {
         if (effect == null) {
             return;
         }
-        if (effect.getCooldown() > 0 && !chr.isGM()) {
+        if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
             if (chr.skillisCooling(attack.skill)) {
                 c.getSession().write(MaplePacketCreator.enableActions());
                 return;

@@ -270,7 +270,7 @@ public class EventManager {
         if (squad.getStatus() == 0) {
             return; //we dont like cleared squads
         }
-        if (!squad.getLeader().isGM()) {
+        //if (!squad.getLeader().isGM()) {
             if (squad.getMembers().size() < 3) { //less than 3
                 squad.getLeader().dropMessage(5, "The squad has less than 3 people participating.");
                 return;
@@ -285,7 +285,7 @@ public class EventManager {
                     return;
                 }
             }
-        }
+        //}
         try {
             EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", squad.getLeaderName()));
             eim.registerSquad(squad, map);
