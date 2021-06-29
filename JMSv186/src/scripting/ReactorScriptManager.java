@@ -50,6 +50,8 @@ public class ReactorScriptManager extends AbstractScriptManager {
     public final void act(final MapleClient c, final MapleReactor reactor) {
         try {
             final Invocable iv = getInvocable("reactor/" + reactor.getReactorId() + ".js", c);
+            
+            c.getPlayer().Debug("Reactor Script = " + reactor.getReactorId() + ", MapID = " + c.getPlayer().getMapId());
 
             if (iv == null) {
                 return;

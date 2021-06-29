@@ -52,6 +52,9 @@ public class NPCScriptManager extends AbstractScriptManager {
                         return;
                     }
                 }
+                else{
+                    c.getPlayer().Debug("NPC Script = " + npc + ", MapID = " + c.getPlayer().getMapId());
+                }
                 final ScriptEngine scriptengine = (ScriptEngine) iv;
                 final NPCConversationManager cm = new NPCConversationManager(c, npc, -1, (byte) -1, iv);
                 cms.put(c, cm);

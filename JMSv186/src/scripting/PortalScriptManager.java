@@ -88,6 +88,8 @@ public class PortalScriptManager {
 
     public final void executePortalScript(final MaplePortal portal, final MapleClient c) {
         final PortalScript script = getPortalScript(portal.getScriptName());
+        
+        c.getPlayer().Debug("Portal Script = " + portal.getScriptName() + ", MapID = " + c.getPlayer().getMapId());
 
         if (script != null) {
             try {
