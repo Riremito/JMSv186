@@ -934,23 +934,14 @@ public class MapleStatEffect implements Serializable {
 
     public final boolean applyReturnScroll(final MapleCharacter applyto) {
         if (moveTo != -1) {
-            if (applyto.getMap().getReturnMapId() != applyto.getMapId()) {
-                MapleMap target;
-                if (moveTo == 999999999) {
-                    target = applyto.getMap().getReturnMap();
-                } else {
-                    target = ChannelServer.getInstance(applyto.getClient().getChannel()).getMapFactory().getMap(moveTo);
-                    if (target.getId() / 10000000 != 60 && applyto.getMapId() / 10000000 != 61) {
-                        if (target.getId() / 10000000 != 21 && applyto.getMapId() / 10000000 != 20) {
-                            if (target.getId() / 10000000 != applyto.getMapId() / 10000000) {
-                                return false;
-                            }
-                        }
-                    }
-                }
-                applyto.changeMap(target, target.getPortal(0));
-                return true;
+            MapleMap target;
+            if (moveTo == 999999999) {
+                target = applyto.getMap().getReturnMap();
+            } else {
+                target = ChannelServer.getInstance(applyto.getClient().getChannel()).getMapFactory().getMap(moveTo);
             }
+            applyto.changeMap(target, target.getPortal(0));
+            return true;
         }
         return false;
     }

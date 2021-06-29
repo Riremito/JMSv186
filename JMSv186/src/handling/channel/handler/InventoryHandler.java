@@ -262,7 +262,7 @@ public class InventoryHandler {
     }
 
     public static final void UseReturnScroll(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (!chr.isAlive() || chr.getMapId() == 749040100) {
+        if (!chr.isAlive()) {
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }
@@ -275,12 +275,8 @@ public class InventoryHandler {
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }
-        if (!FieldLimitType.PotionUse.check(chr.getMap().getFieldLimit())) {
-            if (MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyReturnScroll(chr)) {
-                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
-            } else {
-                c.getSession().write(MaplePacketCreator.enableActions());
-            }
+        if (MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyReturnScroll(chr)) {
+            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
         } else {
             c.getSession().write(MaplePacketCreator.enableActions());
         }
