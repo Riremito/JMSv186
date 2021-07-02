@@ -73,8 +73,8 @@ public class ItemMakerHandler {
                     c.getPlayer().gainMeso(-gem.getCost(), false);
                     MapleInventoryManipulator.addById(c, randGemGiven, (byte) (taken == randGemGiven ? 9 : 1)); // Gem is always 1
 
-                    c.getSession().write(MaplePacketCreator.ItemMaker_Success());
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMaker_Success_3rdParty(c.getPlayer().getId()), false);
+                    c.getSession().write(MaplePacketCreator.ItemMakerResult(true));
+                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMakerResultTo(c.getPlayer(), true), false);
                 } else if (GameConstants.isOtherGem(toCreate)) {
                     //non-gems that are gems
                     //stim and numEnchanter always 0
@@ -102,8 +102,8 @@ public class ItemMakerHandler {
                         MapleInventoryManipulator.addById(c, toCreate, (byte) 1); // Gem is always 1
                     }
 
-                    c.getSession().write(MaplePacketCreator.ItemMaker_Success());
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMaker_Success_3rdParty(c.getPlayer().getId()), false);
+                    c.getSession().write(MaplePacketCreator.ItemMakerResult(true));
+                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMakerResultTo(c.getPlayer(), true), false);
                 } else {
                     final boolean stimulator = slea.readByte() > 0;
                     final int numEnchanter = slea.readInt();
@@ -149,8 +149,8 @@ public class ItemMakerHandler {
                         }
                     }
                     MapleInventoryManipulator.addbyItem(c, toGive);
-                    c.getSession().write(MaplePacketCreator.ItemMaker_Success());
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMaker_Success_3rdParty(c.getPlayer().getId()), false);
+                    c.getSession().write(MaplePacketCreator.ItemMakerResult(true));
+                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMakerResultTo(c.getPlayer(), true), false);
                 }
                 break;
             }
@@ -160,8 +160,8 @@ public class ItemMakerHandler {
                     MapleInventoryManipulator.addById(c, getCreateCrystal(etc), (short) 1);
                     MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, etc, 100, false, false);
 
-                    c.getSession().write(MaplePacketCreator.ItemMaker_Success());
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMaker_Success_3rdParty(c.getPlayer().getId()), false);
+                    c.getSession().write(MaplePacketCreator.ItemMakerResult(true));
+                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMakerResultTo(c.getPlayer(), true), false);
                 }
                 break;
             }
@@ -181,8 +181,8 @@ public class ItemMakerHandler {
                     MapleInventoryManipulator.addById(c, toGive[0], (byte) toGive[1]);
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.EQUIP, slot, (byte) 1, false);
                 }
-                c.getSession().write(MaplePacketCreator.ItemMaker_Success());
-                c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMaker_Success_3rdParty(c.getPlayer().getId()), false);
+                c.getSession().write(MaplePacketCreator.ItemMakerResult(true));
+                c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMakerResultTo(c.getPlayer(), true), false);
                 break;
             }
         }

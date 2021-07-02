@@ -1386,7 +1386,8 @@ public class InventoryHandler {
                     if (eq.getState() >= 5) {
                         eq.renewPotential();
                         c.getSession().write(MaplePacketCreator.scrolledItem(toUse, item, false, true));
-                        //c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.getPotentialEffect(c.getPlayer().getId(), eq.getItemId()));
+                        c.getSession().write(MaplePacketCreator.getPotentialEffect(c.getPlayer().getId(), eq.getItemId()));
+                        c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), ScrollResult.SUCCESS, false), false);
                         c.getPlayer().forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);
                         MapleInventoryManipulator.addById(c, 2430112, (short) 1);
                         used = true;

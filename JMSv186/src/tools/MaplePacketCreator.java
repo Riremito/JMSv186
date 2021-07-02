@@ -1411,14 +1411,6 @@ public class MaplePacketCreator {
         mplew.writeShort(SendPacketOpcode.SHOW_POTENTIAL_EFFECT.getValue());
         mplew.writeInt(chr);
         mplew.writeInt(itemid);
-        mplew.writeInt(0);
-        mplew.writeInt(0);
-        mplew.writeInt(0);
-        mplew.writeInt(0);
-        mplew.writeInt(0);
-        mplew.writeInt(0);
-        mplew.writeInt(0);
-        mplew.writeInt(0);
         return mplew.getPacket();
     }
 
@@ -1432,24 +1424,20 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket ItemMaker_Success() {
+    public static final MaplePacket ItemMakerResult(boolean is_success) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-//D6 00 00 00 00 00 01 00 00 00 00 DC DD 40 00 01 00 00 00 01 00 00 00 8A 1C 3D 00 01 00 00 00 00 00 00 00 00 B0 AD 01 00
         mplew.writeShort(SendPacketOpcode.SHOW_ITEM_GAIN_INCHAT.getValue());
-        mplew.write(0x12);
-        mplew.writeZeroBytes(4);
-
+        mplew.write(0x11);
+        mplew.writeInt(is_success ? 0 : 1);
         return mplew.getPacket();
     }
 
-    public static final MaplePacket ItemMaker_Success_3rdParty(final int from_playerid) {
+    public static final MaplePacket ItemMakerResultTo(MapleCharacter chr, boolean is_success) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
         mplew.writeShort(SendPacketOpcode.SHOW_FOREIGN_EFFECT.getValue());
-        mplew.writeInt(from_playerid);
-        mplew.write(0x12);
-        mplew.writeZeroBytes(4);
-
+        mplew.writeInt(chr.getId());
+        mplew.write(0x11);
+        mplew.writeInt(is_success ? 0 : 1);
         return mplew.getPacket();
     }
 

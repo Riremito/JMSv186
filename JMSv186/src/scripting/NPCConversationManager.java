@@ -58,6 +58,7 @@ import server.MapleItemInformationProvider;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
 import database.DatabaseConnection;
+import handling.MaplePacket;
 import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import handling.world.World;
@@ -107,6 +108,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     
     public void BroadcastPacket(byte[] packet) {
         World.Broadcast.broadcastMessage(packet);
+    }
+    
+    public void DebugPacket(MaplePacket packet) {
+        c.getSession().write(packet);
     }
     
     public MaplePacketLittleEndianWriter getOutPacket(){
