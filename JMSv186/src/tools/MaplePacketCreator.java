@@ -2087,7 +2087,8 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(0xF);
+        //mplew.write(0xF);
+        mplew.write(0xE);
         mplew.write(number);
         mplew.writeInt(meso);
 
@@ -2098,7 +2099,8 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(0xE);
+        //mplew.write(0xE);
+        mplew.write(0xD);
         mplew.write(number);
         PacketHelper.addItemInfo(mplew, item, false, false, true);
 
@@ -2133,7 +2135,8 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(0x10); //or 7? what
+        //mplew.write(0x10); //or 7? what
+        mplew.write(0x0F);
 
         return mplew.getPacket();
     }

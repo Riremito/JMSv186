@@ -52,21 +52,27 @@ public class PlayerInteractionHandler {
             CHAT = 0x06,
             EXIT = 0x0A,
             OPEN = 0x0B,
-            SET_ITEMS = 0x0E,
-            SET_MESO = 0x0F,
-            CONFIRM_TRADE = 0x10,
+            //SET_ITEMS = 0x0E,
+            SET_ITEMS = 0x0D,
+            SET_MESO = 0x0E,
+            //SET_MESO = 0x0F,
+            //CONFIRM_TRADE = 0x10,
+            CONFIRM_TRADE = 0x0F,
             //TRADE_SOMETHING = 0x13,
             //PLAYER_SHOP_ADD_ITEM = 0x14,
             PLAYER_SHOP_ADD_ITEM = 0x13,
             BUY_ITEM_PLAYER_SHOP = 0x15,
             MERCHANT_EXIT = 0x1C, //is this also updated
-            ADD_ITEM = 0x1F,
+            //ADD_ITEM = 0x1F,
+            ADD_ITEM = 0x1E,
             BUY_ITEM_STORE = 0x20,
             BUY_ITEM_HIREDMERCHANT = 0x22,
             REMOVE_ITEM = 0x24,
             MAINTANCE_OFF = 0x25, //This is mispelled...
-            MAINTANCE_ORGANISE = 0x26,
-            CLOSE_MERCHANT = 0x27,
+            //MAINTANCE_ORGANISE = 0x26,
+            
+            //CLOSE_MERCHANT = 0x27,
+            CLOSE_MERCHANT = 0x26,
             ADMIN_STORE_NAMECHANGE = 0x2B,
             VIEW_MERCHANT_VISITOR = 0x2C,
             VIEW_MERCHANT_BLACKLIST = 0x2D,
@@ -99,10 +105,12 @@ public class PlayerInteractionHandler {
                 if (createType == 3) { // trade
                     MapleTrade.startTrade(chr);
                 } else if (createType == 1 || createType == 2 || createType == 4 || createType == 5) { // shop
+                    /*
                     if (createType == 4 && !chr.isAdmin()) { //not hired merch... blocked playershop
                         c.getSession().write(MaplePacketCreator.enableActions());
                         return;
                     }
+                    */
                     if (chr.getMap().getMapObjectsInRange(chr.getPosition(), 20000, Arrays.asList(MapleMapObjectType.SHOP, MapleMapObjectType.HIRED_MERCHANT)).size() != 0) {
                         chr.dropMessage(1, "You may not establish a store here.");
                         c.getSession().write(MaplePacketCreator.enableActions());
@@ -447,6 +455,7 @@ public class PlayerInteractionHandler {
                 }
                 break;
             }
+            /*
             case MAINTANCE_ORGANISE: {
                 final IMaplePlayerShop imps = chr.getPlayerShop();
                 if (imps != null && imps.isOwner(chr) && !(imps instanceof MapleMiniGame)) {
@@ -465,6 +474,7 @@ public class PlayerInteractionHandler {
                 }
                 break;
             }
+            */
             case CLOSE_MERCHANT: {
                 final IMaplePlayerShop merchant = chr.getPlayerShop();
                 if (merchant != null && merchant.getShopType() == 1 && merchant.isOwner(chr)) {
