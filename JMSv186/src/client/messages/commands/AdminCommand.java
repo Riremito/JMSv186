@@ -359,8 +359,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class Fame extends CommandExecute {
 
         @Override
@@ -403,8 +402,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-    
+     */
     public static class Invincible extends CommandExecute {
 
         @Override
@@ -935,8 +933,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class ItemCheck extends CommandExecute {
 
         @Override
@@ -1006,8 +1003,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class CheckPoint extends CommandExecute {
 
         @Override
@@ -1118,8 +1114,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class RemoveItem extends CommandExecute {
 
         @Override
@@ -1171,9 +1166,9 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
+     */
 
-    /*
+ /*
     public static class KillMap extends CommandExecute {
 
         @Override
@@ -1189,9 +1184,9 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
+     */
 
-    /*
+ /*
     public static class SpeakMega extends CommandExecute {
 
         @Override
@@ -1257,8 +1252,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class Disease extends CommandExecute {
 
         @Override
@@ -1302,6 +1296,9 @@ public class AdminCommand {
                 return 0;
             }
             dis = MapleDisease.getBySkill(type);
+            if (dis == null) {
+                return 0;
+            }
             if (splitted.length == 4) {
                 MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[2]);
                 if (victim == null) {
@@ -1380,8 +1377,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class MesoEveryone extends CommandExecute {
 
         @Override
@@ -1457,8 +1453,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class CharInfo extends CommandExecute {
 
         @Override
@@ -1721,8 +1716,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class FakeRelog extends CommandExecute {
 
         @Override
@@ -1808,8 +1802,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class ResetReactor extends CommandExecute {
 
         @Override
@@ -2170,8 +2163,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class KillAll extends CommandExecute {
 
         @Override
@@ -2499,8 +2491,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class Notice extends CommandExecute {
 
         private static int getNoticeType(String typestring) {
@@ -2642,8 +2633,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class ReloadQuests extends CommandExecute {
 
         @Override
@@ -2822,8 +2812,7 @@ public class AdminCommand {
 
         }
     }
-    */
-
+     */
     public static class Spawn extends CommandExecute {
 
         @Override
@@ -2942,8 +2931,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
-
+     */
     public static class Warp extends CommandExecute {
 
         @Override
@@ -3219,5 +3207,5 @@ public class AdminCommand {
             toTest = BuffTimer.getInstance();
         }
     }
-    */
+     */
 }

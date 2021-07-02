@@ -93,7 +93,9 @@ public class InventoryHandler {
         final short src = slea.readShort();                                            //01 00
         final short dst = slea.readShort();                                            //00 00
         final short quantity = slea.readShort();                                       //53 01
-
+        
+        c.getPlayer().Debug("ItemMove = " + src + " -> " + dst + " (" + quantity + ")");
+        
         if (src < 0 && dst > 0) {
             MapleInventoryManipulator.unequip(c, src, dst);
         } else if (dst < 0) {
@@ -1574,7 +1576,7 @@ public class InventoryHandler {
                 }
                 break;
             }
-            */
+             */
             case 5071000:
             case 5073000:
             case 5074000:
@@ -1584,26 +1586,39 @@ public class InventoryHandler {
                     break;
                 }
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
-                    final String message = slea.readMapleAsciiString();
+                    String message = "";
+                    final String user_message = slea.readMapleAsciiString();
 
-                    if (message.length() > 65) {
+                    if (user_message.length() > 65) {
                         break;
                     }
-                    final StringBuilder sb = new StringBuilder();
-                    addMedalString(c.getPlayer(), sb);
-                    sb.append(c.getPlayer().getName());
-                    sb.append(" : ");
-                    sb.append(message);
+
+                    final IItem medal = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -21);
+
+                    if (medal != null) { // Medal
+                        String medal_name = MapleItemInformationProvider.getInstance().getName(medal.getItemId());
+                        int padding = medal_name.indexOf("の勲章");
+                        if (padding > 0) {
+                            medal_name = medal_name.substring(0, padding);
+                        }
+                        message += "<" + medal_name + "> ";
+                        System.out.println("Medal = " + medal.getItemId());
+                    } else {
+                        System.out.println("Medal = Null");
+                    }
+
+                    message += (c.getPlayer().getName());
+                    message += " : " + user_message;
 
                     final boolean ear = slea.readByte() != 0;
                     int type = 3;
-                    if (itemId == 5073000){
+                    if (itemId == 5073000) {
                         type = 12;
                     }
-                    if(itemId == 5074000){
+                    if (itemId == 5074000) {
                         type = 13;
                     }
-                    World.Broadcast.broadcastSmega(MaplePacketCreator.serverNotice(type, c.getChannel(), sb.toString(), ear).getBytes());
+                    World.Broadcast.broadcastSmega(MaplePacketCreator.serverNotice(type, c.getChannel(), message, ear).getBytes());
                     used = true;
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
@@ -1622,7 +1637,7 @@ public class InventoryHandler {
                         break;
                     }
                     final StringBuilder sb = new StringBuilder();
-                    addMedalString(c.getPlayer(), sb);
+                    //addMedalString(c.getPlayer(), sb);
                     sb.append(c.getPlayer().getName());
                     sb.append(" : ");
                     sb.append(message);
@@ -1909,7 +1924,7 @@ public class InventoryHandler {
             c.getPlayer().dropMessage(5, "Auto changing channels. Please wait.");
             c.getPlayer().changeChannel(c.getChannel() == ChannelServer.getChannelCount() ? 1 : (c.getChannel() + 1));
         }
-        */
+         */
     }
 
     public static final void Pickup_Player(final SeekableLittleEndianAccessor slea, MapleClient c, final MapleCharacter chr) {
@@ -2184,7 +2199,7 @@ public class InventoryHandler {
     }
 
     private static final void addMedalString(final MapleCharacter c, final StringBuilder sb) {
-        final IItem medal = c.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -46);
+        final IItem medal = c.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -21);
         if (medal != null) { // Medal
             sb.append("<");
             sb.append(MapleItemInformationProvider.getInstance().getName(medal.getItemId()));

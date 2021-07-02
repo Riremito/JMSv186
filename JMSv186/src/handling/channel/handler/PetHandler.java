@@ -32,6 +32,8 @@ import constants.GameConstants;
 import client.inventory.PetCommand;
 import client.inventory.PetDataFactory;
 import handling.world.MaplePartyCharacter;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.concurrent.locks.Lock;
 import server.Randomizer;
@@ -83,7 +85,13 @@ public class PetHandler {
         }
     }
 
-    public static final void PetChat(final int petid, final short command, final String text, MapleCharacter chr) {
+    public static final void PetChat(/*final int petid, final short command, final String text, */final SeekableLittleEndianAccessor slea, MapleCharacter chr) throws UnsupportedEncodingException {
+        int petid = slea.readInt();
+        short command = slea.readShort();
+        short text_length = slea.readShort();
+        
+        String text = new String(slea.read(text_length), "SHIFT_JIS");
+                
         if (chr == null || chr.getMap() == null || petid/*chr.getPetIndex(petid)*/ < 0) {
             return;
         }

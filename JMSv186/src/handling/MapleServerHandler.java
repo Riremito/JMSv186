@@ -402,12 +402,20 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                     if (Log_Packets) {
                         log(slea, recv, c, session);
                     }
-                    
+
                     /*
                     final StringBuilder sb = new StringBuilder("Received data : ");
                     sb.append(recv.toString()).append("\n").append(HexTool.toString((byte[]) message)).append("\n").append(HexTool.toStringFromAscii((byte[]) message));
                     System.out.println(sb.toString());
-                    */
+                     */
+                    if (recv != RecvPacketOpcode.MOVE_PLAYER
+                            && recv != RecvPacketOpcode.HEAL_OVER_TIME
+                            && recv != RecvPacketOpcode.NPC_ACTION) {
+                        if (c.getPlayer() != null && "リレミト".equals(c.getPlayer().getName())) {
+                            System.out.println("[Packet] " + Integer.toHexString(header_num));
+                            System.out.println(slea.toString());
+                        }
+                    }
                     handlePacket(recv, slea, c, cs);
                     //Log after the packet is handle. You'll see why =]
                     FileWriter fw = isLoggedIP(session);
@@ -428,6 +436,11 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                     }
                     return;
                 }
+            }
+            final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+            if (c.getPlayer() != null && "リレミト".equals(c.getPlayer().getName())) {
+                System.out.println("[Unknown Packet] " + Integer.toHexString(header_num));
+                System.out.println(slea.toString());
             }
         } catch (Exception e) {
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
@@ -452,13 +465,14 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
     }
 
     public static final void handlePacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor slea, final MapleClient c, final boolean cs) throws Exception {
-        //System.out.println(String.format("[Packet] %04X", (short)header.getValue()));
+        //System.out.println(String.format("[Packet] %04X", (short)header.getValue()));[
+
         switch (header) {
             /*
             case PONG:
                 c.pongReceived();
                 break;
-            */
+             */
             case LOGIN_PASSWORD:
                 CharLoginHandler.login(slea, c);
                 break;
@@ -815,7 +829,12 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 if (slea.available() < 12) {
                     break;
                 }
-                PetHandler.PetChat((int) slea.readLong(), slea.readShort(), slea.readMapleAsciiString(), c.getPlayer());
+                // slea.readShort()
+                // nullついてない文字数
+                // slea.readShort()
+                // slea.readMapleAsciiString()
+                //PetHandler.PetChat((int) slea.readLong(), slea.readShort(), slea.readMapleAsciiString(), c.getPlayer());
+                PetHandler.PetChat(slea, c.getPlayer());
                 break;
             case PET_COMMAND:
                 PetHandler.PetCommand(slea, c, c.getPlayer());
