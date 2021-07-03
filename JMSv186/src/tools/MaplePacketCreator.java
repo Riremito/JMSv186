@@ -423,11 +423,10 @@ public class MaplePacketCreator {
                 //with Ruby Exp Coupon being in yellow and with item info
                 break;
         }
-        
+
         //mplew.writeInt(0);
         //mplew.writeInt(0);
         //mplew.writeInt(0);
-        
         return mplew.getPacket();
     }
 
@@ -1053,9 +1052,8 @@ public class MaplePacketCreator {
                     mplew.write(0x07);
                     mplew.write(oned.attack.size());
                     for (Pair<Integer, Boolean> eachd : oned.attack) {
-                        mplew.write(0);
-                        // highest bit set = crit
-                        mplew.writeInt(eachd.left); //m.e. is never crit
+                        mplew.write(eachd.right ? 1 : 0);
+                        mplew.writeInt(eachd.left);
                     }
                 }
             }
@@ -1065,13 +1063,8 @@ public class MaplePacketCreator {
                     mplew.writeInt(oned.objectid);
                     mplew.write(0x07);
                     for (Pair<Integer, Boolean> eachd : oned.attack) {
-                        mplew.write(0);
-                        // highest bit set = crit
-                        if (eachd.right) {
-                            mplew.writeInt(eachd.left.intValue() + 0x80000000);
-                        } else {
-                            mplew.writeInt(eachd.left.intValue());
-                        }
+                        mplew.write(eachd.right ? 1 : 0);
+                        mplew.writeInt(eachd.left.intValue());
                     }
                 }
             }
@@ -1107,13 +1100,8 @@ public class MaplePacketCreator {
                 mplew.writeInt(oned.objectid);
                 mplew.write(0x07);
                 for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    mplew.write(0);
-                    // highest bit set = crit
-                    if (eachd.right) {
-                        mplew.writeInt(eachd.left.intValue() + 0x80000000);
-                    } else {
-                        mplew.writeInt(eachd.left.intValue());
-                    }
+                    mplew.write(eachd.right ? 1 : 0);
+                    mplew.writeInt(eachd.left.intValue());
                 }
             }
         }
@@ -1144,13 +1132,8 @@ public class MaplePacketCreator {
                 mplew.writeInt(oned.objectid);
                 mplew.write(-1);
                 for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    mplew.write(0);
-                    // highest bit set = crit
-                    if (eachd.right) {
-                        mplew.writeInt(eachd.left.intValue() + 0x80000000);
-                    } else {
-                        mplew.writeInt(eachd.left.intValue());
-                    }
+                    mplew.write(eachd.right ? 1 : 0);
+                    mplew.writeInt(eachd.left.intValue());
                 }
             }
         }
@@ -1398,7 +1381,7 @@ public class MaplePacketCreator {
                 break;
         }
         mplew.write(0); //? pam's song?
-        
+
         // テスト
         mplew.writeInt(0);
         return mplew.getPacket();
