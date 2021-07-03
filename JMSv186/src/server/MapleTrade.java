@@ -280,8 +280,8 @@ public class MapleTrade {
             // We don't need to check for map here as the user is found via MapleMap.getCharacterById()
             c2.getClient().getSession().write(MaplePacketCreator.getTradePartnerAdd(c1));
             c1.getClient().getSession().write(MaplePacketCreator.getTradeStart(c1.getClient(), c1.getTrade(), (byte) 1));
-            c1.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
-            c2.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
+            //c1.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
+           //c2.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
         } else {
             c1.getClient().getSession().write(MaplePacketCreator.serverNotice(5, "The other player has already closed the trade"));
         }

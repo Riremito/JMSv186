@@ -52,32 +52,35 @@ public class PlayerInteractionHandler {
             CHAT = 0x06,
             EXIT = 0x0A,
             OPEN = 0x0B,
-            //SET_ITEMS = 0x0E,
-            SET_ITEMS = 0x0D,
-            SET_MESO = 0x0E,
-            //SET_MESO = 0x0F,
-            //CONFIRM_TRADE = 0x10,
-            CONFIRM_TRADE = 0x0F,
+            SET_ITEMS = 0x0D, // 0x0E
+            SET_MESO = 0x0E, // 0x0F
+            CONFIRM_TRADE = 0x0F, // 0x10
             //TRADE_SOMETHING = 0x13,
             //PLAYER_SHOP_ADD_ITEM = 0x14,
             PLAYER_SHOP_ADD_ITEM = 0x13,
-            BUY_ITEM_PLAYER_SHOP = 0x15,
-            MERCHANT_EXIT = 0x1C, //is this also updated
+            //BUY_ITEM_PLAYER_SHOP = 0x15,
+            BUY_ITEM_PLAYER_SHOP = 0x14, // 0x15
+            //MERCHANT_EXIT = 0x1C, //is this also updated
+            MERCHANT_EXIT = 0x1B, // 0x1C
             //ADD_ITEM = 0x1F,
             ADD_ITEM = 0x1E,
             BUY_ITEM_STORE = 0x20,
-            BUY_ITEM_HIREDMERCHANT = 0x22,
-            REMOVE_ITEM = 0x24,
-            MAINTANCE_OFF = 0x25, //This is mispelled...
-            //MAINTANCE_ORGANISE = 0x26,
+            //BUY_ITEM_HIREDMERCHANT = 0x22,
+            BUY_ITEM_HIREDMERCHANT = 0x1F, // 0x22
+            //REMOVE_ITEM = 0x24,
+            REMOVE_ITEM = 0x23, // 0x24
+            PLAYER_SHOP_REMOVE_ITEM = 0x19, // 0x24
+            ///MAINTANCE_OFF = 0x25, //This is mispelled...
+            HIREDMERCHANT_EXIT = 0x24, // 0x25
+            HIREDMERCHANT_ORGANISE = 0x25, // 0x26
             
             //CLOSE_MERCHANT = 0x27,
-            CLOSE_MERCHANT = 0x26,
-            ADMIN_STORE_NAMECHANGE = 0x2B,
-            VIEW_MERCHANT_VISITOR = 0x2C,
-            VIEW_MERCHANT_BLACKLIST = 0x2D,
-            MERCHANT_BLACKLIST_ADD = 0x2E,
-            MERCHANT_BLACKLIST_REMOVE = 0x2F,
+            HIREDMERCHANT_ORGANISE_CLOSE = 0x26,
+            ADMIN_STORE_NAMECHANGE = 0x2A, // 0x2B
+            VIEW_MERCHANT_VISITOR = 0x2B, // 0x2C
+            VIEW_MERCHANT_BLACKLIST = 0x2C, // 0x2D
+            MERCHANT_BLACKLIST_ADD = 0x2D, // 0x2E
+            MERCHANT_BLACKLIST_REMOVE = 0x2E, // 0x2F
             REQUEST_TIE = 0x30,
             ANSWER_TIE = 0x31,
             GIVE_UP = 0x32,
@@ -283,9 +286,10 @@ public class PlayerInteractionHandler {
                             shop.setAvailable(true);
                             shop.update();
                         }
-                    } else {
+                    }/* else {
                         c.getSession().close();
                     }
+                    */
                 }
 
                 break;
@@ -417,6 +421,7 @@ public class PlayerInteractionHandler {
                 shop.broadcastToVisitors(PlayerShopPacket.shopItemUpdate(shop));
                 break;
             }
+            case PLAYER_SHOP_REMOVE_ITEM:
             case REMOVE_ITEM: {
                 int slot = slea.readShort(); //0
                 final IMaplePlayerShop shop = chr.getPlayerShop();
@@ -447,16 +452,15 @@ public class PlayerInteractionHandler {
                 c.getSession().write(PlayerShopPacket.shopItemUpdate(shop));
                 break;
             }
-            case MAINTANCE_OFF: {
-                final IMaplePlayerShop shop = chr.getPlayerShop();
-                if (shop != null && shop instanceof HiredMerchant && shop.isOwner(chr)) {
-                    shop.setOpen(true);
+            case HIREDMERCHANT_EXIT: {
+                final IMaplePlayerShop merchant = chr.getPlayerShop();
+                if (merchant != null && merchant.getShopType() == 1 && merchant.isOwner(chr)) {
+                    merchant.closeShop(true, true);
                     chr.setPlayerShop(null);
                 }
                 break;
             }
-            /*
-            case MAINTANCE_ORGANISE: {
+            case HIREDMERCHANT_ORGANISE: {
                 final IMaplePlayerShop imps = chr.getPlayerShop();
                 if (imps != null && imps.isOwner(chr) && !(imps instanceof MapleMiniGame)) {
                     for (int i = 0; i < imps.getItems().size(); i++) {
@@ -474,14 +478,13 @@ public class PlayerInteractionHandler {
                 }
                 break;
             }
-            */
-            case CLOSE_MERCHANT: {
+            case HIREDMERCHANT_ORGANISE_CLOSE: {
                 final IMaplePlayerShop merchant = chr.getPlayerShop();
                 if (merchant != null && merchant.getShopType() == 1 && merchant.isOwner(chr)) {
                     c.getSession().write(MaplePacketCreator.serverNotice(1, "Please visit Fredrick for your items."));
                     c.getSession().write(MaplePacketCreator.enableActions());
-                    merchant.closeShop(true, true);
-                    chr.setPlayerShop(null);
+                    //merchant.closeShop(true, true);
+                    //chr.setPlayerShop(null);
                 }
                 break;
             }

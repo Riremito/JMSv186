@@ -52,7 +52,7 @@ public class CharLoginHandler {
         return false;
     }
 
-    public static final void login(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static final boolean login(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final String login = slea.readMapleAsciiString();
         final String pwd = slea.readMapleAsciiString();
 
@@ -88,7 +88,9 @@ public class CharLoginHandler {
         } else {
             c.loginAttempt = 0;
             LoginWorker.registerClient(c);
+            return true;
         }
+        return false;
     }
 
     public static final void ServerListRequest(final MapleClient c) {
@@ -268,17 +270,18 @@ public class CharLoginHandler {
         c.getSession().write(LoginPacket.deleteCharResponse(Character_ID, state));
     }
 
-    public static final void Character_WithSecondPassword(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static final boolean Character_WithSecondPassword(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final int charId = slea.readInt();
 
         if (loginFailCount(c) || !c.login_Auth(charId)) { // This should not happen unless player is hacking
             c.getSession().close();
-            return;
+            return false;
         }
         if (c.getIdleTask() != null) {
             c.getIdleTask().cancel(true);
         }
         c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
         c.getSession().write(MaplePacketCreator.getServerIP(Integer.parseInt(ChannelServer.getInstance(c.getChannel()).getIP().split(":")[1]), charId));
+        return true;
     }
 }

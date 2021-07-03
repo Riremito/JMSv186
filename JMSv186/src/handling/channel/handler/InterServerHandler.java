@@ -50,6 +50,15 @@ import tools.packet.FamilyPacket;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class InterServerHandler {
+    public static boolean login_test = false;
+    
+    public static void SetLogin(boolean login_state){
+        login_test = login_state;
+    }
+    
+    public static boolean GetLogin(){
+        return login_test;
+    }
 
     public static final void EnterCS(final MapleClient c, final MapleCharacter chr, final boolean mts) {
         if (!chr.isAlive() || chr.getEventInstance() != null || c.getChannelServer() == null) {

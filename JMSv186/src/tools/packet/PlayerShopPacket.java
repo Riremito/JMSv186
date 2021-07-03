@@ -87,7 +87,7 @@ public class PlayerShopPacket {
         mplew.write(4);
         mplew.writeShort(merch.getVisitorSlot(chr));
         mplew.writeInt(merch.getItemId());
-        mplew.writeMapleAsciiString("Hired Merchant");
+        mplew.writeMapleAsciiString("雇用商人");
 
         for (final Pair<Byte, MapleCharacter> storechr : merch.getVisitors()) {
             mplew.write(storechr.left);
@@ -221,7 +221,9 @@ public class PlayerShopPacket {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(0x17);
+        
+        mplew.write(0x16); // 0x17
+
         if (shop.getShopType() == 1) {
             mplew.writeInt(0);
         }
@@ -233,10 +235,7 @@ public class PlayerShopPacket {
             mplew.writeInt(item.price);
             PacketHelper.addItemInfo(mplew, item.item, true, true);
         }
-        mplew.writeInt(0);
-        mplew.writeInt(0);
-        mplew.writeInt(0);
-        mplew.writeInt(0);
+
         return mplew.getPacket();
     }
 
@@ -507,7 +506,7 @@ public class PlayerShopPacket {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(45);
+        mplew.write(44); // 45
         mplew.writeShort(blackList.size());
         for (int i = 0; i < blackList.size(); i++) {
             if (blackList.get(i) != null) {
@@ -521,7 +520,7 @@ public class PlayerShopPacket {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(44);
+        mplew.write(43); // 44
         mplew.writeShort(visitor.size());
         for (String visit : visitor) {
             mplew.writeMapleAsciiString(visit);
