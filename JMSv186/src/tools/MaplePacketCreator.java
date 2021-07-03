@@ -2452,7 +2452,7 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.OPEN_STORAGE.getValue());
-        mplew.write(0x16);
+        mplew.write(0x15); // 0x16
         mplew.writeInt(npcId);
         mplew.write(slots);
         mplew.writeShort(0x7E);
@@ -2483,7 +2483,7 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.OPEN_STORAGE.getValue());
-        mplew.write(0x13);
+        mplew.write(0x12); // 0x13
         mplew.write(slots);
         mplew.writeShort(2);
         mplew.writeShort(0);
@@ -2497,7 +2497,7 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.OPEN_STORAGE.getValue());
-        mplew.write(0x0D);
+        mplew.write(0x0C); // 0x0D
         mplew.write(slots);
         mplew.writeShort(type.getBitfieldEncoding());
         mplew.writeShort(0);
@@ -2513,7 +2513,7 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.OPEN_STORAGE.getValue());
-        mplew.write(0x9);
+        mplew.write(0x08); // 0x09
         mplew.write(slots);
         mplew.writeShort(type.getBitfieldEncoding());
         mplew.writeShort(0);

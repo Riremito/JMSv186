@@ -206,7 +206,7 @@ public class NPCHandler {
         final MapleStorage storage = chr.getStorage();
 
         switch (mode) {
-            case 4: { // Take Out
+            case 3: { // Take Out
                 final byte type = slea.readByte();
                 final byte slot = storage.getSlot(MapleInventoryType.getByType(type), slea.readByte());
                 final IItem item = storage.takeOut(slot);
@@ -225,7 +225,7 @@ public class NPCHandler {
                 }
                 break;
             }
-            case 5: { // Store
+            case 4: { // Store
                 final byte slot = (byte) slea.readShort();
                 final int itemId = slea.readInt();
                 short quantity = slea.readShort();
@@ -280,7 +280,7 @@ public class NPCHandler {
                 storage.sendStored(c, GameConstants.getInventoryType(itemId));
                 break;
             }
-            case 7: {
+            case 6: {
                 int meso = slea.readInt();
                 final int storageMesos = storage.getMeso();
                 final int playerMesos = chr.getMeso();
@@ -306,7 +306,7 @@ public class NPCHandler {
                 storage.sendMeso(c);
                 break;
             }
-            case 8: {
+            case 7: {
                 storage.close();
                 chr.setConversation(0);
                 break;
