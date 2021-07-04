@@ -1,5 +1,4 @@
-// 機械装置
-// ビシャス退場
+// パチンコ3
 var status = -1;
 function action(mode, type, selection) {
 	if (mode == 1) {
@@ -11,12 +10,17 @@ function action(mode, type, selection) {
 	switch (status) {
 		case 0:
 			{
-				cm.sendYesNo("僕を通じて安全な場所に移動できます。このまま移動しますか？");
+				cm.sendYesNo("パチンコを始めましょうか。");
 				return;
+			}
+		case -1:
+			{
+				cm.sendOk("残念ですね…。後で時間ができましたら、ご利用ください。");
+				break;
 			}
 		case 1:
 			{
-				cm.warp(220080000);
+				cm.sendOk("パチンコの処理");
 				break;
 			}
 		default:

@@ -346,6 +346,34 @@ function selectJob(jobid, level) {
 	return false;
 }
 
+function LearnSkills(jobid) {
+	switch (jobid) {
+		case 222:
+			{
+				cm.teachSkill(2221000, 0);
+				cm.teachSkill(2221003, 0);
+				cm.teachSkill(2221004, 0);
+				cm.teachSkill(2221007, 0);
+				cm.teachSkill(2221008, 0);
+				break;
+			}
+		case 232:
+			{
+				cm.teachSkill(2321000, 0);
+				cm.teachSkill(2321003, 0);
+				cm.teachSkill(2321004, 0);
+				cm.teachSkill(2321006, 0);
+				cm.teachSkill(2321007, 0);
+				cm.teachSkill(2321008, 0);
+				cm.teachSkill(2321009, 0);
+				break;
+			}
+		default:
+			break;
+	}
+	return false;
+}
+
 function action(mode, type, selection) {
 	var id = cm.getNpc();
 	var mapid = cm.getMapId();
@@ -373,9 +401,10 @@ function action(mode, type, selection) {
 
 	if (status == 1 && selection > 0) {
 		cm.getPlayer().changeJob(selection);
+		//LearnSkills(selection);
 	}
 	else {
-		if (level <= 160) {
+		if (status != 1 && level <= 200) {
 			cm.getPlayer().gainExp(500000000, true, false, true);
 		}
 		else {

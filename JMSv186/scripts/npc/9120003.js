@@ -1,34 +1,46 @@
-/*
-	Hikari - Showa Town(801000000)
-*/
+// ヒカリ
+// 銭湯
 
+var cost = 300;
 var status = -1;
-
-function start() {
-    action(1,0,0);
-}
-
 function action(mode, type, selection) {
-    if (mode == 1)
-	status++;
-    else {
-	cm.sendOk("Please come back some other time.");
-	cm.dispose();
-	return;
-    }
-    if (status == 0) {
-	cm.sendYesNo("Would you like to enter the bathhouse? That'll be "+300+" mesos for you");
-    } else if (status == 1) {
-	if (cm.getMeso() < 300) {
-	    cm.sendOk("Please check and see if you have "+300+" mesos to enter this place.");
+	if (mode == 1) {
+		status++;
 	} else {
-	    cm.gainMeso(-300);
-	    if (cm.getPlayerStat("GENDER") == 0) {
-		cm.warp(801000100);
-	    } else {
-		cm.warp(801000200);
-	    }
+		status--;
 	}
+
+	switch (status) {
+		case 0:
+			{
+				cm.sendYesNo("銭湯に入りたいですか？では、" + cost + "メルを払いなさい。");
+				return;
+			}
+		case -1:
+			{
+				cm.sendOk("今度利用してください。");
+				break;
+			}
+		case 1:
+			{
+				var gender = cm.getPlayerStat("GENDER");
+				if (cm.getMeso() >= cost) {
+					cm.gainMeso(-cost);
+					if (gender == 0) {
+						cm.warp(801000100);
+					}
+					else {
+						cm.warp(801000200);
+					}
+				} else {
+					cm.sendOk("入場料" + cost + "メルを持っているか確認してください。");
+				}
+				break;
+			}
+		default:
+			//cm.sendYesNo("mode = " + mode + ", type " + type + ", selection = " + selection + ", status = " + status);
+			break;
+	}
+
 	cm.dispose();
-    }
 }
