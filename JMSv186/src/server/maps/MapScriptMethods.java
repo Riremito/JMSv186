@@ -41,11 +41,12 @@ public class MapScriptMethods {
 
     private static final Point witchTowerPos = new Point(-60, 184);
     private static final String[] mulungEffects = {
-        "I have been waiting for you! If you have an ounce of courage in you, you'll be walking in that door right now!",
-        "How brave of you to take on Mu Lung Training Tower!",
-        "I will make sure you will regret taking on Mu Lung Training Tower!",
-        "I do like your intestinal fortitude! But don't confuse your courage with recklessness!",
-        "If you want to step on the path to failure, by all means to do so!"};
+        //"If you want to step on the path to failure, by all means to do so!"
+        "意外と利口だな！　戦略的撤退と無謀に突っ込むのじゃ、ワケが違うからな！",
+        "武陵道場に挑むなんて…無謀なのか、それだけの自信があるってことか…。",
+        "武陵道場に挑むなんてその勇気に感心するな！",
+        "待ってたぞ！勇気が有り余ってるなら入ってこい！"
+    };
 
     private static enum onFirstUserEnter {
 

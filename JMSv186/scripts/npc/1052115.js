@@ -1,33 +1,33 @@
+// 林次長
 var status = 0;
 var section = 0;
-importPackage(java.lang);
 //questid 29931, infoquest 7662
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	status--;
-    }
-    if (status == 1) {
-	if (cm.getMapId() == 910320001) {
-		cm.warp(910320000, 0);
-		cm.dispose();
-	} else if (cm.getMapId() == 910330001) {
-		var itemid = 4001321;
-		if (!cm.canHold(itemid)) {
-			cm.sendOk("Please make room for 1 ETC slot.");
-		} else {
-			cm.gainItem(itemid,1);
-			cm.warp(910320000, 0);
-		}
-		cm.dispose();
-	} else if (cm.getMapId() >= 910320100 && cm.getMapId() <= 910320304) {
-		cm.sendYesNo("Would you like to exit this place?");
-		status = 99;
+	if (mode == 1) {
+		status++;
 	} else {
-		cm.sendSimple("My name is Mr.Lim.\r\n#b#e#L1#Enter the Dusty Platform.#l#n\r\n#L2#Head towards Train 999.#l\r\n#L3#Receive a medal of <Honorary Employee>.#l#k");
+		status--;
 	}
-    } else if (status == 2) {
+	if (status == 1) {
+		if (cm.getMapId() == 910320001) {
+			cm.warp(910320000, 0);
+			cm.dispose();
+		} else if (cm.getMapId() == 910330001) {
+			var itemid = 4001321;
+			if (!cm.canHold(itemid)) {
+				cm.sendOk("Please make room for 1 ETC slot.");
+			} else {
+				cm.gainItem(itemid, 1);
+				cm.warp(910320000, 0);
+			}
+			cm.dispose();
+		} else if (cm.getMapId() >= 910320100 && cm.getMapId() <= 910320304) {
+			cm.sendYesNo("Would you like to exit this place?");
+			status = 99;
+		} else {
+			cm.sendSimple("私は林次長です。\r\n#b#e#L1#ホコリだらけのプラットフォームに下る#l#n\r\n#L2#999番の客車に行く#l\r\n#L3#<名誉駅務員> 勲章を受け取る#l#k");
+		}
+	} else if (status == 2) {
 		section = selection;
 		if (selection == 1) {
 			if (cm.getPlayer().getLevel() < 25 || cm.getPlayer().getLevel() > 30 || !cm.isLeader()) {
@@ -58,8 +58,8 @@ function action(mode, type, selection) {
 			var mons = parseInt(data);
 			if (mons < 10000) {
 				cm.sendOk("Please defeat at least 10,000 monsters in the Station and look for me again. Kills : " + mons);
-			} else if (cm.canHold(1142141) && !cm.haveItem(1142141)){
-				cm.gainItem(1142141,1);
+			} else if (cm.canHold(1142141) && !cm.haveItem(1142141)) {
+				cm.gainItem(1142141, 1);
 				cm.forceStartQuest(29931);
 				cm.forceCompleteQuest(29931);
 			} else {
@@ -68,7 +68,8 @@ function action(mode, type, selection) {
 		}
 		cm.dispose();
 	} else if (status == 100) {
-		cm.warp(910320000,0);
+		cm.warp(910320000, 0);
 		cm.dispose();
 	}
+	cm.dispose();
 }

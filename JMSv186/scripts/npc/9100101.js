@@ -1,39 +1,109 @@
-/*
-@	Name: GMS-like Gachapon
-	Ellinia
- */
+// ガシャポン ヘネシス
+
+var rewards = new Array(
+	// 設置
+	3010013,
+	3010058,
+	3010091,
+	3010087,
+	3010089,
+	3010088,
+	3010090,
+	3010098,
+	3010020,
+	3010174,
+	// ETC
+	4001396,
+	4130012,
+	4001010, // ママシュの消しゴム 同じのが2つある?
+	4001039,
+	// 消費
+	2049002,
+	2000019,
+	2000004,
+
+	// テスト
+	2022025, // ヘネシス
+	2022027 // ヘネシス
+);
+
+function RandomRewards() {
+	var target = Math.floor(Math.random() * rewards.length);
+	return rewards[target];
+}
+
+function ShowProb() {
+	var text = "排出確率\r\n";
+
+	for (var i = 0; i < rewards.length; i++) {
+		text += "#v" + rewards[i] + "##t" + rewards[i] + "# #b(" + Math.floor(1 / rewards.length * 100) + "%)#k\r\n";
+	}
+
+	cm.sendOk(text);
+}
 
 var status = -1;
-
+var old_selection = -1;
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	status--;
-    }
-    if (status == 0) {
-	if (cm.haveItem(5220000)) {
-	    cm.sendYesNo("You have some #bGachapon Tickets#k there.\r\nWould you like to try your luck?");
+	if (mode == 1) {
+		status++;
 	} else {
-	    cm.sendOk("You don't have a single ticket with you. Please buy the ticket at the department store before coming back to me. Thank you.");
-	    cm.safeDispose();
+		status--;
 	}
-    } else if (status == 1) {
-	var item;
-	if (Math.floor(Math.random() * 300) == 0) {
-	    var rareList = new Array(1382047, 1372037, 1382045, 1372035, 1382048);
 
-	    item = cm.gainGachaponItem(rareList[Math.floor(Math.random() * rareList.length)], 1);
-	} else {
-	    var itemList = new Array(2000005, 2022113, 2002018, 1382001, 1050008, 1442017, 1002084, 1050003, 1002064, 1061006, 1051027, 1442009, 1050056, 1051047, 1050049, 1040080, 1051055, 1372010, 1422005, 1002143, 1302027, 1061087, 1372003, 1302019, 1051023, 1050054, 1061083, 1051017, 1002028, 1322010, 1332013, 1050055, 1002245);
-	    item = cm.gainGachaponItem(itemList[Math.floor(Math.random() * itemList.length)], 1);
+	switch (status) {
+		case 0:
+			{
+				if (old_selection == -1) {
+					var text = "ガシャポンです。\r\n";
+					text += "#L" + 1 + "##b" + "ガシャポンを利用したいです" + "#l#k\r\n";
+					text += "#L" + 0 + "##b" + "排出率" + "#l#k\r\n";
+					cm.sendSimple(text);
+					return;
+				}
+				break;
+			}
+		case 1:
+			{
+				old_selection = selection;
+				switch (selection) {
+					case 0:
+						{
+							ShowProb();
+							break;
+						}
+					case 1:
+						{
+							var ticket = 5220000;
+							if (cm.haveItem(ticket)) {
+								cm.sendYesNo("ガシャポンが置いてある。#t" + ticket + "#を使いますか？");
+								return;
+							}
+							else {
+								cm.sendNext("ガシャポンが置いてある…");
+							}
+
+							break;
+						}
+					default:
+						break;
+				}
+				break;
+			}
+		case 2:
+			{
+				var ticket = 5220000;
+				if (cm.haveItem(ticket)) {
+					var reward = RandomRewards();
+					cm.gainItem(5220000, -1);
+					cm.gainItem(reward, 1);
+					cm.sendOk("#b#t" + reward + "##k１個を獲得しました！");
+				}
+				break;
+			}
+		default:
+			break;
 	}
-	if (item != -1) {
-	    cm.gainItem(5220000, -1);
-	    cm.sendOk("You have obtained #b#t" + item + "##k.");
-	} else {
-	    cm.sendOk("Please check your item inventory and see if you have the ticket, or if the inventory is full.");
-	}
-	cm.safeDispose();
-    }
+
+	cm.dispose();
 }

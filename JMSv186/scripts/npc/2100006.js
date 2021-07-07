@@ -1,8 +1,4 @@
-/* Author: aaroncsn (MapleSea Like)
-	NPC Name: 		Mazra
-	Map(s): 		The Burning Road: Ariant(2600000000)
-	Description: 	Hair Salon Owner
-*/
+// マズラ
 
 var status = 0;
 var beauty = 0;
@@ -30,39 +26,39 @@ function action(mode, type, selection) {
 		else
 			status--;
 		if (status == 0) {
-			cm.sendSimple("Hahaha... it takes a lot of style and flair for someone to pay attention to his or her hairsyle in a desert. Someone like you...If you have #bAriant hair style coupon(VIP)#k or #bAriant hair color coupon(VIP)#k, I'll give your hair a fresh new look. \r\n#L0##bChange Hairstyle(VIP Coupon)#k#l \r\n#L1##bDye Hair(VIP Coupon)#k#l");
+			cm.sendSimple("ふふふ…熱い砂漠でもヘアスタイルを管理するあなたは本当のオシャレ屋ですね。#b調髪特別券(アリアント)#kや#b染毛特別券(アリアント)#kを持っていればヘアスタイルを変えてみませんか。\r\n#L0##bヘアスタイルの変更(調髪特別券使用)#k#l\r\n#L1##bヘアカラーの変更(染毛特別券使用)#k#l\r\n#L2##bアイドルスターヘアに変更#k#l\r\n");
 		} else if (status == 1) {
 			if (selection == 0) {
 				beauty = 1;
 				hairnew = Array();
 				if (cm.getChar().getGender() == 0) {
-					for(var i = 0; i < mhair.length; i++) {
+					for (var i = 0; i < mhair.length; i++) {
 						hairnew.push(mhair[i] + parseInt(cm.getChar().getHair()
- % 10));
-					}
-				} 
-				if (cm.getChar().getGender() == 1) {
-					for(var i = 0; i < fhair.length; i++) {
-						hairnew.push(fhair[i] + parseInt(cm.getChar().getHair()
- % 10));
+							% 10));
 					}
 				}
-				cm.sendStyle("Hahaha~all you need is #bAriant hair style coupon(VIP)#k to change up your hairstyle. Choose the new style, and let me do the rest.", hairnew);
+				if (cm.getChar().getGender() == 1) {
+					for (var i = 0; i < fhair.length; i++) {
+						hairnew.push(fhair[i] + parseInt(cm.getChar().getHair()
+							% 10));
+					}
+				}
+				cm.sendStyle("ふふふ…あなたのヘアスタイルを新しいスタイルに変えてあげましょう。今のヘアスタイルにうんざりしていませんか？#b調髪特別券(アリアント)#kを持っているのでしたら、お任せください。さあ変えたいヘアスタイルをゆっくり選んでください。", hairnew);
 			} else if (selection == 1) {
 				beauty = 2;
 				haircolor = Array();
 				var current = parseInt(cm.getChar().getHair()
-/10)*10;
-				for(var i = 0; i < 8; i++) {
+					/ 10) * 10;
+				for (var i = 0; i < 8; i++) {
 					haircolor.push(current + i);
 				}
 				cm.sendStyle("Every once in a while, it doesn't hurt to change up your hair color... it's fun. Allow me, the great Mazra, to dye your hair, so you just bring me #bAriant hair color coupon(VIP)#k, and choose your new hair color.", haircolor);
 			}
 		}
-		else if (status == 2){
+		else if (status == 2) {
 			cm.dispose();
-			if (beauty == 1){
-				if (cm.haveItem(5150027) == true){
+			if (beauty == 1) {
+				if (cm.haveItem(5150027) == true) {
 					cm.gainItem(5150027, -1);
 					cm.setHair(hairnew[selection]);
 					cm.sendOk("Enjoy your new and improved hairstyle!");
@@ -70,8 +66,8 @@ function action(mode, type, selection) {
 					cm.sendNext("I thought I told you, you need the coupon in order for me to work magic on your hair check again.");
 				}
 			}
-			if (beauty == 2){
-				if (cm.haveItem(5151022) == true){
+			if (beauty == 2) {
+				if (cm.haveItem(5151022) == true) {
 					cm.gainItem(5151022, -1);
 					cm.setHair(haircolor[selection]);
 					cm.sendOk("Enjoy your new and improved haircolor!");

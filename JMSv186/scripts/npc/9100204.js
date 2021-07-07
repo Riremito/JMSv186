@@ -1,4 +1,16 @@
 // パチンコ5
+
+function PacketTest() {
+	var p = cm.getOutPacket();
+	// header
+	p.writeShort(0x0168);
+
+	// data
+	p.writeInt(7777);
+	p.write(2); // 機種
+	cm.DebugPacket(p.getPacket());
+}
+
 var status = -1;
 function action(mode, type, selection) {
 	if (mode == 1) {
@@ -10,8 +22,14 @@ function action(mode, type, selection) {
 	switch (status) {
 		case 0:
 			{
-				cm.sendYesNo("パチンコを始めましょうか。");
-				return;
+				// パチンコ玉を所持している場合
+				if (1) {
+					cm.sendYesNo("パチンコを始めましょうか。");
+					return;
+				}
+
+				cm.sendOk("パチンコ玉が足りないため、パチンコをすることができません。只今、ポイントショップのETCの経済活動欄でパチンコ玉を販売中ですので、ご利用ください。");
+				break;
 			}
 		case -1:
 			{
@@ -20,7 +38,7 @@ function action(mode, type, selection) {
 			}
 		case 1:
 			{
-				cm.sendOk("パチンコの処理");
+				PacketTest();
 				break;
 			}
 		default:

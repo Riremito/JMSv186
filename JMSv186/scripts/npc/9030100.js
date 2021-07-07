@@ -399,12 +399,17 @@ function action(mode, type, selection) {
 		}
 	}
 
-	if (status == 1 && selection > 0) {
-		cm.getPlayer().changeJob(selection);
+	if (status == 1) {
+		if (selection > 0) {
+			cm.getPlayer().changeJob(selection);
+		}
 		//LearnSkills(selection);
+		else if (selection == 0) {
+			cm.getPlayer().gainExp(500000000, true, false, true);
+		}
 	}
 	else {
-		if (status != 1 && level <= 200) {
+		if (level <= 160) {
 			cm.getPlayer().gainExp(500000000, true, false, true);
 		}
 		else {

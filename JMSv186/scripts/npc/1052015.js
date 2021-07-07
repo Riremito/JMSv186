@@ -67,18 +67,14 @@ function DoSomething_DC() {
 	cm.DebugPacket(p.getPacket());
 }
 
-// ガシャポン レアアイテム
+// 道場
 function DoSomething() {
 	var p = cm.getOutPacket();
 	// header
-	p.writeShort(0x003F);
+	p.writeShort(0x00DC);
 
 	// data
-	// 16 = 体験用アバター
-	p.write(15);
-	p.writeMapleAsciiString("リレミト : aaaaaaaaa");
-	p.writeInt(0);
-	//p.writeMapleAsciiString("リレミト");
+	p.write(08);
 	p.writeZeroBytes(100);
 
 	// ProcessPacket

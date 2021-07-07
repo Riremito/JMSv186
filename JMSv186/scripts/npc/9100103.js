@@ -1,33 +1,118 @@
-/*
-@	Name: GMS-like Gachapon
-	Kerning City
- */
+// ガシャポン カニングシティー
+
+var rewards = new Array(
+	// 設置
+	3010013,
+	3010058,
+	3010091,
+	3010087,
+	3010089,
+	3010088,
+	3010090,
+	3010098,
+	3010020,
+	3010174,
+	3010149, // K
+	3010148,
+	3013001,
+	3010151,
+	3010153,
+	3010146, // 同名アイテムは存在しないので注意
+	3010173,
+
+	// ETC
+	4001396,
+	4130012,
+	4001012, // 消しゴム 同じのが2つある?
+	4001041,
+	4001197, // 青の鉱石 消しゴムクエスト
+	// 消費
+	2049002,
+	2000019,
+	2000004,
+
+	// テスト
+	2022025, // ヘネシス
+	2022027 // ヘネシス
+);
+
+function RandomRewards() {
+	var target = Math.floor(Math.random() * rewards.length);
+	return rewards[target];
+}
+
+function ShowProb() {
+	var text = "排出確率\r\n";
+
+	for (var i = 0; i < rewards.length; i++) {
+		text += "#v" + rewards[i] + "##t" + rewards[i] + "# #b(" + Math.floor(1 / rewards.length * 100) + "%)#k\r\n";
+	}
+
+	cm.sendOk(text);
+}
 
 var status = -1;
-
+var old_selection = -1;
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	status--;
-    }
-    if (status == 0) {
-	if (cm.haveItem(5220000)) {
-	    cm.sendYesNo("You have some #bGachapon Tickets#k there.\r\nWould you like to try your luck?");
+	if (mode == 1) {
+		status++;
 	} else {
-	    cm.sendOk("You don't have a single ticket with you. Please buy the ticket at the department store before coming back to me. Thank you.");
-	    cm.safeDispose();
+		status--;
 	}
-    } else if (status == 1) {
-	var itemList = new Array(2040402, 2022130, 4130014, 2000004, 2000005, 2022113, 1322008, 1302021, 1322022, 1302013, 1051010, 1060079, 1002005, 1002023, 1002085, 1332017, 1322010, 1051031, 1002212, 1002117, 1040081, 1051037, 1472026, 1332015, 1041060, 1472003, 1060086, 1060087, 1472009, 1060051, 1041080, 1041106, 1092018);
 
-	var item = cm.gainGachaponItem(itemList[Math.floor(Math.random() * itemList.length)], 1);
-	if (item != -1) {
-	    cm.gainItem(5220000, -1);
-	    cm.sendOk("You have obtained #b#t" + item + "##k.");
-	} else {
-	    cm.sendOk("Please check your item inventory and see if you have the ticket, or if the inventory is full.");
+	switch (status) {
+		case 0:
+			{
+				if (old_selection == -1) {
+					var text = "ガシャポンです。\r\n";
+					text += "#L" + 1 + "##b" + "ガシャポンを利用したいです" + "#l#k\r\n";
+					text += "#L" + 0 + "##b" + "排出率" + "#l#k\r\n";
+					cm.sendSimple(text);
+					return;
+				}
+				break;
+			}
+		case 1:
+			{
+				old_selection = selection;
+				switch (selection) {
+					case 0:
+						{
+							ShowProb();
+							break;
+						}
+					case 1:
+						{
+							var ticket = 5220000;
+							if (cm.haveItem(ticket)) {
+								cm.sendYesNo("ガシャポンが置いてある。#t" + ticket + "#を使いますか？");
+								return;
+							}
+							else {
+								cm.sendNext("ガシャポンが置いてある…");
+							}
+
+							break;
+						}
+					default:
+						break;
+				}
+				break;
+			}
+		case 2:
+			{
+				var ticket = 5220000;
+				if (cm.haveItem(ticket)) {
+					var reward = RandomRewards();
+					cm.gainItem(5220000, -1);
+					cm.gainItem(reward, 1);
+					cm.sendOk("#b#t" + reward + "##k１個を獲得しました！");
+				}
+				break;
+			}
+		default:
+			break;
 	}
-	cm.safeDispose();
-    }
+
+	cm.dispose();
 }

@@ -1,37 +1,50 @@
+// ラクダ
+var cost = 1500;
 var status = -1;
-
-function start() {
-
-    action(1,0,0);
-}
-
 function action(mode, type, selection) {
-    if (mode != 1) {
-	cm.dispose();
-	return;
-    }
-status++;
-    if (status == 0) {
-	if (cm.isPlayerInstance()) {
-		if (cm.getMapId() == 749040100) {
-			cm.sendSimple("What would you like to do? \r\n #L0#Leave the Mini Dungeon#l");
-		} else {
-			cm.sendSimple("What would you like to do? \r\n #L0#Leave the Meso Map#l");
-		}
+	if (mode == 1) {
+		status++;
 	} else {
-		cm.sendOk("Sorry, I am not coded yet.");
-		cm.safeDispose();
-		return;
+		status--;
 	}
-    }
-    else if (status == 1) {
-	cm.sendYesNo("Are you sure you want to do that? You won't be able to come back, and you won't be refunded either!");
-    }
-    else if (status == 2) {
-	if (cm.isPlayerInstance()) { 
-		cm.getPlayer().getEventInstance().removePlayer(cm.getPlayer());
+
+	var mapid = cm.getMapId();
+
+	switch (status) {
+		case 0:
+			{
+				if (mapid != 260020700) {
+					cm.sendYesNo("#bラクダ#kに乗って錬金術の村#bマガティア#kに移動しますか。費用は" + cost + "メルです。");
+				}
+				else {
+					// テキスト不明
+					cm.sendYesNo("#bラクダ#kに乗って#bアリアント#kに移動しますか。費用は" + cost + "メルです。");
+				}
+				return;
+			}
+		case -1:
+			{
+				//cm.sendOk("");
+				break;
+			}
+		case 1:
+			{
+				if (cm.getMeso() >= cost) {
+					cm.gainMeso(-cost);
+					if (mapid != 260020700) {
+						cm.warp(261000000, 0);
+					}
+					else {
+						cm.warp(260000000, 0);
+					}
+				} else {
+					//cm.sendNext("");
+				}
+				break;
+			}
+		default:
+			break;
 	}
-	cm.warp(910000000, 0);
+
 	cm.dispose();
-    }
 }

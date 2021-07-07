@@ -3882,7 +3882,7 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.SHOW_ITEM_GAIN_INCHAT.getValue());
-        mplew.write(7);
+        mplew.write(8); // portal sound
 
         return mplew.getPacket();
     }
@@ -3896,7 +3896,8 @@ public class MaplePacketCreator {
     }
 
     public static MaplePacket Mulung_Pts(int recv, int total) {
-        return showQuestMsg("You have received " + recv + " training points, for the accumulated total of " + total + " training points.");
+        // どうやらバージョンごとにメッセージが切り替わっていて統一されていない?
+        return showQuestMsg("修練点数を" + recv + "点獲得しました。総修練点数が" + total + "になりました。");
     }
 
     public static MaplePacket showOXQuiz(int questionSet, int questionId, boolean askQuestion) {
