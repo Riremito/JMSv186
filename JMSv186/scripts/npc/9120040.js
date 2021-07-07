@@ -1,20 +1,13 @@
 // ポニチャル
 // ベルガモット
 
-function GetSpawnItem(itemid) {
-	if (cm.haveItem(itemid)) {
-		return false;
-	}
-
-	cm.gainItem(itemid, 1);
-	return true;
-}
-
-function EnterBossMap(mapid) {
-	if (cm.getPlayerCount(mapid) == 0) {
-		cm.resetMap(mapid);
-	}
+function EnterAreaBossMap(mapid, mobid, x, y) {
+	var first_user = cm.getPlayerCount(mapid) ? false : true;
 	cm.warp(mapid);
+	if (first_user) {
+		cm.getMap(mapid).resetFully();
+		cm.spawnMonster(mobid, x, y);
+	}
 }
 
 var status = -1;
@@ -46,7 +39,7 @@ function action(mode, type, selection) {
 					case 1:
 						{
 							// spawn 9400263
-							EnterBossMap(802000211);
+							EnterAreaBossMap(802000211, 9400263, 559, 545);
 							break;
 						}
 					case 2:
