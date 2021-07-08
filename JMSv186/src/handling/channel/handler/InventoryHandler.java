@@ -94,7 +94,7 @@ public class InventoryHandler {
         final short dst = slea.readShort();                                            //00 00
         final short quantity = slea.readShort();                                       //53 01
         
-        c.getPlayer().Debug("ItemMove = " + src + " -> " + dst + " (" + quantity + ")");
+        c.getPlayer().Info("ItemMove = " + src + " -> " + dst + " (" + quantity + ")");
         
         if (src < 0 && dst > 0) {
             MapleInventoryManipulator.unequip(c, src, dst);

@@ -99,6 +99,36 @@ public class CommandProcessor {
     }
 
     public static boolean processCommand(MapleClient c, String line, CommandType type) {
+        // 通常クライアントのコマンドの処理
+        if (line.charAt(0) == PlayerGMRank.MAPLE.getCommandPrefix()) {
+            String[] splitted = line.split(" ");
+            splitted[0] = splitted[0].toLowerCase();
+
+            // デバッグモード
+            if ("/debug".equals(splitted[0])) {
+                c.getPlayer().SetDebugger();
+                if (c.getPlayer().GetDebugger()) {
+                    c.getPlayer().Notice("デバッグモード有効");
+                } else {
+                    c.getPlayer().Notice("デバッグモード無効");
+                }
+                return true;
+            }
+
+            // スクリプト情報
+            if ("/info".equals(splitted[0])) {
+                c.getPlayer().SetInformation();
+                if (c.getPlayer().GetInformation()) {
+                    c.getPlayer().Notice("スクリプト情報有効");
+                } else {
+                    c.getPlayer().Notice("スクリプト情報無効");
+                }
+                return true;
+            }
+
+            return true;
+        }
+
         if (line.charAt(0) == PlayerGMRank.NORMAL.getCommandPrefix()) {
             String[] splitted = line.split(" ");
             splitted[0] = splitted[0].toLowerCase();

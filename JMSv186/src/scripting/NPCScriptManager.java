@@ -46,6 +46,7 @@ public class NPCScriptManager extends AbstractScriptManager {
             if (!cms.containsKey(c)) {
                 Invocable iv = getInvocable("npc/" + npc + ".js", c, true);
                 if (iv == null) {
+                    c.getPlayer().Info("NPC Script = " + npc + ", MapID = " + c.getPlayer().getMapId());
                     iv = getInvocable("npc/notcoded.js", c, true); //safe disposal
                     if (iv == null) {
                         dispose(c);
@@ -53,7 +54,7 @@ public class NPCScriptManager extends AbstractScriptManager {
                     }
                 }
                 else{
-                    c.getPlayer().Debug("NPC Script = " + npc + ", MapID = " + c.getPlayer().getMapId());
+                    c.getPlayer().Info("NPC Script = " + npc + ", MapID = " + c.getPlayer().getMapId());
                 }
                 final ScriptEngine scriptengine = (ScriptEngine) iv;
                 final NPCConversationManager cm = new NPCConversationManager(c, npc, -1, (byte) -1, iv);

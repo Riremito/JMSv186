@@ -61,6 +61,14 @@ import server.MTSStorage;
 import tools.FileoutputUtil;
 import tools.HexTool;
 import handling.world.World;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import scripting.NPCConversationManager;
+import static server.quest.MapleQuestRequirementType.npc;
 
 public class MapleServerHandler extends IoHandlerAdapter implements MapleServerHandlerMBean {
 
@@ -403,21 +411,23 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                         log(slea, recv, c, session);
                     }
 
-                    /*
-                    final StringBuilder sb = new StringBuilder("Received data : ");
-                    sb.append(recv.toString()).append("\n").append(HexTool.toString((byte[]) message)).append("\n").append(HexTool.toStringFromAscii((byte[]) message));
-                    System.out.println(sb.toString());
-                     */
-                    if (recv != RecvPacketOpcode.MOVE_PLAYER
-                            && recv != RecvPacketOpcode.HEAL_OVER_TIME
-                            && recv != RecvPacketOpcode.NPC_ACTION) {
-                        if (c.getPlayer() != null && "リレミト".equals(c.getPlayer().getName())) {
+                    if (c.getPlayer() != null && c.getPlayer().GetDebugger()) {
+                        if (recv != RecvPacketOpcode.MOVE_PLAYER
+                                && recv != RecvPacketOpcode.HEAL_OVER_TIME
+                                && recv != RecvPacketOpcode.NPC_ACTION
+                                && recv != RecvPacketOpcode.SPECIAL_MOVE
+                                && recv != RecvPacketOpcode.RANGED_ATTACK
+                                && recv != RecvPacketOpcode.MAGIC_ATTACK
+                                && recv != RecvPacketOpcode.CLOSE_RANGE_ATTACK
+                                && recv != RecvPacketOpcode.MOVE_LIFE
+                                && recv != RecvPacketOpcode.GENERAL_CHAT) {
                             System.out.println("[Packet] " + Integer.toHexString(header_num));
                             System.out.println(slea.toString());
                         }
                     }
+
                     handlePacket(recv, slea, c, cs);
-                    //Log after the packet is handle. You'll see why =]
+
                     FileWriter fw = isLoggedIP(session);
                     if (fw != null && !blocked.contains(recv)) {
                         if (recv == RecvPacketOpcode.PLAYER_LOGGEDIN && c != null) { // << This is why. Win.
@@ -438,10 +448,17 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 }
             }
             final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-            if (c.getPlayer() != null && "リレミト".equals(c.getPlayer().getName())) {
-                System.out.println("[Unknown Packet] " + Integer.toHexString(header_num));
-                System.out.println(slea.toString());
+            if (c.getPlayer() != null && c.getPlayer().GetDebugger()) {
+                if (header_num != 0x0010
+                        && header_num != 0x00EF
+                        && header_num != 0x00BF
+                        && header_num != 0x000E
+                        && header_num != 0x00DF) {
+                    System.out.println("[Unknown Packet] " + Integer.toHexString(header_num));
+                    System.out.println(slea.toString());
+                }
             }
+
         } catch (Exception e) {
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
             e.printStackTrace();
@@ -474,7 +491,9 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 break;
              */
             case LOGIN_PASSWORD:
-                CharLoginHandler.login(slea, c);
+                if (CharLoginHandler.login(slea, c)) {
+                    InterServerHandler.SetLogin(false);
+                }
                 break;
             case SERVERLIST_REQUEST:
                 CharLoginHandler.ServerListRequest(c);
@@ -496,7 +515,9 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 break;
             case CHAR_SELECT:
             case AUTH_SECOND_PASSWORD:
-                CharLoginHandler.Character_WithSecondPassword(slea, c);
+                if (CharLoginHandler.Character_WithSecondPassword(slea, c)) {
+                    InterServerHandler.SetLogin(false);
+                }
                 break;
             case RSA_KEY: // Fix this somehow
                 c.getSession().write(LoginPacket.LoginAUTH());
@@ -511,22 +532,48 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                     CashShopOperation.EnterCS(playerid, c);
                 } else {
                     InterServerHandler.Loggedin(playerid, c);
-                    System.out.println("[LogIn]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
-                    Map<Integer, Integer> connected = World.getConnected();
-                    c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
+                    if (!InterServerHandler.GetLogin()) {
+                        InterServerHandler.SetLogin(true);
+                        System.out.println("[LogIn]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
+                        Map<Integer, Integer> connected = World.getConnected();
+                        c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
+                        c.getPlayer().Notice("不具合報告等はこちら https://discord.gg/72jpx7DfZH (リレミト#9404)");
+                        if (c.getPlayer().getLevel() <= 30) {
+                            c.getPlayer().Notice("========== コマンド ==========");
+                            c.getPlayer().Notice("@joyce マップ移動 (ドイからも可)");
+                            c.getPlayer().Notice("@fm    フリマへ移動");
+                            c.getPlayer().Notice("@ea    キャラクターがロックされているバグ状態を解除");
+                            c.getPlayer().Notice("@help  ヘルプ");
+                        }
+                        c.getPlayer().Notice("========== サーバー情報 ==========");
+                        c.getPlayer().Notice("スクルジ     転職");
+                        c.getPlayer().Notice("フレドリック アイテム販売");
+                        c.getPlayer().Notice("ドイ         マップ移動");
+                        c.getPlayer().Notice("ナオミ       マップ移動(少ない)");
+
+                        c.getPlayer().Notice("========== コマンド2 ==========");
+                        c.getPlayer().Notice("/info スクリプト情報出力切り替え");
+                    }
                 }
                 break;
             case ENTER_CASH_SHOP:
                 InterServerHandler.EnterCS(c, c.getPlayer(), false);
                 break;
             case ENTER_MTS:
-                InterServerHandler.EnterCS(c, c.getPlayer(), true);
+                if (c.getPlayer().GetDebugger()) {
+                    //DebugPacket(c);
+                    InterServerHandler.EnterCS(c, c.getPlayer(), true);
+
+                } else {
+                    InterServerHandler.EnterCS(c, c.getPlayer(), true);
+                }
                 break;
             case MOVE_PLAYER:
                 PlayerHandler.MovePlayer(slea, c, c.getPlayer());
                 break;
             case CHAR_INFO_REQUEST:
-                c.getPlayer().updateTick(slea.readInt());
+                //c.getPlayer().updateTick(slea.readInt());
+                slea.readInt();
                 PlayerHandler.CharInfoRequest(slea.readInt(), c, c.getPlayer());
                 break;
             case CLOSE_RANGE_ATTACK:
@@ -573,7 +620,8 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 PlayerHandler.SkillEffect(slea, c.getPlayer());
                 break;
             case MESO_DROP:
-                c.getPlayer().updateTick(slea.readInt());
+                //c.getPlayer().updateTick(slea.readInt());
+                slea.readInt();
                 PlayerHandler.DropMeso(slea.readInt(), c.getPlayer());
                 break;
             case MONSTER_BOOK_COVER:
@@ -587,6 +635,9 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                     CashShopOperation.LeaveCS(slea, c, c.getPlayer());
                 } else {
                     PlayerHandler.ChangeMap(slea, c, c.getPlayer());
+                    if (c.getPlayer().GetInformation()) {
+                        c.getPlayer().Info("MapID = " + c.getPlayer().getMapId());
+                    }
                     System.out.println("[EnterMap]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
                 }
                 break;
@@ -663,11 +714,12 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) slea.readShort(), c, c.getPlayer());
                 break;
             case USE_POTENTIAL_SCROLL:
-                c.getPlayer().updateTick(slea.readInt());
+                //c.getPlayer().updateTick(slea.readInt());
+                slea.readInt();
                 InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) 0, c, c.getPlayer());
                 break;
             case USE_EQUIP_SCROLL:
-                c.getPlayer().updateTick(slea.readInt());
+                //c.getPlayer().updateTick(slea.readInt());
                 InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) 0, c, c.getPlayer());
                 break;
             case USE_SUMMON_BAG:
@@ -677,7 +729,8 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 InventoryHandler.UseTreasureChest(slea, c, c.getPlayer());
                 break;
             case USE_SKILL_BOOK:
-                c.getPlayer().updateTick(slea.readInt());
+                //c.getPlayer().updateTick(slea.readInt());
+                slea.readInt();
                 InventoryHandler.UseSkillBook((byte) slea.readShort(), slea.readInt(), c, c.getPlayer());
                 break;
             case USE_CATCH_ITEM:
@@ -729,7 +782,8 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 NPCHandler.Storage(slea, c, c.getPlayer());
                 break;
             case GENERAL_CHAT:
-                c.getPlayer().updateTick(slea.readInt());
+                //c.getPlayer().updateTick(slea.readInt());
+                slea.readInt();
                 ChatHandler.GeneralChat(slea.readMapleAsciiString(), slea.readByte(), c, c.getPlayer());
                 break;
             case PARTYCHAT:
@@ -748,7 +802,8 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 StatsHandling.DistributeAP(slea, c, c.getPlayer());
                 break;
             case DISTRIBUTE_SP:
-                c.getPlayer().updateTick(slea.readInt());
+                //c.getPlayer().updateTick(slea.readInt());
+                slea.readInt();
                 StatsHandling.DistributeSP(slea.readInt(), c, c.getPlayer());
                 break;
             case PLAYER_INTERACTION:
@@ -940,4 +995,51 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 break;
         }
     }
+
+    private static final ScriptEngineManager sem = new ScriptEngineManager();
+
+    protected static Invocable getInvocable() {
+        FileReader fr = null;
+        String path = "scripts/debug/test.js";
+        try {
+
+            File scriptFile = new File(path);
+            if (!scriptFile.exists()) {
+                return null;
+            }
+
+            ScriptEngine engine = sem.getEngineByName("javascript");
+
+            fr = new FileReader(scriptFile);
+            engine.eval(fr);
+
+            return (Invocable) engine;
+        } catch (FileNotFoundException | ScriptException e) {
+            System.err.println("Error executing script. Path: " + path + "\nException " + e);
+            FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Error executing script. Path: " + path + "\nException " + e);
+            return null;
+        } finally {
+            try {
+                if (fr != null) {
+                    fr.close();
+                }
+            } catch (IOException ignore) {
+            }
+        }
+    }
+
+    protected static void DebugPacket(final MapleClient c) throws ScriptException {
+        Invocable iv = getInvocable();
+        if (iv == null) {
+            System.out.println("scripts/debug/test.jsが見つかりません");
+            return;
+        }
+        final ScriptEngine scriptengine = (ScriptEngine) iv;
+        scriptengine.put("c", c);
+        try {
+            iv.invokeFunction("test");
+        } catch (NoSuchMethodException nsme) {
+        }
+    }
+
 }

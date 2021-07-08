@@ -41,6 +41,7 @@ import javax.script.ScriptEngine;
 
 import database.DatabaseConnection;
 import database.DatabaseException;
+import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.world.MapleMessengerCharacter;
@@ -68,6 +69,7 @@ import org.apache.mina.common.IoSession;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
+import tools.data.output.MaplePacketLittleEndianWriter;
 
 public class MapleClient implements Serializable {
 
@@ -1308,4 +1310,13 @@ public class MapleClient implements Serializable {
     public void setReceiving(boolean m) {
         this.receiving = m;
     }
+    
+    public void DebugPacket(MaplePacket packet) {
+        getSession().write(packet);
+    }
+
+    public MaplePacketLittleEndianWriter getOutPacket(){
+        return new MaplePacketLittleEndianWriter();
+    }  
+    
 }

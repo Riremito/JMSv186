@@ -193,6 +193,26 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private transient List<Integer> pendingExpiration = null, pendingSkills = null;
     private transient Map<Integer, Integer> movedMobs = new HashMap<Integer, Integer>();
     private String teleportname = "";
+    // デバッグモード
+    private boolean Debugger = false;
+    // スクリプト情報
+    private boolean Information = true;
+
+    public void SetDebugger() {
+        Debugger = !Debugger;
+    }
+
+    public boolean GetDebugger() {
+        return Debugger;
+    }
+
+    public void SetInformation() {
+        Information = !Information;
+    }
+
+    public boolean GetInformation() {
+        return Information;
+    }
 
     private MapleCharacter(final boolean ChannelServer) {
         setStance(0);
@@ -842,7 +862,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 ps.setByte(14, (byte) 0); // GM Level
                 System.out.println("キャラクター作成: " + chr.name);
             }
-            */
+             */
             ps.setByte(14, (byte) 0); // GM Level
             System.out.println("キャラクター作成: " + chr.name);
 
@@ -4431,11 +4451,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             client.getSession().write(MaplePacketCreator.serverNotice(type, message));
         }
     }
-    
+
     public void Debug(String text) {
+        if (GetDebugger()) {
+            client.getSession().write(MaplePacketCreator.serverNotice(5, text));
+        }
+    }
+
+    public void Info(String text) {
+        if (GetInformation()) {
+            client.getSession().write(MaplePacketCreator.serverNotice(5, text));
+        }
+    }
+
+    public void Notice(String text) {
         client.getSession().write(MaplePacketCreator.serverNotice(5, text));
     }
-    
+
     public void Notify(String text) {
         World.Broadcast.broadcastMessage((MaplePacketCreator.serverNotice(6, text)).getBytes());
     }

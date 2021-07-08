@@ -91,11 +91,12 @@ public class ServerConstants {
     public static enum PlayerGMRank {
 
         NORMAL('@', 0),
+        MAPLE('/', 0),
         INTERN('!', 1),
         GM('!', 2),
         ADMIN('!', 3);
-        private char commandPrefix;
-        private int level;
+        final private char commandPrefix;
+        final private int level;
 
         PlayerGMRank(char ch, int level) {
             commandPrefix = ch;

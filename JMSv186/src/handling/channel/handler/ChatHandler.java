@@ -35,7 +35,7 @@ public class ChatHandler {
 
     public static final void GeneralChat(final String text, final byte unk, final MapleClient c, final MapleCharacter chr) {
         if (chr != null && !CommandProcessor.processCommand(c, text, CommandType.NORMAL)) {
-            if (!chr.isGM() && text.length() >= 80) {
+            if (!chr.isGM() && text.length() >= 70) {
                 return;
             }
             if (chr.getCanTalk() || chr.isStaff()) {
@@ -43,7 +43,7 @@ public class ChatHandler {
                 if (chr.isHidden()) {
                     chr.getMap().broadcastGMMessage(chr, MaplePacketCreator.getChatText(chr.getId(), text, c.getPlayer().isGM(), unk), true);
                 } else {
-                    chr.getCheatTracker().checkMsg();
+                    //chr.getCheatTracker().checkMsg();
                     chr.getMap().broadcastMessage(MaplePacketCreator.getChatText(chr.getId(), text, false/*c.getPlayer().isGM()*/, unk), c.getPlayer().getPosition());
                 }
                 if (text.equalsIgnoreCase(c.getChannelServer().getServerName() + " rocks")) {
@@ -71,7 +71,7 @@ public class ChatHandler {
         if (CommandProcessor.processCommand(c, chattext, CommandType.NORMAL)) {
             return;
         }
-        chr.getCheatTracker().checkMsg();
+        //chr.getCheatTracker().checkMsg();
         switch (type) {
             case 0:
                 World.Buddy.buddyChat(recipients, chr.getId(), chr.getName(), chattext);
@@ -225,7 +225,7 @@ public class ChatHandler {
                     c.getSession().write(MaplePacketCreator.serverNotice(6, "You have been muted and are therefore unable to talk."));
                     return;
                 }
-                c.getPlayer().getCheatTracker().checkMsg();
+                //c.getPlayer().getCheatTracker().checkMsg();
                 final String recipient = slea.readMapleAsciiString();
                 final String text = slea.readMapleAsciiString();
                 final int ch = World.Find.findChannel(recipient);

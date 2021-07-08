@@ -24,23 +24,23 @@ import java.io.Serializable;
 import server.Randomizer;
 
 public enum MapleDisease implements Serializable {
-
-    POTION(0x80000000000L, true),
-    SHADOW(0x100000000000L, true), //receiving damage/moving
-    BLIND(0x200000000000L, true),
-    FREEZE(0x8000000000000L, true),
+    NULL(0x0),
     SLOW(0x1),
-    MORPH(0x2),
+    //MORPH(0x2),
     SEDUCE(0x80),
     ZOMBIFY(0x4000),
-    REVERSE_DIRECTION(0x80000),
-    WEIRD_FLAME(0x8000000),
-    STUN(0x2000000000000L),
+    REVERSE_DIRECTION(0x80000), // CONFUSE
     POISON(0x4000000000000L),
+    STUN(0x2000000000000L),
+    POTION(0x80000000000L, true),
     SEAL(0x8000000000000L),
     DARKNESS(0x10000000000000L),
     WEAKEN(0x4000000000000000L),
-    CURSE(0x8000000000000000L),;
+    CURSE(0x8000000000000000L), //SHADOW(0x100000000000L, true), //receiving damage/moving
+    //BLIND(0x200000000000L, true),
+    //FREEZE(0x8000000000000L, true),
+    //WEIRD_FLAME(0x8000000)
+    ;
     // 0x100 is disable skill except buff
     private static final long serialVersionUID = 0L;
     private long i;
@@ -98,12 +98,14 @@ public enum MapleDisease implements Serializable {
                 return ZOMBIFY;
             case 134:
                 return POTION;
+            /*
             case 135:
                 return SHADOW;
             case 136:
                 return BLIND;
             case 137:
                 return FREEZE;
+             */
         }
         return null;
     }
@@ -132,12 +134,14 @@ public enum MapleDisease implements Serializable {
                 return 133;
             case POTION:
                 return 134;
+            /*
             case SHADOW:
                 return 135;
             case BLIND:
                 return 136;
             case FREEZE:
                 return 137;
+             */
         }
         return 0;
     }

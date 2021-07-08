@@ -195,7 +195,7 @@ public class NPCHandler {
                 break;
             }
         }
-        c.getPlayer().Debug("Quest ID = " + quest + ", Action = " + action);
+        c.getPlayer().Info("Quest ID = " + quest + ", Action = " + action);
     }
 
     public static final void Storage(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {

@@ -68,13 +68,30 @@ function DoSomething_DC() {
 }
 
 // ìπèÍ
-function DoSomething() {
+function DoSomething_DC() {
 	var p = cm.getOutPacket();
 	// header
 	p.writeShort(0x00DC);
 
 	// data
 	p.write(08);
+	p.writeZeroBytes(100);
+
+	// ProcessPacket
+	cm.DebugPacket(p.getPacket());
+}
+
+
+// ÉrÉVÉÉÉnÉì
+function DoSomething() {
+	var p = cm.getOutPacket();
+	// header
+	p.writeShort(0x018E);
+
+	// data
+	p.write(50);
+	p.writeInt(0);
+	p.writeInt(1);
 	p.writeZeroBytes(100);
 
 	// ProcessPacket

@@ -445,6 +445,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void openShop(int id) {
+        c.getPlayer().Info("ShopID = " + id + ", MapID = " + c.getPlayer().getMapId());
         MapleShopFactory.getInstance().getShop(id).sendShop(c);
     }
 
