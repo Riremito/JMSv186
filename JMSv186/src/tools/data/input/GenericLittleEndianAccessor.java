@@ -147,7 +147,7 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
         for (int x = 0; x < n; x++) {
             ret[x] = readByte();
         }
-        return new String(ret, Charset.forName("Shift-JIS"));
+        return new String(ret, Charset.forName("MS932"));
         /*        final char ret[] = new char[n];
         for (int x = 0; x < n; x++) {
             ret[x] = (char) readByte();
