@@ -572,7 +572,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 PlayerHandler.MovePlayer(slea, c, c.getPlayer());
                 break;
             case CHAR_INFO_REQUEST:
-                //c.getPlayer().updateTick(slea.readInt());
                 slea.readInt();
                 PlayerHandler.CharInfoRequest(slea.readInt(), c, c.getPlayer());
                 break;
@@ -620,7 +619,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 PlayerHandler.SkillEffect(slea, c.getPlayer());
                 break;
             case MESO_DROP:
-                //c.getPlayer().updateTick(slea.readInt());
                 slea.readInt();
                 PlayerHandler.DropMeso(slea.readInt(), c.getPlayer());
                 break;
@@ -710,16 +708,15 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 InventoryHandler.UseReturnScroll(slea, c, c.getPlayer());
                 break;
             case USE_UPGRADE_SCROLL:
-                c.getPlayer().updateTick(slea.readInt());
+                slea.readInt();
                 InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) slea.readShort(), c, c.getPlayer());
                 break;
             case USE_POTENTIAL_SCROLL:
-                //c.getPlayer().updateTick(slea.readInt());
                 slea.readInt();
                 InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) 0, c, c.getPlayer());
                 break;
             case USE_EQUIP_SCROLL:
-                //c.getPlayer().updateTick(slea.readInt());
+                slea.readInt();
                 InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) 0, c, c.getPlayer());
                 break;
             case USE_SUMMON_BAG:
@@ -729,7 +726,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 InventoryHandler.UseTreasureChest(slea, c, c.getPlayer());
                 break;
             case USE_SKILL_BOOK:
-                //c.getPlayer().updateTick(slea.readInt());
                 slea.readInt();
                 InventoryHandler.UseSkillBook((byte) slea.readShort(), slea.readInt(), c, c.getPlayer());
                 break;
@@ -782,7 +778,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 NPCHandler.Storage(slea, c, c.getPlayer());
                 break;
             case GENERAL_CHAT:
-                //c.getPlayer().updateTick(slea.readInt());
                 slea.readInt();
                 ChatHandler.GeneralChat(slea.readMapleAsciiString(), slea.readByte(), c, c.getPlayer());
                 break;
@@ -802,7 +797,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 StatsHandling.DistributeAP(slea, c, c.getPlayer());
                 break;
             case DISTRIBUTE_SP:
-                //c.getPlayer().updateTick(slea.readInt());
                 slea.readInt();
                 StatsHandling.DistributeSP(slea.readInt(), c, c.getPlayer());
                 break;
