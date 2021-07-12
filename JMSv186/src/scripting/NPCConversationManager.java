@@ -67,6 +67,8 @@ import server.MapleCarnivalChallenge;
 import java.util.HashMap;
 import handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
+import server.MapleShop;
+import server.MapleShopItem;
 import server.MapleStatEffect;
 import server.SpeedRunner;
 import server.maps.SpeedRunType;
@@ -93,7 +95,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         this.type = type;
         this.iv = iv;
     }
-    
+
     public int getNpc() {
         return npc;
     }
@@ -105,16 +107,16 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public void WorldMessage(String text) {
         World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, text).getBytes());
     }
-    
+
     public void BroadcastPacket(byte[] packet) {
         World.Broadcast.broadcastMessage(packet);
     }
-    
+
     public void DebugPacket(MaplePacket packet) {
         c.getSession().write(packet);
     }
-    
-    public MaplePacketLittleEndianWriter getOutPacket(){
+
+    public MaplePacketLittleEndianWriter getOutPacket() {
         return new MaplePacketLittleEndianWriter();
     }
 
@@ -447,6 +449,20 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public void openShop(int id) {
         c.getPlayer().Info("ShopID = " + id + ", MapID = " + c.getPlayer().getMapId());
         MapleShopFactory.getInstance().getShop(id).sendShop(c);
+    }
+
+    public MapleShop CreateCustomShop(int id) {
+        MapleShop shop = new MapleShop(id, id);
+        return shop;
+    }
+    
+    public void CustomShopAdd(MapleShop shop, int itemid, int price){
+        shop.addItem(new MapleShopItem((short) 1000, itemid, price, 0, 0));
+    }
+
+    public void OpenCustomShop(MapleShop shop) {
+        c.getPlayer().Info("Custom Shop, MapID = " + c.getPlayer().getMapId());
+        shop.sendShop(c);
     }
 
     public int gainGachaponItem(int id, int quantity) {

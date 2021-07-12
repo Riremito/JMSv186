@@ -66,7 +66,7 @@ public class MapleShop {
     /**
      * Creates a new instance of MapleShop
      */
-    private MapleShop(int id, int npcId) {
+    public MapleShop(int id, int npcId) {
         this.id = id;
         this.npcId = npcId;
         items = new LinkedList<MapleShopItem>();
