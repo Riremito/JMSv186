@@ -2,8 +2,7 @@
 // test
 
 // 整形
-var face_list = Array(
-	// 男
+var face_list_male = Array(
 	20000,
 	20001,
 	20002,
@@ -37,8 +36,10 @@ var face_list = Array(
 	20033,
 	20035,
 	20038,
-	20040,
-	// 女
+	20040
+);
+
+var face_list_female = Array(
 	21000,
 	21001,
 	21002,
@@ -72,12 +73,49 @@ var face_list = Array(
 	21036,
 	21038
 );
-function Surgery() {
-	cm.sendStyle("整形", face_list);
+
+function Surgery_male() {
+	var my_face = cm.getPlayerStat("FACE");
+	var my_face_gender = (my_face >= 21000) ? true : false;
+	var my_face_id = my_face % 100;
+	var my_face_color = (my_face - (my_face_gender ? 21000 : 20000) - my_face_id);
+
+	for (i = 0; i < face_list_male.length; i++) {
+		var face_id = face_list_male[i] % 100;
+		var face_color = (face_list_male[i] - 20000 - face_id);
+		face_list_male[i] -= face_color;
+	}
+
+	for (i = 0; i < face_list_male.length; i++) {
+		face_list_male[i] += my_face_color;
+	}
+
+	cm.sendStyle("整形（男）", face_list_male);
+}
+
+function Surgery_female() {
+	var my_face = cm.getPlayerStat("FACE");
+	var my_face_gender = (my_face >= 21000) ? true : false;
+	var my_face_id = my_face % 100;
+	var my_face_color = (my_face - (my_face_gender ? 21000 : 20000) - my_face_id);
+
+	for (i = 0; i < face_list_female.length; i++) {
+		var face_id = face_list_female[i] % 100;
+		var face_color = (face_list_female[i] - 21000 - face_id);
+		face_list_female[i] -= face_color;
+	}
+
+	// 目の色白 + 女だけバグあり
+	if (my_face_color != 800) {
+		for (i = 0; i < face_list_female.length; i++) {
+			face_list_female[i] += my_face_color;
+		}
+	}
+	cm.sendStyle("整形（女）", face_list_female);
 }
 
 // 調髪
-var hair_list = Array(
+var hair_list_male = Array(
 	// 男
 	30000,
 	//30010, // 特殊
@@ -175,7 +213,10 @@ var hair_list = Array(
 	30960,
 	30970,
 	30980,
-	30990,
+	30990
+);
+
+var hair_list_female = Array(
 	31000,
 	31010,
 	31020,
@@ -210,10 +251,7 @@ var hair_list = Array(
 	31310,
 	31320,
 	31330,
-	31340
-);
-
-var hair_list2 = Array(
+	31340,
 	31350,
 	31400,
 	31410,
@@ -273,7 +311,10 @@ var hair_list2 = Array(
 	31960,
 	31970,
 	31980,
-	31990,
+	31990
+);
+
+var hair_list_female2 = Array(
 	32000,
 	32010,
 	32020,
@@ -317,15 +358,35 @@ var hair_list2 = Array(
 	34250,
 	34260
 );
-function ChangeHair() {
-	cm.sendStyle("調髪", hair_list);
+
+function ChangeHair_male() {
+	var color = cm.getPlayerStat("HAIR") % 10;
+	for (i = 0; i < hair_list_male.length; i++) {
+		hair_list_male[i] -= hair_list_male[i] % 10;
+		hair_list_male[i] += color;
+	}
+	cm.sendStyle("調髪（男）", hair_list_male);
 }
-function ChangeHair2() {
-	cm.sendStyle("調髪2", hair_list2);
+
+function ChangeHair_female() {
+	var color = cm.getPlayerStat("HAIR") % 10;
+	for (i = 0; i < hair_list_female.length; i++) {
+		hair_list_female[i] -= hair_list_female[i] % 10;
+		hair_list_female[i] += color;
+	}
+	cm.sendStyle("調髪（女）", hair_list_female);
+}
+
+function ChangeHair_female2() {
+	var color = cm.getPlayerStat("HAIR") % 10;
+	for (i = 0; i < hair_list_female2.length; i++) {
+		hair_list_female2[i] -= hair_list_female2[i] % 10;
+		hair_list_female2[i] += color;
+	}
+	cm.sendStyle("調髪（女）", hair_list_female2);
 }
 
 // 染毛
-var new_hair_color = 0;
 var hair_color_list = new Array();
 function HairDyeing() {
 	var my_hair_color = Math.floor((cm.getPlayerStat("HAIR") / 10)) * 10;
@@ -335,6 +396,26 @@ function HairDyeing() {
 		hair_color_list[i] = my_hair_color + i;
 	}
 	cm.sendStyle("染毛", hair_color_list);
+}
+
+// 目の色
+var face_color_list = new Array();
+function FaceColor() {
+	var my_face_gender = (cm.getPlayerStat("FACE") >= 21000) ? true : false;
+	var my_face = cm.getPlayerStat("FACE") % 100;
+
+	my_face += 20000;
+	// female
+	if (my_face_gender) {
+		my_face += 1000;
+	}
+
+	face_color_list = new Array();
+
+	for (var i = 0; i < 9; i++) {
+		face_color_list[i] = my_face + (i * 100);
+	}
+	cm.sendStyle("目の色", face_color_list);
 }
 
 // スキンケア
@@ -355,15 +436,23 @@ function action(mode, type, selection) {
 	switch (status) {
 		case 0:
 			{
-				//cm.sendYesNo("退出しますか？");
-				var text = "デバッグメニュー\r\nパワーエリクサーが必要です\r\n";
-				text += "#L" + 1 + "##r整形#k#l\r\n";
-				text += "#L" + 2 + "##r調髪#k#l\r\n";
+				//cm.sendOk("test hair color" + (cm.getPlayerStat("HAIR") % 10));
+				//break;
+				var text = "デバッグキャラクタークリエイト\r\n";
+				text += "パワーエリクサーが必要です\r\n";
+				text += "目の色白 + 女の顔の一部, 男の髪型の一部 + 染毛でバグあり\r\n";
+				text += "#L" + 1 + "##r整形（男）#k#l\r\n";
+				text += "#L" + 2 + "##r調髪（男）#k#l\r\n";
 				text += "#L" + 3 + "##r染毛#k#l\r\n";
 				text += "#L" + 4 + "##rスキンケア#k#l\r\n";
 				text += "#L" + 5 + "##r目の色#k#l\r\n";
 				text += "#L" + 6 + "##r性転換#k#l\r\n";
-				text += "#L" + 7 + "##r調髪2#k#l\r\n";
+				text += "#L" + 7 + "##r調髪（女）#k#l\r\n";
+				text += "#L" + 8 + "##r調髪（女）#k#l\r\n";
+				text += "#L" + 9 + "##r整形（女）#k#l\r\n";
+				if (!cm.haveItem(2000005)) {
+					cm.gainItem(2000005, 1);
+				}
 				return cm.sendSimple(text);
 			}
 		case 1:
@@ -372,11 +461,11 @@ function action(mode, type, selection) {
 				switch (selection) {
 					case 1:
 						{
-							return Surgery();
+							return Surgery_male();
 						}
 					case 2:
 						{
-							return ChangeHair();
+							return ChangeHair_male();
 						}
 					case 3:
 						{
@@ -388,8 +477,7 @@ function action(mode, type, selection) {
 						}
 					case 5:
 						{
-							cm.sendSimple("作成中....");
-							break;
+							return FaceColor();
 						}
 					case 6:
 						{
@@ -399,7 +487,15 @@ function action(mode, type, selection) {
 					// 髪型が0x7Fでオーバーフローしてそれ以降の選択肢がキャンセル扱い
 					case 7:
 						{
-							return ChangeHair2();
+							return ChangeHair_female();
+						}
+					case 8:
+						{
+							return ChangeHair_female2();
+						}
+					case 9:
+						{
+							return Surgery_female();
 						}
 					default:
 						break;
@@ -410,13 +506,13 @@ function action(mode, type, selection) {
 			switch (old_selection) {
 				case 1:
 					{
-						cm.setAvatar(2000005, face_list[selection]);
+						cm.setAvatar(2000005, face_list_male[selection]);
 						break;
 					}
 				case 2:
 					{
-						
-						cm.setAvatar(2000005, hair_list[selection]);
+
+						cm.setAvatar(2000005, hair_list_male[selection]);
 						break;
 					}
 				case 3:
@@ -431,7 +527,7 @@ function action(mode, type, selection) {
 					}
 				case 5:
 					{
-						// test
+						cm.setAvatar(2000005, face_color_list[selection]);
 						break;
 					}
 				case 6:
@@ -441,7 +537,17 @@ function action(mode, type, selection) {
 					}
 				case 7:
 					{
-						cm.setAvatar(2000005, hair_list2[selection]);
+						cm.setAvatar(2000005, hair_list_female[selection]);
+						break;
+					}
+				case 8:
+					{
+						cm.setAvatar(2000005, hair_list_female2[selection]);
+						break;
+					}
+				case 9:
+					{
+						cm.setAvatar(2000005, face_list_female[selection]);
 						break;
 					}
 				default:
