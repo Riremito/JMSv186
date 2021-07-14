@@ -1,4 +1,6 @@
 function enter(pi) {
-    pi.warp(809030000, 0);
-    return true;
+	pi.playPortalSE();
+	pi.saveLocation("MULUNG_TC");
+	pi.warp(809030000, "out00");
+	return true;
 }
