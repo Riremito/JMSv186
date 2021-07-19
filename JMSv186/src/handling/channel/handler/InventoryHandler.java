@@ -93,9 +93,9 @@ public class InventoryHandler {
         final short src = slea.readShort();                                            //01 00
         final short dst = slea.readShort();                                            //00 00
         final short quantity = slea.readShort();                                       //53 01
-        
+
         c.getPlayer().Info("ItemMove = " + src + " -> " + dst + " (" + quantity + ")");
-        
+
         if (src < 0 && dst > 0) {
             MapleInventoryManipulator.unequip(c, src, dst);
         } else if (dst < 0) {
@@ -336,13 +336,15 @@ public class InventoryHandler {
     }
 
     public static final boolean UseUpgradeScroll(final byte slot, final byte dst, final byte ws, final MapleClient c, final MapleCharacter chr, final int vegas) {
-        boolean whiteScroll = false; // white scroll being used?
+        boolean whiteScroll = true;
         boolean legendarySpirit = false; // legendary spirit skill
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
+        /*
         if ((ws & 2) == 2) {
             whiteScroll = true;
         }
+        */
 
         IEquip toScroll;
         if (dst < 0) {
@@ -365,6 +367,25 @@ public class InventoryHandler {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
             return false;
         }
+
+        // 黄金つち (ビシャスのハンマー)
+        if (scroll.getItemId() == 2470000) {
+            final Equip toHammer = (Equip)toScroll;
+            
+            if(toHammer.getViciousHammer() >= 2 || toHammer.getUpgradeSlots() > 120){
+                c.getSession().write(MaplePacketCreator.getInventoryFull());
+                return false;
+            }
+            
+            toHammer.setViciousHammer((byte) (toHammer.getViciousHammer() + 1));
+            toHammer.setUpgradeSlots((byte) (toHammer.getUpgradeSlots() + 1));
+
+            c.getSession().write(MaplePacketCreator.scrolledItem(scroll, toHammer, false, false));
+            chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
+            chr.getMap().broadcastMessage(chr, MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), IEquip.ScrollResult.SUCCESS, legendarySpirit), vegas == 0);
+            return true;
+        }
+
         if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
             if (toScroll.getUpgradeSlots() < 1) {
                 c.getSession().write(MaplePacketCreator.getInventoryFull());
@@ -1052,17 +1073,17 @@ public class InventoryHandler {
                 }
                 switch (apfrom) { // AP to
                     case 64: // str
-                        if (playerst.getStr() <= 4 || (c.getPlayer().getJob() % 1000 / 100 == 1 && playerst.getStr() <= 35)) {
+                        if (playerst.getStr() <= 4) {
                             used = false;
                         }
                         break;
                     case 128: // dex
-                        if (playerst.getDex() <= 4 || (c.getPlayer().getJob() % 1000 / 100 == 3 && playerst.getStr() <= 25) || (c.getPlayer().getJob() % 1000 / 100 == 4 && playerst.getStr() <= 25) || (c.getPlayer().getJob() % 1000 / 100 == 5 && playerst.getStr() <= 20)) {
+                        if (playerst.getDex() <= 4) {
                             used = false;
                         }
                         break;
                     case 256: // int
-                        if (playerst.getInt() <= 4 || (c.getPlayer().getJob() % 1000 / 100 == 2 && playerst.getInt() <= 20)) {
+                        if (playerst.getInt() <= 4) {
                             used = false;
                         }
                         break;
