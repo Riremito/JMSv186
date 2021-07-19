@@ -549,6 +549,33 @@ public class MTSCSPacket {
         return mplew.getPacket();
     }
 
+    public static MaplePacket TamaBoxSuccess(int tama) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(SendPacketOpcode.TAMA_BOX_SUCCESS.getValue());
+        mplew.writeInt(tama);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket TamaBoxFailed() {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(SendPacketOpcode.TAMA_BOX_FAILURE.getValue());
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket RandomMesoBagSuccess(byte type, int mesos) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(SendPacketOpcode.RANDOM_MESOBAG_SUCCESS.getValue());
+        mplew.write(type);
+        mplew.writeInt(mesos);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket RandomMesoBagFailed() {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(SendPacketOpcode.RANDOM_MESOBAG_FAILURE.getValue());
+        return mplew.getPacket();
+    }
+
 //======================================MTS===========================================
     public static final MaplePacket startMTS(final MapleCharacter chr) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();

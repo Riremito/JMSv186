@@ -47,20 +47,24 @@ public class AttackInfo {
         }
         if (GameConstants.isLinkedAranSkill(skill)) {
             final ISkill skillLink = SkillFactory.getSkill(skill);
+            /*
             if (display > 80) {
                 if (!skillLink.getAction()) {
                     AutobanManager.getInstance().autoban(chr.getClient(), "No delay hack, SkillID : " + skill); // 2 of the same autobans? wtf...
                     return null;
                 }
             }
+             */
             return skillLink.getEffect(skillLevel);
         }
+        /*
         if (display > 80) {
             if (!skill_.getAction()) {
                 AutobanManager.getInstance().autoban(chr.getClient(), "No delay hack, SkillID : " + skill);
                 return null;
             }
         }
+         */
         return skill_.getEffect(skillLevel);
     }
 }

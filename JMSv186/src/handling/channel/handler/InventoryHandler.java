@@ -50,6 +50,7 @@ import handling.world.MaplePartyCharacter;
 import handling.world.World;
 import java.awt.Rectangle;
 import java.util.Collections;
+import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import server.AutobanManager;
 import server.Randomizer;
@@ -94,7 +95,9 @@ public class InventoryHandler {
         final short dst = slea.readShort();                                            //00 00
         final short quantity = slea.readShort();                                       //53 01
 
-        c.getPlayer().Info("ItemMove = " + src + " -> " + dst + " (" + quantity + ")");
+        if (dst != 0) {
+            c.getPlayer().Info("ItemMove = " + src + " -> " + dst + " (" + quantity + ")");
+        }
 
         if (src < 0 && dst > 0) {
             MapleInventoryManipulator.unequip(c, src, dst);
@@ -344,8 +347,7 @@ public class InventoryHandler {
         if ((ws & 2) == 2) {
             whiteScroll = true;
         }
-        */
-
+         */
         IEquip toScroll;
         if (dst < 0) {
             toScroll = (IEquip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
@@ -370,13 +372,13 @@ public class InventoryHandler {
 
         // 黄金つち (ビシャスのハンマー)
         if (scroll.getItemId() == 2470000) {
-            final Equip toHammer = (Equip)toScroll;
-            
-            if(toHammer.getViciousHammer() >= 2 || toHammer.getUpgradeSlots() > 120){
+            final Equip toHammer = (Equip) toScroll;
+
+            if (toHammer.getViciousHammer() >= 2 || toHammer.getUpgradeSlots() > 120) {
                 c.getSession().write(MaplePacketCreator.getInventoryFull());
                 return false;
             }
-            
+
             toHammer.setViciousHammer((byte) (toHammer.getViciousHammer() + 1));
             toHammer.setUpgradeSlots((byte) (toHammer.getUpgradeSlots() + 1));
 
@@ -982,6 +984,54 @@ public class InventoryHandler {
         boolean used = false, cc = false;
 
         switch (itemId) {
+            case 5201000:
+            case 5201001:
+            case 5201002: {
+                final int tama = MapleItemInformationProvider.getInstance().getInt(itemId, "info/dama");
+                if (c.getPlayer().gainTama(tama, true)) {
+                    c.getSession().write(MTSCSPacket.TamaBoxSuccess(tama));
+                    used = true;
+                } else {
+                    c.getSession().write(MTSCSPacket.TamaBoxFailed());
+                }
+                break;
+            }
+            case 5202000: {
+                int randommeso = 0;
+                final int meso = MapleItemInformationProvider.getInstance().getInt(itemId, "info/meso");
+                final int mesomax = MapleItemInformationProvider.getInstance().getInt(itemId, "info/mesomax");
+                final int mesomin = MapleItemInformationProvider.getInstance().getInt(itemId, "info/mesomin");
+                final int mesostdev = MapleItemInformationProvider.getInstance().getInt(itemId, "info/mesostdev");
+
+                Random random = new Random();
+                int r = random.nextInt(4);
+
+                switch (r) {
+                    case 0:
+                        randommeso = mesomin;
+                        break;
+                    case 1:
+                        randommeso = mesostdev;
+                        break;
+                    case 2:
+                        randommeso = meso;
+                        break;
+                    case 3:
+                        randommeso = mesomax;
+                        break;
+                    default:
+                        randommeso = mesomin;
+                        break;
+                }
+
+                if (c.getPlayer().gainMeso(randommeso, false)) {
+                    c.getSession().write(MTSCSPacket.RandomMesoBagSuccess((byte) (r + 1), randommeso));
+                    used = true;
+                } else {
+                    c.getSession().write(MTSCSPacket.RandomMesoBagFailed());
+                }
+                break;
+            }
             case 5043001: // NPC Teleport Rock
             case 5043000: { // NPC Teleport Rock
                 final short questid = slea.readShort();
@@ -1983,7 +2033,7 @@ public class InventoryHandler {
             }
             final double Distance = Client_Reportedpos.distanceSq(mapitem.getPosition());
             if (Distance > 2500) {
-                chr.getCheatTracker().registerOffense(CheatingOffense.ITEMVAC_CLIENT, String.valueOf(Distance));
+                //chr.getCheatTracker().registerOffense(CheatingOffense.ITEMVAC_CLIENT, String.valueOf(Distance));
             } else if (chr.getPosition().distanceSq(mapitem.getPosition()) > 640000.0) {
                 chr.getCheatTracker().registerOffense(CheatingOffense.ITEMVAC_SERVER);
             }
@@ -2065,7 +2115,7 @@ public class InventoryHandler {
             }
             final double Distance = Client_Reportedpos.distanceSq(mapitem.getPosition());
             if (Distance > 10000 && (mapitem.getMeso() > 0 || mapitem.getItemId() != 4001025)) {
-                chr.getCheatTracker().registerOffense(CheatingOffense.PET_ITEMVAC_CLIENT, String.valueOf(Distance));
+                //chr.getCheatTracker().registerOffense(CheatingOffense.PET_ITEMVAC_CLIENT, String.valueOf(Distance));
             } else if (pet.getPos().distanceSq(mapitem.getPosition()) > 640000.0) {
                 chr.getCheatTracker().registerOffense(CheatingOffense.PET_ITEMVAC_SERVER);
             }

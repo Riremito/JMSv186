@@ -164,7 +164,8 @@ public class PacketHelper {
     public static void addInventoryInfo(MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
         mplew.writeInt(chr.getMeso()); // mesos
         mplew.writeInt(chr.getId());
-        mplew.writeLong(0); // パチンコ pachinko
+        mplew.writeInt(chr.getTama()); // パチンコ玉の数
+        mplew.writeInt(0); // unknown
         mplew.write(chr.getInventory(MapleInventoryType.EQUIP).getSlotLimit()); // equip slots
         mplew.write(chr.getInventory(MapleInventoryType.USE).getSlotLimit()); // use slots
         mplew.write(chr.getInventory(MapleInventoryType.SETUP).getSlotLimit()); // set-up slots

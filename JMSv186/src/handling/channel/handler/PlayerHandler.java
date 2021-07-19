@@ -118,7 +118,7 @@ public class PlayerHandler {
         final IItem toUse = chr.getInventory(MapleInventoryType.SETUP).findById(itemId);
 
         if (toUse == null) {
-            chr.getCheatTracker().registerOffense(CheatingOffense.USING_UNAVAILABLE_ITEM, Integer.toString(itemId));
+            //chr.getCheatTracker().registerOffense(CheatingOffense.USING_UNAVAILABLE_ITEM, Integer.toString(itemId));
             return;
         }
         if (itemId == 3011000) {
@@ -889,7 +889,7 @@ public class PlayerHandler {
             final int emoteid = 5159992 + emote;
             final MapleInventoryType type = GameConstants.getInventoryType(emoteid);
             if (chr.getInventory(type).findById(emoteid) == null) {
-                chr.getCheatTracker().registerOffense(CheatingOffense.USING_UNAVAILABLE_ITEM, Integer.toString(emoteid));
+                //chr.getCheatTracker().registerOffense(CheatingOffense.USING_UNAVAILABLE_ITEM, Integer.toString(emoteid));
                 return;
             }
         }
@@ -929,13 +929,13 @@ public class PlayerHandler {
 
         if (healHP != 0) {
             if (healHP > stats.getHealHP()) {
-                chr.getCheatTracker().registerOffense(CheatingOffense.REGEN_HIGH_HP, String.valueOf(healHP));
+                //chr.getCheatTracker().registerOffense(CheatingOffense.REGEN_HIGH_HP, String.valueOf(healHP));
             }
             chr.addHP(healHP);
         }
         if (healMP != 0) {
             if (healMP > stats.getHealMP()) {
-                chr.getCheatTracker().registerOffense(CheatingOffense.REGEN_HIGH_MP, String.valueOf(healMP));
+                //chr.getCheatTracker().registerOffense(CheatingOffense.REGEN_HIGH_MP, String.valueOf(healMP));
             }
             chr.addMP(healMP);
         }

@@ -44,6 +44,11 @@ public enum SendPacketOpcode implements WritableIntValueHolder {
     CHANNEL_SELECTED,
     ALL_CHARLIST,
     LOGIN_AUTH,
+    // Added
+    RANDOM_MESOBAG_SUCCESS,
+    RANDOM_MESOBAG_FAILURE,
+    TAMA_BOX_SUCCESS,
+    TAMA_BOX_FAILURE,
     // CHANNEL
     CHANGE_CHANNEL,
     UPDATE_STATS,

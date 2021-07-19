@@ -96,8 +96,8 @@ public class AutobanManager implements Runnable {
 //		Calendar cal = Calendar.getInstance();
 //		cal.add(Calendar.DATE, 60);
 //		c.getPlayer().tempban(sb.toString(), cal, 1, false);
-                c.getPlayer().ban(sb.toString(), false, true, false);
-                c.disconnect(true, false);
+                //c.getPlayer().ban(sb.toString(), false, true, false);
+                //c.disconnect(true, false);
             } else {
                 if (expiration > 0) {
                     expirations.add(new ExpirationEntry(System.currentTimeMillis() + expiration, acc, points));

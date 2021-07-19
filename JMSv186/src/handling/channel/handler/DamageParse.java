@@ -464,7 +464,7 @@ public class DamageParse {
 
             tracker.setAttacksWithoutHit(true);
             if (tracker.getAttacksWithoutHit() > 1000) {
-                tracker.registerOffense(CheatingOffense.ATTACK_WITHOUT_GETTING_HIT, Integer.toString(tracker.getAttacksWithoutHit()));
+                //tracker.registerOffense(CheatingOffense.ATTACK_WITHOUT_GETTING_HIT, Integer.toString(tracker.getAttacksWithoutHit()));
             }
         }
     }
@@ -636,7 +636,7 @@ public class DamageParse {
             tracker.setAttacksWithoutHit(true);
 
             if (tracker.getAttacksWithoutHit() > 1000) {
-                tracker.registerOffense(CheatingOffense.ATTACK_WITHOUT_GETTING_HIT, Integer.toString(tracker.getAttacksWithoutHit()));
+                //tracker.registerOffense(CheatingOffense.ATTACK_WITHOUT_GETTING_HIT, Integer.toString(tracker.getAttacksWithoutHit()));
             }
         }
     }

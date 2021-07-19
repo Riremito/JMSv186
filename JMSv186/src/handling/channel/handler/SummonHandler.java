@@ -200,16 +200,18 @@ public class SummonHandler {
                     }
                 }
             }
-            if (/*chr.isGM() || */toDamage < 120000) {
-                mob.damage(chr, toDamage, true);
-                chr.checkMonsterAggro(mob);
-                if (!mob.isAlive()) {
-                    chr.getClient().getSession().write(MobPacket.killMonster(mob.getObjectId(), 1));
-                }
+            //if (/*chr.isGM() || */toDamage < 120000) {
+            mob.damage(chr, toDamage, true);
+            chr.checkMonsterAggro(mob);
+            if (!mob.isAlive()) {
+                chr.getClient().getSession().write(MobPacket.killMonster(mob.getObjectId(), 1));
+            }
+            /*
             } else {
                 AutobanManager.getInstance().autoban(c, "High Summon Damage (" + toDamage + " to " + attackEntry.getMonster().getId() + ")");
                 // TODO : Check player's stat for damage checking.
             }
+             */
         }
         if (summon.isGaviota()) {
             chr.getMap().broadcastMessage(MaplePacketCreator.removeSummon(summon, true));

@@ -136,7 +136,7 @@ public class CheatTracker {
 
             if (numSameDamage > 5) {
                 numSameDamage = 0;
-                registerOffense(CheatingOffense.SAME_DAMAGE, numSameDamage + " times: " + dmg);
+                //registerOffense(CheatingOffense.SAME_DAMAGE, numSameDamage + " times: " + dmg);
             }
         } else {
             lastDamage = dmg;
@@ -246,7 +246,7 @@ public class CheatTracker {
         if (offense.shouldAutoban(entry.getCount())) {
             final byte type = offense.getBanType();
             if (type == 1) {
-                AutobanManager.getInstance().autoban(chrhardref.getClient(), StringUtil.makeEnumHumanReadable(offense.name()));
+                //AutobanManager.getInstance().autoban(chrhardref.getClient(), StringUtil.makeEnumHumanReadable(offense.name()));
             } else if (type == 2) {
                 chrhardref.getClient().getSession().close();
             }

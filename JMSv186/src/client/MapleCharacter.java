@@ -197,6 +197,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private boolean Debugger = false;
     // スクリプト情報
     private boolean Information = true;
+    private int tama = 0;
 
     public void SetDebugger() {
         Debugger = !Debugger;
@@ -491,6 +492,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             ret.remainingAp = rs.getShort("ap");
             ret.meso = rs.getInt("meso");
+            ret.tama = rs.getInt("tama");
             ret.gmLevel = rs.getByte("gm");
             ret.skinColor = rs.getByte("skincolor");
             ret.gender = rs.getByte("gender");
@@ -1015,7 +1017,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
 
-            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, monsterbookcover = ?, dojo_pts = ?, dojoRecord = ?, pets = ?, subcategory = ?, marriageId = ?, currentrep = ?, totalrep = ?, name = ? WHERE id = ?", DatabaseConnection.RETURN_GENERATED_KEYS);
+            ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, monsterbookcover = ?, dojo_pts = ?, dojoRecord = ?, pets = ?, subcategory = ?, marriageId = ?, currentrep = ?, totalrep = ?, name = ?, tama = ? WHERE id = ?", DatabaseConnection.RETURN_GENERATED_KEYS);
             ps.setInt(1, level);
             ps.setShort(2, fame);
             ps.setShort(3, stats.getStr());
@@ -1085,7 +1087,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.setInt(32, currentrep);
             ps.setInt(33, totalrep);
             ps.setString(34, name);
-            ps.setInt(35, id);
+            ps.setInt(35, tama);
+            ps.setInt(36, id);
 
             if (ps.executeUpdate() < 1) {
                 ps.close();
@@ -2924,6 +2927,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return meso;
     }
 
+    public int getTama() {
+        return tama;
+    }
+
     public final int[] getSavedLocations() {
         return savedLocations;
     }
@@ -2944,24 +2951,37 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         savedLocations[type.getValue()] = -1;
     }
 
-    public void gainMeso(int gain, boolean show) {
-        gainMeso(gain, show, false, false);
+    public boolean gainMeso(int gain, boolean show) {
+        return gainMeso(gain, show, false, false);
     }
 
     public void gainMeso(int gain, boolean show, boolean enableActions) {
         gainMeso(gain, show, enableActions, false);
     }
 
-    public void gainMeso(int gain, boolean show, boolean enableActions, boolean inChat) {
+    public boolean gainMeso(int gain, boolean show, boolean enableActions, boolean inChat) {
         if (meso + gain < 0) {
             client.getSession().write(MaplePacketCreator.enableActions());
-            return;
+            return false;
         }
         meso += gain;
         updateSingleStat(MapleStat.MESO, meso, enableActions);
         if (show) {
             client.getSession().write(MaplePacketCreator.showMesoGain(gain, inChat));
         }
+        return true;
+    }
+
+    public boolean gainTama(int gain, boolean show) {
+        if (tama + gain < 0) {
+            client.getSession().write(MaplePacketCreator.enableActions());
+            return false;
+        }
+        tama += gain;
+        if (show) {
+            client.getSession().write(MaplePacketCreator.showTamaGain(gain));
+        }
+        return true;
     }
 
     public void controlMonster(MapleMonster monster, boolean aggro) {
