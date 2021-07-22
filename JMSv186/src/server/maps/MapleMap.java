@@ -441,58 +441,51 @@ public final class MapleMap {
         final List<MonsterDropEntry> dropEntry = mi.retrieveDrop(mob.getId());
         Collections.shuffle(dropEntry);
 
+        final boolean forced_drop = mob.getStats().isBoss();
+
+        // この辺でドロップ確定させるMobのIDのチェック処理を入れる
         for (final MonsterDropEntry de : dropEntry) {
             if (de.itemId == mob.getStolen()) {
                 continue;
             }
-            if (Randomizer.nextInt(999999) < (int) (de.chance * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0) * (showdown / 100.0))) {
+
+            // モンスターカード
+            if (GameConstants.isMonsterCard(de.itemId)) {
+                if (chr.getMonsterBook().getLevel(de.itemId) >= 5) {
+                    continue;
+                }
+            }
+
+            // ボスは無条件でドロップ確定, 通常Mobはx/1000の確率でDBの値を参照してドロップする
+            if (forced_drop || (Math.floor(Math.random() * 1000) < (int) (de.chance * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0) * (showdown / 100.0)))) {
                 if (droptype == 3) {
                     pos.x = (mobpos + (d % 2 == 0 ? (40 * (d + 1) / 2) : -(40 * (d / 2))));
                 } else {
                     pos.x = (mobpos + ((d % 2 == 0) ? (25 * (d + 1) / 2) : -(25 * (d / 2))));
                 }
-                if (de.itemId == 0) { // meso
-                    int mesos = Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum;
+                // メル
+                if (de.itemId == 0) {
+                    int mesos = de.Minimum;
+                    if (de.Maximum > de.Minimum) {
+                        mesos = Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum;
+                    }
 
                     if (mesos > 0) {
                         spawnMobMesoDrop((int) (mesos * (chr.getStat().mesoBuff / 100.0) * chr.getDropMod() * cmServerrate), calcDropPos(pos, mob.getPosition()), mob, chr, false, droptype);
                     }
                 } else {
+                    // 装備
                     if (GameConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
                         // 能力値調整, randomizeStatsを利用すると通常通り
                         idrop = ii.RireSabaStats((Equip) ii.getEquipById(de.itemId));
                     } else {
+                        // 通常アイテム
                         final int range = Math.abs(de.Maximum - de.Minimum);
                         idrop = new Item(de.itemId, (byte) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(range <= 0 ? 1 : range) + de.Minimum : 1), (byte) 0);
                     }
                     spawnMobDrop(idrop, calcDropPos(pos, mob.getPosition()), mob, chr, droptype, de.questid);
                 }
                 d++;
-            }
-        }
-        final List<MonsterGlobalDropEntry> globalEntry = new ArrayList<MonsterGlobalDropEntry>(mi.getGlobalDrop());
-        Collections.shuffle(globalEntry);
-        final int cashz = (int) ((mob.getStats().isBoss() && mob.getStats().getHPDisplayType() == 0 ? 20 : 1) * caServerrate);
-        final int cashModifier = (int) ((mob.getStats().isBoss() ? 0 : (mob.getMobExp() / 1000 + mob.getMobMaxHp() / 10000))); //no rate
-        // Global Drops
-        for (final MonsterGlobalDropEntry de : globalEntry) {
-            if (Randomizer.nextInt(999999) < de.chance && (de.continent < 0 || (de.continent < 10 && mapid / 100000000 == de.continent) || (de.continent < 100 && mapid / 10000000 == de.continent) || (de.continent < 1000 && mapid / 1000000 == de.continent))) {
-                if (droptype == 3) {
-                    pos.x = (mobpos + (d % 2 == 0 ? (40 * (d + 1) / 2) : -(40 * (d / 2))));
-                } else {
-                    pos.x = (mobpos + ((d % 2 == 0) ? (25 * (d + 1) / 2) : -(25 * (d / 2))));
-                }
-                if (de.itemId == 0) {
-                    chr.modifyCSPoints(1, (int) ((Randomizer.nextInt(cashz) + cashz + cashModifier) * (chr.getStat().cashBuff / 100.0) * chr.getCashMod()), true);
-                } else if (!gDropsDisabled) {
-                    if (GameConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
-                        idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
-                    } else {
-                        idrop = new Item(de.itemId, (byte) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum : 1), (byte) 0);
-                    }
-                    spawnMobDrop(idrop, calcDropPos(pos, mob.getPosition()), mob, chr, de.onlySelf ? 0 : droptype, de.questid);
-                    d++;
-                }
             }
         }
     }

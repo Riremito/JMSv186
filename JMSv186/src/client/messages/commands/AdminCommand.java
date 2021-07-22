@@ -2584,7 +2584,6 @@ public class AdminCommand {
     public static class Y extends Yellow {
     }
 
-    /*
     public static class ReloadOps extends CommandExecute {
 
         @Override
@@ -2633,7 +2632,7 @@ public class AdminCommand {
             return 1;
         }
     }
-     */
+
     public static class ReloadQuests extends CommandExecute {
 
         @Override

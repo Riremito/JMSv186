@@ -43,7 +43,13 @@ public class SpawnPointAreaBoss extends Spawns {
         this.pos1 = pos1;
         this.pos2 = pos2;
         this.pos3 = pos3;
-        this.mobTime = (mobTime < 0 ? -1 : (mobTime * 1000));
+        // 10分間隔未満は通常処理
+        if (mobTime < 600) {
+            this.mobTime = (mobTime < 0 ? -1 : (mobTime * 1000));
+        } else {
+            // 10分以上の間隔の場合は1秒に設定
+            this.mobTime = 1000;
+        }
         this.msg = msg;
         this.nextPossibleSpawn = System.currentTimeMillis();
     }

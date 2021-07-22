@@ -43,9 +43,20 @@ public class SpawnPoint extends Spawns {
     public SpawnPoint(final MapleMonster monster, final Point pos, final int mobTime, final byte carnivalTeam, final String msg) {
         this.monster = monster;
         this.pos = pos;
-        this.mobTime = (mobTime < 0 ? -1 : (mobTime * 1000));
+        // 10分間隔未満は通常処理
+        if (mobTime < 600 || !monster.getStats().isBoss()) {
+            this.mobTime = (mobTime < 0 ? -1 : (mobTime * 1000));
+        } else {
+            // 10分以上の間隔の場合は1秒に設定
+            this.mobTime = 1000;
+        }
         this.carnivalTeam = carnivalTeam;
-        this.msg = msg;
+        if (msg != null || !monster.getStats().isBoss()) {
+            this.msg = msg;
+        } else {
+            // ボス出現メッセージがない場合のメッセージ
+            this.msg = monster.getStats().getName() + "が現れました。";
+        }
         this.immobile = !monster.getStats().getMobile();
         this.nextPossibleSpawn = System.currentTimeMillis();
     }
@@ -119,6 +130,11 @@ public class SpawnPoint extends Spawns {
         }
         if (msg != null) {
             map.broadcastMessage(MaplePacketCreator.serverNotice(6, msg));
+            // デバッグ出力
+            if (mob.getStats().isBoss()) {
+                String debug_msg = "BossID = " + monster.getId() + ", MapID = " + map.getId();
+                map.broadcastMessage(MaplePacketCreator.serverNotice(5, debug_msg));
+            }
         }
         return mob;
     }
