@@ -66,9 +66,26 @@ public class XMLWZFile implements MapleDataProvider {
         try {
             fis = new FileInputStream(dataFile);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
+            try {
+                System.out.println("original wz: " + path + ".xml");
+                int dir_left = path.indexOf("/");
+                int dir_right = path.indexOf("/", dir_left + 1);
+                String path_dir = path.substring(dir_left, dir_right + 1);
+                String pathCustom = path;
+                pathCustom = pathCustom.replace(path_dir, "/Custom/");
+
+                //System.out.println("path_dir: " + path_dir);
+                System.out.println("custom wz: " + pathCustom + ".xml");
+
+                File dataFileCustom = new File(root, pathCustom + ".xml");
+                fis = new FileInputStream(dataFileCustom);
+            } catch (FileNotFoundException e2) {
+                throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
+            }
+            //throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
         }
         final XMLDomMapleData domMapleData;
+
         try {
             domMapleData = new XMLDomMapleData(fis, imageDataDir.getParentFile());
         } finally {
