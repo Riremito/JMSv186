@@ -194,10 +194,40 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         damage(from, damage, updateAttackTime, 0);
     }
 
-    public final void damage(final MapleCharacter from, final long damage, final boolean updateAttackTime, final int lastSkill) {
+    public final boolean isRaid() {
+        if (!stats.isBoss()) {
+            return false;
+        }
+
+        // 屋台等の状態変化系は初期状態は調整しない
+        if (stats.getRevives().size() > 0) {
+            return false;
+        }
+
+        int mapid = map.getId();
+        // ボスモンスターレイド v155
+        if (970030100 <= mapid && mapid <= 970042717) {
+            return true;
+        }
+        // 海外ボスモンスターレイド v180
+        if (889210100 <= mapid && mapid <= 889222517) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public final void damage(final MapleCharacter from, long damage, final boolean updateAttackTime, final int lastSkill) {
         if (from == null || damage <= 0 || !isAlive()) {
             return;
         }
+
+        // ボスモンスターレイド
+        // ボスが弱すぎるのでダメージ計算式を変更して最低20回の攻撃ヒット回数を求める
+        if (isRaid()) {
+            damage = Math.min(damage, (getMobMaxHp() / 20));
+        }
+
         AttackerEntry attacker = null;
 
         if (from.getParty() != null) {
@@ -262,7 +292,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                         em.monsterDamaged(from, this, (int) rDamage);
                     }
                 }
-                if (sponge.get() == null && hp > 0) {
+                if (sponge.get() == null/* && hp > 0*/) {
                     switch (stats.getHPDisplayType()) {
                         case 0:
                             map.broadcastMessage(MobPacket.showBossHP(this), this.getPosition());
@@ -289,6 +319,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 }
 
                 if (hp <= 0) {
+                    /*
+                    if (stats.getHPDisplayType() == 0) {
+                        map.broadcastMessage(MobPacket.showBossHP(this), this.getPosition());
+                    }
+                     */
                     map.killMonster(this, from, true, false, (byte) 1, lastSkill);
                 }
             }

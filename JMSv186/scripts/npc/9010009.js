@@ -24,6 +24,15 @@ var towns = Array(
 	100000000
 );
 
+
+// カスタムマップ
+var towns_custom = Array(
+	60000,
+	209000000,
+	219000000,
+	100000000
+);
+
 // 501030106
 
 var event_maps = Array(
@@ -32,6 +41,10 @@ var event_maps = Array(
 
 function start() {
 	var text = "宅配先を選択してください\r\n";
+
+	for (var i = 0; i < towns_custom.length; i++) {
+		text += "#r#L" + towns_custom[i] + "##m" + towns_custom[i] + "#(" +towns_custom[i] + ")#l#k\r\n";
+	}
 
 	for (var i = 0; i < towns.length; i++) {
 		text += "#b#L" + towns[i] + "##m" + towns[i] + "#(" +towns[i] + ")#l#k\r\n";

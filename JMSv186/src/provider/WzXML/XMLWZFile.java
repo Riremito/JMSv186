@@ -67,14 +67,12 @@ public class XMLWZFile implements MapleDataProvider {
             fis = new FileInputStream(dataFile);
         } catch (FileNotFoundException e) {
             try {
-                System.out.println("original wz: " + path + ".xml");
                 int dir_left = path.indexOf("/");
                 int dir_right = path.indexOf("/", dir_left + 1);
                 String path_dir = path.substring(dir_left, dir_right + 1);
                 String pathCustom = path;
                 pathCustom = pathCustom.replace(path_dir, "/Custom/");
 
-                //System.out.println("path_dir: " + path_dir);
                 System.out.println("custom wz: " + pathCustom + ".xml");
 
                 File dataFileCustom = new File(root, pathCustom + ".xml");
