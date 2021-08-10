@@ -5,24 +5,25 @@ import java.awt.Point;
 import provider.MapleData;
 import provider.MapleDataTool;
 import server.maps.MapleGenericPortal;
+import server.maps.MapleMap;
 import server.maps.MapleMapPortal;
 
 public class PortalFactory {
 
     private int nextDoorPortal = 0x80;
 
-    public MaplePortal makePortal(int type, MapleData portal) {
+    public MaplePortal makePortal(MapleMap map, int type, MapleData portal) {
         MapleGenericPortal ret = null;
         if (type == MaplePortal.MAP_PORTAL) {
             ret = new MapleMapPortal();
         } else {
             ret = new MapleGenericPortal(type);
         }
-        loadPortal(ret, portal);
+        loadPortal(map, ret, portal);
         return ret;
     }
 
-    private void loadPortal(MapleGenericPortal myPortal, MapleData portal) {
+    private void loadPortal(MapleMap map, MapleGenericPortal myPortal, MapleData portal) {
         myPortal.setName(MapleDataTool.getString(portal.getChildByPath("pn")));
         myPortal.setTarget(MapleDataTool.getString(portal.getChildByPath("tn")));
         myPortal.setTargetMapId(MapleDataTool.getInt(portal.getChildByPath("tm")));
@@ -37,7 +38,8 @@ public class PortalFactory {
             myPortal.setId(nextDoorPortal);
             nextDoorPortal++;
         } else {
-            myPortal.setId(Integer.parseInt(portal.getName()));
+            //myPortal.setId(Integer.parseInt(portal.getName()));
+            myPortal.setId(map.getPortals().size());
         }
         //portalState
         //if (myPortal.getName().equals("join00") && !myPortal.getPortalState()) { //ola ola, ox quiz, maplefitness

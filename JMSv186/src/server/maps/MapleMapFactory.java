@@ -63,7 +63,7 @@ public class MapleMapFactory {
         return getMap(mapid, respawns, npcs, true);
     }
 
-    public final MapleMap getMap(final int mapid, final boolean respawns, final boolean npcs, final boolean reactors) {
+    public final MapleMap getMap(int mapid, final boolean respawns, final boolean npcs, final boolean reactors) {
         Integer omapid = Integer.valueOf(mapid);
         MapleMap map = maps.get(omapid);
         if (map == null) {
@@ -73,7 +73,18 @@ public class MapleMapFactory {
                 if (map != null) {
                     return map;
                 }
-                MapleData mapData = source.getData(getMapName(mapid));
+
+                MapleData mapData;
+                try {
+                    mapData = source.getData(getMapName(mapid));
+                } catch (Exception e) {
+                    System.out.println("Unknown MapID = " + mapid);
+                    // キノコ神社に強制移動
+                    mapid = 800000000;
+                    omapid = Integer.valueOf(mapid);
+                    mapData = source.getData(getMapName(mapid));
+                }
+                //MapleData mapData = source.getData(getMapName(mapid));
 
                 MapleData link = mapData.getChildByPath("info/link");
                 if (link != null) {
@@ -91,7 +102,7 @@ public class MapleMapFactory {
 
                 PortalFactory portalFactory = new PortalFactory();
                 for (MapleData portal : mapData.getChildByPath("portal")) {
-                    map.addPortal(portalFactory.makePortal(MapleDataTool.getInt(portal.getChildByPath("pt")), portal));
+                    map.addPortal(portalFactory.makePortal(map, MapleDataTool.getInt(portal.getChildByPath("pt")), portal));
                 }
                 List<MapleFoothold> allFootholds = new LinkedList<MapleFoothold>();
                 Point lBound = new Point();
@@ -246,7 +257,7 @@ public class MapleMapFactory {
 
         PortalFactory portalFactory = new PortalFactory();
         for (MapleData portal : mapData.getChildByPath("portal")) {
-            map.addPortal(portalFactory.makePortal(MapleDataTool.getInt(portal.getChildByPath("pt")), portal));
+            map.addPortal(portalFactory.makePortal(map, MapleDataTool.getInt(portal.getChildByPath("pt")), portal));
         }
         List<MapleFoothold> allFootholds = new LinkedList<MapleFoothold>();
         Point lBound = new Point();

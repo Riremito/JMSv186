@@ -14,6 +14,7 @@ function action(mode, type, selection) {
 		case 0:
 			{
 				var text = "デバッグショップ\r\n";
+				text += "#L" + 700 + "##r人気度300#k#l\r\n";
 				text += "#L" + 299 + "##r消費EX#k#l\r\n";
 				text += "#L" + 499 + "##rETCEX#k#l\r\n";
 				text += "#L" + 399 + "##r設置EX#k#l\r\n";
@@ -71,6 +72,14 @@ function action(mode, type, selection) {
 			{
 
 				switch (selection) {
+					case 700:
+						{
+							var fame = cm.getPlayer().getFame();
+							var newfame = 300 - fame;
+							cm.getPlayer().addFame(newfame);
+							cm.sendOk("人気度獲得 " + newfame);
+							break;
+						}
 					case 599:
 						{
 							CustomShop(item_CashEX);

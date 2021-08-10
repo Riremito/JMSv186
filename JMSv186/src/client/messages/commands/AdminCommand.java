@@ -292,7 +292,7 @@ public class AdminCommand {
             return 1;
         }
     }
-
+     */
     public static class DC extends CommandExecute {
 
         @Override
@@ -344,6 +344,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class Skill extends CommandExecute {
 
         @Override
@@ -1391,6 +1392,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public static class CloneMe extends CommandExecute {
 
         @Override
@@ -1410,7 +1412,6 @@ public class AdminCommand {
         }
     }
 
-    /*
     public static class Monitor extends CommandExecute {
 
         @Override
@@ -3101,7 +3102,7 @@ public class AdminCommand {
             return 1;
         }
     }
-
+    */
     public static class ReloadMap extends CommandExecute {
 
         @Override
@@ -3140,6 +3141,7 @@ public class AdminCommand {
         }
     }
 
+    /*
     public abstract static class TestTimer extends CommandExecute {
 
         protected Timer toTest = null;
