@@ -21,9 +21,11 @@ import server.quest.MapleQuest;
 public class Start {
 
     public final static void main(final String args[]) {
-        if (Boolean.parseBoolean(ServerProperties.getProperty("net.sf.odinms.world.admin"))) {
-            System.out.println("[!!! Admin Only Mode Active !!!]");
-        }
+        // 設定ファイルの読み込み
+        DatabaseConnection.LoadConfig();
+        LoginServer.LoadConfig();
+        CashShopServer.LoadConfig();
+        ChannelServer.LoadConfig("momiji");
 
         try {
             final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0");

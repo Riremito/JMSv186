@@ -25,6 +25,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Properties;
 import server.ServerProperties;
 
 /**
@@ -36,59 +37,24 @@ import server.ServerProperties;
  */
 public class DatabaseConnection {
 
-    private static final ThreadLocal<Connection> con = new ThreadLocalConnection();
-    public static final int CLOSE_CURRENT_RESULT = 1;
-    /**
-     * The constant indicating that the current <code>ResultSet</code> object
-     * should not be closed when calling <code>getMoreResults</code>.
-     *
-     * @since 1.4
-     */
-    public static final int KEEP_CURRENT_RESULT = 2;
-    /**
-     * The constant indicating that all <code>ResultSet</code> objects that have
-     * previously been kept open should be closed when calling
-     * <code>getMoreResults</code>.
-     *
-     * @since 1.4
-     */
-    public static final int CLOSE_ALL_RESULTS = 3;
-    /**
-     * The constant indicating that a batch statement executed successfully but
-     * that no count of the number of rows it affected is available.
-     *
-     * @since 1.4
-     */
-    public static final int SUCCESS_NO_INFO = -2;
-    /**
-     * The constant indicating that an error occured while executing a batch
-     * statement.
-     *
-     * @since 1.4
-     */
-    public static final int EXECUTE_FAILED = -3;
-    /**
-     * The constant indicating that generated keys should be made available for
-     * retrieval.
-     *
-     * @since 1.4
-     */
+    private static final ThreadLocal<Connection> connected = new ThreadLocalConnection();
     public static final int RETURN_GENERATED_KEYS = 1;
-    /**
-     * The constant indicating that generated keys should not be made available
-     * for retrieval.
-     *
-     * @since 1.4
-     */
-    public static final int NO_GENERATED_KEYS = 2;
+    private static String url, user, password;
+
+    public static final void LoadConfig() {
+        Properties p = ServerProperties.LoadConfig("properties/database.properties");
+        url = p.getProperty("database.url");
+        user = p.getProperty("database.user");
+        password = p.getProperty("database.password");
+    }
 
     public static final Connection getConnection() {
-        return con.get();
+        return connected.get();
     }
 
     public static final void closeAll() throws SQLException {
-        for (final Connection con : ThreadLocalConnection.allConnections) {
-            con.close();
+        for (final Connection disconnect : ThreadLocalConnection.allConnections) {
+            disconnect.close();
         }
     }
 
@@ -104,7 +70,7 @@ public class DatabaseConnection {
                 System.err.println("ERROR" + e);
             }
             try {
-                final Connection con = DriverManager.getConnection(ServerProperties.getProperty("url"), ServerProperties.getProperty("user"), ServerProperties.getProperty("password"));
+                final Connection con = DriverManager.getConnection(url, user, password);
                 allConnections.add(con);
                 return con;
             } catch (SQLException e) {

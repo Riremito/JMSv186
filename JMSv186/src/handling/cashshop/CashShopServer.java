@@ -21,14 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package handling.cashshop;
 
 import java.net.InetSocketAddress;
-
 import handling.MapleServerHandler;
 import handling.channel.PlayerStorage;
 import handling.mina.MapleCodecFactory;
+import java.util.Properties;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import org.apache.mina.common.IoAcceptor;
-
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
@@ -37,16 +36,20 @@ import server.ServerProperties;
 
 public class CashShopServer {
 
-    private static String ip;
     private static InetSocketAddress InetSocketadd;
-    private final static int PORT = 8596;
     private static IoAcceptor acceptor;
     private static PlayerStorage players, playersMTS;
     private static boolean finishedShutdown = false;
+    private static String ip;
+    private static int PORT;
+
+    public static final void LoadConfig() {
+        Properties p = ServerProperties.LoadConfig("properties/shop.properties");
+        PORT = Integer.parseInt(p.getProperty("server.port"));
+        ip = p.getProperty("server.host") + ":" + PORT;
+    }
 
     public static final void run_startup_configurations() {
-        ip = ServerProperties.getProperty("net.sf.odinms.world.host") + ":" + PORT;
-
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
 

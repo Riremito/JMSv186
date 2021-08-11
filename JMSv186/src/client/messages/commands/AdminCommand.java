@@ -1895,27 +1895,6 @@ public class AdminCommand {
         }
     }
 
-    public static class CashRate extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            if (splitted.length > 1) {
-                final int rate = Integer.parseInt(splitted[1]);
-                if (splitted.length > 2 && splitted[2].equalsIgnoreCase("all")) {
-                    for (ChannelServer cserv : ChannelServer.getAllInstances()) {
-                        cserv.setCashRate(rate);
-                    }
-                } else {
-                    c.getChannelServer().setCashRate(rate);
-                }
-                c.getPlayer().dropMessage(6, "Cash Rate has been changed to " + rate + "x");
-            } else {
-                c.getPlayer().dropMessage(6, "Syntax: !cashrate <number> [all]");
-            }
-            return 1;
-        }
-    }
-
     public static class ListSquads extends CommandExecute {
 
         @Override

@@ -20,18 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.login;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import database.DatabaseConnection;
 import handling.MapleServerHandler;
 import handling.mina.MapleCodecFactory;
-import java.rmi.NotBoundException;
+import java.util.Properties;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import org.apache.mina.common.IoAcceptor;
@@ -43,14 +39,24 @@ import server.ServerProperties;
 
 public class LoginServer {
 
-    public static final int PORT = 8484;
     private static InetSocketAddress InetSocketadd;
     private static IoAcceptor acceptor;
     private static Map<Integer, Integer> load = new HashMap<Integer, Integer>();
+    private static int userLimit, usersOn = 0;
+    private static boolean finishedShutdown = true, adminOnly = false;
+    private static int PORT;
     private static String serverName, eventMessage;
     private static byte flag;
-    private static int maxCharacters, userLimit, usersOn = 0;
-    private static boolean finishedShutdown = true, adminOnly = false;
+
+    public static final void LoadConfig() {
+        Properties p = ServerProperties.LoadConfig("properties/login.properties");
+        PORT = Integer.parseInt(p.getProperty("server.port"));
+        userLimit = Integer.parseInt(p.getProperty("server.userlimit"));
+
+        serverName = p.getProperty("server.name");
+        eventMessage = p.getProperty("server.event");
+        flag = Byte.parseByte(p.getProperty("server.flag"));
+    }
 
     public static final void addChannel(final int channel) {
         load.put(channel, 0);
@@ -61,12 +67,6 @@ public class LoginServer {
     }
 
     public static final void run_startup_configurations() {
-        userLimit = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.login.userlimit"));
-        serverName = ServerProperties.getProperty("net.sf.odinms.login.serverName");
-        eventMessage = ServerProperties.getProperty("net.sf.odinms.login.eventMessage");
-        flag = Byte.parseByte(ServerProperties.getProperty("net.sf.odinms.login.flag"));
-        adminOnly = Boolean.parseBoolean(ServerProperties.getProperty("net.sf.odinms.world.admin", "false"));
-        maxCharacters = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.login.maxCharacters"));
 
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
@@ -105,10 +105,6 @@ public class LoginServer {
 
     public static final byte getFlag() {
         return flag;
-    }
-
-    public static final int getMaxCharacters() {
-        return maxCharacters;
     }
 
     public static final Map<Integer, Integer> getLoad() {

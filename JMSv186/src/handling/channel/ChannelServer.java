@@ -55,6 +55,7 @@ import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import server.ServerProperties;
 import server.events.MapleCoconut;
@@ -71,7 +72,7 @@ public class ChannelServer implements Serializable {
     public static long serverStartTime;
     private int expRate, mesoRate, dropRate, cashRate;
     private short port = 8585;
-    private static final short DEFAULT_PORT = 8585;
+    private static short DEFAULT_PORT = 8585;
     private int channel, running_MerchantID = 0, flags = 0;
     private String serverMessage, key, ip, serverName;
     private boolean shutdown = false, finishedShutdown = false, MegaphoneMuteState = false, adminOnly = false;
@@ -88,6 +89,8 @@ public class ChannelServer implements Serializable {
     private final ReentrantReadWriteLock squadLock = new ReentrantReadWriteLock(); //squad
     private int eventmap = -1;
     private final Map<MapleEventType, MapleEvent> events = new EnumMap<MapleEventType, MapleEvent>(MapleEventType.class);
+    private static Properties ChannelProperties;
+    private static int channels = 1;
 
     private ChannelServer(final String key, final int channel) {
         this.key = key;
@@ -98,6 +101,11 @@ public class ChannelServer implements Serializable {
 
     public static Set<Integer> getAllInstance() {
         return new HashSet<Integer>(instances.keySet());
+    }
+
+    public static final void LoadConfig(final String server) {
+        ChannelProperties = ServerProperties.LoadConfig("properties/" + server + ".properties");
+        channels = Integer.parseInt(ChannelProperties.getProperty("server.channels"));
     }
 
     public final void loadEvents() {
@@ -114,20 +122,21 @@ public class ChannelServer implements Serializable {
     public final void run_startup_configurations() {
         setChannel(channel); //instances.put
         try {
-            expRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.exp"));
-            mesoRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.meso"));
-            dropRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.drop"));
-            cashRate = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.cash"));
-            serverMessage = ServerProperties.getProperty("net.sf.odinms.world.serverMessage");
-            serverName = ServerProperties.getProperty("net.sf.odinms.login.serverName");
-            flags = Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.world.flags", "0"));
-            adminOnly = Boolean.parseBoolean(ServerProperties.getProperty("net.sf.odinms.world.admin", "false"));
-            eventSM = new EventScriptManager(this, ServerProperties.getProperty("net.sf.odinms.channel.events").split(","));
-            port = Short.parseShort(ServerProperties.getProperty("net.sf.odinms.channel.net.port" + channel, String.valueOf(DEFAULT_PORT + channel)));
+            DEFAULT_PORT = Short.parseShort(ChannelProperties.getProperty("server.port"));
+
+            expRate = Integer.parseInt(ChannelProperties.getProperty("server.rate.exp"));
+            mesoRate = Integer.parseInt(ChannelProperties.getProperty("server.rate.meso"));
+            dropRate = Integer.parseInt(ChannelProperties.getProperty("server.rate.drop"));
+            serverMessage = ChannelProperties.getProperty("server.message");
+            serverName = ChannelProperties.getProperty("server.name");
+            flags = Integer.parseInt(ChannelProperties.getProperty("server.flags", "0"));
+            adminOnly = Boolean.parseBoolean(ChannelProperties.getProperty("server.admin", "false"));
+            eventSM = new EventScriptManager(this, ChannelProperties.getProperty("server.events").split(","));
+            port = (short) (DEFAULT_PORT + channel - 1);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        ip = ServerProperties.getProperty("net.sf.odinms.channel.net.interface") + ":" + port;
+        ip = ChannelProperties.getProperty("server.host") + ":" + port;
 
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
@@ -253,14 +262,6 @@ public class ChannelServer implements Serializable {
         this.expRate = expRate;
     }
 
-    public final int getCashRate() {
-        return cashRate;
-    }
-
-    public final void setCashRate(final int cashRate) {
-        this.cashRate = cashRate;
-    }
-
     public final int getChannel() {
         return channel;
     }
@@ -292,7 +293,7 @@ public class ChannelServer implements Serializable {
 
     public final void reloadEvents() {
         eventSM.cancel();
-        eventSM = new EventScriptManager(this, ServerProperties.getProperty("net.sf.odinms.channel.events").split(","));
+        eventSM = new EventScriptManager(this, ChannelProperties.getProperty("server.events").split(","));
         eventSM.init();
     }
 
@@ -315,7 +316,7 @@ public class ChannelServer implements Serializable {
     public static final void startChannel_Main() {
         serverStartTime = System.currentTimeMillis();
 
-        for (int i = 0; i < Integer.parseInt(ServerProperties.getProperty("net.sf.odinms.channel.count", "0")); i++) {
+        for (int i = 0; i < channels; i++) {
             newInstance(ServerConstants.Channel_Key[i], i + 1).run_startup_configurations();
         }
     }
