@@ -1229,7 +1229,7 @@ public class MapleItemInformationProvider {
         mesoCache.put(itemId, triggerItem);
         return triggerItem;
     }
-    
+
     // info/damaとか
     public final int getInt(final int itemId, final String text) {
         final int triggerItem = MapleDataTool.getIntConvert(text, getItemData(itemId), 0);

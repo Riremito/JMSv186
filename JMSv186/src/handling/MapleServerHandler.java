@@ -709,15 +709,21 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 break;
             case USE_UPGRADE_SCROLL:
                 slea.readInt();
-                InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) slea.readShort(), c, c.getPlayer());
+                if (InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) slea.readShort(), c, c.getPlayer())) {
+                    c.getPlayer().saveToDB(false, false);
+                }
                 break;
             case USE_POTENTIAL_SCROLL:
                 slea.readInt();
-                InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) 0, c, c.getPlayer());
+                if (InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) 0, c, c.getPlayer())) {
+                    c.getPlayer().saveToDB(false, false);
+                }
                 break;
             case USE_EQUIP_SCROLL:
                 slea.readInt();
-                InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) 0, c, c.getPlayer());
+                if (InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) 0, c, c.getPlayer())) {
+                    c.getPlayer().saveToDB(false, false);
+                }
                 break;
             case USE_SUMMON_BAG:
                 InventoryHandler.UseSummonBag(slea, c, c.getPlayer());
@@ -727,7 +733,9 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                 break;
             case USE_SKILL_BOOK:
                 slea.readInt();
-                InventoryHandler.UseSkillBook((byte) slea.readShort(), slea.readInt(), c, c.getPlayer());
+                if (InventoryHandler.UseSkillBook((byte) slea.readShort(), slea.readInt(), c, c.getPlayer())) {
+                    c.getPlayer().saveToDB(false, false);
+                }
                 break;
             case USE_CATCH_ITEM:
                 InventoryHandler.UseCatchItem(slea, c, c.getPlayer());

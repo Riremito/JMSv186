@@ -44,6 +44,9 @@ import tools.data.input.SeekableLittleEndianAccessor;
 
 public class CharLoginHandler {
 
+    private static int SelectedWorld = 0;
+    private static int SelectedChannel = 0;
+
     private static final boolean loginFailCount(final MapleClient c) {
         c.loginAttempt++;
         if (c.loginAttempt > 5) {
@@ -94,8 +97,10 @@ public class CharLoginHandler {
     }
 
     public static final void ServerListRequest(final MapleClient c) {
-        c.getSession().write(LoginPacket.getServerList(0, LoginServer.getServerName(), LoginServer.getLoad()));
-        c.getSession().write(LoginPacket.getServerList(1, "もみじ", LoginServer.getLoad()));
+        // かえで
+        c.getSession().write(LoginPacket.getServerList(0, LoginServer.getLoad()));
+        // もみじ
+        c.getSession().write(LoginPacket.getServerList(1, LoginServer.getLoad()));
         c.getSession().write(LoginPacket.getEndOfServerList());
     }
 
@@ -115,8 +120,15 @@ public class CharLoginHandler {
     }
 
     public static final void CharlistRequest(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final int server = slea.readByte();
+        int server = slea.readByte();
         final int channel = slea.readByte() + 1;
+
+        if (server == 12) {
+            server = 0;
+        }
+
+        SelectedWorld = server;
+        SelectedChannel = channel - 1;
 
         c.setWorld(server);
         //System.out.println("Client " + c.getSession().getRemoteAddress().toString().split(":")[0] + " is connecting to server " + server + " channel " + channel + "");
@@ -281,7 +293,8 @@ public class CharLoginHandler {
             c.getIdleTask().cancel(true);
         }
         c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
-        c.getSession().write(MaplePacketCreator.getServerIP(Integer.parseInt(ChannelServer.getInstance(c.getChannel()).getIP().split(":")[1]), charId));
+        //c.getSession().write(MaplePacketCreator.getServerIP(Integer.parseInt(ChannelServer.getInstance(c.getChannel()).getIP().split(":")[1]), charId));
+        c.getSession().write(MaplePacketCreator.getServerIP(LoginServer.WorldPort[SelectedWorld] + SelectedChannel, charId));
         return true;
     }
 }

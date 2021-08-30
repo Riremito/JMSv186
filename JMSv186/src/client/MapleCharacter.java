@@ -2284,6 +2284,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (pyramid && pyramidSubway != null) { //checks if they had pyramid before AND after changing
             pyramidSubway.onChangeMap(this, to.getId());
         }
+        // マップ移動時にDBへ反映する
+        saveToDB(false, false);
     }
 
     public void leaveMap() {
@@ -2421,6 +2423,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 map.spawnDragon(dragon);
                 map.updateMapObjectVisibility(this, dragon);
             }
+
+            // 転職時にDBへ反映する
+            saveToDB(false, false);
         } catch (Exception e) {
             FileoutputUtil.outputFileError(FileoutputUtil.ScriptEx_Log, e); //all jobs throw errors :(
         }
@@ -3291,6 +3296,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     break;
             }
         }
+
+        // レベルアップ時にDBへ反映する
+        saveToDB(false, false);
         //if (map.getForceMove() > 0 && map.getForceMove() <= getLevel()) {
         //    changeMap(map.getReturnMap(), map.getReturnMap().getPortal(0));
         //    dropMessage(-1, "You have been expelled from the map.");

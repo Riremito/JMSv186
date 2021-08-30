@@ -41,6 +41,7 @@ import client.inventory.MapleInventoryType;
 import client.MapleQuestStatus;
 import client.inventory.IItem;
 import client.SkillEntry;
+import handling.channel.ChannelServer;
 import tools.Pair;
 import server.movement.LifeMovementFragment;
 import server.shops.AbstractPlayerStore;
@@ -389,13 +390,23 @@ public class PacketHelper {
                     mplew.writeShort(equip.getExpPercentage() * 4); // Item Exp... 98% = 25%
                 }
                 mplew.writeInt(equip.getDurability());
-                mplew.writeInt(equip.getViciousHammer());
+                if (ChannelServer.IsCustom()) {
+                    mplew.writeInt(equip.getViciousHammer());
+                } else {
+                    mplew.writeInt(0);
+                }
                 if (!hasUniqueId) {
                     mplew.write(equip.getState()); //7 = unique for the lulz
                     mplew.write(equip.getEnhance());
-                    mplew.writeShort(equip.getPotential1()); //potential stuff 1. total damage
-                    mplew.writeShort(equip.getPotential2()); //potential stuff 2. critical rate
-                    mplew.writeShort(equip.getPotential3()); //potential stuff 3. all stats
+                    if (ChannelServer.IsCustom()) {
+                        mplew.writeShort(equip.getPotential1()); //potential stuff 1. total damage
+                        mplew.writeShort(equip.getPotential2()); //potential stuff 2. critical rate
+                        mplew.writeShort(equip.getPotential3()); //potential stuff 3. all stats
+                    } else {
+                        mplew.writeShort(0);
+                        mplew.writeShort(0);
+                        mplew.writeShort(0);
+                    }
                 }
                 mplew.writeShort(equip.getHpR());
                 mplew.writeShort(equip.getMpR());

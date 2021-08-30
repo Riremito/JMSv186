@@ -36,6 +36,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
+import server.maps.MapleMap;
+import server.maps.SavedLocationType;
 import tools.FileoutputUtil;
 
 public class CommandProcessor {
@@ -98,6 +100,26 @@ public class CommandProcessor {
 
     }
 
+    private static boolean warp(MapleClient c, int mapid) {
+        try {
+            if (!(0 < mapid && mapid < 999999999)) {
+                c.getPlayer().Notice("存在しないMapIDです");
+                return false;
+            }
+            MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
+            if (map == null) {
+                c.getPlayer().Notice("存在しないMapIDです");
+                return false;
+            }
+
+            c.getPlayer().changeMap(map, map.getPortal(0));
+            return true;
+        } catch (Exception e) {
+        }
+        c.getPlayer().Notice("例外発生");
+        return false;
+    }
+
     public static boolean processCommand(MapleClient c, String line, CommandType type) {
         // 通常クライアントのコマンドの処理
         if (line.charAt(0) == PlayerGMRank.MAPLE.getCommandPrefix()) {
@@ -123,6 +145,51 @@ public class CommandProcessor {
                 } else {
                     c.getPlayer().Notice("スクリプト情報無効");
                 }
+                return true;
+            }
+            // ヘルプ
+            if ("/help".equals(splitted[0])) {
+                c.getPlayer().Notice("/save, /map2, /fm, /henesys, /leafre, /magatia");
+                return true;
+            }
+
+            // セーブ
+            if ("/save".equals(splitted[0]) || "/セーブ".equals(splitted[0])) {
+                c.getPlayer().saveToDB(false, false);
+                c.getPlayer().Notice("現在のキャラクターの状態がDBへ反映されました");
+                return true;
+            }
+            // map2
+            if ("/map2".equals(splitted[0])) {
+                try {
+                    int mapid = Integer.parseInt(splitted[1]);
+                    if (0 < mapid && mapid < 999999999) {
+                        warp(c, mapid);
+                    }
+                } catch (Exception e) {
+                }
+                return true;
+            }
+
+            // FM
+            if ("/fm".equals(splitted[0]) || "/フリマ".equals(splitted[0])) {
+                c.getPlayer().saveLocation(SavedLocationType.FREE_MARKET, c.getPlayer().getMap().getReturnMap().getId());
+                warp(c, 910000000);
+                return true;
+            }
+            // ヘネシス
+            if ("/henesys".equals(splitted[0]) || "/ヘネシス".equals(splitted[0])) {
+                warp(c, 100000000);
+                return true;
+            }
+            // リプレ
+            if ("/leafre".equals(splitted[0]) || "/リプレ".equals(splitted[0])) {
+                warp(c, 240000000);
+                return true;
+            }
+            // マガティア
+            if ("/magatia".equals(splitted[0]) || "/マガティア".equals(splitted[0])) {
+                warp(c, 261000000);
                 return true;
             }
 

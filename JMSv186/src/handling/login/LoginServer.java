@@ -45,17 +45,41 @@ public class LoginServer {
     private static int userLimit, usersOn = 0;
     private static boolean finishedShutdown = true, adminOnly = false;
     private static int PORT;
-    private static String serverName, eventMessage;
-    private static byte flag;
+
+    private static final int WolrdLimit = 20;
+    public static int NumberOfWorld = 0;
+    public static final short WorldPort[] = new short[WolrdLimit];
+    public static final String WorldEvent[] = new String[WolrdLimit];
+    public static final String WorldMessage[] = new String[WolrdLimit];
+    public static final String WorldName[] = new String[WolrdLimit];
+    public static final int WorldFlag[] = new int[WolrdLimit];
+    public static final int WorldChannels[] = new int[WolrdLimit];
 
     public static final void LoadConfig() {
         Properties p = ServerProperties.LoadConfig("properties/login.properties");
         PORT = Integer.parseInt(p.getProperty("server.port"));
         userLimit = Integer.parseInt(p.getProperty("server.userlimit"));
+    }
 
-        serverName = p.getProperty("server.name");
-        eventMessage = p.getProperty("server.event");
-        flag = Byte.parseByte(p.getProperty("server.flag"));
+    public static final Properties LoadWorldConfig(final String server) {
+        Properties p = ServerProperties.LoadConfig("properties/" + server + ".properties");
+        return p;
+    }
+
+    public static final void SetWorldConfig() {
+        final String worldlist[] = {"kaede", "momiji"};
+
+        for (String wolrd : worldlist) {
+            Properties p = LoadWorldConfig(wolrd);
+            WorldChannels[NumberOfWorld] = Integer.parseInt(p.getProperty("server.channels"));
+            WorldPort[NumberOfWorld] = Short.parseShort(p.getProperty("server.port"));
+            WorldName[NumberOfWorld] = p.getProperty("server.name");
+            WorldEvent[NumberOfWorld] = p.getProperty("server.event");
+            WorldMessage[NumberOfWorld] = p.getProperty("server.message");
+            WorldFlag[NumberOfWorld] = Integer.parseInt(p.getProperty("server.flags"));
+
+            NumberOfWorld++;
+        }
     }
 
     public static final void addChannel(final int channel) {
@@ -95,18 +119,6 @@ public class LoginServer {
         finishedShutdown = true; //nothing. lol
     }
 
-    public static final String getServerName() {
-        return serverName;
-    }
-
-    public static final String getEventMessage() {
-        return eventMessage;
-    }
-
-    public static final byte getFlag() {
-        return flag;
-    }
-
     public static final Map<Integer, Integer> getLoad() {
         return load;
     }
@@ -116,24 +128,12 @@ public class LoginServer {
         usersOn = usersOn_;
     }
 
-    public static final void setEventMessage(final String newMessage) {
-        eventMessage = newMessage;
-    }
-
-    public static final void setFlag(final byte newflag) {
-        flag = newflag;
-    }
-
     public static final int getUserLimit() {
         return userLimit;
     }
 
     public static final int getUsersOn() {
         return usersOn;
-    }
-
-    public static final void setUserLimit(final int newLimit) {
-        userLimit = newLimit;
     }
 
     public static final int getNumberOfSessions() {

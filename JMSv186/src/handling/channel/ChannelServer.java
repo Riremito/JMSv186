@@ -91,6 +91,7 @@ public class ChannelServer implements Serializable {
     private final Map<MapleEventType, MapleEvent> events = new EnumMap<MapleEventType, MapleEvent>(MapleEventType.class);
     private static Properties ChannelProperties;
     private static int channels = 1;
+    private static boolean custom = false;
 
     private ChannelServer(final String key, final int channel) {
         this.key = key;
@@ -119,6 +120,11 @@ public class ChannelServer implements Serializable {
         events.put(MapleEventType.Snowball, new MapleSnowball(channel, MapleEventType.Snowball.mapids));
     }
 
+    // BB前仕様かどうか判定
+    public static boolean IsCustom() {
+        return custom;
+    }
+
     public final void run_startup_configurations() {
         setChannel(channel); //instances.put
         try {
@@ -133,6 +139,7 @@ public class ChannelServer implements Serializable {
             adminOnly = Boolean.parseBoolean(ChannelProperties.getProperty("server.admin", "false"));
             eventSM = new EventScriptManager(this, ChannelProperties.getProperty("server.events").split(","));
             port = (short) (DEFAULT_PORT + channel - 1);
+            custom = Boolean.parseBoolean(ChannelProperties.getProperty("server.custom"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -20,12 +20,62 @@ import server.quest.MapleQuest;
 
 public class Start {
 
-    public final static void main(final String args[]) {
+    public static void TestServer() {
+        System.out.println("テストサーバー");
         // 設定ファイルの読み込み
         DatabaseConnection.LoadConfig();
         LoginServer.LoadConfig();
+        LoginServer.SetWorldConfig();
         CashShopServer.LoadConfig();
         ChannelServer.LoadConfig("momiji");
+        World.init();
+        WorldTimer.getInstance().start();
+        EtcTimer.getInstance().start();
+        MapTimer.getInstance().start();
+        MobTimer.getInstance().start();
+        CloneTimer.getInstance().start();
+        EventTimer.getInstance().start();
+        BuffTimer.getInstance().start();
+        //WZ
+        MapleQuest.initQuests();
+        MapleLifeFactory.loadQuestCounts();
+        ItemMakerFactory.getInstance();
+        MapleItemInformationProvider.getInstance().load();
+        RandomRewards.getInstance();
+        SkillFactory.getSkill(99999999);
+        MapleOxQuizFactory.getInstance().initialize();
+        MapleCarnivalFactory.getInstance().initialize();
+        MapleGuildRanking.getInstance().getRank();
+        MapleFamilyBuff.getBuffEntry();
+        MapleServerHandler.registerMBean();
+        ChannelServer.startChannel_Main();
+        CashItemFactory.getInstance().initialize();
+        CheatTimer.getInstance().register(AutobanManager.getInstance(), 60000);
+        Runtime.getRuntime().addShutdownHook(new Thread(new Shutdown()));
+        try {
+            SpeedRunner.getInstance().loadSpeedRuns();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        PlayerNPC.loadAll();// touch - so we see database problems early...
+        World.registerRespawn();
+        System.out.println("起動完了");
+    }
+
+    public final static void main(final String args[]) {
+        for (String arg : args) {
+            System.out.println(arg);
+            if (arg.equals("test")) {
+                TestServer();
+                return;
+            }
+        }
+        // 設定ファイルの読み込み
+        DatabaseConnection.LoadConfig();
+        LoginServer.LoadConfig();
+        LoginServer.SetWorldConfig();
+        CashShopServer.LoadConfig();
+        ChannelServer.LoadConfig("kaede");
 
         try {
             final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0");

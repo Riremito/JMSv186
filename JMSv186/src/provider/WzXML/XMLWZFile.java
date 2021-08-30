@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package provider.WzXML;
 
+import handling.channel.ChannelServer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -66,21 +67,25 @@ public class XMLWZFile implements MapleDataProvider {
         try {
             fis = new FileInputStream(dataFile);
         } catch (FileNotFoundException e) {
-            try {
-                int dir_left = path.indexOf("/");
-                int dir_right = path.indexOf("/", dir_left + 1);
-                String path_dir = path.substring(dir_left, dir_right + 1);
-                String pathCustom = path;
-                pathCustom = pathCustom.replace(path_dir, "/Custom/");
+            // Wz改変済みの場合は追加マップを開放
+            if (ChannelServer.IsCustom()) {
+                try {
+                    int dir_left = path.indexOf("/");
+                    int dir_right = path.indexOf("/", dir_left + 1);
+                    String path_dir = path.substring(dir_left, dir_right + 1);
+                    String pathCustom = path;
+                    pathCustom = pathCustom.replace(path_dir, "/Custom/");
 
-                System.out.println("custom wz: " + pathCustom + ".xml");
+                    System.out.println("custom wz: " + pathCustom + ".xml");
 
-                File dataFileCustom = new File(root, pathCustom + ".xml");
-                fis = new FileInputStream(dataFileCustom);
-            } catch (FileNotFoundException e2) {
+                    File dataFileCustom = new File(root, pathCustom + ".xml");
+                    fis = new FileInputStream(dataFileCustom);
+                } catch (FileNotFoundException e2) {
+                    throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
+                }
+            } else {
                 throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
             }
-            //throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
         }
         final XMLDomMapleData domMapleData;
 

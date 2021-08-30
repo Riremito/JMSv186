@@ -171,15 +171,23 @@ public class LoginPacket {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket getServerList(final int serverId, final String serverName, final Map<Integer, Integer> channelLoad) {
+    public static final MaplePacket getServerList(final int serverId, final Map<Integer, Integer> channelLoad) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.SERVERLIST.getValue());
-        mplew.write(serverId); // 0 = Aquilla, 1 = bootes, 2 = cass, 3 = delphinus
-//        final String worldName = serverName.substring(0, serverName.length() - 3); //remove the SEA
-        mplew.writeMapleAsciiString(serverName);
-        mplew.write(LoginServer.getFlag());
-        mplew.writeMapleAsciiString(LoginServer.getEventMessage());
+
+        /*
+        if (serverId == 0) {
+            mplew.write(12);
+        } else {
+            mplew.write(serverId);
+        }
+         */
+        mplew.write(serverId);
+
+        mplew.writeMapleAsciiString(LoginServer.WorldName[serverId]);
+        mplew.write(LoginServer.WorldFlag[serverId]);
+        mplew.writeMapleAsciiString(LoginServer.WorldEvent[serverId]);
         mplew.writeShort(100);
         mplew.writeShort(100);
 
@@ -200,7 +208,7 @@ public class LoginPacket {
             } else {
                 load = 1200;
             }
-            mplew.writeMapleAsciiString(serverName + "-" + i);
+            mplew.writeMapleAsciiString(LoginServer.WorldName[serverId] + "-" + i);
             mplew.writeInt(load);
             mplew.write(serverId);
             mplew.writeShort(i - 1);
