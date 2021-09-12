@@ -386,47 +386,58 @@ public class MaplePacketCreator {
     private static MaplePacket serverMessage(int type, int channel, String message, boolean megaEar) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        /*	* 0: [Notice]<br>
-         * 1: Popup<br>
-         * 2: Megaphone<br>
-         * 3: Super Megaphone<br>
-         * 4: Scrolling message at top<br>
-         * 5: Pink Text<br>
-         * 6: Lightblue Text
-         * 8: Item megaphone
-         * 9: Heart megaphone
-         * 10: Skull Super megaphone
-         * 11: Green megaphone message?
-         * 12: Three line of megaphone text はーと
-         * 13: End of file =.=" どくろ
-         * 14: Green Gachapon box
-         * 15: Red Gachapon box
-         * 18: Blue Notice (again)*/
+        /*
+        0x00    [告知事項]青文字
+        0x01    ダイアログ
+        0x02    メガホン
+        0x03    拡声器
+        0x04    画面上部のメッセージ
+        0x05    ピンク文字
+        0x06    青文字
+        0x07    ???
+        0x08    アイテム拡声器
+        0x09    ワールド拡声器? (未実装)
+        0x0A    三連拡声器
+        0x0B    不明
+        0x0C    ハート拡声器
+        0x0D    ドクロ拡声器
+        0x0E    ???
+        0x0F    ???
+        0x10    体験用アバター獲得
+        0x11    青文字
+         */
         mplew.writeShort(SendPacketOpcode.SERVERMESSAGE.getValue());
         mplew.write(type);
+
         if (type == 4) {
             mplew.write(1);
         }
+
+        // 0x10 = 名前
         mplew.writeMapleAsciiString(message);
 
         switch (type) {
-            case 3:
-            case 12:
-            case 13:
+            case 0x0A:
+                mplew.write(0x03);
+                mplew.writeMapleAsciiString(message);
+                mplew.writeMapleAsciiString(message);
+                mplew.write(channel - 1);
+                mplew.write(megaEar ? 1 : 0);
+                break;
+            case 0x03:
+            case 0x0C:
+            case 0x0D:
                 mplew.write(channel - 1); // channel
                 mplew.write(megaEar ? 1 : 0);
                 break;
-            case 6:
-            case 18:
+            case 0x06:
+            case 0x09:
                 mplew.writeInt(channel >= 1000000 && channel < 6000000 ? channel : 0); //cash itemID, displayed in yellow by the {name}
                 //E.G. All new EXP coupon {Ruby EXP Coupon} is now available in the Cash Shop!
                 //with Ruby Exp Coupon being in yellow and with item info
                 break;
         }
 
-        //mplew.writeInt(0);
-        //mplew.writeInt(0);
-        //mplew.writeInt(0);
         return mplew.getPacket();
     }
 
@@ -447,7 +458,7 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.SERVERMESSAGE.getValue());
-        mplew.write(14);
+        mplew.write(0x0A);
 
         if (message.get(0) != null) {
             mplew.writeMapleAsciiString(message.get(0));
@@ -703,7 +714,7 @@ public class MaplePacketCreator {
 
         return mplew.getPacket();
     }
-    
+
     public static final MaplePacket showTamaGain(final int gain) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 

@@ -1619,12 +1619,7 @@ public class InventoryHandler {
                 }
                 break;
             }
-            /*
-            case 5077000: { // 3 line Megaphone
-                if (c.getPlayer().getLevel() < 10) {
-                    c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
-                }
+            case 5077000: { // 三連拡声器
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
                     final byte numLines = slea.readByte();
                     if (numLines > 3) {
@@ -1632,12 +1627,29 @@ public class InventoryHandler {
                     }
                     final List<String> messages = new LinkedList<String>();
                     String message;
+
+                    // 勲章
+                    final IItem medal = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -21);
+
+                    String player_name = null;
+                    if (medal != null) { // Medal
+                        String medal_name = MapleItemInformationProvider.getInstance().getName(medal.getItemId());
+                        int padding = medal_name.indexOf("の勲章");
+                        if (padding > 0) {
+                            medal_name = medal_name.substring(0, padding);
+                        }
+                        player_name = "<" + medal_name + "> " + c.getPlayer().getName();
+                    } else {
+                        player_name = c.getPlayer().getName();
+                    }
+
                     for (int i = 0; i < numLines; i++) {
                         message = slea.readMapleAsciiString();
                         if (message.length() > 65) {
                             break;
                         }
-                        messages.add(c.getPlayer().getName() + " : " + message);
+                        messages.add(player_name + " : " + message);
+
                     }
                     final boolean ear = slea.readByte() > 0;
 
@@ -1648,7 +1660,6 @@ public class InventoryHandler {
                 }
                 break;
             }
-             */
             case 5071000:
             case 5073000:
             case 5074000:
@@ -1658,7 +1669,6 @@ public class InventoryHandler {
                     break;
                 }
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
-                    String message = "";
                     final String user_message = slea.readMapleAsciiString();
 
                     if (user_message.length() > 65) {
@@ -1666,21 +1676,19 @@ public class InventoryHandler {
                     }
 
                     final IItem medal = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -21);
-
+                    String player_name = null;
                     if (medal != null) { // Medal
                         String medal_name = MapleItemInformationProvider.getInstance().getName(medal.getItemId());
                         int padding = medal_name.indexOf("の勲章");
                         if (padding > 0) {
                             medal_name = medal_name.substring(0, padding);
                         }
-                        message += "<" + medal_name + "> ";
-                        System.out.println("Medal = " + medal.getItemId());
+                        player_name = "<" + medal_name + "> " + c.getPlayer().getName();
                     } else {
-                        System.out.println("Medal = Null");
+                        player_name = c.getPlayer().getName();
                     }
 
-                    message += (c.getPlayer().getName());
-                    message += " : " + user_message;
+                    String message = player_name + " : " + user_message;
 
                     final boolean ear = slea.readByte() != 0;
                     int type = 3;
@@ -1709,8 +1717,21 @@ public class InventoryHandler {
                         break;
                     }
                     final StringBuilder sb = new StringBuilder();
-                    //addMedalString(c.getPlayer(), sb);
-                    sb.append(c.getPlayer().getName());
+
+                    final IItem medal = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -21);
+                    String player_name = null;
+                    if (medal != null) { // Medal
+                        String medal_name = MapleItemInformationProvider.getInstance().getName(medal.getItemId());
+                        int padding = medal_name.indexOf("の勲章");
+                        if (padding > 0) {
+                            medal_name = medal_name.substring(0, padding);
+                        }
+                        player_name = "<" + medal_name + "> " + c.getPlayer().getName();
+                    } else {
+                        player_name = c.getPlayer().getName();
+                    }
+
+                    sb.append(player_name);
                     sb.append(" : ");
                     sb.append(message);
 

@@ -159,14 +159,35 @@ function DoSomething_F4() {
 	cm.DebugPacket(p.getPacket());
 }
 
-// test
-function DoSomething() {
+// パチンコ玉獲得ダイアログ
+function DoSomething_F3() {
 	var p = cm.getOutPacket();
 	// header
 	p.writeShort(0xF3);
 
 	p.writeInt(123456789);
 	p.writeZeroBytes(100);
+	// ProcessPacket
+	cm.DebugPacket(p.getPacket());
+}
+
+// test
+function DoSomething() {
+	var p = cm.getOutPacket();
+	// header
+	p.writeShort(0x003F);
+
+	// data
+	p.write(0x0A);
+	p.writeMapleAsciiString("Riremito : Abbb");
+	p.write(0x03);
+	p.writeMapleAsciiString("Riremito : Baaa");
+	p.writeMapleAsciiString("Riremito : Saaa");
+
+	p.write(0x00);
+	p.write(0x00);
+	p.writeZeroBytes(100);
+
 	// ProcessPacket
 	cm.DebugPacket(p.getPacket());
 }
