@@ -992,6 +992,13 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
             case ACCEPT_FAMILY:
                 FamilyHandler.AcceptFamily(slea, c);
                 break;
+            // パチンコ
+            case BEANS_OPERATION:
+                BeanGame.BeanGame1(slea, c);
+                break;
+            case BEANS_UPDATE:
+                BeanGame.BeanGame2(slea, c);
+                break;
             default:
                 System.out.println("[UNHANDLED] Recv [" + header.toString() + "] found");
                 break;

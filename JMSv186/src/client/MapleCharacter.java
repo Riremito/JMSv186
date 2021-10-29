@@ -23,7 +23,6 @@ package client;
 import constants.GameConstants;
 import client.inventory.MapleInventoryType;
 import client.inventory.MapleInventory;
-import client.inventory.PetDataFactory;
 import client.inventory.Item;
 import client.inventory.ItemLoader;
 import client.inventory.MapleInventoryIdentifier;
@@ -79,7 +78,6 @@ import handling.world.guild.MapleGuildCharacter;
 import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import tools.MockIOSession;
 import scripting.EventInstanceManager;
 import scripting.NPCScriptManager;
@@ -198,6 +196,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     // スクリプト情報
     private boolean Information = true;
     private int tama = 0;
+    // パチンコ
+    private int beans, beansRange, beansNum;
+    private boolean canSetBeansNum;
 
     public void SetDebugger() {
         Debugger = !Debugger;
@@ -286,6 +287,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ret.stats.hp = 50;
         ret.stats.maxmp = 50;
         ret.stats.mp = 50;
+
+        // パチンコ
+        ret.beans = 0;
 
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -5562,5 +5566,43 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public int currentBattleshipHP() {
         return battleshipHP;
+    }
+
+    // パチンコ
+    // CMS v72から流用
+    public int getBeans() {
+        return beans;
+    }
+
+    public void setBeans(int b) {
+        beans = b;
+    }
+
+    public void gainBeans(int s) {
+        this.beans += s;
+    }
+
+    public int getBeansRange() {
+        return beansRange;
+    }
+
+    public void setBeansRange(int beansRange) {
+        this.beansRange = beansRange;
+    }
+
+    public int getBeansNum() {
+        return beansNum;
+    }
+
+    public void setBeansNum(int beansNum) {
+        this.beansNum = beansNum;
+    }
+
+    public boolean isCanSetBeansNum() {
+        return canSetBeansNum;
+    }
+
+    public void setCanSetBeansNum(boolean canSetBeansNum) {
+        this.canSetBeansNum = canSetBeansNum;
     }
 }

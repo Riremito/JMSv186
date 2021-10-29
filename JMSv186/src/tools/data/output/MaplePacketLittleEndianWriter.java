@@ -76,4 +76,8 @@ public class MaplePacketLittleEndianWriter extends GenericLittleEndianWriter {
     public final String toString() {
         return HexTool.toString(baos.toByteArray());
     }
+
+    public final void writeBoolean(boolean b) {
+        baos.write((byte) (b ? 1 : 0));
+    }
 }

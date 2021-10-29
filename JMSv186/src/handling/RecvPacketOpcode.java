@@ -177,7 +177,9 @@ public enum RecvPacketOpcode implements WritableIntValueHolder {
     DISPLAY_NODE,
     TOUCH_REACTOR,
     RING_ACTION,
-    MTS_TAB;
+    MTS_TAB,
+    BEANS_OPERATION,
+    BEANS_UPDATE;
     private short code = -2;
 
     @Override

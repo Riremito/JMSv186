@@ -255,7 +255,11 @@ public enum SendPacketOpcode implements WritableIntValueHolder {
     GHOST_POINT,
     GHOST_STATUS,
     ENGAGE_RESULT,
-    RPS_GAME;
+    RPS_GAME,
+    UPDATE_BEANS,
+    TIP_BEANS,
+    OPEN_BEANS,
+    SHOOT_BEANS;
     private short code = -2;
 
     @Override
