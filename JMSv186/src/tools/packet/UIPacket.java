@@ -179,7 +179,6 @@ public class UIPacket {
 
         mplew.writeShort(SendPacketOpcode.FISHING_CAUGHT.getValue());
         mplew.writeInt(chrid);
-
         return mplew.getPacket();
     }
 }

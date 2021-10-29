@@ -121,19 +121,20 @@ public class PlayerHandler {
             //chr.getCheatTracker().registerOffense(CheatingOffense.USING_UNAVAILABLE_ITEM, Integer.toString(itemId));
             return;
         }
+        // 釣りの椅子
         if (itemId == 3011000) {
-            boolean haz = false;
+            int fishing_level = 0;
             for (IItem item : c.getPlayer().getInventory(MapleInventoryType.CASH).list()) {
-                if (item.getItemId() == 5340000) {
-                    haz = true;
-                } else if (item.getItemId() == 5340001) {
-                    haz = false;
-                    chr.startFishingTask(true);
+                if (fishing_level <= 1 && item.getItemId() == 5340000) {
+                    fishing_level = 1;
+                }
+                if (item.getItemId() == 5340001) {
+                    fishing_level = 2;
                     break;
                 }
             }
-            if (haz) {
-                chr.startFishingTask(false);
+            if (fishing_level > 0) {
+                chr.startFishingTask(fishing_level == 2);
             }
         }
         chr.setChair(itemId);
@@ -166,8 +167,8 @@ public class PlayerHandler {
                 if (!FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
                     chr.addRockMap();
                 } else {
-		    chr.dropMessage(1, "You may not add this map.");	
-	 	}
+                    chr.dropMessage(1, "You may not add this map.");
+                }
             }
         } else {
             if (addrem == 0) {
@@ -176,7 +177,7 @@ public class PlayerHandler {
                 if (!FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
                     chr.addRegRockMap();
                 } else {
-		    chr.dropMessage(1, "You may not add this map.");	
+                    chr.dropMessage(1, "You may not add this map.");
                 }
             }
         }
@@ -191,7 +192,7 @@ public class PlayerHandler {
         c.getSession().write(MaplePacketCreator.enableActions());
         if (player != null && !player.isClone()) {
             //if (!player.isGM() || c.getPlayer().isGM()) {
-                c.getSession().write(MaplePacketCreator.charInfo(player, c.getPlayer().getId() == objectid));
+            c.getSession().write(MaplePacketCreator.charInfo(player, c.getPlayer().getId() == objectid));
             //}
         }
     }
@@ -373,7 +374,7 @@ public class PlayerHandler {
                     chr.addMPHP(-damage, -mpattack);
                 }
             }
-	    chr.handleBattleshipHP(-damage);
+            chr.handleBattleshipHP(-damage);
         }
         if (!chr.isHidden()) {
             chr.getMap().broadcastMessage(chr, MaplePacketCreator.damagePlayer(type, monsteridfrom, chr.getId(), damage, fake, direction, reflect, is_pg, oid, pos_x, pos_y), false);
@@ -485,14 +486,14 @@ public class PlayerHandler {
             if (GameConstants.isMulungSkill(skillid)) {
                 if (chr.getMapId() / 10000 != 92502) {
                     //AutobanManager.getInstance().autoban(c, "Using Mu Lung dojo skill out of dojo maps.");
-		    return;
+                    return;
                 } else {
                     chr.mulung_EnergyModify(false);
                 }
             } else if (GameConstants.isPyramidSkill(skillid)) {
                 if (chr.getMapId() / 10000 != 92602) {
                     //AutobanManager.getInstance().autoban(c, "Using Pyramid skill out of pyramid maps.");
-		    return;
+                    return;
                 }
             }
         }
@@ -534,11 +535,11 @@ public class PlayerHandler {
                     pos = slea.readPos();
                 }
                 if (effect.isMagicDoor()) { // Mystic Door
-                        if (!FieldLimitType.MysticDoor.check(chr.getMap().getFieldLimit())) {
-                            effect.applyTo(c.getPlayer(), pos);
-                        } else {
-                            c.getSession().write(MaplePacketCreator.enableActions());
-                        }
+                    if (!FieldLimitType.MysticDoor.check(chr.getMap().getFieldLimit())) {
+                        effect.applyTo(c.getPlayer(), pos);
+                    } else {
+                        c.getSession().write(MaplePacketCreator.enableActions());
+                    }
                 } else {
                     final int mountid = MapleStatEffect.parseMountInfo(c.getPlayer(), skill.getId());
                     if (mountid != 0 && mountid != GameConstants.getMountItem(skill.getId()) /*&& !c.getPlayer().isGM()*/ && c.getPlayer().getBuffedValue(MapleBuffStat.MONSTER_RIDING) == null && c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/) == null) {
@@ -676,7 +677,7 @@ public class PlayerHandler {
                 final int attackCount2 = attackCount;
                 final double maxdamage2 = maxdamage;
                 final MapleStatEffect eff2 = effect;
-                final AttackInfo attack2 = DamageParse.DivideAttack(attack, /*chr.isGM() ? 1 : 4*/4);
+                final AttackInfo attack2 = DamageParse.DivideAttack(attack, /*chr.isGM() ? 1 : 4*/ 4);
                 CloneTimer.getInstance().schedule(new Runnable() {
 
                     public void run() {
@@ -978,7 +979,6 @@ public class PlayerHandler {
 //	    } else { //original POS? or end POS?
 //		map.broadcastMessage(chr, MaplePacketCreator.movePlayer(chr.getId(), res, Original_Pos), false);
 //	    }
-
             MovementParse.updatePosition(res, chr, 0);
             final Point pos = chr.getPosition();
             map.movePlayer(chr, pos);
@@ -1029,7 +1029,7 @@ public class PlayerHandler {
             } else if (count > 0) {
                 c.getPlayer().setFallCounter(0);
             }
-	    c.getPlayer().setOldPosition(new Point(c.getPlayer().getPosition()));
+            c.getPlayer().setOldPosition(new Point(c.getPlayer().getPosition()));
         }
     }
 

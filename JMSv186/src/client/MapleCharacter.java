@@ -1537,30 +1537,52 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
             @Override
             public void run() {
-                final boolean expMulti = haveItem(2300001, 1, false, true);
-                if (!expMulti && !haveItem(2300000, 1, false, true)) {
+                int bait_level = 0;
+                // 餌を消費しない
+                if (isGM()) {
+                    bait_level = 2;
+                }
+                // 高級餌を消費
+                if (bait_level < 2 && haveItem(2300001, 1, false, true)) {
+                    bait_level = 2;
+                    MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2300001, 1, false, false);
+                }
+                // 餌を消費
+                if (bait_level < 2 && haveItem(2300000, 1, false, true)) {
+                    bait_level = 1;
+                    MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2300000, 1, false, false);
+                }
+                // 釣り終了
+                if (bait_level < 1) {
                     cancelFishingTask();
                     return;
                 }
-                MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, expMulti ? 2300001 : 2300000, 1, false, false);
-
                 final int randval = RandomRewards.getInstance().getFishingReward();
 
                 switch (randval) {
                     case 0: // Meso
-                        final int money = Randomizer.rand(expMulti ? 15 : 10, expMulti ? 75000 : 50000);
-                        gainMeso(money, true);
-                        client.getSession().write(UIPacket.fishingUpdate((byte) 1, money));
+                    {
+                        final int caught_meso = Randomizer.rand(bait_level * 10000, bait_level * 100000);
+                        gainMeso(caught_meso, true);
+                        client.getSession().write(UIPacket.fishingUpdate((byte) 1, caught_meso));
                         break;
+                    }
                     case 1: // EXP
-                        final int experi = Randomizer.nextInt(Math.abs(GameConstants.getExpNeededForLevel(level) / 200) + 1);
-                        gainExp(expMulti ? (experi * 3 / 2) : experi, true, false, true);
-                        client.getSession().write(UIPacket.fishingUpdate((byte) 2, experi));
+                    {
+                        final int required_exp = GameConstants.getExpNeededForLevel(level);
+                        int caught_exp = Randomizer.rand(required_exp / ((3 - bait_level) * 100), required_exp / ((3 - bait_level) * 10));
+                        if (caught_exp == 0) {
+                            caught_exp += 1;
+                        }
+                        gainExp(caught_exp, true, false, true);
+                        client.getSession().write(UIPacket.fishingUpdate((byte) 2, caught_exp));
                         break;
-                    default:
+                    }
+                    default: {
                         MapleInventoryManipulator.addById(client, randval, (short) 1);
-                        client.getSession().write(UIPacket.fishingUpdate((byte) 0, randval));
+                        //client.getSession().write(UIPacket.fishingUpdate((byte) 0, randval));
                         break;
+                    }
                 }
                 map.broadcastMessage(UIPacket.fishingCaught(id));
             }

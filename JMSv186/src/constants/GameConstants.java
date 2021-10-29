@@ -966,14 +966,14 @@ public class GameConstants {
         0, 90, // Meso
         1, 70, // EXP
         2022179, 1, // Onyx Apple
-        1302021, 5, // Pico Pico Hammer
-        1072238, 1, // Voilet Snowshoe
-        1072239, 1, // Yellow Snowshoe
+        //1302021, 5, // Pico Pico Hammer
+        //1072238, 1, // Voilet Snowshoe
+        //1072239, 1, // Yellow Snowshoe
         2049100, 1, // Chaos Scroll
         2049301, 1, // Equip Enhancer Scroll
         2049401, 1, // Potential Scroll
-        1302000, 3, // Sword
-        1442011, 1, // Surfboard
+        //1302000, 3, // Sword
+        //1442011, 1, // Surfboard
         4000517, 8, // Golden Fish
         4000518, 25, // Golden Fish Egg
         4031627, 2, // White Bait (3cm)
@@ -1949,7 +1949,7 @@ public class GameConstants {
     }
 
     public static int getFishingTime(boolean vip, boolean gm) {
-        return gm ? 1000 : (vip ? 30000 : 60000);
+        return gm ? 100 : (vip ? 100 : 1000);
     }
 
     public static int getCustomSpawnID(int summoner, int def) {
