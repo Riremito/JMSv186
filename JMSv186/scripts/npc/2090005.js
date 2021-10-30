@@ -1,85 +1,65 @@
-/*
-	Hak - Cabin <To Mu Lung>(200000141) / Mu Lung Temple(250000100) / Herb Town(251000000)
-*/
-var menu = new Array("Mu Lung","Orbis","Herb Town","Mu Lung");
-var cost = new Array(6000,6000,1500,1500);
-var hak;
-var display = "";
-var btwmsg;
-var method;
+// ツノーレ
 
-function start() {
-    status = -1;
-    hak = cm.getEventManager("Hak");
-    action(1, 0, 0);
-}
+// イルカ
 
+var spawn_portal = Array(
+	[200000141, "west00"], // オルビス, h001
+	[250000100, "sp"], // 武陵神社
+	[251000000, 0] // 白草村
+);
+
+var npc_talk_status = -1;
 function action(mode, type, selection) {
-    if(mode == 0 && status == 0) {
-	cm.dispose();
-	return;
-    } else if(mode == 0) {
-	cm.sendNext("OK. If you ever change your mind, please let me know.");
-	cm.dispose();
-	return;
-    }
-    status++;
-    if (status == 0) {
-	for(var i=0; i < menu.length; i++) {
-	    if(cm.getMapId() == 200000141 && i < 1) {
-		display += "\r\n#L"+i+"##b"+menu[i]+"("+cost[i]+" mesos)#k";
-	    } else if(cm.getMapId() == 250000100 && i > 0 && i < 3) {
-		display += "\r\n#L"+i+"##b"+menu[i]+"("+cost[i]+" mesos)#k";
-	    }
+	if (mode != 1) {
+		return cm.dispose();
 	}
-	if(cm.getMapId() == 200000141 || cm.getMapId() == 251000000) {
-	    btwmsg = "#bOrbis#k to #bMu Lung#k";
-	} else if(cm.getMapId() == 250000100) {
-	    btwmsg = "#bMu Lung#k to #bOrbis#k";
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				var mapid = cm.getMapId();
+				var text = "メッセージ準備中\r\n";
+				// 武陵
+				if (mapid == 250000100) {
+					text += "#L" + 200000141 + "##b#m200000141#に行く。#k#l\r\n"
+					text += "#L" + 251000000 + "##b#m251000000#に行く。#k#l\r\n"
+					return cm.sendSimple(text);
+				}
+				// 白草村
+				if (mapid == 251000000) {
+					text = "良く来た！　我輩は#b#m250000000##kへ往復している孤高の鶴であーる！今#m250000000#に出発したいであーるか？#b500 メル#kでいいあーる。";
+					// Yes Noに修正予定
+					text += "#L" + 250000100 + "##b#m250000100#に行く。#k#l\r\n"
+					return cm.sendSimple(text);
+				}
+				// オルビス
+				if (mapid == 200000141) {
+					text += "#L" + 250000100 + "##b#m250000100#に行く。#k#l\r\n"
+					return cm.sendSimple(text);
+				}
+				// デバッグモード
+				text = "デバッグモード\r\n";
+				text += "#L" + 200000141 + "##b#m200000141#に行く。#k#l\r\n"
+				text += "#L" + 251000000 + "##b#m251000000#に行く。#k#l\r\n"
+				text += "#L" + 250000100 + "##b#m250000100#に行く。#k#l\r\n"
+
+				return cm.sendSimple(text);
+			}
+		case 1:
+			{
+				var mapid = selection;
+				for (var i = 0; i < spawn_portal.length; i++) {
+					if (spawn_portal[i][0] == mapid) {
+						cm.warp(spawn_portal[i][0], spawn_portal[i][1]);
+						return cm.dispose();
+					}
+				}
+				break;
+			}
+		default:
+			break;
 	}
-	if(cm.getMapId() == 200000141 && (hak == null || hak.getProperty("isRiding").equals("true"))) {
-	    cm.sendNext("Someone else is on the way to Mu Lung right now. Talk to me a little bit more.");
-	    cm.dispose();
-	}
-	if(cm.getMapId() == 251000000) {
-	    cm.sendYesNo("Hello there? I'm the crane that flies from "+btwmsg+" and back. I fly around all the time, so I figured, why not make some money by taking travelers like you along for a small fee? It's good business for me. Anyway, what do you think? Do you want to fly to #b"+menu[3]+"#k right now? I only charge #b"+cost[3]+" mesos#k.");
-	} else {
-	    cm.sendSimple("Hello there? I'm the crane that flies from "+btwmsg+" and back. I fly around all the time, so I figured, why not make some money by taking travelers like you along for a small fee? It's good business for me. Anyway, what do you think?\r\n"+display);
-	}
-    } else if(status == 1) {
-	if(selection == 2) {
-	    cm.sendYesNo("Will you move to #b"+menu[2]+"#k now? If you have #b"+cost[2]+" mesos#k, I'll take you there right now.");
-	} else {
-	    if(cm.getMeso() < cost[selection]) {
-		cm.sendNext("Are you sure you have enough mesos?");
-		cm.dispose();
-	    } else {
-		if(cm.getMapId() == 251000000) {
-		    cm.gainMeso(-cost[3]);
-		    cm.warp(250000100);
-		    cm.dispose();
-		} else {
-		    if(hak != null && hak.getProperty("isRiding").equals("false")) {
-			cm.gainMeso(-cost[selection]);
-			hak.newInstance("Hak");
-			hak.setProperty("myRide",selection);
-			hak.getInstance("Hak").registerPlayer(cm.getChar());
-			cm.dispose();
-		    } else {
-			cm.sendNext("Someone else is on the way to Orbis right now. Talk to me a little bit more.");
-			cm.dispose();
-		    }
-		}
-	    }
-	}
-    } else if(status == 2) {
-	if(cm.getMeso() < cost[2]) {
-	    cm.sendNext("Are you sure you have enough mesos?");
-	    cm.dispose();
-	} else {
-	    cm.gainMeso(-cost[2]);
-	    cm.warp(251000000);
-	    cm.dispose();
-	}
-    }
+
+	return cm.dispose();
 }

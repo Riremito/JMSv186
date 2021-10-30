@@ -27,10 +27,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -169,6 +175,42 @@ public class MapleMapFactory {
                         }
                     }
                 }
+
+                // 設定ファイルに定義されたNPCを設置
+                Path file = Paths.get("./scripts/map/" + mapid + ".txt");
+                try {
+                    if (!Files.notExists(file)) {
+                        List<String> text;
+                        text = Files.readAllLines(file); // UTF-8
+                        for (int i = 0; i < text.size(); i++) {
+                            String[] npc_data = text.get(i).split(",");
+                            if (npc_data.length == 4) {
+
+                                int npc_id = Integer.parseInt(npc_data[0]);
+                                int npc_x = Integer.parseInt(npc_data[1]);
+                                int npc_y = Integer.parseInt(npc_data[2]);
+                                int npc_fh = Integer.parseInt(npc_data[3]);
+
+                                MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
+                                if (npc != null && !npc.getName().equals("MISSINGNO")) {
+                                    npc.setPosition(new Point(npc_x, npc_y));
+                                    npc.setCy(npc_y);
+                                    npc.setRx0(npc_x + 50);
+                                    npc.setRx1(npc_x - 50);
+                                    npc.setFh(npc_fh);
+                                    npc.setCustom(true);
+                                    map.addMapObject(npc);
+                                    System.out.println("npc spawn: " + mapid + " = " + npc_id + "," + npc_x + "," + npc_y + "," + npc_fh);
+                                }
+                            } else {
+                                System.out.println("spawn npc format error: " + mapid);
+                            }
+                        }
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(MapleMapFactory.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
                 addAreaBossSpawn(map);
                 map.setCreateMobInterval((short) MapleDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 9000));
                 map.loadMonsterRate(true);

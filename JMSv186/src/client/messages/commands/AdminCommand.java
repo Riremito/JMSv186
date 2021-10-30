@@ -28,8 +28,10 @@ import handling.world.World;
 import handling.world.CheaterData;
 import java.awt.Point;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -41,6 +43,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -2343,6 +2346,17 @@ public class AdminCommand {
                 npc.setCustom(true);
                 c.getPlayer().getMap().addMapObject(npc);
                 c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.spawnNPC(npc, true));
+
+                // ファイルへ追記
+                try (FileWriter fw = new FileWriter("./scripts/map/temp/" + c.getPlayer().getMapId() + ".txt", true)) {
+                    PrintWriter pw = new PrintWriter(fw);
+                    pw.println(npcId + "," + c.getPlayer().getPosition().x + "," + c.getPlayer().getPosition().y + "," + c.getPlayer().getMap().getFootholds().findBelow(c.getPlayer().getPosition()).getId());
+                    pw.flush();
+                } catch (FileNotFoundException e) {
+                } catch (IOException ex) {
+                    Logger.getLogger(AdminCommand.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                }
+
             } else {
                 c.getPlayer().dropMessage(6, "You have entered an invalid Npc-Id");
                 return 0;
@@ -3081,7 +3095,7 @@ public class AdminCommand {
             return 1;
         }
     }
-    */
+     */
     public static class ReloadMap extends CommandExecute {
 
         @Override
