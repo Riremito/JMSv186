@@ -537,22 +537,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
                         System.out.println("[LogIn]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
                         Map<Integer, Integer> connected = World.getConnected();
                         c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
-                        c.getPlayer().Notice("不具合報告等はこちら https://discord.gg/72jpx7DfZH (リレミト#9404)");
-                        if (c.getPlayer().getLevel() <= 30) {
-                            c.getPlayer().Notice("========== コマンド ==========");
-                            c.getPlayer().Notice("@joyce マップ移動 (ドイからも可)");
-                            c.getPlayer().Notice("@fm    フリマへ移動");
-                            c.getPlayer().Notice("@ea    キャラクターがロックされているバグ状態を解除");
-                            c.getPlayer().Notice("@help  ヘルプ");
-                        }
-                        c.getPlayer().Notice("========== サーバー情報 ==========");
-                        c.getPlayer().Notice("スクルジ     転職");
-                        c.getPlayer().Notice("フレドリック アイテム販売");
-                        c.getPlayer().Notice("ドイ         マップ移動");
-                        c.getPlayer().Notice("ナオミ       マップ移動(少ない)");
-
-                        c.getPlayer().Notice("========== コマンド2 ==========");
-                        c.getPlayer().Notice("/info スクリプト情報出力切り替え");
                     }
                 }
                 break;
