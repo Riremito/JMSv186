@@ -582,8 +582,7 @@ public class MTSCSPacket {
         mplew.writeShort(SendPacketOpcode.MTS_OPEN.getValue());
 
         PacketHelper.addCharacterInfo(mplew, chr);
-
-        mplew.writeMapleAsciiString("T13333333337W");
+        mplew.writeMapleAsciiString(chr.getClient().getAccountName());
         mplew.writeInt(ServerConstants.MTS_MESO);
         mplew.writeInt(ServerConstants.MTS_TAX);
         mplew.writeInt(ServerConstants.MTS_BASE);

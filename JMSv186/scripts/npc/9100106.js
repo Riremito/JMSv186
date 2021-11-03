@@ -156,7 +156,7 @@ function action(mode, type, selection) {
 				if (cm.haveItem(ticket)) {
 					var reward = RandomRewards();
 					cm.gainItem(5220000, -1);
-					cm.gainItem(reward, 1);
+					cm.Gashapon(reward, 1);
 					cm.sendOk("#b#t" + reward + "##k‚PŒÂ‚ğŠl“¾‚µ‚Ü‚µ‚½I");
 				}
 				break;

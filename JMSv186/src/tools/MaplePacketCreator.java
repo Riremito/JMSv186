@@ -396,17 +396,17 @@ public class MaplePacketCreator {
         0x04    画面上部のメッセージ
         0x05    ピンク文字
         0x06    青文字
-        0x07    ???
+        0x07    ??? 直接関数ポインタへ処理が移る 0x00B93F3F[0x07] = 00B93E27
         0x08    アイテム拡声器
-        0x09    ワールド拡声器? (未実装)
+        0x09    ワールド拡声器 (テスト)
         0x0A    三連拡声器
-        0x0B    不明
+        0x0B    不明 0x00B93F3F[0x0B] = 00B93ECA
         0x0C    ハート拡声器
         0x0D    ドクロ拡声器
-        0x0E    ???
-        0x0F    ???
-        0x10    体験用アバター獲得
-        0x11    青文字
+        0x0E    ガシャポン 0x00B93F3F[0x0E] = 00B93779
+        0x0F    青文字 名前:アイテム名(xxxx個))
+        0x10    体験用アバター獲得 0x00B93F3F[0x10] = 00B93950
+        0x11    青文字 アイテム表示 0x00B93F3F[0x11] = 00B93DA1
          */
         mplew.writeShort(SendPacketOpcode.SERVERMESSAGE.getValue());
         mplew.write(type);
@@ -426,6 +426,7 @@ public class MaplePacketCreator {
                 mplew.write(channel - 1);
                 mplew.write(megaEar ? 1 : 0);
                 break;
+            // 拡声器, ハート拡声器, ドクロ拡声器
             case 0x03:
             case 0x0C:
             case 0x0D:
@@ -433,10 +434,33 @@ public class MaplePacketCreator {
                 mplew.write(megaEar ? 1 : 0);
                 break;
             case 0x06:
-            case 0x09:
                 mplew.writeInt(channel >= 1000000 && channel < 6000000 ? channel : 0); //cash itemID, displayed in yellow by the {name}
-                //E.G. All new EXP coupon {Ruby EXP Coupon} is now available in the Cash Shop!
-                //with Ruby Exp Coupon being in yellow and with item info
+                break;
+            case 0x07:
+                mplew.writeInt(0);
+                break;
+            // ワールド拡声器
+            case 0x09:
+                // ワールド番号
+                mplew.write(0);
+                break;
+            // 不明
+            case 0x0B:
+                mplew.writeInt(0); // 不明
+                break;
+            // アイテム情報 個数付き
+            case 0x0F:
+                mplew.writeInt(0); // 不明
+                mplew.writeInt(1472117); // アイテムID
+                mplew.writeInt(256); // 個数
+                break;
+            // お勧め体験用アバター
+            case 0x10:
+                // 必要なメッセージはキャラ名のみとなる
+                break;
+            // アイテム情報
+            case 0x11:
+                mplew.writeInt(1472117); // アイテムID
                 break;
         }
 
@@ -447,12 +471,13 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.SERVERMESSAGE.getValue());
-        mplew.write(rareness == 2 ? 15 : 14);
-        mplew.writeMapleAsciiString(name + message);
-        mplew.writeInt(0); // 0~3 i think
-        mplew.writeMapleAsciiString(name);
+        //mplew.write(rareness == 2 ? 15 : 14);
+        mplew.write(0x0E);
+        mplew.writeMapleAsciiString(name + " : " + message);
+        mplew.writeInt(0x01010000);
+        //mplew.writeMapleAsciiString(name);
         PacketHelper.addItemInfo(mplew, item, true, true);
-
+        mplew.writeZeroBytes(10);
         return mplew.getPacket();
     }
 

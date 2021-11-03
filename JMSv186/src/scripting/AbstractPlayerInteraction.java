@@ -33,6 +33,7 @@ import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import client.MapleQuestStatus;
+import client.inventory.IItem;
 import handling.channel.ChannelServer;
 import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
@@ -412,32 +413,40 @@ public abstract class AbstractPlayerInteraction {
         gainItem(id, quantity, randomStats, 0, -1, "");
     }
 
-    public final void gainItem(final int id, final short quantity, final boolean randomStats, final int slots) {
-        gainItem(id, quantity, randomStats, 0, slots, "");
+    public final void Gashapon(final int id, final short quantity) {
+        IItem item_info = gainItem(id, quantity, true, 0, -1, "");
+        if (item_info != null) {
+            World.Broadcast.broadcastMessage(MaplePacketCreator.getGachaponMega(c.getPlayer().getName(), "をガシャポンで手に入れました。おめでとうございます！", item_info, (byte) 1).getBytes());
+        }
     }
 
-    public final void gainItem(final int id, final short quantity, final long period) {
-        gainItem(id, quantity, false, period, -1, "");
+    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final int slots) {
+        return gainItem(id, quantity, randomStats, 0, slots, "");
     }
 
-    public final void gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots) {
-        gainItem(id, quantity, randomStats, period, slots, "");
+    public final IItem gainItem(final int id, final short quantity, final long period) {
+        return gainItem(id, quantity, false, period, -1, "");
     }
 
-    public final void gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner) {
-        gainItem(id, quantity, randomStats, period, slots, owner, c);
+    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots) {
+        return gainItem(id, quantity, randomStats, period, slots, "");
     }
 
-    public final void gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner, final MapleClient cg) {
+    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner) {
+        return gainItem(id, quantity, randomStats, period, slots, owner, c);
+    }
+
+    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner, final MapleClient cg) {
+        IItem item_info = null;
         if (quantity >= 0) {
             final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             final MapleInventoryType type = GameConstants.getInventoryType(id);
 
             if (!MapleInventoryManipulator.checkSpace(cg, id, quantity, "")) {
-                return;
+                return null;
             }
             if (type.equals(MapleInventoryType.EQUIP) && !GameConstants.isThrowingStar(id) && !GameConstants.isBullet(id)) {
-                final Equip item = (Equip) (randomStats ? ii.randomizeStats((Equip) ii.getEquipById(id)) : ii.getEquipById(id));
+                final Equip item = (Equip) (randomStats ? ii.RireSabaStats((Equip) ii.getEquipById(id)) : ii.getEquipById(id));
                 if (period > 0) {
                     item.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
                 }
@@ -454,6 +463,7 @@ public abstract class AbstractPlayerInteraction {
                     cg.getPlayer().dropMessage(5, msg);
                 }
                 MapleInventoryManipulator.addbyItem(cg, item.copy());
+                item_info = item;
             } else {
                 MapleInventoryManipulator.addById(cg, id, quantity, owner == null ? "" : owner, null, period);
             }
@@ -461,6 +471,7 @@ public abstract class AbstractPlayerInteraction {
             MapleInventoryManipulator.removeById(cg, GameConstants.getInventoryType(id), id, -quantity, true, false);
         }
         cg.getSession().write(MaplePacketCreator.getShowItemGain(id, quantity, true));
+        return item_info;
     }
 
     public final void changeMusic(final String songName) {

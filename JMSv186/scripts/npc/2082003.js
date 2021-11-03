@@ -1,29 +1,43 @@
-/*
-	NPC Name: 		Cobra - Retired dragon trainer
-	Map(s): 		Leafre : Cabin
-*/
-var status = 0;
+// リプレ - 時間の神殿
+// コルバ
 
-function start() {
-    status = -1;
-    action(1, 0, 0);
-}
+var warp_map = Array(
+	// ポータル番号が見れないので適当です
+	[200090500, 0, "#bドラゴンに変身したいです。#k"]
+);
 
+var npc_talk_status = -1;
 function action(mode, type, selection) {
-    if (status >= 0 && mode == 0) {
-	cm.dispose();
-	return;
-    }
-    if (mode == 1)
-	status++;
-    else
-	status--;
+	if (mode != 1) {
+		return cm.dispose();
+	}
 
-    if (status == 0) {
-	cm.sendSimple("If you had wings, I'm sure you could go there.  But, that alone won't be enough.  If you want to fly though the wind that's sharper than a blade, you'll need tough scales as well.  I'm the only Halfling left that knows the way back... If you want to go there, I can transform you.  No matter what you are, for this moment, you will become a #bDragon#k...\r\n #L0##bI want to become a dragon.#k#l");
-    } else if (status == 1) {
-	cm.useItem(2210016);
-	cm.warp(200090500, 0);
-	cm.dispose();
-    }
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				var mapid = cm.getMapId();
+				var text = "羽があればそこに行けるじゃろう。じゃが、それだけでは足りんのじゃ。剣より鋭い風の狭間を飛ぶためには、丈夫な鱗も必要なんじゃ。戻ってくる方法まで知っておる半獣族は、もうワシ一人しかおらん…もしあそこに行きたいんじゃったら、ワシが変身させてやろう。お前の今の姿が何であれ、今、この瞬間だけは　#bドラゴン#kになるのじゃ…。\r\n";
+				for (var i = 0; i < warp_map.length; i++) {
+					text += "#L" + warp_map[i][0] + "#" + warp_map[i][2] + "#l\r\n";
+				}
+				return cm.sendSimple(text);
+			}
+		case 1:
+			{
+				var mapid = selection;
+				for (var i = 0; i < warp_map.length; i++) {
+					if (warp_map[i][0] == mapid) {
+						cm.useItem(2210016);
+						cm.warp(warp_map[i][0], warp_map[i][1]);
+						return cm.dispose();
+					}
+				}
+				break;
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }

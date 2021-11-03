@@ -16,7 +16,7 @@ function DoSomething_00AD() {
 }
 
 // test
-function DoSomething() {
+function DoSomething_CID() {
 	var p = cm.getOutPacket();
 	// header
 	p.writeShort(0x00B2);
@@ -26,6 +26,24 @@ function DoSomething() {
 	p.writeInt(0);
 	//p.writeShort(1);
 	//p.writeShort(0);
+	p.writeZeroBytes(100);
+	// ProcessPacket
+	cm.DebugPacket(p.getPacket());
+}
+
+// do
+function DoSomething() {
+	var p = cm.getOutPacket();
+	// header
+	p.writeShort(0x003F);
+
+	// data
+	p.write(0x07);
+	p.writeMapleAsciiString("リレミト" + " : " + "NAYN!");
+	//p.writeMapleAsciiString("リレミト");
+	//p.writeInt(1472117);
+	p.writeInt(1);
+	//p.writeInt(0x00007DBC);
 	p.writeZeroBytes(100);
 	// ProcessPacket
 	cm.DebugPacket(p.getPacket());

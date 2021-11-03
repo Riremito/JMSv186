@@ -1460,5 +1460,5 @@ public class MapleItemInformationProvider {
         inventoryTypeCache.put(itemId, ret);
         return ret;
     }
-    */
+     */
 }

@@ -1,150 +1,52 @@
-/*
-	Crysta; - Kamuma (Neo Tokyo Teleporter)
-*/
-// 4681 未来への扉
-// 802000101
-function start() {
-	switch (cm.getMapId()) {
-		case 802000211:
-			if (cm.getQuestStatus(4686) == 2) {
-				cm.gainItem(4032181, 100);
-				cm.warp(802000212, 0);
-			} else {
-				cm.showEffect(false, "quest/party/clear");
-				cm.playSound(false, "Party1/Clear");
-				cm.gainItem(4032181, 100);
-				cm.forceCompleteQuest(4686);
-			}
-			cm.dispose();
-			break;
-		case 802000313:
-			if (cm.getQuestStatus(4689) == 2) {
-				cm.gainItem(4032181, 50);
-				cm.warp(802000312, 0);
-			} else {
-				cm.showEffect(false, "quest/party/clear");
-				cm.playSound(false, "Party1/Clear");
-				cm.gainItem(4032181, 50);
-				cm.forceCompleteQuest(4689);
-			}
-			cm.dispose();
-			break;
-		case 802000411:
-			if (cm.getQuestStatus(4693) == 2) {
-				cm.gainItem(4032181, 100);
-				cm.warp(802000412, 0);
-			} else {
-				cm.showEffect(false, "quest/party/clear");
-				cm.playSound(false, "Party1/Clear");
-				cm.gainItem(4032181, 100);
-				cm.forceCompleteQuest(4693);
-			}
-			cm.dispose();
-			break;
-		case 802000611:
-			if (cm.getQuestStatus(4696) == 2) {
-				cm.gainItem(4032181, 100);
-				cm.warp(802000612, 0);
-			} else {
-				cm.showEffect(false, "quest/party/clear");
-				cm.playSound(false, "Party1/Clear");
-				cm.gainItem(4032181, 100);
-				cm.forceCompleteQuest(4696);
-			}
-			cm.dispose();
-			break;
-		case 802000111:
-			if (cm.getQuestStatus(4698) == 2) {
-				cm.gainItem(4032181, 100);
-				cm.warp(802000112, 0);
-			} else {
-				cm.showEffect(false, "quest/party/clear");
-				cm.playSound(false, "Party1/Clear");
-				cm.gainItem(4032181, 100);
-				cm.forceCompleteQuest(4698);
-			}
-			cm.dispose();
-			break;
-		case 802000711:
-			if (cm.getQuestStatus(50003) == 2) {
-				cm.gainItem(4032181, 100);
-				cm.warp(802000712, 0);
-			} else {
-				cm.showEffect(false, "quest/party/clear");
-				cm.playSound(false, "Party1/Clear");
-				cm.gainItem(4032181, 100);
-				cm.forceCompleteQuest(50003);
-			}
-			cm.dispose();
-			break;
-		case 802000803:
-			if (cm.getQuestStatus(50016) == 2) {
-				cm.gainItem(4032181, 100);
-				cm.gainItem(4032361, 1);
-				cm.warp(802000804, 0);
-			} else {
-				cm.showEffect(false, "quest/party/clear");
-				cm.playSound(false, "Party1/Clear");
-				cm.gainItem(4032181, 100);
+// クリスタル 未来東京
 
-				cm.forceCompleteQuest(50016);
-			}
-			cm.dispose();
-			break;
-		default:
-			cm.sendSimple("I am responsible for expanding Asia's vast strengths. If you have received permission from Asia on time warp, then I will send you to the past or future of Zipangu. \r #b#L0#Future - Odaiba, Tokyo, 2100#l \r #L1#Future - Tokyo Park, 2095#l \r #L2#Future - Akihabara, Tokyo, 2102#l \r #L3#Future - Tokyo Skies, 2102#l \r #L4#Future - Shibuya, Tokyo, 2102#l \r #L5#Future - Top Floor of Roppongi Mall, Tokyo, 2102#l  \r #L7#Future - 2102 Roppongi Mall - Top Floor#l \r #L6#Past - Ninja Castle#l");
-			break;
-	}
-}
+var warp_map = Array(
+	[802000200, "st00", "#b未来 - 2100年 トウキョウお台場#k"],
+	[802000300, "st00", "#b未来 - 2095年 トウキョウ公園#k"],
+	[802000500, "st00", "#b未来 - 2102年 トウキョウ秋葉原#k"],
+	[802000600, "st00", "#b未来 - 2102年 トウキョウ上空#k"],
+	[802000700, "st00", "#b未来 - 2102年 トウキョウ渋谷#k"],
+	[802000800, "st00", "#b未来 - 2102年 トウキョウ六本木モール最上層#k"],
+	[800040000, "st00", "#b過去 - 楓城　天下泰平#k"],
+	[910000000, "out00", "#bデバッグ - #m910000000##k"]
+);
 
+var npc_talk_status = -1;
 function action(mode, type, selection) {
-	if (selection != 6) {
-
-		var questid = true, mapid = 0, portal = 0;
-
-		switch (selection) {
-			case 0:
-				questid = cm.getQuestStatus(4682) == 2;
-				mapid = 802000200;
-				portal = 2;
-				break;
-			case 1:
-				questid = cm.getQuestStatus(4687) == 2;
-				mapid = 802000300;
-				portal = 0;
-				break;
-			case 2:
-				questid = cm.getQuestStatus(4690) == 2;
-				mapid = 802000500;
-				portal = 0;
-				break;
-			case 3:
-				questid = cm.getQuestStatus(4694) == 2;
-				mapid = 802000600;
-				portal = 0;
-				break;
-			case 4:
-				questid = cm.getQuestStatus(50001) == 2;
-				mapid = 802000700;
-				portal = 0;
-				break;
-			case 5:
-				questid = cm.getQuestStatus(50015) == 2;
-				mapid = 802000800;
-				portal = 0;
-				break;
-			case 7:
-				questid = cm.getQuestStatus(50017) == 2;
-				mapid = 802000820;
-				portal = 0;
-				break;
-		}
-		if (questid && mapid > 0) {
-			cm.warp(mapid, portal);
-		} else {
-			cm.sendOk("I don't think Asia has permitted you to use the Time Warp just yet. Complete your mission first before reporting to Asia");
-		}
+	if (mode != 1) {
+		return cm.dispose();
 	}
 
-	cm.dispose();
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				var mapid = cm.getMapId();
+				var text = "私はアーシア様の力を増幅させる者。タイムワープの許可がアーシア様より下りていれば、過去や未来のジパングに飛ばしてあげよう。\r\n";
+				for (var i = 0; i < warp_map.length; i++) {
+					text += "#L" + warp_map[i][0] + "#" + warp_map[i][2] + "#l\r\n";
+				}
+				return cm.sendSimple(text);
+			}
+		case 1:
+			{
+				var mapid = selection;
+				for (var i = 0; i < warp_map.length; i++) {
+					if (warp_map[i][0] == mapid) {
+						// debug
+						if (!cm.haveItem(5252002)) {
+							// 質屋にあった大ガマガエルの財布
+							cm.gainItem(5252002, 1);
+						}
+						cm.warp(warp_map[i][0], warp_map[i][1]);
+						return cm.dispose();
+					}
+				}
+				break;
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }

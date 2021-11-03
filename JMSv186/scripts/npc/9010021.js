@@ -24,6 +24,8 @@ function MainMenu(selection) {
 			}
 		case "アップデート情報":
 			{
+				text += "2021/11/03 移動系NPC, 時間の神殿修正\r\n";
+				text += "2021/11/02 ガシャポンログ追加\r\n";
 				text += "2021/10/30 移動系NPC修正\r\n";
 				text += "2021/10/29 パチンコ実装\r\n";
 				text += "2021/10/22 コレ\r\n";
