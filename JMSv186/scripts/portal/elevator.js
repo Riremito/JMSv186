@@ -1,23 +1,26 @@
-var em;
+// エレベーター
+// ヘリオス塔
 
+// エレベータースキップ
 function enter(pi) {
-    em = pi.getEventManager("elevator");
+	var mapid = pi.getMapId();
 
-    if (em != null) {
-	if (pi.getMapId() == 222020100) {
-	    if (em.getProperty("isDown").equals("true")) {
-		pi.playPortalSE();
-		pi.warp(222020110, "sp");
-	    } else {
-		pi.playerMessage("The elevator is not available for the riding at this time. Please try again later.");
-	    }
-	} else { // 222020200
-	    if (em.getProperty("isUp").equals("true")) {
-		pi.playPortalSE();
-		pi.warp(222020210, "sp");
-	    } else {
-		pi.playerMessage("The elevator is not available for the riding at this time. Please try again later.");
-	    }
+	switch (mapid) {
+		case 222020100:
+			{
+				pi.playPortalSE();
+				//pi.warp(222020110, "sp");
+				pi.warp(222020200, "in00");
+				return;
+			}
+		case 222020200:
+			{
+				pi.playPortalSE();
+				//pi.warp(222020210, "sp");
+				pi.warp(222020100, "in00");
+				return;
+			}
+		default:
+			break;
 	}
-    }
 }

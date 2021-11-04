@@ -1,45 +1,50 @@
-/*
-Third Eos Rock - Ludibrium : Eos Tower 41st Floor (221021700)
-*/
+// 三番目のエオス石
 
-var status = 0;
-var map;
-var portal;
+var map_portal = Array(
+	[221022900, 3],
+	[221020000, 4]
+);
 
-function start() {
-    status = -1;
-    action(1, 0, 0);
+function getPortal(mapid) {
+	for (var i = 0; i < map_portal; i++) {
+		if (mapid == map_portal[i][0]) {
+			return map_portal[i][1];
+		}
+	}
+	return 0;
 }
 
+var npc_talk_status = -1;
 function action(mode, type, selection) {
-    if (status >= 0 && mode == 0) {
-	cm.dispose();
-	return;
-    }
-    if (mode == 1)
-	status++;
-    else
-	status--;
-    if (status == 0) {
-	if (cm.haveItem(4001020)) {
-	    cm.sendSimple("You can use #bEos Rock Scroll#k to activate #bThird Eos Rock#k. Which of these rocks would you like to teleport to?#b\r\n#L0#Second Eos Rock (71st Floor)#l\r\n#L1#Fourth Eos Rock (1st Floor)#l");
-	} else {
-	    cm.sendOk("There's a rock that will enable you to teleport to #bSecond Eos Rock or Fourth Eos Rock#k, but it cannot be activated without the scroll.");
-	    cm.dispose();
+	if (mode != 1) {
+		return cm.dispose();
 	}
-    } else if (status == 1) {
-	if (selection == 0) {
-	    cm.sendYesNo("You can use #bEos Rock Scroll#k to activate #bThird Eos Rock#k. Will you teleport to #bSecond Eos Rock#k at the 71st Floor?");
-	    map = 221022900;
-	    portal = 3;
-	} else {
-	    cm.sendYesNo("You can use #bEos Rock Scroll#k to activate #bThird Eos Rock#k. Will you teleport to #bFourth Eos Rock#k at the 1st Floor?");
-	    map = 221020000;
-	    portal = 4;
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				// デバッグモード
+				if (!cm.haveItem(4001020)) {
+					cm.gainItem(4001020, 1);
+				}
+				var text = "#bエオス石の書#kを使って#b三番目のエオス石#kを活性化できます。どの石へ移動しますか？\r\n";
+				text += "#L" + 221022900 + "##b二番目のエオス石(100階)#k#l\r\n";
+				text += "#L" + 221020000 + "##b四番目のエオス石(41階)#k#l\r\n";
+				return cm.sendSimple(text);
+			}
+		case 1:
+			{
+				var mapid = selection;
+				if (cm.haveItem(4001020)) {
+					cm.gainItem(4001020, -1);
+					cm.warp(mapid, getPortal(mapid));
+				}
+				return cm.dispose();
+			}
+		default:
+			break;
 	}
-    } else if (status == 2) {
-	cm.gainItem(4001020, -1);
-	cm.warp(map, portal);
-	cm.dispose();
-    }
+
+	return cm.dispose();
 }

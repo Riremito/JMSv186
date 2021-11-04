@@ -1,33 +1,34 @@
-/*
-	Fourth Eos Rock - Ludibrium : Eos Tower 1st Floor (221020000)
-*/
+// 四番目のエオス石
 
-var status = 0;
-
-function start() {
-    status = -1;
-    action(1, 0, 0);
-}
+var npc_talk_status = -1;
 
 function action(mode, type, selection) {
-    if (status >= 0 && mode == 0) {
-	cm.dispose();
-	return;
-    }
-    if (mode == 1)
-	status++;
-    else
-	status--;
-    if (status == 0) {
-	if (cm.haveItem(4001020)) {
-	    cm.sendYesNo("You can use #bEos Rock Scroll#k to activate #bFourth Eos Rock#k. Will you head over to #bThird Eos Rock#k at the 41st floor?");
-	} else {
-	    cm.sendOk("There's a rock that will enable you to teleport to #bThird Eos Rock#k, but it cannot be activated without the scroll.");
-	    cm.dispose();
+	if (mode != 1) {
+		return cm.dispose();
 	}
-    } else if (status == 1) {
-	cm.gainItem(4001020, -1);
-	cm.warp(221021700, 3);
-	cm.dispose();
-    }
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				// デバッグモード
+				if (!cm.haveItem(4001020)) {
+					cm.gainItem(4001020, 1);
+				}
+				var text = "#bエオス石の書#kを使って#b四番目のエオス石#kを活性化できます。#b三番目のエオス石#kがあるところへ移動しますか？";
+				return cm.sendYesNo(text);
+			}
+		case 1:
+			{
+				if (cm.haveItem(4001020)) {
+					cm.gainItem(4001020, -1);
+					cm.warp(221021700, 3);
+				}
+				return cm.dispose();
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }

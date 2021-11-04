@@ -1,27 +1,34 @@
-/**
-	El Nath Magic Spot - Orbis Tower <20th Floor>(200080200)
-**/
+// エルナス魔法石
 
-var status = -1;
+var npc_talk_status = -1;
 
 function action(mode, type, selection) {
-    if (mode == 0) {
-	cm.dispose();
-	return;
-    }
-    status++;
-
-    if (status == 0) {
-	if (cm.haveItem(4001019)) {
-	    cm.sendYesNo("You can use #b#t4001019#k to activate #b#p2012014##k. Will you teleport to where #b#p2012015##k is?");
-	} else {
-	    cm.sendOk("There's a #b#p2012015##k that'll enable you to teleport to where #b#p2012014##k is, but you can't activate it without the scroll.");
-	    cm.safeDispose();
+	if (mode != 1) {
+		return cm.dispose();
 	}
-    }
-    if (status == 1) {
-	cm.gainItem(4001019, -1);
-	cm.warp(200080200,0);
-	cm.dispose();
-    }
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				// デバッグモード
+				if (!cm.haveItem(4001019)) {
+					cm.gainItem(4001019, 1);
+				}
+				var text = "#b魔法石の書#kを使って#bエルナス魔法石#kを活性化できます。#bオルビス魔法石#kがあるところへ移動しますか？";
+				return cm.sendYesNo(text);
+			}
+		case 1:
+			{
+				if (cm.haveItem(4001019)) {
+					cm.gainItem(4001019, -1);
+					cm.warp(200080200, 0);
+				}
+				return cm.dispose();
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }
