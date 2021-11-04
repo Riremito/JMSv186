@@ -1,19 +1,18 @@
-/*
- * Time Temple - Kirston
- * Twilight of the Gods
- */
+// ピンクビーン召喚
+// キルストン
 
 function start() {
-    cm.askAcceptDecline("If only I had the Mirror of Goodness then I can re-summon the Black Wizard! \r\nWait! something's not right! Why is the Black Wizard not summoned? Wait, what's this aura? I feel something... totally different from the Black Wizard Ahhhhh!!!!! \r\n\r\n #b(Places a hand on the shoulder of Kryston.)");
+	var text = "女神の鏡さえあれば…もう一度暗黒の魔法使いを呼び出すことができる！　…\r\n"
+	text += "お、おかしい…どうして暗黒の魔法使いを呼び出さないんだ？　この気はなんだ？　暗黒の魔法使いとは全く違う…ウワアアアッ！\r\n";
+	text += "#b(キルストンの肩に手をかける)\r\n";
+	cm.askAcceptDecline(text);
 }
 
 function action(mode, type, selection) {
-    if (mode == 1) {
-	cm.removeNpc(270050100, 2141000);
-	cm.forceStartReactor(270050100, 2709000);
-    }
-    cm.dispose();
+	if (mode == 1) {
+		cm.removeNpc(270050100, 2141000);
+		cm.forceStartReactor(270050100, 2709000);
+	}
 
-// If accepted, = summon PB + Kriston Disappear + 1 hour timer
-// If deny = NoTHING HAPPEN
+	cm.dispose();
 }

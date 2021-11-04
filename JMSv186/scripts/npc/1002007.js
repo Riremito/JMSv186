@@ -1,74 +1,58 @@
-/*
-	NPC Name: 		Regular Cab at Lith Habour
-	Map(s): 		Victoria Road : Lith Habour (104000000)
-	Description: 		Lith Habour
-*/
-var status = 0;
-var maps = Array(120000000, 102000000, 100000000, 103000000);
-var rCost = Array(1200, 1000, 1000, 1200);
-var costBeginner = Array(120, 100, 100, 120);
-var cost = new Array("1,200", "1,000", "1,000", "1,200");
-var show;
-var sCost;
-var selectedMap = -1;
+// タクシー
+// 港口
 
+var taxi_map = Array(
+	[104000000, 0],
+	[100000000, 0],
+	[102000000, 0],
+	[101000000, 0],
+	[103000000, 0],
+	[120000000, 0]
+);
 
+var npc_talk_status = -1;
+var to_map = 0;
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	if (status >= 2) {
-	    cm.sendNext("There's a lot to see in this town, too. Come back and find us when you need to go to a different town.");
-	    cm.safeDispose();
-	    return;
+	if (mode != 1) {
+		return cm.dispose();
 	}
-	status--;
-    }
-    if (status == 0) {
-	cm.sendNext("Hi! I drive the Lith Harbor Regular Cab. Would you like to travel to a different town? If so, try using my cab. I can take you to a different town for a cheap price.");
-    } else if (status == 1) {
-	if (!cm.haveItem(4032313)) {
-	    var job = cm.getJob();
-	    if (job == 0 || job == 1000 || job == 2000) {
-		var selStr = "We have a special 90% discount for beginners. Choose your destination, for fees will change from place to place.#b";
-		for (var i = 0; i < maps.length; i++) {
-		    selStr += "\r\n#L" + i + "##m" + maps[i] + "# (" + costBeginner[i] + " mesos)#l";
-		}
-	    } else {
-		var selStr = "Choose your destination, for fees will change from place to place.#b";
-		for (var i = 0; i < maps.length; i++) {
-		    selStr += "\r\n#L" + i + "##m" + maps[i] + "# (" + cost[i] + " mesos)#l";
-		}
-	    }
-	    cm.sendSimple(selStr);
-	} else {
-	    cm.sendNextPrev("Hey, since you have a Taxi Coupon, I can take you to the town indicated on the pass for free. It looks like your destination is #bHenesys#k!");
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				// 原文ママ
+				var text = "こんにちは～! リス港口中型タクシーです。他の村で安全で早く移動したいのですか? それなら私どものタクシーを利用してみて下さい。 安い価格でお望みの所まで親切に迎えて差し上げています。\r\n";
+				return cm.sendSimple(text);
+			}
+		case 1:
+			{
+				var text = "目的地をお選びください。村事に料金が異なります。\r\n";
+				var mapid = cm.getMapId();
+				for (var i = 0; i < taxi_map.length; i++) {
+					// 現在のマップはスキップ
+					if (mapid == taxi_map[i][0]) {
+						continue;
+					}
+					text += "#L" + taxi_map[i][0] + "##b#m" + taxi_map[i][0] + "#(" + taxi_map[i][1] + "メル)#k#l\r\n";
+				}
+				return cm.sendSimple(text);
+			}
+		case 2:
+			{
+				to_map = selection;
+				// テキスト適当 本来は誤字あり?
+				var text = "ここではもう用事がないようですね。本当に#m" + to_map + "#へ移動しますか？\r\n";
+				return cm.sendYesNo(text);
+			}
+		case 3:
+			{
+				cm.warp(to_map);
+				return cm.dispose();
+			}
+		default:
+			break;
 	}
-    } else if (status == 2) {
-	if (!cm.haveItem(4032313)) {
-	    var job = cm.getJob();
-	    if (job == 0 || job == 1000 || job == 2000) {
-		sCost = costBeginner[selection];
-		show = costBeginner[selection];
-	    } else {
-		sCost = rCost[selection];
-		show = cost[selection];
-	    }
-	    cm.sendYesNo("You don't have anything else to do here, huh? Do you really want to go to #b#m" + maps[selection] + "##k? It'll cost you #b" + show + " mesos#k.");
-	    selectedMap = selection;
-	} else {
-	    cm.gainItem(4032313, -1);
-	    cm.warp(100000000, 6);
-	    cm.dispose();
-	}
-    } else if (status == 3) {
-	if (cm.getMeso() < sCost) {
-	    cm.sendNext("You don't have enough mesos. Sorry to say this, but without them, you won't be able to ride the cab.");
-	    cm.safeDispose();
-	} else {
-	    cm.gainMeso(-sCost);
-	    cm.warp(maps[selectedMap]);
-	    cm.dispose();
-	}
-    }
+
+	return cm.dispose();
 }

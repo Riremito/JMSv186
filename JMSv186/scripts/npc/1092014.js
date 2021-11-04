@@ -1,63 +1,57 @@
-/* Author: Xterminator
-	NPC Name: 		Nautilus' Mid-Sized Taxi
-	Map(s): 		Victoria Road : Nautilus Harbor (120000000)
-	Description: 		Nautilus Harbor Taxi
-*/
+// タクシー
+// ノーチラス
 
-var status = -1;
-var maps = Array(104000000, 102000000, 100000000, 103000000, 101000000);
-var rCost = Array(1200, 1000, 1000, 1200, 1000);
-var costBeginner = Array(120, 100, 100, 120, 100);
-var cost = new Array("1,200", "1,000", "1,000", "1,200", "1,000");
-var show;
-var sCost;
-var selectedMap = -1;
+var taxi_map = Array(
+	[104000000, 0],
+	[100000000, 0],
+	[102000000, 0],
+	[101000000, 0],
+	[103000000, 0],
+	[120000000, 0]
+);
 
+var npc_talk_status = -1;
+var to_map = 0;
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	if (status >= 2) {
-	    cm.sendNext("There's a lot to see in this town, too. Come back and find us when you need to go to a different town.");
-	    cm.safeDispose();
-	    return;
+	if (mode != 1) {
+		return cm.dispose();
 	}
-	status--;
-    }
 
-    if (status == 0) {
-	cm.sendNext("How's it going? I drive the Nautilus' Mid-Sized Taxi. If you want to go from town to town safely and fast, then ride our cab. We'll gladly take you to your destination with an affordable price.");
-    } else if (status == 1) {
-	if (cm.getJob() == 0) {
-	    var selStr = "We have a special 90% discount for beginners. Choose your destination, for fees will change from place to place.#b";
-	    for (var i = 0; i < maps.length; i++) {
-		selStr += "\r\n#L" + i + "##m" + maps[i] + "# (" + costBeginner[i] + " mesos)#l";
-	    }
-	} else {
-	    var selStr = "Choose your destination, for fees will change from place to place.#b";
-	    for (var i = 0; i < maps.length; i++) {
-		selStr += "\r\n#L" + i + "##m" + maps[i] + "# (" + cost[i] + " mesos)#l";
-	    }
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				var text = "こんにちは！　ノーチラス大型タクシーでございます。他の村への安全で迅速な移動をお望みですか？でしたら我がタクシーをご利用ください。安い値段でお望みの場所まで親切にご案内しております。\r\n";
+				return cm.sendSimple(text);
+			}
+		case 1:
+			{
+				var text = "目的地をお選びください。村事に料金が異なります。\r\n";
+				var mapid = cm.getMapId();
+				for (var i = 0; i < taxi_map.length; i++) {
+					// 現在のマップはスキップ
+					if (mapid == taxi_map[i][0]) {
+						continue;
+					}
+					text += "#L" + taxi_map[i][0] + "##b#m" + taxi_map[i][0] + "#(" + taxi_map[i][1] + "メル)#k#l\r\n";
+				}
+				return cm.sendSimple(text);
+			}
+		case 2:
+			{
+				to_map = selection;
+				// テキスト適当 本来は誤字あり?
+				var text = "ここではもう用事がないようですね。本当に#m" + to_map + "#へ移動しますか？\r\n";
+				return cm.sendYesNo(text);
+			}
+		case 3:
+			{
+				cm.warp(to_map);
+				return cm.dispose();
+			}
+		default:
+			break;
 	}
-	cm.sendSimple(selStr);
-    } else if (status == 2) {
-	if (cm.getJob() == 0) {
-	    sCost = costBeginner[selection];
-	    show = costBeginner[selection];
-	} else {
-	    sCost = rCost[selection];
-	    show = cost[selection];
-	}
-	cm.sendYesNo("You don't have anything else to do here, huh? Do you really want to go to #b#m" + maps[selection] + "##k? It'll cost you #b" + show + " mesos#k.");
-	selectedMap = selection;
-    } else if (status == 3) {
-	if (cm.getMeso() < sCost) {
-	    cm.sendNext("You don't have enough mesos. Sorry to say this, but without them, you won't be able to ride the cab.");
-	    cm.safeDispose();
-	} else {
-	    cm.gainMeso(-sCost);
-	    cm.warp(maps[selectedMap], 0);
-	    cm.dispose();
-	}
-    }
+
+	return cm.dispose();
 }

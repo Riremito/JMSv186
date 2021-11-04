@@ -1,33 +1,85 @@
-/*
-	Konpei - Showa Town(801000000)
-*/
+// 火狸金融 入場
+// コンペイ
 
-function start() {
-    status = -1;
-    action(1, 0, 0);
+var main_menu = Array(
+	"#bアジトの説明を聞く。#k",
+	"#bアジトに連れて行ってくれ。#k",
+	"#b用はない。#k"
+);
+
+function select_explain(npc_talk_status) {
+	switch (npc_talk_status) {
+		case 1:
+			{
+				var text = "オイラはアジトまで案内してやることができるぜ。しかしアジトはガラの悪い連中がウヨウヨいるからよ、力つけて腹くくってから行くことにしなぁ。アジトにはこの近辺の親分たちを取り仕切っている大親分がいる。アジトにはまあ簡単に行けるんだが、アジトの最上階にある部屋には1日1回しか行けねーぞ。大親分の部屋は恐ろしいところだ。あんまり長居しない方が良いから、短時間でケリつけてくれよ！あの大親分もただもんじゃねーが、大親分に会うまでにも腕っぷしの強いやつらがいるから、やっかいだぜ～。";
+				cm.sendSimple(text);
+				break;
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }
 
-function action(mode, type, selection) {
-    if (mode == 0) {
-	cm.dispose();
-    } else {
-	if (mode == 1)
-	    status++;
-	if (status == 0) {
-	    cm.sendSimple ("What do you want from me?\r #L0##bGather up some information on the hideout.#l\r\n#L1#Take me to the hideout#l\r\n#L2#Nothing#l#k");
-	} else if (status == 1) {
-	    if (selection == 0) {
-		cm.sendNext("I can take you to the hideout, but the place is infested with thugs looking for trouble. You'll need to be both incredibly strong and brave to enter the premise. At the hideaway, you'll find the Boss that controls all the other bosses around this area. It's easy to get to the hideout, but the room on the top floor of the place can only be entered ONCE a day. The Boss's Room is not a place to mess around. I suggest you don't stay there for too long; you'll need to swiftly take care of the business once inside. The boss himself is a difficult foe, but you'll run into some incredibly powerful enemies on you way to meeting the boss! It ain't going to be easy.");
-	    } if (selection == 1) {
-		cm.sendNext("Oh, the brave one. I've been awaiting your arrival. If these\r\nthugs are left unchecked, there's no telling what going to\r\nhappen in this neighborhood. Before that happens, I hope\r\nyou take care of all them and beat the boss, who resides\r\non the 5th floor. You'll need to be on alert at all times, since\r\nthe boss is too tough for even wisemen to handle.\r\nLooking at your eyes, however, I can see that eye of the\r\ntiger, the eyes that tell me you can do this. Let's go!");
-	    } if (selection == 2) {
-		cm.sendOk("I'm a busy person! Leave me alone if that's all you need!");
-	    } if(selection != 1) {
-		cm.dispose();
-	    }
-	} else if (status == 2) {
-	    cm.warp(801040000, 0);
-	    cm.dispose();
+function select_go(npc_talk_status) {
+	switch (npc_talk_status) {
+		case 1:
+			{
+				var text = "おお、勇者よ待っていたぞ。このまま奴等を放置すれば取り返しがつかなくなる。その前にお前さんの力で、５階にいる大親分を懲らしめてくれ。くれぐれも油断はすんなよ。大親分は幾人もの猛者が敵わなかった兵だ。だが、お前さんの目を見ているとやってくれると確信が持てたぜ。さあ行くぞ。";
+				return cm.sendSimple(text);
+			}
+		default:
+			break;
 	}
-    }
+
+	return cm.dispose();
+}
+
+function menu_select(npc_talk_status, selection) {
+	switch (selection) {
+		case 0:
+			{
+				return select_explain(npc_talk_status);
+			}
+		case 1:
+			{
+				return select_go(npc_talk_status);
+			}
+		default:
+			break;
+	}
+	return cm.dispose();
+}
+
+var npc_talk_status = -1;
+function action(mode, type, selection) {
+	if (mode != 1) {
+		return cm.dispose();
+	}
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				var mapid = cm.getMapId();
+				var text = "用はなんだ。\r\n";
+				for (var i = 0; i < main_menu.length; i++) {
+					text += "#L" + i + "#" + main_menu[i] + "#l\r\n";
+				}
+				return cm.sendSimple(text);
+			}
+		case 1:
+			{
+				return menu_select(npc_talk_status, selection);
+			}
+		case 2:
+			{
+				cm.warp(801040000, 0);
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }

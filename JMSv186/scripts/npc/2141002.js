@@ -1,16 +1,13 @@
-/*
-	NPC Name: 		The Forgotten Temple Manager
-	Map(s): 		Deep in the Shrine - Twilight of the gods
-	Description: 		Pink Bean
- */
+// ピンクビーン遠征隊 退場
+// 忘れられた神殿管理人
 
 function start() {
-    cm.sendYesNo("Do you want to get out now?");
+	cm.sendYesNo("遠征隊をやめて退場しますか？");
 }
 
 function action(mode, type, selection) {
-    if (mode == 1) {
-	cm.warp(270050000, 0);
-    }
-    cm.dispose();
+	if (mode == 1) {
+		cm.warp(270050000, 0);
+	}
+	cm.dispose();
 }
