@@ -1,59 +1,102 @@
-/* 
-	NPC Name: 		Shanks
-	Map(s): 		Maple Road : Southperry (60000)
-	Description: 		Brings you to Victoria Island
-*/
-var status = 0;
+// シャンクス
+// 港口からメイプルアイランドへ
 
-function start() {
-    status = -1;
-    action(1, 0, 0);
+function ToVictoria(npc_talk_status, selection) {
+	switch (npc_talk_status) {
+		case 0:
+			{
+				// デバッグモード
+				if (!cm.haveItem(4031801)) {
+					cm.gainItem(4031801, 1);
+				}
+				// 原文ママ
+				var text = "この船に乗れば、広大なフィールドが広がる#bビクトリアアイランド#kに行くことができる。#e150 メル#n必要だけどね。ただ、一度ビクトリアアイランドに渡ってしまうと、修行をつんで一人前にならなければ、このメイプルアイランドには戻ってこれなくなるんだ。ここに比べて危険の多い島でもあるから、レベルを5ぐらいにあげてから旅立つとよいだろうね。";
+				return cm.sendYesNo(text);
+
+			}
+		case 1:
+			{
+				if (cm.haveItem(4031801)) {
+					// 原文ママ
+					var text = "それはアムホストの長老ルーカス様の推薦書じゃないか!これがあるなら早く行ってくれ、金はいらんぞ。";
+					return cm.sendSimple(text);
+				}
+				if (cm.getMeso() < 150) {
+					// 適当
+					cm.sendOk("メルが不足しています。");
+					return cm.dispose();
+				}
+				// 適当
+				return cm.sendSimple("150メル受け取りました。");
+			}
+		case 2:
+			{
+				if (cm.haveItem(4031801)) {
+					// 原文ママ
+					var text = "推薦書を持っているから、特別に料金は免除しよう。さあ！ビクトリアアイランドに出発するぞ！揺れるかもしれないから何かに捕まってくれ！";
+					// sendNextPrevが正常に動作しない
+					return cm.sendSimple(text);
+				}
+				cm.gainMeso(-150);
+				cm.warp(104000000);
+				return cm.dispose();
+			}
+		case 3:
+			{
+				cm.warp(104000000);
+				return cm.dispose();
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }
 
-function action(mode, type, selection) {
-    if (status >= 0 && mode == 0) {
-	cm.sendOk("Hmm... I guess you still have things to do here?");
-	cm.dispose();
-	return;
-    }
-    if (mode == 1)
-	status++;
-    else
-	status--;
+function FromVictoria(npc_talk_status, selection) {
+	var fame = cm.getPlayer().getFame();
+	switch (npc_talk_status) {
+		case 0:
+			{
+				// 人気度制限
+				if (fame < 300) {
+					// 原文ママ
+					var text = "人気度が300以上ないとメイプルアイランドに行くことはできない。";
+					return cm.sendSimple(text);
+				}
+				// 原文ママ
+				var text = "特別にサウスペリに移動させてあげよう。どうだい #bメイプルアイランドのサウスペリ#kに行きたいかい？";
+				return cm.sendYesNo(text);
 
-    if (status == 0) {
-	cm.sendYesNo("Take this ship and you'll head off to a bigger continent. For #e150 mesos#n, I'll take you to #bVictoria Island#k. The thing is, once you leave this place, you can't ever come back. What do you think? Do you want to go to Victoria Island?");
-    } else if (status == 1) {
-	if (cm.haveItem(4031801)) {
-	    cm.sendNext("Okay, now give me 150 mesos... Hey, what's that? Is that the recommendation letter from Lucas, the chief of Amherst? Hey, you should have told me you had this. I, Shanks, recognize greatness when I see one, and since you have been recommended by Lucas, I see that you have a great, great potential as an adventurer. No way would I charge you for this trip!");
-	} else {
-	    cm.sendNext("Bored of this place? Here... Give me #e150 mesos#n first...");
+			}
+		case 1:
+			{
+				if (fame < 300) {
+					return cm.dispose();
+				}
+				cm.warp(2000000);
+				return cm.dispose();
+			}
+		default:
+			break;
 	}
-    } else if (status == 2) {
-	if (cm.haveItem(4031801)) {
-	    cm.sendNextPrev("Since you have the recommendation letter, I won't charge you for this. Alright, buckle up, because we're going to head to Victoria Island right now, and it might get a bit turbulent!!");
-	} else {
-	    if (cm.getPlayerStat("LVL") >= 7) {
-		if (cm.getMeso() < 150) {
-		    cm.sendOk("What? You're telling me you wanted to go without any money? You're one weirdo...");
-		    cm.dispose();
-		} else {
-		    cm.sendNext("Awesome! #e150#n mesos accepted! Alright, off to Victoria Island!");
-		}
-	    } else {
-		cm.sendOk("Let's see... I don't think you are strong enough. You'll have to be at least Level 7 to go to Victoria Island.");
-		cm.dispose();
-	    }
+
+	return cm.dispose();
+}
+
+var npc_talk_status = -1;
+
+function action(mode, type, selection) {
+	if (mode != 1) {
+		return cm.dispose();
 	}
-    } else if (status == 3) {
-	if (cm.haveItem(4031801)) {
-	    cm.gainItem(4031801, -1);
-	    cm.warp(2010000,0);
-	    cm.dispose();
-	} else {
-	    cm.gainMeso(-150);
-	    cm.warp(2010000,0);
-	    cm.dispose();
+	npc_talk_status++;
+
+	var mapid = cm.getMapId();
+
+	if (mapid == 104000000) {
+		return FromVictoria(npc_talk_status, selection);
 	}
-    }
+
+	return ToVictoria(npc_talk_status, selection);
 }
