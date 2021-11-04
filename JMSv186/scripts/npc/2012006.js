@@ -1,39 +1,41 @@
-var mapid = new Array(200000110,200000120,200000130,200000140,200000150);
-var platform = new Array("Ellinia","Ludibrium","Leafre","Mu Lung","Ariant");
-var flight = new Array("ship","ship","ship","Hak","Geenie");
-var menu;
-var select;
+// オルビス 船
+// map 200000100
 
-function start() {
-    status = -1;
-    action(1, 0, 0);
-}
+var ship_platform = Array(
+	[200000110, "エリニア行きの船に乗る昇降場"],
+	[200000120, "ルディブリアム行きの船に乗る昇降場"],
+	[200000130, "リプレ行きの船に乗る昇降場"],
+	[200000140, "武陵行きのツルに乗る昇降場"],
+	[200000150, "アリアント行きのジニに乗る昇降場"],
+	[200000160, "エレヴ行きの船に乗る昇降場"]
+);
+
+var npc_talk_status = -1;
 
 function action(mode, type, selection) {
-    if(mode == 0 && status == 0) {
-	cm.dispose();
-	return;
-    }
-    if(mode == 0) {
-	cm.sendOk("Please make sure you know where you are going and then go to the platform through me. The ride is on schedule so you better not miss it!");
-	cm.dispose();
-	return;
-    }
-    if(mode == 1)
-	status++;
-    else
-	status--;
-    if(status == 0) {
-	menu = "Orbis Station has a lots of platforms available to choose from. You need to choose the one that'll take you to the destination of your choice. Which platform will you take?";
-	for(var i=0; i < platform.length; i++) {
-	    menu += "\r\n#L"+i+"##bThe platform to the ship that heads to "+platform[i]+"#k#l";
+	if (mode != 1) {
+		return cm.dispose();
 	}
-	cm.sendSimple(menu);
-    } else if(status == 1) {
-	select = selection;
-	cm.sendYesNo("Even if you took the wrong passage you can get back here using the portal, so no worries. Will you move to the #bplatform to the "+flight[select]+" that heads to "+platform[select]+"#k?");
-    } else if(status == 2) {
-	cm.warp(mapid[select], 0);
-	cm.dispose();
-    }
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				var text = "オルビスステーションには多くの昇降場があります。目的地によって正しい昇降場へ行かなければなりません。どの方面に向かう船の昇降場に行くんですか？\r\n";
+				for (var i = 0; i < ship_platform.length; i++) {
+					text += "#L" + ship_platform[i][0] + "##b" + ship_platform[i][1] + "#k#l\r\n";
+				}
+				return cm.sendSimple(text);
+			}
+		case 1:
+			{
+				var mapid = selection;
+				cm.warp(mapid, "west00");
+				return cm.dispose();
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }
