@@ -18,7 +18,8 @@ function action(mode, type, selection) {
 			}
 		case 1:
 			{
-				cm.warp(200000161);
+				// オルビスチケット売場
+				cm.warp(200000100);
 				return cm.dispose();
 			}
 		default:
