@@ -1,32 +1,60 @@
-/*
-@	Name: GMS-like Gachapon
-	Showa Spa (F)
- */
+// ガシャポン
+// 銭湯（男）
 
-var status = -1;
+var rewards = new Array(
+	1102040,
+	1102041,
+	1102042,
+	1102084,
+	1102085,
+	1102086
+);
+
+function RandomRewards() {
+	var target = Math.floor(Math.random() * rewards.length);
+	return rewards[target];
+}
+
+var ticket_itemid = 5220000;
+
+var npc_talk_status = 0;
 
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	status--;
-    }
-    if (status == 0) {
-	if (cm.haveItem(5220000)) {
-	    cm.sendYesNo("You have some #bGachapon Tickets#k there.\r\nWould you like to try your luck?");
-	} else {
-	    cm.sendOk("You don't have a single ticket with you. Please buy the ticket at the department store before coming back to me. Thank you.");
-	    cm.safeDispose();
+	if (mode != 1) {
+		return cm.dispose();
 	}
-    } else if (status == 1) {
-	var itemList = new Array(2000004, 2022113, 2040019, 2040020, 1072238, 1040081, 1382002, 1442021, 1072239, 1002096, 1322010, 1472005, 1002021, 1422007, 1082148, 1102081, 1040043, 1002117, 1302013, 1462024, 1382003, 1051001, 1472000, 1002088, 1472003, 1002048, 1002178, 1040007, 1002131, 1002288, 1002183, 1372006, 1442004, 1040082, 1322003, 2022195, 1412001, 1472009, 1060088, 1002035, 1322009, 1472016, 1332011, 1032027, 1002214, 1312014, 1002120, 1322023, 1452010, 1002034, 1060025, 1082147, 1002055, 1060019, 1002180, 1002154, 1060068, 1462013);
-	var item = cm.gainGachaponItem(itemList[Math.floor(Math.random() * itemList.length)], 1);
-	if (item != -1) {
-	    cm.gainItem(5220000, -1);
-	    cm.sendOk("You have obtained #b#t" + item + "##k.");
-	} else {
-	    cm.sendOk("Please check your item inventory and see if you have the ticket, or if the inventory is full.");
+
+	npc_talk_status++;
+
+	switch (npc_talk_status) {
+		case 1:
+			{
+				// デバッグモード
+				if (!cm.haveItem(ticket_itemid)) {
+					cm.gainItem(ticket_itemid, 1);
+				}
+				if (!cm.haveItem(ticket_itemid)) {
+					npc_talk_status = -1;
+					// 原文ママ
+					var text = "ガシャポンが置いてある…";
+					return cm.sendSimple(text);
+				}
+				var text = "ガシャポンが置いてある。#b#z" + ticket_itemid + "##kを使いますか？";
+				return cm.sendYesNo(text);
+			}
+		case 2:
+			{
+				if (cm.haveItem(ticket_itemid)) {
+					var reward = RandomRewards();
+					cm.gainItem(ticket_itemid, -1);
+					cm.Gashapon(reward, 1);
+					cm.sendOk("#b#t" + reward + "##k１個を獲得しました！");
+				}
+				return cm.dispose();
+			}
+		default:
+			break;
 	}
-	cm.safeDispose();
-    }
+
+	return cm.dispose();
 }

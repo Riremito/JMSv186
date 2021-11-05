@@ -1,5 +1,5 @@
 // ガシャポン
-// 未実装的something
+// コカ・コーラ ゼロ
 
 var rewards = new Array(
 	1102040,
@@ -15,7 +15,7 @@ function RandomRewards() {
 	return rewards[target];
 }
 
-var ticket_itemid = 5220000;
+var ticket_itemid = 5220060;
 
 var npc_talk_status = 0;
 
@@ -35,10 +35,11 @@ function action(mode, type, selection) {
 				}
 				if (!cm.haveItem(ticket_itemid)) {
 					npc_talk_status = -1;
-					var text = "謎のガシャポンが置いてある…";
+					// 原文ママ
+					var text = "ガシャポンが置いてある…";
 					return cm.sendSimple(text);
 				}
-				var text = "謎のガシャポンが置いてある。#b#z" + ticket_itemid + "##kを使いますか？";
+				var text = "ガシャポンが置いてある。#b#z" + ticket_itemid + "##kを使いますか？";
 				return cm.sendYesNo(text);
 			}
 		case 2:

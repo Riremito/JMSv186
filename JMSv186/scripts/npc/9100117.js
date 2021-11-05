@@ -1,5 +1,5 @@
 // ガシャポン
-// 未実装的something
+// ノーチラスガシャポン 未実装的な奴?
 
 var rewards = new Array(
 	1102040,
@@ -35,10 +35,10 @@ function action(mode, type, selection) {
 				}
 				if (!cm.haveItem(ticket_itemid)) {
 					npc_talk_status = -1;
-					var text = "謎のガシャポンが置いてある…";
+					var text = "ノーチラスガシャポンが置いてある…";
 					return cm.sendSimple(text);
 				}
-				var text = "謎のガシャポンが置いてある。#b#z" + ticket_itemid + "##kを使いますか？";
+				var text = "ノーチラスガシャポンが置いてある。#b#z" + ticket_itemid + "##kを使いますか？";
 				return cm.sendYesNo(text);
 			}
 		case 2:

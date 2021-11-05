@@ -1,25 +1,23 @@
-/*
-	NPC Name: 		Vikin
-	Map(s): 		Victoria Road: Lith Harbor (104000000)
-*/
-var status = 0;
+// バイキン
 
-function start() {
-    status = -1;
-    action(1, 0, 0);
-}
+var npc_talk_status = -1;
 
 function action(mode, type, selection) {
-    if (status >= 0 && mode == 0) {
-	cm.dispose();
-	return;
-    }
-    if (mode == 1)
-	status++;
-    else
-	status--;
-    if (status == 0) {
-	cm.sendOk("Hey hey!!! Find the Treasure Scroll! I lost the map\r\nsomewhere and I can't leave without it.");
-	cm.dispose();
-    }
+	if (mode != 1) {
+		return cm.dispose();
+	}
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				// BB後
+				var text = "おいおい、早く宝の地図を探してこいよ。地図がなけりゃあ海には出られないぜ。";
+				return cm.sendOk(text);
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }
