@@ -1,4 +1,4 @@
-// 輝く石
+// プディン
 
 var npc_talk_status = -1;
 
@@ -12,7 +12,7 @@ function action(mode, type, selection) {
 		case 0:
 			{
 				// BB後
-				var text = "美しく輝く石だ。何となく神秘的な力が感じられる。";
+				var text = "ここは英雄の殿堂だ。\r\n";
 				return cm.sendSimple(text);
 			}
 		default:

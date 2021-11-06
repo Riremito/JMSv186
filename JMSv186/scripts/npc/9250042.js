@@ -1,5 +1,4 @@
-// ごみ箱おじさん
-// ビジター関連
+// ヘネシス電光版
 
 var npc_talk_status = -1;
 
@@ -12,9 +11,8 @@ function action(mode, type, selection) {
 	switch (npc_talk_status) {
 		case 0:
 			{
-				// 原文ママ 多分
-				var text = "おい!!!何でコインを投げたりするんだ!!!\r\nごみ箱とでも思ってんのか？";
-				return cm.sendSimple(text);
+				// 何もしない
+				return cm.dispose();
 			}
 		default:
 			break;

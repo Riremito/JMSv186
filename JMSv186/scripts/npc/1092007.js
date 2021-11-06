@@ -1,12 +1,23 @@
-/*
-Muirhat - Nautilus' Port
-*/
+// ƒ€ƒ‰ƒg
 
-
-function start() {
-    cm.sendOk("The Black Magician and his followers. Kyrin and the Crew of Nautilus. \n They'll be chasing one another until one of them doesn't exist, that's for sure.");
-}
+var npc_talk_status = -1;
 
 function action(mode, type, selection) {
-    cm.dispose();
+	if (mode != 1) {
+		return cm.dispose();
+	}
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				// BBŒã
+				var text = "‚¢‚Â‚Å‚à“ü‚ê‚é‚æ‚¤‚ÈŠ‚¶‚á‚È‚¢‚¼c";
+				return cm.sendOk(text);
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }

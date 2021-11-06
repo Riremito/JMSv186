@@ -1,58 +1,48 @@
-/*
-	Hotel Receptionist - Sleepywood Hotel(105040400)
-*/
-
-var status = 0;
-var regcost = 499;
-var vipcost = 999;
-var tempvar;
-
-function start() {
-    status = -1;
-    action(1, 0, 0);
-}
-
+var npc_talk_status = 0;
+var enter_mapid = 105040401;
 function action(mode, type, selection) {
-    if (mode == 1)
-	status++; if (mode == 0 && status == 1) {
-	cm.dispose();
-	return;
-    } if (mode == 0 && status == 2) {
-	cm.sendNext("We offer other kinds of services, too, so please think carefully and then make your decision.");
-	cm.dispose();
-	return;
-    }
-    if (status == 0) {
-	cm.sendNext("Welcome. We're the Sleepywood Hotel. Our hotel works hard to serve you the best at all times. If you are tired and worn out from hunting, how about a relaxing stay at our hotel?");
-    }
-    if (status == 1) {
-	cm.sendSimple("We offer two kinds of rooms for our service. Please choose the one of your liking.\r\n#b#L0#Regular sauna (" + regcost + " mesos per use)#l\r\n#L1#VIP sauna (" + vipcost + "mesos per use)#l");
-    }
-    if (status == 2) {
-	tempvar = selection;
-	if (tempvar == 0) {
-	    cm.sendYesNo("You have chosen the regular sauna. Your HP and MP will recover fast and you can even purchase some items there. Are you sure you want to go in?");
+	if (mode != 1) {
+		if (npc_talk_status == 3) {
+			npc_talk_status = -1;
+			var text = "当ホテルは別のサービスもございますので、ゆっくりお考えになってからご利用下さい。";
+			return cm.sendSimple(text);
+		}
+		return cm.dispose();
 	}
-	if (tempvar == 1) {
-	    cm.sendYesNo("You've chosen the VIP sauna. Your HP and MP will recover even faster than that of the regular sauna and you can even find a special item in there. Are you sure you want to go in?");
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 1:
+			{
+				// BB後
+				var text = "いらっしゃいませ。スリーピーウッドホテルでございます。当ホテルは皆様に最高のサービスを提供するようにいつも心がけています。戦いに疲れたなら当ホテルを利用してはいかがでしょうか？\r\n";
+				return cm.sendSimple(text);
+			}
+		case 2:
+			{
+				var text = "当ホテルには2つのルームがございます。どちらのルームを利用しますか？\r\n";
+				text += "#L0##b一般サウナ室(1回：499メル)#k#l\r\n";
+				text += "#L1##b高級サウナ室 (1回：999メル)#k#l\r\n";
+				return cm.sendSimple(text);
+			}
+		case 3:
+			{
+				if (selection == 0) {
+					enter_mapid = 105040401;
+					var text = "一般サウナ室をご利用ですね。HPとMPの回復ができて、色々なアイテムの売買も行えます。よろしいでしょうか？";
+					return cm.sendYesNo(text);
+				}
+				enter_mapid = 105040402;
+				var text = "高級サウナ室をご利用ですね。一般サウナ室よりも速くHPとMPの回復ができて、中では特別なアイテムを買うこともできます。よろしいでしょうか？";
+				return cm.sendYesNo(text);
+			}
+		case 4: {
+			cm.warp(enter_mapid, 0)
+			return cm.dispose();
+		}
+		default:
+			break;
 	}
-    }
-    if (status == 3) {
-	if (tempvar == 0) {
-	    if (cm.getMeso() >= regcost) {
-		cm.warp(105040401);
-		cm.gainMeso(-regcost);
-	    } else {
-		cm.sendNext("I'm sorry. It looks like you don't have enough mesos. It will cost you at least " + regcost + "mesos to stay at our hotel.");
-	    }
-	} if (tempvar == 1) {
-	    if (cm.getMeso() >= vipcost) {
-		cm.warp(105040402);
-		cm.gainMeso(-vipcost);
-	    } else {
-		cm.sendNext("I'm sorry. It looks like you don't have enough mesos. It will cost you at least " + regcost + "mesos to stay at our hotel.");
-	    }
-	}
-	cm.dispose();
-    }
+
+	return cm.dispose();
 }

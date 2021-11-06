@@ -1,4 +1,4 @@
-// ヒュモノイドA
+// チコ
 var npc_talk_status = -1;
 
 function action(mode, type, selection) {
@@ -10,8 +10,9 @@ function action(mode, type, selection) {
 	switch (npc_talk_status) {
 		case 0:
 			{
-				// BB後
-				var text = "僕は人間になりたいです。暖かい心を持った人間に…そうなったらきっと、彼女の手の暖かさも感じることができるでしょう。でも、それは叶わぬ夢…。\r\n";
+				var text = "こんにちは！俺はこの周辺のミニゲームを統括している#b#p2040014##kだよ。君、ミニゲームに関心があるようだな。 助けてあげようか。じゃ、やりたいことは？\r\n";
+				text += "#L" + 0 + "##bミニゲームのアイテム作成#k#l\r\n";
+				text += "#L" + 1 + "##bミニゲームに対する説明を聞く#k#l\r\n";
 				return cm.sendSimple(text);
 			}
 		case 1:

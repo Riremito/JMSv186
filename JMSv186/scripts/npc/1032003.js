@@ -1,67 +1,43 @@
-/**
--- Odin JavaScript --------------------------------------------------------------------------------
-	Shane - Ellinia (101000000)
--- By ---------------------------------------------------------------------------------------------
-	Unknown
--- Version Info -----------------------------------------------------------------------------------
-	1.1 - Statement fix [Information]
-	1.0 - First Version by Unknown
----------------------------------------------------------------------------------------------------
-**/
+// シェイン
+// エリニア忍耐
 
-var status = 0;
-var check = 0;
-
-function start() {
-    status = -1;
-    action(1, 0, 0);
-}
+var npc_talk_status = 0;
 
 function action(mode, type, selection) {
-    if (mode == 0) {
-	cm.sendOk("Alright, see you next time.");
-	cm.dispose();
-	return;
-    }
-    if (mode == 1) {
-	status++;
-    }
-    else {
-	status--;
-    }
-    if (status == 0) {
-	if (cm.getPlayerStat("LVL") < 25) {
-	    cm.sendOk("You must be a higher level to enter the Forest of Patience.");
-	    cm.dispose();
-	    check = 1;
+	if (mode != 1) {
+		return cm.dispose();
 	}
-	else {
-	    cm.sendYesNo("Hi, i'm Shane. I can let you into the Forest of Patience for a small fee. Would you like to enter for #b5000#k mesos?");
-	}
-    } else if (status == 1) {
-	if (check != 1) {
-	    if (cm.getMeso() < 5000) {
-		cm.sendOk("Sorry but it doesn't like you have enough mesos!")
-		cm.dispose();
-	    }
-	    else {
-		if (cm.getQuestStatus(2050) == 1) {
-		    cm.warp(101000100, 0);
-		}
-		else if (cm.getQuestStatus(2051) == 1) {
-		    cm.warp(101000102, 0);
-		}
-		else if (cm.getPlayerStat("LVL") >= 25 && cm.getPlayerStat("LVL") < 50) {
-		    cm.warp(101000100, 0);
-		}
-		else if (cm.getPlayerStat("LVL") >= 50) {
-		    cm.warp(101000102, 0);
-		}
-		cm.gainMeso(-5000);
-		cm.dispose();
-	    }
-	}
-    }
-}	
 
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 1:
+			{
+				// BB後
+				var text = "#bサビトラマ#kから頼まれて薬草を取りに来ただって？　だが、ここは父から譲り受けた大切な場所なんだよ…。本当なら誰も入れる訳にはいけないんだが、#r6000#k メルさえ払えば話は違うぞ。どうだ、メルを払うかい？";
+				return cm.sendYesNo(text);
+			}
+		case 2:
+			{
+				var text = "デバッグモード\r\n";
+				// cm.getQuestStatus(2050) == 1
+				text += "#L" + 101000100 + "##r#m" + 101000100 + "##k#l\r\n";
+				text += "#L" + 101000101 + "##r#m" + 101000101 + "##k#l\r\n";
+				// cm.getQuestStatus(2051) == 1
+				text += "#L" + 101000102 + "##r#m" + 101000102 + "##k#l\r\n";
+				text += "#L" + 101000103 + "##r#m" + 101000103 + "##k#l\r\n";
+				text += "#L" + 101000104 + "##r#m" + 101000104 + "##k#l\r\n";
+				return cm.sendSimple(text);
 
+			}
+		case 3:
+			{
+				var mapid = selection;
+				cm.warp(mapid, 0);
+				return cm.dispose();
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
+}

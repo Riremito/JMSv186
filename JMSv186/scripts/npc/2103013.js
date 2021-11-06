@@ -3,35 +3,35 @@ var section = 0;
 importPackage(java.lang);
 //questid 29932, infoquest 7760
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	if (status == 99) {
-		cm.dispose();
-		return;
-	}
-	status--;
-    }
-    if (status == 1) {
-	if (cm.getMapId() >= 926020001 && cm.getMapId() <= 926020004) {
-		var itemid = 4001321 + (cm.getMapId() % 10);
-		if (!cm.canHold(itemid)) {
-			cm.sendOk("Please make room for 1 ETC slot.");
-		} else {
-			cm.gainItem(itemid,1);
-			cm.warp(cm.getMapId() - 10000, 0);
-		}
-		cm.dispose();
-	} else if (cm.getMapId() >= 926010001 && cm.getMapId() <= 926010004) {
-		cm.warp(926010000,0);
-		cm.dispose();
-	} else if (cm.getMapId() >= 926010100 && cm.getMapId() <= 926013504) {
-		cm.sendYesNo("Would you like to exit this place?");
-		status = 99;
+	if (mode == 1) {
+		status++;
 	} else {
-		cm.sendSimple("My name is Duarte.\r\n#b#e#L1#Enter the Pyramid.#l#n\r\n#L2#Head towards Yeti Pharaoh's Tomb.#l\r\n#L3#Hear a story on Yeti Pharaoh's jewelry.#l\r\n#L4#Receive a medal of <Protector of Pharaoh>.#l#k");
+		if (status == 99) {
+			cm.dispose();
+			return;
+		}
+		status--;
 	}
-    } else if (status == 2) {
+	if (status == 1) {
+		if (cm.getMapId() >= 926020001 && cm.getMapId() <= 926020004) {
+			var itemid = 4001321 + (cm.getMapId() % 10);
+			if (!cm.canHold(itemid)) {
+				cm.sendOk("Please make room for 1 ETC slot.");
+			} else {
+				cm.gainItem(itemid, 1);
+				cm.warp(cm.getMapId() - 10000, 0);
+			}
+			cm.dispose();
+		} else if (cm.getMapId() >= 926010001 && cm.getMapId() <= 926010004) {
+			cm.warp(926010000, 0);
+			cm.dispose();
+		} else if (cm.getMapId() >= 926010100 && cm.getMapId() <= 926013504) {
+			cm.sendYesNo("Would you like to exit this place?");
+			status = 99;
+		} else {
+			cm.sendSimple("My name is Duarte.\r\n#b#e#L1#Enter the Pyramid.#l#n\r\n#L2#Head towards Yeti Pharaoh's Tomb.#l\r\n#L3#Hear a story on Yeti Pharaoh's jewelry.#l\r\n#L4#Receive a medal of <Protector of Pharaoh>.#l#k");
+		}
+	} else if (status == 2) {
 		section = selection;
 		if (selection == 1) {
 			cm.sendSimple("You ignorant fool that's oblivious to the rage of the Lord, choose your destiny!\r\n#L0# #v3994115# #l#L1# #v3994116# #l#L2# #v3994117# #l#L3# #v3994118# #l");
@@ -50,8 +50,8 @@ function action(mode, type, selection) {
 			var mons = parseInt(data);
 			if (mons < 50000) {
 				cm.sendOk("Please defeat at least 50,000 monsters in the Pyramid and look for me again. Kills : " + mons);
-			} else if (cm.canHold(1142142) && !cm.haveItem(1142142)){
-				cm.gainItem(1142142,1);
+			} else if (cm.canHold(1142142) && !cm.haveItem(1142142)) {
+				cm.gainItem(1142142, 1);
 				cm.forceStartQuest(29932);
 				cm.forceCompleteQuest(29932);
 			} else {
@@ -75,7 +75,7 @@ function action(mode, type, selection) {
 					cm.sendOk("You must be at least level 45.");
 				} else if (cm.getPlayer().getLevel() > 60) {
 					cm.sendOk("You must be at most level 60.");
-				} else {	
+				} else {
 					cont_ = true;
 				}
 			} else if (selection == 2) { //hard; 51-60
@@ -90,7 +90,7 @@ function action(mode, type, selection) {
 				if (cm.getPlayer().getLevel() < 61) {
 					cm.sendOk("You must be at least level 61.");
 				} else {
-						cont_ = true;
+					cont_ = true;
 				}
 			}
 			if (cont_ && cm.isLeader()) {//todo
@@ -102,7 +102,7 @@ function action(mode, type, selection) {
 			}
 		} else if (section == 2) {
 			var itemid = 4001322 + selection;
-			if (!cm.haveItem(itemid,1)) {
+			if (!cm.haveItem(itemid, 1)) {
 				cm.sendOk("You do not have the item.");
 			} else {
 				if (cm.bonus_PyramidSubway(selection)) {
@@ -114,7 +114,7 @@ function action(mode, type, selection) {
 		}
 		cm.dispose(); //todo
 	} else if (status == 100) {
-		cm.warp(926010000,0);
+		cm.warp(926010000, 0);
 		cm.dispose();
 	}
 }

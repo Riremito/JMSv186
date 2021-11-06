@@ -1,35 +1,48 @@
-var status = -1;
+// 変な形の石像
+// スリーピーウッド忍耐
+
+var npc_talk_status = 0;
 
 function action(mode, type, selection) {
-    if (mode == 1)
-	status++;
-    else
-	status--;
-        
-    if (status == 0) {
-	if (cm.haveItem(4031025)) {
-	    cm.sendNext("I laid my hand on the statue but nothing had happened.\r\nProbably because of Pink Viola that I have, because it looks like it only interferes with the power of the statue.");
-	    cm.safeDispose();
-	} else if (cm.haveItem(4031028)) {
-	    cm.sendNext("I laid my hand on the statue but nothing had happened.\r\nProbably because of White Viola that I have, because it looks like it only interferes with the power of the statue.");
-	    cm.safeDispose();
-	} else if (cm.haveItem(4031026)) {
-	    cm.sendNext("I laid my hand on the statue but nothing had happened.\r\nProbably because of Blue Viola that I have, because it looks like it only interferes with the power of the statue.");
-	    cm.safeDispose();
-	} else {
-	    cm.sendYesNo("Once I lay my hand on the statue, a strange light covers me and it feels like I am being sucked into somewhere else. Is it okay to be moved to somewhere else randomly just like that?");
+	if (mode != 1) {
+		return cm.dispose();
 	}
 
-    } else if (status == 1) {
-	if (cm.getQuestStatus(2052) == 1 || cm.getQuestStatus(2052) == 2) {
-	    cm.warp(105040310, 0);
-	} else if (cm.getQuestStatus(2053) == 1 || cm.getQuestStatus(2053) == 2) {
-	    cm.warp(105040312, 0);
-	} else if (cm.getQuestStatus(2054) == 1 || cm.getQuestStatus(2054) == 2) {
-	    cm.warp(105040314, 0);
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 1:
+			{
+				// BB後
+				//var text = "石像に手を出してみても何も起こりませんでした。\r\n";
+				//return cm.sendSimple(text);
+				// BB後 クエスト中
+				var text = "石像に手を出してみると不思議な光に全身を包まれ、中に吸い込まれるような感覚に襲われました。このまま移動しますか？\r\n";
+				return cm.sendYesNo(text);
+			}
+		case 2:
+			{
+				var text = "デバッグモード\r\n";
+				// cm.getQuestStatus(2052) == 1 || cm.getQuestStatus(2052) == 2
+				text += "#L" + 105040310 + "##r#m" + 105040310 + "##k#l\r\n";
+				text += "#L" + 105040311 + "##r#m" + 105040311 + "##k#l\r\n";
+				// cm.getQuestStatus(2053) == 1 || cm.getQuestStatus(2053) == 2
+				text += "#L" + 105040312 + "##r#m" + 105040312 + "##k#l\r\n";
+				text += "#L" + 105040313 + "##r#m" + 105040313 + "##k#l\r\n";
+				// cm.getQuestStatus(2054) == 1 || cm.getQuestStatus(2054) == 2
+				text += "#L" + 105040314 + "##r#m" + 105040314 + "##k#l\r\n";
+				text += "#L" + 105040315 + "##r#m" + 105040315 + "##k#l\r\n";
+				text += "#L" + 105040316 + "##r#m" + 105040316 + "##k#l\r\n";
+				return cm.sendSimple(text);
+			}
+		case 3:
+			{
+				var mapid = selection;
+				cm.warp(mapid, 0);
+				return cm.dispose();
+			}
+		default:
+			break;
 	}
-	cm.dispose();
-    }
-}	
 
-
+	return cm.dispose();
+}

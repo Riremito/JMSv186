@@ -1,5 +1,4 @@
-// 輝く石
-
+// カサンドラ
 var npc_talk_status = -1;
 
 function action(mode, type, selection) {
@@ -12,8 +11,12 @@ function action(mode, type, selection) {
 		case 0:
 			{
 				// BB後
-				var text = "美しく輝く石だ。何となく神秘的な力が感じられる。";
+				var text = "何が知りたいのかな？私の水晶玉で占ってあげようか？\r\n";
 				return cm.sendSimple(text);
+			}
+		case 1:
+			{
+				return cm.dispose();
 			}
 		default:
 			break;

@@ -1,21 +1,25 @@
-/* NPC : A pile of white flower
- * Location : Sleepywood, forest of patient
- */
+// スリーピーウッド忍耐 3回目
 
-var itemSet = new Array(4020007, 4020008, 4010006);
-var rand = Math.floor(Math.random() * itemSet.length);
+var npc_talk_status = -1;
 
 function action(mode, type, selection) {
-    if (mode == 1) {
-	cm.warp(105040300);
-            
-	if (cm.getMapId() == 105040300) {
-	    if (cm.getQuestStatus(2052) == 1 && !cm.haveItem(4031025)) {
-		cm.gainItem(4031025, 10);
-	    }
-	} else {
-	    cm.gainItem(itemSet[rand], 2);
+	if (mode != 1) {
+		return cm.dispose();
 	}
-    }
-    cm.dispose();
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				// cm.getQuestStatus(2052) == 1 && !cm.haveItem(4031025)
+				cm.gainItem(4031025, 10);
+				cm.warp(105040300, 0);
+				// クエスト時以外は報酬適当に設定すると良さそう
+				return cm.dispose();
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }

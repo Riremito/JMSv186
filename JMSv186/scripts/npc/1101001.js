@@ -1,14 +1,11 @@
- /* 
-	NPC Name: 		Divine Bird
-	Map(s): 		Erev
-	Description: 		Buff
-*/
+// 神獣
 
 function start() {
-    cm.useItem(2022458);
-    cm.sendOk("Don't stop training. Every ounce of your energy is required to protect the world of Maple....");
+	cm.useItem(2022458);
+	// BB後
+	cm.sendOk("メイプルワールドの平和を守るため、より強くなるのだ…。");
 }
 
 function action(mode, type, selection) {
-    cm.dispose();
+	cm.dispose();
 }

@@ -1,6 +1,13 @@
-// 輝く石
+// プパ
+// ココナッツジュース販売
 
 var npc_talk_status = -1;
+
+function CustomShop() {
+	var shop = cm.CreateCustomShop(cm.getNpc());
+	cm.CustomShopAdd(shop, 2022258, 105);
+	cm.OpenCustomShop(shop);
+}
 
 function action(mode, type, selection) {
 	if (mode != 1) {
@@ -11,9 +18,7 @@ function action(mode, type, selection) {
 	switch (npc_talk_status) {
 		case 0:
 			{
-				// BB後
-				var text = "美しく輝く石だ。何となく神秘的な力が感じられる。";
-				return cm.sendSimple(text);
+				CustomShop();
 			}
 		default:
 			break;
