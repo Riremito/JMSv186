@@ -1,53 +1,6 @@
 // タイラス
 // 戦士3次
 
-var npc_talk_status = -1;
-
-function action(mode, type, selection) {
-	if (mode != 1) {
-		return cm.dispose();
-	}
-
-	npc_talk_status++;
-	switch (npc_talk_status) {
-		case 0:
-			{
-				// 原文ママ
-				var text = "私に何の用だい？\r\n";
-				text += "#L" + 0 + "##b3次転職したいです。#k#l\r\n";
-				text += "#L" + 1 + "##bジャクムダンジョンクエストを許可してください。#k#l\r\n";
-				return cm.sendSimple(text);
-			}
-		case 1:
-			{
-				if (selection == 0) {
-					// 原文ママ
-					var text = "おほん、何の用で私を訪ねたんだい？む・・・.3次転職をし、もっと強い戦士になりたいのか。もちろん私の力で君をもう少し強くしてあげる事はできるが、その前に君がどれほど熱心に修練したのかについて検証が必要なんだ。今までもっと強くなりたいと私を訪ねてきた若者たちは多かったが、実際に自分の強さを証明できたやつはあまりいなかった。どうだい？しくはないだろうが君を試してもいいかい？";
-					return cm.sendYesNo(text);
-				}
-				return cm.dispose();
-			}
-		case 2:
-			{
-				// 原文ママ
-				var text = "よし！君が証明しなければいけないのは、 君の力と知恵、この二つだ。まず、力についての試験から説明をしてあげるよう。君に1次、2次転職をさせてくれたペリオンの #b#p1022000##kを覚えているだろう？を訪ねると彼が君に一つの任務を託するだろう。その任務を無事に完遂し、 #p1022000#から#b#z4031057##kをもらって来てくれ。";
-				return cm.sendSimple(text);
-			}
-		case 3:
-			{
-				// 原文ママ
-				var text = "xxx";
-				return cm.sendSimple(text);
-			}
-		default:
-			break;
-	}
-
-	return cm.dispose();
-}
-
-
-/*
 var status = 0;
 var job;
 var skills = Array(21001003, 21000000, 21100002, 21100004, 21100005, 21110002);
@@ -145,4 +98,3 @@ function action(mode, type, selection) {
 		}
 	}
 }
-*/

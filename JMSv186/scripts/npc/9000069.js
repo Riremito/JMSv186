@@ -1,4 +1,6 @@
-// ロビン
+// スズリ
+// 7周年
+// テスト用途
 
 var npc_talk_status = -1;
 
@@ -11,7 +13,9 @@ function action(mode, type, selection) {
 	switch (npc_talk_status) {
 		case 0:
 			{
-				var text = "当時のNPC会話のメッセージ募集中\r\n";
+				var text = "テスト\r\n";
+				text += "#L" + 0 + "##b#k#l\r\n";
+				text += "#L" + 1 + "##b#k#l\r\n";
 				return cm.sendSimple(text);
 			}
 		case 1:

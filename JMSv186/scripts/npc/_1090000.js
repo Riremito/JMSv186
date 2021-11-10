@@ -1,64 +1,5 @@
 // カイリン
-// 海賊転職
 
-
-var npc_3rd_job = 2020013;
-// 黒い護符
-var quest_require = 4031059;
-// 強靭のネックレス
-var quest_reward = 4031057;
-
-var npc_talk_status = -1;
-
-function action(mode, type, selection) {
-	if (mode != 1) {
-		return cm.dispose();
-	}
-
-	npc_talk_status++;
-	switch (npc_talk_status) {
-		case 0:
-			{
-				// 原文ママ
-				var text = "何か用？\r\n";
-				text += "#L" + 0 + "##b海賊について知りたいです。#k#l\r\n";
-				return cm.sendSimple(text);
-			}
-		case 1:
-			{
-				if (selection == 0) {
-					// 3次転職 力のテスト
-					if (cm.haveItem(quest_require)) {
-						// 原文ママ
-						var text = "あら…私の分身を倒して#b#z" + quest_require + "##kを持ってきたのね。ふふっ…やるじゃない。これであなたの実力は十分に証明されたわ。力だけなら、3次転職をするのに申し分ないくらい備わっているわね。じゃあ、約束通り、あなたに#b#z" + quest_reward + "##kをあげるわ。このネックレスを持って、オシリアの#b#p" + npc_3rd_job + "##kさんのところに行けば、2番目のテストを受けることができると思うわ。じゃあ、あなたが無事に3次転職できるよう、祈ってるわ。";
-						return cm.sendSimple(text);
-					}
-					// 原文ママ
-					var text = "あなたのことを待ってたわ。この間、オシリアの#b#p" + npc_3rd_job + "##kさんからあなたのことを聞いたのよ。ふふっ…いいわ。あなたの実力、私が試してみましょう。エビルアイの巣って知ってる？　そのどこかに、他の次元に通じる亀裂があるはずよ。普通の人は入ることができないんだけれど、あなただけは入れるようにしておくから。亀裂の中に入ると、私の分身がいると思うわ。その分身を倒して、#b#z" + quest_require + "##kを入手して、私の所まで戻ってきてごらんなさい。";
-					return cm.sendSimple(text);
-				}
-				return cm.dispose();
-			}
-		case 2:
-			{
-				if (cm.haveItem(quest_require)) {
-					cm.gainItem(quest_require, -1);
-					cm.gainItem(quest_reward, 1);
-					return cm.dispose();
-				}
-				// 原文ママ
-				var text = "私の分身の強さは想像もつかないでしょう？　そうね…色々な高レベルのスキルを使ってくるのは確実よ。そんな相手にあなたは1人で戦わないといけないから、相当大変だと思うわ。それに、戦う場所はこの世界とは異なる次元の世界だから、普通の人間が長居するのはあまり良くないの。できるだけ素早く倒すのよ？　だから、挑戦するなら　事前に万全の準備を整えてからね。絶対よ。じゃあ、あなたが#b#z" + quest_require + "##kを持って、無事に戻ってくるのを待っているわ。";
-				return cm.sendSimple(text);
-			}
-		default:
-			break;
-	}
-
-	return cm.dispose();
-}
-
-
-/*
 var status = 0;
 var requirements = false;
 var text;
@@ -118,14 +59,19 @@ function action(mode, type, selection) {
 			} else if (cm.getQuestStatus(2192) == 1) {
 				status = 40;
 				cm.sendNext("Okay, as promised, you will now become a #bGunslinger#k.");
-			}
-			if (cm.getPlayerStat("LVL") < 30) {
-				status = 9;
-				cm.sendSimple("Do you have something that piques you about being a Pirate...?#b\r\n#L0#What are the basic characteristics of a Pirate?#l\r\n#L1#What are the weapons a Pirate can use?#l\r\n#L2#What are the armors a Pirate can use?#l\r\n#L3#What are the Pirate skills?");
-			} else if (cm.getPlayerStat("LVL") >= 30) {
-				status = 22;
-				cm.sendSimple("Do you want to know more about Brawlers and Gunslingers? It'd be good to know in advance, so you'll have a clear picture of what you want to become for your job advancement...\r\n#b#L0# Please explain to me what being a Brawler is all about.#k#l\r\n#b#L1# Please explain to me what being a Gunslinger is all about.#k#l");
-			}
+			} else /*if (cm.getQuestStatus(2191) == 1) {
+		    status = 29;
+		    cm.sendNext("Okay, now I'll take you to the test room. Here are the instructions: defeat the Octopirates and gather up\r\n#b15 #t4031856#s#k. The Octopirates you'll see here are highly trained and very strong, so I suggest you really buckle down and get ready for this.");
+		} else if (cm.getQuestStatus(2192) == 1) {
+		    status = 31;
+		    cm.sendNext("Okay, now I'll take you to the test room. Here are the instructions: defeat the Octopirates and gather #b15 #t4031857#s#k. The Octopirates you'll see here are highly trained and are very quick, so I suggest you really buckle down and get ready for this.");
+		} else */if (cm.getPlayerStat("LVL") < 30) {
+					status = 9;
+					cm.sendSimple("Do you have something that piques you about being a Pirate...?#b\r\n#L0#What are the basic characteristics of a Pirate?#l\r\n#L1#What are the weapons a Pirate can use?#l\r\n#L2#What are the armors a Pirate can use?#l\r\n#L3#What are the Pirate skills?");
+				} else if (cm.getPlayerStat("LVL") >= 30) {
+					status = 22;
+					cm.sendSimple("Do you want to know more about Brawlers and Gunslingers? It'd be good to know in advance, so you'll have a clear picture of what you want to become for your job advancement...\r\n#b#L0# Please explain to me what being a Brawler is all about.#k#l\r\n#b#L1# Please explain to me what being a Gunslinger is all about.#k#l");
+				}
 		} else if (cm.getJob() == 0) {
 			cm.sendNext("Do you wish to become a Pirate? You'll need to meet our set of standards if you are to become one of us. I need you to be #bat least Level 10, with DEX at 20 or above.#k Let's see...");
 		} else {
@@ -307,4 +253,3 @@ function action(mode, type, selection) {
 		cm.dispose();
 	}
 }
-*/

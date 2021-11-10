@@ -1,33 +1,42 @@
-/*
-	NPC Name: 		Dances with Balrog
-	Map(s): 		Maple Road : Spilt road of choice
-	Description: 		Job tutorial, movie clip
-*/
+// コブシを開いて立て
+// 選択の分かれ道
 
-var status = -1;
-
-function start() {
-    action(1, 0, 0);
-}
+var npc_talk_status = 0;
 
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	if (status == 1) {
-	    cm.sendNext("If you wish to experience what it's like to be a Warrior, come see me again.");
-	    cm.dispose();
-	    return;
+	if (mode != 1) {
+		if (npc_talk_status == 2) {
+			// BB後
+			var text = "戦士を体験してみたかったらもう一度俺に声をかけてくれよ。";
+			cm.sendSimple(text);
+		}
+		return cm.dispose();
 	}
-	status--;
-    }
-    if (status == 0) {
-	cm.sendNext("Warriors possess an enormous power with stamina to back it up, and they shine the brightest in melee combat situation. Regular attacks are powerful to begin with, and armed with complex skills, the job is perfect for explosive attacks.");
-    } else if (status == 1) {
-	cm.sendYesNo("Would you like to experience what it's like to be a Warrior?");
-    } else if (status == 2) {
-	cm.MovieClipIntroUI(true);
-	cm.warp(1020100, 0); // Effect/Direction3.img/swordman/Scene00
-	cm.dispose();
-    }
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 1:
+			{
+				// BB後
+				var text = "戦士は、凄まじい攻撃力と体力を持つ職業で、戦場の最前線でその真価を発揮するんだ。基本攻撃力がとても強い職業で、高レベルのスキルを覚えればもっと強い力を発揮する事ができるよ。";
+				return cm.sendSimple(text);
+			}
+		case 2:
+			{
+				// BB後
+				var text = "どうだい？戦士を体験してみないか？";
+				return cm.sendYesNo(text);
+			}
+		case 3:
+			{
+				// 職業体験カットシーン
+				cm.MovieClipIntroUI(true);
+				cm.warp(1020100, 0);
+				return cm.dispose();
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }

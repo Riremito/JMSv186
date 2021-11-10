@@ -36,8 +36,12 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
+import scripting.NPCScriptManager;
+import server.life.MapleLifeFactory;
+import server.life.MapleNPC;
 import server.maps.MapleMap;
 import server.maps.SavedLocationType;
+import static server.quest.MapleQuestRequirementType.npc;
 import tools.FileoutputUtil;
 
 public class CommandProcessor {
@@ -120,6 +124,17 @@ public class CommandProcessor {
         return false;
     }
 
+    private static boolean NPCTalk(MapleClient c, int npcid) {
+        MapleNPC npc = MapleLifeFactory.getNPC(npcid);
+
+        if (npc == null || npc.getName().equals("MISSINGNO")) {
+            return false;
+        }
+
+        NPCScriptManager.getInstance().start(c, npcid);
+        return true;
+    }
+
     public static boolean processCommand(MapleClient c, String line, CommandType type) {
         // 通常クライアントのコマンドの処理
         if (line.charAt(0) == PlayerGMRank.MAPLE.getCommandPrefix()) {
@@ -191,6 +206,33 @@ public class CommandProcessor {
             if ("/magatia".equals(splitted[0]) || "/マガティア".equals(splitted[0])) {
                 warp(c, 261000000);
                 return true;
+            }
+
+            // 転職
+            if ("/jc".equals(splitted[0]) || "/jobchange".equals(splitted[0]) || "/転職".equals(splitted[0])) {
+                return NPCTalk(c, 9330104);
+            }
+
+            // NPC
+            if ("/npctalk".equals(splitted[0]) || "/NPC会話".equals(splitted[0])) {
+                if (splitted.length < 2) {
+                    return true;
+                }
+                try {
+                    int npcid = Integer.parseInt(splitted[1]);
+                    if (NPCTalk(c, npcid)) {
+                        return true;
+                    }
+                } catch (NumberFormatException e) {
+                    ;
+                }
+                c.getPlayer().Notice("無効なNPCIDです");
+                return true;
+            }
+
+            // テスト
+            if ("/test".equals(splitted[0]) || "/テスト".equals(splitted[0])) {
+                return NPCTalk(c, 9010021);
             }
 
             return true;

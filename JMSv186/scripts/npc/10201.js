@@ -1,33 +1,42 @@
-/*
-	NPC Name: 		Grendel the Really Old
-	Map(s): 		Maple Road : Spilt road of choice
-	Description: 		Job tutorial, movie clip
-*/
+// ハインズ
+// 選択の分かれ道
 
-var status = -1;
-
-function start() {
-    action(1, 0, 0);
-}
+var npc_talk_status = 0;
 
 function action(mode, type, selection) {
-    if (mode == 1) {
-	status++;
-    } else {
-	if (status == 1) {
-	    cm.sendNext("If you wish to experience what it's like to be a Magician, come see me again.");
-	    cm.dispose();
-	    return;
+	if (mode != 1) {
+		if (npc_talk_status == 2) {
+			// BB後
+			var text = "魔法使いを体験してみたかったらもう一度私に声をかけておくれ。";
+			cm.sendSimple(text);
+		}
+		return cm.dispose();
 	}
-	status--;
-    }
-    if (status == 0) {
-	cm.sendNext("Magicians are armed with flashy element-based spells and secondary magic that aids party as a whole. After the 2nd job adv., the elemental-based magic will provide ample amount of damage to enemies of opposite element.");
-    } else if (status == 1) {
-	cm.sendYesNo("Would you like to experience what it's like to be a Magician?");
-    } else if (status == 2) {
-	cm.MovieClipIntroUI(true);
-	cm.warp(1020200, 0); // Effect/Direction3.img/magician/Scene00
-	cm.dispose();
-    }
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 1:
+			{
+				// BB後
+				var text = "魔法使いは、華麗な属性魔法とグループでの戦闘時に有効な様々な補助魔法を持っておる。更に、2次転職以後に覚える属性魔法は、反対属性の敵に致命的なダメージを与えられるのだ。";
+				return cm.sendSimple(text);
+			}
+		case 2:
+			{
+				// BB後
+				var text = "どうじゃ？魔法使いを体験してみないか？";
+				return cm.sendYesNo(text);
+			}
+		case 3:
+			{
+				// 職業体験カットシーン
+				cm.MovieClipIntroUI(true);
+				cm.warp(1020200, 0);
+				return cm.dispose();
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
 }
