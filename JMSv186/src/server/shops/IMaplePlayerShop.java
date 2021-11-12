@@ -80,7 +80,7 @@ public interface IMaplePlayerShop {
 
     public void buy(MapleClient c, int item, short quantity);
 
-    public void closeShop(boolean saveItems, boolean remove);
+    public void closeShop(boolean saveItems, boolean remove, int reason);
 
     public String getPassword();
 

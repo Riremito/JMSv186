@@ -377,7 +377,7 @@ public class ChannelServer implements Serializable {
         try {
             final Iterator<HiredMerchant> merchants_ = merchants.values().iterator();
             while (merchants_.hasNext()) {
-                merchants_.next().closeShop(true, false);
+                merchants_.next().closeShop(true, false, 0);
                 merchants_.remove();
             }
         } finally {

@@ -73,7 +73,7 @@ public class PlayerInteractionHandler {
             ///MAINTANCE_OFF = 0x25, //This is mispelled...
             HIREDMERCHANT_EXIT = 0x24, // 0x25
             HIREDMERCHANT_ORGANISE = 0x25, // 0x26
-            
+
             //CLOSE_MERCHANT = 0x27,
             HIREDMERCHANT_ORGANISE_CLOSE = 0x26,
             ADMIN_STORE_NAMECHANGE = 0x2A, // 0x2B
@@ -113,7 +113,7 @@ public class PlayerInteractionHandler {
                         c.getSession().write(MaplePacketCreator.enableActions());
                         return;
                     }
-                    */
+                     */
                     if (chr.getMap().getMapObjectsInRange(chr.getPosition(), 20000, Arrays.asList(MapleMapObjectType.SHOP, MapleMapObjectType.HIRED_MERCHANT)).size() != 0) {
                         chr.dropMessage(1, "You may not establish a store here.");
                         c.getSession().write(MaplePacketCreator.enableActions());
@@ -258,7 +258,7 @@ public class PlayerInteractionHandler {
                         return;
                     }
                     if (!ips.isAvailable() || (ips.isOwner(chr) && ips.getShopType() != 1)) {
-                        ips.closeShop(false, ips.isAvailable());
+                        ips.closeShop(false, ips.isAvailable(), 3);
                     } else {
                         ips.removeVisitor(chr);
                     }
@@ -289,7 +289,7 @@ public class PlayerInteractionHandler {
                     }/* else {
                         c.getSession().close();
                     }
-                    */
+                     */
                 }
 
                 break;
@@ -455,7 +455,7 @@ public class PlayerInteractionHandler {
             case HIREDMERCHANT_EXIT: {
                 final IMaplePlayerShop merchant = chr.getPlayerShop();
                 if (merchant != null && merchant.getShopType() == 1 && merchant.isOwner(chr)) {
-                    merchant.closeShop(true, true);
+                    merchant.closeShop(true, true, 3);
                     chr.setPlayerShop(null);
                 }
                 break;

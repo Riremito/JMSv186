@@ -188,7 +188,26 @@ public class PlayerShopPacket {
 
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
         mplew.write(0x0A);
+        // 退場する人の番号 0 = 開いている人
         mplew.write(type);
+        /*
+            商店を閉じる理由
+            0   =   なし
+            1   =   ここではオープン出来ません。
+            2   =   なし
+            3   =   商店が閉じています
+            4   =   なし
+            5   =   強制退場されました。
+            6   =   制限時間が経過し、商店を開くことができませんした
+            7   =   なし
+            8   =   なし
+            9   =   なし
+            10  =   なし
+            11  =   なし
+            12  =   なし
+            13  =   なし
+            14  =   品物は売れ切れです。
+         */
         mplew.write(error);
 
         return mplew.getPacket();
@@ -221,7 +240,7 @@ public class PlayerShopPacket {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        
+
         mplew.write(0x16); // 0x17
 
         if (shop.getShopType() == 1) {

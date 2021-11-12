@@ -154,7 +154,7 @@ public class MapleMiniGame extends AbstractPlayerStore {
 
     public void send(MapleClient c) {
         if (getMCOwner() == null) {
-            closeShop(false, false);
+            closeShop(false, false, 0);
             return;
         }
         c.getSession().write(PlayerShopPacket.getMiniGame(c, this));
@@ -355,7 +355,7 @@ public class MapleMiniGame extends AbstractPlayerStore {
     }
 
     @Override
-    public void closeShop(boolean s, boolean z) {
+    public void closeShop(boolean s, boolean z, int reason) {
         removeAllVisitors(3, 1);
         if (getMCOwner() != null) {
             getMCOwner().setPlayerShop(null);

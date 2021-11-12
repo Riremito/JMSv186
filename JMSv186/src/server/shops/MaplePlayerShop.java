@@ -62,7 +62,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
                     if (pItem.bundles <= 0) {
                         boughtnumber++;
                         if (boughtnumber == items.size()) {
-                            closeShop(false, true);
+                            closeShop(false, true, 14);
                             return;
                         }
                     }
@@ -83,9 +83,9 @@ public class MaplePlayerShop extends AbstractPlayerStore {
     }
 
     @Override
-    public void closeShop(boolean saveItems, boolean remove) {
+    public void closeShop(boolean saveItems, boolean remove, int reason) {
         MapleCharacter owner = getMCOwner();
-        removeAllVisitors(14, 1);
+        removeAllVisitors(reason, 1);
         getMap().removeMapObject(this);
 
         for (MaplePlayerShopItem items : getItems()) {
@@ -101,26 +101,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
             }
         }
 
-        // 露店を開いているプレイヤーが退出する
-        /*
-            shopErrorMessage
-            0   =   なし
-            1   =   ここではオープン出来ません。
-            2   =   なし
-            3   =   商店が閉じています
-            4   =   なし
-            5   =   強制退場されました。
-            6   =   制限時間が経過し、商店を開くことができませんした
-            7   =   なし
-            8   =   なし
-            9   =   なし
-            10  =   なし
-            11  =   なし
-            12  =   なし
-            13  =   なし
-            14  =   品物は品切れです。
-         */
-        owner.getClient().getSession().write(PlayerShopPacket.shopErrorMessage(14, 0));
+        owner.getClient().getSession().write(PlayerShopPacket.shopErrorMessage(reason, 0));
         owner.setPlayerShop(null);
         update();
     }

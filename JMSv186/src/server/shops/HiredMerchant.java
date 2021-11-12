@@ -50,7 +50,7 @@ public class HiredMerchant extends AbstractPlayerStore {
 
             @Override
             public void run() {
-                closeShop(true, true);
+                closeShop(true, true, 0);
             }
         }, 1000 * 60 * 60 * 24);
     }
@@ -104,7 +104,7 @@ public class HiredMerchant extends AbstractPlayerStore {
     }
 
     @Override
-    public void closeShop(boolean saveItems, boolean remove) {
+    public void closeShop(boolean saveItems, boolean remove, int reason) {
         if (schedule != null) {
             schedule.cancel(false);
         }

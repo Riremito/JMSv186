@@ -742,7 +742,7 @@ public class MapleClient implements Serializable {
                     if (shop.getShopType() == 1 && shop.isAvailable()) {
                         shop.setOpen(true);
                     } else {
-                        shop.closeShop(true, true);
+                        shop.closeShop(true, true, 6);
                     }
                 }
             }
