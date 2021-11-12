@@ -168,6 +168,7 @@ function JobChange2(mode, type, selection) {
 					}
 					return cm.dispose();
 				}
+				return cm.dispose();
 			}
 		case 5:
 			{
@@ -181,13 +182,13 @@ function JobChange2(mode, type, selection) {
 					// prev next
 					return cm.sendSimple(text);
 				}
+				return cm.dispose();
 			}
 		case 6:
 			{
 				// 原文ママ
 				var text = "君に今からソードマンが学べるスキルが書かれている本を与えよう。その本にはさまざまなファイターと係わるスキルが書かれている。それに消費、ETCにアイテムを保管できる数も増えたぞ。それぞれ1ライン増えているだろう。最大HPも増えたしね…一回確認しなさい。";
 				return cm.sendSimple(text);
-
 			}
 		case 7:
 			{

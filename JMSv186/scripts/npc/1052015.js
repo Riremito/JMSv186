@@ -32,20 +32,29 @@ function DoSomething_CID() {
 }
 
 // do
-function DoSomething() {
+function DoSomething_3F() {
 	var p = cm.getOutPacket();
 	// header
 	p.writeShort(0x003F);
 
 	// data
-	p.write(0x07);
-	p.writeMapleAsciiString("リレミト" + " : " + "NAYN!");
+	//p.write(0x07);
+	//p.writeMapleAsciiString("リレミト" + " : " + "NAYN!");
 	//p.writeMapleAsciiString("リレミト");
 	//p.writeInt(1472117);
-	p.writeInt(1);
+	//p.writeInt(1);
 	//p.writeInt(0x00007DBC);
-	p.writeZeroBytes(100);
+	//p.writeZeroBytes(100);
 	// ProcessPacket
+	cm.DebugPacket(p.getPacket());
+}
+function DoSomething() {
+	var p = cm.getOutPacket();
+	// header
+	p.writeShort(0x015F);
+	p.write(0x0A);
+	p.write(10);
+	p.write(1);
 	cm.DebugPacket(p.getPacket());
 }
 
