@@ -45,6 +45,7 @@ import client.PlayerStats;
 import constants.GameConstants;
 import client.SkillFactory;
 import client.anticheat.CheatingOffense;
+import debug.DebugScriptManager;
 import handling.channel.ChannelServer;
 import handling.world.MaplePartyCharacter;
 import handling.world.World;
@@ -248,6 +249,17 @@ public class InventoryHandler {
         final byte slot = (byte) slea.readShort();
         final int itemId = slea.readInt();
         final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
+
+        // デバッグモード, 獣の肉を使用
+        if (itemId == 2010001) {
+            c.getSession().write(MaplePacketCreator.enableActions());
+            try {
+                DebugScriptManager.getInstance().executeDebugScript(c);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 
         if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId) {
             c.getSession().write(MaplePacketCreator.enableActions());
