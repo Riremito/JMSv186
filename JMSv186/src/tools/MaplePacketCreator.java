@@ -2102,12 +2102,12 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket getTradeInvite(MapleCharacter c) {
+    public static MaplePacket getTradeInvite(MapleCharacter c, boolean isPointTrade) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
         mplew.write(2);
-        mplew.write(3);
+        mplew.write(isPointTrade ? 6 : 3);
         mplew.writeMapleAsciiString(c.getName());
         mplew.writeInt(0); // Trade ID
 
@@ -2138,12 +2138,12 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket getTradeStart(MapleClient c, MapleTrade trade, byte number) {
+    public static MaplePacket getTradeStart(MapleClient c, MapleTrade trade, byte number, boolean isPointTrade) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
         mplew.write(5);
-        mplew.write(3);
+        mplew.write(isPointTrade ? 6 : 3);
         mplew.write(2);
         mplew.write(number);
 

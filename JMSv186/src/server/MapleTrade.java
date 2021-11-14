@@ -23,10 +23,21 @@ public class MapleTrade {
     private boolean locked = false;
     private final WeakReference<MapleCharacter> chr;
     private final byte tradingslot;
+    private boolean isPointTrade = false;
 
     public MapleTrade(final byte tradingslot, final MapleCharacter chr) {
         this.tradingslot = tradingslot;
         this.chr = new WeakReference<MapleCharacter>(chr);
+    }
+
+    public MapleTrade(final byte tradingslot, final MapleCharacter chr, boolean isPointTrade) {
+        this.tradingslot = tradingslot;
+        this.chr = new WeakReference<MapleCharacter>(chr);
+        this.isPointTrade = isPointTrade;
+    }
+
+    public boolean IsPointTrading() {
+        return this.isPointTrade;
     }
 
     public final void CompleteTrade() {
@@ -251,10 +262,10 @@ public class MapleTrade {
         }
     }
 
-    public static final void startTrade(final MapleCharacter c) {
+    public static final void startTrade(final MapleCharacter c, boolean isPointTrade) {
         if (c.getTrade() == null) {
-            c.setTrade(new MapleTrade((byte) 0, c));
-            c.getClient().getSession().write(MaplePacketCreator.getTradeStart(c.getClient(), c.getTrade(), (byte) 0));
+            c.setTrade(new MapleTrade((byte) 0, c, isPointTrade));
+            c.getClient().getSession().write(MaplePacketCreator.getTradeStart(c.getClient(), c.getTrade(), (byte) 0, isPointTrade));
         } else {
             c.getClient().getSession().write(MaplePacketCreator.serverNotice(5, "You are already in a trade"));
         }
@@ -268,20 +279,20 @@ public class MapleTrade {
             c2.setTrade(new MapleTrade((byte) 1, c2));
             c2.getTrade().setPartner(c1.getTrade());
             c1.getTrade().setPartner(c2.getTrade());
-            c2.getClient().getSession().write(MaplePacketCreator.getTradeInvite(c1));
+            c2.getClient().getSession().write(MaplePacketCreator.getTradeInvite(c1, c1.getTrade().IsPointTrading()));
         } else {
             c1.getClient().getSession().write(MaplePacketCreator.serverNotice(5, "The other player is already trading with someone else."));
             cancelTrade(c1.getTrade(), c1.getClient());
         }
     }
 
-    public static final void visitTrade(final MapleCharacter c1, final MapleCharacter c2) {
+    public static final void visitTrade(final MapleCharacter c1, final MapleCharacter c2, boolean isPointTrade) {
         if (c1.getTrade() != null && c1.getTrade().getPartner() == c2.getTrade() && c2.getTrade() != null && c2.getTrade().getPartner() == c1.getTrade()) {
             // We don't need to check for map here as the user is found via MapleMap.getCharacterById()
             c2.getClient().getSession().write(MaplePacketCreator.getTradePartnerAdd(c1));
-            c1.getClient().getSession().write(MaplePacketCreator.getTradeStart(c1.getClient(), c1.getTrade(), (byte) 1));
+            c1.getClient().getSession().write(MaplePacketCreator.getTradeStart(c1.getClient(), c1.getTrade(), (byte) 1, isPointTrade));
             //c1.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
-           //c2.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
+            //c2.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
         } else {
             c1.getClient().getSession().write(MaplePacketCreator.serverNotice(5, "The other player has already closed the trade"));
         }

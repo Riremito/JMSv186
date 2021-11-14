@@ -100,7 +100,13 @@ public class PlayerInteractionHandler {
             case CREATE: {
                 final byte createType = slea.readByte();
                 if (createType == 3) { // trade
-                    MapleTrade.startTrade(chr);
+                    MapleTrade.startTrade(chr, false);
+                } else if (createType == 6) {
+                    // 未使用の可能性あり
+                    slea.readInt();
+                    // 交換窓のID
+                    final int tradeid = slea.readInt();
+                    MapleTrade.startTrade(chr, true);
                 } else if (createType == 1 || createType == 2 || createType == 4 || createType == 5) { // shop
                     /*
                     if (createType == 4 && !chr.isAdmin()) { //not hired merch... blocked playershop
@@ -171,7 +177,7 @@ public class PlayerInteractionHandler {
             }
             case VISIT: {
                 if (chr.getTrade() != null && chr.getTrade().getPartner() != null) {
-                    MapleTrade.visitTrade(chr, chr.getTrade().getPartner().getChr());
+                    MapleTrade.visitTrade(chr, chr.getTrade().getPartner().getChr(), chr.getTrade().getPartner().IsPointTrading());
                 } else if (chr.getMap() != null) {
                     final int obid = slea.readInt();
                     MapleMapObject ob = chr.getMap().getMapObject(obid, MapleMapObjectType.HIRED_MERCHANT);

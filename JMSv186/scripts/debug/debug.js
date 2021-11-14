@@ -123,7 +123,23 @@ function Gaming(c) {
 	c.DebugPacket(p.getPacket());
 }
 
+// ゲーム
+function AvaTrade(c) {
+	var p = c.getOutPacket();
+	p.writeShort(0x015F);
+	p.write(2);
+	p.write(6);
+	/*
+		3	=	交換
+		6	=	ポイント交換
+	*/
+	p.writeMapleAsciiString("リレミトX");
+	p.writeInt(1);
+	p.writeZeroBytes(100);
+	c.DebugPacket(p.getPacket());
+}
+
 // Javaから呼ばれる
 function debug(c) {
-	Gaming(c);
+	AvaTrade(c);
 }
