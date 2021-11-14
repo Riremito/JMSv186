@@ -28,6 +28,7 @@ import constants.GameConstants;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.inventory.MapleInventoryType;
+import java.util.List;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleTrade;
@@ -40,6 +41,7 @@ import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 import server.shops.MapleMiniGame;
 import tools.MaplePacketCreator;
+import tools.Pair;
 import tools.packet.PlayerShopPacket;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -59,12 +61,13 @@ public class PlayerInteractionHandler {
             CONFIRM_TRADE = 0x0F,
             PLAYER_SHOP_ADD_ITEM = 0x13,
             BUY_ITEM_PLAYER_SHOP = 0x14,
+            PLAYER_SHOP_REMOVE_ITEM = 0x18,
+            PLAYER_SHOP_BLOCK_PLAYER = 0x19,
             MERCHANT_EXIT = 0x1B,
             ADD_ITEM = 0x1E,
             BUY_ITEM_STORE = 0x20,
             BUY_ITEM_HIREDMERCHANT = 0x1F,
             REMOVE_ITEM = 0x23, // 0x24
-            PLAYER_SHOP_REMOVE_ITEM = 0x19,
             HIREDMERCHANT_EXIT = 0x24,
             HIREDMERCHANT_ORGANISE = 0x25,
             HIREDMERCHANT_ORGANISE_CLOSE = 0x26,
@@ -440,6 +443,27 @@ public class PlayerInteractionHandler {
                 c.getSession().write(PlayerShopPacket.shopItemUpdate(shop));
                 break;
             }
+            // 営業許可証 追放
+            case PLAYER_SHOP_BLOCK_PLAYER: {
+                // @007F [19] [01] [09 00 83 8A 83 8C 83 7E 83 67 58]
+                byte visitor_slot = slea.readByte();
+                short name_length = slea.readShort();
+                byte[] name_bytes = slea.read(name_length);
+                String visitor_name = new String(name_bytes);
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null) {
+                    for (Pair<Byte, MapleCharacter> visitors : ips.getVisitors()) {
+                        if (visitors.getRight().getName().equals(visitor_name)) {
+                            visitors.getRight().getClient().getSession().write(PlayerShopPacket.shopBlockPlayer(visitor_slot));
+                            visitors.getRight().setPlayerShop(null);
+                            ips.removeVisitor(visitors.getRight());
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+
             case HIREDMERCHANT_EXIT: {
                 /*
                 final IMaplePlayerShop merchant = chr.getPlayerShop();

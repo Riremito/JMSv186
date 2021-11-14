@@ -281,6 +281,19 @@ public class PlayerShopPacket {
         return mplew.getPacket();
     }
 
+    public static final MaplePacket shopBlockPlayer(final byte slot) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+
+        mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
+        mplew.write(0x0A);
+        // キャラクターの場所を正しく指定しないとD/C
+        mplew.write(slot);
+        // 強制退場されました。
+        mplew.write(5);
+
+        return mplew.getPacket();
+    }
+
     public static final MaplePacket Merchant_Buy_Error(final byte message) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
