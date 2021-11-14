@@ -382,21 +382,21 @@ public class PlayerShopPacket {
     public static MaplePacket getMiniGameReady(boolean ready) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(ready ? 0x38 : 0x39);
+        mplew.write(ready ? 0x37 : 0x38);
         return mplew.getPacket();
     }
 
     public static MaplePacket getMiniGameExitAfter(boolean ready) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(ready ? 0x36 : 0x37);
+        mplew.write(ready ? 0x35 : 0x36);
         return mplew.getPacket();
     }
 
     public static MaplePacket getMiniGameStart(int loser) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(0x3B);
+        mplew.write(0x3A);
         mplew.write(loser == 1 ? 0 : 1);
         return mplew.getPacket();
     }
@@ -404,7 +404,7 @@ public class PlayerShopPacket {
     public static MaplePacket getMiniGameSkip(int slot) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(0x3D);
+        mplew.write(0x3C);
         //owner = 1 visitor = 0?
         mplew.write(slot);
         return mplew.getPacket();
@@ -435,7 +435,7 @@ public class PlayerShopPacket {
     public static MaplePacket getMiniGameMoveOmok(int move1, int move2, int move3) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(0x3E);
+        mplew.write(0x3D);
         mplew.writeInt(move1);
         mplew.writeInt(move2);
         mplew.write(move3);
@@ -474,7 +474,7 @@ public class PlayerShopPacket {
     public static MaplePacket getMatchCardStart(MapleMiniGame game, int loser) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(0x3B);
+        mplew.write(0x3A);
         mplew.write(loser == 1 ? 0 : 1);
         int times = game.getPieceType() == 1 ? 20 : (game.getPieceType() == 2 ? 30 : 12);
         mplew.write(times);
@@ -487,7 +487,7 @@ public class PlayerShopPacket {
     public static MaplePacket getMatchCardSelect(int turn, int slot, int firstslot, int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(0x42);
+        mplew.write(0x41);
         mplew.write(turn);
         mplew.write(slot);
         if (turn == 0) {
@@ -500,7 +500,7 @@ public class PlayerShopPacket {
     public static MaplePacket getMiniGameResult(MapleMiniGame game, int type, int x) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
-        mplew.write(0x3C);
+        mplew.write(0x3B);
         mplew.write(type); //lose = 0, tie = 1, win = 2
         game.setPoints(x, type);
         if (type != 0) {

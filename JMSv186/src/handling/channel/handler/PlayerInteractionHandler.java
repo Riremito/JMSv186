@@ -45,56 +45,47 @@ import tools.data.input.SeekableLittleEndianAccessor;
 
 public class PlayerInteractionHandler {
 
-    private static final byte CREATE = 0x00,
+    private static final byte CREATE = 0x00, // アバター交換, @007F 00 06 00 00 00 00 76 7D 00 00
+            // 交換申込, アバター交換
+            // @007F 02 76 7D 00 00
             INVITE_TRADE = 0x02,
             DENY_TRADE = 0x03,
             VISIT = 0x04,
             CHAT = 0x06,
             EXIT = 0x0A,
             OPEN = 0x0B,
-            SET_ITEMS = 0x0D, // 0x0E
-            SET_MESO = 0x0E, // 0x0F
-            CONFIRM_TRADE = 0x0F, // 0x10
-            //TRADE_SOMETHING = 0x13,
-            //PLAYER_SHOP_ADD_ITEM = 0x14,
+            SET_ITEMS = 0x0D,
+            SET_MESO = 0x0E,
+            CONFIRM_TRADE = 0x0F,
             PLAYER_SHOP_ADD_ITEM = 0x13,
-            //BUY_ITEM_PLAYER_SHOP = 0x15,
-            BUY_ITEM_PLAYER_SHOP = 0x14, // 0x15
-            //MERCHANT_EXIT = 0x1C, //is this also updated
-            MERCHANT_EXIT = 0x1B, // 0x1C
-            //ADD_ITEM = 0x1F,
+            BUY_ITEM_PLAYER_SHOP = 0x14,
+            MERCHANT_EXIT = 0x1B,
             ADD_ITEM = 0x1E,
             BUY_ITEM_STORE = 0x20,
-            //BUY_ITEM_HIREDMERCHANT = 0x22,
-            BUY_ITEM_HIREDMERCHANT = 0x1F, // 0x22
-            //REMOVE_ITEM = 0x24,
+            BUY_ITEM_HIREDMERCHANT = 0x1F,
             REMOVE_ITEM = 0x23, // 0x24
-            PLAYER_SHOP_REMOVE_ITEM = 0x19, // 0x24
-            ///MAINTANCE_OFF = 0x25, //This is mispelled...
-            HIREDMERCHANT_EXIT = 0x24, // 0x25
-            HIREDMERCHANT_ORGANISE = 0x25, // 0x26
-
-            //CLOSE_MERCHANT = 0x27,
+            PLAYER_SHOP_REMOVE_ITEM = 0x19,
+            HIREDMERCHANT_EXIT = 0x24,
+            HIREDMERCHANT_ORGANISE = 0x25,
             HIREDMERCHANT_ORGANISE_CLOSE = 0x26,
-            ADMIN_STORE_NAMECHANGE = 0x2A, // 0x2B
+            ADMIN_STORE_NAMECHANGE = 0x2A,
             VIEW_MERCHANT_VISITOR = 0x2B, // 0x2C
             VIEW_MERCHANT_BLACKLIST = 0x2C, // 0x2D
             MERCHANT_BLACKLIST_ADD = 0x2D, // 0x2E
             MERCHANT_BLACKLIST_REMOVE = 0x2E, // 0x2F
-            REQUEST_TIE = 0x30,
-            ANSWER_TIE = 0x31,
-            GIVE_UP = 0x32,
-            REQUEST_REDO = 0x34,
-            ANSWER_REDO = 0x35,
-            EXIT_AFTER_GAME = 0x36,
-            CANCEL_EXIT = 0x37,
-            READY = 0x38,
-            UN_READY = 0x39,
-            EXPEL = 0x3A,
-            START = 0x3B,
-            SKIP = 0x3D,
-            MOVE_OMOK = 0x3E,
-            SELECT_CARD = 0x42;
+            REQUEST_TIE = 0x2F,
+            ANSWER_TIE = 0x30,
+            GIVE_UP = 0x31,
+            EXIT_AFTER_GAME = 0x35,
+            CANCEL_EXIT = 0x36,
+            READY = 0x37,
+            UN_READY = 0x38,
+            EXPEL = 0x39,
+            START = 0x3A,
+            // たぶん
+            SKIP = 0x3C,
+            MOVE_OMOK = 0x3D,
+            SELECT_CARD = 0x41;
 
     public static final void PlayerInteraction(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
         //System.out.println(slea.toString());
@@ -130,6 +121,9 @@ public class PlayerInteractionHandler {
                     if (slea.readByte() > 0 && (createType == 1 || createType == 2)) {
                         pass = slea.readMapleAsciiString();
                     }
+                    // たぶんなんかがおかしい
+                    // ごもく @007F 00 02 04 00 63 61 72 64 00 02
+                    // 神経衰弱 @007F 00 02 01 00 66 00 [01] 最後の1バイトがサイズ
                     if (createType == 1 || createType == 2) {
                         final int piece = slea.readByte();
                         final int itemId = createType == 1 ? (4080000 + piece) : 4080100;
@@ -286,10 +280,7 @@ public class PlayerInteractionHandler {
                             shop.setAvailable(true);
                             shop.update();
                         }
-                    }/* else {
-                        c.getSession().close();
                     }
-                     */
                 }
 
                 break;
@@ -322,11 +313,8 @@ public class PlayerInteractionHandler {
                 break;
             }
             case MERCHANT_EXIT: {
-                /*		final IMaplePlayerShop shop = chr.getPlayerShop();
-                if (shop != null && shop instanceof HiredMerchant && shop.isOwner(chr)) {
+                IMaplePlayerShop shop = chr.getPlayerShop();
                 shop.setOpen(true);
-                chr.setPlayerShop(null);
-                }*/
                 break;
             }
             case PLAYER_SHOP_ADD_ITEM:
@@ -453,11 +441,13 @@ public class PlayerInteractionHandler {
                 break;
             }
             case HIREDMERCHANT_EXIT: {
+                /*
                 final IMaplePlayerShop merchant = chr.getPlayerShop();
                 if (merchant != null && merchant.getShopType() == 1 && merchant.isOwner(chr)) {
                     merchant.closeShop(true, true, 3);
                     chr.setPlayerShop(null);
                 }
+                 */
                 break;
             }
             case HIREDMERCHANT_ORGANISE: {
@@ -479,18 +469,34 @@ public class PlayerInteractionHandler {
                 break;
             }
             case HIREDMERCHANT_ORGANISE_CLOSE: {
-                final IMaplePlayerShop merchant = chr.getPlayerShop();
-                if (merchant != null && merchant.getShopType() == 1 && merchant.isOwner(chr)) {
-                    c.getSession().write(MaplePacketCreator.serverNotice(1, "Please visit Fredrick for your items."));
-                    c.getSession().write(MaplePacketCreator.enableActions());
-                    //merchant.closeShop(true, true);
-                    //chr.setPlayerShop(null);
+
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips == null) {
+                    return;
                 }
+                if (!ips.isAvailable() || ips.isOwner(chr)) {
+                    ips.closeShop(false, ips.isAvailable(), 20);
+                }
+                chr.setPlayerShop(null);
+                /*
+                final IMaplePlayerShop merchant = chr.getPlayerShop();
+                if (merchant != null) {
+                    if (merchant.getShopType() == 1 && merchant.isOwner(chr)) {
+                        c.getSession().write(MaplePacketCreator.serverNotice(1, "プレドリックからアイテムを回収してください。"));
+                        c.getSession().write(MaplePacketCreator.enableActions());
+                        merchant.closeShop(true, true, 20);
+                        chr.setPlayerShop(null);
+                    } else {
+                        merchant.closeShop(true, true, 20);
+                    }
+                }
+                 */
                 break;
             }
             //case TRADE_SOMETHING:
-            case ADMIN_STORE_NAMECHANGE: { // Changing store name, only Admin
-                // 01 00 00 00
+            // GMが右クリックした場合の雇用商人の名前を替えますか？でOKを押したときに送信されるデータ
+            case ADMIN_STORE_NAMECHANGE: {
+                // @007F 2A [BC 7D 00 00 (ID)]
                 break;
             }
             case VIEW_MERCHANT_VISITOR: {
@@ -536,13 +542,15 @@ public class PlayerInteractionHandler {
                 }
                 break;
             }
+            // 追放
             case EXPEL: {
                 final IMaplePlayerShop ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     if (!((MapleMiniGame) ips).isOpen()) {
                         break;
                     }
-                    ips.removeAllVisitors(3, 1); //no msg
+                    // 5 = 強制退場されました。
+                    ips.removeAllVisitors(5, 1);
                 }
                 break;
             }
@@ -626,10 +634,6 @@ public class PlayerInteractionHandler {
                     if (game.isOpen()) {
                         break;
                     }
-                    if (game.getLoser() != ips.getVisitorSlot(chr)) {
-                        ips.broadcastToVisitors(PlayerShopPacket.shopChat("Turn could not be skipped by " + chr.getName() + ". Loser: " + game.getLoser() + " Visitor: " + ips.getVisitorSlot(chr), ips.getVisitorSlot(chr)));
-                        return;
-                    }
                     ips.broadcastToVisitors(PlayerShopPacket.getMiniGameSkip(ips.getVisitorSlot(chr)));
                     game.nextLoser();
                 }
@@ -642,10 +646,6 @@ public class PlayerInteractionHandler {
                     if (game.isOpen()) {
                         break;
                     }
-                    if (game.getLoser() != game.getVisitorSlot(chr)) {
-                        game.broadcastToVisitors(PlayerShopPacket.shopChat("Omok could not be placed by " + chr.getName() + ". Loser: " + game.getLoser() + " Visitor: " + game.getVisitorSlot(chr), game.getVisitorSlot(chr)));
-                        return;
-                    }
                     game.setPiece(slea.readInt(), slea.readInt(), slea.readByte(), chr);
                 }
                 break;
@@ -656,14 +656,6 @@ public class PlayerInteractionHandler {
                     MapleMiniGame game = (MapleMiniGame) ips;
                     if (game.isOpen()) {
                         break;
-                    }
-                    if (game.getLoser() != game.getVisitorSlot(chr)) {
-                        game.broadcastToVisitors(PlayerShopPacket.shopChat("Card could not be placed by " + chr.getName() + ". Loser: " + game.getLoser() + " Visitor: " + game.getVisitorSlot(chr), game.getVisitorSlot(chr)));
-                        return;
-                    }
-                    if (slea.readByte() != game.getTurn()) {
-                        game.broadcastToVisitors(PlayerShopPacket.shopChat("Omok could not be placed by " + chr.getName() + ". Loser: " + game.getLoser() + " Visitor: " + game.getVisitorSlot(chr) + " Turn: " + game.getTurn(), game.getVisitorSlot(chr)));
-                        return;
                     }
                     final int slot = slea.readByte();
                     final int turn = game.getTurn();

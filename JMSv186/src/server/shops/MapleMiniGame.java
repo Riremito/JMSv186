@@ -171,6 +171,7 @@ public class MapleMiniGame extends AbstractPlayerStore {
     public void setPiece(int move1, int move2, int type, MapleCharacter chr) {
         if (piece[move1][move2] == 0 && isOpen()) {
             piece[move1][move2] = type;
+            // なんか勝てないし、if文の中に入れるとゲームが進まないので謎
             this.broadcastToVisitors(PlayerShopPacket.getMiniGameMoveOmok(move1, move2, type));
             boolean found = false;
             for (int y = 0; y < 15; y++) {
