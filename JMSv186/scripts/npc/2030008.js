@@ -22,6 +22,16 @@ function action(mode, type, selection) {
 			}
 		case 1:
 			{
+				if (selection == 4) {
+					cm.gainItem(4001017, 1);
+					var bossmap = cm.getMap(280030000);
+
+					if (cm.getPlayerCount(280030000) <= 0) {
+						bossmap.resetFully();
+					}
+
+					cm.warp(280030000, 0);
+				}
 				return cm.dispose();
 			}
 		default:

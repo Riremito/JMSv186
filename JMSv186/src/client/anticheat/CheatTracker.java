@@ -77,6 +77,7 @@ public class CheatTracker {
     }
 
     public final void checkAttack(final int skillId, final int tickcount) {
+        /*
         final short AtkDelay = GameConstants.getAttackDelay(skillId);
         if ((tickcount - lastAttackTickCount) < AtkDelay) {
             registerOffense(CheatingOffense.FASTATTACK);
@@ -97,9 +98,11 @@ public class CheatTracker {
         }
         chr.get().updateTick(tickcount);
         lastAttackTickCount = tickcount;
+         */
     }
 
     public final void checkTakeDamage(final int damage) {
+        /*
         numSequentialDamage++;
         lastDamageTakenTime = System.currentTimeMillis();
 
@@ -113,12 +116,6 @@ public class CheatTracker {
             takingDamageSince = lastDamageTakenTime;
             numSequentialDamage = 0;
         }
-        /*	(non-thieves)
-        Min Miss Rate: 2%
-        Max Miss Rate: 80%
-        (thieves)
-        Min Miss Rate: 5%
-        Max Miss Rate: 95%*/
         if (damage == 0) {
             numZeroDamageTaken++;
             if (numZeroDamageTaken >= 35) { // Num count MSEA a/b players
@@ -128,9 +125,11 @@ public class CheatTracker {
         } else if (damage != -1) {
             numZeroDamageTaken = 0;
         }
+         */
     }
 
     public final void checkSameDamage(final int dmg) {
+        /*
         if (dmg > 2000 && lastDamage == dmg) {
             numSameDamage++;
 
@@ -142,9 +141,11 @@ public class CheatTracker {
             lastDamage = dmg;
             numSameDamage = 0;
         }
+         */
     }
 
     public final void checkMoveMonster(final Point pos) {
+        /*
         if (pos == lastMonsterMove) {
             monsterMoveCount++;
             if (monsterMoveCount > 15) {
@@ -154,14 +155,18 @@ public class CheatTracker {
             lastMonsterMove = pos;
             monsterMoveCount = 1;
         }
+         */
     }
 
     public final void resetSummonAttack() {
+        /*
         summonSummonTime = System.currentTimeMillis();
         numSequentialSummonAttack = 0;
+         */
     }
 
     public final boolean checkSummonAttack() {
+        /*
         numSequentialSummonAttack++;
         //estimated
         // System.out.println(numMPRegens + "/" + allowedRegens);
@@ -169,6 +174,7 @@ public class CheatTracker {
             registerOffense(CheatingOffense.FAST_SUMMON_ATTACK);
             return false;
         }
+         */
         return true;
     }
 
@@ -177,6 +183,7 @@ public class CheatTracker {
     }
 
     public final void checkDrop(final boolean dc) {
+        /*
         if ((System.currentTimeMillis() - lastDropTime) < 1000) {
             dropsPerSecond++;
             if (dropsPerSecond >= (dc ? 32 : 16) && chr.get() != null) {
@@ -190,9 +197,11 @@ public class CheatTracker {
             dropsPerSecond = 0;
         }
         lastDropTime = System.currentTimeMillis();
+         */
     }
 
     public final void checkMsg() { //ALL types of msg. caution with number of  msgsPerSecond
+        /*
         if ((System.currentTimeMillis() - lastMsgTime) < 1000) { //luckily maplestory has auto-check for too much msging
             msgsPerSecond++;
             if (msgsPerSecond > 10 && chr.get() != null) {
@@ -202,6 +211,7 @@ public class CheatTracker {
             msgsPerSecond = 0;
         }
         lastMsgTime = System.currentTimeMillis();
+         */
     }
 
     public final int getAttacksWithoutHit() {
@@ -209,11 +219,13 @@ public class CheatTracker {
     }
 
     public final void setAttacksWithoutHit(final boolean increase) {
+        /*
         if (increase) {
             this.attacksWithoutHit++;
         } else {
             this.attacksWithoutHit = 0;
         }
+         */
     }
 
     public final void registerOffense(final CheatingOffense offense) {
@@ -221,6 +233,7 @@ public class CheatTracker {
     }
 
     public final void registerOffense(final CheatingOffense offense, final String param) {
+        /*
         final MapleCharacter chrhardref = chr.get();
         if (chrhardref == null || !offense.isEnabled() || chrhardref.isClone() || chrhardref.isGM()) {
             return;
@@ -275,12 +288,14 @@ public class CheatTracker {
                 break;
         }
         CheatingOffensePersister.getInstance().persistEntry(entry);
+         */
     }
 
     public void updateTick(int newTick) {
+        /*
         if (newTick == lastTickCount) { //definitely packet spamming
             if (tickSame >= 5) {
-                chr.get().getClient().getSession().close(); //i could also add a check for less than, but i'm not too worried at the moment :)
+                //chr.get().getClient().getSession().close(); //i could also add a check for less than, but i'm not too worried at the moment :)
             } else {
                 tickSame++;
             }
@@ -288,6 +303,7 @@ public class CheatTracker {
             tickSame = 0;
         }
         lastTickCount = newTick;
+         */
     }
 
     public final void expireEntry(final CheatingOffenseEntry coe) {
@@ -301,6 +317,7 @@ public class CheatTracker {
 
     public final int getPoints() {
         int ret = 0;
+        /*
         CheatingOffenseEntry[] offenses_copy;
         rL.lock();
         try {
@@ -315,6 +332,7 @@ public class CheatTracker {
                 ret += entry.getPoints();
             }
         }
+         */
         return ret;
     }
 
