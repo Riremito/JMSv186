@@ -4675,11 +4675,11 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket openBeans(int beansCount, int type) {
+    public static MaplePacket openBeans(MapleCharacter c, int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(SendPacketOpcode.OPEN_BEANS.getValue());
-        mplew.writeInt(beansCount);
+        mplew.writeInt(c.getTama());
         mplew.write(type);
 
         return mplew.getPacket();

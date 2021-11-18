@@ -20,7 +20,7 @@ function action(mode, type, selection) {
 			}
 		case 1:
 			{
-				cm.sendOk("ポイントショップへ入場する処理");
+				cm.getPlayer().EnterPointShop();
 				break;
 			}
 		default:

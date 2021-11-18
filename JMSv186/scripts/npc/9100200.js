@@ -1,32 +1,18 @@
 // パチンコ1
 
-function PacketTest() {
-	var p = cm.getOutPacket();
-	// header
-	p.writeShort(0x0168);
-
-	// data
-	p.writeInt(7777); // パチンコ玉の数
-	p.write(0); // 台番号 0, 1, 2
-	p.writeZeroBytes(100);
-
-	// ProcessPacket
-	cm.DebugPacket(p.getPacket());
-}
-
-var status = -1;
+var npc_talk_status = -1;
 function action(mode, type, selection) {
 	if (mode == 1) {
-		status++;
+		npc_talk_status++;
 	} else {
-		status--;
+		npc_talk_status--;
 	}
 
-	switch (status) {
+	switch (npc_talk_status) {
 		case 0:
 			{
 				// パチンコ玉を所持している場合
-				if (1) {
+				if (cm.getPlayer().getTama() > 0) {
 					cm.sendYesNo("パチンコを始めましょうか。");
 					return;
 				}
@@ -41,7 +27,7 @@ function action(mode, type, selection) {
 			}
 		case 1:
 			{
-				PacketTest();
+				cm.getPlayer().StartPachinko(0);
 				break;
 			}
 		default:

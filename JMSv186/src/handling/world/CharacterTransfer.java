@@ -46,7 +46,8 @@ public class CharacterTransfer implements Externalizable {
             meso, hair, face, mapid, guildid,
             partyid, messengerid, mBookCover, dojo, ACash, MaplePoints,
             mount_itemid, mount_exp, points, vpoints, marriageId,
-            familyid, seniorid, junior1, junior2, currentrep, totalrep, battleshipHP;
+            familyid, seniorid, junior1, junior2, currentrep, totalrep, battleshipHP,
+            tama;
     public byte channel, dojoRecord, gender, gmLevel, guildrank, alliancerank, clonez, fairyExp, buddysize, world, initialSpawnPoint, skinColor, mount_level, mount_Fatigue, subcategory;
     public long lastfametime, TranferTime;
     public String name, accountname, BlessOfFairy, chalkboard;
@@ -90,6 +91,7 @@ public class CharacterTransfer implements Externalizable {
         this.remainingAp = chr.getRemainingAp();
         this.remainingSp = chr.getRemainingSps();
         this.meso = chr.getMeso();
+        this.tama = chr.getTama();
         this.skinColor = chr.getSkinColor();
         this.job = chr.getJob();
         this.hair = chr.getHair();
@@ -214,6 +216,7 @@ public class CharacterTransfer implements Externalizable {
             this.remainingSp[i] = in.readInt();
         }
         this.meso = in.readInt();
+        this.tama = in.readInt();
         this.skinColor = in.readByte();
         this.job = in.readShort();
         this.hair = in.readInt();
@@ -362,6 +365,7 @@ public class CharacterTransfer implements Externalizable {
             out.writeInt(this.remainingSp[i]);
         }
         out.writeInt(this.meso);
+        out.writeInt(this.tama);
         out.writeByte(this.skinColor);
         out.writeShort(this.job);
         out.writeInt(this.hair);

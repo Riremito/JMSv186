@@ -60,6 +60,7 @@ import database.DatabaseConnection;
 import database.DatabaseException;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
+import handling.channel.handler.InterServerHandler;
 import handling.world.CharacterTransfer;
 import handling.world.MapleMessenger;
 import handling.world.MapleMessengerCharacter;
@@ -197,7 +198,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private boolean Information = true;
     private int tama = 0;
     // パチンコ
-    private int beans, beansRange, beansNum;
+    private int beansRange, beansNum;
     private boolean canSetBeansNum;
 
     public void SetDebugger() {
@@ -289,7 +290,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ret.stats.mp = 50;
 
         // パチンコ
-        ret.beans = 0;
+        ret.tama = 0;
 
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -341,6 +342,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ret.remainingSp = ct.remainingSp;
         ret.remainingAp = ct.remainingAp;
         ret.meso = ct.meso;
+        ret.tama = ct.tama;
         ret.gmLevel = ct.gmLevel;
         ret.skinColor = ct.skinColor;
         ret.gender = ct.gender;
@@ -3009,6 +3011,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             return false;
         }
         tama += gain;
+        updateSingleStat(MapleStat.TAMA, tama, true);
         if (show) {
             client.getSession().write(MaplePacketCreator.showTamaGain(gain));
         }
@@ -5592,16 +5595,26 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     // パチンコ
     // CMS v72から流用
+    public boolean StartPachinko(int type) {
+        client.getSession().write(MaplePacketCreator.openBeans(this, type));
+        return true;
+    }
+
+    public boolean EnterPointShop() {
+        InterServerHandler.EnterCS(client, this, false);
+        return true;
+    }
+
     public int getBeans() {
-        return beans;
+        return tama;
     }
 
     public void setBeans(int b) {
-        beans = b;
+        tama = b;
     }
 
     public void gainBeans(int s) {
-        this.beans += s;
+        this.tama += s;
     }
 
     public int getBeansRange() {

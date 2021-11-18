@@ -139,7 +139,13 @@ function AvaTrade(c) {
 	c.DebugPacket(p.getPacket());
 }
 
+function UpdateTama(c) {
+	var p = c.getOutPacket();
+	p.writeShort(0x016A);
+	p.writeInt(7777);
+}
+
 // Java‚©‚çŒÄ‚Î‚ê‚é
 function debug(c) {
-	AvaTrade(c);
+	UpdateTama(c);
 }
