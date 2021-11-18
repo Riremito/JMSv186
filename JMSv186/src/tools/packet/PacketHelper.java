@@ -380,7 +380,13 @@ public class PacketHelper {
                 mplew.writeShort(equip.getSpeed());
                 mplew.writeShort(equip.getJump());
                 mplew.writeMapleAsciiString(equip.getOwner());
-                mplew.writeShort(equip.getFlag());
+                // ポイントアイテムの一度も装備していないことを確認するためのフラグ
+                if (hasUniqueId) {
+                    // ポイントアイテム交換可能
+                    mplew.writeShort(0x10);
+                } else {
+                    mplew.writeShort(equip.getFlag());
+                }
                 mplew.write(0);
                 mplew.write(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // Item level
                 if (hasUniqueId) {
