@@ -1,33 +1,6 @@
-/*
-This file is part of the OdinMS Maple Story Server
-Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc> 
-Matthias Butz <matze@odinms.de>
-Jan Christian Meyer <vimes@odinms.de>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License version 3
-as published by the Free Software Foundation. You may not use, modify
-or distribute this program under any other version of the
-GNU Affero General Public License.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package handling;
 
 import constants.ServerConstants;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
-
 import client.MapleClient;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -36,196 +9,24 @@ import handling.channel.handler.*;
 import handling.login.LoginServer;
 import handling.login.handler.*;
 import handling.mina.MaplePacketDecoder;
-import java.io.File;
-import java.io.FileWriter;
-import java.lang.management.ManagementFactory;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import server.Randomizer;
 import tools.MapleAESOFB;
 import tools.packet.LoginPacket;
 import tools.data.input.ByteArrayByteStream;
 import tools.data.input.GenericSeekableLittleEndianAccessor;
 import tools.data.input.SeekableLittleEndianAccessor;
-import tools.Pair;
-
 import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoSession;
 import server.MTSStorage;
 import tools.FileoutputUtil;
-import tools.HexTool;
 import handling.world.World;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import scripting.NPCConversationManager;
-import static server.quest.MapleQuestRequirementType.npc;
+import java.util.Map;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
-    public static final boolean Log_Packets = true;
     private int channel = -1;
-    private boolean cs;
-    private final List<String> BlockedIP = new ArrayList<String>();
-    private final Map<String, Pair<Long, Byte>> tracker = new ConcurrentHashMap<String, Pair<Long, Byte>>();
-    //Screw locking. Doesn't matter.
-//    private static final ReentrantReadWriteLock IPLoggingLock = new ReentrantReadWriteLock();
-    private static final String nl = System.getProperty("line.separator");
-    private static final File loggedIPs = new File("LogIPs.txt");
-    private static final HashMap<String, FileWriter> logIPMap = new HashMap<String, FileWriter>();
-
-    //Note to Zero: Use an enumset. Don't iterate through an array.
-    private static final EnumSet<RecvPacketOpcode> blocked = EnumSet.noneOf(RecvPacketOpcode.class);
-
-    static {
-        reloadLoggedIPs();
-        RecvPacketOpcode[] block = new RecvPacketOpcode[]{RecvPacketOpcode.NPC_ACTION, RecvPacketOpcode.MOVE_PLAYER, RecvPacketOpcode.MOVE_PET, RecvPacketOpcode.MOVE_SUMMON, RecvPacketOpcode.MOVE_DRAGON, RecvPacketOpcode.MOVE_LIFE, RecvPacketOpcode.HEAL_OVER_TIME, RecvPacketOpcode.STRANGE_DATA};
-        blocked.addAll(Arrays.asList(block));
-    }
-
-    public static void reloadLoggedIPs() {
-//        IPLoggingLock.writeLock().lock();
-//        try {
-        for (FileWriter fw : logIPMap.values()) {
-            if (fw != null) {
-                try {
-                    fw.write("=== Closing Log ===");
-                    fw.write(nl);
-                    fw.flush(); //Just in case.
-                    fw.close();
-                } catch (IOException ex) {
-                    System.out.println("Error closing Packet Log.");
-                    System.out.println(ex);
-                }
-            }
-        }
-        logIPMap.clear();
-        try {
-            Scanner sc = new Scanner(loggedIPs);
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine().trim();
-                if (line.length() > 0) {
-                    FileWriter fw = new FileWriter(new File("PacketLog_" + line + ".txt"), true);
-                    fw.write("=== Creating Log ===");
-                    fw.write(nl);
-                    fw.flush();
-                    logIPMap.put(line, fw);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Could not reload packet logged IPs.");
-            System.out.println(e);
-        }
-//        } finally {
-//            IPLoggingLock.writeLock().unlock();
-//        }
-    }
-
-    //Return the Filewriter if the IP is logged. Null otherwise.
-    private static FileWriter isLoggedIP(IoSession sess) {
-        String a = sess.getRemoteAddress().toString();
-        String realIP = a.substring(a.indexOf('/') + 1, a.indexOf(':'));
-        return logIPMap.get(realIP);
-    }
-// <editor-fold defaultstate="collapsed" desc="Packet Log Implementation">
-    private static final int Log_Size = 10000;
-    private static final ArrayList<LoggedPacket> Packet_Log = new ArrayList<LoggedPacket>(Log_Size);
-    private static final ReentrantReadWriteLock Packet_Log_Lock = new ReentrantReadWriteLock();
-    private static final File Packet_Log_Output = new File("PacketLog.txt");
-
-    public static void log(SeekableLittleEndianAccessor packet, RecvPacketOpcode op, MapleClient c, IoSession io) {
-        if (blocked.contains(op)) {
-            return;
-        }
-        try {
-            Packet_Log_Lock.writeLock().lock();
-            LoggedPacket logged = null;
-            if (Packet_Log.size() == Log_Size) {
-                logged = Packet_Log.remove(0);
-            }
-            //This way, we don't create new LoggedPacket objects, we reuse them =]
-            if (logged == null) {
-                logged = new LoggedPacket(packet, op, io.getRemoteAddress().toString(),
-                        c == null ? -1 : c.getAccID(),
-                        c == null || c.getAccountName() == null ? "[Null]" : c.getAccountName(),
-                        c == null || c.getPlayer() == null || c.getPlayer().getName() == null ? "[Null]" : c.getPlayer().getName());
-            } else {
-                logged.setInfo(packet, op, io.getRemoteAddress().toString(),
-                        c == null ? -1 : c.getAccID(),
-                        c == null || c.getAccountName() == null ? "[Null]" : c.getAccountName(),
-                        c == null || c.getPlayer() == null || c.getPlayer().getName() == null ? "[Null]" : c.getPlayer().getName());
-            }
-            Packet_Log.add(logged);
-        } finally {
-            Packet_Log_Lock.writeLock().unlock();
-        }
-    }
-
-    private static class LoggedPacket {
-
-        private static final String nl = System.getProperty("line.separator");
-        private String ip, accName, accId, chrName;
-        private SeekableLittleEndianAccessor packet;
-        private long timestamp;
-        private RecvPacketOpcode op;
-
-        public LoggedPacket(SeekableLittleEndianAccessor p, RecvPacketOpcode op, String ip, int id, String accName, String chrName) {
-            setInfo(p, op, ip, id, accName, chrName);
-        }
-
-        public final void setInfo(SeekableLittleEndianAccessor p, RecvPacketOpcode op, String ip, int id, String accName, String chrName) {
-            this.ip = ip;
-            this.op = op;
-            packet = p;
-            this.accName = accName;
-            this.chrName = chrName;
-            timestamp = System.currentTimeMillis();
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("[IP: ").append(ip).append("] [").append(accId).append('|').append(accName).append('|').append(chrName).append("] [Time: ").append(timestamp).append(']');
-            sb.append(nl);
-            sb.append("[Op: ").append(op.toString()).append(']');
-            sb.append(" [Data: ").append(packet.toString()).append(']');
-            return sb.toString();
-        }
-    }
-
-    public void writeLog() {
-        try {
-            FileWriter fw = new FileWriter(Packet_Log_Output, true);
-            try {
-                Packet_Log_Lock.readLock().lock();
-                String nl = System.getProperty("line.separator");
-                for (LoggedPacket loggedPacket : Packet_Log) {
-                    fw.write(loggedPacket.toString());
-                    fw.write(nl);
-                }
-                fw.flush();
-                fw.close();
-            } finally {
-                Packet_Log_Lock.readLock().unlock();
-            }
-        } catch (IOException ex) {
-            System.out.println("Error writing log to file.");
-        }
-    }
-
-    public MapleServerHandler() {
-        //ONLY FOR THE MBEAN
-    }
-    // </editor-fold>
+    private boolean cs = false;
 
     public MapleServerHandler(final int channel, final boolean cs) {
         this.channel = channel;
@@ -243,43 +44,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
     @Override
     public void exceptionCaught(final IoSession session, final Throwable cause) throws Exception {
-        /*	MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-        log.error(MapleClient.getLogMessage(client, cause.getMessage()), cause);*/
-//	cause.printStackTrace();
     }
 
     @Override
     public void sessionOpened(final IoSession session) throws Exception {
-        // Start of IP checking
         final String address = session.getRemoteAddress().toString().split(":")[0];
-
-        if (BlockedIP.contains(address)) {
-            session.close();
-            return;
-        }
-        final Pair<Long, Byte> track = tracker.get(address);
-
-        byte count;
-        if (track == null) {
-            count = 1;
-        } else {
-            count = track.right;
-
-            final long difference = System.currentTimeMillis() - track.left;
-            if (difference < 2000) { // Less than 2 sec
-                count++;
-            } else if (difference > 20000) { // Over 20 sec
-                count = 1;
-            }
-            if (count >= 10) {
-                BlockedIP.add(address);
-                tracker.remove(address); // Cleanup
-                session.close();
-                return;
-            }
-        }
-        tracker.put(address, new Pair<Long, Byte>(System.currentTimeMillis(), count));
-        // End of IP checking.
 
         if (channel > -1) {
             if (ChannelServer.getInstance(channel).isShutdown()) {
@@ -328,21 +97,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
         }
         sb.append("IoSession opened ").append(address);
         System.out.println(sb.toString());
-
-        FileWriter fw = isLoggedIP(session);
-        if (fw != null) {
-            if (channel > -1) {
-                fw.write("=== Logged Into Channel " + channel + " ===");
-                fw.write(nl);
-            } else if (cs) {
-                fw.write("=== Logged Into CashShop Server ===");
-                fw.write(nl);
-            } else {
-                fw.write("=== Logged Into Login Server ===");
-                fw.write(nl);
-            }
-            fw.flush();
-        }
     }
 
     @Override
@@ -351,12 +105,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
         if (client != null) {
             try {
-                FileWriter fw = isLoggedIP(session);
-                if (fw != null) {
-                    fw.write("=== Session Closed ===");
-                    fw.write(nl);
-                    fw.flush();
-                }
                 client.disconnect(true, cs);
             } finally {
                 session.close();
@@ -387,17 +135,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                             return;
                         }
                     }
-                    if (c.getPlayer() != null && c.isMonitored()) {
-                        if (!blocked.contains(recv)) {
-                            FileWriter fw = new FileWriter(new File("MonitorLogs/" + c.getPlayer().getName() + "_log.txt"), true);
-                            fw.write(String.valueOf(recv) + " (" + Integer.toHexString(header_num) + ") Handled: \r\n" + slea.toString() + "\r\n");
-                            fw.flush();
-                            fw.close();
-                        }
-                    }
-                    if (Log_Packets) {
-                        log(slea, recv, c, session);
-                    }
 
                     if (c.getPlayer() != null && c.getPlayer().GetDebugger()) {
                         if (recv != RecvPacketOpcode.MOVE_PLAYER
@@ -415,23 +152,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     }
 
                     handlePacket(recv, slea, c, cs);
-
-                    FileWriter fw = isLoggedIP(session);
-                    if (fw != null && !blocked.contains(recv)) {
-                        if (recv == RecvPacketOpcode.PLAYER_LOGGEDIN && c != null) { // << This is why. Win.
-                            fw.write(">> [AccountName: "
-                                    + (c.getAccountName() == null ? "null" : c.getAccountName())
-                                    + "] | [IGN: "
-                                    + (c.getPlayer() == null || c.getPlayer().getName() == null ? "null" : c.getPlayer().getName())
-                                    + "] | [Time: "
-                                    + FileoutputUtil.CurrentReadable_Time()
-                                    + "]");
-                            fw.write(nl);
-                        }
-                        fw.write("[" + recv.toString() + "]" + slea.toString(true));
-                        fw.write(nl);
-                        fw.flush();
-                    }
                     return;
                 }
             }
@@ -451,27 +171,20 @@ public class MapleServerHandler extends IoHandlerAdapter {
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
             e.printStackTrace();
         }
-        /*        final StringBuilder sb = new StringBuilder("Received data : (Unhandled)\n");
-        sb.append(HexTool.toString((byte[]) message)).append("\n").append(HexTool.toStringFromAscii((byte[]) message));
-        System.out.println(sb.toString());*/
     }
 
     @Override
     public void sessionIdle(final IoSession session, final IdleStatus status) throws Exception {
         final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
 
-        /*	if (client != null && client.getPlayer() != null) {
-        System.out.println("Player "+ client.getPlayer().getName() +" went idle");
-        }*/
         if (client != null) {
             client.sendPing();
         }
+
         super.sessionIdle(session, status);
     }
 
     public static final void handlePacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor slea, final MapleClient c, final boolean cs) throws Exception {
-        //System.out.println(String.format("[Packet] %04X", (short)header.getValue()));[
-
         switch (header) {
             /*
             case PONG:
@@ -976,51 +689,4 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 break;
         }
     }
-
-    private static final ScriptEngineManager sem = new ScriptEngineManager();
-
-    protected static Invocable getInvocable() {
-        FileReader fr = null;
-        String path = "scripts/debug/test.js";
-        try {
-
-            File scriptFile = new File(path);
-            if (!scriptFile.exists()) {
-                return null;
-            }
-
-            ScriptEngine engine = sem.getEngineByName("javascript");
-
-            fr = new FileReader(scriptFile);
-            engine.eval(fr);
-
-            return (Invocable) engine;
-        } catch (FileNotFoundException | ScriptException e) {
-            System.err.println("Error executing script. Path: " + path + "\nException " + e);
-            FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Error executing script. Path: " + path + "\nException " + e);
-            return null;
-        } finally {
-            try {
-                if (fr != null) {
-                    fr.close();
-                }
-            } catch (IOException ignore) {
-            }
-        }
-    }
-
-    protected static void DebugPacket(final MapleClient c) throws ScriptException {
-        Invocable iv = getInvocable();
-        if (iv == null) {
-            System.out.println("scripts/debug/test.jsが見つかりません");
-            return;
-        }
-        final ScriptEngine scriptengine = (ScriptEngine) iv;
-        scriptengine.put("c", c);
-        try {
-            iv.invokeFunction("test");
-        } catch (NoSuchMethodException nsme) {
-        }
-    }
-
 }
