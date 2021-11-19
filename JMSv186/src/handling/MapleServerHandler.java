@@ -184,51 +184,63 @@ public class MapleServerHandler extends IoHandlerAdapter {
         super.sessionIdle(session, status);
     }
 
-    public static final void handlePacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor slea, final MapleClient c, final boolean cs) throws Exception {
+    public static final boolean handlePacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c, final boolean cs) throws Exception {
         switch (header) {
-            /*
-            case PONG:
-                c.pongReceived();
-                break;
-             */
-            case LOGIN_PASSWORD:
-                if (CharLoginHandler.login(slea, c)) {
+            // ログインサーバー関連
+            case LOGIN_PASSWORD: {
+                if (CharLoginHandler.login(p, c)) {
                     InterServerHandler.SetLogin(false);
                 }
-                break;
-            case SERVERLIST_REQUEST:
+                return true;
+            }
+            case SERVERLIST_REQUEST: {
+                // +p
                 CharLoginHandler.ServerListRequest(c);
-                break;
-            case CHARLIST_REQUEST:
-                CharLoginHandler.CharlistRequest(slea, c);
-                break;
-            case SERVERSTATUS_REQUEST:
+                return true;
+            }
+            case CHARLIST_REQUEST: {
+                CharLoginHandler.CharlistRequest(p, c);
+                return true;
+            }
+            case SERVERSTATUS_REQUEST: {
+                // +p
                 CharLoginHandler.ServerStatusRequest(c);
-                break;
-            case CHECK_CHAR_NAME:
-                CharLoginHandler.CheckCharName(slea.readMapleAsciiString(), c);
-                break;
-            case CREATE_CHAR:
-                CharLoginHandler.CreateChar(slea, c);
-                break;
-            case DELETE_CHAR:
-                CharLoginHandler.DeleteChar(slea, c);
-                break;
+                return true;
+            }
+            case CHECK_CHAR_NAME: {
+                // p
+                CharLoginHandler.CheckCharName(p.readMapleAsciiString(), c);
+                return true;
+            }
+            case CREATE_CHAR: {
+                CharLoginHandler.CreateChar(p, c);
+                return true;
+            }
+            case DELETE_CHAR: {
+                CharLoginHandler.DeleteChar(p, c);
+                return true;
+            }
             case CHAR_SELECT:
-            case AUTH_SECOND_PASSWORD:
-                if (CharLoginHandler.Character_WithSecondPassword(slea, c)) {
+            case AUTH_SECOND_PASSWORD: {
+                if (CharLoginHandler.Character_WithSecondPassword(p, c)) {
                     InterServerHandler.SetLogin(false);
                 }
-                break;
-            case RSA_KEY: // Fix this somehow
+                return true;
+            }
+            case RSA_KEY: {
+                // +p
                 c.getSession().write(LoginPacket.LoginAUTH());
-                break;
-            // END OF LOGIN SERVER
-            case CHANGE_CHANNEL:
-                InterServerHandler.ChangeChannel(slea, c, c.getPlayer());
-                break;
-            case PLAYER_LOGGEDIN:
-                final int playerid = slea.readInt();
+                return true;
+            }
+            // ゲームサーバー関連
+            case CHANGE_CHANNEL: {
+                // c
+                InterServerHandler.ChangeChannel(p, c, c.getPlayer());
+                return true;
+            }
+            case PLAYER_LOGGEDIN: {
+                // +p
+                final int playerid = p.readInt();
                 if (cs) {
                     CashShopOperation.EnterCS(playerid, c);
                 } else {
@@ -240,453 +252,655 @@ public class MapleServerHandler extends IoHandlerAdapter {
                         c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
                     }
                 }
-                break;
-            case ENTER_CASH_SHOP:
+                return true;
+            }
+            case ENTER_CASH_SHOP: {
+                // pc
                 InterServerHandler.EnterCS(c, c.getPlayer(), false);
-                break;
-            case ENTER_MTS:
-                if (c.getPlayer().GetDebugger()) {
-                    //DebugPacket(c);
-                    InterServerHandler.EnterCS(c, c.getPlayer(), true);
-
-                } else {
-                    InterServerHandler.EnterCS(c, c.getPlayer(), true);
-                }
-                break;
-            case MOVE_PLAYER:
-                PlayerHandler.MovePlayer(slea, c, c.getPlayer());
-                break;
-            case CHAR_INFO_REQUEST:
-                slea.readInt();
-                PlayerHandler.CharInfoRequest(slea.readInt(), c, c.getPlayer());
-                break;
-            case CLOSE_RANGE_ATTACK:
-                PlayerHandler.closeRangeAttack(slea, c, c.getPlayer(), false);
-                break;
-            case RANGED_ATTACK:
-                PlayerHandler.rangedAttack(slea, c, c.getPlayer());
-                break;
-            case MAGIC_ATTACK:
-                PlayerHandler.MagicDamage(slea, c, c.getPlayer());
-                break;
-            case SPECIAL_MOVE:
-                PlayerHandler.SpecialMove(slea, c, c.getPlayer());
-                break;
-            case PASSIVE_ENERGY:
-                PlayerHandler.closeRangeAttack(slea, c, c.getPlayer(), true);
-                break;
-            case FACE_EXPRESSION:
-                PlayerHandler.ChangeEmotion(slea.readInt(), c.getPlayer());
-                break;
-            case TAKE_DAMAGE:
-                PlayerHandler.TakeDamage(slea, c, c.getPlayer());
-                break;
-            case HEAL_OVER_TIME:
-                PlayerHandler.Heal(slea, c.getPlayer());
-                break;
-            case CANCEL_BUFF:
-                PlayerHandler.CancelBuffHandler(slea.readInt(), c.getPlayer());
-                break;
-            case CANCEL_ITEM_EFFECT:
-                PlayerHandler.CancelItemEffect(slea.readInt(), c.getPlayer());
-                break;
-            case USE_CHAIR:
-                PlayerHandler.UseChair(slea.readInt(), c, c.getPlayer());
-                break;
-            case CANCEL_CHAIR:
-                PlayerHandler.CancelChair(slea.readShort(), c, c.getPlayer());
-                break;
+                return true;
+            }
+            case ENTER_MTS: {
+                // pc
+                InterServerHandler.EnterCS(c, c.getPlayer(), true);
+                return true;
+            }
+            case MOVE_PLAYER: {
+                // pc
+                PlayerHandler.MovePlayer(p, c, c.getPlayer());
+                return true;
+            }
+            case CHAR_INFO_REQUEST: {
+                // 実装が悪い
+                p.readInt();
+                PlayerHandler.CharInfoRequest(p.readInt(), c, c.getPlayer());
+                return true;
+            }
+            case CLOSE_RANGE_ATTACK: {
+                // c
+                PlayerHandler.closeRangeAttack(p, c, c.getPlayer(), false);
+                return true;
+            }
+            case RANGED_ATTACK: {
+                // c
+                PlayerHandler.rangedAttack(p, c, c.getPlayer());
+                return true;
+            }
+            case MAGIC_ATTACK: {
+                // c
+                PlayerHandler.MagicDamage(p, c, c.getPlayer());
+                return true;
+            }
+            case SPECIAL_MOVE: {
+                // c
+                PlayerHandler.SpecialMove(p, c, c.getPlayer());
+                return true;
+            }
+            case PASSIVE_ENERGY: {
+                // c
+                PlayerHandler.closeRangeAttack(p, c, c.getPlayer(), true);
+                return true;
+            }
+            case FACE_EXPRESSION: {
+                // pc
+                PlayerHandler.ChangeEmotion(p.readInt(), c.getPlayer());
+                return true;
+            }
+            case TAKE_DAMAGE: {
+                // c
+                PlayerHandler.TakeDamage(p, c, c.getPlayer());
+                return true;
+            }
+            case HEAL_OVER_TIME: {
+                PlayerHandler.Heal(p, c.getPlayer());
+                return true;
+            }
+            case CANCEL_BUFF: {
+                // pc
+                PlayerHandler.CancelBuffHandler(p.readInt(), c.getPlayer());
+                return true;
+            }
+            case CANCEL_ITEM_EFFECT: {
+                // pc
+                PlayerHandler.CancelItemEffect(p.readInt(), c.getPlayer());
+                return true;
+            }
+            case USE_CHAIR: {
+                // pc
+                PlayerHandler.UseChair(p.readInt(), c, c.getPlayer());
+                return true;
+            }
+            case CANCEL_CHAIR: {
+                // pc
+                PlayerHandler.CancelChair(p.readShort(), c, c.getPlayer());
+                return true;
+            }
             case USE_ITEMEFFECT:
-            case WHEEL_OF_FORTUNE:
-                PlayerHandler.UseItemEffect(slea.readInt(), c, c.getPlayer());
-                break;
-            case SKILL_EFFECT:
-                PlayerHandler.SkillEffect(slea, c.getPlayer());
-                break;
-            case MESO_DROP:
-                slea.readInt();
-                PlayerHandler.DropMeso(slea.readInt(), c.getPlayer());
-                break;
-            case MONSTER_BOOK_COVER:
-                PlayerHandler.ChangeMonsterBookCover(slea.readInt(), c, c.getPlayer());
-                break;
-            case CHANGE_KEYMAP:
-                PlayerHandler.ChangeKeymap(slea, c.getPlayer());
-                break;
-            case CHANGE_MAP:
+            case WHEEL_OF_FORTUNE: {
+                // pc
+                PlayerHandler.UseItemEffect(p.readInt(), c, c.getPlayer());
+                return true;
+            }
+            case SKILL_EFFECT: {
+                // c
+                PlayerHandler.SkillEffect(p, c.getPlayer());
+                return true;
+            }
+            case MESO_DROP: {
+                // 実装が悪い
+                p.readInt();
+                PlayerHandler.DropMeso(p.readInt(), c.getPlayer());
+                return true;
+            }
+            case MONSTER_BOOK_COVER: {
+                // pc
+                PlayerHandler.ChangeMonsterBookCover(p.readInt(), c, c.getPlayer());
+                return true;
+            }
+            case CHANGE_KEYMAP: {
+                // c
+                PlayerHandler.ChangeKeymap(p, c.getPlayer());
+                return true;
+            }
+            case CHANGE_MAP: {
+                // c
                 if (cs) {
-                    CashShopOperation.LeaveCS(slea, c, c.getPlayer());
+                    CashShopOperation.LeaveCS(p, c, c.getPlayer());
                 } else {
-                    PlayerHandler.ChangeMap(slea, c, c.getPlayer());
+                    PlayerHandler.ChangeMap(p, c, c.getPlayer());
                     if (c.getPlayer().GetInformation()) {
                         c.getPlayer().Info("MapID = " + c.getPlayer().getMapId());
                     }
                     System.out.println("[EnterMap]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
                 }
-                break;
-            case CHANGE_MAP_SPECIAL:
-                slea.skip(1);
-                PlayerHandler.ChangeMapSpecial(slea.readMapleAsciiString(), c, c.getPlayer());
-                break;
-            case USE_INNER_PORTAL:
-                slea.skip(1);
-                PlayerHandler.InnerPortal(slea, c, c.getPlayer());
-                break;
-            case TROCK_ADD_MAP:
-                PlayerHandler.TrockAddMap(slea, c, c.getPlayer());
-                break;
-            case ARAN_COMBO:
+                return true;
+            }
+            case CHANGE_MAP_SPECIAL: {
+                // 実装が悪い
+                p.skip(1);
+                PlayerHandler.ChangeMapSpecial(p.readMapleAsciiString(), c, c.getPlayer());
+                return true;
+            }
+            case USE_INNER_PORTAL: {
+                // 実装が悪い
+                p.skip(1);
+                PlayerHandler.InnerPortal(p, c, c.getPlayer());
+                return true;
+            }
+            case TROCK_ADD_MAP: {
+                // c
+                PlayerHandler.TrockAddMap(p, c, c.getPlayer());
+                return true;
+            }
+            case ARAN_COMBO: {
+                // pc
                 PlayerHandler.AranCombo(c, c.getPlayer());
-                break;
-            case SKILL_MACRO:
-                PlayerHandler.ChangeSkillMacro(slea, c.getPlayer());
-                break;
-            case GIVE_FAME:
-                PlayersHandler.GiveFame(slea, c, c.getPlayer());
-                break;
-            case TRANSFORM_PLAYER:
-                PlayersHandler.TransformPlayer(slea, c, c.getPlayer());
-                break;
-            case NOTE_ACTION:
-                PlayersHandler.Note(slea, c.getPlayer());
-                break;
-            case USE_DOOR:
-                PlayersHandler.UseDoor(slea, c.getPlayer());
-                break;
-            case DAMAGE_REACTOR:
-                PlayersHandler.HitReactor(slea, c);
-                break;
-            case TOUCH_REACTOR:
-                PlayersHandler.TouchReactor(slea, c);
-                break;
-            case CLOSE_CHALKBOARD:
+                return true;
+            }
+            case SKILL_MACRO: {
+                // c
+                PlayerHandler.ChangeSkillMacro(p, c.getPlayer());
+                return true;
+            }
+            case GIVE_FAME: {
+                // c
+                PlayersHandler.GiveFame(p, c, c.getPlayer());
+                return true;
+            }
+            case TRANSFORM_PLAYER: {
+                // c
+                PlayersHandler.TransformPlayer(p, c, c.getPlayer());
+                return true;
+            }
+            case NOTE_ACTION: {
+                // c
+                PlayersHandler.Note(p, c.getPlayer());
+                return true;
+            }
+            case USE_DOOR: {
+                // c
+                PlayersHandler.UseDoor(p, c.getPlayer());
+                return true;
+            }
+            case DAMAGE_REACTOR: {
+                PlayersHandler.HitReactor(p, c);
+                return true;
+            }
+            case TOUCH_REACTOR: {
+                PlayersHandler.TouchReactor(p, c);
+                return true;
+            }
+            case CLOSE_CHALKBOARD: {
+                // 実装が悪い
                 c.getPlayer().setChalkboard(null);
-                break;
-            case ITEM_MAKER:
-                ItemMakerHandler.ItemMaker(slea, c);
-                break;
-            case ITEM_SORT:
-                InventoryHandler.ItemSort(slea, c);
-                break;
-            case ITEM_GATHER:
-                InventoryHandler.ItemGather(slea, c);
-                break;
-            case ITEM_MOVE:
-                InventoryHandler.ItemMove(slea, c);
-                break;
-            case ITEM_PICKUP:
-                InventoryHandler.Pickup_Player(slea, c, c.getPlayer());
-                break;
-            case USE_CASH_ITEM:
-                InventoryHandler.UseCashItem(slea, c);
-                break;
-            case USE_ITEM:
-                InventoryHandler.UseItem(slea, c, c.getPlayer());
-                break;
-            case USE_MAGNIFY_GLASS:
-                InventoryHandler.UseMagnify(slea, c);
-                break;
-            case USE_SCRIPTED_NPC_ITEM:
-                InventoryHandler.UseScriptedNPCItem(slea, c, c.getPlayer());
-                break;
-            case USE_RETURN_SCROLL:
-                InventoryHandler.UseReturnScroll(slea, c, c.getPlayer());
-                break;
-            case USE_UPGRADE_SCROLL:
-                slea.readInt();
-                if (InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) slea.readShort(), c, c.getPlayer())) {
+                return true;
+            }
+            case ITEM_MAKER: {
+                ItemMakerHandler.ItemMaker(p, c);
+                return true;
+            }
+            case ITEM_SORT: {
+                InventoryHandler.ItemSort(p, c);
+                return true;
+            }
+            case ITEM_GATHER: {
+                InventoryHandler.ItemGather(p, c);
+                return true;
+            }
+            case ITEM_MOVE: {
+                InventoryHandler.ItemMove(p, c);
+                return true;
+            }
+            case ITEM_PICKUP: {
+                // c
+                InventoryHandler.Pickup_Player(p, c, c.getPlayer());
+                return true;
+            }
+            case USE_CASH_ITEM: {
+                InventoryHandler.UseCashItem(p, c);
+                return true;
+            }
+            case USE_ITEM: {
+                // c
+                InventoryHandler.UseItem(p, c, c.getPlayer());
+                return true;
+            }
+            case USE_MAGNIFY_GLASS: {
+                InventoryHandler.UseMagnify(p, c);
+                return true;
+            }
+            case USE_SCRIPTED_NPC_ITEM: {
+                // c
+                InventoryHandler.UseScriptedNPCItem(p, c, c.getPlayer());
+                return true;
+            }
+            case USE_RETURN_SCROLL: {
+                // c
+                InventoryHandler.UseReturnScroll(p, c, c.getPlayer());
+                return true;
+            }
+            case USE_UPGRADE_SCROLL: {
+                // 実装が悪い
+                p.readInt();
+                if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) p.readShort(), c, c.getPlayer())) {
                     c.getPlayer().saveToDB(false, false);
                 }
-                break;
-            case USE_POTENTIAL_SCROLL:
-                slea.readInt();
-                if (InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) 0, c, c.getPlayer())) {
+                return true;
+            }
+            case USE_POTENTIAL_SCROLL: {
+                // 実装が悪い
+                p.readInt();
+                if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) 0, c, c.getPlayer())) {
                     c.getPlayer().saveToDB(false, false);
                 }
-                break;
-            case USE_EQUIP_SCROLL:
-                slea.readInt();
-                if (InventoryHandler.UseUpgradeScroll((byte) slea.readShort(), (byte) slea.readShort(), (byte) 0, c, c.getPlayer())) {
+                return true;
+            }
+            case USE_EQUIP_SCROLL: {
+                // 実装が悪い
+                p.readInt();
+                if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) 0, c, c.getPlayer())) {
                     c.getPlayer().saveToDB(false, false);
                 }
-                break;
-            case USE_SUMMON_BAG:
-                InventoryHandler.UseSummonBag(slea, c, c.getPlayer());
-                break;
-            case USE_TREASUER_CHEST:
-                InventoryHandler.UseTreasureChest(slea, c, c.getPlayer());
-                break;
-            case USE_SKILL_BOOK:
-                slea.readInt();
-                if (InventoryHandler.UseSkillBook((byte) slea.readShort(), slea.readInt(), c, c.getPlayer())) {
+                return true;
+            }
+            case USE_SUMMON_BAG: {
+                // c
+                InventoryHandler.UseSummonBag(p, c, c.getPlayer());
+                return true;
+            }
+            case USE_TREASUER_CHEST: {
+                // c
+                InventoryHandler.UseTreasureChest(p, c, c.getPlayer());
+                return true;
+            }
+            case USE_SKILL_BOOK: {
+                // 実装が悪い
+                p.readInt();
+                if (InventoryHandler.UseSkillBook((byte) p.readShort(), p.readInt(), c, c.getPlayer())) {
                     c.getPlayer().saveToDB(false, false);
                 }
-                break;
-            case USE_CATCH_ITEM:
-                InventoryHandler.UseCatchItem(slea, c, c.getPlayer());
-                break;
-            case USE_MOUNT_FOOD:
-                InventoryHandler.UseMountFood(slea, c, c.getPlayer());
-                break;
-            case REWARD_ITEM:
-                InventoryHandler.UseRewardItem((byte) slea.readShort(), slea.readInt(), c, c.getPlayer());
-                break;
-            case HYPNOTIZE_DMG:
-                MobHandler.HypnotizeDmg(slea, c.getPlayer());
-                break;
-            case MOB_NODE:
-                MobHandler.MobNode(slea, c.getPlayer());
-                break;
-            case DISPLAY_NODE:
-                MobHandler.DisplayNode(slea, c.getPlayer());
-                break;
-            case MOVE_LIFE:
-                MobHandler.MoveMonster(slea, c, c.getPlayer());
-                break;
-            case AUTO_AGGRO:
-                MobHandler.AutoAggro(slea.readInt(), c.getPlayer());
-                break;
-            case FRIENDLY_DAMAGE:
-                MobHandler.FriendlyDamage(slea, c.getPlayer());
-                break;
-            case MONSTER_BOMB:
-                MobHandler.MonsterBomb(slea.readInt(), c.getPlayer());
-                break;
-            case NPC_SHOP:
-                NPCHandler.NPCShop(slea, c, c.getPlayer());
-                break;
-            case NPC_TALK:
-                NPCHandler.NPCTalk(slea, c, c.getPlayer());
-                break;
-            case NPC_TALK_MORE:
-                NPCHandler.NPCMoreTalk(slea, c);
-                break;
-            case NPC_ACTION:
-                NPCHandler.NPCAnimation(slea, c);
-                break;
-            case QUEST_ACTION:
-                NPCHandler.QuestAction(slea, c, c.getPlayer());
-                break;
-            case STORAGE:
-                NPCHandler.Storage(slea, c, c.getPlayer());
-                break;
-            case GENERAL_CHAT:
-                slea.readInt();
-                ChatHandler.GeneralChat(slea.readMapleAsciiString(), slea.readByte(), c, c.getPlayer());
-                break;
-            case PARTYCHAT:
-                ChatHandler.Others(slea, c, c.getPlayer());
-                break;
-            case WHISPER:
-                ChatHandler.Whisper_Find(slea, c);
-                break;
-            case MESSENGER:
-                ChatHandler.Messenger(slea, c);
-                break;
-            case AUTO_ASSIGN_AP:
-                StatsHandling.AutoAssignAP(slea, c, c.getPlayer());
-                break;
-            case DISTRIBUTE_AP:
-                StatsHandling.DistributeAP(slea, c, c.getPlayer());
-                break;
-            case DISTRIBUTE_SP:
-                slea.readInt();
-                StatsHandling.DistributeSP(slea.readInt(), c, c.getPlayer());
-                break;
-            case PLAYER_INTERACTION:
-                PlayerInteractionHandler.PlayerInteraction(slea, c, c.getPlayer());
-                break;
-            case GUILD_OPERATION:
-                GuildHandler.Guild(slea, c);
-                break;
-            case DENY_GUILD_REQUEST:
-                slea.skip(1);
-                GuildHandler.DenyGuildRequest(slea.readMapleAsciiString(), c);
-                break;
-            case ALLIANCE_OPERATION:
-                AllianceHandler.HandleAlliance(slea, c, false);
-                break;
-            case DENY_ALLIANCE_REQUEST:
-                AllianceHandler.HandleAlliance(slea, c, true);
-                break;
-            case BBS_OPERATION:
-                BBSHandler.BBSOperatopn(slea, c);
-                break;
-            /*case REQUEST_FAMILY:
-            FamilyHandler.RequestFamily(slea);
-            break;*/
-            case PARTY_OPERATION:
-                PartyHandler.PartyOperatopn(slea, c);
-                break;
-            case DENY_PARTY_REQUEST:
-                PartyHandler.DenyPartyRequest(slea, c);
-                break;
-            case BUDDYLIST_MODIFY:
-                BuddyListHandler.BuddyOperation(slea, c);
-                break;
-            case CYGNUS_SUMMON:
+                return true;
+            }
+            case USE_CATCH_ITEM: {
+                // c
+                InventoryHandler.UseCatchItem(p, c, c.getPlayer());
+                return true;
+            }
+            case USE_MOUNT_FOOD: {
+                // c
+                InventoryHandler.UseMountFood(p, c, c.getPlayer());
+                return true;
+            }
+            case REWARD_ITEM: {
+                // c
+                InventoryHandler.UseRewardItem((byte) p.readShort(), p.readInt(), c, c.getPlayer());
+                return true;
+            }
+            case HYPNOTIZE_DMG: {
+                // c
+                MobHandler.HypnotizeDmg(p, c.getPlayer());
+                return true;
+            }
+            case MOB_NODE: {
+                // c
+                MobHandler.MobNode(p, c.getPlayer());
+                return true;
+            }
+            case DISPLAY_NODE: {
+                // c
+                MobHandler.DisplayNode(p, c.getPlayer());
+                return true;
+            }
+            case MOVE_LIFE: {
+                // c
+                MobHandler.MoveMonster(p, c, c.getPlayer());
+                return true;
+            }
+            case AUTO_AGGRO: {
+                // c
+                MobHandler.AutoAggro(p.readInt(), c.getPlayer());
+                return true;
+            }
+            case FRIENDLY_DAMAGE: {
+                // c
+                MobHandler.FriendlyDamage(p, c.getPlayer());
+                return true;
+            }
+            case MONSTER_BOMB: {
+                // pc
+                MobHandler.MonsterBomb(p.readInt(), c.getPlayer());
+                return true;
+            }
+            case NPC_SHOP: {
+                // c
+                NPCHandler.NPCShop(p, c, c.getPlayer());
+                return true;
+            }
+            case NPC_TALK: {
+                // c
+                NPCHandler.NPCTalk(p, c, c.getPlayer());
+                return true;
+            }
+            case NPC_TALK_MORE: {
+                NPCHandler.NPCMoreTalk(p, c);
+                return true;
+            }
+            case NPC_ACTION: {
+                NPCHandler.NPCAnimation(p, c);
+                return true;
+            }
+            case QUEST_ACTION: {
+                // c
+                NPCHandler.QuestAction(p, c, c.getPlayer());
+                return true;
+            }
+            case STORAGE: {
+                // c
+                NPCHandler.Storage(p, c, c.getPlayer());
+                return true;
+            }
+            case GENERAL_CHAT: {
+                // 実装が悪い
+                p.readInt();
+                ChatHandler.GeneralChat(p.readMapleAsciiString(), p.readByte(), c, c.getPlayer());
+                return true;
+            }
+            case PARTYCHAT: {
+                // c
+                ChatHandler.Others(p, c, c.getPlayer());
+                return true;
+            }
+            case WHISPER: {
+                ChatHandler.Whisper_Find(p, c);
+                return true;
+            }
+            case MESSENGER: {
+                ChatHandler.Messenger(p, c);
+                return true;
+            }
+            case AUTO_ASSIGN_AP: {
+                // c
+                StatsHandling.AutoAssignAP(p, c, c.getPlayer());
+                return true;
+            }
+            case DISTRIBUTE_AP: {
+                // c
+                StatsHandling.DistributeAP(p, c, c.getPlayer());
+                return true;
+            }
+            case DISTRIBUTE_SP: {
+                // 実装が悪い
+                p.readInt();
+                StatsHandling.DistributeSP(p.readInt(), c, c.getPlayer());
+                return true;
+            }
+            case PLAYER_INTERACTION: {
+                // c
+                PlayerInteractionHandler.PlayerInteraction(p, c, c.getPlayer());
+                return true;
+            }
+            case GUILD_OPERATION: {
+                GuildHandler.Guild(p, c);
+                return true;
+            }
+            case DENY_GUILD_REQUEST: {
+                // 実装が悪い
+                p.skip(1);
+                GuildHandler.DenyGuildRequest(p.readMapleAsciiString(), c);
+                return true;
+            }
+            case ALLIANCE_OPERATION: {
+                AllianceHandler.HandleAlliance(p, c, false);
+                return true;
+            }
+            case DENY_ALLIANCE_REQUEST: {
+                AllianceHandler.HandleAlliance(p, c, true);
+                return true;
+            }
+            case BBS_OPERATION: {
+                BBSHandler.BBSOperatopn(p, c);
+                return true;
+            }
+            case PARTY_OPERATION: {
+                PartyHandler.PartyOperatopn(p, c);
+                return true;
+            }
+            case DENY_PARTY_REQUEST: {
+                PartyHandler.DenyPartyRequest(p, c);
+                return true;
+            }
+            case BUDDYLIST_MODIFY: {
+                BuddyListHandler.BuddyOperation(p, c);
+                return true;
+            }
+            case CYGNUS_SUMMON: {
+                // 実装が悪い
                 UserInterfaceHandler.CygnusSummon_NPCRequest(c);
-                break;
-            case SHIP_OBJECT:
-                UserInterfaceHandler.ShipObjectRequest(slea.readInt(), c);
-                break;
-            case BUY_CS_ITEM:
-                CashShopOperation.BuyCashItem(slea, c, c.getPlayer());
-                break;
-            case COUPON_CODE:
-                FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "Coupon : \n" + slea.toString(true));
-                System.out.println(slea.toString());
-                slea.skip(2);
-                CashShopOperation.CouponCode(slea.readMapleAsciiString(), c);
-                break;
-            case CS_UPDATE:
+                return true;
+            }
+            case SHIP_OBJECT: {
+                // p
+                UserInterfaceHandler.ShipObjectRequest(p.readInt(), c);
+                return true;
+            }
+            case BUY_CS_ITEM: {
+                // c
+                CashShopOperation.BuyCashItem(p, c, c.getPlayer());
+                return true;
+            }
+            case COUPON_CODE: {
+                // 実装が悪い
+                FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "Coupon : \n" + p.toString(true));
+                System.out.println(p.toString());
+                p.skip(2);
+                CashShopOperation.CouponCode(p.readMapleAsciiString(), c);
+                return true;
+            }
+            case CS_UPDATE: {
+                // p
                 CashShopOperation.CSUpdate(c);
-                break;
-            case TOUCHING_MTS:
+                return true;
+            }
+            case TOUCHING_MTS: {
+                // p
                 MTSOperation.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
-                break;
-            case MTS_TAB:
-                MTSOperation.MTSOperation(slea, c);
-                break;
-            case DAMAGE_SUMMON:
-                slea.skip(4);
-                SummonHandler.DamageSummon(slea, c.getPlayer());
-                break;
-            case MOVE_SUMMON:
-                SummonHandler.MoveSummon(slea, c.getPlayer());
-                break;
-            case SUMMON_ATTACK:
-                SummonHandler.SummonAttack(slea, c, c.getPlayer());
-                break;
-            case MOVE_DRAGON:
-                SummonHandler.MoveDragon(slea, c.getPlayer());
-                break;
-            case SPAWN_PET:
-                PetHandler.SpawnPet(slea, c, c.getPlayer());
-                break;
-            case MOVE_PET:
-                PetHandler.MovePet(slea, c.getPlayer());
-                break;
-            case PET_CHAT:
-                if (slea.available() < 12) {
-                    break;
+                return true;
+            }
+            case MTS_TAB: {
+                MTSOperation.MTSOperation(p, c);
+                return true;
+            }
+            case DAMAGE_SUMMON: {
+                // 実装が悪い
+                p.skip(4);
+                SummonHandler.DamageSummon(p, c.getPlayer());
+                return true;
+            }
+            case MOVE_SUMMON: {
+                // c
+                SummonHandler.MoveSummon(p, c.getPlayer());
+                return true;
+            }
+            case SUMMON_ATTACK: {
+                // c
+                SummonHandler.SummonAttack(p, c, c.getPlayer());
+                return true;
+            }
+            case MOVE_DRAGON: {
+                // c
+                SummonHandler.MoveDragon(p, c.getPlayer());
+                return true;
+            }
+            case SPAWN_PET: {
+                // c
+                PetHandler.SpawnPet(p, c, c.getPlayer());
+                return true;
+            }
+            case MOVE_PET: {
+                // c
+                PetHandler.MovePet(p, c.getPlayer());
+                return true;
+            }
+            case PET_CHAT: {
+                if (p.available() < 12) {
+                    return false;
                 }
-                // slea.readShort()
+                // p.readShort()
                 // nullついてない文字数
-                // slea.readShort()
-                // slea.readMapleAsciiString()
-                //PetHandler.PetChat((int) slea.readLong(), slea.readShort(), slea.readMapleAsciiString(), c.getPlayer());
-                PetHandler.PetChat(slea, c.getPlayer());
-                break;
-            case PET_COMMAND:
-                PetHandler.PetCommand(slea, c, c.getPlayer());
-                break;
-            case PET_FOOD:
-                PetHandler.PetFood(slea, c, c.getPlayer());
-                break;
-            case PET_LOOT:
-                InventoryHandler.Pickup_Pet(slea, c, c.getPlayer());
-                break;
-            case PET_AUTO_POT:
-                PetHandler.Pet_AutoPotion(slea, c, c.getPlayer());
-                break;
-            case MONSTER_CARNIVAL:
-                MonsterCarnivalHandler.MonsterCarnival(slea, c);
-                break;
-            case DUEY_ACTION:
-                DueyHandler.DueyOperation(slea, c);
-                break;
-            case USE_HIRED_MERCHANT:
-                HiredMerchantHandler.UseHiredMerchant(slea, c);
-                break;
-            case MERCH_ITEM_STORE:
-                HiredMerchantHandler.MerchantItemStore(slea, c);
-                break;
-            case CANCEL_DEBUFF:
-                // Ignore for now
-                break;
-            case LEFT_KNOCK_BACK:
-                PlayerHandler.leftKnockBack(slea, c);
-                break;
-            case SNOWBALL:
-                PlayerHandler.snowBall(slea, c);
-                break;
-            case COCONUT:
-                PlayersHandler.hitCoconut(slea, c);
-                break;
-            case REPAIR:
-                NPCHandler.repair(slea, c);
-                break;
-            case REPAIR_ALL:
+                // p.readShort()
+                // p.readMapleAsciiString()
+                //PetHandler.PetChat((int) p.readLong(), p.readShort(), p.readMapleAsciiString(), c.getPlayer());
+                PetHandler.PetChat(p, c.getPlayer());
+                return true;
+            }
+            case PET_COMMAND: {
+                // c
+                PetHandler.PetCommand(p, c, c.getPlayer());
+                return true;
+            }
+            case PET_FOOD: {
+                // c
+                PetHandler.PetFood(p, c, c.getPlayer());
+                return true;
+            }
+            case PET_LOOT: {
+                // c
+                InventoryHandler.Pickup_Pet(p, c, c.getPlayer());
+                return true;
+            }
+            case PET_AUTO_POT: {
+                // c
+                PetHandler.Pet_AutoPotion(p, c, c.getPlayer());
+                return true;
+            }
+            case MONSTER_CARNIVAL: {
+                MonsterCarnivalHandler.MonsterCarnival(p, c);
+                return true;
+            }
+            case DUEY_ACTION: {
+                DueyHandler.DueyOperation(p, c);
+                return true;
+            }
+            case USE_HIRED_MERCHANT: {
+                HiredMerchantHandler.UseHiredMerchant(p, c);
+                return true;
+            }
+            case MERCH_ITEM_STORE: {
+                HiredMerchantHandler.MerchantItemStore(p, c);
+                return true;
+            }
+            case CANCEL_DEBUFF: {
+                return true;
+            }
+            case LEFT_KNOCK_BACK: {
+                PlayerHandler.leftKnockBack(p, c);
+                return true;
+            }
+            case SNOWBALL: {
+                PlayerHandler.snowBall(p, c);
+                return true;
+            }
+            case COCONUT: {
+                PlayersHandler.hitCoconut(p, c);
+                return true;
+            }
+            case REPAIR: {
+                NPCHandler.repair(p, c);
+                return true;
+            }
+            case REPAIR_ALL: {
+                // p
                 NPCHandler.repairAll(c);
-                break;
-            case GAME_POLL:
-                UserInterfaceHandler.InGame_Poll(slea, c);
-                break;
-            case OWL:
-                InventoryHandler.Owl(slea, c);
-                break;
-            case OWL_WARP:
-                InventoryHandler.OwlWarp(slea, c);
-                break;
-            case USE_OWL_MINERVA:
-                InventoryHandler.OwlMinerva(slea, c);
-                break;
-            case RPS_GAME:
-                NPCHandler.RPSGame(slea, c);
-                break;
-            case UPDATE_QUEST:
-                NPCHandler.UpdateQuest(slea, c);
-                break;
-            case USE_ITEM_QUEST:
-                NPCHandler.UseItemQuest(slea, c);
-                break;
-            case FOLLOW_REQUEST:
-                PlayersHandler.FollowRequest(slea, c);
-                break;
-            case FOLLOW_REPLY:
-                PlayersHandler.FollowReply(slea, c);
-                break;
-            case RING_ACTION:
-                PlayersHandler.RingAction(slea, c);
-                break;
-            case REQUEST_FAMILY:
-                FamilyHandler.RequestFamily(slea, c);
-                break;
-            case OPEN_FAMILY:
-                FamilyHandler.OpenFamily(slea, c);
-                break;
-            case FAMILY_OPERATION:
-                FamilyHandler.FamilyOperation(slea, c);
-                break;
-            case DELETE_JUNIOR:
-                FamilyHandler.DeleteJunior(slea, c);
-                break;
-            case DELETE_SENIOR:
-                FamilyHandler.DeleteSenior(slea, c);
-                break;
-            case USE_FAMILY:
-                FamilyHandler.UseFamily(slea, c);
-                break;
-            case FAMILY_PRECEPT:
-                FamilyHandler.FamilyPrecept(slea, c);
-                break;
-            case FAMILY_SUMMON:
-                FamilyHandler.FamilySummon(slea, c);
-                break;
-            case ACCEPT_FAMILY:
-                FamilyHandler.AcceptFamily(slea, c);
-                break;
+                return true;
+            }
+            case GAME_POLL: {
+                UserInterfaceHandler.InGame_Poll(p, c);
+                return true;
+            }
+            case OWL: {
+                InventoryHandler.Owl(p, c);
+                return true;
+            }
+            case OWL_WARP: {
+                InventoryHandler.OwlWarp(p, c);
+                return true;
+            }
+            case USE_OWL_MINERVA: {
+                InventoryHandler.OwlMinerva(p, c);
+                return true;
+            }
+            case RPS_GAME: {
+                NPCHandler.RPSGame(p, c);
+                return true;
+            }
+            case UPDATE_QUEST: {
+                NPCHandler.UpdateQuest(p, c);
+                return true;
+            }
+            case USE_ITEM_QUEST: {
+                NPCHandler.UseItemQuest(p, c);
+                return true;
+            }
+            case FOLLOW_REQUEST: {
+                PlayersHandler.FollowRequest(p, c);
+                return true;
+            }
+            case FOLLOW_REPLY: {
+                PlayersHandler.FollowReply(p, c);
+                return true;
+            }
+            case RING_ACTION: {
+                PlayersHandler.RingAction(p, c);
+                return true;
+            }
+            case REQUEST_FAMILY: {
+                FamilyHandler.RequestFamily(p, c);
+                return true;
+            }
+            case OPEN_FAMILY: {
+                FamilyHandler.OpenFamily(p, c);
+                return true;
+            }
+            case FAMILY_OPERATION: {
+                FamilyHandler.FamilyOperation(p, c);
+                return true;
+            }
+            case DELETE_JUNIOR: {
+                FamilyHandler.DeleteJunior(p, c);
+                return true;
+            }
+            case DELETE_SENIOR: {
+                FamilyHandler.DeleteSenior(p, c);
+                return true;
+            }
+            case USE_FAMILY: {
+                FamilyHandler.UseFamily(p, c);
+                return true;
+            }
+            case FAMILY_PRECEPT: {
+                FamilyHandler.FamilyPrecept(p, c);
+                return true;
+            }
+            case FAMILY_SUMMON: {
+                FamilyHandler.FamilySummon(p, c);
+                return true;
+            }
+            case ACCEPT_FAMILY: {
+                FamilyHandler.AcceptFamily(p, c);
+                return true;
+            }
             // パチンコ
-            case BEANS_OPERATION:
-                BeanGame.BeanGame1(slea, c);
+            case BEANS_OPERATION: {
+                BeanGame.BeanGame1(p, c);
+                return true;
+            }
+            case BEANS_UPDATE: {
+                BeanGame.BeanGame2(p, c);
+                return true;
+            }
+            default: {
                 break;
-            case BEANS_UPDATE:
-                BeanGame.BeanGame2(slea, c);
-                break;
-            default:
-                System.out.println("[UNHANDLED] Recv [" + header.toString() + "] found");
-                break;
+            }
         }
+        return false;
     }
 }
