@@ -131,6 +131,41 @@ public class MapleServerHandler extends IoHandlerAdapter {
         super.sessionClosed(session);
     }
 
+    private boolean IsAnnoyingPacket(RecvPacketOpcode r) {
+        switch (r) {
+            case NPC_ACTION:
+            case SPECIAL_MOVE:
+            case RANGED_ATTACK:
+            case MAGIC_ATTACK:
+            case CLOSE_RANGE_ATTACK:
+            case MOVE_LIFE:
+            case HEAL_OVER_TIME:
+            case MOVE_PLAYER: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    private boolean IsAnnoyingPacket(short r) {
+        switch (r) {
+            case 0x0010:
+            case 0x00EF:
+            case 0x00BF:
+            case 0x000E:
+            case 0x00DF: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void messageReceived(final IoSession session, final Object message) {
         try {
@@ -139,7 +174,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return;
             }
             final short header_num = slea.readShort();
-            // Console output part
 
             for (final RecvPacketOpcode recv : RecvPacketOpcode.values()) {
                 if (recv.getValue() == header_num) {
@@ -153,38 +187,33 @@ public class MapleServerHandler extends IoHandlerAdapter {
                         }
                     }
 
-                    if (c.getPlayer() != null && c.getPlayer().GetDebugger()) {
-                        if (recv != RecvPacketOpcode.MOVE_PLAYER
-                                && recv != RecvPacketOpcode.HEAL_OVER_TIME
-                                && recv != RecvPacketOpcode.NPC_ACTION
-                                && recv != RecvPacketOpcode.SPECIAL_MOVE
-                                && recv != RecvPacketOpcode.RANGED_ATTACK
-                                && recv != RecvPacketOpcode.MAGIC_ATTACK
-                                && recv != RecvPacketOpcode.CLOSE_RANGE_ATTACK
-                                && recv != RecvPacketOpcode.MOVE_LIFE
-                                && recv != RecvPacketOpcode.GENERAL_CHAT) {
-                            System.out.println("[Packet] " + Integer.toHexString(header_num));
-                            System.out.println(slea.toString());
-                        }
+                    if (c.getPlayer() != null && c.getPlayer().GetDebugger() && !IsAnnoyingPacket(recv)) {
+                        System.out.println("[Packet] @" + String.format("%04X", header_num) + " " + slea.toString());
                     }
 
                     // ログインサーバー
                     if (server_type == ServerType.LoginServer) {
-                        handleLoginPacket(recv, slea, c);
+                        if (!handleLoginPacket(recv, slea, c)) {
+                            System.out.println("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
+                        }
                         return;
                     }
 
                     // ポイントショップとMTSが共通のサーバーのため、ポイントショップで処理されなかったパケットはMTSのパケット扱いにする
                     if (server_type == ServerType.PointShopServer) {
                         if (!handlePointShopPacket(recv, slea, c)) {
-                            handleMapleTradeSpacePacket(recv, slea, c);
+                            if (!handleMapleTradeSpacePacket(recv, slea, c)) {
+                                System.out.println("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
+                            }
                         }
                         return;
                     }
 
                     // ゲームサーバー
                     if (server_type == ServerType.GameServer) {
-                        handleGamePacket(recv, slea, c);
+                        if (!handleGamePacket(recv, slea, c)) {
+                            System.out.println("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
+                        }
                         return;
                     }
 
@@ -192,15 +221,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
             }
             final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-            if (c.getPlayer() != null && c.getPlayer().GetDebugger()) {
-                if (header_num != 0x0010
-                        && header_num != 0x00EF
-                        && header_num != 0x00BF
-                        && header_num != 0x000E
-                        && header_num != 0x00DF) {
-                    System.out.println("[Unknown Packet] " + Integer.toHexString(header_num));
-                    System.out.println(slea.toString());
-                }
+            if (c.getPlayer() != null && c.getPlayer().GetDebugger() && !IsAnnoyingPacket(header_num)) {
+                System.out.println("[UnknownPacket] @" + String.format("%04X", header_num) + " " + slea.toString());
             }
 
         } catch (Exception e) {
