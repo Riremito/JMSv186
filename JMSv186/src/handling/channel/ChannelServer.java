@@ -157,7 +157,7 @@ public class ChannelServer implements Serializable {
         loadEvents();
 
         try {
-            this.serverHandler = new MapleServerHandler(channel, false);
+            this.serverHandler = new MapleServerHandler(channel, MapleServerHandler.ServerType.GameServer);
             acceptor.bind(new InetSocketAddress(port), serverHandler, acceptor_config);
             System.out.println("Channel " + channel + ": Listening on port " + port + "");
             eventSM.init();

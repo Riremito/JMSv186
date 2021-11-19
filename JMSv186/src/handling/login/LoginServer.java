@@ -103,7 +103,7 @@ public class LoginServer {
 
         try {
             InetSocketadd = new InetSocketAddress(PORT);
-            acceptor.bind(InetSocketadd, new MapleServerHandler(-1, false), cfg);
+            acceptor.bind(InetSocketadd, new MapleServerHandler(-1, MapleServerHandler.ServerType.LoginServer), cfg);
             System.out.println("Listening on port " + PORT + ".");
         } catch (IOException e) {
             System.err.println("Binding to port " + PORT + " failed" + e);

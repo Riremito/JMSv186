@@ -25,12 +25,19 @@ import java.util.Map;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
-    private int channel = -1;
-    private boolean cs = false;
+    public enum ServerType {
+        LoginServer,
+        GameServer,
+        PointShopServer,
+        MapleTradeSpaceServer
+    }
 
-    public MapleServerHandler(final int channel, final boolean cs) {
+    private int channel = -1;
+    private ServerType server_type = ServerType.GameServer;
+
+    public MapleServerHandler(final int channel, final ServerType st) {
         this.channel = channel;
-        this.cs = cs;
+        this.server_type = st;
     }
 
     @Override
@@ -48,24 +55,44 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionOpened(final IoSession session) throws Exception {
-        final String address = session.getRemoteAddress().toString().split(":")[0];
+        final String address = session.getRemoteAddress().toString();
 
-        if (channel > -1) {
-            if (ChannelServer.getInstance(channel).isShutdown()) {
-                session.close();
-                return;
+        switch (server_type) {
+            case LoginServer: {
+                if (LoginServer.isShutdown()) {
+                    session.close();
+                    return;
+                }
+                System.out.println("[LoginServer] " + address);
+                break;
             }
-        } else if (cs) {
-            if (CashShopServer.isShutdown()) {
-                session.close();
-                return;
+            case GameServer: {
+                if (ChannelServer.getInstance(channel).isShutdown()) {
+                    session.close();
+                    return;
+                }
+                System.out.println("[GameServer " + String.format("%02d", channel) + "] " + address);
+                break;
             }
-        } else {
-            if (LoginServer.isShutdown()) {
-                session.close();
-                return;
+            case PointShopServer: {
+                if (CashShopServer.isShutdown()) {
+                    session.close();
+                    return;
+                }
+                System.out.println("[PointShopServer] " + address);
+                break;
+            }
+            case MapleTradeSpaceServer: {
+                // ポイントショップとMTSを別のサーバーに分離した場合は修正が必要
+                System.out.println("[MapleTradeSpaceServer] " + address);
+                break;
+            }
+            default: {
+                System.out.println("[UnknownServer] " + address);
+                break;
             }
         }
+
         final byte serverRecv[] = new byte[]{70, 114, 122, (byte) Randomizer.nextInt(255)};
         final byte serverSend[] = new byte[]{82, 48, 120, (byte) Randomizer.nextInt(255)};
         final byte ivRecv[] = ServerConstants.Use_Fixed_IV ? new byte[]{9, 0, 0x5, 0x5F} : serverRecv;
@@ -87,16 +114,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
         session.setIdleTime(IdleStatus.WRITER_IDLE, 60);
         RecvPacketOpcode.reloadValues();
         SendPacketOpcode.reloadValues();
-        StringBuilder sb = new StringBuilder();
-        if (channel > -1) {
-            sb.append("[Channel Server] Channel ").append(channel).append(" : ");
-        } else if (cs) {
-            sb.append("[Cash Server]");
-        } else {
-            sb.append("[Login Server]");
-        }
-        sb.append("IoSession opened ").append(address);
-        System.out.println(sb.toString());
     }
 
     @Override
@@ -105,7 +122,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
         if (client != null) {
             try {
-                client.disconnect(true, cs);
+                client.disconnect(true, server_type == ServerType.PointShopServer);
             } finally {
                 session.close();
                 session.removeAttribute(MapleClient.CLIENT_KEY);
@@ -151,7 +168,26 @@ public class MapleServerHandler extends IoHandlerAdapter {
                         }
                     }
 
-                    handlePacket(recv, slea, c, cs);
+                    // ログインサーバー
+                    if (server_type == ServerType.LoginServer) {
+                        handleLoginPacket(recv, slea, c);
+                        return;
+                    }
+
+                    // ポイントショップとMTSが共通のサーバーのため、ポイントショップで処理されなかったパケットはMTSのパケット扱いにする
+                    if (server_type == ServerType.PointShopServer) {
+                        if (!handlePointShopPacket(recv, slea, c)) {
+                            handleMapleTradeSpacePacket(recv, slea, c);
+                        }
+                        return;
+                    }
+
+                    // ゲームサーバー
+                    if (server_type == ServerType.GameServer) {
+                        handleGamePacket(recv, slea, c);
+                        return;
+                    }
+
                     return;
                 }
             }
@@ -184,7 +220,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         super.sessionIdle(session, status);
     }
 
-    public static final boolean handlePacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c, final boolean cs) throws Exception {
+    public static final boolean handleLoginPacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
             // ログインサーバー関連
             case LOGIN_PASSWORD: {
@@ -232,6 +268,82 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 c.getSession().write(LoginPacket.LoginAUTH());
                 return true;
             }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static final boolean handlePointShopPacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
+        switch (header) {
+            case PLAYER_LOGGEDIN: {
+                // +p
+                final int playerid = p.readInt();
+                CashShopOperation.EnterCS(playerid, c);
+                return true;
+            }
+            case CHANGE_MAP: {
+                // c
+                CashShopOperation.LeaveCS(p, c, c.getPlayer());
+                return true;
+            }
+            case BUY_CS_ITEM: {
+                // c
+                CashShopOperation.BuyCashItem(p, c, c.getPlayer());
+                return true;
+            }
+            case COUPON_CODE: {
+                // 実装が悪い
+                FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "Coupon : \n" + p.toString(true));
+                System.out.println(p.toString());
+                p.skip(2);
+                CashShopOperation.CouponCode(p.readMapleAsciiString(), c);
+                return true;
+            }
+            case CS_UPDATE: {
+                // p
+                CashShopOperation.CSUpdate(c);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static final boolean handleMapleTradeSpacePacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
+        switch (header) {
+            case PLAYER_LOGGEDIN: {
+                // +p
+                final int playerid = p.readInt();
+                CashShopOperation.EnterCS(playerid, c);
+                return true;
+            }
+            case CHANGE_MAP: {
+                // c
+                CashShopOperation.LeaveCS(p, c, c.getPlayer());
+                return true;
+            }
+            case TOUCHING_MTS: {
+                // p
+                MTSOperation.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
+                return true;
+            }
+            case MTS_TAB: {
+                MTSOperation.MTSOperation(p, c);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static final boolean handleGamePacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
+        switch (header) {
             // ゲームサーバー関連
             case CHANGE_CHANNEL: {
                 // c
@@ -241,16 +353,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case PLAYER_LOGGEDIN: {
                 // +p
                 final int playerid = p.readInt();
-                if (cs) {
-                    CashShopOperation.EnterCS(playerid, c);
-                } else {
-                    InterServerHandler.Loggedin(playerid, c);
-                    if (!InterServerHandler.GetLogin()) {
-                        InterServerHandler.SetLogin(true);
-                        System.out.println("[LogIn]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
-                        Map<Integer, Integer> connected = World.getConnected();
-                        c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
-                    }
+                InterServerHandler.Loggedin(playerid, c);
+                if (!InterServerHandler.GetLogin()) {
+                    InterServerHandler.SetLogin(true);
+                    System.out.println("[LogIn]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
+                    Map<Integer, Integer> connected = World.getConnected();
+                    c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
                 }
                 return true;
             }
@@ -363,15 +471,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CHANGE_MAP: {
                 // c
-                if (cs) {
-                    CashShopOperation.LeaveCS(p, c, c.getPlayer());
-                } else {
-                    PlayerHandler.ChangeMap(p, c, c.getPlayer());
-                    if (c.getPlayer().GetInformation()) {
-                        c.getPlayer().Info("MapID = " + c.getPlayer().getMapId());
-                    }
-                    System.out.println("[EnterMap]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
+                PlayerHandler.ChangeMap(p, c, c.getPlayer());
+                if (c.getPlayer().GetInformation()) {
+                    c.getPlayer().Info("MapID = " + c.getPlayer().getMapId());
                 }
+                System.out.println("[EnterMap]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
+
                 return true;
             }
             case CHANGE_MAP_SPECIAL: {
@@ -680,33 +785,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case SHIP_OBJECT: {
                 // p
                 UserInterfaceHandler.ShipObjectRequest(p.readInt(), c);
-                return true;
-            }
-            case BUY_CS_ITEM: {
-                // c
-                CashShopOperation.BuyCashItem(p, c, c.getPlayer());
-                return true;
-            }
-            case COUPON_CODE: {
-                // 実装が悪い
-                FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "Coupon : \n" + p.toString(true));
-                System.out.println(p.toString());
-                p.skip(2);
-                CashShopOperation.CouponCode(p.readMapleAsciiString(), c);
-                return true;
-            }
-            case CS_UPDATE: {
-                // p
-                CashShopOperation.CSUpdate(c);
-                return true;
-            }
-            case TOUCHING_MTS: {
-                // p
-                MTSOperation.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
-                return true;
-            }
-            case MTS_TAB: {
-                MTSOperation.MTSOperation(p, c);
                 return true;
             }
             case DAMAGE_SUMMON: {
