@@ -47,7 +47,6 @@ public class Start {
         MapleCarnivalFactory.getInstance().initialize();
         MapleGuildRanking.getInstance().getRank();
         MapleFamilyBuff.getBuffEntry();
-        MapleServerHandler.registerMBean();
         ChannelServer.startChannel_Main();
         CashItemFactory.getInstance().initialize();
         CheatTimer.getInstance().register(AutobanManager.getInstance(), 60000);
@@ -113,8 +112,6 @@ public class Start {
         MapleCarnivalFactory.getInstance().initialize();
         MapleGuildRanking.getInstance().getRank();
         MapleFamilyBuff.getBuffEntry();
-
-        MapleServerHandler.registerMBean();
 
         System.out.println("[Loading Channel]");
         ChannelServer.startChannel_Main();

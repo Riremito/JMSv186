@@ -83,7 +83,6 @@ import server.maps.MapleReactorFactory;
 import server.maps.MapleReactorStats;
 import server.quest.MapleQuest;
 import tools.ArrayMap;
-import tools.CPUSampler;
 import tools.MaplePacketCreator;
 import tools.MockIOSession;
 import tools.Pair;

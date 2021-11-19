@@ -22,7 +22,6 @@ package handling.mina;
 
 import client.MapleClient;
 import tools.MapleAESOFB;
-import tools.MapleCustomEncryption;
 
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;

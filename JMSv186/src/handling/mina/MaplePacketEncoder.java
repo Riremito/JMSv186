@@ -23,7 +23,6 @@ package handling.mina;
 import client.MapleClient;
 import handling.MaplePacket;
 import tools.MapleAESOFB;
-import tools.MapleCustomEncryption;
 
 import java.util.concurrent.locks.Lock;
 

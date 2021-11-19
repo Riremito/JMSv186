@@ -70,7 +70,7 @@ import javax.script.ScriptException;
 import scripting.NPCConversationManager;
 import static server.quest.MapleQuestRequirementType.npc;
 
-public class MapleServerHandler extends IoHandlerAdapter implements MapleServerHandlerMBean {
+public class MapleServerHandler extends IoHandlerAdapter {
 
     public static final boolean Log_Packets = true;
     private int channel = -1;
@@ -199,18 +199,6 @@ public class MapleServerHandler extends IoHandlerAdapter implements MapleServerH
             sb.append("[Op: ").append(op.toString()).append(']');
             sb.append(" [Data: ").append(packet.toString()).append(']');
             return sb.toString();
-        }
-    }
-
-    public static void registerMBean() {
-        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-        try {
-            MapleServerHandler mbean = new MapleServerHandler();
-            //The log is a static object, so we can just use this hacky method.
-            mBeanServer.registerMBean(mbean, new ObjectName("handling:type=MapleServerHandler"));
-        } catch (Exception e) {
-            System.out.println("Error registering PacketLog MBean");
-            e.printStackTrace();
         }
     }
 
