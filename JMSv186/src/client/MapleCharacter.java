@@ -59,6 +59,7 @@ import constants.ServerConstants;
 import database.DatabaseConnection;
 import database.DatabaseException;
 import handling.MaplePacket;
+import handling.MapleServerHandler;
 import handling.channel.ChannelServer;
 import handling.channel.handler.InterServerHandler;
 import handling.world.CharacterTransfer;
@@ -2300,6 +2301,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         final boolean pyramid = pyramidSubway != null;
         if (map.getId() == nowmapid) {
             client.getSession().write(warpPacket);
+            MapleServerHandler.DebugLog(getName() + " Warp Map = " + to.getId());
 
             map.removePlayer(this);
             if (!isClone() && client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {

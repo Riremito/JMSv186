@@ -21,6 +21,8 @@ import org.apache.mina.common.IoSession;
 import server.MTSStorage;
 import tools.FileoutputUtil;
 import handling.world.World;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 public class MapleServerHandler extends IoHandlerAdapter {
@@ -242,12 +244,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
         super.sessionIdle(session, status);
     }
 
+    public static void DebugLog(final String text) {
+        System.out.println((new SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ").format(new Date())) + text);
+    }
+
     public static final boolean handleLoginPacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
             // ログインサーバー関連
             case LOGIN_PASSWORD: {
                 if (CharLoginHandler.login(p, c)) {
                     InterServerHandler.SetLogin(false);
+                    DebugLog("Login MapleID = " + c.getAccountName());
                 }
                 return true;
             }
@@ -303,6 +310,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // +p
                 final int playerid = p.readInt();
                 CashShopOperation.EnterCS(playerid, c);
+                DebugLog(c.getPlayer().getName() + " Enter PointShop");
                 return true;
             }
             case CHANGE_MAP: {
@@ -341,6 +349,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // +p
                 final int playerid = p.readInt();
                 CashShopOperation.EnterCS(playerid, c);
+                DebugLog(c.getPlayer().getName() + " Enter MTS");
                 return true;
             }
             case CHANGE_MAP: {
@@ -378,9 +387,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InterServerHandler.Loggedin(playerid, c);
                 if (!InterServerHandler.GetLogin()) {
                     InterServerHandler.SetLogin(true);
-                    System.out.println("[LogIn]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
+                    DebugLog(c.getPlayer().getName() + " Login, MapID = " + c.getPlayer().getMapId());
                     Map<Integer, Integer> connected = World.getConnected();
                     c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
+                } else {
+                    DebugLog(c.getPlayer().getName() + " CC, MapID = " + c.getPlayer().getMapId());
                 }
                 return true;
             }
@@ -497,8 +508,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 if (c.getPlayer().GetInformation()) {
                     c.getPlayer().Info("MapID = " + c.getPlayer().getMapId());
                 }
-                System.out.println("[EnterMap]" + c.getPlayer().getName() + " in " + c.getPlayer().getMapId());
-
+                DebugLog(c.getPlayer().getName() + " Enter Map = " + c.getPlayer().getMapId());
                 return true;
             }
             case CHANGE_MAP_SPECIAL: {
