@@ -22,7 +22,7 @@ public class RandomRewards {
     }
 
     protected RandomRewards() {
-        System.out.println("Loading RandomRewards :::");
+        //System.out.println("Loading RandomRewards :::");
         // Gold Box
         List<Integer> returnArray = new ArrayList<Integer>();
 

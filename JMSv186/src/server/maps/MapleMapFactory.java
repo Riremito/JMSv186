@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.maps;
 
+import debug.Debug;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.HashMap;
@@ -84,7 +85,7 @@ public class MapleMapFactory {
                 try {
                     mapData = source.getData(getMapName(mapid));
                 } catch (Exception e) {
-                    System.out.println("Unknown MapID = " + mapid);
+                    Debug.InfoLog("Unknown MapID = " + mapid);
                     // キノコ神社に強制移動
                     mapid = 800000000;
                     omapid = Integer.valueOf(mapid);
@@ -200,10 +201,10 @@ public class MapleMapFactory {
                                     npc.setFh(npc_fh);
                                     npc.setCustom(true);
                                     map.addMapObject(npc);
-                                    System.out.println("npc spawn: " + mapid + " = " + npc_id + "," + npc_x + "," + npc_y + "," + npc_fh);
+                                    Debug.DebugLog("Spawn NPC, NPC = " + npc.getName() + " (" + npc_id + "), Map = " + MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(omapid))) + " - " + MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(omapid))) + " (" + mapid + ")");
                                 }
                             } else {
-                                System.out.println("spawn npc format error: " + mapid);
+                                Debug.InfoLog("spawn npc format error: " + mapid);
                             }
                         }
                     }

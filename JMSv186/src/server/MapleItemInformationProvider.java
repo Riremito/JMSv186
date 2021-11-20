@@ -75,7 +75,7 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Pair<Integer, List<Integer>>> questItems = new HashMap<Integer, Pair<Integer, List<Integer>>>();
 
     protected MapleItemInformationProvider() {
-        System.out.println("Loading MapleItemInformationProvider :::");
+        //System.out.println("Loading MapleItemInformationProvider :::");
     }
 
     public final void load() {

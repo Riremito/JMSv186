@@ -1,5 +1,6 @@
 package server;
 
+import debug.Debug;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
@@ -15,7 +16,7 @@ public class ServerProperties {
             p.load(fr);
             fr.close();
         } catch (IOException e) {
-            System.out.println("設定ファイルが見つかりません (" + e + ")");
+            Debug.InfoLog("設定ファイルが見つかりません (" + e + ")");
         }
 
         return p;

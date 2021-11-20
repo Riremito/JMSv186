@@ -36,7 +36,7 @@ public class CashItemFactory {
     }
 
     public void initialize() {
-        System.out.println("Loading CashItemFactory :::");
+        //System.out.println("Loading CashItemFactory :::");
         final List<Integer> itemids = new ArrayList<Integer>();
         for (MapleData field : data.getData("Commodity.img").getChildren()) {
             final int itemId = MapleDataTool.getIntConvert("ItemId", field, 0);

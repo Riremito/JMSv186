@@ -32,6 +32,7 @@ import java.util.Map;
 
 import client.MapleCharacter;
 import constants.ServerConstants;
+import debug.Debug;
 import handling.ByteArrayMaplePacket;
 import handling.MaplePacket;
 import handling.MapleServerHandler;
@@ -159,10 +160,10 @@ public class ChannelServer implements Serializable {
         try {
             this.serverHandler = new MapleServerHandler(channel, MapleServerHandler.ServerType.GameServer);
             acceptor.bind(new InetSocketAddress(port), serverHandler, acceptor_config);
-            System.out.println("Channel " + channel + ": Listening on port " + port + "");
+            Debug.InfoLog("Channel " + channel + " Port = " + port);
             eventSM.init();
         } catch (IOException e) {
-            System.out.println("Binding to port " + port + " failed (ch: " + getChannel() + ")" + e);
+            Debug.InfoLog("Binding to port " + port + " failed (ch: " + getChannel() + ")" + e);
         }
     }
 
@@ -174,15 +175,15 @@ public class ChannelServer implements Serializable {
         // dc all clients by hand so we get sessionClosed...
         shutdown = true;
 
-        System.out.println("Channel " + channel + ", Saving hired merchants...");
+        Debug.InfoLog("Channel " + channel + ", Saving hired merchants...");
 
         closeAllMerchant();
 
-        System.out.println("Channel " + channel + ", Saving characters...");
+        Debug.InfoLog("Channel " + channel + ", Saving characters...");
 
         getPlayerStorage().disconnectAll();
 
-        System.out.println("Channel " + channel + ", Unbinding...");
+        Debug.InfoLog("Channel " + channel + ", Unbinding...");
 
         acceptor.unbindAll();
         acceptor = null;
@@ -507,12 +508,12 @@ public class ChannelServer implements Serializable {
 
     public final void setShutdown() {
         this.shutdown = true;
-        System.out.println("Channel " + channel + " has set to shutdown.");
+        Debug.InfoLog("Channel " + channel + " has set to shutdown.");
     }
 
     public final void setFinishShutdown() {
         this.finishedShutdown = true;
-        System.out.println("Channel " + channel + " has finished shutdown.");
+        Debug.InfoLog("Channel " + channel + " has finished shutdown.");
     }
 
     public final boolean isAdminOnly() {

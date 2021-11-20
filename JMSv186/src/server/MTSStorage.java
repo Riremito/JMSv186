@@ -59,7 +59,7 @@ public class MTSStorage {
     //mts_items is id/packageid, tab(byte), price, characterid, seller, expiration
 
     public MTSStorage() {
-        System.out.println("Loading MTSStorage::");
+        //System.out.println("Loading MTSStorage::");
         idToCart = new LinkedHashMap<Integer, MTSCart>();
         buyNow = new LinkedHashMap<Integer, MTSItemInfo>();
         packageId = new AtomicInteger(1);

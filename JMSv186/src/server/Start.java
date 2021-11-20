@@ -10,6 +10,7 @@ import handling.login.LoginInformationProvider;
 import handling.world.World;
 import java.sql.SQLException;
 import database.DatabaseConnection;
+import debug.Debug;
 import handling.world.family.MapleFamilyBuff;
 import java.sql.PreparedStatement;
 import server.Timer.*;
@@ -21,7 +22,6 @@ import server.quest.MapleQuest;
 public class Start {
 
     public static void TestServer() {
-        System.out.println("テストサーバー");
         // 設定ファイルの読み込み
         DatabaseConnection.LoadConfig();
         LoginServer.LoadConfig();
@@ -47,6 +47,7 @@ public class Start {
         MapleCarnivalFactory.getInstance().initialize();
         MapleGuildRanking.getInstance().getRank();
         MapleFamilyBuff.getBuffEntry();
+        Debug.InfoLog("Start Game Server");
         ChannelServer.startChannel_Main();
         CashItemFactory.getInstance().initialize();
         CheatTimer.getInstance().register(AutobanManager.getInstance(), 60000);
@@ -58,13 +59,14 @@ public class Start {
         }
         PlayerNPC.loadAll();// touch - so we see database problems early...
         World.registerRespawn();
-        System.out.println("起動完了");
+        Debug.InfoLog("Running...");
     }
 
     public final static void main(final String args[]) {
+        Debug.InfoLog("Starting...");
         for (String arg : args) {
-            System.out.println(arg);
             if (arg.equals("test")) {
+                Debug.InfoLog("Mode = " + arg);
                 TestServer();
                 return;
             }
@@ -84,9 +86,7 @@ public class Start {
             throw new RuntimeException("[EXCEPTION] Please check if the SQL server is active.");
         }
 
-        System.out.println("[Loading World]");
         World.init();
-        System.out.println("[World Initialized]");
 
         WorldTimer.getInstance().start();
         EtcTimer.getInstance().start();
@@ -97,9 +97,8 @@ public class Start {
         BuffTimer.getInstance().start();
         LoginInformationProvider.getInstance();
 
-        System.out.println("[Loading Login]");
+        Debug.InfoLog("Start Login Server");
         LoginServer.run_startup_configurations();
-        System.out.println("[Login Initialized]");
 
         //WZ
         MapleQuest.initQuests();
@@ -113,16 +112,14 @@ public class Start {
         MapleGuildRanking.getInstance().getRank();
         MapleFamilyBuff.getBuffEntry();
 
-        System.out.println("[Loading Channel]");
+        Debug.InfoLog("Start Game Server");
         ChannelServer.startChannel_Main();
-        System.out.println("[Channel Initialized]");
 
         CashItemFactory.getInstance().initialize();
 
-        System.out.println("[Loading CS]");
+        Debug.InfoLog("Start PointShop Server");
         CashShopServer.run_startup_configurations();
         MTSStorage.load();
-        System.out.println("[CS Initialized]");
 
         CheatTimer.getInstance().register(AutobanManager.getInstance(), 60000);
         Runtime.getRuntime().addShutdownHook(new Thread(new Shutdown()));
@@ -133,9 +130,10 @@ public class Start {
         }
         PlayerNPC.loadAll();// touch - so we see database problems early...
         World.registerRespawn();
-        //ChannelServer.getInstance(1).getMapFactory().getMap(910000000).spawnRandDrop(); //start it off
         LoginServer.setOn(); //now or later
-        System.out.println("[Fully Initialized]");
+
+        Debug.InfoLog("Login Server is opened");
+        Debug.InfoLog("Running...");
 //        RankingWorker.getInstance().run();
     }
 

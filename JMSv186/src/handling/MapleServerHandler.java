@@ -62,7 +62,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     session.close();
                     return;
                 }
-                System.out.println("[LoginServer] " + address);
+                Debug.InfoLog("[LoginServer] " + address);
                 break;
             }
             case GameServer: {
@@ -70,7 +70,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     session.close();
                     return;
                 }
-                System.out.println("[GameServer " + String.format("%02d", channel) + "] " + address);
+                Debug.InfoLog("[GameServer " + String.format("%02d", channel) + "] " + address);
                 break;
             }
             case PointShopServer: {
@@ -78,16 +78,16 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     session.close();
                     return;
                 }
-                System.out.println("[PointShopServer] " + address);
+                Debug.InfoLog("[PointShopServer] " + address);
                 break;
             }
             case MapleTradeSpaceServer: {
                 // ポイントショップとMTSを別のサーバーに分離した場合は修正が必要
-                System.out.println("[MapleTradeSpaceServer] " + address);
+                Debug.InfoLog("[MapleTradeSpaceServer] " + address);
                 break;
             }
             default: {
-                System.out.println("[UnknownServer] " + address);
+                Debug.InfoLog("[UnknownServer] " + address);
                 break;
             }
         }
@@ -191,13 +191,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     }
 
                     if (c.getPlayer() != null && c.getPlayer().GetDebugger() && !IsAnnoyingPacket(recv)) {
-                        System.out.println("[Packet] @" + String.format("%04X", header_num) + " " + slea.toString());
+                        Debug.DebugLog("[Packet] @" + String.format("%04X", header_num) + " " + slea.toString());
                     }
 
                     // ログインサーバー
                     if (server_type == ServerType.LoginServer) {
                         if (!handleLoginPacket(recv, slea, c)) {
-                            System.out.println("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
+                            Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
                         }
                         return;
                     }
@@ -206,7 +206,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     if (server_type == ServerType.PointShopServer) {
                         if (!handlePointShopPacket(recv, slea, c)) {
                             if (!handleMapleTradeSpacePacket(recv, slea, c)) {
-                                System.out.println("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
+                                Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
                             }
                         }
                         return;
@@ -215,7 +215,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     // ゲームサーバー
                     if (server_type == ServerType.GameServer) {
                         if (!handleGamePacket(recv, slea, c)) {
-                            System.out.println("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
+                            Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
                         }
                         return;
                     }
@@ -225,7 +225,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
             if (c.getPlayer() != null && c.getPlayer().GetDebugger() && !IsAnnoyingPacket(header_num)) {
-                System.out.println("[UnknownPacket] @" + String.format("%04X", header_num) + " " + slea.toString());
+                Debug.InfoLog("[UnknownPacket] @" + String.format("%04X", header_num) + " " + slea.toString());
             }
 
         } catch (Exception e) {
@@ -330,8 +330,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case COUPON_CODE: {
                 // 実装が悪い
-                FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "Coupon : \n" + p.toString(true));
-                System.out.println(p.toString());
+                //FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "Coupon : \n" + p.toString(true));
+                //System.out.println(p.toString());
                 p.skip(2);
                 CashShopOperation.CouponCode(p.readMapleAsciiString(), c);
                 return true;
@@ -513,7 +513,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 if (c.getPlayer().GetInformation()) {
                     c.getPlayer().Info("MapID = " + c.getPlayer().getMapId());
                 }
-                Debug.DebugLog(c.getPlayer().getName() + " Enter Map = " + c.getPlayer().getMapId());
                 return true;
             }
             case CHANGE_MAP_SPECIAL: {

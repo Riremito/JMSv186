@@ -2302,7 +2302,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         final boolean pyramid = pyramidSubway != null;
         if (map.getId() == nowmapid) {
             client.getSession().write(warpPacket);
-            Debug.DebugLog(getName() + " Warp Map = " + to.getId());
+            Debug.DebugLog(getName() + " Enter Map = " + to.getId());
 
             map.removePlayer(this);
             if (!isClone() && client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {

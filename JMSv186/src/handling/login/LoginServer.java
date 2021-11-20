@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.login;
 
+import debug.Debug;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -104,9 +105,9 @@ public class LoginServer {
         try {
             InetSocketadd = new InetSocketAddress(PORT);
             acceptor.bind(InetSocketadd, new MapleServerHandler(-1, MapleServerHandler.ServerType.LoginServer), cfg);
-            System.out.println("Listening on port " + PORT + ".");
+            Debug.InfoLog("Login Server Port = " + PORT);
         } catch (IOException e) {
-            System.err.println("Binding to port " + PORT + " failed" + e);
+            Debug.InfoLog("Binding to port " + PORT + " failed" + e);
         }
     }
 
