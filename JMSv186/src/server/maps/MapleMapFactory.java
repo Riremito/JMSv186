@@ -172,7 +172,9 @@ public class MapleMapFactory {
                                     mob.getId() == bossid ? msg : null);
 
                         } else if (myLife != null) {
-                            map.addMapObject(myLife);
+                            if (!Debug.CheckNPCBlock(myLife.getId(), MapleLifeFactory.getNPC(myLife.getId()).getName())) {
+                                map.addMapObject(myLife);
+                            }
                         }
                     }
                 }
