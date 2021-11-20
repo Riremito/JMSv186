@@ -2,6 +2,7 @@ package handling;
 
 import constants.ServerConstants;
 import client.MapleClient;
+import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.cashshop.handler.*;
@@ -244,57 +245,61 @@ public class MapleServerHandler extends IoHandlerAdapter {
         super.sessionIdle(session, status);
     }
 
-    public static void DebugLog(final String text) {
-        System.out.println((new SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ").format(new Date())) + text);
-    }
-
     public static final boolean handleLoginPacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
-            // ログインサーバー関連
+            // ログイン画面
+            case RSA_KEY: {
+                // +p
+                c.getSession().write(LoginPacket.LoginAUTH(p, c));
+                return true;
+            }
+            // ログイン
             case LOGIN_PASSWORD: {
                 if (CharLoginHandler.login(p, c)) {
                     InterServerHandler.SetLogin(false);
-                    DebugLog("Login MapleID = " + c.getAccountName());
+                    Debug.DebugLog("Login MapleID = " + c.getAccountName());
                 }
                 return true;
             }
+            // サーバー一覧
             case SERVERLIST_REQUEST: {
                 // +p
                 CharLoginHandler.ServerListRequest(c);
                 return true;
             }
-            case CHARLIST_REQUEST: {
-                CharLoginHandler.CharlistRequest(p, c);
-                return true;
-            }
+            // サーバーの状態
             case SERVERSTATUS_REQUEST: {
                 // +p
                 CharLoginHandler.ServerStatusRequest(c);
                 return true;
             }
+            // キャラクター一覧
+            case CHARLIST_REQUEST: {
+                CharLoginHandler.CharlistRequest(p, c);
+                return true;
+            }
+            // キャラクター作成時の名前重複確認
             case CHECK_CHAR_NAME: {
                 // p
                 CharLoginHandler.CheckCharName(p.readMapleAsciiString(), c);
                 return true;
             }
+            // キャラクター作成
             case CREATE_CHAR: {
                 CharLoginHandler.CreateChar(p, c);
                 return true;
             }
+            // キャラクター削除
             case DELETE_CHAR: {
                 CharLoginHandler.DeleteChar(p, c);
                 return true;
             }
+            // キャラクター選択
             case CHAR_SELECT:
             case AUTH_SECOND_PASSWORD: {
                 if (CharLoginHandler.Character_WithSecondPassword(p, c)) {
                     InterServerHandler.SetLogin(false);
                 }
-                return true;
-            }
-            case RSA_KEY: {
-                // +p
-                c.getSession().write(LoginPacket.LoginAUTH());
                 return true;
             }
             default: {
@@ -310,7 +315,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // +p
                 final int playerid = p.readInt();
                 CashShopOperation.EnterCS(playerid, c);
-                DebugLog(c.getPlayer().getName() + " Enter PointShop");
+                Debug.DebugLog(c.getPlayer().getName() + " Enter PointShop");
                 return true;
             }
             case CHANGE_MAP: {
@@ -349,7 +354,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // +p
                 final int playerid = p.readInt();
                 CashShopOperation.EnterCS(playerid, c);
-                DebugLog(c.getPlayer().getName() + " Enter MTS");
+                Debug.DebugLog(c.getPlayer().getName() + " Enter MTS");
                 return true;
             }
             case CHANGE_MAP: {
@@ -387,11 +392,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InterServerHandler.Loggedin(playerid, c);
                 if (!InterServerHandler.GetLogin()) {
                     InterServerHandler.SetLogin(true);
-                    DebugLog(c.getPlayer().getName() + " Login, MapID = " + c.getPlayer().getMapId());
+                    Debug.DebugLog(c.getPlayer().getName() + " Login, MapID = " + c.getPlayer().getMapId());
                     Map<Integer, Integer> connected = World.getConnected();
                     c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
                 } else {
-                    DebugLog(c.getPlayer().getName() + " CC, MapID = " + c.getPlayer().getMapId());
+                    Debug.DebugLog(c.getPlayer().getName() + " CC, MapID = " + c.getPlayer().getMapId());
                 }
                 return true;
             }
@@ -508,7 +513,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 if (c.getPlayer().GetInformation()) {
                     c.getPlayer().Info("MapID = " + c.getPlayer().getMapId());
                 }
-                DebugLog(c.getPlayer().getName() + " Enter Map = " + c.getPlayer().getMapId());
+                Debug.DebugLog(c.getPlayer().getName() + " Enter Map = " + c.getPlayer().getMapId());
                 return true;
             }
             case CHANGE_MAP_SPECIAL: {

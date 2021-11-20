@@ -58,6 +58,7 @@ import client.anticheat.CheatTracker;
 import constants.ServerConstants;
 import database.DatabaseConnection;
 import database.DatabaseException;
+import debug.Debug;
 import handling.MaplePacket;
 import handling.MapleServerHandler;
 import handling.channel.ChannelServer;
@@ -2301,7 +2302,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         final boolean pyramid = pyramidSubway != null;
         if (map.getId() == nowmapid) {
             client.getSession().write(warpPacket);
-            MapleServerHandler.DebugLog(getName() + " Warp Map = " + to.getId());
+            Debug.DebugLog(getName() + " Warp Map = " + to.getId());
 
             map.removePlayer(this);
             if (!isClone() && client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {

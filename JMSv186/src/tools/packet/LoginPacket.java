@@ -30,8 +30,10 @@ import constants.ServerConstants;
 import handling.MaplePacket;
 import handling.SendPacketOpcode;
 import handling.login.LoginServer;
+import java.util.Random;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import tools.HexTool;
+import tools.data.input.SeekableLittleEndianAccessor;
 
 public class LoginPacket {
 
@@ -56,11 +58,17 @@ public class LoginPacket {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket LoginAUTH() {
+    public static final MaplePacket LoginAUTH(SeekableLittleEndianAccessor p, MapleClient c) {
+        // JMS v186.1には3つのログイン画面が存在するのでランダムに割り振ってみる
+        String LoginScreen[] = {"MapLogin", "MapLogin1", "MapLogin2"};
+        return LoginAUTH(LoginScreen[(new Random().nextInt(3))]);
+    }
+
+    public static final MaplePacket LoginAUTH(String LoginScreen) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(16);
 
         mplew.writeShort(SendPacketOpcode.LOGIN_AUTH.getValue());
-        mplew.writeMapleAsciiString("MapLogin2");
+        mplew.writeMapleAsciiString(LoginScreen);
 
         return mplew.getPacket();
     }
