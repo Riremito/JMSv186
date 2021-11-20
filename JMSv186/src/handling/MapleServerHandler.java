@@ -22,17 +22,16 @@ import org.apache.mina.common.IoSession;
 import server.MTSStorage;
 import tools.FileoutputUtil;
 import handling.world.World;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
+    // サーバーの種類
     public enum ServerType {
         LoginServer,
         GameServer,
         PointShopServer,
-        MapleTradeSpaceServer
+        MapleTradeSpaceServer // PointShopと共通なので未使用
     }
 
     private int channel = -1;
@@ -52,10 +51,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         super.messageSent(session, message);
     }
 
-    @Override
-    public void exceptionCaught(final IoSession session, final Throwable cause) throws Exception {
-    }
-
+    // クライアントが接続
     @Override
     public void sessionOpened(final IoSession session) throws Exception {
         final String address = session.getRemoteAddress().toString();
@@ -119,6 +115,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         SendPacketOpcode.reloadValues();
     }
 
+    // クライアントを切断
     @Override
     public void sessionClosed(final IoSession session) throws Exception {
         final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
@@ -134,6 +131,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         super.sessionClosed(session);
     }
 
+    // ログをとる必要がないPacket
     private boolean IsAnnoyingPacket(RecvPacketOpcode r) {
         switch (r) {
             case NPC_ACTION:
@@ -153,6 +151,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         return false;
     }
 
+    // ログをとる必要がないPacket (Headerが未定義)
     private boolean IsAnnoyingPacket(short r) {
         switch (r) {
             case 0x0010:
@@ -169,6 +168,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         return false;
     }
 
+    // Packet受信時の動作
     @Override
     public void messageReceived(final IoSession session, final Object message) {
         try {

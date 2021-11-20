@@ -1,3 +1,6 @@
+/*
+    デバッグ系の処理
+*/
 package debug;
 
 import java.text.SimpleDateFormat;
