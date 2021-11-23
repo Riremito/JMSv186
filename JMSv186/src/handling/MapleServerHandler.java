@@ -890,10 +890,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 MonsterCarnivalHandler.MonsterCarnival(p, c);
                 return true;
             }
+            /*
             case DUEY_ACTION: {
                 DueyHandler.DueyOperation(p, c);
                 return true;
             }
+             */
             case USE_HIRED_MERCHANT: {
                 HiredMerchantHandler.UseHiredMerchant(p, c);
                 return true;
@@ -930,15 +932,19 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 UserInterfaceHandler.InGame_Poll(p, c);
                 return true;
             }
-            case OWL: {
-                InventoryHandler.Owl(p, c);
+            case OWL_OPEN_UI: {
+                // @003B 05
+                // クライアントが不思議なフクロウのUIを開くときにパケットが送信されているが、UIはクライアント側で開くのでサーバーからは何も出来ない
                 return true;
             }
             case OWL_WARP: {
+                // @003C B3 86 01 00 87 7F 3D 36
                 InventoryHandler.OwlWarp(p, c);
                 return true;
             }
-            case USE_OWL_MINERVA: {
+            case OWL_USE_ITEM_VERSION_SEARCH: {
+                // @004C 0A 00 70 3F 23 00 85 84 1E 00 00 8C 4E 34 1A
+                // 消費アイテム版の不思議なフクロウが存在し、専用のパケットが送信される
                 InventoryHandler.OwlMinerva(p, c);
                 return true;
             }

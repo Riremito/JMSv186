@@ -1,7 +1,6 @@
 package server;
 
 import client.SkillFactory;
-import handling.MapleServerHandler;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
 import handling.login.LoginServer;

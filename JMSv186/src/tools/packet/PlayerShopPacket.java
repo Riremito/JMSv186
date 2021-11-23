@@ -584,4 +584,30 @@ public class PlayerShopPacket {
 
         return mplew.getPacket();
     }
+
+    // 雇用商人 閉店
+    public static MaplePacket CloseHiredMerchant() {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
+        // UIを閉じる
+        mplew.write(0x0A);
+        // 自分のキャラクターを指定
+        mplew.write(0);
+        // UI閉じるときのメッセージ（何も表示しない設定)
+        mplew.write(20);
+        return mplew.getPacket();
+    }
+
+    // 雇用商人 整理中 (他人用)
+    public static MaplePacket MaintenanceHiredMerchant(int slot) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(SendPacketOpcode.PLAYER_INTERACTION.getValue());
+        // UIを閉じる
+        mplew.write(0x0A);
+        // キャラクターを指定
+        mplew.write(slot);
+        // UI閉じるときのメッセージ（何も表示しない設定)
+        mplew.write(17);
+        return mplew.getPacket();
+    }
 }

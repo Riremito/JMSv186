@@ -192,12 +192,23 @@ public class PlayerInteractionHandler {
                             final HiredMerchant merchant = (HiredMerchant) ips;
                             if (merchant.isOwner(chr)) {
                                 merchant.setOpen(false);
-                                merchant.removeAllVisitors((byte) 16, (byte) 0);
+                                // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
+                                //merchant.removeAllVisitors((byte) 17, (byte) 0);
+                                List<Pair<Byte, MapleCharacter>> visitors = ips.getVisitors();
+                                for (int i = 0; i < visitors.size(); i++) {
+                                    visitors.get(i).getRight().getClient().getSession().write(PlayerShopPacket.MaintenanceHiredMerchant((byte) i + 1));
+                                    System.out.println("slot = " + i + "char = " + visitors.get(i).getRight().getName());
+                                    visitors.get(i).getRight().setPlayerShop(null);
+                                    ips.removeVisitor(visitors.get(i).getRight());
+                                }
+
                                 chr.setPlayerShop(ips);
                                 c.getSession().write(PlayerShopPacket.getHiredMerch(chr, merchant, false));
                             } else {
                                 if (!merchant.isOpen() || !merchant.isAvailable()) {
-                                    chr.dropMessage(1, "This shop is in maintenance, please come by later.");
+                                    // パケットでこのメッセージが出せそう
+                                    chr.dropMessage(1, "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。test");
+                                    //c.getSession().write(PlayerShopPacket.MaintenanceHiredMerchant(1));
                                 } else {
                                     if (ips.getFreeSlot() == -1) {
                                         chr.dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
@@ -469,15 +480,14 @@ public class PlayerInteractionHandler {
                 }
                 break;
             }
-
+            // 雇用商人 "商店から出る"
             case HIREDMERCHANT_EXIT: {
-                /*
-                final IMaplePlayerShop merchant = chr.getPlayerShop();
-                if (merchant != null && merchant.getShopType() == 1 && merchant.isOwner(chr)) {
-                    merchant.closeShop(true, true, 3);
-                    chr.setPlayerShop(null);
+                // @007F 0A
+                // 閉じるときの処理が必ず後に発生するため何もする必要がない
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null) {
+                    ips.setOpen(true);
                 }
-                 */
                 break;
             }
             case HIREDMERCHANT_ORGANISE: {
@@ -498,29 +508,30 @@ public class PlayerInteractionHandler {
                 }
                 break;
             }
+            // 雇用商人 "商店とクローズ"
             case HIREDMERCHANT_ORGANISE_CLOSE: {
+                // "イベントリに空きがないとアイテムはストアーバンクNPCのプレドリックのところで探すべきです。閉店しますか？" と聞かれてOKを押した場合の処理
+                // ダイアログを出さずに閉じる処理が必要となる
+                c.getSession().write(PlayerShopPacket.CloseHiredMerchant());
 
                 final IMaplePlayerShop ips = chr.getPlayerShop();
-                if (ips == null) {
-                    return;
-                }
                 if (!ips.isAvailable() || ips.isOwner(chr)) {
-                    ips.closeShop(false, ips.isAvailable(), 20);
-                }
-                chr.setPlayerShop(null);
-                /*
-                final IMaplePlayerShop merchant = chr.getPlayerShop();
-                if (merchant != null) {
-                    if (merchant.getShopType() == 1 && merchant.isOwner(chr)) {
-                        c.getSession().write(MaplePacketCreator.serverNotice(1, "プレドリックからアイテムを回収してください。"));
-                        c.getSession().write(MaplePacketCreator.enableActions());
-                        merchant.closeShop(true, true, 20);
-                        chr.setPlayerShop(null);
-                    } else {
-                        merchant.closeShop(true, true, 20);
+
+                    // アイテム回収
+                    for (MaplePlayerShopItem items : ips.getItems()) {
+                        if (items.bundles > 0) {
+                            IItem newItem = items.item.copy();
+                            newItem.setQuantity((short) (items.bundles * newItem.getQuantity()));
+                            if (MapleInventoryManipulator.addFromDrop(chr.getClient(), newItem, false)) {
+                                items.bundles = 0;
+                            }
+                        }
                     }
+
+                    ips.closeShop(false, true, 20);
                 }
-                 */
+
+                chr.setPlayerShop(null);
                 break;
             }
             //case TRADE_SOMETHING:
