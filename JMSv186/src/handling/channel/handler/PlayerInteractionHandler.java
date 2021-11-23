@@ -745,4 +745,28 @@ public class PlayerInteractionHandler {
             }
         }
     }
+
+    // 雇用商店遠隔管理機
+    public static final boolean RemoteStore(final SeekableLittleEndianAccessor p, final MapleClient c) {
+        final HiredMerchant merchant = (HiredMerchant) c.getPlayer().getPlayerShop();
+        if (merchant == null) {
+            return false;
+        }
+        // 動いてない
+        /*
+        merchant.setOpen(false);
+
+        // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
+        List<Pair<Byte, MapleCharacter>> visitors = merchant.getVisitors();
+        for (int i = 0; i < visitors.size(); i++) {
+            visitors.get(i).getRight().getClient().getSession().write(PlayerShopPacket.MaintenanceHiredMerchant((byte) i + 1));
+            visitors.get(i).getRight().setPlayerShop(null);
+            merchant.removeVisitor(visitors.get(i).getRight());
+        }
+
+        c.getPlayer().setPlayerShop(merchant);
+        c.getSession().write(PlayerShopPacket.getHiredMerch(c.getPlayer(), merchant, false));
+         */
+        return true;
+    }
 }

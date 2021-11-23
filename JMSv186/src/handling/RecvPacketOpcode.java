@@ -61,6 +61,7 @@ public enum RecvPacketOpcode implements WritableIntValueHolder {
     WHEEL_OF_FORTUNE,
     MONSTER_BOOK_COVER,
     NPC_TALK,
+    HIRED_MERCHANT_REMOTE,
     NPC_TALK_MORE,
     NPC_SHOP,
     STORAGE,

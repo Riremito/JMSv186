@@ -721,6 +721,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 NPCHandler.NPCTalk(p, c, c.getPlayer());
                 return true;
             }
+            // 雇用商店遠隔管理機
+            case HIRED_MERCHANT_REMOTE: {
+                // @0033 [02 00]
+                // アイテムのスロット指定されているだけ
+                //PlayerInteractionHandler.RemoteStore(p, c);
+                return true;
+            }
             case NPC_TALK_MORE: {
                 NPCHandler.NPCMoreTalk(p, c);
                 return true;
@@ -1023,4 +1030,5 @@ public class MapleServerHandler extends IoHandlerAdapter {
         }
         return false;
     }
+
 }
