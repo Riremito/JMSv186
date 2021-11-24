@@ -725,7 +725,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case HIRED_MERCHANT_REMOTE: {
                 // @0033 [02 00]
                 // アイテムのスロット指定されているだけ
-                //PlayerInteractionHandler.RemoteStore(p, c);
+                PlayerInteractionHandler.RemoteStore(p, c);
                 return true;
             }
             case NPC_TALK_MORE: {

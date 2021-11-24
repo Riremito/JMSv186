@@ -160,6 +160,7 @@ public class PlayerInteractionHandler {
                         } else {
                             final HiredMerchant merch = new HiredMerchant(chr, shop.getItemId(), desc);
                             chr.setPlayerShop(merch);
+                            chr.setRemoteStore(merch);
                             chr.getMap().addMapObject(merch);
                             c.getSession().write(PlayerShopPacket.getHiredMerch(chr, merch, true));
                         }
@@ -532,6 +533,7 @@ public class PlayerInteractionHandler {
                 }
 
                 chr.setPlayerShop(null);
+                chr.setRemoteStore(null);
                 break;
             }
             //case TRADE_SOMETHING:
@@ -748,12 +750,22 @@ public class PlayerInteractionHandler {
 
     // 雇用商店遠隔管理機
     public static final boolean RemoteStore(final SeekableLittleEndianAccessor p, final MapleClient c) {
-        final HiredMerchant merchant = (HiredMerchant) c.getPlayer().getPlayerShop();
+        // 雇用商店遠隔管理機 5470000
+        // short slot = p.readShort();
+        // アイテム欄の癒しの該当するスロットのitemIDが5470000かどうか確認したほうが良い
+        // 自分の雇用商店の情報をCH変更時、ログアウト時に保持する必要がある
+        // 現状の実装だとCH変更またはログアウトすると情報が消失するためDBにデータを追加し、ログイン時にデータを読み込む必要がある
+        // どうせ使わないし面倒くさいので後回し
+        //
+
+        final HiredMerchant merchant = (HiredMerchant) c.getPlayer().getRemoteStore();
         if (merchant == null) {
+            c.getPlayer().Info("merchant == null");
             return false;
         }
-        // 動いてない
-        /*
+
+        c.getPlayer().Info("RemoteStore");
+
         merchant.setOpen(false);
 
         // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
@@ -766,7 +778,7 @@ public class PlayerInteractionHandler {
 
         c.getPlayer().setPlayerShop(merchant);
         c.getSession().write(PlayerShopPacket.getHiredMerch(c.getPlayer(), merchant, false));
-         */
+
         return true;
     }
 }

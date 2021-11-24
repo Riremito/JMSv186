@@ -202,6 +202,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     // パチンコ
     private int beansRange, beansNum;
     private boolean canSetBeansNum;
+    // 雇用商人
+    private IMaplePlayerShop remoteStore = null;
 
     public void SetDebugger() {
         Debugger = !Debugger;
@@ -5642,5 +5644,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void setCanSetBeansNum(boolean canSetBeansNum) {
         this.canSetBeansNum = canSetBeansNum;
+    }
+
+    // 雇用商人
+    public void setRemoteStore(IMaplePlayerShop playerShop) {
+        this.remoteStore = playerShop;
+    }
+
+    public IMaplePlayerShop getRemoteStore() {
+        return this.remoteStore;
     }
 }
