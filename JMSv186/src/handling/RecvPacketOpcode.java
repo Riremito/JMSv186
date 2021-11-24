@@ -29,6 +29,11 @@ public enum RecvPacketOpcode implements WritableIntValueHolder {
     // GENERIC
 
     PONG(false),
+    GM_COMMAND_SERVER_MESSAGE,
+    GM_COMMAND,
+    GM_COMMAND_TEXT,
+    GM_COMMAND_EVENT_START,
+    GM_COMMAND_MAPLETV,
     // LOGIN
     LOGIN_PASSWORD(false),
     SERVERLIST_REQUEST,

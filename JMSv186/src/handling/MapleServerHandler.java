@@ -2,6 +2,7 @@ package handling;
 
 import constants.ServerConstants;
 import client.MapleClient;
+import command.GMCommand;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -245,6 +246,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         super.sessionIdle(session, status);
     }
 
+    // Login Server
     public static final boolean handleLoginPacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
             // ログイン画面
@@ -309,6 +311,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         return false;
     }
 
+    // Point Shop
     public static final boolean handlePointShopPacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
             case PLAYER_LOGGEDIN: {
@@ -348,6 +351,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         return false;
     }
 
+    // MTS
     public static final boolean handleMapleTradeSpacePacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
             case PLAYER_LOGGEDIN: {
@@ -378,9 +382,29 @@ public class MapleServerHandler extends IoHandlerAdapter {
         return false;
     }
 
+    // Game Server
     public static final boolean handleGamePacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
-            // ゲームサーバー関連
+            // サーバーメッセージ
+            case GM_COMMAND_SERVER_MESSAGE: {
+                return true;
+            }
+            // GMコマンド
+            case GM_COMMAND: {
+                return GMCommand.Accept(p, c);
+            }
+            // GMコマンドの文字列
+            case GM_COMMAND_TEXT: {
+                return true;
+            }
+            // 雪玉専用？
+            case GM_COMMAND_EVENT_START: {
+                return true;
+            }
+            // MapleTV
+            case GM_COMMAND_MAPLETV: {
+                return true;
+            }
             case CHANGE_CHANNEL: {
                 // c
                 InterServerHandler.ChangeChannel(p, c, c.getPlayer());
