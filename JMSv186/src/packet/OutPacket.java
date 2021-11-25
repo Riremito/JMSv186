@@ -14,7 +14,9 @@ public class OutPacket {
         CHECK_CHAR_NAME,
         CREATE_CHAR,
         DELETE_CHAR,
+        LATEST_CRASH_DATA,
         AUTH_SECOND_PASSWORD,
+        REACHED_LOGIN_SCREEN,
         RSA_KEY,
         CHANGE_MAP,
         CHANGE_CHANNEL,
@@ -127,6 +129,7 @@ public class OutPacket {
         ARAN_COMBO,
         BBS_OPERATION,
         ENTER_MTS,
+        AVATAR_RANDOM_BOX_OPEN,
         MOVE_PET,
         PET_COMMAND,
         PET_LOOT,
@@ -152,9 +155,11 @@ public class OutPacket {
         SHIP_OBJECT,
         PARTY_SEARCH_START,
         PARTY_SEARCH_STOP,
+        CS_FILL,
         CS_UPDATE,
         BUY_CS_ITEM,
         COUPON_CODE,
+        RECOMMENDED_AVATAR,
         MAPLETV,
         UPDATE_QUEST,
         QUEST_ITEM,
@@ -198,22 +203,22 @@ public class OutPacket {
         Header.PLAYER_LOGGEDIN.Set(0x0007);
         Header.CHECK_CHAR_NAME.Set(0x0008);
         // 0x0009
-        // 0x000A
+        // 0x000A @000A, 全キャラクター確認
         Header.CREATE_CHAR.Set(0x000B);
         // 0x000C
         Header.DELETE_CHAR.Set(0x000D);
-        // 0x000E
-        // 0x000F
+        // 0x000E InPacket @0x0009から送信されるようになっているが未確認
+        Header.LATEST_CRASH_DATA.Set(0x000F);
         // 0x0010
-        // 0x0011
+        // 0x0011 InPacket 0x000Eから送信される
         // 0x0012
         // 0x0013
         Header.AUTH_SECOND_PASSWORD.Set(0x0014);
         // 0x0015
         // 0x0016
         // 0x0017
-        // 0x0018
-        // 0x0019
+        Header.REACHED_LOGIN_SCREEN.Set(0x0018);
+        // 0x0019 InPacket 0x0013から送信される
         Header.RSA_KEY.Set(0x001A);
         // 0x001B
         // 0x001C
@@ -247,7 +252,7 @@ public class OutPacket {
         Header.MERCH_ITEM_STORE.Set(0x003A);
         Header.OWL_OPEN_UI.Set(0x003B);
         Header.OWL_WARP.Set(0x003C);
-        // 0x003D
+        // 0x003D InPacket 0x0158, 0x0159から送信される
         Header.ITEM_SORT.Set(0x003E);
         Header.ITEM_GATHER.Set(0x003F);
         Header.ITEM_MOVE.Set(0x0040);
@@ -347,7 +352,7 @@ public class OutPacket {
         Header.FAMILY_SUMMON.Set(0x009F);
         Header.CYGNUS_SUMMON.Set(0x00A0);
         Header.ARAN_COMBO.Set(0x00A1);
-        // 0x00A2
+        // 0x00A2 InPacket 0x0111から送信される
         // 0x00A3
         Header.BBS_OPERATION.Set(0x00A4);
         // 0x00A5
@@ -356,7 +361,7 @@ public class OutPacket {
         // 0x00A8
         // 0x00A9
         Header.ENTER_MTS.Set(0x00AA);
-        // 0x00AB
+        Header.AVATAR_RANDOM_BOX_OPEN.Set(0x00AB);
         // 0x00AC
         // 0x00AD
         Header.MOVE_PET.Set(0x00AE);
@@ -379,7 +384,7 @@ public class OutPacket {
         // 0x00BF
         // 0x00C0
         // 0x00C1
-        // 0x00C2
+        // 0x00C2 InPacket 0x007Cから送信される
         // 0x00C3
         // 0x00C4
         // 0x00C5
@@ -427,19 +432,20 @@ public class OutPacket {
         Header.PARTY_SEARCH_STOP.Set(0x00EF);
         // 0x00F0
         // 0x00F1
-        // 0x00F2
+        // 0x00F2 InPacket 0x00A0から送信される
         Header.BEANS_OPERATION.Set(0x0000F3);
         Header.BEANS_UPDATE.Set(0x0000F4);
         // 0x00F5
         // 0x00F6
         // 0x00F7
-        // 0x00F8
+        Header.CS_FILL.Set(0x00F8);
         Header.CS_UPDATE.Set(0x00F9);
         Header.BUY_CS_ITEM.Set(0x00FA);
         Header.COUPON_CODE.Set(0x00FB);
         // 0x00FC
         // 0x00FD
-        // 0x00FE
+        Header.RECOMMENDED_AVATAR.Set(0x00FE);
+        // 0x00FF
         // 0x0100
         // 0x0101
         // 0x0102

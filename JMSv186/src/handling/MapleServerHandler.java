@@ -155,7 +155,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
     private boolean IsAnnoyingPacket(short r) {
         switch (r) {
             case 0x0010:
-            case 0x00EF:
             case 0x00BF:
             case 0x000E:
             case 0x00DF: {
@@ -188,7 +187,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     if (!c.isLoggedIn()) {
                         return;
                     }
-                    */
+                     */
 
                     if (c.getPlayer() != null && c.getPlayer().GetDebugger() && !IsAnnoyingPacket(recv)) {
                         Debug.DebugLog("[Packet] @" + String.format("%04X", header_num) + " " + slea.toString());
@@ -224,7 +223,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
             }
             final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-            if (c.getPlayer() != null && c.getPlayer().GetDebugger() && !IsAnnoyingPacket(header_num)) {
+            if ((server_type != ServerType.GameServer || (c.getPlayer() != null && c.getPlayer().GetDebugger())) && !IsAnnoyingPacket(header_num)) {
                 Debug.InfoLog("[UnknownPacket] @" + String.format("%04X", header_num) + " " + slea.toString());
             }
 
@@ -295,12 +294,25 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 CharLoginHandler.DeleteChar(p, c);
                 return true;
             }
+            // クラッシュデータ
+            case LATEST_CRASH_DATA: {
+                // @000F EncodeBuffer(CrashDumpLog)
+                // 起動時に何らかの条件で前回のクラッシュの詳細のテキストが送信される
+                // 文字列で送信されているがnullで終わっていないので注意
+                return true;
+            }
             // キャラクター選択
             case CHAR_SELECT:
             case AUTH_SECOND_PASSWORD: {
                 if (CharLoginHandler.Character_WithSecondPassword(p, c)) {
                     InterServerHandler.SetLogin(false);
                 }
+                return true;
+            }
+            // ログイン画面に到達
+            case REACHED_LOGIN_SCREEN: {
+                // @0018
+                // ログイン画面に到達した場合に送信される
                 return true;
             }
             default: {
@@ -332,15 +344,34 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case COUPON_CODE: {
                 // 実装が悪い
+                // 受け取りキャラクター指定した際にエラーしてる
                 //FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "Coupon : \n" + p.toString(true));
                 //System.out.println(p.toString());
                 p.skip(2);
                 CashShopOperation.CouponCode(p.readMapleAsciiString(), c);
                 return true;
             }
+            case CS_FILL: {
+                // p
+                // 充填ボタンをクリックした場合の処理
+                // 公式サイトが開くような処理だったと思うが、特に何もしない
+                CashShopOperation.CSUpdate(c);
+                return true;
+            }
             case CS_UPDATE: {
                 // p
                 CashShopOperation.CSUpdate(c);
+                return true;
+            }
+            case RECOMMENDED_AVATAR: {
+                // @00FE
+                // オススメアバターを選択した時の処理
+                return true;
+            }
+            // アバターランダムボックスのオープン処理
+            case AVATAR_RANDOM_BOX_OPEN: {
+                // @00AB [B0 58] 00 00 00 00 00 00
+                // アイテムスロットが指定されている
                 return true;
             }
             default: {
@@ -404,6 +435,16 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case GM_COMMAND_MAPLETV: {
                 return true;
             }
+            // 未実装的な奴
+            case PARTY_SEARCH_START: {
+                // @00EE Data: 91 00 00 00 A5 00 00 00 05 00 00 00 FF FF EF 0F
+                return true;
+            }
+            case PARTY_SEARCH_STOP: {
+                // @00EF
+                return true;
+            }
+            //
             case CHANGE_CHANNEL: {
                 // c
                 InterServerHandler.ChangeChannel(p, c, c.getPlayer());

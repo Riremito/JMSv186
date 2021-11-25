@@ -284,9 +284,9 @@ public class InPacket {
         // 0x000C
         // 0x000D CHANNEL_SELECTED?
         // 0x000E
-        // 0x000F RELOG_RESPONSE?
-        // 0x0010
-        // 0x0011
+        // 0x000F 未使用
+        // 0x0010 未使用
+        // 0x0011 未使用
         // 0x0012
         // 0x0013
         // 0x0014
@@ -294,8 +294,8 @@ public class InPacket {
         Header.SECONDPW_ERROR.Set(0x0016);
         // 0x0017
         Header.LOGIN_AUTH.Set(0x0018);
-        // 0x0019
-        // 0x001A
+        // 0x0019 未使用
+        // 0x001A 未使用
         Header.MODIFY_INVENTORY_ITEM.Set(0x001B);
         Header.UPDATE_INVENTORY_SLOT.Set(0x001C);
         Header.UPDATE_STATS.Set(0x001D);
@@ -309,7 +309,7 @@ public class InPacket {
         Header.SHOW_STATUS_INFO.Set(0x0025);
         Header.SHOW_NOTES.Set(0x0026);
         Header.TROCK_LOCATIONS.Set(0x0027);
-        // 0x0028
+        // 0x0028 未使用
         // 0x0029
         // 0x002A
         // 0x002B
@@ -320,14 +320,14 @@ public class InPacket {
         Header.USE_SKILL_BOOK.Set(0x0030);
         Header.FINISH_SORT.Set(0x0031);
         Header.FINISH_GATHER.Set(0x0032);
-        // 0x0033
-        // 0x0034
+        // 0x0033 未使用
+        // 0x0034 未使用
         Header.CHAR_INFO.Set(0x0035);
         Header.PARTY_OPERATION.Set(0x0036);
-        // 0x0037
+        // 0x0037 未使用
         Header.EXPEDITION_OPERATION.Set(0x0038);
         Header.BUDDYLIST.Set(0x0039);
-        // 0x003A
+        // 0x003A 未使用
         Header.GUILD_OPERATION.Set(0x003B);
         Header.ALLIANCE_OPERATION.Set(0x003C);
         Header.SPAWN_PORTAL.Set(0x003D);
@@ -344,7 +344,7 @@ public class InPacket {
         Header.YELLOW_CHAT.Set(0x0048);
         // 0x0049
         // 0x004A
-        // 0x004B
+        // 0x004B 未使用
         // 0x004C
         // 0x004D
         // 0x004E
@@ -416,17 +416,17 @@ public class InPacket {
         Header.GM_EFFECT.Set(0x0090);
         Header.OX_QUIZ.Set(0x0091);
         Header.GMEVENT_INSTRUCTIONS.Set(0x0092);
-        Header.CLOCK.Set(0x0093);
-        Header.BOAT_EFF.Set(0x0094);
-        Header.BOAT_EFFECT.Set(0x0095);
+        //Header.CLOCK.Set(0x0093);
+        //Header.BOAT_EFF.Set(0x0094);
+        //Header.BOAT_EFFECT.Set(0x0095);
         // 0x0096
         // 0x0097
         // 0x0098
         Header.STOP_CLOCK.Set(0x0099);
-        // 0x009A
+        // 0x009A 未使用
         // 0x009B
-        Header.PYRAMID_UPDATE.Set(0x009C);
-        Header.PYRAMID_RESULT.Set(0x009D);
+        //Header.PYRAMID_UPDATE.Set(0x009C);
+        //Header.PYRAMID_RESULT.Set(0x009D);
         // 0x009E
         Header.MOVE_PLATFORM.Set(0x009F);
         // 0x00A0
@@ -450,23 +450,23 @@ public class InPacket {
         Header.FISHING_CAUGHT.Set(0x00B2);
         Header.PAMS_SONG.Set(0x00B3);
         Header.SPAWN_PET.Set(0x00B4);
-        // 0x00B5
-        // 0x00B6
+        // 0x00B5 未使用
+        // 0x00B6 未使用
         Header.MOVE_PET.Set(0x00B7);
         Header.PET_CHAT.Set(0x00B8);
         Header.PET_NAMECHANGE.Set(0x00B9);
         // 0x00BA
         Header.PET_COMMAND.Set(0x00BB);
-        Header.SPAWN_SUMMON.Set(0x00BC);
-        Header.REMOVE_SUMMON.Set(0x00BD);
-        Header.MOVE_SUMMON.Set(0x00BE);
-        Header.SUMMON_ATTACK.Set(0x00BF);
+        //Header.SPAWN_SUMMON.Set(0x00BC);
+        //Header.REMOVE_SUMMON.Set(0x00BD);
+        //Header.MOVE_SUMMON.Set(0x00BE);
+        //Header.SUMMON_ATTACK.Set(0x00BF);
         Header.SUMMON_SKILL.Set(0x00C0);
         Header.DAMAGE_SUMMON.Set(0x00C1);
         Header.DRAGON_SPAWN.Set(0x00C2);
         Header.DRAGON_MOVE.Set(0x00C3);
         Header.DRAGON_REMOVE.Set(0x00C4);
-        // 0x00C5
+        // 0x00C5 未使用
         Header.MOVE_PLAYER.Set(0x00C6);
         Header.CLOSE_RANGE_ATTACK.Set(0x00C7);
         Header.RANGED_ATTACK.Set(0x00C8);
@@ -478,7 +478,7 @@ public class InPacket {
         Header.FACIAL_EXPRESSION.Set(0x00CE);
         Header.SHOW_ITEM_EFFECT.Set(0x00CF);
         // 0x00D0
-        Header.SHOW_CHAIR.Set(0x00D1);
+        //Header.SHOW_CHAIR.Set(0x00D1);
         Header.UPDATE_CHAR_LOOK.Set(0x00D2);
         Header.SHOW_FOREIGN_EFFECT.Set(0x00D3);
         Header.GIVE_FOREIGN_BUFF.Set(0x00D4);
@@ -488,10 +488,10 @@ public class InPacket {
         Header.LOAD_GUILD_ICON.Set(0x00D8);
         // 0x00D9
         Header.CANCEL_CHAIR.Set(0x00DA);
-        // 0x00DB
-        Header.SHOW_ITEM_GAIN_INCHAT.Set(0x00DC);
+        // 0x00DB 0x00CEと同一
+        Header.SHOW_ITEM_GAIN_INCHAT.Set(0x00DC); // 0x00D3と同一
         Header.CURRENT_MAP_WARP.Set(0x00DD);
-        // 0x00DE
+        // 0x00DE 未使用
         Header.MESOBAG_SUCCESS.Set(0x00DF);
         Header.MESOBAG_FAILURE.Set(0x00E0);
         Header.RANDOM_MESOBAG_SUCCESS.Set(0x00E1);
@@ -528,7 +528,7 @@ public class InPacket {
         Header.FOLLOW_MSG.Set(0x0100);
         Header.GAME_POLL_QUESTION.Set(0x0101);
         Header.COOLDOWN.Set(0x0102);
-        // 0x0103
+        // 0x0103 未使用
         Header.SPAWN_MONSTER.Set(0x0104);
         Header.KILL_MONSTER.Set(0x0105);
         Header.SPAWN_MONSTER_CONTROL.Set(0x0106);
@@ -537,11 +537,11 @@ public class InPacket {
         // 0x0109
         Header.APPLY_MONSTER_STATUS.Set(0x010A);
         Header.CANCEL_MONSTER_STATUS.Set(0x010B);
-        // 0x010C
+        // 0x010C メモリ開放系の処理かもしれない
         Header.MOB_TO_MOB_DAMAGE.Set(0x010D);
         Header.DAMAGE_MONSTER.Set(0x010E);
         // 0x010F
-        // 0x0110
+        // 0x0110 未使用
         // 0x0111
         Header.SHOW_MONSTER_HP.Set(0x0112);
         Header.SHOW_MAGNET.Set(0x0113);
@@ -554,7 +554,7 @@ public class InPacket {
         // 0x011A
         // 0x011B
         // 0x011C
-        // 0x011D
+        // 0x011D 未使用
         Header.SPAWN_NPC.Set(0x011E);
         Header.REMOVE_NPC.Set(0x011F);
         Header.SPAWN_NPC_REQUEST_CONTROLLER.Set(0x0120);
@@ -562,7 +562,7 @@ public class InPacket {
         // 0x0122
         // 0x0123
         // 0x0124
-        // 0x0125
+        // 0x0125 未使用
         Header.SPAWN_HIRED_MERCHANT.Set(0x0126);
         Header.DESTROY_HIRED_MERCHANT.Set(0x0127);
         Header.UPDATE_HIRED_MERCHANT.Set(0x0128);
@@ -581,34 +581,34 @@ public class InPacket {
         // 0x0135 ポータルを開けませんでした。
         // 0x0136
         Header.REACTOR_HIT.Set(0x0137);
-        // 0x0138
+        // 0x0138 未使用
         Header.REACTOR_SPAWN.Set(0x0139);
         Header.REACTOR_DESTROY.Set(0x013A);
-        Header.ROLL_SNOWBALL.Set(0x013B);
-        Header.HIT_SNOWBALL.Set(0x013C);
-        Header.SNOWBALL_MESSAGE.Set(0x013D);
-        Header.LEFT_KNOCK_BACK.Set(0x013E);
-        Header.HIT_COCONUT.Set(0x013F);
-        Header.COCONUT_SCORE.Set(0x0140);
-        // 0x0141
-        // 0x0142
-        Header.MONSTER_CARNIVAL_START.Set(0x0143);
-        Header.MONSTER_CARNIVAL_OBTAINED_CP.Set(0x0144);
-        Header.MONSTER_CARNIVAL_PARTY_CP.Set(0x0145);
-        Header.MONSTER_CARNIVAL_SUMMON.Set(0x0146);
-        // 0x0147
-        Header.MONSTER_CARNIVAL_DIED.Set(0x0148);
-        // 0x0149
-        // 0x014A
-        // 0x014B
-        // 0x014C
-        // 0x014D
-        // 0x014E
+        //Header.ROLL_SNOWBALL.Set(0x013B);
+        //Header.HIT_SNOWBALL.Set(0x013C);
+        //Header.SNOWBALL_MESSAGE.Set(0x013D);
+        //Header.LEFT_KNOCK_BACK.Set(0x013E);
+        //Header.HIT_COCONUT.Set(0x013F);
+        //Header.COCONUT_SCORE.Set(0x0140);
+        // 0x0141 未使用
+        // 0x0142 未使用
+        //Header.MONSTER_CARNIVAL_START.Set(0x0143);
+        //Header.MONSTER_CARNIVAL_OBTAINED_CP.Set(0x0144);
+        //Header.MONSTER_CARNIVAL_PARTY_CP.Set(0x0145);
+        //Header.MONSTER_CARNIVAL_SUMMON.Set(0x0146);
+        // 0x0147 未使用
+        //Header.MONSTER_CARNIVAL_DIED.Set(0x0148);
+        // 0x0149 未使用
+        // 0x014A 未使用
+        // 0x014B 未使用
+        // 0x014C 未使用
+        // 0x014D 未使用
+        // 0x014E 未使用
         // 0x014F
-        // 0x0150
+        // 0x0150 未使用
         Header.CHAOS_HORNTAIL_SHRINE.Set(0x0151);
         Header.CHAOS_ZAKUM_SHRINE.Set(0x0152);
-        Header.HORNTAIL_SHRINE.Set(0x0153);
+        //Header.HORNTAIL_SHRINE.Set(0x0153);
         Header.ZAKUM_SHRINE.Set(0x0154);
         Header.NPC_TALK.Set(0x0155);
         Header.OPEN_NPC_SHOP.Set(0x0156);
@@ -621,13 +621,13 @@ public class InPacket {
         Header.RPS_GAME.Set(0x015D);
         Header.MESSENGER.Set(0x015E);
         Header.PLAYER_INTERACTION.Set(0x015F);
-        // 0x0160
-        // 0x0161
-        // 0x0162
-        // 0x0163
-        // 0x0164
-        // 0x0165
-        // 0x0166
+        // 0x0160 未使用
+        // 0x0161 未使用
+        // 0x0162 未使用
+        // 0x0163 未使用
+        // 0x0164 未使用
+        // 0x0165 未使用
+        // 0x0166 未使用
         Header.TIP_BEANS.Set(0x0167);
         Header.OPEN_BEANS.Set(0x0168);
         Header.SHOOT_BEANS.Set(0x0169);
@@ -653,16 +653,24 @@ public class InPacket {
         Header.PET_AUTO_HP.Set(0x017D);
         Header.PET_AUTO_MP.Set(0x017E);
         // 0x017F
-        // 0x0180
-        // 0x0181
-        // 0x0182
-        // 0x0183
-        // 0x0184
-        // 0x0185
-        // 0x0186
-        // 0x0187
-        Header.GET_MTS_TOKENS.Set(0x0188);
-        Header.MTS_OPERATION.Set(0x0189);
+        // 0x0180 未使用
+        // 0x0181 未使用
+        // 0x0182 未使用
+        // 0x0183 未使用
+        // 0x0184 未使用
+        // 0x0185 未使用
+        // 0x0186 未使用
+        // 0x0187 未使用
+        //Header.GET_MTS_TOKENS.Set(0x0188);
+        //Header.MTS_OPERATION.Set(0x0189);
+        // 0x018A 未使用
+        // 0x018B 未使用
+        // 0x018C 未使用
+        // 0x018D
+        // 0x018E
+        // 0x018F
+        // 0x0190 未使用 (何もしない関数)
+        // 0x0199 一番最後の関数
     }
 
 }
