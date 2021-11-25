@@ -1165,26 +1165,6 @@ public class PlayerHandler {
         }
     }
 
-    public static final void InnerPortal(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (chr == null) {
-            return;
-        }
-        final MaplePortal portal = chr.getMap().getPortal(slea.readMapleAsciiString());
-        final Point Original_Pos = chr.getPosition();
-        final int toX = slea.readShort();
-        final int toY = slea.readShort();
-//	slea.readShort(); // Original X pos
-//	slea.readShort(); // Original Y pos
-
-        if (portal == null) {
-            return;
-        } else if (portal.getPosition().distanceSq(chr.getPosition()) > 22500) {
-            chr.getCheatTracker().registerOffense(CheatingOffense.USING_FARAWAY_PORTAL);
-        }
-        chr.getMap().movePlayer(chr, new Point(toX, toY));
-        chr.checkFollow();
-    }
-
     public static final void snowBall(SeekableLittleEndianAccessor slea, MapleClient c) {
         //B2 00
         //01 [team]

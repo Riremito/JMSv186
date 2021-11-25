@@ -238,7 +238,7 @@ public class MaplePacketCreator {
         mplew.writeInt(chr.getClient().getChannel() - 1);
         mplew.write(0);
         mplew.writeInt(0);
-        mplew.write(0x2); // Count
+        mplew.write((byte) chr.getPortalCount());
         mplew.write(0);
         mplew.writeShort(0);
         mplew.write(0);

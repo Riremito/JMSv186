@@ -29,6 +29,7 @@ public enum RecvPacketOpcode implements WritableIntValueHolder {
     // GENERIC
 
     PONG(false),
+    // GM
     GM_COMMAND_SERVER_MESSAGE,
     GM_COMMAND,
     GM_COMMAND_TEXT,
@@ -101,7 +102,7 @@ public enum RecvPacketOpcode implements WritableIntValueHolder {
     SPAWN_PET,
     CANCEL_DEBUFF,
     CHANGE_MAP_SPECIAL,
-    USE_INNER_PORTAL,
+    PORTAL_INSIDE_MAP,
     TROCK_ADD_MAP,
     QUEST_ACTION,
     SKILL_MACRO,

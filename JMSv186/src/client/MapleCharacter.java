@@ -204,6 +204,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private boolean canSetBeansNum;
     // 雇用商人
     private IMaplePlayerShop remoteStore = null;
+    // ポータルカウント
+    private int portal_count = 1;
+
+    public int getPortalCount() {
+        portal_count += 1;
+        return portal_count;
+    }
 
     public void SetDebugger() {
         Debugger = !Debugger;

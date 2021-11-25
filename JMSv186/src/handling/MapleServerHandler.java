@@ -545,10 +545,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.ChangeMapSpecial(p.readMapleAsciiString(), c, c.getPlayer());
                 return true;
             }
-            case USE_INNER_PORTAL: {
-                // 実装が悪い
-                p.skip(1);
-                PlayerHandler.InnerPortal(p, c, c.getPlayer());
+            case PORTAL_INSIDE_MAP: {
+                // @0063 [13] [04 00 75 70 30 30] [9F 01] [04 00] [C9 01] [F4 FE]
+                // ポータルカウント, ポータル名, 元のX座標, 元のY座標, 移動先のX座標, 移動先のY座標
+                // ポータル利用時のスクリプト実行用だがJMSとEMS以外では利用されておらず意味がない
+                // サーバー側で特にみる必要もないが、マップ内ポータルを利用した時にサーバー側でスクリプトを実行したい場合は必要になる
                 return true;
             }
             case TROCK_ADD_MAP: {
