@@ -4,6 +4,14 @@ package packet;
 public class InPacket {
 
     public enum Header {
+        // unknown
+        RELOG_RESPONSE,
+        BBS_OPERATION,
+        SERVERSTATUS,
+        XMAS_SURPRISE,
+        DUEY,
+        EARN_TITLE_MSG,
+        // test
         PING,
         LOGIN_STATUS,
         SERVERLIST,

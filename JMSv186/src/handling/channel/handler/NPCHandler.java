@@ -33,6 +33,7 @@ import handling.SendPacketOpcode;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import packet.InPacket;
 import server.AutobanManager;
 import server.MapleShop;
 import server.MapleInventoryManipulator;
@@ -52,14 +53,14 @@ public class NPCHandler {
 
     public static final void NPCAnimation(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(SendPacketOpcode.NPC_ACTION.getValue());
+        mplew.writeShort(InPacket.Header.NPC_ACTION.Get());
         final int length = (int) slea.available();
 
         if (length == 6) { // NPC Talk
             mplew.writeInt(slea.readInt());
             mplew.writeShort(slea.readShort());
         } else if (length > 6) { // NPC Move
-            mplew.writeShort(SendPacketOpcode.NPC_ACTION.getValue());
+            mplew.writeShort(InPacket.Header.NPC_ACTION.Get());
             mplew.write(slea.read(length - 9));
         } else {
             return;

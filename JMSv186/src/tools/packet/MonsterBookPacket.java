@@ -22,6 +22,7 @@ package tools.packet;
 
 import handling.MaplePacket;
 import handling.SendPacketOpcode;
+import packet.InPacket;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 public class MonsterBookPacket {
@@ -29,7 +30,7 @@ public class MonsterBookPacket {
     public static MaplePacket addCard(boolean full, int cardid, int level) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(SendPacketOpcode.MONSTERBOOK_ADD.getValue());
+        mplew.writeShort(InPacket.Header.MONSTERBOOK_ADD.Get());
 
         if (!full) {
             mplew.write(1);
@@ -45,7 +46,7 @@ public class MonsterBookPacket {
     public static MaplePacket showGainCard(final int itemid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(SendPacketOpcode.SHOW_STATUS_INFO.getValue());
+        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
         mplew.write(0);
         mplew.write(2);
         mplew.writeInt(itemid);
@@ -56,7 +57,7 @@ public class MonsterBookPacket {
     public static MaplePacket showForeginCardEffect(int id) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(SendPacketOpcode.SHOW_FOREIGN_EFFECT.getValue());
+        mplew.writeShort(InPacket.Header.SHOW_FOREIGN_EFFECT.Get());
         mplew.writeInt(id);
         mplew.write(0x0E); //14
 
@@ -66,7 +67,7 @@ public class MonsterBookPacket {
     public static MaplePacket changeCover(int cardid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(SendPacketOpcode.MONSTERBOOK_CHANGE_COVER.getValue());
+        mplew.writeShort(InPacket.Header.MONSTERBOOK_CHANGE_COVER.Get());
         mplew.writeInt(cardid);
 
         return mplew.getPacket();

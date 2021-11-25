@@ -31,6 +31,7 @@ import handling.MaplePacket;
 import handling.SendPacketOpcode;
 import handling.login.LoginServer;
 import java.util.Random;
+import packet.InPacket;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import tools.HexTool;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -53,7 +54,7 @@ public class LoginPacket {
     public static final MaplePacket getPing() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(16);
 
-        mplew.writeShort(SendPacketOpcode.PING.getValue());
+        mplew.writeShort(InPacket.Header.PING.Get());
 
         return mplew.getPacket();
     }
@@ -67,7 +68,7 @@ public class LoginPacket {
     public static final MaplePacket LoginAUTH(String LoginScreen) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(16);
 
-        mplew.writeShort(SendPacketOpcode.LOGIN_AUTH.getValue());
+        mplew.writeShort(InPacket.Header.LOGIN_AUTH.Get());
         mplew.writeMapleAsciiString(LoginScreen);
 
         return mplew.getPacket();
@@ -96,7 +97,7 @@ public class LoginPacket {
          * 27: Some weird full client notice, probably for trial versions
          * 32: IP blocked
          * 84: please revisit website for pass change --> 0x07 recv with response 00/01*/
-        mplew.writeShort(SendPacketOpcode.LOGIN_STATUS.getValue());
+        mplew.writeShort(InPacket.Header.LOGIN_STATUS.Get());
         mplew.write(reason);
         if (reason == 84) {
             mplew.write(PacketHelper.unk1);
@@ -111,7 +112,7 @@ public class LoginPacket {
     public static final MaplePacket getPermBan(final byte reason) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(16);
 
-        mplew.writeShort(SendPacketOpcode.LOGIN_STATUS.getValue());
+        mplew.writeShort(InPacket.Header.LOGIN_STATUS.Get());
         mplew.writeShort(2); // Account is banned
         mplew.writeInt(0);
         mplew.writeShort(reason);
@@ -123,7 +124,7 @@ public class LoginPacket {
     public static final MaplePacket getTempBan(final long timestampTill, final byte reason) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(17);
 
-        mplew.writeShort(SendPacketOpcode.LOGIN_STATUS.getValue());
+        mplew.writeShort(InPacket.Header.LOGIN_STATUS.Get());
         mplew.write(2);
         mplew.write(HexTool.getByteArrayFromHexString("00 00 00 00 00"));
         mplew.write(reason);
@@ -135,7 +136,7 @@ public class LoginPacket {
     public static final MaplePacket getAuthSuccessRequest(final MapleClient client) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(SendPacketOpcode.LOGIN_STATUS.getValue());
+        mplew.writeShort(InPacket.Header.LOGIN_STATUS.Get());
         mplew.write(0);
         mplew.write(0);
         mplew.writeInt(client.getAccID());
@@ -159,7 +160,7 @@ public class LoginPacket {
     public static final MaplePacket deleteCharResponse(final int cid, final int state) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(SendPacketOpcode.DELETE_CHAR_RESPONSE.getValue());
+        mplew.writeShort(InPacket.Header.DELETE_CHAR_RESPONSE.Get());
         mplew.writeInt(cid);
         mplew.write(state);
 
@@ -173,7 +174,7 @@ public class LoginPacket {
          * 14 - Invalid password
          * 15 - Second password is incorrect
          */
-        mplew.writeShort(SendPacketOpcode.SECONDPW_ERROR.getValue());
+        mplew.writeShort(InPacket.Header.SECONDPW_ERROR.Get());
         mplew.write(mode);
 
         return mplew.getPacket();
@@ -182,7 +183,7 @@ public class LoginPacket {
     public static final MaplePacket getServerList(final int serverId, final Map<Integer, Integer> channelLoad) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(SendPacketOpcode.SERVERLIST.getValue());
+        mplew.writeShort(InPacket.Header.SERVERLIST.Get());
 
         /*
         if (serverId == 0) {
@@ -229,7 +230,7 @@ public class LoginPacket {
     public static final MaplePacket getEndOfServerList() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(SendPacketOpcode.SERVERLIST.getValue());
+        mplew.writeShort(InPacket.Header.SERVERLIST.Get());
         mplew.write(0xFF);
 
         return mplew.getPacket();
@@ -241,7 +242,7 @@ public class LoginPacket {
         /*	 * 0 - Normal
          * 1 - Highly populated
          * 2 - Full*/
-        mplew.writeShort(SendPacketOpcode.SERVERSTATUS.getValue());
+        mplew.writeShort(InPacket.Header.SERVERSTATUS.Get());
         mplew.writeShort(status);
 
         return mplew.getPacket();
@@ -250,7 +251,7 @@ public class LoginPacket {
     public static final MaplePacket getCharList(final boolean secondpw, final List<MapleCharacter> chars, int charslots) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(SendPacketOpcode.CHARLIST.getValue());
+        mplew.writeShort(InPacket.Header.CHARLIST.Get());
         mplew.write(0);
         mplew.writeMapleAsciiString("");
         mplew.write(chars.size()); // 1
@@ -269,7 +270,7 @@ public class LoginPacket {
     public static final MaplePacket addNewCharEntry(final MapleCharacter chr, final boolean worked) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(SendPacketOpcode.ADD_NEW_CHAR_ENTRY.getValue());
+        mplew.writeShort(InPacket.Header.ADD_NEW_CHAR_ENTRY.Get());
         mplew.write(worked ? 0 : 1);
         addCharEntry(mplew, chr, false);
 
@@ -279,7 +280,7 @@ public class LoginPacket {
     public static final MaplePacket charNameResponse(final String charname, final boolean nameUsed) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(SendPacketOpcode.CHAR_NAME_RESPONSE.getValue());
+        mplew.writeShort(InPacket.Header.CHAR_NAME_RESPONSE.Get());
         mplew.writeMapleAsciiString(charname);
         mplew.write(nameUsed ? 1 : 0);
 
