@@ -29,7 +29,6 @@ import constants.GameConstants;
 import client.MapleQuestStatus;
 import client.RockPaperScissors;
 import client.inventory.ItemFlag;
-import handling.SendPacketOpcode;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;

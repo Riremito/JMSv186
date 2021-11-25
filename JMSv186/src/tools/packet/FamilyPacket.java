@@ -22,7 +22,6 @@ package tools.packet;
 
 import client.MapleCharacter;
 import handling.MaplePacket;
-import handling.SendPacketOpcode;
 import handling.world.World;
 import handling.world.family.MapleFamily;
 import handling.world.family.MapleFamilyBuff;

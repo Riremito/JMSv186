@@ -8,37 +8,24 @@ import client.MapleClient;
 import client.MapleDisease;
 import client.MapleStat;
 import client.SkillFactory;
-import client.anticheat.CheatingOffense;
 import client.inventory.Equip;
 import client.inventory.IItem;
 import client.inventory.ItemFlag;
-import client.inventory.MapleInventory;
-import client.inventory.MapleInventoryIdentifier;
 import client.inventory.MapleInventoryType;
-import client.inventory.MapleRing;
 import client.messages.CommandProcessorUtil;
 import constants.GameConstants;
-import database.DatabaseConnection;
 import handling.MaplePacket;
-import handling.MapleServerHandler;
-import handling.SendPacketOpcode;
 import handling.channel.ChannelServer;
 import handling.world.World;
 import handling.world.CheaterData;
-import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -56,38 +43,22 @@ import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleShopFactory;
 import server.MapleSquad;
-import server.ShutdownServer;
-import server.Timer;
-import server.Timer.BuffTimer;
-import server.Timer.CloneTimer;
-import server.Timer.EtcTimer;
-import server.Timer.EventTimer;
-import server.Timer.MapTimer;
-import server.Timer.MobTimer;
-import server.Timer.WorldTimer;
-import server.events.MapleEvent;
-import server.events.MapleEventType;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterInformationProvider;
 import server.life.MapleNPC;
 import server.life.MobSkillFactory;
 import server.life.OverrideMonsterStats;
-import server.life.PlayerNPC;
 import server.maps.MapleMap;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 import server.maps.MapleReactor;
-import server.maps.MapleReactorFactory;
-import server.maps.MapleReactorStats;
 import server.quest.MapleQuest;
 import tools.ArrayMap;
 import tools.MaplePacketCreator;
-import tools.MockIOSession;
 import tools.Pair;
 import tools.StringUtil;
 import tools.packet.MobPacket;
-import tools.packet.PlayerShopPacket;
 
 /**
  *
@@ -2580,7 +2551,6 @@ public class AdminCommand {
 
         @Override
         public int execute(MapleClient c, String[] splitted) {
-            SendPacketOpcode.reloadValues();
             return 1;
         }
     }

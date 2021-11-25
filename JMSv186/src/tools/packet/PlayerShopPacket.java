@@ -24,7 +24,6 @@ import client.MapleCharacter;
 import client.inventory.IItem;
 import client.MapleClient;
 import handling.MaplePacket;
-import handling.SendPacketOpcode;
 import java.util.List;
 import packet.InPacket;
 import server.MerchItemPackage;

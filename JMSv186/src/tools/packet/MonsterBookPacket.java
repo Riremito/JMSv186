@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tools.packet;
 
 import handling.MaplePacket;
-import handling.SendPacketOpcode;
 import packet.InPacket;
 import tools.data.output.MaplePacketLittleEndianWriter;
 

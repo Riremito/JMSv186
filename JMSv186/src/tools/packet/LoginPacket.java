@@ -28,7 +28,6 @@ import client.MapleClient;
 import client.MapleCharacter;
 import constants.ServerConstants;
 import handling.MaplePacket;
-import handling.SendPacketOpcode;
 import handling.login.LoginServer;
 import java.util.Random;
 import packet.InPacket;

@@ -27,7 +27,6 @@ import client.inventory.MaplePet;
 import client.MapleStat;
 import client.MapleCharacter;
 import handling.MaplePacket;
-import handling.SendPacketOpcode;
 import packet.InPacket;
 import server.movement.LifeMovementFragment;
 import tools.MaplePacketCreator;

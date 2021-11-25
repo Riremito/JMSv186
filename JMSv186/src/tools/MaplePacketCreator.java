@@ -49,7 +49,6 @@ import client.inventory.MapleRing;
 import client.SkillMacro;
 import handling.ByteArrayMaplePacket;
 import handling.MaplePacket;
-import handling.SendPacketOpcode;
 import constants.ServerConstants;
 import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;

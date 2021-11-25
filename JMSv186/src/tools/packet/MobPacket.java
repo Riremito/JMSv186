@@ -27,7 +27,6 @@ import java.awt.Point;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import handling.MaplePacket;
-import handling.SendPacketOpcode;
 import java.util.Collection;
 import java.util.Collections;
 import packet.InPacket;

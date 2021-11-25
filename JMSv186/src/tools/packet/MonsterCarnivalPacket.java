@@ -22,7 +22,6 @@ package tools.packet;
 
 import client.MapleCharacter;
 import handling.MaplePacket;
-import handling.SendPacketOpcode;
 import packet.InPacket;
 import server.MapleCarnivalParty;
 import tools.data.output.MaplePacketLittleEndianWriter;
