@@ -103,6 +103,7 @@ public enum RecvPacketOpcode implements WritableIntValueHolder {
     CANCEL_DEBUFF,
     CHANGE_MAP_SPECIAL,
     PORTAL_INSIDE_MAP,
+    GET_BUFF_REQUEST,
     TROCK_ADD_MAP,
     QUEST_ACTION,
     SKILL_MACRO,
