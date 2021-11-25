@@ -21,7 +21,6 @@ import constants.GameConstants;
 import database.DatabaseConnection;
 import handling.MaplePacket;
 import handling.MapleServerHandler;
-import handling.RecvPacketOpcode;
 import handling.SendPacketOpcode;
 import handling.channel.ChannelServer;
 import handling.world.World;
@@ -2582,7 +2581,6 @@ public class AdminCommand {
         @Override
         public int execute(MapleClient c, String[] splitted) {
             SendPacketOpcode.reloadValues();
-            RecvPacketOpcode.reloadValues();
             return 1;
         }
     }

@@ -24,6 +24,7 @@ import server.MTSStorage;
 import tools.FileoutputUtil;
 import handling.world.World;
 import java.util.Map;
+import packet.OutPacket;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
@@ -112,7 +113,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
         session.setAttribute(MapleClient.CLIENT_KEY, client);
         session.setIdleTime(IdleStatus.READER_IDLE, 60);
         session.setIdleTime(IdleStatus.WRITER_IDLE, 60);
-        RecvPacketOpcode.reloadValues();
         SendPacketOpcode.reloadValues();
     }
 
@@ -133,7 +133,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // ログをとる必要がないPacket
-    private boolean IsAnnoyingPacket(RecvPacketOpcode r) {
+    private boolean IsAnnoyingPacket(OutPacket.Header r) {
         switch (r) {
             case NPC_ACTION:
             case SPECIAL_MOVE:
@@ -179,17 +179,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             final short header_num = slea.readShort();
 
-            for (final RecvPacketOpcode recv : RecvPacketOpcode.values()) {
-                if (recv.getValue() == header_num) {
+            for (final OutPacket.Header recv : OutPacket.Header.values()) {
+                if (recv.Get() == header_num) {
                     final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
                     if (!c.isReceiving()) {
                         return;
                     }
-                    if (recv.NeedsChecking()) {
-                        if (!c.isLoggedIn()) {
-                            return;
-                        }
+                    /*
+                    if (!c.isLoggedIn()) {
+                        return;
                     }
+                    */
 
                     if (c.getPlayer() != null && c.getPlayer().GetDebugger() && !IsAnnoyingPacket(recv)) {
                         Debug.DebugLog("[Packet] @" + String.format("%04X", header_num) + " " + slea.toString());
@@ -247,7 +247,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // Login Server
-    public static final boolean handleLoginPacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
+    public static final boolean handleLoginPacket(final OutPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
             // ログイン画面
             case RSA_KEY: {
@@ -312,7 +312,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // Point Shop
-    public static final boolean handlePointShopPacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
+    public static final boolean handlePointShopPacket(final OutPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
             case PLAYER_LOGGEDIN: {
                 // +p
@@ -352,7 +352,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // MTS
-    public static final boolean handleMapleTradeSpacePacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
+    public static final boolean handleMapleTradeSpacePacket(final OutPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
             case PLAYER_LOGGEDIN: {
                 // +p
@@ -383,7 +383,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // Game Server
-    public static final boolean handleGamePacket(final RecvPacketOpcode header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
+    public static final boolean handleGamePacket(final OutPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
             // サーバーメッセージ
             case GM_COMMAND_SERVER_MESSAGE: {
@@ -578,11 +578,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayersHandler.GiveFame(p, c, c.getPlayer());
                 return true;
             }
+            /*
             case TRANSFORM_PLAYER: {
                 // c
                 PlayersHandler.TransformPlayer(p, c, c.getPlayer());
                 return true;
             }
+             */
             case NOTE_ACTION: {
                 // c
                 PlayersHandler.Note(p, c.getPlayer());
@@ -966,10 +968,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 NPCHandler.repairAll(c);
                 return true;
             }
+            /*
             case GAME_POLL: {
                 UserInterfaceHandler.InGame_Poll(p, c);
                 return true;
             }
+             */
             case OWL_OPEN_UI: {
                 // @003B 05
                 // クライアントが不思議なフクロウのUIを開くときにパケットが送信されているが、UIはクライアント側で開くのでサーバーからは何も出来ない
