@@ -12,6 +12,7 @@ import database.DatabaseConnection;
 import debug.Debug;
 import handling.world.family.MapleFamilyBuff;
 import java.sql.PreparedStatement;
+import packet.InPacket;
 import packet.OutPacket;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
@@ -65,6 +66,7 @@ public class Start {
     public final static void main(final String args[]) {
         Debug.InfoLog("Starting...");
         OutPacket.SetForJMSv186();
+        InPacket.SetForJMSv186();
 
         for (String arg : args) {
             if (arg.equals("test")) {
