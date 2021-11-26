@@ -671,7 +671,6 @@ public class InPacket {
         // 0x018F
         // 0x0190 未使用 (何もしない関数)
         // 0x0199 一番最後の関数
-        // TEST
     }
 
 }

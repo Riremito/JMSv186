@@ -162,6 +162,7 @@ public class OutPacket {
         RECOMMENDED_AVATAR,
         ETC_ITEM_UI,
         ETC_ITEM_UI_UPDATE,
+        ETC_ITEM_UI_DROP_ITEM,
         MAPLETV,
         UPDATE_QUEST,
         QUEST_ITEM,
@@ -454,7 +455,7 @@ public class OutPacket {
         // 0x0103
         Header.ETC_ITEM_UI_UPDATE.Set(0x0104);
         Header.ETC_ITEM_UI.Set(0x0105);
-        // 0x0106
+        Header.ETC_ITEM_UI_DROP_ITEM.Set(0x0106);
         // 0x0107
         // 0x0108
         // 0x0109

@@ -456,6 +456,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // ETCアイテムのUIの更新処理だと思われる
                 return true;
             }
+            case ETC_ITEM_UI_DROP_ITEM: {
+                // @0106 60 00 5E 85 3D 00 0D C4 00 00 64 00 00 00
+                // ETCアイテムのUIにアイテムをドロップした際の処理
+                return true;
+            }
             //
             case CHANGE_CHANNEL: {
                 // c
