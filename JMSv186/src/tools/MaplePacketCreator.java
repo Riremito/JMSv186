@@ -4473,6 +4473,16 @@ public class MaplePacketCreator {
     public static MaplePacket getFollowMsg(int opcode) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(InPacket.Header.FOLLOW_MSG.Get());
+        /*
+            0x00    原因不明の理由で自動追尾を申請できませんでした。
+            0x01    相手が自動追尾できない位置にいるか距離が遠すぎて自動追尾できません。
+            0x02    相手が自動追尾できない位置にいるか距離が遠すぎて自動追尾できません。
+            0x03    相手は現在自動追尾申請できない状態です。
+            0x04    自動追尾中のキャラクターがいると自動追尾申請できません。
+            0x05    相手が自動追尾を許可しませんでした。
+            0x06    離れているようです。
+            0x07    以降0x00と同じ
+         */
         mplew.writeLong(opcode); //5 = canceled request.
         return mplew.getPacket();
     }
@@ -4495,12 +4505,44 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
+    // チャット欄へのテキスト表示
     public static final MaplePacket getFollowMessage(final String msg) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(InPacket.Header.FOLLOW_MESSAGE.Get());
-        mplew.writeShort(0x0B); //?
-        mplew.writeMapleAsciiString(msg); //white in gms, but msea just makes it pink.. waste
+        /*
+            // どのような内容のテキストでも問題なし
+            0x0000  全体チャット
+            0x0001  内緒
+            0x0002  ピンク
+            0x0003  友達
+            0x0004  ギルド
+            0x0005  連合
+            0x0006  灰色
+            0x0007  黄色
+            0x0008  薄い黄色
+            0x0009  水色
+            0x000A  GM
+            0x000B  薄いピンク
+            0x000C  メガホン
+            0x0011  濃い紫
+            0x0017  黄色
+            0x0018  薄い水色
+            0x0019  GM
+            0x001A  体験用アバター
+            // "名前 : メッセージ" 形式のテキストでないとクライアントがクラッシュする
+            0x000D  拡声器
+            0x000E  体験用アバター
+            0x000F  アバターランダムボックス
+            0x0010  アイテム拡声器
+            0x0012  ワールド拡声器
+            0x0013  3連拡声器のプレビューと同等
+            0x0014  ハート拡声器
+            0x0015  ドクロ拡声器
+            0x0016  ハートバルーン拡声器
+         */
+        mplew.writeShort(0x0B);
+        mplew.writeMapleAsciiString(msg);
         return mplew.getPacket();
     }
 

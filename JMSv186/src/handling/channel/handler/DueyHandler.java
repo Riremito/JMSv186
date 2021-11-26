@@ -27,11 +27,9 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import client.inventory.IItem;
-import client.inventory.ItemFlag;
 import constants.GameConstants;
 import client.inventory.ItemLoader;
 import client.MapleCharacter;
-import client.MapleCharacterUtil;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import database.DatabaseConnection;
@@ -39,9 +37,6 @@ import java.util.Collections;
 import java.util.Map;
 import tools.data.input.SeekableLittleEndianAccessor;
 import server.MapleDueyActions;
-import server.MapleInventoryManipulator;
-import server.MapleItemInformationProvider;
-import tools.MaplePacketCreator;
 import tools.Pair;
 
 public class DueyHandler {

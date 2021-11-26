@@ -147,7 +147,189 @@ function UpdateTama(c) {
 	c.DebugPacket(p.getPacket());
 }
 
+// 任意のテキストの表示
+function ChatMessage(c) {
+	for (var i = 0; i <= 0x1A; i++) {
+		var p = c.getOutPacket();
+		p.writeShort(0x00FB);
+		p.writeShort(i);
+		p.writeMapleAsciiString("リレミト : メッセージ");
+		p.writeZeroBytes(100);
+		c.DebugPacket(p.getPacket());
+	}
+}
+
+
+function AttackDamageMotion(c) {
+	var p = c.getOutPacket();
+	p.writeShort(0x00FE);
+	p.writeInt(0);
+	p.writeInt(0);
+	p.writeInt(0);
+	p.writeInt(1); // 吹っ飛び判定
+	p.writeInt(9999); // 被ダメージ
+	p.writeZeroBytes(100);
+	c.DebugPacket(p.getPacket());
+}
+
+function ClosedPortal(c) {
+	var p = c.getOutPacket();
+	p.writeShort(0x0135);
+
+	/*
+		0	ポータルが開けませんでした。
+		1	入場には[]が必要です。
+		2	原因不明の理由で入場できません。
+	*/
+	p.write(1);
+	p.writeInt(2000005); // 1 の場合にアイテム名が表示される
+	p.writeZeroBytes(100);
+	c.DebugPacket(p.getPacket());
+}
+
+// マップ退場メッセージ
+function BossAfter(c) {
+	var p = c.getOutPacket();
+	p.writeShort(0x014F);
+	/*
+		0	マップが閉じられました。 or X分以内に出現中のモンスターを倒さないとマップから退場します。
+		1	ボスモンスター退治後、マップ退場まで残りX分です。
+	*/
+	p.write(0);
+	p.writeInt(33); // 残り時間
+	p.writeZeroBytes(100);
+	c.DebugPacket(p.getPacket());
+}
+
+// /MapleTV GMコマンドのexploit利用した場合にサーバーから返ってくるパケットと同等
+function MapleTVErrorMessage(c) {
+	var p = c.getOutPacket();
+	p.writeShort(0x018F);
+	/*
+		0以外	エラーメッセージ処理
+	*/
+	p.write(1);
+	/*
+		1	Non-GM character tried to send GM message.
+		2	You entered wrong user name.
+		3	You have to wait for more than 1 Hour now. Please use it later.
+	*/
+	p.write(1);
+	c.DebugPacket(p.getPacket());
+}
+
+// 強制的にUIを開く
+function OpenUI(c) {
+	var p = c.getOutPacket();
+	p.writeShort(0x00EC);
+	/*
+		0x01	装備
+		0x02	ステータス
+		0x03	スキル
+		0x05	キー設定
+		0x06	クエスト
+		0x09	モンスターブック
+		0x0A	キャラクター情報
+		0x11	クラッシュ
+		0x15	グループ探し
+		0x16	メーカー
+		0x19	マイランキング Webブラウザ
+		0x1A	ファミリースキル
+		0x1A	ファミリー家系図
+		0x1C	GM Story Board Webブラウザ
+		0x1D	運用者から手紙が届きました。(右端にアイコン出現)
+		0x1E	勲章
+		0x1F	メイプルイベント @010D 00が送信される
+		0x20	エヴァンのスキル
+		0x22	チャット
+		0x23	クラッシュ
+	*/
+	p.write(0x29);
+	p.writeZeroBytes(100);
+	c.DebugPacket(p.getPacket());
+}
+
+// マップ移動関連のエラーメッセージ
+function MapMoveMessage(c) {
+	/*
+		0x01	只今、ポータルが閉じられています。
+		0x02	他の大陸への瞬間移動は不可能です。
+		0x03	地の気運に遮られて近づけることができません。
+		0x04	テレポートできない場所です。(ダイアログ)
+		0x05	地の気運に遮られて近づけることができません。
+		0x06	グループメンバーのみ入場することができるマップです。
+		0x07	遠征隊メンバーのみ入場できるマップです。
+	*/
+	for (var i = 1; i <= 7; i++) {
+		var p = c.getOutPacket();
+		p.writeShort(0x0084);
+		p.write(i);
+		c.DebugPacket(p.getPacket());
+	}
+}
+
+// 灰色の文字列
+function GrayMessage(c) {
+	var p = c.getOutPacket();
+	p.writeShort(0x007B);
+	p.writeInt(0); // 不明
+	p.writeMapleAsciiString("Maple"); // 文字列
+	c.DebugPacket(p.getPacket());
+}
+
+// プレゼント
+function GiftTest(c) {
+	var p = c.getOutPacket();
+	p.writeShort(0x004F);
+
+	/*
+		0x01	プレゼントが来ました。(通知)
+		0x03	アイテムインベントリの消費欄に空きがないためプレゼントが渡せません。
+	*/
+	p.write(0x01);
+	p.writeZeroBytes(100);
+	c.DebugPacket(p.getPacket());
+}
+
+// パチンコ情報 (UIの玉も更新される)
+function PachiUpdate(c) {
+	var p = c.getOutPacket();
+	p.writeShort(0x004C);
+	p.writeInt(0);
+	p.writeInt(8787); // 玉
+	// bufferをdecodeしているのでフォーマット不明
+	p.writeZeroBytes(100);
+	c.DebugPacket(p.getPacket());
+}
+
+// a
+function TestPacket(c) {
+	var p = c.getOutPacket();
+	p.writeShort(0x0001);
+	//p.write(4);
+	//p.writeMapleAsciiString("Maple");
+	//p.writeInt(0x00007DBC);
+	p.writeZeroBytes(100);
+	c.DebugPacket(p.getPacket());
+}
+
+/*
+function TestPacket(c) {
+	var p = c.getOutPacket();
+	p.writeShort(0x0084);
+	//p.write(1);
+	// p.writeMapleAsciiString("Maple");
+	//p.writeInt(1);
+	//p.writeInt(0x00007DBC);
+	p.writeZeroBytes(100);
+	c.DebugPacket(p.getPacket());
+}
+*/
+// キャラID 0x00007DBC
+//p.writeInt(1);
+//p.writeInt(0x00007DBC);
+
 // Javaから呼ばれる
 function debug(c) {
-	UpdateTama(c);
+	TestPacket(c);
 }

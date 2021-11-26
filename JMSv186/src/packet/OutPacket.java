@@ -114,6 +114,7 @@ public class OutPacket {
         CHANGE_KEYMAP,
         RPS_GAME,
         RING_ACTION,
+        WEDDING_REGISTRY,
         ALLIANCE_OPERATION,
         DENY_ALLIANCE_REQUEST,
         REQUEST_FAMILY,
@@ -251,7 +252,7 @@ public class OutPacket {
         Header.STORAGE.Set(0x0036);
         Header.USE_HIRED_MERCHANT.Set(0x0037);
         // 0x0038
-        // 0x0039 InPacket 0x016Cから送信される
+        Header.DUEY_ACTION.Set(0x0039); // OK
         Header.MERCH_ITEM_STORE.Set(0x003A);
         Header.OWL_OPEN_UI.Set(0x003B);
         Header.OWL_WARP.Set(0x003C);
@@ -338,7 +339,7 @@ public class OutPacket {
         Header.CHANGE_KEYMAP.Set(0x008E);
         Header.RPS_GAME.Set(0x008F);
         Header.RING_ACTION.Set(0x0090);
-        // 0x0091
+        Header.WEDDING_REGISTRY.Set(0x0091);
         // 0x0092
         // 0x0093
         // 0x0094
@@ -387,7 +388,7 @@ public class OutPacket {
         // 0x00BF
         // 0x00C0
         // 0x00C1
-        // 0x00C2 InPacket 0x007Cから送信される
+        // 0x00C2 InPacket 0x007Cから送信される, ファムの歌を利用する処理 @00C2 [00or01]が送信される01は使用フラグ
         // 0x00C3
         // 0x00C4
         // 0x00C5
@@ -460,9 +461,9 @@ public class OutPacket {
         // 0x0108
         // 0x0109
         Header.MAPLETV.Set(0x010A);
-        Header.UPDATE_QUEST.Set(0x010B);
+        // 0x010B @00EAでCOUNSEL UIを開いたときに送信される
         Header.QUEST_ITEM.Set(0x010C);
-        Header.USE_ITEM_QUEST.Set(0x010D);
+        // 0x010D @00EC 1FでメイプルイベントのUIを開いたときに@010D 00が送信される
         // 0x010E
         // 0x010F
         // 0x0110

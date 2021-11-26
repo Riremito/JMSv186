@@ -283,14 +283,14 @@ public class InPacket {
         // 0x000B
         // 0x000C
         // 0x000D CHANNEL_SELECTED?
-        // 0x000E
+        // 0x000E @000E ..., @0011 00 00 を送信
         // 0x000F 未使用
         // 0x0010 未使用
         // 0x0011 未使用
         // 0x0012
         // 0x0013
         // 0x0014
-        // 0x0015
+        // 0x0015 @0015 [00], 不法プログラムまたは悪性コードが感知されたためゲームを強制終了します。
         Header.SECONDPW_ERROR.Set(0x0016);
         // 0x0017
         Header.LOGIN_AUTH.Set(0x0018);
@@ -338,32 +338,32 @@ public class InPacket {
         // 0x0042
         Header.ENGAGE_REQUEST.Set(0x0043);
         Header.ENGAGE_RESULT.Set(0x0044);
-        // 0x0045
-        // 0x0046
-        // 0x0047
+        // 0x0045 @0045 [09], ウェディング登録? @0091が送信される
+        // 0x0046 @0046 int,int, MTSか?
+        // 0x0047 @0047 [01]..., 現在ペットはこのえさが食べることができません。もう一度確認してください。
         Header.YELLOW_CHAT.Set(0x0048);
         // 0x0049
-        // 0x004A
+        // 0x004A @004A ..., 当該モンスターの体力が強くてできません。
         // 0x004B 未使用
-        // 0x004C
-        // 0x004D
-        // 0x004E
-        // 0x004F
-        // 0x0050
+        // 0x004C @004C buffer, パチンコ情報の更新 +4バイト目からがパチンコ玉の数、それ以外は不明
+        // 0x004D パチンコ景品受け取りUI
+        // 0x004E @004E int,int, パチンコ球をx子プレゼントします。というダイアログ誤字っているのでたぶん未実装的な奴
+        // 0x004F @004F [01 or 03], プレゼントの通知
+        // 0x0050 @0050 strig, string..., 相性占い結果UI
         Header.FISHING_BOARD_UPDATE.Set(0x0051);
-        // 0x0052
-        // 0x0053
-        // 0x0054
-        // 0x0055
+        // 0x0052 @0052 String, 任意メッセージをダイアログに表示
+        // 0x0053 @0053 [01 (00, 02は謎)], ワールド変更申請のキャンセル
+        // 0x0054 @0054 int, プレイタイム終了まで残りx分x秒です。
+        // 0x0055 @0055 byte, なんも処理がされない関数
         Header.PLAYER_NPC.Set(0x0056);
         Header.MONSTERBOOK_ADD.Set(0x0057);
         Header.MONSTERBOOK_CHANGE_COVER.Set(0x0058);
         // 0x0059 BBS_OPERATION?
-        // 0x005A
+        // 0x005A @005A String, 任意メッセージをダイアログに表示
         Header.AVATAR_MEGA.Set(0x005B);
         // 0x005C
         // 0x005D
-        // 0x005E
+        // 0x005E @005E 00, ミニマップ点滅, 再読み込みかも?
         // 0x005F
         // 0x0060
         // 0x0061
@@ -386,22 +386,22 @@ public class InPacket {
         Header.MARRIAGE_UPDATE.Set(0x0072);
         Header.JOB_UPDATE.Set(0x0073);
         // 0x0074
-        Header.FOLLOW_REQUEST.Set(0x0075);
-        // 0x0076
+        Header.FOLLOW_REQUEST.Set(0x0075); // @0076を送信
+        // 0x0076 @0076 [不明], マジェスティックボックスの中身獲得後のUI
         Header.TOP_MSG.Set(0x0077);
-        // 0x0078 GM chatbox?
-        // 0x0079
+        // 0x0078 @0078 string, イベンドガイドのNPC会話で任意文字列を表示
+        // 0x0079 @0079 [0x02 or], イベンドガイドのNPC会話のエラーメッセージの呼び出し
         // 0x007A
-        // 0x007B
-        // 0x007C
+        // 0x007B @007B int,string, 灰色のメッセージ
+        // 0x007C @007C, ファムの歌を利用するか選択するUI, @00C2 [00or01]が送信される01は使用フラグ
         Header.SKILL_MACRO.Set(0x007D);
         Header.WARP_TO_MAP.Set(0x007E);
         Header.MTS_OPEN.Set(0x007F);
         Header.CS_OPEN.Set(0x0080);
         // 0x0081
         // 0x0082
-        // 0x0083
-        // 0x0084
+        // 0x0083 @0083, 画面の位置をキャラクターを中心とした場所に変更, 背景リロードしてるかも?
+        // 0x0084 @0084 [01-07], マップ移動時のエラーメッセージ (テレポストーン?)
         Header.SERVER_BLOCKED.Set(0x0085);
         Header.SHOW_EQUIP_EFFECT.Set(0x0086);
         Header.MULTICHAT.Set(0x0087);
@@ -429,7 +429,7 @@ public class InPacket {
         //Header.PYRAMID_RESULT.Set(0x009D);
         // 0x009E
         Header.MOVE_PLATFORM.Set(0x009F);
-        // 0x00A0
+        // 0x00A0 0x00F2を送信
         Header.SPAWN_PLAYER.Set(0x00A1);
         Header.REMOVE_PLAYER_FROM_MAP.Set(0x00A2);
         Header.CHATTEXT.Set(0x00A3);
@@ -499,13 +499,13 @@ public class InPacket {
         Header.UPDATE_QUEST_INFO.Set(0x00E3);
         // 0x00E4
         // 0x00E5
-        // 0x00E6
+        // 0x00E6 @00E6 "文字列",short1,short0,byte0, 不明
         // 0x00E7
         Header.PLAYER_HINT.Set(0x00E8);
-        // 0x00E9
-        // 0x00EA
-        // 0x00EB
-        // 0x00EC
+        // 0x00E9 パケットの構造が複雑, メルをなくしました。(-xxxx)と表示される
+        // 0x00EA @00EA, COUNSELのUI, @010Bが送信される
+        // 0x00EB @00EB, クラス対抗戦UI
+        // 0x00EC @00EC [], 強制的にUIを開く
         Header.REPAIR_WINDOW.Set(0x00ED);
         Header.CYGNUS_INTRO_LOCK.Set(0x00EE);
         Header.CYGNUS_INTRO_DISABLE_UI.Set(0x00EF);
@@ -518,14 +518,14 @@ public class InPacket {
         // 0x00F6
         // 0x00F7
         // 0x00F8
-        // 0x00F9
-        Header.GAME_POLL_REPLY.Set(0x00FA);
-        Header.FOLLOW_MESSAGE.Set(0x00FB);
+        // 0x00F9 @00F9, アラン4次スキルの説明UI
+        Header.GAME_POLL_REPLY.Set(0x00FA); // OK
+        Header.FOLLOW_MESSAGE.Set(0x00FB); // OK
         // 0x00FC
-        // 0x00FD
-        // 0x00FE
+        // 0x00FD @00FD 時間, 謎のタイマー出現
+        // 0x00FE @00FE int,int,int,int吹っ飛び判定,intダメージ量,..., 攻撃, 被ダメ, KB動作
         Header.FOLLOW_MOVE.Set(0x00FF);
-        Header.FOLLOW_MSG.Set(0x0100);
+        Header.FOLLOW_MSG.Set(0x0100); // OK
         Header.GAME_POLL_QUESTION.Set(0x0101);
         Header.COOLDOWN.Set(0x0102);
         // 0x0103 未使用
@@ -534,7 +534,7 @@ public class InPacket {
         Header.SPAWN_MONSTER_CONTROL.Set(0x0106);
         Header.MOVE_MONSTER.Set(0x0107);
         Header.MOVE_MONSTER_RESPONSE.Set(0x0108);
-        // 0x0109
+        // 0x0109 未使用
         Header.APPLY_MONSTER_STATUS.Set(0x010A);
         Header.CANCEL_MONSTER_STATUS.Set(0x010B);
         // 0x010C メモリ開放系の処理かもしれない
@@ -542,12 +542,12 @@ public class InPacket {
         Header.DAMAGE_MONSTER.Set(0x010E);
         // 0x010F
         // 0x0110 未使用
-        // 0x0111
+        // 0x0111 @0111 int, @00A2を送信
         Header.SHOW_MONSTER_HP.Set(0x0112);
         Header.SHOW_MAGNET.Set(0x0113);
         Header.CATCH_MONSTER.Set(0x0114);
         Header.MOB_SPEAKING.Set(0x0115);
-        // 0x0116
+        // 0x0116 @0116 int,int,int,int, 何らかの変数が更新されるが詳細不明
         Header.MONSTER_PROPERTIES.Set(0x0117);
         Header.REMOVE_TALK_MONSTER.Set(0x0118);
         Header.TALK_MONSTER.Set(0x0119);
@@ -604,12 +604,12 @@ public class InPacket {
         // 0x014C 未使用
         // 0x014D 未使用
         // 0x014E 未使用
-        // 0x014F
+        // 0x014F @014F byte種類,int残り時間, マップ退場メッセージ
         // 0x0150 未使用
-        Header.CHAOS_HORNTAIL_SHRINE.Set(0x0151);
-        Header.CHAOS_ZAKUM_SHRINE.Set(0x0152);
+        Header.CHAOS_HORNTAIL_SHRINE.Set(0x0151); // OK
+        Header.CHAOS_ZAKUM_SHRINE.Set(0x0152); // OK
         //Header.HORNTAIL_SHRINE.Set(0x0153);
-        Header.ZAKUM_SHRINE.Set(0x0154);
+        Header.ZAKUM_SHRINE.Set(0x0154); // OK
         Header.NPC_TALK.Set(0x0155);
         Header.OPEN_NPC_SHOP.Set(0x0156);
         Header.CONFIRM_SHOP_TRANSACTION.Set(0x0157);
@@ -633,7 +633,7 @@ public class InPacket {
         Header.SHOOT_BEANS.Set(0x0169);
         // 0x016A
         Header.UPDATE_BEANS.Set(0x016B);
-        // 0x016C
+        Header.DUEY.Set(0x016C); // OK
         // 0x016D
         // 0x016E
         Header.CS_UPDATE.Set(0x016F);
@@ -668,9 +668,9 @@ public class InPacket {
         // 0x018C 未使用
         // 0x018D
         // 0x018E
-        // 0x018F
+        // 0x018F @018F [01] [01-03], /MapleTV コマンドのエラーメッセージ処理 (GMコマンドなので通常プレイでは不要)
         // 0x0190 未使用 (何もしない関数)
-        // 0x0199 一番最後の関数
+        // 0x0199 一番最後の関数 0x00D76700が0以外の値のときのみ動作する
     }
 
 }

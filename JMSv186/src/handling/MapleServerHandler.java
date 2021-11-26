@@ -461,6 +461,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // ETCアイテムのUIにアイテムをドロップした際の処理
                 return true;
             }
+            // ウェディング系の謎UI
+            case WEDDING_REGISTRY: {
+                // @0091 06 01 00 FA DD 13 00 01 00
+                // アイテムを選択して送る
+                // @0091 08
+                // 出る
+                return true;
+            }
             //
             case CHANGE_CHANNEL: {
                 // c
@@ -987,12 +995,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 MonsterCarnivalHandler.MonsterCarnival(p, c);
                 return true;
             }
-            /*
             case DUEY_ACTION: {
                 DueyHandler.DueyOperation(p, c);
                 return true;
             }
-             */
             case USE_HIRED_MERCHANT: {
                 HiredMerchantHandler.UseHiredMerchant(p, c);
                 return true;
