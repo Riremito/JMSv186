@@ -141,8 +141,10 @@ function AvaTrade(c) {
 
 function UpdateTama(c) {
 	var p = c.getOutPacket();
-	p.writeShort(0x016A);
+	p.writeShort(0x0025);
+	p.write(15);
 	p.writeInt(7777);
+	c.DebugPacket(p.getPacket());
 }
 
 // Java‚©‚çŒÄ‚Î‚ê‚é

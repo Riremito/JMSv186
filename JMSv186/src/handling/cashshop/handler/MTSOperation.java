@@ -185,7 +185,7 @@ public class MTSOperation {
         c.getSession().write(MTSStorage.getInstance().getCurrentNotYetSold(cart));
         c.getSession().write(MTSStorage.getInstance().getCurrentTransfer(cart, changed));
         c.getSession().write(MTSCSPacket.showMTSCash(c.getPlayer()));
-        c.getSession().write(MTSCSPacket.enableCSUse());
+        //c.getSession().write(MTSCSPacket.enableCSUse());
         MTSStorage.getInstance().checkExpirations();
     }
 }

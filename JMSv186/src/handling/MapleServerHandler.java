@@ -444,6 +444,18 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // @00EF
                 return true;
             }
+            case ETC_ITEM_UI: {
+                // @0105 EC 1D 00 00 01
+                // @0105 EC 1D 00 00 00
+                // 布製の人形などETCアイテムからUIを開くタイプの処理
+                // 最後の末尾のフラグが01なら開いて、00なら閉じる
+                return true;
+            }
+            case ETC_ITEM_UI_UPDATE: {
+                // @0104 EC 1D
+                // ETCアイテムのUIの更新処理だと思われる
+                return true;
+            }
             //
             case CHANGE_CHANNEL: {
                 // c

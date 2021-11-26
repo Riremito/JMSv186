@@ -160,6 +160,8 @@ public class OutPacket {
         BUY_CS_ITEM,
         COUPON_CODE,
         RECOMMENDED_AVATAR,
+        ETC_ITEM_UI,
+        ETC_ITEM_UI_UPDATE,
         MAPLETV,
         UPDATE_QUEST,
         QUEST_ITEM,
@@ -248,7 +250,7 @@ public class OutPacket {
         Header.STORAGE.Set(0x0036);
         Header.USE_HIRED_MERCHANT.Set(0x0037);
         // 0x0038
-        // 0x0039
+        // 0x0039 InPacket 0x016Cから送信される
         Header.MERCH_ITEM_STORE.Set(0x003A);
         Header.OWL_OPEN_UI.Set(0x003B);
         Header.OWL_WARP.Set(0x003C);
@@ -442,7 +444,7 @@ public class OutPacket {
         Header.CS_UPDATE.Set(0x00F9);
         Header.BUY_CS_ITEM.Set(0x00FA);
         Header.COUPON_CODE.Set(0x00FB);
-        // 0x00FC
+        // 0x00FC UI/CashShop.img/CSMemberShop
         // 0x00FD
         Header.RECOMMENDED_AVATAR.Set(0x00FE);
         // 0x00FF
@@ -450,8 +452,8 @@ public class OutPacket {
         // 0x0101
         // 0x0102
         // 0x0103
-        // 0x0104
-        // 0x0105
+        Header.ETC_ITEM_UI_UPDATE.Set(0x0104);
+        Header.ETC_ITEM_UI.Set(0x0105);
         // 0x0106
         // 0x0107
         // 0x0108

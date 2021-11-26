@@ -514,7 +514,7 @@ public class CashShopOperation {
     private static final void doCSPackets(MapleClient c) {
         c.getSession().write(MTSCSPacket.getCSInventory(c));
         c.getSession().write(MTSCSPacket.showNXMapleTokens(c.getPlayer()));
-        c.getSession().write(MTSCSPacket.enableCSUse());
+        //c.getSession().write(MTSCSPacket.enableCSUse());
         c.getPlayer().getCashInventory().checkExpire(c);
     }
 }
