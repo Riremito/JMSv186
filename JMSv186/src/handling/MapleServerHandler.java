@@ -489,6 +489,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 Debug.DebugPacket(op);
                 return true;
             }
+            // グループクエスト or 遠征隊検索
+            case EXPEDITION_LISTING: {
+                Debug.DebugPacket(op);
+                return true;
+            }
             //
             case CHANGE_CHANNEL: {
                 // c
@@ -865,6 +870,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case GENERAL_CHAT: {
+                Debug.DebugPacket(op);
                 // 実装が悪い
                 p.readInt();
                 ChatHandler.GeneralChat(p.readMapleAsciiString(), p.readByte(), c, c.getPlayer());
