@@ -5,6 +5,7 @@ package debug;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import packet.OutPacket;
 
 public class Debug {
 
@@ -16,6 +17,11 @@ public class Debug {
     // 情報出力
     public static void InfoLog(String text) {
         System.out.println((new SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ").format(new Date())) + text);
+    }
+
+    // パケット出力
+    public static void DebugPacket(OutPacket p) {
+        DebugLog("[DebugPacket] " + p.Packet());
     }
 
     // 不要なNPCを設置しない

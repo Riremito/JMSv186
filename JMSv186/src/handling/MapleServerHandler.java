@@ -195,7 +195,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
                     // ログインサーバー
                     if (server_type == ServerType.LoginServer) {
-                        if (!handleLoginPacket(recv, slea, c)) {
+                        OutPacket op = new OutPacket((byte[]) message);
+                        if (!handleLoginPacket(op, c)) {
                             Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
                         }
                         return;
@@ -245,8 +246,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // Login Server
-    public static final boolean handleLoginPacket(final OutPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
-        switch (header) {
+    public static final boolean handleLoginPacket(OutPacket p, MapleClient c) throws Exception {
+        short header = p.Decode2();
+        OutPacket.Header type = OutPacket.ToHeader(header);
+        switch (type) {
             // ログイン画面
             case RSA_KEY: {
                 // +p
@@ -281,7 +284,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             // キャラクター作成時の名前重複確認
             case CHECK_CHAR_NAME: {
                 // p
-                CharLoginHandler.CheckCharName(p.readMapleAsciiString(), c);
+                CharLoginHandler.CheckCharName(p, c);
                 return true;
             }
             // キャラクター作成
@@ -299,6 +302,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // @000F EncodeBuffer(CrashDumpLog)
                 // 起動時に何らかの条件で前回のクラッシュの詳細のテキストが送信される
                 // 文字列で送信されているがnullで終わっていないので注意
+                Debug.DebugPacket(p);
                 return true;
             }
             // キャラクター選択
@@ -313,6 +317,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case REACHED_LOGIN_SCREEN: {
                 // @0018
                 // ログイン画面に到達した場合に送信される
+                Debug.DebugPacket(p);
                 return true;
             }
             default: {

@@ -257,7 +257,7 @@ public class InPacket {
             value = 0xFFFF;
         }
 
-        public boolean Set(int header) {
+        private boolean Set(int header) {
             value = header;
             return true;
         }

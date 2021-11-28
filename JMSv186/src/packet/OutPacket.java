@@ -3,8 +3,80 @@ package packet;
 
 public class OutPacket {
 
+    private byte[] packet;
+    private int decoded;
+
+    // MapleのInPacketのDecodeのように送信されたパケットを再度Decodeする
+    public OutPacket(byte[] b) {
+        packet = b;
+        decoded = 0;
+    }
+
+    public static Header ToHeader(short w) {
+        for (final Header h : Header.values()) {
+            if (h.Get() == w) {
+                return h;
+            }
+        }
+
+        return Header.UNKNOWN;
+    }
+
+    public String Packet() {
+        short header = (short) (packet[0] | (packet[1] << 8));
+        String text = String.format("@%04X", header);
+
+        for (int i = 2; i < packet.length; i++) {
+            text += String.format(" %02X", packet[i]);
+        }
+
+        return text;
+    }
+
+    public byte Decode1() {
+        return (byte) packet[decoded++];
+    }
+
+    public short Decode2() {
+        return (short) (((short) Decode1() & 0xFF) | (((short) Decode1() & 0xFF) << 8));
+    }
+
+    // アタイガズレル
+    public int Decode4() {
+        return (int) (((int) Decode2() & 0xFFFF) | (((int) Decode2() & 0xFFFF) << 16));
+    }
+
+    public long Decode8() {
+        return (long) (((long) Decode4() & 0xFFFFFFFF) | (((long) Decode4() & 0xFFFFFFFF) << 32));
+    }
+
+    public byte[] DecodeBuffer() {
+        int length = Decode2();
+        byte[] buffer = new byte[length];
+
+        for (int i = 0; i < length; i++) {
+            buffer[i] = Decode1();
+        }
+
+        return buffer;
+    }
+
+    public String DecodeStr() {
+        int length = Decode2();
+        byte[] buffer = new byte[length + 1];
+
+        for (int i = 0; i < length; i++) {
+            buffer[i] = Decode1();
+        }
+        // 終端文字を読み取る
+        buffer[length] = Decode1();
+
+        return new String(buffer);
+    }
+
     public enum Header {
         // ヘッダに対応する処理の名前を定義
+        UNKNOWN,
         LOGIN_PASSWORD,
         SERVERLIST_REQUEST,
         CHARLIST_REQUEST,
@@ -184,7 +256,7 @@ public class OutPacket {
             value = 0xFFFF;
         }
 
-        public boolean Set(int header) {
+        private boolean Set(int header) {
             value = header;
             return true;
         }

@@ -25,16 +25,15 @@ import java.util.Calendar;
 
 import client.inventory.IItem;
 import client.inventory.Item;
-import client.LoginCrypto;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.MapleCharacterUtil;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
-import handling.channel.ChannelServer;
 import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
 import handling.login.LoginWorker;
+import packet.OutPacket;
 import server.MapleItemInformationProvider;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -55,9 +54,9 @@ public class CharLoginHandler {
         return false;
     }
 
-    public static final boolean login(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final String login = slea.readMapleAsciiString();
-        final String pwd = slea.readMapleAsciiString();
+    public static final boolean login(OutPacket p, final MapleClient c) {
+        final String login = new String(p.DecodeBuffer());
+        final String pwd = new String(p.DecodeBuffer());
 
         c.setAccountName(login);
         final boolean ipBan = c.hasBannedIP();
@@ -119,9 +118,9 @@ public class CharLoginHandler {
         }
     }
 
-    public static final void CharlistRequest(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        int server = slea.readByte();
-        final int channel = slea.readByte() + 1;
+    public static final void CharlistRequest(OutPacket p, final MapleClient c) {
+        int server = p.Decode1();
+        final int channel = p.Decode1() + 1;
 
         if (server == 12) {
             server = 0;
@@ -142,66 +141,26 @@ public class CharLoginHandler {
         }
     }
 
-    public static final void CheckCharName(final String name, final MapleClient c) {
+    public static final void CheckCharName(OutPacket p, final MapleClient c) {
+        String name = new String(p.DecodeBuffer());
         c.getSession().write(LoginPacket.charNameResponse(name,
                 !MapleCharacterUtil.canCreateChar(name) || LoginInformationProvider.getInstance().isForbiddenName(name)));
     }
 
-    public static final void CreateChar(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final String name = slea.readMapleAsciiString();
-        final int JobType = slea.readInt(); // 1 = Adventurer, 0 = Cygnus, 2 = Aran
-        final short db = slea.readShort(); //whether dual blade = 1 or adventurer = 0
-        final int face = slea.readInt();
-        final int hair = slea.readInt();
-        final int hairColor = 0/*slea.readInt()*/;
-        final byte skinColor = (byte) 0/*slea.readInt()*/;
-        final int top = slea.readInt();
-        final int bottom = slea.readInt();
-        final int shoes = slea.readInt();
-        final int weapon = slea.readInt();
+    public static final void CreateChar(OutPacket p, final MapleClient c) {
+        final String name = new String(p.DecodeBuffer());
+        final int JobType = p.Decode4();
+        final short db = p.Decode2();
+        final int face = p.Decode4();
+        final int hair = p.Decode4();
+        final int hairColor = 0;
+        final byte skinColor = (byte) 0;
+        final int top = p.Decode4();
+        final int bottom = p.Decode4();
+        final int shoes = p.Decode4();
+        final int weapon = p.Decode4();
         final byte gender = c.getGender();
 
-        /*        if (gender == 0) {
-            if (face != 20000 && face != 20001 && face != 20002 && face != 20100 && face != 20401 && face != 20402) {
-                return;
-            }
-            if (hair != 30000 && hair != 30020 && hair != 30030) {
-                return;
-            }
-            if (top != 1040002 && top != 1040006 && top != 1040010 && top != 1042167 && top != 1042180) {
-                return;
-            }
-            if (bottom != 1060006 && bottom != 1060002 && bottom != 1062115 && bottom != 1060138) {
-                return;
-            }
-        } else if (gender == 1) {
-            if (face != 21000 && face != 21001 && face != 21002 && face != 21700 && face != 21201) {
-                return;
-            }
-            if (hair != 31000 && hair != 31040 && hair != 31050) {
-                return;
-            }
-            if (top != 1041002 && top != 1041006 && top != 1041010 && top != 1041011 && top != 1042167 && top != 1042180) {
-                return;
-            }
-            if (bottom != 1061002 && bottom != 1061008 && bottom != 1062115 && bottom != 1061160) {
-                return;
-            }
-        } else {
-            return;
-        }
-        if ((skinColor < 0 || skinColor > 3) && skinColor != 11) {
-            return;
-        }
-        if (weapon != 1302000 && weapon != 1322005 && weapon != 1312004 && weapon != 1442079 && weapon != 1302132) {
-            return;
-        }
-        if (shoes != 1072001 && shoes != 1072005 && shoes != 1072037 && shoes != 1072038 && shoes != 1072383 && shoes != 1072418) {
-            return;
-        }
-        if (hairColor != 0 && hairColor != 2 && hairColor != 3 && hairColor != 7) {
-            return;
-        }*/
         MapleCharacter newchar = MapleCharacter.getDefault(c, JobType);
         newchar.setWorld((byte) c.getWorld());
         newchar.setFace(face);
@@ -265,8 +224,8 @@ public class CharLoginHandler {
         }
     }
 
-    public static final void DeleteChar(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final int Character_ID = slea.readInt();
+    public static final void DeleteChar(OutPacket p, final MapleClient c) {
+        final int Character_ID = p.Decode4();
 
         if (!c.login_Auth(Character_ID)) {
             c.getSession().close();
@@ -282,8 +241,8 @@ public class CharLoginHandler {
         c.getSession().write(LoginPacket.deleteCharResponse(Character_ID, state));
     }
 
-    public static final boolean Character_WithSecondPassword(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final int charId = slea.readInt();
+    public static final boolean Character_WithSecondPassword(OutPacket p, final MapleClient c) {
+        final int charId = p.Decode4();
 
         if (loginFailCount(c) || !c.login_Auth(charId)) { // This should not happen unless player is hacking
             c.getSession().close();
