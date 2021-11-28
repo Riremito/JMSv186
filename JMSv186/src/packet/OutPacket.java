@@ -23,7 +23,7 @@ public class OutPacket {
     }
 
     public String Packet() {
-        short header = (short) (packet[0] | (packet[1] << 8));
+        short header = (short) (((short) packet[0] & 0xFF) | ((short) packet[1] & 0xFF << 8));
         String text = String.format("@%04X", header);
 
         for (int i = 2; i < packet.length; i++) {

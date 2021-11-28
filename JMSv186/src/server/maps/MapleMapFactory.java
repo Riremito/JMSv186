@@ -203,7 +203,7 @@ public class MapleMapFactory {
                                     npc.setFh(npc_fh);
                                     npc.setCustom(true);
                                     map.addMapObject(npc);
-                                    Debug.DebugLog("Spawn NPC, NPC = " + npc.getName() + " (" + npc_id + "), Map = " + MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(omapid))) + " - " + MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(omapid))) + " (" + mapid + ")");
+                                    //Debug.DebugLog("Spawn NPC, NPC = " + npc.getName() + " (" + npc_id + "), Map = " + MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(omapid))) + " - " + MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(omapid))) + " (" + mapid + ")");
                                 }
                             } else {
                                 Debug.InfoLog("spawn npc format error: " + mapid);

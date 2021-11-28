@@ -214,7 +214,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
                     // ゲームサーバー
                     if (server_type == ServerType.GameServer) {
-                        if (!handleGamePacket(recv, slea, c)) {
+                        OutPacket op = new OutPacket((byte[]) message);
+                        if (!handleGamePacket(slea, c, op)) {
                             Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
                         }
                         return;
@@ -418,35 +419,45 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // Game Server
-    public static final boolean handleGamePacket(final OutPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
-        switch (header) {
+    public static final boolean handleGamePacket(final SeekableLittleEndianAccessor p, final MapleClient c, OutPacket op) throws Exception {
+        short header = op.Decode2();
+        OutPacket.Header type = OutPacket.ToHeader(header);
+
+        switch (type) {
             // サーバーメッセージ
             case GM_COMMAND_SERVER_MESSAGE: {
+                Debug.DebugPacket(op);
                 return true;
             }
             // GMコマンド
             case GM_COMMAND: {
+                Debug.DebugPacket(op);
                 return GMCommand.Accept(p, c);
             }
             // GMコマンドの文字列
             case GM_COMMAND_TEXT: {
+                Debug.DebugPacket(op);
                 return true;
             }
             // 雪玉専用？
             case GM_COMMAND_EVENT_START: {
+                Debug.DebugPacket(op);
                 return true;
             }
             // MapleTV
             case GM_COMMAND_MAPLETV: {
+                Debug.DebugPacket(op);
                 return true;
             }
             // 未実装的な奴
             case PARTY_SEARCH_START: {
                 // @00EE Data: 91 00 00 00 A5 00 00 00 05 00 00 00 FF FF EF 0F
+                Debug.DebugPacket(op);
                 return true;
             }
             case PARTY_SEARCH_STOP: {
                 // @00EF
+                Debug.DebugPacket(op);
                 return true;
             }
             case ETC_ITEM_UI: {
@@ -454,16 +465,19 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // @0105 EC 1D 00 00 00
                 // 布製の人形などETCアイテムからUIを開くタイプの処理
                 // 最後の末尾のフラグが01なら開いて、00なら閉じる
+                Debug.DebugPacket(op);
                 return true;
             }
             case ETC_ITEM_UI_UPDATE: {
                 // @0104 EC 1D
                 // ETCアイテムのUIの更新処理だと思われる
+                Debug.DebugPacket(op);
                 return true;
             }
             case ETC_ITEM_UI_DROP_ITEM: {
                 // @0106 60 00 5E 85 3D 00 0D C4 00 00 64 00 00 00
                 // ETCアイテムのUIにアイテムをドロップした際の処理
+                Debug.DebugPacket(op);
                 return true;
             }
             // ウェディング系の謎UI
@@ -472,6 +486,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // アイテムを選択して送る
                 // @0091 08
                 // 出る
+                Debug.DebugPacket(op);
                 return true;
             }
             //
