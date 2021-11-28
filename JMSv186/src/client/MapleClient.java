@@ -66,6 +66,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.mina.common.IoSession;
+import packet.InPacket;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -367,8 +368,8 @@ public class MapleClient implements Serializable {
         }
         return 0;
     }
-    
-    public int auto_register(String MapleID, String pwd){
+
+    public int auto_register(String MapleID, String pwd) {
         /*
         if(MapleID.toUpperCase().indexOf("GM") == 0){
             System.out.println("GMアカウント生成:"  + MapleID);
@@ -377,8 +378,8 @@ public class MapleClient implements Serializable {
         else{
             System.out.println("アカウント生成:"  + MapleID);
         }
-        */
-        System.out.println("アカウント生成:"  + MapleID);
+         */
+        System.out.println("アカウント生成:" + MapleID);
 
         String password1_hash = null;
         String password2_hash = null;
@@ -392,7 +393,7 @@ public class MapleClient implements Serializable {
             Logger.getLogger(MapleClient.class.getName()).log(Level.SEVERE, null, ex);
             return 0;
         }
-        
+
         try {
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("INSERT INTO accounts (name, password, 2ndpassword, ACash, gender) VALUES (?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
@@ -400,22 +401,21 @@ public class MapleClient implements Serializable {
             ps.setString(2, password1_hash);
             ps.setString(3, password2_hash);
             ps.setInt(4, 10000000);
-            ps.setByte(5, (byte)1);
+            ps.setByte(5, (byte) 1);
             ps.executeUpdate();
-                
+
             ResultSet rs = ps.getGeneratedKeys();
             rs.next();
             rs.close();
             ps.close();
             return 1;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.err.println("ERROR" + e);
         }
         return 0;
     }
-    
-    public int auto_register_GM(String MapleID, String pwd){
+
+    public int auto_register_GM(String MapleID, String pwd) {
         String password1_hash = null;
         String password2_hash = null;
         try {
@@ -428,23 +428,22 @@ public class MapleClient implements Serializable {
             Logger.getLogger(MapleClient.class.getName()).log(Level.SEVERE, null, ex);
             return 0;
         }
-        
+
         try {
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("INSERT INTO accounts (name, password, 2ndpassword, gm) VALUES (?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, MapleID);
             ps.setString(2, password1_hash);
             ps.setString(3, password2_hash);
-            ps.setByte(4, (byte)1);
+            ps.setByte(4, (byte) 1);
             ps.executeUpdate();
-                
+
             ResultSet rs = ps.getGeneratedKeys();
             rs.next();
             rs.close();
             ps.close();
             return 1;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.err.println("ERROR" + e);
         }
         return 0;
@@ -719,7 +718,7 @@ public class MapleClient implements Serializable {
                     stat1.setCustomData("3");
                 }
             }
-	    player.changeRemoval(true);
+            player.changeRemoval(true);
             if (player.getEventInstance() != null) {
                 player.getEventInstance().playerDisconnected(player, player.getId());
             }
@@ -938,9 +937,9 @@ public class MapleClient implements Serializable {
                 }
                 World.Guild.deleteGuildCharacter(rs.getInt("guildid"), cid);
             }
-	    if (rs.getInt("familyid") > 0) {
-		World.Family.getFamily(rs.getInt("familyid")).leaveFamily(cid);
-	    }
+            if (rs.getInt("familyid") > 0) {
+                World.Family.getFamily(rs.getInt("familyid")).leaveFamily(cid);
+            }
             rs.close();
             ps.close();
 
@@ -1310,13 +1309,21 @@ public class MapleClient implements Serializable {
     public void setReceiving(boolean m) {
         this.receiving = m;
     }
-    
+
     public void DebugPacket(MaplePacket packet) {
         getSession().write(packet);
     }
 
-    public MaplePacketLittleEndianWriter getOutPacket(){
+    public MaplePacketLittleEndianWriter getOutPacket() {
         return new MaplePacketLittleEndianWriter();
-    }  
-    
+    }
+
+    public InPacket InPacket(short header) {
+        return new InPacket(header);
+    }
+
+    public void ProcessPacket(MaplePacket packet) {
+        getSession().write(packet);
+    }
+
 }

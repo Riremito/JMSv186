@@ -123,22 +123,6 @@ public class MTSCSPacket {
         return mplew.getPacket();
     }
 
-    public static MaplePacket ViciousHammer(boolean start, int hammered) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(InPacket.Header.VICIOUS_HAMMER.Get());
-        if (start) {
-            mplew.write(49);
-            mplew.writeInt(0);
-            mplew.writeInt(hammered);
-        } else {
-            mplew.write(53);
-            mplew.writeInt(0);
-        }
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket changePetName(MapleCharacter chr, String newname, int slot) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(InPacket.Header.PET_NAMECHANGE.Get());

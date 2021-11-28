@@ -54,6 +54,7 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import minigame.Pachinko;
+import packet.ProcessPacketTest;
 import server.AutobanManager;
 import server.Randomizer;
 import server.RandomRewards;
@@ -530,6 +531,13 @@ public class InventoryHandler {
         if (dst < 0 && (scrollSuccess == IEquip.ScrollResult.SUCCESS || scrollSuccess == IEquip.ScrollResult.CURSE) && vegas == 0) {
             chr.equipChanged();
         }
+
+        // ベガの呪文書
+        if (vegas != 0) {
+            c.getSession().write(ProcessPacketTest.VegaScroll_Start());
+            c.getSession().write(ProcessPacketTest.VegaScroll_Result((scrollSuccess == ScrollResult.SUCCESS)));
+        }
+
         return true;
     }
 
@@ -1514,13 +1522,11 @@ public class InventoryHandler {
                         item.setUpgradeSlots((byte) (item.getUpgradeSlots() + 1));
 
                         c.getPlayer().forceReAddItem(item, MapleInventoryType.EQUIP);
-                        c.getSession().write(MTSCSPacket.ViciousHammer(true, (byte) item.getViciousHammer()));
-                        c.getSession().write(MTSCSPacket.ViciousHammer(false, (byte) 0));
+                        // ビシャスのハンマーのアニメーションの終わる通知待ち状態へ
+                        c.getSession().write(ProcessPacketTest.ViciousHammer_Notify(item.getViciousHammer()));
                         used = true;
-                        cc = true;
                     } else {
-                        c.getPlayer().dropMessage(5, "You may not use it on this item.");
-                        cc = true;
+                        c.getSession().write(ProcessPacketTest.ViciousHammer_Failure(1));
                     }
                 }
 
@@ -1533,7 +1539,9 @@ public class InventoryHandler {
                 slea.readInt(); // Inventory type, always use
                 final byte src = (byte) slea.readInt();
                 used = UseUpgradeScroll(src, dst, (byte) 2, c, c.getPlayer(), itemId); //cannot use ws with vega but we dont care
-                cc = used;
+                if (used) {
+                    c.getPlayer().saveToDB(false, false);
+                }
                 break;
             }
             case 5060001: { // Sealing Lock

@@ -112,10 +112,12 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         World.Broadcast.broadcastMessage(packet);
     }
 
+    // そのうち消す
     public void DebugPacket(MaplePacket packet) {
         c.getSession().write(packet);
     }
 
+    // そのうち消す
     public MaplePacketLittleEndianWriter getOutPacket() {
         return new MaplePacketLittleEndianWriter();
     }
@@ -455,8 +457,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         MapleShop shop = new MapleShop(id, id);
         return shop;
     }
-    
-    public void CustomShopAdd(MapleShop shop, int itemid, int price){
+
+    public void CustomShopAdd(MapleShop shop, int itemid, int price) {
         shop.addItem(new MapleShopItem((short) 1000, itemid, price, 0, 0));
     }
 

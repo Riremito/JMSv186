@@ -242,7 +242,8 @@ public class OutPacket {
         TOUCHING_MTS,
         MTS_TAB,
         BEANS_OPERATION,
-        BEANS_UPDATE;
+        BEANS_UPDATE,
+        VICIOUS_HAMMER;
 
         // 定義値の変更や取得
         private int value;
@@ -547,6 +548,7 @@ public class OutPacket {
         // 0x0117
         // 0x0118
         // 0x0119
+        Header.VICIOUS_HAMMER.Set(0x0119);
         // 0x011A
         // 0x011B
         // 0x011C

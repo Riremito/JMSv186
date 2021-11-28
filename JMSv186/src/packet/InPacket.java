@@ -19,6 +19,12 @@ public class InPacket {
         encoded += 2;
     }
 
+    public InPacket(short w) {
+        packet.add((byte) (w & 0xFF));
+        packet.add((byte) ((w >> 8) & 0xFF));
+        encoded += 2;
+    }
+
     public void Encode1(byte b) {
         packet.add(b);
         encoded += 1;
@@ -81,6 +87,8 @@ public class InPacket {
     public enum Header {
         // added
         MINIGAME_PACHINKO_UPDATE_TAMA,
+        UNKNOWN_RELOAD_MINIMAP,
+        UNKNOWN_RELOAD_MAP,
         // unknown
         RELOG_RESPONSE,
         BBS_OPERATION,
@@ -317,6 +325,7 @@ public class InPacket {
         ARIANT_THING,
         ARIANT_PQ_START,
         VICIOUS_HAMMER,
+        VEGA_SCROLL,
         REPORT_PLAYER_MSG,
         NPC_CONFIRM,
         UPDATE_BEANS,
@@ -388,7 +397,7 @@ public class InPacket {
         Header.TROCK_LOCATIONS.Set(0x0027);
         // 0x0028 未使用
         // 0x0029
-        // 0x002A
+        // 0x002A @002A [02-03, 41-47]..., 通報後のダイアログ通知
         // 0x002B
         // 0x002C
         Header.UPDATE_MOUNT.Set(0x002D);
@@ -440,7 +449,7 @@ public class InPacket {
         Header.AVATAR_MEGA.Set(0x005B);
         // 0x005C
         // 0x005D
-        // 0x005E @005E 00, ミニマップ点滅, 再読み込みかも?
+        Header.UNKNOWN_RELOAD_MINIMAP.Set(0x005E);
         // 0x005F
         // 0x0060
         // 0x0061
@@ -477,7 +486,7 @@ public class InPacket {
         Header.CS_OPEN.Set(0x0080);
         // 0x0081
         // 0x0082
-        // 0x0083 @0083, 画面の位置をキャラクターを中心とした場所に変更, 背景リロードしてるかも?
+        Header.UNKNOWN_RELOAD_MAP.Set(0x0083);
         // 0x0084 @0084 [01-07], マップ移動時のエラーメッセージ (テレポストーン?)
         Header.SERVER_BLOCKED.Set(0x0085);
         Header.SHOW_EQUIP_EFFECT.Set(0x0086);
@@ -747,6 +756,14 @@ public class InPacket {
         // 0x018E
         // 0x018F @018F [01] [01-03], /MapleTV コマンドのエラーメッセージ処理 (GMコマンドなので通常プレイでは不要)
         // 0x0190 未使用 (何もしない関数)
+        // 0x0191 未使用
+        Header.VICIOUS_HAMMER.Set(0x0192);
+        // 0x0193 実質未使用 (VICIOUS)
+        // 0x0194 実質未使用 (VICIOUS)
+        // 0x0195 実質未使用 (VICIOUS)
+        Header.VEGA_SCROLL.Set(0x0196);
+        // 0x0197 実質未使用 (VEGA)
+        // 0x0198 実質未使用 (VEGA)
         // 0x0199 一番最後の関数 0x00D76700が0以外の値のときのみ動作する
     }
 

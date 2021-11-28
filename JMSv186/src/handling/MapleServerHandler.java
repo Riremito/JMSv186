@@ -25,6 +25,7 @@ import tools.FileoutputUtil;
 import handling.world.World;
 import java.util.Map;
 import packet.OutPacket;
+import packet.ProcessPacketTest;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
@@ -424,6 +425,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
         OutPacket.Header type = OutPacket.ToHeader(header);
 
         switch (type) {
+            case VICIOUS_HAMMER: {
+                // @0119 [38 00 00 00] [00 00 00 00]
+                // 0x38が成功フラグなのでクライアント側から成功可否を通知している可能性がある
+                c.getSession().write(ProcessPacketTest.ViciousHammer_Success());
+                return true;
+            }
             // サーバーメッセージ
             case GM_COMMAND_SERVER_MESSAGE: {
                 Debug.DebugPacket(op);

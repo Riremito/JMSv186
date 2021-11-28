@@ -302,34 +302,80 @@ function PachiUpdate(c) {
 	c.DebugPacket(p.getPacket());
 }
 
-// a
+function Reported(c) {
+	var p = c.InPacket(0x002A);
+	/*
+		0x02	受付成功
+		0x03	申告されました。
+
+		0x41	しばらく後もう一度行ってください。
+		0x42	キャラクター名を確認してからもう一度行ってください。
+		0x43	申告に必要な手数料のメルが足りません。
+		0x44	サーバに接続できません。
+		0x45	申告可能回数を超過しました。
+		0x46	X時から X時まで申告可能です。
+		0x47	虚偽申告で制裁され申告できません。
+	*/
+	p.Encode1(0x40);
+	p.Encode4(0);
+	p.Encode4(0);
+
+	// 0埋め
+	p.Encode4(0);
+	p.Encode4(0);
+	p.Encode4(0);
+	p.Encode4(0);
+	p.Encode4(0);
+	p.Encode4(0);
+	p.Encode4(0);
+	p.Encode4(0);
+	// 送信
+	c.ProcessPacket(p.Get());
+}
+
+// test
+// ベガ Encode1 (0x40, 0x41, 0x43)
+function ViciousHammer(c) {
+	var pp = c.InPacket(0x0192);
+	pp.Encode1(0x3A);
+	// 未使用?
+	pp.Encode4(0);
+	// 2-Xで残り回数
+	pp.Encode4(2);
+	c.ProcessPacket(pp.Get());
+
+	var p = c.InPacket(0x0192);
+	p.Encode1(0x38); // 0x38, 0x39, 0x3A
+	p.Encode4(1);
+	c.ProcessPacket(p.Get());
+}
+
+function VegaScroll(c) {
+	var pp = c.InPacket(0x0196);
+	// 3C or 3E
+	pp.Encode1(0x3E);
+	c.ProcessPacket(pp.Get());
+	var p = c.InPacket(0x0196);
+	// 3B = 成功? ,40 = 失敗?
+	p.Encode1(0x3B);
+	c.ProcessPacket(p.Get());
+}
+
 function TestPacket(c) {
-	var p = c.getOutPacket();
-	p.writeShort(0x0001);
-	//p.write(4);
-	//p.writeMapleAsciiString("Maple");
-	//p.writeInt(0x00007DBC);
-	p.writeZeroBytes(100);
-	c.DebugPacket(p.getPacket());
+	var p = c.InPacket(0x00F4);
+	c.ProcessPacket(p.Get());
 }
 
 /*
 function TestPacket(c) {
-	var p = c.getOutPacket();
-	p.writeShort(0x0084);
-	//p.write(1);
-	// p.writeMapleAsciiString("Maple");
-	//p.writeInt(1);
-	//p.writeInt(0x00007DBC);
-	p.writeZeroBytes(100);
-	c.DebugPacket(p.getPacket());
+	var p = c.InPacket(0x00F4);
+	c.ProcessPacket(p.Get());
 }
 */
+
 // キャラID 0x00007DBC
-//p.writeInt(1);
-//p.writeInt(0x00007DBC);
 
 // Javaから呼ばれる
 function debug(c) {
-	PachiUpdate(c);
+	TestPacket(c);
 }
