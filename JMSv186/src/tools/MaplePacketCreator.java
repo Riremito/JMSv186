@@ -742,16 +742,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket showTamaGain(final int gain) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
-        mplew.write(15); // パチンコ玉
-        mplew.writeInt(gain);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket getShowItemGain(int itemId, short quantity) {
         return getShowItemGain(itemId, quantity, false);
     }

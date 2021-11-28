@@ -548,19 +548,6 @@ public class MTSCSPacket {
         return mplew.getPacket();
     }
 
-    public static MaplePacket TamaBoxSuccess(int tama) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.TAMA_BOX_SUCCESS.Get());
-        mplew.writeInt(tama);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket TamaBoxFailed() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.TAMA_BOX_FAILURE.Get());
-        return mplew.getPacket();
-    }
-
     public static MaplePacket RandomMesoBagSuccess(byte type, int mesos) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(InPacket.Header.RANDOM_MESOBAG_SUCCESS.Get());

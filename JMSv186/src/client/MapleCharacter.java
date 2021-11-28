@@ -3025,7 +3025,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
         gainTama(gain);
         if (show) {
-            client.getSession().write(MaplePacketCreator.showTamaGain(gain));
+            client.getSession().write(Pachinko.GainTamaMessage(gain));
         }
         return true;
     }

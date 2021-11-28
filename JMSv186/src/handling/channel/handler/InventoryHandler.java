@@ -53,6 +53,7 @@ import java.awt.Rectangle;
 import java.util.Collections;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
+import minigame.Pachinko;
 import server.AutobanManager;
 import server.Randomizer;
 import server.RandomRewards;
@@ -1001,10 +1002,10 @@ public class InventoryHandler {
             case 5201002: {
                 final int tama = MapleItemInformationProvider.getInstance().getInt(itemId, "info/dama");
                 if (c.getPlayer().gainTama(tama, true)) {
-                    c.getSession().write(MTSCSPacket.TamaBoxSuccess(tama));
+                    c.getSession().write(Pachinko.TamaBoxSuccess(tama));
                     used = true;
                 } else {
-                    c.getSession().write(MTSCSPacket.TamaBoxFailed());
+                    c.getSession().write(Pachinko.TamaBoxFailure());
                 }
                 break;
             }
