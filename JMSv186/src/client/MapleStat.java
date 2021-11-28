@@ -20,7 +20,7 @@ public enum MapleStat {
     EXP(0x10000),
     FAME(0x20000),
     MESO(0x40000),
-    TAMA(0x200000), // 違うっぽい
+    UNKNOWN(0x200000), // 不明
     PET(0x180008);
     private final int i;
 

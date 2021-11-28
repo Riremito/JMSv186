@@ -1,9 +1,86 @@
 // サーバー側から送信されるパケットのヘッダの定義
 package packet;
 
+import handling.ByteArrayMaplePacket;
+import handling.MaplePacket;
+import java.util.ArrayList;
+
 public class InPacket {
 
+    // Encoder
+    private ArrayList<Byte> packet = new ArrayList<>();
+    private int encoded = 0;
+
+    public InPacket(Header header) {
+        short w = (short) header.Get();
+
+        packet.add((byte) (w & 0xFF));
+        packet.add((byte) ((w >> 8) & 0xFF));
+        encoded += 2;
+    }
+
+    public void Encode1(byte b) {
+        packet.add(b);
+        encoded += 1;
+    }
+
+    public void Encode2(short w) {
+        Encode1((byte) (w & 0xFF));
+        Encode1((byte) ((w >> 8) & 0xFF));
+    }
+
+    public void Encode4(int dw) {
+        Encode2((short) (dw & 0xFFFF));
+        Encode2((short) ((dw >> 16) & 0xFFFF));
+    }
+
+    public void Encode8(long qw) {
+        Encode4((int) (qw & 0xFFFFFFFF));
+        Encode4((int) ((qw >> 32) & 0xFFFFFFFF));
+    }
+
+    public void EncodeStr(String str) {
+        Encode2((short) str.length());
+        byte[] b = str.getBytes();
+
+        for (int i = 0; i < b.length; i++) {
+            Encode1(b[i]);
+        }
+    }
+
+    public void EncodeBuffer(byte[] b) {
+        for (int i = 0; i < b.length; i++) {
+            Encode1(b[i]);
+        }
+    }
+
+    public String Packet() {
+        byte[] b = new byte[encoded];
+        for (int i = 0; i < encoded; i++) {
+            b[i] = packet.get(i);
+        }
+
+        short header = (short) (((short) b[0] & 0xFF) | ((short) b[1] & 0xFF << 8));
+        String text = String.format("@%04X", header);
+
+        for (int i = 2; i < encoded; i++) {
+            text += String.format(" %02X", b[i]);
+        }
+
+        return text;
+    }
+
+    public MaplePacket Get() {
+        byte[] b = new byte[encoded];
+        for (int i = 0; i < encoded; i++) {
+            b[i] = packet.get(i);
+        }
+        return new ByteArrayMaplePacket(b);
+    }
+
     public enum Header {
+        // added
+        MINIGAME_PACHINKO_UPDATE_TAMA,
         // unknown
         RELOG_RESPONSE,
         BBS_OPERATION,
@@ -345,7 +422,7 @@ public class InPacket {
         // 0x0049
         // 0x004A @004A ..., 当該モンスターの体力が強くてできません。
         // 0x004B 未使用
-        // 0x004C @004C buffer, パチンコ情報の更新 +4バイト目からがパチンコ玉の数、それ以外は不明
+        Header.MINIGAME_PACHINKO_UPDATE_TAMA.Set(0x4C);
         // 0x004D パチンコ景品受け取りUI
         // 0x004E @004E int,int, パチンコ球をx子プレゼントします。というダイアログ誤字っているのでたぶん未実装的な奴
         // 0x004F @004F [01 or 03], プレゼントの通知

@@ -331,5 +331,5 @@ function TestPacket(c) {
 
 // Java‚©‚çŒÄ‚Î‚ê‚é
 function debug(c) {
-	TestPacket(c);
+	PachiUpdate(c);
 }

@@ -5,6 +5,7 @@ package debug;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import packet.InPacket;
 import packet.OutPacket;
 
 public class Debug {
@@ -22,6 +23,9 @@ public class Debug {
     // パケット出力
     public static void DebugPacket(OutPacket p) {
         DebugLog("[DebugPacket] " + p.Packet());
+    }
+    public static void DebugInPacket(InPacket p) {
+        DebugLog("[DebugInPacket] " + p.Packet());
     }
 
     // 不要なNPCを設置しない

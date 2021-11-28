@@ -452,7 +452,7 @@ public class BeanGame {
                      */
                     // int 奖励豆豆 = Randomizer.nextInt(150) + 50;
                     int 奖励豆豆 = (第二排 + 1) * 豆豆奖励范围;
-                    chr.gainBeans(奖励豆豆);
+                    chr.gainTama(奖励豆豆);
                     c.getPlayer().dropMessage(5, "在豆豆机中获得: " + 奖励豆豆 + "个豆豆！");
                     // chr.gainExp(1, true, false, true);
                     if (chr.getMapId() == 809030000) {
@@ -497,7 +497,7 @@ public class BeanGame {
                 if (chr.isCanSetBeansNum()) {
                     chr.setBeansNum(chr.getBeansNum() + 循环次数);
                 }
-                chr.gainBeans(-循环次数);
+                chr.gainTama(-循环次数);
                 chr.setCanSetBeansNum(true);
                 break;
             default:
@@ -570,7 +570,7 @@ public class BeanGame {
     }
 
     public static final void BeanGame2(LittleEndianAccessor slea, MapleClient c) {
-        c.getSession().write(MaplePacketCreator.updateBeansMSG(c.getPlayer().getBeans()));
+        c.getSession().write(MaplePacketCreator.updateBeansMSG(c.getPlayer().getTama()));
         c.getSession().write(MaplePacketCreator.enableActions());
     }
 }

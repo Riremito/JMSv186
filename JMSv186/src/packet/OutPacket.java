@@ -41,7 +41,6 @@ public class OutPacket {
         return (short) (((short) Decode1() & 0xFF) | (((short) Decode1() & 0xFF) << 8));
     }
 
-    // アタイガズレル
     public int Decode4() {
         return (int) (((int) Decode2() & 0xFFFF) | (((int) Decode2() & 0xFFFF) << 16));
     }

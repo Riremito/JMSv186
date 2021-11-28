@@ -81,6 +81,7 @@ import handling.world.guild.MapleGuildCharacter;
 import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
+import minigame.Pachinko;
 import tools.MockIOSession;
 import scripting.EventInstanceManager;
 import scripting.NPCScriptManager;
@@ -3022,8 +3023,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             client.getSession().write(MaplePacketCreator.enableActions());
             return false;
         }
-        tama += gain;
-        updateSingleStat(MapleStat.TAMA, tama, true);
+        gainTama(gain);
         if (show) {
             client.getSession().write(MaplePacketCreator.showTamaGain(gain));
         }
@@ -5625,8 +5625,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         tama = b;
     }
 
-    public void gainBeans(int s) {
+    public void gainTama(int s) {
         this.tama += s;
+        client.getSession().write(Pachinko.UpdateTama(this));
     }
 
     public int getBeansRange() {
