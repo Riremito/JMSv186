@@ -25,7 +25,9 @@ import tools.FileoutputUtil;
 import handling.world.World;
 import java.util.Map;
 import packet.OutPacket;
+import packet.ProcessPacket;
 import packet.ProcessPacketTest;
+import packet.SendPacket;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
@@ -425,11 +427,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
         OutPacket.Header type = OutPacket.ToHeader(header);
 
         switch (type) {
+            case DUEY: {
+                return SendPacket.HomeDelivery.Accept(c, op);
+            }
             case VICIOUS_HAMMER: {
-                // @0119 [38 00 00 00] [00 00 00 00]
-                // 0x38が成功フラグなのでクライアント側から成功可否を通知している可能性がある
-                c.getSession().write(ProcessPacketTest.ViciousHammer_Success());
-                return true;
+                return SendPacket.ViciousHammer.Accept(c, op);
             }
             // サーバーメッセージ
             case GM_COMMAND_SERVER_MESSAGE: {
@@ -1026,18 +1028,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case MONSTER_CARNIVAL: {
                 MonsterCarnivalHandler.MonsterCarnival(p, c);
-                return true;
-            }
-            case DUEY_ACTION: {
-                // @0039 03 02 02 00 01 00 01 00 00 00 09 00 83 8A 83 8C 83 7E 83 67 58 00
-                // 通常配送
-                // @0039 03 02 02 00 01 00 01 00 00 00 09 00 83 8A 83 8C 83 7E 83 67 58 01 00 00 03 00 00 00
-                // 速達
-                // @0039 08
-                // 閉じる
-                //DueyHandler.DueyOperation(p, c);
-                Debug.DebugPacket(op);
-                DueyHandler.DueyAction(op, c);
                 return true;
             }
             case USE_HIRED_MERCHANT: {

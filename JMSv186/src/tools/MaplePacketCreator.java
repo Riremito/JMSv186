@@ -3867,55 +3867,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket removeItemFromDuey(boolean remove, int Package) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(InPacket.Header.DUEY.Get());
-        mplew.write(0x18);
-        mplew.writeInt(Package);
-        mplew.write(remove ? 3 : 4);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket sendDuey(byte operation, List<MapleDueyActions> packages) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(InPacket.Header.DUEY.Get());
-        mplew.write(operation);
-
-        switch (operation) {
-            case 9: { // Request 13 Digit AS
-                mplew.write(1);
-                // 0xFF = error
-                break;
-            }
-            case 10: { // Open duey
-                mplew.write(0);
-                mplew.write(packages.size());
-
-                for (MapleDueyActions dp : packages) {
-                    mplew.writeInt(dp.getPackageId());
-                    mplew.writeAsciiString(dp.getSender(), 13);
-                    mplew.writeInt(dp.getMesos());
-                    mplew.writeLong(KoreanDateUtil.getFileTimestamp(dp.getSentTime(), false));
-                    mplew.writeZeroBytes(205);
-
-                    if (dp.getItem() != null) {
-                        mplew.write(1);
-                        PacketHelper.addItemInfo(mplew, dp.getItem(), true, true);
-                    } else {
-                        mplew.write(0);
-                    }
-                    //System.out.println("Package has been sent in packet: " + dp.getPackageId());
-                }
-                mplew.write(0);
-                break;
-            }
-        }
-        return mplew.getPacket();
-    }
-
     public static MaplePacket Mulung_DojoUp2() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 

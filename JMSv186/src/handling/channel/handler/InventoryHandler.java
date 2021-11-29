@@ -54,6 +54,7 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import minigame.Pachinko;
+import packet.ProcessPacket;
 import packet.ProcessPacketTest;
 import server.AutobanManager;
 import server.Randomizer;
@@ -1007,7 +1008,7 @@ public class InventoryHandler {
 
         switch (itemId) {
             case 5330000: {
-                c.getSession().write(ProcessPacketTest.Delivery_Open(true, false));
+                c.getSession().write(ProcessPacket.HomeDelivery.Open(true, false));
                 break;
             }
             case 5201000:
@@ -1528,10 +1529,10 @@ public class InventoryHandler {
 
                         c.getPlayer().forceReAddItem(item, MapleInventoryType.EQUIP);
                         // ビシャスのハンマーのアニメーションの終わる通知待ち状態へ
-                        c.getSession().write(ProcessPacketTest.ViciousHammer_Notify(item.getViciousHammer()));
+                        c.getSession().write(ProcessPacket.ViciousHammer.Update(item.getViciousHammer()));
                         used = true;
                     } else {
-                        c.getSession().write(ProcessPacketTest.ViciousHammer_Failure(1));
+                        c.getSession().write(ProcessPacket.ViciousHammer.Failure(1));
                     }
                 }
 

@@ -111,7 +111,7 @@ public class OutPacket {
         NPC_SHOP,
         STORAGE,
         MERCH_ITEM_STORE,
-        DUEY_ACTION,
+        DUEY,
         OWL_OPEN_UI,
         OWL_WARP,
         ITEM_SORT,
@@ -324,7 +324,7 @@ public class OutPacket {
         Header.STORAGE.Set(0x0036);
         Header.USE_HIRED_MERCHANT.Set(0x0037);
         // 0x0038
-        Header.DUEY_ACTION.Set(0x0039); // OK
+        Header.DUEY.Set(0x0039); // OK
         Header.MERCH_ITEM_STORE.Set(0x003A);
         Header.OWL_OPEN_UI.Set(0x003B);
         Header.OWL_WARP.Set(0x003C);
@@ -555,7 +555,6 @@ public class OutPacket {
         // 0x011D
         // 0x011E
         Header.TOUCHING_MTS.Set(0x011F);
-        // DUEY_ACTION
     }
 
 }
