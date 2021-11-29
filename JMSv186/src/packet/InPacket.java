@@ -756,11 +756,11 @@ public class InPacket {
         // 0x018E
         // 0x018F @018F [01] [01-03], /MapleTV コマンドのエラーメッセージ処理 (GMコマンドなので通常プレイでは不要)
         // 0x0190 未使用 (何もしない関数)
-        // 0x0191 未使用
+        // 0x0191 実質未使用 (VICIOUS)
         Header.VICIOUS_HAMMER.Set(0x0192);
         // 0x0193 実質未使用 (VICIOUS)
         // 0x0194 実質未使用 (VICIOUS)
-        // 0x0195 実質未使用 (VICIOUS)
+        // 0x0195 実質未使用 (VEGA)
         Header.VEGA_SCROLL.Set(0x0196);
         // 0x0197 実質未使用 (VEGA)
         // 0x0198 実質未使用 (VEGA)

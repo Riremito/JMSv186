@@ -362,7 +362,27 @@ function VegaScroll(c) {
 }
 
 function TestPacket(c) {
-	var p = c.InPacket(0x00F4);
+	var p = c.InPacket(0x016C);
+	/*
+		0x09	エラー?
+		0x0A	UIを開く
+		0x19	D/C
+		0x1A	宅配物到着! 通知
+		0x1B	速達のUI (クイック配送利用券)
+		0x1C	宅配物到着! 通知
+	*/
+	p.Encode1(0x0A);
+	p.Encode1(0);
+	p.Encode1(0);
+	p.Encode1(0);
+	/*
+	p.Encode1(0);
+	p.Encode4(0);
+	p.Encode4(0);
+	p.Encode4(0);
+	p.Encode4(0);
+	p.Encode4(0);
+	*/
 	c.ProcessPacket(p.Get());
 }
 

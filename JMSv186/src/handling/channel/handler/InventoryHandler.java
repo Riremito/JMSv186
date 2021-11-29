@@ -534,6 +534,7 @@ public class InventoryHandler {
 
         // ベガの呪文書
         if (vegas != 0) {
+            c.getPlayer().forceReAddItem(toScroll, MapleInventoryType.EQUIP);
             c.getSession().write(ProcessPacketTest.VegaScroll_Start());
             c.getSession().write(ProcessPacketTest.VegaScroll_Result((scrollSuccess == ScrollResult.SUCCESS)));
         }
@@ -1005,6 +1006,10 @@ public class InventoryHandler {
         boolean used = false, cc = false;
 
         switch (itemId) {
+            case 5330000: {
+                c.getSession().write(ProcessPacketTest.Delivery_Open(true, false));
+                break;
+            }
             case 5201000:
             case 5201001:
             case 5201002: {

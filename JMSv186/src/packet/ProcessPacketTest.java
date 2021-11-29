@@ -73,4 +73,29 @@ public class ProcessPacketTest {
         p.Encode1((byte) (isSuccess ? 0x3B : 0x40));
         return p.Get();
     }
+
+    /*
+        0x09    エラーメッセージ
+        0x0A    UI
+        0x1A	宅配物到着! 通知
+        0x1B	速達のUI (クイック配送利用券)
+        0x1C	宅配物到着! 通知
+     */
+    public static MaplePacket Delivery_Open(boolean isQuick, boolean isNPC) {
+        InPacket p = new InPacket(InPacket.Header.DUEY);
+        // 0x3B or 0x40
+        if (isQuick) {
+            // 速達のUI
+            p.Encode1((byte) 0x1B);
+            return p.Get();
+        }
+
+        // 通常のUI
+        p.Encode1((byte) 0x0A);
+        // NPC会話 or 速達の通知から開いたかの判定
+        p.Encode1((byte) (isNPC ? 0x00 : 0x01));
+        p.Encode1((byte) 0x00);
+        p.Encode1((byte) 0x00);
+        return p.Get();
+    }
 }
