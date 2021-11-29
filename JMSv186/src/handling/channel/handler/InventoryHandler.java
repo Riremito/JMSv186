@@ -1529,10 +1529,10 @@ public class InventoryHandler {
 
                         c.getPlayer().forceReAddItem(item, MapleInventoryType.EQUIP);
                         // ビシャスのハンマーのアニメーションの終わる通知待ち状態へ
-                        c.getSession().write(ProcessPacket.ViciousHammer.Update(item.getViciousHammer()));
+                        c.ProcessPacket(ProcessPacket.ViciousHammer.Update(item.getViciousHammer()));
                         used = true;
                     } else {
-                        c.getSession().write(ProcessPacket.ViciousHammer.Failure(1));
+                        c.ProcessPacket(ProcessPacket.ViciousHammer.Failure(1));
                     }
                 }
 
