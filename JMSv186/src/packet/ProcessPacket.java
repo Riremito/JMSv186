@@ -180,4 +180,77 @@ public class ProcessPacket {
         }
     }
 
+    // ベガの呪文書
+    public static class VegaScroll {
+
+        private enum Action {
+            // 成功
+            SUCCESS((byte) 0x3B),
+            // 不明
+            START_NOT_USED((byte) 0x3C),
+            // 開始
+            START((byte) 0x3E),
+            // 失敗
+            FAILURE((byte) 0x40),
+            UNKNOWN((byte) -1);
+
+            public static Action Find(byte b) {
+                for (final Action o : Action.values()) {
+                    if (o.Get() == b) {
+                        return o;
+                    }
+                }
+
+                return UNKNOWN;
+            }
+
+            private byte value;
+
+            Action(byte b) {
+                value = b;
+            }
+
+            Action() {
+                value = -1;
+            }
+
+            public byte Get() {
+                return value;
+            }
+
+        };
+
+        // ベガの呪文書開始
+        public static MaplePacket Start() {
+            InPacket p = new InPacket(InPacket.Header.VEGA_SCROLL);
+            // 0x3E or 0x40
+            p.Encode1(Action.START.Get());
+            return p.Get();
+        }
+
+        // ベガの呪文書の結果
+        public static MaplePacket Result(boolean isSuccess) {
+            InPacket p = new InPacket(InPacket.Header.VEGA_SCROLL);
+            // 成功可否
+            p.Encode1((byte) (isSuccess ? Action.SUCCESS.Get() : Action.FAILURE.Get()));
+            return p.Get();
+        }
+    }
+
+    // 謎
+    public static class Test {
+
+        // 0x005E @005E 00, ミニマップ点滅, 再読み込みかも?
+        public static MaplePacket ReloadMiniMap() {
+            InPacket p = new InPacket(InPacket.Header.UNKNOWN_RELOAD_MINIMAP);
+            p.Encode1((byte) 0x00);
+            return p.Get();
+        }
+
+        // 0x0083 @0083, 画面の位置をキャラクターを中心とした場所に変更, 背景リロードしてるかも?
+        public static MaplePacket ReloadMap() {
+            InPacket p = new InPacket(InPacket.Header.UNKNOWN_RELOAD_MAP);
+            return p.Get();
+        }
+    }
 }

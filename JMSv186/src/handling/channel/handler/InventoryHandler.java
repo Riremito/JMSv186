@@ -46,7 +46,6 @@ import constants.GameConstants;
 import client.SkillFactory;
 import client.anticheat.CheatingOffense;
 import debug.DebugScriptManager;
-import handling.channel.ChannelServer;
 import handling.world.MaplePartyCharacter;
 import handling.world.World;
 import java.awt.Rectangle;
@@ -55,7 +54,6 @@ import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import minigame.Pachinko;
 import packet.ProcessPacket;
-import packet.ProcessPacketTest;
 import server.AutobanManager;
 import server.Randomizer;
 import server.RandomRewards;
@@ -77,14 +75,11 @@ import server.StructPotentialItem;
 import server.maps.MapleMist;
 import server.shops.HiredMerchant;
 import server.shops.IMaplePlayerShop;
-import tools.HexTool;
 import tools.Pair;
 import tools.packet.MTSCSPacket;
 import tools.packet.PetPacket;
 import tools.data.input.SeekableLittleEndianAccessor;
 import tools.MaplePacketCreator;
-import tools.data.input.ByteArrayByteStream;
-import tools.data.input.GenericSeekableLittleEndianAccessor;
 import tools.packet.PlayerShopPacket;
 
 public class InventoryHandler {
@@ -536,8 +531,8 @@ public class InventoryHandler {
         // ベガの呪文書
         if (vegas != 0) {
             c.getPlayer().forceReAddItem(toScroll, MapleInventoryType.EQUIP);
-            c.getSession().write(ProcessPacketTest.VegaScroll_Start());
-            c.getSession().write(ProcessPacketTest.VegaScroll_Result((scrollSuccess == ScrollResult.SUCCESS)));
+            c.ProcessPacket(ProcessPacket.VegaScroll.Start());
+            c.ProcessPacket(ProcessPacket.VegaScroll.Result((scrollSuccess == ScrollResult.SUCCESS)));
         }
 
         return true;

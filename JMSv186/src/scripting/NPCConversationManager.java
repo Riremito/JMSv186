@@ -68,7 +68,6 @@ import java.util.HashMap;
 import handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
 import packet.ProcessPacket;
-import packet.ProcessPacketTest;
 import server.MapleShop;
 import server.MapleShopItem;
 import server.MapleStatEffect;

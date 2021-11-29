@@ -362,38 +362,15 @@ function VegaScroll(c) {
 }
 
 function TestPacket(c) {
-	var p = c.InPacket(0x016C);
-	/*
-		0x09	???
-		0x0A	UIを開く
-		0x0C	メルが足りません。
-		0x0D	間違った要請です。
-		0x0E	宛先の名前を再確認してください。
-		0x0F	同じID内のキャラクターには送れません。
-		0x10	宛先の宅配保管箱に空きがありません。
-		0x11	宅配を受け取ることができないキャラクターです。
-		0x12	1個しか持てないアイテムが宛先の宅配保管箱にあります。
-		0x13	宅配物を発送しました。
-		0x14	原因不明のエラーが発生しました。
-		0x16	空きがあるか確認してください。
-		0x17	1個しか持てないアイテムがありメルとアイテムを取り出すことができませんでした。
-		0x18	宅配物を受け取りました。
-		0x19	クラッシュ
-		0x1A	宅配物到着! 通知
-		0x1B	速達のUI (クイック配送利用券)
-		0x1C	宅配物到着! 通知
-		0x1D	原因不明のエラーが発生しました。
-	*/
-	p.Encode1(0x13);
-	/*
-	p.Encode1(0);
-	p.Encode4(0);
-	p.Encode4(0);
-	p.Encode4(0);
-	p.Encode4(0);
-	p.Encode4(0);
-	*/
+	var pp = c.InPacket(0x0196);
+	// 3C or 3E
+	pp.Encode1(0x3E);
+	c.ProcessPacket(pp.Get());
+	var p = c.InPacket(0x0196);
+	// 3B = 成功? ,40 = 失敗?
+	p.Encode1(0x3B);
 	c.ProcessPacket(p.Get());
+
 }
 
 /*

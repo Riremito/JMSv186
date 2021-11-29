@@ -25,8 +25,6 @@ import tools.FileoutputUtil;
 import handling.world.World;
 import java.util.Map;
 import packet.OutPacket;
-import packet.ProcessPacket;
-import packet.ProcessPacketTest;
 import packet.SendPacket;
 
 public class MapleServerHandler extends IoHandlerAdapter {

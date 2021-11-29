@@ -39,7 +39,6 @@ import handling.world.PartyOperation;
 import handling.world.PlayerBuffStorage;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
-import packet.ProcessPacketTest;
 import server.maps.FieldLimitType;
 import tools.FileoutputUtil;
 import tools.MaplePacketCreator;
@@ -126,9 +125,6 @@ public class InterServerHandler {
         channelServer.addPlayer(player);
 
         c.getSession().write(MaplePacketCreator.getCharInfo(player));
-        // Map移動時のテスト
-        c.getSession().write(ProcessPacketTest.Test_ReloadMiniMap());
-        c.getSession().write(ProcessPacketTest.Test_ReloadMap());
         //
 
         /*        if (player.isGM()) {
