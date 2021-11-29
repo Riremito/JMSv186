@@ -46,8 +46,8 @@ public class InPacket {
     }
 
     public void EncodeStr(String str) {
-        Encode2((short) str.length());
         byte[] b = str.getBytes();
+        Encode2((short) b.length);
 
         for (int i = 0; i < b.length; i++) {
             Encode1(b[i]);

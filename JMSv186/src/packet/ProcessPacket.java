@@ -1,7 +1,9 @@
 // クライアントへ送信するパケットの生成
 package packet;
 
+import debug.Debug;
 import handling.MaplePacket;
+import java.util.List;
 
 public class ProcessPacket {
 
@@ -233,6 +235,144 @@ public class ProcessPacket {
             InPacket p = new InPacket(InPacket.Header.VEGA_SCROLL);
             // 成功可否
             p.Encode1((byte) (isSuccess ? Action.SUCCESS.Get() : Action.FAILURE.Get()));
+            return p.Get();
+        }
+    }
+
+    // 拡声器
+    public static class Megaphone {
+
+        private enum Action {
+            // 青文字, [告知事項]
+            UNKNOWN_00((byte) 0x00),
+            // ダイアログ
+            UNKNOWN_01((byte) 0x01),
+            // メガホン
+            MEGAPHONE_BLUE((byte) 0x02),
+            // 拡声器
+            MEGAPHONE((byte) 0x03),
+            // 画面上部
+            UNKNOWN_04((byte) 0x04),
+            // ピンク文字
+            UNKNOWN_05((byte) 0x05),
+            // 青文字
+            UNKNOWN_06((byte) 0x06),
+            // 用途不明, 0x00B93F3F[0x07] = 00B93E27
+            UNKNOWN_07((byte) 0x07),
+            // アイテム拡声器
+            MEGAPHONE_ITEM((byte) 0x08),
+            // ワールド拡声器, 未実装
+            MEGAPHONE_GREEN((byte) 0x09),
+            // 三連拡声器
+            MEGAPHONE_TRIPLE((byte) 0x0A),
+            // 用途不明, 0x00B93F3F[0x0B] = 00B93ECA
+            UNKNOWN_0B((byte) 0x0B),
+            // ハート拡声器
+            MEGAPHONE_HEART((byte) 0x0C),
+            // ドクロ拡声器
+            MEGAPHONE_SKULL((byte) 0x0D),
+            // ガシャポン
+            MEGAPHONE_GASHAPON((byte) 0x0E),
+            // 青文字, 名前:アイテム名(xxxx個))
+            UNKNOWN_0F((byte) 0x0F),
+            // 体験用アバター獲得
+            MEGAPHONE_AVATAR((byte) 0x10),
+            // 青文字, アイテム表示
+            UNKNOWN_11((byte) 0x11),
+            UNKNOWN((byte) -1);
+
+            public static Action Find(byte b) {
+                for (final Action o : Action.values()) {
+                    if (o.Get() == b) {
+                        return o;
+                    }
+                }
+
+                return UNKNOWN;
+            }
+
+            private byte value;
+
+            Action(byte b) {
+                value = b;
+            }
+
+            Action() {
+                value = -1;
+            }
+
+            public byte Get() {
+                return value;
+            }
+
+        };
+
+        // メガホン
+        public static MaplePacket MegaphoneBlue(String text) {
+            InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
+            p.Encode1(Action.MEGAPHONE_BLUE.Get());
+            p.EncodeStr(text);
+            return p.Get();
+        }
+
+        // 拡声器
+        public static MaplePacket Megaphone(String text, byte channel, byte ear) {
+            InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
+            p.Encode1(Action.MEGAPHONE.Get());
+            p.EncodeStr(text);
+            p.Encode1((byte) (channel - 1));
+            p.Encode1(ear);
+            Debug.DebugInPacket(p);
+            return p.Get();
+        }
+
+        // ハート拡声器
+        public static MaplePacket MegaphoneHeart(String text, byte channel, byte ear) {
+            InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
+            p.Encode1(Action.MEGAPHONE_HEART.Get());
+            p.EncodeStr(text);
+            p.Encode1((byte) (channel - 1));
+            p.Encode1(ear);
+            return p.Get();
+        }
+
+        // ドクロ拡声器
+        public static MaplePacket MegaphoneSkull(String text, byte channel, byte ear) {
+            InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
+            p.Encode1(Action.MEGAPHONE_SKULL.Get());
+            p.EncodeStr(text);
+            p.Encode1((byte) (channel - 1));
+            p.Encode1(ear);
+            return p.Get();
+        }
+
+        // アイテム拡声器
+        public static MaplePacket MegaphoneItem(String text, byte channel, byte ear, byte showitem) {
+            InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
+            p.Encode1(Action.MEGAPHONE_ITEM.Get());
+            p.EncodeStr(text);
+            p.Encode1((byte) (channel - 1));
+            p.Encode1(ear);
+            // アイテム判定
+            p.Encode1((byte) 0x00);
+            if (showitem != 0x00) {
+                // PacketHelper.addItemInfo(mplew, item, false, false, true);
+            }
+            return p.Get();
+        }
+
+        // 三連拡声器
+        public static MaplePacket MegaphoneTriple(List<String> text, byte channel, byte ear) {
+            InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
+            p.Encode1(Action.MEGAPHONE_TRIPLE.Get());
+            // 1行目
+            p.EncodeStr(text.get(0));
+            p.Encode1((byte) text.size());
+            for (int i = 1; i < text.size(); i++) {
+                p.EncodeStr(text.get(i));
+            }
+            p.Encode1((byte) (channel - 1));
+            p.Encode1(ear);
             return p.Get();
         }
     }

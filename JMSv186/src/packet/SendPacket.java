@@ -2,6 +2,13 @@
 package packet;
 
 import client.MapleClient;
+import client.inventory.IItem;
+import client.inventory.MapleInventoryType;
+import handling.world.World;
+import java.util.LinkedList;
+import java.util.List;
+import server.MapleItemInformationProvider;
+import tools.MaplePacketCreator;
 
 public class SendPacket {
 
@@ -76,6 +83,152 @@ public class SendPacket {
             c.ProcessPacket(ProcessPacket.ViciousHammer.Success());
             return true;
         }
+    }
+
+    // 拡声器
+    public static class CashItem {
+
+        public static boolean Use(MapleClient c, OutPacket p) {
+            int timestamp = p.Decode4();
+            short slotid = p.Decode2();
+            int itemid = p.Decode4();
+
+            IItem iteminfo = c.getPlayer().getInventory(MapleInventoryType.CASH).getItem(slotid);
+
+            if (iteminfo == null) {
+                return false;
+            }
+
+            if (iteminfo.getItemId() != itemid) {
+                return false;
+            }
+
+            if (iteminfo.getQuantity() < 1) {
+                return false;
+            }
+
+            // 拡声器
+            if (itemid / 10000 == 507) {
+                return Megaphone.Use(c, p, itemid);
+            }
+
+            return false;
+        }
+
+        public static class Megaphone {
+
+            // 勲章が装備されるスロットのID
+            private static final short SLOT_EQUIPPED_MEDAL = (short) -21;
+
+            // 勲章の名前を付けたキャラクター名
+            private static String GetSenderName(MapleClient c) {
+                IItem equipped_medal = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(SLOT_EQUIPPED_MEDAL);
+                // "キャラクター名"
+                if (equipped_medal == null) {
+                    return c.getPlayer().getName();
+                }
+                String medal_name = MapleItemInformationProvider.getInstance().getName(equipped_medal.getItemId());
+                int padding = medal_name.indexOf("の勲章");
+
+                if (padding > 0) {
+                    medal_name = medal_name.substring(0, padding);
+                }
+
+                // "<勲章> キャラクター名"
+                return "<" + medal_name + "> " + c.getPlayer().getName();
+            }
+
+            public static boolean Use(MapleClient c, OutPacket p, int itemid) {
+                switch (itemid) {
+                    // メガホン
+                    case 5070000: {
+                        String message = new String(p.DecodeBuffer());
+                        c.getPlayer().getMap().broadcastMessage(ProcessPacket.Megaphone.MegaphoneBlue(GetSenderName(c) + " : " + message));
+                        return true;
+                    }
+                    // 拡声器
+                    case 5071000: {
+                        String message = new String(p.DecodeBuffer());
+                        byte ear = p.Decode1();
+                        World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.Megaphone(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear).getBytes());
+                        return true;
+                    }
+                    // 高機能拡声器 (使えない)
+                    case 5072000: {
+                        break;
+                    }
+                    // ハート拡声器
+                    case 5073000: {
+                        String message = new String(p.DecodeBuffer());
+                        byte ear = p.Decode1();
+                        byte channel = (byte) c.getChannel();
+                        World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.MegaphoneHeart(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear).getBytes());
+                        return true;
+                    }
+                    // ドクロ拡声器
+                    case 5074000: {
+                        String message = new String(p.DecodeBuffer());
+                        byte ear = p.Decode1();
+                        World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.MegaphoneSkull(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear).getBytes());
+                        return true;
+                    }
+                    // MapleTV
+                    case 5075000:
+                    case 5075001:
+                    case 5075002:
+                    case 5075003:
+                    case 5075004:
+                    case 5075005: {
+                        break;
+                    }
+                    // アイテム拡声器
+                    case 5076000: {
+                        String message = new String(p.DecodeBuffer());
+                        byte ear = p.Decode1();
+                        byte item = p.Decode1();
+                        if (item == 0x01) {
+                            // アイテム情報
+                            byte type = p.Decode1();
+                            byte slot = p.Decode1();
+                        }
+                        /*
+                            IItem item = null;
+                            if (slea.readByte() == 1) { //item
+                                byte invType = (byte) slea.readInt();
+                                byte pos = (byte) slea.readInt();
+                                item = c.getPlayer().getInventory(MapleInventoryType.getByType(invType)).getItem(pos);
+                            }
+                         */
+                        World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.MegaphoneItem(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear, item).getBytes());
+                        return true;
+                    }
+                    // 三連拡声器
+                    case 5077000: {
+                        List<String> messages = new LinkedList<>();
+                        String sender = GetSenderName(c);
+                        // メッセージの行数
+                        byte line = p.Decode1();
+                        for (int i = 0; i < line; i++) {
+                            String message = new String(p.DecodeBuffer());
+                            if (message.length() > 65) {
+                                break;
+                            }
+                            messages.add(sender + " : " + message);
+                        }
+                        byte ear = p.Decode1();
+                        World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.MegaphoneTriple(messages, (byte) c.getChannel(), ear).getBytes());
+                        return true;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+
+                c.ProcessPacket(MaplePacketCreator.enableActions());
+                return false;
+            }
+        }
+
     }
 
 }

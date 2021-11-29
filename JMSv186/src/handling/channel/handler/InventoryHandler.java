@@ -53,7 +53,9 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import minigame.Pachinko;
+import packet.OutPacket;
 import packet.ProcessPacket;
+import packet.SendPacket;
 import server.AutobanManager;
 import server.Randomizer;
 import server.RandomRewards;
@@ -988,7 +990,7 @@ public class InventoryHandler {
         }
     }
 
-    public static final void UseCashItem(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static final void UseCashItem(final SeekableLittleEndianAccessor slea, final MapleClient c, OutPacket op) {
         c.getPlayer().updateTick(slea.readInt());
         final byte slot = (byte) slea.readShort();
         final int itemId = slea.readInt();
@@ -1615,190 +1617,6 @@ public class InventoryHandler {
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.ETC, item.getPosition(), (short) 1, false);
                     used = true;
                 }
-            }
-            break;
-            case 5070000: { // Megaphone
-                if (c.getPlayer().getLevel() < 10) {
-                    c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
-                }
-                if (!c.getChannelServer().getMegaphoneMuteState()) {
-                    final String message = slea.readMapleAsciiString();
-
-                    if (message.length() > 65) {
-                        break;
-                    }
-                    final StringBuilder sb = new StringBuilder();
-                    addMedalString(c.getPlayer(), sb);
-                    sb.append(c.getPlayer().getName());
-                    sb.append(" : ");
-                    sb.append(message);
-
-                    c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.serverNotice(2, sb.toString()));
-                    used = true;
-                } else {
-                    c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
-                }
-                break;
-            }
-            case 5077000: { // 三連拡声器
-                if (!c.getChannelServer().getMegaphoneMuteState()) {
-                    final byte numLines = slea.readByte();
-                    if (numLines > 3) {
-                        return;
-                    }
-                    final List<String> messages = new LinkedList<String>();
-                    String message;
-
-                    // 勲章
-                    final IItem medal = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -21);
-
-                    String player_name = null;
-                    if (medal != null) { // Medal
-                        String medal_name = MapleItemInformationProvider.getInstance().getName(medal.getItemId());
-                        int padding = medal_name.indexOf("の勲章");
-                        if (padding > 0) {
-                            medal_name = medal_name.substring(0, padding);
-                        }
-                        player_name = "<" + medal_name + "> " + c.getPlayer().getName();
-                    } else {
-                        player_name = c.getPlayer().getName();
-                    }
-
-                    for (int i = 0; i < numLines; i++) {
-                        message = slea.readMapleAsciiString();
-                        if (message.length() > 65) {
-                            break;
-                        }
-                        messages.add(player_name + " : " + message);
-
-                    }
-                    final boolean ear = slea.readByte() > 0;
-
-                    World.Broadcast.broadcastSmega(MaplePacketCreator.tripleSmega(messages, ear, c.getChannel()).getBytes());
-                    used = true;
-                } else {
-                    c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
-                }
-                break;
-            }
-            case 5071000:
-            case 5073000:
-            case 5074000:
-            case 5072000: { // Super Megaphone
-                if (c.getPlayer().getLevel() < 10) {
-                    c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
-                }
-                if (!c.getChannelServer().getMegaphoneMuteState()) {
-                    final String user_message = slea.readMapleAsciiString();
-
-                    if (user_message.length() > 65) {
-                        break;
-                    }
-
-                    final IItem medal = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -21);
-                    String player_name = null;
-                    if (medal != null) { // Medal
-                        String medal_name = MapleItemInformationProvider.getInstance().getName(medal.getItemId());
-                        int padding = medal_name.indexOf("の勲章");
-                        if (padding > 0) {
-                            medal_name = medal_name.substring(0, padding);
-                        }
-                        player_name = "<" + medal_name + "> " + c.getPlayer().getName();
-                    } else {
-                        player_name = c.getPlayer().getName();
-                    }
-
-                    String message = player_name + " : " + user_message;
-
-                    final boolean ear = slea.readByte() != 0;
-                    int type = 3;
-                    if (itemId == 5073000) {
-                        type = 12;
-                    }
-                    if (itemId == 5074000) {
-                        type = 13;
-                    }
-                    World.Broadcast.broadcastSmega(MaplePacketCreator.serverNotice(type, c.getChannel(), message, ear).getBytes());
-                    used = true;
-                } else {
-                    c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
-                }
-                break;
-            }
-            case 5076000: { // Item Megaphone
-                if (c.getPlayer().getLevel() < 10) {
-                    c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
-                }
-                if (!c.getChannelServer().getMegaphoneMuteState()) {
-                    final String message = slea.readMapleAsciiString();
-
-                    if (message.length() > 65) {
-                        break;
-                    }
-                    final StringBuilder sb = new StringBuilder();
-
-                    final IItem medal = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -21);
-                    String player_name = null;
-                    if (medal != null) { // Medal
-                        String medal_name = MapleItemInformationProvider.getInstance().getName(medal.getItemId());
-                        int padding = medal_name.indexOf("の勲章");
-                        if (padding > 0) {
-                            medal_name = medal_name.substring(0, padding);
-                        }
-                        player_name = "<" + medal_name + "> " + c.getPlayer().getName();
-                    } else {
-                        player_name = c.getPlayer().getName();
-                    }
-
-                    sb.append(player_name);
-                    sb.append(" : ");
-                    sb.append(message);
-
-                    final boolean ear = slea.readByte() > 0;
-
-                    IItem item = null;
-                    if (slea.readByte() == 1) { //item
-                        byte invType = (byte) slea.readInt();
-                        byte pos = (byte) slea.readInt();
-                        item = c.getPlayer().getInventory(MapleInventoryType.getByType(invType)).getItem(pos);
-                    }
-                    World.Broadcast.broadcastSmega(MaplePacketCreator.itemMegaphone(sb.toString(), ear, c.getChannel(), item).getBytes());
-                    used = true;
-                } else {
-                    c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
-                }
-                break;
-            }
-            case 5075000: // MapleTV Messenger
-            case 5075001: // MapleTV Star Messenger
-            case 5075002: { // MapleTV Heart Messenger
-                c.getPlayer().dropMessage(5, "There are no MapleTVs to broadcast the message to.");
-                break;
-            }
-            case 5075003:
-            case 5075004:
-            case 5075005: {
-                if (c.getPlayer().getLevel() < 10) {
-                    c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
-                    break;
-                }
-                int tvType = itemId % 10;
-                if (tvType == 3) {
-                    slea.readByte(); //who knows
-                }
-                boolean ear = tvType != 1 && tvType != 2 && slea.readByte() > 1; //for tvType 1/2, there is no byte. 
-                MapleCharacter victim = tvType == 1 || tvType == 4 ? null : c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString()); //for tvType 4, there is no string.
-                if (tvType == 0 || tvType == 3) { //doesn't allow two
-                    victim = null;
-                } else if (victim == null) {
-                    c.getPlayer().dropMessage(1, "That character is not in the channel.");
-                    break;
-                }
-                String message = slea.readMapleAsciiString();
-                World.Broadcast.broadcastSmega(MaplePacketCreator.serverNotice(3, c.getChannel(), c.getPlayer().getName() + " : " + message, ear).getBytes());
                 break;
             }
             case 5090100: // Wedding Invitation Card
@@ -1987,8 +1805,11 @@ public class InventoryHandler {
                 //used = true;
                 break;
             }
-            default:
-                if (itemId / 10000 == 512) {
+            default: {
+                // 拡声器
+                if (itemId / 10000 == 507) {
+                    used = SendPacket.CashItem.Use(c, op);
+                } else if (itemId / 10000 == 512) {
                     final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                     final String msg = ii.getMsg(itemId).replaceFirst("%s", c.getPlayer().getName()).replaceFirst("%s", slea.readMapleAsciiString());
                     c.getPlayer().getMap().startMapEffect(msg, itemId);
@@ -2024,6 +1845,7 @@ public class InventoryHandler {
                     System.out.println(slea.toString(true));
                 }
                 break;
+            }
         }
 
         if (used) {

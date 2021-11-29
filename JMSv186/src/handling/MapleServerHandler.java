@@ -727,7 +727,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case USE_CASH_ITEM: {
-                InventoryHandler.UseCashItem(p, c);
+                InventoryHandler.UseCashItem(p, c, op);
                 return true;
             }
             case USE_ITEM: {

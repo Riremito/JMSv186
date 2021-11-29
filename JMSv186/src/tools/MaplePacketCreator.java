@@ -66,7 +66,6 @@ import server.MapleItemInformationProvider;
 import server.MapleShopItem;
 import server.MapleStatEffect;
 import server.MapleTrade;
-import server.MapleDueyActions;
 import server.Randomizer;
 import server.life.SummonAttackEntry;
 import server.maps.MapleSummon;
@@ -463,7 +462,6 @@ public class MaplePacketCreator {
                 mplew.writeInt(1472117); // アイテムID
                 break;
         }
-
         return mplew.getPacket();
     }
 
@@ -478,27 +476,6 @@ public class MaplePacketCreator {
         //mplew.writeMapleAsciiString(name);
         PacketHelper.addItemInfo(mplew, item, true, true);
         mplew.writeZeroBytes(10);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket tripleSmega(List<String> message, boolean ear, int channel) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(InPacket.Header.SERVERMESSAGE.Get());
-        mplew.write(0x0A);
-
-        if (message.get(0) != null) {
-            mplew.writeMapleAsciiString(message.get(0));
-        }
-        mplew.write(message.size());
-        for (int i = 1; i < message.size(); i++) {
-            if (message.get(i) != null) {
-                mplew.writeMapleAsciiString(message.get(i));
-            }
-        }
-        mplew.write(channel - 1);
-        mplew.write(ear ? 1 : 0);
-
         return mplew.getPacket();
     }
 
