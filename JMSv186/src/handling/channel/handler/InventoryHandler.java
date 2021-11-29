@@ -1011,10 +1011,10 @@ public class InventoryHandler {
             case 5201002: {
                 final int tama = MapleItemInformationProvider.getInstance().getInt(itemId, "info/dama");
                 if (c.getPlayer().gainTama(tama, true)) {
-                    c.getSession().write(Pachinko.TamaBoxSuccess(tama));
+                    c.ProcessPacket(Pachinko.TamaBoxSuccess(tama));
                     used = true;
                 } else {
-                    c.getSession().write(Pachinko.TamaBoxFailure());
+                    c.ProcessPacket(Pachinko.TamaBoxFailure());
                 }
                 break;
             }
