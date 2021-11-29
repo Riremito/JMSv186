@@ -1029,7 +1029,15 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case DUEY_ACTION: {
-                DueyHandler.DueyOperation(p, c);
+                // @0039 03 02 02 00 01 00 01 00 00 00 09 00 83 8A 83 8C 83 7E 83 67 58 00
+                // 通常配送
+                // @0039 03 02 02 00 01 00 01 00 00 00 09 00 83 8A 83 8C 83 7E 83 67 58 01 00 00 03 00 00 00
+                // 速達
+                // @0039 08
+                // 閉じる
+                //DueyHandler.DueyOperation(p, c);
+                Debug.DebugPacket(op);
+                DueyHandler.DueyAction(op, c);
                 return true;
             }
             case USE_HIRED_MERCHANT: {

@@ -35,11 +35,34 @@ import client.inventory.MapleInventoryType;
 import database.DatabaseConnection;
 import java.util.Collections;
 import java.util.Map;
+import packet.OutPacket;
+import packet.ProcessPacketTest;
 import tools.data.input.SeekableLittleEndianAccessor;
 import server.MapleDueyActions;
 import tools.Pair;
 
 public class DueyHandler {
+
+    public static final boolean DueyAction(OutPacket p, MapleClient c) {
+        byte action = p.Decode1();
+
+        switch (action) {
+            // 配送
+            case 0x03: {
+                c.getSession().write(ProcessPacketTest.Delivery_Send());
+                return true;
+            }
+            // 閉じる
+            case 0x08: {
+                // 厳密に宅配可能状態か判断する場合は宅配UIを開いた時に何らかのフラグをサーバー側で保持して閉じるパケットが送信されたフラグをオフにする必要がある
+                return true;
+            }
+            default:
+                break;
+        }
+
+        return false;
+    }
 
     /*
      * 19 = Successful
