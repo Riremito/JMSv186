@@ -185,21 +185,15 @@ public class SendPacket {
                     case 5076000: {
                         String message = new String(p.DecodeBuffer());
                         byte ear = p.Decode1();
-                        byte item = p.Decode1();
-                        if (item == 0x01) {
+                        byte showitem = p.Decode1();
+                        IItem item = null;
+                        if (showitem == 0x01) {
                             // アイテム情報
-                            byte type = p.Decode1();
-                            byte slot = p.Decode1();
+                            int type = p.Decode4();
+                            int slot = p.Decode4();
+                            item = c.getPlayer().getInventory(MapleInventoryType.getByType((byte)type)).getItem((short)slot);
                         }
-                        /*
-                            IItem item = null;
-                            if (slea.readByte() == 1) { //item
-                                byte invType = (byte) slea.readInt();
-                                byte pos = (byte) slea.readInt();
-                                item = c.getPlayer().getInventory(MapleInventoryType.getByType(invType)).getItem(pos);
-                            }
-                         */
-                        World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.MegaphoneItem(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear, item).getBytes());
+                        World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.MegaphoneItem(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear, showitem, item).getBytes());
                         return true;
                     }
                     // 三連拡声器

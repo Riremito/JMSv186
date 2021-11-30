@@ -1,9 +1,12 @@
 // クライアントへ送信するパケットの生成
 package packet;
 
+import client.inventory.IItem;
 import debug.Debug;
 import handling.MaplePacket;
 import java.util.List;
+import tools.data.output.MaplePacketLittleEndianWriter;
+import tools.packet.PacketHelper;
 
 public class ProcessPacket {
 
@@ -322,7 +325,6 @@ public class ProcessPacket {
             p.EncodeStr(text);
             p.Encode1((byte) (channel - 1));
             p.Encode1(ear);
-            Debug.DebugInPacket(p);
             return p.Get();
         }
 
@@ -347,16 +349,19 @@ public class ProcessPacket {
         }
 
         // アイテム拡声器
-        public static MaplePacket MegaphoneItem(String text, byte channel, byte ear, byte showitem) {
+        public static MaplePacket MegaphoneItem(String text, byte channel, byte ear, byte showitem, IItem item) {
             InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
             p.Encode1(Action.MEGAPHONE_ITEM.Get());
             p.EncodeStr(text);
             p.Encode1((byte) (channel - 1));
             p.Encode1(ear);
             // アイテム判定
-            p.Encode1((byte) 0x00);
-            if (showitem != 0x00) {
-                // PacketHelper.addItemInfo(mplew, item, false, false, true);
+            if (showitem == 0x00) {
+                p.Encode1(showitem);
+            } else {
+                MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+                PacketHelper.addItemInfo(mplew, item, false, false, true);
+                p.EncodeBuffer(mplew.getPacket().getBytes());
             }
             return p.Get();
         }
