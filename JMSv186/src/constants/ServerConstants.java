@@ -56,8 +56,6 @@ public class ServerConstants {
     public static final String Poll_Question = "Are you mudkiz?";
     public static final String[] Poll_Answers = {"test1", "test2", "test3"};
     // End of Poll
-    public static final short MAPLE_VERSION = 186;
-    public static final String MAPLE_PATCH = "1";
     public static final boolean Use_Fixed_IV = false;
     public static final int MIN_MTS = 110;
     public static final int MTS_BASE = 0; //+1000 to everything in MSEA but cash is costly here

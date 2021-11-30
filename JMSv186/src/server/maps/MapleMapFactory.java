@@ -43,6 +43,7 @@ import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.PortalFactory;
+import server.Start;
 import server.life.AbstractLoadedMapleLife;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
@@ -180,38 +181,40 @@ public class MapleMapFactory {
                 }
 
                 // 設定ファイルに定義されたNPCを設置
-                Path file = Paths.get("./scripts/map/" + mapid + ".txt");
-                try {
-                    if (!Files.notExists(file)) {
-                        List<String> text;
-                        text = Files.readAllLines(file); // UTF-8
-                        for (int i = 0; i < text.size(); i++) {
-                            String[] npc_data = text.get(i).split(",");
-                            if (npc_data.length == 4) {
+                if (Start.getMainVersion() == 186) {
+                    Path file = Paths.get("./scripts/map/" + mapid + ".txt");
+                    try {
+                        if (!Files.notExists(file)) {
+                            List<String> text;
+                            text = Files.readAllLines(file); // UTF-8
+                            for (int i = 0; i < text.size(); i++) {
+                                String[] npc_data = text.get(i).split(",");
+                                if (npc_data.length == 4) {
 
-                                int npc_id = Integer.parseInt(npc_data[0]);
-                                int npc_x = Integer.parseInt(npc_data[1]);
-                                int npc_y = Integer.parseInt(npc_data[2]);
-                                int npc_fh = Integer.parseInt(npc_data[3]);
+                                    int npc_id = Integer.parseInt(npc_data[0]);
+                                    int npc_x = Integer.parseInt(npc_data[1]);
+                                    int npc_y = Integer.parseInt(npc_data[2]);
+                                    int npc_fh = Integer.parseInt(npc_data[3]);
 
-                                MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
-                                if (npc != null && !npc.getName().equals("MISSINGNO")) {
-                                    npc.setPosition(new Point(npc_x, npc_y));
-                                    npc.setCy(npc_y);
-                                    npc.setRx0(npc_x + 50);
-                                    npc.setRx1(npc_x - 50);
-                                    npc.setFh(npc_fh);
-                                    npc.setCustom(true);
-                                    map.addMapObject(npc);
-                                    //Debug.DebugLog("Spawn NPC, NPC = " + npc.getName() + " (" + npc_id + "), Map = " + MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(omapid))) + " - " + MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(omapid))) + " (" + mapid + ")");
+                                    MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
+                                    if (npc != null && !npc.getName().equals("MISSINGNO")) {
+                                        npc.setPosition(new Point(npc_x, npc_y));
+                                        npc.setCy(npc_y);
+                                        npc.setRx0(npc_x + 50);
+                                        npc.setRx1(npc_x - 50);
+                                        npc.setFh(npc_fh);
+                                        npc.setCustom(true);
+                                        map.addMapObject(npc);
+                                        //Debug.DebugLog("Spawn NPC, NPC = " + npc.getName() + " (" + npc_id + "), Map = " + MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(omapid))) + " - " + MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(omapid))) + " (" + mapid + ")");
+                                    }
+                                } else {
+                                    Debug.InfoLog("spawn npc format error: " + mapid);
                                 }
-                            } else {
-                                Debug.InfoLog("spawn npc format error: " + mapid);
                             }
                         }
+                    } catch (IOException ex) {
+                        Logger.getLogger(MapleMapFactory.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                } catch (IOException ex) {
-                    Logger.getLogger(MapleMapFactory.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
                 addAreaBossSpawn(map);

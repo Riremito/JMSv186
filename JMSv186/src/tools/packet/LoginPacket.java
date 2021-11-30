@@ -26,23 +26,24 @@ import java.util.Set;
 
 import client.MapleClient;
 import client.MapleCharacter;
-import constants.ServerConstants;
+import debug.Debug;
 import handling.MaplePacket;
 import handling.login.LoginServer;
 import java.util.Random;
 import packet.InPacket;
 import packet.OutPacket;
+import server.Start;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import tools.HexTool;
 
 public class LoginPacket {
 
-    public static final MaplePacket getHello(final short mapleVersion, final byte[] sendIv, final byte[] recvIv) {
+    public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(16);
 
         mplew.writeShort(14); // 13 = MSEA, 14 = GlobalMS, 15 = EMS
-        mplew.writeShort(mapleVersion);
-        mplew.writeMapleAsciiString(ServerConstants.MAPLE_PATCH);
+        mplew.writeShort(Start.getMainVersion());
+        mplew.writeMapleAsciiString(String.valueOf(Start.getSubVersion()));
         mplew.write(recvIv);
         mplew.write(sendIv);
         mplew.write(3); // 1 = KMS, 3 = JMS, 4 = CMS, 6 = TMS, 7 = MSEA, 8 = GlobalMS, 5 = Test Server
@@ -61,6 +62,10 @@ public class LoginPacket {
     public static final MaplePacket LoginAUTH(OutPacket p, MapleClient c) {
         // JMS v186.1には3つのログイン画面が存在するのでランダムに割り振ってみる
         String LoginScreen[] = {"MapLogin", "MapLogin1", "MapLogin2"};
+        // v187
+        if (Start.getMainVersion() >= 187) {
+            return LoginAUTH(LoginScreen[0]);
+        }
         return LoginAUTH(LoginScreen[(new Random().nextInt(3))]);
     }
 
@@ -70,6 +75,9 @@ public class LoginPacket {
         mplew.writeShort(InPacket.Header.LOGIN_AUTH.Get());
         mplew.writeMapleAsciiString(LoginScreen);
 
+        if (Start.getMainVersion() >= 187) {
+            mplew.writeZeroBytes(16);
+        }
         return mplew.getPacket();
     }
 

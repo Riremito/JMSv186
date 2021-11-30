@@ -63,18 +63,51 @@ public class Start {
         Debug.InfoLog("Running...");
     }
 
-    public final static void main(final String args[]) {
-        Debug.InfoLog("Starting...");
-        OutPacket.SetForJMSv186();
-        InPacket.SetForJMSv186();
+    private static short MapleVersion = 0;
+    private static byte MapleSubVersion = 0;
 
-        for (String arg : args) {
-            if (arg.equals("test")) {
-                Debug.InfoLog("Mode = " + arg);
-                TestServer();
-                return;
-            }
+    public static short getMainVersion() {
+        return MapleVersion;
+    }
+
+    public static byte getSubVersion() {
+        return MapleSubVersion;
+    }
+
+    public final static void main(final String args[]) {
+
+        int version_main = 186;
+        int version_sub = 1;
+        String server_name = "main";
+
+        if (args.length >= 2) {
+            version_main = Integer.parseInt(args[0]);
+            version_sub = Integer.parseInt(args[1]);
         }
+
+        if (args.length >= 3) {
+            server_name = args[2];
+        }
+
+        Debug.InfoLog("JMS Emulate Server for v" + version_main + "." + version_sub);
+        Debug.InfoLog("Starting " + server_name + "...");
+
+        MapleVersion = (short) version_main;
+        MapleSubVersion = (byte) version_sub;
+
+        if (version_main == 186) {
+            OutPacket.SetForJMSv186();
+            InPacket.SetForJMSv186();
+        } else {
+            OutPacket.SetForJMSv186();
+            InPacket.SetForJMSv186();
+        }
+
+        if (server_name.equals("test")) {
+            TestServer();
+            return;
+        }
+
         // 設定ファイルの読み込み
         DatabaseConnection.LoadConfig();
         LoginServer.LoadConfig();

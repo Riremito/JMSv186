@@ -61,9 +61,6 @@ public class MaplePacketLittleEndianWriter extends GenericLittleEndianWriter {
      * @return A <code>MaplePacket</code> with the bytes in this stream.
      */
     public final MaplePacket getPacket() {
-        //MaplePacket packet = new ByteArrayMaplePacket(baos.toByteArray());
-        //System.out.println("Packet to be sent:\n" +packet.toString());
-//        System.out.println("Packet to be sent:\n" + HexTool.toString(baos.toByteArray()) + "\n" + HexTool.toStringFromAscii(baos.toByteArray()));
         return new ByteArrayMaplePacket(baos.toByteArray());
     }
 

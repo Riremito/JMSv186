@@ -26,6 +26,7 @@ import handling.world.World;
 import java.util.Map;
 import packet.OutPacket;
 import packet.SendPacket;
+import server.Start;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
@@ -101,16 +102,15 @@ public class MapleServerHandler extends IoHandlerAdapter {
         final byte ivSend[] = ServerConstants.Use_Fixed_IV ? new byte[]{1, 0x5F, 4, 0x3F} : serverSend;
 
         final MapleClient client = new MapleClient(
-                new MapleAESOFB(ivSend, (short) (0xFFFF - ServerConstants.MAPLE_VERSION)), // Sent Cypher
-                new MapleAESOFB(ivRecv, ServerConstants.MAPLE_VERSION), // Recv Cypher
+                new MapleAESOFB(ivSend, (short) (0xFFFF - Start.getMainVersion())), // Sent Cypher
+                new MapleAESOFB(ivRecv, Start.getMainVersion()), // Recv Cypher
                 session);
         client.setChannel(channel);
 
         MaplePacketDecoder.DecoderState decoderState = new MaplePacketDecoder.DecoderState();
         session.setAttribute(MaplePacketDecoder.DECODER_STATE_KEY, decoderState);
 
-        session.write(LoginPacket.getHello(ServerConstants.MAPLE_VERSION,
-                ServerConstants.Use_Fixed_IV ? serverSend : ivSend, ServerConstants.Use_Fixed_IV ? serverRecv : ivRecv));
+        session.write(LoginPacket.getHello(ServerConstants.Use_Fixed_IV ? serverSend : ivSend, ServerConstants.Use_Fixed_IV ? serverRecv : ivRecv));
         session.setAttribute(MapleClient.CLIENT_KEY, client);
         session.setIdleTime(IdleStatus.READER_IDLE, 60);
         session.setIdleTime(IdleStatus.WRITER_IDLE, 60);
@@ -251,6 +251,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
     public static final boolean handleLoginPacket(OutPacket p, MapleClient c) throws Exception {
         short header = p.Decode2();
         OutPacket.Header type = OutPacket.ToHeader(header);
+
+        if (Start.getMainVersion() >= 187) {
+            Debug.DebugPacket(p);
+        }
+
         switch (type) {
             // ログイン画面
             case RSA_KEY: {
