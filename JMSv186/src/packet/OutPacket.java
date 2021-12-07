@@ -267,6 +267,24 @@ public class OutPacket {
 
     }
 
+    public static void SetForJMSv164() {
+        Header.LOGIN_PASSWORD.Set(0x0001);
+        Header.SERVERLIST_REQUEST.Set(0x0003);
+        Header.CHARLIST_REQUEST.Set(0x0004);
+        Header.SERVERSTATUS_REQUEST.Set(0x0005);
+        Header.CHECK_CHAR_NAME.Set(0x0008);
+        Header.CREATE_CHAR.Set(0x000B);
+        Header.DELETE_CHAR.Set(0x000D);
+
+        Header.LATEST_CRASH_DATA.Set(0x000F);
+        Header.REACHED_LOGIN_SCREEN.Set(0x0018);
+    }
+
+    public static void SetForJMSv184() {
+        Header.REACHED_LOGIN_SCREEN.Set(0x0017);
+        Header.RSA_KEY.Set(0x0019);
+    }
+
     // JMS v186.1 SendPacket
     public static void SetForJMSv186() {
         // 0x0000

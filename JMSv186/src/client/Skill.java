@@ -27,6 +27,7 @@ import java.util.List;
 import provider.MapleData;
 import provider.MapleDataTool;
 import server.MapleStatEffect;
+import server.Start;
 import server.life.Element;
 
 public class Skill implements ISkill {
@@ -196,8 +197,10 @@ public class Skill implements ISkill {
         }
         ret.chargeskill = data.getChildByPath("keydown") != null;
 
-        for (final MapleData level : data.getChildByPath("level")) {
-            ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
+        if (Start.getMainVersion() <= 186) {
+            for (final MapleData level : data.getChildByPath("level")) {
+                ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
+            }
         }
         final MapleData reqDataRoot = data.getChildByPath("req");
         if (reqDataRoot != null) {

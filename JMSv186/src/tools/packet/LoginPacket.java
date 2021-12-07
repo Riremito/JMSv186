@@ -63,7 +63,7 @@ public class LoginPacket {
         // JMS v186.1には3つのログイン画面が存在するのでランダムに割り振ってみる
         String LoginScreen[] = {"MapLogin", "MapLogin1", "MapLogin2"};
         // v187
-        if (Start.getMainVersion() >= 187) {
+        if (Start.getMainVersion() != 186) {
             return LoginAUTH(LoginScreen[0]);
         }
         return LoginAUTH(LoginScreen[(new Random().nextInt(3))]);
@@ -157,7 +157,11 @@ public class LoginPacket {
         mplew.write(0);
         mplew.write(0);
         mplew.write(0); // 1 = login need pic
-        mplew.write(0);
+
+        if (Start.getMainVersion() != 164) {
+            mplew.write(0);
+        }
+
         mplew.writeLong(0);
         mplew.writeMapleAsciiString(client.getAccountName());
 

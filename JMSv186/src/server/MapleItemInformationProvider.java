@@ -83,6 +83,10 @@ public class MapleItemInformationProvider {
             return;
         }
         getAllItems();
+        // 潜在能力実装がv186のためそれ以前では存在しない
+        if (Start.getMainVersion() < 186) {
+            return;
+        }
         final MapleData setsData = etcData.getData("SetItemInfo.img");
         StructSetItem itemz;
         SetItem itez;
@@ -211,7 +215,11 @@ public class MapleItemInformationProvider {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        itemsData = stringData.getData("Consume.img");
+        if (Start.getMainVersion() == 164) {
+            itemsData = stringData.getData("Consume.img").getChildByPath("Con");
+        } else {
+            itemsData = stringData.getData("Consume.img");
+        }
         for (final MapleData itemFolder : itemsData.getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }

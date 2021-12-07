@@ -353,6 +353,20 @@ public class InPacket {
         }
     }
 
+    public static void SetForJMSv164() {
+        Header.LOGIN_STATUS.Set(0x0000);
+        Header.SERVERLIST.Set(0x0002);
+        Header.CHARLIST.Set(0x0003);
+        Header.SERVER_IP.Set(0x0004);
+        Header.CHAR_NAME_RESPONSE.Set(0x0005);
+        Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
+        Header.DELETE_CHAR_RESPONSE.Set(0x0007);
+    }
+
+    public static void SetForJMSv184() {
+        //Header.LOGIN_AUTH.Set(0x0017);
+    }
+
     // JMS v186.1 ProcessPacket
     public static void SetForJMSv186() {
         Header.LOGIN_STATUS.Set(0x0000);
