@@ -272,8 +272,11 @@ public class LoginPacket {
         }
 
         mplew.writeShort(2); // second pw request
-        mplew.writeLong(charslots);
-        mplew.writeLong(0);
+        if (Start.getMainVersion() == 164) {
+            mplew.writeInt(charslots);
+        } else {
+            mplew.writeLong(charslots);
+        }
 
         return mplew.getPacket();
     }
@@ -300,7 +303,9 @@ public class LoginPacket {
     private static final void addCharEntry(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr, boolean ranking) {
         PacketHelper.addCharStats(mplew, chr);
         PacketHelper.addCharLook(mplew, chr, true);
-        mplew.write(0); //<-- who knows
+        if (Start.getMainVersion() > 164) {
+            mplew.write(0); //<-- who knows
+        }
         mplew.write(ranking ? 1 : 0);
         if (ranking) {
             mplew.writeInt(chr.getRank());

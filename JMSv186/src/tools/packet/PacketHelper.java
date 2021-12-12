@@ -173,8 +173,12 @@ public class PacketHelper {
         mplew.write(chr.getInventory(MapleInventoryType.SETUP).getSlotLimit()); // set-up slots
         mplew.write(chr.getInventory(MapleInventoryType.ETC).getSlotLimit()); // etc slots
         mplew.write(chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // cash slots
-        mplew.write(unk1);
-        mplew.write(unk2);
+        if (Start.getMainVersion() > 164) {
+            mplew.write(unk1);
+            mplew.write(unk2);
+        } else {
+            mplew.writeZeroBytes(0x07);
+        }
         MapleInventory iv = chr.getInventory(MapleInventoryType.EQUIPPED);
         Collection<IItem> equippedC = iv.list();
 
@@ -269,8 +273,12 @@ public class PacketHelper {
 //        mplew.writeLong(0); //0 -> 4?
         mplew.writeInt(chr.getMapId()); // current map id
         mplew.write(chr.getInitialSpawnpoint()); // spawnpoint
-        mplew.writeShort(chr.getSubcategory()); //1 here = db
-        mplew.writeZeroBytes(20); // 8 + 4 + 4 + 4
+        if (Start.getMainVersion() > 164) {
+            mplew.writeShort(chr.getSubcategory()); //1 here = db
+            mplew.writeZeroBytes(20); // 8 + 4 + 4 + 4
+        } else {
+            mplew.writeZeroBytes(16);
+        }
     }
 
     public static final void addCharLook(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr, final boolean mega) {
@@ -475,23 +483,29 @@ public class PacketHelper {
 
     public static final void addCharacterInfo(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
         mplew.writeLong(-1);
-        mplew.write(0);
-        addCharStats(mplew, chr);
-        mplew.write(chr.getBuddylist().getCapacity());
-        // Bless
-        if (chr.getBlessOfFairyOrigin() != null) {
-            mplew.write(1);
-            mplew.writeMapleAsciiString(chr.getBlessOfFairyOrigin());
-        } else {
+        if (Start.getMainVersion() > 164) {
             mplew.write(0);
         }
-        // End
-        
-        if (Start.getMainVersion() == 184) {
-            mplew.writeZeroBytes(256);
-            return;
+        addCharStats(mplew, chr);
+        mplew.write(chr.getBuddylist().getCapacity());
+
+        if (Start.getMainVersion() > 164) {
+            // Bless
+            if (chr.getBlessOfFairyOrigin() != null) {
+                mplew.write(1);
+                mplew.writeMapleAsciiString(chr.getBlessOfFairyOrigin());
+            } else {
+                mplew.write(0);
+            }
+            // End
         }
+
         addInventoryInfo(mplew, chr);
+
+        if (Start.getMainVersion() <= 164) {
+            mplew.writeZeroBytes(256);
+        }
+
         addSkillInfo(mplew, chr);
         addCoolDownInfo(mplew, chr);
         addQuestInfo(mplew, chr);

@@ -100,21 +100,29 @@ public class Start {
         MapleVersion = (short) version_main;
         MapleSubVersion = (byte) version_sub;
 
-        if (version_main == 164) {
-            OutPacket.SetForJMSv164();
-            InPacket.SetForJMSv164();
-        } else {
-            if (version_main == 186) {
-                OutPacket.SetForJMSv186();
-                InPacket.SetForJMSv186();
-            } else {
-                OutPacket.SetForJMSv186();
-                InPacket.SetForJMSv186();
-            }
+        switch (version_main) {
+            case 164: {
 
-            if (version_main <= 184) {
+                OutPacket.SetForJMSv164();
+                InPacket.SetForJMSv164();
+                break;
+            }
+            case 184: {
+
                 OutPacket.SetForJMSv184();
                 InPacket.SetForJMSv184();
+                break;
+            }
+            case 186: {
+
+                OutPacket.SetForJMSv186();
+                InPacket.SetForJMSv186();
+                break;
+            }
+            default: {
+                OutPacket.SetForJMSv186();
+                InPacket.SetForJMSv186();
+                break;
             }
         }
 

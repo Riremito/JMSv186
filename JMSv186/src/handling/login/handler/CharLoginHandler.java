@@ -35,6 +35,7 @@ import handling.login.LoginServer;
 import handling.login.LoginWorker;
 import packet.OutPacket;
 import server.MapleItemInformationProvider;
+import server.Start;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
 import tools.packet.LoginPacket;
@@ -149,6 +150,58 @@ public class CharLoginHandler {
 
     public static final void CreateChar(OutPacket p, final MapleClient c) {
         final String name = new String(p.DecodeBuffer());
+
+        if (Start.getMainVersion() == 164) {
+            final int face = p.Decode4();
+            final int hair = p.Decode4();
+            final int hairColor = 0;
+            final byte skinColor = (byte) 0;
+            final int top = p.Decode4();
+            final int bottom = p.Decode4();
+            final int shoes = p.Decode4();
+            final int weapon = p.Decode4();
+            final byte gender = c.getGender();
+
+            MapleCharacter newchar = MapleCharacter.getDefault(c, 1);
+            newchar.setWorld((byte) c.getWorld());
+            newchar.setFace(face);
+            newchar.setHair(hair + hairColor);
+            newchar.setGender(gender);
+            newchar.setName(name);
+            newchar.setSkinColor(skinColor);
+
+            MapleInventory equip = newchar.getInventory(MapleInventoryType.EQUIPPED);
+            final MapleItemInformationProvider li = MapleItemInformationProvider.getInstance();
+
+            IItem item = li.getEquipById(top);
+            item.setPosition((byte) -5);
+            equip.addFromDB(item);
+
+            item = li.getEquipById(bottom);
+            item.setPosition((byte) -6);
+            equip.addFromDB(item);
+
+            item = li.getEquipById(shoes);
+            item.setPosition((byte) -7);
+            equip.addFromDB(item);
+
+            item = li.getEquipById(weapon);
+            item.setPosition((byte) -11);
+            equip.addFromDB(item);
+
+            newchar.getInventory(MapleInventoryType.USE).addItem(new Item(2000013, (byte) 0, (short) 100, (byte) 0));
+            newchar.getInventory(MapleInventoryType.USE).addItem(new Item(2000014, (byte) 0, (short) 100, (byte) 0));
+            newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161001, (byte) 0, (short) 1, (byte) 0));
+
+            if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
+                MapleCharacter.saveNewCharToDB(newchar, 1, false);
+                c.getSession().write(LoginPacket.addNewCharEntry(newchar, true));
+                c.createdChar(newchar.getId());
+            } else {
+                c.getSession().write(LoginPacket.addNewCharEntry(newchar, false));
+            }
+            return;
+        }
         final int JobType = p.Decode4();
         final short db = p.Decode2();
         final int face = p.Decode4();

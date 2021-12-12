@@ -49,7 +49,7 @@ public class MapleNPC extends AbstractLoadedMapleLife {
             return;
         } else {
             client.getSession().write(MaplePacketCreator.spawnNPC(this, true));
-            client.getSession().write(MaplePacketCreator.spawnNPCRequestController(this, true));
+            //client.getSession().write(MaplePacketCreator.spawnNPCRequestController(this, true));
         }
     }
 

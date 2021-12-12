@@ -167,6 +167,7 @@ public class MobPacket {
         mplew.write(1); // 1 = Control normal, 5 = Control none
         mplew.writeInt(life.getId());
         addMonsterStatus(mplew, life);
+        // この辺からおかしい
         mplew.writeShort(life.getPosition().x);
         mplew.writeShort(life.getPosition().y);
         mplew.write(life.getStance());

@@ -131,18 +131,16 @@ public class MaplePacketCreator {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(InPacket.Header.WARP_TO_MAP.Get());
-        if (Start.getMainVersion() >= 186) {
+        if (Start.getMainVersion() > 164) {
             mplew.writeShort(0);
-        } else {
-            mplew.write(0);
         }
         mplew.writeInt(chr.getClient().getChannel() - 1);
         mplew.write(0);
-        mplew.writeInt(0);
-        if (Start.getMainVersion() >= 186) {
-            mplew.write(1);
-            mplew.write(1);
+        if (Start.getMainVersion() > 164) {
+            mplew.writeInt(0);
         }
+        mplew.write(1);
+        mplew.write(1);
         mplew.writeShort(0);
         chr.CRand().connectData(mplew); // Random number generator
 
@@ -240,18 +238,25 @@ public class MaplePacketCreator {
 
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(InPacket.Header.WARP_TO_MAP.Get());
-        mplew.writeShort(0);
+
+        if (Start.getMainVersion() > 164) {
+            mplew.writeShort(0);
+        }
         mplew.writeInt(chr.getClient().getChannel() - 1);
         mplew.write(0);
-        mplew.writeInt(0);
+        if (Start.getMainVersion() > 164) {
+            mplew.writeInt(0);
+        }
         mplew.write((byte) chr.getPortalCount());
         mplew.write(0);
         mplew.writeShort(0);
-        mplew.write(0);
+
+        if (Start.getMainVersion() > 164) {
+            mplew.write(0);
+        }
         mplew.writeInt(to.getId());
         mplew.write(spawnPoint);
         mplew.writeShort(chr.getStat().getHp());
-        mplew.write(0);
         mplew.writeLong(PacketHelper.getTime(System.currentTimeMillis()));
 
         return mplew.getPacket();
@@ -538,7 +543,8 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(InPacket.Header.REMOVE_NPC.Get());
-        mplew.writeLong(objectid);
+        //mplew.writeLong(objectid);
+        mplew.writeInt(objectid);
 
         return mplew.getPacket();
     }
@@ -549,6 +555,7 @@ public class MaplePacketCreator {
         mplew.writeShort(InPacket.Header.SPAWN_NPC_REQUEST_CONTROLLER.Get());
         mplew.write(1);
         mplew.writeInt(life.getObjectId());
+        // フォーマット不明
         mplew.writeInt(life.getId());
         mplew.writeShort(life.getPosition().x);
         mplew.writeShort(life.getCy());
@@ -811,6 +818,8 @@ public class MaplePacketCreator {
 
         mplew.writeShort(InPacket.Header.SPAWN_PLAYER.Get());
         mplew.writeInt(chr.getId());
+        // 自分のキャラクターの場合はここで終了
+
         mplew.write(chr.getLevel());
         mplew.writeMapleAsciiString(chr.getName());
 
@@ -1984,6 +1993,7 @@ public class MaplePacketCreator {
 
         if (statups != null) {
             writeLongMaskFromList(mplew, statups);
+            // 上のフラグの有無で以下のバイトが必要になる
             mplew.write(3);
         } else {
             mplew.writeLong(0);

@@ -361,12 +361,30 @@ public class InPacket {
         Header.CHAR_NAME_RESPONSE.Set(0x0005);
         Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
         Header.DELETE_CHAR_RESPONSE.Set(0x0007);
+        Header.LOGIN_AUTH.Set(0x0018);
+        Header.WARP_TO_MAP.Set(0x0067);
     }
 
     public static void SetForJMSv184() {
-        //Header.WARP_TO_MAP.Set(0xFFFF);
-        //Header.SERVERMESSAGE.Set(0xFFFF);
-        //Header.TEMP_STATS_RESET.Set(0xFFFF);
+        Header.LOGIN_STATUS.Set(0x0000);
+        Header.SERVERLIST.Set(0x0002);
+        Header.CHARLIST.Set(0x0003);
+        Header.SERVER_IP.Set(0x0004);
+        Header.CHAR_NAME_RESPONSE.Set(0x0005);
+        Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
+        Header.DELETE_CHAR_RESPONSE.Set(0x0007);
+        Header.CHANGE_CHANNEL.Set(0x0008);
+        Header.PING.Set(0x0009);
+        Header.LOGIN_AUTH.Set(0x0018);
+
+        Header.WARP_TO_MAP.Set(0x007B);
+
+        Header.SPAWN_NPC.Set(0xFFFF);
+        Header.FAMILY.Set(0xFFFF);
+        Header.KEYMAP.Set(0xFFFF);
+        Header.SERVERMESSAGE.Set(0xFFFF);
+        Header.OPEN_FAMILY.Set(0xFFFF);
+        Header.CS_OPEN.Set(0xFFFF);
     }
 
     // JMS v186.1 ProcessPacket

@@ -59,7 +59,6 @@ public class NPCHandler {
             mplew.writeInt(slea.readInt());
             mplew.writeShort(slea.readShort());
         } else if (length > 6) { // NPC Move
-            mplew.writeShort(InPacket.Header.NPC_ACTION.Get());
             mplew.write(slea.read(length - 9));
         } else {
             return;
