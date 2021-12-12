@@ -154,7 +154,7 @@ public class MapleClient implements Serializable {
 
         @Override
         public WriteFuture write(Object o) {
-            if (Start.getMainVersion() == 164) {
+            if (Start.getDebug()) {
                 Debug.DebugProcessPacket(((MaplePacket) o).getBytes());
             }
             return session.write(o);

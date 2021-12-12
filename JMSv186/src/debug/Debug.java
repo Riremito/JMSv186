@@ -22,24 +22,37 @@ public class Debug {
 
     // パケット出力
     public static void DebugPacket(OutPacket p) {
-        DebugLog("[DebugPacket] " + p.Packet());
+        //DebugLog("[DebugPacket] " + p.Packet());
     }
 
     public static void DebugInPacket(InPacket p) {
-        DebugLog("[DebugInPacket] " + p.Packet());
+        //DebugLog("[DebugInPacket] " + p.Packet());
+    }
+
+    public static void DebugSendPacket(byte b[]) {
+        if (b.length < 2) {
+            return;
+        }
+        short header = (short) (((short) b[0] & 0xFF) | (((short) b[1] & 0xFF) << 8));
+        String text = String.format("@%04X", header);
+
+        for (int i = 2; i < b.length; i++) {
+            text += String.format(" %02X", b[i]);
+        }
+        DebugLog("[OutPacket] " + text);
     }
 
     public static void DebugProcessPacket(byte b[]) {
         if (b.length < 2) {
             return;
         }
-        short header = (short) (((short) b[0] & 0xFF) | ((short) b[1] & 0xFF << 8));
+        short header = (short) (((short) b[0] & 0xFF) | (((short) b[1] & 0xFF) << 8));
         String text = String.format("@%04X", header);
 
         for (int i = 2; i < b.length; i++) {
             text += String.format(" %02X", b[i]);
         }
-        DebugLog("[ProcessPacket] " + text);
+        DebugLog("[InPacket] " + text);
     }
 
     // 不要なNPCを設置しない

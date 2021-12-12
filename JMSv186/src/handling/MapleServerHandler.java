@@ -184,21 +184,20 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     if (!c.isReceiving()) {
                         return;
                     }
-                    /*
-                    if (!c.isLoggedIn()) {
-                        return;
+
+                    if (Start.getDebug()) {
+                        Debug.DebugSendPacket((byte[]) message);
                     }
-                     */
 
                     if (c.getPlayer() != null && c.getPlayer().GetDebugger() && !IsAnnoyingPacket(recv)) {
-                        Debug.DebugLog("[Packet] @" + String.format("%04X", header_num) + " " + slea.toString());
+                        //Debug.DebugLog("[Packet] @" + String.format("%04X", header_num) + " " + slea.toString());
                     }
 
                     // ログインサーバー
                     if (server_type == ServerType.LoginServer) {
                         OutPacket op = new OutPacket((byte[]) message);
                         if (!handleLoginPacket(op, c)) {
-                            Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
+                            //Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
                         }
                         return;
                     }
@@ -207,7 +206,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     if (server_type == ServerType.PointShopServer) {
                         if (!handlePointShopPacket(recv, slea, c)) {
                             if (!handleMapleTradeSpacePacket(recv, slea, c)) {
-                                Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
+                                //Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
                             }
                         }
                         return;
@@ -217,7 +216,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     if (server_type == ServerType.GameServer) {
                         OutPacket op = new OutPacket((byte[]) message);
                         if (!handleGamePacket(slea, c, op)) {
-                            Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
+                            //Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
                         }
                         return;
                     }
@@ -227,7 +226,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
             if ((server_type != ServerType.GameServer || (c.getPlayer() != null && c.getPlayer().GetDebugger())) && !IsAnnoyingPacket(header_num)) {
-                Debug.InfoLog("[UnknownPacket] @" + String.format("%04X", header_num) + " " + slea.toString());
+                //Debug.InfoLog("[UnknownPacket] @" + String.format("%04X", header_num) + " " + slea.toString());
             }
 
         } catch (Exception e) {

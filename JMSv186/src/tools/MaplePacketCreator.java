@@ -89,6 +89,7 @@ import tools.packet.PacketHelper;
 import client.MapleBeans;
 import handling.channel.handler.BeanGame;
 import packet.InPacket;
+import server.Start;
 
 public class MaplePacketCreator {
 
@@ -130,12 +131,18 @@ public class MaplePacketCreator {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(InPacket.Header.WARP_TO_MAP.Get());
-        mplew.writeShort(0);
+        if (Start.getMainVersion() >= 186) {
+            mplew.writeShort(0);
+        } else {
+            mplew.write(0);
+        }
         mplew.writeInt(chr.getClient().getChannel() - 1);
         mplew.write(0);
         mplew.writeInt(0);
-        mplew.write(1);
-        mplew.write(1);
+        if (Start.getMainVersion() >= 186) {
+            mplew.write(1);
+            mplew.write(1);
+        }
         mplew.writeShort(0);
         chr.CRand().connectData(mplew); // Random number generator
 

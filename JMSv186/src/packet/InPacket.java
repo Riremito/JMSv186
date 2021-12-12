@@ -364,7 +364,9 @@ public class InPacket {
     }
 
     public static void SetForJMSv184() {
-        //Header.LOGIN_AUTH.Set(0x0017);
+        //Header.WARP_TO_MAP.Set(0xFFFF);
+        //Header.SERVERMESSAGE.Set(0xFFFF);
+        //Header.TEMP_STATS_RESET.Set(0xFFFF);
     }
 
     // JMS v186.1 ProcessPacket

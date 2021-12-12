@@ -42,6 +42,7 @@ import client.MapleQuestStatus;
 import client.inventory.IItem;
 import client.SkillEntry;
 import handling.channel.ChannelServer;
+import server.Start;
 import tools.Pair;
 import server.movement.LifeMovementFragment;
 import server.shops.AbstractPlayerStore;
@@ -176,21 +177,27 @@ public class PacketHelper {
         mplew.write(unk2);
         MapleInventory iv = chr.getInventory(MapleInventoryType.EQUIPPED);
         Collection<IItem> equippedC = iv.list();
+
         List<Item> equipped = new ArrayList<Item>(equippedC.size());
 
         for (IItem item : equippedC) {
             equipped.add((Item) item);
         }
         Collections.sort(equipped);
-        for (Item item : equipped) {
-            if (item.getPosition() < 0 && item.getPosition() > -100) {
-                addItemInfo(mplew, item, false, false);
+        if (Start.getMainVersion() == 186) {
+            for (Item item : equipped) {
+                if (item.getPosition() < 0 && item.getPosition() > -100) {
+                    addItemInfo(mplew, item, false, false);
+                }
             }
         }
         mplew.writeShort(0); // start of equipped nx
-        for (Item item : equipped) {
-            if (item.getPosition() <= -100 && item.getPosition() > -1000) {
-                addItemInfo(mplew, item, false, false);
+
+        if (Start.getMainVersion() == 186) {
+            for (Item item : equipped) {
+                if (item.getPosition() <= -100 && item.getPosition() > -1000) {
+                    addItemInfo(mplew, item, false, false);
+                }
             }
         }
 
@@ -201,9 +208,11 @@ public class PacketHelper {
         }
         mplew.writeShort(0); //start of other equips
 
-        for (Item item : equipped) {
-            if (item.getPosition() <= -1000) {
-                addItemInfo(mplew, item, false, false);
+        if (Start.getMainVersion() == 186) {
+            for (Item item : equipped) {
+                if (item.getPosition() <= -1000) {
+                    addItemInfo(mplew, item, false, false);
+                }
             }
         }
 
@@ -477,6 +486,11 @@ public class PacketHelper {
             mplew.write(0);
         }
         // End
+        
+        if (Start.getMainVersion() == 184) {
+            mplew.writeZeroBytes(256);
+            return;
+        }
         addInventoryInfo(mplew, chr);
         addSkillInfo(mplew, chr);
         addCoolDownInfo(mplew, chr);

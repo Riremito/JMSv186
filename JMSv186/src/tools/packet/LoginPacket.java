@@ -284,7 +284,6 @@ public class LoginPacket {
         mplew.writeShort(InPacket.Header.ADD_NEW_CHAR_ENTRY.Get());
         mplew.write(worked ? 0 : 1);
         addCharEntry(mplew, chr, false);
-
         return mplew.getPacket();
     }
 

@@ -59,6 +59,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import server.ServerProperties;
+import server.Start;
 import server.events.MapleCoconut;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
@@ -221,7 +222,9 @@ public class ChannelServer implements Serializable {
 
     public final void addPlayer(final MapleCharacter chr) {
         getPlayerStorage().registerPlayer(chr);
-        chr.getClient().getSession().write(MaplePacketCreator.serverMessage(serverMessage));
+        if (Start.getMainVersion() == 186) {
+            chr.getClient().getSession().write(MaplePacketCreator.serverMessage(serverMessage));
+        }
     }
 
     public final PlayerStorage getPlayerStorage() {

@@ -65,6 +65,7 @@ public class Start {
 
     private static short MapleVersion = 0;
     private static byte MapleSubVersion = 0;
+    private static boolean ServerDebug = false;
 
     public static short getMainVersion() {
         return MapleVersion;
@@ -72,6 +73,10 @@ public class Start {
 
     public static byte getSubVersion() {
         return MapleSubVersion;
+    }
+
+    public static boolean getDebug() {
+        return ServerDebug;
     }
 
     public final static void main(final String args[]) {
