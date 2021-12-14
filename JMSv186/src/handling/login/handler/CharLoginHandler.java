@@ -203,7 +203,13 @@ public class CharLoginHandler {
             return;
         }
         final int JobType = p.Decode4();
-        final short db = p.Decode2();
+
+        short db = 0;
+
+        if (Start.getMainVersion() > 176) {
+            db = p.Decode2();
+        }
+
         final int face = p.Decode4();
         final int hair = p.Decode4();
         final int hairColor = 0;

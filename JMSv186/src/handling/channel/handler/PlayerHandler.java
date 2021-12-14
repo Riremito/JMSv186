@@ -44,6 +44,7 @@ import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.MaplePortal;
 import server.Randomizer;
+import server.Start;
 import server.Timer.CloneTimer;
 import server.events.MapleSnowball.MapleSnowballs;
 import server.life.MapleMonster;
@@ -948,7 +949,12 @@ public class PlayerHandler {
             return;
         }
         final Point Original_Pos = chr.getPosition(); // 4 bytes Added on v.80 MSEA
-        slea.skip(37);
+
+        if (Start.getMainVersion() == 164) {
+            slea.skip(9);
+        } else {
+            slea.skip(37);
+        }
 
         // log.trace("Movement command received: unk1 {} unk2 {}", new Object[] { unk1, unk2 });
         List<LifeMovementFragment> res;
@@ -961,8 +967,10 @@ public class PlayerHandler {
 
         if (res != null && c.getPlayer().getMap() != null) { // TODO more validation of input data
             if (slea.available() < 13 || slea.available() > 26) {
-                System.out.println("slea.available != 13-26 (movement parsing error)\n" + slea.toString(true));
-                return;
+                if (Start.getMainVersion() != 164) {
+                    System.out.println("slea.available != 13-26 (movement parsing error)\n" + slea.toString(true));
+                    return;
+                }
             }
             final List<LifeMovementFragment> res2 = new ArrayList<LifeMovementFragment>(res);
             final MapleMap map = c.getPlayer().getMap();

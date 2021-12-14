@@ -102,9 +102,13 @@ public class Start {
 
         switch (version_main) {
             case 164: {
-
                 OutPacket.SetForJMSv164();
                 InPacket.SetForJMSv164();
+                break;
+            }
+            case 176: {
+                OutPacket.SetForJMSv176();
+                InPacket.SetForJMSv176();
                 break;
             }
             case 184: {

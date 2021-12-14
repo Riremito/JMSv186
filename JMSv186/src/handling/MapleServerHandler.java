@@ -883,7 +883,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case GENERAL_CHAT: {
                 Debug.DebugPacket(op);
                 // 実装が悪い
-                p.readInt();
+                if (Start.getMainVersion() > 164) {
+                    p.readInt();
+                }
                 ChatHandler.GeneralChat(p.readMapleAsciiString(), p.readByte(), c, c.getPlayer());
                 return true;
             }

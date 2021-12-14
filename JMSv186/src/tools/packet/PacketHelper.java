@@ -273,7 +273,7 @@ public class PacketHelper {
 //        mplew.writeLong(0); //0 -> 4?
         mplew.writeInt(chr.getMapId()); // current map id
         mplew.write(chr.getInitialSpawnpoint()); // spawnpoint
-        if (Start.getMainVersion() > 164) {
+        if (Start.getMainVersion() > 176) {
             mplew.writeShort(chr.getSubcategory()); //1 here = db
             mplew.writeZeroBytes(20); // 8 + 4 + 4 + 4
         } else {
