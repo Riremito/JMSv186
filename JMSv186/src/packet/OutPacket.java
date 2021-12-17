@@ -272,13 +272,13 @@ public class OutPacket {
         Header.LOGIN_PASSWORD.Set(0x0001);
         Header.SERVERLIST_REQUEST.Set(0x0003);
         Header.CHARLIST_REQUEST.Set(0x0004);
-        Header.SERVERSTATUS_REQUEST.Set(0x0005);
         Header.CHAR_SELECT.Set(0x0006);
         Header.PLAYER_LOGGEDIN.Set(0x0007);
         Header.CHECK_CHAR_NAME.Set(0x0008);
         Header.CREATE_CHAR.Set(0x000B);
         Header.DELETE_CHAR.Set(0x000D);
         // ログインサーバー その他
+        //Header.SERVERSTATUS_REQUEST.Set(0x0005);
         Header.LATEST_CRASH_DATA.Set(0x000F);
         Header.REACHED_LOGIN_SCREEN.Set(0x0018);
         // ゲームサーバー 必須

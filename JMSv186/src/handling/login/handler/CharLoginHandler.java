@@ -22,7 +22,6 @@ package handling.login.handler;
 
 import java.util.List;
 import java.util.Calendar;
-
 import client.inventory.IItem;
 import client.inventory.Item;
 import client.MapleClient;
@@ -30,7 +29,6 @@ import client.MapleCharacter;
 import client.MapleCharacterUtil;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
-import handling.channel.ChannelServer;
 import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
 import handling.login.LoginWorker;
@@ -41,7 +39,6 @@ import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
 import tools.packet.LoginPacket;
 import tools.KoreanDateUtil;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 public class CharLoginHandler {
 
@@ -105,6 +102,7 @@ public class CharLoginHandler {
         c.getSession().write(LoginPacket.getEndOfServerList());
     }
 
+    // 必要なさそう
     public static final void ServerStatusRequest(final MapleClient c) {
         // 0 = Select world normally
         // 1 = "Since there are many users, you may encounter some..."

@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import client.inventory.MapleMount;
 import client.BuddylistEntry;
 import client.inventory.IItem;
@@ -95,21 +94,24 @@ public class MaplePacketCreator {
 
     public final static List<Pair<MapleStat, Integer>> EMPTY_STATUPDATE = Collections.emptyList();
 
+    // ゲームサーバーへ接続
     public static final MaplePacket getServerIP(final int port, final int clientId) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(InPacket.Header.SERVER_IP.Get());
-        mplew.writeShort(0);
+        InPacket p = new InPacket(InPacket.Header.SERVER_IP);
+        p.Encode1(0);
+        p.Encode1(0);
+        // ゲームサーバーのIP
         try {
-            mplew.write(InetAddress.getByName(ServerConstants.Gateway_IP_String).getAddress());
+            p.EncodeBuffer(InetAddress.getByName(ServerConstants.Gateway_IP_String).getAddress()); // DWORD
         } catch (UnknownHostException e) {
-            mplew.write(ServerConstants.Gateway_IP);
+            p.EncodeBuffer(ServerConstants.Gateway_IP); // DWORD
         }
-        mplew.writeShort(port);
-        mplew.writeInt(clientId);
-        mplew.writeZeroBytes(5);
-
-        return mplew.getPacket();
+        // ゲームサーバーのPort
+        p.Encode2(port);
+        // キャラクターID?
+        p.Encode4(clientId);
+        p.Encode1(0);
+        p.Encode4(0);
+        return p.Get();
     }
 
     public static final MaplePacket getChannelChange(final int port) {

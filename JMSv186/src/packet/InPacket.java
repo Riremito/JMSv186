@@ -60,6 +60,25 @@ public class InPacket {
         }
     }
 
+    public void EncodeBuffer(String str, int size) {
+        byte[] b = str.getBytes();
+        for (int i = 0; i < b.length; i++) {
+            Encode1(b[i]);
+        }
+        for (int i = 0; i < (size - b.length); i++) {
+            Encode1(0);
+        }
+    }
+
+    public void EncodeBuffer(byte[] b, int size) {
+        for (int i = 0; i < b.length; i++) {
+            Encode1(b[i]);
+        }
+        for (int i = 0; i < (size - b.length); i++) {
+            Encode1(0);
+        }
+    }
+
     public String Packet() {
         byte[] b = new byte[encoded];
         for (int i = 0; i < encoded; i++) {
