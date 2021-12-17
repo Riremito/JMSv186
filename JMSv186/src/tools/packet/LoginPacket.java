@@ -26,8 +26,8 @@ import java.util.Set;
 
 import client.MapleClient;
 import client.MapleCharacter;
-import debug.Debug;
 import handling.MaplePacket;
+import handling.channel.ChannelServer;
 import handling.login.LoginServer;
 import java.util.Random;
 import packet.InPacket;
@@ -38,80 +38,135 @@ import tools.HexTool;
 
 public class LoginPacket {
 
+    // サーバーのバージョン情報
     public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(16);
-
-        mplew.writeShort(14); // 13 = MSEA, 14 = GlobalMS, 15 = EMS
-        mplew.writeShort(Start.getMainVersion());
-        mplew.writeMapleAsciiString(String.valueOf(Start.getSubVersion()));
-        mplew.write(recvIv);
-        mplew.write(sendIv);
-        mplew.write(3); // 1 = KMS, 3 = JMS, 4 = CMS, 6 = TMS, 7 = MSEA, 8 = GlobalMS, 5 = Test Server
-
-        return mplew.getPacket();
+        InPacket p = new InPacket(InPacket.Header.HELLO);
+        p.Encode2(Start.getMainVersion());
+        p.EncodeStr(String.valueOf(Start.getSubVersion()));
+        p.EncodeBuffer(recvIv);
+        p.EncodeBuffer(sendIv);
+        p.Encode1(3);
+        return p.Get();
     }
 
-    public static final MaplePacket getPing() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(16);
-
-        mplew.writeShort(InPacket.Header.PING.Get());
-
-        return mplew.getPacket();
-    }
-
+    // いらない機能
     public static final MaplePacket LoginAUTH(OutPacket p, MapleClient c) {
         // JMS v186.1には3つのログイン画面が存在するのでランダムに割り振ってみる
         String LoginScreen[] = {"MapLogin", "MapLogin1", "MapLogin2"};
-        // v187
         if (Start.getMainVersion() != 186) {
             return LoginAUTH(LoginScreen[0]);
         }
         return LoginAUTH(LoginScreen[(new Random().nextInt(3))]);
     }
 
+    // ログイン画面へ切り替え
     public static final MaplePacket LoginAUTH(String LoginScreen) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(16);
+        InPacket p = new InPacket(InPacket.Header.LOGIN_AUTH);
 
-        mplew.writeShort(InPacket.Header.LOGIN_AUTH.Get());
-        mplew.writeMapleAsciiString(LoginScreen);
+        // ログイン画面の名称
+        p.EncodeStr(LoginScreen);
 
         if (Start.getMainVersion() >= 187) {
-            mplew.writeZeroBytes(16);
+            p.Encode4(0);
         }
-        return mplew.getPacket();
+
+        return p.Get();
     }
 
+    // ログイン成功
+    public static final MaplePacket getAuthSuccessRequest(final MapleClient client) {
+        InPacket p = new InPacket(InPacket.Header.LOGIN_STATUS);
+
+        p.Encode1(0);
+        p.Encode1(0);
+        p.Encode4(client.getAccID());
+        // 性別
+        p.Encode1(client.getGender());
+        p.Encode1(client.isGm() ? 1 : 0);
+        p.Encode1(client.isGm() ? 1 : 0);
+        p.EncodeStr(client.getAccountName());
+        p.EncodeStr(client.getAccountName());
+        p.Encode1(0);
+        p.Encode1(0);
+        p.Encode1(0);
+        p.Encode1(0);
+        p.Encode1(0);
+
+        if (Start.getMainVersion() > 164) {
+            p.Encode1(0);
+        }
+
+        p.EncodeZeroBytes(8);
+        p.EncodeStr(client.getAccountName());
+
+        return p.Get();
+    }
+
+    // ログイン失敗
     public static final MaplePacket getLoginFailed(final int reason) {
+        InPacket p = new InPacket(InPacket.Header.LOGIN_STATUS);
+
+        // 理由
+        p.Encode1(reason);
+        p.Encode1(0);
+
+        return p.Get();
+    }
+
+    // ワールドセレクト
+    public static final MaplePacket getServerList(final int serverId) {
+        return getServerList(serverId, true, 0);
+    }
+
+    // ワールドセレクト
+    public static final MaplePacket getServerList(final int serverId, boolean internalserver, int externalch) {
+        InPacket p = new InPacket(InPacket.Header.SERVERLIST);
+        // ワールドID
+        p.Encode1(serverId);
+        // ワールド名
+        p.EncodeStr(LoginServer.WorldName[serverId]);
+        // ワールドの旗
+        p.Encode1(LoginServer.WorldFlag[serverId]);
+        // 吹き出し
+        p.EncodeStr(LoginServer.WorldEvent[serverId]);
+        // 経験値倍率?
+        p.Encode2(100);
+        // ドロップ倍率?
+        p.Encode2(100);
+        // チャンネル数
+        p.Encode1(internalserver ? ChannelServer.getChannels() : externalch);
+        // チャンネル情報
+        for (int i = 0; i < (internalserver ? ChannelServer.getChannels() : externalch); i++) {
+            // チャンネル名
+            p.EncodeStr(LoginServer.WorldName[serverId] + "-" + (i + 1));
+            // 接続人数表示
+            if (internalserver && ChannelServer.getPopulation(i + 1) < 5) {
+                p.Encode4(ChannelServer.getPopulation(i + 1) * 200);
+            } else {
+                p.Encode4(1000);
+            }
+
+            // ワールドID
+            p.Encode1(serverId);
+            // チャンネルID
+            p.Encode2(i);
+        }
+        p.Encode2(0);
+
+        return p.Get();
+    }
+
+    // ワールドセレクト
+    public static final MaplePacket getEndOfServerList() {
+        InPacket p = new InPacket(InPacket.Header.SERVERLIST);
+        p.Encode1(0xFF);
+        return p.Get();
+    }
+
+    public static final MaplePacket getPing() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(16);
 
-        /*	* 3: ID deleted or blocked
-         * 4: Incorrect password
-         * 5: Not a registered id
-         * 6: System error
-         * 7: Already logged in
-         * 8: System error
-         * 9: System error
-         * 10: Cannot process so many connections
-         * 11: Only users older than 20 can use this channel
-         * 13: Unable to log on as master at this ip
-         * 14: Wrong gateway or personal info and weird korean button
-         * 15: Processing request with that korean button!
-         * 16: Please verify your account through email...
-         * 17: Wrong gateway or personal info
-         * 21: Please verify your account through email...
-         * 23: License agreement
-         * 25: Maple Europe notice
-         * 27: Some weird full client notice, probably for trial versions
-         * 32: IP blocked
-         * 84: please revisit website for pass change --> 0x07 recv with response 00/01*/
-        mplew.writeShort(InPacket.Header.LOGIN_STATUS.Get());
-        mplew.write(reason);
-        if (reason == 84) {
-            mplew.write(PacketHelper.unk1);
-        } else if (reason == 7) { //prolly this
-            mplew.writeZeroBytes(5);
-        }
-        mplew.write(0);
+        mplew.writeShort(InPacket.Header.PING.Get());
 
         return mplew.getPacket();
     }
@@ -140,34 +195,6 @@ public class LoginPacket {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket getAuthSuccessRequest(final MapleClient client) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(InPacket.Header.LOGIN_STATUS.Get());
-        mplew.write(0);
-        mplew.write(0);
-        mplew.writeInt(client.getAccID());
-        mplew.write(client.getGender());
-        mplew.write(client.isGm() ? 1 : 0); // Admin byte
-        mplew.write(client.isGm() ? 1 : 0); // Admin byte
-        mplew.writeMapleAsciiString(client.getAccountName());
-        mplew.writeMapleAsciiString(client.getAccountName());
-        mplew.write(0);
-        mplew.write(0); // 1 = banned account
-        mplew.write(0);
-        mplew.write(0);
-        mplew.write(0); // 1 = login need pic
-
-        if (Start.getMainVersion() != 164) {
-            mplew.write(0);
-        }
-
-        mplew.writeLong(0);
-        mplew.writeMapleAsciiString(client.getAccountName());
-
-        return mplew.getPacket();
-    }
-
     public static final MaplePacket deleteCharResponse(final int cid, final int state) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -187,62 +214,6 @@ public class LoginPacket {
          */
         mplew.writeShort(InPacket.Header.SECONDPW_ERROR.Get());
         mplew.write(mode);
-
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket getServerList(final int serverId, final Map<Integer, Integer> channelLoad) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(InPacket.Header.SERVERLIST.Get());
-
-        /*
-        if (serverId == 0) {
-            mplew.write(12);
-        } else {
-            mplew.write(serverId);
-        }
-         */
-        mplew.write(serverId);
-
-        mplew.writeMapleAsciiString(LoginServer.WorldName[serverId]);
-        mplew.write(LoginServer.WorldFlag[serverId]);
-        mplew.writeMapleAsciiString(LoginServer.WorldEvent[serverId]);
-        mplew.writeShort(100);
-        mplew.writeShort(100);
-
-        int lastChannel = 1;
-        Set<Integer> channels = channelLoad.keySet();
-        for (int i = 30; i > 0; i--) {
-            if (channels.contains(i)) {
-                lastChannel = i;
-                break;
-            }
-        }
-        mplew.write(lastChannel);
-
-        int load;
-        for (int i = 1; i <= lastChannel; i++) {
-            if (channels.contains(i)) {
-                load = channelLoad.get(i);
-            } else {
-                load = 1200;
-            }
-            mplew.writeMapleAsciiString(LoginServer.WorldName[serverId] + "-" + i);
-            mplew.writeInt(load);
-            mplew.write(serverId);
-            mplew.writeShort(i - 1);
-        }
-        mplew.writeShort(0);
-
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket getEndOfServerList() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(InPacket.Header.SERVERLIST.Get());
-        mplew.write(0xFF);
 
         return mplew.getPacket();
     }
@@ -286,7 +257,8 @@ public class LoginPacket {
 
         mplew.writeShort(InPacket.Header.ADD_NEW_CHAR_ENTRY.Get());
         mplew.write(worked ? 0 : 1);
-        addCharEntry(mplew, chr, false);
+        PacketHelper.addCharStats(mplew, chr);
+        PacketHelper.addCharLook(mplew, chr, true);
         return mplew.getPacket();
     }
 

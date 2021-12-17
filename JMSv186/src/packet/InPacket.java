@@ -84,11 +84,28 @@ public class InPacket {
         return new ByteArrayMaplePacket(b);
     }
 
+    public void Encode1(int b) {
+        packet.add((byte) b);
+        encoded += 1;
+    }
+
+    public void Encode2(int w) {
+        Encode1((byte) ((short) w & 0xFF));
+        Encode1((byte) (((short) w >> 8) & 0xFF));
+    }
+
+    public void EncodeZeroBytes(int length) {
+        for (int i = 0; i < length; i++) {
+            Encode1(0);
+        }
+    }
+
     public enum Header {
         // added
         MINIGAME_PACHINKO_UPDATE_TAMA,
         UNKNOWN_RELOAD_MINIMAP,
         UNKNOWN_RELOAD_MAP,
+        HELLO(0x000E),
         // unknown
         RELOG_RESPONSE,
         BBS_OPERATION,
@@ -354,6 +371,7 @@ public class InPacket {
     }
 
     public static void SetForJMSv164() {
+        // ログインサーバー 必須
         Header.LOGIN_STATUS.Set(0x0000);
         Header.SERVERLIST.Set(0x0002);
         Header.CHARLIST.Set(0x0003);
@@ -362,21 +380,20 @@ public class InPacket {
         Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
         Header.DELETE_CHAR_RESPONSE.Set(0x0007);
         Header.CHANGE_CHANNEL.Set(0x0008);
+        Header.HELLO.Set(0x000E);
         Header.LOGIN_AUTH.Set(0x0018);
+        // ログインサーバー その他
+
+        // ゲームサーバー 最重要
         Header.WARP_TO_MAP.Set(0x0067);
-
-        // 関数テーブル内
+        // ゲームサーバー 必須
         Header.SERVERMESSAGE.Set(0x0037);
-
-        // 同一関数内 00754707 -> 00635112
-        Header.PLAYER_NPC.Set(0x004D);
-        //Header.MONSTERBOOK_ADD.Set(0x0057);
+        //Header.PLAYER_NPC.Set(0x004D);
         Header.SPAWN_NPC.Set(0x00D5);
-        Header.REMOVE_NPC.Set(0x00D6);
+        //Header.REMOVE_NPC.Set(0x00D6);
         Header.SPAWN_NPC_REQUEST_CONTROLLER.Set(0x00D7);
-
-        // 00698C63
-        Header.NPC_TALK.Set(0x0100);
+        Header.NPC_TALK.Set(0x0100); // 00698C63
+        // ゲームサーバー その他
     }
 
     public static void SetForJMSv176() {
@@ -835,6 +852,23 @@ public class InPacket {
         // 0x0197 実質未使用 (VEGA)
         // 0x0198 実質未使用 (VEGA)
         // 0x0199 一番最後の関数 0x00D76700が0以外の値のときのみ動作する
+    }
+
+    public static void SetForJMSv187() {
+        // ログインサーバー
+        Header.LOGIN_STATUS.Set(0x0000);
+        Header.SERVERLIST.Set(0x0002);
+        Header.CHARLIST.Set(0x0003);
+        Header.SERVER_IP.Set(0x0004);
+        Header.CHAR_NAME_RESPONSE.Set(0x0005);
+        Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
+        Header.DELETE_CHAR_RESPONSE.Set(0x0007);
+        Header.CHANGE_CHANNEL.Set(0x0008);
+        Header.PING.Set(0x0009);
+        Header.SECONDPW_ERROR.Set(0x0016);
+        Header.LOGIN_AUTH.Set(0x0018);
+        // ゲームサーバー
+        Header.WARP_TO_MAP.Set(0x0081);
     }
 
 }

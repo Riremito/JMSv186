@@ -486,6 +486,11 @@ public class PacketHelper {
         if (Start.getMainVersion() > 164) {
             mplew.write(0);
         }
+
+        if (Start.getMainVersion() >= 187) {
+            mplew.write(0);
+        }
+
         addCharStats(mplew, chr);
         mplew.write(chr.getBuddylist().getCapacity());
 
@@ -504,6 +509,9 @@ public class PacketHelper {
 
         if (Start.getMainVersion() <= 164) {
             mplew.writeZeroBytes(256);
+        }
+        if (Start.getMainVersion() >= 187) {
+            mplew.writeZeroBytes(512);
         }
 
         addSkillInfo(mplew, chr);

@@ -268,6 +268,7 @@ public class OutPacket {
     }
 
     public static void SetForJMSv164() {
+        // ログインサーバー 必須
         Header.LOGIN_PASSWORD.Set(0x0001);
         Header.SERVERLIST_REQUEST.Set(0x0003);
         Header.CHARLIST_REQUEST.Set(0x0004);
@@ -277,18 +278,17 @@ public class OutPacket {
         Header.CHECK_CHAR_NAME.Set(0x0008);
         Header.CREATE_CHAR.Set(0x000B);
         Header.DELETE_CHAR.Set(0x000D);
+        // ログインサーバー その他
         Header.LATEST_CRASH_DATA.Set(0x000F);
         Header.REACHED_LOGIN_SCREEN.Set(0x0018);
-
+        // ゲームサーバー 必須
         Header.CHANGE_MAP.Set(0x001C);
         Header.CHANGE_CHANNEL.Set(0x001D);
         Header.MOVE_PLAYER.Set(0x001F);
-
         Header.GENERAL_CHAT.Set(0x0027);
-
         Header.NPC_TALK.Set(0x0030);
-
         Header.CHANGE_MAP_SPECIAL.Set(0x005A);
+        // ゲームサーバー その他
         Header.PORTAL_INSIDE_MAP.Set(0x005B);
     }
 
@@ -616,6 +616,22 @@ public class OutPacket {
         // 0x011D
         // 0x011E
         Header.TOUCHING_MTS.Set(0x011F);
+    }
+
+    public static void SetForJMSv187() {
+        Header.LOGIN_PASSWORD.Set(0x0001);
+        Header.SERVERLIST_REQUEST.Set(0x0003);
+        Header.CHARLIST_REQUEST.Set(0x0004);
+        Header.SERVERSTATUS_REQUEST.Set(0x0005);
+        Header.CHAR_SELECT.Set(0x0006);
+        Header.PLAYER_LOGGEDIN.Set(0x0007);
+        Header.CHECK_CHAR_NAME.Set(0x0008);
+        Header.CREATE_CHAR.Set(0x000B);
+        Header.DELETE_CHAR.Set(0x000D);
+        Header.LATEST_CRASH_DATA.Set(0x000F);
+        Header.AUTH_SECOND_PASSWORD.Set(0x0014);
+        Header.REACHED_LOGIN_SCREEN.Set(0x0018);
+        Header.RSA_KEY.Set(0x001A);
     }
 
 }

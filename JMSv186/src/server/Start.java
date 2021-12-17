@@ -65,7 +65,7 @@ public class Start {
 
     private static short MapleVersion = 0;
     private static byte MapleSubVersion = 0;
-    private static boolean ServerDebug = false;
+    private static final boolean ServerDebug = false;
 
     public static short getMainVersion() {
         return MapleVersion;
@@ -121,6 +121,11 @@ public class Start {
 
                 OutPacket.SetForJMSv186();
                 InPacket.SetForJMSv186();
+                break;
+            }
+            case 187: {
+                OutPacket.SetForJMSv187();
+                InPacket.SetForJMSv187();
                 break;
             }
             default: {

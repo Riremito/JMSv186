@@ -111,6 +111,10 @@ public class ChannelServer implements Serializable {
         channels = Integer.parseInt(ChannelProperties.getProperty("server.channels"));
     }
 
+    public static int getChannels() {
+        return channels;
+    }
+
     public final void loadEvents() {
         if (events.size() != 0) {
             return;
@@ -218,6 +222,15 @@ public class ChannelServer implements Serializable {
 
     public static final ChannelServer getInstance(final int channel) {
         return instances.get(channel);
+    }
+
+    // 接続人数
+    public static int getPopulation(int channel) {
+        ChannelServer ch = instances.get(channel);
+        if (ch == null) {
+            return 1000;
+        }
+        return ch.getPlayerStorage().getAllCharacters().size();
     }
 
     public final void addPlayer(final MapleCharacter chr) {

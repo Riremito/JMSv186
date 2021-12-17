@@ -40,6 +40,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
+import server.Start;
 import server.StructPotentialItem;
 import server.StructSetItem;
 import server.StructSetItem.SetItem;
@@ -1208,10 +1209,17 @@ public class PlayerStats implements Serializable {
         mplew.writeShort(dex); // dex
         mplew.writeShort(int_); // int
         mplew.writeShort(luk); // luk
-        mplew.writeShort(hp); // hp
-        mplew.writeShort(maxhp); // maxhp
-        mplew.writeShort(mp); // mp
-        mplew.writeShort(maxmp); // maxmp
+        if (Start.getMainVersion() <= 186) {
+            mplew.writeShort(hp); // hp
+            mplew.writeShort(maxhp); // maxhp
+            mplew.writeShort(mp); // mp
+            mplew.writeShort(maxmp); // maxmp
+        } else {
+            mplew.writeInt(hp); // hp
+            mplew.writeInt(maxhp); // maxhp
+            mplew.writeInt(mp); // mp
+            mplew.writeInt(maxmp); // maxmp
+        }
     }
 
     public final int getSkillByJob(final int skillID, final int job) {

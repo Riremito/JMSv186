@@ -30,6 +30,7 @@ import client.MapleCharacter;
 import client.MapleCharacterUtil;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import handling.channel.ChannelServer;
 import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
 import handling.login.LoginWorker;
@@ -98,9 +99,9 @@ public class CharLoginHandler {
 
     public static final void ServerListRequest(final MapleClient c) {
         // かえで
-        c.getSession().write(LoginPacket.getServerList(0, LoginServer.getLoad()));
-        // もみじ
-        c.getSession().write(LoginPacket.getServerList(1, LoginServer.getLoad()));
+        c.getSession().write(LoginPacket.getServerList(0));
+        // もみじ (サーバーを分離すると接続人数を取得するのが難しくなる)
+        c.getSession().write(LoginPacket.getServerList(1, false, 16));
         c.getSession().write(LoginPacket.getEndOfServerList());
     }
 
