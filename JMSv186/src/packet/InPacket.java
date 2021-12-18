@@ -30,6 +30,10 @@ public class InPacket {
         encoded += 1;
     }
 
+    public InPacket() {
+        // データ構造用
+    }
+
     public void Encode2(short w) {
         Encode1((byte) (w & 0xFF));
         Encode1((byte) ((w >> 8) & 0xFF));
