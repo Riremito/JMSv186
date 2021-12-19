@@ -254,8 +254,6 @@ public class MaplePacketCreator {
             if (Start.getMainVersion() > 164) {
                 p.Encode4(0);
                 p.Encode4(0);
-            } else {
-                p.EncodeZeroBytes(7);
             }
             MapleInventory iv = chr.getInventory(MapleInventoryType.EQUIPPED);
             Collection<IItem> equippedC = iv.list();
@@ -264,59 +262,97 @@ public class MaplePacketCreator {
                 equipped.add((Item) item);
             }
             Collections.sort(equipped);
-            for (Item item : equipped) {
-                if (item.getPosition() < 0 && item.getPosition() > -100) {
-                    p.EncodeBuffer(addItemInfo(item, false, false));
+
+            // 装備済みアイテム
+            {
+                for (Item item : equipped) {
+                    if (item.getPosition() < 0 && item.getPosition() > -100) {
+                        p.EncodeBuffer(addItemInfo(item, false, false));
+                    }
+                }
+                if (Start.getMainVersion() == 164) {
+                    p.Encode1(0);
+                } else {
+                    p.Encode2(0);
                 }
             }
-            p.Encode2(0); // start of equipped nx
-
-            for (Item item : equipped) {
-                if (item.getPosition() <= -100 && item.getPosition() > -1000) {
+            // 装備済みアバター?
+            {
+                for (Item item : equipped) {
+                    if (item.getPosition() <= -100 && item.getPosition() > -1000) {
+                        p.EncodeBuffer(addItemInfo(item, false, false));
+                    }
+                }
+                // その他装備済みアイテム終了?
+                if (Start.getMainVersion() == 164) {
+                    p.Encode1(0);
+                } else {
+                    p.Encode2(0);
+                }
+            }
+            // 装備
+            {
+                iv = chr.getInventory(MapleInventoryType.EQUIP);
+                for (IItem item : iv.list()) {
                     p.EncodeBuffer(addItemInfo(item, false, false));
+                }
+                if (Start.getMainVersion() == 164) {
+                    p.Encode1(0);
+                } else {
+                    p.Encode2(0);
+                }
+            }
+            // v164だとないかも?
+            {
+                if (Start.getMainVersion() > 164) {
+                    for (Item item : equipped) {
+                        if (item.getPosition() <= -1000) {
+                            p.EncodeBuffer(addItemInfo(item, false, false));
+                        }
+                    }
+                    if (Start.getMainVersion() == 164) {
+                        p.Encode1(0);
+                    } else {
+                        p.Encode2(0); // start of use inventory
+                    }
                 }
             }
 
-            p.Encode2(0); // start of equip inventory
-            iv = chr.getInventory(MapleInventoryType.EQUIP);
-            for (IItem item : iv.list()) {
-                p.EncodeBuffer(addItemInfo(item, false, false));
-            }
-
-            p.Encode2(0); //start of other equips
-            for (Item item : equipped) {
-                if (item.getPosition() <= -1000) {
+            // 消費
+            {
+                iv = chr.getInventory(MapleInventoryType.USE);
+                for (IItem item : iv.list()) {
                     p.EncodeBuffer(addItemInfo(item, false, false));
                 }
+                p.Encode1(0);
             }
 
-            p.Encode2(0); // start of use inventory
-            iv = chr.getInventory(MapleInventoryType.USE);
-            for (IItem item : iv.list()) {
-                p.EncodeBuffer(addItemInfo(item, false, false));
+            // 設置
+            {
+                iv = chr.getInventory(MapleInventoryType.SETUP);
+                for (IItem item : iv.list()) {
+                    p.EncodeBuffer(addItemInfo(item, false, false));
+                }
+                p.Encode1(0);
             }
 
-            // BB後
-            if (Start.getMainVersion() >= 187) {
-                p.Encode2(0);
+            // ETC
+            {
+                iv = chr.getInventory(MapleInventoryType.ETC);
+                for (IItem item : iv.list()) {
+                    p.EncodeBuffer(addItemInfo(item, false, false));
+                }
+                p.Encode1(0);
             }
 
-            p.Encode1(0); // start of set-up inventory
-            iv = chr.getInventory(MapleInventoryType.SETUP);
-            for (IItem item : iv.list()) {
-                p.EncodeBuffer(addItemInfo(item, false, false));
+            // ポイントアイテム
+            {
+                iv = chr.getInventory(MapleInventoryType.CASH);
+                for (IItem item : iv.list()) {
+                    p.EncodeBuffer(addItemInfo(item, false, false));
+                }
+                p.Encode1(0);
             }
-            p.Encode1(0); // start of etc inventory
-            iv = chr.getInventory(MapleInventoryType.ETC);
-            for (IItem item : iv.list()) {
-                p.EncodeBuffer(addItemInfo(item, false, false));
-            }
-            p.Encode1(0); // start of cash inventory
-            iv = chr.getInventory(MapleInventoryType.CASH);
-            for (IItem item : iv.list()) {
-                p.EncodeBuffer(addItemInfo(item, false, false));
-            }
-            p.Encode1(0);
         }
         // [addSkillInfo]
         p.EncodeBuffer(addSkillInfo(chr));
@@ -325,7 +361,11 @@ public class MaplePacketCreator {
         // [addQuestInfo]
         p.EncodeBuffer(addQuestInfo(chr));
         // [addRingInfo]
+        p.Encode2(0);
         p.EncodeBuffer(addRingInfo(chr));
+        if (Start.getMainVersion() > 164 && Start.getMainVersion() < 187) {
+            p.Encode2(0);
+        }
         // [addRocksInfo]
         p.EncodeBuffer(addRocksInfo(chr));
         p.Encode2(0);
@@ -335,12 +375,14 @@ public class MaplePacketCreator {
         p.EncodeBuffer(QuestInfoPacket(chr));
         // PQ rank?
         p.Encode2(0);
-        p.Encode2(0);
-        // ログアウトギフト? (16 bytes)
-        p.Encode4(0);
-        p.Encode4(0);
-        p.Encode4(0);
-        p.Encode4(0);
+        if (Start.getMainVersion() > 164) {
+            p.Encode2(0);
+            // ログアウトギフト? (16 bytes)
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(0);
+        }
         // サーバーの時間?
         p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
         return p.Get();
@@ -365,7 +407,8 @@ public class MaplePacketCreator {
                     pos -= 100;
                 }
             }
-            if (!trade && item.getType() == 1) {
+            // v164では場所は1バイトで全て表現される
+            if (Start.getMainVersion() > 164 && !trade && item.getType() == 1) {
                 data.Encode2(pos);
             } else {
                 data.Encode1(pos);
@@ -379,7 +422,6 @@ public class MaplePacketCreator {
         if (hasUniqueId) {
             data.Encode8(item.getUniqueId());
         }
-
         if (item.getPet() != null) { // Pet
             data.EncodeBuffer(addPetItemInfo(item, item.getPet()));
         } else {
@@ -389,7 +431,7 @@ public class MaplePacketCreator {
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
                 // 謎フラグ
-                if (Start.getMainVersion() <= 184) {
+                if (Start.getMainVersion() > 164 && Start.getMainVersion() <= 184) {
                     data.Encode1(0);
                 }
                 data.Encode2(equip.getStr());
@@ -423,11 +465,17 @@ public class MaplePacketCreator {
                     data.Encode2(0);
                     data.Encode2(equip.getExpPercentage() * 4); // Item Exp... 98% = 25%
                 }
-                data.Encode4(equip.getDurability());
-                if (ChannelServer.IsCustom()) {
-                    data.Encode4(equip.getViciousHammer());
-                } else {
-                    data.Encode4(0);
+                // 耐久度
+                if (Start.getMainVersion() > 164) {
+                    data.Encode4(equip.getDurability());
+                }
+                // ビシャスのハンマー
+                if (Start.getMainVersion() > 164) {
+                    if (ChannelServer.IsCustom()) {
+                        data.Encode4(equip.getViciousHammer());
+                    } else {
+                        data.Encode4(0);
+                    }
                 }
                 // 潜在能力
                 if (Start.getMainVersion() >= 186) {
@@ -444,12 +492,11 @@ public class MaplePacketCreator {
                             data.Encode2(0);
                         }
                     }
+                    data.Encode2(equip.getHpR());
+                    data.Encode2(equip.getMpR());
                 }
-                data.Encode2(equip.getHpR());
-                data.Encode2(equip.getMpR());
-                data.Encode8(0); //some tracking ID
-                data.Encode4(0);
-                data.Encode4(0);
+                data.Encode8(0);
+                data.Encode8(0);
                 data.Encode4(-1);
             } else {
                 data.Encode2(item.getQuantity());
@@ -506,6 +553,13 @@ public class MaplePacketCreator {
 
     public static final byte[] addSkillInfo(final MapleCharacter chr) {
         InPacket data = new InPacket();
+
+        // シグナス騎士団が存在しないので精霊の祝福が存在しない (スキルID 0000012) を除外する必要がある
+        if (Start.getMainVersion() <= 164) {
+            data.Encode2(0);
+            return data.Get().getBytes();
+        }
+
         final Map<ISkill, SkillEntry> skills = chr.getSkills();
         data.Encode2(skills.size());
         for (final Entry<ISkill, SkillEntry> skill : skills.entrySet()) {
@@ -553,7 +607,6 @@ public class MaplePacketCreator {
 
     public static final byte[] addRingInfo(final MapleCharacter chr) {
         InPacket data = new InPacket();
-        data.Encode2(0);
         Pair<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
         List<MapleRing> cRing = aRing.getLeft();
         data.Encode2(cRing.size());
@@ -571,11 +624,6 @@ public class MaplePacketCreator {
             data.Encode8(ring.getRingId());
             data.Encode8(ring.getPartnerRingId());
             data.Encode4(ring.getItemId());
-        }
-
-        // BB後に消滅?
-        if (Start.getMainVersion() < 187) {
-            data.Encode2(0); //engagement ring?
         }
         return data.Get().getBytes();
     }
