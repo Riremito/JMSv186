@@ -411,6 +411,7 @@ public class InPacket {
         Header.WARP_TO_MAP.Set(0x0067);
         // ゲームサーバー 必須
         Header.SERVERMESSAGE.Set(0x0037);
+        Header.CHATTEXT.Set(0x0083);
         //Header.PLAYER_NPC.Set(0x004D);
         Header.SPAWN_NPC.Set(0x00D5);
         //Header.REMOVE_NPC.Set(0x00D6);

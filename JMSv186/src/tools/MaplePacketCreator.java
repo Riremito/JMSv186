@@ -317,7 +317,6 @@ public class MaplePacketCreator {
                     }
                 }
             }
-
             // 消費
             {
                 iv = chr.getInventory(MapleInventoryType.USE);
@@ -326,7 +325,6 @@ public class MaplePacketCreator {
                 }
                 p.Encode1(0);
             }
-
             // 設置
             {
                 iv = chr.getInventory(MapleInventoryType.SETUP);
@@ -335,7 +333,6 @@ public class MaplePacketCreator {
                 }
                 p.Encode1(0);
             }
-
             // ETC
             {
                 iv = chr.getInventory(MapleInventoryType.ETC);
@@ -344,7 +341,6 @@ public class MaplePacketCreator {
                 }
                 p.Encode1(0);
             }
-
             // ポイントアイテム
             {
                 iv = chr.getInventory(MapleInventoryType.CASH);
@@ -363,7 +359,7 @@ public class MaplePacketCreator {
         // [addRingInfo]
         p.Encode2(0);
         p.EncodeBuffer(addRingInfo(chr));
-        if (Start.getMainVersion() > 164 && Start.getMainVersion() < 187) {
+        if (Start.getMainVersion() > 164) {
             p.Encode2(0);
         }
         // [addRocksInfo]
@@ -384,6 +380,34 @@ public class MaplePacketCreator {
             p.Encode4(0);
         }
         // サーバーの時間?
+        p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
+        return p.Get();
+    }
+
+    // マップ移動
+    public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
+        InPacket p = new InPacket(InPacket.Header.WARP_TO_MAP);
+        if (Start.getMainVersion() > 164) {
+            p.Encode2(0);
+        }
+        p.Encode4(chr.getClient().getChannel() - 1);
+        p.Encode1(0);
+        if (Start.getMainVersion() > 164) {
+            p.Encode4(0);
+        }
+        p.Encode1((byte) chr.getPortalCount());
+        p.Encode1(0);
+        p.Encode2(0);
+        if (Start.getMainVersion() > 164) {
+            p.Encode1(0);
+        }
+        p.Encode4(to.getId());
+        p.Encode1(spawnPoint);
+        if (Start.getMainVersion() <= 186) {
+            p.Encode2(chr.getStat().getHp());
+        } else {
+            p.Encode4(chr.getStat().getHp());
+        }
         p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
         return p.Get();
     }
@@ -555,7 +579,7 @@ public class MaplePacketCreator {
         InPacket data = new InPacket();
 
         // シグナス騎士団が存在しないので精霊の祝福が存在しない (スキルID 0000012) を除外する必要がある
-        if (Start.getMainVersion() <= 164) {
+        if (Start.getMainVersion() <= 164 || Start.getMainVersion() >= 187) {
             data.Encode2(0);
             return data.Get().getBytes();
         }
@@ -767,34 +791,6 @@ public class MaplePacketCreator {
         }
         return mplew.getPacket();
 
-    }
-
-    public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
-
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.WARP_TO_MAP.Get());
-
-        if (Start.getMainVersion() > 164) {
-            mplew.writeShort(0);
-        }
-        mplew.writeInt(chr.getClient().getChannel() - 1);
-        mplew.write(0);
-        if (Start.getMainVersion() > 164) {
-            mplew.writeInt(0);
-        }
-        mplew.write((byte) chr.getPortalCount());
-        mplew.write(0);
-        mplew.writeShort(0);
-
-        if (Start.getMainVersion() > 164) {
-            mplew.write(0);
-        }
-        mplew.writeInt(to.getId());
-        mplew.write(spawnPoint);
-        mplew.writeShort(chr.getStat().getHp());
-        mplew.writeLong(PacketHelper.getTime(System.currentTimeMillis()));
-
-        return mplew.getPacket();
     }
 
     public static final MaplePacket instantMapWarp(final byte portal) {

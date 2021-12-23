@@ -286,8 +286,9 @@ public class OutPacket {
         Header.CHANGE_CHANNEL.Set(0x001D);
         Header.MOVE_PLAYER.Set(0x001F);
         Header.GENERAL_CHAT.Set(0x0027);
-        Header.NPC_TALK.Set(0x0030);
         Header.CHANGE_MAP_SPECIAL.Set(0x005A);
+        Header.CLOSE_RANGE_ATTACK.Set(0x0022);
+        Header.NPC_TALK.Set(0x0030);
         // ゲームサーバー その他
         Header.PORTAL_INSIDE_MAP.Set(0x005B);
     }
@@ -632,6 +633,12 @@ public class OutPacket {
         Header.AUTH_SECOND_PASSWORD.Set(0x0014);
         Header.REACHED_LOGIN_SCREEN.Set(0x0018);
         Header.RSA_KEY.Set(0x001A);
+        Header.CHANGE_MAP.Set(0x001D);
+        Header.CHANGE_CHANNEL.Set(0x001E);
+        Header.MOVE_PLAYER.Set(0x0020);
+        Header.GENERAL_CHAT.Set(0x002A);
+        Header.CHANGE_MAP_SPECIAL.Set(0x0065);
+        Header.PORTAL_INSIDE_MAP.Set(0x0066);
     }
 
 }

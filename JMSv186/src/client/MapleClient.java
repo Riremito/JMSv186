@@ -666,7 +666,8 @@ public class MapleClient implements Serializable {
             ps.setString(2, password1_hash);
             ps.setString(3, password2_hash);
             ps.setInt(4, 10000000);
-            ps.setByte(5, (byte) 1);
+            // 性別
+            ps.setByte(5, (byte) 0);
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
