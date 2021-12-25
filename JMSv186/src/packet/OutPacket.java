@@ -620,6 +620,7 @@ public class OutPacket {
     }
 
     public static void SetForJMSv187() {
+        // Login
         Header.LOGIN_PASSWORD.Set(0x0001);
         Header.SERVERLIST_REQUEST.Set(0x0003);
         Header.CHARLIST_REQUEST.Set(0x0004);
@@ -633,12 +634,168 @@ public class OutPacket {
         Header.AUTH_SECOND_PASSWORD.Set(0x0014);
         Header.REACHED_LOGIN_SCREEN.Set(0x0018);
         Header.RSA_KEY.Set(0x001A);
+        // Game
         Header.CHANGE_MAP.Set(0x001D);
         Header.CHANGE_CHANNEL.Set(0x001E);
+        Header.ENTER_CASH_SHOP.Set(0x001F);
         Header.MOVE_PLAYER.Set(0x0020);
-        Header.GENERAL_CHAT.Set(0x002A);
-        Header.CHANGE_MAP_SPECIAL.Set(0x0065);
-        Header.PORTAL_INSIDE_MAP.Set(0x0066);
+        Header.CANCEL_CHAIR.Set(0x0021);
+        Header.USE_CHAIR.Set(0x0022);
+        Header.CLOSE_RANGE_ATTACK.Set(0x0023);
+        Header.RANGED_ATTACK.Set(0x0024);
+        Header.MAGIC_ATTACK.Set(0x0025);
+        /*
+        Header.PASSIVE_ENERGY.Set(0x0026);
+        Header.TAKE_DAMAGE.Set(0x0027);
+         */
+        Header.GENERAL_CHAT.Set(0x0029 + 1);
+        Header.CLOSE_CHALKBOARD.Set(0x002A + 1);
+        Header.FACE_EXPRESSION.Set(0x002B + 1);
+        Header.USE_ITEMEFFECT.Set(0x002C + 1);
+        Header.WHEEL_OF_FORTUNE.Set(0x002D + 1);
+        Header.MONSTER_BOOK_COVER.Set(0x0031 + 1);
+        Header.NPC_TALK.Set(0x0032 + 1);
+        Header.HIRED_MERCHANT_REMOTE.Set(0x0033 + 1);
+        Header.NPC_TALK_MORE.Set(0x0034 + 1);
+        Header.NPC_SHOP.Set(0x0035 + 1);
+        Header.STORAGE.Set(0x0036 + 1);
+        Header.USE_HIRED_MERCHANT.Set(0x0037 + 1);
+        Header.DUEY.Set(0x0039 + 1);
+        Header.MERCH_ITEM_STORE.Set(0x003A + 1);
+        Header.OWL_OPEN_UI.Set(0x003B + 1);
+        Header.OWL_WARP.Set(0x003C + 1);
+        Header.ITEM_SORT.Set(0x003E + 1);
+        Header.ITEM_GATHER.Set(0x003F + 1);
+        Header.ITEM_MOVE.Set(0x0040 + 1);
+        /*
+        Header.USE_ITEM.Set(0x0041);
+        Header.CANCEL_ITEM_EFFECT.Set(0x0042);
+        Header.USE_SUMMON_BAG.Set(0x0044);
+        Header.PET_FOOD.Set(0x0045);
+        Header.USE_MOUNT_FOOD.Set(0x0046);
+        Header.USE_SCRIPTED_NPC_ITEM.Set(0x0047);
+        Header.USE_CASH_ITEM.Set(0x0048);
+        Header.USE_CATCH_ITEM.Set(0x004A);
+        Header.USE_SKILL_BOOK.Set(0x004B);
+        Header.OWL_USE_ITEM_VERSION_SEARCH.Set(0x004C);
+        Header.USE_TELE_ROCK.Set(0x004D);
+        Header.USE_RETURN_SCROLL.Set(0x004E);
+        Header.USE_UPGRADE_SCROLL.Set(0x004F);
+        Header.USE_EQUIP_SCROLL.Set(0x0050);
+        Header.USE_POTENTIAL_SCROLL.Set(0x0051);
+        Header.USE_MAGNIFY_GLASS.Set(0x0052);
+        Header.DISTRIBUTE_AP.Set(0x0053);
+        Header.AUTO_ASSIGN_AP.Set(0x0054);
+        Header.HEAL_OVER_TIME.Set(0x0055);
+        Header.DISTRIBUTE_SP.Set(0x0057);
+        Header.SPECIAL_MOVE.Set(0x0058);
+        Header.CANCEL_BUFF.Set(0x0059);
+        Header.SKILL_EFFECT.Set(0x005A);
+         */
+        Header.MESO_DROP.Set(0x005B + 3);
+        Header.GIVE_FAME.Set(0x005C + 3);
+        Header.CHAR_INFO_REQUEST.Set(0x005E + 3);
+        Header.SPAWN_PET.Set(0x005F + 3);
+        Header.CANCEL_DEBUFF.Set(0x0060 + 3);
+        Header.CHANGE_MAP_SPECIAL.Set(0x0062 + 3);
+        Header.PORTAL_INSIDE_MAP.Set(0x0063 + 3);
+        Header.TROCK_ADD_MAP.Set(0x0064 + 3);
+        Header.QUEST_ACTION.Set(0x0069 + 3);
+        /*
+        Header.GET_BUFF_REQUEST.Set(0x006A);
+        Header.SKILL_MACRO.Set(0x006C);
+        Header.ITEM_MAKER.Set(0x006F);
+        Header.REWARD_ITEM.Set(0x0070);
+        Header.REPAIR_ALL.Set(0x0072);
+        Header.REPAIR.Set(0x0073);
+        Header.SOLOMON.Set(0x0076);
+        Header.GACH_EXP.Set(0x0077);
+        Header.FOLLOW_REQUEST.Set(0x0078);
+        Header.FOLLOW_REPLY.Set(0x0079);
+        Header.USE_TREASUER_CHEST.Set(0x007A);
+        Header.GM_COMMAND_SERVER_MESSAGE.Set(0x007B);
+        Header.PARTYCHAT.Set(0x007C);
+        Header.WHISPER.Set(0x007D);
+        Header.MESSENGER.Set(0x007E);
+        Header.PLAYER_INTERACTION.Set(0x007F);
+        Header.PARTY_OPERATION.Set(0x0080);
+        Header.DENY_PARTY_REQUEST.Set(0x0081);
+        Header.EXPEDITION_OPERATION.Set(0x0082);
+        Header.EXPEDITION_LISTING.Set(0x0083);
+        Header.GUILD_OPERATION.Set(0x0084);
+        Header.DENY_GUILD_REQUEST.Set(0x0085);
+        Header.GM_COMMAND.Set(0x0086);
+        Header.GM_COMMAND_TEXT.Set(0x0087);
+        Header.BUDDYLIST_MODIFY.Set(0x0088);
+        Header.NOTE_ACTION.Set(0x0089);
+        Header.USE_DOOR.Set(0x008B);
+        Header.CHANGE_KEYMAP.Set(0x008E);
+        Header.RPS_GAME.Set(0x008F);
+        Header.RING_ACTION.Set(0x0090);
+        Header.WEDDING_REGISTRY.Set(0x0091);
+        Header.ALLIANCE_OPERATION.Set(0x0095);
+        Header.DENY_ALLIANCE_REQUEST.Set(0x0096);
+        Header.REQUEST_FAMILY.Set(0x0097);
+        Header.OPEN_FAMILY.Set(0x0098);
+        Header.FAMILY_OPERATION.Set(0x0099);
+        Header.DELETE_JUNIOR.Set(0x009A);
+        Header.DELETE_SENIOR.Set(0x009B);
+        Header.ACCEPT_FAMILY.Set(0x009C);
+        Header.USE_FAMILY.Set(0x009D);
+        Header.FAMILY_PRECEPT.Set(0x009E);
+        Header.FAMILY_SUMMON.Set(0x009F);
+        Header.CYGNUS_SUMMON.Set(0x00A0);
+        Header.ARAN_COMBO.Set(0x00A1);
+        Header.BBS_OPERATION.Set(0x00A4);
+         */
+        Header.ENTER_MTS.Set(0x00AF);
+        /*
+        Header.AVATAR_RANDOM_BOX_OPEN.Set(0x00AB);
+        Header.MOVE_PET.Set(0x00AE);
+        Header.PET_CHAT.Set(0x00AF);
+        Header.PET_COMMAND.Set(0x00B0);
+        Header.PET_LOOT.Set(0x00B1);
+        Header.PET_AUTO_POT.Set(0x00B2);
+        Header.MOVE_SUMMON.Set(0x00B6);
+        Header.SUMMON_ATTACK.Set(0x00B7);
+        Header.DAMAGE_SUMMON.Set(0x00B8);
+        Header.MOVE_DRAGON.Set(0x00BD);
+        Header.MOVE_LIFE.Set(0x00C7);
+        Header.AUTO_AGGRO.Set(0x00C8);
+        Header.FRIENDLY_DAMAGE.Set(0x00CB);
+        Header.MONSTER_BOMB.Set(0x00CC);
+        Header.HYPNOTIZE_DMG.Set(0x00CD);
+        Header.MOB_NODE.Set(0x00D0);
+        Header.DISPLAY_NODE.Set(0x00D1);
+        Header.NPC_ACTION.Set(0x00D5);
+        Header.ITEM_PICKUP.Set(0x00DA);
+        Header.DAMAGE_REACTOR.Set(0x00DD);
+        Header.TOUCH_REACTOR.Set(0x00DE);
+        Header.GM_COMMAND_EVENT_START.Set(0x00E2);
+        Header.SNOWBALL.Set(0x00E4);
+        Header.LEFT_KNOCK_BACK.Set(0x00E5);
+        Header.COCONUT.Set(0x00E6);
+        Header.MONSTER_CARNIVAL.Set(0x00E9);
+        Header.SHIP_OBJECT.Set(0x00EC);
+        Header.PARTY_SEARCH_START.Set(0x00EE);
+        Header.PARTY_SEARCH_STOP.Set(0x00EF);
+        Header.BEANS_OPERATION.Set(0x0000F3);
+        Header.BEANS_UPDATE.Set(0x0000F4);
+        Header.CS_FILL.Set(0x00F8);
+        Header.CS_UPDATE.Set(0x00F9);
+        Header.BUY_CS_ITEM.Set(0x00FA);
+        Header.COUPON_CODE.Set(0x00FB);
+        Header.RECOMMENDED_AVATAR.Set(0x00FE);
+        Header.ETC_ITEM_UI_UPDATE.Set(0x0104);
+        Header.ETC_ITEM_UI.Set(0x0105);
+        Header.ETC_ITEM_UI_DROP_ITEM.Set(0x0106);
+        Header.MAPLETV.Set(0x010A);
+        Header.QUEST_ITEM.Set(0x010C);
+        Header.MTS_TAB.Set(0x0111);
+        Header.GM_COMMAND_MAPLETV.Set(0x0114);
+        Header.VICIOUS_HAMMER.Set(0x0119);
+        Header.TOUCHING_MTS.Set(0x011F);
+         */
     }
 
 }

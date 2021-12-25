@@ -181,7 +181,7 @@ public class MapleMapFactory {
                 }
 
                 // 設定ファイルに定義されたNPCを設置
-                if (Start.getMainVersion() == 186) {
+                if (Start.getMainVersion() >= 186) {
                     Path file = Paths.get("./scripts/map/" + mapid + ".txt");
                     try {
                         if (!Files.notExists(file)) {

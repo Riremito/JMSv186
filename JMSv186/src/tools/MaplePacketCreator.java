@@ -313,10 +313,13 @@ public class MaplePacketCreator {
                     if (Start.getMainVersion() == 164) {
                         p.Encode1(0);
                     } else {
-                        p.Encode2(0); // start of use inventory
+                        p.Encode2(0);
                     }
                 }
             }
+            // v187.0
+            // なんかしらのデータが消費アイテムの前にあってずれている
+            // おそらくアイテム欄より後でもズレが発生してる
             // 消費
             {
                 iv = chr.getInventory(MapleInventoryType.USE);
@@ -432,7 +435,7 @@ public class MaplePacketCreator {
                 }
             }
             // v164では場所は1バイトで全て表現される
-            if (Start.getMainVersion() > 164 && !trade && item.getType() == 1) {
+            if ((Start.getMainVersion() > 164 && !trade && item.getType() == 1)/* || Start.getMainVersion() >= 187*/) {
                 data.Encode2(pos);
             } else {
                 data.Encode1(pos);
@@ -600,6 +603,12 @@ public class MaplePacketCreator {
     public static final byte[] addCoolDownInfo(final MapleCharacter chr) {
         InPacket data = new InPacket();
         final List<MapleCoolDownValueHolder> cd = chr.getCooldowns();
+
+        if (Start.getMainVersion() <= 164 || Start.getMainVersion() >= 187) {
+            data.Encode2(0);
+            return data.Get().getBytes();
+        }
+
         data.Encode2(cd.size());
         for (final MapleCoolDownValueHolder cooling : cd) {
             data.Encode4(cooling.skillId);
@@ -611,6 +620,7 @@ public class MaplePacketCreator {
     public static byte[] addQuestInfo(final MapleCharacter chr) {
         InPacket data = new InPacket();
         final List<MapleQuestStatus> started = chr.getStartedQuests();
+
         data.Encode2(started.size());
         for (final MapleQuestStatus q : started) {
             data.Encode2(q.getQuest().getId());
@@ -687,6 +697,12 @@ public class MaplePacketCreator {
     public static final byte[] QuestInfoPacket(final MapleCharacter chr) {
         InPacket data = new InPacket();
         Map<Integer, String> questinfo = chr.getInfoQuest_Map();
+
+        if (Start.getMainVersion() <= 164 || Start.getMainVersion() >= 187) {
+            data.Encode2(0);
+            return data.Get().getBytes();
+        }
+
         data.Encode2(questinfo.size());
         for (final Entry<Integer, String> q : questinfo.entrySet()) {
             data.Encode2(q.getKey());

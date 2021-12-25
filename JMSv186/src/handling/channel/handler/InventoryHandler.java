@@ -1800,8 +1800,10 @@ public class InventoryHandler {
                 }
                 break;
             }
-            case 5450000: { // Mu Mu the Travelling Merchant
-                MapleShopFactory.getInstance().getShop(61).sendShop(c);
+            // さすらいの商人ミョミョ
+            case 5450000: {
+                // 適当なSHOPを指定しているので修正必要
+                MapleShopFactory.getInstance().getShop(11100).sendShop(c);
                 //used = true;
                 break;
             }
@@ -1852,16 +1854,6 @@ public class InventoryHandler {
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false, true);
         }
         c.getSession().write(MaplePacketCreator.enableActions());
-        /*
-        if (cc) {
-            if (!c.getPlayer().isAlive() || c.getPlayer().getEventInstance() != null || FieldLimitType.ChannelSwitch.check(c.getPlayer().getMap().getFieldLimit())) {
-                c.getPlayer().dropMessage(1, "Auto change channel failed.");
-                return;
-            }
-            c.getPlayer().dropMessage(5, "Auto changing channels. Please wait.");
-            c.getPlayer().changeChannel(c.getChannel() == ChannelServer.getChannelCount() ? 1 : (c.getChannel() + 1));
-        }
-         */
     }
 
     public static final void Pickup_Player(final SeekableLittleEndianAccessor slea, MapleClient c, final MapleCharacter chr) {
