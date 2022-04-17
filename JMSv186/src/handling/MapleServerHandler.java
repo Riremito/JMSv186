@@ -1150,11 +1150,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // パチンコ
             case BEANS_OPERATION: {
-                BeanGame.BeanGame1(p, c);
+                //BeanGame.BeanGame1(p, c);
                 return true;
             }
             case BEANS_UPDATE: {
-                BeanGame.BeanGame2(p, c);
+                //BeanGame.BeanGame2(p, c);
                 return true;
             }
             default: {

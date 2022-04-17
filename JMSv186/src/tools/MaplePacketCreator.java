@@ -5209,6 +5209,7 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
+    /*
     public static MaplePacket BeansZJgeidd(boolean type, int a) {//豆豆进洞后奖励的
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -5288,11 +5289,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    /**
-     *
-     * @param beansInfo
-     * @return
-     */
     public static MaplePacket showBeans(List<MapleBeans> beansInfo) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -5306,4 +5302,5 @@ public class MaplePacketCreator {
         }
         return mplew.getPacket();
     }
+    */
 }

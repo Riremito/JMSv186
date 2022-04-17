@@ -15,6 +15,7 @@ import constants.GameConstants;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
+import debug.Debug;
 import java.util.LinkedList;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
@@ -84,7 +85,8 @@ public class MapleItemInformationProvider {
         }
         getAllItems();
         // 潜在能力実装がv186のためそれ以前では存在しない
-        if (Start.getMainVersion() < 186) {
+        // v186以外で全然違うので使い物にならない
+        if (Start.getMainVersion() != 186) {
             return;
         }
         final MapleData setsData = etcData.getData("SetItemInfo.img");

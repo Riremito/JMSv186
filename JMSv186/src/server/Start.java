@@ -101,31 +101,54 @@ public class Start {
         MapleSubVersion = (byte) version_sub;
 
         switch (version_main) {
+            // ゴミ
             case 164: {
                 OutPacket.SetForJMSv164();
                 InPacket.SetForJMSv164();
                 break;
             }
+            // ゴミ
             case 176: {
                 OutPacket.SetForJMSv176();
                 InPacket.SetForJMSv176();
                 break;
             }
+            // ゴミ
             case 184: {
 
                 OutPacket.SetForJMSv184();
                 InPacket.SetForJMSv184();
                 break;
             }
+            // ゴミ
             case 186: {
 
                 OutPacket.SetForJMSv186();
                 InPacket.SetForJMSv186();
                 break;
             }
+            // ゴミ
             case 187: {
                 OutPacket.SetForJMSv187();
                 InPacket.SetForJMSv187();
+                break;
+            }
+            // 起動早い
+            case 194: {
+                OutPacket.SetForJMSv302();
+                InPacket.SetForJMSv302();
+                break;
+            }
+            // 起動まぁまぁ早い
+            case 201: {
+                OutPacket.SetForJMSv302();
+                InPacket.SetForJMSv302();
+                break;
+            }
+            // 起動が遅い
+            case 302: {
+                OutPacket.SetForJMSv302();
+                InPacket.SetForJMSv302();
                 break;
             }
             default: {

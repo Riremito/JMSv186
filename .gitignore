@@ -4,3 +4,5 @@
 /JMSv186/MonitorLogs/
 /JMSv186/stable/
 *.rtf
+/JMSv186/out/
+/JMSv186/.idea/

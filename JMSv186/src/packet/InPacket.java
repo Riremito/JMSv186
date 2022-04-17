@@ -1107,4 +1107,19 @@ public class InPacket {
          */
     }
 
+    public static void SetForJMSv302() {
+        // ログインサーバー
+        Header.LOGIN_STATUS.Set(0x0000);
+        Header.SERVERLIST.Set(0x0002);
+        Header.CHARLIST.Set(0x0003);
+        Header.SERVER_IP.Set(0x0004);
+        Header.CHAR_NAME_RESPONSE.Set(0x0005);
+        Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
+        Header.DELETE_CHAR_RESPONSE.Set(0x0007);
+        Header.CHANGE_CHANNEL.Set(0x0008);
+        Header.PING.Set(0x0009);
+        Header.SECONDPW_ERROR.Set(0x0016);
+        Header.LOGIN_AUTH.Set(0x0018);
+    }
+
 }

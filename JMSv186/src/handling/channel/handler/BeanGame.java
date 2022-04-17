@@ -15,7 +15,7 @@ import tools.data.input.LittleEndianAccessor;
 import tools.MaplePacketCreator;
 
 public class BeanGame {
-
+/*
     public static int 进洞次数 = 0;
     public static int 第一排 = 0;
     public static int 第三排 = 0;
@@ -32,43 +32,6 @@ public class BeanGame {
     public static int 海洋帽子 = 1002743;
 
     public static final void BeanGame1(LittleEndianAccessor slea, MapleClient c) {
-        /*
-        第一
-        1 = 3
-        2 = 6
-        3 = 9
-        4 = 2
-        5 = 5
-        6 = 8
-        7 = 4
-        8 = 7
-        9 = 1
-        
-        第三
-        1 = 5
-        2 = 3
-        3 = 8
-        4 = 6
-        5 = 4
-        6 = 9
-        7 = 1
-        8 = 7
-        9 = 2
-        
-        0 大白怪
-        1 紫怪
-        2 飞侠
-        3 粉怪
-        4 海盗
-        5 小白怪
-        6 法师
-        7 战士
-        8 弓箭手
-        9 女皇
-         */
- /*public static int[] 豆豆装备 = {1002695, 1002609, 1002665, 1002985, 1002986, 1002761, 1002760, 1002583, 1002543, 1002448, 1052137, 1092051, 1702232, 1702138};
-    public static int[] 豆豆坐骑 = {1902031, 1902032, 1902033, 1902034, 1902035, 1902037};
-    public static int[] 消耗品 = {2022140, 2022141, 2022139, 2022137, 1902035, 1902037};*/
         BeansConstants Beans = new BeansConstants();
         String 豆豆装备[] = Beans.get豆豆装备();
         String 豆豆坐骑[] = Beans.get豆豆坐骑();
@@ -131,8 +94,6 @@ public class BeanGame {
             case 4:
                 //记录进洞次数的黄色豆豆。最多只有7个。
                 gain进洞次数(-1);
-                /*  第一排 = Randomizer.nextInt(10);
-                第三排 = Randomizer.nextInt(10);*/
                 // 第二排 = Randomizer.nextInt(10);
                 int 概率 = 0;
                 if (黄金狗设置局数 > 0) {
@@ -440,16 +401,6 @@ public class BeanGame {
                             System.out.println("未处理的类型A【" + type + "】\n包" + slea.toString());
                             break;
                     }
-                    /*
-                    if (c.getPlayer().getInventory(GameConstants.getInventoryType(itemId)).getNextFreeSlot() > -1 && itemId != 0) {
-                        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                        MapleInventoryType type1 = ii.getInventoryTypeCS(itemId);
-                        if (type1.equals(MapleInventoryType.EQUIP)) {
-                            count = 1;
-                        }
-                        MapleInventoryManipulator.addById(c, itemId, (short) count, "豆豆机奖励");
-                    }
-                     */
                     // int 奖励豆豆 = Randomizer.nextInt(150) + 50;
                     int 奖励豆豆 = (第二排 + 1) * 豆豆奖励范围;
                     chr.gainTama(奖励豆豆);
@@ -517,17 +468,6 @@ public class BeanGame {
     private static int getBeanType() {
         int random = rand(1, 100);
         int beanType = 0;
-        /* switch (random) {
-            case 2:
-                beanType = 1;
-                break;
-            case 49:
-                beanType = 2;
-                break;
-            case 99:
-                beanType = 3;
-                break;
-        }*/
         return beanType;
     }
 
@@ -573,4 +513,5 @@ public class BeanGame {
         c.getSession().write(MaplePacketCreator.updateBeansMSG(c.getPlayer().getTama()));
         c.getSession().write(MaplePacketCreator.enableActions());
     }
+*/
 }
