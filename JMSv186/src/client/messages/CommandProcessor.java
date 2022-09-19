@@ -235,6 +235,15 @@ public class CommandProcessor {
                 return NPCTalk(c, 9010021);
             }
 
+            splitted[0] = splitted[0].replace("/", "!");
+            CommandObject co = commands.get(splitted[0]);
+            if (co == null) {
+                c.getPlayer().dropMessage(6, "error");
+                return true;
+            }
+
+            co.execute(c, splitted);
+            c.getPlayer().dropMessage(6, splitted[0]);
             return true;
         }
 

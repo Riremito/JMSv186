@@ -226,6 +226,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         // ボスが弱すぎるのでダメージ計算式を変更して最低20回の攻撃ヒット回数を求める
         if (isRaid()) {
             damage = Math.min(damage, (getMobMaxHp() / 20));
+        } // test
+        else {
+            //damage *= 500;
+            //damage = Math.min(damage, (getMobMaxHp() / 3));
         }
 
         AttackerEntry attacker = null;
