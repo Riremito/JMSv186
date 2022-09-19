@@ -54,8 +54,11 @@
     + v186のクライアントを用意
         + https://msdl.xyz/pages/jms/setups
     + [エミュ鯖へ接続させるためのツール](https://github.com/Riremito/RunEmu/releases)
+        + https://hostr.co/rgU3Kdkhxonv
+            + これを使ったほうが良いです
 + 実行
     + RunEmu.exeを実行するとローカルで動作する
+        + 初回はRunEmu.exeにMapleStory.exeをドロップする必要があります
 
 ### サーバーの停止
 + CTRL+Cで停止するか聞かれるのでyで終了
