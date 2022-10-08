@@ -30,15 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 
-import constants.GameConstants;
 import client.MapleCharacter;
-import client.MapleCharacterUtil;
-import handling.world.World;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import server.AutobanManager;
 import server.Timer.CheatTimer;
-import tools.MaplePacketCreator;
 import tools.StringUtil;
 
 public class CheatTracker {

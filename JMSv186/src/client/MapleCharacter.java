@@ -873,16 +873,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.setShort(11, stat.getMaxMp());
             ps.setString(12, "0,0,0,0,0,0,0,0,0,0"); // Remaining SP
             ps.setShort(13, (short) 0); // Remaining AP
-
-            /*
-            if (chr.name.toUpperCase().indexOf("GM") == 0) {
-                ps.setByte(14, (byte) 111); // GM Level
-                System.out.println("GMキャラクター作成:" + chr.name);
-            } else {
-                ps.setByte(14, (byte) 0); // GM Level
-                System.out.println("キャラクター作成: " + chr.name);
-            }
-             */
             ps.setByte(14, (byte) 0); // GM Level
             System.out.println("キャラクター作成: " + chr.name);
 
@@ -899,7 +889,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 ps.setInt(20, 910000000);
             }
 
-            ps.setInt(21, 500000000); // Meso
+            ps.setInt(21, chr.getMeso()); // Meso
             ps.setShort(22, (short) 0); // HP ap used
             ps.setByte(23, (byte) 0); // Spawnpoint
             ps.setInt(24, -1); // Party
@@ -953,11 +943,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
             ps = con.prepareStatement("INSERT INTO inventoryslot (characterid, `equip`, `use`, `setup`, `etc`, `cash`) VALUES (?, ?, ?, ?, ?, ?)");
             ps.setInt(1, chr.id);
-            ps.setByte(2, (byte) 96); // Eq
-            ps.setByte(3, (byte) 96); // Use
-            ps.setByte(4, (byte) 96); // Setup
-            ps.setByte(5, (byte) 96); // ETC
-            ps.setByte(6, (byte) 96); // Cash
+            ps.setByte(2, chr.getInventory(MapleInventoryType.EQUIP).getSlotLimit()); // Eq
+            ps.setByte(3, chr.getInventory(MapleInventoryType.USE).getSlotLimit()); // Use
+            ps.setByte(4, chr.getInventory(MapleInventoryType.SETUP).getSlotLimit()); // Setup
+            ps.setByte(5, chr.getInventory(MapleInventoryType.ETC).getSlotLimit()); // ETC
+            ps.setByte(6, chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // Cash
             ps.execute();
             ps.close();
 
@@ -2973,8 +2963,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return meso;
     }
 
+    // 初期化用
+    public void setMeso(int val) {
+        meso = val;
+    }
+
     public int getTama() {
         return tama;
+    }
+
+    public void setTama(int val) {
+        tama = val;
     }
 
     public final int[] getSavedLocations() {

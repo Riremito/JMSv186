@@ -928,7 +928,10 @@ public class DamageParse {
                                 eachd.right = eachd_copy.get(hit - 1 - mid_att).right;
                             } else {
                                 //rough calculation
-                                eachd.right = (Randomizer.nextInt(100)/*chr.CRand().CRand32__Random_ForMonster() % 100*/) < CriticalRate;
+                                //eachd.right = (Randomizer.nextInt(100)/*chr.CRand().CRand32__Random_ForMonster() % 100*/) < CriticalRate;
+                                //eachd.right = (chr.CRand().CRand32__Random_ForMonster() % 100) < CriticalRate;
+                                //eachd.right = (double)((((chr.CRand().CRand32__Random_ForMonster() % 7) * 4) % 10000000) * 0.0000100000010000001) < (double)CriticalRate;
+
                             }
                             eachd_copy.get(hit - 1).right = eachd.right;
                             //System.out.println("CRITICAL RATE: " + CriticalRate + ", passive rate: " + chr.getStat().passive_sharpeye_rate() + ", critical: " + eachd.right);

@@ -27,6 +27,7 @@ import client.inventory.Item;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.MapleCharacterUtil;
+import client.inventory.Equip;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import handling.login.LoginInformationProvider;
@@ -248,38 +249,124 @@ public class CharLoginHandler {
         item.setPosition((byte) -11);
         equip.addFromDB(item);
 
-        newchar.getInventory(MapleInventoryType.USE).addItem(new Item(2000013, (byte) 0, (short) 100, (byte) 0));
-        newchar.getInventory(MapleInventoryType.USE).addItem(new Item(2000014, (byte) 0, (short) 100, (byte) 0));
         //blue/red pots
-        switch (JobType) {
-            case 0: // Cygnus
-                newchar.setQuestAdd(MapleQuest.getInstance(20022), (byte) 1, "1");
-                newchar.setQuestAdd(MapleQuest.getInstance(20010), (byte) 1, null); //>_>_>_> ugh
-
-                newchar.setQuestAdd(MapleQuest.getInstance(20000), (byte) 1, null); //>_>_>_> ugh
-                newchar.setQuestAdd(MapleQuest.getInstance(20015), (byte) 1, null); //>_>_>_> ugh
-                newchar.setQuestAdd(MapleQuest.getInstance(20020), (byte) 1, null); //>_>_>_> ugh
-
-                newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161047, (byte) 0, (short) 1, (byte) 0));
-                break;
-            case 1: // Adventurer
-                newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161001, (byte) 0, (short) 1, (byte) 0));
-                break;
-            case 2: // Aran
-                newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161048, (byte) 0, (short) 1, (byte) 0));
-                break;
-            case 3: //Evan
-                newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161052, (byte) 0, (short) 1, (byte) 0));
-                break;
+        if (JobType == 0) {
+            newchar.setQuestAdd(MapleQuest.getInstance(20022), (byte) 1, "1");
+            newchar.setQuestAdd(MapleQuest.getInstance(20010), (byte) 1, null); //>_>_>_> ugh
+            newchar.setQuestAdd(MapleQuest.getInstance(20000), (byte) 1, null); //>_>_>_> ugh
+            newchar.setQuestAdd(MapleQuest.getInstance(20015), (byte) 1, null); //>_>_>_> ugh
+            newchar.setQuestAdd(MapleQuest.getInstance(20020), (byte) 1, null); //>_>_>_> ugh
         }
 
         if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
+            addInitialItems(newchar);
             MapleCharacter.saveNewCharToDB(newchar, JobType, JobType == 1 && db > 0);
+
             c.getSession().write(LoginPacket.addNewCharEntry(newchar, true));
             c.createdChar(newchar.getId());
         } else {
             c.getSession().write(LoginPacket.addNewCharEntry(newchar, false));
         }
+    }
+
+    public static void addInitialItems(final MapleCharacter chr) {
+        MapleInventory use = chr.getInventory(MapleInventoryType.USE);
+        MapleInventory etc = chr.getInventory(MapleInventoryType.ETC);
+        MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIP);
+        MapleInventory cash = chr.getInventory(MapleInventoryType.CASH);
+        MapleInventory setup = chr.getInventory(MapleInventoryType.SETUP);
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+
+        // メル
+        chr.setMeso(5000000);
+
+        // パチンコ玉
+        //chr.setTama(500000);
+        // エリクサー
+        use.addItem(new Item(2000004, (byte) 0, (short) 100, (byte) 0));
+        use.addItem(new Item(2000004, (byte) 0, (short) 100, (byte) 0));
+        use.addItem(new Item(2000004, (byte) 0, (short) 100, (byte) 0));
+        use.addItem(new Item(2000004, (byte) 0, (short) 100, (byte) 0));
+        // 万病治療薬
+        use.addItem(new Item(2050004, (byte) 0, (short) 100, (byte) 0));
+        // コーヒー牛乳
+        use.addItem(new Item(2030008, (byte) 0, (short) 100, (byte) 0));
+        // いちご牛乳
+        use.addItem(new Item(2030009, (byte) 0, (short) 100, (byte) 0));
+        // フルーツ牛乳
+        use.addItem(new Item(2030010, (byte) 0, (short) 100, (byte) 0));
+        // 帰還の書(ヘネシス)
+        use.addItem(new Item(2030004, (byte) 0, (short) 100, (byte) 0));
+        // 強化書
+        use.addItem(new Item(2040303, (byte) 0, (short) 7, (byte) 0));
+        use.addItem(new Item(2040506, (byte) 0, (short) 10, (byte) 0));
+        use.addItem(new Item(2040710, (byte) 0, (short) 7, (byte) 0));
+        use.addItem(new Item(2040807, (byte) 0, (short) 7, (byte) 0));
+        use.addItem(new Item(2044703, (byte) 0, (short) 7, (byte) 0));
+        use.addItem(new Item(2044503, (byte) 0, (short) 7, (byte) 0));
+        use.addItem(new Item(2043803, (byte) 0, (short) 7, (byte) 0));
+        use.addItem(new Item(2043003, (byte) 0, (short) 7, (byte) 0));
+        use.addItem(new Item(2049100, (byte) 0, (short) 100, (byte) 0));
+        use.addItem(new Item(2049300, (byte) 0, (short) 100, (byte) 0));
+        use.addItem(new Item(2049400, (byte) 0, (short) 100, (byte) 0));
+        use.addItem(new Item(2049003, (byte) 0, (short) 100, (byte) 0));
+        use.addItem(new Item(2470000, (byte) 0, (short) 100, (byte) 0));
+
+        // 魔法の石
+        etc.addItem(new Item(4006000, (byte) 0, (short) 100, (byte) 0));
+        // 召喚の石
+        etc.addItem(new Item(4006001, (byte) 0, (short) 100, (byte) 0));
+
+        // 軍手(茶)
+        equip.addItem(ii.getEquipById(1082149));
+        // ドロシー(銀)
+        equip.addItem(ii.getEquipById(1072264));
+        // 冒険家のマント(黄)
+        equip.addItem(ii.getEquipById(1102040));
+        // 緑ずきん
+        equip.addItem(ii.getEquipById(1002391));
+        // オウルアイ
+        equip.addItem(ii.getEquipById(1022047));
+        // 犬鼻
+        equip.addItem(ii.getEquipById(1012056));
+        // メイプルシールド
+        equip.addItem(ii.getEquipById(1092030));
+        // タオル(黒)
+        equip.addItem(ii.getEquipById(1050127));
+        // バスタオル(黄)
+        equip.addItem(ii.getEquipById(1051140));
+        // エレメントピアス
+        equip.addItem(ii.getEquipById(1032062));
+        // 錬金術師の指輪
+        equip.addItem(ii.getEquipById(1112400));
+
+        // ドラゴン(アビス)
+        setup.addItem(new Item(3010047, (byte) 0, (short) 1, (byte) 0));
+
+        // 拡声器
+        cash.addItem(new Item(5071000, (byte) 0, (short) 100, (byte) 0));
+        // アイテム拡声器
+        cash.addItem(new Item(5076000, (byte) 0, (short) 100, (byte) 0));
+        // 黒板
+        cash.addItem(new Item(5370000, (byte) 0, (short) 1, (byte) 0));
+        // 営業許可証
+        cash.addItem(new Item(5140000, (byte) 0, (short) 1, (byte) 0));
+        // 高性能テレポストーン
+        cash.addItem(new Item(5041000, (byte) 0, (short) 100, (byte) 0));
+        // ガシャポンチケット
+        cash.addItem(new Item(5220000, (byte) 0, (short) 100, (byte) 0));
+        // ビシャスのハンマー
+        cash.addItem(new Item(5570000, (byte) 0, (short) 100, (byte) 0));
+        // ミラクルキューブ
+        cash.addItem(new Item(5062000, (byte) 0, (short) 100, (byte) 0));
+        // ベガの呪文書(10%)
+        cash.addItem(new Item(5610000, (byte) 0, (short) 100, (byte) 0));
+        // ベガの呪文書(60%)
+        cash.addItem(new Item(5610001, (byte) 0, (short) 100, (byte) 0));
+        // AP再分配の書
+        cash.addItem(new Item(5050000, (byte) 0, (short) 100, (byte) 0));
+        cash.addItem(new Item(5050000, (byte) 0, (short) 100, (byte) 0));
+
     }
 
     public static final void DeleteChar(OutPacket p, final MapleClient c) {
