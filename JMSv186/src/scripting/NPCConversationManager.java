@@ -72,6 +72,7 @@ import server.MapleShop;
 import server.MapleShopItem;
 import server.MapleStatEffect;
 import server.SpeedRunner;
+import server.Start;
 import server.maps.SpeedRunType;
 import server.StructPotentialItem;
 import server.Timer.CloneTimer;
@@ -263,8 +264,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 2, text, "", (byte) 0));
-        lastMsg = 2;
+
+        byte nextval = 2;
+        if (Start.getMainVersion() <= 164) {
+            nextval = 1;
+        }
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
+        lastMsg = nextval;
     }
 
     public void sendYesNoS(String text, byte type) {
@@ -275,8 +281,12 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 2, text, "", type));
-        lastMsg = 2;
+        byte nextval = 2;
+        if (Start.getMainVersion() <= 164) {
+            nextval = 1;
+        }
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", type));
+        lastMsg = nextval;
     }
 
     public void sendAcceptDecline(String text) {
@@ -295,8 +305,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0x0C, text, "", (byte) 0));
-        lastMsg = 0xC;
+
+        byte nextval = 0x0C;
+        if (Start.getMainVersion() <= 164) {
+            nextval = 0x0B;
+        }
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
+        lastMsg = nextval;
     }
 
     public void askAcceptDeclineNoESC(String text) {
@@ -307,8 +322,12 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0x0D, text, "", (byte) 0));
-        lastMsg = 0xD;
+        byte nextval = 0x0D;
+        if (Start.getMainVersion() <= 164) {
+            nextval = 0x0C;
+        }
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
+        lastMsg = nextval;
     }
 
     public void askAvatar(String text, int... args) {
@@ -327,8 +346,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendNext(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 5, text, "", (byte) 0));
-        lastMsg = 5;
+
+        byte nextval = 5;
+        if (Start.getMainVersion() <= 164) {
+            nextval = 4;
+        }
+
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
+        lastMsg = nextval;
     }
 
     public void sendSimpleS(String text, byte type) {
@@ -339,8 +364,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendNextS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 5, text, "", (byte) type));
-        lastMsg = 5;
+
+        byte nextval = 5;
+        if (Start.getMainVersion() <= 164) {
+            nextval = 4;
+        }
+
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) type));
+        lastMsg = nextval;
     }
 
     public void sendStyle(String text, int styles[]) {

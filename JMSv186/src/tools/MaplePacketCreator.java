@@ -2737,7 +2737,10 @@ public class MaplePacketCreator {
         mplew.write(4);
         mplew.writeInt(npc);
         mplew.write(msgType);
-        mplew.write(type); // 1 = No ESC, 3 = show character + no sec
+        // v164に存在しない
+        if (Start.getMainVersion() >= 186/* || msgType == 0x05*/) {
+            mplew.write(type); // 1 = No ESC, 3 = show character + no sec
+        }
         mplew.writeMapleAsciiString(talk);
         mplew.write(HexTool.getByteArrayFromHexString(endBytes));
 
@@ -5302,5 +5305,5 @@ public class MaplePacketCreator {
         }
         return mplew.getPacket();
     }
-    */
+     */
 }

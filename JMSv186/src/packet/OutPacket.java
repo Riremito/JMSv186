@@ -289,6 +289,7 @@ public class OutPacket {
         Header.CHANGE_MAP_SPECIAL.Set(0x005A);
         Header.CLOSE_RANGE_ATTACK.Set(0x0022);
         Header.NPC_TALK.Set(0x0030);
+        Header.NPC_TALK_MORE.Set(0x0032);
         // ゲームサーバー その他
         Header.PORTAL_INSIDE_MAP.Set(0x005B);
     }

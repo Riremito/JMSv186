@@ -269,7 +269,7 @@ public class CharLoginHandler {
         }
     }
 
-    public static void addInitialItems(final MapleCharacter chr) {
+    public static void addInitialItems(final MapleCharacter chr) { 
         MapleInventory use = chr.getInventory(MapleInventoryType.USE);
         MapleInventory etc = chr.getInventory(MapleInventoryType.ETC);
         MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIP);

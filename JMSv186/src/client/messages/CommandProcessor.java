@@ -137,6 +137,9 @@ public class CommandProcessor {
 
     public static boolean processCommand(MapleClient c, String line, CommandType type) {
         // 通常クライアントのコマンドの処理
+        if (line.charAt(0) == '!' || line.charAt(0) == '@') {
+            line = '/' + line.substring(1);
+        }
         if (line.charAt(0) == PlayerGMRank.MAPLE.getCommandPrefix()) {
             String[] splitted = line.split(" ");
             splitted[0] = splitted[0].toLowerCase();

@@ -654,10 +654,10 @@ public class InPacket {
         Header.PET_NAMECHANGE.Set(0x00B9);
         // 0x00BA
         Header.PET_COMMAND.Set(0x00BB);
-        //Header.SPAWN_SUMMON.Set(0x00BC);
-        //Header.REMOVE_SUMMON.Set(0x00BD);
-        //Header.MOVE_SUMMON.Set(0x00BE);
-        //Header.SUMMON_ATTACK.Set(0x00BF);
+        Header.SPAWN_SUMMON.Set(0x00BC);
+        Header.REMOVE_SUMMON.Set(0x00BD);
+        Header.MOVE_SUMMON.Set(0x00BE);
+        Header.SUMMON_ATTACK.Set(0x00BF);
         Header.SUMMON_SKILL.Set(0x00C0);
         Header.DAMAGE_SUMMON.Set(0x00C1);
         Header.DRAGON_SPAWN.Set(0x00C2);
