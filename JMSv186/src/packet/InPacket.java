@@ -422,8 +422,38 @@ public class InPacket {
         //Header.SHOW_EQUIP_EFFECT.Set(0x0086);
         Header.CHATTEXT.Set(0x0083);
         // ===== Game Server 3 =====
+        // 00A3 -> 0083
         //Header.SPAWN_PLAYER.Set(0x00A1);
         //Header.REMOVE_PLAYER_FROM_MAP.Set(0x00A2);
+        Header.SHOW_SCROLL_EFFECT.Set(0x0087); // 00A8 -> 0087
+
+        // ===== Mob =====
+        Header.SPAWN_MONSTER.Set(0x00C2);
+        Header.KILL_MONSTER.Set(Header.SPAWN_MONSTER.Get() + 0x01);
+        Header.SPAWN_MONSTER_CONTROL.Set(Header.SPAWN_MONSTER.Get() + 0x02);
+        // ===== Mob Movement ====
+        Header.MOVE_MONSTER.Set(0x00C5);
+        Header.MOVE_MONSTER_RESPONSE.Set(Header.MOVE_MONSTER.Get() + 0x01);
+        // Header.MOVE_MONSTER.Get() + 0x02 は存在しない
+        Header.APPLY_MONSTER_STATUS.Set(Header.MOVE_MONSTER.Get() + 0x03);
+        Header.CANCEL_MONSTER_STATUS.Set(Header.MOVE_MONSTER.Get() + 0x04);
+        // Header.MOVE_MONSTER.Get() + 0x05
+        Header.MOB_TO_MOB_DAMAGE.Set(Header.MOVE_MONSTER.Get() + 0x06);
+        Header.DAMAGE_MONSTER.Set(Header.MOVE_MONSTER.Get() + 0x07);
+        // Header.MOVE_MONSTER.Get() + 0x08
+        // Header.MOVE_MONSTER.Get() + 0x09
+        // Header.MOVE_MONSTER.Get() + 0x0A
+        Header.SHOW_MONSTER_HP.Set(Header.MOVE_MONSTER.Get() + 0x0B);
+        /*
+        Header.SHOW_MAGNET.Set(Header.MOVE_MONSTER.Get() + 0x0C);
+        Header.CATCH_MONSTER.Set(0x0114);
+        Header.MOB_SPEAKING.Set(0x0115);
+        // 0x0116 @0116 int,int,int,int, 何らかの変数が更新されるが詳細不明
+        Header.MONSTER_PROPERTIES.Set(0x0117);
+        Header.REMOVE_TALK_MONSTER.Set(0x0118);
+        Header.TALK_MONSTER.Set(0x0119);
+         */
+
         Header.SPAWN_NPC.Set(0x00D5);
         Header.SPAWN_NPC_REQUEST_CONTROLLER.Set(0x00D7);
         Header.NPC_TALK.Set(0x0100); // 00698C63

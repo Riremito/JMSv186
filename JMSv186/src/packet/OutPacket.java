@@ -299,6 +299,7 @@ public class OutPacket {
 
         // 簡単に確認が可能
         Header.ENTER_CASH_SHOP.Set(0x001E);
+        Header.TAKE_DAMAGE.Set(0x0026);
         Header.ITEM_MOVE.Set(0x003D);
         Header.USE_ITEM.Set(0x003E);
 

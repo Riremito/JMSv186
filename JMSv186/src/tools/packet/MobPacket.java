@@ -30,6 +30,7 @@ import handling.MaplePacket;
 import java.util.Collection;
 import java.util.Collections;
 import packet.InPacket;
+import server.Start;
 import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.movement.LifeMovementFragment;
@@ -166,13 +167,18 @@ public class MobPacket {
         mplew.writeInt(life.getObjectId());
         mplew.write(1); // 1 = Control normal, 5 = Control none
         mplew.writeInt(life.getId());
-        addMonsterStatus(mplew, life);
+        if (Start.getMainVersion() > 164) {
+            addMonsterStatus(mplew, life);
+        } else {
+            mplew.writeInt(0); // something
+        }
         // この辺からおかしい
         mplew.writeShort(life.getPosition().x);
         mplew.writeShort(life.getPosition().y);
         mplew.write(life.getStance());
         mplew.writeShort(0); // FH
         mplew.writeShort(life.getFh()); // Origin FH
+
         if (effect != 0 || link != 0) {
             mplew.write(effect != 0 ? effect : -3);
             mplew.writeInt(link);
@@ -184,7 +190,10 @@ public class MobPacket {
             //0xFB when wh spawns
         }
         mplew.write(life.getCarnivalTeam());
-        mplew.writeInt(0); //v102 - another int here
+
+        if (Start.getMainVersion() > 164) {
+            mplew.writeInt(0);
+        }
         mplew.writeInt(0);
 
         return mplew.getPacket();
@@ -233,7 +242,11 @@ public class MobPacket {
         mplew.writeInt(life.getObjectId());
         mplew.write(1); // 1 = Control normal, 5 = Control none
         mplew.writeInt(life.getId());
-        addMonsterStatus(mplew, life);
+        if (Start.getMainVersion() > 164) {
+            addMonsterStatus(mplew, life);
+        } else {
+            mplew.writeInt(0);
+        }
         mplew.writeShort(life.getPosition().x);
         mplew.writeShort(life.getPosition().y);
         mplew.write(life.getStance()); // Bitfield
@@ -242,7 +255,9 @@ public class MobPacket {
         mplew.write(life.isFake() ? -4 : newSpawn ? -2 : -1);
         mplew.write(life.getCarnivalTeam());
         mplew.writeInt(0);
-        mplew.writeInt(0);
+        if (Start.getMainVersion() > 164) {
+            mplew.writeInt(0);
+        }
 
         return mplew.getPacket();
     }
