@@ -82,7 +82,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 public class NPCConversationManager extends AbstractPlayerInteraction {
 
     private MapleClient c;
-    private int npc, questid;
+    private int npc, script_name, questid;
     private String getText;
     private byte type; // -1 = NPC, 0 = start quest, 1 = end quest
     private byte lastMsg = -1;
@@ -96,10 +96,25 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         this.questid = questid;
         this.type = type;
         this.iv = iv;
+        this.script_name = npc;
+    }
+
+    public NPCConversationManager(MapleClient c, int npc, int questid, byte type, Invocable iv, int sciprt_name) {
+        super(c);
+        this.c = c;
+        this.npc = npc;
+        this.questid = questid;
+        this.type = type;
+        this.iv = iv;
+        this.script_name = sciprt_name;
     }
 
     public int getNpc() {
         return npc;
+    }
+
+    public int getScript() {
+        return script_name;
     }
 
     public Invocable getIv() {
@@ -541,23 +556,23 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void forceStartQuest() {
-        MapleQuest.getInstance(questid).forceStart(getPlayer(), getNpc(), null);
+        MapleQuest.getInstance(questid).forceStart(getPlayer(), getScript(), null);
     }
 
     public void forceStartQuest(int id) {
-        MapleQuest.getInstance(id).forceStart(getPlayer(), getNpc(), null);
+        MapleQuest.getInstance(id).forceStart(getPlayer(), getScript(), null);
     }
 
     public void forceStartQuest(String customData) {
-        MapleQuest.getInstance(questid).forceStart(getPlayer(), getNpc(), customData);
+        MapleQuest.getInstance(questid).forceStart(getPlayer(), getScript(), customData);
     }
 
     public void forceCompleteQuest() {
-        MapleQuest.getInstance(questid).forceComplete(getPlayer(), getNpc());
+        MapleQuest.getInstance(questid).forceComplete(getPlayer(), getScript());
     }
 
     public void forceCompleteQuest(final int id) {
-        MapleQuest.getInstance(id).forceComplete(getPlayer(), getNpc());
+        MapleQuest.getInstance(id).forceComplete(getPlayer(), getScript());
     }
 
     public String getQuestCustomData() {

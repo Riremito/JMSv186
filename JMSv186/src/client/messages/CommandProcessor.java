@@ -135,6 +135,18 @@ public class CommandProcessor {
         return true;
     }
 
+    // テスト用
+    private static boolean CustomNPCTalk(MapleClient c, final int npcid, final int npc_script) {
+        MapleNPC npc = MapleLifeFactory.getNPC(npcid);
+
+        if (npc == null || npc.getName().equals("MISSINGNO")) {
+            return false;
+        }
+
+        NPCScriptManager.getInstance().start(c, npcid, npc_script);
+        return true;
+    }
+
     public static boolean processCommand(MapleClient c, String line, CommandType type) {
         // 通常クライアントのコマンドの処理
         if (line.charAt(0) == '!' || line.charAt(0) == '@') {
@@ -213,7 +225,7 @@ public class CommandProcessor {
 
             // 転職
             if ("/jc".equals(splitted[0]) || "/jobchange".equals(splitted[0]) || "/転職".equals(splitted[0])) {
-                return NPCTalk(c, 9330104);
+                return CustomNPCTalk(c, 1012003, 9330104);
             }
 
             // NPC
@@ -232,10 +244,25 @@ public class CommandProcessor {
                 c.getPlayer().Notice("無効なNPCIDです");
                 return true;
             }
+            if ("/npctalk2".equals(splitted[0])) {
+                if (splitted.length < 2) {
+                    return true;
+                }
+                try {
+                    int npcid = Integer.parseInt(splitted[1]);
+                    if (CustomNPCTalk(c, 1012003, npcid)) {
+                        return true;
+                    }
+                } catch (NumberFormatException e) {
+                    ;
+                }
+                c.getPlayer().Notice("無効なNPCIDです");
+                return true;
+            }
 
             // テスト
             if ("/test".equals(splitted[0]) || "/テスト".equals(splitted[0])) {
-                return NPCTalk(c, 9010021);
+                return CustomNPCTalk(c, 1012003, 9010021);
             }
 
             splitted[0] = splitted[0].replace("/", "!");
