@@ -286,11 +286,56 @@ public class OutPacket {
         Header.CHANGE_CHANNEL.Set(0x001D);
         Header.MOVE_PLAYER.Set(0x001F);
         Header.GENERAL_CHAT.Set(0x0027);
-        Header.CHANGE_MAP_SPECIAL.Set(0x005A);
         Header.CLOSE_RANGE_ATTACK.Set(0x0022);
+
         Header.NPC_TALK.Set(0x0030);
+        Header.HIRED_MERCHANT_REMOTE.Set(Header.NPC_TALK.Get() + 0x01);
+        Header.NPC_TALK_MORE.Set(Header.NPC_TALK.Get() + 0x02); // 0032
+        Header.NPC_SHOP.Set(Header.NPC_TALK.Get() + 0x03);
+        Header.STORAGE.Set(Header.NPC_TALK.Get() + 0x04);
+        //Header.USE_HIRED_MERCHANT.Set(Header.NPC_TALK.Get() + 0x05);
         // ゲームサーバー その他
         Header.PORTAL_INSIDE_MAP.Set(0x005B);
+
+        // 簡単に確認が可能
+        Header.ENTER_CASH_SHOP.Set(0x001E);
+        Header.TAKE_DAMAGE.Set(0x0026);
+        Header.ITEM_MOVE.Set(0x003D);
+        Header.USE_ITEM.Set(0x003E);
+
+        /*
+        Header.USE_SUMMON_BAG.Set(0x0044);
+        Header.PET_FOOD.Set(0x0045);
+        Header.USE_MOUNT_FOOD.Set(0x0046);
+        Header.USE_SCRIPTED_NPC_ITEM.Set(0x0047);
+        Header.USE_CASH_ITEM.Set(0x0048);
+        Header.USE_CATCH_ITEM.Set(0x004A);
+        Header.USE_SKILL_BOOK.Set(0x004B);
+        Header.OWL_USE_ITEM_VERSION_SEARCH.Set(0x004C);
+        Header.USE_TELE_ROCK.Set(0x004D);
+         */
+        Header.USE_RETURN_SCROLL.Set(0x004B);
+        Header.USE_UPGRADE_SCROLL.Set(Header.USE_RETURN_SCROLL.Get() + 0x01);
+
+        Header.DISTRIBUTE_AP.Set(0x004D);
+        Header.AUTO_ASSIGN_AP.Set(Header.DISTRIBUTE_AP.Get() + 0x01);
+
+        Header.DISTRIBUTE_SP.Set(0x0050);
+        Header.SPECIAL_MOVE.Set(Header.DISTRIBUTE_SP.Get() + 0x01);
+        Header.CANCEL_BUFF.Set(Header.DISTRIBUTE_SP.Get() + 0x02);
+        Header.SKILL_EFFECT.Set(Header.DISTRIBUTE_SP.Get() + 0x03);
+        Header.MESO_DROP.Set(Header.DISTRIBUTE_SP.Get() + 0x04);
+
+        Header.CHANGE_MAP_SPECIAL.Set(0x005A);
+        Header.PORTAL_INSIDE_MAP.Set(Header.CHANGE_MAP_SPECIAL.Get() + 0x01);
+        Header.TROCK_ADD_MAP.Set(Header.CHANGE_MAP_SPECIAL.Get() + 0x02);
+
+        //Header.QUEST_ACTION.Set(0x0061); クエスト情報がおかしくなり、ログイン不可になる
+        Header.SKILL_MACRO.Set(0x0064);
+
+        Header.CHANGE_KEYMAP.Set(0x007B);
+
+        Header.ENTER_MTS.Set(0x0091);
     }
 
     public static void SetForJMSv176() {

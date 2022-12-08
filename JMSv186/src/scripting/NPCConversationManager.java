@@ -72,6 +72,7 @@ import server.MapleShop;
 import server.MapleShopItem;
 import server.MapleStatEffect;
 import server.SpeedRunner;
+import server.Start;
 import server.maps.SpeedRunType;
 import server.StructPotentialItem;
 import server.Timer.CloneTimer;
@@ -81,7 +82,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 public class NPCConversationManager extends AbstractPlayerInteraction {
 
     private MapleClient c;
-    private int npc, questid;
+    private int npc, script_name, questid;
     private String getText;
     private byte type; // -1 = NPC, 0 = start quest, 1 = end quest
     private byte lastMsg = -1;
@@ -95,10 +96,25 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         this.questid = questid;
         this.type = type;
         this.iv = iv;
+        this.script_name = npc;
+    }
+
+    public NPCConversationManager(MapleClient c, int npc, int questid, byte type, Invocable iv, int sciprt_name) {
+        super(c);
+        this.c = c;
+        this.npc = npc;
+        this.questid = questid;
+        this.type = type;
+        this.iv = iv;
+        this.script_name = sciprt_name;
     }
 
     public int getNpc() {
         return npc;
+    }
+
+    public int getScript() {
+        return script_name;
     }
 
     public Invocable getIv() {
@@ -263,8 +279,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 2, text, "", (byte) 0));
-        lastMsg = 2;
+
+        byte nextval = 2;
+        if (Start.getMainVersion() <= 164) {
+            nextval = 1;
+        }
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
+        lastMsg = nextval;
     }
 
     public void sendYesNoS(String text, byte type) {
@@ -275,8 +296,12 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 2, text, "", type));
-        lastMsg = 2;
+        byte nextval = 2;
+        if (Start.getMainVersion() <= 164) {
+            nextval = 1;
+        }
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", type));
+        lastMsg = nextval;
     }
 
     public void sendAcceptDecline(String text) {
@@ -295,8 +320,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0x0C, text, "", (byte) 0));
-        lastMsg = 0xC;
+
+        byte nextval = 0x0C;
+        if (Start.getMainVersion() <= 164) {
+            nextval = 0x0B;
+        }
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
+        lastMsg = nextval;
     }
 
     public void askAcceptDeclineNoESC(String text) {
@@ -307,8 +337,12 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0x0D, text, "", (byte) 0));
-        lastMsg = 0xD;
+        byte nextval = 0x0D;
+        if (Start.getMainVersion() <= 164) {
+            nextval = 0x0C;
+        }
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
+        lastMsg = nextval;
     }
 
     public void askAvatar(String text, int... args) {
@@ -327,8 +361,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendNext(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 5, text, "", (byte) 0));
-        lastMsg = 5;
+
+        byte nextval = 5;
+        if (Start.getMainVersion() <= 164) {
+            nextval = 4;
+        }
+
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
+        lastMsg = nextval;
     }
 
     public void sendSimpleS(String text, byte type) {
@@ -339,8 +379,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendNextS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 5, text, "", (byte) type));
-        lastMsg = 5;
+
+        byte nextval = 5;
+        if (Start.getMainVersion() <= 164) {
+            nextval = 4;
+        }
+
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) type));
+        lastMsg = nextval;
     }
 
     public void sendStyle(String text, int styles[]) {
@@ -510,23 +556,23 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void forceStartQuest() {
-        MapleQuest.getInstance(questid).forceStart(getPlayer(), getNpc(), null);
+        MapleQuest.getInstance(questid).forceStart(getPlayer(), getScript(), null);
     }
 
     public void forceStartQuest(int id) {
-        MapleQuest.getInstance(id).forceStart(getPlayer(), getNpc(), null);
+        MapleQuest.getInstance(id).forceStart(getPlayer(), getScript(), null);
     }
 
     public void forceStartQuest(String customData) {
-        MapleQuest.getInstance(questid).forceStart(getPlayer(), getNpc(), customData);
+        MapleQuest.getInstance(questid).forceStart(getPlayer(), getScript(), customData);
     }
 
     public void forceCompleteQuest() {
-        MapleQuest.getInstance(questid).forceComplete(getPlayer(), getNpc());
+        MapleQuest.getInstance(questid).forceComplete(getPlayer(), getScript());
     }
 
     public void forceCompleteQuest(final int id) {
-        MapleQuest.getInstance(id).forceComplete(getPlayer(), getNpc());
+        MapleQuest.getInstance(id).forceComplete(getPlayer(), getScript());
     }
 
     public String getQuestCustomData() {

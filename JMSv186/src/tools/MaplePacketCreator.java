@@ -1731,9 +1731,13 @@ public class MaplePacketCreator {
         for (MapleShopItem item : items) {
             mplew.writeInt(item.getItemId());
             mplew.writeInt(item.getPrice());
-            mplew.writeInt(item.getReqItem());
-            mplew.writeInt(item.getReqItemQ());
-            mplew.writeLong(0);
+            if (Start.getMainVersion() <= 164) {
+                // nothing
+            } else {
+                mplew.writeInt(item.getReqItem());
+                mplew.writeInt(item.getReqItemQ());
+                mplew.writeLong(0);
+            }
             if (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId())) {
                 mplew.writeShort(1); // stacksize o.o
                 mplew.writeShort(item.getBuyable());
@@ -2737,7 +2741,10 @@ public class MaplePacketCreator {
         mplew.write(4);
         mplew.writeInt(npc);
         mplew.write(msgType);
-        mplew.write(type); // 1 = No ESC, 3 = show character + no sec
+        // v164に存在しない
+        if (Start.getMainVersion() >= 186) {
+            mplew.write(type); // 1 = No ESC, 3 = show character + no sec
+        }
         mplew.writeMapleAsciiString(talk);
         mplew.write(HexTool.getByteArrayFromHexString(endBytes));
 
@@ -5302,5 +5309,5 @@ public class MaplePacketCreator {
         }
         return mplew.getPacket();
     }
-    */
+     */
 }

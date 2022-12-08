@@ -33,7 +33,7 @@ import java.io.Serializable;
 public class MapleInventory implements Iterable<IItem>, Serializable {
 
     private Map<Short, IItem> inventory;
-    private byte slotLimit = 0;
+    private byte slotLimit = 96;
     private MapleInventoryType type;
 
     /**
