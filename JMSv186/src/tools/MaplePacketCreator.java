@@ -1731,9 +1731,13 @@ public class MaplePacketCreator {
         for (MapleShopItem item : items) {
             mplew.writeInt(item.getItemId());
             mplew.writeInt(item.getPrice());
-            mplew.writeInt(item.getReqItem());
-            mplew.writeInt(item.getReqItemQ());
-            mplew.writeLong(0);
+            if (Start.getMainVersion() <= 164) {
+                // nothing
+            } else {
+                mplew.writeInt(item.getReqItem());
+                mplew.writeInt(item.getReqItemQ());
+                mplew.writeLong(0);
+            }
             if (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId())) {
                 mplew.writeShort(1); // stacksize o.o
                 mplew.writeShort(item.getBuyable());

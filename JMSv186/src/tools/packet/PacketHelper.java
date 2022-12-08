@@ -188,7 +188,7 @@ public class PacketHelper {
             equipped.add((Item) item);
         }
         Collections.sort(equipped);
-        if (Start.getMainVersion() == 186) {
+        if (Start.getMainVersion() <= 186) {
             for (Item item : equipped) {
                 if (item.getPosition() < 0 && item.getPosition() > -100) {
                     addItemInfo(mplew, item, false, false);
@@ -197,7 +197,7 @@ public class PacketHelper {
         }
         mplew.writeShort(0); // start of equipped nx
 
-        if (Start.getMainVersion() == 186) {
+        if (Start.getMainVersion() <= 186) {
             for (Item item : equipped) {
                 if (item.getPosition() <= -100 && item.getPosition() > -1000) {
                     addItemInfo(mplew, item, false, false);
@@ -212,7 +212,7 @@ public class PacketHelper {
         }
         mplew.writeShort(0); //start of other equips
 
-        if (Start.getMainVersion() == 186) {
+        if (Start.getMainVersion() <= 186) {
             for (Item item : equipped) {
                 if (item.getPosition() <= -1000) {
                     addItemInfo(mplew, item, false, false);
@@ -507,8 +507,9 @@ public class PacketHelper {
 
         addInventoryInfo(mplew, chr);
 
+        // 修正が必要
         if (Start.getMainVersion() <= 164) {
-            mplew.writeZeroBytes(256);
+            mplew.writeZeroBytes(512);
         }
         if (Start.getMainVersion() >= 187) {
             mplew.writeZeroBytes(512);

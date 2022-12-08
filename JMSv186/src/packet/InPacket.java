@@ -394,7 +394,7 @@ public class InPacket {
     }
 
     public static void SetForJMSv164() {
-        // ログインサーバー 必須
+        // ===== Login Server 1 =====
         Header.LOGIN_STATUS.Set(0x0000);
         Header.SERVERLIST.Set(0x0002);
         Header.CHARLIST.Set(0x0003);
@@ -402,22 +402,40 @@ public class InPacket {
         Header.CHAR_NAME_RESPONSE.Set(0x0005);
         Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
         Header.DELETE_CHAR_RESPONSE.Set(0x0007);
+        // ===== Change Channel =====
         Header.CHANGE_CHANNEL.Set(0x0008);
+        // ===== Login Server 2 =====
         Header.HELLO.Set(0x000E);
         Header.LOGIN_AUTH.Set(0x0018);
-        // ログインサーバー その他
-
-        // ゲームサーバー 最重要
-        Header.WARP_TO_MAP.Set(0x0067);
-        // ゲームサーバー 必須
+        // ===== Game Server 1 =====
+        Header.MODIFY_INVENTORY_ITEM.Set(0x0016);
+        Header.UPDATE_INVENTORY_SLOT.Set(Header.MODIFY_INVENTORY_ITEM.Get() + 0x01);
+        Header.UPDATE_STATS.Set(Header.MODIFY_INVENTORY_ITEM.Get() + 0x02);
         Header.SERVERMESSAGE.Set(0x0037);
+        // ===== Cash Shop =====
+        // 0x0066 + 1
+        Header.WARP_TO_MAP.Set(0x0067);
+        Header.MTS_OPEN.Set(Header.WARP_TO_MAP.Get() + 0x01); // 0x0068
+        Header.CS_OPEN.Set(Header.WARP_TO_MAP.Get() + 0x02); // 0x0069
+        // ===== Game Server 2 =====
+        //Header.SERVER_BLOCKED.Set(0x0085);
+        //Header.SHOW_EQUIP_EFFECT.Set(0x0086);
         Header.CHATTEXT.Set(0x0083);
-        //Header.PLAYER_NPC.Set(0x004D);
+        // ===== Game Server 3 =====
+        //Header.SPAWN_PLAYER.Set(0x00A1);
+        //Header.REMOVE_PLAYER_FROM_MAP.Set(0x00A2);
         Header.SPAWN_NPC.Set(0x00D5);
-        //Header.REMOVE_NPC.Set(0x00D6);
         Header.SPAWN_NPC_REQUEST_CONTROLLER.Set(0x00D7);
         Header.NPC_TALK.Set(0x0100); // 00698C63
-        // ゲームサーバー その他
+        Header.OPEN_NPC_SHOP.Set(Header.NPC_TALK.Get() + 0x01);
+        Header.CONFIRM_SHOP_TRANSACTION.Set(Header.NPC_TALK.Get() + 0x02);
+
+        //Header.OPEN_STORAGE.Set(0x0104);
+        //Header.MERCH_ITEM_MSG.Set(Header.NPC_TALK.Get() + 0x05);
+        //Header.MERCH_ITEM_STORE.Set(Header.NPC_TALK.Get() + 0x06);
+        //Header.RPS_GAME.Set(Header.NPC_TALK.Get() + 0x07);
+        //Header.MESSENGER.Set(Header.NPC_TALK.Get() + 0x08);
+        Header.PLAYER_INTERACTION.Set(Header.NPC_TALK.Get() + 0x09);
     }
 
     public static void SetForJMSv176() {
@@ -466,6 +484,7 @@ public class InPacket {
 
     // JMS v186.1 ProcessPacket
     public static void SetForJMSv186() {
+        // ===== Login Server 1 =====
         Header.LOGIN_STATUS.Set(0x0000);
         // 0x0001 SERVERSTATUS?
         Header.SERVERLIST.Set(0x0002);
@@ -474,6 +493,8 @@ public class InPacket {
         Header.CHAR_NAME_RESPONSE.Set(0x0005);
         Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
         Header.DELETE_CHAR_RESPONSE.Set(0x0007);
+
+        // ===== Change Channel =====
         Header.CHANGE_CHANNEL.Set(0x0008);
         Header.PING.Set(0x0009);
         // 0x000A
@@ -484,6 +505,8 @@ public class InPacket {
         // 0x000F 未使用
         // 0x0010 未使用
         // 0x0011 未使用
+
+        // ===== Login Server 2 =====
         // 0x0012
         // 0x0013
         // 0x0014
@@ -493,6 +516,7 @@ public class InPacket {
         Header.LOGIN_AUTH.Set(0x0018);
         // 0x0019 未使用
         // 0x001A 未使用
+        // ===== Game Server 1 =====
         Header.MODIFY_INVENTORY_ITEM.Set(0x001B);
         Header.UPDATE_INVENTORY_SLOT.Set(0x001C);
         Header.UPDATE_STATS.Set(0x001D);
@@ -592,12 +616,15 @@ public class InPacket {
         // 0x007B @007B int,string, 灰色のメッセージ
         // 0x007C @007C, ファムの歌を利用するか選択するUI, @00C2 [00or01]が送信される01は使用フラグ
         Header.SKILL_MACRO.Set(0x007D);
+        // ===== Cash Shop =====
         Header.WARP_TO_MAP.Set(0x007E);
         Header.MTS_OPEN.Set(0x007F);
         Header.CS_OPEN.Set(0x0080);
         // 0x0081
         // 0x0082
         Header.UNKNOWN_RELOAD_MAP.Set(0x0083);
+
+        // ===== Game Server 2 =====
         // 0x0084 @0084 [01-07], マップ移動時のエラーメッセージ (テレポストーン?)
         Header.SERVER_BLOCKED.Set(0x0085);
         Header.SHOW_EQUIP_EFFECT.Set(0x0086);
@@ -627,6 +654,8 @@ public class InPacket {
         // 0x009E
         Header.MOVE_PLATFORM.Set(0x009F);
         // 0x00A0 0x00F2を送信
+
+        // ===== Game Server 3 =====
         Header.SPAWN_PLAYER.Set(0x00A1);
         Header.REMOVE_PLAYER_FROM_MAP.Set(0x00A2);
         Header.CHATTEXT.Set(0x00A3);

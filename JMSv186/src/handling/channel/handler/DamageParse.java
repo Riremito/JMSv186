@@ -40,6 +40,7 @@ import java.util.Map;
 import server.AutobanManager;
 import server.MapleStatEffect;
 import server.Randomizer;
+import server.Start;
 import server.Timer.MapTimer;
 import server.life.Element;
 import server.life.MapleMonster;
@@ -1002,13 +1003,19 @@ public class DamageParse {
         //System.out.println(lea.toString());
         final AttackInfo ret = new AttackInfo();
 
-        lea.skip(1);
-        lea.skip(8);
+        if (Start.getMainVersion() > 164) {
+            lea.skip(1);
+            lea.skip(8);
+        }
         ret.tbyte = lea.readByte();
         //System.out.println("TBYTE: " + tbyte);
         ret.targets = (byte) ((ret.tbyte >>> 4) & 0xF);
         ret.hits = (byte) (ret.tbyte & 0xF);
-        lea.skip(8);
+
+        if (Start.getMainVersion() > 164) {
+            lea.skip(8);
+        }
+
         ret.skill = lea.readInt();
         lea.skip(12); // ORDER [4] bytes on v.79, [4] bytes on v.80, [1] byte on v.82
         switch (ret.skill) {
