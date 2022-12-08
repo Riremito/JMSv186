@@ -194,6 +194,7 @@ public class CharLoginHandler {
             newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161001, (byte) 0, (short) 1, (byte) 0));
 
             if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
+                addInitialItems(newchar);
                 MapleCharacter.saveNewCharToDB(newchar, 1, false);
                 c.getSession().write(LoginPacket.addNewCharEntry(newchar, true));
                 c.createdChar(newchar.getId());
@@ -269,7 +270,7 @@ public class CharLoginHandler {
         }
     }
 
-    public static void addInitialItems(final MapleCharacter chr) { 
+    public static void addInitialItems(final MapleCharacter chr) {
         MapleInventory use = chr.getInventory(MapleInventoryType.USE);
         MapleInventory etc = chr.getInventory(MapleInventoryType.ETC);
         MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIP);
@@ -298,19 +299,22 @@ public class CharLoginHandler {
         // 帰還の書(ヘネシス)
         use.addItem(new Item(2030004, (byte) 0, (short) 100, (byte) 0));
         // 強化書
-        use.addItem(new Item(2040303, (byte) 0, (short) 7, (byte) 0));
-        use.addItem(new Item(2040506, (byte) 0, (short) 10, (byte) 0));
-        use.addItem(new Item(2040710, (byte) 0, (short) 7, (byte) 0));
-        use.addItem(new Item(2040807, (byte) 0, (short) 7, (byte) 0));
-        use.addItem(new Item(2044703, (byte) 0, (short) 7, (byte) 0));
-        use.addItem(new Item(2044503, (byte) 0, (short) 7, (byte) 0));
-        use.addItem(new Item(2043803, (byte) 0, (short) 7, (byte) 0));
-        use.addItem(new Item(2043003, (byte) 0, (short) 7, (byte) 0));
+        use.addItem(new Item(2040303, (byte) 0, (short) 30, (byte) 0));
+        use.addItem(new Item(2040506, (byte) 0, (short) 30, (byte) 0));
+        use.addItem(new Item(2040710, (byte) 0, (short) 30, (byte) 0));
+        use.addItem(new Item(2040807, (byte) 0, (short) 30, (byte) 0));
+        use.addItem(new Item(2044703, (byte) 0, (short) 30, (byte) 0));
+        use.addItem(new Item(2044503, (byte) 0, (short) 30, (byte) 0));
+        use.addItem(new Item(2043803, (byte) 0, (short) 30, (byte) 0));
+        use.addItem(new Item(2043003, (byte) 0, (short) 30, (byte) 0));
         use.addItem(new Item(2049100, (byte) 0, (short) 100, (byte) 0));
-        use.addItem(new Item(2049300, (byte) 0, (short) 100, (byte) 0));
-        use.addItem(new Item(2049400, (byte) 0, (short) 100, (byte) 0));
         use.addItem(new Item(2049003, (byte) 0, (short) 100, (byte) 0));
-        use.addItem(new Item(2470000, (byte) 0, (short) 100, (byte) 0));
+
+        if (Start.getMainVersion() >= 186) {
+            use.addItem(new Item(2049300, (byte) 0, (short) 100, (byte) 0));
+            use.addItem(new Item(2049400, (byte) 0, (short) 100, (byte) 0));
+            use.addItem(new Item(2470000, (byte) 0, (short) 100, (byte) 0));
+        }
 
         // 魔法の石
         etc.addItem(new Item(4006000, (byte) 0, (short) 100, (byte) 0));
@@ -337,8 +341,10 @@ public class CharLoginHandler {
         equip.addItem(ii.getEquipById(1051140));
         // エレメントピアス
         equip.addItem(ii.getEquipById(1032062));
-        // 錬金術師の指輪
-        equip.addItem(ii.getEquipById(1112400));
+        if (Start.getMainVersion() >= 186) {
+            // 錬金術師の指輪
+            equip.addItem(ii.getEquipById(1112400));
+        }
 
         // ドラゴン(アビス)
         setup.addItem(new Item(3010047, (byte) 0, (short) 1, (byte) 0));
@@ -355,14 +361,16 @@ public class CharLoginHandler {
         cash.addItem(new Item(5041000, (byte) 0, (short) 100, (byte) 0));
         // ガシャポンチケット
         cash.addItem(new Item(5220000, (byte) 0, (short) 100, (byte) 0));
-        // ビシャスのハンマー
-        cash.addItem(new Item(5570000, (byte) 0, (short) 100, (byte) 0));
-        // ミラクルキューブ
-        cash.addItem(new Item(5062000, (byte) 0, (short) 100, (byte) 0));
-        // ベガの呪文書(10%)
-        cash.addItem(new Item(5610000, (byte) 0, (short) 100, (byte) 0));
-        // ベガの呪文書(60%)
-        cash.addItem(new Item(5610001, (byte) 0, (short) 100, (byte) 0));
+        if (Start.getMainVersion() >= 186) {
+            // ビシャスのハンマー
+            cash.addItem(new Item(5570000, (byte) 0, (short) 100, (byte) 0));
+            // ミラクルキューブ
+            cash.addItem(new Item(5062000, (byte) 0, (short) 100, (byte) 0));
+            // ベガの呪文書(10%)
+            cash.addItem(new Item(5610000, (byte) 0, (short) 100, (byte) 0));
+            // ベガの呪文書(60%)
+            cash.addItem(new Item(5610001, (byte) 0, (short) 100, (byte) 0));
+        }
         // AP再分配の書
         cash.addItem(new Item(5050000, (byte) 0, (short) 100, (byte) 0));
         cash.addItem(new Item(5050000, (byte) 0, (short) 100, (byte) 0));
