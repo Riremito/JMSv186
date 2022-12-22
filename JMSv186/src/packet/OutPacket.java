@@ -74,35 +74,328 @@ public class OutPacket {
     }
 
     public enum Header {
+        // Names from v95 PDB
+        // ログインサーバー
+        CP_BEGIN_SOCKET,
+        CP_CheckPassword,
+        //CP_GuestIDLogin,
+        CP_AccountInfoRequest,
+        CP_WorldInfoRequest,
+        CP_SelectWorld,
+        CP_CheckUserLimit,
+        //CP_ConfirmEULA,
+        //CP_SetGender,
+        CP_CheckPinCode,
+        //CP_UpdatePinCode,
+        CP_WorldRequest,
+        //CP_LogoutWorld,
+        CP_ViewAllChar,
+        //CP_SelectCharacterByVAC,
+        //CP_VACFlagSet,
+        //CP_CheckNameChangePossible,
+        //CP_RegisterNewCharacter,
+        //CP_CheckTransferWorldPossible,
+        CP_SelectCharacter,
+        CP_MigrateIn,
+        CP_CheckDuplicatedID,
+        CP_CreateNewCharacter,
+        CP_CreateNewCharacterInCS,
+        CP_DeleteCharacter,
+        CP_AliveAck,
+        CP_ExceptionLog,
+        CP_SecurityPacket,
+        //CP_EnableSPWRequest,
+        //CP_CheckSPWRequest,
+        //CP_EnableSPWRequestByACV,
+        //CP_CheckSPWRequestByACV,
+        //CP_CheckOTPRequest,
+        //CP_CheckDeleteCharacterOTP,
+        //CP_CreateSecurityHandle,
+        //CP_SSOErrorLog,
+        //CP_ClientDumpLog,
+        //CP_CheckExtraCharInfo,
+        //CP_CreateNewCharacter_Ex,
+        CP_END_SOCKET,
+        // ゲームサーバー
+        CP_BEGIN_USER,
+        CP_UserTransferFieldRequest,
+        CP_UserTransferChannelRequest,
+        CP_UserMigrateToCashShopRequest,
+        CP_UserMove,
+        CP_UserSitRequest,
+        CP_UserPortableChairSitRequest,
+        CP_UserMeleeAttack,
+        CP_UserShootAttack,
+        CP_UserMagicAttack,
+        CP_UserBodyAttack,
+        //CP_UserMovingShootAttackPrepare,
+        CP_UserHit,
+        CP_UserAttackUser,
+        CP_UserChat,
+        CP_UserADBoardClose,
+        CP_UserEmotion,
+        CP_UserActivateEffectItem,
+        CP_UserUpgradeTombEffect,
+        CP_UserHP,
+        CP_Premium,
+        CP_UserBanMapByMob,
+        CP_UserMonsterBookSetCover,
+        CP_UserSelectNpc,
+        CP_UserRemoteShopOpenRequest,
+        CP_UserScriptMessageAnswer,
+        CP_UserShopRequest,
+        CP_UserTrunkRequest,
+        CP_UserEntrustedShopRequest,
+        CP_UserStoreBankRequest,
+        CP_UserParcelRequest,
+        CP_UserEffectLocal,
+        CP_ShopScannerRequest,
+        CP_ShopLinkRequest,
+        CP_AdminShopRequest,
+        CP_UserGatherItemRequest,
+        CP_UserSortItemRequest,
+        CP_UserChangeSlotPositionRequest,
+        CP_UserStatChangeItemUseRequest,
+        CP_UserStatChangeItemCancelRequest,
+        CP_UserStatChangeByPortableChairRequest,
+        CP_UserMobSummonItemUseRequest,
+        CP_UserPetFoodItemUseRequest,
+        CP_UserTamingMobFoodItemUseRequest,
+        CP_UserScriptItemUseRequest,
+        CP_UserConsumeCashItemUseRequest,
+        CP_UserDestroyPetItemRequest,
+        CP_UserBridleItemUseRequest,
+        CP_UserSkillLearnItemUseRequest,
+        CP_UserSkillResetItemUseRequest,
+        CP_UserShopScannerItemUseRequest,
+        CP_UserMapTransferItemUseRequest,
+        CP_UserPortalScrollUseRequest,
+        CP_UserUpgradeItemUseRequest,
+        CP_UserHyperUpgradeItemUseRequest,
+        CP_UserItemOptionUpgradeItemUseRequest,
+        CP_UserUIOpenItemUseRequest,
+        CP_UserItemReleaseRequest,
+        CP_UserAbilityUpRequest,
+        CP_UserAbilityMassUpRequest,
+        CP_UserChangeStatRequest,
+        CP_UserChangeStatRequestByItemOption,
+        CP_UserSkillUpRequest,
+        CP_UserSkillUseRequest,
+        CP_UserSkillCancelRequest,
+        CP_UserSkillPrepareRequest,
+        CP_UserDropMoneyRequest,
+        CP_UserGivePopularityRequest,
+        CP_UserPartyRequest,
+        CP_UserCharacterInfoRequest,
+        CP_UserActivatePetRequest,
+        CP_UserTemporaryStatUpdateRequest,
+        CP_UserPortalScriptRequest,
+        CP_UserPortalTeleportRequest,
+        CP_UserMapTransferRequest,
+        CP_UserAntiMacroItemUseRequest,
+        CP_UserAntiMacroSkillUseRequest,
+        CP_UserAntiMacroQuestionResult,
+        CP_UserClaimRequest,
+        CP_UserQuestRequest,
+        CP_UserCalcDamageStatSetRequest,
+        CP_UserThrowGrenade,
+        CP_UserMacroSysDataModified,
+        CP_UserSelectNpcItemUseRequest,
+        CP_UserLotteryItemUseRequest,
+        CP_UserItemMakeRequest,
+        CP_UserSueCharacterRequest,
+        CP_UserUseGachaponBoxRequest,
+        CP_UserUseGachaponRemoteRequest,
+        CP_UserUseWaterOfLife,
+        CP_UserRepairDurabilityAll,
+        CP_UserRepairDurability,
+        CP_UserQuestRecordSetState,
+        CP_UserClientTimerEndRequest,
+        CP_UserFollowCharacterRequest,
+        CP_UserFollowCharacterWithdraw,
+        CP_UserSelectPQReward,
+        CP_UserRequestPQReward,
+        CP_SetPassenserResult,
+        CP_BroadcastMsg,
+        CP_GroupMessage,
+        CP_Whisper,
+        CP_CoupleMessage,
+        CP_Messenger,
+        CP_MiniRoom,
+        CP_PartyRequest,
+        CP_PartyResult,
+        CP_ExpeditionRequest,
+        CP_PartyAdverRequest,
+        CP_GuildRequest,
+        CP_GuildResult,
+        CP_Admin,
+        CP_Log,
+        CP_FriendRequest,
+        CP_MemoRequest,
+        CP_MemoFlagRequest,
+        CP_EnterTownPortalRequest,
+        CP_EnterOpenGateRequest,
+        CP_SlideRequest,
+        CP_FuncKeyMappedModified,
+        CP_RPSGame,
+        CP_MarriageRequest,
+        CP_WeddingWishListRequest,
+        CP_WeddingProgress,
+        CP_GuestBless,
+        CP_BoobyTrapAlert,
+        CP_StalkBegin,
+        CP_AllianceRequest,
+        CP_AllianceResult,
+        CP_FamilyChartRequest,
+        CP_FamilyInfoRequest,
+        CP_FamilyRegisterJunior,
+        CP_FamilyUnregisterJunior,
+        CP_FamilyUnregisterParent,
+        CP_FamilyJoinResult,
+        CP_FamilyUsePrivilege,
+        CP_FamilySetPrecept,
+        CP_FamilySummonResult,
+        CP_ChatBlockUserReq,
+        CP_GuildBBS,
+        CP_UserMigrateToITCRequest,
+        CP_UserExpUpItemUseRequest,
+        CP_UserTempExpUseRequest,
+        CP_NewYearCardRequest,
+        CP_RandomMorphRequest,
+        CP_CashItemGachaponRequest,
+        CP_CashGachaponOpenRequest,
+        CP_ChangeMaplePointRequest,
+        CP_TalkToTutor,
+        CP_RequestIncCombo,
+        CP_MobCrcKeyChangedReply,
+        CP_RequestSessionValue,
+        CP_UpdateGMBoard,
+        CP_AccountMoreInfo,
+        CP_FindFriend,
+        CP_AcceptAPSPEvent,
+        CP_UserDragonBallBoxRequest,
+        CP_UserDragonBallSummonRequest,
+        CP_BEGIN_PET,
+        CP_PetMove,
+        CP_PetAction,
+        CP_PetInteractionRequest,
+        CP_PetDropPickUpRequest,
+        CP_PetStatChangeItemUseRequest,
+        CP_PetUpdateExceptionListRequest,
+        CP_END_PET,
+        CP_BEGIN_SUMMONED,
+        CP_SummonedMove,
+        CP_SummonedAttack,
+        CP_SummonedHit,
+        CP_SummonedSkill,
+        CP_Remove,
+        CP_END_SUMMONED,
+        CP_BEGIN_DRAGON,
+        CP_DragonMove,
+        CP_END_DRAGON,
+        CP_QuickslotKeyMappedModified,
+        CP_PassiveskillInfoUpdate,
+        CP_UpdateScreenSetting,
+        CP_UserAttackUser_Specific,
+        CP_UserPamsSongUseRequest,
+        CP_QuestGuideRequest,
+        CP_UserRepeatEffectRemove,
+        CP_END_USER,
+        CP_BEGIN_FIELD,
+        CP_BEGIN_LIFEPOOL,
+        CP_BEGIN_MOB,
+        CP_MobMove,
+        CP_MobApplyCtrl,
+        CP_MobDropPickUpRequest,
+        CP_MobHitByObstacle,
+        CP_MobHitByMob,
+        CP_MobSelfDestruct,
+        CP_MobAttackMob,
+        CP_MobSkillDelayEnd,
+        CP_MobTimeBombEnd,
+        CP_MobEscortCollision,
+        CP_MobRequestEscortInfo,
+        CP_MobEscortStopEndRequest,
+        CP_END_MOB,
+        CP_BEGIN_NPC,
+        CP_NpcMove,
+        CP_NpcSpecialAction,
+        CP_END_NPC,
+        CP_END_LIFEPOOL,
+        CP_BEGIN_DROPPOOL,
+        CP_DropPickUpRequest,
+        CP_END_DROPPOOL,
+        CP_BEGIN_REACTORPOOL,
+        CP_ReactorHit,
+        CP_ReactorTouch,
+        CP_RequireFieldObstacleStatus,
+        CP_END_REACTORPOOL,
+        CP_BEGIN_EVENT_FIELD,
+        CP_EventStart,
+        CP_SnowBallHit,
+        CP_SnowBallTouch,
+        CP_CoconutHit,
+        CP_TournamentMatchTable,
+        CP_PulleyHit,
+        CP_END_EVENT_FIELD,
+        CP_BEGIN_MONSTER_CARNIVAL_FIELD,
+        CP_MCarnivalRequest,
+        CP_END_MONSTER_CARNIVAL_FIELD,
+        CP_CONTISTATE,
+        CP_BEGIN_PARTY_MATCH,
+        CP_INVITE_PARTY_MATCH,
+        CP_CANCEL_INVITE_PARTY_MATCH,
+        CP_END_PARTY_MATCH,
+        CP_RequestFootHoldInfo,
+        CP_FootHoldInfo,
+        CP_END_FIELD,
+        CP_BEGIN_CASHSHOP,
+        CP_CashShopChargeParamRequest,
+        CP_CashShopQueryCashRequest,
+        CP_CashShopCashItemRequest,
+        CP_CashShopCheckCouponRequest,
+        CP_CashShopGiftMateInfoRequest,
+        CP_END_CASHSHOP,
+        CP_CheckSSN2OnCreateNewCharacter,
+        CP_CheckSPWOnCreateNewCharacter,
+        CP_FirstSSNOnCreateNewCharacter,
+        CP_BEGIN_RAISE,
+        CP_RaiseRefesh,
+        CP_RaiseUIState,
+        CP_RaiseIncExp,
+        CP_RaiseAddPiece,
+        CP_END_RAISE,
+        CP_SendMateMail,
+        CP_RequestGuildBoardAuthKey,
+        CP_RequestConsultAuthKey,
+        CP_RequestClassCompetitionAuthKey,
+        CP_RequestWebBoardAuthKey,
+        CP_BEGIN_ITEMUPGRADE,
+        CP_GoldHammerRequest,
+        CP_GoldHammerComplete,
+        CP_ItemUpgradeComplete,
+        CP_END_ITEMUPGRADE,
+        CP_BEGIN_BATTLERECORD,
+        CP_BATTLERECORD_ONOFF_REQUEST,
+        CP_END_BATTLERECORD,
+        CP_BEGIN_MAPLETV,
+        CP_MapleTVSendMessageRequest,
+        CP_MapleTVUpdateViewCount,
+        CP_END_MAPLETV,
+        CP_BEGIN_ITC,
+        CP_ITCChargeParamRequest,
+        CP_ITCQueryCashRequest,
+        CP_ITCItemRequest,
+        CP_END_ITC,
+        CP_BEGIN_CHARACTERSALE,
+        CP_CheckDuplicatedIDInCS,
+        CP_END_CHARACTERSALE,
+        CP_LogoutGiftSelect,
+        CP_NO,
         // ヘッダに対応する処理の名前を定義
         UNKNOWN,
-        LOGIN_PASSWORD,
-        SERVERLIST_REQUEST,
-        CHARLIST_REQUEST,
-        SERVERSTATUS_REQUEST,
-        CHAR_SELECT,
-        PLAYER_LOGGEDIN,
-        CHECK_CHAR_NAME,
-        CREATE_CHAR,
-        DELETE_CHAR,
-        LATEST_CRASH_DATA,
-        AUTH_SECOND_PASSWORD,
-        REACHED_LOGIN_SCREEN,
-        RSA_KEY,
-        CHANGE_MAP,
-        CHANGE_CHANNEL,
-        ENTER_CASH_SHOP,
-        MOVE_PLAYER,
-        CANCEL_CHAIR,
-        USE_CHAIR,
-        CLOSE_RANGE_ATTACK,
-        RANGED_ATTACK,
-        MAGIC_ATTACK,
-        PASSIVE_ENERGY,
-        TAKE_DAMAGE,
-        CLOSE_CHALKBOARD,
-        FACE_EXPRESSION,
-        USE_ITEMEFFECT,
+        REACHED_LOGIN_SCREEN, // 名称不明
+        RSA_KEY, // 名称不明
         WHEEL_OF_FORTUNE,
         MONSTER_BOOK_COVER,
         NPC_TALK,
@@ -145,7 +438,7 @@ public class OutPacket {
         PORTAL_INSIDE_MAP,
         GET_BUFF_REQUEST,
         QUEST_ACTION,
-        GENERAL_CHAT,
+        //GENERAL_CHAT,
         USE_UPGRADE_SCROLL,
         USE_EQUIP_SCROLL,
         USE_POTENTIAL_SCROLL,
@@ -269,24 +562,24 @@ public class OutPacket {
 
     public static void SetForJMSv164() {
         // ログインサーバー 必須
-        Header.LOGIN_PASSWORD.Set(0x0001);
-        Header.SERVERLIST_REQUEST.Set(0x0003);
-        Header.CHARLIST_REQUEST.Set(0x0004);
-        Header.CHAR_SELECT.Set(0x0006);
-        Header.PLAYER_LOGGEDIN.Set(0x0007);
-        Header.CHECK_CHAR_NAME.Set(0x0008);
-        Header.CREATE_CHAR.Set(0x000B);
-        Header.DELETE_CHAR.Set(0x000D);
+        Header.CP_CheckPassword.Set(0x0001);
+        Header.CP_WorldInfoRequest.Set(0x0003);
+        Header.CP_SelectWorld.Set(0x0004);
+        Header.CP_SelectCharacter.Set(0x0006);
+        Header.CP_MigrateIn.Set(0x0007);
+        Header.CP_CheckDuplicatedID.Set(0x0008);
+        Header.CP_CreateNewCharacter.Set(0x000B);
+        Header.CP_DeleteCharacter.Set(0x000D);
         // ログインサーバー その他
         //Header.SERVERSTATUS_REQUEST.Set(0x0005);
-        Header.LATEST_CRASH_DATA.Set(0x000F);
+        Header.CP_ExceptionLog.Set(0x000F);
         Header.REACHED_LOGIN_SCREEN.Set(0x0018);
         // ゲームサーバー 必須
-        Header.CHANGE_MAP.Set(0x001C);
-        Header.CHANGE_CHANNEL.Set(0x001D);
-        Header.MOVE_PLAYER.Set(0x001F);
-        Header.GENERAL_CHAT.Set(0x0027);
-        Header.CLOSE_RANGE_ATTACK.Set(0x0022);
+        Header.CP_UserTransferFieldRequest.Set(0x001C);
+        Header.CP_UserTransferChannelRequest.Set(0x001D);
+        Header.CP_UserMove.Set(0x001F);
+        Header.CP_UserChat.Set(0x0027);
+        Header.CP_UserMeleeAttack.Set(0x0022);
 
         Header.NPC_TALK.Set(0x0030);
         Header.HIRED_MERCHANT_REMOTE.Set(Header.NPC_TALK.Get() + 0x01);
@@ -298,8 +591,8 @@ public class OutPacket {
         Header.PORTAL_INSIDE_MAP.Set(0x005B);
 
         // 簡単に確認が可能
-        Header.ENTER_CASH_SHOP.Set(0x001E);
-        Header.TAKE_DAMAGE.Set(0x0026);
+        Header.CP_UserMigrateToCashShopRequest.Set(0x001E);
+        Header.CP_UserHit.Set(0x0026);
         Header.ITEM_MOVE.Set(0x003D);
         Header.USE_ITEM.Set(0x003E);
 
@@ -339,88 +632,91 @@ public class OutPacket {
     }
 
     public static void SetForJMSv176() {
-        Header.LOGIN_PASSWORD.Set(0x0001);
-        Header.SERVERLIST_REQUEST.Set(0x0003);
-        Header.CHARLIST_REQUEST.Set(0x0004);
-        Header.SERVERSTATUS_REQUEST.Set(0x0005);
-        Header.CHAR_SELECT.Set(0x0006);
-        Header.PLAYER_LOGGEDIN.Set(0x0007);
-        Header.CHECK_CHAR_NAME.Set(0x0008);
-        Header.CREATE_CHAR.Set(0x000B);
-        Header.DELETE_CHAR.Set(0x000D);
+        Header.CP_CheckPassword.Set(0x0001);
+        Header.CP_WorldInfoRequest.Set(0x0003);
+        Header.CP_SelectWorld.Set(0x0004);
+        Header.CP_CheckUserLimit.Set(0x0005);
+        Header.CP_SelectCharacter.Set(0x0006);
+        Header.CP_MigrateIn.Set(0x0007);
+        Header.CP_CheckDuplicatedID.Set(0x0008);
+        Header.CP_CreateNewCharacter.Set(0x000B);
+        Header.CP_DeleteCharacter.Set(0x000D);
         Header.REACHED_LOGIN_SCREEN.Set(0x0017);
         Header.RSA_KEY.Set(0x0019);
-        Header.GENERAL_CHAT.Set(0x0028);
-        Header.CHANGE_MAP.Set(0x001C);
-        Header.MOVE_PLAYER.Set(0x001F);
+        Header.CP_UserChat.Set(0x0028);
+        Header.CP_UserTransferChannelRequest.Set(0x001C);
+        Header.CP_UserMove.Set(0x001F);
         Header.CHANGE_MAP_SPECIAL.Set(0x005E);
         Header.PORTAL_INSIDE_MAP.Set(0x005F);
     }
 
     public static void SetForJMSv184() {
-        Header.LOGIN_PASSWORD.Set(0x0001);
-        Header.SERVERLIST_REQUEST.Set(0x0003);
-        Header.CHARLIST_REQUEST.Set(0x0004);
-        Header.SERVERSTATUS_REQUEST.Set(0x0005);
-        Header.CHAR_SELECT.Set(0x0006);
-        Header.PLAYER_LOGGEDIN.Set(0x0007);
-        Header.CHECK_CHAR_NAME.Set(0x0008);
+        Header.CP_CheckPassword.Set(0x0001);
+        Header.CP_WorldInfoRequest.Set(0x0003);
+        Header.CP_SelectWorld.Set(0x0004);
+        Header.CP_CheckUserLimit.Set(0x0005);
+        Header.CP_SelectCharacter.Set(0x0006);
+        Header.CP_MigrateIn.Set(0x0007);
+        Header.CP_CheckDuplicatedID.Set(0x0008);
         Header.REACHED_LOGIN_SCREEN.Set(0x0017);
         Header.RSA_KEY.Set(0x0019);
-        Header.GENERAL_CHAT.Set(0x0028);
-        Header.CHANGE_MAP.Set(0x001C);
-        Header.MOVE_PLAYER.Set(0x001F);
+        Header.CP_UserChat.Set(0x0028);
+        Header.CP_UserTransferFieldRequest.Set(0x001C);
+        Header.CP_UserMove.Set(0x001F);
         Header.CHANGE_MAP_SPECIAL.Set(0x005E);
         Header.PORTAL_INSIDE_MAP.Set(0x005F);
     }
 
     // JMS v186.1 SendPacket
     public static void SetForJMSv186() {
-        // 0x0000
-        Header.LOGIN_PASSWORD.Set(0x0001);
-        // 0x0002
-        Header.SERVERLIST_REQUEST.Set(0x0003);
-        Header.CHARLIST_REQUEST.Set(0x0004);
-        Header.SERVERSTATUS_REQUEST.Set(0x0005);
-        Header.CHAR_SELECT.Set(0x0006);
-        Header.PLAYER_LOGGEDIN.Set(0x0007);
-        Header.CHECK_CHAR_NAME.Set(0x0008);
-        // 0x0009
-        // 0x000A @000A, 全キャラクター確認
-        Header.CREATE_CHAR.Set(0x000B);
-        // 0x000C
-        Header.DELETE_CHAR.Set(0x000D);
-        // 0x000E InPacket @0x0009から送信されるようになっているが未確認
-        Header.LATEST_CRASH_DATA.Set(0x000F);
+        // ログインサーバー
+        Header.CP_BEGIN_SOCKET.Set(0x0000);
+        Header.CP_CheckPassword.Set(0x0001);
+        // 0x0002, CP_AccountInfoRequest
+        Header.CP_WorldInfoRequest.Set(0x0003);
+        Header.CP_SelectWorld.Set(0x0004);
+        Header.CP_CheckUserLimit.Set(0x0005);
+        Header.CP_SelectCharacter.Set(0x0006);
+        Header.CP_MigrateIn.Set(0x0007);
+        Header.CP_CheckDuplicatedID.Set(0x0008);
+        // 0x0009 ???
+        // 0x000A @000A, 全キャラクター確認, CP_ViewAllChar
+        Header.CP_CreateNewCharacter.Set(0x000B);
+        // 0x000C, CP_CreateNewCharacterInCS
+        Header.CP_DeleteCharacter.Set(0x000D);
+        // 0x000E InPacket @0x0009から送信されるようになっているが未確認, CP_AliveAck
+        Header.CP_ExceptionLog.Set(0x000F);
         // 0x0010
         // 0x0011 InPacket 0x000Eから送信される
         // 0x0012
         // 0x0013
-        Header.AUTH_SECOND_PASSWORD.Set(0x0014);
+        Header.CP_CheckPinCode.Set(0x0014);
         // 0x0015
         // 0x0016
         // 0x0017
         Header.REACHED_LOGIN_SCREEN.Set(0x0018);
         // 0x0019 InPacket 0x0013から送信される
         Header.RSA_KEY.Set(0x001A);
-        // 0x001B
-        // 0x001C
-        Header.CHANGE_MAP.Set(0x001D);
-        Header.CHANGE_CHANNEL.Set(0x001E);
-        Header.ENTER_CASH_SHOP.Set(0x001F);
-        Header.MOVE_PLAYER.Set(0x0020);
-        Header.CANCEL_CHAIR.Set(0x0021);
-        Header.USE_CHAIR.Set(0x0022);
-        Header.CLOSE_RANGE_ATTACK.Set(0x0023);
-        Header.RANGED_ATTACK.Set(0x0024);
-        Header.MAGIC_ATTACK.Set(0x0025);
-        Header.PASSIVE_ENERGY.Set(0x0026);
-        Header.TAKE_DAMAGE.Set(0x0027);
-        // 0x0028
-        Header.GENERAL_CHAT.Set(0x0029);
-        Header.CLOSE_CHALKBOARD.Set(0x002A);
-        Header.FACE_EXPRESSION.Set(0x002B);
-        Header.USE_ITEMEFFECT.Set(0x002C);
+        Header.CP_END_SOCKET.Set(0x001B);
+
+        // ゲームサーバー
+        Header.CP_BEGIN_USER.Set(0x001C);
+        Header.CP_UserTransferFieldRequest.Set(0x001D);
+        Header.CP_UserTransferChannelRequest.Set(0x001E);
+        Header.CP_UserMigrateToCashShopRequest.Set(0x001F);
+        Header.CP_UserMove.Set(0x0020);
+        Header.CP_UserSitRequest.Set(0x0021);
+        Header.CP_UserPortableChairSitRequest.Set(0x0022);
+        Header.CP_UserMeleeAttack.Set(0x0023);
+        Header.CP_UserShootAttack.Set(0x0024);
+        Header.CP_UserMagicAttack.Set(0x0025);
+        Header.CP_UserBodyAttack.Set(0x0026);
+        Header.CP_UserHit.Set(0x0027);
+        // 0x0028, CP_UserAttackUser
+        Header.CP_UserChat.Set(0x0029);
+        Header.CP_UserADBoardClose.Set(0x002A);
+        Header.CP_UserEmotion.Set(0x002B);
+        Header.CP_UserActivateEffectItem.Set(0x002C);
         Header.WHEEL_OF_FORTUNE.Set(0x002D);
         // 0x0030
         Header.MONSTER_BOOK_COVER.Set(0x0031);
@@ -666,37 +962,37 @@ public class OutPacket {
 
     public static void SetForJMSv187() {
         // Login
-        Header.LOGIN_PASSWORD.Set(0x0001);
-        Header.SERVERLIST_REQUEST.Set(0x0003);
-        Header.CHARLIST_REQUEST.Set(0x0004);
-        Header.SERVERSTATUS_REQUEST.Set(0x0005);
-        Header.CHAR_SELECT.Set(0x0006);
-        Header.PLAYER_LOGGEDIN.Set(0x0007);
-        Header.CHECK_CHAR_NAME.Set(0x0008);
-        Header.CREATE_CHAR.Set(0x000B);
-        Header.DELETE_CHAR.Set(0x000D);
-        Header.LATEST_CRASH_DATA.Set(0x000F);
-        Header.AUTH_SECOND_PASSWORD.Set(0x0014);
+        Header.CP_CheckPassword.Set(0x0001);
+        Header.CP_WorldInfoRequest.Set(0x0003);
+        Header.CP_SelectWorld.Set(0x0004);
+        Header.CP_CheckUserLimit.Set(0x0005);
+        Header.CP_SelectCharacter.Set(0x0006);
+        Header.CP_MigrateIn.Set(0x0007);
+        Header.CP_CheckDuplicatedID.Set(0x0008);
+        Header.CP_CreateNewCharacter.Set(0x000B);
+        Header.CP_DeleteCharacter.Set(0x000D);
+        Header.CP_ExceptionLog.Set(0x000F);
+        Header.CP_CheckPinCode.Set(0x0014);
         Header.REACHED_LOGIN_SCREEN.Set(0x0018);
         Header.RSA_KEY.Set(0x001A);
         // Game
-        Header.CHANGE_MAP.Set(0x001D);
-        Header.CHANGE_CHANNEL.Set(0x001E);
-        Header.ENTER_CASH_SHOP.Set(0x001F);
-        Header.MOVE_PLAYER.Set(0x0020);
-        Header.CANCEL_CHAIR.Set(0x0021);
-        Header.USE_CHAIR.Set(0x0022);
-        Header.CLOSE_RANGE_ATTACK.Set(0x0023);
-        Header.RANGED_ATTACK.Set(0x0024);
-        Header.MAGIC_ATTACK.Set(0x0025);
+        Header.CP_UserTransferFieldRequest.Set(0x001D);
+        Header.CP_UserTransferChannelRequest.Set(0x001E);
+        Header.CP_UserMigrateToCashShopRequest.Set(0x001F);
+        Header.CP_UserMove.Set(0x0020);
+        Header.CP_UserSitRequest.Set(0x0021);
+        Header.CP_UserPortableChairSitRequest.Set(0x0022);
+        Header.CP_UserMeleeAttack.Set(0x0023);
+        Header.CP_UserShootAttack.Set(0x0024);
+        Header.CP_UserMagicAttack.Set(0x0025);
         /*
         Header.PASSIVE_ENERGY.Set(0x0026);
         Header.TAKE_DAMAGE.Set(0x0027);
          */
-        Header.GENERAL_CHAT.Set(0x0029 + 1);
-        Header.CLOSE_CHALKBOARD.Set(0x002A + 1);
-        Header.FACE_EXPRESSION.Set(0x002B + 1);
-        Header.USE_ITEMEFFECT.Set(0x002C + 1);
+        Header.CP_UserChat.Set(0x0029 + 1);
+        Header.CP_UserADBoardClose.Set(0x002A + 1);
+        Header.CP_UserEmotion.Set(0x002B + 1);
+        Header.CP_UserActivateEffectItem.Set(0x002C + 1);
         Header.WHEEL_OF_FORTUNE.Set(0x002D + 1);
         Header.MONSTER_BOOK_COVER.Set(0x0031 + 1);
         Header.NPC_TALK.Set(0x0032 + 1);
@@ -845,16 +1141,16 @@ public class OutPacket {
 
     public static void SetForJMSv302() {
         // Login
-        Header.LOGIN_PASSWORD.Set(0x0001);
-        Header.SERVERLIST_REQUEST.Set(0x0003);
-        Header.CHARLIST_REQUEST.Set(0x0004);
-        Header.SERVERSTATUS_REQUEST.Set(0x0005);
-        Header.CHAR_SELECT.Set(0x0006);
-        Header.PLAYER_LOGGEDIN.Set(0x0007);
-        Header.CHECK_CHAR_NAME.Set(0x0008);
-        Header.CREATE_CHAR.Set(0x000B);
-        Header.DELETE_CHAR.Set(0x000D);
-        Header.LATEST_CRASH_DATA.Set(0x000F);
+        Header.CP_CheckPassword.Set(0x0001);
+        Header.CP_WorldInfoRequest.Set(0x0003);
+        Header.CP_SelectWorld.Set(0x0004);
+        Header.CP_CheckUserLimit.Set(0x0005);
+        Header.CP_SelectCharacter.Set(0x0006);
+        Header.CP_MigrateIn.Set(0x0007);
+        Header.CP_CheckDuplicatedID.Set(0x0008);
+        Header.CP_CreateNewCharacter.Set(0x000B);
+        Header.CP_DeleteCharacter.Set(0x000D);
+        Header.CP_ExceptionLog.Set(0x000F);
         //Header.AUTH_SECOND_PASSWORD.Set(0x0014);
         //Header.REACHED_LOGIN_SCREEN.Set(0x0014);
         Header.RSA_KEY.Set(0x0022);

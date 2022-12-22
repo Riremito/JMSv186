@@ -137,12 +137,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
         switch (r) {
             case NPC_ACTION:
             case SPECIAL_MOVE:
-            case RANGED_ATTACK:
-            case MAGIC_ATTACK:
-            case CLOSE_RANGE_ATTACK:
+            case CP_UserShootAttack:
+            case CP_UserMagicAttack:
+            case CP_UserMeleeAttack:
             case MOVE_LIFE:
             case HEAL_OVER_TIME:
-            case MOVE_PLAYER: {
+            case CP_UserMove: {
                 return true;
             }
             default: {
@@ -263,7 +263,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // ログイン
-            case LOGIN_PASSWORD: {
+            case CP_CheckPassword: {
                 if (CharLoginHandler.login(p, c)) {
                     InterServerHandler.SetLogin(false);
                     Debug.DebugLog("Login MapleID = " + c.getAccountName());
@@ -271,40 +271,40 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // サーバー一覧
-            case SERVERLIST_REQUEST: {
+            case CP_WorldInfoRequest: {
                 // +p
                 CharLoginHandler.ServerListRequest(c);
                 return true;
             }
             // サーバーの状態
-            case SERVERSTATUS_REQUEST: {
+            case CP_CheckUserLimit: {
                 // +p
                 CharLoginHandler.ServerStatusRequest(c);
                 return true;
             }
             // キャラクター一覧
-            case CHARLIST_REQUEST: {
+            case CP_SelectWorld: {
                 CharLoginHandler.CharlistRequest(p, c);
                 return true;
             }
             // キャラクター作成時の名前重複確認
-            case CHECK_CHAR_NAME: {
+            case CP_CheckDuplicatedID: {
                 // p
                 CharLoginHandler.CheckCharName(p, c);
                 return true;
             }
             // キャラクター作成
-            case CREATE_CHAR: {
+            case CP_CreateNewCharacter: {
                 CharLoginHandler.CreateChar(p, c);
                 return true;
             }
             // キャラクター削除
-            case DELETE_CHAR: {
+            case CP_DeleteCharacter: {
                 CharLoginHandler.DeleteChar(p, c);
                 return true;
             }
             // クラッシュデータ
-            case LATEST_CRASH_DATA: {
+            case CP_ExceptionLog: {
                 // @000F EncodeBuffer(CrashDumpLog)
                 // 起動時に何らかの条件で前回のクラッシュの詳細のテキストが送信される
                 // 文字列で送信されているがnullで終わっていないので注意
@@ -312,8 +312,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // キャラクター選択
-            case CHAR_SELECT:
-            case AUTH_SECOND_PASSWORD: {
+            case CP_SelectCharacter:
+            case CP_CheckPinCode: {
                 if (CharLoginHandler.Character_WithSecondPassword(p, c)) {
                     InterServerHandler.SetLogin(false);
                 }
@@ -336,14 +336,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
     // Point Shop
     public static final boolean handlePointShopPacket(final OutPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
-            case PLAYER_LOGGEDIN: {
+            case CP_MigrateIn: {
                 // +p
                 final int playerid = p.readInt();
                 CashShopOperation.EnterCS(playerid, c);
                 Debug.DebugLog(c.getPlayer().getName() + " Enter PointShop");
                 return true;
             }
-            case CHANGE_MAP: {
+            case CP_UserTransferFieldRequest: {
                 // c
                 CashShopOperation.LeaveCS(p, c, c.getPlayer());
                 return true;
@@ -395,14 +395,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
     // MTS
     public static final boolean handleMapleTradeSpacePacket(final OutPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
-            case PLAYER_LOGGEDIN: {
+            case CP_MigrateIn: {
                 // +p
                 final int playerid = p.readInt();
                 CashShopOperation.EnterCS(playerid, c);
                 Debug.DebugLog(c.getPlayer().getName() + " Enter MTS");
                 return true;
             }
-            case CHANGE_MAP: {
+            case CP_UserTransferFieldRequest: {
                 // c
                 CashShopOperation.LeaveCS(p, c, c.getPlayer());
                 return true;
@@ -506,12 +506,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             //
-            case CHANGE_CHANNEL: {
+            case CP_UserTransferChannelRequest: {
                 // c
                 InterServerHandler.ChangeChannel(p, c, c.getPlayer());
                 return true;
             }
-            case PLAYER_LOGGEDIN: {
+            case CP_MigrateIn: {
                 // +p
                 final int playerid = p.readInt();
                 InterServerHandler.Loggedin(playerid, c);
@@ -525,7 +525,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case ENTER_CASH_SHOP: {
+            case CP_UserMigrateToCashShopRequest: {
                 // pc
                 InterServerHandler.EnterCS(c, c.getPlayer(), false);
                 return true;
@@ -535,7 +535,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InterServerHandler.EnterCS(c, c.getPlayer(), true);
                 return true;
             }
-            case MOVE_PLAYER: {
+            case CP_UserMove: {
                 // pc
                 PlayerHandler.MovePlayer(p, c, c.getPlayer());
                 return true;
@@ -546,17 +546,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.CharInfoRequest(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case CLOSE_RANGE_ATTACK: {
+            case CP_UserMeleeAttack: {
                 // c
                 PlayerHandler.closeRangeAttack(p, c, c.getPlayer(), false);
                 return true;
             }
-            case RANGED_ATTACK: {
+            case CP_UserShootAttack: {
                 // c
                 PlayerHandler.rangedAttack(p, c, c.getPlayer());
                 return true;
             }
-            case MAGIC_ATTACK: {
+            case CP_UserMagicAttack: {
                 // c
                 PlayerHandler.MagicDamage(p, c, c.getPlayer());
                 return true;
@@ -566,17 +566,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.SpecialMove(p, c, c.getPlayer());
                 return true;
             }
-            case PASSIVE_ENERGY: {
+            case CP_UserBodyAttack: {
                 // c
                 PlayerHandler.closeRangeAttack(p, c, c.getPlayer(), true);
                 return true;
             }
-            case FACE_EXPRESSION: {
+            case CP_UserEmotion: {
                 // pc
                 PlayerHandler.ChangeEmotion(p.readInt(), c.getPlayer());
                 return true;
             }
-            case TAKE_DAMAGE: {
+            case CP_UserHit: {
                 // c
                 PlayerHandler.TakeDamage(p, c, c.getPlayer());
                 return true;
@@ -595,17 +595,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.CancelItemEffect(p.readInt(), c.getPlayer());
                 return true;
             }
-            case USE_CHAIR: {
+            case CP_UserPortableChairSitRequest: {
                 // pc
                 PlayerHandler.UseChair(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case CANCEL_CHAIR: {
+            case CP_UserSitRequest: {
                 // pc
                 PlayerHandler.CancelChair(p.readShort(), c, c.getPlayer());
                 return true;
             }
-            case USE_ITEMEFFECT:
+            case CP_UserActivateEffectItem:
             case WHEEL_OF_FORTUNE: {
                 // pc
                 PlayerHandler.UseItemEffect(p.readInt(), c, c.getPlayer());
@@ -632,7 +632,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.ChangeKeymap(p, c.getPlayer());
                 return true;
             }
-            case CHANGE_MAP: {
+            case CP_UserTransferFieldRequest: {
                 // c
                 PlayerHandler.ChangeMap(p, c, c.getPlayer());
                 if (c.getPlayer().GetInformation()) {
@@ -704,7 +704,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayersHandler.TouchReactor(p, c);
                 return true;
             }
-            case CLOSE_CHALKBOARD: {
+            case CP_UserADBoardClose: {
                 // 実装が悪い
                 c.getPlayer().setChalkboard(null);
                 return true;
@@ -880,7 +880,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 NPCHandler.Storage(p, c, c.getPlayer());
                 return true;
             }
-            case GENERAL_CHAT: {
+            case CP_UserChat: {
                 Debug.DebugPacket(op);
                 // 実装が悪い
                 if (Start.getMainVersion() > 164) {
