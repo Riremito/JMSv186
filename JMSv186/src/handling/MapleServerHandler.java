@@ -436,17 +436,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return SendPacket.ViciousHammer.Accept(c, op);
             }
             // サーバーメッセージ
-            case GM_COMMAND_SERVER_MESSAGE: {
+            case CP_BroadcastMsg: {
                 Debug.DebugPacket(op);
                 return true;
             }
             // GMコマンド
-            case GM_COMMAND: {
+            case CP_Admin: {
                 Debug.DebugPacket(op);
                 return GMCommand.Accept(p, c);
             }
             // GMコマンドの文字列
-            case GM_COMMAND_TEXT: {
+            case CP_Log: {
                 Debug.DebugPacket(op);
                 return true;
             }
@@ -492,7 +492,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // ウェディング系の謎UI
-            case WEDDING_REGISTRY: {
+            case CP_WeddingWishListRequest: {
                 // @0091 06 01 00 FA DD 13 00 01 00
                 // アイテムを選択して送る
                 // @0091 08
@@ -501,7 +501,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // グループクエスト or 遠征隊検索
-            case EXPEDITION_LISTING: {
+            case CP_PartyAdverRequest: {
                 Debug.DebugPacket(op);
                 return true;
             }
@@ -627,7 +627,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.ChangeMonsterBookCover(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case CHANGE_KEYMAP: {
+            case CP_FuncKeyMappedModified: {
                 // c
                 PlayerHandler.ChangeKeymap(p, c.getPlayer());
                 return true;
@@ -640,26 +640,26 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case CHANGE_MAP_SPECIAL: {
+            case CP_UserPortalScriptRequest: {
                 // 実装が悪い
                 p.skip(1);
                 PlayerHandler.ChangeMapSpecial(p.readMapleAsciiString(), c, c.getPlayer());
                 return true;
             }
-            case PORTAL_INSIDE_MAP: {
+            case CP_UserPortalTeleportRequest: {
                 // @0063 [13] [04 00 75 70 30 30] [9F 01] [04 00] [C9 01] [F4 FE]
                 // ポータルカウント, ポータル名, 元のX座標, 元のY座標, 移動先のX座標, 移動先のY座標
                 // ポータル利用時のスクリプト実行用だがJMSとEMS以外では利用されておらず意味がない
                 // サーバー側で特にみる必要もないが、マップ内ポータルを利用した時にサーバー側でスクリプトを実行したい場合は必要になる
                 return true;
             }
-            case GET_BUFF_REQUEST: {
+            case CP_UserCalcDamageStatSetRequest: {
                 // @006A
                 // バフを獲得するアイテムを使用した際に送信されている
                 // 利用用途が不明だが、アイテム利用時ではなくてこちらが送信されたときにバフを有効にすべきなのかもしれない
                 return true;
             }
-            case TROCK_ADD_MAP: {
+            case CP_UserMapTransferRequest: {
                 // c
                 PlayerHandler.TrockAddMap(p, c, c.getPlayer());
                 return true;
@@ -669,7 +669,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.AranCombo(c, c.getPlayer());
                 return true;
             }
-            case SKILL_MACRO: {
+            case CP_UserMacroSysDataModified: {
                 // c
                 PlayerHandler.ChangeSkillMacro(p, c.getPlayer());
                 return true;
@@ -686,12 +686,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
              */
-            case NOTE_ACTION: {
+            case CP_MemoRequest: {
                 // c
                 PlayersHandler.Note(p, c.getPlayer());
                 return true;
             }
-            case USE_DOOR: {
+            case CP_EnterTownPortalRequest: {
                 // c
                 PlayersHandler.UseDoor(p, c.getPlayer());
                 return true;
@@ -709,7 +709,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 c.getPlayer().setChalkboard(null);
                 return true;
             }
-            case ITEM_MAKER: {
+            case CP_UserItemMakeRequest: {
                 ItemMakerHandler.ItemMaker(p, c);
                 return true;
             }
@@ -805,7 +805,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InventoryHandler.UseMountFood(p, c, c.getPlayer());
                 return true;
             }
-            case REWARD_ITEM: {
+            case CP_UserUseGachaponBoxRequest: {
                 // c
                 InventoryHandler.UseRewardItem((byte) p.readShort(), p.readInt(), c, c.getPlayer());
                 return true;
@@ -870,7 +870,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 NPCHandler.NPCAnimation(p, c);
                 return true;
             }
-            case QUEST_ACTION: {
+            case CP_UserQuestRequest: {
                 // c
                 NPCHandler.QuestAction(p, c, c.getPlayer());
                 return true;
@@ -889,16 +889,16 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 ChatHandler.GeneralChat(p.readMapleAsciiString(), p.readByte(), c, c.getPlayer());
                 return true;
             }
-            case PARTYCHAT: {
+            case CP_GroupMessage: {
                 // c
                 ChatHandler.Others(p, c, c.getPlayer());
                 return true;
             }
-            case WHISPER: {
+            case CP_Whisper: {
                 ChatHandler.Whisper_Find(p, c);
                 return true;
             }
-            case MESSENGER: {
+            case CP_Messenger: {
                 ChatHandler.Messenger(p, c);
                 return true;
             }
@@ -918,26 +918,26 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 StatsHandling.DistributeSP(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case PLAYER_INTERACTION: {
+            case CP_MiniRoom: {
                 // c
                 PlayerInteractionHandler.PlayerInteraction(p, c, c.getPlayer());
                 return true;
             }
-            case GUILD_OPERATION: {
+            case CP_GuildRequest: {
                 GuildHandler.Guild(p, c);
                 return true;
             }
-            case DENY_GUILD_REQUEST: {
+            case CP_GuildResult: {
                 // 実装が悪い
                 p.skip(1);
                 GuildHandler.DenyGuildRequest(p.readMapleAsciiString(), c);
                 return true;
             }
-            case ALLIANCE_OPERATION: {
+            case CP_AllianceRequest: {
                 AllianceHandler.HandleAlliance(p, c, false);
                 return true;
             }
-            case DENY_ALLIANCE_REQUEST: {
+            case CP_AllianceResult: {
                 AllianceHandler.HandleAlliance(p, c, true);
                 return true;
             }
@@ -945,15 +945,15 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 BBSHandler.BBSOperatopn(p, c);
                 return true;
             }
-            case PARTY_OPERATION: {
+            case CP_PartyRequest: {
                 PartyHandler.PartyOperatopn(p, c);
                 return true;
             }
-            case DENY_PARTY_REQUEST: {
+            case CP_PartyResult: {
                 PartyHandler.DenyPartyRequest(p, c);
                 return true;
             }
-            case BUDDYLIST_MODIFY: {
+            case CP_FriendRequest: {
                 BuddyListHandler.BuddyOperation(p, c);
                 return true;
             }
@@ -1042,7 +1042,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 HiredMerchantHandler.MerchantItemStore(p, c);
                 return true;
             }
-            case CANCEL_DEBUFF: {
+            case CP_UserTemporaryStatUpdateRequest: {
                 return true;
             }
             case LEFT_KNOCK_BACK: {
@@ -1057,11 +1057,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayersHandler.hitCoconut(p, c);
                 return true;
             }
-            case REPAIR: {
+            case CP_UserRepairDurability: {
                 NPCHandler.repair(p, c);
                 return true;
             }
-            case REPAIR_ALL: {
+            case CP_UserRepairDurabilityAll: {
                 // p
                 NPCHandler.repairAll(c);
                 return true;
@@ -1088,7 +1088,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InventoryHandler.OwlMinerva(p, c);
                 return true;
             }
-            case RPS_GAME: {
+            case CP_RPSGame: {
                 NPCHandler.RPSGame(p, c);
                 return true;
             }
@@ -1100,51 +1100,51 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 NPCHandler.UseItemQuest(p, c);
                 return true;
             }
-            case FOLLOW_REQUEST: {
+            case CP_UserFollowCharacterRequest: {
                 PlayersHandler.FollowRequest(p, c);
                 return true;
             }
-            case FOLLOW_REPLY: {
+            case CP_UserFollowCharacterWithdraw: {
                 PlayersHandler.FollowReply(p, c);
                 return true;
             }
-            case RING_ACTION: {
+            case CP_MarriageRequest: {
                 PlayersHandler.RingAction(p, c);
                 return true;
             }
-            case REQUEST_FAMILY: {
+            case CP_FamilyChartRequest: {
                 FamilyHandler.RequestFamily(p, c);
                 return true;
             }
-            case OPEN_FAMILY: {
+            case CP_FamilyInfoRequest: {
                 FamilyHandler.OpenFamily(p, c);
                 return true;
             }
-            case FAMILY_OPERATION: {
+            case CP_FamilyRegisterJunior: {
                 FamilyHandler.FamilyOperation(p, c);
                 return true;
             }
-            case DELETE_JUNIOR: {
+            case CP_FamilyUnregisterJunior: {
                 FamilyHandler.DeleteJunior(p, c);
                 return true;
             }
-            case DELETE_SENIOR: {
+            case CP_FamilyUnregisterParent: {
                 FamilyHandler.DeleteSenior(p, c);
                 return true;
             }
-            case USE_FAMILY: {
+            case CP_FamilyUsePrivilege: {
                 FamilyHandler.UseFamily(p, c);
                 return true;
             }
-            case FAMILY_PRECEPT: {
+            case CP_FamilySetPrecept: {
                 FamilyHandler.FamilyPrecept(p, c);
                 return true;
             }
-            case FAMILY_SUMMON: {
+            case CP_FamilySummonResult: {
                 FamilyHandler.FamilySummon(p, c);
                 return true;
             }
-            case ACCEPT_FAMILY: {
+            case CP_FamilyJoinResult: {
                 FamilyHandler.AcceptFamily(p, c);
                 return true;
             }

@@ -189,6 +189,7 @@ public class OutPacket {
         CP_UserCharacterInfoRequest,
         CP_UserActivatePetRequest,
         CP_UserTemporaryStatUpdateRequest,
+        CP_UNK_0061, // v186.1
         CP_UserPortalScriptRequest,
         CP_UserPortalTeleportRequest,
         CP_UserMapTransferRequest,
@@ -203,23 +204,23 @@ public class OutPacket {
         CP_UserSelectNpcItemUseRequest,
         CP_UserLotteryItemUseRequest,
         CP_UserItemMakeRequest,
-        CP_UserSueCharacterRequest,
+        //CP_UserSueCharacterRequest,
         CP_UserUseGachaponBoxRequest,
-        CP_UserUseGachaponRemoteRequest,
-        CP_UserUseWaterOfLife,
+        //CP_UserUseGachaponRemoteRequest,
+        //CP_UserUseWaterOfLife,
         CP_UserRepairDurabilityAll,
         CP_UserRepairDurability,
         CP_UserQuestRecordSetState,
         CP_UserClientTimerEndRequest,
         CP_UserFollowCharacterRequest,
         CP_UserFollowCharacterWithdraw,
-        CP_UserSelectPQReward,
-        CP_UserRequestPQReward,
-        CP_SetPassenserResult,
+        //CP_UserSelectPQReward,
+        //CP_UserRequestPQReward,
+        //CP_SetPassenserResult,
         CP_BroadcastMsg,
         CP_GroupMessage,
         CP_Whisper,
-        CP_CoupleMessage,
+        //CP_CoupleMessage,
         CP_Messenger,
         CP_MiniRoom,
         CP_PartyRequest,
@@ -397,57 +398,14 @@ public class OutPacket {
         REACHED_LOGIN_SCREEN, // 名称不明
         RSA_KEY, // 名称不明
         WHEEL_OF_FORTUNE, // 不明
-        CANCEL_DEBUFF,
-        CHANGE_MAP_SPECIAL,
-        PORTAL_INSIDE_MAP,
-        GET_BUFF_REQUEST,
-        QUEST_ACTION,
-        TROCK_ADD_MAP,
-        SKILL_MACRO,
-        ITEM_MAKER,
-        GM_COMMAND,
-        GM_COMMAND_TEXT,
         GM_COMMAND_SERVER_MESSAGE,
         GM_COMMAND_EVENT_START,
         GM_COMMAND_MAPLETV,
         SNOWBALL,
         PET_CHAT,
-        REWARD_ITEM,
-        REPAIR_ALL,
-        REPAIR,
         SOLOMON,
         GACH_EXP,
-        FOLLOW_REQUEST,
-        FOLLOW_REPLY,
         USE_TREASUER_CHEST,
-        PARTYCHAT,
-        WHISPER,
-        MESSENGER,
-        PLAYER_INTERACTION,
-        PARTY_OPERATION,
-        DENY_PARTY_REQUEST,
-        EXPEDITION_OPERATION,
-        EXPEDITION_LISTING,
-        GUILD_OPERATION,
-        DENY_GUILD_REQUEST,
-        BUDDYLIST_MODIFY,
-        NOTE_ACTION,
-        USE_DOOR,
-        CHANGE_KEYMAP,
-        RPS_GAME,
-        RING_ACTION,
-        WEDDING_REGISTRY,
-        ALLIANCE_OPERATION,
-        DENY_ALLIANCE_REQUEST,
-        REQUEST_FAMILY,
-        OPEN_FAMILY,
-        FAMILY_OPERATION,
-        DELETE_JUNIOR,
-        DELETE_SENIOR,
-        ACCEPT_FAMILY,
-        USE_FAMILY,
-        FAMILY_PRECEPT,
-        FAMILY_SUMMON,
         CYGNUS_SUMMON,
         ARAN_COMBO,
         BBS_OPERATION,
@@ -546,7 +504,7 @@ public class OutPacket {
         Header.CP_UserTrunkRequest.Set(Header.CP_UserSelectNpc.Get() + 0x04);
         //Header.USE_HIRED_MERCHANT.Set(Header.NPC_TALK.Get() + 0x05);
         // ゲームサーバー その他
-        Header.PORTAL_INSIDE_MAP.Set(0x005B);
+        Header.CP_UserPortalTeleportRequest.Set(0x005B);
 
         // 簡単に確認が可能
         Header.CP_UserMigrateToCashShopRequest.Set(0x001E);
@@ -577,14 +535,14 @@ public class OutPacket {
         Header.CP_UserSkillPrepareRequest.Set(Header.CP_UserSkillUpRequest.Get() + 0x03);
         Header.CP_UserDropMoneyRequest.Set(Header.CP_UserSkillUpRequest.Get() + 0x04);
 
-        Header.CHANGE_MAP_SPECIAL.Set(0x005A);
-        Header.PORTAL_INSIDE_MAP.Set(Header.CHANGE_MAP_SPECIAL.Get() + 0x01);
-        Header.TROCK_ADD_MAP.Set(Header.CHANGE_MAP_SPECIAL.Get() + 0x02);
+        Header.CP_UserPortalScriptRequest.Set(0x005A);
+        Header.CP_UserPortalTeleportRequest.Set(Header.CP_UserPortalScriptRequest.Get() + 0x01);
+        Header.CP_UserMapTransferRequest.Set(Header.CP_UserPortalScriptRequest.Get() + 0x02);
 
         //Header.QUEST_ACTION.Set(0x0061); クエスト情報がおかしくなり、ログイン不可になる
-        Header.SKILL_MACRO.Set(0x0064);
+        Header.CP_UserMacroSysDataModified.Set(0x0064);
 
-        Header.CHANGE_KEYMAP.Set(0x007B);
+        Header.CP_FuncKeyMappedModified.Set(0x007B);
 
         Header.ENTER_MTS.Set(0x0091);
     }
@@ -604,8 +562,8 @@ public class OutPacket {
         Header.CP_UserChat.Set(0x0028);
         Header.CP_UserTransferChannelRequest.Set(0x001C);
         Header.CP_UserMove.Set(0x001F);
-        Header.CHANGE_MAP_SPECIAL.Set(0x005E);
-        Header.PORTAL_INSIDE_MAP.Set(0x005F);
+        Header.CP_UserPortalScriptRequest.Set(0x005E);
+        Header.CP_UserPortalTeleportRequest.Set(0x005F);
     }
 
     public static void SetForJMSv184() {
@@ -621,8 +579,8 @@ public class OutPacket {
         Header.CP_UserChat.Set(0x0028);
         Header.CP_UserTransferFieldRequest.Set(0x001C);
         Header.CP_UserMove.Set(0x001F);
-        Header.CHANGE_MAP_SPECIAL.Set(0x005E);
-        Header.PORTAL_INSIDE_MAP.Set(0x005F);
+        Header.CP_UserPortalScriptRequest.Set(0x005E);
+        Header.CP_UserPortalTeleportRequest.Set(0x005F);
     }
 
     // JMS v186.1 SendPacket
@@ -724,70 +682,70 @@ public class OutPacket {
         // 0x005D, CP_UserPartyRequest
         Header.CP_UserCharacterInfoRequest.Set(0x005E);
         Header.CP_UserActivatePetRequest.Set(0x005F);
-        Header.CANCEL_DEBUFF.Set(0x0060);
-        // 0x0061
-        Header.CHANGE_MAP_SPECIAL.Set(0x0062);
-        Header.PORTAL_INSIDE_MAP.Set(0x0063);
-        Header.TROCK_ADD_MAP.Set(0x0064);
-        // 0x0065
-        // 0x0066
-        // 0x0067
-        // 0x0068
-        Header.QUEST_ACTION.Set(0x0069);
-        Header.GET_BUFF_REQUEST.Set(0x006A);
-        // 0x006B
-        Header.SKILL_MACRO.Set(0x006C);
-        // 0x006D
-        // 0x006E
-        Header.ITEM_MAKER.Set(0x006F);
-        Header.REWARD_ITEM.Set(0x0070);
-        // 0x0071
-        Header.REPAIR_ALL.Set(0x0072);
-        Header.REPAIR.Set(0x0073);
-        // 0x0074
-        // 0x0075
+        Header.CP_UserTemporaryStatUpdateRequest.Set(0x0060);
+        // 0x0061 ???, CP_UserRegisterPetAutoBuffRequest
+        Header.CP_UserPortalScriptRequest.Set(0x0062);
+        Header.CP_UserPortalTeleportRequest.Set(0x0063);
+        Header.CP_UserMapTransferRequest.Set(0x0064);
+        // 0x0065, CP_UserAntiMacroItemUseRequest
+        // 0x0066, CP_UserAntiMacroSkillUseRequest
+        // 0x0067, CP_UserAntiMacroQuestionResult
+        // 0x0068, CP_UserClaimRequest
+        Header.CP_UserQuestRequest.Set(0x0069);
+        Header.CP_UserCalcDamageStatSetRequest.Set(0x006A);
+        // 0x006B, CP_UserThrowGrenade
+        Header.CP_UserMacroSysDataModified.Set(0x006C);
+        // 0x006D, CP_UserSelectNpcItemUseRequest
+        // 0x006E, CP_UserLotteryItemUseRequest
+        Header.CP_UserItemMakeRequest.Set(0x006F);
+        Header.CP_UserUseGachaponBoxRequest.Set(0x0070);
+        // 0x0071, CP_UserUseGachaponRemoteRequest or CP_UserUseWaterOfLife
+        Header.CP_UserRepairDurabilityAll.Set(0x0072);
+        Header.CP_UserRepairDurability.Set(0x0073);
+        // 0x0074, CP_UserQuestRecordSetState
+        // 0x0075, CP_UserClientTimerEndRequest
         Header.SOLOMON.Set(0x0076);
         Header.GACH_EXP.Set(0x0077);
-        Header.FOLLOW_REQUEST.Set(0x0078);
-        Header.FOLLOW_REPLY.Set(0x0079);
+        Header.CP_UserFollowCharacterRequest.Set(0x0078);
+        Header.CP_UserFollowCharacterWithdraw.Set(0x0079);
         Header.USE_TREASUER_CHEST.Set(0x007A);
-        Header.GM_COMMAND_SERVER_MESSAGE.Set(0x007B);
-        Header.PARTYCHAT.Set(0x007C);
-        Header.WHISPER.Set(0x007D);
-        Header.MESSENGER.Set(0x007E);
-        Header.PLAYER_INTERACTION.Set(0x007F);
-        Header.PARTY_OPERATION.Set(0x0080);
-        Header.DENY_PARTY_REQUEST.Set(0x0081);
-        Header.EXPEDITION_OPERATION.Set(0x0082);
-        Header.EXPEDITION_LISTING.Set(0x0083);
-        Header.GUILD_OPERATION.Set(0x0084);
-        Header.DENY_GUILD_REQUEST.Set(0x0085);
-        Header.GM_COMMAND.Set(0x0086);
-        Header.GM_COMMAND_TEXT.Set(0x0087);
-        Header.BUDDYLIST_MODIFY.Set(0x0088);
-        Header.NOTE_ACTION.Set(0x0089);
-        // 0x008A
-        Header.USE_DOOR.Set(0x008B);
-        // 0x008C
-        // 0x008D
-        Header.CHANGE_KEYMAP.Set(0x008E);
-        Header.RPS_GAME.Set(0x008F);
-        Header.RING_ACTION.Set(0x0090);
-        Header.WEDDING_REGISTRY.Set(0x0091);
-        // 0x0092
-        // 0x0093
-        // 0x0094
-        Header.ALLIANCE_OPERATION.Set(0x0095);
-        Header.DENY_ALLIANCE_REQUEST.Set(0x0096);
-        Header.REQUEST_FAMILY.Set(0x0097);
-        Header.OPEN_FAMILY.Set(0x0098);
-        Header.FAMILY_OPERATION.Set(0x0099);
-        Header.DELETE_JUNIOR.Set(0x009A);
-        Header.DELETE_SENIOR.Set(0x009B);
-        Header.ACCEPT_FAMILY.Set(0x009C);
-        Header.USE_FAMILY.Set(0x009D);
-        Header.FAMILY_PRECEPT.Set(0x009E);
-        Header.FAMILY_SUMMON.Set(0x009F);
+        Header.CP_BroadcastMsg.Set(0x007B);
+        Header.CP_GroupMessage.Set(0x007C);
+        Header.CP_Whisper.Set(0x007D);
+        Header.CP_Messenger.Set(0x007E);
+        Header.CP_MiniRoom.Set(0x007F);
+        Header.CP_PartyRequest.Set(0x0080);
+        Header.CP_PartyResult.Set(0x0081);
+        Header.CP_ExpeditionRequest.Set(0x0082);
+        Header.CP_PartyAdverRequest.Set(0x0083);
+        Header.CP_GuildRequest.Set(0x0084);
+        Header.CP_GuildResult.Set(0x0085);
+        Header.CP_Admin.Set(0x0086);
+        Header.CP_Log.Set(0x0087);
+        Header.CP_FriendRequest.Set(0x0088);
+        Header.CP_MemoRequest.Set(0x0089);
+        // 0x008A, CP_MemoFlagRequest
+        Header.CP_EnterTownPortalRequest.Set(0x008B);
+        // 0x008C, CP_EnterOpenGateRequest
+        // 0x008D, CP_SlideRequest
+        Header.CP_FuncKeyMappedModified.Set(0x008E);
+        Header.CP_RPSGame.Set(0x008F);
+        Header.CP_MarriageRequest.Set(0x0090);
+        Header.CP_WeddingWishListRequest.Set(0x0091);
+        // 0x0092, CP_WeddingProgress
+        // 0x0093, CP_GuestBless
+        // 0x0094, CP_BoobyTrapAlert or CP_StalkBegin=
+        Header.CP_AllianceRequest.Set(0x0095);
+        Header.CP_AllianceResult.Set(0x0096);
+        Header.CP_FamilyChartRequest.Set(0x0097);
+        Header.CP_FamilyInfoRequest.Set(0x0098);
+        Header.CP_FamilyRegisterJunior.Set(0x0099);
+        Header.CP_FamilyUnregisterJunior.Set(0x009A);
+        Header.CP_FamilyUnregisterParent.Set(0x009B);
+        Header.CP_FamilyJoinResult.Set(0x009C);
+        Header.CP_FamilyUsePrivilege.Set(0x009D);
+        Header.CP_FamilySetPrecept.Set(0x009E);
+        Header.CP_FamilySummonResult.Set(0x009F);
         Header.CYGNUS_SUMMON.Set(0x00A0);
         Header.ARAN_COMBO.Set(0x00A1);
         // 0x00A2 InPacket 0x0111から送信される
@@ -996,11 +954,11 @@ public class OutPacket {
         Header.CP_UserGivePopularityRequest.Set(0x005C + 3);
         Header.CP_UserCharacterInfoRequest.Set(0x005E + 3);
         Header.CP_UserActivatePetRequest.Set(0x005F + 3);
-        Header.CANCEL_DEBUFF.Set(0x0060 + 3);
-        Header.CHANGE_MAP_SPECIAL.Set(0x0062 + 3);
-        Header.PORTAL_INSIDE_MAP.Set(0x0063 + 3);
-        Header.TROCK_ADD_MAP.Set(0x0064 + 3);
-        Header.QUEST_ACTION.Set(0x0069 + 3);
+        Header.CP_UserTemporaryStatUpdateRequest.Set(0x0060 + 3);
+        Header.CP_UserPortalScriptRequest.Set(0x0062 + 3);
+        Header.CP_UserPortalTeleportRequest.Set(0x0063 + 3);
+        Header.CP_UserMapTransferRequest.Set(0x0064 + 3);
+        Header.CP_UserQuestRequest.Set(0x0069 + 3);
         /*
         Header.GET_BUFF_REQUEST.Set(0x006A);
         Header.SKILL_MACRO.Set(0x006C);
