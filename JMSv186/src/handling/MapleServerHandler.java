@@ -135,12 +135,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
     // ログをとる必要がないPacket
     private boolean IsAnnoyingPacket(OutPacket.Header r) {
         switch (r) {
-            case NPC_ACTION:
+            case CP_NpcMove:
             case CP_UserSkillUseRequest:
             case CP_UserShootAttack:
             case CP_UserMagicAttack:
             case CP_UserMeleeAttack:
-            case MOVE_LIFE:
+            case CP_MobMove:
             case CP_UserChangeStatRequest:
             case CP_UserMove: {
                 return true;
@@ -380,7 +380,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // アバターランダムボックスのオープン処理
-            case AVATAR_RANDOM_BOX_OPEN: {
+            case CP_CashItemGachaponRequest: {
                 // @00AB [B0 58] 00 00 00 00 00 00
                 // アイテムスロットが指定されている
                 return true;
@@ -664,7 +664,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.TrockAddMap(p, c, c.getPlayer());
                 return true;
             }
-            case ARAN_COMBO: {
+            case CP_RequestIncCombo: {
                 // pc
                 PlayerHandler.AranCombo(c, c.getPlayer());
                 return true;
@@ -810,37 +810,37 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InventoryHandler.UseRewardItem((byte) p.readShort(), p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case HYPNOTIZE_DMG: {
+            case CP_MobAttackMob: {
                 // c
                 MobHandler.HypnotizeDmg(p, c.getPlayer());
                 return true;
             }
-            case MOB_NODE: {
+            case CP_MobEscortCollision: {
                 // c
                 MobHandler.MobNode(p, c.getPlayer());
                 return true;
             }
-            case DISPLAY_NODE: {
+            case CP_MobRequestEscortInfo: {
                 // c
                 MobHandler.DisplayNode(p, c.getPlayer());
                 return true;
             }
-            case MOVE_LIFE: {
+            case CP_MobMove: {
                 // c
                 MobHandler.MoveMonster(p, c, c.getPlayer());
                 return true;
             }
-            case AUTO_AGGRO: {
+            case CP_MobApplyCtrl: {
                 // c
                 MobHandler.AutoAggro(p.readInt(), c.getPlayer());
                 return true;
             }
-            case FRIENDLY_DAMAGE: {
+            case CP_MobHitByMob: {
                 // c
                 MobHandler.FriendlyDamage(p, c.getPlayer());
                 return true;
             }
-            case MONSTER_BOMB: {
+            case CP_MobSelfDestruct: {
                 // pc
                 MobHandler.MonsterBomb(p.readInt(), c.getPlayer());
                 return true;
@@ -866,7 +866,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 NPCHandler.NPCMoreTalk(p, c);
                 return true;
             }
-            case NPC_ACTION: {
+            case CP_NpcMove: {
                 NPCHandler.NPCAnimation(p, c);
                 return true;
             }
@@ -941,7 +941,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 AllianceHandler.HandleAlliance(p, c, true);
                 return true;
             }
-            case BBS_OPERATION: {
+            case CP_GuildBBS: {
                 BBSHandler.BBSOperatopn(p, c);
                 return true;
             }
@@ -967,23 +967,23 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 UserInterfaceHandler.ShipObjectRequest(p.readInt(), c);
                 return true;
             }
-            case DAMAGE_SUMMON: {
+            case CP_SummonedHit: {
                 // 実装が悪い
                 p.skip(4);
                 SummonHandler.DamageSummon(p, c.getPlayer());
                 return true;
             }
-            case MOVE_SUMMON: {
+            case CP_SummonedMove: {
                 // c
                 SummonHandler.MoveSummon(p, c.getPlayer());
                 return true;
             }
-            case SUMMON_ATTACK: {
+            case CP_SummonedAttack: {
                 // c
                 SummonHandler.SummonAttack(p, c, c.getPlayer());
                 return true;
             }
-            case MOVE_DRAGON: {
+            case CP_DragonMove: {
                 // c
                 SummonHandler.MoveDragon(p, c.getPlayer());
                 return true;
@@ -993,12 +993,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PetHandler.SpawnPet(p, c, c.getPlayer());
                 return true;
             }
-            case MOVE_PET: {
+            case CP_PetMove: {
                 // c
                 PetHandler.MovePet(p, c.getPlayer());
                 return true;
             }
-            case PET_CHAT: {
+            case CP_PetAction: {
                 if (p.available() < 12) {
                     return false;
                 }
@@ -1010,7 +1010,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PetHandler.PetChat(p, c.getPlayer());
                 return true;
             }
-            case PET_COMMAND: {
+            case CP_PetInteractionRequest: {
                 // c
                 PetHandler.PetCommand(p, c, c.getPlayer());
                 return true;
@@ -1020,12 +1020,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PetHandler.PetFood(p, c, c.getPlayer());
                 return true;
             }
-            case PET_LOOT: {
+            case CP_PetDropPickUpRequest: {
                 // c
                 InventoryHandler.Pickup_Pet(p, c, c.getPlayer());
                 return true;
             }
-            case PET_AUTO_POT: {
+            case CP_PetStatChangeItemUseRequest: {
                 // c
                 PetHandler.Pet_AutoPotion(p, c, c.getPlayer());
                 return true;

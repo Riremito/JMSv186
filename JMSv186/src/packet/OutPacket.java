@@ -588,7 +588,7 @@ public class OutPacket {
         // ログインサーバー
         Header.CP_BEGIN_SOCKET.Set(0x0000);
         Header.CP_CheckPassword.Set(0x0001);
-        // 0x0002, CP_AccountInfoRequest
+        Header.CP_AccountInfoRequest.Set(0x0002);
         Header.CP_WorldInfoRequest.Set(0x0003);
         Header.CP_SelectWorld.Set(0x0004);
         Header.CP_CheckUserLimit.Set(0x0005);
@@ -598,7 +598,7 @@ public class OutPacket {
         // 0x0009 ???
         // 0x000A @000A, 全キャラクター確認, CP_ViewAllChar
         Header.CP_CreateNewCharacter.Set(0x000B);
-        // 0x000C, CP_CreateNewCharacterInCS
+        Header.CP_CreateNewCharacterInCS.Set(0x000C);
         Header.CP_DeleteCharacter.Set(0x000D);
         // 0x000E InPacket @0x0009から送信されるようになっているが未確認, CP_AliveAck
         Header.CP_ExceptionLog.Set(0x000F);
@@ -628,7 +628,7 @@ public class OutPacket {
         Header.CP_UserMagicAttack.Set(0x0025);
         Header.CP_UserBodyAttack.Set(0x0026);
         Header.CP_UserHit.Set(0x0027);
-        // 0x0028, CP_UserAttackUser
+        Header.CP_UserAttackUser.Set(0x0028);
         Header.CP_UserChat.Set(0x0029);
         Header.CP_UserADBoardClose.Set(0x002A);
         Header.CP_UserEmotion.Set(0x002B);
@@ -642,7 +642,7 @@ public class OutPacket {
         Header.CP_UserShopRequest.Set(0x0035);
         Header.CP_UserTrunkRequest.Set(0x0036);
         Header.CP_UserEntrustedShopRequest.Set(0x0037);
-        // 0x0038, CP_UserStoreBankRequest
+        Header.CP_UserStoreBankRequest.Set(0x0038);
         Header.CP_UserParcelRequest.Set(0x0039); // OK
         Header.CP_UserEffectLocal.Set(0x003A);
         Header.CP_ShopScannerRequest.Set(0x003B);
@@ -653,13 +653,13 @@ public class OutPacket {
         Header.CP_UserChangeSlotPositionRequest.Set(0x0040);
         Header.CP_UserStatChangeItemUseRequest.Set(0x0041);
         Header.CP_UserStatChangeItemCancelRequest.Set(0x0042);
-        // 0x0043, CP_UserStatChangeByPortableChairRequest
+        Header.CP_UserStatChangeByPortableChairRequest.Set(0x0043);
         Header.CP_UserMobSummonItemUseRequest.Set(0x0044);
         Header.CP_UserPetFoodItemUseRequest.Set(0x0045);
         Header.CP_UserTamingMobFoodItemUseRequest.Set(0x0046);
         Header.CP_UserScriptItemUseRequest.Set(0x0047);
         Header.CP_UserConsumeCashItemUseRequest.Set(0x0048);
-        // 0x0049, CP_UserDestroyPetItemRequest
+        Header.CP_UserDestroyPetItemRequest.Set(0x0049);
         Header.CP_UserBridleItemUseRequest.Set(0x004A);
         Header.CP_UserSkillLearnItemUseRequest.Set(0x004B);
         Header.CP_UserShopScannerItemUseRequest.Set(0x004C);
@@ -672,14 +672,14 @@ public class OutPacket {
         Header.CP_UserAbilityUpRequest.Set(0x0053);
         Header.CP_UserAbilityMassUpRequest.Set(0x0054);
         Header.CP_UserChangeStatRequest.Set(0x0055);
-        // 0x0056, CP_UserChangeStatRequestByItemOption
+        Header.CP_UserChangeStatRequestByItemOption.Set(0x0056);
         Header.CP_UserSkillUpRequest.Set(0x0057);
         Header.CP_UserSkillUseRequest.Set(0x0058);
         Header.CP_UserSkillCancelRequest.Set(0x0059);
         Header.CP_UserSkillPrepareRequest.Set(0x005A);
         Header.CP_UserDropMoneyRequest.Set(0x005B);
         Header.CP_UserGivePopularityRequest.Set(0x005C);
-        // 0x005D, CP_UserPartyRequest
+        Header.CP_UserPartyRequest.Set(0x005D);
         Header.CP_UserCharacterInfoRequest.Set(0x005E);
         Header.CP_UserActivatePetRequest.Set(0x005F);
         Header.CP_UserTemporaryStatUpdateRequest.Set(0x0060);
@@ -687,23 +687,23 @@ public class OutPacket {
         Header.CP_UserPortalScriptRequest.Set(0x0062);
         Header.CP_UserPortalTeleportRequest.Set(0x0063);
         Header.CP_UserMapTransferRequest.Set(0x0064);
-        // 0x0065, CP_UserAntiMacroItemUseRequest
-        // 0x0066, CP_UserAntiMacroSkillUseRequest
-        // 0x0067, CP_UserAntiMacroQuestionResult
-        // 0x0068, CP_UserClaimRequest
+        Header.CP_UserAntiMacroItemUseRequest.Set(0x0065);
+        Header.CP_UserAntiMacroSkillUseRequest.Set(0x0066);
+        Header.CP_UserAntiMacroQuestionResult.Set(0x0067);
+        Header.CP_UserClaimRequest.Set(0x0068);
         Header.CP_UserQuestRequest.Set(0x0069);
         Header.CP_UserCalcDamageStatSetRequest.Set(0x006A);
-        // 0x006B, CP_UserThrowGrenade
+        Header.CP_UserThrowGrenade.Set(0x006B);
         Header.CP_UserMacroSysDataModified.Set(0x006C);
-        // 0x006D, CP_UserSelectNpcItemUseRequest
-        // 0x006E, CP_UserLotteryItemUseRequest
+        Header.CP_UserSelectNpcItemUseRequest.Set(0x006D);
+        Header.CP_UserLotteryItemUseRequest.Set(0x006E);
         Header.CP_UserItemMakeRequest.Set(0x006F);
         Header.CP_UserUseGachaponBoxRequest.Set(0x0070);
         // 0x0071, CP_UserUseGachaponRemoteRequest or CP_UserUseWaterOfLife
         Header.CP_UserRepairDurabilityAll.Set(0x0072);
         Header.CP_UserRepairDurability.Set(0x0073);
-        // 0x0074, CP_UserQuestRecordSetState
-        // 0x0075, CP_UserClientTimerEndRequest
+        Header.CP_UserQuestRecordSetState.Set(0x0074);
+        Header.CP_UserClientTimerEndRequest.Set(0x0075);
         Header.SOLOMON.Set(0x0076);
         Header.GACH_EXP.Set(0x0077);
         Header.CP_UserFollowCharacterRequest.Set(0x0078);
@@ -724,10 +724,10 @@ public class OutPacket {
         Header.CP_Log.Set(0x0087);
         Header.CP_FriendRequest.Set(0x0088);
         Header.CP_MemoRequest.Set(0x0089);
-        // 0x008A, CP_MemoFlagRequest
+        Header.CP_MemoFlagRequest.Set(0x008A);
         Header.CP_EnterTownPortalRequest.Set(0x008B);
-        // 0x008C, CP_EnterOpenGateRequest
-        // 0x008D, CP_SlideRequest
+        Header.CP_EnterOpenGateRequest.Set(0x008C);
+        Header.CP_SlideRequest.Set(0x008D);
         Header.CP_FuncKeyMappedModified.Set(0x008E);
         Header.CP_RPSGame.Set(0x008F);
         Header.CP_MarriageRequest.Set(0x0090);
@@ -747,63 +747,71 @@ public class OutPacket {
         Header.CP_FamilySetPrecept.Set(0x009E);
         Header.CP_FamilySummonResult.Set(0x009F);
         Header.CYGNUS_SUMMON.Set(0x00A0);
-        Header.ARAN_COMBO.Set(0x00A1);
+        Header.CP_RequestIncCombo.Set(0x00A1);
         // 0x00A2 InPacket 0x0111から送信される
         // 0x00A3
-        Header.BBS_OPERATION.Set(0x00A4);
+        Header.CP_GuildBBS.Set(0x00A4);
         // 0x00A5
         // 0x00A6
         // 0x00A7
         // 0x00A8
         // 0x00A9
         Header.ENTER_MTS.Set(0x00AA);
-        Header.AVATAR_RANDOM_BOX_OPEN.Set(0x00AB);
+        Header.CP_CashItemGachaponRequest.Set(0x00AB);
         // 0x00AC
-        // 0x00AD
-        Header.MOVE_PET.Set(0x00AE);
-        Header.PET_CHAT.Set(0x00AF);
-        Header.PET_COMMAND.Set(0x00B0);
-        Header.PET_LOOT.Set(0x00B1);
-        Header.PET_AUTO_POT.Set(0x00B2);
-        // 0x00B3
-        // 0x00B4
-        // 0x00B5
-        Header.MOVE_SUMMON.Set(0x00B6);
-        Header.SUMMON_ATTACK.Set(0x00B7);
-        Header.DAMAGE_SUMMON.Set(0x00B8);
-        // 0x00B9
-        // 0x00BA
-        // 0x00BB
-        // 0x00BC
-        Header.MOVE_DRAGON.Set(0x00BD);
-        // 0x00BE
+
+        Header.CP_BEGIN_PET.Set(0x00AD);
+        Header.CP_PetMove.Set(0x00AE);
+        Header.CP_PetAction.Set(0x00AF);
+        Header.CP_PetInteractionRequest.Set(0x00B0);
+        Header.CP_PetDropPickUpRequest.Set(0x00B1);
+        Header.CP_PetStatChangeItemUseRequest.Set(0x00B2);
+        Header.CP_PetUpdateExceptionListRequest.Set(0x00B3);
+        Header.CP_END_PET.Set(0x00B4);
+
+        Header.CP_BEGIN_SUMMONED.Set(0x00B5);
+        Header.CP_SummonedMove.Set(0x00B6);
+        Header.CP_SummonedAttack.Set(0x00B7);
+        Header.CP_SummonedHit.Set(0x00B8);
+        Header.CP_SummonedSkill.Set(0x00B9);
+        Header.CP_Remove.Set(0x00BA);
+        Header.CP_END_SUMMONED.Set(0x00BB);
+
+        Header.CP_BEGIN_DRAGON.Set(0x00BC);
+        Header.CP_DragonMove.Set(0x00BD);
+        Header.CP_END_DRAGON.Set(0x00BE);
+
         // 0x00BF
         // 0x00C0
         // 0x00C1
-        // 0x00C2 InPacket 0x007Cから送信される, ファムの歌を利用する処理 @00C2 [00or01]が送信される01は使用フラグ
-        // 0x00C3
-        // 0x00C4
-        // 0x00C5
-        // 0x00C6
-        Header.MOVE_LIFE.Set(0x00C7);
-        Header.AUTO_AGGRO.Set(0x00C8);
-        // 0x00C9
-        // 0x00CA
-        Header.FRIENDLY_DAMAGE.Set(0x00CB);
-        Header.MONSTER_BOMB.Set(0x00CC);
-        Header.HYPNOTIZE_DMG.Set(0x00CD);
-        // 0x00CE
-        // 0x00CF
-        Header.MOB_NODE.Set(0x00D0);
-        Header.DISPLAY_NODE.Set(0x00D1);
-        // 0x00D2
-        // 0x00D3
-        // 0x00D4
-        Header.NPC_ACTION.Set(0x00D5);
-        // 0x00D6
-        // 0x00D7
-        // 0x00D8
-        // 0x00D9
+        // 0x00C2, CP_UserRepeatEffectRemove, InPacket 0x007Cから送信される, ファムの歌を利用する処理 @00C2 [00or01]が送信される01は使用フラグ
+        Header.CP_END_USER.Set(0x00C3);
+        Header.CP_BEGIN_FIELD.Set(0x00C4);
+        Header.CP_BEGIN_LIFEPOOL.Set(0x00C5);
+
+        Header.CP_BEGIN_MOB.Set(0x00C6);
+        Header.CP_MobMove.Set(0x00C7);
+        Header.CP_MobApplyCtrl.Set(0x00C8);
+        Header.CP_MobDropPickUpRequest.Set(0x00C9);
+        Header.CP_MobHitByObstacle.Set(0x00CA);
+        Header.CP_MobHitByMob.Set(0x00CB);
+        Header.CP_MobSelfDestruct.Set(0x00CC);
+        Header.CP_MobAttackMob.Set(0x00CD);
+        Header.CP_MobSkillDelayEnd.Set(0x00CE);
+        Header.CP_MobTimeBombEnd.Set(0x00CF);
+        Header.CP_MobEscortCollision.Set(0x00D0);
+        Header.CP_MobRequestEscortInfo.Set(0x00D1);
+        Header.CP_MobEscortStopEndRequest.Set(0x00D2);
+        Header.CP_END_MOB.Set(0x00D3);
+
+        Header.CP_BEGIN_NPC.Set(0x00D4);
+        Header.CP_NpcMove.Set(0x00D5);
+        Header.CP_NpcSpecialAction.Set(0x00D6);
+        Header.CP_END_NPC.Set(0x00D7);
+
+        Header.CP_END_LIFEPOOL.Set(0x00D8);
+
+        Header.CP_BEGIN_DROPPOOL.Set(0x00D9);
         Header.ITEM_PICKUP.Set(0x00DA);
         // 0x00DB
         // 0x00DC
