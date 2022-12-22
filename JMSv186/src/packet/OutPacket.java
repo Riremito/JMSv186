@@ -166,14 +166,14 @@ public class OutPacket {
         CP_UserDestroyPetItemRequest,
         CP_UserBridleItemUseRequest,
         CP_UserSkillLearnItemUseRequest,
-        CP_UserSkillResetItemUseRequest,
+        //CP_UserSkillResetItemUseRequest,
         CP_UserShopScannerItemUseRequest,
         CP_UserMapTransferItemUseRequest,
         CP_UserPortalScrollUseRequest,
         CP_UserUpgradeItemUseRequest,
         CP_UserHyperUpgradeItemUseRequest,
         CP_UserItemOptionUpgradeItemUseRequest,
-        CP_UserUIOpenItemUseRequest,
+        //CP_UserUIOpenItemUseRequest,
         CP_UserItemReleaseRequest,
         CP_UserAbilityUpRequest,
         CP_UserAbilityMassUpRequest,
@@ -396,54 +396,12 @@ public class OutPacket {
         UNKNOWN,
         REACHED_LOGIN_SCREEN, // 名称不明
         RSA_KEY, // 名称不明
-        WHEEL_OF_FORTUNE,
-        MONSTER_BOOK_COVER,
-        NPC_TALK,
-        HIRED_MERCHANT_REMOTE,
-        NPC_TALK_MORE,
-        NPC_SHOP,
-        STORAGE,
-        MERCH_ITEM_STORE,
-        DUEY,
-        OWL_OPEN_UI,
-        OWL_WARP,
-        ITEM_SORT,
-        ITEM_GATHER,
-        ITEM_MOVE,
-        USE_ITEM,
-        CANCEL_ITEM_EFFECT,
-        USE_SUMMON_BAG,
-        PET_FOOD,
-        USE_MOUNT_FOOD,
-        USE_SCRIPTED_NPC_ITEM,
-        USE_CASH_ITEM,
-        USE_CATCH_ITEM,
-        USE_SKILL_BOOK,
-        OWL_USE_ITEM_VERSION_SEARCH,
-        USE_TELE_ROCK,
-        USE_RETURN_SCROLL,
-        DISTRIBUTE_AP,
-        AUTO_ASSIGN_AP,
-        HEAL_OVER_TIME,
-        DISTRIBUTE_SP,
-        SPECIAL_MOVE,
-        CANCEL_BUFF,
-        SKILL_EFFECT,
-        MESO_DROP,
-        GIVE_FAME,
-        CHAR_INFO_REQUEST,
-        SPAWN_PET,
+        WHEEL_OF_FORTUNE, // 不明
         CANCEL_DEBUFF,
         CHANGE_MAP_SPECIAL,
         PORTAL_INSIDE_MAP,
         GET_BUFF_REQUEST,
         QUEST_ACTION,
-        //GENERAL_CHAT,
-        USE_UPGRADE_SCROLL,
-        USE_EQUIP_SCROLL,
-        USE_POTENTIAL_SCROLL,
-        USE_MAGNIFY_GLASS,
-        USE_HIRED_MERCHANT,
         TROCK_ADD_MAP,
         SKILL_MACRO,
         ITEM_MAKER,
@@ -581,11 +539,11 @@ public class OutPacket {
         Header.CP_UserChat.Set(0x0027);
         Header.CP_UserMeleeAttack.Set(0x0022);
 
-        Header.NPC_TALK.Set(0x0030);
-        Header.HIRED_MERCHANT_REMOTE.Set(Header.NPC_TALK.Get() + 0x01);
-        Header.NPC_TALK_MORE.Set(Header.NPC_TALK.Get() + 0x02); // 0032
-        Header.NPC_SHOP.Set(Header.NPC_TALK.Get() + 0x03);
-        Header.STORAGE.Set(Header.NPC_TALK.Get() + 0x04);
+        Header.CP_UserSelectNpc.Set(0x0030);
+        Header.CP_UserRemoteShopOpenRequest.Set(Header.CP_UserSelectNpc.Get() + 0x01);
+        Header.CP_UserScriptMessageAnswer.Set(Header.CP_UserSelectNpc.Get() + 0x02); // 0032
+        Header.CP_UserShopRequest.Set(Header.CP_UserSelectNpc.Get() + 0x03);
+        Header.CP_UserTrunkRequest.Set(Header.CP_UserSelectNpc.Get() + 0x04);
         //Header.USE_HIRED_MERCHANT.Set(Header.NPC_TALK.Get() + 0x05);
         // ゲームサーバー その他
         Header.PORTAL_INSIDE_MAP.Set(0x005B);
@@ -593,8 +551,8 @@ public class OutPacket {
         // 簡単に確認が可能
         Header.CP_UserMigrateToCashShopRequest.Set(0x001E);
         Header.CP_UserHit.Set(0x0026);
-        Header.ITEM_MOVE.Set(0x003D);
-        Header.USE_ITEM.Set(0x003E);
+        Header.CP_UserChangeSlotPositionRequest.Set(0x003D);
+        Header.CP_UserStatChangeItemUseRequest.Set(0x003E);
 
         /*
         Header.USE_SUMMON_BAG.Set(0x0044);
@@ -607,17 +565,17 @@ public class OutPacket {
         Header.OWL_USE_ITEM_VERSION_SEARCH.Set(0x004C);
         Header.USE_TELE_ROCK.Set(0x004D);
          */
-        Header.USE_RETURN_SCROLL.Set(0x004B);
-        Header.USE_UPGRADE_SCROLL.Set(Header.USE_RETURN_SCROLL.Get() + 0x01);
+        Header.CP_UserPortalScrollUseRequest.Set(0x004B);
+        Header.CP_UserUpgradeItemUseRequest.Set(Header.CP_UserPortalScrollUseRequest.Get() + 0x01);
 
-        Header.DISTRIBUTE_AP.Set(0x004D);
-        Header.AUTO_ASSIGN_AP.Set(Header.DISTRIBUTE_AP.Get() + 0x01);
+        Header.CP_UserAbilityUpRequest.Set(0x004D);
+        Header.CP_UserAbilityMassUpRequest.Set(Header.CP_UserAbilityUpRequest.Get() + 0x01);
 
-        Header.DISTRIBUTE_SP.Set(0x0050);
-        Header.SPECIAL_MOVE.Set(Header.DISTRIBUTE_SP.Get() + 0x01);
-        Header.CANCEL_BUFF.Set(Header.DISTRIBUTE_SP.Get() + 0x02);
-        Header.SKILL_EFFECT.Set(Header.DISTRIBUTE_SP.Get() + 0x03);
-        Header.MESO_DROP.Set(Header.DISTRIBUTE_SP.Get() + 0x04);
+        Header.CP_UserSkillUpRequest.Set(0x0050);
+        Header.CP_UserSkillUseRequest.Set(Header.CP_UserSkillUpRequest.Get() + 0x01);
+        Header.CP_UserSkillCancelRequest.Set(Header.CP_UserSkillUpRequest.Get() + 0x02);
+        Header.CP_UserSkillPrepareRequest.Set(Header.CP_UserSkillUpRequest.Get() + 0x03);
+        Header.CP_UserDropMoneyRequest.Set(Header.CP_UserSkillUpRequest.Get() + 0x04);
 
         Header.CHANGE_MAP_SPECIAL.Set(0x005A);
         Header.PORTAL_INSIDE_MAP.Set(Header.CHANGE_MAP_SPECIAL.Get() + 0x01);
@@ -719,52 +677,53 @@ public class OutPacket {
         Header.CP_UserActivateEffectItem.Set(0x002C);
         Header.WHEEL_OF_FORTUNE.Set(0x002D);
         // 0x0030
-        Header.MONSTER_BOOK_COVER.Set(0x0031);
-        Header.NPC_TALK.Set(0x0032);
-        Header.HIRED_MERCHANT_REMOTE.Set(0x0033);
-        Header.NPC_TALK_MORE.Set(0x0034);
-        Header.NPC_SHOP.Set(0x0035);
-        Header.STORAGE.Set(0x0036);
-        Header.USE_HIRED_MERCHANT.Set(0x0037);
-        // 0x0038
-        Header.DUEY.Set(0x0039); // OK
-        Header.MERCH_ITEM_STORE.Set(0x003A);
-        Header.OWL_OPEN_UI.Set(0x003B);
-        Header.OWL_WARP.Set(0x003C);
-        // 0x003D InPacket 0x0158, 0x0159から送信される
-        Header.ITEM_SORT.Set(0x003E);
-        Header.ITEM_GATHER.Set(0x003F);
-        Header.ITEM_MOVE.Set(0x0040);
-        Header.USE_ITEM.Set(0x0041);
-        Header.CANCEL_ITEM_EFFECT.Set(0x0042);
-        // 0x0043
-        Header.USE_SUMMON_BAG.Set(0x0044);
-        Header.PET_FOOD.Set(0x0045);
-        Header.USE_MOUNT_FOOD.Set(0x0046);
-        Header.USE_SCRIPTED_NPC_ITEM.Set(0x0047);
-        Header.USE_CASH_ITEM.Set(0x0048);
-        Header.USE_CATCH_ITEM.Set(0x004A);
-        Header.USE_SKILL_BOOK.Set(0x004B);
-        Header.OWL_USE_ITEM_VERSION_SEARCH.Set(0x004C);
-        Header.USE_TELE_ROCK.Set(0x004D);
-        Header.USE_RETURN_SCROLL.Set(0x004E);
-        Header.USE_UPGRADE_SCROLL.Set(0x004F);
-        Header.USE_EQUIP_SCROLL.Set(0x0050);
-        Header.USE_POTENTIAL_SCROLL.Set(0x0051);
-        Header.USE_MAGNIFY_GLASS.Set(0x0052);
-        Header.DISTRIBUTE_AP.Set(0x0053);
-        Header.AUTO_ASSIGN_AP.Set(0x0054);
-        Header.HEAL_OVER_TIME.Set(0x0055);
-        // 0x0056
-        Header.DISTRIBUTE_SP.Set(0x0057);
-        Header.SPECIAL_MOVE.Set(0x0058);
-        Header.CANCEL_BUFF.Set(0x0059);
-        Header.SKILL_EFFECT.Set(0x005A);
-        Header.MESO_DROP.Set(0x005B);
-        Header.GIVE_FAME.Set(0x005C);
-        // 0x005D
-        Header.CHAR_INFO_REQUEST.Set(0x005E);
-        Header.SPAWN_PET.Set(0x005F);
+        Header.CP_UserMonsterBookSetCover.Set(0x0031);
+        Header.CP_UserSelectNpc.Set(0x0032);
+        Header.CP_UserRemoteShopOpenRequest.Set(0x0033);
+        Header.CP_UserScriptMessageAnswer.Set(0x0034);
+        Header.CP_UserShopRequest.Set(0x0035);
+        Header.CP_UserTrunkRequest.Set(0x0036);
+        Header.CP_UserEntrustedShopRequest.Set(0x0037);
+        // 0x0038, CP_UserStoreBankRequest
+        Header.CP_UserParcelRequest.Set(0x0039); // OK
+        Header.CP_UserEffectLocal.Set(0x003A);
+        Header.CP_ShopScannerRequest.Set(0x003B);
+        Header.CP_ShopLinkRequest.Set(0x003C);
+        // 0x003D InPacket 0x0158, 0x0159から送信される,
+        Header.CP_UserSortItemRequest.Set(0x003E);
+        Header.CP_UserGatherItemRequest.Set(0x003F);
+        Header.CP_UserChangeSlotPositionRequest.Set(0x0040);
+        Header.CP_UserStatChangeItemUseRequest.Set(0x0041);
+        Header.CP_UserStatChangeItemCancelRequest.Set(0x0042);
+        // 0x0043, CP_UserStatChangeByPortableChairRequest
+        Header.CP_UserMobSummonItemUseRequest.Set(0x0044);
+        Header.CP_UserPetFoodItemUseRequest.Set(0x0045);
+        Header.CP_UserTamingMobFoodItemUseRequest.Set(0x0046);
+        Header.CP_UserScriptItemUseRequest.Set(0x0047);
+        Header.CP_UserConsumeCashItemUseRequest.Set(0x0048);
+        // 0x0049, CP_UserDestroyPetItemRequest
+        Header.CP_UserBridleItemUseRequest.Set(0x004A);
+        Header.CP_UserSkillLearnItemUseRequest.Set(0x004B);
+        Header.CP_UserShopScannerItemUseRequest.Set(0x004C);
+        Header.CP_UserMapTransferItemUseRequest.Set(0x004D);
+        Header.CP_UserPortalScrollUseRequest.Set(0x004E);
+        Header.CP_UserUpgradeItemUseRequest.Set(0x004F);
+        Header.CP_UserHyperUpgradeItemUseRequest.Set(0x0050);
+        Header.CP_UserItemOptionUpgradeItemUseRequest.Set(0x0051);
+        Header.CP_UserItemReleaseRequest.Set(0x0052);
+        Header.CP_UserAbilityUpRequest.Set(0x0053);
+        Header.CP_UserAbilityMassUpRequest.Set(0x0054);
+        Header.CP_UserChangeStatRequest.Set(0x0055);
+        // 0x0056, CP_UserChangeStatRequestByItemOption
+        Header.CP_UserSkillUpRequest.Set(0x0057);
+        Header.CP_UserSkillUseRequest.Set(0x0058);
+        Header.CP_UserSkillCancelRequest.Set(0x0059);
+        Header.CP_UserSkillPrepareRequest.Set(0x005A);
+        Header.CP_UserDropMoneyRequest.Set(0x005B);
+        Header.CP_UserGivePopularityRequest.Set(0x005C);
+        // 0x005D, CP_UserPartyRequest
+        Header.CP_UserCharacterInfoRequest.Set(0x005E);
+        Header.CP_UserActivatePetRequest.Set(0x005F);
         Header.CANCEL_DEBUFF.Set(0x0060);
         // 0x0061
         Header.CHANGE_MAP_SPECIAL.Set(0x0062);
@@ -994,20 +953,20 @@ public class OutPacket {
         Header.CP_UserEmotion.Set(0x002B + 1);
         Header.CP_UserActivateEffectItem.Set(0x002C + 1);
         Header.WHEEL_OF_FORTUNE.Set(0x002D + 1);
-        Header.MONSTER_BOOK_COVER.Set(0x0031 + 1);
-        Header.NPC_TALK.Set(0x0032 + 1);
-        Header.HIRED_MERCHANT_REMOTE.Set(0x0033 + 1);
-        Header.NPC_TALK_MORE.Set(0x0034 + 1);
-        Header.NPC_SHOP.Set(0x0035 + 1);
-        Header.STORAGE.Set(0x0036 + 1);
-        Header.USE_HIRED_MERCHANT.Set(0x0037 + 1);
-        Header.DUEY.Set(0x0039 + 1);
-        Header.MERCH_ITEM_STORE.Set(0x003A + 1);
-        Header.OWL_OPEN_UI.Set(0x003B + 1);
-        Header.OWL_WARP.Set(0x003C + 1);
-        Header.ITEM_SORT.Set(0x003E + 1);
-        Header.ITEM_GATHER.Set(0x003F + 1);
-        Header.ITEM_MOVE.Set(0x0040 + 1);
+        Header.CP_UserMonsterBookSetCover.Set(0x0031 + 1);
+        Header.CP_UserSelectNpc.Set(0x0032 + 1);
+        Header.CP_UserRemoteShopOpenRequest.Set(0x0033 + 1);
+        Header.CP_UserScriptMessageAnswer.Set(0x0034 + 1);
+        Header.CP_UserShopRequest.Set(0x0035 + 1);
+        Header.CP_UserTrunkRequest.Set(0x0036 + 1);
+        Header.CP_UserEntrustedShopRequest.Set(0x0037 + 1);
+        Header.CP_UserParcelRequest.Set(0x0039 + 1);
+        Header.CP_UserEffectLocal.Set(0x003A + 1);
+        Header.CP_ShopScannerRequest.Set(0x003B + 1);
+        Header.CP_ShopLinkRequest.Set(0x003C + 1);
+        Header.CP_UserSortItemRequest.Set(0x003E + 1);
+        Header.CP_UserGatherItemRequest.Set(0x003F + 1);
+        Header.CP_UserChangeSlotPositionRequest.Set(0x0040 + 1);
         /*
         Header.USE_ITEM.Set(0x0041);
         Header.CANCEL_ITEM_EFFECT.Set(0x0042);
@@ -1033,10 +992,10 @@ public class OutPacket {
         Header.CANCEL_BUFF.Set(0x0059);
         Header.SKILL_EFFECT.Set(0x005A);
          */
-        Header.MESO_DROP.Set(0x005B + 3);
-        Header.GIVE_FAME.Set(0x005C + 3);
-        Header.CHAR_INFO_REQUEST.Set(0x005E + 3);
-        Header.SPAWN_PET.Set(0x005F + 3);
+        Header.CP_UserDropMoneyRequest.Set(0x005B + 3);
+        Header.CP_UserGivePopularityRequest.Set(0x005C + 3);
+        Header.CP_UserCharacterInfoRequest.Set(0x005E + 3);
+        Header.CP_UserActivatePetRequest.Set(0x005F + 3);
         Header.CANCEL_DEBUFF.Set(0x0060 + 3);
         Header.CHANGE_MAP_SPECIAL.Set(0x0062 + 3);
         Header.PORTAL_INSIDE_MAP.Set(0x0063 + 3);

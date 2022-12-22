@@ -136,12 +136,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
     private boolean IsAnnoyingPacket(OutPacket.Header r) {
         switch (r) {
             case NPC_ACTION:
-            case SPECIAL_MOVE:
+            case CP_UserSkillUseRequest:
             case CP_UserShootAttack:
             case CP_UserMagicAttack:
             case CP_UserMeleeAttack:
             case MOVE_LIFE:
-            case HEAL_OVER_TIME:
+            case CP_UserChangeStatRequest:
             case CP_UserMove: {
                 return true;
             }
@@ -429,7 +429,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         OutPacket.Header type = OutPacket.ToHeader(header);
 
         switch (type) {
-            case DUEY: {
+            case CP_UserParcelRequest: {
                 return SendPacket.HomeDelivery.Accept(c, op);
             }
             case VICIOUS_HAMMER: {
@@ -540,7 +540,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.MovePlayer(p, c, c.getPlayer());
                 return true;
             }
-            case CHAR_INFO_REQUEST: {
+            case CP_UserCharacterInfoRequest: {
                 // 実装が悪い
                 p.readInt();
                 PlayerHandler.CharInfoRequest(p.readInt(), c, c.getPlayer());
@@ -561,7 +561,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.MagicDamage(p, c, c.getPlayer());
                 return true;
             }
-            case SPECIAL_MOVE: {
+            case CP_UserSkillUseRequest: {
                 // c
                 PlayerHandler.SpecialMove(p, c, c.getPlayer());
                 return true;
@@ -581,16 +581,16 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.TakeDamage(p, c, c.getPlayer());
                 return true;
             }
-            case HEAL_OVER_TIME: {
+            case CP_UserChangeStatRequest: {
                 PlayerHandler.Heal(p, c.getPlayer());
                 return true;
             }
-            case CANCEL_BUFF: {
+            case CP_UserSkillCancelRequest: {
                 // pc
                 PlayerHandler.CancelBuffHandler(p.readInt(), c.getPlayer());
                 return true;
             }
-            case CANCEL_ITEM_EFFECT: {
+            case CP_UserStatChangeItemCancelRequest: {
                 // pc
                 PlayerHandler.CancelItemEffect(p.readInt(), c.getPlayer());
                 return true;
@@ -611,18 +611,18 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.UseItemEffect(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case SKILL_EFFECT: {
+            case CP_UserSkillPrepareRequest: {
                 // c
                 PlayerHandler.SkillEffect(p, c.getPlayer());
                 return true;
             }
-            case MESO_DROP: {
+            case CP_UserDropMoneyRequest: {
                 // 実装が悪い
                 p.readInt();
                 PlayerHandler.DropMeso(p.readInt(), c.getPlayer());
                 return true;
             }
-            case MONSTER_BOOK_COVER: {
+            case CP_UserMonsterBookSetCover: {
                 // pc
                 PlayerHandler.ChangeMonsterBookCover(p.readInt(), c, c.getPlayer());
                 return true;
@@ -674,7 +674,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.ChangeSkillMacro(p, c.getPlayer());
                 return true;
             }
-            case GIVE_FAME: {
+            case CP_UserGivePopularityRequest: {
                 // c
                 PlayersHandler.GiveFame(p, c, c.getPlayer());
                 return true;
@@ -713,15 +713,15 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 ItemMakerHandler.ItemMaker(p, c);
                 return true;
             }
-            case ITEM_SORT: {
+            case CP_UserSortItemRequest: {
                 InventoryHandler.ItemSort(p, c);
                 return true;
             }
-            case ITEM_GATHER: {
+            case CP_UserGatherItemRequest: {
                 InventoryHandler.ItemGather(p, c);
                 return true;
             }
-            case ITEM_MOVE: {
+            case CP_UserChangeSlotPositionRequest: {
                 InventoryHandler.ItemMove(p, c);
                 return true;
             }
@@ -730,30 +730,30 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InventoryHandler.Pickup_Player(p, c, c.getPlayer());
                 return true;
             }
-            case USE_CASH_ITEM: {
+            case CP_UserConsumeCashItemUseRequest: {
                 InventoryHandler.UseCashItem(p, c, op);
                 return true;
             }
-            case USE_ITEM: {
+            case CP_UserStatChangeItemUseRequest: {
                 // c
                 InventoryHandler.UseItem(p, c, c.getPlayer());
                 return true;
             }
-            case USE_MAGNIFY_GLASS: {
+            case CP_UserItemReleaseRequest: {
                 InventoryHandler.UseMagnify(p, c);
                 return true;
             }
-            case USE_SCRIPTED_NPC_ITEM: {
+            case CP_UserScriptItemUseRequest: {
                 // c
                 InventoryHandler.UseScriptedNPCItem(p, c, c.getPlayer());
                 return true;
             }
-            case USE_RETURN_SCROLL: {
+            case CP_UserPortalScrollUseRequest: {
                 // c
                 InventoryHandler.UseReturnScroll(p, c, c.getPlayer());
                 return true;
             }
-            case USE_UPGRADE_SCROLL: {
+            case CP_UserUpgradeItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
                 if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) p.readShort(), c, c.getPlayer())) {
@@ -761,7 +761,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case USE_POTENTIAL_SCROLL: {
+            case CP_UserItemOptionUpgradeItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
                 if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) 0, c, c.getPlayer())) {
@@ -769,7 +769,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case USE_EQUIP_SCROLL: {
+            case CP_UserHyperUpgradeItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
                 if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) 0, c, c.getPlayer())) {
@@ -777,7 +777,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case USE_SUMMON_BAG: {
+            case CP_UserMobSummonItemUseRequest: {
                 // c
                 InventoryHandler.UseSummonBag(p, c, c.getPlayer());
                 return true;
@@ -787,7 +787,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InventoryHandler.UseTreasureChest(p, c, c.getPlayer());
                 return true;
             }
-            case USE_SKILL_BOOK: {
+            case CP_UserSkillLearnItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
                 if (InventoryHandler.UseSkillBook((byte) p.readShort(), p.readInt(), c, c.getPlayer())) {
@@ -795,12 +795,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case USE_CATCH_ITEM: {
+            case CP_UserBridleItemUseRequest: {
                 // c
                 InventoryHandler.UseCatchItem(p, c, c.getPlayer());
                 return true;
             }
-            case USE_MOUNT_FOOD: {
+            case CP_UserTamingMobFoodItemUseRequest: {
                 // c
                 InventoryHandler.UseMountFood(p, c, c.getPlayer());
                 return true;
@@ -845,24 +845,24 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 MobHandler.MonsterBomb(p.readInt(), c.getPlayer());
                 return true;
             }
-            case NPC_SHOP: {
+            case CP_UserShopRequest: {
                 // c
                 NPCHandler.NPCShop(p, c, c.getPlayer());
                 return true;
             }
-            case NPC_TALK: {
+            case CP_UserSelectNpc: {
                 // c
                 NPCHandler.NPCTalk(p, c, c.getPlayer());
                 return true;
             }
             // 雇用商店遠隔管理機
-            case HIRED_MERCHANT_REMOTE: {
+            case CP_UserRemoteShopOpenRequest: {
                 // @0033 [02 00]
                 // アイテムのスロット指定されているだけ
                 PlayerInteractionHandler.RemoteStore(p, c);
                 return true;
             }
-            case NPC_TALK_MORE: {
+            case CP_UserScriptMessageAnswer: {
                 NPCHandler.NPCMoreTalk(p, c);
                 return true;
             }
@@ -875,7 +875,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 NPCHandler.QuestAction(p, c, c.getPlayer());
                 return true;
             }
-            case STORAGE: {
+            case CP_UserTrunkRequest: {
                 // c
                 NPCHandler.Storage(p, c, c.getPlayer());
                 return true;
@@ -902,17 +902,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 ChatHandler.Messenger(p, c);
                 return true;
             }
-            case AUTO_ASSIGN_AP: {
+            case CP_UserAbilityMassUpRequest: {
                 // c
                 StatsHandling.AutoAssignAP(p, c, c.getPlayer());
                 return true;
             }
-            case DISTRIBUTE_AP: {
+            case CP_UserAbilityUpRequest: {
                 // c
                 StatsHandling.DistributeAP(p, c, c.getPlayer());
                 return true;
             }
-            case DISTRIBUTE_SP: {
+            case CP_UserSkillUpRequest: {
                 // 実装が悪い
                 p.readInt();
                 StatsHandling.DistributeSP(p.readInt(), c, c.getPlayer());
@@ -988,7 +988,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 SummonHandler.MoveDragon(p, c.getPlayer());
                 return true;
             }
-            case SPAWN_PET: {
+            case CP_UserActivatePetRequest: {
                 // c
                 PetHandler.SpawnPet(p, c, c.getPlayer());
                 return true;
@@ -1015,7 +1015,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PetHandler.PetCommand(p, c, c.getPlayer());
                 return true;
             }
-            case PET_FOOD: {
+            case CP_UserPetFoodItemUseRequest: {
                 // c
                 PetHandler.PetFood(p, c, c.getPlayer());
                 return true;
@@ -1034,11 +1034,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 MonsterCarnivalHandler.MonsterCarnival(p, c);
                 return true;
             }
-            case USE_HIRED_MERCHANT: {
+            case CP_UserEntrustedShopRequest: {
                 HiredMerchantHandler.UseHiredMerchant(p, c);
                 return true;
             }
-            case MERCH_ITEM_STORE: {
+            case CP_UserEffectLocal: {
                 HiredMerchantHandler.MerchantItemStore(p, c);
                 return true;
             }
@@ -1072,17 +1072,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
              */
-            case OWL_OPEN_UI: {
+            case CP_ShopScannerRequest: {
                 // @003B 05
                 // クライアントが不思議なフクロウのUIを開くときにパケットが送信されているが、UIはクライアント側で開くのでサーバーからは何も出来ない
                 return true;
             }
-            case OWL_WARP: {
+            case CP_ShopLinkRequest: {
                 // @003C B3 86 01 00 87 7F 3D 36
                 InventoryHandler.OwlWarp(p, c);
                 return true;
             }
-            case OWL_USE_ITEM_VERSION_SEARCH: {
+            case CP_UserShopScannerItemUseRequest: {
                 // @004C 0A 00 70 3F 23 00 85 84 1E 00 00 8C 4E 34 1A
                 // 消費アイテム版の不思議なフクロウが存在し、専用のパケットが送信される
                 InventoryHandler.OwlMinerva(p, c);
