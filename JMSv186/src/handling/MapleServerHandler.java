@@ -257,7 +257,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
         switch (type) {
             // ログイン画面
-            case RSA_KEY: {
+            case CP_CreateSecurityHandle: {
                 // +p
                 c.getSession().write(LoginPacket.LoginAUTH(p, c));
                 return true;
@@ -348,12 +348,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 CashShopOperation.LeaveCS(p, c, c.getPlayer());
                 return true;
             }
-            case BUY_CS_ITEM: {
+            case CP_CashShopCashItemRequest: {
                 // c
                 CashShopOperation.BuyCashItem(p, c, c.getPlayer());
                 return true;
             }
-            case COUPON_CODE: {
+            case CP_CashShopCheckCouponRequest: {
                 // 実装が悪い
                 // 受け取りキャラクター指定した際にエラーしてる
                 //FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "Coupon : \n" + p.toString(true));
@@ -362,14 +362,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 CashShopOperation.CouponCode(p.readMapleAsciiString(), c);
                 return true;
             }
-            case CS_FILL: {
+            case CP_CashShopChargeParamRequest: {
                 // p
                 // 充填ボタンをクリックした場合の処理
                 // 公式サイトが開くような処理だったと思うが、特に何もしない
                 CashShopOperation.CSUpdate(c);
                 return true;
             }
-            case CS_UPDATE: {
+            case CP_CashShopQueryCashRequest: {
                 // p
                 CashShopOperation.CSUpdate(c);
                 return true;
@@ -380,7 +380,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // アバターランダムボックスのオープン処理
-            case CP_CashItemGachaponRequest: {
+            case CP_CashGachaponOpenRequest: {
                 // @00AB [B0 58] 00 00 00 00 00 00
                 // アイテムスロットが指定されている
                 return true;
@@ -432,7 +432,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserParcelRequest: {
                 return SendPacket.HomeDelivery.Accept(c, op);
             }
-            case VICIOUS_HAMMER: {
+            case CP_GoldHammerRequest: {
                 return SendPacket.ViciousHammer.Accept(c, op);
             }
             // サーバーメッセージ
@@ -451,7 +451,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // 雪玉専用？
-            case GM_COMMAND_EVENT_START: {
+            case CP_EventStart: {
                 Debug.DebugPacket(op);
                 return true;
             }
@@ -461,17 +461,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // 未実装的な奴
-            case PARTY_SEARCH_START: {
+            case CP_INVITE_PARTY_MATCH: {
                 // @00EE Data: 91 00 00 00 A5 00 00 00 05 00 00 00 FF FF EF 0F
                 Debug.DebugPacket(op);
                 return true;
             }
-            case PARTY_SEARCH_STOP: {
+            case CP_CANCEL_INVITE_PARTY_MATCH: {
                 // @00EF
                 Debug.DebugPacket(op);
                 return true;
             }
-            case ETC_ITEM_UI: {
+            case CP_RaiseUIState: {
                 // @0105 EC 1D 00 00 01
                 // @0105 EC 1D 00 00 00
                 // 布製の人形などETCアイテムからUIを開くタイプの処理
@@ -479,13 +479,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 Debug.DebugPacket(op);
                 return true;
             }
-            case ETC_ITEM_UI_UPDATE: {
+            case CP_RaiseRefesh: {
                 // @0104 EC 1D
                 // ETCアイテムのUIの更新処理だと思われる
                 Debug.DebugPacket(op);
                 return true;
             }
-            case ETC_ITEM_UI_DROP_ITEM: {
+            case CP_RaiseIncExp: {
                 // @0106 60 00 5E 85 3D 00 0D C4 00 00 64 00 00 00
                 // ETCアイテムのUIにアイテムをドロップした際の処理
                 Debug.DebugPacket(op);
@@ -530,7 +530,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InterServerHandler.EnterCS(c, c.getPlayer(), false);
                 return true;
             }
-            case ENTER_MTS: {
+            case CP_UserMigrateToITCRequest: {
                 // pc
                 InterServerHandler.EnterCS(c, c.getPlayer(), true);
                 return true;
@@ -696,11 +696,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayersHandler.UseDoor(p, c.getPlayer());
                 return true;
             }
-            case DAMAGE_REACTOR: {
+            case CP_ReactorHit: {
                 PlayersHandler.HitReactor(p, c);
                 return true;
             }
-            case TOUCH_REACTOR: {
+            case CP_ReactorTouch: {
                 PlayersHandler.TouchReactor(p, c);
                 return true;
             }
@@ -725,7 +725,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InventoryHandler.ItemMove(p, c);
                 return true;
             }
-            case ITEM_PICKUP: {
+            case CP_DropPickUpRequest: {
                 // c
                 InventoryHandler.Pickup_Player(p, c, c.getPlayer());
                 return true;
@@ -1030,7 +1030,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PetHandler.Pet_AutoPotion(p, c, c.getPlayer());
                 return true;
             }
-            case MONSTER_CARNIVAL: {
+            case CP_MCarnivalRequest: {
                 MonsterCarnivalHandler.MonsterCarnival(p, c);
                 return true;
             }
@@ -1049,11 +1049,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.leftKnockBack(p, c);
                 return true;
             }
-            case SNOWBALL: {
+            case CP_SnowBallTouch: {
                 PlayerHandler.snowBall(p, c);
                 return true;
             }
-            case COCONUT: {
+            case CP_CoconutHit: {
                 PlayersHandler.hitCoconut(p, c);
                 return true;
             }
