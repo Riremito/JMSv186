@@ -40,7 +40,7 @@ public class UIPacket {
     public static MaplePacket getSPMsg(byte sp, short job) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(4);
         mplew.writeShort(job);
         mplew.write(sp);
@@ -52,7 +52,7 @@ public class UIPacket {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         // Temporary transformed as a dragon, even with the skill ......
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(7);
         mplew.writeInt(itemid);
 
@@ -72,7 +72,7 @@ public class UIPacket {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         // Temporary transformed as a dragon, even with the skill ......
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(8);
         mplew.writeInt(itemid);
 
@@ -94,7 +94,7 @@ public class UIPacket {
     public static final MaplePacket AranTutInstructionalBalloon(final String data) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_ITEM_GAIN_INCHAT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(0x18);
         mplew.writeMapleAsciiString(data);
         mplew.writeInt(1);
@@ -105,7 +105,7 @@ public class UIPacket {
     public static final MaplePacket ShowWZEffect(final String data) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_ITEM_GAIN_INCHAT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(0x13);
         mplew.writeMapleAsciiString(data);
 

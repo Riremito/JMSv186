@@ -50,7 +50,7 @@ public class MTSCSPacket {
     public static MaplePacket warpCS(MapleClient c) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.CS_OPEN.Get());
+        mplew.writeShort(InPacket.Header.LP_SetCashShop.Get());
 
         PacketHelper.addCharacterInfo(mplew, c.getPlayer());
 
@@ -95,7 +95,7 @@ public class MTSCSPacket {
     public static MaplePacket useCharm(byte charmsleft, byte daysleft) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_ITEM_GAIN_INCHAT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(6);
         mplew.write(1);
         mplew.write(charmsleft);
@@ -107,7 +107,7 @@ public class MTSCSPacket {
     public static MaplePacket useWheel(byte charmsleft) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_ITEM_GAIN_INCHAT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(21);
         mplew.writeLong(charmsleft);
 
@@ -121,7 +121,7 @@ public class MTSCSPacket {
         // 21 00 08 02
         // 50 62 25 00
         // 50 62 25 00
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(2);
         mplew.writeInt(itemid);
 
@@ -130,7 +130,7 @@ public class MTSCSPacket {
 
     public static MaplePacket changePetName(MapleCharacter chr, String newname, int slot) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.PET_NAMECHANGE.Get());
+        mplew.writeShort(InPacket.Header.LP_PetNameChanged.Get());
 
         mplew.writeInt(chr.getId());
         mplew.write(0);
@@ -143,7 +143,7 @@ public class MTSCSPacket {
     public static MaplePacket showNotes(ResultSet notes, int count) throws SQLException {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_NOTES.Get());
+        mplew.writeShort(InPacket.Header.LP_MemoResult.Get());
         mplew.write(3);
         mplew.write(count);
         for (int i = 0; i < count; i++) {
@@ -160,7 +160,7 @@ public class MTSCSPacket {
 
     public static MaplePacket useChalkboard(final int charid, final String msg) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.CHALKBOARD.Get());
+        mplew.writeShort(InPacket.Header.LP_UserADBoard.Get());
 
         mplew.writeInt(charid);
         if (msg == null || msg.length() <= 0) {
@@ -176,7 +176,7 @@ public class MTSCSPacket {
     public static MaplePacket getTrockRefresh(MapleCharacter chr, boolean vip, boolean delete) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.TROCK_LOCATIONS.Get());
+        mplew.writeShort(InPacket.Header.LP_MapTransferResult.Get());
         mplew.write(delete ? 2 : 3);
         mplew.write(vip ? 1 : 0);
         if (vip) {
@@ -526,20 +526,20 @@ public class MTSCSPacket {
 
     public static MaplePacket sendMesobagFailed() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.MESOBAG_FAILURE.Get());
+        mplew.writeShort(InPacket.Header.LP_MesoGive_Failed.Get());
         return mplew.getPacket();
     }
 
     public static MaplePacket sendMesobagSuccess(int mesos) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.MESOBAG_SUCCESS.Get());
+        mplew.writeShort(InPacket.Header.LP_MesoGive_Succeeded.Get());
         mplew.writeInt(mesos);
         return mplew.getPacket();
     }
 
     public static MaplePacket RandomMesoBagSuccess(byte type, int mesos) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.RANDOM_MESOBAG_SUCCESS.Get());
+        mplew.writeShort(InPacket.Header.LP_Random_Mesobag_Succeed.Get());
         mplew.write(type);
         mplew.writeInt(mesos);
         return mplew.getPacket();
@@ -547,14 +547,14 @@ public class MTSCSPacket {
 
     public static MaplePacket RandomMesoBagFailed() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.RANDOM_MESOBAG_FAILURE.Get());
+        mplew.writeShort(InPacket.Header.LP_Random_Mesobag_Failed.Get());
         return mplew.getPacket();
     }
 
 //======================================MTS===========================================
     public static final MaplePacket startMTS(final MapleCharacter chr) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.MTS_OPEN.Get());
+        mplew.writeShort(InPacket.Header.LP_SetITC.Get());
 
         PacketHelper.addCharacterInfo(mplew, chr);
         mplew.writeMapleAsciiString(chr.getClient().getAccountName());

@@ -45,7 +45,7 @@ public class MonsterBookPacket {
     public static MaplePacket showGainCard(final int itemid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(0);
         mplew.write(2);
         mplew.writeInt(itemid);
@@ -56,7 +56,7 @@ public class MonsterBookPacket {
     public static MaplePacket showForeginCardEffect(int id) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_FOREIGN_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectRemote.Get());
         mplew.writeInt(id);
         mplew.write(0x0E); //14
 

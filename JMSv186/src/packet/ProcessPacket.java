@@ -394,7 +394,7 @@ public class ProcessPacket {
 
         // 0x0083 @0083, 画面の位置をキャラクターを中心とした場所に変更, 背景リロードしてるかも?
         public static MaplePacket ReloadMap() {
-            InPacket p = new InPacket(InPacket.Header.UNKNOWN_RELOAD_MAP);
+            InPacket p = new InPacket(InPacket.Header.LP_ClearBackgroundEffect);
             return p.Get();
         }
     }

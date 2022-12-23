@@ -61,7 +61,13 @@ public class PlayerShopPacket {
     public static final MaplePacket sendTitleBox() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SEND_TITLE_BOX.Get());
+        mplew.writeShort(InPacket.Header.LP_EntrustedShopCheckResult.Get());
+        /*
+            0x07    店を開く
+            0x09    プレドリックから～
+            0x0A    他のキャラクターがアイテムを使用中
+            0x0B    今は開店できません
+         */
         mplew.write(7);
 
         return mplew.getPacket();

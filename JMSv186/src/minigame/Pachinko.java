@@ -35,7 +35,7 @@ public class Pachinko {
 
     // チャット欄にパチンコ玉獲得のメッセージを表示
     public static final MaplePacket GainTamaMessage(int gain) {
-        InPacket p = new InPacket(InPacket.Header.SHOW_STATUS_INFO);
+        InPacket p = new InPacket(InPacket.Header.LP_Message);
         // パチンコ玉のフラグ
         p.Encode1((byte) 15);
         // パチンコ玉の数

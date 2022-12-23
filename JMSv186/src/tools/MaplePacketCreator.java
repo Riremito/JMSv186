@@ -123,7 +123,7 @@ public class MaplePacketCreator {
 
     // プレイヤー情報の初期化
     public static final MaplePacket getCharInfo(final MapleCharacter chr) {
-        InPacket p = new InPacket(InPacket.Header.WARP_TO_MAP);
+        InPacket p = new InPacket(InPacket.Header.LP_SetField);
         if (Start.getMainVersion() > 164) {
             p.Encode2(0);
         }
@@ -389,7 +389,7 @@ public class MaplePacketCreator {
 
     // マップ移動
     public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
-        InPacket p = new InPacket(InPacket.Header.WARP_TO_MAP);
+        InPacket p = new InPacket(InPacket.Header.LP_SetField);
         if (Start.getMainVersion() > 164) {
             p.Encode2(0);
         }
@@ -812,7 +812,7 @@ public class MaplePacketCreator {
     public static final MaplePacket instantMapWarp(final byte portal) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.CURRENT_MAP_WARP.Get());
+        mplew.writeShort(InPacket.Header.LP_UserTeleport.Get());
         mplew.write(0);
         mplew.write(portal); // 6
 
@@ -921,7 +921,7 @@ public class MaplePacketCreator {
     public static MaplePacket serverBlocked(int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SERVER_BLOCKED.Get());
+        mplew.writeShort(InPacket.Header.LP_TransferChannelReqIgnored.Get());
         mplew.write(type);
 
         return mplew.getPacket();
@@ -1169,7 +1169,7 @@ public class MaplePacketCreator {
     public static MaplePacket getChatText(int cidfrom, String text, boolean whiteBG, int show) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.CHATTEXT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserChat.Get());
         mplew.writeInt(cidfrom);
         mplew.write(whiteBG ? 1 : 0);
         mplew.writeMapleAsciiString(text);
@@ -1204,7 +1204,7 @@ public class MaplePacketCreator {
     public static final MaplePacket GainEXP_Monster(final int gain, final boolean white, final int partyinc, final int Class_Bonus_EXP, final int Equipment_Bonus_EXP, final int Premium_Bonus_EXP) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(3); // 3 = exp, 4 = fame, 5 = mesos, 6 = guildpoints
         mplew.write(white ? 1 : 0);
         mplew.writeInt(gain);
@@ -1227,7 +1227,7 @@ public class MaplePacketCreator {
     public static final MaplePacket GainEXP_Others(final int gain, final boolean inChat, final boolean white) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(3); // 3 = exp, 4 = fame, 5 = mesos, 6 = guildpoints
         mplew.write(white ? 1 : 0);
         mplew.writeInt(gain);
@@ -1255,7 +1255,7 @@ public class MaplePacketCreator {
     public static final MaplePacket getShowFameGain(final int gain) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(5);
         mplew.writeInt(gain);
 
@@ -1265,7 +1265,7 @@ public class MaplePacketCreator {
     public static final MaplePacket showMesoGain(final int gain, final boolean inChat) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         if (!inChat) {
             mplew.write(0);
             mplew.write(1);
@@ -1288,7 +1288,7 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         if (inChat) {
-            mplew.writeShort(InPacket.Header.SHOW_ITEM_GAIN_INCHAT.Get());
+            mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
             mplew.write(3);
             mplew.write(1); // item count
             mplew.writeInt(itemId);
@@ -1298,7 +1298,7 @@ public class MaplePacketCreator {
             mplew.writeInt(quantity);
             }*/
         } else {
-            mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+            mplew.writeShort(InPacket.Header.LP_Message.Get());
             mplew.writeShort(0);
             mplew.writeInt(itemId);
             mplew.writeInt(quantity);
@@ -1309,7 +1309,7 @@ public class MaplePacketCreator {
     public static MaplePacket showRewardItemAnimation(int itemId, String effect) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_ITEM_GAIN_INCHAT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(0x0F);
         mplew.writeInt(itemId);
         mplew.write(effect != null && effect.length() > 0 ? 1 : 0);
@@ -1323,7 +1323,7 @@ public class MaplePacketCreator {
     public static MaplePacket showRewardItemAnimation(int itemId, String effect, int from_playerid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_FOREIGN_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectRemote.Get());
         mplew.writeInt(from_playerid);
         mplew.write(0x0F);
         mplew.writeInt(itemId);
@@ -1363,7 +1363,7 @@ public class MaplePacketCreator {
     public static MaplePacket spawnPlayerMapobject(MapleCharacter chr) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SPAWN_PLAYER.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEnterField.Get());
         mplew.writeInt(chr.getId());
         // 自分のキャラクターの場合はここで終了
 
@@ -1542,7 +1542,7 @@ public class MaplePacketCreator {
     public static MaplePacket removePlayerFromMap(int cid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.REMOVE_PLAYER_FROM_MAP.Get());
+        mplew.writeShort(InPacket.Header.LP_UserLeaveField.Get());
         mplew.writeInt(cid);
 
         return mplew.getPacket();
@@ -1551,7 +1551,7 @@ public class MaplePacketCreator {
     public static MaplePacket facialExpression(MapleCharacter from, int expression) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.FACIAL_EXPRESSION.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEmotion.Get());
         mplew.writeInt(from.getId());
         mplew.writeInt(expression);
         mplew.writeInt(-1); //itemid of expression use
@@ -1563,7 +1563,7 @@ public class MaplePacketCreator {
     public static MaplePacket movePlayer(int cid, List<LifeMovementFragment> moves, Point startPos) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.MOVE_PLAYER.Get());
+        mplew.writeShort(InPacket.Header.LP_UserMove.Get());
         mplew.writeInt(cid);
         mplew.writePos(startPos);
         mplew.writeInt(0);
@@ -1606,7 +1606,7 @@ public class MaplePacketCreator {
     public static MaplePacket closeRangeAttack(int cid, int tbyte, int skill, int level, byte display, byte animation, byte speed, List<AttackPair> damage, final boolean energy, int lvl, byte mastery, byte unk, int charge) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(energy ? InPacket.Header.ENERGY_ATTACK.Get() : InPacket.Header.CLOSE_RANGE_ATTACK.Get());
+        mplew.writeShort(energy ? InPacket.Header.LP_UserBodyAttack.Get() : InPacket.Header.LP_UserMeleeAttack.Get());
         mplew.writeInt(cid);
         mplew.write(tbyte);
         mplew.write(lvl); //?
@@ -1656,7 +1656,7 @@ public class MaplePacketCreator {
     public static MaplePacket rangedAttack(int cid, byte tbyte, int skill, int level, byte display, byte animation, byte speed, int itemid, List<AttackPair> damage, final Point pos, int lvl, byte mastery, byte unk) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.RANGED_ATTACK.Get());
+        mplew.writeShort(InPacket.Header.LP_UserShootAttack.Get());
         mplew.writeInt(cid);
         mplew.write(tbyte);
         mplew.write(lvl); //?
@@ -1691,7 +1691,7 @@ public class MaplePacketCreator {
     public static MaplePacket magicAttack(int cid, int tbyte, int skill, int level, byte display, byte animation, byte speed, List<AttackPair> damage, int charge, int lvl, byte unk) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.MAGIC_ATTACK.Get());
+        mplew.writeShort(InPacket.Header.LP_UserMagicAttack.Get());
         mplew.writeInt(cid);
         mplew.write(tbyte);
         mplew.write(lvl); //?
@@ -1944,7 +1944,7 @@ public class MaplePacketCreator {
     public static MaplePacket getScrollEffect(int chr, ScrollResult scrollSuccess, boolean legendarySpirit) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_SCROLL_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserItemUpgradeEffect.Get());
         mplew.writeInt(chr);
 
         switch (scrollSuccess) {
@@ -1973,7 +1973,7 @@ public class MaplePacketCreator {
     public static MaplePacket getPotentialEffect(final int chr, final int itemid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_POTENTIAL_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserItemUnreleaseEffect.Get());
         mplew.writeInt(chr);
         mplew.writeInt(itemid);
         return mplew.getPacket();
@@ -1983,7 +1983,7 @@ public class MaplePacketCreator {
     public static MaplePacket getPotentialReset(final int chr, final short pos) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_POTENTIAL_RESET.Get());
+        mplew.writeShort(InPacket.Header.LP_UserItemReleaseEffect.Get());
         mplew.writeInt(chr);
         mplew.writeShort(pos);
         return mplew.getPacket();
@@ -1991,7 +1991,7 @@ public class MaplePacketCreator {
 
     public static final MaplePacket ItemMakerResult(boolean is_success) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.SHOW_ITEM_GAIN_INCHAT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(0x11);
         mplew.writeInt(is_success ? 0 : 1);
         return mplew.getPacket();
@@ -1999,7 +1999,7 @@ public class MaplePacketCreator {
 
     public static final MaplePacket ItemMakerResultTo(MapleCharacter chr, boolean is_success) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.SHOW_FOREIGN_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectRemote.Get());
         mplew.writeInt(chr.getId());
         mplew.write(0x11);
         mplew.writeInt(is_success ? 0 : 1);
@@ -2039,7 +2039,7 @@ public class MaplePacketCreator {
     public static MaplePacket updateCharLook(MapleCharacter chr) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.UPDATE_CHAR_LOOK.Get());
+        mplew.writeShort(InPacket.Header.LP_UserAvatarModified.Get());
         mplew.writeInt(chr.getId());
         mplew.write(1);
         PacketHelper.addCharLook(mplew, chr, false);
@@ -2088,7 +2088,7 @@ public class MaplePacketCreator {
     public static MaplePacket damagePlayer(int skill, int monsteridfrom, int cid, int damage, int fake, byte direction, int reflect, boolean is_pg, int oid, int pos_x, int pos_y) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.DAMAGE_PLAYER.Get());
+        mplew.writeShort(InPacket.Header.LP_UserHit.Get());
         mplew.writeInt(cid);
         mplew.write(skill);
         mplew.writeInt(damage);
@@ -2116,7 +2116,7 @@ public class MaplePacketCreator {
     public static final MaplePacket updateQuest(final MapleQuestStatus quest) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(1);
         mplew.writeShort(quest.getQuest().getId());
         mplew.write(quest.getStatus());
@@ -2138,7 +2138,7 @@ public class MaplePacketCreator {
     public static final MaplePacket updateInfoQuest(final int quest, final String data) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(0x0B);
         mplew.writeShort(quest);
         mplew.writeMapleAsciiString(data);
@@ -2346,7 +2346,7 @@ public class MaplePacketCreator {
         final boolean infusion = skillid == 5121009 || skillid == 15111005;
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.GIVE_FOREIGN_BUFF.Get());
+        mplew.writeShort(InPacket.Header.LP_UserTemporaryStatSet.Get());
         mplew.writeInt(cid);
         writeLongMask(mplew, statups);
         mplew.writeShort(0);
@@ -2396,7 +2396,7 @@ public class MaplePacketCreator {
     public static MaplePacket giveEnergyChargeTest(int cid, int bar, int bufflength) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.GIVE_FOREIGN_BUFF.Get());
+        mplew.writeShort(InPacket.Header.LP_UserTemporaryStatSet.Get());
         mplew.writeInt(cid);
         mplew.writeLong(MapleBuffStat.ENERGY_CHARGE.getValue());
         mplew.writeLong(0);
@@ -2460,7 +2460,7 @@ public class MaplePacketCreator {
     public static MaplePacket giveForeignDebuff(int cid, final List<Pair<MapleDisease, Integer>> statups, int skillid, int level) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.GIVE_FOREIGN_BUFF.Get());
+        mplew.writeShort(InPacket.Header.LP_UserTemporaryStatSet.Get());
         mplew.writeInt(cid);
 
         writeLongDiseaseMask(mplew, statups);
@@ -2479,7 +2479,7 @@ public class MaplePacketCreator {
     public static MaplePacket cancelForeignDebuff(int cid, long mask, boolean first) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.CANCEL_FOREIGN_BUFF.Get());
+        mplew.writeShort(InPacket.Header.LP_UserTemporaryStatReset.Get());
         mplew.writeInt(cid);
         mplew.writeLong(first ? mask : 0);
         mplew.writeLong(first ? 0 : mask);
@@ -2490,7 +2490,7 @@ public class MaplePacketCreator {
     public static MaplePacket showMonsterRiding(int cid, List<Pair<MapleBuffStat, Integer>> statups, int itemId, int skillId) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.GIVE_FOREIGN_BUFF.Get());
+        mplew.writeShort(InPacket.Header.LP_UserTemporaryStatSet.Get());
         mplew.writeInt(cid);
 
         writeLongMask(mplew, statups);
@@ -2509,7 +2509,7 @@ public class MaplePacketCreator {
     public static MaplePacket giveForeignBuff(int cid, List<Pair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.GIVE_FOREIGN_BUFF.Get());
+        mplew.writeShort(InPacket.Header.LP_UserTemporaryStatSet.Get());
         mplew.writeInt(cid);
 
         writeLongMask(mplew, statups);
@@ -2529,7 +2529,7 @@ public class MaplePacketCreator {
     public static MaplePacket cancelForeignBuff(int cid, List<MapleBuffStat> statups) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.CANCEL_FOREIGN_BUFF.Get());
+        mplew.writeShort(InPacket.Header.LP_UserTemporaryStatReset.Get());
         mplew.writeInt(cid);
 
         writeLongMaskFromList(mplew, statups);
@@ -2580,7 +2580,7 @@ public class MaplePacketCreator {
     public static MaplePacket updateMount(MapleCharacter chr, boolean levelup) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.UPDATE_MOUNT.Get());
+        mplew.writeShort(InPacket.Header.LP_SetTamingMobInfo.Get());
         mplew.writeInt(chr.getId());
         mplew.writeInt(chr.getMount().getLevel());
         mplew.writeInt(chr.getMount().getExp());
@@ -2593,7 +2593,7 @@ public class MaplePacketCreator {
     public static MaplePacket mountInfo(MapleCharacter chr) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.UPDATE_MOUNT.Get());
+        mplew.writeShort(InPacket.Header.LP_SetTamingMobInfo.Get());
         mplew.writeInt(chr.getId());
         mplew.write(1);
         mplew.writeInt(chr.getMount().getLevel());
@@ -2814,7 +2814,7 @@ public class MaplePacketCreator {
     public static MaplePacket showForeignEffect(int cid, int effect) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_FOREIGN_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectRemote.Get());
         mplew.writeInt(cid);
         mplew.write(effect); // 0 = Level up, 8 = job change
 
@@ -2828,7 +2828,7 @@ public class MaplePacketCreator {
     public static MaplePacket showBuffeffect(int cid, int skillid, int effectid, byte direction) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_FOREIGN_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectRemote.Get());
         mplew.writeInt(cid);
         mplew.write(effectid); //ehh?
         mplew.writeInt(skillid);
@@ -2847,7 +2847,7 @@ public class MaplePacketCreator {
     public static MaplePacket showOwnBuffEffect(int skillid, int effectid, byte direction) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_ITEM_GAIN_INCHAT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(effectid);
         mplew.writeInt(skillid);
         mplew.write(1); //skill level = 1 for the lulz
@@ -2870,7 +2870,7 @@ public class MaplePacketCreator {
     public static MaplePacket showSpecialEffect(int effect) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_ITEM_GAIN_INCHAT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(effect);
 
         return mplew.getPacket();
@@ -2879,7 +2879,7 @@ public class MaplePacketCreator {
     public static MaplePacket showSpecialEffect(int cid, int effect) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_FOREIGN_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectRemote.Get());
         mplew.writeInt(cid);
         mplew.write(effect);
 
@@ -2904,7 +2904,7 @@ public class MaplePacketCreator {
     public static final MaplePacket updateQuestMobKills(final MapleQuestStatus status) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(1);
         mplew.writeShort(status.getQuest().getId());
         mplew.write(1);
@@ -2922,7 +2922,7 @@ public class MaplePacketCreator {
     public static MaplePacket getShowQuestCompletion(int id) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_QUEST_COMPLETION.Get());
+        mplew.writeShort(InPacket.Header.LP_QuestClear.Get());
         mplew.writeShort(id);
 
         return mplew.getPacket();
@@ -2942,7 +2942,7 @@ public class MaplePacketCreator {
     public static MaplePacket getWhisper(String sender, int channel, String text) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.WHISPER.Get());
+        mplew.writeShort(InPacket.Header.LP_Whisper.Get());
         mplew.write(0x12);
         mplew.writeMapleAsciiString(sender);
         mplew.writeShort(channel - 1);
@@ -2954,7 +2954,7 @@ public class MaplePacketCreator {
     public static MaplePacket getWhisperReply(String target, byte reply) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.WHISPER.Get());
+        mplew.writeShort(InPacket.Header.LP_Whisper.Get());
         mplew.write(0x0A); // whisper?
         mplew.writeMapleAsciiString(target);
         mplew.write(reply);//  0x0 = cannot find char, 0x1 = success
@@ -2965,7 +2965,7 @@ public class MaplePacketCreator {
     public static MaplePacket getFindReplyWithMap(String target, int mapid, final boolean buddy) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.WHISPER.Get());
+        mplew.writeShort(InPacket.Header.LP_Whisper.Get());
         mplew.write(buddy ? 72 : 9);
         mplew.writeMapleAsciiString(target);
         mplew.write(1);
@@ -2978,7 +2978,7 @@ public class MaplePacketCreator {
     public static MaplePacket getFindReply(String target, int channel, final boolean buddy) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.WHISPER.Get());
+        mplew.writeShort(InPacket.Header.LP_Whisper.Get());
         mplew.write(buddy ? 72 : 9);
         mplew.writeMapleAsciiString(target);
         mplew.write(3);
@@ -3008,7 +3008,7 @@ public class MaplePacketCreator {
     public static MaplePacket getShowInventoryStatus(int mode) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(0);
         mplew.write(mode);
         mplew.writeInt(0);
@@ -3305,7 +3305,7 @@ public class MaplePacketCreator {
     public static MaplePacket updatePartyMemberHP(int cid, int curhp, int maxhp) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.UPDATE_PARTYMEMBER_HP.Get());
+        mplew.writeShort(InPacket.Header.LP_UserHP.Get());
         mplew.writeInt(cid);
         mplew.writeInt(curhp);
         mplew.writeInt(maxhp);
@@ -3316,7 +3316,7 @@ public class MaplePacketCreator {
     public static MaplePacket multiChat(String name, String chattext, int mode) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.MULTICHAT.Get());
+        mplew.writeShort(InPacket.Header.LP_GroupMessage.Get());
         mplew.write(mode); //  0 buddychat; 1 partychat; 2 guildchat
         mplew.writeMapleAsciiString(name);
         mplew.writeMapleAsciiString(chattext);
@@ -3458,7 +3458,7 @@ public class MaplePacketCreator {
     public static MaplePacket itemEffect(int characterid, int itemid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_ITEM_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserSetActiveEffectItem.Get());
         mplew.writeInt(characterid);
         mplew.writeInt(itemid);
 
@@ -3478,7 +3478,7 @@ public class MaplePacketCreator {
     public static MaplePacket showChair(int characterid, int itemid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_CHAIR.Get());
+        mplew.writeShort(InPacket.Header.LP_UserSetActivePortableChair.Get());
         mplew.writeInt(characterid);
         mplew.writeInt(itemid);
 
@@ -3488,7 +3488,7 @@ public class MaplePacketCreator {
     public static MaplePacket cancelChair(int id) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.CANCEL_CHAIR.Get());
+        mplew.writeShort(InPacket.Header.LP_UserSitResult.Get());
         if (id == -1) {
             mplew.write(0);
         } else {
@@ -4130,7 +4130,7 @@ public class MaplePacketCreator {
     public static MaplePacket skillEffect(MapleCharacter from, int skillId, byte level, byte flags, byte speed, byte unk) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SKILL_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserSkillPrepare.Get());
         mplew.writeInt(from.getId());
         mplew.writeInt(skillId);
         mplew.write(level);
@@ -4144,7 +4144,7 @@ public class MaplePacketCreator {
     public static MaplePacket skillCancel(MapleCharacter from, int skillId) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.CANCEL_SKILL_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserSkillCancel.Get());
         mplew.writeInt(from.getId());
         mplew.writeInt(skillId);
 
@@ -4265,7 +4265,7 @@ public class MaplePacketCreator {
     public static MaplePacket getFindReplyWithCS(String target, final boolean buddy) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.WHISPER.Get());
+        mplew.writeShort(InPacket.Header.LP_Whisper.Get());
         mplew.write(buddy ? 72 : 9);
         mplew.writeMapleAsciiString(target);
         mplew.write(2);
@@ -4277,7 +4277,7 @@ public class MaplePacketCreator {
     public static MaplePacket getFindReplyWithMTS(String target, final boolean buddy) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.WHISPER.Get());
+        mplew.writeShort(InPacket.Header.LP_Whisper.Get());
         mplew.write(buddy ? 72 : 9);
         mplew.writeMapleAsciiString(target);
         mplew.write(0);
@@ -4289,7 +4289,7 @@ public class MaplePacketCreator {
     public static MaplePacket showEquipEffect() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_EQUIP_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_FieldSpecificData.Get());
 
         return mplew.getPacket();
     }
@@ -4297,7 +4297,7 @@ public class MaplePacketCreator {
     public static MaplePacket showEquipEffect(int team) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_EQUIP_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_FieldSpecificData.Get());
         mplew.writeShort(team);
         return mplew.getPacket();
     }
@@ -4326,7 +4326,7 @@ public class MaplePacketCreator {
     public static MaplePacket useSkillBook(MapleCharacter chr, int skillid, int maxlevel, boolean canuse, boolean success) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.USE_SKILL_BOOK.Get());
+        mplew.writeShort(InPacket.Header.LP_SkillLearnItemResult.Get());
         mplew.write(0); //?
         mplew.writeInt(chr.getId());
         mplew.write(1);
@@ -4418,7 +4418,7 @@ public class MaplePacketCreator {
     public static MaplePacket Mulung_DojoUp2() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_ITEM_GAIN_INCHAT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(8); // portal sound
 
         return mplew.getPacket();
@@ -4426,7 +4426,7 @@ public class MaplePacketCreator {
 
     public static MaplePacket showQuestMsg(final String msg) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(10);
         mplew.writeMapleAsciiString(msg);
         return mplew.getPacket();
@@ -4489,7 +4489,7 @@ public class MaplePacketCreator {
 
     public static MaplePacket finishedSort(int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.FINISH_SORT.Get());
+        mplew.writeShort(InPacket.Header.LP_SortItemResult.Get());
         mplew.write(1);
         mplew.write(type);
         return mplew.getPacket();
@@ -4520,7 +4520,7 @@ public class MaplePacketCreator {
 
     public static MaplePacket finishedGather(int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.FINISH_GATHER.Get());
+        mplew.writeShort(InPacket.Header.LP_GatherItemResult.Get());
         mplew.write(1);
         mplew.write(type);
         return mplew.getPacket();
@@ -4619,7 +4619,7 @@ public class MaplePacketCreator {
 
     public static MaplePacket spawnDragon(MapleDragon d) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.DRAGON_SPAWN.Get());
+        mplew.writeShort(InPacket.Header.LP_DragonEnterField.Get());
         mplew.writeInt(d.getOwner());
         mplew.writeInt(d.getPosition().x);
         mplew.writeInt(d.getPosition().y);
@@ -4631,7 +4631,7 @@ public class MaplePacketCreator {
 
     public static MaplePacket removeDragon(int chrid) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.DRAGON_REMOVE.Get());
+        mplew.writeShort(InPacket.Header.LP_DragonLeaveField.Get());
         mplew.writeInt(chrid);
         return mplew.getPacket();
     }
@@ -4639,7 +4639,7 @@ public class MaplePacketCreator {
     public static MaplePacket moveDragon(MapleDragon d, Point startPos, List<LifeMovementFragment> moves) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.DRAGON_MOVE.Get()); //not sure
+        mplew.writeShort(InPacket.Header.LP_DragonMove.Get()); //not sure
         mplew.writeInt(d.getOwner());
         mplew.writePos(startPos);
         mplew.writeInt(0);
@@ -4727,7 +4727,7 @@ public class MaplePacketCreator {
     //its likely that durability items use this
     public static final MaplePacket showHpHealed(final int cid, final int amount) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.SHOW_FOREIGN_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectRemote.Get());
         mplew.writeInt(cid);
         mplew.write(0x0A); //Type 
         mplew.writeInt(amount);
@@ -4736,7 +4736,7 @@ public class MaplePacketCreator {
 
     public static final MaplePacket showOwnHpHealed(final int amount) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.SHOW_ITEM_GAIN_INCHAT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(0x0A); //Type 
         mplew.writeInt(amount);
         return mplew.getPacket();
@@ -4946,7 +4946,7 @@ public class MaplePacketCreator {
 
     public static MaplePacket followEffect(int initiator, int replier, Point toMap) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.FOLLOW_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserFollowCharacter.Get());
         mplew.writeInt(initiator);
         mplew.writeInt(replier);
         if (replier == 0) { //cancel
@@ -5180,7 +5180,7 @@ public class MaplePacketCreator {
     public static MaplePacket updateBeansMSG(int cid, int beansCount) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SHOW_STATUS_INFO.Get());
+        mplew.writeShort(InPacket.Header.LP_Message.Get());
         mplew.write(21);
         mplew.writeInt(beansCount);
         return mplew.getPacket();
