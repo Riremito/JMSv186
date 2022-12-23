@@ -78,7 +78,7 @@ public class LoginPacket {
 
     // ログイン成功
     public static final MaplePacket getAuthSuccessRequest(final MapleClient client) {
-        InPacket p = new InPacket(InPacket.Header.LOGIN_STATUS);
+        InPacket p = new InPacket(InPacket.Header.LP_CheckPasswordResult);
 
         p.Encode1(0);
         p.Encode1(0);
@@ -107,7 +107,7 @@ public class LoginPacket {
 
     // ログイン失敗
     public static final MaplePacket getLoginFailed(final int reason) {
-        InPacket p = new InPacket(InPacket.Header.LOGIN_STATUS);
+        InPacket p = new InPacket(InPacket.Header.LP_CheckPasswordResult);
 
         // 理由
         p.Encode1(reason);
@@ -123,7 +123,7 @@ public class LoginPacket {
 
     // ワールドセレクト
     public static final MaplePacket getServerList(final int serverId, boolean internalserver, int externalch) {
-        InPacket p = new InPacket(InPacket.Header.SERVERLIST);
+        InPacket p = new InPacket(InPacket.Header.LP_WorldInformation);
         // ワールドID
         p.Encode1(serverId);
         // ワールド名
@@ -161,14 +161,14 @@ public class LoginPacket {
 
     // ワールドセレクト
     public static final MaplePacket getEndOfServerList() {
-        InPacket p = new InPacket(InPacket.Header.SERVERLIST);
+        InPacket p = new InPacket(InPacket.Header.LP_WorldInformation);
         p.Encode1(0xFF);
         return p.Get();
     }
 
     // キャラクターセレクト
     public static final MaplePacket getCharList(final boolean secondpw, final List<MapleCharacter> chars, int charslots) {
-        InPacket p = new InPacket(InPacket.Header.CHARLIST);
+        InPacket p = new InPacket(InPacket.Header.LP_SelectWorldResult);
         p.Encode1(0);
         p.EncodeStr("");
         // キャラクターの数
@@ -325,7 +325,7 @@ public class LoginPacket {
 
     // キャラクター削除
     public static final MaplePacket deleteCharResponse(final int cid, final int state) {
-        InPacket p = new InPacket(InPacket.Header.DELETE_CHAR_RESPONSE);
+        InPacket p = new InPacket(InPacket.Header.LP_DeleteCharacterResult);
         p.Encode4(cid);
         p.Encode1(state);
         return p.Get();
@@ -334,7 +334,7 @@ public class LoginPacket {
     public static final MaplePacket getPing() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(16);
 
-        mplew.writeShort(InPacket.Header.PING.Get());
+        mplew.writeShort(InPacket.Header.LP_AliveReq.Get());
 
         return mplew.getPacket();
     }
@@ -342,7 +342,7 @@ public class LoginPacket {
     public static final MaplePacket getPermBan(final byte reason) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(16);
 
-        mplew.writeShort(InPacket.Header.LOGIN_STATUS.Get());
+        mplew.writeShort(InPacket.Header.LP_CheckPasswordResult.Get());
         mplew.writeShort(2); // Account is banned
         mplew.writeInt(0);
         mplew.writeShort(reason);
@@ -354,7 +354,7 @@ public class LoginPacket {
     public static final MaplePacket getTempBan(final long timestampTill, final byte reason) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(17);
 
-        mplew.writeShort(InPacket.Header.LOGIN_STATUS.Get());
+        mplew.writeShort(InPacket.Header.LP_CheckPasswordResult.Get());
         mplew.write(2);
         mplew.write(HexTool.getByteArrayFromHexString("00 00 00 00 00"));
         mplew.write(reason);
@@ -370,7 +370,7 @@ public class LoginPacket {
          * 14 - Invalid password
          * 15 - Second password is incorrect
          */
-        mplew.writeShort(InPacket.Header.SECONDPW_ERROR.Get());
+        mplew.writeShort(InPacket.Header.LP_CheckPinCodeResult.Get());
         mplew.write(mode);
 
         return mplew.getPacket();
@@ -392,7 +392,7 @@ public class LoginPacket {
     public static final MaplePacket addNewCharEntry(final MapleCharacter chr, final boolean worked) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.ADD_NEW_CHAR_ENTRY.Get());
+        mplew.writeShort(InPacket.Header.LP_CreateNewCharacterResult.Get());
         mplew.write(worked ? 0 : 1);
         PacketHelper.addCharStats(mplew, chr);
         PacketHelper.addCharLook(mplew, chr, true);
@@ -402,7 +402,7 @@ public class LoginPacket {
     public static final MaplePacket charNameResponse(final String charname, final boolean nameUsed) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.CHAR_NAME_RESPONSE.Get());
+        mplew.writeShort(InPacket.Header.LP_CheckDuplicatedIDResult.Get());
         mplew.writeMapleAsciiString(charname);
         mplew.write(nameUsed ? 1 : 0);
 

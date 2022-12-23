@@ -128,15 +128,15 @@ public class InPacket {
         // ログインサーバー
         LP_BEGIN_SOCKET,
         LP_CheckPasswordResult,
-        LP_GuestIDLoginResult,
-        LP_AccountInfoResult,
+        //LP_GuestIDLoginResult,
+        //LP_AccountInfoResult,
         LP_CheckUserLimitResult,
-        LP_SetAccountResult,
-        LP_ConfirmEULAResult,
+        //LP_SetAccountResult,
+        //LP_ConfirmEULAResult,
         LP_CheckPinCodeResult,
         LP_UpdatePinCodeResult,
         LP_ViewAllCharResult,
-        LP_SelectCharacterByVACResult,
+        //LP_SelectCharacterByVACResult,
         LP_WorldInformation,
         LP_SelectWorldResult,
         LP_SelectCharacterResult,
@@ -145,16 +145,16 @@ public class InPacket {
         LP_DeleteCharacterResult,
         LP_MigrateCommand,
         LP_AliveReq,
-        LP_AuthenCodeChanged,
-        LP_AuthenMessage,
+        //LP_AuthenCodeChanged,
+        //LP_AuthenMessage,
         LP_SecurityPacket,
-        LP_EnableSPWResult,
-        LP_DeleteCharacterOTPRequest,
-        LP_CheckCrcResult,
-        LP_LatestConnectedWorld,
-        LP_RecommendWorldMessage,
-        LP_CheckExtraCharInfoResult,
-        LP_CheckSPWResult,
+        //LP_EnableSPWResult,
+        //LP_DeleteCharacterOTPRequest,
+        //LP_CheckCrcResult,
+        //LP_LatestConnectedWorld,
+        //LP_RecommendWorldMessage,
+        //LP_CheckExtraCharInfoResult,
+        //LP_CheckSPWResult,
         LP_END_SOCKET,
         // ゲームサーバー
         LP_BEGIN_CHARACTERDATA,
@@ -649,27 +649,7 @@ public class InPacket {
         XMAS_SURPRISE,
         DUEY,
         EARN_TITLE_MSG,
-        // test
-        PING,
-        LOGIN_STATUS,
-        SERVERLIST,
-        CHARLIST,
-        SERVER_IP,
-        CHAR_NAME_RESPONSE,
-        ADD_NEW_CHAR_ENTRY,
-        DELETE_CHAR_RESPONSE,
-        CHANGE_CHANNEL,
-        SECONDPW_ERROR,
-        LOGIN_AUTH,
-        MODIFY_INVENTORY_ITEM,
-        UPDATE_INVENTORY_SLOT,
-        UPDATE_STATS,
-        GIVE_BUFF,
-        CANCEL_BUFF,
-        TEMP_STATS,
-        TEMP_STATS_RESET,
-        UPDATE_SKILLS,
-        FAME_RESPONSE,
+        LOGIN_AUTH, // 名称不明
         SHOW_STATUS_INFO,
         SHOW_NOTES,
         TROCK_LOCATIONS,
@@ -909,22 +889,22 @@ public class InPacket {
 
     public static void SetForJMSv164() {
         // ===== Login Server 1 =====
-        Header.LOGIN_STATUS.Set(0x0000);
-        Header.SERVERLIST.Set(0x0002);
-        Header.CHARLIST.Set(0x0003);
-        Header.SERVER_IP.Set(0x0004);
-        Header.CHAR_NAME_RESPONSE.Set(0x0005);
-        Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
-        Header.DELETE_CHAR_RESPONSE.Set(0x0007);
+        Header.LP_CheckPasswordResult.Set(0x0000);
+        Header.LP_WorldInformation.Set(0x0002);
+        Header.LP_SelectWorldResult.Set(0x0003);
+        Header.LP_SelectCharacterResult.Set(0x0004);
+        Header.LP_CheckDuplicatedIDResult.Set(0x0005);
+        Header.LP_CreateNewCharacterResult.Set(0x0006);
+        Header.LP_DeleteCharacterResult.Set(0x0007);
         // ===== Change Channel =====
-        Header.CHANGE_CHANNEL.Set(0x0008);
+        Header.LP_MigrateCommand.Set(0x0008);
         // ===== Login Server 2 =====
         Header.HELLO.Set(0x000E);
         Header.LOGIN_AUTH.Set(0x0018);
         // ===== Game Server 1 =====
-        Header.MODIFY_INVENTORY_ITEM.Set(0x0016);
-        Header.UPDATE_INVENTORY_SLOT.Set(Header.MODIFY_INVENTORY_ITEM.Get() + 0x01);
-        Header.UPDATE_STATS.Set(Header.MODIFY_INVENTORY_ITEM.Get() + 0x02);
+        Header.LP_InventoryOperation.Set(0x0016);
+        Header.LP_InventoryGrow.Set(Header.LP_InventoryOperation.Get() + 0x01);
+        Header.LP_StatChanged.Set(Header.LP_InventoryOperation.Get() + 0x02);
         Header.SERVERMESSAGE.Set(0x0037);
         // ===== Cash Shop =====
         // 0x0066 + 1
@@ -983,15 +963,15 @@ public class InPacket {
     }
 
     public static void SetForJMSv176() {
-        Header.LOGIN_STATUS.Set(0x0000);
-        Header.SERVERLIST.Set(0x0002);
-        Header.CHARLIST.Set(0x0003);
-        Header.SERVER_IP.Set(0x0004);
-        Header.CHAR_NAME_RESPONSE.Set(0x0005);
-        Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
-        Header.DELETE_CHAR_RESPONSE.Set(0x0007);
-        Header.CHANGE_CHANNEL.Set(0x0008);
-        Header.PING.Set(0x0009);
+        Header.LP_CheckPasswordResult.Set(0x0000);
+        Header.LP_WorldInformation.Set(0x0002);
+        Header.LP_SelectWorldResult.Set(0x0003);
+        Header.LP_SelectCharacterResult.Set(0x0004);
+        Header.LP_CheckDuplicatedIDResult.Set(0x0005);
+        Header.LP_CreateNewCharacterResult.Set(0x0006);
+        Header.LP_DeleteCharacterResult.Set(0x0007);
+        Header.LP_MigrateCommand.Set(0x0008);
+        Header.LP_AliveReq.Set(0x0009);
         Header.LOGIN_AUTH.Set(0x0018);
 
         Header.WARP_TO_MAP.Set(0x007B); // wrong
@@ -1005,15 +985,15 @@ public class InPacket {
     }
 
     public static void SetForJMSv184() {
-        Header.LOGIN_STATUS.Set(0x0000);
-        Header.SERVERLIST.Set(0x0002);
-        Header.CHARLIST.Set(0x0003);
-        Header.SERVER_IP.Set(0x0004);
-        Header.CHAR_NAME_RESPONSE.Set(0x0005);
-        Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
-        Header.DELETE_CHAR_RESPONSE.Set(0x0007);
-        Header.CHANGE_CHANNEL.Set(0x0008);
-        Header.PING.Set(0x0009);
+        Header.LP_CheckPasswordResult.Set(0x0000);
+        Header.LP_WorldInformation.Set(0x0002);
+        Header.LP_SelectWorldResult.Set(0x0003);
+        Header.LP_SelectCharacterResult.Set(0x0004);
+        Header.LP_CheckDuplicatedIDResult.Set(0x0005);
+        Header.LP_CreateNewCharacterResult.Set(0x0006);
+        Header.LP_DeleteCharacterResult.Set(0x0007);
+        Header.LP_MigrateCommand.Set(0x0008);
+        Header.LP_AliveReq.Set(0x0009);
         Header.LOGIN_AUTH.Set(0x0018);
 
         Header.WARP_TO_MAP.Set(0x007B);
@@ -1028,50 +1008,54 @@ public class InPacket {
 
     // JMS v186.1 ProcessPacket
     public static void SetForJMSv186() {
-        // ===== Login Server 1 =====
-        Header.LOGIN_STATUS.Set(0x0000);
-        // 0x0001 SERVERSTATUS?
-        Header.SERVERLIST.Set(0x0002);
-        Header.CHARLIST.Set(0x0003);
-        Header.SERVER_IP.Set(0x0004);
-        Header.CHAR_NAME_RESPONSE.Set(0x0005);
-        Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
-        Header.DELETE_CHAR_RESPONSE.Set(0x0007);
+        // ログインサーバー
+        Header.LP_BEGIN_SOCKET.Set(0);
+        {
+            Header.LP_CheckPasswordResult.Set(0x0000);
+            // 0x0001, LP_CheckUserLimitResult or LP_AccountInfoResult
+            Header.LP_WorldInformation.Set(0x0002);
+            Header.LP_SelectWorldResult.Set(0x0003);
+            Header.LP_SelectCharacterResult.Set(0x0004);
+            Header.LP_CheckDuplicatedIDResult.Set(0x0005);
+            Header.LP_CreateNewCharacterResult.Set(0x0006);
+            Header.LP_DeleteCharacterResult.Set(0x0007);
+            Header.LP_MigrateCommand.Set(0x0008); // Change Channel
+            Header.LP_AliveReq.Set(0x0009);
+            // 0x000A
+            // 0x000B
+            Header.LP_SecurityPacket.Set(0x000C); // HackShield HeartBeat
+            // 0x000D CHANNEL_SELECTED?
+            // 0x000E @000E ..., @0011 00 00 を送信
+            // 0x000F 未使用
+            // 0x0010 未使用
+            // 0x0011 未使用
+            // 0x0012
+            // 0x0013
+            // 0x0014
+            // 0x0015 @0015 [00], 不法プログラムまたは悪性コードが感知されたためゲームを強制終了します。
+            Header.LP_CheckPinCodeResult.Set(0x0016); // 違うかも
+            // 0x0017
+            Header.LOGIN_AUTH.Set(0x0018);
+            // 0x0019
+            // 0x001A
+        }
+        Header.LP_END_SOCKET.Set(0);
 
-        // ===== Change Channel =====
-        Header.CHANGE_CHANNEL.Set(0x0008);
-        Header.PING.Set(0x0009);
-        // 0x000A
-        // 0x000B
-        // 0x000C
-        // 0x000D CHANNEL_SELECTED?
-        // 0x000E @000E ..., @0011 00 00 を送信
-        // 0x000F 未使用
-        // 0x0010 未使用
-        // 0x0011 未使用
-
-        // ===== Login Server 2 =====
-        // 0x0012
-        // 0x0013
-        // 0x0014
-        // 0x0015 @0015 [00], 不法プログラムまたは悪性コードが感知されたためゲームを強制終了します。
-        Header.SECONDPW_ERROR.Set(0x0016);
-        // 0x0017
-        Header.LOGIN_AUTH.Set(0x0018);
-        // 0x0019 未使用
-        // 0x001A 未使用
-        // ===== Game Server 1 =====
-        Header.MODIFY_INVENTORY_ITEM.Set(0x001B);
-        Header.UPDATE_INVENTORY_SLOT.Set(0x001C);
-        Header.UPDATE_STATS.Set(0x001D);
-        Header.GIVE_BUFF.Set(0x001E);
-        Header.CANCEL_BUFF.Set(0x001F);
-        Header.TEMP_STATS.Set(0x0020);
-        Header.TEMP_STATS_RESET.Set(0x0021);
-        Header.UPDATE_SKILLS.Set(0x0022);
-        // 0x0023
-        Header.FAME_RESPONSE.Set(0x0024);
-        Header.SHOW_STATUS_INFO.Set(0x0025);
+        // ゲームサーバー
+        Header.LP_BEGIN_CHARACTERDATA.Set(0);
+        {
+        }
+        Header.LP_InventoryOperation.Set(0x001B);
+        Header.LP_InventoryGrow.Set(0x001C);
+        Header.LP_StatChanged.Set(0x001D);
+        Header.LP_TemporaryStatSet.Set(0x001E);
+        Header.LP_TemporaryStatReset.Set(0x001F);
+        Header.LP_ForcedStatSet.Set(0x0020);
+        Header.LP_ForcedStatReset.Set(0x0021);
+        Header.LP_ChangeSkillRecordResult.Set(0x0022);
+        Header.LP_SkillUseResult.Set(0x0023);
+        Header.LP_GivePopularityResult.Set(0x0024);
+        Header.SHOW_STATUS_INFO.Set(0x0025); // LP_Message?
         Header.SHOW_NOTES.Set(0x0026);
         Header.TROCK_LOCATIONS.Set(0x0027);
         // 0x0028 未使用
@@ -1453,27 +1437,27 @@ public class InPacket {
 
     public static void SetForJMSv187() {
         // ログインサーバー
-        Header.LOGIN_STATUS.Set(0x0000);
-        Header.SERVERLIST.Set(0x0002);
-        Header.CHARLIST.Set(0x0003);
-        Header.SERVER_IP.Set(0x0004);
-        Header.CHAR_NAME_RESPONSE.Set(0x0005);
-        Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
-        Header.DELETE_CHAR_RESPONSE.Set(0x0007);
-        Header.CHANGE_CHANNEL.Set(0x0008);
-        Header.PING.Set(0x0009);
-        Header.SECONDPW_ERROR.Set(0x0016);
+        Header.LP_CheckPasswordResult.Set(0x0000);
+        Header.LP_WorldInformation.Set(0x0002);
+        Header.LP_SelectWorldResult.Set(0x0003);
+        Header.LP_SelectCharacterResult.Set(0x0004);
+        Header.LP_CheckDuplicatedIDResult.Set(0x0005);
+        Header.LP_CreateNewCharacterResult.Set(0x0006);
+        Header.LP_DeleteCharacterResult.Set(0x0007);
+        Header.LP_MigrateCommand.Set(0x0008);
+        Header.LP_AliveReq.Set(0x0009);
+        Header.LP_CheckPinCodeResult.Set(0x0016);
         Header.LOGIN_AUTH.Set(0x0018);
         // ゲームサーバー
-        Header.MODIFY_INVENTORY_ITEM.Set(0x001B);
-        Header.UPDATE_INVENTORY_SLOT.Set(0x001C);
+        Header.LP_InventoryOperation.Set(0x001B);
+        Header.LP_InventoryGrow.Set(0x001C);
         //Header.UPDATE_STATS.Set(0x001D);
-        Header.GIVE_BUFF.Set(0x001E);
-        Header.CANCEL_BUFF.Set(0x001F);
-        Header.TEMP_STATS.Set(0x0020);
-        Header.TEMP_STATS_RESET.Set(0x0021);
-        Header.UPDATE_SKILLS.Set(0x0022);
-        Header.FAME_RESPONSE.Set(0x0024);
+        Header.LP_TemporaryStatSet.Set(0x001E);
+        Header.LP_TemporaryStatReset.Set(0x001F);
+        Header.LP_ForcedStatSet.Set(0x0020);
+        Header.LP_ForcedStatReset.Set(0x0021);
+        Header.LP_ChangeSkillRecordResult.Set(0x0022);
+        Header.LP_GivePopularityResult.Set(0x0024);
         Header.SHOW_STATUS_INFO.Set(0x0025);
         Header.SHOW_NOTES.Set(0x0026);
         Header.TROCK_LOCATIONS.Set(0x0027);
@@ -1682,16 +1666,16 @@ public class InPacket {
 
     public static void SetForJMSv302() {
         // ログインサーバー
-        Header.LOGIN_STATUS.Set(0x0000);
-        Header.SERVERLIST.Set(0x0002);
-        Header.CHARLIST.Set(0x0003);
-        Header.SERVER_IP.Set(0x0004);
-        Header.CHAR_NAME_RESPONSE.Set(0x0005);
-        Header.ADD_NEW_CHAR_ENTRY.Set(0x0006);
-        Header.DELETE_CHAR_RESPONSE.Set(0x0007);
-        Header.CHANGE_CHANNEL.Set(0x0008);
-        Header.PING.Set(0x0009);
-        Header.SECONDPW_ERROR.Set(0x0016);
+        Header.LP_CheckPasswordResult.Set(0x0000);
+        Header.LP_WorldInformation.Set(0x0002);
+        Header.LP_SelectWorldResult.Set(0x0003);
+        Header.LP_SelectCharacterResult.Set(0x0004);
+        Header.LP_CheckDuplicatedIDResult.Set(0x0005);
+        Header.LP_CreateNewCharacterResult.Set(0x0006);
+        Header.LP_DeleteCharacterResult.Set(0x0007);
+        Header.LP_MigrateCommand.Set(0x0008);
+        Header.LP_AliveReq.Set(0x0009);
+        Header.LP_CheckPinCodeResult.Set(0x0016);
         Header.LOGIN_AUTH.Set(0x0018);
     }
 

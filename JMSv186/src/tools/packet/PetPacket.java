@@ -39,7 +39,7 @@ public class PetPacket {
     public static final MaplePacket updatePet(final MaplePet pet, final IItem item) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.MODIFY_INVENTORY_ITEM.Get());
+        mplew.writeShort(InPacket.Header.LP_InventoryOperation.Get());
         mplew.write(0);
         mplew.write(2);
         mplew.write(3);
@@ -162,7 +162,7 @@ public class PetPacket {
     public static final MaplePacket petStatUpdate_Empty() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.UPDATE_STATS.Get());
+        mplew.writeShort(InPacket.Header.LP_StatChanged.Get());
         mplew.write(0);
         mplew.writeInt(MapleStat.PET.getValue());
         mplew.writeZeroBytes(25);
@@ -172,7 +172,7 @@ public class PetPacket {
     public static final MaplePacket petStatUpdate(final MapleCharacter chr) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.UPDATE_STATS.Get());
+        mplew.writeShort(InPacket.Header.LP_StatChanged.Get());
         mplew.write(0);
         mplew.writeInt(MapleStat.PET.getValue());
 
