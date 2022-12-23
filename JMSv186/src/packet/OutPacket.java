@@ -88,7 +88,7 @@ public class OutPacket {
         CP_CheckPinCode,
         //CP_UpdatePinCode,
         CP_WorldRequest,
-        //CP_LogoutWorld,
+        CP_LogoutWorld,
         CP_ViewAllChar,
         //CP_SelectCharacterByVAC,
         //CP_VACFlagSet,
@@ -189,7 +189,6 @@ public class OutPacket {
         CP_UserCharacterInfoRequest,
         CP_UserActivatePetRequest,
         CP_UserTemporaryStatUpdateRequest,
-        CP_UNK_0061, // v186.1
         CP_UserPortalScriptRequest,
         CP_UserPortalTeleportRequest,
         CP_UserMapTransferRequest,
@@ -299,8 +298,8 @@ public class OutPacket {
         CP_UpdateScreenSetting,
         CP_UserAttackUser_Specific,
         CP_UserPamsSongUseRequest,
-        CP_QuestGuideRequest,
-        CP_UserRepeatEffectRemove,
+        //CP_QuestGuideRequest,
+        //CP_UserRepeatEffectRemove,
         CP_END_USER,
         CP_BEGIN_FIELD,
         CP_BEGIN_LIFEPOOL,
@@ -336,20 +335,21 @@ public class OutPacket {
         CP_SnowBallHit,
         CP_SnowBallTouch,
         CP_CoconutHit,
-        CP_TournamentMatchTable,
-        CP_PulleyHit,
+        //CP_TournamentMatchTable,
+        //CP_PulleyHit,
         CP_END_EVENT_FIELD,
         CP_BEGIN_MONSTER_CARNIVAL_FIELD,
         CP_MCarnivalRequest,
         CP_END_MONSTER_CARNIVAL_FIELD,
-        CP_CONTISTATE,
+        //CP_CONTISTATE,
         CP_BEGIN_PARTY_MATCH,
         CP_INVITE_PARTY_MATCH,
         CP_CANCEL_INVITE_PARTY_MATCH,
         CP_END_PARTY_MATCH,
-        CP_RequestFootHoldInfo,
-        CP_FootHoldInfo,
+        //CP_RequestFootHoldInfo,
+        //CP_FootHoldInfo,
         CP_END_FIELD,
+        // ポイントショップ
         CP_BEGIN_CASHSHOP,
         CP_CashShopChargeParamRequest,
         CP_CashShopQueryCashRequest,
@@ -357,102 +357,65 @@ public class OutPacket {
         CP_CashShopCheckCouponRequest,
         CP_CashShopGiftMateInfoRequest,
         CP_END_CASHSHOP,
-        CP_CheckSSN2OnCreateNewCharacter,
-        CP_CheckSPWOnCreateNewCharacter,
-        CP_FirstSSNOnCreateNewCharacter,
+        //CP_CheckSSN2OnCreateNewCharacter,
+        //CP_CheckSPWOnCreateNewCharacter,
+        //CP_FirstSSNOnCreateNewCharacter,
+        // 多分絵具とかアイテム集める系のUI
         CP_BEGIN_RAISE,
         CP_RaiseRefesh,
         CP_RaiseUIState,
         CP_RaiseIncExp,
         CP_RaiseAddPiece,
         CP_END_RAISE,
-        CP_SendMateMail,
-        CP_RequestGuildBoardAuthKey,
-        CP_RequestConsultAuthKey,
-        CP_RequestClassCompetitionAuthKey,
-        CP_RequestWebBoardAuthKey,
+        //CP_SendMateMail,
+        //CP_RequestGuildBoardAuthKey,
+        //CP_RequestConsultAuthKey,
+        //CP_RequestClassCompetitionAuthKey,
+        //CP_RequestWebBoardAuthKey,
         CP_BEGIN_ITEMUPGRADE,
+        // ビシャスのハンマー
         CP_GoldHammerRequest,
-        CP_GoldHammerComplete,
-        CP_ItemUpgradeComplete,
+        //CP_GoldHammerComplete,
+        //CP_ItemUpgradeComplete,
         CP_END_ITEMUPGRADE,
         CP_BEGIN_BATTLERECORD,
         CP_BATTLERECORD_ONOFF_REQUEST,
         CP_END_BATTLERECORD,
-        CP_BEGIN_MAPLETV,
+        //CP_BEGIN_MAPLETV,
         CP_MapleTVSendMessageRequest,
-        CP_MapleTVUpdateViewCount,
-        CP_END_MAPLETV,
+        //CP_MapleTVUpdateViewCount,
+        //CP_END_MAPLETV,
+        // MTS
         CP_BEGIN_ITC,
         CP_ITCChargeParamRequest,
         CP_ITCQueryCashRequest,
         CP_ITCItemRequest,
         CP_END_ITC,
-        CP_BEGIN_CHARACTERSALE,
-        CP_CheckDuplicatedIDInCS,
-        CP_END_CHARACTERSALE,
+        //CP_BEGIN_CHARACTERSALE,
+        //CP_CheckDuplicatedIDInCS,
+        //CP_END_CHARACTERSALE,
         CP_LogoutGiftSelect,
         CP_NO,
         // ヘッダに対応する処理の名前を定義
+        UNKNOWN_BEGIN,
         UNKNOWN,
-        REACHED_LOGIN_SCREEN, // 名称不明
-        RSA_KEY, // 名称不明
+        REACHED_LOGIN_SCREEN, // 名称不明, ログイン画面に到達
         WHEEL_OF_FORTUNE, // 不明
-        GM_COMMAND_SERVER_MESSAGE,
-        GM_COMMAND_EVENT_START,
-        GM_COMMAND_MAPLETV,
-        SNOWBALL,
-        PET_CHAT,
-        SOLOMON,
-        GACH_EXP,
-        USE_TREASUER_CHEST,
-        CYGNUS_SUMMON,
-        ARAN_COMBO,
-        BBS_OPERATION,
-        ENTER_MTS,
-        AVATAR_RANDOM_BOX_OPEN,
-        MOVE_PET,
-        PET_COMMAND,
-        PET_LOOT,
-        PET_AUTO_POT,
-        MOVE_SUMMON,
-        SUMMON_ATTACK,
-        DAMAGE_SUMMON,
-        MOVE_DRAGON,
-        MOVE_LIFE,
-        AUTO_AGGRO,
-        FRIENDLY_DAMAGE,
-        MONSTER_BOMB,
-        HYPNOTIZE_DMG,
-        MOB_NODE,
-        DISPLAY_NODE,
-        NPC_ACTION,
-        ITEM_PICKUP,
-        DAMAGE_REACTOR,
-        TOUCH_REACTOR,
-        LEFT_KNOCK_BACK,
-        COCONUT,
-        MONSTER_CARNIVAL,
-        SHIP_OBJECT,
-        PARTY_SEARCH_START,
-        PARTY_SEARCH_STOP,
-        CS_FILL,
-        CS_UPDATE,
-        BUY_CS_ITEM,
-        COUPON_CODE,
-        RECOMMENDED_AVATAR,
-        ETC_ITEM_UI,
-        ETC_ITEM_UI_UPDATE,
-        ETC_ITEM_UI_DROP_ITEM,
-        MAPLETV,
-        UPDATE_QUEST,
-        QUEST_ITEM,
-        USE_ITEM_QUEST,
-        TOUCHING_MTS,
-        MTS_TAB,
-        BEANS_OPERATION,
-        BEANS_UPDATE,
-        VICIOUS_HAMMER;
+        GM_COMMAND_MAPLETV, // Super Megaphone Exploitのパケット
+        SOLOMON, // 名称不明
+        USE_TREASUER_CHEST, // 名称不明
+        CYGNUS_SUMMON, // 名称不明
+        LEFT_KNOCK_BACK, // イベント関連?
+        SHIP_OBJECT, // レッサーバルログ
+        RECOMMENDED_AVATAR, // おすすめアバター
+        UPDATE_QUEST, // 不明
+        QUEST_ITEM, // 不明
+        USE_ITEM_QUEST, // 多分Quest Value Addition Exploitのパケット
+        TOUCHING_MTS, // 不明
+        MTS_TAB, // MTS検索
+        BEANS_OPERATION, // パチンコ
+        BEANS_UPDATE, // パチンコ
+        UNKNOWN_END;
 
         // 定義値の変更や取得
         private int value;
@@ -613,7 +576,7 @@ public class OutPacket {
             // 0x0017
             Header.REACHED_LOGIN_SCREEN.Set(0x0018);
             // 0x0019 InPacket 0x0013から送信される
-            Header.CP_CreateSecurityHandle.Set(0x001A);
+            Header.CP_CreateSecurityHandle.Set(0x001A); // 名称違うかも
         }
         Header.CP_END_SOCKET.Set(0x001B);
 
@@ -636,7 +599,7 @@ public class OutPacket {
             Header.CP_UserADBoardClose.Set(0x002A);
             Header.CP_UserEmotion.Set(0x002B);
             Header.CP_UserActivateEffectItem.Set(0x002C);
-            Header.WHEEL_OF_FORTUNE.Set(0x002D);
+            Header.WHEEL_OF_FORTUNE.Set(0x002D); // 不明
             // 0x0030
             Header.CP_UserMonsterBookSetCover.Set(0x0031);
             Header.CP_UserSelectNpc.Set(0x0032);
@@ -711,7 +674,7 @@ public class OutPacket {
             Header.CP_UserExpUpItemUseRequest.Set(0x0077); // 名称が違うかも
             Header.CP_UserFollowCharacterRequest.Set(0x0078);
             Header.CP_UserFollowCharacterWithdraw.Set(0x0079);
-            Header.USE_TREASUER_CHEST.Set(0x007A);
+            Header.USE_TREASUER_CHEST.Set(0x007A); // 不明
             Header.CP_BroadcastMsg.Set(0x007B);
             Header.CP_GroupMessage.Set(0x007C);
             Header.CP_Whisper.Set(0x007D);
@@ -905,7 +868,7 @@ public class OutPacket {
         // 0x0109
         Header.CP_MapleTVSendMessageRequest.Set(0x010A); // 名称違うかもしれない
         // 0x010B @00EAでCOUNSEL UIを開いたときに送信される, CP_RequestConsultAuthKey?
-        Header.QUEST_ITEM.Set(0x010C);
+        Header.QUEST_ITEM.Set(0x010C); // ???
         // 0x010D @00EC 1FでメイプルイベントのUIを開いたときに@010D 00が送信される
         // 0x010E
         // 0x010F, CP_BEGIN_ITC?
