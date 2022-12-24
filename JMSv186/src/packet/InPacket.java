@@ -650,8 +650,6 @@ public class InPacket {
         BOAT_EFF,
         SERVERSTATUS,
         XMAS_SURPRISE,
-        MTS_OPERATION,
-        GET_MTS_TOKENS,
         EARN_TITLE_MSG,
         LOGIN_AUTH, // 名称不明
         FISHING_BOARD_UPDATE,
@@ -1374,9 +1372,16 @@ public class InPacket {
         // 0x0187 未使用
         //Header.GET_MTS_TOKENS.Set(0x0188);
         //Header.MTS_OPERATION.Set(0x0189);
-        // 0x018A 未使用
-        // 0x018B 未使用
-        Header.LP_BEGIN_MAPLETV.Set(0); // 0x018C 未使用のはず
+        // MTS, 0x0062E9A6
+        Header.LP_BEGIN_ITC.Set(0);
+        {
+            Header.LP_ITCChargeParamResult.Set(0x018A);
+            Header.LP_ITCQueryCashResult.Set(0x018B);
+            Header.LP_ITCNormalItemResult.Set(0x018C);
+        }
+        Header.LP_END_ITC.Set(0);
+
+        Header.LP_BEGIN_MAPLETV.Set(0);
         {
             // 0x018D, LP_MapleTVUpdateMessage
             // 0x018E, LP_MapleTVClearMessage

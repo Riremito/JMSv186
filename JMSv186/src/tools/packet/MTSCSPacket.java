@@ -570,7 +570,7 @@ public class MTSCSPacket {
     public static final MaplePacket sendMTS(final List<MTSItemInfo> items, final int tab, final int type, final int page, final int pages) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.MTS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCNormalItemResult.Get());
         mplew.write(0x15); //operation
         mplew.writeInt(pages * 10); //total items
         mplew.writeInt(items.size()); //number of items on this page
@@ -590,7 +590,7 @@ public class MTSCSPacket {
 
     public static final MaplePacket showMTSCash(final MapleCharacter p) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.GET_MTS_TOKENS.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCQueryCashResult.Get());
         mplew.writeInt(p.getCSPoints(1));
         mplew.writeInt(p.getCSPoints(2));
         return mplew.getPacket();
@@ -598,7 +598,7 @@ public class MTSCSPacket {
 
     public static final MaplePacket getMTSWantedListingOver(final int nx, final int items) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.MTS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCNormalItemResult.Get());
         mplew.write(0x3D);
         mplew.writeInt(nx);
         mplew.writeInt(items);
@@ -607,14 +607,14 @@ public class MTSCSPacket {
 
     public static final MaplePacket getMTSConfirmSell() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.MTS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCNormalItemResult.Get());
         mplew.write(0x1D);
         return mplew.getPacket();
     }
 
     public static final MaplePacket getMTSFailSell() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.MTS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCNormalItemResult.Get());
         mplew.write(0x1E);
         mplew.write(0x42);
         return mplew.getPacket();
@@ -622,14 +622,14 @@ public class MTSCSPacket {
 
     public static final MaplePacket getMTSConfirmBuy() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.MTS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCNormalItemResult.Get());
         mplew.write(0x33);
         return mplew.getPacket();
     }
 
     public static final MaplePacket getMTSFailBuy() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.MTS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCNormalItemResult.Get());
         mplew.write(0x34);
         mplew.write(0x42);
         return mplew.getPacket();
@@ -637,14 +637,14 @@ public class MTSCSPacket {
 
     public static final MaplePacket getMTSConfirmCancel() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.MTS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCNormalItemResult.Get());
         mplew.write(0x25);
         return mplew.getPacket();
     }
 
     public static final MaplePacket getMTSFailCancel() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.MTS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCNormalItemResult.Get());
         mplew.write(0x26);
         mplew.write(0x42);
         return mplew.getPacket();
@@ -652,7 +652,7 @@ public class MTSCSPacket {
 
     public static final MaplePacket getMTSConfirmTransfer(final int quantity, final int pos) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.MTS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCNormalItemResult.Get());
         mplew.write(0x27);
         mplew.writeInt(quantity);
         mplew.writeInt(pos);
@@ -675,7 +675,7 @@ public class MTSCSPacket {
     public static final MaplePacket getNotYetSoldInv(final List<MTSItemInfo> items) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.MTS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCNormalItemResult.Get());
         mplew.write(0x23);
 
         mplew.writeInt(items.size());
@@ -690,7 +690,7 @@ public class MTSCSPacket {
     public static final MaplePacket getTransferInventory(final List<IItem> items, final boolean changed) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.MTS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCNormalItemResult.Get());
         mplew.write(0x21);
 
         mplew.writeInt(items.size());
@@ -712,7 +712,7 @@ public class MTSCSPacket {
     public static final MaplePacket addToCartMessage(boolean fail, boolean remove) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.MTS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_ITCNormalItemResult.Get());
         if (remove) {
             if (fail) {
                 mplew.write(0x2C);
