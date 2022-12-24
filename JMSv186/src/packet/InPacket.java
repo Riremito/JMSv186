@@ -643,6 +643,16 @@ public class InPacket {
         UNKNOWN_RELOAD_MAP,
         HELLO(0x000E),
         // unknown
+        RELOG_RESPONSE,
+        ARIANT_PQ_START,
+        ARIANT_SCOREBOARD,
+        BOAT_EFFECT,
+        BOAT_EFF,
+        SERVERSTATUS,
+        XMAS_SURPRISE,
+        MTS_OPERATION,
+        GET_MTS_TOKENS,
+        EARN_TITLE_MSG,
         LOGIN_AUTH, // 名称不明
         FISHING_BOARD_UPDATE,
         PLAYER_NPC,

@@ -2768,7 +2768,7 @@ public class MaplePacketCreator {
     public static MaplePacket getNPCTalkStyle(int npc, String talk, int... args) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.NPC_TALK.Get());
+        mplew.writeShort(InPacket.Header.LP_ScriptMessage.Get());
         mplew.write(4);
         mplew.writeInt(npc);
         mplew.writeShort(8);
@@ -2784,7 +2784,7 @@ public class MaplePacketCreator {
     public static MaplePacket getNPCTalkNum(int npc, String talk, int def, int min, int max) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.NPC_TALK.Get());
+        mplew.writeShort(InPacket.Header.LP_ScriptMessage.Get());
         mplew.write(4);
         mplew.writeInt(npc);
         mplew.writeShort(4);
@@ -2800,7 +2800,7 @@ public class MaplePacketCreator {
     public static MaplePacket getNPCTalkText(int npc, String talk) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.NPC_TALK.Get());
+        mplew.writeShort(InPacket.Header.LP_ScriptMessage.Get());
         mplew.write(4);
         mplew.writeInt(npc);
         mplew.writeShort(3);
@@ -4028,7 +4028,7 @@ public class MaplePacketCreator {
     public static MaplePacket BBSThreadList(final List<MapleBBSThread> bbs, int start) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.BBS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_GuildBBS.Get());
         mplew.write(6);
 
         if (bbs == null) {
@@ -4077,7 +4077,7 @@ public class MaplePacketCreator {
     public static MaplePacket showThread(MapleBBSThread thread) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.BBS_OPERATION.Get());
+        mplew.writeShort(InPacket.Header.LP_GuildBBS.Get());
         mplew.write(7);
 
         mplew.writeInt(thread.localthreadID);
@@ -4831,7 +4831,7 @@ public class MaplePacketCreator {
     public static MaplePacket getEvanTutorial(String data) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.NPC_TALK.Get());
+        mplew.writeShort(InPacket.Header.LP_ScriptMessage.Get());
 
         mplew.writeInt(8);
         mplew.write(0);
