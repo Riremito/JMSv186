@@ -643,224 +643,27 @@ public class InPacket {
         UNKNOWN_RELOAD_MAP,
         HELLO(0x000E),
         // unknown
-        RELOG_RESPONSE,
-        BBS_OPERATION,
-        SERVERSTATUS,
-        XMAS_SURPRISE,
-        DUEY,
-        EARN_TITLE_MSG,
         LOGIN_AUTH, // 名称不明
-        SHOW_STATUS_INFO,
-        SHOW_NOTES,
-        TROCK_LOCATIONS,
-        UPDATE_MOUNT,
-        SHOW_QUEST_COMPLETION,
-        SEND_TITLE_BOX,
-        USE_SKILL_BOOK,
-        FINISH_SORT,
-        FINISH_GATHER,
-        CHAR_INFO,
-        PARTY_OPERATION,
-        EXPEDITION_OPERATION,
-        BUDDYLIST,
-        GUILD_OPERATION,
-        ALLIANCE_OPERATION,
-        SPAWN_PORTAL,
-        SERVERMESSAGE,
-        PIGMI_REWARD,
-        OWL_OF_MINERVA,
-        ENGAGE_REQUEST,
-        ENGAGE_RESULT,
-        YELLOW_CHAT,
         FISHING_BOARD_UPDATE,
         PLAYER_NPC,
-        MONSTERBOOK_ADD,
-        MONSTERBOOK_CHANGE_COVER,
-        AVATAR_MEGA,
         ENERGY,
         GHOST_POINT,
         GHOST_STATUS,
         FAIRY_PEND_MSG,
-        SEND_PEDIGREE,
-        OPEN_FAMILY,
-        FAMILY_MESSAGE,
-        FAMILY_INVITE,
-        FAMILY_JUNIOR,
-        SENIOR_MESSAGE,
-        FAMILY,
-        REP_INCREASE,
-        FAMILY_LOGGEDIN,
-        FAMILY_BUFF,
-        FAMILY_USE_REQUEST,
-        LEVEL_UPDATE,
-        MARRIAGE_UPDATE,
-        JOB_UPDATE,
-        FOLLOW_REQUEST,
-        TOP_MSG,
-        SKILL_MACRO,
-        WARP_TO_MAP,
-        MTS_OPEN,
-        CS_OPEN,
-        SERVER_BLOCKED,
-        SHOW_EQUIP_EFFECT,
-        MULTICHAT,
-        WHISPER,
-        BOSS_ENV,
-        MOVE_ENV,
-        UPDATE_ENV,
-        MAP_EFFECT,
-        CASH_SONG,
-        GM_EFFECT,
-        OX_QUIZ,
-        GMEVENT_INSTRUCTIONS,
-        CLOCK,
-        BOAT_EFF,
-        BOAT_EFFECT,
-        STOP_CLOCK,
         PYRAMID_UPDATE,
         PYRAMID_RESULT,
-        MOVE_PLATFORM,
-        SPAWN_PLAYER,
-        REMOVE_PLAYER_FROM_MAP,
-        CHATTEXT,
-        CHATTEXT1,
-        CHALKBOARD,
-        UPDATE_CHAR_BOX,
-        SHOW_SCROLL_EFFECT,
-        SHOW_POTENTIAL_RESET,
-        SHOW_POTENTIAL_EFFECT,
         FISHING_CAUGHT,
-        PAMS_SONG,
-        FOLLOW_EFFECT,
-        SPAWN_PET,
-        MOVE_PET,
-        PET_CHAT,
-        PET_NAMECHANGE,
-        PET_COMMAND,
-        SPAWN_SUMMON,
-        REMOVE_SUMMON,
-        MOVE_SUMMON,
-        SUMMON_ATTACK,
-        SUMMON_SKILL,
-        DAMAGE_SUMMON,
-        DRAGON_SPAWN,
-        DRAGON_MOVE,
-        DRAGON_REMOVE,
-        MOVE_PLAYER,
-        CLOSE_RANGE_ATTACK,
-        RANGED_ATTACK,
-        MAGIC_ATTACK,
-        ENERGY_ATTACK,
-        SKILL_EFFECT,
-        CANCEL_SKILL_EFFECT,
-        DAMAGE_PLAYER,
-        FACIAL_EXPRESSION,
-        SHOW_ITEM_EFFECT,
-        SHOW_CHAIR,
-        UPDATE_CHAR_LOOK,
-        SHOW_FOREIGN_EFFECT,
-        GIVE_FOREIGN_BUFF,
-        CANCEL_FOREIGN_BUFF,
-        UPDATE_PARTYMEMBER_HP,
-        LOAD_GUILD_NAME,
-        LOAD_GUILD_ICON,
-        CANCEL_CHAIR,
-        SHOW_ITEM_GAIN_INCHAT,
-        CURRENT_MAP_WARP,
-        MESOBAG_SUCCESS,
-        MESOBAG_FAILURE,
-        RANDOM_MESOBAG_SUCCESS,
-        RANDOM_MESOBAG_FAILURE,
-        UPDATE_QUEST_INFO,
         PLAYER_HINT,
-        REPAIR_WINDOW,
-        CYGNUS_INTRO_LOCK,
-        CYGNUS_INTRO_DISABLE_UI,
-        SUMMON_HINT,
-        SUMMON_HINT_MSG,
-        ARAN_COMBO,
         TAMA_BOX_SUCCESS,
         TAMA_BOX_FAILURE,
         GAME_POLL_REPLY,
-        FOLLOW_MESSAGE,
-        FOLLOW_MOVE,
-        FOLLOW_MSG,
+        TALK_MONSTER,
         GAME_POLL_QUESTION,
-        COOLDOWN,
-        SPAWN_MONSTER,
-        KILL_MONSTER,
-        SPAWN_MONSTER_CONTROL,
-        MOVE_MONSTER,
-        MOVE_MONSTER_RESPONSE,
-        APPLY_MONSTER_STATUS,
-        CANCEL_MONSTER_STATUS,
-        MOB_TO_MOB_DAMAGE,
-        DAMAGE_MONSTER,
-        SHOW_MONSTER_HP,
-        SHOW_MAGNET,
-        CATCH_MONSTER,
-        MOB_SPEAKING,
         MONSTER_PROPERTIES,
         REMOVE_TALK_MONSTER,
-        TALK_MONSTER,
-        SPAWN_NPC,
-        REMOVE_NPC,
-        SPAWN_NPC_REQUEST_CONTROLLER,
-        NPC_ACTION,
-        SPAWN_HIRED_MERCHANT,
-        DESTROY_HIRED_MERCHANT,
-        UPDATE_HIRED_MERCHANT,
-        DROP_ITEM_FROM_MAPOBJECT,
-        REMOVE_ITEM_FROM_MAP,
-        KITE_MESSAGE,
-        SPAWN_KITE,
-        REMOVE_KITE,
-        SPAWN_MIST,
-        REMOVE_MIST,
-        SPAWN_DOOR,
-        REMOVE_DOOR,
-        REACTOR_HIT,
-        REACTOR_SPAWN,
-        REACTOR_DESTROY,
-        ROLL_SNOWBALL,
-        HIT_SNOWBALL,
-        SNOWBALL_MESSAGE,
-        LEFT_KNOCK_BACK,
-        HIT_COCONUT,
-        COCONUT_SCORE,
-        MONSTER_CARNIVAL_START,
-        MONSTER_CARNIVAL_OBTAINED_CP,
-        MONSTER_CARNIVAL_PARTY_CP,
-        MONSTER_CARNIVAL_SUMMON,
-        MONSTER_CARNIVAL_DIED,
-        CHAOS_HORNTAIL_SHRINE,
-        CHAOS_ZAKUM_SHRINE,
-        HORNTAIL_SHRINE,
-        ZAKUM_SHRINE,
-        NPC_TALK,
-        OPEN_NPC_SHOP,
-        CONFIRM_SHOP_TRANSACTION,
-        OPEN_STORAGE,
-        MERCH_ITEM_MSG,
-        MERCH_ITEM_STORE,
-        RPS_GAME,
-        MESSENGER,
-        PLAYER_INTERACTION,
+        SHOW_MAGNET,
         CS_UPDATE,
         CS_OPERATION,
-        KEYMAP,
-        PET_AUTO_HP,
-        PET_AUTO_MP,
-        GET_MTS_TOKENS,
-        MTS_OPERATION,
-        BLOCK_PORTAL,
-        ARIANT_SCOREBOARD,
-        ARIANT_THING,
-        ARIANT_PQ_START,
-        VICIOUS_HAMMER,
-        VEGA_SCROLL,
-        REPORT_PLAYER_MSG,
-        NPC_CONFIRM,
         UPDATE_BEANS,
         TIP_BEANS,
         OPEN_BEANS,
@@ -905,7 +708,7 @@ public class InPacket {
         Header.LP_InventoryOperation.Set(0x0016);
         Header.LP_InventoryGrow.Set(Header.LP_InventoryOperation.Get() + 0x01);
         Header.LP_StatChanged.Set(Header.LP_InventoryOperation.Get() + 0x02);
-        Header.SERVERMESSAGE.Set(0x0037);
+        Header.LP_BroadcastMsg.Set(0x0037);
         // ===== Cash Shop =====
         // 0x0066 + 1
         Header.LP_SetField.Set(0x0067);
@@ -977,10 +780,10 @@ public class InPacket {
         Header.LP_SetField.Set(0x007B); // wrong
 
         Header.LP_NpcEnterField.Set(0xFFFF);
-        Header.FAMILY.Set(0xFFFF);
+        Header.LP_FamilyPrivilegeList.Set(0xFFFF);
         Header.LP_FuncKeyMappedInit.Set(0xFFFF);
-        Header.SERVERMESSAGE.Set(0xFFFF);
-        Header.OPEN_FAMILY.Set(0xFFFF);
+        Header.LP_BroadcastMsg.Set(0xFFFF);
+        Header.LP_FamilyInfoResult.Set(0xFFFF);
         Header.LP_SetCashShop.Set(0xFFFF);
     }
 
@@ -996,13 +799,13 @@ public class InPacket {
         Header.LP_AliveReq.Set(0x0009);
         Header.LOGIN_AUTH.Set(0x0018);
 
-        Header.WARP_TO_MAP.Set(0x007B);
+        Header.LP_SetField.Set(0x007B);
 
         Header.LP_NpcEnterField.Set(0xFFFF);
-        Header.FAMILY.Set(0xFFFF);
+        Header.LP_FamilyPrivilegeList.Set(0xFFFF);
         Header.LP_FuncKeyMappedInit.Set(0xFFFF);
-        Header.SERVERMESSAGE.Set(0xFFFF);
-        Header.OPEN_FAMILY.Set(0xFFFF);
+        Header.LP_BroadcastMsg.Set(0xFFFF);
+        Header.LP_FamilyInfoResult.Set(0xFFFF);
         Header.LP_SetCashShop.Set(0xFFFF);
     }
 
@@ -1044,106 +847,110 @@ public class InPacket {
         // ゲームサーバー
         Header.LP_BEGIN_CHARACTERDATA.Set(0);
         {
+            Header.LP_InventoryOperation.Set(0x001B);
+            Header.LP_InventoryGrow.Set(0x001C);
+            Header.LP_StatChanged.Set(0x001D);
+            Header.LP_TemporaryStatSet.Set(0x001E);
+            Header.LP_TemporaryStatReset.Set(0x001F);
+            Header.LP_ForcedStatSet.Set(0x0020);
+            Header.LP_ForcedStatReset.Set(0x0021);
+            Header.LP_ChangeSkillRecordResult.Set(0x0022);
+            Header.LP_SkillUseResult.Set(0x0023);
+            Header.LP_GivePopularityResult.Set(0x0024);
+            Header.LP_Message.Set(0x0025);
+            Header.LP_MemoResult.Set(0x0026);
+            Header.LP_MapTransferResult.Set(0x0027);
+            Header.LP_AntiMacroResult.Set(0x0028); // 未使用?
+            Header.LP_InitialQuizStart.Set(0x0029);
+            Header.LP_ClaimResult.Set(0x002A); // @002A [02-03, 41-47]..., 通報後のダイアログ通知
+            Header.LP_SetClaimSvrAvailableTime.Set(0x002B);
+            Header.LP_ClaimSvrStatusChanged.Set(0x002C);
+            Header.LP_SetTamingMobInfo.Set(0x002D);
+            Header.LP_QuestClear.Set(0x002E);
+            Header.LP_EntrustedShopCheckResult.Set(0x002F);
+            Header.LP_SkillLearnItemResult.Set(0x0030);
+            Header.LP_SortItemResult.Set(0x0031); //逆?
+            Header.LP_GatherItemResult.Set(0x0032);
+            // 0x0033 未使用
+            // 0x0034 未使用
+            Header.LP_CharacterInfo.Set(0x0035);
+            Header.LP_PartyResult.Set(0x0036);
+            Header.LP_ExpeditionRequest.Set(0x0037);
+            Header.LP_ExpeditionNoti.Set(0x0038);
+            Header.LP_FriendResult.Set(0x0039);
+            Header.LP_GuildRequest.Set(0x003A);
+            Header.LP_GuildResult.Set(0x003B);
+            Header.LP_AllianceResult.Set(0x003C);
+            Header.LP_TownPortal.Set(0x003D);
+            Header.LP_OpenGate.Set(0x003E); // メカニックならこの時点では未実装?
+            Header.LP_BroadcastMsg.Set(0x003F);
+            Header.LP_IncubatorResult.Set(0x0040); // ピグミー
+            Header.LP_ShopScannerResult.Set(0x0041);
+            Header.LP_ShopLinkResult.Set(0x0042);
+            Header.LP_MarriageRequest.Set(0x0043);
+            Header.LP_MarriageResult.Set(0x0044);
+            Header.LP_WeddingGiftResult.Set(0x0045); // @0045 [09], ウェディング登録? @0091が送信される
+            Header.LP_MarriedPartnerMapTransfer.Set(0x0046); // @0046 int,int
+            Header.LP_CashPetFoodResult.Set(0x0047); // @0047 [01]..., 現在ペットはこのえさが食べることができません。もう一度確認してください。
+            Header.LP_SetWeekEventMessage.Set(0x0048);
+            Header.LP_SetPotionDiscountRate.Set(0x0049);
+            Header.LP_BridleMobCatchFail.Set(0x004A); // 0x004A @004A ..., 当該モンスターの体力が強くてできません。
+            // 0x004B 未使用
+            // パチンコ
+            {
+                Header.MINIGAME_PACHINKO_UPDATE_TAMA.Set(0x4C);
+                // 0x004D パチンコ景品受け取りUI
+                // 0x004E @004E int,int, パチンコ球をx子プレゼントします。というダイアログ誤字っているのでたぶん未実装的な奴
+            }
+            // 0x004F @004F [01 or 03], プレゼントの通知
+            // 0x0050 @0050 strig, string..., 相性占い結果UI
+            Header.FISHING_BOARD_UPDATE.Set(0x0051);
+            // 0x0052 @0052 String, 任意メッセージをダイアログに表示
+            // 0x0053 @0053 [01 (00, 02は謎)], ワールド変更申請のキャンセル
+            // 0x0054 @0054 int, プレイタイム終了まで残りx分x秒です。
+            // 0x0055 @0055 byte, なんも処理がされない関数
+            Header.PLAYER_NPC.Set(0x0056);
+            Header.LP_MonsterBookSetCard.Set(0x0057);
+            Header.LP_MonsterBookSetCover.Set(0x0058);
+            // 0x0059 BBS_OPERATION?
+            // 0x005A @005A String, 任意メッセージをダイアログに表示
+            Header.LP_AvatarMegaphoneRes.Set(0x005B);
+            // 0x005C
+            // 0x005D
+            Header.UNKNOWN_RELOAD_MINIMAP.Set(0x005E);
+            // 0x005F
+            // 0x0060
+            // 0x0061
+            Header.ENERGY.Set(0x0062);
+            Header.GHOST_POINT.Set(0x0063);
+            Header.GHOST_STATUS.Set(0x0064);
+            Header.FAIRY_PEND_MSG.Set(0x0065);
+            Header.LP_FamilyChartResult.Set(0x0066);
+            Header.LP_FamilyInfoResult.Set(0x0067);
+            Header.LP_FamilyResult.Set(0x0068);
+            Header.LP_FamilyJoinRequest.Set(0x0069);
+            Header.LP_FamilyJoinRequestResult.Set(0x006A);
+            Header.LP_FamilyJoinAccepted.Set(0x006B);
+            Header.LP_FamilyPrivilegeList.Set(0x006C);
+            Header.LP_FamilyFamousPointIncResult.Set(0x006D);
+            Header.LP_FamilyNotifyLoginOrLogout.Set(0x006E);
+            Header.LP_FamilySetPrivilege.Set(0x006F);
+            Header.LP_FamilySummonRequest.Set(0x0070);
+            Header.LP_NotifyLevelUp.Set(0x0071);
+            Header.LP_NotifyWedding.Set(0x0072);
+            Header.LP_NotifyJobChange.Set(0x0073);
+            // 0x0074
+            Header.LP_SetPassenserRequest.Set(0x0075);
+            Header.LP_SuccessInUseGachaponBox.Set(0x0076); // @0076 [不明], マジェスティックボックスの中身獲得後のUI
+            Header.LP_ScriptProgressMessage.Set(0x0077); // 画面中央の黄色文字
+            Header.LP_DataCRCCheckFailed.Set(0x0078); // @0078 string, イベンドガイドのNPC会話で任意文字列を表示
+            // 0x0079 @0079 [0x02 or], イベンドガイドのNPC会話のエラーメッセージの呼び出し
+            // 0x007A
+            // 0x007B @007B int,string, 灰色のメッセージ
+            Header.LP_AskUserWhetherUsePamsSong.Set(0x007C); // ファムの歌を利用するか選択するUI, @00C2 [00or01]が送信される01は使用フラグ
+            Header.LP_MacroSysDataInit.Set(0x007D);
         }
-        Header.LP_InventoryOperation.Set(0x001B);
-        Header.LP_InventoryGrow.Set(0x001C);
-        Header.LP_StatChanged.Set(0x001D);
-        Header.LP_TemporaryStatSet.Set(0x001E);
-        Header.LP_TemporaryStatReset.Set(0x001F);
-        Header.LP_ForcedStatSet.Set(0x0020);
-        Header.LP_ForcedStatReset.Set(0x0021);
-        Header.LP_ChangeSkillRecordResult.Set(0x0022);
-        Header.LP_SkillUseResult.Set(0x0023);
-        Header.LP_GivePopularityResult.Set(0x0024);
-        Header.LP_Message.Set(0x0025);
-        Header.LP_MemoResult.Set(0x0026);
-        Header.LP_MapTransferResult.Set(0x0027);
-        Header.LP_AntiMacroResult.Set(0x0028); // 未使用?
-        Header.LP_InitialQuizStart.Set(0x0029);
-        Header.LP_ClaimResult.Set(0x002A); // @002A [02-03, 41-47]..., 通報後のダイアログ通知
-        Header.LP_SetClaimSvrAvailableTime.Set(0x002B);
-        Header.LP_ClaimSvrStatusChanged.Set(0x002C);
-        Header.LP_SetTamingMobInfo.Set(0x002D);
-        Header.LP_QuestClear.Set(0x002E);
-        Header.LP_EntrustedShopCheckResult.Set(0x002F);
-        Header.LP_SkillLearnItemResult.Set(0x0030);
-        Header.LP_SortItemResult.Set(0x0031); //逆?
-        Header.LP_GatherItemResult.Set(0x0032);
-        // 0x0033 未使用
-        // 0x0034 未使用
-        Header.CHAR_INFO.Set(0x0035);
-        Header.PARTY_OPERATION.Set(0x0036);
-        // 0x0037 未使用
-        Header.EXPEDITION_OPERATION.Set(0x0038);
-        Header.BUDDYLIST.Set(0x0039);
-        // 0x003A 未使用
-        Header.GUILD_OPERATION.Set(0x003B);
-        Header.ALLIANCE_OPERATION.Set(0x003C);
-        Header.SPAWN_PORTAL.Set(0x003D);
-        // 0x003E
-        Header.SERVERMESSAGE.Set(0x003F);
-        Header.PIGMI_REWARD.Set(0x0040);
-        Header.OWL_OF_MINERVA.Set(0x0041);
-        // 0x0042
-        Header.ENGAGE_REQUEST.Set(0x0043);
-        Header.ENGAGE_RESULT.Set(0x0044);
-        // 0x0045 @0045 [09], ウェディング登録? @0091が送信される
-        // 0x0046 @0046 int,int, MTSか?
-        // 0x0047 @0047 [01]..., 現在ペットはこのえさが食べることができません。もう一度確認してください。
-        Header.YELLOW_CHAT.Set(0x0048);
-        // 0x0049
-        // 0x004A @004A ..., 当該モンスターの体力が強くてできません。
-        // 0x004B 未使用
-        Header.MINIGAME_PACHINKO_UPDATE_TAMA.Set(0x4C);
-        // 0x004D パチンコ景品受け取りUI
-        // 0x004E @004E int,int, パチンコ球をx子プレゼントします。というダイアログ誤字っているのでたぶん未実装的な奴
-        // 0x004F @004F [01 or 03], プレゼントの通知
-        // 0x0050 @0050 strig, string..., 相性占い結果UI
-        Header.FISHING_BOARD_UPDATE.Set(0x0051);
-        // 0x0052 @0052 String, 任意メッセージをダイアログに表示
-        // 0x0053 @0053 [01 (00, 02は謎)], ワールド変更申請のキャンセル
-        // 0x0054 @0054 int, プレイタイム終了まで残りx分x秒です。
-        // 0x0055 @0055 byte, なんも処理がされない関数
-        Header.PLAYER_NPC.Set(0x0056);
-        Header.MONSTERBOOK_ADD.Set(0x0057);
-        Header.MONSTERBOOK_CHANGE_COVER.Set(0x0058);
-        // 0x0059 BBS_OPERATION?
-        // 0x005A @005A String, 任意メッセージをダイアログに表示
-        Header.AVATAR_MEGA.Set(0x005B);
-        // 0x005C
-        // 0x005D
-        Header.UNKNOWN_RELOAD_MINIMAP.Set(0x005E);
-        // 0x005F
-        // 0x0060
-        // 0x0061
-        Header.ENERGY.Set(0x0062);
-        Header.GHOST_POINT.Set(0x0063);
-        Header.GHOST_STATUS.Set(0x0064);
-        Header.FAIRY_PEND_MSG.Set(0x0065);
-        Header.SEND_PEDIGREE.Set(0x0066);
-        Header.OPEN_FAMILY.Set(0x0067);
-        Header.FAMILY_MESSAGE.Set(0x0068);
-        Header.FAMILY_INVITE.Set(0x0069);
-        Header.FAMILY_JUNIOR.Set(0x006A);
-        Header.SENIOR_MESSAGE.Set(0x006B);
-        Header.FAMILY.Set(0x006C);
-        Header.REP_INCREASE.Set(0x006D);
-        Header.FAMILY_LOGGEDIN.Set(0x006E);
-        Header.FAMILY_BUFF.Set(0x006F);
-        Header.FAMILY_USE_REQUEST.Set(0x0070);
-        Header.LEVEL_UPDATE.Set(0x0071);
-        Header.MARRIAGE_UPDATE.Set(0x0072);
-        Header.JOB_UPDATE.Set(0x0073);
-        // 0x0074
-        Header.FOLLOW_REQUEST.Set(0x0075); // @0076を送信
-        // 0x0076 @0076 [不明], マジェスティックボックスの中身獲得後のUI
-        Header.TOP_MSG.Set(0x0077);
-        // 0x0078 @0078 string, イベンドガイドのNPC会話で任意文字列を表示
-        // 0x0079 @0079 [0x02 or], イベンドガイドのNPC会話のエラーメッセージの呼び出し
-        // 0x007A
-        // 0x007B @007B int,string, 灰色のメッセージ
-        // 0x007C @007C, ファムの歌を利用するか選択するUI, @00C2 [00or01]が送信される01は使用フラグ
-        Header.SKILL_MACRO.Set(0x007D);
+        Header.LP_END_CHARACTERDATA.Set(0);
         // ステージ切り替え
         Header.LP_BEGIN_STAGE.Set(0);
         {
@@ -1168,29 +975,29 @@ public class InPacket {
             Header.LP_FieldSpecificData.Set(0x0086);
             Header.LP_GroupMessage.Set(0x0087);
             Header.LP_Whisper.Set(0x0088);
-            Header.BLOCK_PORTAL.Set(0x0089);
-            Header.BOSS_ENV.Set(0x008A);
-            Header.MOVE_ENV.Set(0x008B);
-            Header.UPDATE_ENV.Set(0x008C);
-            // 0x008D
-            Header.MAP_EFFECT.Set(0x008E);
-            Header.CASH_SONG.Set(0x008F);
-            Header.GM_EFFECT.Set(0x0090);
-            Header.OX_QUIZ.Set(0x0091);
-            Header.GMEVENT_INSTRUCTIONS.Set(0x0092);
-            //Header.CLOCK.Set(0x0093);
+            Header.LP_MobSummonItemUseResult.Set(0x0089);
+            Header.LP_FieldEffect.Set(0x008A);
+            Header.LP_FieldObstacleOnOff.Set(0x008B);
+            Header.LP_FieldObstacleOnOffStatus.Set(0x008C);
+            Header.LP_FieldObstacleAllReset.Set(0x008D);
+            Header.LP_BlowWeather.Set(0x008E);
+            Header.LP_PlayJukeBox.Set(0x008F);
+            Header.LP_AdminResult.Set(0x0090);
+            Header.LP_Quiz.Set(0x0091);
+            Header.LP_Desc.Set(0x0092);
+            Header.LP_Clock.Set(0x0093);
             //Header.BOAT_EFF.Set(0x0094);
             //Header.BOAT_EFFECT.Set(0x0095);
             // 0x0096
             // 0x0097
             // 0x0098
-            Header.STOP_CLOCK.Set(0x0099);
+            Header.LP_DestroyClock.Set(0x0099);
             // 0x009A 未使用
             // 0x009B
             //Header.PYRAMID_UPDATE.Set(0x009C);
             //Header.PYRAMID_RESULT.Set(0x009D);
             // 0x009E
-            Header.MOVE_PLATFORM.Set(0x009F);
+            Header.LP_FootHoldInfo.Set(0x009F);
             // 0x00A0 0x00F2を送信
 
             // プレイヤー
@@ -1203,7 +1010,7 @@ public class InPacket {
                     Header.LP_UserChat.Set(0x00A3);
                     Header.LP_UserChatNLCPQ.Set(0x00A4);
                     Header.LP_UserADBoard.Set(0x00A5);
-                    Header.UPDATE_CHAR_BOX.Set(0x00A6); // 名称不明
+                    Header.LP_UserMiniRoomBalloon.Set(0x00A6);
                     Header.LP_UserConsumeItemEffect.Set(0x00A7);
                     Header.LP_UserItemUpgradeEffect.Set(0x00A8); // 書
                     Header.LP_UserItemHyperUpgradeEffect.Set(0x00A9); // 装備強化の書
@@ -1399,10 +1206,14 @@ public class InPacket {
                 Header.LP_DropLeaveField.Set(0x012A);
             }
             Header.LP_END_DROPPOOL.Set(0);
-
-            Header.KITE_MESSAGE.Set(0x012B);
-            Header.SPAWN_KITE.Set(0x012C);
-            Header.REMOVE_KITE.Set(0x012D);
+            // ???
+            Header.LP_BEGIN_MESSAGEBOXPOOL.Set(0);
+            {
+                Header.LP_CreateMessgaeBoxFailed.Set(0x012B);
+                Header.LP_MessageBoxEnterField.Set(0x012C);
+                Header.LP_MessageBoxLeaveField.Set(0x012D);
+            }
+            Header.LP_END_MESSAGEBOXPOOL.Set(0);
             // ミスト
             Header.LP_BEGIN_AFFECTEDAREAPOOL.Set(0);
             {
@@ -1621,46 +1432,46 @@ public class InPacket {
         //Header.FINISH_SORT.Set(0x0031);
         //Header.FINISH_GATHER.Set(0x0032);
         // 0x0033
-        Header.CHAR_INFO.Set(0x0035 + 1);
-        Header.PARTY_OPERATION.Set(0x0036 + 1);
-        Header.EXPEDITION_OPERATION.Set(0x0038 + 1);
-        Header.BUDDYLIST.Set(0x0039 + 1);
-        Header.GUILD_OPERATION.Set(0x003B + 1);
-        Header.ALLIANCE_OPERATION.Set(0x003C + 1);
-        Header.SPAWN_PORTAL.Set(0x003D + 1);
-        Header.SERVERMESSAGE.Set(0x003F + 1);
-        Header.PIGMI_REWARD.Set(0x0040 + 1);
-        Header.OWL_OF_MINERVA.Set(0x0041 + 1);
-        Header.ENGAGE_REQUEST.Set(0x0043 + 1);
-        Header.ENGAGE_RESULT.Set(0x0044 + 1);
-        Header.YELLOW_CHAT.Set(0x0048 + 1);  // 基準点
+        Header.LP_CharacterInfo.Set(0x0035 + 1);
+        Header.LP_PartyResult.Set(0x0036 + 1);
+        Header.LP_ExpeditionNoti.Set(0x0038 + 1);
+        Header.LP_FriendResult.Set(0x0039 + 1);
+        Header.LP_GuildResult.Set(0x003B + 1);
+        Header.LP_AllianceResult.Set(0x003C + 1);
+        Header.LP_TownPortal.Set(0x003D + 1);
+        Header.LP_BroadcastMsg.Set(0x003F + 1);
+        Header.LP_IncubatorResult.Set(0x0040 + 1);
+        Header.LP_ShopScannerResult.Set(0x0041 + 1);
+        Header.LP_MarriageRequest.Set(0x0043 + 1);
+        Header.LP_MarriageResult.Set(0x0044 + 1);
+        Header.LP_SetWeekEventMessage.Set(0x0048 + 1);  // 基準点
         Header.MINIGAME_PACHINKO_UPDATE_TAMA.Set(0x4C + 1); // 基準点
         Header.FISHING_BOARD_UPDATE.Set(0x0051 + 1);
         Header.PLAYER_NPC.Set(0x0056 + 1); // NPC
-        Header.MONSTERBOOK_ADD.Set(0x0057 + 1); // NPC
-        Header.MONSTERBOOK_CHANGE_COVER.Set(0x0058 + 1);
-        Header.AVATAR_MEGA.Set(0x005B + 1);
+        Header.LP_MonsterBookSetCard.Set(0x0057 + 1); // NPC
+        Header.LP_MonsterBookSetCover.Set(0x0058 + 1);
+        Header.LP_AvatarMegaphoneRes.Set(0x005B + 1);
         Header.UNKNOWN_RELOAD_MINIMAP.Set(0x005E + 1);
         Header.ENERGY.Set(0x0062 + 1);
         Header.GHOST_POINT.Set(0x0063 + 1);
         Header.GHOST_STATUS.Set(0x0064 + 1);
         Header.FAIRY_PEND_MSG.Set(0x0065 + 1);
-        Header.SEND_PEDIGREE.Set(0x0066 + 1);
-        Header.OPEN_FAMILY.Set(0x0067 + 1);
-        Header.FAMILY_MESSAGE.Set(0x0068 + 1);
-        Header.FAMILY_INVITE.Set(0x0069 + 1);
-        Header.FAMILY_JUNIOR.Set(0x006A + 1);
-        Header.SENIOR_MESSAGE.Set(0x006B + 1);
-        Header.FAMILY.Set(0x006C + 1);
-        Header.REP_INCREASE.Set(0x006D + 1);
-        Header.FAMILY_LOGGEDIN.Set(0x006E + 1);
-        Header.FAMILY_BUFF.Set(0x006F + 1);
-        Header.FAMILY_USE_REQUEST.Set(0x0070 + 1);
-        Header.LEVEL_UPDATE.Set(0x0071 + 1);
-        Header.MARRIAGE_UPDATE.Set(0x0072 + 1);
-        Header.JOB_UPDATE.Set(0x0073 + 1);
-        Header.FOLLOW_REQUEST.Set(0x0075 + 1);
-        Header.TOP_MSG.Set(0x0077 + 1);
+        Header.LP_FamilyChartResult.Set(0x0066 + 1);
+        Header.LP_FamilyInfoResult.Set(0x0067 + 1);
+        Header.LP_FamilyResult.Set(0x0068 + 1);
+        Header.LP_FamilyJoinRequest.Set(0x0069 + 1);
+        Header.LP_FamilyJoinRequestResult.Set(0x006A + 1);
+        Header.LP_FamilyJoinAccepted.Set(0x006B + 1);
+        Header.LP_FamilyPrivilegeList.Set(0x006C + 1);
+        Header.LP_FamilyFamousPointIncResult.Set(0x006D + 1);
+        Header.LP_FamilyNotifyLoginOrLogout.Set(0x006E + 1);
+        Header.LP_FamilySetPrivilege.Set(0x006F + 1);
+        Header.LP_FamilySummonRequest.Set(0x0070 + 1);
+        Header.LP_NotifyLevelUp.Set(0x0071 + 1);
+        Header.LP_NotifyWedding.Set(0x0072 + 1);
+        Header.LP_NotifyJobChange.Set(0x0073 + 1);
+        Header.LP_SetPassenserRequest.Set(0x0075 + 1);
+        Header.LP_ScriptProgressMessage.Set(0x0077 + 1);
         // 0x007A - 0x007Fなんか増えた
         // サーバー切り替え系
         Header.LP_SetField.Set(0x007E + 3);
@@ -1671,24 +1482,24 @@ public class InPacket {
         Header.LP_FieldSpecificData.Set(0x0086 + 3);
         Header.LP_GroupMessage.Set(0x0087 + 3);
         Header.LP_Whisper.Set(0x0088 + 3);
-        Header.BLOCK_PORTAL.Set(0x0089 + 3);
-        Header.BOSS_ENV.Set(0x008A + 3);
-        Header.MOVE_ENV.Set(0x008B + 3);
-        Header.UPDATE_ENV.Set(0x008C + 3);
-        Header.MAP_EFFECT.Set(0x008E + 3);
-        Header.CASH_SONG.Set(0x008F + 3);
-        Header.GM_EFFECT.Set(0x0090 + 3);
-        Header.OX_QUIZ.Set(0x0091 + 3);
-        Header.GMEVENT_INSTRUCTIONS.Set(0x0092 + 3);
-        Header.STOP_CLOCK.Set(0x0099 + 3);
-        Header.MOVE_PLATFORM.Set(0x009F + 3);
+        Header.LP_MobSummonItemUseResult.Set(0x0089 + 3);
+        Header.LP_FieldEffect.Set(0x008A + 3);
+        Header.LP_FieldObstacleOnOff.Set(0x008B + 3);
+        Header.LP_FieldObstacleOnOffStatus.Set(0x008C + 3);
+        Header.LP_BlowWeather.Set(0x008E + 3);
+        Header.LP_PlayJukeBox.Set(0x008F + 3);
+        Header.LP_AdminResult.Set(0x0090 + 3);
+        Header.LP_Quiz.Set(0x0091 + 3);
+        Header.LP_Desc.Set(0x0092 + 3);
+        Header.LP_DestroyClock.Set(0x0099 + 3);
+        Header.LP_FootHoldInfo.Set(0x009F + 3);
         // GameServer Player 0xA1 -> 0xA5
         Header.LP_UserEnterField.Set(0x00A1 + 4);
         Header.LP_UserLeaveField.Set(0x00A2 + 4);
         Header.LP_UserChat.Set(0x00A3 + 4);
         Header.LP_UserChatNLCPQ.Set(0x00A4 + 4);
         Header.LP_UserADBoard.Set(0x00A5 + 4);
-        Header.UPDATE_CHAR_BOX.Set(0x00A6 + 4);
+        Header.LP_UserMiniRoomBalloon.Set(0x00A6 + 4);
         Header.LP_UserItemUpgradeEffect.Set(0x00A8 + 4);
         Header.LP_UserItemReleaseEffect.Set(0x00AB + 4);
         Header.LP_UserItemUnreleaseEffect.Set(0x00AC + 4);

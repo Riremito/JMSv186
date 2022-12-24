@@ -113,7 +113,7 @@ public class MobPacket {
     public static MaplePacket showBossHP(final MapleMonster mob) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.BOSS_ENV.Get());
+        mplew.writeShort(InPacket.Header.LP_FieldEffect.Get());
         mplew.write(5);
         mplew.writeInt(mob.getId());
         if (mob.getHp() > Integer.MAX_VALUE) {

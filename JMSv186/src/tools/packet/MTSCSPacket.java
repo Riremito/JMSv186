@@ -86,7 +86,7 @@ public class MTSCSPacket {
 
     public static MaplePacket playCashSong(int itemid, String name) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.CASH_SONG.Get());
+        mplew.writeShort(InPacket.Header.LP_PlayJukeBox.Get());
         mplew.writeInt(itemid);
         mplew.writeMapleAsciiString(name);
         return mplew.getPacket();

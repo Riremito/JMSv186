@@ -29,7 +29,7 @@ public class MonsterBookPacket {
     public static MaplePacket addCard(boolean full, int cardid, int level) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.MONSTERBOOK_ADD.Get());
+        mplew.writeShort(InPacket.Header.LP_MonsterBookSetCard.Get());
 
         if (!full) {
             mplew.write(1);
@@ -66,7 +66,7 @@ public class MonsterBookPacket {
     public static MaplePacket changeCover(int cardid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.MONSTERBOOK_CHANGE_COVER.Get());
+        mplew.writeShort(InPacket.Header.LP_MonsterBookSetCover.Get());
         mplew.writeInt(cardid);
 
         return mplew.getPacket();

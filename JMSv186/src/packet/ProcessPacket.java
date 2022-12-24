@@ -312,7 +312,7 @@ public class ProcessPacket {
 
         // メガホン
         public static MaplePacket MegaphoneBlue(String text) {
-            InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
+            InPacket p = new InPacket(InPacket.Header.LP_BroadcastMsg);
             p.Encode1(Action.MEGAPHONE_BLUE.Get());
             p.EncodeStr(text);
             return p.Get();
@@ -320,7 +320,7 @@ public class ProcessPacket {
 
         // 拡声器
         public static MaplePacket Megaphone(String text, byte channel, byte ear) {
-            InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
+            InPacket p = new InPacket(InPacket.Header.LP_BroadcastMsg);
             p.Encode1(Action.MEGAPHONE.Get());
             p.EncodeStr(text);
             p.Encode1((byte) (channel - 1));
@@ -330,7 +330,7 @@ public class ProcessPacket {
 
         // ハート拡声器
         public static MaplePacket MegaphoneHeart(String text, byte channel, byte ear) {
-            InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
+            InPacket p = new InPacket(InPacket.Header.LP_BroadcastMsg);
             p.Encode1(Action.MEGAPHONE_HEART.Get());
             p.EncodeStr(text);
             p.Encode1((byte) (channel - 1));
@@ -340,7 +340,7 @@ public class ProcessPacket {
 
         // ドクロ拡声器
         public static MaplePacket MegaphoneSkull(String text, byte channel, byte ear) {
-            InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
+            InPacket p = new InPacket(InPacket.Header.LP_BroadcastMsg);
             p.Encode1(Action.MEGAPHONE_SKULL.Get());
             p.EncodeStr(text);
             p.Encode1((byte) (channel - 1));
@@ -350,7 +350,7 @@ public class ProcessPacket {
 
         // アイテム拡声器
         public static MaplePacket MegaphoneItem(String text, byte channel, byte ear, byte showitem, IItem item) {
-            InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
+            InPacket p = new InPacket(InPacket.Header.LP_BroadcastMsg);
             p.Encode1(Action.MEGAPHONE_ITEM.Get());
             p.EncodeStr(text);
             p.Encode1((byte) (channel - 1));
@@ -368,7 +368,7 @@ public class ProcessPacket {
 
         // 三連拡声器
         public static MaplePacket MegaphoneTriple(List<String> text, byte channel, byte ear) {
-            InPacket p = new InPacket(InPacket.Header.SERVERMESSAGE);
+            InPacket p = new InPacket(InPacket.Header.LP_BroadcastMsg);
             p.Encode1(Action.MEGAPHONE_TRIPLE.Get());
             // 1行目
             p.EncodeStr(text.get(0));

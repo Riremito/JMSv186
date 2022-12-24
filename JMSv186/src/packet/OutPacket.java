@@ -668,12 +668,12 @@ public class OutPacket {
             // 0x0071, CP_UserUseGachaponRemoteRequest or CP_UserUseWaterOfLife
             Header.CP_UserRepairDurabilityAll.Set(0x0072);
             Header.CP_UserRepairDurability.Set(0x0073);
-            Header.CP_UserQuestRecordSetState.Set(0x0074);
-            Header.CP_UserClientTimerEndRequest.Set(0x0075);
-            Header.SOLOMON.Set(0x0076);
-            Header.CP_UserExpUpItemUseRequest.Set(0x0077); // 名称が違うかも
-            Header.CP_UserFollowCharacterRequest.Set(0x0078);
-            Header.CP_UserFollowCharacterWithdraw.Set(0x0079);
+            Header.CP_UserFollowCharacterRequest.Set(0x0074);
+            Header.CP_UserFollowCharacterWithdraw.Set(0x0076);
+            Header.CP_UserExpUpItemUseRequest.Set(0x0077); // OK
+            //Header.CP_UserQuestRecordSetState.Set(0x0074);
+            //Header.CP_UserClientTimerEndRequest.Set(0x0075);
+            //Header.SOLOMON.Set(0x0076);
             Header.USE_TREASUER_CHEST.Set(0x007A); // 不明
             Header.CP_BroadcastMsg.Set(0x007B);
             Header.CP_GroupMessage.Set(0x007C);

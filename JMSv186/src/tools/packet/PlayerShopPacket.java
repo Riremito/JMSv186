@@ -41,7 +41,7 @@ public class PlayerShopPacket {
     public static final MaplePacket addCharBox(final MapleCharacter c, final int type) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.UPDATE_CHAR_BOX.Get());
+        mplew.writeShort(InPacket.Header.LP_UserMiniRoomBalloon.Get());
         mplew.writeInt(c.getId());
         PacketHelper.addAnnounceBox(mplew, c);
 
@@ -51,7 +51,7 @@ public class PlayerShopPacket {
     public static final MaplePacket removeCharBox(final MapleCharacter c) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.UPDATE_CHAR_BOX.Get());
+        mplew.writeShort(InPacket.Header.LP_UserMiniRoomBalloon.Get());
         mplew.writeInt(c.getId());
         mplew.write(0);
 
@@ -76,7 +76,7 @@ public class PlayerShopPacket {
     public static final MaplePacket sendPlayerShopBox(final MapleCharacter c) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.UPDATE_CHAR_BOX.Get());
+        mplew.writeShort(InPacket.Header.LP_UserMiniRoomBalloon.Get());
         mplew.writeInt(c.getId());
         PacketHelper.addAnnounceBox(mplew, c);
 
