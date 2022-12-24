@@ -115,7 +115,7 @@ public class UIPacket {
     public static MaplePacket summonHelper(boolean summon) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SUMMON_HINT.Get());
+        mplew.writeShort(InPacket.Header.LP_UserHireTutor.Get());
         mplew.write(summon ? 1 : 0);
 
         return mplew.getPacket();
@@ -124,7 +124,7 @@ public class UIPacket {
     public static MaplePacket summonMessage(int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SUMMON_HINT_MSG.Get());
+        mplew.writeShort(InPacket.Header.LP_UserTutorMsg.Get());
         mplew.write(1);
         mplew.writeInt(type);
         mplew.writeInt(7000); // probably the delay
@@ -135,7 +135,7 @@ public class UIPacket {
     public static MaplePacket summonMessage(String message) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.SUMMON_HINT_MSG.Get());
+        mplew.writeShort(InPacket.Header.LP_UserTutorMsg.Get());
         mplew.write(0);
         mplew.writeMapleAsciiString(message);
         mplew.writeInt(200); // IDK
@@ -148,7 +148,7 @@ public class UIPacket {
     public static MaplePacket IntroLock(boolean enable) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.CYGNUS_INTRO_LOCK.Get());
+        mplew.writeShort(InPacket.Header.LP_SetDirectionMode.Get());
         mplew.write(enable ? 1 : 0);
         mplew.writeInt(enable ? 1 : 0);
 
@@ -158,7 +158,7 @@ public class UIPacket {
     public static MaplePacket IntroDisableUI(boolean enable) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.CYGNUS_INTRO_DISABLE_UI.Get());
+        mplew.writeShort(InPacket.Header.LP_SetStandAloneMode.Get());
         mplew.write(enable ? 1 : 0);
 
         return mplew.getPacket();

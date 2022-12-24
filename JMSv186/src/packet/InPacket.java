@@ -922,22 +922,22 @@ public class InPacket {
         Header.LP_UserItemUpgradeEffect.Set(0x0087); // 00A8 -> 0087
 
         // ===== Mob =====
-        Header.SPAWN_MONSTER.Set(0x00C2);
-        Header.KILL_MONSTER.Set(Header.SPAWN_MONSTER.Get() + 0x01);
-        Header.SPAWN_MONSTER_CONTROL.Set(Header.SPAWN_MONSTER.Get() + 0x02);
+        Header.LP_MobEnterField.Set(0x00C2);
+        Header.LP_MobLeaveField.Set(Header.LP_MobEnterField.Get() + 0x01);
+        Header.LP_MobChangeController.Set(Header.LP_MobEnterField.Get() + 0x02);
         // ===== Mob Movement ====
-        Header.MOVE_MONSTER.Set(0x00C5);
-        Header.MOVE_MONSTER_RESPONSE.Set(Header.MOVE_MONSTER.Get() + 0x01);
+        Header.LP_MobMove.Set(0x00C5);
+        Header.LP_MobCtrlAck.Set(Header.LP_MobMove.Get() + 0x01);
         // Header.MOVE_MONSTER.Get() + 0x02 は存在しない
-        Header.APPLY_MONSTER_STATUS.Set(Header.MOVE_MONSTER.Get() + 0x03);
-        Header.CANCEL_MONSTER_STATUS.Set(Header.MOVE_MONSTER.Get() + 0x04);
+        Header.LP_MobStatSet.Set(Header.LP_MobMove.Get() + 0x03);
+        Header.LP_MobStatReset.Set(Header.LP_MobMove.Get() + 0x04);
         // Header.MOVE_MONSTER.Get() + 0x05
-        Header.MOB_TO_MOB_DAMAGE.Set(Header.MOVE_MONSTER.Get() + 0x06);
-        Header.DAMAGE_MONSTER.Set(Header.MOVE_MONSTER.Get() + 0x07);
+        Header.LP_MobAffected.Set(Header.LP_MobMove.Get() + 0x06);
+        Header.LP_MobDamaged.Set(Header.LP_MobMove.Get() + 0x07);
         // Header.MOVE_MONSTER.Get() + 0x08
         // Header.MOVE_MONSTER.Get() + 0x09
         // Header.MOVE_MONSTER.Get() + 0x0A
-        Header.SHOW_MONSTER_HP.Set(Header.MOVE_MONSTER.Get() + 0x0B);
+        Header.LP_MobHPIndicator.Set(Header.LP_MobMove.Get() + 0x0B);
         /*
         Header.SHOW_MAGNET.Set(Header.MOVE_MONSTER.Get() + 0x0C);
         Header.CATCH_MONSTER.Set(0x0114);
@@ -948,18 +948,18 @@ public class InPacket {
         Header.TALK_MONSTER.Set(0x0119);
          */
 
-        Header.SPAWN_NPC.Set(0x00D5);
-        Header.SPAWN_NPC_REQUEST_CONTROLLER.Set(0x00D7);
-        Header.NPC_TALK.Set(0x0100); // 00698C63
-        Header.OPEN_NPC_SHOP.Set(Header.NPC_TALK.Get() + 0x01);
-        Header.CONFIRM_SHOP_TRANSACTION.Set(Header.NPC_TALK.Get() + 0x02);
+        Header.LP_NpcEnterField.Set(0x00D5);
+        Header.LP_NpcChangeController.Set(0x00D7);
+        Header.LP_ScriptMessage.Set(0x0100); // 00698C63
+        Header.LP_OpenShopDlg.Set(Header.LP_ScriptMessage.Get() + 0x01);
+        Header.LP_ShopResult.Set(Header.LP_ScriptMessage.Get() + 0x02);
 
         //Header.OPEN_STORAGE.Set(0x0104);
         //Header.MERCH_ITEM_MSG.Set(Header.NPC_TALK.Get() + 0x05);
         //Header.MERCH_ITEM_STORE.Set(Header.NPC_TALK.Get() + 0x06);
         //Header.RPS_GAME.Set(Header.NPC_TALK.Get() + 0x07);
         //Header.MESSENGER.Set(Header.NPC_TALK.Get() + 0x08);
-        Header.PLAYER_INTERACTION.Set(Header.NPC_TALK.Get() + 0x09);
+        Header.LP_MiniRoom.Set(Header.LP_ScriptMessage.Get() + 0x09);
     }
 
     public static void SetForJMSv176() {
@@ -976,9 +976,9 @@ public class InPacket {
 
         Header.LP_SetField.Set(0x007B); // wrong
 
-        Header.SPAWN_NPC.Set(0xFFFF);
+        Header.LP_NpcEnterField.Set(0xFFFF);
         Header.FAMILY.Set(0xFFFF);
-        Header.KEYMAP.Set(0xFFFF);
+        Header.LP_FuncKeyMappedInit.Set(0xFFFF);
         Header.SERVERMESSAGE.Set(0xFFFF);
         Header.OPEN_FAMILY.Set(0xFFFF);
         Header.LP_SetCashShop.Set(0xFFFF);
@@ -998,9 +998,9 @@ public class InPacket {
 
         Header.WARP_TO_MAP.Set(0x007B);
 
-        Header.SPAWN_NPC.Set(0xFFFF);
+        Header.LP_NpcEnterField.Set(0xFFFF);
         Header.FAMILY.Set(0xFFFF);
-        Header.KEYMAP.Set(0xFFFF);
+        Header.LP_FuncKeyMappedInit.Set(0xFFFF);
         Header.SERVERMESSAGE.Set(0xFFFF);
         Header.OPEN_FAMILY.Set(0xFFFF);
         Header.LP_SetCashShop.Set(0xFFFF);
@@ -1163,286 +1163,385 @@ public class InPacket {
         // マップ上の処理
         Header.LP_BEGIN_FIELD.Set(0);
         {
-        }
-        Header.LP_TransferFieldReqIgnored.Set(0x0084); // @0084 [01-07], マップ移動時のエラーメッセージ (テレポストーン?)
-        Header.LP_TransferChannelReqIgnored.Set(0x0085);
-        Header.LP_FieldSpecificData.Set(0x0086);
-        Header.LP_GroupMessage.Set(0x0087);
-        Header.LP_Whisper.Set(0x0088);
-        Header.BLOCK_PORTAL.Set(0x0089);
-        Header.BOSS_ENV.Set(0x008A);
-        Header.MOVE_ENV.Set(0x008B);
-        Header.UPDATE_ENV.Set(0x008C);
-        // 0x008D
-        Header.MAP_EFFECT.Set(0x008E);
-        Header.CASH_SONG.Set(0x008F);
-        Header.GM_EFFECT.Set(0x0090);
-        Header.OX_QUIZ.Set(0x0091);
-        Header.GMEVENT_INSTRUCTIONS.Set(0x0092);
-        //Header.CLOCK.Set(0x0093);
-        //Header.BOAT_EFF.Set(0x0094);
-        //Header.BOAT_EFFECT.Set(0x0095);
-        // 0x0096
-        // 0x0097
-        // 0x0098
-        Header.STOP_CLOCK.Set(0x0099);
-        // 0x009A 未使用
-        // 0x009B
-        //Header.PYRAMID_UPDATE.Set(0x009C);
-        //Header.PYRAMID_RESULT.Set(0x009D);
-        // 0x009E
-        Header.MOVE_PLATFORM.Set(0x009F);
-        // 0x00A0 0x00F2を送信
+            Header.LP_TransferFieldReqIgnored.Set(0x0084); // @0084 [01-07], マップ移動時のエラーメッセージ (テレポストーン?)
+            Header.LP_TransferChannelReqIgnored.Set(0x0085);
+            Header.LP_FieldSpecificData.Set(0x0086);
+            Header.LP_GroupMessage.Set(0x0087);
+            Header.LP_Whisper.Set(0x0088);
+            Header.BLOCK_PORTAL.Set(0x0089);
+            Header.BOSS_ENV.Set(0x008A);
+            Header.MOVE_ENV.Set(0x008B);
+            Header.UPDATE_ENV.Set(0x008C);
+            // 0x008D
+            Header.MAP_EFFECT.Set(0x008E);
+            Header.CASH_SONG.Set(0x008F);
+            Header.GM_EFFECT.Set(0x0090);
+            Header.OX_QUIZ.Set(0x0091);
+            Header.GMEVENT_INSTRUCTIONS.Set(0x0092);
+            //Header.CLOCK.Set(0x0093);
+            //Header.BOAT_EFF.Set(0x0094);
+            //Header.BOAT_EFFECT.Set(0x0095);
+            // 0x0096
+            // 0x0097
+            // 0x0098
+            Header.STOP_CLOCK.Set(0x0099);
+            // 0x009A 未使用
+            // 0x009B
+            //Header.PYRAMID_UPDATE.Set(0x009C);
+            //Header.PYRAMID_RESULT.Set(0x009D);
+            // 0x009E
+            Header.MOVE_PLATFORM.Set(0x009F);
+            // 0x00A0 0x00F2を送信
 
-        // プレイヤー
-        Header.LP_BEGIN_USERPOOL.Set(0);
-        {
-        }
-        Header.LP_UserEnterField.Set(0x00A1);
-        Header.LP_UserLeaveField.Set(0x00A2);
-        Header.LP_BEGIN_USERCOMMON.Set(0);
-        {
-            Header.LP_UserChat.Set(0x00A3);
-            Header.LP_UserChatNLCPQ.Set(0x00A4);
-            Header.LP_UserADBoard.Set(0x00A5);
-            Header.UPDATE_CHAR_BOX.Set(0x00A6); // 名称不明
-            Header.LP_UserConsumeItemEffect.Set(0x00A7);
-            Header.LP_UserItemUpgradeEffect.Set(0x00A8); // 書
-            Header.LP_UserItemHyperUpgradeEffect.Set(0x00A9); // 装備強化の書
-            Header.LP_UserItemOptionUpgradeEffect.Set(0x00AA); // ミラクルキューブ
-            Header.LP_UserItemReleaseEffect.Set(0x00AB); // 虫眼鏡
-            Header.LP_UserItemUnreleaseEffect.Set(0x00AC); // 虫眼鏡?
-            Header.LP_UserHitByUser.Set(0x00AD); // Damage Effect
-            // 0x00AE
-            // 0x00AF
-            // 0x00B0
-            Header.LP_UserFollowCharacter.Set(0x00B1);
-            Header.FISHING_CAUGHT.Set(0x00B2); // 名称不明
-            Header.LP_ShowPamsSongResult.Set(0x00B3);
-            // ペット
-            Header.LP_BEGIN_PET.Set(0);
+            // プレイヤー
+            Header.LP_BEGIN_USERPOOL.Set(0);
             {
-                Header.LP_PetActivated.Set(0x00B4);
-                Header.LP_PetEvol.Set(0x00B5);
-                Header.LP_PetTransferField.Set(0x00B6);
-                Header.LP_PetMove.Set(0x00B7);
-                Header.LP_PetAction.Set(0x00B8);
-                Header.LP_PetNameChanged.Set(0x00B9);
-                Header.LP_PetLoadExceptionList.Set(0x00BA);
-                Header.LP_PetActionCommand.Set(0x00BB);
-            }
-            Header.LP_END_PET.Set(0);
-            // 召喚
-            Header.SPAWN_SUMMON.Set(0x00BC);
-            Header.REMOVE_SUMMON.Set(0x00BD);
-            Header.MOVE_SUMMON.Set(0x00BE);
-            Header.SUMMON_ATTACK.Set(0x00BF);
-            Header.SUMMON_SKILL.Set(0x00C0);
-            Header.DAMAGE_SUMMON.Set(0x00C1);
-            // エヴァンのドラゴン
-            Header.LP_BEGIN_DRAGON.Set(0);
-            {
-                Header.LP_DragonEnterField.Set(0x00C2);
-                Header.LP_DragonMove.Set(0x00C3);
-                Header.LP_DragonLeaveField.Set(0x00C4);
-            }
-            Header.LP_END_DRAGON.Set(0);
-        }
-        Header.LP_END_USERCOMMON.Set(0);
-        // 他のプレイヤー
-        Header.LP_BEGIN_USERREMOTE.Set(0);
-        {
-            // 0x00C5 未使用
-            Header.LP_UserMove.Set(0x00C6);
-            Header.LP_UserMeleeAttack.Set(0x00C7);
-            Header.LP_UserShootAttack.Set(0x00C8);
-            Header.LP_UserMagicAttack.Set(0x00C9);
-            Header.LP_UserBodyAttack.Set(0x00CA);
-            Header.LP_UserSkillPrepare.Set(0x00CB);
-            Header.LP_UserSkillCancel.Set(0x00CC);
-            Header.LP_UserHit.Set(0x00CD);
-            Header.LP_UserEmotion.Set(0x00CE);
-            Header.LP_UserSetActiveEffectItem.Set(0x00CF);
-            Header.LP_UserShowUpgradeTombEffect.Set(0x00D0);
-            Header.LP_UserSetActivePortableChair.Set(0x00D1);
-            Header.LP_UserAvatarModified.Set(0x00D2);
-            Header.LP_UserEffectRemote.Set(0x00D3);
-            Header.LP_UserTemporaryStatSet.Set(0x00D4);
-            Header.LP_UserTemporaryStatReset.Set(0x00D5);
-            Header.LP_UserHP.Set(0x00D6);
-            Header.LP_UserGuildNameChanged.Set(0x00D7);
-            Header.LP_UserGuildMarkChanged.Set(0x00D8);
-        }
-        Header.LP_END_USERREMOTE.Set(0);
+                Header.LP_UserEnterField.Set(0x00A1);
+                Header.LP_UserLeaveField.Set(0x00A2);
+                Header.LP_BEGIN_USERCOMMON.Set(0);
+                {
+                    Header.LP_UserChat.Set(0x00A3);
+                    Header.LP_UserChatNLCPQ.Set(0x00A4);
+                    Header.LP_UserADBoard.Set(0x00A5);
+                    Header.UPDATE_CHAR_BOX.Set(0x00A6); // 名称不明
+                    Header.LP_UserConsumeItemEffect.Set(0x00A7);
+                    Header.LP_UserItemUpgradeEffect.Set(0x00A8); // 書
+                    Header.LP_UserItemHyperUpgradeEffect.Set(0x00A9); // 装備強化の書
+                    Header.LP_UserItemOptionUpgradeEffect.Set(0x00AA); // ミラクルキューブ
+                    Header.LP_UserItemReleaseEffect.Set(0x00AB); // 虫眼鏡
+                    Header.LP_UserItemUnreleaseEffect.Set(0x00AC); // 虫眼鏡?
+                    Header.LP_UserHitByUser.Set(0x00AD); // Damage Effect
+                    // 0x00AE
+                    // 0x00AF
+                    // 0x00B0
+                    Header.LP_UserFollowCharacter.Set(0x00B1);
+                    Header.FISHING_CAUGHT.Set(0x00B2); // 名称不明
+                    Header.LP_ShowPamsSongResult.Set(0x00B3);
+                    // ペット
+                    Header.LP_BEGIN_PET.Set(0);
+                    {
+                        Header.LP_PetActivated.Set(0x00B4);
+                        Header.LP_PetEvol.Set(0x00B5);
+                        Header.LP_PetTransferField.Set(0x00B6);
+                        Header.LP_PetMove.Set(0x00B7);
+                        Header.LP_PetAction.Set(0x00B8);
+                        Header.LP_PetNameChanged.Set(0x00B9);
+                        Header.LP_PetLoadExceptionList.Set(0x00BA);
+                        Header.LP_PetActionCommand.Set(0x00BB);
+                    }
+                    Header.LP_END_PET.Set(0);
+                    // 召喚
+                    Header.LP_BEGIN_SUMMONED.Set(0);
+                    {
+                        Header.LP_SummonedEnterField.Set(0x00BC);
+                        Header.LP_SummonedLeaveField.Set(0x00BD);
+                        Header.LP_SummonedMove.Set(0x00BE);
+                        Header.LP_SummonedAttack.Set(0x00BF);
+                        Header.LP_SummonedSkill.Set(0x00C0);
+                        Header.LP_SummonedHit.Set(0x00C1);
+                    }
+                    Header.LP_END_SUMMONED.Set(0);
+                    // エヴァンのドラゴン
+                    Header.LP_BEGIN_DRAGON.Set(0);
+                    {
+                        Header.LP_DragonEnterField.Set(0x00C2);
+                        Header.LP_DragonMove.Set(0x00C3);
+                        Header.LP_DragonLeaveField.Set(0x00C4);
+                    }
+                    Header.LP_END_DRAGON.Set(0);
+                }
+                Header.LP_END_USERCOMMON.Set(0);
+                // 他のプレイヤー
+                Header.LP_BEGIN_USERREMOTE.Set(0);
+                {
+                    // 0x00C5 未使用
+                    Header.LP_UserMove.Set(0x00C6);
+                    Header.LP_UserMeleeAttack.Set(0x00C7);
+                    Header.LP_UserShootAttack.Set(0x00C8);
+                    Header.LP_UserMagicAttack.Set(0x00C9);
+                    Header.LP_UserBodyAttack.Set(0x00CA);
+                    Header.LP_UserSkillPrepare.Set(0x00CB);
+                    Header.LP_UserSkillCancel.Set(0x00CC);
+                    Header.LP_UserHit.Set(0x00CD);
+                    Header.LP_UserEmotion.Set(0x00CE);
+                    Header.LP_UserSetActiveEffectItem.Set(0x00CF);
+                    Header.LP_UserShowUpgradeTombEffect.Set(0x00D0);
+                    Header.LP_UserSetActivePortableChair.Set(0x00D1);
+                    Header.LP_UserAvatarModified.Set(0x00D2);
+                    Header.LP_UserEffectRemote.Set(0x00D3);
+                    Header.LP_UserTemporaryStatSet.Set(0x00D4);
+                    Header.LP_UserTemporaryStatReset.Set(0x00D5);
+                    Header.LP_UserHP.Set(0x00D6);
+                    Header.LP_UserGuildNameChanged.Set(0x00D7);
+                    Header.LP_UserGuildMarkChanged.Set(0x00D8);
+                }
+                Header.LP_END_USERREMOTE.Set(0);
 
-        Header.LP_UserThrowGrenade.Set(0x00D9); // 不明
-        // クライアントサイドの処理
-        Header.LP_BEGIN_USERLOCAL.Set(0);
-        Header.LP_UserSitResult.Set(0x00DA);
-        Header.LP_UserEmotionLocal.Set(0x00DB); // 0x00CEと同一
-        Header.LP_UserEffectLocal.Set(0x00DC); // 0x00D3と同一
-        Header.LP_UserTeleport.Set(0x00DD);
-        Header.LP_Premium.Set(0x00DE); // 未使用?
-        Header.LP_MesoGive_Succeeded.Set(0x00DF);
-        Header.LP_MesoGive_Failed.Set(0x00E0);
-        Header.LP_Random_Mesobag_Succeed.Set(0x00E1);
-        Header.LP_Random_Mesobag_Failed.Set(0x00E2);
-        Header.UPDATE_QUEST_INFO.Set(0x00E3);
-        // 0x00E4
-        // 0x00E5
-        // 0x00E6 @00E6 "文字列",short1,short0,byte0, 不明
-        // 0x00E7
-        Header.PLAYER_HINT.Set(0x00E8);
-        // 0x00E9 パケットの構造が複雑, メルをなくしました。(-xxxx)と表示される
-        // 0x00EA @00EA, COUNSELのUI, @010Bが送信される
-        // 0x00EB @00EB, クラス対抗戦UI
-        // 0x00EC @00EC [], 強制的にUIを開く
-        Header.REPAIR_WINDOW.Set(0x00ED);
-        Header.CYGNUS_INTRO_LOCK.Set(0x00EE);
-        Header.CYGNUS_INTRO_DISABLE_UI.Set(0x00EF);
-        Header.SUMMON_HINT.Set(0x00F0);
-        Header.SUMMON_HINT_MSG.Set(0x00F1);
-        Header.ARAN_COMBO.Set(0x00F2);
-        Header.TAMA_BOX_SUCCESS.Set(0x00F3);
-        Header.TAMA_BOX_FAILURE.Set(0x00F4);
-        // 0x00F5
-        // 0x00F6
-        // 0x00F7
-        // 0x00F8
-        // 0x00F9 @00F9, アラン4次スキルの説明UI
-        Header.GAME_POLL_REPLY.Set(0x00FA); // OK
-        Header.FOLLOW_MESSAGE.Set(0x00FB); // OK
-        // 0x00FC
-        // 0x00FD @00FD 時間, 謎のタイマー出現
-        // 0x00FE @00FE int,int,int,int吹っ飛び判定,intダメージ量,..., 攻撃, 被ダメ, KB動作
-        Header.FOLLOW_MOVE.Set(0x00FF);
-        Header.FOLLOW_MSG.Set(0x0100); // OK
-        Header.GAME_POLL_QUESTION.Set(0x0101);
-        Header.COOLDOWN.Set(0x0102);
-        // 0x0103 未使用
-        Header.SPAWN_MONSTER.Set(0x0104);
-        Header.KILL_MONSTER.Set(0x0105);
-        Header.SPAWN_MONSTER_CONTROL.Set(0x0106);
-        Header.MOVE_MONSTER.Set(0x0107);
-        Header.MOVE_MONSTER_RESPONSE.Set(0x0108);
-        // 0x0109 未使用
-        Header.APPLY_MONSTER_STATUS.Set(0x010A);
-        Header.CANCEL_MONSTER_STATUS.Set(0x010B);
-        // 0x010C メモリ開放系の処理かもしれない
-        Header.MOB_TO_MOB_DAMAGE.Set(0x010D);
-        Header.DAMAGE_MONSTER.Set(0x010E);
-        // 0x010F
-        // 0x0110 未使用
-        // 0x0111 @0111 int, @00A2を送信
-        Header.SHOW_MONSTER_HP.Set(0x0112);
-        Header.SHOW_MAGNET.Set(0x0113);
-        Header.CATCH_MONSTER.Set(0x0114);
-        Header.MOB_SPEAKING.Set(0x0115);
-        // 0x0116 @0116 int,int,int,int, 何らかの変数が更新されるが詳細不明
-        Header.MONSTER_PROPERTIES.Set(0x0117);
-        Header.REMOVE_TALK_MONSTER.Set(0x0118);
-        Header.TALK_MONSTER.Set(0x0119);
-        // 0x011A
-        // 0x011B
-        // 0x011C
-        // 0x011D 未使用
-        Header.SPAWN_NPC.Set(0x011E);
-        Header.REMOVE_NPC.Set(0x011F);
-        Header.SPAWN_NPC_REQUEST_CONTROLLER.Set(0x0120);
-        Header.NPC_ACTION.Set(0x0121);
-        // 0x0122
-        // 0x0123
-        // 0x0124
-        // 0x0125 未使用
-        Header.SPAWN_HIRED_MERCHANT.Set(0x0126);
-        Header.DESTROY_HIRED_MERCHANT.Set(0x0127);
-        Header.UPDATE_HIRED_MERCHANT.Set(0x0128);
-        Header.DROP_ITEM_FROM_MAPOBJECT.Set(0x0129);
-        Header.REMOVE_ITEM_FROM_MAP.Set(0x012A);
-        Header.KITE_MESSAGE.Set(0x012B);
-        Header.SPAWN_KITE.Set(0x012C);
-        Header.REMOVE_KITE.Set(0x012D);
-        Header.SPAWN_MIST.Set(0x012E);
-        Header.REMOVE_MIST.Set(0x012F);
-        Header.SPAWN_DOOR.Set(0x0130);
-        Header.REMOVE_DOOR.Set(0x0131);
-        // 0x0132
-        // 0x0133
-        // 0x0134 crash
-        // 0x0135 ポータルを開けませんでした。
-        // 0x0136
-        Header.REACTOR_HIT.Set(0x0137);
-        // 0x0138 未使用
-        Header.REACTOR_SPAWN.Set(0x0139);
-        Header.REACTOR_DESTROY.Set(0x013A);
-        //Header.ROLL_SNOWBALL.Set(0x013B);
-        //Header.HIT_SNOWBALL.Set(0x013C);
-        //Header.SNOWBALL_MESSAGE.Set(0x013D);
-        //Header.LEFT_KNOCK_BACK.Set(0x013E);
-        //Header.HIT_COCONUT.Set(0x013F);
-        //Header.COCONUT_SCORE.Set(0x0140);
-        // 0x0141 未使用
-        // 0x0142 未使用
-        //Header.MONSTER_CARNIVAL_START.Set(0x0143);
-        //Header.MONSTER_CARNIVAL_OBTAINED_CP.Set(0x0144);
-        //Header.MONSTER_CARNIVAL_PARTY_CP.Set(0x0145);
-        //Header.MONSTER_CARNIVAL_SUMMON.Set(0x0146);
-        // 0x0147 未使用
-        //Header.MONSTER_CARNIVAL_DIED.Set(0x0148);
-        // 0x0149 未使用
-        // 0x014A 未使用
-        // 0x014B 未使用
-        // 0x014C 未使用
-        // 0x014D 未使用
-        // 0x014E 未使用
-        // 0x014F @014F byte種類,int残り時間, マップ退場メッセージ
-        // 0x0150 未使用
-        Header.CHAOS_HORNTAIL_SHRINE.Set(0x0151); // OK
-        Header.CHAOS_ZAKUM_SHRINE.Set(0x0152); // OK
-        //Header.HORNTAIL_SHRINE.Set(0x0153);
-        Header.ZAKUM_SHRINE.Set(0x0154); // OK
-        Header.NPC_TALK.Set(0x0155);
-        Header.OPEN_NPC_SHOP.Set(0x0156);
-        Header.CONFIRM_SHOP_TRANSACTION.Set(0x0157);
-        // 0x0158
-        // 0x0159
-        Header.OPEN_STORAGE.Set(0x015A);
-        Header.MERCH_ITEM_MSG.Set(0x015B);
-        Header.MERCH_ITEM_STORE.Set(0x015C);
-        Header.RPS_GAME.Set(0x015D);
-        Header.MESSENGER.Set(0x015E);
-        Header.PLAYER_INTERACTION.Set(0x015F);
-        // 0x0160 未使用
-        // 0x0161 未使用
-        // 0x0162 未使用
-        // 0x0163 未使用
-        // 0x0164 未使用
-        // 0x0165 未使用
-        // 0x0166 未使用
-        Header.TIP_BEANS.Set(0x0167);
-        Header.OPEN_BEANS.Set(0x0168);
-        Header.SHOOT_BEANS.Set(0x0169);
-        // 0x016A
-        Header.UPDATE_BEANS.Set(0x016B);
-        Header.DUEY.Set(0x016C); // OK
-        // 0x016D
-        // 0x016E
-        Header.CS_UPDATE.Set(0x016F);
-        Header.CS_OPERATION.Set(0x0170);
-        // 0x0171
-        // 0x0172
-        // 0x0173
-        // 0x0174
-        // 0x0175
-        // 0x0176
-        // 0x0177
-        // 0x0178
-        // 0x0179
-        // 0x017A
-        // 0x017B
-        Header.KEYMAP.Set(0x017C);
-        Header.PET_AUTO_HP.Set(0x017D);
-        Header.PET_AUTO_MP.Set(0x017E);
+                Header.LP_UserThrowGrenade.Set(0x00D9); // 不明
+                // クライアントサイドの処理
+                Header.LP_BEGIN_USERLOCAL.Set(0);
+                {
+                    Header.LP_UserSitResult.Set(0x00DA);
+                    Header.LP_UserEmotionLocal.Set(0x00DB); // 0x00CEと同一
+                    Header.LP_UserEffectLocal.Set(0x00DC); // 0x00D3と同一
+                    Header.LP_UserTeleport.Set(0x00DD);
+                    Header.LP_Premium.Set(0x00DE); // 未使用?
+                    Header.LP_MesoGive_Succeeded.Set(0x00DF);
+                    Header.LP_MesoGive_Failed.Set(0x00E0);
+                    Header.LP_Random_Mesobag_Succeed.Set(0x00E1);
+                    Header.LP_Random_Mesobag_Failed.Set(0x00E2);
+                    Header.LP_UserQuestResult.Set(0x00E3);
+                    Header.LP_NotifyHPDecByField.Set(0x00E4);
+                    Header.LP_UserPetSkillChanged.Set(0x00E5);
+                    Header.LP_UserBalloonMsg.Set(0x00E6); // @00E6 "文字列",short1,short0,byte0, 不明
+                    Header.LP_PlayEventSound.Set(0x00E7);
+                    Header.PLAYER_HINT.Set(0x00E8); // LP_PlayMinigameSound?
+                    Header.LP_UserMakerResult.Set(0x00E9); // パケットの構造が複雑, メルをなくしました。(-xxxx)と表示される
+                    Header.LP_UserOpenConsultBoard.Set(0x00EA); // COUNSELのUI, @010Bが送信される
+                    Header.LP_UserOpenClassCompetitionPage.Set(0x00EB); // クラス対抗戦UI
+                    Header.LP_UserOpenUI.Set(0x00EC); // @00EC [byte], 強制的にUIを開く
+                    Header.LP_UserOpenUIWithOption.Set(0x00ED);
+                    Header.LP_SetDirectionMode.Set(0x00EE);
+                    Header.LP_SetStandAloneMode.Set(0x00EF);
+                    Header.LP_UserHireTutor.Set(0x00F0);
+                    Header.LP_UserTutorMsg.Set(0x00F1);
+                    Header.LP_IncCombo.Set(0x00F2);
+                    Header.TAMA_BOX_SUCCESS.Set(0x00F3); // パチンコ
+                    Header.TAMA_BOX_FAILURE.Set(0x00F4); // パチンコ
+                    Header.LP_UserRandomEmotion.Set(0x00F5);
+                    Header.LP_ResignQuestReturn.Set(0x00F6);
+                    Header.LP_PassMateName.Set(0x00F7);
+                    Header.LP_SetRadioSchedule.Set(0x00F8);
+                    Header.LP_UserOpenSkillGuide.Set(0x00F9); // アラン4次スキルの説明UI
+                    Header.LP_UserNoticeMsg.Set(0x00FA); // OK
+                    Header.LP_UserChatMsg.Set(0x00FB); // OK
+                    // 0x00FC
+                    // 0x00FD, LP_UserTimeBombAttack? @00FD 時間, 謎のタイマー出現
+                    // 0x00FE @00FE int,int,int,int吹っ飛び判定,intダメージ量,..., 攻撃, 被ダメ, KB動作
+                    Header.LP_UserPassiveMove.Set(0x00FF);
+                    Header.LP_UserFollowCharacterFailed.Set(0x0100); // OK
+                    Header.GAME_POLL_QUESTION.Set(0x0101);
+                    Header.LP_SkillCooltimeSet.Set(0x0102);
+                }
+                Header.LP_END_USERLOCAL.Set(0);
+            }
+            Header.LP_END_USERPOOL.Set(0); // 0x0103 未使用のはず
+
+            // Mob情報
+            Header.LP_BEGIN_MOBPOOL.Set(0);
+            {
+                Header.LP_MobEnterField.Set(0x0104);
+                Header.LP_MobLeaveField.Set(0x0105);
+                Header.LP_MobChangeController.Set(0x0106);
+                // Mobの処理
+                Header.LP_BEGIN_MOB.Set(0);
+                {
+                    Header.LP_MobMove.Set(0x0107);
+                    Header.LP_MobCtrlAck.Set(0x0108);
+                    Header.LP_MobCtrlHint.Set(0x0109);
+                    Header.LP_MobStatSet.Set(0x010A);
+                    Header.LP_MobStatReset.Set(0x010B);
+                    Header.LP_MobSuspendReset.Set(0x010C);
+                    Header.LP_MobAffected.Set(0x010D);
+                    Header.LP_MobDamaged.Set(0x010E);
+                    // 0x010F, LP_MobSpecialEffectBySkill
+                    // 0x0110, LP_MobHPChange 未使用
+                    // 0x0111, LP_MobCrcKeyChanged @0111 int, @00A2を送信
+                    Header.LP_MobHPIndicator.Set(0x0112);
+                    Header.SHOW_MAGNET.Set(0x0113); // ???
+                    Header.LP_MobCatchEffect.Set(0x0114);
+                    Header.LP_MobSpeaking.Set(0x0115);
+                    // 0x0116 @0116 int,int,int,int, 何らかの変数が更新されるが詳細不明
+                    Header.MONSTER_PROPERTIES.Set(0x0117);
+                    Header.REMOVE_TALK_MONSTER.Set(0x0118);
+                    Header.TALK_MONSTER.Set(0x0119);
+                    // 0x011A
+                    // 0x011B
+                }
+                Header.LP_END_MOB.Set(0);
+                // 0x011C
+            }
+            Header.LP_END_MOBPOOL.Set(0); // 0x011D 未使用のはず
+            // NPC情報
+            Header.LP_BEGIN_NPCPOOL.Set(0);
+            {
+                Header.LP_NpcEnterField.Set(0x011E);
+                Header.LP_NpcLeaveField.Set(0x011F);
+                Header.LP_NpcChangeController.Set(0x0120);
+                // NPC
+                Header.LP_BEGIN_NPC.Set(0);
+                {
+                    Header.LP_NpcMove.Set(0x0121);
+                    Header.LP_NpcUpdateLimitedInfo.Set(0x0122);
+                    Header.LP_NpcSpecialAction.Set(0x0123);
+                }
+                Header.LP_END_NPC.Set(0);
+                // ???
+                Header.LP_BEGIN_NPCTEMPLATE.Set(0);
+                {
+                    Header.LP_NpcSetScript.Set(0x0124);
+                }
+                Header.LP_END_NPCTEMPLATE.Set(0);
+            }
+            Header.LP_END_NPCPOOL.Set(0); // 0x0125 未使用のはず
+            // 雇用商人
+            Header.LP_BEGIN_EMPLOYEEPOOL.Set(0);
+            {
+                Header.LP_EmployeeEnterField.Set(0x0126);
+                Header.LP_EmployeeLeaveField.Set(0x0127);
+                Header.LP_EmployeeMiniRoomBalloon.Set(0x0128);
+            }
+            Header.LP_END_EMPLOYEEPOOL.Set(0);
+            // ドロップアイテム
+            Header.LP_BEGIN_DROPPOOL.Set(0);
+            {
+                Header.LP_DropEnterField.Set(0x0129);
+                Header.LP_DropLeaveField.Set(0x012A);
+            }
+            Header.LP_END_DROPPOOL.Set(0);
+
+            Header.KITE_MESSAGE.Set(0x012B);
+            Header.SPAWN_KITE.Set(0x012C);
+            Header.REMOVE_KITE.Set(0x012D);
+            // ミスト
+            Header.LP_BEGIN_AFFECTEDAREAPOOL.Set(0);
+            {
+                Header.LP_AffectedAreaCreated.Set(0x012E);
+                Header.LP_AffectedAreaRemoved.Set(0x012F);
+            }
+            Header.LP_END_AFFECTEDAREAPOOL.Set(0);
+            // ミスティックドア
+            Header.LP_END_TOWNPORTALPOOL.Set(0);
+            {
+                Header.LP_TownPortalCreated.Set(0x0130);
+                Header.LP_TownPortalRemoved.Set(0x0131);
+            }
+            Header.LP_END_TOWNPORTALPOOL.Set(0);
+            // 0x0132
+            // 0x0133
+            // 0x0134 crash
+            // 0x0135 ポータルを開けませんでした。
+            // 0x0136
+            // 設置物
+            Header.LP_BEGIN_REACTORPOOL.Set(0);
+            {
+                Header.LP_ReactorChangeState.Set(0x0137);
+                Header.LP_ReactorMove.Set(0x0138);
+                Header.LP_ReactorEnterField.Set(0x0139);
+                Header.LP_ReactorLeaveField.Set(0x013A);
+            }
+            Header.LP_END_REACTORPOOL.Set(0);
+            // イベント
+            Header.LP_BEGIN_ETCFIELDOBJ.Set(0);
+            {
+                Header.LP_SnowBallState.Set(0x013B);
+                Header.LP_SnowBallHit.Set(0x013C);
+                Header.LP_SnowBallMsg.Set(0x013D);
+                Header.LP_SnowBallTouch.Set(0x013E);
+                Header.LP_CoconutHit.Set(0x013F);
+                Header.LP_CoconutScore.Set(0x0140);
+                Header.LP_HealerMove.Set(0x0141);
+                Header.LP_PulleyStateChange.Set(0x0142);
+                // ずれてるかも
+                Header.LP_MCarnivalEnter.Set(0x0143);
+                Header.LP_MCarnivalPersonalCP.Set(0x0144);
+                Header.LP_MCarnivalTeamCP.Set(0x0145);
+                Header.LP_MCarnivalResultSuccess.Set(0x0146);
+                Header.LP_MCarnivalResultFail.Set(0x0147);
+                Header.LP_MCarnivalDeath.Set(0x0148);
+                Header.LP_MCarnivalMemberOut.Set(0x0149);
+                Header.LP_MCarnivalGameResult.Set(0x014A);
+                // 0x014B 未使用
+                // 0x014C 未使用
+                // 0x014D 未使用
+                // 0x014E 未使用
+                // 0x014F @014F byte種類,int残り時間, マップ退場メッセージ
+                // 0x0150 未使用
+                Header.LP_HontaleTimer.Set(0x0151); // OK
+                Header.LP_ChaosZakumTimer.Set(0x0152); // OK
+                Header.LP_HontailTimer.Set(0x0153);
+                Header.LP_ZakumTimer.Set(0x0154); // OK
+            }
+            Header.LP_END_ETCFIELDOBJ.Set(0);
+            // NPC会話
+            Header.LP_BEGIN_SCRIPT.Set(0);
+            {
+                Header.LP_ScriptMessage.Set(0x0155);
+            }
+            Header.LP_END_SCRIPT.Set(0);
+            // 商店
+            Header.LP_BEGIN_SHOP.Set(0);
+            {
+                Header.LP_OpenShopDlg.Set(0x0156);
+                Header.LP_ShopResult.Set(0x0157);
+            }
+            Header.LP_END_SHOP.Set(0);
+            // ???
+            Header.LP_BEGIN_ADMINSHOP.Set(0);
+            {
+                // 0x0158
+                // 0x0159
+            }
+            Header.LP_END_ADMINSHOP.Set(0);
+
+            Header.LP_TrunkResult.Set(0x015A); // 倉庫
+            // プレドリック
+            Header.LP_BEGIN_STOREBANK.Set(0);
+            {
+                Header.LP_StoreBankGetAllResult.Set(0x015B);
+                Header.LP_StoreBankResult.Set(0x015C);
+            }
+            Header.LP_END_STOREBANK.Set(0);
+
+            Header.LP_RPSGame.Set(0x015D);
+            Header.LP_Messenger.Set(0x015E);
+            Header.LP_MiniRoom.Set(0x015F);
+            // 0x0160 未使用
+            // 0x0161 未使用
+            // 0x0162 未使用
+            // 0x0163 未使用
+            // 0x0164 未使用
+            // 0x0165 未使用
+            // 0x0166 未使用
+            // パチンコ
+            {
+                Header.TIP_BEANS.Set(0x0167);
+                Header.OPEN_BEANS.Set(0x0168);
+                Header.SHOOT_BEANS.Set(0x0169);
+                // 0x016A
+                Header.UPDATE_BEANS.Set(0x016B);
+            }
+            Header.LP_Parcel.Set(0x016C); // 宅配
+        }
+        Header.LP_END_FIELD.Set(0);
+        // ポイントショップ
+        Header.LP_BEGIN_CASHSHOP.Set(0);
+        {
+            // 0x016D
+            // 0x016E
+            Header.CS_UPDATE.Set(0x016F);
+            Header.CS_OPERATION.Set(0x0170);
+            // 0x0171
+            // 0x0172
+            // 0x0173
+            // 0x0174
+            // 0x0175
+            // 0x0176
+            // 0x0177
+            // 0x0178
+            // 0x0179
+            // 0x017A
+            // 0x017B
+        }
+        Header.LP_END_CASHSHOP.Set(0);
+        // キー設定
+        Header.LP_BEGIN_FUNCKEYMAPPED.Set(0);
+        {
+            Header.LP_FuncKeyMappedInit.Set(0x017C);
+            Header.LP_PetConsumeItemInit.Set(0x017D);
+            Header.LP_PetConsumeMPItemInit.Set(0x017E);
+        }
+        Header.LP_END_FUNCKEYMAPPED.Set(0);
         // 0x017F
         // 0x0180 未使用
         // 0x0181 未使用
@@ -1456,20 +1555,36 @@ public class InPacket {
         //Header.MTS_OPERATION.Set(0x0189);
         // 0x018A 未使用
         // 0x018B 未使用
-        // 0x018C 未使用
-        // 0x018D
-        // 0x018E
-        // 0x018F @018F [01] [01-03], /MapleTV コマンドのエラーメッセージ処理 (GMコマンドなので通常プレイでは不要)
-        // 0x0190 未使用 (何もしない関数)
-        // 0x0191 実質未使用 (VICIOUS)
-        Header.VICIOUS_HAMMER.Set(0x0192);
-        // 0x0193 実質未使用 (VICIOUS)
-        // 0x0194 実質未使用 (VICIOUS)
-        // 0x0195 実質未使用 (VEGA)
-        Header.VEGA_SCROLL.Set(0x0196);
-        // 0x0197 実質未使用 (VEGA)
-        // 0x0198 実質未使用 (VEGA)
+        Header.LP_BEGIN_MAPLETV.Set(0); // 0x018C 未使用のはず
+        {
+            // 0x018D, LP_MapleTVUpdateMessage
+            // 0x018E, LP_MapleTVClearMessage
+            // 0x018F, LP_MapleTVSendMessageResult @018F [01] [01-03], /MapleTV コマンドのエラーメッセージ処理 (GMコマンドなので通常プレイでは不要)
+            // 0x0190, LP_BroadSetFlashChangeEvent 未使用 (何もしない関数)
+        }
+        Header.LP_END_MAPLETV.Set(0); // 0x191 未使用のはず
+        // ビシャスのハンマー
+        Header.LP_BEGIN_GOLDHAMMER.Set(0);
+        {
+            // 0x0191 未使用
+            Header.LP_GoldHammerResult.Set(0x0192);
+            // 0x0193 未使用
+            // 0x0194 未使用
+        }
+        Header.LP_END_GOLDHAMMER.Set(0);
+        // ベガの呪文書
+        Header.LP_BEGIN_VEGA.Set(0);
+        {
+            // 0x0195 未使用
+            Header.LP_VegaResult.Set(0x0196);
+            // 0x0197 未使用
+            // 0x0198 未使用
+        }
+        Header.LP_END_VEGA.Set(0);
         // 0x0199 一番最後の関数 0x00D76700が0以外の値のときのみ動作する
+        Header.LP_LogoutGift.Set(0x0199); // 他に該当する処理がないので多分ログアウトギフト
+        // 末尾
+        Header.LP_NO.Set(0x19A);
     }
 
     public static void SetForJMSv187() {
@@ -1587,8 +1702,8 @@ public class InPacket {
         Header.LP_PetNameChanged.Set(0x00B9 + 5);
         Header.LP_PetActionCommand.Set(0x00BB + 5);
 
-        Header.SUMMON_SKILL.Set(0x00C0 + 5);
-        Header.DAMAGE_SUMMON.Set(0x00C1 + 5);
+        Header.LP_SummonedSkill.Set(0x00C0 + 5);
+        Header.LP_SummonedHit.Set(0x00C1 + 5);
         Header.LP_DragonEnterField.Set(0x00C2 + 5);
         Header.LP_DragonMove.Set(0x00C3 + 5);
         Header.LP_DragonLeaveField.Set(0x00C4 + 5);
@@ -1652,10 +1767,10 @@ public class InPacket {
         Header.REMOVE_TALK_MONSTER.Set(0x0118);
         Header.TALK_MONSTER.Set(0x0119);
          */
-        Header.SPAWN_NPC.Set(0x011E + 9);
-        Header.REMOVE_NPC.Set(0x011F + 9);
-        Header.SPAWN_NPC_REQUEST_CONTROLLER.Set(0x0120 + 9);
-        Header.NPC_ACTION.Set(0x0121 + 9);
+        Header.LP_NpcEnterField.Set(0x011E + 9);
+        Header.LP_NpcLeaveField.Set(0x011F + 9);
+        Header.LP_NpcChangeController.Set(0x0120 + 9);
+        Header.LP_NpcMove.Set(0x0121 + 9);
         /*
         Header.SPAWN_HIRED_MERCHANT.Set(0x0126);
         Header.DESTROY_HIRED_MERCHANT.Set(0x0127);
@@ -1676,10 +1791,10 @@ public class InPacket {
         Header.CHAOS_ZAKUM_SHRINE.Set(0x0152);
         Header.ZAKUM_SHRINE.Set(0x0154);
          */
-        Header.NPC_TALK.Set(0x0155 + 8);
-        Header.OPEN_NPC_SHOP.Set(0x0156 + 8);
-        Header.CONFIRM_SHOP_TRANSACTION.Set(0x0157 + 8);
-        Header.OPEN_STORAGE.Set(0x015A + 8);
+        Header.LP_ScriptMessage.Set(0x0155 + 8);
+        Header.LP_OpenShopDlg.Set(0x0156 + 8);
+        Header.LP_ShopResult.Set(0x0157 + 8);
+        Header.LP_TrunkResult.Set(0x015A + 8);
         /*
         Header.MERCH_ITEM_MSG.Set(0x015B);
         Header.MERCH_ITEM_STORE.Set(0x015C);

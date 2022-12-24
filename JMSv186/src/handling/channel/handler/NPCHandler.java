@@ -52,7 +52,7 @@ public class NPCHandler {
 
     public static final void NPCAnimation(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.NPC_ACTION.Get());
+        mplew.writeShort(InPacket.Header.LP_NpcMove.Get());
         final int length = (int) slea.available();
 
         if (length == 6) { // NPC Talk
