@@ -1117,7 +1117,7 @@ public class MaplePacketCreator {
 
     public static MaplePacket spawnPlayerNPC(PlayerNPC npc) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.PLAYER_NPC.Get());
+        mplew.writeShort(InPacket.Header.LP_ImitatedNPCData.Get());
         mplew.write(npc.getF() == 1 ? 0 : 1);
         mplew.writeInt(npc.getId());
         mplew.writeMapleAsciiString(npc.getName());

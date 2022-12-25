@@ -638,6 +638,8 @@ public class InPacket {
         // ヘッダに対応する処理の名前を定義
         UNKNOWN_BEGIN,
         // added
+        UNK_BEGIN_PACHINKO,
+        UNK_END_PACHINKO,
         MINIGAME_PACHINKO_UPDATE_TAMA,
         UNKNOWN_RELOAD_MINIMAP,
         UNKNOWN_RELOAD_MAP,
@@ -820,21 +822,37 @@ public class InPacket {
     // JMS v186.1 ProcessPacket
     public static void SetForJMSv186() {
         // ログインサーバー
-        Header.LP_BEGIN_SOCKET.Set(0);
+        // CLogin::OnPacket
+        Header.LP_BEGIN_SOCKET.Set(0); // 00699d8d
         {
-            Header.LP_CheckPasswordResult.Set(0x0000);
+            // CLogin::OnCheckPasswordResult
+            Header.LP_CheckPasswordResult.Set(0x0000); // 0069a00e
             // 0x0001, LP_CheckUserLimitResult or LP_AccountInfoResult
+            // CLogin::OnWorldInformation
             Header.LP_WorldInformation.Set(0x0002);
+            // CLogin::OnSelectWorldResult
             Header.LP_SelectWorldResult.Set(0x0003);
+            // CLogin::OnSelectCharacterResult
             Header.LP_SelectCharacterResult.Set(0x0004);
+            // CLogin::OnCheckDuplicatedIDResult
             Header.LP_CheckDuplicatedIDResult.Set(0x0005);
+            // CLogin::OnCreateNewCharacterResult
             Header.LP_CreateNewCharacterResult.Set(0x0006);
+            // CLogin::OnDeleteCharacterResult
             Header.LP_DeleteCharacterResult.Set(0x0007);
-            Header.LP_MigrateCommand.Set(0x0008); // Change Channel
-            Header.LP_AliveReq.Set(0x0009);
-            // 0x000A
-            // 0x000B
-            Header.LP_SecurityPacket.Set(0x000C); // HackShield HeartBeat
+
+            // CClientSocket::ProcessPacket
+            // 004bbb9a
+            {
+                // CClientSocket::OnMigrateCommand
+                Header.LP_MigrateCommand.Set(0x0008); // Change Channel
+                // CClientSocket::OnAliveReq
+                Header.LP_AliveReq.Set(0x0009);
+                // 0x000A
+                // 0x000B
+                // CSecurityClient::OnPacket
+                Header.LP_SecurityPacket.Set(0x000C); // HackShield HeartBeat
+            }
             // 0x000D CHANNEL_SELECTED?
             // 0x000E @000E ..., @0011 00 00 を送信
             // 0x000F 未使用
@@ -844,16 +862,19 @@ public class InPacket {
             // 0x0013
             // 0x0014
             // 0x0015 @0015 [00], 不法プログラムまたは悪性コードが感知されたためゲームを強制終了します。
+            // CLogin::OnCheckPinCodeResult
             Header.LP_CheckPinCodeResult.Set(0x0016); // 違うかも
             // 0x0017
-            Header.LOGIN_AUTH.Set(0x0018);
+            // CLogin::???
+            Header.LOGIN_AUTH.Set(0x0018); // JMSオリジナルの可能性が高い
             // 0x0019
             // 0x001A
         }
         Header.LP_END_SOCKET.Set(0);
 
         // ゲームサーバー
-        Header.LP_BEGIN_CHARACTERDATA.Set(0);
+        // CWvsContext::OnPacket
+        Header.LP_BEGIN_CHARACTERDATA.Set(0); // 00b73785
         {
             Header.LP_InventoryOperation.Set(0x001B);
             Header.LP_InventoryGrow.Set(0x001C);
@@ -905,6 +926,7 @@ public class InPacket {
             Header.LP_BridleMobCatchFail.Set(0x004A); // 0x004A @004A ..., 当該モンスターの体力が強くてできません。
             // 0x004B 未使用
             // パチンコ
+            // 特に関数は別のテーブルとして独立していない
             {
                 Header.MINIGAME_PACHINKO_UPDATE_TAMA.Set(0x4C);
                 // 0x004D パチンコ景品受け取りUI
@@ -917,9 +939,15 @@ public class InPacket {
             // 0x0053 @0053 [01 (00, 02は謎)], ワールド変更申請のキャンセル
             // 0x0054 @0054 int, プレイタイム終了まで残りx分x秒です。
             // 0x0055 @0055 byte, なんも処理がされない関数
-            Header.PLAYER_NPC.Set(0x0056);
-            Header.LP_MonsterBookSetCard.Set(0x0057);
-            Header.LP_MonsterBookSetCover.Set(0x0058);
+
+            // 一応ここにもあるが、NPCの方参照した方が確認が楽
+            {
+                //Header.LP_ImitatedNPCData.Set(0x0056);
+                //Header.LP_LimitedNPCDisableInfo.Set(0x0057);
+            }
+
+            Header.LP_MonsterBookSetCard.Set(0x0058); // OK
+            Header.LP_MonsterBookSetCover.Set(0x0059); // OK
             // 0x0059 BBS_OPERATION?
             // 0x005A @005A String, 任意メッセージをダイアログに表示
             Header.LP_AvatarMegaphoneRes.Set(0x005B);
@@ -960,7 +988,8 @@ public class InPacket {
         }
         Header.LP_END_CHARACTERDATA.Set(0);
         // ステージ切り替え
-        Header.LP_BEGIN_STAGE.Set(0);
+        // CStage::OnPacket
+        Header.LP_BEGIN_STAGE.Set(0); // 00837235
         {
             Header.LP_SetField.Set(0x007E);
             Header.LP_SetITC.Set(0x007F);
@@ -968,7 +997,8 @@ public class InPacket {
         }
         Header.LP_END_STAGE.Set(0);
         // マップ読み込み
-        Header.LP_BEGIN_MAP.Set(0);
+        // CMapLoadable::OnPacket
+        Header.LP_BEGIN_MAP.Set(0); // 006e8f24
         {
             Header.LP_SetBackgroundEffect.Set(0x0081);
             Header.LP_SetMapObjectVisible.Set(0x0082);
@@ -976,7 +1006,8 @@ public class InPacket {
         }
         Header.LP_END_MAP.Set(0);
         // マップ上の処理
-        Header.LP_BEGIN_FIELD.Set(0);
+        // CField::OnPacket
+        Header.LP_BEGIN_FIELD.Set(0); // 0058254f
         {
             Header.LP_TransferFieldReqIgnored.Set(0x0084); // @0084 [01-07], マップ移動時のエラーメッセージ (テレポストーン?)
             Header.LP_TransferChannelReqIgnored.Set(0x0085);
@@ -1009,11 +1040,13 @@ public class InPacket {
             // 0x00A0 0x00F2を送信
 
             // プレイヤー
-            Header.LP_BEGIN_USERPOOL.Set(0);
+            // CUserPool::OnPacket
+            Header.LP_BEGIN_USERPOOL.Set(0); // 00ac3b21
             {
                 Header.LP_UserEnterField.Set(0x00A1);
                 Header.LP_UserLeaveField.Set(0x00A2);
-                Header.LP_BEGIN_USERCOMMON.Set(0);
+                // CUserPool::OnUserCommonPacket
+                Header.LP_BEGIN_USERCOMMON.Set(0); // 00ac3e8f
                 {
                     Header.LP_UserChat.Set(0x00A3);
                     Header.LP_UserChatNLCPQ.Set(0x00A4);
@@ -1033,7 +1066,8 @@ public class InPacket {
                     Header.FISHING_CAUGHT.Set(0x00B2); // 名称不明
                     Header.LP_ShowPamsSongResult.Set(0x00B3);
                     // ペット
-                    Header.LP_BEGIN_PET.Set(0);
+                    // CUser::OnPetPacket
+                    Header.LP_BEGIN_PET.Set(0); // 00a700f7
                     {
                         Header.LP_PetActivated.Set(0x00B4);
                         Header.LP_PetEvol.Set(0x00B5);
@@ -1045,8 +1079,9 @@ public class InPacket {
                         Header.LP_PetActionCommand.Set(0x00BB);
                     }
                     Header.LP_END_PET.Set(0);
-                    // 召喚
-                    Header.LP_BEGIN_SUMMONED.Set(0);
+                    // 召喚, GMSだとここに入ってない
+                    // CSummonedPool::OnPacket
+                    Header.LP_BEGIN_SUMMONED.Set(0); // 00a701a0
                     {
                         Header.LP_SummonedEnterField.Set(0x00BC);
                         Header.LP_SummonedLeaveField.Set(0x00BD);
@@ -1057,7 +1092,8 @@ public class InPacket {
                     }
                     Header.LP_END_SUMMONED.Set(0);
                     // エヴァンのドラゴン
-                    Header.LP_BEGIN_DRAGON.Set(0);
+                    // CUser::OnDragonPacket
+                    Header.LP_BEGIN_DRAGON.Set(0); // 00a70476
                     {
                         Header.LP_DragonEnterField.Set(0x00C2);
                         Header.LP_DragonMove.Set(0x00C3);
@@ -1067,7 +1103,8 @@ public class InPacket {
                 }
                 Header.LP_END_USERCOMMON.Set(0);
                 // 他のプレイヤー
-                Header.LP_BEGIN_USERREMOTE.Set(0);
+                // CUserPool::OnPacket
+                Header.LP_BEGIN_USERREMOTE.Set(0); // 同じ
                 {
                     // 0x00C5 未使用
                     Header.LP_UserMove.Set(0x00C6);
@@ -1094,7 +1131,8 @@ public class InPacket {
 
                 Header.LP_UserThrowGrenade.Set(0x00D9); // 不明
                 // クライアントサイドの処理
-                Header.LP_BEGIN_USERLOCAL.Set(0);
+                // CUserPool::OnPacket
+                Header.LP_BEGIN_USERLOCAL.Set(0); // 同じ
                 {
                     Header.LP_UserSitResult.Set(0x00DA);
                     Header.LP_UserEmotionLocal.Set(0x00DB); // 0x00CEと同一
@@ -1143,13 +1181,16 @@ public class InPacket {
             Header.LP_END_USERPOOL.Set(0); // 0x0103 未使用のはず
 
             // Mob情報
-            Header.LP_BEGIN_MOBPOOL.Set(0);
+            // CMobPool::OnPacket
+            Header.LP_BEGIN_MOBPOOL.Set(0); // 0072a766
             {
                 Header.LP_MobEnterField.Set(0x0104);
                 Header.LP_MobLeaveField.Set(0x0105);
                 Header.LP_MobChangeController.Set(0x0106);
+                // 0x0111, LP_MobCrcKeyChanged @0111 int, @00A2を送信
                 // Mobの処理
-                Header.LP_BEGIN_MOB.Set(0);
+                // C_UNK_Mob::OnPacket (仮)
+                Header.LP_BEGIN_MOB.Set(0); // 0072a7c5
                 {
                     Header.LP_MobMove.Set(0x0107);
                     Header.LP_MobCtrlAck.Set(0x0108);
@@ -1161,7 +1202,6 @@ public class InPacket {
                     Header.LP_MobDamaged.Set(0x010E);
                     // 0x010F, LP_MobSpecialEffectBySkill
                     // 0x0110, LP_MobHPChange 未使用
-                    // 0x0111, LP_MobCrcKeyChanged @0111 int, @00A2を送信
                     Header.LP_MobHPIndicator.Set(0x0112);
                     Header.SHOW_MAGNET.Set(0x0113); // ???
                     Header.LP_MobCatchEffect.Set(0x0114);
@@ -1172,35 +1212,38 @@ public class InPacket {
                     Header.TALK_MONSTER.Set(0x0119);
                     // 0x011A
                     // 0x011B
+                    // 0x011C
                 }
                 Header.LP_END_MOB.Set(0);
-                // 0x011C
             }
             Header.LP_END_MOBPOOL.Set(0); // 0x011D 未使用のはず
-            // NPC情報
-            Header.LP_BEGIN_NPCPOOL.Set(0);
+            // CNpcPool::OnPacket
+            Header.LP_BEGIN_NPCPOOL.Set(0); // 00754707
             {
+                Header.LP_ImitatedNPCData.Set(0x0056); // OK
+                Header.LP_LimitedNPCDisableInfo.Set(0x0057); // OK
                 Header.LP_NpcEnterField.Set(0x011E);
                 Header.LP_NpcLeaveField.Set(0x011F);
                 Header.LP_NpcChangeController.Set(0x0120);
-                // NPC
-                Header.LP_BEGIN_NPC.Set(0);
+                // CNpcPool::OnNpcPacket
+                Header.LP_BEGIN_NPC.Set(0); // 007548b1
                 {
                     Header.LP_NpcMove.Set(0x0121);
                     Header.LP_NpcUpdateLimitedInfo.Set(0x0122);
                     Header.LP_NpcSpecialAction.Set(0x0123);
                 }
                 Header.LP_END_NPC.Set(0);
-                // ???
-                Header.LP_BEGIN_NPCTEMPLATE.Set(0);
+                // CNpcPool::OnNpcTemplatePacket
+                Header.LP_BEGIN_NPCTEMPLATE.Set(0); // 0075494f
                 {
-                    Header.LP_NpcSetScript.Set(0x0124);
+                    Header.LP_NpcSetScript.Set(0x0124); // OK
                 }
                 Header.LP_END_NPCTEMPLATE.Set(0);
             }
             Header.LP_END_NPCPOOL.Set(0); // 0x0125 未使用のはず
             // 雇用商人
-            Header.LP_BEGIN_EMPLOYEEPOOL.Set(0);
+            // CEmployeePool::OnPacket
+            Header.LP_BEGIN_EMPLOYEEPOOL.Set(0); // 005546a2
             {
                 Header.LP_EmployeeEnterField.Set(0x0126);
                 Header.LP_EmployeeLeaveField.Set(0x0127);
@@ -1208,32 +1251,35 @@ public class InPacket {
             }
             Header.LP_END_EMPLOYEEPOOL.Set(0);
             // ドロップアイテム
-            Header.LP_BEGIN_DROPPOOL.Set(0);
+            // CDropPool::OnPacket
+            Header.LP_BEGIN_DROPPOOL.Set(0); // 00548071
             {
                 Header.LP_DropEnterField.Set(0x0129);
                 Header.LP_DropLeaveField.Set(0x012A);
             }
             Header.LP_END_DROPPOOL.Set(0);
-            // ???
-            Header.LP_BEGIN_MESSAGEBOXPOOL.Set(0);
+            // CMessageBoxPool::OnPacket
+            Header.LP_BEGIN_MESSAGEBOXPOOL.Set(0); // 00705c65
             {
-                Header.LP_CreateMessgaeBoxFailed.Set(0x012B);
-                Header.LP_MessageBoxEnterField.Set(0x012C);
-                Header.LP_MessageBoxLeaveField.Set(0x012D);
+                Header.LP_CreateMessgaeBoxFailed.Set(0x012B); // OK
+                Header.LP_MessageBoxEnterField.Set(0x012C); // OK
+                Header.LP_MessageBoxLeaveField.Set(0x012D); // OK
             }
             Header.LP_END_MESSAGEBOXPOOL.Set(0);
             // ミスト
-            Header.LP_BEGIN_AFFECTEDAREAPOOL.Set(0);
+            // CAffectedAreaPool::OnPacket
+            Header.LP_BEGIN_AFFECTEDAREAPOOL.Set(0); // 00438806
             {
-                Header.LP_AffectedAreaCreated.Set(0x012E);
-                Header.LP_AffectedAreaRemoved.Set(0x012F);
+                Header.LP_AffectedAreaCreated.Set(0x012E); // OK
+                Header.LP_AffectedAreaRemoved.Set(0x012F); // OK
             }
             Header.LP_END_AFFECTEDAREAPOOL.Set(0);
             // ミスティックドア
-            Header.LP_END_TOWNPORTALPOOL.Set(0);
+            // CTownPortalPool::OnPacket
+            Header.LP_END_TOWNPORTALPOOL.Set(0); // 0089923d
             {
-                Header.LP_TownPortalCreated.Set(0x0130);
-                Header.LP_TownPortalRemoved.Set(0x0131);
+                Header.LP_TownPortalCreated.Set(0x0130); // OK?
+                Header.LP_TownPortalRemoved.Set(0x0131); // OK?
             }
             Header.LP_END_TOWNPORTALPOOL.Set(0);
             // 0x0132
@@ -1242,34 +1288,50 @@ public class InPacket {
             // 0x0135 ポータルを開けませんでした。
             // 0x0136
             // 設置物
-            Header.LP_BEGIN_REACTORPOOL.Set(0);
+            // CReactorPool::OnPacket
+            Header.LP_BEGIN_REACTORPOOL.Set(0); // 007de94f
             {
-                Header.LP_ReactorChangeState.Set(0x0137);
-                Header.LP_ReactorMove.Set(0x0138);
-                Header.LP_ReactorEnterField.Set(0x0139);
-                Header.LP_ReactorLeaveField.Set(0x013A);
+                Header.LP_ReactorChangeState.Set(0x0137); // OK
+                Header.LP_ReactorMove.Set(0x0138); // 存在しない
+                Header.LP_ReactorEnterField.Set(0x0139); // OK
+                Header.LP_ReactorLeaveField.Set(0x013A); // OK
             }
             Header.LP_END_REACTORPOOL.Set(0);
             // イベント
-            Header.LP_BEGIN_ETCFIELDOBJ.Set(0);
+            Header.LP_BEGIN_ETCFIELDOBJ.Set(0); // ???
             {
-                Header.LP_SnowBallState.Set(0x013B);
-                Header.LP_SnowBallHit.Set(0x013C);
-                Header.LP_SnowBallMsg.Set(0x013D);
-                Header.LP_SnowBallTouch.Set(0x013E);
-                Header.LP_CoconutHit.Set(0x013F);
-                Header.LP_CoconutScore.Set(0x0140);
-                Header.LP_HealerMove.Set(0x0141);
-                Header.LP_PulleyStateChange.Set(0x0142);
+                // CField_SnowBall::OnPacket
+                {
+                    // 合っているか不明
+                    Header.LP_SnowBallState.Set(0x013B);
+                    Header.LP_SnowBallHit.Set(0x013C);
+                    Header.LP_SnowBallMsg.Set(0x013D);
+                    Header.LP_SnowBallTouch.Set(0x013E);
+                }
+                // CField_Coconut::OnPacket
+                {
+                    // 合っているか不明
+                    Header.LP_CoconutHit.Set(0x013F);
+                    Header.LP_CoconutScore.Set(0x0140);
+                }
+                // CField_GuildBoss::OnPacket
+                {
+                    // 合っているか不明
+                    Header.LP_HealerMove.Set(0x0141);
+                    Header.LP_PulleyStateChange.Set(0x0142);
+                }
                 // ずれてるかも
-                Header.LP_MCarnivalEnter.Set(0x0143);
-                Header.LP_MCarnivalPersonalCP.Set(0x0144);
-                Header.LP_MCarnivalTeamCP.Set(0x0145);
-                Header.LP_MCarnivalResultSuccess.Set(0x0146);
-                Header.LP_MCarnivalResultFail.Set(0x0147);
-                Header.LP_MCarnivalDeath.Set(0x0148);
-                Header.LP_MCarnivalMemberOut.Set(0x0149);
-                Header.LP_MCarnivalGameResult.Set(0x014A);
+                // CField_MonsterCarnival::OnPacket
+                {
+                    Header.LP_MCarnivalEnter.Set(0x0143); // CField_MonsterCarnivalRevive::OnPacketにもある
+                    Header.LP_MCarnivalPersonalCP.Set(0x0144);
+                    Header.LP_MCarnivalTeamCP.Set(0x0145);
+                    Header.LP_MCarnivalResultSuccess.Set(0x0146);
+                    Header.LP_MCarnivalResultFail.Set(0x0147);
+                    Header.LP_MCarnivalDeath.Set(0x0148);
+                    Header.LP_MCarnivalMemberOut.Set(0x0149);
+                    Header.LP_MCarnivalGameResult.Set(0x014A); // CField_MonsterCarnivalRevive::OnPacketにもある
+                }
                 // 0x014B 未使用
                 // 0x014C 未使用
                 // 0x014D 未使用
@@ -1283,29 +1345,33 @@ public class InPacket {
             }
             Header.LP_END_ETCFIELDOBJ.Set(0);
             // NPC会話
-            Header.LP_BEGIN_SCRIPT.Set(0);
+            // CScriptMan::OnPacket
+            Header.LP_BEGIN_SCRIPT.Set(0); // 007f9360
             {
                 Header.LP_ScriptMessage.Set(0x0155);
             }
             Header.LP_END_SCRIPT.Set(0);
             // 商店
-            Header.LP_BEGIN_SHOP.Set(0);
+            // CShopDlg::OnPacket
+            Header.LP_BEGIN_SHOP.Set(0); // 0080f72f
             {
                 Header.LP_OpenShopDlg.Set(0x0156);
                 Header.LP_ShopResult.Set(0x0157);
             }
             Header.LP_END_SHOP.Set(0);
-            // ???
-            Header.LP_BEGIN_ADMINSHOP.Set(0);
+            // CAdminShopDlg::OnPacket
+            Header.LP_BEGIN_ADMINSHOP.Set(0); // 00427102
             {
-                // 0x0158
-                // 0x0159
+                Header.LP_AdminShopResult.Set(0x0158); // OK
+                Header.LP_AdminShopCommodity.Set(0x0159); // OK
             }
             Header.LP_END_ADMINSHOP.Set(0);
 
-            Header.LP_TrunkResult.Set(0x015A); // 倉庫
+            // CTrunkDlg::OnPacket
+            Header.LP_TrunkResult.Set(0x015A); // 008a7467
             // プレドリック
-            Header.LP_BEGIN_STOREBANK.Set(0);
+            // CStoreBankDlg::OnPacket
+            Header.LP_BEGIN_STOREBANK.Set(0); // 0086e26a
             {
                 Header.LP_StoreBankGetAllResult.Set(0x015B);
                 Header.LP_StoreBankResult.Set(0x015C);
@@ -1315,14 +1381,13 @@ public class InPacket {
             Header.LP_RPSGame.Set(0x015D);
             Header.LP_Messenger.Set(0x015E);
             Header.LP_MiniRoom.Set(0x015F);
-            // 0x0160 未使用
-            // 0x0161 未使用
-            // 0x0162 未使用
-            // 0x0163 未使用
-            // 0x0164 未使用
-            // 0x0165 未使用
-            // 0x0166 未使用
+            // 未使用
+            {
+            // 0x0160 - 0x0166
+            }
             // パチンコ
+            // C_UNK_Pachinko::OnPacket (仮)
+            Header.UNK_BEGIN_PACHINKO.Set(0); // 005d7922
             {
                 Header.TIP_BEANS.Set(0x0167);
                 Header.OPEN_BEANS.Set(0x0168);
@@ -1330,11 +1395,15 @@ public class InPacket {
                 // 0x016A
                 Header.UPDATE_BEANS.Set(0x016B);
             }
-            Header.LP_Parcel.Set(0x016C); // 宅配
+            Header.UNK_END_PACHINKO.Set(0);
+            // 宅配
+            // CParcelDlg::OnPacket
+            Header.LP_Parcel.Set(0x016C); // 00792325
         }
         Header.LP_END_FIELD.Set(0);
         // ポイントショップ
-        Header.LP_BEGIN_CASHSHOP.Set(0);
+        // CCashShop::OnPacket
+        Header.LP_BEGIN_CASHSHOP.Set(0); // 00493582
         {
             // 0x016D
             // 0x016E
@@ -1354,43 +1423,51 @@ public class InPacket {
         }
         Header.LP_END_CASHSHOP.Set(0);
         // キー設定
-        Header.LP_BEGIN_FUNCKEYMAPPED.Set(0);
+        // CFuncKeyMappedMan::OnPacket
+        Header.LP_BEGIN_FUNCKEYMAPPED.Set(0); // 00609abc
         {
             Header.LP_FuncKeyMappedInit.Set(0x017C);
             Header.LP_PetConsumeItemInit.Set(0x017D);
             Header.LP_PetConsumeMPItemInit.Set(0x017E);
+            // 0x017F 不明, JMSオリジナル
         }
         Header.LP_END_FUNCKEYMAPPED.Set(0);
-        // 0x017F
-        // 0x0180 未使用
-        // 0x0181 未使用
-        // 0x0182 未使用
-        // 0x0183 未使用
-        // 0x0184 未使用
-        // 0x0185 未使用
-        // 0x0186 未使用
-        // 0x0187 未使用
-        //Header.GET_MTS_TOKENS.Set(0x0188);
-        //Header.MTS_OPERATION.Set(0x0189);
-        // MTS, 0x0062E9A6
-        Header.LP_BEGIN_ITC.Set(0);
+        // 未使用
         {
+            // 0x0180 - 0x0186
+        }
+        // 不明 0058afb7
+        {
+            // 0x0187
+            // 0x0188
+            // 0x0189
+        }
+        // MTS
+        // CITC::OnPacket
+        Header.LP_BEGIN_ITC.Set(0); // 0x0062E9A6
+        {
+            // CITC::OnChargeParamResult
             Header.LP_ITCChargeParamResult.Set(0x018A);
+            // CITC::OnQueryCashResult
             Header.LP_ITCQueryCashResult.Set(0x018B);
+            // CITC::OnNormalItemResult
             Header.LP_ITCNormalItemResult.Set(0x018C);
         }
         Header.LP_END_ITC.Set(0);
 
-        Header.LP_BEGIN_MAPLETV.Set(0);
+        // CMapleTVMan::OnPacket
+        Header.LP_BEGIN_MAPLETV.Set(0); // 006d9728
         {
-            // 0x018D, LP_MapleTVUpdateMessage
-            // 0x018E, LP_MapleTVClearMessage
-            // 0x018F, LP_MapleTVSendMessageResult @018F [01] [01-03], /MapleTV コマンドのエラーメッセージ処理 (GMコマンドなので通常プレイでは不要)
-            // 0x0190, LP_BroadSetFlashChangeEvent 未使用 (何もしない関数)
+            Header.LP_MapleTVUpdateMessage.Set(0x018D); // OK
+            Header.LP_MapleTVClearMessage.Set(0x018E); // OK
+            Header.LP_MapleTVSendMessageResult.Set(0x018F); // @018F [01] [01-03], /MapleTV コマンドのエラーメッセージ処理 (GMコマンドなので通常プレイでは不要)
+            Header.LP_BroadSetFlashChangeEvent.Set(0x0190); // 何もしない関数なので実質未使用
         }
         Header.LP_END_MAPLETV.Set(0); // 0x191 未使用のはず
         // ビシャスのハンマー
-        Header.LP_BEGIN_GOLDHAMMER.Set(0);
+        // GMSだと関数なし
+        // C_UNK_GoldHammer::OnPacket
+        Header.LP_BEGIN_GOLDHAMMER.Set(0); // 0058942f
         {
             // 0x0191 未使用
             Header.LP_GoldHammerResult.Set(0x0192);
@@ -1399,7 +1476,8 @@ public class InPacket {
         }
         Header.LP_END_GOLDHAMMER.Set(0);
         // ベガの呪文書
-        Header.LP_BEGIN_VEGA.Set(0);
+        // CUIVega::OnPacket
+        Header.LP_BEGIN_VEGA.Set(0); // 00589449
         {
             // 0x0195 未使用
             Header.LP_VegaResult.Set(0x0196);
@@ -1408,7 +1486,8 @@ public class InPacket {
         }
         Header.LP_END_VEGA.Set(0);
         // 0x0199 一番最後の関数 0x00D76700が0以外の値のときのみ動作する
-        Header.LP_LogoutGift.Set(0x0199); // 他に該当する処理がないので多分ログアウトギフト
+        // CWvsContext::OnLogoutGift
+        Header.LP_LogoutGift.Set(0x0199); // 00b6f82e
         // 末尾
         Header.LP_NO.Set(0x19A);
     }
@@ -1462,7 +1541,7 @@ public class InPacket {
         Header.LP_SetWeekEventMessage.Set(0x0048 + 1);  // 基準点
         Header.MINIGAME_PACHINKO_UPDATE_TAMA.Set(0x4C + 1); // 基準点
         Header.FISHING_BOARD_UPDATE.Set(0x0051 + 1);
-        Header.PLAYER_NPC.Set(0x0056 + 1); // NPC
+        Header.LP_ImitatedNPCData.Set(0x0056 + 1); // NPC
         Header.LP_MonsterBookSetCard.Set(0x0057 + 1); // NPC
         Header.LP_MonsterBookSetCover.Set(0x0058 + 1);
         Header.LP_AvatarMegaphoneRes.Set(0x005B + 1);

@@ -613,7 +613,7 @@ public class OutPacket {
             Header.CP_UserEffectLocal.Set(0x003A);
             Header.CP_ShopScannerRequest.Set(0x003B);
             Header.CP_ShopLinkRequest.Set(0x003C);
-            // 0x003D InPacket 0x0158, 0x0159から送信される, CP_AdminShopRequest?
+            Header.CP_AdminShopRequest.Set(0x003D); // InPacket 0x0158, 0x0159から送信される, CP_AdminShopRequest?
             Header.CP_UserSortItemRequest.Set(0x003E);
             Header.CP_UserGatherItemRequest.Set(0x003F);
             Header.CP_UserChangeSlotPositionRequest.Set(0x0040);
