@@ -4397,7 +4397,7 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         // 1034: balrog boat comes, 1548: boat comes, 3: boat leaves
-        mplew.writeShort(InPacket.Header.BOAT_EFFECT.Get());
+        mplew.writeShort(InPacket.Header.LP_CONTISTATE.Get());
         mplew.writeShort(effect); // 0A 04 balrog
         //this packet had 3: boat leaves
 
@@ -4408,7 +4408,7 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         // 1034: balrog boat comes, 1548: boat comes, 3: boat leaves
-        mplew.writeShort(InPacket.Header.BOAT_EFF.Get());
+        mplew.writeShort(InPacket.Header.LP_CONTIMOVE.Get());
         mplew.writeShort(effect); // 0A 04 balrog
         //this packet had the other ones o.o
 

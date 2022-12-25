@@ -58,7 +58,6 @@ public class MTSCSPacket {
         // 0048C403 +17252 WORD
         // 0048C44A +17254 WORD
         // 0047FFA8 +17256 BYTE
-        
         mplew.writeZeroBytes(1500);
         /*        Collection<CashModInfo> cmi = CashItemFactory.getInstance().getAllModInfo();
         mplew.writeShort(cmi.size());
@@ -602,6 +601,12 @@ public class MTSCSPacket {
         mplew.write(0x3D);
         mplew.writeInt(nx);
         mplew.writeInt(items);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket openWebSite() {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(InPacket.Header.LP_ITCChargeParamResult.Get());
         return mplew.getPacket();
     }
 

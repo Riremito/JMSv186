@@ -407,12 +407,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 CashShopOperation.LeaveCS(p, c, c.getPlayer());
                 return true;
             }
-            case TOUCHING_MTS: {
+            case CP_ITCChargeParamRequest: {
+                // 公式サイト開くだけなので不要だが、何かしらのパケットを送らないと画面がパケット受信するまで操作不能になる
+                MTSOperation.OnChargeParamResult(c);
+                return true;
+            }
+            case CP_ITCQueryCashRequest: {
                 // p
                 MTSOperation.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
                 return true;
             }
-            case MTS_TAB: {
+            case CP_ITCItemRequest: {
                 MTSOperation.MTSOperation(p, c);
                 return true;
             }
@@ -962,7 +967,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 UserInterfaceHandler.CygnusSummon_NPCRequest(c);
                 return true;
             }
-            case SHIP_OBJECT: {
+            case CP_CONTISTATE: {
                 // p
                 UserInterfaceHandler.ShipObjectRequest(p.readInt(), c);
                 return true;

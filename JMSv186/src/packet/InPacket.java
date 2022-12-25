@@ -648,14 +648,11 @@ public class InPacket {
         RELOG_RESPONSE,
         ARIANT_PQ_START,
         ARIANT_SCOREBOARD,
-        BOAT_EFFECT,
-        BOAT_EFF,
         SERVERSTATUS,
         XMAS_SURPRISE,
         EARN_TITLE_MSG,
         LOGIN_AUTH, // 名称不明
         FISHING_BOARD_UPDATE,
-        PLAYER_NPC,
         ENERGY,
         GHOST_POINT,
         GHOST_STATUS,
@@ -1024,9 +1021,15 @@ public class InPacket {
             Header.LP_AdminResult.Set(0x0090);
             Header.LP_Quiz.Set(0x0091);
             Header.LP_Desc.Set(0x0092);
+            // 船の駅の時刻
             Header.LP_Clock.Set(0x0093);
-            //Header.BOAT_EFF.Set(0x0094);
-            //Header.BOAT_EFFECT.Set(0x0095);
+            // 船
+            // CField_ContiMove::OnPacket
+            // 005a3d4e
+            {
+                Header.LP_CONTIMOVE.Set(0x0094);
+                Header.LP_CONTISTATE.Set(0x0095);
+            }
             // 0x0096
             // 0x0097
             // 0x0098

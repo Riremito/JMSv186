@@ -215,7 +215,7 @@ public class OutPacket {
         CP_UserFollowCharacterWithdraw,
         //CP_UserSelectPQReward,
         //CP_UserRequestPQReward,
-        //CP_SetPassenserResult,
+        CP_SetPassenserResult,
         CP_BroadcastMsg,
         CP_GroupMessage,
         CP_Whisper,
@@ -335,13 +335,13 @@ public class OutPacket {
         CP_SnowBallHit,
         CP_SnowBallTouch,
         CP_CoconutHit,
-        //CP_TournamentMatchTable,
-        //CP_PulleyHit,
+        CP_TournamentMatchTable,
+        CP_PulleyHit,
         CP_END_EVENT_FIELD,
         CP_BEGIN_MONSTER_CARNIVAL_FIELD,
         CP_MCarnivalRequest,
         CP_END_MONSTER_CARNIVAL_FIELD,
-        //CP_CONTISTATE,
+        CP_CONTISTATE, // 船の状態取得
         CP_BEGIN_PARTY_MATCH,
         CP_INVITE_PARTY_MATCH,
         CP_CANCEL_INVITE_PARTY_MATCH,
@@ -406,13 +406,10 @@ public class OutPacket {
         USE_TREASUER_CHEST, // 名称不明
         CYGNUS_SUMMON, // 名称不明
         LEFT_KNOCK_BACK, // イベント関連?
-        SHIP_OBJECT, // レッサーバルログ
         RECOMMENDED_AVATAR, // おすすめアバター
         UPDATE_QUEST, // 不明
         QUEST_ITEM, // 不明
         USE_ITEM_QUEST, // 多分Quest Value Addition Exploitのパケット
-        TOUCHING_MTS, // 不明
-        MTS_TAB, // MTS検索
         BEANS_OPERATION, // パチンコ
         BEANS_UPDATE, // パチンコ
         UNKNOWN_END;
@@ -823,8 +820,8 @@ public class OutPacket {
             }
             Header.CP_END_MONSTER_CARNIVAL_FIELD.Set(0x00EA);
             // 0x00EB
-            // レッサーバルログ
-            Header.SHIP_OBJECT.Set(0x00EC);
+            // ステーションの船
+            Header.CP_CONTISTATE.Set(0x00EC);
             // グループ
             Header.CP_BEGIN_PARTY_MATCH.Set(0x00ED);
             {
@@ -872,8 +869,11 @@ public class OutPacket {
         // 0x010D @00EC 1FでメイプルイベントのUIを開いたときに@010D 00が送信される
         // 0x010E
         // 0x010F, CP_BEGIN_ITC?
-        // 0x0110, CP_ITCChargeParamRequest?
-        Header.MTS_TAB.Set(0x0111); // CP_ITCQueryCashRequest?
+        {
+            Header.CP_ITCChargeParamRequest.Set(0x010F); // 充填
+            Header.CP_ITCQueryCashRequest.Set(0x0110); // ポイント確認
+            Header.CP_ITCItemRequest.Set(0x0111); // 画面操作
+        }
         // 0x0112, CP_ITCItemRequest?
         // 0x0113, CP_END_ITC?
         Header.GM_COMMAND_MAPLETV.Set(0x0114); // CP_MapleTVSendMessageRequestかも?
@@ -890,7 +890,6 @@ public class OutPacket {
         // 0x011C
         // 0x011D
         // 0x011E
-        Header.TOUCHING_MTS.Set(0x011F); // 多分違う
         // 末尾
         Header.CP_NO.Set(0x0120);
     }
