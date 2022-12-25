@@ -1031,7 +1031,7 @@ public class InPacket {
             // 0x0097
             // 0x0098
             Header.LP_DestroyClock.Set(0x0099);
-            // 0x009A 未使用
+            // 0x009A CField_AriantArena::OnPacketで使用
             // 0x009B
             //Header.PYRAMID_UPDATE.Set(0x009C);
             //Header.PYRAMID_RESULT.Set(0x009D);
@@ -1103,8 +1103,9 @@ public class InPacket {
                 }
                 Header.LP_END_USERCOMMON.Set(0);
                 // 他のプレイヤー
-                // CUserPool::OnPacket
-                Header.LP_BEGIN_USERREMOTE.Set(0); // 同じ
+                // CUserPool::OnPacket (GMS)
+                // C_UNK_UserRemote::OnPacket (JMS)
+                Header.LP_BEGIN_USERREMOTE.Set(0); // 00ac4035
                 {
                     // 0x00C5 未使用
                     Header.LP_UserMove.Set(0x00C6);
@@ -1126,13 +1127,14 @@ public class InPacket {
                     Header.LP_UserHP.Set(0x00D6);
                     Header.LP_UserGuildNameChanged.Set(0x00D7);
                     Header.LP_UserGuildMarkChanged.Set(0x00D8);
+                    Header.LP_UserThrowGrenade.Set(0x00D9); // 不明
                 }
                 Header.LP_END_USERREMOTE.Set(0);
 
-                Header.LP_UserThrowGrenade.Set(0x00D9); // 不明
                 // クライアントサイドの処理
-                // CUserPool::OnPacket
-                Header.LP_BEGIN_USERLOCAL.Set(0); // 同じ
+                // CUserPool::OnPacket (GMS)
+                // C_UNK_UserLocal::OnPacket (JMS)
+                Header.LP_BEGIN_USERLOCAL.Set(0); // 00a8cc68
                 {
                     Header.LP_UserSitResult.Set(0x00DA);
                     Header.LP_UserEmotionLocal.Set(0x00DB); // 0x00CEと同一
@@ -1301,46 +1303,65 @@ public class InPacket {
             Header.LP_BEGIN_ETCFIELDOBJ.Set(0); // ???
             {
                 // CField_SnowBall::OnPacket
+                // 005e8b95
                 {
-                    // 合っているか不明
+                    // OK
                     Header.LP_SnowBallState.Set(0x013B);
                     Header.LP_SnowBallHit.Set(0x013C);
                     Header.LP_SnowBallMsg.Set(0x013D);
                     Header.LP_SnowBallTouch.Set(0x013E);
                 }
                 // CField_Coconut::OnPacket
+                // CocaColaも同じ処理だった
+                // 0059F0AA
                 {
-                    // 合っているか不明
+                    // OK
                     Header.LP_CoconutHit.Set(0x013F);
                     Header.LP_CoconutScore.Set(0x0140);
                 }
                 // CField_GuildBoss::OnPacket
+                // 005B6F75
                 {
-                    // 合っているか不明
+                    // OK
                     Header.LP_HealerMove.Set(0x0141);
                     Header.LP_PulleyStateChange.Set(0x0142);
                 }
-                // ずれてるかも
                 // CField_MonsterCarnival::OnPacket
+                // 005cd297
+                // CField_MonsterCarnivalRevive::OnPacket
+                // 005cdc16
                 {
                     Header.LP_MCarnivalEnter.Set(0x0143); // CField_MonsterCarnivalRevive::OnPacketにもある
                     Header.LP_MCarnivalPersonalCP.Set(0x0144);
                     Header.LP_MCarnivalTeamCP.Set(0x0145);
-                    Header.LP_MCarnivalResultSuccess.Set(0x0146);
-                    Header.LP_MCarnivalResultFail.Set(0x0147);
+                    Header.LP_MCarnivalResultSuccess.Set(0x0146); // OK
+                    Header.LP_MCarnivalResultFail.Set(0x0147); // なんか違う
                     Header.LP_MCarnivalDeath.Set(0x0148);
                     Header.LP_MCarnivalMemberOut.Set(0x0149);
                     Header.LP_MCarnivalGameResult.Set(0x014A); // CField_MonsterCarnivalRevive::OnPacketにもある
                 }
-                // 0x014B 未使用
+                // CField_AriantArena::OnPacket
+                // 0059249c
+                {
+                    // OK
+                    Header.LP_ShowArenaResult.Set(0x009A);
+                    Header.LP_ArenaScore.Set(0x014B);
+                }
                 // 0x014C 未使用
-                // 0x014D 未使用
-                // 0x014E 未使用
+                // 0059AD23
+                {
+                    // 0x014D
+                    // 0x014E
+                }
                 // 0x014F @014F byte種類,int残り時間, マップ退場メッセージ
-                // 0x0150 未使用
+                // CField_Witchtower::OnPacket
+                // 005fb0a0
+                {
+                    Header.LP_WitchtowerScore.Set(0x0150); // OK
+                }
                 Header.LP_HontaleTimer.Set(0x0151); // OK
                 Header.LP_ChaosZakumTimer.Set(0x0152); // OK
-                Header.LP_HontailTimer.Set(0x0153);
+                Header.LP_HontailTimer.Set(0x0153); // 未使用
                 Header.LP_ZakumTimer.Set(0x0154); // OK
             }
             Header.LP_END_ETCFIELDOBJ.Set(0);
@@ -1381,10 +1402,26 @@ public class InPacket {
             Header.LP_RPSGame.Set(0x015D);
             Header.LP_Messenger.Set(0x015E);
             Header.LP_MiniRoom.Set(0x015F);
-            // 未使用
+            // イベント
+            // CField_Tournament::OnPacket
+            Header.LP_BEGIN_TOURNAMENT.Set(0); // 005EFE97
             {
-            // 0x0160 - 0x0166
+                Header.LP_Tournament.Set(0x0160);
+                Header.LP_TournamentMatchTable.Set(0x0161);
+                Header.LP_TournamentSetPrize.Set(0x0162);
+                Header.LP_TournamentNoticeUEW.Set(0x0163);
+                Header.LP_TournamentAvatarInfo.Set(0x0164); // 何もしない関数のため実質未実装
             }
+            Header.LP_END_TOURNAMENT.Set(0);
+
+            // CField_Wedding::OnPacket
+            Header.LP_BEGIN_WEDDING.Set(0); // 005F6F55
+            {
+                // BYTE DWORD DWORD (GMS) -> DWORD DWORD (JMS)
+                Header.LP_WeddingProgress.Set(0x0165);
+                Header.LP_WeddingCremonyEnd.Set(0x0166); // OK
+            }
+            Header.LP_END_WEDDING.Set(0);
             // パチンコ
             // C_UNK_Pachinko::OnPacket (仮)
             Header.UNK_BEGIN_PACHINKO.Set(0); // 005d7922
