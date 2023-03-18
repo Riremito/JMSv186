@@ -429,10 +429,16 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // Game Server
+    // CClientSocket::ProcessPacket
     public static final boolean handleGamePacket(final SeekableLittleEndianAccessor p, final MapleClient c, OutPacket op) throws Exception {
         short header = op.Decode2();
         OutPacket.Header type = OutPacket.ToHeader(header);
 
+        // CClientSocket::ProcessUserPacket
+        // CUser::OnPacket
+        // CUser::OnPetPacket
+        // CUser::OnFieldPacket
+        // CUser::OnSummonedPacket
         switch (type) {
             case CP_UserParcelRequest: {
                 return SendPacket.HomeDelivery.Accept(c, op);

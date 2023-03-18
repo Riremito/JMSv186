@@ -19,6 +19,7 @@ import server.events.MapleOxQuizFactory;
 import server.life.MapleLifeFactory;
 import server.life.PlayerNPC;
 import server.quest.MapleQuest;
+import tools.admin.main;
 
 public class Start {
 
@@ -80,7 +81,10 @@ public class Start {
     }
 
     public final static void main(final String args[]) {
-
+        if (args.length > 0) {
+            tools.admin.main.main();
+            //return;
+        }
         int version_main = 186;
         int version_sub = 1;
         String server_name = "main";
@@ -227,6 +231,7 @@ public class Start {
         Debug.InfoLog("Login Server is opened");
         Debug.InfoLog("Running...");
 //        RankingWorker.getInstance().run();
+        //tools.admin.main.main();
     }
 
     public static class Shutdown implements Runnable {
