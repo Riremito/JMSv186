@@ -27,7 +27,6 @@ import client.inventory.Item;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.MapleCharacterUtil;
-import client.inventory.Equip;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import handling.login.LoginInformationProvider;
@@ -55,8 +54,15 @@ public class CharLoginHandler {
     }
 
     public static final boolean login(OutPacket p, final MapleClient c) {
-        final String login = new String(p.DecodeBuffer());
+        String login = new String(p.DecodeBuffer());
         final String pwd = new String(p.DecodeBuffer());
+        boolean endwith_ = false;
+
+        // MapleIDは最低4文字なので、5文字以上の場合に性別変更の特殊判定を行う
+        if (login.length() >= 5 && login.endsWith("_")) {
+            login = login.substring(0, login.length() - 1);
+            endwith_ = true;
+        }
 
         c.setAccountName(login);
         final boolean ipBan = c.hasBannedIP();
@@ -89,6 +95,10 @@ public class CharLoginHandler {
             }
         } else {
             c.loginAttempt = 0;
+            // アカウントの性別変更
+            if (endwith_) {
+                c.setGender((byte) 1);
+            }
             LoginWorker.registerClient(c);
             return true;
         }
