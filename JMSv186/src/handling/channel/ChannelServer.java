@@ -116,7 +116,7 @@ public class ChannelServer implements Serializable {
         events.put(MapleEventType.Snowball, new MapleSnowball(channel, MapleEventType.Snowball.mapids));
     }
 
-    // BB前仕様かどうか判定
+    // 独自仕様かどうか
     public static boolean IsCustom() {
         return ServerConfig.game_server_custom;
     }

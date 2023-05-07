@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package scripting;
 
-import java.rmi.RemoteException;
 import java.awt.Point;
 import java.util.List;
 
@@ -446,7 +445,7 @@ public abstract class AbstractPlayerInteraction {
                 return null;
             }
             if (type.equals(MapleInventoryType.EQUIP) && !GameConstants.isThrowingStar(id) && !GameConstants.isBullet(id)) {
-                final Equip item = (Equip) (randomStats ? ii.RireSabaStats((Equip) ii.getEquipById(id)) : ii.getEquipById(id));
+                final Equip item = (Equip) (randomStats ? ii.randomizeStats((Equip) ii.getEquipById(id)) : ii.getEquipById(id));
                 if (period > 0) {
                     item.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
                 }

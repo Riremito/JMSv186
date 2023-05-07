@@ -15,6 +15,7 @@ import constants.GameConstants;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
+import config.ServerConfig;
 import debug.Debug;
 import java.util.LinkedList;
 import provider.MapleData;
@@ -879,10 +880,16 @@ public class MapleItemInformationProvider {
                 }
             } else {
                 if (!ws && !GameConstants.isCleanSlate(scrollId.getItemId()) && !GameConstants.isSpecialScroll(scrollId.getItemId()) && !GameConstants.isEquipScroll(scrollId.getItemId()) && !GameConstants.isPotentialScroll(scrollId.getItemId())) {
-                    nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
+                    // 書失敗時のUG減少を無効化
+                    if (!ServerConfig.game_server_disable_scroll_failure) {
+                        nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
+                    }
                 }
-                if (Randomizer.nextInt(99) < curse) {
-                    return null;
+                // 装備破壊を無効化
+                if (!ServerConfig.game_server_disable_scroll_boom) {
+                    if (Randomizer.nextInt(99) < curse) {
+                        return null;
+                    }
                 }
             }
         }
@@ -1033,6 +1040,10 @@ public class MapleItemInformationProvider {
     }
 
     public final Equip randomizeStats(final Equip equip) {
+        if (ServerConfig.game_server_god_equip) {
+            return RireSabaStats(equip);
+        }
+
         equip.setStr(getRandStat(equip.getStr(), 5));
         equip.setDex(getRandStat(equip.getDex(), 5));
         equip.setInt(getRandStat(equip.getInt(), 5));

@@ -25,6 +25,7 @@ import client.SkillFactory;
 import client.PlayerStats;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import config.ServerConfig;
 import handling.channel.ChannelServer;
 import provider.MapleData;
 import provider.MapleDataTool;
@@ -775,7 +776,9 @@ public class MapleStatEffect implements Serializable {
         final PlayerStats stat = applyto.getStat();
         if (primary) {
             if (itemConNo != 0 && !applyto.isClone()) {
-                MapleInventoryManipulator.removeById(applyto.getClient(), GameConstants.getInventoryType(itemCon), itemCon, itemConNo, false, true);
+                if (!ServerConfig.game_server_disable_stone_consuming) {
+                    MapleInventoryManipulator.removeById(applyto.getClient(), GameConstants.getInventoryType(itemCon), itemCon, itemConNo, false, true);
+                }
             }
         } else if (!primary && isResurrection()) {
             hpchange = stat.getMaxHp();
@@ -830,7 +833,10 @@ public class MapleStatEffect implements Serializable {
                 item = use.getItem((byte) i);
                 if (item != null) {
                     if (GameConstants.isThrowingStar(item.getItemId()) && item.getQuantity() >= 200) {
-                        MapleInventoryManipulator.removeById(applyto.getClient(), MapleInventoryType.USE, item.getItemId(), 200, false, true);
+                        // 手裏剣の消費を無効化
+                        if (!ServerConfig.game_server_disable_star_consuming) {
+                            MapleInventoryManipulator.removeById(applyto.getClient(), MapleInventoryType.USE, item.getItemId(), 200, false, true);
+                        }
                         break;
                     }
                 }

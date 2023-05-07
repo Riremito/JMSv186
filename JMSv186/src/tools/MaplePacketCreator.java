@@ -92,7 +92,7 @@ import client.SkillEntry;
 import client.inventory.IEquip;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
-import handling.channel.ChannelServer;
+import config.ServerConfig;
 import handling.channel.handler.BeanGame;
 import packet.InPacket;
 import server.Start;
@@ -498,7 +498,7 @@ public class MaplePacketCreator {
                 }
                 // ビシャスのハンマー
                 if (Start.getMainVersion() > 164) {
-                    if (ChannelServer.IsCustom()) {
+                    if (ServerConfig.game_server_enable_hammer) {
                         data.Encode4(equip.getViciousHammer());
                     } else {
                         data.Encode4(0);
@@ -509,7 +509,7 @@ public class MaplePacketCreator {
                     if (!hasUniqueId) {
                         data.Encode1(equip.getState()); //7 = unique for the lulz
                         data.Encode1(equip.getEnhance());
-                        if (ChannelServer.IsCustom()) {
+                        if (ServerConfig.game_server_enable_potential) {
                             data.Encode2(equip.getPotential1()); //potential stuff 1. total damage
                             data.Encode2(equip.getPotential2()); //potential stuff 2. critical rate
                             data.Encode2(equip.getPotential3()); //potential stuff 3. all stats

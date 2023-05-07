@@ -37,7 +37,6 @@ import client.anticheat.CheatingOffense;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import java.util.Map;
-import server.AutobanManager;
 import server.MapleStatEffect;
 import server.Randomizer;
 import server.Start;
