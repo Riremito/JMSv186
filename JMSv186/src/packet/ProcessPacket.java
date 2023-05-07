@@ -2,13 +2,37 @@
 package packet;
 
 import client.inventory.IItem;
-import debug.Debug;
 import handling.MaplePacket;
 import java.util.List;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import tools.packet.PacketHelper;
 
 public class ProcessPacket {
+
+    // 独自実装
+    public static class Custom {
+
+        public static MaplePacket Hash() {
+            InPacket p = new InPacket(InPacket.Header.LP_CUSTOM_WZ_HASH);
+            p.EncodeStr("Skill.wz");
+            return p.Get();
+        }
+
+        public static MaplePacket Patch(int address, byte memory[]) {
+            InPacket p = new InPacket(InPacket.Header.LP_CUSTOM_CLIENT_PATCH);
+            p.Encode4(address);
+            p.Encode2((short) memory.length);
+            p.EncodeBuffer(memory);
+            return p.Get();
+        }
+
+        public static MaplePacket Scan(int address, short size) {
+            InPacket p = new InPacket(InPacket.Header.LP_CUSTOM_MEMORY_SCAN);
+            p.Encode4(address);
+            p.Encode2(size);
+            return p.Get();
+        }
+    }
 
     // 宅配
     public static class HomeDelivery {

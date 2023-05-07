@@ -20,13 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package database;
 
+import config.ServerConfig;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Properties;
-import server.ServerProperties;
 
 /**
  * All OdinMS servers maintain a Database Connection. This class therefore
@@ -39,14 +38,6 @@ public class DatabaseConnection {
 
     private static final ThreadLocal<Connection> connected = new ThreadLocalConnection();
     public static final int RETURN_GENERATED_KEYS = 1;
-    private static String url, user, password;
-
-    public static final void LoadConfig() {
-        Properties p = ServerProperties.LoadConfig("properties/database.properties");
-        url = p.getProperty("database.url");
-        user = p.getProperty("database.user");
-        password = p.getProperty("database.password");
-    }
 
     public static final Connection getConnection() {
         return connected.get();
@@ -70,7 +61,7 @@ public class DatabaseConnection {
                 System.err.println("ERROR" + e);
             }
             try {
-                final Connection con = DriverManager.getConnection(url, user, password);
+                final Connection con = DriverManager.getConnection(ServerConfig.database_url, ServerConfig.database_user, ServerConfig.database_password);
                 allConnections.add(con);
                 return con;
             } catch (SQLException e) {

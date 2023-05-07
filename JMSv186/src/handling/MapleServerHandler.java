@@ -3,6 +3,7 @@ package handling;
 import constants.ServerConstants;
 import client.MapleClient;
 import command.GMCommand;
+import config.ServerConfig;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -25,6 +26,7 @@ import tools.FileoutputUtil;
 import handling.world.World;
 import java.util.Map;
 import packet.OutPacket;
+import packet.ProcessPacket;
 import packet.SendPacket;
 import server.Start;
 
@@ -256,6 +258,27 @@ public class MapleServerHandler extends IoHandlerAdapter {
         }
 
         switch (type) {
+            // 独自実装
+            case CP_CUSTOM_WZ_HASH: {
+                if (ServerConfig.login_server_antihack) {
+                    if (SendPacket.Custom.Hash(p)) {
+                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz OK");
+                    } else {
+                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz NG");
+                    }
+                }
+                return true;
+            }
+            case CP_CUSTOM_MEMORY_SCAN: {
+                if (ServerConfig.login_server_antihack) {
+                    if (SendPacket.Custom.Scan(p)) {
+                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory OK");
+                    } else {
+                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory NG");
+                    }
+                }
+                return true;
+            }
             // ログイン画面
             case CP_CreateSecurityHandle: {
                 // +p
@@ -267,6 +290,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 if (CharLoginHandler.login(p, c)) {
                     InterServerHandler.SetLogin(false);
                     Debug.DebugLog("Login MapleID = " + c.getAccountName());
+
+                    if (ServerConfig.login_server_antihack && Start.getMainVersion() == 186) {
+                        c.getSession().write(ProcessPacket.Custom.Hash());
+                        c.getSession().write(ProcessPacket.Custom.Scan(0x008625B5, (short) 3)); // damage hack check
+                        // test
+                        byte mem[] = {(byte) 0x90, (byte) 0x90, (byte) 0x90};
+                        c.getSession().write(ProcessPacket.Custom.Patch(0x00BCCA45, mem));
+                    }
                 }
                 return true;
             }
@@ -1161,11 +1192,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // パチンコ
             case BEANS_OPERATION: {
-                //BeanGame.BeanGame1(p, c);
+                BeanGame.BeanGame1(p, c);
                 return true;
             }
             case BEANS_UPDATE: {
-                //BeanGame.BeanGame2(p, c);
+                BeanGame.BeanGame2(p, c);
                 return true;
             }
             default: {

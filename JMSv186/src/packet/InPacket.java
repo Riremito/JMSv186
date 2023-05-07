@@ -124,6 +124,11 @@ public class InPacket {
     }
 
     public enum Header {
+        // 独自仕様
+        LP_CUSTOM_,
+        LP_CUSTOM_WZ_HASH,
+        LP_CUSTOM_CLIENT_PATCH,
+        LP_CUSTOM_MEMORY_SCAN,
         // Names from v95 PDB
         // ログインサーバー
         LP_BEGIN_SOCKET,
@@ -814,6 +819,15 @@ public class InPacket {
         Header.LP_BroadcastMsg.Set(0xFFFF);
         Header.LP_FamilyInfoResult.Set(0xFFFF);
         Header.LP_SetCashShop.Set(0xFFFF);
+    }
+
+    public static void SetCustomHeader() {
+        // WZファイルのハッシュ値の確認
+        Header.LP_CUSTOM_WZ_HASH.Set(0x77AA);
+        // CLIENTのパッチ
+        Header.LP_CUSTOM_CLIENT_PATCH.Set(0x77BB);
+        // メモリスキャン
+        Header.LP_CUSTOM_MEMORY_SCAN.Set(0x77CC);
     }
 
     // JMS v186.1 ProcessPacket

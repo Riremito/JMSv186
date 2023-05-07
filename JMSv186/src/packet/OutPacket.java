@@ -67,13 +67,17 @@ public class OutPacket {
         for (int i = 0; i < length; i++) {
             buffer[i] = Decode1();
         }
-        // 終端文字を読み取る
-        buffer[length] = Decode1();
+
+        buffer[length] = 0;
 
         return new String(buffer);
     }
 
     public enum Header {
+        // 独自仕様
+        CP_CUSTOM_,
+        CP_CUSTOM_WZ_HASH,
+        CP_CUSTOM_MEMORY_SCAN,
         // Names from v95 PDB
         // ログインサーバー
         CP_BEGIN_SOCKET,
@@ -505,6 +509,33 @@ public class OutPacket {
         Header.CP_FuncKeyMappedModified.Set(0x007B);
 
         Header.CP_UserMigrateToITCRequest.Set(0x0091);
+
+        Header.CP_BEGIN_FIELD.Set(0x00A2);
+        {
+            // マップ上で動く物
+            Header.CP_BEGIN_LIFEPOOL.Set(0x00A3);
+            {
+                // Mob
+                Header.CP_BEGIN_MOB.Set(0x00A4);
+                {
+                    Header.CP_MobMove.Set(0x00A5);
+                    /*
+                    Header.CP_MobApplyCtrl.Set(0x00C8);
+                    Header.CP_MobDropPickUpRequest.Set(0x00C9);
+                    Header.CP_MobHitByObstacle.Set(0x00CA);
+                    Header.CP_MobHitByMob.Set(0x00CB);
+                    Header.CP_MobSelfDestruct.Set(0x00CC);
+                    Header.CP_MobAttackMob.Set(0x00CD);
+                    Header.CP_MobSkillDelayEnd.Set(0x00CE);
+                    Header.CP_MobTimeBombEnd.Set(0x00CF);
+                    Header.CP_MobEscortCollision.Set(0x00D0);
+                    Header.CP_MobRequestEscortInfo.Set(0x00D1);
+                    Header.CP_MobEscortStopEndRequest.Set(0x00D2);
+                     */
+                }
+                //Header.CP_END_MOB.Set(0x00D3);
+            }
+        }
     }
 
     public static void SetForJMSv176() {
@@ -541,6 +572,14 @@ public class OutPacket {
         Header.CP_UserMove.Set(0x001F);
         Header.CP_UserPortalScriptRequest.Set(0x005E);
         Header.CP_UserPortalTeleportRequest.Set(0x005F);
+    }
+
+    // チート対策
+    public static void SetCustomHeader() {
+        // WZファイルのハッシュ値の送信
+        Header.CP_CUSTOM_WZ_HASH.Set(0x77AA);
+        // メモリスキャン
+        Header.CP_CUSTOM_MEMORY_SCAN.Set(0x77BB);
     }
 
     // JMS v186.1 SendPacket

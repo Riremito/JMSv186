@@ -1,6 +1,7 @@
 package server;
 
 import client.SkillFactory;
+import config.ServerConfig;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
 import handling.login.LoginServer;
@@ -19,17 +20,11 @@ import server.events.MapleOxQuizFactory;
 import server.life.MapleLifeFactory;
 import server.life.PlayerNPC;
 import server.quest.MapleQuest;
-import tools.admin.main;
 
 public class Start {
 
     public static void TestServer() {
         // 設定ファイルの読み込み
-        DatabaseConnection.LoadConfig();
-        LoginServer.LoadConfig();
-        LoginServer.SetWorldConfig();
-        CashShopServer.LoadConfig();
-        ChannelServer.LoadConfig("momiji");
         World.init();
         WorldTimer.getInstance().start();
         EtcTimer.getInstance().start();
@@ -81,6 +76,10 @@ public class Start {
     }
 
     public final static void main(final String args[]) {
+        // 設定の読み込み
+        ServerConfig.SetProperty();
+        LoginServer.SetWorldConfig();
+
         if (args.length > 0) {
             tools.admin.main.main();
             //return;
@@ -129,6 +128,8 @@ public class Start {
 
                 OutPacket.SetForJMSv186();
                 InPacket.SetForJMSv186();
+                OutPacket.SetCustomHeader();
+                InPacket.SetCustomHeader();
                 break;
             }
             // ゴミ
@@ -166,13 +167,6 @@ public class Start {
             TestServer();
             return;
         }
-
-        // 設定ファイルの読み込み
-        DatabaseConnection.LoadConfig();
-        LoginServer.LoadConfig();
-        LoginServer.SetWorldConfig();
-        CashShopServer.LoadConfig();
-        ChannelServer.LoadConfig("kaede");
 
         try {
             final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0");

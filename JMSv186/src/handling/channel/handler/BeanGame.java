@@ -15,7 +15,7 @@ import tools.data.input.LittleEndianAccessor;
 import tools.MaplePacketCreator;
 
 public class BeanGame {
-/*
+
     public static int 进洞次数 = 0;
     public static int 第一排 = 0;
     public static int 第三排 = 0;
@@ -513,5 +513,4 @@ public class BeanGame {
         c.getSession().write(MaplePacketCreator.updateBeansMSG(c.getPlayer().getTama()));
         c.getSession().write(MaplePacketCreator.enableActions());
     }
-*/
 }
