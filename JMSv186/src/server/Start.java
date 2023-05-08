@@ -136,7 +136,7 @@ public class Start {
 
         CashItemFactory.getInstance().initialize();
 
-        Debug.InfoLog("Start PointShop Server");
+        Debug.InfoLog("Start Cash Shop Server");
         CashShopServer.run_startup_configurations();
         MTSStorage.load();
 
@@ -150,8 +150,6 @@ public class Start {
         PlayerNPC.loadAll();// touch - so we see database problems early...
         World.registerRespawn();
         LoginServer.setOn(); //now or later
-
-        Debug.InfoLog("Login Server is opened");
         Debug.InfoLog("OK");
 //        RankingWorker.getInstance().run();
     }

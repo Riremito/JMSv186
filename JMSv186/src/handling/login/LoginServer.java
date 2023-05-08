@@ -95,7 +95,7 @@ public class LoginServer {
         try {
             InetSocketadd = new InetSocketAddress(ServerConfig.login_server_port);
             acceptor.bind(InetSocketadd, new MapleServerHandler(-1, MapleServerHandler.ServerType.LoginServer), cfg);
-            Debug.InfoLog("Login Server Port = " + ServerConfig.login_server_port);
+            Debug.InfoLog("Port = " + ServerConfig.login_server_port);
         } catch (IOException e) {
             Debug.InfoLog("Binding to port " + ServerConfig.login_server_port + " failed" + e);
         }

@@ -67,7 +67,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     session.close();
                     return;
                 }
-                Debug.InfoLog("[LoginServer] " + address);
+                Debug.InfoLog("[Login Server] Connected " + address);
                 break;
             }
             case GameServer: {
@@ -75,7 +75,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     session.close();
                     return;
                 }
-                Debug.InfoLog("[GameServer " + String.format("%02d", channel) + "] " + address);
+                Debug.InfoLog("[Game Server " + String.format("%02d", channel) + "]  Connected " + address);
                 break;
             }
             case PointShopServer: {
@@ -83,16 +83,16 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     session.close();
                     return;
                 }
-                Debug.InfoLog("[PointShopServer] " + address);
+                Debug.InfoLog("[Cash Shop Server] Connected " + address);
                 break;
             }
             case MapleTradeSpaceServer: {
                 // ポイントショップとMTSを別のサーバーに分離した場合は修正が必要
-                Debug.InfoLog("[MapleTradeSpaceServer] " + address);
+                Debug.InfoLog("[Maple Trade Space Server] Connected " + address);
                 break;
             }
             default: {
-                Debug.InfoLog("[UnknownServer] " + address);
+                Debug.InfoLog("[UnknownServer] Connected " + address);
                 break;
             }
         }
