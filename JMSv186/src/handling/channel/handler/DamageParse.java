@@ -36,10 +36,10 @@ import client.anticheat.CheatTracker;
 import client.anticheat.CheatingOffense;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import config.ServerConfig;
 import java.util.Map;
 import server.MapleStatEffect;
 import server.Randomizer;
-import server.Start;
 import server.Timer.MapTimer;
 import server.life.Element;
 import server.life.MapleMonster;
@@ -1002,7 +1002,7 @@ public class DamageParse {
         //System.out.println(lea.toString());
         final AttackInfo ret = new AttackInfo();
 
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             lea.skip(1);
             lea.skip(8);
         }
@@ -1011,7 +1011,7 @@ public class DamageParse {
         ret.targets = (byte) ((ret.tbyte >>> 4) & 0xF);
         ret.hits = (byte) (ret.tbyte & 0xF);
 
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             lea.skip(8);
         }
 

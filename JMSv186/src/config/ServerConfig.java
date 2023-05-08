@@ -7,6 +7,15 @@ import java.util.Properties;
 
 public class ServerConfig {
 
+    // Version
+    public static short version = 186;
+    public static byte version_sub = 1;
+
+    public static void SetVersion(int ver1, int ver2) {
+        version = (short) ver1;
+        version_sub = (byte) ver2;
+    }
+
     // Database
     public static String database_url, database_user, database_password;
     // Login Server

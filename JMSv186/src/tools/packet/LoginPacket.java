@@ -26,6 +26,7 @@ import client.MapleCharacter;
 import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import config.ServerConfig;
 import constants.GameConstants;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
@@ -35,7 +36,6 @@ import java.util.Map;
 import java.util.Random;
 import packet.InPacket;
 import packet.OutPacket;
-import server.Start;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import tools.HexTool;
 
@@ -44,8 +44,8 @@ public class LoginPacket {
     // サーバーのバージョン情報
     public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
         InPacket p = new InPacket(InPacket.Header.HELLO);
-        p.Encode2(Start.getMainVersion());
-        p.EncodeStr(String.valueOf(Start.getSubVersion()));
+        p.Encode2(ServerConfig.version);
+        p.EncodeStr(String.valueOf(ServerConfig.version_sub));
         p.EncodeBuffer(recvIv);
         p.EncodeBuffer(sendIv);
         p.Encode1(3);
@@ -56,7 +56,7 @@ public class LoginPacket {
     public static final MaplePacket LoginAUTH(OutPacket p, MapleClient c) {
         // JMS v186.1には3つのログイン画面が存在するのでランダムに割り振ってみる
         String LoginScreen[] = {"MapLogin", "MapLogin1", "MapLogin2"};
-        if (Start.getMainVersion() != 186) {
+        if (ServerConfig.version != 186) {
             return LoginAUTH(LoginScreen[0]);
         }
         return LoginAUTH(LoginScreen[(new Random().nextInt(3))]);
@@ -69,7 +69,7 @@ public class LoginPacket {
         // ログイン画面の名称
         p.EncodeStr(LoginScreen);
 
-        if (Start.getMainVersion() >= 187) {
+        if (ServerConfig.version >= 187) {
             p.Encode4(0);
         }
 
@@ -95,7 +95,7 @@ public class LoginPacket {
         p.Encode1(0);
         p.Encode1(0);
 
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             p.Encode1(0);
         }
 
@@ -205,7 +205,7 @@ public class LoginPacket {
                 // LUK
                 p.Encode2(chr.getStat().luk);
                 // HP, MP
-                if (Start.getMainVersion() <= 186) {
+                if (ServerConfig.version <= 186) {
                     // BB前
                     p.Encode2(chr.getStat().hp);
                     p.Encode2(chr.getStat().maxhp);
@@ -241,7 +241,7 @@ public class LoginPacket {
                 p.Encode4(chr.getMapId());
                 // マップ入場位置
                 p.Encode1(chr.getInitialSpawnpoint());
-                if (Start.getMainVersion() > 176) {
+                if (ServerConfig.version > 176) {
                     // デュアルブレイドフラグ
                     p.Encode2(chr.getSubcategory());
                     p.EncodeZeroBytes(20);
@@ -302,7 +302,7 @@ public class LoginPacket {
                 p.Encode8(0);
             }
             // [ランキング情報]
-            if (Start.getMainVersion() > 176) {
+            if (ServerConfig.version > 176) {
                 p.Encode1(0);
             }
             // ランキングフラグ
@@ -314,7 +314,7 @@ public class LoginPacket {
         p.Encode2(2);
 
         // キャラクタースロットの数
-        if (Start.getMainVersion() <= 176) {
+        if (ServerConfig.version <= 176) {
             p.Encode4(charslots);
         } else {
             p.Encode8(charslots); // buffer
@@ -412,7 +412,7 @@ public class LoginPacket {
     private static final void addCharEntry(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr, boolean ranking) {
         PacketHelper.addCharStats(mplew, chr);
         PacketHelper.addCharLook(mplew, chr, true);
-        if (Start.getMainVersion() > 176) {
+        if (ServerConfig.version > 176) {
             mplew.write(0);
         }
         mplew.write(ranking ? 1 : 0);

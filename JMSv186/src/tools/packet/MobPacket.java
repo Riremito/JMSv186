@@ -26,11 +26,11 @@ import java.awt.Point;
 
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import config.ServerConfig;
 import handling.MaplePacket;
 import java.util.Collection;
 import java.util.Collections;
 import packet.InPacket;
-import server.Start;
 import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.movement.LifeMovementFragment;
@@ -167,7 +167,7 @@ public class MobPacket {
         mplew.writeInt(life.getObjectId());
         mplew.write(1); // 1 = Control normal, 5 = Control none
         mplew.writeInt(life.getId());
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             addMonsterStatus(mplew, life);
         } else {
             mplew.writeInt(0); // something
@@ -191,7 +191,7 @@ public class MobPacket {
         }
         mplew.write(life.getCarnivalTeam());
 
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             mplew.writeInt(0);
         }
         mplew.writeInt(0);
@@ -242,7 +242,7 @@ public class MobPacket {
         mplew.writeInt(life.getObjectId());
         mplew.write(1); // 1 = Control normal, 5 = Control none
         mplew.writeInt(life.getId());
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             addMonsterStatus(mplew, life);
         } else {
             mplew.writeInt(0);
@@ -255,7 +255,7 @@ public class MobPacket {
         mplew.write(life.isFake() ? -4 : newSpawn ? -2 : -1);
         mplew.write(life.getCarnivalTeam());
         mplew.writeInt(0);
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             mplew.writeInt(0);
         }
 

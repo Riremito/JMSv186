@@ -174,7 +174,7 @@ public class PacketHelper {
         mplew.write(chr.getInventory(MapleInventoryType.SETUP).getSlotLimit()); // set-up slots
         mplew.write(chr.getInventory(MapleInventoryType.ETC).getSlotLimit()); // etc slots
         mplew.write(chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // cash slots
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             mplew.write(unk1);
             mplew.write(unk2);
         } else {
@@ -189,7 +189,7 @@ public class PacketHelper {
             equipped.add((Item) item);
         }
         Collections.sort(equipped);
-        if (Start.getMainVersion() <= 186) {
+        if (ServerConfig.version <= 186) {
             for (Item item : equipped) {
                 if (item.getPosition() < 0 && item.getPosition() > -100) {
                     addItemInfo(mplew, item, false, false);
@@ -198,7 +198,7 @@ public class PacketHelper {
         }
         mplew.writeShort(0); // start of equipped nx
 
-        if (Start.getMainVersion() <= 186) {
+        if (ServerConfig.version <= 186) {
             for (Item item : equipped) {
                 if (item.getPosition() <= -100 && item.getPosition() > -1000) {
                     addItemInfo(mplew, item, false, false);
@@ -213,7 +213,7 @@ public class PacketHelper {
         }
         mplew.writeShort(0); //start of other equips
 
-        if (Start.getMainVersion() <= 186) {
+        if (ServerConfig.version <= 186) {
             for (Item item : equipped) {
                 if (item.getPosition() <= -1000) {
                     addItemInfo(mplew, item, false, false);
@@ -274,7 +274,7 @@ public class PacketHelper {
 //        mplew.writeLong(0); //0 -> 4?
         mplew.writeInt(chr.getMapId()); // current map id
         mplew.write(chr.getInitialSpawnpoint()); // spawnpoint
-        if (Start.getMainVersion() > 176) {
+        if (ServerConfig.version > 176) {
             mplew.writeShort(chr.getSubcategory()); //1 here = db
             mplew.writeZeroBytes(20); // 8 + 4 + 4 + 4
         } else {
@@ -484,18 +484,18 @@ public class PacketHelper {
 
     public static final void addCharacterInfo(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
         mplew.writeLong(-1);
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             mplew.write(0);
         }
 
-        if (Start.getMainVersion() >= 187) {
+        if (ServerConfig.version >= 187) {
             mplew.write(0);
         }
 
         addCharStats(mplew, chr);
         mplew.write(chr.getBuddylist().getCapacity());
 
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             // Bless
             if (chr.getBlessOfFairyOrigin() != null) {
                 mplew.write(1);
@@ -509,10 +509,10 @@ public class PacketHelper {
         addInventoryInfo(mplew, chr);
 
         // 修正が必要
-        if (Start.getMainVersion() <= 164) {
+        if (ServerConfig.version <= 164) {
             mplew.writeZeroBytes(512);
         }
-        if (Start.getMainVersion() >= 187) {
+        if (ServerConfig.version >= 187) {
             mplew.writeZeroBytes(512);
         }
 

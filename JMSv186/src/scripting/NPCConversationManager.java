@@ -42,6 +42,7 @@ import client.inventory.MapleInventoryType;
 import client.SkillFactory;
 import client.SkillEntry;
 import client.MapleStat;
+import config.ServerConfig;
 import server.MapleCarnivalParty;
 import server.Randomizer;
 import server.MapleInventoryManipulator;
@@ -72,7 +73,6 @@ import server.MapleShop;
 import server.MapleShopItem;
 import server.MapleStatEffect;
 import server.SpeedRunner;
-import server.Start;
 import server.maps.SpeedRunType;
 import server.StructPotentialItem;
 import server.Timer.CloneTimer;
@@ -281,7 +281,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         byte nextval = 2;
-        if (Start.getMainVersion() <= 164) {
+        if (ServerConfig.version <= 164) {
             nextval = 1;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
@@ -297,7 +297,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
         byte nextval = 2;
-        if (Start.getMainVersion() <= 164) {
+        if (ServerConfig.version <= 164) {
             nextval = 1;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", type));
@@ -322,7 +322,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         byte nextval = 0x0C;
-        if (Start.getMainVersion() <= 164) {
+        if (ServerConfig.version <= 164) {
             nextval = 0x0B;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
@@ -338,7 +338,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
         byte nextval = 0x0D;
-        if (Start.getMainVersion() <= 164) {
+        if (ServerConfig.version <= 164) {
             nextval = 0x0C;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
@@ -363,7 +363,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         byte nextval = 5;
-        if (Start.getMainVersion() <= 164) {
+        if (ServerConfig.version <= 164) {
             nextval = 4;
         }
 
@@ -381,7 +381,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         byte nextval = 5;
-        if (Start.getMainVersion() <= 164) {
+        if (ServerConfig.version <= 164) {
             nextval = 4;
         }
 

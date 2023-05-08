@@ -95,7 +95,6 @@ import client.inventory.MapleInventory;
 import config.ServerConfig;
 import handling.channel.handler.BeanGame;
 import packet.InPacket;
-import server.Start;
 
 public class MaplePacketCreator {
 
@@ -124,13 +123,13 @@ public class MaplePacketCreator {
     // プレイヤー情報の初期化
     public static final MaplePacket getCharInfo(final MapleCharacter chr) {
         InPacket p = new InPacket(InPacket.Header.LP_SetField);
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             p.Encode2(0);
         }
         // チャンネル
         p.Encode4(chr.getClient().getChannel() - 1);
         p.Encode1(0);
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             p.Encode4(0);
         }
         p.Encode1(1);
@@ -144,10 +143,10 @@ public class MaplePacketCreator {
         }
         // [addCharacterInfo]
         p.Encode8(-1);
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             p.Encode1(0);
         }
-        if (Start.getMainVersion() > 186) {
+        if (ServerConfig.version > 186) {
             p.Encode1(0);
         }
         // [addCharStats]
@@ -179,7 +178,7 @@ public class MaplePacketCreator {
             // LUK
             p.Encode2(chr.getStat().luk);
             // HP, MP
-            if (Start.getMainVersion() <= 186) {
+            if (ServerConfig.version <= 186) {
                 // BB前
                 p.Encode2(chr.getStat().hp);
                 p.Encode2(chr.getStat().maxhp);
@@ -215,7 +214,7 @@ public class MaplePacketCreator {
             p.Encode4(chr.getMapId());
             // マップ入場位置
             p.Encode1(chr.getInitialSpawnpoint());
-            if (Start.getMainVersion() > 176) {
+            if (ServerConfig.version > 176) {
                 // デュアルブレイドフラグ
                 p.Encode2(chr.getSubcategory());
                 p.EncodeZeroBytes(20);
@@ -226,7 +225,7 @@ public class MaplePacketCreator {
         // 友達リストの上限
         p.Encode1(chr.getBuddylist().getCapacity());
         // 精霊の祝福
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             if (chr.getBlessOfFairyOrigin() != null) {
                 p.Encode1(1);
                 p.EncodeStr(chr.getBlessOfFairyOrigin());
@@ -251,7 +250,7 @@ public class MaplePacketCreator {
                 p.Encode1(chr.getInventory(MapleInventoryType.ETC).getSlotLimit());
                 p.Encode1(chr.getInventory(MapleInventoryType.CASH).getSlotLimit());
             }
-            if (Start.getMainVersion() > 164) {
+            if (ServerConfig.version > 164) {
                 p.Encode4(0);
                 p.Encode4(0);
             }
@@ -270,7 +269,7 @@ public class MaplePacketCreator {
                         p.EncodeBuffer(addItemInfo(item, false, false));
                     }
                 }
-                if (Start.getMainVersion() == 164) {
+                if (ServerConfig.version == 164) {
                     p.Encode1(0);
                 } else {
                     p.Encode2(0);
@@ -284,7 +283,7 @@ public class MaplePacketCreator {
                     }
                 }
                 // その他装備済みアイテム終了?
-                if (Start.getMainVersion() == 164) {
+                if (ServerConfig.version == 164) {
                     p.Encode1(0);
                 } else {
                     p.Encode2(0);
@@ -296,7 +295,7 @@ public class MaplePacketCreator {
                 for (IItem item : iv.list()) {
                     p.EncodeBuffer(addItemInfo(item, false, false));
                 }
-                if (Start.getMainVersion() == 164) {
+                if (ServerConfig.version == 164) {
                     p.Encode1(0);
                 } else {
                     p.Encode2(0);
@@ -304,13 +303,13 @@ public class MaplePacketCreator {
             }
             // v164だとないかも?
             {
-                if (Start.getMainVersion() > 164) {
+                if (ServerConfig.version > 164) {
                     for (Item item : equipped) {
                         if (item.getPosition() <= -1000) {
                             p.EncodeBuffer(addItemInfo(item, false, false));
                         }
                     }
-                    if (Start.getMainVersion() == 164) {
+                    if (ServerConfig.version == 164) {
                         p.Encode1(0);
                     } else {
                         p.Encode2(0);
@@ -362,7 +361,7 @@ public class MaplePacketCreator {
         // [addRingInfo]
         p.Encode2(0);
         p.EncodeBuffer(addRingInfo(chr));
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             p.Encode2(0);
         }
         // [addRocksInfo]
@@ -374,7 +373,7 @@ public class MaplePacketCreator {
         p.EncodeBuffer(QuestInfoPacket(chr));
         // PQ rank?
         p.Encode2(0);
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             p.Encode2(0);
             // ログアウトギフト? (16 bytes)
             p.Encode4(0);
@@ -390,23 +389,23 @@ public class MaplePacketCreator {
     // マップ移動
     public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
         InPacket p = new InPacket(InPacket.Header.LP_SetField);
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             p.Encode2(0);
         }
         p.Encode4(chr.getClient().getChannel() - 1);
         p.Encode1(0);
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             p.Encode4(0);
         }
         p.Encode1((byte) chr.getPortalCount());
         p.Encode1(0);
         p.Encode2(0);
-        if (Start.getMainVersion() > 164) {
+        if (ServerConfig.version > 164) {
             p.Encode1(0);
         }
         p.Encode4(to.getId());
         p.Encode1(spawnPoint);
-        if (Start.getMainVersion() <= 186) {
+        if (ServerConfig.version <= 186) {
             p.Encode2(chr.getStat().getHp());
         } else {
             p.Encode4(chr.getStat().getHp());
@@ -435,7 +434,7 @@ public class MaplePacketCreator {
                 }
             }
             // v164では場所は1バイトで全て表現される
-            if ((Start.getMainVersion() > 164 && !trade && item.getType() == 1)/* || Start.getMainVersion() >= 187*/) {
+            if ((ServerConfig.version > 164 && !trade && item.getType() == 1)/* || ServerConfig.version >= 187*/) {
                 data.Encode2(pos);
             } else {
                 data.Encode1(pos);
@@ -458,7 +457,7 @@ public class MaplePacketCreator {
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
                 // 謎フラグ
-                if (Start.getMainVersion() > 164 && Start.getMainVersion() <= 184) {
+                if (ServerConfig.version > 164 && ServerConfig.version <= 184) {
                     data.Encode1(0);
                 }
                 data.Encode2(equip.getStr());
@@ -493,11 +492,11 @@ public class MaplePacketCreator {
                     data.Encode2(equip.getExpPercentage() * 4); // Item Exp... 98% = 25%
                 }
                 // 耐久度
-                if (Start.getMainVersion() > 164) {
+                if (ServerConfig.version > 164) {
                     data.Encode4(equip.getDurability());
                 }
                 // ビシャスのハンマー
-                if (Start.getMainVersion() > 164) {
+                if (ServerConfig.version > 164) {
                     if (ServerConfig.game_server_enable_hammer) {
                         data.Encode4(equip.getViciousHammer());
                     } else {
@@ -505,7 +504,7 @@ public class MaplePacketCreator {
                     }
                 }
                 // 潜在能力
-                if (Start.getMainVersion() >= 186) {
+                if (ServerConfig.version >= 186) {
                     if (!hasUniqueId) {
                         data.Encode1(equip.getState()); //7 = unique for the lulz
                         data.Encode1(equip.getEnhance());
@@ -582,7 +581,7 @@ public class MaplePacketCreator {
         InPacket data = new InPacket();
 
         // シグナス騎士団が存在しないので精霊の祝福が存在しない (スキルID 0000012) を除外する必要がある
-        if (Start.getMainVersion() <= 164 || Start.getMainVersion() >= 187) {
+        if (ServerConfig.version <= 164 || ServerConfig.version >= 187) {
             data.Encode2(0);
             return data.Get().getBytes();
         }
@@ -604,7 +603,7 @@ public class MaplePacketCreator {
         InPacket data = new InPacket();
         final List<MapleCoolDownValueHolder> cd = chr.getCooldowns();
 
-        if (Start.getMainVersion() <= 164 || Start.getMainVersion() >= 187) {
+        if (ServerConfig.version <= 164 || ServerConfig.version >= 187) {
             data.Encode2(0);
             return data.Get().getBytes();
         }
@@ -698,7 +697,7 @@ public class MaplePacketCreator {
         InPacket data = new InPacket();
         Map<Integer, String> questinfo = chr.getInfoQuest_Map();
 
-        if (Start.getMainVersion() <= 164 || Start.getMainVersion() >= 187) {
+        if (ServerConfig.version <= 164 || ServerConfig.version >= 187) {
             data.Encode2(0);
             return data.Get().getBytes();
         }
@@ -1731,7 +1730,7 @@ public class MaplePacketCreator {
         for (MapleShopItem item : items) {
             mplew.writeInt(item.getItemId());
             mplew.writeInt(item.getPrice());
-            if (Start.getMainVersion() <= 164) {
+            if (ServerConfig.version <= 164) {
                 // nothing
             } else {
                 mplew.writeInt(item.getReqItem());
@@ -2742,7 +2741,7 @@ public class MaplePacketCreator {
         mplew.writeInt(npc);
         mplew.write(msgType);
         // v164に存在しない
-        if (Start.getMainVersion() >= 186) {
+        if (ServerConfig.version >= 186) {
             mplew.write(type); // 1 = No ESC, 3 = show character + no sec
         }
         mplew.writeMapleAsciiString(talk);

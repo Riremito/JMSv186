@@ -41,7 +41,6 @@ import javax.script.ScriptEngine;
 
 import database.DatabaseConnection;
 import database.DatabaseException;
-import debug.Debug;
 import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -79,7 +78,6 @@ import org.apache.mina.common.TrafficMask;
 import org.apache.mina.common.TransportType;
 import org.apache.mina.common.WriteFuture;
 import packet.InPacket;
-import server.Start;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -154,9 +152,6 @@ public class MapleClient implements Serializable {
 
         @Override
         public WriteFuture write(Object o) {
-            if (Start.getDebug()) {
-                Debug.DebugProcessPacket(((MaplePacket) o).getBytes());
-            }
             return session.write(o);
         }
 

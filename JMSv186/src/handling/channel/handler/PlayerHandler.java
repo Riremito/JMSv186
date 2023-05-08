@@ -954,7 +954,7 @@ public class PlayerHandler {
         }
         final Point Original_Pos = chr.getPosition(); // 4 bytes Added on v.80 MSEA
 
-        if (Start.getMainVersion() == 164) {
+        if (ServerConfig.version == 164) {
             slea.skip(9);
         } else {
             slea.skip(37);
@@ -971,7 +971,7 @@ public class PlayerHandler {
 
         if (res != null && c.getPlayer().getMap() != null) { // TODO more validation of input data
             if (slea.available() < 13 || slea.available() > 26) {
-                if (Start.getMainVersion() != 164) {
+                if (ServerConfig.version != 164) {
                     System.out.println("slea.available != 13-26 (movement parsing error)\n" + slea.toString(true));
                     return;
                 }

@@ -87,7 +87,7 @@ public class MapleItemInformationProvider {
         getAllItems();
         // 潜在能力実装がv186のためそれ以前では存在しない
         // v186以外で全然違うので使い物にならない
-        if (Start.getMainVersion() != 186) {
+        if (ServerConfig.version != 186) {
             return;
         }
         final MapleData setsData = etcData.getData("SetItemInfo.img");
@@ -218,7 +218,7 @@ public class MapleItemInformationProvider {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        if (Start.getMainVersion() == 164) {
+        if (ServerConfig.version == 164) {
             itemsData = stringData.getData("Consume.img").getChildByPath("Con");
         } else {
             itemsData = stringData.getData("Consume.img");

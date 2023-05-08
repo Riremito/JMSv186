@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.maps;
 
+import config.ServerConfig;
 import debug.Debug;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -43,7 +44,6 @@ import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.PortalFactory;
-import server.Start;
 import server.life.AbstractLoadedMapleLife;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
@@ -181,7 +181,7 @@ public class MapleMapFactory {
                 }
 
                 // 設定ファイルに定義されたNPCを設置
-                if (Start.getMainVersion() >= 186) {
+                if (ServerConfig.version >= 186) {
                     Path file = Paths.get("./scripts/map/" + mapid + ".txt");
                     try {
                         if (!Files.notExists(file)) {

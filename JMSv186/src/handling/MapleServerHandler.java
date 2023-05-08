@@ -28,7 +28,6 @@ import java.util.Map;
 import packet.OutPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
-import server.Start;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
@@ -104,8 +103,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
         final byte ivSend[] = ServerConstants.Use_Fixed_IV ? new byte[]{1, 0x5F, 4, 0x3F} : serverSend;
 
         final MapleClient client = new MapleClient(
-                new MapleAESOFB(ivSend, (short) (0xFFFF - Start.getMainVersion())), // Sent Cypher
-                new MapleAESOFB(ivRecv, Start.getMainVersion()), // Recv Cypher
+                new MapleAESOFB(ivSend, (short) (0xFFFF - ServerConfig.version)), // Sent Cypher
+                new MapleAESOFB(ivRecv, ServerConfig.version), // Recv Cypher
                 session);
         client.setChannel(channel);
 
@@ -187,10 +186,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                         return;
                     }
 
-                    if (Start.getDebug()) {
-                        Debug.DebugSendPacket((byte[]) message);
-                    }
-
                     if (c.getPlayer() != null && c.getPlayer().GetDebugger() && !IsAnnoyingPacket(recv)) {
                         //Debug.DebugLog("[Packet] @" + String.format("%04X", header_num) + " " + slea.toString());
                     }
@@ -253,7 +248,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         short header = p.Decode2();
         OutPacket.Header type = OutPacket.ToHeader(header);
 
-        if (Start.getMainVersion() >= 187) {
+        if (ServerConfig.version >= 187) {
             Debug.DebugPacket(p);
         }
 
@@ -291,7 +286,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     InterServerHandler.SetLogin(false);
                     Debug.DebugLog("Login MapleID = " + c.getAccountName());
 
-                    if (ServerConfig.login_server_antihack && Start.getMainVersion() == 186) {
+                    if (ServerConfig.login_server_antihack && ServerConfig.version == 186) {
                         c.getSession().write(ProcessPacket.Custom.Hash());
                         c.getSession().write(ProcessPacket.Custom.Scan(0x008625B5, (short) 3)); // damage hack check
                         // test
@@ -925,7 +920,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserChat: {
                 Debug.DebugPacket(op);
                 // 実装が悪い
-                if (Start.getMainVersion() > 164) {
+                if (ServerConfig.version > 164) {
                     p.readInt();
                 }
                 ChatHandler.GeneralChat(p.readMapleAsciiString(), p.readByte(), c, c.getPlayer());

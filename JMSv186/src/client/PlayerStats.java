@@ -26,6 +26,7 @@ import client.inventory.IItem;
 import client.inventory.Equip;
 import client.inventory.IEquip;
 import client.inventory.MapleWeaponType;
+import config.ServerConfig;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.List;
@@ -40,7 +41,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
-import server.Start;
 import server.StructPotentialItem;
 import server.StructSetItem;
 import server.StructSetItem.SetItem;
@@ -1209,7 +1209,7 @@ public class PlayerStats implements Serializable {
         mplew.writeShort(dex); // dex
         mplew.writeShort(int_); // int
         mplew.writeShort(luk); // luk
-        if (Start.getMainVersion() <= 186) {
+        if (ServerConfig.version <= 186) {
             mplew.writeShort(hp); // hp
             mplew.writeShort(maxhp); // maxhp
             mplew.writeShort(mp); // mp

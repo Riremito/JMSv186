@@ -29,12 +29,12 @@ import client.MapleCharacter;
 import client.MapleCharacterUtil;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import config.ServerConfig;
 import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
 import handling.login.LoginWorker;
 import packet.OutPacket;
 import server.MapleItemInformationProvider;
-import server.Start;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
 import tools.packet.LoginPacket;
@@ -161,7 +161,7 @@ public class CharLoginHandler {
     public static final void CreateChar(OutPacket p, final MapleClient c) {
         final String name = new String(p.DecodeBuffer());
 
-        if (Start.getMainVersion() == 164) {
+        if (ServerConfig.version == 164) {
             final int face = p.Decode4();
             final int hair = p.Decode4();
             final int hairColor = 0;
@@ -217,7 +217,7 @@ public class CharLoginHandler {
 
         short db = 0;
 
-        if (Start.getMainVersion() > 176) {
+        if (ServerConfig.version > 176) {
             db = p.Decode2();
         }
 
@@ -320,7 +320,7 @@ public class CharLoginHandler {
         use.addItem(new Item(2049100, (byte) 0, (short) 100, (byte) 0));
         use.addItem(new Item(2049003, (byte) 0, (short) 100, (byte) 0));
 
-        if (Start.getMainVersion() >= 186) {
+        if (ServerConfig.version >= 186) {
             use.addItem(new Item(2049300, (byte) 0, (short) 100, (byte) 0));
             use.addItem(new Item(2049400, (byte) 0, (short) 100, (byte) 0));
             use.addItem(new Item(2470000, (byte) 0, (short) 100, (byte) 0));
@@ -351,7 +351,7 @@ public class CharLoginHandler {
         equip.addItem(ii.getEquipById(1051140));
         // エレメントピアス
         equip.addItem(ii.getEquipById(1032062));
-        if (Start.getMainVersion() >= 186) {
+        if (ServerConfig.version >= 186) {
             // 錬金術師の指輪
             equip.addItem(ii.getEquipById(1112400));
         }
@@ -371,7 +371,7 @@ public class CharLoginHandler {
         cash.addItem(new Item(5041000, (byte) 0, (short) 100, (byte) 0));
         // ガシャポンチケット
         cash.addItem(new Item(5220000, (byte) 0, (short) 100, (byte) 0));
-        if (Start.getMainVersion() >= 186) {
+        if (ServerConfig.version >= 186) {
             // ビシャスのハンマー
             cash.addItem(new Item(5570000, (byte) 0, (short) 100, (byte) 0));
             // ミラクルキューブ

@@ -4,12 +4,12 @@ package packet;
 import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import config.ServerConfig;
 import debug.Debug;
 import handling.world.World;
 import java.util.LinkedList;
 import java.util.List;
 import server.MapleItemInformationProvider;
-import server.Start;
 import tools.MaplePacketCreator;
 
 public class SendPacket {
@@ -19,7 +19,7 @@ public class SendPacket {
 
         public static boolean Hash(OutPacket p) {
             // v186以外は無視
-            if (Start.getMainVersion() != 186) {
+            if (ServerConfig.version != 186) {
                 return true;
             }
             final String wz_hash = p.DecodeStr();
@@ -30,7 +30,7 @@ public class SendPacket {
 
         public static boolean Scan(OutPacket p) {
             // v186以外は無視
-            if (Start.getMainVersion() != 186) {
+            if (ServerConfig.version != 186) {
                 return true;
             }
             int scan_address = p.Decode4();
