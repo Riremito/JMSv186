@@ -92,7 +92,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 break;
             }
             default: {
-                Debug.InfoLog("[UnknownServer] Connected " + address);
+                Debug.InfoLog("[Unknown Server] Connected " + address);
                 break;
             }
         }
@@ -133,42 +133,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
         super.sessionClosed(session);
     }
 
-    // ログをとる必要がないPacket
-    private boolean IsAnnoyingPacket(OutPacket.Header r) {
-        switch (r) {
-            case CP_NpcMove:
-            case CP_UserSkillUseRequest:
-            case CP_UserShootAttack:
-            case CP_UserMagicAttack:
-            case CP_UserMeleeAttack:
-            case CP_MobMove:
-            case CP_UserChangeStatRequest:
-            case CP_UserMove: {
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    // ログをとる必要がないPacket (Headerが未定義)
-    private boolean IsAnnoyingPacket(short r) {
-        switch (r) {
-            case 0x0010:
-            case 0x00BF:
-            case 0x000E:
-            case 0x00DF: {
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
     // Packet受信時の動作
     @Override
     public void messageReceived(final IoSession session, final Object message) {
@@ -186,25 +150,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
                         return;
                     }
 
-                    if (c.getPlayer() != null && c.getPlayer().GetDebugger() && !IsAnnoyingPacket(recv)) {
-                        //Debug.DebugLog("[Packet] @" + String.format("%04X", header_num) + " " + slea.toString());
-                    }
-
                     // ログインサーバー
                     if (server_type == ServerType.LoginServer) {
                         OutPacket op = new OutPacket((byte[]) message);
-                        if (!handleLoginPacket(op, c)) {
-                            //Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
-                        }
+                        handleLoginPacket(op, c);
                         return;
                     }
 
                     // ポイントショップとMTSが共通のサーバーのため、ポイントショップで処理されなかったパケットはMTSのパケット扱いにする
                     if (server_type == ServerType.PointShopServer) {
                         if (!handlePointShopPacket(recv, slea, c)) {
-                            if (!handleMapleTradeSpacePacket(recv, slea, c)) {
-                                //Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
-                            }
+                            handleMapleTradeSpacePacket(recv, slea, c);
                         }
                         return;
                     }
@@ -212,9 +168,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     // ゲームサーバー
                     if (server_type == ServerType.GameServer) {
                         OutPacket op = new OutPacket((byte[]) message);
-                        if (!handleGamePacket(slea, c, op)) {
-                            //Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
-                        }
+                        handleGamePacket(slea, c, op);
                         return;
                     }
 
@@ -222,9 +176,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
             }
             final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-            if ((server_type != ServerType.GameServer || (c.getPlayer() != null && c.getPlayer().GetDebugger())) && !IsAnnoyingPacket(header_num)) {
-                //Debug.InfoLog("[UnknownPacket] @" + String.format("%04X", header_num) + " " + slea.toString());
-            }
 
         } catch (Exception e) {
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
