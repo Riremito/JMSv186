@@ -37,7 +37,6 @@ import client.status.MonsterStatus;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import server.MapleStatEffect;
-import server.AutobanManager;
 import server.Timer.CloneTimer;
 import server.movement.LifeMovementFragment;
 import server.life.MapleMonster;

@@ -39,13 +39,11 @@ import constants.MapConstants;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import server.AutobanManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.MaplePortal;
 import server.Randomizer;
-import server.Start;
 import server.Timer.CloneTimer;
 import server.events.MapleSnowball.MapleSnowballs;
 import server.life.MapleMonster;
@@ -254,8 +252,7 @@ public class PlayerHandler {
 
         if (damage == -1) {
             fake = 4020002 + ((chr.getJob() / 10 - 40) * 100000);
-        } else if (damage < -1 || damage > 60000) {
-            AutobanManager.getInstance().addPoints(c, 1000, 60000, "Taking abnormal amounts of damge from " + monsteridfrom + ": " + damage);
+        } else if (damage < -1) {
             return;
         }
         chr.getCheatTracker().checkTakeDamage(damage);

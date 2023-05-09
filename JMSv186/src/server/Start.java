@@ -140,7 +140,6 @@ public class Start {
         CashShopServer.run_startup_configurations();
         MTSStorage.load();
 
-        CheatTimer.getInstance().register(AutobanManager.getInstance(), 60000);
         Runtime.getRuntime().addShutdownHook(new Thread(new Shutdown()));
         try {
             SpeedRunner.getInstance().loadSpeedRuns();

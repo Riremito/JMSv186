@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import packet.InPacket;
-import server.AutobanManager;
 import server.MapleShop;
 import server.MapleInventoryManipulator;
 import server.MapleStorage;
@@ -272,7 +271,6 @@ public class NPCHandler {
                         item.setQuantity(quantity);
                         storage.store(item);
                     } else {
-                        AutobanManager.getInstance().addPoints(c, 1000, 0, "Trying to store non-matching itemid (" + itemId + "/" + item.getItemId() + ") or quantity not in posession (" + quantity + "/" + item.getQuantity() + ")");
                         return;
                     }
                 }
@@ -299,7 +297,6 @@ public class NPCHandler {
                     storage.setMeso(storageMesos - meso);
                     chr.gainMeso(meso, false, true, false);
                 } else {
-                    AutobanManager.getInstance().addPoints(c, 1000, 0, "Trying to store or take out unavailable amount of mesos (" + meso + "/" + storage.getMeso() + "/" + c.getPlayer().getMeso() + ")");
                     return;
                 }
                 storage.sendMeso(c);

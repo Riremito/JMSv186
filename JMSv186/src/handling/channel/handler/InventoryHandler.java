@@ -56,7 +56,6 @@ import minigame.Pachinko;
 import packet.OutPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
-import server.AutobanManager;
 import server.Randomizer;
 import server.RandomRewards;
 import server.MapleShopFactory;
@@ -488,7 +487,6 @@ public class InventoryHandler {
 
         if (legendarySpirit && vegas == 0) {
             if (chr.getSkillLevel(SkillFactory.getSkill(1003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(10001003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(20001003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(20011003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(30001003)) <= 0) {
-                AutobanManager.getInstance().addPoints(c, 50, 120000, "Using the Skill 'Legendary Spirit' without having it.");
                 return false;
             }
         }
