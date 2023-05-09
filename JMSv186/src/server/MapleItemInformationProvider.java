@@ -16,7 +16,6 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
-import debug.Debug;
 import java.util.LinkedList;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;

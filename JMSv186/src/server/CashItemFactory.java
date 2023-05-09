@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import database.DatabaseConnection;
-import handling.cashshop.CashShopServer;
 import java.io.File;
 import java.util.List;
 import java.util.ArrayList;

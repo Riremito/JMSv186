@@ -25,8 +25,6 @@ import client.MapleCharacter;
 import java.util.LinkedList;
 import java.util.List;
 import server.Timer.EventTimer;
-import server.maps.MapleMap;
-import server.maps.SavedLocationType;
 import tools.MaplePacketCreator;
 
 public class MapleCoconut extends MapleEvent {

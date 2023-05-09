@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
-import client.MapleCharacter;
 import client.inventory.MapleInventoryType;
 import database.DatabaseConnection;
 

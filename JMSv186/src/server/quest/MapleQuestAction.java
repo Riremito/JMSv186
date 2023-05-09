@@ -40,7 +40,6 @@ import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
 import tools.MaplePacketCreator;
-import tools.packet.UIPacket;
 
 public class MapleQuestAction implements Serializable {
 

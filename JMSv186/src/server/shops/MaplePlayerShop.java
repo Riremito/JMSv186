@@ -27,7 +27,6 @@ import client.inventory.ItemFlag;
 import client.MapleCharacter;
 import client.MapleClient;
 import server.MapleInventoryManipulator;
-import server.maps.MapleMapObjectType;
 import tools.packet.PlayerShopPacket;
 
 public class MaplePlayerShop extends AbstractPlayerStore {

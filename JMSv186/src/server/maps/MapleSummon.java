@@ -26,7 +26,6 @@ import client.MapleCharacter;
 import client.MapleClient;
 import constants.GameConstants;
 import client.anticheat.CheatingOffense;
-import handling.channel.ChannelServer;
 import server.MapleStatEffect;
 import tools.MaplePacketCreator;
 

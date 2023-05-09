@@ -23,7 +23,6 @@ package scripting;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.WeakHashMap;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ScheduledFuture;
 import javax.script.Invocable;

@@ -26,8 +26,6 @@ import client.MapleCharacter;
 import server.Randomizer;
 import server.Timer.EventTimer;
 import tools.MaplePacketCreator;
-import server.maps.MapleMap;
-import server.maps.SavedLocationType;
 
 public class MapleOla extends MapleEvent {
 

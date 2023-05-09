@@ -27,7 +27,6 @@ import java.util.concurrent.ScheduledFuture;
 import server.Timer.EventTimer;
 import server.life.MobSkillFactory;
 import server.maps.MapleMap;
-import server.maps.SavedLocationType;
 import tools.MaplePacketCreator;
 
 public class MapleSnowball extends MapleEvent {

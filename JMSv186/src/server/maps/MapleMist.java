@@ -28,7 +28,6 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.SkillFactory;
 import handling.MaplePacket;
-import java.lang.ref.WeakReference;
 import server.MapleStatEffect;
 import server.life.MapleMonster;
 import server.life.MobSkill;
