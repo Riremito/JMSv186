@@ -13,8 +13,8 @@ import database.DatabaseConnection;
 import debug.Debug;
 import handling.world.family.MapleFamilyBuff;
 import java.sql.PreparedStatement;
-import packet.InPacket;
-import packet.OutPacket;
+import packet.ServerPacket;
+import packet.ClientPacket;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.MapleLifeFactory;
@@ -40,59 +40,59 @@ public class Start {
         switch (ServerConfig.version) {
             // ゴミ
             case 164: {
-                OutPacket.SetForJMSv164();
-                InPacket.SetForJMSv164();
+                ClientPacket.SetForJMSv164();
+                ServerPacket.SetForJMSv164();
                 break;
             }
             // ゴミ
             case 176: {
-                OutPacket.SetForJMSv176();
-                InPacket.SetForJMSv176();
+                ClientPacket.SetForJMSv176();
+                ServerPacket.SetForJMSv176();
                 break;
             }
             // ゴミ
             case 184: {
 
-                OutPacket.SetForJMSv184();
-                InPacket.SetForJMSv184();
+                ClientPacket.SetForJMSv184();
+                ServerPacket.SetForJMSv184();
                 break;
             }
             // ゴミ
             case 186: {
 
-                OutPacket.SetForJMSv186();
-                InPacket.SetForJMSv186();
-                OutPacket.SetCustomHeader();
-                InPacket.SetCustomHeader();
+                ClientPacket.SetForJMSv186();
+                ServerPacket.SetForJMSv186();
+                ClientPacket.SetCustomHeader();
+                ServerPacket.SetCustomHeader();
                 break;
             }
             // ゴミ
             case 187: {
-                OutPacket.SetForJMSv187();
-                InPacket.SetForJMSv187();
+                ClientPacket.SetForJMSv187();
+                ServerPacket.SetForJMSv187();
                 break;
             }
             // 起動早い
             case 194: {
-                OutPacket.SetForJMSv302();
-                InPacket.SetForJMSv302();
+                ClientPacket.SetForJMSv302();
+                ServerPacket.SetForJMSv302();
                 break;
             }
             // 起動まぁまぁ早い
             case 201: {
-                OutPacket.SetForJMSv302();
-                InPacket.SetForJMSv302();
+                ClientPacket.SetForJMSv302();
+                ServerPacket.SetForJMSv302();
                 break;
             }
             // 起動が遅い
             case 302: {
-                OutPacket.SetForJMSv302();
-                InPacket.SetForJMSv302();
+                ClientPacket.SetForJMSv302();
+                ServerPacket.SetForJMSv302();
                 break;
             }
             default: {
-                OutPacket.SetForJMSv186();
-                InPacket.SetForJMSv186();
+                ClientPacket.SetForJMSv186();
+                ServerPacket.SetForJMSv186();
                 break;
             }
         }

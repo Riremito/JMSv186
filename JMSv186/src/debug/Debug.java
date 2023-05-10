@@ -5,8 +5,8 @@ package debug;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import packet.InPacket;
-import packet.OutPacket;
+import packet.ServerPacket;
+import packet.ClientPacket;
 
 public class Debug {
 
@@ -21,11 +21,11 @@ public class Debug {
     }
 
     // パケット出力
-    public static void DebugPacket(OutPacket p) {
+    public static void DebugPacket(ClientPacket p) {
         //DebugLog("[DebugPacket] " + p.Packet());
     }
 
-    public static void DebugInPacket(InPacket p) {
+    public static void DebugInPacket(ServerPacket p) {
         //DebugLog("[DebugInPacket] " + p.Packet());
     }
 

@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tools.packet;
 
 import handling.MaplePacket;
-import packet.InPacket;
+import packet.ServerPacket;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -31,7 +31,7 @@ public class UIPacket {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
 // "You have acquired the Pig's Weakness skill."
-        mplew.writeShort(InPacket.Header.EARN_TITLE_MSG.Get());
+        mplew.writeShort(ServerPacket.Header.EARN_TITLE_MSG.Get());
         mplew.writeMapleAsciiString(msg);
 
         return mplew.getPacket();
@@ -40,7 +40,7 @@ public class UIPacket {
     public static MaplePacket getSPMsg(byte sp, short job) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.LP_Message.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
         mplew.write(4);
         mplew.writeShort(job);
         mplew.write(sp);
@@ -52,7 +52,7 @@ public class UIPacket {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         // Temporary transformed as a dragon, even with the skill ......
-        mplew.writeShort(InPacket.Header.LP_Message.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
         mplew.write(7);
         mplew.writeInt(itemid);
 
@@ -62,7 +62,7 @@ public class UIPacket {
     public static MaplePacket getTopMsg(String msg) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.LP_ScriptProgressMessage.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ScriptProgressMessage.Get());
         mplew.writeMapleAsciiString(msg);
 
         return mplew.getPacket();
@@ -72,7 +72,7 @@ public class UIPacket {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         // Temporary transformed as a dragon, even with the skill ......
-        mplew.writeShort(InPacket.Header.LP_Message.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
         mplew.write(8);
         mplew.writeInt(itemid);
 
@@ -94,7 +94,7 @@ public class UIPacket {
     public static final MaplePacket AranTutInstructionalBalloon(final String data) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(0x18);
         mplew.writeMapleAsciiString(data);
         mplew.writeInt(1);
@@ -105,7 +105,7 @@ public class UIPacket {
     public static final MaplePacket ShowWZEffect(final String data) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(0x13);
         mplew.writeMapleAsciiString(data);
 
@@ -115,7 +115,7 @@ public class UIPacket {
     public static MaplePacket summonHelper(boolean summon) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.LP_UserHireTutor.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserHireTutor.Get());
         mplew.write(summon ? 1 : 0);
 
         return mplew.getPacket();
@@ -124,7 +124,7 @@ public class UIPacket {
     public static MaplePacket summonMessage(int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.LP_UserTutorMsg.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserTutorMsg.Get());
         mplew.write(1);
         mplew.writeInt(type);
         mplew.writeInt(7000); // probably the delay
@@ -135,7 +135,7 @@ public class UIPacket {
     public static MaplePacket summonMessage(String message) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.LP_UserTutorMsg.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserTutorMsg.Get());
         mplew.write(0);
         mplew.writeMapleAsciiString(message);
         mplew.writeInt(200); // IDK
@@ -148,7 +148,7 @@ public class UIPacket {
     public static MaplePacket IntroLock(boolean enable) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.LP_SetDirectionMode.Get());
+        mplew.writeShort(ServerPacket.Header.LP_SetDirectionMode.Get());
         mplew.write(enable ? 1 : 0);
         mplew.writeInt(enable ? 1 : 0);
 
@@ -158,7 +158,7 @@ public class UIPacket {
     public static MaplePacket IntroDisableUI(boolean enable) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.LP_SetStandAloneMode.Get());
+        mplew.writeShort(ServerPacket.Header.LP_SetStandAloneMode.Get());
         mplew.write(enable ? 1 : 0);
 
         return mplew.getPacket();
@@ -167,7 +167,7 @@ public class UIPacket {
     public static MaplePacket fishingUpdate(byte type, int id) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.FISHING_BOARD_UPDATE.Get());
+        mplew.writeShort(ServerPacket.Header.FISHING_BOARD_UPDATE.Get());
         mplew.write(type);
         mplew.writeInt(id);
 
@@ -177,7 +177,7 @@ public class UIPacket {
     public static MaplePacket fishingCaught(int chrid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.FISHING_CAUGHT.Get());
+        mplew.writeShort(ServerPacket.Header.FISHING_CAUGHT.Get());
         mplew.writeInt(chrid);
         return mplew.getPacket();
     }

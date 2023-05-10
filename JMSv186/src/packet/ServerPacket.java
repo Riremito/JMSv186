@@ -5,13 +5,13 @@ import handling.ByteArrayMaplePacket;
 import handling.MaplePacket;
 import java.util.ArrayList;
 
-public class InPacket {
+public class ServerPacket {
 
     // Encoder
     private ArrayList<Byte> packet = new ArrayList<>();
     private int encoded = 0;
 
-    public InPacket(Header header) {
+    public ServerPacket(Header header) {
         short w = (short) header.Get();
 
         packet.add((byte) (w & 0xFF));
@@ -19,7 +19,7 @@ public class InPacket {
         encoded += 2;
     }
 
-    public InPacket(short w) {
+    public ServerPacket(short w) {
         packet.add((byte) (w & 0xFF));
         packet.add((byte) ((w >> 8) & 0xFF));
         encoded += 2;
@@ -30,7 +30,7 @@ public class InPacket {
         encoded += 1;
     }
 
-    public InPacket() {
+    public ServerPacket() {
         // データ構造用
     }
 

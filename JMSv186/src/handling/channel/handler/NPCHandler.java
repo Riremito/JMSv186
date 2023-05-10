@@ -32,7 +32,7 @@ import client.inventory.ItemFlag;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import packet.InPacket;
+import packet.ServerPacket;
 import server.MapleShop;
 import server.MapleInventoryManipulator;
 import server.MapleStorage;
@@ -51,7 +51,7 @@ public class NPCHandler {
 
     public static final void NPCAnimation(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(InPacket.Header.LP_NpcMove.Get());
+        mplew.writeShort(ServerPacket.Header.LP_NpcMove.Get());
         final int length = (int) slea.available();
 
         if (length == 6) { // NPC Talk

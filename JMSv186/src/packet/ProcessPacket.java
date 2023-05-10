@@ -13,13 +13,13 @@ public class ProcessPacket {
     public static class Custom {
 
         public static MaplePacket Hash() {
-            InPacket p = new InPacket(InPacket.Header.LP_CUSTOM_WZ_HASH);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CUSTOM_WZ_HASH);
             p.EncodeStr("Skill.wz");
             return p.Get();
         }
 
         public static MaplePacket Patch(int address, byte memory[]) {
-            InPacket p = new InPacket(InPacket.Header.LP_CUSTOM_CLIENT_PATCH);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CUSTOM_CLIENT_PATCH);
             p.Encode4(address);
             p.Encode2((short) memory.length);
             p.EncodeBuffer(memory);
@@ -27,7 +27,7 @@ public class ProcessPacket {
         }
 
         public static MaplePacket Scan(int address, short size) {
-            InPacket p = new InPacket(InPacket.Header.LP_CUSTOM_MEMORY_SCAN);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CUSTOM_MEMORY_SCAN);
             p.Encode4(address);
             p.Encode2(size);
             return p.Get();
@@ -106,7 +106,7 @@ public class ProcessPacket {
 
         // 宅配
         public static MaplePacket Open(boolean isQuick, boolean isNPC) {
-            InPacket p = new InPacket(InPacket.Header.LP_Parcel);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_Parcel);
             // 0x3B or 0x40
             if (isQuick) {
                 // 速達のUI
@@ -124,7 +124,7 @@ public class ProcessPacket {
         }
 
         public static MaplePacket Send() {
-            InPacket p = new InPacket(InPacket.Header.LP_Parcel);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_Parcel);
             p.Encode1((byte) Action.SEND.Get());
             return p.Get();
         }
@@ -170,7 +170,7 @@ public class ProcessPacket {
 
         // ビシャスのハンマーの成功ダイアログで表示される残りアップグレード数を通知する
         public static MaplePacket Update(int hammered) {
-            InPacket p = new InPacket(InPacket.Header.LP_GoldHammerResult);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_GoldHammerResult);
             // ビシャスのハンマーの使用回数を通知するフラグ, 0x38,0x39以外なら何でもOK
             p.Encode1(Action.UPDATE.Get());
             // 未使用
@@ -182,7 +182,7 @@ public class ProcessPacket {
 
         // ビシャスのハンマーの成功ダイアログを表示
         public static MaplePacket Success() {
-            InPacket p = new InPacket(InPacket.Header.LP_GoldHammerResult);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_GoldHammerResult);
             // 成功フラグ
             p.Encode1(Action.SUCCESS.Get());
             /*
@@ -195,7 +195,7 @@ public class ProcessPacket {
 
         // ビシャスのハンマーの失敗ダイアログを表示, クライアント側で弾かれるのでチート以外では表示されることがないメッセージ
         public static MaplePacket Failure(int error) {
-            InPacket p = new InPacket(InPacket.Header.LP_GoldHammerResult);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_GoldHammerResult);
             // 失敗フラグ
             p.Encode1(Action.FAILURE.Get());
             /*
@@ -251,7 +251,7 @@ public class ProcessPacket {
 
         // ベガの呪文書開始
         public static MaplePacket Start() {
-            InPacket p = new InPacket(InPacket.Header.LP_VegaResult);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_VegaResult);
             // 0x3E or 0x40
             p.Encode1(Action.START.Get());
             return p.Get();
@@ -259,7 +259,7 @@ public class ProcessPacket {
 
         // ベガの呪文書の結果
         public static MaplePacket Result(boolean isSuccess) {
-            InPacket p = new InPacket(InPacket.Header.LP_VegaResult);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_VegaResult);
             // 成功可否
             p.Encode1((byte) (isSuccess ? Action.SUCCESS.Get() : Action.FAILURE.Get()));
             return p.Get();
@@ -336,7 +336,7 @@ public class ProcessPacket {
 
         // メガホン
         public static MaplePacket MegaphoneBlue(String text) {
-            InPacket p = new InPacket(InPacket.Header.LP_BroadcastMsg);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
             p.Encode1(Action.MEGAPHONE_BLUE.Get());
             p.EncodeStr(text);
             return p.Get();
@@ -344,7 +344,7 @@ public class ProcessPacket {
 
         // 拡声器
         public static MaplePacket Megaphone(String text, byte channel, byte ear) {
-            InPacket p = new InPacket(InPacket.Header.LP_BroadcastMsg);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
             p.Encode1(Action.MEGAPHONE.Get());
             p.EncodeStr(text);
             p.Encode1((byte) (channel - 1));
@@ -354,7 +354,7 @@ public class ProcessPacket {
 
         // ハート拡声器
         public static MaplePacket MegaphoneHeart(String text, byte channel, byte ear) {
-            InPacket p = new InPacket(InPacket.Header.LP_BroadcastMsg);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
             p.Encode1(Action.MEGAPHONE_HEART.Get());
             p.EncodeStr(text);
             p.Encode1((byte) (channel - 1));
@@ -364,7 +364,7 @@ public class ProcessPacket {
 
         // ドクロ拡声器
         public static MaplePacket MegaphoneSkull(String text, byte channel, byte ear) {
-            InPacket p = new InPacket(InPacket.Header.LP_BroadcastMsg);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
             p.Encode1(Action.MEGAPHONE_SKULL.Get());
             p.EncodeStr(text);
             p.Encode1((byte) (channel - 1));
@@ -374,7 +374,7 @@ public class ProcessPacket {
 
         // アイテム拡声器
         public static MaplePacket MegaphoneItem(String text, byte channel, byte ear, byte showitem, IItem item) {
-            InPacket p = new InPacket(InPacket.Header.LP_BroadcastMsg);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
             p.Encode1(Action.MEGAPHONE_ITEM.Get());
             p.EncodeStr(text);
             p.Encode1((byte) (channel - 1));
@@ -392,7 +392,7 @@ public class ProcessPacket {
 
         // 三連拡声器
         public static MaplePacket MegaphoneTriple(List<String> text, byte channel, byte ear) {
-            InPacket p = new InPacket(InPacket.Header.LP_BroadcastMsg);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
             p.Encode1(Action.MEGAPHONE_TRIPLE.Get());
             // 1行目
             p.EncodeStr(text.get(0));
@@ -411,14 +411,14 @@ public class ProcessPacket {
 
         // 0x005E @005E 00, ミニマップ点滅, 再読み込みかも?
         public static MaplePacket ReloadMiniMap() {
-            InPacket p = new InPacket(InPacket.Header.UNKNOWN_RELOAD_MINIMAP);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.UNKNOWN_RELOAD_MINIMAP);
             p.Encode1((byte) 0x00);
             return p.Get();
         }
 
         // 0x0083 @0083, 画面の位置をキャラクターを中心とした場所に変更, 背景リロードしてるかも?
         public static MaplePacket ReloadMap() {
-            InPacket p = new InPacket(InPacket.Header.LP_ClearBackgroundEffect);
+            ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ClearBackgroundEffect);
             return p.Get();
         }
     }

@@ -33,7 +33,7 @@ import config.ServerConfig;
 import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
 import handling.login.LoginWorker;
-import packet.OutPacket;
+import packet.ClientPacket;
 import server.MapleItemInformationProvider;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -53,7 +53,7 @@ public class CharLoginHandler {
         return false;
     }
 
-    public static final boolean login(OutPacket p, final MapleClient c) {
+    public static final boolean login(ClientPacket p, final MapleClient c) {
         String login = new String(p.DecodeBuffer());
         final String pwd = new String(p.DecodeBuffer());
         boolean endwith_ = false;
@@ -129,7 +129,7 @@ public class CharLoginHandler {
         }
     }
 
-    public static final void CharlistRequest(OutPacket p, final MapleClient c) {
+    public static final void CharlistRequest(ClientPacket p, final MapleClient c) {
         int server = p.Decode1();
         final int channel = p.Decode1() + 1;
 
@@ -152,13 +152,13 @@ public class CharLoginHandler {
         }
     }
 
-    public static final void CheckCharName(OutPacket p, final MapleClient c) {
+    public static final void CheckCharName(ClientPacket p, final MapleClient c) {
         String name = new String(p.DecodeBuffer());
         c.getSession().write(LoginPacket.charNameResponse(name,
                 !MapleCharacterUtil.canCreateChar(name) || LoginInformationProvider.getInstance().isForbiddenName(name)));
     }
 
-    public static final void CreateChar(OutPacket p, final MapleClient c) {
+    public static final void CreateChar(ClientPacket p, final MapleClient c) {
         final String name = new String(p.DecodeBuffer());
 
         if (ServerConfig.version == 164) {
@@ -387,7 +387,7 @@ public class CharLoginHandler {
 
     }
 
-    public static final void DeleteChar(OutPacket p, final MapleClient c) {
+    public static final void DeleteChar(ClientPacket p, final MapleClient c) {
         final int Character_ID = p.Decode4();
 
         if (!c.login_Auth(Character_ID)) {
@@ -404,7 +404,7 @@ public class CharLoginHandler {
         c.getSession().write(LoginPacket.deleteCharResponse(Character_ID, state));
     }
 
-    public static final boolean Character_WithSecondPassword(OutPacket p, final MapleClient c) {
+    public static final boolean Character_WithSecondPassword(ClientPacket p, final MapleClient c) {
         final int charId = p.Decode4();
 
         if (loginFailCount(c) || !c.login_Auth(charId)) { // This should not happen unless player is hacking

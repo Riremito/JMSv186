@@ -1,13 +1,13 @@
 // クライアント側から送信されるパケットのヘッダの定義
 package packet;
 
-public class OutPacket {
+public class ClientPacket {
 
     private byte[] packet;
     private int decoded;
 
     // MapleのInPacketのDecodeのように送信されたパケットを再度Decodeする
-    public OutPacket(byte[] b) {
+    public ClientPacket(byte[] b) {
         packet = b;
         decoded = 0;
     }
@@ -600,10 +600,10 @@ public class OutPacket {
             Header.CP_CreateNewCharacter.Set(0x000B);
             Header.CP_CreateNewCharacterInCS.Set(0x000C);
             Header.CP_DeleteCharacter.Set(0x000D);
-            Header.CP_AliveAck.Set(0x000E); // InPacket @0009から送信されるようになっているが未確認
+            Header.CP_AliveAck.Set(0x000E); // ServerPacket @0009から送信されるようになっているが未確認
             Header.CP_ExceptionLog.Set(0x000F);
-            Header.CP_SecurityPacket.Set(0x0010); // InPacket 0x000Cから送信される, HackShield HeartBeat
-            // 0x0011 InPacket 0x000Eから送信される
+            Header.CP_SecurityPacket.Set(0x0010); // ServerPacket 0x000Cから送信される, HackShield HeartBeat
+            // 0x0011 ServerPacket 0x000Eから送信される
             // 0x0012
             // 0x0013
             Header.CP_CheckPinCode.Set(0x0014); //　名称違うかも
@@ -611,7 +611,7 @@ public class OutPacket {
             // 0x0016
             // 0x0017
             Header.REACHED_LOGIN_SCREEN.Set(0x0018);
-            // 0x0019 InPacket 0x0013から送信される
+            // 0x0019 ServerPacket 0x0013から送信される
             Header.CP_CreateSecurityHandle.Set(0x001A); // 名称違うかも
         }
         Header.CP_END_SOCKET.Set(0x001B);
@@ -649,7 +649,7 @@ public class OutPacket {
             Header.CP_UserEffectLocal.Set(0x003A);
             Header.CP_ShopScannerRequest.Set(0x003B);
             Header.CP_ShopLinkRequest.Set(0x003C);
-            Header.CP_AdminShopRequest.Set(0x003D); // InPacket 0x0158, 0x0159から送信される, CP_AdminShopRequest?
+            Header.CP_AdminShopRequest.Set(0x003D); // ServerPacket 0x0158, 0x0159から送信される, CP_AdminShopRequest?
             Header.CP_UserSortItemRequest.Set(0x003E);
             Header.CP_UserGatherItemRequest.Set(0x003F);
             Header.CP_UserChangeSlotPositionRequest.Set(0x0040);
@@ -750,7 +750,7 @@ public class OutPacket {
             Header.CP_FamilySummonResult.Set(0x009F);
             Header.CYGNUS_SUMMON.Set(0x00A0);
             Header.CP_RequestIncCombo.Set(0x00A1);
-            // 0x00A2 InPacket 0x0111から送信される
+            // 0x00A2 ServerPacket 0x0111から送信される
             // 0x00A3
             Header.CP_GuildBBS.Set(0x00A4);
             // 0x00A5
@@ -793,7 +793,7 @@ public class OutPacket {
             Header.CP_QuickslotKeyMappedModified.Set(0x00BF); // キー設定からクイックスロットを編集
             // 0x00C0
             // 0x00C1
-            Header.CP_UserPamsSongUseRequest.Set(0x00C2); // InPacket 0x007Cから送信される, ファムの歌を利用する処理 @00C2 [00or01]が送信される01は使用フラグ
+            Header.CP_UserPamsSongUseRequest.Set(0x00C2); // ServerPacket 0x007Cから送信される, ファムの歌を利用する処理 @00C2 [00or01]が送信される01は使用フラグ
         }
         Header.CP_END_USER.Set(0x00C3);
         // マップ上の処理
@@ -870,7 +870,7 @@ public class OutPacket {
             Header.CP_END_PARTY_MATCH.Set(0x00F0);
         }
         Header.CP_END_FIELD.Set(0x00F1);
-        // 0x00F2 InPacket 0x00A0から送信される
+        // 0x00F2 ServerPacket 0x00A0から送信される
         // パチンコ
         Header.BEANS_OPERATION.Set(0x00F3);
         Header.BEANS_UPDATE.Set(0x00F4);

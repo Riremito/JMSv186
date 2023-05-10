@@ -76,7 +76,7 @@ import org.apache.mina.common.IoSessionConfig;
 import org.apache.mina.common.TrafficMask;
 import org.apache.mina.common.TransportType;
 import org.apache.mina.common.WriteFuture;
-import packet.InPacket;
+import packet.ServerPacket;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -1444,8 +1444,8 @@ public class MapleClient implements Serializable {
         return new MaplePacketLittleEndianWriter();
     }
 
-    public InPacket InPacket(short header) {
-        return new InPacket(header);
+    public ServerPacket ServerPacket(short header) {
+        return new ServerPacket(header);
     }
 
     public void ProcessPacket(MaplePacket packet) {

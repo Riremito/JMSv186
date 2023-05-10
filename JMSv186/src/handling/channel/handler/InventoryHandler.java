@@ -53,7 +53,7 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import minigame.Pachinko;
-import packet.OutPacket;
+import packet.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
 import server.Randomizer;
@@ -988,7 +988,7 @@ public class InventoryHandler {
         }
     }
 
-    public static final void UseCashItem(final SeekableLittleEndianAccessor slea, final MapleClient c, OutPacket op) {
+    public static final void UseCashItem(final SeekableLittleEndianAccessor slea, final MapleClient c, ClientPacket op) {
         c.getPlayer().updateTick(slea.readInt());
         final byte slot = (byte) slea.readShort();
         final int itemId = slea.readInt();

@@ -22,7 +22,7 @@ package tools.packet;
 
 import client.MapleCharacter;
 import handling.MaplePacket;
-import packet.InPacket;
+import packet.ServerPacket;
 import server.MapleCarnivalParty;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -31,7 +31,7 @@ public class MonsterCarnivalPacket {
     public static MaplePacket startMonsterCarnival(final MapleCharacter chr, final int enemyavailable, final int enemytotal) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.LP_MCarnivalEnter.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MCarnivalEnter.Get());
         final MapleCarnivalParty friendly = chr.getCarnivalParty();
         mplew.write(friendly.getTeam());
         mplew.writeShort(chr.getAvailableCP());
@@ -49,7 +49,7 @@ public class MonsterCarnivalPacket {
     public static MaplePacket playerDiedMessage(String name, int lostCP, int team) { //CPQ
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.LP_MCarnivalDeath.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MCarnivalDeath.Get());
         mplew.write(team); //team
         mplew.writeMapleAsciiString(name);
         mplew.write(lostCP);
@@ -60,9 +60,9 @@ public class MonsterCarnivalPacket {
     public static MaplePacket CPUpdate(boolean party, int curCP, int totalCP, int team) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         if (!party) {
-            mplew.writeShort(InPacket.Header.LP_MCarnivalPersonalCP.Get());
+            mplew.writeShort(ServerPacket.Header.LP_MCarnivalPersonalCP.Get());
         } else {
-            mplew.writeShort(InPacket.Header.LP_MCarnivalTeamCP.Get());
+            mplew.writeShort(ServerPacket.Header.LP_MCarnivalTeamCP.Get());
             mplew.write(team);
         }
         mplew.writeShort(curCP);
@@ -74,7 +74,7 @@ public class MonsterCarnivalPacket {
     public static MaplePacket playerSummoned(String name, int tab, int number) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(InPacket.Header.LP_MCarnivalResultSuccess.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MCarnivalResultSuccess.Get());
         mplew.write(tab);
         mplew.write(number);
         mplew.writeMapleAsciiString(name);

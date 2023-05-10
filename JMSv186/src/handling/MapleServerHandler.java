@@ -25,7 +25,7 @@ import server.MTSStorage;
 import tools.FileoutputUtil;
 import handling.world.World;
 import java.util.Map;
-import packet.OutPacket;
+import packet.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
 
@@ -143,7 +143,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             final short header_num = slea.readShort();
 
-            for (final OutPacket.Header recv : OutPacket.Header.values()) {
+            for (final ClientPacket.Header recv : ClientPacket.Header.values()) {
                 if (recv.Get() == header_num) {
                     final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
                     if (!c.isReceiving()) {
@@ -152,7 +152,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
                     // ログインサーバー
                     if (server_type == ServerType.LoginServer) {
-                        OutPacket op = new OutPacket((byte[]) message);
+                        ClientPacket op = new ClientPacket((byte[]) message);
                         handleLoginPacket(op, c);
                         return;
                     }
@@ -167,7 +167,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
                     // ゲームサーバー
                     if (server_type == ServerType.GameServer) {
-                        OutPacket op = new OutPacket((byte[]) message);
+                        ClientPacket op = new ClientPacket((byte[]) message);
                         handleGamePacket(slea, c, op);
                         return;
                     }
@@ -195,9 +195,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // Login Server
-    public static final boolean handleLoginPacket(OutPacket p, MapleClient c) throws Exception {
+    public static final boolean handleLoginPacket(ClientPacket p, MapleClient c) throws Exception {
         short header = p.Decode2();
-        OutPacket.Header type = OutPacket.ToHeader(header);
+        ClientPacket.Header type = ClientPacket.ToHeader(header);
 
         if (ServerConfig.version >= 187) {
             Debug.DebugPacket(p);
@@ -311,7 +311,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // Point Shop
-    public static final boolean handlePointShopPacket(final OutPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
+    public static final boolean handlePointShopPacket(final ClientPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
             case CP_MigrateIn: {
                 // +p
@@ -370,7 +370,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // MTS
-    public static final boolean handleMapleTradeSpacePacket(final OutPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
+    public static final boolean handleMapleTradeSpacePacket(final ClientPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
             case CP_MigrateIn: {
                 // +p
@@ -407,9 +407,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
     // Game Server
     // CClientSocket::ProcessPacket
-    public static final boolean handleGamePacket(final SeekableLittleEndianAccessor p, final MapleClient c, OutPacket op) throws Exception {
+    public static final boolean handleGamePacket(final SeekableLittleEndianAccessor p, final MapleClient c, ClientPacket op) throws Exception {
         short header = op.Decode2();
-        OutPacket.Header type = OutPacket.ToHeader(header);
+        ClientPacket.Header type = ClientPacket.ToHeader(header);
 
         // CClientSocket::ProcessUserPacket
         // CUser::OnPacket
