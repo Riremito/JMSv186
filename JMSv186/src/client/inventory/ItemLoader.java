@@ -33,8 +33,6 @@ import database.DatabaseConnection;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import tools.Pair;
 
 public enum ItemLoader {

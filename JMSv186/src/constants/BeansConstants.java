@@ -1,156 +1,93 @@
-// CMS v72のソースを流用
 package constants;
 
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.util.Properties;
+import config.ServerConfig;
 
 public class BeansConstants {
 
     private static BeansConstants instance = null;
-    private static boolean CANLOG;
-    private Properties itempb_cfg = new Properties();
-    private final String pachinkoequip[];
-    private final String pachinkosetup[];
-    private final String consume[];
-    private final int piratehatrate;//（百分比 = 固定值）
-    private final String goldendograte[];// = （1,2 = 出的概率）
-    private final String smallwhitemob[];// > （1,2 = 出的概率  3,4 = 中奖概率）
-    private final String bigwhitemob[];// > （1,2 = 出的概率  3,4 = 中奖概率）
-    private final String purplemob[];// > （1,2 = 出的概率  3,4 = 中奖概率）
-    private final String pinkmob[];// > （1,2 = 出的概率  3,4 = 中奖概率）
-    private final String flyingman[];// > （1,2 = 出的概率  3,4 = 中奖概率）
-    private final String pirate[];// > （1,2 = 出的概率  3,4 = 中奖概率）
-    private final String magician[];// > （1,2 = 出的概率  3,4 = 中奖概率）
-    private final String warrior[];// > （1,2 = 出的概率  3,4 = 中奖概率）
-    private final String archer[];// > （1,2 = 出的概率  3,4 = 中奖概率）
-    private final String queen[];// > （1,2 = 出的概率  3,4 = 中奖概率）
-    private final String whitemobaward[];// > （1,2 经验    3,4药水）
-    private final String colormobaward[];// > （1,2 经验    3,4药水  5,6equip）
-    private final String job5award[];// > （1,2 经验    3,4药水  5,6equip 7,8setup）
-    private final String queenaward[];// > （1,2 经验    3,4药水  5,6equip 7,8setup）
-    private final int handlepower;//大概范围在500-1000左右
-    private final int pachinkoawardrange;//1-10 * pachinkoaward范围 = 给与award
 
-    public BeansConstants() {
-        try (InputStreamReader is = new FileReader("beans.properties")) {
-            itempb_cfg.load(is);
-        } catch (Exception e) {
-        }
-        pachinkoequip = itempb_cfg.getProperty("ddzb").split(",");
-        pachinkosetup = itempb_cfg.getProperty("ddzq").split(",");
-        consume = itempb_cfg.getProperty("xhp").split(",");
-        piratehatrate = Integer.parseInt(itempb_cfg.getProperty("hymzjl"));
-        goldendograte = itempb_cfg.getProperty("hjgjl").split(",");
-        bigwhitemob = itempb_cfg.getProperty("dbg").split(",");
-        smallwhitemob = itempb_cfg.getProperty("xbg").split(",");
-        purplemob = itempb_cfg.getProperty("zsg").split(",");
-        pinkmob = itempb_cfg.getProperty("fsg").split(",");
-        flyingman = itempb_cfg.getProperty("fx").split(",");
-        pirate = itempb_cfg.getProperty("hd").split(",");
-        magician = itempb_cfg.getProperty("fs").split(",");
-        warrior = itempb_cfg.getProperty("zs").split(",");
-        archer = itempb_cfg.getProperty("gjs").split(",");
-        queen = itempb_cfg.getProperty("nh").split(",");
-        whitemobaward = itempb_cfg.getProperty("bgjl").split(",");
-        colormobaward = itempb_cfg.getProperty("sgjl").split(",");
-        job5award = itempb_cfg.getProperty("wzyjl").split(",");
-        queenaward = itempb_cfg.getProperty("nhjl").split(",");
-        handlepower = Integer.parseInt(itempb_cfg.getProperty("ldgj"));
-        pachinkoawardrange = Integer.parseInt(itempb_cfg.getProperty("ddjlfw"));
-
+    public int get豆豆奖励范围() {
+        return ServerConfig.豆豆奖励范围;
     }
 
-    public int getpachinkoawardrange() {
-        return pachinkoawardrange;
+    public int get力度搞假() {
+        return ServerConfig.力度搞假;
     }
 
-    public int gethandlepower() {
-        return handlepower;
+    public String[] get白怪奖励() {
+        return ServerConfig.白怪奖励;
     }
 
-    public String[] getwhitemobaward() {
-        return whitemobaward;
+    public String[] get色怪奖励() {
+        return ServerConfig.色怪奖励;
     }
 
-    public String[] getcolormobaward() {
-        return colormobaward;
+    public String[] get五职业奖励() {
+        return ServerConfig.五职业奖励;
     }
 
-    public String[] getjob5award() {
-        return job5award;
+    public String[] get女皇奖励() {
+        return ServerConfig.女皇奖励;
     }
 
-    public String[] getqueenaward() {
-        return queenaward;
+    public String[] get大白怪() {
+        return ServerConfig.大白怪;
     }
 
-    public String[] getbigwhitemob() {
-        return bigwhitemob;
+    public String[] get小白怪() {
+        return ServerConfig.小白怪;
     }
 
-    public String[] getsmallwhitemob() {
-        return smallwhitemob;
+    public String[] get紫色怪() {
+        return ServerConfig.紫色怪;
     }
 
-    public String[] getpurplemob() {
-        return purplemob;
+    public String[] get粉色怪() {
+        return ServerConfig.粉色怪;
     }
 
-    public String[] getpinkmob() {
-        return pinkmob;
+    public String[] get飞侠() {
+        return ServerConfig.飞侠;
     }
 
-    public String[] getflyingman() {
-        return flyingman;
+    public String[] get海盗() {
+        return ServerConfig.海盗;
     }
 
-    public String[] getpirate() {
-        return pirate;
+    public String[] get法师() {
+        return ServerConfig.法师;
     }
 
-    public String[] getmagician() {
-        return magician;
+    public String[] get战士() {
+        return ServerConfig.战士;
     }
 
-    public String[] getwarrior() {
-        return warrior;
+    public String[] get弓箭手() {
+        return ServerConfig.弓箭手;
     }
 
-    public String[] getarcher() {
-        return archer;
+    public String[] get女皇() {
+        return ServerConfig.女皇;
     }
 
-    public String[] getqueen() {
-        return queen;
+    public String[] get豆豆装备() {
+        return ServerConfig.豆豆装备;
     }
 
-    public String[] getpachinkoequip() {
-        return pachinkoequip;
+    public String[] get豆豆坐骑() {
+        return ServerConfig.豆豆坐骑;
     }
 
-    public String[] getpachinkosetup() {
-        return pachinkosetup;
+    public String[] get消耗品() {
+        return ServerConfig.消耗品;
     }
 
-    public String[] getconsume() {
-        return consume;
+    public int get海洋帽子几率() {
+        return ServerConfig.海洋帽子几率;
     }
 
-    public int getpiratehatrate() {
-        return piratehatrate;
-    }
-
-    public String[] getgoldendograte() {
-        return goldendograte;
-    }
-
-    public boolean isCANLOG() {
-        return CANLOG;
-    }
-
-    public void setCANLOG(boolean CANLOG) {
-        BeansConstants.CANLOG = CANLOG;
+    public String[] get黄金狗几率() {
+        return ServerConfig.黄金狗几率;
     }
 
     public static BeansConstants getInstance() {

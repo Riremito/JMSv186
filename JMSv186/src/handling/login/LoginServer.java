@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.login;
 
+import config.ServerConfig;
 import debug.Debug;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -28,7 +29,6 @@ import java.util.Map;
 
 import handling.MapleServerHandler;
 import handling.mina.MapleCodecFactory;
-import java.util.Properties;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import org.apache.mina.common.IoAcceptor;
@@ -36,51 +36,41 @@ import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
-import server.ServerProperties;
 
 public class LoginServer {
 
     private static InetSocketAddress InetSocketadd;
     private static IoAcceptor acceptor;
     private static Map<Integer, Integer> load = new HashMap<Integer, Integer>();
-    private static int userLimit, usersOn = 0;
+    private static int usersOn = 0;
     private static boolean finishedShutdown = true, adminOnly = false;
-    private static int PORT;
 
     private static final int WolrdLimit = 20;
     public static int NumberOfWorld = 0;
-    public static final short WorldPort[] = new short[WolrdLimit];
+    public static final int WorldPort[] = new int[WolrdLimit];
     public static final String WorldEvent[] = new String[WolrdLimit];
     public static final String WorldMessage[] = new String[WolrdLimit];
     public static final String WorldName[] = new String[WolrdLimit];
     public static final int WorldFlag[] = new int[WolrdLimit];
     public static final int WorldChannels[] = new int[WolrdLimit];
 
-    public static final void LoadConfig() {
-        Properties p = ServerProperties.LoadConfig("properties/login.properties");
-        PORT = Integer.parseInt(p.getProperty("server.port"));
-        userLimit = Integer.parseInt(p.getProperty("server.userlimit"));
-    }
-
-    public static final Properties LoadWorldConfig(final String server) {
-        Properties p = ServerProperties.LoadConfig("properties/" + server + ".properties");
-        return p;
-    }
-
     public static final void SetWorldConfig() {
-        final String worldlist[] = {"kaede", "momiji"};
-
-        for (String wolrd : worldlist) {
-            Properties p = LoadWorldConfig(wolrd);
-            WorldChannels[NumberOfWorld] = Integer.parseInt(p.getProperty("server.channels"));
-            WorldPort[NumberOfWorld] = Short.parseShort(p.getProperty("server.port"));
-            WorldName[NumberOfWorld] = p.getProperty("server.name");
-            WorldEvent[NumberOfWorld] = p.getProperty("server.event");
-            WorldMessage[NumberOfWorld] = p.getProperty("server.message");
-            WorldFlag[NumberOfWorld] = Integer.parseInt(p.getProperty("server.flags"));
-
-            NumberOfWorld++;
-        }
+        // Kaede
+        WorldChannels[NumberOfWorld] = ServerConfig.game_server_channels;
+        WorldPort[NumberOfWorld] = ServerConfig.game_server_DEFAULT_PORT;
+        WorldName[NumberOfWorld] = ServerConfig.game_server_serverName;
+        WorldEvent[NumberOfWorld] = ServerConfig.game_server_event;
+        WorldMessage[NumberOfWorld] = ServerConfig.game_server_serverMessage;
+        WorldFlag[NumberOfWorld] = ServerConfig.game_server_flags;
+        NumberOfWorld++;
+        // Momiji, not used
+        WorldChannels[NumberOfWorld] = ServerConfig.test_game_server_channels;
+        WorldPort[NumberOfWorld] = ServerConfig.test_game_server_DEFAULT_PORT;
+        WorldName[NumberOfWorld] = ServerConfig.test_game_server_serverName;
+        WorldEvent[NumberOfWorld] = ServerConfig.test_game_server_event;
+        WorldMessage[NumberOfWorld] = ServerConfig.test_game_server_serverMessage;
+        WorldFlag[NumberOfWorld] = ServerConfig.test_game_server_flags;
+        NumberOfWorld++;
     }
 
     public static final void addChannel(final int channel) {
@@ -103,11 +93,11 @@ public class LoginServer {
         cfg.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MapleCodecFactory()));
 
         try {
-            InetSocketadd = new InetSocketAddress(PORT);
+            InetSocketadd = new InetSocketAddress(ServerConfig.login_server_port);
             acceptor.bind(InetSocketadd, new MapleServerHandler(-1, MapleServerHandler.ServerType.LoginServer), cfg);
-            Debug.InfoLog("Login Server Port = " + PORT);
+            Debug.InfoLog("Port = " + ServerConfig.login_server_port);
         } catch (IOException e) {
-            Debug.InfoLog("Binding to port " + PORT + " failed" + e);
+            Debug.InfoLog("Binding to port " + ServerConfig.login_server_port + " failed" + e);
         }
     }
 
@@ -130,7 +120,7 @@ public class LoginServer {
     }
 
     public static final int getUserLimit() {
-        return userLimit;
+        return ServerConfig.login_server_userlimit;
     }
 
     public static final int getUsersOn() {

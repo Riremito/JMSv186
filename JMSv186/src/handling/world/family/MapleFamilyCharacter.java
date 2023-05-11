@@ -22,7 +22,6 @@
 package handling.world.family;
 
 import client.MapleCharacter;
-import handling.world.World;
 import java.util.ArrayList;
 import java.util.List;
 

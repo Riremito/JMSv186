@@ -3,6 +3,7 @@ package handling;
 import constants.ServerConstants;
 import client.MapleClient;
 import command.GMCommand;
+import config.ServerConfig;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -24,9 +25,9 @@ import server.MTSStorage;
 import tools.FileoutputUtil;
 import handling.world.World;
 import java.util.Map;
-import packet.OutPacket;
+import packet.ClientPacket;
+import packet.ProcessPacket;
 import packet.SendPacket;
-import server.Start;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
@@ -66,7 +67,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     session.close();
                     return;
                 }
-                Debug.InfoLog("[LoginServer] " + address);
+                Debug.InfoLog("[Login Server] Connected " + address);
                 break;
             }
             case GameServer: {
@@ -74,7 +75,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     session.close();
                     return;
                 }
-                Debug.InfoLog("[GameServer " + String.format("%02d", channel) + "] " + address);
+                Debug.InfoLog("[Game Server " + String.format("%02d", channel) + "]  Connected " + address);
                 break;
             }
             case PointShopServer: {
@@ -82,16 +83,16 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     session.close();
                     return;
                 }
-                Debug.InfoLog("[PointShopServer] " + address);
+                Debug.InfoLog("[Cash Shop Server] Connected " + address);
                 break;
             }
             case MapleTradeSpaceServer: {
                 // ポイントショップとMTSを別のサーバーに分離した場合は修正が必要
-                Debug.InfoLog("[MapleTradeSpaceServer] " + address);
+                Debug.InfoLog("[Maple Trade Space Server] Connected " + address);
                 break;
             }
             default: {
-                Debug.InfoLog("[UnknownServer] " + address);
+                Debug.InfoLog("[Unknown Server] Connected " + address);
                 break;
             }
         }
@@ -102,8 +103,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
         final byte ivSend[] = ServerConstants.Use_Fixed_IV ? new byte[]{1, 0x5F, 4, 0x3F} : serverSend;
 
         final MapleClient client = new MapleClient(
-                new MapleAESOFB(ivSend, (short) (0xFFFF - Start.getMainVersion())), // Sent Cypher
-                new MapleAESOFB(ivRecv, Start.getMainVersion()), // Recv Cypher
+                new MapleAESOFB(ivSend, (short) (0xFFFF - ServerConfig.version)), // Sent Cypher
+                new MapleAESOFB(ivRecv, ServerConfig.version), // Recv Cypher
                 session);
         client.setChannel(channel);
 
@@ -132,42 +133,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
         super.sessionClosed(session);
     }
 
-    // ログをとる必要がないPacket
-    private boolean IsAnnoyingPacket(OutPacket.Header r) {
-        switch (r) {
-            case NPC_ACTION:
-            case SPECIAL_MOVE:
-            case RANGED_ATTACK:
-            case MAGIC_ATTACK:
-            case CLOSE_RANGE_ATTACK:
-            case MOVE_LIFE:
-            case HEAL_OVER_TIME:
-            case MOVE_PLAYER: {
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    // ログをとる必要がないPacket (Headerが未定義)
-    private boolean IsAnnoyingPacket(short r) {
-        switch (r) {
-            case 0x0010:
-            case 0x00BF:
-            case 0x000E:
-            case 0x00DF: {
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
     // Packet受信時の動作
     @Override
     public void messageReceived(final IoSession session, final Object message) {
@@ -178,46 +143,32 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             final short header_num = slea.readShort();
 
-            for (final OutPacket.Header recv : OutPacket.Header.values()) {
+            for (final ClientPacket.Header recv : ClientPacket.Header.values()) {
                 if (recv.Get() == header_num) {
                     final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
                     if (!c.isReceiving()) {
                         return;
                     }
 
-                    if (Start.getDebug()) {
-                        Debug.DebugSendPacket((byte[]) message);
-                    }
-
-                    if (c.getPlayer() != null && c.getPlayer().GetDebugger() && !IsAnnoyingPacket(recv)) {
-                        //Debug.DebugLog("[Packet] @" + String.format("%04X", header_num) + " " + slea.toString());
-                    }
-
                     // ログインサーバー
                     if (server_type == ServerType.LoginServer) {
-                        OutPacket op = new OutPacket((byte[]) message);
-                        if (!handleLoginPacket(op, c)) {
-                            //Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
-                        }
+                        ClientPacket op = new ClientPacket((byte[]) message);
+                        handleLoginPacket(op, c);
                         return;
                     }
 
                     // ポイントショップとMTSが共通のサーバーのため、ポイントショップで処理されなかったパケットはMTSのパケット扱いにする
                     if (server_type == ServerType.PointShopServer) {
                         if (!handlePointShopPacket(recv, slea, c)) {
-                            if (!handleMapleTradeSpacePacket(recv, slea, c)) {
-                                //Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
-                            }
+                            handleMapleTradeSpacePacket(recv, slea, c);
                         }
                         return;
                     }
 
                     // ゲームサーバー
                     if (server_type == ServerType.GameServer) {
-                        OutPacket op = new OutPacket((byte[]) message);
-                        if (!handleGamePacket(slea, c, op)) {
-                            //Debug.InfoLog("[ParseError] @" + String.format("%04X", header_num) + " " + slea.toString());
-                        }
+                        ClientPacket op = new ClientPacket((byte[]) message);
+                        handleGamePacket(slea, c, op);
                         return;
                     }
 
@@ -225,9 +176,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
             }
             final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-            if ((server_type != ServerType.GameServer || (c.getPlayer() != null && c.getPlayer().GetDebugger())) && !IsAnnoyingPacket(header_num)) {
-                //Debug.InfoLog("[UnknownPacket] @" + String.format("%04X", header_num) + " " + slea.toString());
-            }
 
         } catch (Exception e) {
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
@@ -247,64 +195,93 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // Login Server
-    public static final boolean handleLoginPacket(OutPacket p, MapleClient c) throws Exception {
+    public static final boolean handleLoginPacket(ClientPacket p, MapleClient c) throws Exception {
         short header = p.Decode2();
-        OutPacket.Header type = OutPacket.ToHeader(header);
+        ClientPacket.Header type = ClientPacket.ToHeader(header);
 
-        if (Start.getMainVersion() >= 187) {
+        if (ServerConfig.version >= 187) {
             Debug.DebugPacket(p);
         }
 
         switch (type) {
+            // 独自実装
+            case CP_CUSTOM_WZ_HASH: {
+                if (ServerConfig.login_server_antihack) {
+                    if (SendPacket.Custom.Hash(p)) {
+                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz OK");
+                    } else {
+                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz NG");
+                    }
+                }
+                return true;
+            }
+            case CP_CUSTOM_MEMORY_SCAN: {
+                if (ServerConfig.login_server_antihack) {
+                    if (SendPacket.Custom.Scan(p)) {
+                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory OK");
+                    } else {
+                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory NG");
+                    }
+                }
+                return true;
+            }
             // ログイン画面
-            case RSA_KEY: {
+            case CP_CreateSecurityHandle: {
                 // +p
                 c.getSession().write(LoginPacket.LoginAUTH(p, c));
                 return true;
             }
             // ログイン
-            case LOGIN_PASSWORD: {
+            case CP_CheckPassword: {
                 if (CharLoginHandler.login(p, c)) {
                     InterServerHandler.SetLogin(false);
                     Debug.DebugLog("Login MapleID = " + c.getAccountName());
+
+                    if (ServerConfig.login_server_antihack && ServerConfig.version == 186) {
+                        c.getSession().write(ProcessPacket.Custom.Hash());
+                        c.getSession().write(ProcessPacket.Custom.Scan(0x008625B5, (short) 3)); // damage hack check
+                        // test
+                        byte mem[] = {(byte) 0x90, (byte) 0x90, (byte) 0x90};
+                        c.getSession().write(ProcessPacket.Custom.Patch(0x00BCCA45, mem));
+                    }
                 }
                 return true;
             }
             // サーバー一覧
-            case SERVERLIST_REQUEST: {
+            case CP_WorldInfoRequest: {
                 // +p
                 CharLoginHandler.ServerListRequest(c);
                 return true;
             }
             // サーバーの状態
-            case SERVERSTATUS_REQUEST: {
+            case CP_CheckUserLimit: {
                 // +p
                 CharLoginHandler.ServerStatusRequest(c);
                 return true;
             }
             // キャラクター一覧
-            case CHARLIST_REQUEST: {
+            case CP_SelectWorld: {
                 CharLoginHandler.CharlistRequest(p, c);
                 return true;
             }
             // キャラクター作成時の名前重複確認
-            case CHECK_CHAR_NAME: {
+            case CP_CheckDuplicatedID: {
                 // p
                 CharLoginHandler.CheckCharName(p, c);
                 return true;
             }
             // キャラクター作成
-            case CREATE_CHAR: {
+            case CP_CreateNewCharacter: {
                 CharLoginHandler.CreateChar(p, c);
                 return true;
             }
             // キャラクター削除
-            case DELETE_CHAR: {
+            case CP_DeleteCharacter: {
                 CharLoginHandler.DeleteChar(p, c);
                 return true;
             }
             // クラッシュデータ
-            case LATEST_CRASH_DATA: {
+            case CP_ExceptionLog: {
                 // @000F EncodeBuffer(CrashDumpLog)
                 // 起動時に何らかの条件で前回のクラッシュの詳細のテキストが送信される
                 // 文字列で送信されているがnullで終わっていないので注意
@@ -312,8 +289,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // キャラクター選択
-            case CHAR_SELECT:
-            case AUTH_SECOND_PASSWORD: {
+            case CP_SelectCharacter:
+            case CP_CheckPinCode: {
                 if (CharLoginHandler.Character_WithSecondPassword(p, c)) {
                     InterServerHandler.SetLogin(false);
                 }
@@ -334,26 +311,26 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // Point Shop
-    public static final boolean handlePointShopPacket(final OutPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
+    public static final boolean handlePointShopPacket(final ClientPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
-            case PLAYER_LOGGEDIN: {
+            case CP_MigrateIn: {
                 // +p
                 final int playerid = p.readInt();
                 CashShopOperation.EnterCS(playerid, c);
                 Debug.DebugLog(c.getPlayer().getName() + " Enter PointShop");
                 return true;
             }
-            case CHANGE_MAP: {
+            case CP_UserTransferFieldRequest: {
                 // c
                 CashShopOperation.LeaveCS(p, c, c.getPlayer());
                 return true;
             }
-            case BUY_CS_ITEM: {
+            case CP_CashShopCashItemRequest: {
                 // c
                 CashShopOperation.BuyCashItem(p, c, c.getPlayer());
                 return true;
             }
-            case COUPON_CODE: {
+            case CP_CashShopCheckCouponRequest: {
                 // 実装が悪い
                 // 受け取りキャラクター指定した際にエラーしてる
                 //FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "Coupon : \n" + p.toString(true));
@@ -362,14 +339,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 CashShopOperation.CouponCode(p.readMapleAsciiString(), c);
                 return true;
             }
-            case CS_FILL: {
+            case CP_CashShopChargeParamRequest: {
                 // p
                 // 充填ボタンをクリックした場合の処理
                 // 公式サイトが開くような処理だったと思うが、特に何もしない
                 CashShopOperation.CSUpdate(c);
                 return true;
             }
-            case CS_UPDATE: {
+            case CP_CashShopQueryCashRequest: {
                 // p
                 CashShopOperation.CSUpdate(c);
                 return true;
@@ -380,7 +357,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // アバターランダムボックスのオープン処理
-            case AVATAR_RANDOM_BOX_OPEN: {
+            case CP_CashGachaponOpenRequest: {
                 // @00AB [B0 58] 00 00 00 00 00 00
                 // アイテムスロットが指定されている
                 return true;
@@ -393,26 +370,31 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // MTS
-    public static final boolean handleMapleTradeSpacePacket(final OutPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
+    public static final boolean handleMapleTradeSpacePacket(final ClientPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
         switch (header) {
-            case PLAYER_LOGGEDIN: {
+            case CP_MigrateIn: {
                 // +p
                 final int playerid = p.readInt();
                 CashShopOperation.EnterCS(playerid, c);
                 Debug.DebugLog(c.getPlayer().getName() + " Enter MTS");
                 return true;
             }
-            case CHANGE_MAP: {
+            case CP_UserTransferFieldRequest: {
                 // c
                 CashShopOperation.LeaveCS(p, c, c.getPlayer());
                 return true;
             }
-            case TOUCHING_MTS: {
+            case CP_ITCChargeParamRequest: {
+                // 公式サイト開くだけなので不要だが、何かしらのパケットを送らないと画面がパケット受信するまで操作不能になる
+                MTSOperation.OnChargeParamResult(c);
+                return true;
+            }
+            case CP_ITCQueryCashRequest: {
                 // p
                 MTSOperation.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
                 return true;
             }
-            case MTS_TAB: {
+            case CP_ITCItemRequest: {
                 MTSOperation.MTSOperation(p, c);
                 return true;
             }
@@ -424,34 +406,40 @@ public class MapleServerHandler extends IoHandlerAdapter {
     }
 
     // Game Server
-    public static final boolean handleGamePacket(final SeekableLittleEndianAccessor p, final MapleClient c, OutPacket op) throws Exception {
+    // CClientSocket::ProcessPacket
+    public static final boolean handleGamePacket(final SeekableLittleEndianAccessor p, final MapleClient c, ClientPacket op) throws Exception {
         short header = op.Decode2();
-        OutPacket.Header type = OutPacket.ToHeader(header);
+        ClientPacket.Header type = ClientPacket.ToHeader(header);
 
+        // CClientSocket::ProcessUserPacket
+        // CUser::OnPacket
+        // CUser::OnPetPacket
+        // CUser::OnFieldPacket
+        // CUser::OnSummonedPacket
         switch (type) {
-            case DUEY: {
+            case CP_UserParcelRequest: {
                 return SendPacket.HomeDelivery.Accept(c, op);
             }
-            case VICIOUS_HAMMER: {
+            case CP_GoldHammerRequest: {
                 return SendPacket.ViciousHammer.Accept(c, op);
             }
             // サーバーメッセージ
-            case GM_COMMAND_SERVER_MESSAGE: {
+            case CP_BroadcastMsg: {
                 Debug.DebugPacket(op);
                 return true;
             }
             // GMコマンド
-            case GM_COMMAND: {
+            case CP_Admin: {
                 Debug.DebugPacket(op);
                 return GMCommand.Accept(p, c);
             }
             // GMコマンドの文字列
-            case GM_COMMAND_TEXT: {
+            case CP_Log: {
                 Debug.DebugPacket(op);
                 return true;
             }
             // 雪玉専用？
-            case GM_COMMAND_EVENT_START: {
+            case CP_EventStart: {
                 Debug.DebugPacket(op);
                 return true;
             }
@@ -461,17 +449,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // 未実装的な奴
-            case PARTY_SEARCH_START: {
+            case CP_INVITE_PARTY_MATCH: {
                 // @00EE Data: 91 00 00 00 A5 00 00 00 05 00 00 00 FF FF EF 0F
                 Debug.DebugPacket(op);
                 return true;
             }
-            case PARTY_SEARCH_STOP: {
+            case CP_CANCEL_INVITE_PARTY_MATCH: {
                 // @00EF
                 Debug.DebugPacket(op);
                 return true;
             }
-            case ETC_ITEM_UI: {
+            case CP_RaiseUIState: {
                 // @0105 EC 1D 00 00 01
                 // @0105 EC 1D 00 00 00
                 // 布製の人形などETCアイテムからUIを開くタイプの処理
@@ -479,20 +467,20 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 Debug.DebugPacket(op);
                 return true;
             }
-            case ETC_ITEM_UI_UPDATE: {
+            case CP_RaiseRefesh: {
                 // @0104 EC 1D
                 // ETCアイテムのUIの更新処理だと思われる
                 Debug.DebugPacket(op);
                 return true;
             }
-            case ETC_ITEM_UI_DROP_ITEM: {
+            case CP_RaiseIncExp: {
                 // @0106 60 00 5E 85 3D 00 0D C4 00 00 64 00 00 00
                 // ETCアイテムのUIにアイテムをドロップした際の処理
                 Debug.DebugPacket(op);
                 return true;
             }
             // ウェディング系の謎UI
-            case WEDDING_REGISTRY: {
+            case CP_WeddingWishListRequest: {
                 // @0091 06 01 00 FA DD 13 00 01 00
                 // アイテムを選択して送る
                 // @0091 08
@@ -501,17 +489,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // グループクエスト or 遠征隊検索
-            case EXPEDITION_LISTING: {
+            case CP_PartyAdverRequest: {
                 Debug.DebugPacket(op);
                 return true;
             }
             //
-            case CHANGE_CHANNEL: {
+            case CP_UserTransferChannelRequest: {
                 // c
                 InterServerHandler.ChangeChannel(p, c, c.getPlayer());
                 return true;
             }
-            case PLAYER_LOGGEDIN: {
+            case CP_MigrateIn: {
                 // +p
                 final int playerid = p.readInt();
                 InterServerHandler.Loggedin(playerid, c);
@@ -525,114 +513,114 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case ENTER_CASH_SHOP: {
+            case CP_UserMigrateToCashShopRequest: {
                 // pc
                 InterServerHandler.EnterCS(c, c.getPlayer(), false);
                 return true;
             }
-            case ENTER_MTS: {
+            case CP_UserMigrateToITCRequest: {
                 // pc
                 InterServerHandler.EnterCS(c, c.getPlayer(), true);
                 return true;
             }
-            case MOVE_PLAYER: {
+            case CP_UserMove: {
                 // pc
                 PlayerHandler.MovePlayer(p, c, c.getPlayer());
                 return true;
             }
-            case CHAR_INFO_REQUEST: {
+            case CP_UserCharacterInfoRequest: {
                 // 実装が悪い
                 p.readInt();
                 PlayerHandler.CharInfoRequest(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case CLOSE_RANGE_ATTACK: {
+            case CP_UserMeleeAttack: {
                 // c
                 PlayerHandler.closeRangeAttack(p, c, c.getPlayer(), false);
                 return true;
             }
-            case RANGED_ATTACK: {
+            case CP_UserShootAttack: {
                 // c
                 PlayerHandler.rangedAttack(p, c, c.getPlayer());
                 return true;
             }
-            case MAGIC_ATTACK: {
+            case CP_UserMagicAttack: {
                 // c
                 PlayerHandler.MagicDamage(p, c, c.getPlayer());
                 return true;
             }
-            case SPECIAL_MOVE: {
+            case CP_UserSkillUseRequest: {
                 // c
                 PlayerHandler.SpecialMove(p, c, c.getPlayer());
                 return true;
             }
-            case PASSIVE_ENERGY: {
+            case CP_UserBodyAttack: {
                 // c
                 PlayerHandler.closeRangeAttack(p, c, c.getPlayer(), true);
                 return true;
             }
-            case FACE_EXPRESSION: {
+            case CP_UserEmotion: {
                 // pc
                 PlayerHandler.ChangeEmotion(p.readInt(), c.getPlayer());
                 return true;
             }
-            case TAKE_DAMAGE: {
+            case CP_UserHit: {
                 // c
                 PlayerHandler.TakeDamage(p, c, c.getPlayer());
                 return true;
             }
-            case HEAL_OVER_TIME: {
+            case CP_UserChangeStatRequest: {
                 PlayerHandler.Heal(p, c.getPlayer());
                 return true;
             }
-            case CANCEL_BUFF: {
+            case CP_UserSkillCancelRequest: {
                 // pc
                 PlayerHandler.CancelBuffHandler(p.readInt(), c.getPlayer());
                 return true;
             }
-            case CANCEL_ITEM_EFFECT: {
+            case CP_UserStatChangeItemCancelRequest: {
                 // pc
                 PlayerHandler.CancelItemEffect(p.readInt(), c.getPlayer());
                 return true;
             }
-            case USE_CHAIR: {
+            case CP_UserPortableChairSitRequest: {
                 // pc
                 PlayerHandler.UseChair(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case CANCEL_CHAIR: {
+            case CP_UserSitRequest: {
                 // pc
                 PlayerHandler.CancelChair(p.readShort(), c, c.getPlayer());
                 return true;
             }
-            case USE_ITEMEFFECT:
+            case CP_UserActivateEffectItem:
             case WHEEL_OF_FORTUNE: {
                 // pc
                 PlayerHandler.UseItemEffect(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case SKILL_EFFECT: {
+            case CP_UserSkillPrepareRequest: {
                 // c
                 PlayerHandler.SkillEffect(p, c.getPlayer());
                 return true;
             }
-            case MESO_DROP: {
+            case CP_UserDropMoneyRequest: {
                 // 実装が悪い
                 p.readInt();
                 PlayerHandler.DropMeso(p.readInt(), c.getPlayer());
                 return true;
             }
-            case MONSTER_BOOK_COVER: {
+            case CP_UserMonsterBookSetCover: {
                 // pc
                 PlayerHandler.ChangeMonsterBookCover(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case CHANGE_KEYMAP: {
+            case CP_FuncKeyMappedModified: {
                 // c
                 PlayerHandler.ChangeKeymap(p, c.getPlayer());
                 return true;
             }
-            case CHANGE_MAP: {
+            case CP_UserTransferFieldRequest: {
                 // c
                 PlayerHandler.ChangeMap(p, c, c.getPlayer());
                 if (c.getPlayer().GetInformation()) {
@@ -640,41 +628,41 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case CHANGE_MAP_SPECIAL: {
+            case CP_UserPortalScriptRequest: {
                 // 実装が悪い
                 p.skip(1);
                 PlayerHandler.ChangeMapSpecial(p.readMapleAsciiString(), c, c.getPlayer());
                 return true;
             }
-            case PORTAL_INSIDE_MAP: {
+            case CP_UserPortalTeleportRequest: {
                 // @0063 [13] [04 00 75 70 30 30] [9F 01] [04 00] [C9 01] [F4 FE]
                 // ポータルカウント, ポータル名, 元のX座標, 元のY座標, 移動先のX座標, 移動先のY座標
                 // ポータル利用時のスクリプト実行用だがJMSとEMS以外では利用されておらず意味がない
                 // サーバー側で特にみる必要もないが、マップ内ポータルを利用した時にサーバー側でスクリプトを実行したい場合は必要になる
                 return true;
             }
-            case GET_BUFF_REQUEST: {
+            case CP_UserCalcDamageStatSetRequest: {
                 // @006A
                 // バフを獲得するアイテムを使用した際に送信されている
                 // 利用用途が不明だが、アイテム利用時ではなくてこちらが送信されたときにバフを有効にすべきなのかもしれない
                 return true;
             }
-            case TROCK_ADD_MAP: {
+            case CP_UserMapTransferRequest: {
                 // c
                 PlayerHandler.TrockAddMap(p, c, c.getPlayer());
                 return true;
             }
-            case ARAN_COMBO: {
+            case CP_RequestIncCombo: {
                 // pc
                 PlayerHandler.AranCombo(c, c.getPlayer());
                 return true;
             }
-            case SKILL_MACRO: {
+            case CP_UserMacroSysDataModified: {
                 // c
                 PlayerHandler.ChangeSkillMacro(p, c.getPlayer());
                 return true;
             }
-            case GIVE_FAME: {
+            case CP_UserGivePopularityRequest: {
                 // c
                 PlayersHandler.GiveFame(p, c, c.getPlayer());
                 return true;
@@ -686,74 +674,74 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
              */
-            case NOTE_ACTION: {
+            case CP_MemoRequest: {
                 // c
                 PlayersHandler.Note(p, c.getPlayer());
                 return true;
             }
-            case USE_DOOR: {
+            case CP_EnterTownPortalRequest: {
                 // c
                 PlayersHandler.UseDoor(p, c.getPlayer());
                 return true;
             }
-            case DAMAGE_REACTOR: {
+            case CP_ReactorHit: {
                 PlayersHandler.HitReactor(p, c);
                 return true;
             }
-            case TOUCH_REACTOR: {
+            case CP_ReactorTouch: {
                 PlayersHandler.TouchReactor(p, c);
                 return true;
             }
-            case CLOSE_CHALKBOARD: {
+            case CP_UserADBoardClose: {
                 // 実装が悪い
                 c.getPlayer().setChalkboard(null);
                 return true;
             }
-            case ITEM_MAKER: {
+            case CP_UserItemMakeRequest: {
                 ItemMakerHandler.ItemMaker(p, c);
                 return true;
             }
-            case ITEM_SORT: {
+            case CP_UserSortItemRequest: {
                 InventoryHandler.ItemSort(p, c);
                 return true;
             }
-            case ITEM_GATHER: {
+            case CP_UserGatherItemRequest: {
                 InventoryHandler.ItemGather(p, c);
                 return true;
             }
-            case ITEM_MOVE: {
+            case CP_UserChangeSlotPositionRequest: {
                 InventoryHandler.ItemMove(p, c);
                 return true;
             }
-            case ITEM_PICKUP: {
+            case CP_DropPickUpRequest: {
                 // c
                 InventoryHandler.Pickup_Player(p, c, c.getPlayer());
                 return true;
             }
-            case USE_CASH_ITEM: {
+            case CP_UserConsumeCashItemUseRequest: {
                 InventoryHandler.UseCashItem(p, c, op);
                 return true;
             }
-            case USE_ITEM: {
+            case CP_UserStatChangeItemUseRequest: {
                 // c
                 InventoryHandler.UseItem(p, c, c.getPlayer());
                 return true;
             }
-            case USE_MAGNIFY_GLASS: {
+            case CP_UserItemReleaseRequest: {
                 InventoryHandler.UseMagnify(p, c);
                 return true;
             }
-            case USE_SCRIPTED_NPC_ITEM: {
+            case CP_UserScriptItemUseRequest: {
                 // c
                 InventoryHandler.UseScriptedNPCItem(p, c, c.getPlayer());
                 return true;
             }
-            case USE_RETURN_SCROLL: {
+            case CP_UserPortalScrollUseRequest: {
                 // c
                 InventoryHandler.UseReturnScroll(p, c, c.getPlayer());
                 return true;
             }
-            case USE_UPGRADE_SCROLL: {
+            case CP_UserUpgradeItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
                 if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) p.readShort(), c, c.getPlayer())) {
@@ -761,7 +749,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case USE_POTENTIAL_SCROLL: {
+            case CP_UserItemOptionUpgradeItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
                 if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) 0, c, c.getPlayer())) {
@@ -769,7 +757,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case USE_EQUIP_SCROLL: {
+            case CP_UserHyperUpgradeItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
                 if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) 0, c, c.getPlayer())) {
@@ -777,7 +765,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case USE_SUMMON_BAG: {
+            case CP_UserMobSummonItemUseRequest: {
                 // c
                 InventoryHandler.UseSummonBag(p, c, c.getPlayer());
                 return true;
@@ -787,7 +775,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InventoryHandler.UseTreasureChest(p, c, c.getPlayer());
                 return true;
             }
-            case USE_SKILL_BOOK: {
+            case CP_UserSkillLearnItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
                 if (InventoryHandler.UseSkillBook((byte) p.readShort(), p.readInt(), c, c.getPlayer())) {
@@ -795,165 +783,165 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case USE_CATCH_ITEM: {
+            case CP_UserBridleItemUseRequest: {
                 // c
                 InventoryHandler.UseCatchItem(p, c, c.getPlayer());
                 return true;
             }
-            case USE_MOUNT_FOOD: {
+            case CP_UserTamingMobFoodItemUseRequest: {
                 // c
                 InventoryHandler.UseMountFood(p, c, c.getPlayer());
                 return true;
             }
-            case REWARD_ITEM: {
+            case CP_UserUseGachaponBoxRequest: {
                 // c
                 InventoryHandler.UseRewardItem((byte) p.readShort(), p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case HYPNOTIZE_DMG: {
+            case CP_MobAttackMob: {
                 // c
                 MobHandler.HypnotizeDmg(p, c.getPlayer());
                 return true;
             }
-            case MOB_NODE: {
+            case CP_MobEscortCollision: {
                 // c
                 MobHandler.MobNode(p, c.getPlayer());
                 return true;
             }
-            case DISPLAY_NODE: {
+            case CP_MobRequestEscortInfo: {
                 // c
                 MobHandler.DisplayNode(p, c.getPlayer());
                 return true;
             }
-            case MOVE_LIFE: {
+            case CP_MobMove: {
                 // c
                 MobHandler.MoveMonster(p, c, c.getPlayer());
                 return true;
             }
-            case AUTO_AGGRO: {
+            case CP_MobApplyCtrl: {
                 // c
                 MobHandler.AutoAggro(p.readInt(), c.getPlayer());
                 return true;
             }
-            case FRIENDLY_DAMAGE: {
+            case CP_MobHitByMob: {
                 // c
                 MobHandler.FriendlyDamage(p, c.getPlayer());
                 return true;
             }
-            case MONSTER_BOMB: {
+            case CP_MobSelfDestruct: {
                 // pc
                 MobHandler.MonsterBomb(p.readInt(), c.getPlayer());
                 return true;
             }
-            case NPC_SHOP: {
+            case CP_UserShopRequest: {
                 // c
                 NPCHandler.NPCShop(p, c, c.getPlayer());
                 return true;
             }
-            case NPC_TALK: {
+            case CP_UserSelectNpc: {
                 // c
                 NPCHandler.NPCTalk(p, c, c.getPlayer());
                 return true;
             }
             // 雇用商店遠隔管理機
-            case HIRED_MERCHANT_REMOTE: {
+            case CP_UserRemoteShopOpenRequest: {
                 // @0033 [02 00]
                 // アイテムのスロット指定されているだけ
                 PlayerInteractionHandler.RemoteStore(p, c);
                 return true;
             }
-            case NPC_TALK_MORE: {
+            case CP_UserScriptMessageAnswer: {
                 NPCHandler.NPCMoreTalk(p, c);
                 return true;
             }
-            case NPC_ACTION: {
+            case CP_NpcMove: {
                 NPCHandler.NPCAnimation(p, c);
                 return true;
             }
-            case QUEST_ACTION: {
+            case CP_UserQuestRequest: {
                 // c
                 NPCHandler.QuestAction(p, c, c.getPlayer());
                 return true;
             }
-            case STORAGE: {
+            case CP_UserTrunkRequest: {
                 // c
                 NPCHandler.Storage(p, c, c.getPlayer());
                 return true;
             }
-            case GENERAL_CHAT: {
+            case CP_UserChat: {
                 Debug.DebugPacket(op);
                 // 実装が悪い
-                if (Start.getMainVersion() > 164) {
+                if (ServerConfig.version > 164) {
                     p.readInt();
                 }
                 ChatHandler.GeneralChat(p.readMapleAsciiString(), p.readByte(), c, c.getPlayer());
                 return true;
             }
-            case PARTYCHAT: {
+            case CP_GroupMessage: {
                 // c
                 ChatHandler.Others(p, c, c.getPlayer());
                 return true;
             }
-            case WHISPER: {
+            case CP_Whisper: {
                 ChatHandler.Whisper_Find(p, c);
                 return true;
             }
-            case MESSENGER: {
+            case CP_Messenger: {
                 ChatHandler.Messenger(p, c);
                 return true;
             }
-            case AUTO_ASSIGN_AP: {
+            case CP_UserAbilityMassUpRequest: {
                 // c
                 StatsHandling.AutoAssignAP(p, c, c.getPlayer());
                 return true;
             }
-            case DISTRIBUTE_AP: {
+            case CP_UserAbilityUpRequest: {
                 // c
                 StatsHandling.DistributeAP(p, c, c.getPlayer());
                 return true;
             }
-            case DISTRIBUTE_SP: {
+            case CP_UserSkillUpRequest: {
                 // 実装が悪い
                 p.readInt();
                 StatsHandling.DistributeSP(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case PLAYER_INTERACTION: {
+            case CP_MiniRoom: {
                 // c
                 PlayerInteractionHandler.PlayerInteraction(p, c, c.getPlayer());
                 return true;
             }
-            case GUILD_OPERATION: {
+            case CP_GuildRequest: {
                 GuildHandler.Guild(p, c);
                 return true;
             }
-            case DENY_GUILD_REQUEST: {
+            case CP_GuildResult: {
                 // 実装が悪い
                 p.skip(1);
                 GuildHandler.DenyGuildRequest(p.readMapleAsciiString(), c);
                 return true;
             }
-            case ALLIANCE_OPERATION: {
+            case CP_AllianceRequest: {
                 AllianceHandler.HandleAlliance(p, c, false);
                 return true;
             }
-            case DENY_ALLIANCE_REQUEST: {
+            case CP_AllianceResult: {
                 AllianceHandler.HandleAlliance(p, c, true);
                 return true;
             }
-            case BBS_OPERATION: {
+            case CP_GuildBBS: {
                 BBSHandler.BBSOperatopn(p, c);
                 return true;
             }
-            case PARTY_OPERATION: {
+            case CP_PartyRequest: {
                 PartyHandler.PartyOperatopn(p, c);
                 return true;
             }
-            case DENY_PARTY_REQUEST: {
+            case CP_PartyResult: {
                 PartyHandler.DenyPartyRequest(p, c);
                 return true;
             }
-            case BUDDYLIST_MODIFY: {
+            case CP_FriendRequest: {
                 BuddyListHandler.BuddyOperation(p, c);
                 return true;
             }
@@ -962,43 +950,43 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 UserInterfaceHandler.CygnusSummon_NPCRequest(c);
                 return true;
             }
-            case SHIP_OBJECT: {
+            case CP_CONTISTATE: {
                 // p
                 UserInterfaceHandler.ShipObjectRequest(p.readInt(), c);
                 return true;
             }
-            case DAMAGE_SUMMON: {
+            case CP_SummonedHit: {
                 // 実装が悪い
                 p.skip(4);
                 SummonHandler.DamageSummon(p, c.getPlayer());
                 return true;
             }
-            case MOVE_SUMMON: {
+            case CP_SummonedMove: {
                 // c
                 SummonHandler.MoveSummon(p, c.getPlayer());
                 return true;
             }
-            case SUMMON_ATTACK: {
+            case CP_SummonedAttack: {
                 // c
                 SummonHandler.SummonAttack(p, c, c.getPlayer());
                 return true;
             }
-            case MOVE_DRAGON: {
+            case CP_DragonMove: {
                 // c
                 SummonHandler.MoveDragon(p, c.getPlayer());
                 return true;
             }
-            case SPAWN_PET: {
+            case CP_UserActivatePetRequest: {
                 // c
                 PetHandler.SpawnPet(p, c, c.getPlayer());
                 return true;
             }
-            case MOVE_PET: {
+            case CP_PetMove: {
                 // c
                 PetHandler.MovePet(p, c.getPlayer());
                 return true;
             }
-            case PET_CHAT: {
+            case CP_PetAction: {
                 if (p.available() < 12) {
                     return false;
                 }
@@ -1010,58 +998,58 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PetHandler.PetChat(p, c.getPlayer());
                 return true;
             }
-            case PET_COMMAND: {
+            case CP_PetInteractionRequest: {
                 // c
                 PetHandler.PetCommand(p, c, c.getPlayer());
                 return true;
             }
-            case PET_FOOD: {
+            case CP_UserPetFoodItemUseRequest: {
                 // c
                 PetHandler.PetFood(p, c, c.getPlayer());
                 return true;
             }
-            case PET_LOOT: {
+            case CP_PetDropPickUpRequest: {
                 // c
                 InventoryHandler.Pickup_Pet(p, c, c.getPlayer());
                 return true;
             }
-            case PET_AUTO_POT: {
+            case CP_PetStatChangeItemUseRequest: {
                 // c
                 PetHandler.Pet_AutoPotion(p, c, c.getPlayer());
                 return true;
             }
-            case MONSTER_CARNIVAL: {
+            case CP_MCarnivalRequest: {
                 MonsterCarnivalHandler.MonsterCarnival(p, c);
                 return true;
             }
-            case USE_HIRED_MERCHANT: {
+            case CP_UserEntrustedShopRequest: {
                 HiredMerchantHandler.UseHiredMerchant(p, c);
                 return true;
             }
-            case MERCH_ITEM_STORE: {
+            case CP_UserEffectLocal: {
                 HiredMerchantHandler.MerchantItemStore(p, c);
                 return true;
             }
-            case CANCEL_DEBUFF: {
+            case CP_UserTemporaryStatUpdateRequest: {
                 return true;
             }
             case LEFT_KNOCK_BACK: {
                 PlayerHandler.leftKnockBack(p, c);
                 return true;
             }
-            case SNOWBALL: {
+            case CP_SnowBallTouch: {
                 PlayerHandler.snowBall(p, c);
                 return true;
             }
-            case COCONUT: {
+            case CP_CoconutHit: {
                 PlayersHandler.hitCoconut(p, c);
                 return true;
             }
-            case REPAIR: {
+            case CP_UserRepairDurability: {
                 NPCHandler.repair(p, c);
                 return true;
             }
-            case REPAIR_ALL: {
+            case CP_UserRepairDurabilityAll: {
                 // p
                 NPCHandler.repairAll(c);
                 return true;
@@ -1072,23 +1060,23 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
              */
-            case OWL_OPEN_UI: {
+            case CP_ShopScannerRequest: {
                 // @003B 05
                 // クライアントが不思議なフクロウのUIを開くときにパケットが送信されているが、UIはクライアント側で開くのでサーバーからは何も出来ない
                 return true;
             }
-            case OWL_WARP: {
+            case CP_ShopLinkRequest: {
                 // @003C B3 86 01 00 87 7F 3D 36
                 InventoryHandler.OwlWarp(p, c);
                 return true;
             }
-            case OWL_USE_ITEM_VERSION_SEARCH: {
+            case CP_UserShopScannerItemUseRequest: {
                 // @004C 0A 00 70 3F 23 00 85 84 1E 00 00 8C 4E 34 1A
                 // 消費アイテム版の不思議なフクロウが存在し、専用のパケットが送信される
                 InventoryHandler.OwlMinerva(p, c);
                 return true;
             }
-            case RPS_GAME: {
+            case CP_RPSGame: {
                 NPCHandler.RPSGame(p, c);
                 return true;
             }
@@ -1100,61 +1088,61 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 NPCHandler.UseItemQuest(p, c);
                 return true;
             }
-            case FOLLOW_REQUEST: {
+            case CP_UserFollowCharacterRequest: {
                 PlayersHandler.FollowRequest(p, c);
                 return true;
             }
-            case FOLLOW_REPLY: {
+            case CP_UserFollowCharacterWithdraw: {
                 PlayersHandler.FollowReply(p, c);
                 return true;
             }
-            case RING_ACTION: {
+            case CP_MarriageRequest: {
                 PlayersHandler.RingAction(p, c);
                 return true;
             }
-            case REQUEST_FAMILY: {
+            case CP_FamilyChartRequest: {
                 FamilyHandler.RequestFamily(p, c);
                 return true;
             }
-            case OPEN_FAMILY: {
+            case CP_FamilyInfoRequest: {
                 FamilyHandler.OpenFamily(p, c);
                 return true;
             }
-            case FAMILY_OPERATION: {
+            case CP_FamilyRegisterJunior: {
                 FamilyHandler.FamilyOperation(p, c);
                 return true;
             }
-            case DELETE_JUNIOR: {
+            case CP_FamilyUnregisterJunior: {
                 FamilyHandler.DeleteJunior(p, c);
                 return true;
             }
-            case DELETE_SENIOR: {
+            case CP_FamilyUnregisterParent: {
                 FamilyHandler.DeleteSenior(p, c);
                 return true;
             }
-            case USE_FAMILY: {
+            case CP_FamilyUsePrivilege: {
                 FamilyHandler.UseFamily(p, c);
                 return true;
             }
-            case FAMILY_PRECEPT: {
+            case CP_FamilySetPrecept: {
                 FamilyHandler.FamilyPrecept(p, c);
                 return true;
             }
-            case FAMILY_SUMMON: {
+            case CP_FamilySummonResult: {
                 FamilyHandler.FamilySummon(p, c);
                 return true;
             }
-            case ACCEPT_FAMILY: {
+            case CP_FamilyJoinResult: {
                 FamilyHandler.AcceptFamily(p, c);
                 return true;
             }
             // パチンコ
             case BEANS_OPERATION: {
-                //BeanGame.BeanGame1(p, c);
+                BeanGame.BeanGame1(p, c);
                 return true;
             }
             case BEANS_UPDATE: {
-                //BeanGame.BeanGame2(p, c);
+                BeanGame.BeanGame2(p, c);
                 return true;
             }
             default: {

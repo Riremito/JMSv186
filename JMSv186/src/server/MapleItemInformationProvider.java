@@ -15,7 +15,7 @@ import constants.GameConstants;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
-import debug.Debug;
+import config.ServerConfig;
 import java.util.LinkedList;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
@@ -86,7 +86,7 @@ public class MapleItemInformationProvider {
         getAllItems();
         // 潜在能力実装がv186のためそれ以前では存在しない
         // v186以外で全然違うので使い物にならない
-        if (Start.getMainVersion() != 186) {
+        if (ServerConfig.version != 186) {
             return;
         }
         final MapleData setsData = etcData.getData("SetItemInfo.img");
@@ -217,7 +217,7 @@ public class MapleItemInformationProvider {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        if (Start.getMainVersion() == 164) {
+        if (ServerConfig.version == 164) {
             itemsData = stringData.getData("Consume.img").getChildByPath("Con");
         } else {
             itemsData = stringData.getData("Consume.img");
@@ -879,10 +879,16 @@ public class MapleItemInformationProvider {
                 }
             } else {
                 if (!ws && !GameConstants.isCleanSlate(scrollId.getItemId()) && !GameConstants.isSpecialScroll(scrollId.getItemId()) && !GameConstants.isEquipScroll(scrollId.getItemId()) && !GameConstants.isPotentialScroll(scrollId.getItemId())) {
-                    nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
+                    // 書失敗時のUG減少を無効化
+                    if (!ServerConfig.game_server_disable_scroll_failure) {
+                        nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
+                    }
                 }
-                if (Randomizer.nextInt(99) < curse) {
-                    return null;
+                // 装備破壊を無効化
+                if (!ServerConfig.game_server_disable_scroll_boom) {
+                    if (Randomizer.nextInt(99) < curse) {
+                        return null;
+                    }
                 }
             }
         }
@@ -1033,6 +1039,10 @@ public class MapleItemInformationProvider {
     }
 
     public final Equip randomizeStats(final Equip equip) {
+        if (ServerConfig.game_server_god_equip) {
+            return RireSabaStats(equip);
+        }
+
         equip.setStr(getRandStat(equip.getStr(), 5));
         equip.setDex(getRandStat(equip.getDex(), 5));
         equip.setInt(getRandStat(equip.getInt(), 5));

@@ -27,7 +27,6 @@ import java.util.Comparator;
 import java.util.List;
 import client.MapleCharacter;
 import client.MapleClient;
-import handling.world.MaplePartyCharacter;
 import java.lang.ref.WeakReference;
 import server.MaplePortal;
 import tools.MaplePacketCreator;

@@ -28,7 +28,6 @@ import constants.GameConstants;
 import client.MapleCharacter;
 import client.SkillFactory;
 import server.MapleStatEffect;
-import server.AutobanManager;
 import tools.AttackPair;
 
 public class AttackInfo {

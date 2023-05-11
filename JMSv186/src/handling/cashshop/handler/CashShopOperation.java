@@ -1,6 +1,5 @@
 package handling.cashshop.handler;
 
-import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.HashMap;
@@ -38,7 +37,7 @@ public class CashShopOperation {
         c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
         try {
             World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
-            c.getSession().write(MaplePacketCreator.getChannelChange(Integer.parseInt(ChannelServer.getInstance(c.getChannel()).getIP().split(":")[1])));
+            c.getSession().write(MaplePacketCreator.getChannelChange(ChannelServer.getInstance(c.getChannel()).getPort()));
         } finally {
 //            c.getSession().close();
             chr.saveToDB(false, true);

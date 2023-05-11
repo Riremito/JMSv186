@@ -60,7 +60,6 @@ import database.DatabaseConnection;
 import database.DatabaseException;
 import debug.Debug;
 import handling.MaplePacket;
-import handling.MapleServerHandler;
 import handling.channel.ChannelServer;
 import handling.channel.handler.InterServerHandler;
 import handling.world.CharacterTransfer;
@@ -5172,7 +5171,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ch.removePlayer(this);
         client.updateLoginState(MapleClient.CHANGE_CHANNEL, client.getSessionIPAddress());
 
-        client.getSession().write(MaplePacketCreator.getChannelChange(Integer.parseInt(toch.getIP().split(":")[1])));
+        client.getSession().write(MaplePacketCreator.getChannelChange(toch.getPort()));
         saveToDB(false, false);
         getMap().removePlayer(this);
         client.setPlayer(null);

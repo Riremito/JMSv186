@@ -20,12 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.cashshop;
 
+import config.ServerConfig;
 import debug.Debug;
 import java.net.InetSocketAddress;
 import handling.MapleServerHandler;
 import handling.channel.PlayerStorage;
 import handling.mina.MapleCodecFactory;
-import java.util.Properties;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import org.apache.mina.common.IoAcceptor;
@@ -33,7 +33,6 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import server.MTSStorage;
-import server.ServerProperties;
 
 public class CashShopServer {
 
@@ -41,14 +40,6 @@ public class CashShopServer {
     private static IoAcceptor acceptor;
     private static PlayerStorage players, playersMTS;
     private static boolean finishedShutdown = false;
-    private static String ip;
-    private static int PORT;
-
-    public static final void LoadConfig() {
-        Properties p = ServerProperties.LoadConfig("properties/shop.properties");
-        PORT = Integer.parseInt(p.getProperty("server.port"));
-        ip = p.getProperty("server.host") + ":" + PORT;
-    }
 
     public static final void run_startup_configurations() {
         ByteBuffer.setUseDirectBuffers(false);
@@ -63,18 +54,18 @@ public class CashShopServer {
         playersMTS = new PlayerStorage(-20);
 
         try {
-            InetSocketadd = new InetSocketAddress(PORT);
+            InetSocketadd = new InetSocketAddress(ServerConfig.cash_shop_server_port);
             acceptor.bind(InetSocketadd, new MapleServerHandler(-1, MapleServerHandler.ServerType.PointShopServer), cfg);
-            Debug.InfoLog("PointShop Server Port = " + PORT);
+            Debug.InfoLog("Port = " + ServerConfig.cash_shop_server_port);
         } catch (final Exception e) {
-            Debug.InfoLog("Binding to port " + PORT + " failed");
+            Debug.InfoLog("Binding to port " + ServerConfig.cash_shop_server_port + " failed");
             e.printStackTrace();
             throw new RuntimeException("Binding failed.", e);
         }
     }
 
-    public static final String getIP() {
-        return ip;
+    public static final int getPort() {
+        return ServerConfig.cash_shop_server_port;
     }
 
     public static final PlayerStorage getPlayerStorage() {

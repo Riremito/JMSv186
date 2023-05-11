@@ -176,6 +176,10 @@ public class MTSOperation {
         doMTSPackets(cart, c);
     }
 
+    public static void OnChargeParamResult(final MapleClient c) {
+        c.getSession().write(MTSCSPacket.openWebSite());
+    }
+
     private static void doMTSPackets(final MTSCart cart, final MapleClient c) {
         sendMTSPackets(cart, c, false);
     }

@@ -4,6 +4,8 @@ package packet;
 import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import config.ServerConfig;
+import debug.Debug;
 import handling.world.World;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +13,36 @@ import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 
 public class SendPacket {
+
+    // 独自実装
+    public static class Custom {
+
+        public static boolean Hash(ClientPacket p) {
+            // v186以外は無視
+            if (ServerConfig.version != 186) {
+                return true;
+            }
+            final String wz_hash = p.DecodeStr();
+            Debug.DebugLog(wz_hash);
+            // v186 Skill.wz
+            return wz_hash.startsWith("2e6008284345bbf5552b45ba206464404e474cbe8d8ba31bd61d0b4733422948");
+        }
+
+        public static boolean Scan(ClientPacket p) {
+            // v186以外は無視
+            if (ServerConfig.version != 186) {
+                return true;
+            }
+            int scan_address = p.Decode4();
+            byte scan_result[] = p.DecodeBuffer();
+            // v186 damage hack
+            if (scan_address == (int) 0x008625B5 && scan_result[0] == (byte) 0x8B && scan_result[1] == (byte) 0x45 && scan_result[2] == (byte) 0x18) {
+                return true;
+            }
+
+            return false;
+        }
+    }
 
     public static class HomeDelivery {
 
@@ -46,7 +78,7 @@ public class SendPacket {
         };
 
         // 宅配
-        public static boolean Accept(MapleClient c, OutPacket p) {
+        public static boolean Accept(MapleClient c, ClientPacket p) {
             // 処理内容
             byte action = p.Decode1();
 
@@ -74,7 +106,7 @@ public class SendPacket {
         // @0119 [38 00 00 00] [00 00 00 00]
         // 0x38が成功フラグなのでクライアント側から成功可否を通知している可能性がある
 
-        public static boolean Accept(MapleClient c, OutPacket p) {
+        public static boolean Accept(MapleClient c, ClientPacket p) {
             // 成功可否
             int action = p.Decode4();
             // 用途不明
@@ -88,7 +120,7 @@ public class SendPacket {
     // 拡声器
     public static class CashItem {
 
-        public static boolean Use(MapleClient c, OutPacket p) {
+        public static boolean Use(MapleClient c, ClientPacket p) {
             int timestamp = p.Decode4();
             short slotid = p.Decode2();
             int itemid = p.Decode4();
@@ -138,7 +170,7 @@ public class SendPacket {
                 return "<" + medal_name + "> " + c.getPlayer().getName();
             }
 
-            public static boolean Use(MapleClient c, OutPacket p, int itemid) {
+            public static boolean Use(MapleClient c, ClientPacket p, int itemid) {
                 switch (itemid) {
                     // メガホン
                     case 5070000: {
@@ -191,7 +223,7 @@ public class SendPacket {
                             // アイテム情報
                             int type = p.Decode4();
                             int slot = p.Decode4();
-                            item = c.getPlayer().getInventory(MapleInventoryType.getByType((byte)type)).getItem((short)slot);
+                            item = c.getPlayer().getInventory(MapleInventoryType.getByType((byte) type)).getItem((short) slot);
                         }
                         World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.MegaphoneItem(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear, showitem, item).getBytes());
                         return true;

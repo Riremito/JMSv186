@@ -476,12 +476,7 @@ public final class MapleMap {
                 } else {
                     // 装備
                     if (GameConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
-                        // 能力値調整, randomizeStatsを利用すると通常通り
-                        if (ChannelServer.IsCustom()) {
-                            idrop = ii.RireSabaStats((Equip) ii.getEquipById(de.itemId));
-                        } else {
-                            idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
-                        }
+                        idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
                     } else {
                         // 通常アイテム
                         final int range = Math.abs(de.Maximum - de.Minimum);

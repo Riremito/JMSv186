@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import client.MapleCharacter;
+import config.ServerConfig;
 import constants.ServerConstants;
 import debug.Debug;
 import handling.ByteArrayMaplePacket;
@@ -56,10 +57,7 @@ import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
-import server.ServerProperties;
-import server.Start;
 import server.events.MapleCoconut;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
@@ -74,9 +72,8 @@ public class ChannelServer implements Serializable {
     public static long serverStartTime;
     private int expRate, mesoRate, dropRate, cashRate;
     private short port = 8585;
-    private static short DEFAULT_PORT = 8585;
     private int channel, running_MerchantID = 0, flags = 0;
-    private String serverMessage, key, ip, serverName;
+    private String serverMessage, key, serverName;
     private boolean shutdown = false, finishedShutdown = false, MegaphoneMuteState = false, adminOnly = false;
     private PlayerStorage players;
     private MapleServerHandler serverHandler;
@@ -91,9 +88,6 @@ public class ChannelServer implements Serializable {
     private final ReentrantReadWriteLock squadLock = new ReentrantReadWriteLock(); //squad
     private int eventmap = -1;
     private final Map<MapleEventType, MapleEvent> events = new EnumMap<MapleEventType, MapleEvent>(MapleEventType.class);
-    private static Properties ChannelProperties;
-    private static int channels = 1;
-    private static boolean custom = false;
 
     private ChannelServer(final String key, final int channel) {
         this.key = key;
@@ -106,13 +100,8 @@ public class ChannelServer implements Serializable {
         return new HashSet<Integer>(instances.keySet());
     }
 
-    public static final void LoadConfig(final String server) {
-        ChannelProperties = ServerProperties.LoadConfig("properties/" + server + ".properties");
-        channels = Integer.parseInt(ChannelProperties.getProperty("server.channels"));
-    }
-
     public static int getChannels() {
-        return channels;
+        return ServerConfig.game_server_channels;
     }
 
     public final void loadEvents() {
@@ -126,30 +115,30 @@ public class ChannelServer implements Serializable {
         events.put(MapleEventType.Snowball, new MapleSnowball(channel, MapleEventType.Snowball.mapids));
     }
 
-    // BB前仕様かどうか判定
+    // 独自仕様かどうか
     public static boolean IsCustom() {
-        return custom;
+        return ServerConfig.game_server_custom;
     }
 
     public final void run_startup_configurations() {
         setChannel(channel); //instances.put
         try {
-            DEFAULT_PORT = Short.parseShort(ChannelProperties.getProperty("server.port"));
 
-            expRate = Integer.parseInt(ChannelProperties.getProperty("server.rate.exp"));
-            mesoRate = Integer.parseInt(ChannelProperties.getProperty("server.rate.meso"));
-            dropRate = Integer.parseInt(ChannelProperties.getProperty("server.rate.drop"));
-            serverMessage = ChannelProperties.getProperty("server.message");
-            serverName = ChannelProperties.getProperty("server.name");
-            flags = Integer.parseInt(ChannelProperties.getProperty("server.flags", "0"));
-            adminOnly = Boolean.parseBoolean(ChannelProperties.getProperty("server.admin", "false"));
-            eventSM = new EventScriptManager(this, ChannelProperties.getProperty("server.events").split(","));
-            port = (short) (DEFAULT_PORT + channel - 1);
-            custom = Boolean.parseBoolean(ChannelProperties.getProperty("server.custom"));
+            expRate = ServerConfig.game_server_expRate;
+            mesoRate = ServerConfig.game_server_mesoRate;
+            dropRate = ServerConfig.game_server_dropRate;
+            serverMessage = ServerConfig.game_server_serverMessage;
+            serverName = ServerConfig.game_server_serverName;
+            flags = ServerConfig.game_server_flags;
+            adminOnly = ServerConfig.game_server_adminOnly;
+
+            // 壊れている可能性あり
+            eventSM = new EventScriptManager(this, ServerConfig.game_server_events.split(","));
+
+            port = (short) (ServerConfig.game_server_DEFAULT_PORT + channel - 1);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        ip = ChannelProperties.getProperty("server.host") + ":" + port;
 
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
@@ -235,7 +224,7 @@ public class ChannelServer implements Serializable {
 
     public final void addPlayer(final MapleCharacter chr) {
         getPlayerStorage().registerPlayer(chr);
-        if (Start.getMainVersion() == 186) {
+        if (ServerConfig.version == 186) {
             chr.getClient().getSession().write(MaplePacketCreator.serverMessage(serverMessage));
         }
     }
@@ -299,8 +288,8 @@ public class ChannelServer implements Serializable {
         return Collections.unmodifiableCollection(instances.values());
     }
 
-    public final String getIP() {
-        return ip;
+    public final int getPort() {
+        return port;
     }
 
     public final boolean isShutdown() {
@@ -317,7 +306,7 @@ public class ChannelServer implements Serializable {
 
     public final void reloadEvents() {
         eventSM.cancel();
-        eventSM = new EventScriptManager(this, ChannelProperties.getProperty("server.events").split(","));
+        eventSM = new EventScriptManager(this, ServerConfig.game_server_events.split(","));
         eventSM.init();
     }
 
@@ -340,7 +329,7 @@ public class ChannelServer implements Serializable {
     public static final void startChannel_Main() {
         serverStartTime = System.currentTimeMillis();
 
-        for (int i = 0; i < channels; i++) {
+        for (int i = 0; i < ServerConfig.game_server_channels; i++) {
             newInstance(ServerConstants.Channel_Key[i], i + 1).run_startup_configurations();
         }
     }
@@ -512,10 +501,6 @@ public class ChannelServer implements Serializable {
 
     public final void setServerName(final String sn) {
         this.serverName = sn;
-    }
-
-    public final int getPort() {
-        return port;
     }
 
     public static final Set<Integer> getChannelServer() {

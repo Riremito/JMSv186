@@ -30,7 +30,6 @@ import client.MapleCharacter;
 import client.MapleStat;
 import client.PlayerStats;
 import client.SkillFactory;
-import server.AutobanManager;
 import server.Randomizer;
 import tools.FileoutputUtil;
 import tools.MaplePacketCreator;
@@ -238,7 +237,6 @@ public class StatsHandling {
 
         if (skill.hasRequiredSkill()) {
             if (chr.getSkillLevel(SkillFactory.getSkill(skill.getRequiredSkillId())) < skill.getRequiredSkillLevel()) {
-                AutobanManager.getInstance().addPoints(c, 1000, 0, "Trying to learn a skill without the required skill (" + skillid + ")");
                 return;
             }
         }
@@ -267,7 +265,6 @@ public class StatsHandling {
             c.getSession().write(MaplePacketCreator.updateSp(chr, false));
             chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
         } else if (!skill.canBeLearnedBy(chr.getJob())) {
-            AutobanManager.getInstance().addPoints(c, 1000, 0, "Trying to learn a skill for a different job (" + skillid + ")");
         }
     }
 

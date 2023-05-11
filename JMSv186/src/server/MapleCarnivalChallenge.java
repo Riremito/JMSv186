@@ -6,7 +6,6 @@ package server;
 
 import java.lang.ref.WeakReference;
 import client.MapleCharacter;
-import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 
 /**

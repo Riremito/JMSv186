@@ -34,17 +34,16 @@ import client.MapleClient;
 import client.MapleCharacter;
 import client.PlayerStats;
 import client.anticheat.CheatingOffense;
+import config.ServerConfig;
 import constants.MapConstants;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import server.AutobanManager;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.MaplePortal;
 import server.Randomizer;
-import server.Start;
 import server.Timer.CloneTimer;
 import server.events.MapleSnowball.MapleSnowballs;
 import server.life.MapleMonster;
@@ -253,8 +252,7 @@ public class PlayerHandler {
 
         if (damage == -1) {
             fake = 4020002 + ((chr.getJob() / 10 - 40) * 100000);
-        } else if (damage < -1 || damage > 60000) {
-            AutobanManager.getInstance().addPoints(c, 1000, 60000, "Taking abnormal amounts of damge from " + monsteridfrom + ": " + damage);
+        } else if (damage < -1) {
             return;
         }
         chr.getCheatTracker().checkTakeDamage(damage);
@@ -755,9 +753,12 @@ public class PlayerHandler {
                 if (effect != null && effect.getBulletConsume() != 0) {
                     bulletConsume = effect.getBulletConsume() * (ShadowPartner != null ? 2 : 1);
                 }
-                if (!MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, projectile, bulletConsume, false, true)) {
-                    chr.dropMessage(5, "You do not have enough arrows/bullets/stars.");
-                    return;
+                // 手裏剣の消費を無効化
+                if (!ServerConfig.game_server_disable_star_consuming) {
+                    if (!MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, projectile, bulletConsume, false, true)) {
+                        chr.dropMessage(5, "You do not have enough arrows/bullets/stars.");
+                        return;
+                    }
                 }
             }
         }
@@ -950,7 +951,7 @@ public class PlayerHandler {
         }
         final Point Original_Pos = chr.getPosition(); // 4 bytes Added on v.80 MSEA
 
-        if (Start.getMainVersion() == 164) {
+        if (ServerConfig.version == 164) {
             slea.skip(9);
         } else {
             slea.skip(37);
@@ -967,7 +968,7 @@ public class PlayerHandler {
 
         if (res != null && c.getPlayer().getMap() != null) { // TODO more validation of input data
             if (slea.available() < 13 || slea.available() > 26) {
-                if (Start.getMainVersion() != 164) {
+                if (ServerConfig.version != 164) {
                     System.out.println("slea.available != 13-26 (movement parsing error)\n" + slea.toString(true));
                     return;
                 }

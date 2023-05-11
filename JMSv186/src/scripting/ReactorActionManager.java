@@ -29,7 +29,6 @@ import client.inventory.Equip;
 import client.inventory.IItem;
 import client.inventory.Item;
 import constants.GameConstants;
-import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import handling.channel.ChannelServer;
@@ -40,9 +39,7 @@ import server.Randomizer;
 import server.life.MapleLifeFactory;
 import server.maps.ReactorDropEntry;
 import server.maps.MapleReactor;
-import tools.MaplePacketCreator;
 import server.life.MapleMonster;
-import server.maps.MapleMap;
 
 public class ReactorActionManager extends AbstractPlayerInteraction {
 

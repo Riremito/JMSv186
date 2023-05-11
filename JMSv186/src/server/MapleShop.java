@@ -83,7 +83,6 @@ public class MapleShop {
 
     public void buy(MapleClient c, int itemId, short quantity) {
         if (quantity <= 0) {
-            AutobanManager.getInstance().addPoints(c, 1000, 0, "Buying " + quantity + " " + itemId);
             return;
         }
         if (!GameConstants.isMountItemAvailable(itemId, c.getPlayer().getJob())) {
@@ -146,7 +145,6 @@ public class MapleShop {
             quantity = item.getQuantity();
         }
         if (quantity < 0) {
-            AutobanManager.getInstance().addPoints(c, 1000, 0, "Selling " + quantity + " " + item.getItemId() + " (" + type.name() + "/" + slot + ")");
             return;
         }
         short iQuant = item.getQuantity();
