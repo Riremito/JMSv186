@@ -43,7 +43,14 @@ public class ServerConfig {
     public static void SetProperty() {
         Properties DataBase = ReadPropertyFile("properties/database.properties");
         {
+            // jdbc:mysql://127.0.0.1:3306/v186?autoReconnect=true&characterEncoding=utf8
             database_url = DataBase.getProperty("database.url");
+            if (database_url.isEmpty()) {
+                String database_host = DataBase.getProperty("database.host");
+                String database_port = DataBase.getProperty("database.port");
+                database_url = "jdbc:mysql://" + database_host + ":" + database_port + "/v" + version + "?autoReconnect=true&characterEncoding=utf8";
+            }
+
             database_user = DataBase.getProperty("database.user");
             database_password = DataBase.getProperty("database.password");
         }

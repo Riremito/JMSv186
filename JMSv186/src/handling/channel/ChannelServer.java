@@ -58,7 +58,6 @@ import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
-import server.Start;
 import server.events.MapleCoconut;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
