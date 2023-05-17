@@ -123,7 +123,7 @@ public class MaplePacketCreator {
     // プレイヤー情報の初期化
     public static final MaplePacket getCharInfo(final MapleCharacter chr) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetField);
-        if (ServerConfig.version > 164) {
+        if (ServerConfig.version > 176) {
             p.Encode2(0);
         }
         // チャンネル
@@ -389,7 +389,7 @@ public class MaplePacketCreator {
     // マップ移動
     public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetField);
-        if (ServerConfig.version > 164) {
+        if (ServerConfig.version > 176) {
             p.Encode2(0);
         }
         p.Encode4(chr.getClient().getChannel() - 1);

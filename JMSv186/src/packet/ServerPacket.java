@@ -789,7 +789,15 @@ public class ServerPacket {
         Header.LP_AliveReq.Set(0x0009);
         Header.LOGIN_AUTH.Set(0x0018);
 
-        Header.LP_SetField.Set(0x007B); // wrong
+        // CStage::OnPacket
+        // 8b 44 24 04 83 e8 ?? 74 22 48
+        Header.LP_BEGIN_STAGE.Set(0);
+        {
+            Header.LP_SetField.Set(0x0076);
+            Header.LP_SetITC.Set(Header.LP_SetField.Get() + 0x01);
+            Header.LP_SetCashShop.Set(Header.LP_SetField.Get() + 0x02);
+        }
+        Header.LP_END_STAGE.Set(0);
 
         Header.LP_NpcEnterField.Set(0xFFFF);
         Header.LP_FamilyPrivilegeList.Set(0xFFFF);

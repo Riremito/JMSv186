@@ -288,6 +288,9 @@ public class CharLoginHandler {
         MapleInventory setup = chr.getInventory(MapleInventoryType.SETUP);
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
+        if (ServerConfig.version != 186) {
+            return;
+        }
         // メル
         chr.setMeso(5000000);
 

@@ -302,7 +302,7 @@ public class LoginPacket {
                 p.Encode8(0);
             }
             // [ランキング情報]
-            if (ServerConfig.version > 176) {
+            if (ServerConfig.version > 164) {
                 p.Encode1(0);
             }
             // ランキングフラグ

@@ -547,26 +547,48 @@ public class ClientPacket {
         Header.CP_MigrateIn.Set(0x0007);
         Header.CP_CheckDuplicatedID.Set(0x0008);
         Header.CP_CreateNewCharacter.Set(0x000B);
-        Header.CP_DeleteCharacter.Set(0x000D);
+        Header.CP_DeleteCharacter.Set(0x000C);
         Header.REACHED_LOGIN_SCREEN.Set(0x0017);
         Header.CP_CreateSecurityHandle.Set(0x0019);
-        Header.CP_UserChat.Set(0x0028);
-        Header.CP_UserTransferChannelRequest.Set(0x001C);
-        Header.CP_UserMove.Set(0x001F);
-        Header.CP_UserPortalScriptRequest.Set(0x005E);
-        Header.CP_UserPortalTeleportRequest.Set(0x005F);
+
+        Header.CP_BEGIN_USER.Set(0x001B);
+        {
+            Header.CP_UserTransferFieldRequest.Set(0x001C);
+            Header.CP_UserTransferChannelRequest.Set(0x001D);
+            Header.CP_UserMigrateToCashShopRequest.Set(0x001E);
+            Header.CP_UserMove.Set(0x001F);
+            Header.CP_UserChat.Set(0x0027);
+        }
+        Header.CP_UserMigrateToITCRequest.Set(0x0099);
+
+        Header.CP_UserPortalScriptRequest.Set(0x005A);
+        Header.CP_UserPortalTeleportRequest.Set(0x005B);
     }
 
     public static void SetForJMSv184() {
-        Header.CP_CheckPassword.Set(0x0001);
-        Header.CP_WorldInfoRequest.Set(0x0003);
-        Header.CP_SelectWorld.Set(0x0004);
-        Header.CP_CheckUserLimit.Set(0x0005);
-        Header.CP_SelectCharacter.Set(0x0006);
-        Header.CP_MigrateIn.Set(0x0007);
-        Header.CP_CheckDuplicatedID.Set(0x0008);
-        Header.REACHED_LOGIN_SCREEN.Set(0x0017);
-        Header.CP_CreateSecurityHandle.Set(0x0019);
+        // ログインサーバー
+        Header.CP_BEGIN_SOCKET.Set(0x0000);
+        {
+            Header.CP_CheckPassword.Set(0x0001);
+            Header.CP_AccountInfoRequest.Set(0x0002);
+            Header.CP_WorldInfoRequest.Set(0x0003);
+            Header.CP_SelectWorld.Set(0x0004);
+            Header.CP_CheckUserLimit.Set(0x0005);
+            Header.CP_SelectCharacter.Set(0x0006);
+            Header.CP_MigrateIn.Set(0x0007);
+            Header.CP_CheckDuplicatedID.Set(0x0008);
+            Header.CP_ViewAllChar.Set(0x000A);
+            Header.CP_CreateNewCharacter.Set(0x000B);
+            Header.CP_CreateNewCharacterInCS.Set(0x000C);
+            Header.CP_DeleteCharacter.Set(0x000D);
+            Header.CP_AliveAck.Set(0x000E);
+            Header.CP_ExceptionLog.Set(0x000F);
+            Header.CP_SecurityPacket.Set(0x0010);
+            Header.CP_CheckPinCode.Set(0x0014);
+            Header.REACHED_LOGIN_SCREEN.Set(0x0017);
+            Header.CP_CreateSecurityHandle.Set(0x0019);
+        }
+        Header.CP_END_SOCKET.Set(0x001B);
         Header.CP_UserChat.Set(0x0028);
         Header.CP_UserTransferFieldRequest.Set(0x001C);
         Header.CP_UserMove.Set(0x001F);
