@@ -217,7 +217,13 @@ public class MaplePacketCreator {
             if (ServerConfig.version > 176) {
                 // デュアルブレイドフラグ
                 p.Encode2(chr.getSubcategory());
-                p.EncodeZeroBytes(20);
+                if (ServerConfig.version >= 188) {
+                    p.Encode8(0);
+                    p.Encode4(0);
+                    p.Encode4(0);
+                } else {
+                    p.EncodeZeroBytes(20);
+                }
             } else {
                 p.EncodeZeroBytes(16);
             }

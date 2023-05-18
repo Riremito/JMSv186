@@ -72,6 +72,11 @@ public class Start {
                 ServerPacket.SetForJMSv187();
                 break;
             }
+            case 188: {
+                ClientPacket.SetForJMSv188();
+                ServerPacket.SetForJMSv188();
+                break;
+            }
             // 起動早い
             case 194: {
                 ClientPacket.SetForJMSv302();

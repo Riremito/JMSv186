@@ -99,6 +99,13 @@ public class LoginPacket {
             p.Encode1(0);
         }
 
+        // 2次パスワード
+        if (ServerConfig.version >= 188) {
+            // 0, 初期化
+            // 1, 登録済み
+            p.Encode1(1);
+        }
+
         p.Encode8(0); // buf
         p.EncodeStr(client.getAccountName());
 
@@ -244,7 +251,13 @@ public class LoginPacket {
                 if (ServerConfig.version > 176) {
                     // デュアルブレイドフラグ
                     p.Encode2(chr.getSubcategory());
-                    p.EncodeZeroBytes(20);
+                    if (ServerConfig.version >= 188) {
+                        p.Encode8(0);
+                        p.Encode4(0);
+                        p.Encode4(0);
+                    } else {
+                        p.EncodeZeroBytes(20);
+                    }
                 } else {
                     p.EncodeZeroBytes(16);
                 }
@@ -311,7 +324,11 @@ public class LoginPacket {
         }
 
         // 2次パスワードの利用状態
-        p.Encode2(2);
+        if (ServerConfig.version <= 186) {
+            p.Encode2(2);
+        } else {
+            p.Encode1(0);
+        }
 
         // キャラクタースロットの数
         if (ServerConfig.version <= 176) {

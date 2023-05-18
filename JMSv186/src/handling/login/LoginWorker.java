@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import client.MapleClient;
+import config.ServerConfig;
 import handling.channel.ChannelServer;
 import server.Timer.PingTimer;
 import tools.packet.LoginPacket;
@@ -72,6 +73,9 @@ public class LoginWorker {
             return;
         }
 
-        CharLoginHandler.ServerListRequest(c);
+        // 2次パスワード要求する場合は入力を待つ必要がある
+        if (ServerConfig.version < 188) {
+            CharLoginHandler.ServerListRequest(c);
+        }
     }
 }

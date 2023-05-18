@@ -1554,6 +1554,7 @@ public class ServerPacket {
         Header.LP_NO.Set(0x19A);
     }
 
+    // v187はクライアントが壊れているので開発する価値なし
     public static void SetForJMSv187() {
         // ログインサーバー
         Header.LP_CheckPasswordResult.Set(0x0000);
@@ -1781,6 +1782,103 @@ public class ServerPacket {
         Header.VICIOUS_HAMMER.Set(0x0192);
         Header.VEGA_SCROLL.Set(0x0196);
          */
+    }
+
+    // v188
+    // CLogin::OnPacket, 005E2E80
+    // CStage::OnPacket, 0073BAC0
+    public static void SetForJMSv188() {
+        // ログインサーバー
+        Header.LP_CheckPasswordResult.Set(0x0000);
+        Header.LP_WorldInformation.Set(0x0002);
+        Header.LP_SelectWorldResult.Set(0x0003);
+        Header.LP_SelectCharacterResult.Set(0x0004);
+        Header.LP_CheckDuplicatedIDResult.Set(0x0005);
+        Header.LP_CreateNewCharacterResult.Set(0x0006);
+        Header.LP_DeleteCharacterResult.Set(0x0007);
+        Header.LP_MigrateCommand.Set(0x0008);
+        Header.LP_AliveReq.Set(0x0009);
+
+        // test
+        // CLogin::OnPacket
+        Header.LP_BEGIN_SOCKET.Set(0); // 00699d8d
+        {
+            // CLogin::OnCheckPasswordResult
+            Header.LP_CheckPasswordResult.Set(0x0000);
+            // CLogin::OnWorldInformation
+            Header.LP_WorldInformation.Set(0x0002);
+            // CLogin::OnSelectWorldResult
+            Header.LP_SelectWorldResult.Set(0x0003);
+            // CLogin::OnSelectCharacterResult
+            Header.LP_SelectCharacterResult.Set(0x0004);
+            // CLogin::OnCheckDuplicatedIDResult
+            Header.LP_CheckDuplicatedIDResult.Set(0x0005);
+            // CLogin::OnCreateNewCharacterResult
+            Header.LP_CreateNewCharacterResult.Set(0x0006);
+            // CLogin::OnDeleteCharacterResult
+            Header.LP_DeleteCharacterResult.Set(0x0007);
+
+            // CClientSocket::ProcessPacket
+            {
+                // CClientSocket::OnMigrateCommand
+                Header.LP_MigrateCommand.Set(0x0008); // Change Channel
+                // CClientSocket::OnAliveReq
+                Header.LP_AliveReq.Set(0x0009);
+                // CSecurityClient::OnPacket
+                Header.LP_SecurityPacket.Set(0x000C); // HackShield HeartBeat
+            }
+            // CLogin::OnCheckPinCodeResult
+            Header.LP_CheckPinCodeResult.Set(0x0016); // 違うかも
+            // 0x0017
+            // CLogin::???
+            Header.LOGIN_AUTH.Set(0x0015); // v188 005E2F84
+        }
+        Header.LP_END_SOCKET.Set(0);
+
+        // 重要処理
+        Header.LP_BEGIN_STAGE.Set(0);
+        {
+            Header.LP_SetField.Set(0x007E); // v188 OK
+            {
+                Header.LP_SetITC.Set(Header.LP_SetField.Get() + 0x01);
+                Header.LP_SetCashShop.Set(Header.LP_SetField.Get() + 0x02);
+            }
+        }
+
+        Header.LP_BEGIN_NPCPOOL.Set(0); // 00754707
+        {
+            //Header.LP_ImitatedNPCData.Set(0x0056); // OK
+            //Header.LP_LimitedNPCDisableInfo.Set(0x0057); // OK
+            Header.LP_NpcEnterField.Set(0x0125);
+            Header.LP_NpcLeaveField.Set(Header.LP_NpcEnterField.Get() + 1);
+            Header.LP_NpcChangeController.Set(Header.LP_NpcEnterField.Get() + 2);
+            // CNpcPool::OnNpcPacket
+            Header.LP_BEGIN_NPC.Set(0); // 007548b1
+            {
+                Header.LP_NpcMove.Set(Header.LP_NpcEnterField.Get() + 3);
+                Header.LP_NpcUpdateLimitedInfo.Set(Header.LP_NpcEnterField.Get() + 4);
+                Header.LP_NpcSpecialAction.Set(Header.LP_NpcEnterField.Get() + 5);
+            }
+            Header.LP_END_NPC.Set(0);
+            // CNpcPool::OnNpcTemplatePacket
+            Header.LP_BEGIN_NPCTEMPLATE.Set(0); // 0075494f
+            {
+                Header.LP_NpcSetScript.Set(Header.LP_NpcEnterField.Get() + 6); // OK
+            }
+            Header.LP_END_NPCTEMPLATE.Set(0);
+        }
+
+        // CScriptMan::OnPacket, NPC会話
+        Header.LP_BEGIN_SCRIPT.Set(0); // 007f9360
+        {
+            Header.LP_ScriptMessage.Set(0x015B); // v186
+        }
+        Header.LP_END_SCRIPT.Set(0);
+
+        Header.LP_END_STAGE.Set(0);
+        Header.LP_END_FIELD.Set(0);
+        // 末尾
+        Header.LP_NO.Set(0x19A);
     }
 
     public static void SetForJMSv302() {

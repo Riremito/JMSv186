@@ -247,6 +247,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
+            case CP_Check2ndPassword: {
+                if (ServerConfig.version >= 188) {
+                    CharLoginHandler.ServerListRequest(c);
+                }
+                return true;
+            }
             // サーバー一覧
             case CP_WorldInfoRequest: {
                 // +p
