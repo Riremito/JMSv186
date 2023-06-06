@@ -1,2 +1,0 @@
-function enter(pi) {
-}
