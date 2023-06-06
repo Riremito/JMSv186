@@ -37,11 +37,11 @@ public class MapleQuest implements Serializable {
     private boolean repeatable = false, customend = false;
     private int viewMedalItem = 0, selectedSkillID = 0;
     protected String name = "";
-    private static MapleDataProvider questData;
-    private static MapleData actions;
-    private static MapleData requirements;
-    private static MapleData info;
-    private static MapleData pinfo;
+    public static MapleDataProvider questData;
+    public static MapleData actions;
+    public static MapleData requirements;
+    public static MapleData info;
+    public static MapleData pinfo;
 
     protected MapleQuest(final int id) {
         relevantMobs = new LinkedHashMap<Integer, Integer>();
@@ -160,17 +160,8 @@ public class MapleQuest implements Serializable {
         return name;
     }
 
-    public static void initQuests() {
-        questData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Quest.wz"));
-        actions = questData.getData("Act.img");
-        requirements = questData.getData("Check.img");
-        info = questData.getData("QuestInfo.img");
-        pinfo = questData.getData("PQuest.img");
-    }
-
     public static void clearQuests() {
         quests.clear();
-        initQuests(); //test
     }
 
     public static MapleQuest getInstance(int id) {

@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tools;
 
+import config.ServerConfig;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -114,15 +115,18 @@ public class MapleAESOFB {
      * @param iv The 4-byte IV to use.
      */
     public MapleAESOFB(byte iv[], short mapleVersion) {
-        try {
-            cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE, skey);
-        } catch (NoSuchAlgorithmException e) {
-            System.err.println("ERROR" + e);
-        } catch (NoSuchPaddingException e) {
-            System.err.println("ERROR" + e);
-        } catch (InvalidKeyException e) {
-            System.err.println("Error initalizing the encryption cipher.  Make sure you're using the Unlimited Strength cryptography jar files.");
+        // 暗号化
+        if (ServerConfig.version >= 164) {
+            try {
+                cipher = Cipher.getInstance("AES");
+                cipher.init(Cipher.ENCRYPT_MODE, skey);
+            } catch (NoSuchAlgorithmException e) {
+                System.err.println("ERROR" + e);
+            } catch (NoSuchPaddingException e) {
+                System.err.println("ERROR" + e);
+            } catch (InvalidKeyException e) {
+                System.err.println("Error initalizing the encryption cipher.  Make sure you're using the Unlimited Strength cryptography jar files.");
+            }
         }
 
         this.setIv(iv);
@@ -190,7 +194,7 @@ public class MapleAESOFB {
     /**
      * Generates a new IV.
      */
-    private void updateIv() {
+    public void updateIv() {
         this.iv = getNewIv(this.iv);
     }
 

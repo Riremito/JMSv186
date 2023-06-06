@@ -199,7 +199,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         short header = p.Decode2();
         ClientPacket.Header type = ClientPacket.ToHeader(header);
 
-        if (ServerConfig.version >= 187) {
+        if (ServerConfig.debug) {
             Debug.DebugPacket(p);
         }
 

@@ -21,6 +21,7 @@
 package handling.mina;
 
 import client.MapleClient;
+import config.ServerConfig;
 import tools.MapleAESOFB;
 
 import org.apache.mina.common.ByteBuffer;
@@ -64,7 +65,12 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
             in.get(decryptedPacket, 0, decoderState.packetlength);
             decoderState.packetlength = -1;
 
-            client.getReceiveCrypto().crypt(decryptedPacket);
+            if (ServerConfig.version < 164) {
+                client.getReceiveCrypto().updateIv();
+            } else {
+                client.getReceiveCrypto().crypt(decryptedPacket);
+            }
+
 //	    MapleCustomEncryption.decryptData(decryptedPacket);
             out.write(decryptedPacket);
             return true;

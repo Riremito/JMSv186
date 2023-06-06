@@ -15,11 +15,13 @@ import handling.world.family.MapleFamilyBuff;
 import java.sql.PreparedStatement;
 import packet.ServerPacket;
 import packet.ClientPacket;
+import packet.v131_0_CP;
+import packet.v131_0_SP;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.MapleLifeFactory;
 import server.life.PlayerNPC;
-import server.quest.MapleQuest;
+import wz.LoadData;
 
 public class Start {
 
@@ -39,6 +41,12 @@ public class Start {
         Debug.InfoLog("JMS v" + ServerConfig.version + "." + ServerConfig.version_sub);
 
         switch (ServerConfig.version) {
+            // 現存する一番古いクライアント
+            case 131: {
+                v131_0_CP.Set();
+                v131_0_SP.Set();
+                break;
+            }
             // ゴミ
             case 164: {
                 ClientPacket.SetForJMSv164();
@@ -131,7 +139,8 @@ public class Start {
         LoginServer.run_startup_configurations();
 
         //WZ
-        MapleQuest.initQuests();
+        LoadData.LoadDataFromXML();
+
         MapleLifeFactory.loadQuestCounts();
         ItemMakerFactory.getInstance();
         MapleItemInformationProvider.getInstance().load();

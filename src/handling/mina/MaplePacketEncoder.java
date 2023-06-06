@@ -21,6 +21,7 @@
 package handling.mina;
 
 import client.MapleClient;
+import config.ServerConfig;
 import handling.MaplePacket;
 import tools.MapleAESOFB;
 
@@ -50,7 +51,11 @@ public class MaplePacketEncoder implements ProtocolEncoder {
             try {
                 final byte[] header = send_crypto.getPacketHeader(unencrypted.length);
 //		MapleCustomEncryption.encryptData(unencrypted); // Encrypting Data
-                send_crypto.crypt(unencrypted); // Crypt it with IV
+                if (ServerConfig.version < 164) {
+                    send_crypto.updateIv();
+                } else {
+                    send_crypto.crypt(unencrypted); // Crypt it with IV
+                }
                 System.arraycopy(header, 0, ret, 0, 4); // Copy the header > "Ret", first 4 bytes
             } finally {
                 mutex.unlock();

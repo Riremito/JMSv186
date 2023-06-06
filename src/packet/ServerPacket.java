@@ -692,7 +692,7 @@ public class ServerPacket {
             value = 0xFFFF;
         }
 
-        private boolean Set(int header) {
+        public boolean Set(int header) {
             value = header;
             return true;
         }

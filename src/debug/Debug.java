@@ -22,7 +22,7 @@ public class Debug {
 
     // パケット出力
     public static void DebugPacket(ClientPacket p) {
-        //DebugLog("[DebugPacket] " + p.Packet());
+        DebugLog("[CP] " + p.Packet());
     }
 
     public static void DebugInPacket(ServerPacket p) {

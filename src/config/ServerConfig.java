@@ -7,6 +7,7 @@ import java.util.Properties;
 
 public class ServerConfig {
 
+    public static boolean debug = true;
     // Version
     public static short version = 186;
     public static byte version_sub = 1;

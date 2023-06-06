@@ -86,14 +86,21 @@ public class LoginPacket {
         // 性別
         p.Encode1(client.getGender());
         p.Encode1(client.isGm() ? 1 : 0);
-        p.Encode1(client.isGm() ? 1 : 0);
+
+        if (ServerConfig.version >= 164) {
+            p.Encode1(client.isGm() ? 1 : 0);
+        }
+
         p.EncodeStr(client.getAccountName());
         p.EncodeStr(client.getAccountName());
         p.Encode1(0);
         p.Encode1(0);
         p.Encode1(0);
         p.Encode1(0);
-        p.Encode1(0);
+
+        if (ServerConfig.version >= 164) {
+            p.Encode1(0);
+        }
 
         if (ServerConfig.version > 164) {
             p.Encode1(0);
