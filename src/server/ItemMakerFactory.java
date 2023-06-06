@@ -1,5 +1,6 @@
 package server;
 
+import config.ServerConfig;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class ItemMakerFactory {
         // 0 = Item upgrade crystals
         // 1 / 2/ 4/ 8 = Item creation
 
-        final MapleData info = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz")).getData("ItemMake.img");
+        final MapleData info = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz")).getData("ItemMake.img");
 
         byte totalupgrades, reqMakerLevel;
         int reqLevel, cost, quantity, stimulator;

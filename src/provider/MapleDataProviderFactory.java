@@ -20,12 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package provider;
 
+import config.ServerConfig;
 import java.io.File;
 import provider.WzXML.XMLWZFile;
 
 public class MapleDataProviderFactory {
-
-    private final static String wzPath = System.getProperty("net.sf.odinms.wzpath");
 
     private static MapleDataProvider getWZ(Object in, boolean provideImages) {
         if (in instanceof File) {
@@ -45,6 +44,6 @@ public class MapleDataProviderFactory {
     }
 
     public static File fileInWZPath(String filename) {
-        return new File(wzPath, filename);
+        return new File(ServerConfig.wz_path, filename);
     }
 }

@@ -34,6 +34,7 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 
 import client.MapleClient;
+import config.ServerConfig;
 import server.MaplePortal;
 import tools.FileoutputUtil;
 
@@ -52,17 +53,16 @@ public class PortalScriptManager {
         if (scripts.containsKey(scriptName)) {
             return scripts.get(scriptName);
         }
-        */
+         */
 
-        final File scriptFile = new File("scripts/portal/" + scriptName + ".js");
-        
+        final File scriptFile = new File(ServerConfig.script_path + "portal/" + scriptName + ".js");
+
         /*
         if (!scriptFile.exists()) {
             scripts.put(scriptName, null);
             return null;
         }
-        */
-
+         */
         FileReader fr = null;
         final ScriptEngine portal = sef.getScriptEngine();
         try {
@@ -88,7 +88,7 @@ public class PortalScriptManager {
 
     public final void executePortalScript(final MaplePortal portal, final MapleClient c) {
         final PortalScript script = getPortalScript(portal.getScriptName());
-        
+
         c.getPlayer().Info("Portal Script = " + portal.getScriptName() + ", MapID = " + c.getPlayer().getMapId());
 
         if (script != null) {

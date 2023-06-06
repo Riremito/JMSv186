@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package client;
 
+import config.ServerConfig;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,14 +41,14 @@ public class SkillFactory {
     private static final Map<Integer, ISkill> skills = new HashMap<Integer, ISkill>();
     private static final Map<Integer, List<Integer>> skillsByJob = new HashMap<Integer, List<Integer>>();
     private static final Map<Integer, SummonSkillEntry> SummonSkillInformation = new HashMap<Integer, SummonSkillEntry>();
-    private final static MapleData stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Skill.img");
+    private final static MapleData stringData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/String.wz")).getData("Skill.img");
 
     public static final ISkill getSkill(final int id) {
         if (skills.size() != 0) {
             return skills.get(Integer.valueOf(id));
         }
         //System.out.println("Loading SkillFactory :::");
-        final MapleDataProvider datasource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
+        final MapleDataProvider datasource = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Skill.wz"));
         final MapleDataDirectoryEntry root = datasource.getRoot();
 
         int skillid;

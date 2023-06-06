@@ -13,6 +13,7 @@ import client.inventory.IItem;
 import client.inventory.ItemFlag;
 import client.inventory.MapleInventoryType;
 import client.messages.CommandProcessorUtil;
+import config.ServerConfig;
 import constants.GameConstants;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
@@ -2317,7 +2318,7 @@ public class AdminCommand {
                 c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.spawnNPC(npc, true));
 
                 // ファイルへ追記
-                try (FileWriter fw = new FileWriter("./scripts/map/temp/" + c.getPlayer().getMapId() + ".txt", true)) {
+                try (FileWriter fw = new FileWriter(ServerConfig.script_path + "map/temp/" + c.getPlayer().getMapId() + ".txt", true)) {
                     PrintWriter pw = new PrintWriter(fw);
                     pw.println(npcId + "," + c.getPlayer().getPosition().x + "," + c.getPlayer().getPosition().y + "," + c.getPlayer().getMap().getFootholds().findBelow(c.getPlayer().getPosition()).getId());
                     pw.flush();
@@ -2615,7 +2616,7 @@ public class AdminCommand {
                 String type = splitted[1];
                 String search = StringUtil.joinStringFrom(splitted, 2);
                 MapleData data = null;
-                MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/" + "String.wz"));
+                MapleDataProvider dataProvider = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/" + "String.wz"));
                 c.getPlayer().dropMessage(6, "<<Type: " + type + " | Search: " + search + ">>");
 
                 if (type.equalsIgnoreCase("NPC")) {

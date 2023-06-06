@@ -30,6 +30,7 @@ public class Start {
         }
 
         // 設定の読み込み
+        ServerConfig.SetDataPath();
         ServerConfig.SetProperty();
         LoginServer.SetWorldConfig();
 

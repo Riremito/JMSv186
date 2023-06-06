@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.life;
 
+import config.ServerConfig;
 import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ import tools.Pair;
 public class MobSkillFactory {
 
     private static Map<Pair<Integer, Integer>, MobSkill> mobSkills = new HashMap<Pair<Integer, Integer>, MobSkill>();
-    private static MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
+    private static MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Skill.wz"));
     private static final MapleData skillRoot = dataSource.getData("MobSkill.img");
 
     public static MobSkill getMobSkill(int skillId, int level) {

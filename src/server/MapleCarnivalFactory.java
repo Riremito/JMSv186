@@ -1,6 +1,7 @@
 package server;
 
 import client.MapleDisease;
+import config.ServerConfig;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class MapleCarnivalFactory {
     private final static MapleCarnivalFactory instance = new MapleCarnivalFactory();
     private final Map<Integer, MCSkill> skills = new HashMap<Integer, MCSkill>();
     private final Map<Integer, MCSkill> guardians = new HashMap<Integer, MCSkill>();
-    private final MapleDataProvider dataRoot = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Skill.wz"));
+    private final MapleDataProvider dataRoot = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Skill.wz"));
 
     public MapleCarnivalFactory() {
         //whoosh

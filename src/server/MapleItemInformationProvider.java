@@ -29,10 +29,10 @@ import tools.Pair;
 public class MapleItemInformationProvider {
 
     private final static MapleItemInformationProvider instance = new MapleItemInformationProvider();
-    protected final MapleDataProvider etcData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz"));
-    protected final MapleDataProvider itemData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Item.wz"));
-    protected final MapleDataProvider equipData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Character.wz"));
-    protected final MapleDataProvider stringData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz"));
+    protected final MapleDataProvider etcData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz"));
+    protected final MapleDataProvider itemData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Item.wz"));
+    protected final MapleDataProvider equipData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Character.wz"));
+    protected final MapleDataProvider stringData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/String.wz"));
     protected final MapleData cashStringData = stringData.getData("Cash.img");
     protected final MapleData consumeStringData = stringData.getData("Consume.img");
     protected final MapleData eqpStringData = stringData.getData("Eqp.img");

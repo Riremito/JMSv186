@@ -1,5 +1,6 @@
 package server;
 
+import config.ServerConfig;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -25,7 +26,7 @@ public class CashItemFactory {
     private final Map<Integer, CashItemInfo> itemStats = new HashMap<Integer, CashItemInfo>();
     private final Map<Integer, List<CashItemInfo>> itemPackage = new HashMap<Integer, List<CashItemInfo>>();
     private final Map<Integer, CashModInfo> itemMods = new HashMap<Integer, CashModInfo>();
-    private final MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz"));
+    private final MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz"));
 
     public static final CashItemFactory getInstance() {
         return instance;

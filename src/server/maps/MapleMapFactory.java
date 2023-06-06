@@ -54,8 +54,8 @@ import tools.StringUtil;
 
 public class MapleMapFactory {
 
-    private static final MapleDataProvider source = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Map.wz"));
-    private static final MapleData nameData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz")).getData("Map.img");
+    private static final MapleDataProvider source = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Map.wz"));
+    private static final MapleData nameData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/String.wz")).getData("Map.img");
     private final Map<Integer, MapleMap> maps = new HashMap<Integer, MapleMap>();
     private final Map<Integer, MapleMap> instanceMap = new HashMap<Integer, MapleMap>();
     private static final Map<Integer, MapleNodes> mapInfos = new HashMap<Integer, MapleNodes>();
@@ -182,7 +182,7 @@ public class MapleMapFactory {
 
                 // 設定ファイルに定義されたNPCを設置
                 if (ServerConfig.version == 186) {
-                    Path file = Paths.get("./scripts/map/" + mapid + ".txt");
+                    Path file = Paths.get(ServerConfig.script_path + "map/" + mapid + ".txt");
                     try {
                         if (!Files.notExists(file)) {
                             List<String> text;

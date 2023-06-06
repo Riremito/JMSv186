@@ -33,6 +33,15 @@
     + ライブラリを選択 -> JAR/フォルダの追加 = libディレクトリに.jarファイルがあるので全て選択して追加
     + 追加したプロジェクトを右クリックしてビルド
 
+### データとスクリプトの入手
++ jms_wz
+    + 以下のリポジトリから取得する方法
+        + `git clone https://github.com/Riremito/jms_wz`
+    + もしくはHaRepackerで生成する
++ jms_scripts
+    + 以下のリポジトリから取得する方法
+    + `git clone https://github.com/Riremito/jms_scripts`
+
 ### DB設定
 + Wampを実行
 + タスクアイコンクリックするとメニューが出るので以下をする
@@ -45,61 +54,37 @@
     + `init_data_set.sql`を指定して実行ボタンを押す
 
 ### サーバーの起動
-+ run.batを実行
-    + `Running...`と出れば問題なし
-    + クライアントが接続してくると`[LoginServer] /127.0.0.1:port`と表示される
++ JMS v186.1を実行する場合
+    + run.batを実行
++ 別バージョンのサーバーを実行する場合
+    + 以下のようにrun_any.batにバージョンを引数として渡して実行する
+        + `run_any.bat 188 0`
 
 ### クライアントの準備
 + ファイル入手
-    + v186のクライアントを用意
-        + https://msdl.xyz/pages/jms/setups
-    + [エミュ鯖へ接続させるためのツール](https://github.com/Riremito/RunEmu/releases)
-        + https://hostr.co/rgU3Kdkhxonv
-            + これを使ったほうが良いです
+    + https://github.com/Riremito/EmuClient
+        + JMSのクライアントを実行可能にするためのツール
+    + https://github.com/Riremito/LocalHost
+        + クライアントの接続先を127.0.0.1等任意に変更するためのツール
+    + https://github.com/Riremito/FixThemida
+        + 古いクライアントをWindows 10で実行可能にするためのツール
+            + v164前後のバージョンのクライアントはWindows 10に対応しておらずこれを利用しないと実行出来ないので注意
+
 + 実行
     + RunEmu.exeを実行するとローカルで動作する
         + 初回はRunEmu.exeにMapleStory.exeをドロップする必要があります
 
-### サーバーの停止
-+ CTRL+Cで停止するか聞かれるのでyで終了
-    + ロールバックは極力発生させないようにしていますが、安全のためにyと入力するまで数秒待ったほうが良いです
-
 ## その他
 ### サーバー仕様
-+ アカウント
++ DB
+    + バージョンごとにDBを持っているのでv186のようにバージョン名のDBを作成すると、自動的にそれが利用されます
++ wz
+    + jms_wzフォルダにバージョンごとにwzのxmlを持っているので、バージョンごとに用意が必要です
++ MapleID
     + 自動登録 (Auto Register)
+        + 存在しないアカウントを入力した場合は自動的にMapleIDが新規作成されます
     + 2次パスワードは削除済み
         + 内部的に777777固定となっていますが、使うことはないはず
-    + GM
-        + accountのgmに111を書き込み、charactersのgmに111と書き込むとGM状態になる
-+ コマンド
-    + 注意
-        + 一応/でコマンドが通るようにしていますが、クライアント側でどうにかする必要があるので/が動かない場合は!でコマンドを入力すれば動く
-    + 移動系コマンド
-        + /map mapid
-            + 指定マップに移動
-            + GM状態ならmapidの代わりにマップ名でも動作する
-        + /henesys, /ヘネシス
-            + ヘネシスへ移動
-        + /leafre, /リプレ
-            + リプレへ移動
-        + /magatia, /マガティア
-            + マガティアへ移動
-        + /fm, /フリマ
-            + フリーマーケットへ移動
-    + デバッグ系コマンド
-        + /debug
-            + デバッグモード
-        + /info
-            + 情報出力切り替え
-        + /save
-            + ロールバック防止のためにDBへ現在の状態を確実に保存する
-        + /map2 mapid
-            + 指定マップに移動
-        + /help
-        + /jobchange, /jc
-            + 転職
-        + /npctalk npcid, /NPC会話 npcid
-            + NPC会話スクリプトを呼び出す
-        + /test
-        + その他いくつか通常のエミュ鯖に存在するGMコマンドがそのまま残っています
+    + MapleIDの末尾に`_`を付けると一時的にアカウントの性別が女となり、女キャラクターの作成画面へ入れる
++ GM
+    + DBからaccountのgmに111を書き込み、charactersのgmに111と書き込むとGM状態になる

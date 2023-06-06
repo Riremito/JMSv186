@@ -10,6 +10,7 @@ import java.util.Map;
 
 import client.MapleCharacter;
 import client.MapleQuestStatus;
+import config.ServerConfig;
 import java.util.ArrayList;
 import scripting.NPCScriptManager;
 import provider.MapleData;
@@ -160,7 +161,7 @@ public class MapleQuest implements Serializable {
     }
 
     public static void initQuests() {
-        questData = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Quest.wz"));
+        questData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Quest.wz"));
         actions = questData.getData("Act.img");
         requirements = questData.getData("Check.img");
         info = questData.getData("QuestInfo.img");

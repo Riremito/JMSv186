@@ -10,6 +10,7 @@
 package debug;
 
 import client.MapleClient;
+import config.ServerConfig;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -32,7 +33,7 @@ public class DebugScriptManager {
     }
 
     public boolean executeDebugScript(final MapleClient c) {
-        File scriptFile = new File("scripts/debug/debug.js");
+        File scriptFile = new File(ServerConfig.script_path + "debug/debug.js");
         FileReader fr = null;
 
         // ファイルを開く

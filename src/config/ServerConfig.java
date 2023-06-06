@@ -16,6 +16,14 @@ public class ServerConfig {
         version_sub = (byte) ver2;
     }
 
+    public static String wz_path, script_path;
+
+    // コマンドライン引数からファイルパスを取得
+    public static void SetDataPath() {
+        wz_path = System.getProperty("riresaba.path.wz");
+        script_path = System.getProperty("riresaba.path.script");
+    }
+
     // Database
     public static String database_url, database_user, database_password;
     // Login Server

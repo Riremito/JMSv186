@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.life;
 
+import config.ServerConfig;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -39,9 +40,9 @@ import tools.StringUtil;
 
 public class MapleLifeFactory {
 
-    private static final MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Mob.wz"));
-    private static final MapleDataProvider stringDataWZ = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/String.wz"));
-    private static final MapleDataProvider etcDataWZ = MapleDataProviderFactory.getDataProvider(new File(System.getProperty("net.sf.odinms.wzpath") + "/Etc.wz"));
+    private static final MapleDataProvider data = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Mob.wz"));
+    private static final MapleDataProvider stringDataWZ = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/String.wz"));
+    private static final MapleDataProvider etcDataWZ = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz"));
     private static final MapleData mobStringData = stringDataWZ.getData("Mob.img");
     private static final MapleData npcStringData = stringDataWZ.getData("Npc.img");
     private static final MapleData npclocData = etcDataWZ.getData("NpcLocation.img");
