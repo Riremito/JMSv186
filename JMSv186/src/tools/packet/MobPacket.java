@@ -205,6 +205,9 @@ public class MobPacket {
         }
         mplew.writeLong(getSpecialLongMask(life.getStati().keySet()));
         mplew.writeLong(getLongMask_NoRef(life.getStati().keySet()));
+        if(ServerConfig.version >= 188){
+            //mplew.writeInt(0);
+        }
         boolean ignore_imm = false;
         for (MonsterStatusEffect buff : life.getStati().values()) {
             if (buff.getStati() == MonsterStatus.MAGIC_DAMAGE_REFLECT || buff.getStati() == MonsterStatus.WEAPON_DAMAGE_REFLECT) {

@@ -96,8 +96,13 @@ public class Start {
                 break;
             }
             default: {
-                ClientPacket.SetForJMSv186();
-                ServerPacket.SetForJMSv186();
+                if (ServerConfig.version <= 186) {
+                    ClientPacket.SetForJMSv186();
+                    ServerPacket.SetForJMSv186();
+                } else {
+                    ClientPacket.SetForJMSv188();
+                    ServerPacket.SetForJMSv188();
+                }
                 break;
             }
         }

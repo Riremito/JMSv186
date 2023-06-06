@@ -86,7 +86,7 @@ public class MapleItemInformationProvider {
         getAllItems();
         // 潜在能力実装がv186のためそれ以前では存在しない
         // v186以外で全然違うので使い物にならない
-        if (ServerConfig.version < 186) {
+        if (ServerConfig.version < 186 || ServerConfig.version >= 302) {
             return;
         }
         final MapleData setsData = etcData.getData("SetItemInfo.img");

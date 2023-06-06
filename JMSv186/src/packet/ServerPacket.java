@@ -1784,76 +1784,35 @@ public class ServerPacket {
          */
     }
 
-    // v188
-    // CLogin::OnPacket, 005E2E80
-    // CStage::OnPacket, 0073BAC0
-    public static void SetForJMSv188() {
-        // ログインサーバー
-        Header.LP_CheckPasswordResult.Set(0x0000);
-        Header.LP_WorldInformation.Set(0x0002);
-        Header.LP_SelectWorldResult.Set(0x0003);
-        Header.LP_SelectCharacterResult.Set(0x0004);
-        Header.LP_CheckDuplicatedIDResult.Set(0x0005);
-        Header.LP_CreateNewCharacterResult.Set(0x0006);
-        Header.LP_DeleteCharacterResult.Set(0x0007);
-        Header.LP_MigrateCommand.Set(0x0008);
-        Header.LP_AliveReq.Set(0x0009);
-
-        // test
+    public static void UpdateHeader() {
         // CLogin::OnPacket
-        Header.LP_BEGIN_SOCKET.Set(0); // 00699d8d
+        Header.LP_BEGIN_SOCKET.Set(0);
         {
-            // CLogin::OnCheckPasswordResult
-            Header.LP_CheckPasswordResult.Set(0x0000);
-            // CLogin::OnWorldInformation
-            Header.LP_WorldInformation.Set(0x0002);
-            // CLogin::OnSelectWorldResult
-            Header.LP_SelectWorldResult.Set(0x0003);
-            // CLogin::OnSelectCharacterResult
-            Header.LP_SelectCharacterResult.Set(0x0004);
-            // CLogin::OnCheckDuplicatedIDResult
-            Header.LP_CheckDuplicatedIDResult.Set(0x0005);
-            // CLogin::OnCreateNewCharacterResult
-            Header.LP_CreateNewCharacterResult.Set(0x0006);
-            // CLogin::OnDeleteCharacterResult
-            Header.LP_DeleteCharacterResult.Set(0x0007);
-
-            // CClientSocket::ProcessPacket
-            {
-                // CClientSocket::OnMigrateCommand
-                Header.LP_MigrateCommand.Set(0x0008); // Change Channel
-                // CClientSocket::OnAliveReq
-                Header.LP_AliveReq.Set(0x0009);
-                // CSecurityClient::OnPacket
-                Header.LP_SecurityPacket.Set(0x000C); // HackShield HeartBeat
-            }
-            // CLogin::OnCheckPinCodeResult
-            Header.LP_CheckPinCodeResult.Set(0x0016); // 違うかも
-            // 0x0017
-            // CLogin::???
-            Header.LOGIN_AUTH.Set(0x0015); // v188 005E2F84
+            // Header.LP_CheckPasswordResult.Set(0x0000);
+            Header.LP_WorldInformation.Set(Header.LP_CheckPasswordResult.Get() + 2);
+            Header.LP_SelectWorldResult.Set(Header.LP_CheckPasswordResult.Get() + 3);
+            Header.LP_SelectCharacterResult.Set(Header.LP_CheckPasswordResult.Get() + 4);
+            Header.LP_CheckDuplicatedIDResult.Set(Header.LP_CheckPasswordResult.Get() + 5);
+            Header.LP_CreateNewCharacterResult.Set(Header.LP_CheckPasswordResult.Get() + 6);
+            Header.LP_DeleteCharacterResult.Set(Header.LP_CheckPasswordResult.Get() + 7);
         }
         Header.LP_END_SOCKET.Set(0);
 
-        // 重要処理
+        // CStage::OnPacket
         Header.LP_BEGIN_STAGE.Set(0);
         {
-            Header.LP_SetField.Set(0x007E); // v188 OK
-            {
-                Header.LP_SetITC.Set(Header.LP_SetField.Get() + 0x01);
-                Header.LP_SetCashShop.Set(Header.LP_SetField.Get() + 0x02);
-            }
+            // Header.LP_SetField.Set(0x007E);
+            Header.LP_SetITC.Set(Header.LP_SetField.Get() + 0x01);
+            Header.LP_SetCashShop.Set(Header.LP_SetField.Get() + 0x02);
         }
 
-        Header.LP_BEGIN_NPCPOOL.Set(0); // 00754707
+        Header.LP_BEGIN_NPCPOOL.Set(0);
         {
-            //Header.LP_ImitatedNPCData.Set(0x0056); // OK
-            //Header.LP_LimitedNPCDisableInfo.Set(0x0057); // OK
-            Header.LP_NpcEnterField.Set(0x0125);
+            // Header.LP_NpcEnterField.Set(0x0125);
             Header.LP_NpcLeaveField.Set(Header.LP_NpcEnterField.Get() + 1);
             Header.LP_NpcChangeController.Set(Header.LP_NpcEnterField.Get() + 2);
             // CNpcPool::OnNpcPacket
-            Header.LP_BEGIN_NPC.Set(0); // 007548b1
+            Header.LP_BEGIN_NPC.Set(0);
             {
                 Header.LP_NpcMove.Set(Header.LP_NpcEnterField.Get() + 3);
                 Header.LP_NpcUpdateLimitedInfo.Set(Header.LP_NpcEnterField.Get() + 4);
@@ -1861,24 +1820,217 @@ public class ServerPacket {
             }
             Header.LP_END_NPC.Set(0);
             // CNpcPool::OnNpcTemplatePacket
-            Header.LP_BEGIN_NPCTEMPLATE.Set(0); // 0075494f
+            Header.LP_BEGIN_NPCTEMPLATE.Set(0);
             {
-                Header.LP_NpcSetScript.Set(Header.LP_NpcEnterField.Get() + 6); // OK
+                Header.LP_NpcSetScript.Set(Header.LP_NpcEnterField.Get() + 6);
+            }
+            Header.LP_END_NPCTEMPLATE.Set(0);
+        }
+
+        // CWvsContext::OnPacket
+        Header.LP_BEGIN_CHARACTERDATA.Set(0);
+        {
+            // Header.LP_InventoryOperation.Set(0x0018);
+            Header.LP_InventoryGrow.Set(Header.LP_InventoryOperation.Get() + 1);
+            Header.LP_StatChanged.Set(Header.LP_InventoryOperation.Get() + 2);
+            Header.LP_TemporaryStatSet.Set(Header.LP_InventoryOperation.Get() + 3);
+            Header.LP_TemporaryStatReset.Set(Header.LP_InventoryOperation.Get() + 4);
+            Header.LP_ForcedStatSet.Set(Header.LP_InventoryOperation.Get() + 5);
+            Header.LP_ForcedStatReset.Set(Header.LP_InventoryOperation.Get() + 6);
+            Header.LP_ChangeSkillRecordResult.Set(Header.LP_InventoryOperation.Get() + 7);
+            Header.LP_SkillUseResult.Set(Header.LP_InventoryOperation.Get() + 8);
+            Header.LP_GivePopularityResult.Set(Header.LP_InventoryOperation.Get() + 9);
+            Header.LP_Message.Set(Header.LP_InventoryOperation.Get() + 10);
+            Header.LP_MemoResult.Set(Header.LP_InventoryOperation.Get() + 11);
+            Header.LP_MapTransferResult.Set(Header.LP_InventoryOperation.Get() + 12);
+            Header.LP_AntiMacroResult.Set(Header.LP_InventoryOperation.Get() + 13);
+            Header.LP_InitialQuizStart.Set(Header.LP_InventoryOperation.Get() + 14);
+            Header.LP_ClaimResult.Set(Header.LP_InventoryOperation.Get() + 15);
+            Header.LP_SetClaimSvrAvailableTime.Set(Header.LP_InventoryOperation.Get() + 16);
+            Header.LP_ClaimSvrStatusChanged.Set(Header.LP_InventoryOperation.Get() + 17);
+            Header.LP_SetTamingMobInfo.Set(Header.LP_InventoryOperation.Get() + 18);
+            Header.LP_QuestClear.Set(Header.LP_InventoryOperation.Get() + 19);
+            Header.LP_EntrustedShopCheckResult.Set(Header.LP_InventoryOperation.Get() + 20);
+            Header.LP_SkillLearnItemResult.Set(Header.LP_InventoryOperation.Get() + 21);
+            Header.LP_SortItemResult.Set(Header.LP_InventoryOperation.Get() + 22); //逆?
+            Header.LP_GatherItemResult.Set(Header.LP_InventoryOperation.Get() + 23);
+            // 0x0033 未使用
+            // 0x0034 未使用
+            //Header.LP_CharacterInfo.Set(Header.LP_InventoryOperation.Get() + 26);
+            /*
+            Header.LP_PartyResult.Set(0x0036);
+            Header.LP_ExpeditionRequest.Set(0x0037);
+            Header.LP_ExpeditionNoti.Set(0x0038);
+            Header.LP_FriendResult.Set(0x0039);
+            Header.LP_GuildRequest.Set(0x003A);
+            Header.LP_GuildResult.Set(0x003B);
+            Header.LP_AllianceResult.Set(0x003C);
+            Header.LP_TownPortal.Set(0x003D);
+            Header.LP_OpenGate.Set(0x003E); // メカニックならこの時点では未実装?
+            Header.LP_BroadcastMsg.Set(0x003F);
+            Header.LP_IncubatorResult.Set(0x0040); // ピグミー
+            Header.LP_ShopScannerResult.Set(0x0041);
+            Header.LP_ShopLinkResult.Set(0x0042);
+            Header.LP_MarriageRequest.Set(0x0043);
+            Header.LP_MarriageResult.Set(0x0044);
+            Header.LP_WeddingGiftResult.Set(0x0045); // @0045 [09], ウェディング登録? @0091が送信される
+            Header.LP_MarriedPartnerMapTransfer.Set(0x0046); // @0046 int,int
+            Header.LP_CashPetFoodResult.Set(0x0047); // @0047 [01]..., 現在ペットはこのえさが食べることができません。もう一度確認してください。
+            Header.LP_SetWeekEventMessage.Set(0x0048);
+            Header.LP_SetPotionDiscountRate.Set(0x0049);
+            Header.LP_BridleMobCatchFail.Set(0x004A); // 0x004A @004A ..., 当該モンスターの体力が強くてできません。
+            // 0x004B 未使用
+            // パチンコ
+            // 特に関数は別のテーブルとして独立していない
+            {
+                Header.MINIGAME_PACHINKO_UPDATE_TAMA.Set(0x4C);
+                // 0x004D パチンコ景品受け取りUI
+                // 0x004E @004E int,int, パチンコ球をx子プレゼントします。というダイアログ誤字っているのでたぶん未実装的な奴
+            }
+            // 0x004F @004F [01 or 03], プレゼントの通知
+            // 0x0050 @0050 strig, string..., 相性占い結果UI
+            Header.FISHING_BOARD_UPDATE.Set(0x0051);
+            // 0x0052 @0052 String, 任意メッセージをダイアログに表示
+            // 0x0053 @0053 [01 (00, 02は謎)], ワールド変更申請のキャンセル
+            // 0x0054 @0054 int, プレイタイム終了まで残りx分x秒です。
+            // 0x0055 @0055 byte, なんも処理がされない関数
+
+            // 一応ここにもあるが、NPCの方参照した方が確認が楽
+            {
+                //Header.LP_ImitatedNPCData.Set(0x0056);
+                //Header.LP_LimitedNPCDisableInfo.Set(0x0057);
+            }
+
+            Header.LP_MonsterBookSetCard.Set(0x0058); // OK
+            Header.LP_MonsterBookSetCover.Set(0x0059); // OK
+            // 0x0059 BBS_OPERATION?
+            // 0x005A @005A String, 任意メッセージをダイアログに表示
+            Header.LP_AvatarMegaphoneRes.Set(0x005B);
+            // 0x005C
+            // 0x005D
+            Header.UNKNOWN_RELOAD_MINIMAP.Set(0x005E);
+            // 0x005F
+            // 0x0060
+            // 0x0061
+            Header.ENERGY.Set(0x0062);
+            Header.GHOST_POINT.Set(0x0063);
+            Header.GHOST_STATUS.Set(0x0064);
+            Header.FAIRY_PEND_MSG.Set(0x0065);
+            Header.LP_FamilyChartResult.Set(0x0066);
+            Header.LP_FamilyInfoResult.Set(0x0067);
+            Header.LP_FamilyResult.Set(0x0068);
+            Header.LP_FamilyJoinRequest.Set(0x0069);
+            Header.LP_FamilyJoinRequestResult.Set(0x006A);
+            Header.LP_FamilyJoinAccepted.Set(0x006B);
+            Header.LP_FamilyPrivilegeList.Set(0x006C);
+            Header.LP_FamilyFamousPointIncResult.Set(0x006D);
+            Header.LP_FamilyNotifyLoginOrLogout.Set(0x006E);
+            Header.LP_FamilySetPrivilege.Set(0x006F);
+            Header.LP_FamilySummonRequest.Set(0x0070);
+            Header.LP_NotifyLevelUp.Set(0x0071);
+            Header.LP_NotifyWedding.Set(0x0072);
+            Header.LP_NotifyJobChange.Set(0x0073);
+            // 0x0074
+            Header.LP_SetPassenserRequest.Set(0x0075);
+            Header.LP_SuccessInUseGachaponBox.Set(0x0076);
+            Header.LP_ScriptProgressMessage.Set(0x0077);
+            Header.LP_DataCRCCheckFailed.Set(0x0078);
+            Header.LP_AskUserWhetherUsePamsSong.Set(0x007C);
+            Header.LP_MacroSysDataInit.Set(0x007D);
+             */
+        }
+        Header.LP_END_CHARACTERDATA.Set(0);
+    }
+
+    public static void SetForJMSv188() {
+        // CClientSocket::ProcessPacket
+        {
+            Header.LP_MigrateCommand.Set(0x0008);
+            Header.LP_AliveReq.Set(0x0009);
+            Header.LP_SecurityPacket.Set(0x000C);
+        }
+
+        // CLogin::OnPacket, 005E2E80
+        Header.LP_CheckPasswordResult.Set(0x0000); // OK
+        Header.LP_CheckPinCodeResult.Set(0x0016); // 違うかも
+        Header.LOGIN_AUTH.Set(0x0015); // v188 005E2F84
+
+        Header.LP_BEGIN_SOCKET.Set(0);
+        {
+            // Header.LP_CheckPasswordResult.Set(0x0000);
+            Header.LP_WorldInformation.Set(Header.LP_CheckPasswordResult.Get() + 2);
+            Header.LP_SelectWorldResult.Set(Header.LP_CheckPasswordResult.Get() + 3);
+            Header.LP_SelectCharacterResult.Set(Header.LP_CheckPasswordResult.Get() + 4);
+            Header.LP_CheckDuplicatedIDResult.Set(Header.LP_CheckPasswordResult.Get() + 5);
+            Header.LP_CreateNewCharacterResult.Set(Header.LP_CheckPasswordResult.Get() + 6);
+            Header.LP_DeleteCharacterResult.Set(Header.LP_CheckPasswordResult.Get() + 7);
+        }
+
+        // CStage::OnPacket, 0073BAC0
+        Header.LP_SetField.Set(0x007E); // OK
+        Header.LP_BEGIN_STAGE.Set(0);
+        {
+            // Header.LP_SetField.Set(0x007E);
+            Header.LP_SetITC.Set(Header.LP_SetField.Get() + 0x01);
+            Header.LP_SetCashShop.Set(Header.LP_SetField.Get() + 0x02);
+        }
+
+        // NPC
+        Header.LP_NpcEnterField.Set(0x0125); // OK
+        Header.LP_BEGIN_NPCPOOL.Set(0);
+        {
+            // Header.LP_NpcEnterField.Set(0x0125);
+            Header.LP_NpcLeaveField.Set(Header.LP_NpcEnterField.Get() + 1);
+            Header.LP_NpcChangeController.Set(Header.LP_NpcEnterField.Get() + 2);
+            // CNpcPool::OnNpcPacket
+            Header.LP_BEGIN_NPC.Set(0);
+            {
+                Header.LP_NpcMove.Set(Header.LP_NpcEnterField.Get() + 3);
+                Header.LP_NpcUpdateLimitedInfo.Set(Header.LP_NpcEnterField.Get() + 4);
+                Header.LP_NpcSpecialAction.Set(Header.LP_NpcEnterField.Get() + 5);
+            }
+            Header.LP_END_NPC.Set(0);
+            // CNpcPool::OnNpcTemplatePacket
+            Header.LP_BEGIN_NPCTEMPLATE.Set(0);
+            {
+                Header.LP_NpcSetScript.Set(Header.LP_NpcEnterField.Get() + 6);
             }
             Header.LP_END_NPCTEMPLATE.Set(0);
         }
 
         // CScriptMan::OnPacket, NPC会話
-        Header.LP_BEGIN_SCRIPT.Set(0); // 007f9360
-        {
-            Header.LP_ScriptMessage.Set(0x015B); // v186
-        }
-        Header.LP_END_SCRIPT.Set(0);
+        Header.LP_ScriptMessage.Set(0x015B);
+        Header.LP_OpenShopDlg.Set(Header.LP_ScriptMessage.Get() + 1);
+        Header.LP_ShopResult.Set(Header.LP_ScriptMessage.Get() + 2);
 
-        Header.LP_END_STAGE.Set(0);
-        Header.LP_END_FIELD.Set(0);
+        // test
+        // CWvsContext::OnPacket
+        Header.LP_InventoryOperation.Set(0x0018);
+        Header.LP_StatChanged.Set(Header.LP_InventoryOperation.Get() + 2);
+        //Header.LP_CharacterInfo.Set(Header.LP_InventoryOperation.Get() + 26);
+
+        Header.LP_BroadcastMsg.Set(0x003D); // v188
+        Header.LP_UserChat.Set(0x00A4); // v188 test v186+1
+
+        Header.LP_UserChatNLCPQ.Set(Header.LP_UserChat.Get() + 1);
+        Header.LP_UserADBoard.Set(Header.LP_UserChat.Get() + 2);
+        Header.LP_UserMiniRoomBalloon.Set(Header.LP_UserChat.Get() + 3);
+        Header.LP_UserConsumeItemEffect.Set(Header.LP_UserChat.Get() + 4);
+        Header.LP_UserItemUpgradeEffect.Set(Header.LP_UserChat.Get() + 5);
+        Header.LP_UserItemHyperUpgradeEffect.Set(Header.LP_UserChat.Get() + 6);
+        Header.LP_UserItemOptionUpgradeEffect.Set(Header.LP_UserChat.Get() + 7);
+        Header.LP_UserItemReleaseEffect.Set(Header.LP_UserChat.Get() + 8);
+        Header.LP_UserItemUnreleaseEffect.Set(Header.LP_UserChat.Get() + 9);
+
+        Header.LP_DropEnterField.Set(0x0130); // v188
+        Header.LP_DropLeaveField.Set(Header.LP_DropEnterField.Get() + 1);
+
+        //Header.LP_MobEnterField.Set(0x010B);
+        //Header.LP_MobLeaveField.Set(0x010C);
         // 末尾
         Header.LP_NO.Set(0x19A);
+
+        //UpdateHeader();
     }
 
     public static void SetForJMSv302() {

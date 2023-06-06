@@ -325,6 +325,10 @@ public class MaplePacketCreator {
             // v187.0
             // なんかしらのデータが消費アイテムの前にあってずれている
             // おそらくアイテム欄より後でもズレが発生してる
+            if (ServerConfig.version >= 188) {
+                p.Encode1(0);
+                p.Encode1(0);
+            }
             // 消費
             {
                 iv = chr.getInventory(MapleInventoryType.USE);
@@ -365,7 +369,10 @@ public class MaplePacketCreator {
         // [addQuestInfo]
         p.EncodeBuffer(addQuestInfo(chr));
         // [addRingInfo]
-        p.Encode2(0);
+        // 間違ってるかもしれない
+        if (ServerConfig.version < 188) {
+            p.Encode2(0);
+        }
         p.EncodeBuffer(addRingInfo(chr));
         if (ServerConfig.version > 164) {
             p.Encode2(0);
@@ -787,6 +794,16 @@ public class MaplePacketCreator {
                 }
             }
         }
+
+        if (ServerConfig.version >= 188) {
+            // test
+            mplew.write(0);
+            mplew.write(0);
+            mplew.write(0);
+            mplew.write(0);
+            mplew.write(0);
+        }
+
         return mplew.getPacket();
     }
 

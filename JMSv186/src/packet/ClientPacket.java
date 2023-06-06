@@ -1153,14 +1153,6 @@ public class ClientPacket {
         //Header.REACHED_LOGIN_SCREEN.Set(0x0017); // changed
         Header.CP_CreateSecurityHandle.Set(0x0017);
 
-        // test
-        Header.CP_UserTransferFieldRequest.Set(0x001A);
-        Header.CP_UserChat.Set(0x0027);
-        // v186と同じ
-        Header.CP_UserPortalScriptRequest.Set(0x0062);
-        Header.CP_UserPortalTeleportRequest.Set(0x0063);
-        Header.CP_UserMapTransferRequest.Set(0x0064);
-
         // ゲームサーバー
         Header.CP_BEGIN_USER.Set(0x0019);
         {
@@ -1183,12 +1175,12 @@ public class ClientPacket {
             Header.CP_UserChat.Set(0x0027); // v188
             {
                 Header.CP_UserADBoardClose.Set(Header.CP_UserChat.Get() + 1);
-                Header.CP_UserEmotion.Set(Header.CP_UserChat.Get() + 2);
+                Header.CP_UserEmotion.Set(Header.CP_UserChat.Get() + 2);  // v188
                 Header.CP_UserActivateEffectItem.Set(Header.CP_UserChat.Get() + 3);
             }
-            Header.WHEEL_OF_FORTUNE.Set(0x002D); // 不明
+            //Header.WHEEL_OF_FORTUNE.Set(0x002D); // 不明
             // 0x0030
-            Header.CP_UserMonsterBookSetCover.Set(0x0031);
+            //Header.CP_UserMonsterBookSetCover.Set(0x0031);
 
             // OK
             Header.CP_UserSelectNpc.Set(0x0030); // v188
@@ -1201,15 +1193,24 @@ public class ClientPacket {
             Header.CP_UserStoreBankRequest.Set(Header.CP_UserSelectNpc.Get() + 6);
             Header.CP_UserParcelRequest.Set(Header.CP_UserSelectNpc.Get() + 7);
             Header.CP_UserEffectLocal.Set(Header.CP_UserSelectNpc.Get() + 8);
-            
-            
-            
-            Header.CP_ShopScannerRequest.Set(0x003B);
-            Header.CP_ShopLinkRequest.Set(0x003C);
-            Header.CP_AdminShopRequest.Set(0x003D); // ServerPacket 0x0158, 0x0159から送信される, CP_AdminShopRequest?
-            Header.CP_UserSortItemRequest.Set(0x003E);
-            Header.CP_UserGatherItemRequest.Set(0x003F);
-            Header.CP_UserChangeSlotPositionRequest.Set(0x0040);
+
+            //Header.CP_ShopScannerRequest.Set(0x003B);
+            //Header.CP_ShopLinkRequest.Set(0x003C);
+            //Header.CP_AdminShopRequest.Set(0x003D); // ServerPacket 0x0158, 0x0159から送信される, CP_AdminShopRequest?
+            Header.CP_UserSortItemRequest.Set(0x003C); // v188
+            Header.CP_UserGatherItemRequest.Set(0x003D);
+            Header.CP_UserChangeSlotPositionRequest.Set(0x003E); // v188
+
+            Header.CP_UserPortalScrollUseRequest.Set(0x004D);
+            Header.CP_UserUpgradeItemUseRequest.Set(0x004E); // v188
+            Header.CP_UserHyperUpgradeItemUseRequest.Set(0x004F);
+            Header.CP_UserItemOptionUpgradeItemUseRequest.Set(0x0050);
+            Header.CP_UserItemReleaseRequest.Set(0x0052); // v188
+            Header.CP_UserAbilityUpRequest.Set(0x0053);
+            Header.CP_UserAbilityMassUpRequest.Set(0x0054);
+            Header.CP_UserChangeStatRequest.Set(0x0055);
+            Header.CP_UserChangeStatRequestByItemOption.Set(0x0056);
+            /*
             Header.CP_UserStatChangeItemUseRequest.Set(0x0041);
             Header.CP_UserStatChangeItemCancelRequest.Set(0x0042);
             Header.CP_UserStatChangeByPortableChairRequest.Set(0x0043);
@@ -1236,24 +1237,26 @@ public class ClientPacket {
             Header.CP_UserSkillUseRequest.Set(0x0058);
             Header.CP_UserSkillCancelRequest.Set(0x0059);
             Header.CP_UserSkillPrepareRequest.Set(0x005A);
-            Header.CP_UserDropMoneyRequest.Set(0x005B);
+             */
+            Header.CP_UserDropMoneyRequest.Set(0x005B); // v188
             Header.CP_UserGivePopularityRequest.Set(0x005C);
             Header.CP_UserPartyRequest.Set(0x005D);
-            Header.CP_UserCharacterInfoRequest.Set(0x005E);
+            Header.CP_UserCharacterInfoRequest.Set(0x005E); // v188
             Header.CP_UserActivatePetRequest.Set(0x005F);
             Header.CP_UserTemporaryStatUpdateRequest.Set(0x0060);
             // 0x0061 ???, CP_UserRegisterPetAutoBuffRequest
-            Header.CP_UserPortalScriptRequest.Set(0x0062);
-            Header.CP_UserPortalTeleportRequest.Set(0x0063);
-            Header.CP_UserMapTransferRequest.Set(0x0064);
+            Header.CP_UserPortalScriptRequest.Set(0x0062); // v188
+            Header.CP_UserPortalTeleportRequest.Set(0x0063); // v188
+            Header.CP_UserMapTransferRequest.Set(0x0064); // v188
             Header.CP_UserAntiMacroItemUseRequest.Set(0x0065);
             Header.CP_UserAntiMacroSkillUseRequest.Set(0x0066);
             Header.CP_UserAntiMacroQuestionResult.Set(0x0067);
             Header.CP_UserClaimRequest.Set(0x0068);
-            Header.CP_UserQuestRequest.Set(0x0069);
+            Header.CP_UserQuestRequest.Set(0x0069); // v188
             Header.CP_UserCalcDamageStatSetRequest.Set(0x006A);
             Header.CP_UserThrowGrenade.Set(0x006B);
-            Header.CP_UserMacroSysDataModified.Set(0x006C);
+            Header.CP_UserMacroSysDataModified.Set(0x006C); // v188
+            /*
             Header.CP_UserSelectNpcItemUseRequest.Set(0x006D);
             Header.CP_UserLotteryItemUseRequest.Set(0x006E);
             Header.CP_UserItemMakeRequest.Set(0x006F);
@@ -1289,8 +1292,8 @@ public class ClientPacket {
             Header.CP_SlideRequest.Set(0x008D);
             Header.CP_FuncKeyMappedModified.Set(0x008E);
             Header.CP_RPSGame.Set(0x008F);
-            Header.CP_MarriageRequest.Set(0x0090);
-            Header.CP_WeddingWishListRequest.Set(0x0091);
+            //Header.CP_MarriageRequest.Set(0x0090);
+            //Header.CP_WeddingWishListRequest.Set(0x0091);
             // 0x0092, CP_WeddingProgress
             // 0x0093, CP_GuestBless
             // 0x0094, CP_BoobyTrapAlert or CP_StalkBegin=
@@ -1385,12 +1388,14 @@ public class ClientPacket {
                 Header.CP_END_NPC.Set(0x00D7);
             }
             Header.CP_END_LIFEPOOL.Set(0x00D8);
+             */
             // アイテム回収
-            Header.CP_BEGIN_DROPPOOL.Set(0x00D9);
+            Header.CP_BEGIN_DROPPOOL.Set(0x00DF);
             {
-                Header.CP_DropPickUpRequest.Set(0x00DA);
+                Header.CP_DropPickUpRequest.Set(0x00E0); // v188
             }
-            Header.CP_END_DROPPOOL.Set(0x00DB);
+            Header.CP_END_DROPPOOL.Set(0x00E1);
+            /*
             // 設置物
             Header.CP_BEGIN_REACTORPOOL.Set(0x00DC);
             {
@@ -1427,24 +1432,27 @@ public class ClientPacket {
             Header.CP_END_PARTY_MATCH.Set(0x00F0);
         }
         Header.CP_END_FIELD.Set(0x00F1);
-
+        }
+             */
+        }
     }
 
     public static void SetForJMSv302() {
         // Login
-        Header.CP_CheckPassword.Set(0x0001);
-        Header.CP_WorldInfoRequest.Set(0x0003);
-        Header.CP_SelectWorld.Set(0x0004);
+        Header.CP_CheckPassword.Set(0x0015); // OK
+        Header.CP_Check2ndPassword.Set(0x0026); // OK
+        Header.CP_WorldInfoRequest.Set(0x0017); // OK
+        Header.CP_CheckDuplicatedID.Set(0x001C); // OK
+        Header.CP_CreateNewCharacter.Set(0x001E); // OK
+
+        Header.CP_SelectWorld.Set(0x0018);
         Header.CP_CheckUserLimit.Set(0x0005);
         Header.CP_SelectCharacter.Set(0x0006);
         Header.CP_MigrateIn.Set(0x0007);
-        Header.CP_CheckDuplicatedID.Set(0x0008);
-        Header.CP_CreateNewCharacter.Set(0x000B);
         Header.CP_DeleteCharacter.Set(0x000D);
-        Header.CP_ExceptionLog.Set(0x000F);
+
         //Header.AUTH_SECOND_PASSWORD.Set(0x0014);
-        //Header.REACHED_LOGIN_SCREEN.Set(0x0014);
-        Header.CP_CreateSecurityHandle.Set(0x0022);
+        Header.REACHED_LOGIN_SCREEN.Set(0x002B); // or 0x0014
     }
 
 }

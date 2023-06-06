@@ -101,8 +101,16 @@ public class LoginPacket {
 
         // 2次パスワード
         if (ServerConfig.version >= 188) {
+            // -1, 無視
             // 0, 初期化
             // 1, 登録済み
+            p.Encode1(-1);
+        }
+
+        // 旧かんたん会員
+        if (ServerConfig.version >= 302) {
+            // 0, 旧かんたん会員
+            // 1, 通常
             p.Encode1(1);
         }
 
@@ -158,10 +166,21 @@ public class LoginPacket {
 
             // ワールドID
             p.Encode1(serverId);
-            // チャンネルID
-            p.Encode2(i);
+            if (ServerConfig.version < 302) {
+                // チャンネルID
+                p.Encode2(i);
+            } else {
+                p.Encode1(i);
+                p.Encode1(0);
+                p.Encode1(0);
+            }
         }
+
         p.Encode2(0);
+
+        if (ServerConfig.version >= 302) {
+            p.Encode4(0);
+        }
 
         return p.Get();
     }
@@ -179,6 +198,7 @@ public class LoginPacket {
         p.Encode1(0);
         p.EncodeStr("");
         // キャラクターの数
+
         p.Encode1(chars.size());
 
         // [addCharEntry]
@@ -330,11 +350,19 @@ public class LoginPacket {
             p.Encode1(0);
         }
 
-        // キャラクタースロットの数
-        if (ServerConfig.version <= 176) {
+        if (ServerConfig.version >= 302) {
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(charslots);
+        } else if (ServerConfig.version >= 190) {
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(charslots);
+        } else if (ServerConfig.version <= 176) {
             p.Encode4(charslots);
         } else {
-            p.Encode8(charslots); // buffer
+            p.Encode8(charslots);
         }
 
         return p.Get();

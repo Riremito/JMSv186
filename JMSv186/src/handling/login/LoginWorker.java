@@ -73,9 +73,9 @@ public class LoginWorker {
             return;
         }
 
-        // 2次パスワード要求する場合は入力を待つ必要がある
-        if (ServerConfig.version < 188) {
-            CharLoginHandler.ServerListRequest(c);
-        }
+        // 2次パスワード要求する場合は入力を待つ必要がある, -1で無視すれば不要
+        //if (ServerConfig.version < 188) {
+        CharLoginHandler.ServerListRequest(c);
+        //}
     }
 }
