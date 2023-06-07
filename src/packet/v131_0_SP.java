@@ -12,8 +12,10 @@ public class v131_0_SP {
         ServerPacket.Header.LP_DeleteCharacterResult.Set(0x0008);
 
         ServerPacket.Header.LP_SetField.Set(0x0047);
-
         ServerPacket.Header.LP_SetCashShop.Set(0x0048);
         ServerPacket.Header.LP_SetITC.Set(0x0049);
+
+        ServerPacket.Header.LP_MigrateCommand.Set(0x0009); // CC
+        ServerPacket.Header.LP_UserChat.Set(0x0063); // chat
     }
 }

@@ -39,6 +39,7 @@ import constants.MapConstants;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import packet.ClientPacket;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
@@ -1042,9 +1043,11 @@ public class PlayerHandler {
         }
     }
 
-    public static final void ChangeMapSpecial(final String portal_name, final MapleClient c, final MapleCharacter chr) {
-        final MaplePortal portal = chr.getMap().getPortal(portal_name);
-//	slea.skip(2);
+    public static final void ChangeMapSpecial(ClientPacket p, final MapleClient c) {
+        byte unk = p.Decode1();
+        String portal_name = p.DecodeStr();
+
+        final MaplePortal portal = c.getPlayer().getMap().getPortal(portal_name);
 
         if (portal != null) {
             portal.enterPortal(c);

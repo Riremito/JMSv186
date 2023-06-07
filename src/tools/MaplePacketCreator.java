@@ -163,13 +163,17 @@ public class MaplePacketCreator {
             p.Encode2(0);
         }
         p.Encode4(chr.getClient().getChannel() - 1);
-        p.Encode1(0);
+        if (ServerConfig.version > 131) {
+            p.Encode1(0);
+        }
         if (ServerConfig.version > 164) {
             p.Encode4(0);
         }
         p.Encode1((byte) chr.getPortalCount());
         p.Encode1(0);
-        p.Encode2(0);
+        if (ServerConfig.version > 131) {
+            p.Encode2(0);
+        }
         if (ServerConfig.version > 164) {
             p.Encode1(0);
         }

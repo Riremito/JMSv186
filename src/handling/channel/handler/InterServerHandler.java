@@ -39,6 +39,7 @@ import handling.world.PartyOperation;
 import handling.world.PlayerBuffStorage;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
+import packet.ClientPacket;
 import server.maps.FieldLimitType;
 import tools.FileoutputUtil;
 import tools.MaplePacketCreator;
@@ -215,11 +216,13 @@ public class InterServerHandler {
         player.spawnSavedPets();
     }
 
-    public static final void ChangeChannel(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void ChangeChannel(ClientPacket p, final MapleClient c, final MapleCharacter chr) {
         if (!chr.isAlive() || chr.getEventInstance() != null || chr.getMap() == null || FieldLimitType.ChannelSwitch.check(chr.getMap().getFieldLimit())) {
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }
-        chr.changeChannel(slea.readByte() + 1);
+
+        int channel = p.Decode1() + 1;
+        chr.changeChannel(channel);
     }
 }

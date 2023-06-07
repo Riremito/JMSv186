@@ -507,7 +507,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             //
             case CP_UserTransferChannelRequest: {
                 // c
-                InterServerHandler.ChangeChannel(p, c, c.getPlayer());
+                InterServerHandler.ChangeChannel(op, c, c.getPlayer());
                 return true;
             }
             case CP_MigrateIn: {
@@ -640,9 +640,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_UserPortalScriptRequest: {
-                // 実装が悪い
-                p.skip(1);
-                PlayerHandler.ChangeMapSpecial(p.readMapleAsciiString(), c, c.getPlayer());
+                PlayerHandler.ChangeMapSpecial(op, c);
                 return true;
             }
             case CP_UserPortalTeleportRequest: {
@@ -881,11 +879,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_UserChat: {
                 Debug.DebugPacket(op);
-                // 実装が悪い
-                if (ServerConfig.version > 176) {
-                    p.readInt();
-                }
-                ChatHandler.GeneralChat(p.readMapleAsciiString(), p.readByte(), c, c.getPlayer());
+                ChatHandler.GeneralChat(op, c);
                 return true;
             }
             case CP_GroupMessage: {

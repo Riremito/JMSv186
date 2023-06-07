@@ -23,17 +23,33 @@ package handling.channel.handler;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.messages.CommandProcessor;
+import config.ServerConfig;
 import constants.ServerConstants.CommandType;
 import handling.channel.ChannelServer;
 import handling.world.MapleMessenger;
 import handling.world.MapleMessengerCharacter;
 import handling.world.World;
+import packet.ClientPacket;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class ChatHandler {
 
-    public static final void GeneralChat(final String text, final byte unk, final MapleClient c, final MapleCharacter chr) {
+    public static final void GeneralChat(ClientPacket p, final MapleClient c) {
+        MapleCharacter chr = c.getPlayer();
+        int timestamp = 0;
+        byte unk = 0;
+
+        if (ServerConfig.version > 176) {
+            timestamp = p.Decode4();
+        }
+
+        if (ServerConfig.version >= 164) {
+            unk = p.Decode1();
+        }
+
+        String text = p.DecodeStr();
+
         if (chr != null && !CommandProcessor.processCommand(c, text, CommandType.NORMAL)) {
             if (!chr.isGM() && text.length() >= 70) {
                 return;
