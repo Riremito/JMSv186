@@ -23,20 +23,14 @@ package tools.packet;
 import java.util.List;
 import client.MapleClient;
 import client.MapleCharacter;
-import client.inventory.IItem;
-import client.inventory.MapleInventory;
-import client.inventory.MapleInventoryType;
 import config.ServerConfig;
-import constants.GameConstants;
-import debug.Debug;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.login.LoginServer;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Random;
 import packet.ServerPacket;
 import packet.ClientPacket;
+import packet.Structure;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import tools.HexTool;
 
@@ -49,7 +43,7 @@ public class LoginPacket {
         p.EncodeStr(String.valueOf(ServerConfig.version_sub));
         p.EncodeBuffer(recvIv);
         p.EncodeBuffer(sendIv);
-        p.Encode1(3);
+        p.Encode1(3); // JMS
         // ヘッダにサイズを書き込む
         p.SetHello();
         return p.Get();
@@ -211,146 +205,14 @@ public class LoginPacket {
 
         p.Encode1(chars.size());
 
-        // [addCharEntry]
         for (MapleCharacter chr : chars) {
-            // [addCharStats]
-            {
-                // キャラクターID
-                p.Encode4(chr.getId());
-                // キャラクター名
-                p.EncodeBuffer(chr.getName(), 13);
-                // 性別
-                p.Encode1(chr.getGender());
-                // 肌の色
-                p.Encode1(chr.getSkinColor());
-                // 顔
-                p.Encode4(chr.getFace());
-                // 髪型
-                p.Encode4(chr.getHair());
-                p.EncodeZeroBytes(24);
-                // レベル
-                p.Encode1(chr.getLevel());
-                // 職業ID
-                p.Encode2(chr.getJob());
-                // [connectData]
-                // STR
-                p.Encode2(chr.getStat().str);
-                // DEX
-                p.Encode2(chr.getStat().dex);
-                // INT
-                p.Encode2(chr.getStat().int_);
-                // LUK
-                p.Encode2(chr.getStat().luk);
-                // HP, MP
-                if (ServerConfig.version <= 186) {
-                    // BB前
-                    p.Encode2(chr.getStat().hp);
-                    p.Encode2(chr.getStat().maxhp);
-                    p.Encode2(chr.getStat().mp);
-                    p.Encode2(chr.getStat().maxmp);
-                } else {
-                    // BB後
-                    p.Encode4(chr.getStat().hp);
-                    p.Encode4(chr.getStat().maxhp);
-                    p.Encode4(chr.getStat().mp);
-                    p.Encode4(chr.getStat().maxmp);
-                }
-                // SP情報
-                p.Encode2(chr.getRemainingAp());
-                if (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob())) {
-                    p.Encode1(chr.getRemainingSpSize());
-                    for (int i = 0; i < chr.getRemainingSps().length; i++) {
-                        if (chr.getRemainingSp(i) > 0) {
-                            p.Encode1(i + 1);
-                            p.Encode1(chr.getRemainingSp(i));
-                        }
-                    }
-                } else {
-                    p.Encode2(chr.getRemainingSp());
-                }
-                // 経験値
-                p.Encode4(chr.getExp());
-                // 人気度
-                p.Encode2(chr.getFame());
-                // Gachapon exp?
-                p.Encode4(0);
-                // マップID
-                p.Encode4(chr.getMapId());
-                // マップ入場位置
-                p.Encode1(chr.getInitialSpawnpoint());
-                if (ServerConfig.version > 176) {
-                    // デュアルブレイドフラグ
-                    p.Encode2(chr.getSubcategory());
-                    if (ServerConfig.version >= 188) {
-                        p.Encode8(0);
-                        p.Encode4(0);
-                        p.Encode4(0);
-                    } else {
-                        p.EncodeZeroBytes(20);
-                    }
-                } else {
-                    p.EncodeZeroBytes(16);
-                }
-            }
-            // [addCharLook]
-            {
-                // 性別
-                p.Encode1(chr.getGender());
-                // 肌の色
-                p.Encode1(chr.getSkinColor());
-                // 顔
-                p.Encode4(chr.getFace());
-                // ?
-                p.Encode1(1);
-                // 髪型
-                p.Encode4(chr.getHair());
+            Structure.CharEntry(p, chr, false);
+        }
 
-                final Map<Byte, Integer> myEquip = new LinkedHashMap<>();
-                final Map<Byte, Integer> maskedEquip = new LinkedHashMap<>();
-                MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIPPED);
-
-                for (final IItem item : equip.list()) {
-                    if (item.getPosition() < -128) { //not visible
-                        continue;
-                    }
-                    byte pos = (byte) (item.getPosition() * -1);
-
-                    if (pos < 100 && myEquip.get(pos) == null) {
-                        myEquip.put(pos, item.getItemId());
-                    } else if ((pos > 100 || pos == -128) && pos != 111) {
-                        pos = (byte) (pos == -128 ? 28 : pos - 100);
-                        if (myEquip.get(pos) != null) {
-                            maskedEquip.put(pos, myEquip.get(pos));
-                        }
-                        myEquip.put(pos, item.getItemId());
-                    } else if (myEquip.get(pos) != null) {
-                        maskedEquip.put(pos, item.getItemId());
-                    }
-                }
-                for (final Map.Entry<Byte, Integer> entry : myEquip.entrySet()) {
-                    p.Encode1(entry.getKey());
-                    p.Encode4(entry.getValue());
-                }
-                p.Encode1(0xFF); // end of visible itens
-                // masked itens
-                for (final Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
-                    p.Encode1(entry.getKey());
-                    p.Encode4(entry.getValue());
-                }
-                p.Encode1(0xFF); // ending markers
-
-                final IItem cWeapon = equip.getItem((byte) -111);
-                p.Encode4(cWeapon != null ? cWeapon.getItemId() : 0);
-                p.Encode4(0);
-                p.Encode8(0);
-            }
-            // [ランキング情報]
-            if (ServerConfig.version > 164) {
-                p.Encode1(0);
-            }
-            // ランキングフラグ
+        if (ServerConfig.version <= 131) {
+            p.Encode1(3); // charslots
             p.Encode1(0);
-            // ランキング情報が存在する場合は追記
+            return p.Get();
         }
 
         // 2次パスワードの利用状態
@@ -445,13 +307,11 @@ public class LoginPacket {
     }
 
     public static final MaplePacket addNewCharEntry(final MapleCharacter chr, final boolean worked) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_CreateNewCharacterResult.Get());
-        mplew.write(worked ? 0 : 1);
-        PacketHelper.addCharStats(mplew, chr);
-        PacketHelper.addCharLook(mplew, chr, true);
-        return mplew.getPacket();
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CreateNewCharacterResult);
+        p.Encode1(worked ? 0 : 1);
+        Structure.CharStats(p, chr);
+        Structure.CharLook(p, chr, true);
+        return p.Get();
     }
 
     public static final MaplePacket charNameResponse(final String charname, final boolean nameUsed) {
@@ -462,20 +322,5 @@ public class LoginPacket {
         mplew.write(nameUsed ? 1 : 0);
 
         return mplew.getPacket();
-    }
-
-    private static final void addCharEntry(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr, boolean ranking) {
-        PacketHelper.addCharStats(mplew, chr);
-        PacketHelper.addCharLook(mplew, chr, true);
-        if (ServerConfig.version > 176) {
-            mplew.write(0);
-        }
-        mplew.write(ranking ? 1 : 0);
-        if (ranking) {
-            mplew.writeInt(chr.getRank());
-            mplew.writeInt(chr.getRankMove());
-            mplew.writeInt(chr.getJobRank());
-            mplew.writeInt(chr.getJobRankMove());
-        }
     }
 }

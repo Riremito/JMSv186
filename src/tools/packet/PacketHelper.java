@@ -43,6 +43,7 @@ import client.inventory.IItem;
 import client.SkillEntry;
 import config.ServerConfig;
 import handling.channel.ChannelServer;
+import packet.ServerPacket;
 import server.Start;
 import tools.Pair;
 import server.movement.LifeMovementFragment;
@@ -251,7 +252,13 @@ public class PacketHelper {
         mplew.write(chr.getSkinColor()); // skin color
         mplew.writeInt(chr.getFace()); // face
         mplew.writeInt(chr.getHair()); // hair
-        mplew.writeZeroBytes(24);
+
+        if (ServerConfig.version < 164) {
+            mplew.writeZeroBytes(8);
+        } else {
+            mplew.writeZeroBytes(24);
+        }
+
         mplew.write(chr.getLevel()); // level
         mplew.writeShort(chr.getJob()); // job
         chr.getStat().connectData(mplew);
@@ -270,8 +277,11 @@ public class PacketHelper {
         }
         mplew.writeInt(chr.getExp()); // exp
         mplew.writeShort(chr.getFame()); // fame
-        mplew.writeInt(0); // Gachapon exp
-//        mplew.writeLong(0); //0 -> 4?
+
+        if (ServerConfig.version >= 164) {
+            mplew.writeInt(0); // Gachapon exp
+        }
+
         mplew.writeInt(chr.getMapId()); // current map id
         mplew.write(chr.getInitialSpawnpoint()); // spawnpoint
         if (ServerConfig.version > 176) {
@@ -326,7 +336,10 @@ public class PacketHelper {
         final IItem cWeapon = equip.getItem((byte) -111);
         mplew.writeInt(cWeapon != null ? cWeapon.getItemId() : 0);
         mplew.writeInt(0);
-        mplew.writeLong(0);
+
+        if (ServerConfig.version >= 164) {
+            mplew.writeLong(0);
+        }
     }
 
     public static final void addExpirationTime(final MaplePacketLittleEndianWriter mplew, final long time) {

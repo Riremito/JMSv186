@@ -161,7 +161,7 @@ public class CharLoginHandler {
     public static final void CreateChar(ClientPacket p, final MapleClient c) {
         final String name = new String(p.DecodeBuffer());
 
-        if (ServerConfig.version == 164) {
+        if (ServerConfig.version <= 164) {
             final int face = p.Decode4();
             final int hair = p.Decode4();
             final int hairColor = 0;
@@ -173,6 +173,15 @@ public class CharLoginHandler {
             final byte gender = c.getGender();
 
             MapleCharacter newchar = MapleCharacter.getDefault(c, 1);
+
+            // サイコロ
+            if (ServerConfig.version <= 131) {
+                newchar.getStat().str = p.Decode1();
+                newchar.getStat().dex = p.Decode1();
+                newchar.getStat().int_ = p.Decode1();
+                newchar.getStat().luk = p.Decode1();
+            }
+
             newchar.setWorld((byte) c.getWorld());
             newchar.setFace(face);
             newchar.setHair(hair + hairColor);
@@ -391,14 +400,20 @@ public class CharLoginHandler {
     }
 
     public static final void DeleteChar(ClientPacket p, final MapleClient c) {
+        byte state = 0;
+        // BB後
+        if (ServerConfig.version >= 188) {
+            String MapleID = p.DecodeStr();
+            if (!MapleID.equals(c.getAccountName())) {
+                // state = 0以外にすると切断されます
+            }
+        }
         final int Character_ID = p.Decode4();
 
         if (!c.login_Auth(Character_ID)) {
             c.getSession().close();
-            return; // Attempting to delete other character
+            return;
         }
-
-        byte state = 0;
 
         if (state == 0) {
             state = (byte) c.deleteCharacter(Character_ID);
