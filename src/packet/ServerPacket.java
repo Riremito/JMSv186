@@ -25,6 +25,16 @@ public class ServerPacket {
         encoded += 2;
     }
 
+    public boolean SetHello() {
+        if (encoded < 2) {
+            return false;
+        }
+        int data_size = encoded - 2;
+        packet.set(0, (byte) (data_size & 0xFF));
+        packet.set(1, (byte) ((data_size >> 8) & 0xFF));
+        return true;
+    }
+
     public void Encode1(byte b) {
         packet.add(b);
         encoded += 1;

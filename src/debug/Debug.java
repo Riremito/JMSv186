@@ -25,8 +25,8 @@ public class Debug {
         DebugLog("[CP] " + p.Packet());
     }
 
-    public static void DebugInPacket(ServerPacket p) {
-        //DebugLog("[DebugInPacket] " + p.Packet());
+    public static void DebugPacket(ServerPacket p) {
+        DebugLog("[SP] " + p.Packet());
     }
 
     public static void DebugSendPacket(byte b[]) {

@@ -28,6 +28,7 @@ import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
 import constants.GameConstants;
+import debug.Debug;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.login.LoginServer;
@@ -43,12 +44,14 @@ public class LoginPacket {
 
     // サーバーのバージョン情報
     public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.HELLO);
+        ServerPacket p = new ServerPacket(ServerPacket.Header.HELLO); // dummy header
         p.Encode2(ServerConfig.version);
         p.EncodeStr(String.valueOf(ServerConfig.version_sub));
         p.EncodeBuffer(recvIv);
         p.EncodeBuffer(sendIv);
         p.Encode1(3);
+        // ヘッダにサイズを書き込む
+        p.SetHello();
         return p.Get();
     }
 
