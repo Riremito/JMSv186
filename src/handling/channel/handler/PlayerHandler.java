@@ -1044,7 +1044,7 @@ public class PlayerHandler {
     }
 
     public static final void ChangeMapSpecial(ClientPacket p, final MapleClient c) {
-        byte unk = p.Decode1();
+        p.Decode1();
         String portal_name = p.DecodeStr();
 
         final MaplePortal portal = c.getPlayer().getMap().getPortal(portal_name);

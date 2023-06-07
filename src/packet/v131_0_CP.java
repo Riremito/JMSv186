@@ -20,5 +20,10 @@ public class v131_0_CP {
         ClientPacket.Header.CP_UserMigrateToCashShopRequest.Set(0x0017);
         ClientPacket.Header.CP_UserChat.Set(0x001F);
 
+        ClientPacket.Header.CP_UserSelectNpc.Set(0x0025);
+        ClientPacket.Header.CP_UserScriptMessageAnswer.Set(0x0026);
+        ClientPacket.Header.CP_UserShopRequest.Set(0x0027);
+        ClientPacket.Header.CP_UserTrunkRequest.Set(0x0028);
+
     }
 }

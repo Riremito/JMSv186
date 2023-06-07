@@ -37,18 +37,17 @@ public class ChatHandler {
 
     public static final void GeneralChat(ClientPacket p, final MapleClient c) {
         MapleCharacter chr = c.getPlayer();
-        int timestamp = 0;
         byte unk = 0;
 
         if (ServerConfig.version > 176) {
-            timestamp = p.Decode4();
+            p.Decode4();
         }
+
+        String text = p.DecodeStr();
 
         if (ServerConfig.version >= 164) {
             unk = p.Decode1();
         }
-
-        String text = p.DecodeStr();
 
         if (chr != null && !CommandProcessor.processCommand(c, text, CommandType.NORMAL)) {
             if (!chr.isGM() && text.length() >= 70) {

@@ -17,5 +17,9 @@ public class v131_0_SP {
 
         ServerPacket.Header.LP_MigrateCommand.Set(0x0009); // CC
         ServerPacket.Header.LP_UserChat.Set(0x0063); // chat
+
+        ServerPacket.Header.LP_NpcEnterField.Set(0x00AF);
+        ServerPacket.Header.LP_NpcLeaveField.Set(ServerPacket.Header.LP_NpcEnterField.Get() + 1);
+        ServerPacket.Header.LP_NpcChangeController.Set(ServerPacket.Header.LP_NpcEnterField.Get() + 2);
     }
 }

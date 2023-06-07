@@ -62,13 +62,11 @@ public class ClientPacket {
 
     public String DecodeStr() {
         int length = Decode2();
-        byte[] buffer = new byte[length + 1];
+        byte[] buffer = new byte[length];
 
         for (int i = 0; i < length; i++) {
             buffer[i] = Decode1();
         }
-
-        buffer[length] = 0;
 
         return new String(buffer);
     }
