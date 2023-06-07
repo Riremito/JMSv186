@@ -17,8 +17,12 @@ import packet.ServerPacket;
 import packet.ClientPacket;
 import packet.v131_0_CP;
 import packet.v131_0_SP;
+import packet.v164_0_CP;
+import packet.v164_0_SP;
 import packet.v186_1_CP;
 import packet.v186_1_SP;
+import packet.v188_0_CP;
+import packet.v188_0_SP;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.MapleLifeFactory;
@@ -43,16 +47,14 @@ public class Start {
         Debug.InfoLog("JMS v" + ServerConfig.version + "." + ServerConfig.version_sub);
 
         switch (ServerConfig.version) {
-            // 現存する一番古いクライアント
             case 131: {
                 v131_0_CP.Set();
                 v131_0_SP.Set();
                 break;
             }
-            // ゴミ
             case 164: {
-                ClientPacket.SetForJMSv164();
-                ServerPacket.SetForJMSv164();
+                v164_0_CP.Set();
+                v164_0_SP.Set();
                 break;
             }
             // ゴミ
@@ -67,7 +69,6 @@ public class Start {
                 ServerPacket.SetForJMSv184();
                 break;
             }
-            // ゴミ
             case 186: {
                 v186_1_CP.Set();
                 v186_1_SP.Set();
@@ -83,8 +84,8 @@ public class Start {
                 break;
             }
             case 188: {
-                ClientPacket.SetForJMSv188();
-                ServerPacket.SetForJMSv188();
+                v188_0_CP.Set();
+                v188_0_SP.Set();
                 break;
             }
             // 起動早い
