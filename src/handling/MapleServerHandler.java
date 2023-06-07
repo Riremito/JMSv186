@@ -318,6 +318,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
     // Point Shop
     public static final boolean handlePointShopPacket(final ClientPacket.Header header, final SeekableLittleEndianAccessor p, final MapleClient c) throws Exception {
+
         switch (header) {
             case CP_MigrateIn: {
                 // +p
@@ -416,6 +417,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
     public static final boolean handleGamePacket(final SeekableLittleEndianAccessor p, final MapleClient c, ClientPacket op) throws Exception {
         short header = op.Decode2();
         ClientPacket.Header type = ClientPacket.ToHeader(header);
+
+        if (ServerConfig.debug) {
+            Debug.DebugPacket(op);
+        }
 
         // CClientSocket::ProcessUserPacket
         // CUser::OnPacket

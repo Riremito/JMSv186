@@ -10,5 +10,10 @@ public class v131_0_SP {
         ServerPacket.Header.LP_CheckDuplicatedIDResult.Set(0x0006);
         ServerPacket.Header.LP_CreateNewCharacterResult.Set(0x0007);
         ServerPacket.Header.LP_DeleteCharacterResult.Set(0x0008);
+
+        ServerPacket.Header.LP_SetField.Set(0x0047);
+
+        ServerPacket.Header.LP_SetCashShop.Set(0x0048);
+        ServerPacket.Header.LP_SetITC.Set(0x0049);
     }
 }
