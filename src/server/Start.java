@@ -17,6 +17,8 @@ import packet.ServerPacket;
 import packet.ClientPacket;
 import packet.v131_0_CP;
 import packet.v131_0_SP;
+import packet.v186_1_CP;
+import packet.v186_1_SP;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.MapleLifeFactory;
@@ -61,16 +63,15 @@ public class Start {
             }
             // ゴミ
             case 184: {
-
                 ClientPacket.SetForJMSv184();
                 ServerPacket.SetForJMSv184();
                 break;
             }
             // ゴミ
             case 186: {
+                v186_1_CP.Set();
+                v186_1_SP.Set();
 
-                ClientPacket.SetForJMSv186();
-                ServerPacket.SetForJMSv186();
                 ClientPacket.SetCustomHeader();
                 ServerPacket.SetCustomHeader();
                 break;
@@ -105,14 +106,8 @@ public class Start {
                 break;
             }
             default: {
-                if (ServerConfig.version <= 186) {
-                    ClientPacket.SetForJMSv186();
-                    ServerPacket.SetForJMSv186();
-                } else {
-                    ClientPacket.SetForJMSv188();
-                    ServerPacket.SetForJMSv188();
-                }
-                break;
+                Debug.InfoLog("the version is not supported!");
+                return;
             }
         }
 
