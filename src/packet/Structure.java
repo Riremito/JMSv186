@@ -465,12 +465,17 @@ public class Structure {
                 } else {
                     data.Encode2(equip.getFlag());
                 }
+
                 if (ServerConfig.version <= 131) {
+                    if (!hasUniqueId) {
+                        data.Encode8(equip.getPosition() <= 0 ? -1 : item.getUniqueId());
+                    }
                     return data.Get().getBytes();
                 }
 
                 data.Encode1(0);
                 data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // Item level
+
                 if (hasUniqueId) {
                     data.Encode4(0);
                 } else {
