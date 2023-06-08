@@ -3,18 +3,6 @@ package packet;
 public class v131_0_SP {
 
     public static void Set() {
-        ServerPacket.Header.LP_UserChat.Set(0x0063); // chat
-
-        ServerPacket.Header.LP_NpcEnterField.Set(0x00AF);
-        ServerPacket.Header.LP_NpcLeaveField.Set(ServerPacket.Header.LP_NpcEnterField.Get() + 1);
-        ServerPacket.Header.LP_NpcChangeController.Set(ServerPacket.Header.LP_NpcEnterField.Get() + 2);
-
-        ServerPacket.Header.LP_ScriptMessage.Set(0x00E9); // NPC会話
-        ServerPacket.Header.LP_OpenShopDlg.Set(0x00EC); // NPC Shop
-        ServerPacket.Header.LP_ShopResult.Set(0x00ED);
-        ServerPacket.Header.LP_TrunkResult.Set(0x00EF); // 倉庫
-
-        // TESTEST
         // ログインサーバー
         // CLogin::OnPacket
         ServerPacket.Header.LP_BEGIN_SOCKET.Set(0);

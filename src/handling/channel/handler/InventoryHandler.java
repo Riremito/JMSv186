@@ -45,6 +45,7 @@ import client.PlayerStats;
 import constants.GameConstants;
 import client.SkillFactory;
 import client.anticheat.CheatingOffense;
+import config.ServerConfig;
 import debug.DebugScriptManager;
 import handling.world.MaplePartyCharacter;
 import handling.world.World;
@@ -989,7 +990,9 @@ public class InventoryHandler {
     }
 
     public static final void UseCashItem(final SeekableLittleEndianAccessor slea, final MapleClient c, ClientPacket op) {
-        c.getPlayer().updateTick(slea.readInt());
+        if (ServerConfig.version > 131) {
+            c.getPlayer().updateTick(slea.readInt());
+        }
         final byte slot = (byte) slea.readShort();
         final int itemId = slea.readInt();
 

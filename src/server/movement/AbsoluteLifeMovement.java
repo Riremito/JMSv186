@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.movement;
 
+import config.ServerConfig;
 import java.awt.Point;
 
 import tools.data.output.LittleEndianWriter;
@@ -63,7 +64,9 @@ public class AbsoluteLifeMovement extends AbstractLifeMovement {
         lew.writePos(getPosition());
         lew.writePos(pixelsPerSecond);
         lew.writeShort(unk);
-        lew.writePos(offset);
+        if (ServerConfig.version > 131) {
+            lew.writePos(offset);
+        }
         lew.write(getNewstate());
         lew.writeShort(getDuration());
     }

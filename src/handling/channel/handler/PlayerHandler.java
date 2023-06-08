@@ -950,13 +950,16 @@ public class PlayerHandler {
         if (chr == null) {
             return;
         }
-        final Point Original_Pos = chr.getPosition(); // 4 bytes Added on v.80 MSEA
 
-        if (ServerConfig.version == 164) {
+        if (ServerConfig.version <= 131) {
+            slea.skip(1);
+        } else if (ServerConfig.version == 164) { // broken
             slea.skip(9);
         } else {
             slea.skip(37);
         }
+
+        final Point Original_Pos = (ServerConfig.version <= 131) ? slea.readPos() : chr.getPosition();
 
         // log.trace("Movement command received: unk1 {} unk2 {}", new Object[] { unk1, unk2 });
         List<LifeMovementFragment> res;
@@ -968,6 +971,20 @@ public class PlayerHandler {
         }
 
         if (res != null && c.getPlayer().getMap() != null) { // TODO more validation of input data
+            if (ServerConfig.version <= 131) {
+                final MapleMap map = c.getPlayer().getMap();
+                MovementParse.updatePosition(res, chr, 0);
+                final Point pos = chr.getPosition(); // chr.getTruePosition
+                map.movePlayer(chr, pos);
+                if (chr.isHidden()) {
+                    chr.setLastRes(res);
+                    c.getPlayer().getMap().broadcastGMMessage(chr, MaplePacketCreator.movePlayer(chr.getId(), res, Original_Pos), false);
+                } else {
+                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.movePlayer(chr.getId(), res, Original_Pos), false);
+                }
+                return;
+            }
+
             if (slea.available() < 13 || slea.available() > 26) {
                 if (ServerConfig.version != 164) {
                     System.out.println("slea.available != 13-26 (movement parsing error)\n" + slea.toString(true));

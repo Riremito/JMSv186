@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.channel.handler;
 
+import config.ServerConfig;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,17 @@ public class MovementParse {
                     final short xwobble = lea.readShort();
                     final short ywobble = lea.readShort();
                     final short unk = lea.readShort();
+
+                    if (ServerConfig.version <= 131) {
+                        final byte newstate = lea.readByte();
+                        final short duration = lea.readShort();
+                        final AbsoluteLifeMovement alm = new AbsoluteLifeMovement(command, new Point(xpos, ypos), duration, newstate);
+                        alm.setUnk(unk);
+                        alm.setPixelsPerSecond(new Point(xwobble, ywobble));
+                        res.add(alm);
+                        return res;
+                    }
+
                     final short xoffset = lea.readShort();
                     final short yoffset = lea.readShort();
                     final byte newstate = lea.readByte();

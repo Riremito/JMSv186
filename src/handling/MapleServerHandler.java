@@ -742,7 +742,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserUpgradeItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
-                if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) p.readShort(), c, c.getPlayer())) {
+                if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (ServerConfig.version > 131) ? (byte) p.readShort() : (byte) p.readByte(), c, c.getPlayer())) {
                     c.getPlayer().saveToDB(false, false);
                 }
                 return true;

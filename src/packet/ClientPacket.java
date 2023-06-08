@@ -90,13 +90,13 @@ public class ClientPacket {
         // Names from v95 PDB
         // ログインサーバー
         CP_BEGIN_SOCKET,
-        CP_CheckPassword,
+        CP_CheckPassword, // LOGIN_PASSWORD
         CP_Check2ndPassword, // v188 test
         CP_Check2ndPassword_cancel, // v188 test
         //CP_GuestIDLogin,
         CP_AccountInfoRequest,
-        CP_WorldInfoRequest,
-        CP_SelectWorld,
+        CP_WorldInfoRequest, // SERVERLIST_REQUEST
+        CP_SelectWorld, // CHARLIST_REQUEST
         CP_CheckUserLimit,
         //CP_ConfirmEULA,
         //CP_SetGender,
@@ -110,12 +110,12 @@ public class ClientPacket {
         //CP_CheckNameChangePossible,
         //CP_RegisterNewCharacter,
         //CP_CheckTransferWorldPossible,
-        CP_SelectCharacter,
-        CP_MigrateIn,
-        CP_CheckDuplicatedID,
-        CP_CreateNewCharacter,
+        CP_SelectCharacter, // CHAR_SELECT
+        CP_MigrateIn, // PLAYER_LOGGEDIN
+        CP_CheckDuplicatedID, // CHECK_CHAR_NAME
+        CP_CreateNewCharacter, // CREATE_CHAR
         CP_CreateNewCharacterInCS,
-        CP_DeleteCharacter,
+        CP_DeleteCharacter, // DELETE_CHAR
         CP_AliveAck,
         CP_ExceptionLog,
         CP_SecurityPacket,
@@ -133,33 +133,33 @@ public class ClientPacket {
         CP_END_SOCKET,
         // ゲームサーバー
         CP_BEGIN_USER,
-        CP_UserTransferFieldRequest,
-        CP_UserTransferChannelRequest,
-        CP_UserMigrateToCashShopRequest,
-        CP_UserMove,
-        CP_UserSitRequest,
-        CP_UserPortableChairSitRequest,
-        CP_UserMeleeAttack,
-        CP_UserShootAttack,
-        CP_UserMagicAttack,
+        CP_UserTransferFieldRequest, // CHANGE_MAP
+        CP_UserTransferChannelRequest, // CHANGE_CHANNEL
+        CP_UserMigrateToCashShopRequest, // ENTER_CASH_SHOP
+        CP_UserMove, // MOVE_PLAYER
+        CP_UserSitRequest, // CANCEL_CHAIR
+        CP_UserPortableChairSitRequest, // USE_CHAIR
+        CP_UserMeleeAttack, // CLOSE_RANGE_ATTACK
+        CP_UserShootAttack, // RANGED_ATTACK
+        CP_UserMagicAttack, // MAGIC_ATTACK
         CP_UserBodyAttack,
         //CP_UserMovingShootAttackPrepare,
-        CP_UserHit,
+        CP_UserHit, // TAKE_DAMAGE
         CP_UserAttackUser,
-        CP_UserChat,
+        CP_UserChat, // GENERAL_CHAT
         CP_UserADBoardClose,
-        CP_UserEmotion,
-        CP_UserActivateEffectItem,
+        CP_UserEmotion, // FACE_EXPRESSION
+        CP_UserActivateEffectItem, // USE_ITEMEFFECT
         CP_UserUpgradeTombEffect,
         CP_UserHP,
         CP_Premium,
         CP_UserBanMapByMob,
         CP_UserMonsterBookSetCover,
-        CP_UserSelectNpc,
+        CP_UserSelectNpc, // NPC_TALK
         CP_UserRemoteShopOpenRequest,
-        CP_UserScriptMessageAnswer,
-        CP_UserShopRequest,
-        CP_UserTrunkRequest,
+        CP_UserScriptMessageAnswer, // NPC_TALK_MORE
+        CP_UserShopRequest, // NPC_SHOP
+        CP_UserTrunkRequest, // STORAGE
         CP_UserEntrustedShopRequest,
         CP_UserStoreBankRequest,
         CP_UserParcelRequest,
@@ -169,49 +169,49 @@ public class ClientPacket {
         CP_AdminShopRequest,
         CP_UserGatherItemRequest,
         CP_UserSortItemRequest,
-        CP_UserChangeSlotPositionRequest,
-        CP_UserStatChangeItemUseRequest,
-        CP_UserStatChangeItemCancelRequest,
+        CP_UserChangeSlotPositionRequest, // ITEM_MOVE
+        CP_UserStatChangeItemUseRequest, // USE_ITEM
+        CP_UserStatChangeItemCancelRequest, // CANCEL_ITEM_EFFECT
         CP_UserStatChangeByPortableChairRequest,
-        CP_UserMobSummonItemUseRequest,
-        CP_UserPetFoodItemUseRequest,
-        CP_UserTamingMobFoodItemUseRequest,
+        CP_UserMobSummonItemUseRequest, // USE_SUMMON_BAG
+        CP_UserPetFoodItemUseRequest, // PET_FOOD
+        CP_UserTamingMobFoodItemUseRequest, // USE_MOUNT_FOOD
         CP_UserScriptItemUseRequest,
-        CP_UserConsumeCashItemUseRequest,
+        CP_UserConsumeCashItemUseRequest, // USE_CASH_ITEM
         CP_UserDestroyPetItemRequest,
-        CP_UserBridleItemUseRequest,
-        CP_UserSkillLearnItemUseRequest,
+        CP_UserBridleItemUseRequest, // USE_CATCH_ITEM
+        CP_UserSkillLearnItemUseRequest, // USE_SKILL_BOOK
         //CP_UserSkillResetItemUseRequest,
-        CP_UserShopScannerItemUseRequest,
-        CP_UserMapTransferItemUseRequest,
-        CP_UserPortalScrollUseRequest,
-        CP_UserUpgradeItemUseRequest,
+        CP_UserShopScannerItemUseRequest, // USE_OWL_MINERVA
+        CP_UserMapTransferItemUseRequest, // USE_TELE_ROCK
+        CP_UserPortalScrollUseRequest, // USE_RETURN_SCROLL
+        CP_UserUpgradeItemUseRequest, // USE_UPGRADE_SCROLL
         CP_UserHyperUpgradeItemUseRequest,
         CP_UserItemOptionUpgradeItemUseRequest,
         //CP_UserUIOpenItemUseRequest,
         CP_UserItemReleaseRequest,
-        CP_UserAbilityUpRequest,
+        CP_UserAbilityUpRequest, // DISTRIBUTE_AP
         CP_UserAbilityMassUpRequest,
-        CP_UserChangeStatRequest,
+        CP_UserChangeStatRequest, // HEAL_OVER_TIME
         CP_UserChangeStatRequestByItemOption,
-        CP_UserSkillUpRequest,
-        CP_UserSkillUseRequest,
-        CP_UserSkillCancelRequest,
-        CP_UserSkillPrepareRequest,
-        CP_UserDropMoneyRequest,
-        CP_UserGivePopularityRequest,
+        CP_UserSkillUpRequest, // DISTRIBUTE_SP
+        CP_UserSkillUseRequest, // SPECIAL_MOVE
+        CP_UserSkillCancelRequest, // CANCEL_BUFF
+        CP_UserSkillPrepareRequest, // SKILL_EFFECT
+        CP_UserDropMoneyRequest, // MESO_DROP
+        CP_UserGivePopularityRequest, // GIVE_FAME
         CP_UserPartyRequest,
-        CP_UserCharacterInfoRequest,
-        CP_UserActivatePetRequest,
-        CP_UserTemporaryStatUpdateRequest,
-        CP_UserPortalScriptRequest,
-        CP_UserPortalTeleportRequest,
-        CP_UserMapTransferRequest,
+        CP_UserCharacterInfoRequest, // CHAR_INFO_REQUEST
+        CP_UserActivatePetRequest, // SPAWN_PET
+        CP_UserTemporaryStatUpdateRequest, // CANCEL_DEBUFF
+        CP_UserPortalScriptRequest, // CHANGE_MAP_SPECIAL
+        CP_UserPortalTeleportRequest, // USE_INNER_PORTAL
+        CP_UserMapTransferRequest, // TROCK_ADD_MAP
         CP_UserAntiMacroItemUseRequest,
         CP_UserAntiMacroSkillUseRequest,
         CP_UserAntiMacroQuestionResult,
         CP_UserClaimRequest,
-        CP_UserQuestRequest,
+        CP_UserQuestRequest, // QUEST_ACTION
         CP_UserCalcDamageStatSetRequest,
         CP_UserThrowGrenade,
         CP_UserMacroSysDataModified,
@@ -232,8 +232,8 @@ public class ClientPacket {
         //CP_UserRequestPQReward,
         CP_SetPassenserResult,
         CP_BroadcastMsg,
-        CP_GroupMessage,
-        CP_Whisper,
+        CP_GroupMessage, // PARTYCHAT
+        CP_Whisper, // WHISPER
         //CP_CoupleMessage,
         CP_Messenger,
         CP_MiniRoom,
@@ -291,7 +291,7 @@ public class ClientPacket {
         CP_UserDragonBallBoxRequest,
         CP_UserDragonBallSummonRequest,
         CP_BEGIN_PET,
-        CP_PetMove,
+        CP_PetMove, // MOVE_PET
         CP_PetAction,
         CP_PetInteractionRequest,
         CP_PetDropPickUpRequest,
@@ -319,8 +319,8 @@ public class ClientPacket {
         CP_BEGIN_FIELD,
         CP_BEGIN_LIFEPOOL,
         CP_BEGIN_MOB,
-        CP_MobMove,
-        CP_MobApplyCtrl,
+        CP_MobMove, // MOVE_LIFE
+        CP_MobApplyCtrl, // AUTO_AGGRO
         CP_MobDropPickUpRequest,
         CP_MobHitByObstacle,
         CP_MobHitByMob,
@@ -338,10 +338,10 @@ public class ClientPacket {
         CP_END_NPC,
         CP_END_LIFEPOOL,
         CP_BEGIN_DROPPOOL,
-        CP_DropPickUpRequest,
+        CP_DropPickUpRequest, // ITEM_PICKUP
         CP_END_DROPPOOL,
         CP_BEGIN_REACTORPOOL,
-        CP_ReactorHit,
+        CP_ReactorHit, // DAMAGE_REACTOR
         CP_ReactorTouch,
         CP_RequireFieldObstacleStatus,
         CP_END_REACTORPOOL,
@@ -425,8 +425,8 @@ public class ClientPacket {
         UPDATE_QUEST, // 不明
         QUEST_ITEM, // 不明
         USE_ITEM_QUEST, // 多分Quest Value Addition Exploitのパケット
-        BEANS_OPERATION, // パチンコ
-        BEANS_UPDATE, // パチンコ
+        BEANS_OPERATION, // PACHINKO_GAME, パチンコ
+        BEANS_UPDATE, // PACHINKO_UPDATE, パチンコ
         UNKNOWN_END;
 
         // 定義値の変更や取得

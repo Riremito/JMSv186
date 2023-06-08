@@ -121,7 +121,9 @@ public class SendPacket {
     public static class CashItem {
 
         public static boolean Use(MapleClient c, ClientPacket p) {
-            int timestamp = p.Decode4();
+            if (ServerConfig.version > 131) {
+                p.Decode4();
+            }
             short slotid = p.Decode2();
             int itemid = p.Decode4();
 
