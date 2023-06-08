@@ -55,6 +55,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.io.Serializable;
 
 import client.anticheat.CheatTracker;
+import config.ServerConfig;
 import constants.ServerConstants;
 import database.DatabaseConnection;
 import database.DatabaseException;
@@ -1171,19 +1172,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             pse.close();
 
             deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?");
-            ps = con.prepareStatement("INSERT INTO skills (characterid, skillid, skilllevel, masterlevel, expiration) VALUES (?, ?, ?, ?, ?)");
-            ps.setInt(1, id);
 
-            for (final Entry<ISkill, SkillEntry> skill : skills.entrySet()) {
-                if (GameConstants.isApplicableSkill(skill.getKey().getId())) { //do not save additional skills
-                    ps.setInt(2, skill.getKey().getId());
-                    ps.setByte(3, skill.getValue().skillevel);
-                    ps.setByte(4, skill.getValue().masterlevel);
-                    ps.setLong(5, skill.getValue().expiration);
-                    ps.execute();
+            // wzの読み込みでおかしくなったのでとりあえずコメントアウト
+            if (ServerConfig.version > 131) {
+                ps = con.prepareStatement("INSERT INTO skills (characterid, skillid, skilllevel, masterlevel, expiration) VALUES (?, ?, ?, ?, ?)");
+                ps.setInt(1, id);
+
+                for (final Entry<ISkill, SkillEntry> skill : skills.entrySet()) {
+                    if (GameConstants.isApplicableSkill(skill.getKey().getId())) { //do not save additional skills
+                        ps.setInt(2, skill.getKey().getId());
+                        ps.setByte(3, skill.getValue().skillevel);
+                        ps.setByte(4, skill.getValue().masterlevel);
+                        ps.setLong(5, skill.getValue().expiration);
+                        ps.execute();
+                    }
                 }
+                ps.close();
             }
-            ps.close();
 
             List<MapleCoolDownValueHolder> cd = getCooldowns();
             if (dc && cd.size() > 0) {

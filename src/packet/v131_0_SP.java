@@ -11,6 +11,9 @@ public class v131_0_SP {
         ServerPacket.Header.LP_CreateNewCharacterResult.Set(0x0007);
         ServerPacket.Header.LP_DeleteCharacterResult.Set(0x0008);
 
+        // ログイン画面のボタン
+        ServerPacket.Header.LP_T_UpdateGameGuard.Set(0x0011);
+
         ServerPacket.Header.LP_SetField.Set(0x0047);
         ServerPacket.Header.LP_SetCashShop.Set(0x0048);
         ServerPacket.Header.LP_SetITC.Set(0x0049);
@@ -21,5 +24,9 @@ public class v131_0_SP {
         ServerPacket.Header.LP_NpcEnterField.Set(0x00AF);
         ServerPacket.Header.LP_NpcLeaveField.Set(ServerPacket.Header.LP_NpcEnterField.Get() + 1);
         ServerPacket.Header.LP_NpcChangeController.Set(ServerPacket.Header.LP_NpcEnterField.Get() + 2);
+
+        ServerPacket.Header.LP_ScriptMessage.Set(0x00E9);
+        ServerPacket.Header.LP_OpenShopDlg.Set(0x00EC);
+        ServerPacket.Header.LP_ShopResult.Set(0x00ED);
     }
 }

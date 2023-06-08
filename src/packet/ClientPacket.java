@@ -76,6 +76,8 @@ public class ClientPacket {
         CP_CUSTOM_,
         CP_CUSTOM_WZ_HASH,
         CP_CUSTOM_MEMORY_SCAN,
+        // JMS v131.0
+        CP_T_UpdateGameGuard,
         // Names from v95 PDB
         // ログインサーバー
         CP_BEGIN_SOCKET,

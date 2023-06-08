@@ -12,6 +12,9 @@ public class v131_0_CP {
         ClientPacket.Header.CP_CreateNewCharacter.Set(0x0009);
         ClientPacket.Header.CP_DeleteCharacter.Set(0x000A);
 
+        // GameGuardのUpdateが必要かどうか
+        ClientPacket.Header.CP_T_UpdateGameGuard.Set(0x000F);
+
         ClientPacket.Header.CP_UserTransferFieldRequest.Set(0x0015);
         ClientPacket.Header.CP_UserPortalScriptRequest.Set(0x0048);
         ClientPacket.Header.CP_UserPortalTeleportRequest.Set(0x0049);

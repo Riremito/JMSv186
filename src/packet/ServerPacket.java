@@ -139,6 +139,8 @@ public class ServerPacket {
         LP_CUSTOM_WZ_HASH,
         LP_CUSTOM_CLIENT_PATCH,
         LP_CUSTOM_MEMORY_SCAN,
+        // JMS v131.0
+        LP_T_UpdateGameGuard,
         // Names from v95 PDB
         // ログインサーバー
         LP_BEGIN_SOCKET,

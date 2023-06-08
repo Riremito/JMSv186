@@ -225,6 +225,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
+            // GameGuard
+            case CP_T_UpdateGameGuard: {
+                c.getSession().write(LoginPacket.CheckGameGuardUpdate());
+                break;
+            }
             // ログイン画面
             case CP_CreateSecurityHandle: {
                 // +p

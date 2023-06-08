@@ -323,4 +323,15 @@ public class LoginPacket {
 
         return mplew.getPacket();
     }
+
+    // ログインボタンを有効化するために必要
+    public static MaplePacket CheckGameGuardUpdate() {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_T_UpdateGameGuard);
+
+        // 0 = Update Game Guard
+        // 1 = Enable Login Button
+        p.Encode1(1);
+
+        return p.Get();
+    }
 }
