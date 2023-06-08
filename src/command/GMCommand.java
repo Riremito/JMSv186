@@ -10,7 +10,7 @@ public class GMCommand {
     public static boolean Accept(final SeekableLittleEndianAccessor p, final MapleClient c) {
         byte command = p.readByte();
 
-        Debug.DebugLog("[GM Command] " + String.format("%02X", command));
+        Debug.AdminLog("[GM Command] " + String.format("%02X", command));
 
         switch (command) {
             // /create
@@ -154,7 +154,7 @@ public class GMCommand {
         short text_length = p.readShort();
         byte[] text_bytes = p.read(text_length);
         String text = new String(text_bytes);
-        Debug.DebugLog("[GM Command Text] " + text);
+        Debug.AdminLog("[GM Command Text] " + text);
         return true;
     }
 }

@@ -3,7 +3,7 @@ package handling;
 import constants.ServerConstants;
 import client.MapleClient;
 import command.GMCommand;
-import config.ServerConfig;
+import config.*;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -92,7 +92,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 break;
             }
             default: {
-                Debug.InfoLog("[Unknown Server] Connected " + address);
+                Debug.ErrorLog("[Unknown Server] Connected " + address);
                 break;
             }
         }
@@ -199,9 +199,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         short header = p.Decode2();
         ClientPacket.Header type = ClientPacket.ToHeader(header);
 
-        if (ServerConfig.debug) {
-            Debug.DebugPacket(p);
-        }
+        Debug.PacketLog(p);
 
         switch (type) {
             // 独自実装
@@ -240,7 +238,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_CheckPassword: {
                 if (CharLoginHandler.login(p, c)) {
                     InterServerHandler.SetLogin(false);
-                    Debug.DebugLog("Login MapleID = " + c.getAccountName());
+                    Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
 
                     if (ServerConfig.login_server_antihack && ServerConfig.version == 186) {
                         c.getSession().write(ProcessPacket.Custom.Hash());
@@ -296,7 +294,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // @000F EncodeBuffer(CrashDumpLog)
                 // 起動時に何らかの条件で前回のクラッシュの詳細のテキストが送信される
                 // 文字列で送信されているがnullで終わっていないので注意
-                Debug.DebugPacket(p);
                 return true;
             }
             // キャラクター選択
@@ -311,7 +308,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case REACHED_LOGIN_SCREEN: {
                 // @0018
                 // ログイン画面に到達した場合に送信される
-                Debug.DebugPacket(p);
                 return true;
             }
             default: {
@@ -329,7 +325,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // +p
                 final int playerid = p.readInt();
                 CashShopOperation.EnterCS(playerid, c);
-                Debug.DebugLog(c.getPlayer().getName() + " Enter PointShop");
+                Debug.UserInfoLog(c, "Enter PointShop");
                 return true;
             }
             case CP_UserTransferFieldRequest: {
@@ -388,7 +384,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // +p
                 final int playerid = p.readInt();
                 CashShopOperation.EnterCS(playerid, c);
-                Debug.DebugLog(c.getPlayer().getName() + " Enter MTS");
+                Debug.UserInfoLog(c, "Enter MTS");
                 return true;
             }
             case CP_UserTransferFieldRequest: {
@@ -423,9 +419,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         short header = op.Decode2();
         ClientPacket.Header type = ClientPacket.ToHeader(header);
 
-        if (ServerConfig.debug) {
-            Debug.DebugPacket(op);
-        }
+        Debug.PacketLog(op);
 
         // CClientSocket::ProcessUserPacket
         // CUser::OnPacket
@@ -441,38 +435,31 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // サーバーメッセージ
             case CP_BroadcastMsg: {
-                Debug.DebugPacket(op);
                 return true;
             }
             // GMコマンド
             case CP_Admin: {
-                Debug.DebugPacket(op);
                 return GMCommand.Accept(p, c);
             }
             // GMコマンドの文字列
             case CP_Log: {
-                Debug.DebugPacket(op);
                 return true;
             }
             // 雪玉専用？
             case CP_EventStart: {
-                Debug.DebugPacket(op);
                 return true;
             }
             // MapleTV
             case GM_COMMAND_MAPLETV: {
-                Debug.DebugPacket(op);
                 return true;
             }
             // 未実装的な奴
             case CP_INVITE_PARTY_MATCH: {
                 // @00EE Data: 91 00 00 00 A5 00 00 00 05 00 00 00 FF FF EF 0F
-                Debug.DebugPacket(op);
                 return true;
             }
             case CP_CANCEL_INVITE_PARTY_MATCH: {
                 // @00EF
-                Debug.DebugPacket(op);
                 return true;
             }
             case CP_RaiseUIState: {
@@ -480,19 +467,16 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // @0105 EC 1D 00 00 00
                 // 布製の人形などETCアイテムからUIを開くタイプの処理
                 // 最後の末尾のフラグが01なら開いて、00なら閉じる
-                Debug.DebugPacket(op);
                 return true;
             }
             case CP_RaiseRefesh: {
                 // @0104 EC 1D
                 // ETCアイテムのUIの更新処理だと思われる
-                Debug.DebugPacket(op);
                 return true;
             }
             case CP_RaiseIncExp: {
                 // @0106 60 00 5E 85 3D 00 0D C4 00 00 64 00 00 00
                 // ETCアイテムのUIにアイテムをドロップした際の処理
-                Debug.DebugPacket(op);
                 return true;
             }
             // ウェディング系の謎UI
@@ -501,12 +485,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // アイテムを選択して送る
                 // @0091 08
                 // 出る
-                Debug.DebugPacket(op);
                 return true;
             }
             // グループクエスト or 遠征隊検索
             case CP_PartyAdverRequest: {
-                Debug.DebugPacket(op);
                 return true;
             }
             //
@@ -521,11 +503,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InterServerHandler.Loggedin(playerid, c);
                 if (!InterServerHandler.GetLogin()) {
                     InterServerHandler.SetLogin(true);
-                    Debug.DebugLog(c.getPlayer().getName() + " Login, MapID = " + c.getPlayer().getMapId());
-                    Map<Integer, Integer> connected = World.getConnected();
-                    c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
+                    Debug.UserInfoLog(c, "Enter Game");
+
+                    //Map<Integer, Integer> connected = World.getConnected();
+                    //c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
                 } else {
-                    Debug.DebugLog(c.getPlayer().getName() + " CC, MapID = " + c.getPlayer().getMapId());
+                    //Debug.DebugLog(c.getPlayer().getName() + " CC, MapID = " + c.getPlayer().getMapId());
+                    Debug.UserInfoLog(c, "Change Channel");
                 }
                 return true;
             }
@@ -883,7 +867,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_UserChat: {
-                Debug.DebugPacket(op);
                 ChatHandler.GeneralChat(op, c);
                 return true;
             }

@@ -29,7 +29,9 @@ import client.MapleCharacter;
 import client.MapleCharacterUtil;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import config.DebugConfig;
 import config.ServerConfig;
+import debug.Debug;
 import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
 import handling.login.LoginWorker;
@@ -62,6 +64,8 @@ public class CharLoginHandler {
         if (login.length() >= 5 && login.endsWith("_")) {
             login = login.substring(0, login.length() - 1);
             endwith_ = true;
+
+            Debug.InfoLog("[FEMALE MODE] \"" + login + "\"");
         }
 
         c.setAccountName(login);
@@ -72,6 +76,7 @@ public class CharLoginHandler {
 
         if (loginok == 5) {
             if (c.auto_register(login, pwd) == 1) {
+                Debug.InfoLog("[NEW MAPLEID] \"" + login + "\"");
                 loginok = c.login(login, pwd, ipBan || macBan);
             }
         }
@@ -208,12 +213,8 @@ public class CharLoginHandler {
             item.setPosition((byte) -11);
             equip.addFromDB(item);
 
-            newchar.getInventory(MapleInventoryType.USE).addItem(new Item(2000013, (byte) 0, (short) 100, (byte) 0));
-            newchar.getInventory(MapleInventoryType.USE).addItem(new Item(2000014, (byte) 0, (short) 100, (byte) 0));
-            newchar.getInventory(MapleInventoryType.ETC).addItem(new Item(4161001, (byte) 0, (short) 1, (byte) 0));
-
             if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
-                addInitialItems(newchar);
+                AddStarterSet(newchar);
                 MapleCharacter.saveNewCharToDB(newchar, 1, false);
                 c.getSession().write(LoginPacket.addNewCharEntry(newchar, true));
                 c.createdChar(newchar.getId());
@@ -279,7 +280,7 @@ public class CharLoginHandler {
         }
 
         if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
-            addInitialItems(newchar);
+            AddStarterSet(newchar);
             MapleCharacter.saveNewCharToDB(newchar, JobType, JobType == 1 && db > 0);
 
             c.getSession().write(LoginPacket.addNewCharEntry(newchar, true));
@@ -287,116 +288,6 @@ public class CharLoginHandler {
         } else {
             c.getSession().write(LoginPacket.addNewCharEntry(newchar, false));
         }
-    }
-
-    public static void addInitialItems(final MapleCharacter chr) {
-        MapleInventory use = chr.getInventory(MapleInventoryType.USE);
-        MapleInventory etc = chr.getInventory(MapleInventoryType.ETC);
-        MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIP);
-        MapleInventory cash = chr.getInventory(MapleInventoryType.CASH);
-        MapleInventory setup = chr.getInventory(MapleInventoryType.SETUP);
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-
-        if (ServerConfig.version != 186) {
-            return;
-        }
-        // メル
-        chr.setMeso(5000000);
-
-        // パチンコ玉
-        //chr.setTama(500000);
-        // エリクサー
-        use.addItem(new Item(2000004, (byte) 0, (short) 100, (byte) 0));
-        use.addItem(new Item(2000004, (byte) 0, (short) 100, (byte) 0));
-        use.addItem(new Item(2000004, (byte) 0, (short) 100, (byte) 0));
-        use.addItem(new Item(2000004, (byte) 0, (short) 100, (byte) 0));
-        // 万病治療薬
-        use.addItem(new Item(2050004, (byte) 0, (short) 100, (byte) 0));
-        // コーヒー牛乳
-        use.addItem(new Item(2030008, (byte) 0, (short) 100, (byte) 0));
-        // いちご牛乳
-        use.addItem(new Item(2030009, (byte) 0, (short) 100, (byte) 0));
-        // フルーツ牛乳
-        use.addItem(new Item(2030010, (byte) 0, (short) 100, (byte) 0));
-        // 帰還の書(ヘネシス)
-        use.addItem(new Item(2030004, (byte) 0, (short) 100, (byte) 0));
-        // 強化書
-        use.addItem(new Item(2040303, (byte) 0, (short) 30, (byte) 0));
-        use.addItem(new Item(2040506, (byte) 0, (short) 30, (byte) 0));
-        use.addItem(new Item(2040710, (byte) 0, (short) 30, (byte) 0));
-        use.addItem(new Item(2040807, (byte) 0, (short) 30, (byte) 0));
-        use.addItem(new Item(2044703, (byte) 0, (short) 30, (byte) 0));
-        use.addItem(new Item(2044503, (byte) 0, (short) 30, (byte) 0));
-        use.addItem(new Item(2043803, (byte) 0, (short) 30, (byte) 0));
-        use.addItem(new Item(2043003, (byte) 0, (short) 30, (byte) 0));
-        use.addItem(new Item(2049100, (byte) 0, (short) 100, (byte) 0));
-        use.addItem(new Item(2049003, (byte) 0, (short) 100, (byte) 0));
-
-        if (ServerConfig.version >= 186) {
-            use.addItem(new Item(2049300, (byte) 0, (short) 100, (byte) 0));
-            use.addItem(new Item(2049400, (byte) 0, (short) 100, (byte) 0));
-            use.addItem(new Item(2470000, (byte) 0, (short) 100, (byte) 0));
-        }
-
-        // 魔法の石
-        etc.addItem(new Item(4006000, (byte) 0, (short) 100, (byte) 0));
-        // 召喚の石
-        etc.addItem(new Item(4006001, (byte) 0, (short) 100, (byte) 0));
-
-        // 軍手(茶)
-        equip.addItem(ii.getEquipById(1082149));
-        // ドロシー(銀)
-        equip.addItem(ii.getEquipById(1072264));
-        // 冒険家のマント(黄)
-        equip.addItem(ii.getEquipById(1102040));
-        // 緑ずきん
-        equip.addItem(ii.getEquipById(1002391));
-        // オウルアイ
-        equip.addItem(ii.getEquipById(1022047));
-        // 犬鼻
-        equip.addItem(ii.getEquipById(1012056));
-        // メイプルシールド
-        equip.addItem(ii.getEquipById(1092030));
-        // タオル(黒)
-        equip.addItem(ii.getEquipById(1050127));
-        // バスタオル(黄)
-        equip.addItem(ii.getEquipById(1051140));
-        // エレメントピアス
-        equip.addItem(ii.getEquipById(1032062));
-        if (ServerConfig.version >= 186) {
-            // 錬金術師の指輪
-            equip.addItem(ii.getEquipById(1112400));
-        }
-
-        // ドラゴン(アビス)
-        setup.addItem(new Item(3010047, (byte) 0, (short) 1, (byte) 0));
-
-        // 拡声器
-        cash.addItem(new Item(5071000, (byte) 0, (short) 100, (byte) 0));
-        // アイテム拡声器
-        cash.addItem(new Item(5076000, (byte) 0, (short) 100, (byte) 0));
-        // 黒板
-        cash.addItem(new Item(5370000, (byte) 0, (short) 1, (byte) 0));
-        // 営業許可証
-        cash.addItem(new Item(5140000, (byte) 0, (short) 1, (byte) 0));
-        // 高性能テレポストーン
-        cash.addItem(new Item(5041000, (byte) 0, (short) 100, (byte) 0));
-        // ガシャポンチケット
-        cash.addItem(new Item(5220000, (byte) 0, (short) 100, (byte) 0));
-        if (ServerConfig.version >= 186) {
-            // ビシャスのハンマー
-            cash.addItem(new Item(5570000, (byte) 0, (short) 100, (byte) 0));
-            // ミラクルキューブ
-            cash.addItem(new Item(5062000, (byte) 0, (short) 100, (byte) 0));
-            // ベガの呪文書(10%)
-            cash.addItem(new Item(5610000, (byte) 0, (short) 100, (byte) 0));
-            // ベガの呪文書(60%)
-            cash.addItem(new Item(5610001, (byte) 0, (short) 100, (byte) 0));
-        }
-        // AP再分配の書
-        cash.addItem(new Item(5050000, (byte) 0, (short) 100, (byte) 0));
-        cash.addItem(new Item(5050000, (byte) 0, (short) 100, (byte) 0));
-
     }
 
     public static final void DeleteChar(ClientPacket p, final MapleClient c) {
@@ -435,6 +326,153 @@ public class CharLoginHandler {
         c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
         //c.getSession().write(MaplePacketCreator.getServerIP(Integer.parseInt(ChannelServer.getInstance(c.getChannel()).getIP().split(":")[1]), charId));
         c.getSession().write(MaplePacketCreator.getServerIP(LoginServer.WorldPort[SelectedWorld] + SelectedChannel, charId));
+        return true;
+    }
+
+    // 初期アイテムをキャラクターデータに追加
+    public static boolean AddItem(MapleCharacter chr, int itemid) {
+        return AddItem(chr, itemid, 1);
+    }
+
+    public static boolean AddItem(MapleCharacter chr, int itemid, int count) {
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        // 存在しないitemid
+        if (!ii.itemExists(itemid)) {
+            Debug.ErrorLog("AddItem: " + itemid);
+            return false;
+        }
+
+        switch (itemid / 1000000) {
+            case 1: {
+                MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIP);
+                equip.addItem(ii.getEquipById(itemid));
+                break;
+            }
+            case 2: {
+                MapleInventory use = chr.getInventory(MapleInventoryType.USE);
+                use.addItem(new Item(itemid, (byte) 0, (short) count, (byte) 0));
+                break;
+            }
+            case 3: {
+                MapleInventory setup = chr.getInventory(MapleInventoryType.SETUP);
+                setup.addItem(new Item(itemid, (byte) 0, (short) 1, (byte) 0));
+                break;
+            }
+            case 4: {
+                MapleInventory etc = chr.getInventory(MapleInventoryType.ETC);
+                etc.addItem(new Item(itemid, (byte) 0, (short) count, (byte) 0));
+                break;
+            }
+            case 5: {
+                MapleInventory cash = chr.getInventory(MapleInventoryType.CASH);
+                cash.addItem(new Item(itemid, (byte) 0, (short) count, (byte) 0));
+                break;
+            }
+            default: {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean AddStarterSet(MapleCharacter chr) {
+        if (!DebugConfig.starter_set) {
+            return false;
+        }
+        // メル
+        chr.setMeso(777000000);
+        // パチンコ玉
+        chr.setTama(500000);
+
+        // エリクサー
+        AddItem(chr, 2000004, 100);
+        // 万病治療薬
+        AddItem(chr, 2050004, 100);
+        // コーヒー牛乳
+        AddItem(chr, 2030008, 100);
+        // いちご牛乳
+        AddItem(chr, 2030009, 100);
+        // フルーツ牛乳
+        AddItem(chr, 2030010, 100);
+        // 帰還の書(ヘネシス)
+        AddItem(chr, 2030004, 100);
+        // 強化書
+        AddItem(chr, 2040303, 100);
+        AddItem(chr, 2040506, 100);
+        AddItem(chr, 2040710, 100);
+        AddItem(chr, 2040807, 100);
+        AddItem(chr, 2044703, 100);
+        AddItem(chr, 2044503, 100);
+        AddItem(chr, 2043803, 100);
+        AddItem(chr, 2043003, 100);
+        AddItem(chr, 2049100, 100);
+        AddItem(chr, 2049003, 100);
+
+        if (ServerConfig.version >= 186) {
+            AddItem(chr, 2049300, 100);
+            AddItem(chr, 2049400, 100);
+            AddItem(chr, 2470000, 100);
+        }
+
+        // 魔法の石
+        AddItem(chr, 4006000, 100);
+        // 召喚の石
+        AddItem(chr, 4006001, 100);
+
+        // 軍手(茶)
+        AddItem(chr, 1082149);
+        // ドロシー(銀)
+        AddItem(chr, 1072264);
+        // 冒険家のマント(黄)
+        AddItem(chr, 1102040);
+        // 緑ずきん
+        AddItem(chr, 1002391);
+        // オウルアイ
+        AddItem(chr, 1022047);
+        // 犬鼻
+        AddItem(chr, 1012056);
+        // メイプルシールド
+        AddItem(chr, 1092030);
+        // タオル(黒)
+        AddItem(chr, 1050127);
+        // バスタオル(黄)
+        AddItem(chr, 1051140);
+        // エレメントピアス
+        AddItem(chr, 1032062);
+        if (ServerConfig.version >= 186) {
+            // 錬金術師の指輪
+            AddItem(chr, 1112400);
+        }
+
+        // ドラゴン(アビス)
+        AddItem(chr, 3010047);
+
+        // 拡声器
+        AddItem(chr, 3010047, 100);
+        // アイテム拡声器
+        AddItem(chr, 5076000, 100);
+        // 黒板
+        AddItem(chr, 5370000, 100);
+        // 営業許可証
+        AddItem(chr, 5140000, 100);
+        // 高性能テレポストーン
+        AddItem(chr, 5041000, 100);
+        // ガシャポンチケット
+        AddItem(chr, 5220000, 100);
+        if (ServerConfig.version >= 186) {
+            // ビシャスのハンマー
+            AddItem(chr, 5570000, 100);
+            // ミラクルキューブ
+            AddItem(chr, 5062000, 100);
+            // ベガの呪文書(10%)
+            AddItem(chr, 5610000, 100);
+            // ベガの呪文書(60%)
+            AddItem(chr, 5610001, 100);
+        }
+        // AP再分配の書
+        AddItem(chr, 5050000, 100);
+
         return true;
     }
 }

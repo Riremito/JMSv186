@@ -874,8 +874,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.setString(12, "0,0,0,0,0,0,0,0,0,0"); // Remaining SP
             ps.setShort(13, (short) 0); // Remaining AP
             ps.setByte(14, (byte) 0); // GM Level
-            System.out.println("キャラクター作成: " + chr.name);
-
             ps.setByte(15, chr.skinColor);
             ps.setByte(16, chr.gender);
             ps.setShort(17, chr.job);
@@ -886,7 +884,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 ps.setInt(20, 100000000);
             } else {
                 //ps.setInt(20, type == 1 ? 0 : (type == 0 ? 130030000 : (type == 3 ? 900090000 : 914000000)));
-                ps.setInt(20, 910000000);
+                ps.setInt(20, ServerConfig.first_mapid);
             }
 
             ps.setInt(21, chr.getMeso()); // Meso
@@ -915,6 +913,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             ps.close();
             rs.close();
+
+            Debug.InfoLog("[NEW CHARACTER] \"" + chr.name + "\"");
+
             ps = con.prepareStatement("INSERT INTO queststatus (`queststatusid`, `characterid`, `quest`, `status`, `time`, `forfeited`, `customData`) VALUES (DEFAULT, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
             pse = con.prepareStatement("INSERT INTO queststatusmobs VALUES (DEFAULT, ?, ?, ?)");
             ps.setInt(1, chr.id);

@@ -7,7 +7,6 @@ import java.util.Properties;
 
 public class ServerConfig {
 
-    public static boolean debug = true;
     // Version
     public static short version = 186;
     public static byte version_sub = 1;
@@ -153,9 +152,14 @@ public class ServerConfig {
             p.load(fr);
             fr.close();
         } catch (IOException e) {
-            Debug.InfoLog("設定ファイルが見つかりません (" + path + ")");
+            Debug.ErrorLog("設定ファイルが見つかりません (" + path + ")");
         }
 
         return p;
     }
+
+    // キャラクター作成後の最初のMapID
+    public static int first_mapid = 910000000; // フリーマーケット入口
+    // 存在しないMapIDへ飛んでしまった場合に強制的にワープさせる場所
+    public static int error_mapid = 800000000; // キノコ神社
 }

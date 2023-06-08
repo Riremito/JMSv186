@@ -3,6 +3,8 @@
  */
 package debug;
 
+import client.MapleClient;
+import config.DebugConfig;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import packet.ServerPacket;
@@ -10,49 +12,70 @@ import packet.ClientPacket;
 
 public class Debug {
 
-    // デバッグ出力
-    public static void DebugLog(String text) {
+    private static void Log(String text) {
         System.out.println((new SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ").format(new Date())) + text);
+    }
+
+    // デバッグ出力
+    public static boolean DebugLog(String text) {
+        if (!DebugConfig.log_debug) {
+            return false;
+        }
+
+        Log("[DEBUG] " + text);
+        return true;
     }
 
     // 情報出力
     public static void InfoLog(String text) {
-        System.out.println((new SimpleDateFormat("[yyyy/MM/dd HH:mm:ss] ").format(new Date())) + text);
+        Log("[INFO] " + text);
     }
 
-    // パケット出力
-    public static void DebugPacket(ClientPacket p) {
-        DebugLog("[CP] " + p.Packet());
+    // エラー出力
+    public static void ErrorLog(String text) {
+        Log("[ERROR] " + text);
     }
 
-    public static void DebugPacket(ServerPacket p) {
-        DebugLog("[SP] " + p.Packet());
+    public static boolean UserDebugLog(MapleClient c, String text) {
+        return DebugLog("[" + text + "] [Character = \"" + c.getPlayer().getName() + "\"]");
     }
 
-    public static void DebugSendPacket(byte b[]) {
-        if (b.length < 2) {
-            return;
-        }
-        short header = (short) (((short) b[0] & 0xFF) | (((short) b[1] & 0xFF) << 8));
-        String text = String.format("@%04X", header);
-
-        for (int i = 2; i < b.length; i++) {
-            text += String.format(" %02X", b[i]);
-        }
-        DebugLog("[OutPacket] " + text);
+    public static void UserInfoLog(MapleClient c, String text) {
+        InfoLog("[" + text + "] [Character = \"" + c.getPlayer().getName() + "\"]");
     }
 
-    public static void DebugProcessPacket(byte b[]) {
-        if (b.length < 2) {
-            return;
-        }
-        short header = (short) (((short) b[0] & 0xFF) | (((short) b[1] & 0xFF) << 8));
-        String text = String.format("@%04X", header);
+    public static void UserErrorLog(MapleClient c, String text) {
+        ErrorLog("[" + text + "] [Character = \"" + c.getPlayer().getName() + "\"]");
+    }
 
-        for (int i = 2; i < b.length; i++) {
-            text += String.format(" %02X", b[i]);
+    // 管理用
+    public static boolean AdminLog(String text) {
+        if (!DebugConfig.log_admin) {
+            return false;
         }
-        DebugLog("[InPacket] " + text);
+
+        Log("[ADMIN] " + text);
+        return true;
+    }
+
+    // パケット出力 (Client Packet)
+    public static boolean PacketLog(ClientPacket p) {
+        if (!DebugConfig.log_packet) {
+            return false;
+        }
+
+        Log("[CP][" + p.GetOpcodeName() + "]\n" + p.Packet());
+        return true;
+    }
+
+    // パケット出力 (Server Packet)
+    public static boolean PacketLog(ServerPacket p) {
+        if (!DebugConfig.log_packet) {
+            return false;
+        }
+
+        Log("[SP][" + p.GetOpcodeName() + "]\n" + p.Packet());
+        return true;
     }
 
     // 不要なNPCを設置しない

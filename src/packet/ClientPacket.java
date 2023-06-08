@@ -33,6 +33,15 @@ public class ClientPacket {
         return text;
     }
 
+    public String GetOpcodeName() {
+        if (packet.length < 2) {
+            return Header.UNKNOWN.toString();
+        }
+
+        short header = (short) (((short) packet[0] & 0xFF) | ((short) packet[1] & 0xFF << 8));
+        return ToHeader(header).toString();
+    }
+
     public byte Decode1() {
         return (byte) packet[decoded++];
     }

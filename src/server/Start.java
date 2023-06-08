@@ -43,7 +43,8 @@ public class Start {
         LoginServer.SetWorldConfig();
 
         // 管理画面
-        //tools.admin.main.main();
+        tools.admin.main.main();
+
         Debug.InfoLog("JMS v" + ServerConfig.version + "." + ServerConfig.version_sub);
 
         switch (ServerConfig.version) {
@@ -107,7 +108,7 @@ public class Start {
                 break;
             }
             default: {
-                Debug.InfoLog("the version is not supported!");
+                Debug.ErrorLog("the version is not supported!");
                 return;
             }
         }

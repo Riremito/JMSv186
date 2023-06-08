@@ -150,9 +150,6 @@ public class MaplePacketCreator {
 
         // サーバーの時間?
         p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
-
-        // test
-        Debug.DebugPacket(p);
         return p.Get();
     }
 
