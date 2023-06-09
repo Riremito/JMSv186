@@ -246,11 +246,6 @@ public class Structure {
 
         if (ServerConfig.version > 164) {
             p.Encode2(0);
-            // ログアウトギフト? (16 bytes)
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
         }
 
         return p.Get().getBytes();

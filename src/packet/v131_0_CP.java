@@ -102,7 +102,7 @@ public class v131_0_CP {
             //ClientPacket.Header.CP_MarriageRequest.Set(0x0090);
             //ClientPacket.Header.CP_WeddingWishListRequest.Set(0x0091);
             //ClientPacket.Header.CP_GuildBBS.Set(0x00A4);
-            //ClientPacket.Header.CP_UserMigrateToITCRequest.Set(0x00AA);
+            ClientPacket.Header.CP_UserMigrateToITCRequest.Set(0x0067);
             //ClientPacket.Header.CP_CashGachaponOpenRequest.Set(0x00AB); // CP_CashItemGachaponRequestかも
 
             // ペット
@@ -202,9 +202,19 @@ public class v131_0_CP {
         // ポイントショップ
         ClientPacket.Header.CP_BEGIN_CASHSHOP.Set(0);
         {
-            ClientPacket.Header.CP_CashShopChargeParamRequest.Set(0x009F);
-            ClientPacket.Header.CP_CashShopQueryCashRequest.Set(0x00A0);
+            ClientPacket.Header.CP_CashShopChargeParamRequest.Set(0x009E);
+            ClientPacket.Header.CP_CashShopQueryCashRequest.Set(0x009F);
+            ClientPacket.Header.CP_CashShopCashItemRequest.Set(0x00A0);
+            ClientPacket.Header.CP_CashShopCheckCouponRequest.Set(0x00A1);
         }
         ClientPacket.Header.CP_END_CASHSHOP.Set(0);
+
+        ClientPacket.Header.CP_BEGIN_ITC.Set(0);
+        {
+            ClientPacket.Header.CP_ITCChargeParamRequest.Set(0x00A6); // 充填
+            ClientPacket.Header.CP_ITCQueryCashRequest.Set(0x00A7); // ポイント確認
+            ClientPacket.Header.CP_ITCItemRequest.Set(0x00A8); // 画面操作
+        }
+        ClientPacket.Header.CP_END_ITC.Set(0);
     }
 }

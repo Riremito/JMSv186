@@ -27,6 +27,7 @@ import java.util.List;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.inventory.IItem;
+import config.ServerConfig;
 import server.CashShop;
 import server.CashItemFactory;
 import server.CashItemInfo;
@@ -37,50 +38,29 @@ import tools.Pair;
 import java.util.Map;
 import java.util.Map.Entry;
 import packet.ServerPacket;
+import packet.Structure;
 import server.MTSStorage.MTSItemInfo;
-import tools.HexTool;
 import tools.KoreanDateUtil;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 public class MTSCSPacket {
 
-    private static final byte[] warpCS = HexTool.getByteArrayFromHexString("00 00 00 63 00 74 00 65 00 64 00 2F 00 32 00 00 00 00 00 02 00 11 00 AD 01 08 06 02 00 00 00 33 00 00 00 05 00 13 00 AF 00 08 06 A0 01 14 00 30 E1 7B 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 00 18 00 B2 01 08 06 02 00 00 00 33 00 00 00 08 00 1A 00 B4 00 0A 06 B8 01 14 00 A8 10 88 06 69 00 6C 00 6C 00 2F 00 39 00 30 00 30 00 31 00");
-    //private static final byte[] warpCS = HexTool.getByteArrayFromHexString("07 00 C2 53 10 00 01 00 62 FC 08 00 00 00 5A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 01 FF 00 00 00 00 00 00 00 00 BE DB 3B 01 FF FF 07 00 AE 7E 10 00 01 00 62 54 0B 00 00 00 5A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 01 02 00 00 00 00 00 00 00 00 E4 63 3D 01 FF FF 07 00 88 F4 19 00 01 00 62 B4 14 00 00 00 5A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 01 02 00 00 00 00 00 00 00 00 8F F6 41 01 FF FF 07 00 E0 C8 10 00 01 00 62 EC 13 00 00 00 5A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 01 FF 00 00 00 00 00 00 00 00 90 F6 41 01 FF FF 07 00 B5 D1 10 00 01 00 62 04 10 00 00 00 5A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 01 02 00 00 00 00 00 00 00 00 06 1E 2C 04 FF FF 07 00 10 E4 8A 00 01 00 63 48 3F 00 00 00 5A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 01 02 00 00 00 00 00 00 00 02 67 A1 98 00 68 A1 98 00 67 B5 C4 04 FF FF 07 00 0B 2E 1F 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF 00 FF 00 00 00 00 00 00 00 00 C1 8C 6C 05 80 00 00 00 40 42 0F 00 C1 8C 6C 05 80 00 00 00 20 A1 07 00 00 00 00 30 00 25 00 00 00 00 00 10 00 10 00 44 00 0A 06 98 BA 50 01 50 D3 B1 04 20 00 2D 00 20 00 34 00 34 00 20 00 2C 00 20 00 66 00 6F 00 72 00 20 00 35 00 39 00 73 00 65 00 63 00 73 00 2C 00 20 00 52 00 61 00 6E 00 67 00 65 00 20 00 32 00 30 00 30 00 25 00 00 00 00 00 03 00 0A 00 72 01 0C 06 06 00 00 00 68 00 32 00 39 00 00 00 00 00 00 00 03 00 0D 00");
-
     public static MaplePacket warpCS(MapleClient c) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetCashShop);
 
-        mplew.writeShort(ServerPacket.Header.LP_SetCashShop.Get());
-
-        PacketHelper.addCharacterInfo(mplew, c.getPlayer());
-
-        // 0048BDCF +16172 Buffer(1080)
-        // 0048C403 +17252 WORD
-        // 0048C44A +17254 WORD
-        // 0047FFA8 +17256 BYTE
-        mplew.writeZeroBytes(1500);
-        /*        Collection<CashModInfo> cmi = CashItemFactory.getInstance().getAllModInfo();
-        mplew.writeShort(cmi.size());
-        for (CashModInfo cm : cmi) {
-            addModCashItemInfo(mplew, cm);
+        p.EncodeBuffer(Structure.CharacterInfo(c.getPlayer()));
+        p.EncodeStr(c.getAccountName());
+        p.Encode2(0);
+        if (ServerConfig.version > 164) {
+            p.Encode2(0);
         }
-        mplew.write(warpCS);
-        int[] itemz = CashItemFactory.getInstance().getBestItems();
-        for (int i = 1; i <= 8; i++) {
-            for (int j = 0; j <= 1; j++) {
-                for (int item : itemz) {
-                    mplew.writeInt(i);
-                    mplew.writeInt(j);
-                    mplew.writeInt(item);
-                }
-            }
-        }
-        mplew.writeShort(0); //stock
-        mplew.writeShort(0); //limited goods 1-> A2 35 4D 00 CE FD FD 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 00 00 00 FF FF FF FF FF FF FF FF 06 00 00 00 1F 1C 32 01 A7 3F 32 01 FF FF FF FF FF FF FF FF 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00
-        mplew.write(0); //eventON
-        mplew.writeInt(0);*/
+        p.Encode1(0);
+        p.EncodeZeroBytes(1080);
+        p.Encode2(0);
+        p.Encode2(0);
+        p.Encode1(0);
 
-        return mplew.getPacket();
+        return p.Get();
     }
 
     public static MaplePacket playCashSong(int itemid, String name) {
@@ -552,18 +532,21 @@ public class MTSCSPacket {
 
 //======================================MTS===========================================
     public static final MaplePacket startMTS(final MapleCharacter chr) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SetITC.Get());
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetITC);
 
-        PacketHelper.addCharacterInfo(mplew, chr);
-        mplew.writeMapleAsciiString(chr.getClient().getAccountName());
-        mplew.writeInt(ServerConstants.MTS_MESO);
-        mplew.writeInt(ServerConstants.MTS_TAX);
-        mplew.writeInt(ServerConstants.MTS_BASE);
-        mplew.writeInt(24);
-        mplew.writeInt(168);
-        mplew.writeLong(PacketHelper.getTime(System.currentTimeMillis()));
-        return mplew.getPacket();
+        p.EncodeBuffer(Structure.CharacterInfo(chr));
+        p.EncodeStr(chr.getClient().getAccountName());
+        p.Encode4(ServerConstants.MTS_MESO);
+        p.Encode4(ServerConstants.MTS_TAX);
+        p.Encode4(ServerConstants.MTS_BASE);
+        p.Encode4(24);
+        p.Encode4(168);
+
+        if (ServerConfig.version > 131) {
+            p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
+        }
+
+        return p.Get();
     }
 
     public static final MaplePacket sendMTS(final List<MTSItemInfo> items, final int tab, final int type, final int page, final int pages) {

@@ -432,8 +432,10 @@ public class v131_0_SP {
         // CCashShop::OnPacket
         ServerPacket.Header.LP_BEGIN_CASHSHOP.Set(0);
         {
-            ServerPacket.Header.LP_CashShopChargeParamResult.Set(0x010A);
-            ServerPacket.Header.LP_CashShopQueryCashResult.Set(ServerPacket.Header.LP_CashShopChargeParamResult.Get() + 1);
+            //ServerPacket.Header.LP_CashShopChargeParamResult.Set(0x010A);
+            //ServerPacket.Header.LP_CashShopQueryCashResult.Set(ServerPacket.Header.LP_CashShopChargeParamResult.Get() + 1);
+            ServerPacket.Header.CS_UPDATE.Set(0x010A);
+            ServerPacket.Header.CS_OPERATION.Set(0x010B);
         }
         ServerPacket.Header.LP_END_CASHSHOP.Set(0);
 
@@ -451,11 +453,11 @@ public class v131_0_SP {
         ServerPacket.Header.LP_BEGIN_ITC.Set(0);
         {
             // CITC::OnChargeParamResult
-            //ServerPacket.Header.LP_ITCChargeParamResult.Set(0x018A);
+            ServerPacket.Header.LP_ITCChargeParamResult.Set(0x0119);
             // CITC::OnQueryCashResult
-            //ServerPacket.Header.LP_ITCQueryCashResult.Set(0x018B);
+            ServerPacket.Header.LP_ITCQueryCashResult.Set(0x011A);
             // CITC::OnNormalItemResult
-            //ServerPacket.Header.LP_ITCNormalItemResult.Set(0x018C);
+            ServerPacket.Header.LP_ITCNormalItemResult.Set(0x011B);
         }
         ServerPacket.Header.LP_END_ITC.Set(0);
 

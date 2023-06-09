@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import client.inventory.MapleMount;
 import client.BuddylistEntry;
-import client.ISkill;
 import client.inventory.IItem;
 import constants.GameConstants;
 import client.MapleBuffStat;
@@ -87,13 +86,7 @@ import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import tools.packet.PacketHelper;
 import client.MapleBeans;
-import client.MapleCoolDownValueHolder;
-import client.SkillEntry;
-import client.inventory.IEquip;
-import client.inventory.Item;
-import client.inventory.MapleInventory;
 import config.ServerConfig;
-import debug.Debug;
 import handling.channel.handler.BeanGame;
 import packet.ServerPacket;
 import packet.Structure;
@@ -147,6 +140,12 @@ public class MaplePacketCreator {
         }
         // キャラクター情報
         p.EncodeBuffer(Structure.CharacterInfo(chr));
+
+        // ログアウトギフト?
+        p.Encode4(0);
+        p.Encode4(0);
+        p.Encode4(0);
+        p.Encode4(0);
 
         // サーバーの時間?
         p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
