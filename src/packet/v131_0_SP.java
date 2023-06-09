@@ -32,7 +32,7 @@ public class v131_0_SP {
             //ServerPacket.Header.LP_SkillUseResult.Set(0x001C); // ?
             ServerPacket.Header.LP_GivePopularityResult.Set(0x001D);
             ServerPacket.Header.LP_Message.Set(0x001E);
-            ServerPacket.Header.LP_MemoResult.Set(0x001F);
+            //ServerPacket.Header.LP_MemoResult.Set(0x001F);
             ServerPacket.Header.LP_MapTransferResult.Set(0x0020);
             ServerPacket.Header.LP_InitialQuizStart.Set(0x0021);
             //ServerPacket.Header.LP_ClaimResult.Set(0x002A); // @002A [02-03, 41-47]..., 通報後のダイアログ通知

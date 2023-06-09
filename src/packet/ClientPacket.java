@@ -42,6 +42,15 @@ public class ClientPacket {
         return ToHeader(header).toString();
     }
 
+    public Header GetOpcode() {
+        if (packet.length < 2) {
+            return Header.UNKNOWN;
+        }
+
+        short header = (short) (((short) packet[0] & 0xFF) | ((short) packet[1] & 0xFF << 8));
+        return ToHeader(header);
+    }
+
     public byte Decode1() {
         return (byte) packet[decoded++];
     }

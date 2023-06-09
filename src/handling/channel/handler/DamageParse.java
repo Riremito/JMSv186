@@ -1002,8 +1002,8 @@ public class DamageParse {
         //System.out.println(lea.toString());
         final AttackInfo ret = new AttackInfo();
 
+        lea.skip(1);
         if (ServerConfig.version > 164) {
-            lea.skip(1);
             lea.skip(8);
         }
         ret.tbyte = lea.readByte();
@@ -1016,7 +1016,13 @@ public class DamageParse {
         }
 
         ret.skill = lea.readInt();
-        lea.skip(12); // ORDER [4] bytes on v.79, [4] bytes on v.80, [1] byte on v.82
+
+        if (ServerConfig.version <= 164) {
+            lea.skip(1);
+        } else {
+            lea.skip(12); // ORDER [4] bytes on v.79, [4] bytes on v.80, [1] byte on v.82
+        }
+
         switch (ret.skill) {
             case 5101004: // Corkscrew
             case 15101003: // Cygnus corkscrew
@@ -1030,13 +1036,24 @@ public class DamageParse {
                 ret.charge = 0;
                 break;
         }
-        ret.unk = lea.readByte();
+
+        if (ServerConfig.version > 164) {
+            ret.unk = lea.readByte();
+        }
+
         ret.display = lea.readByte(); // Always zero?
-        ret.animation = lea.readByte();
+
+        if (ServerConfig.version > 164) {
+            ret.animation = lea.readByte();
+        }
+
         lea.skip(1); // Weapon class
         ret.speed = lea.readByte(); // Confirmed
         ret.lastAttackTickCount = lea.readInt(); // Ticks
-        lea.skip(4); //0
+
+        if (ServerConfig.version > 164) {
+            lea.skip(4); //0
+        }
 
         ret.allDamage = new ArrayList<AttackPair>();
 
@@ -1048,20 +1065,24 @@ public class DamageParse {
 
         for (int i = 0; i < ret.targets; i++) {
             oid = lea.readInt();
-//	    System.out.println(tools.HexTool.toString(lea.read(14)));
             lea.skip(14); // [1] Always 6?, [3] unk, [4] Pos1, [4] Pos2, [2] seems to change randomly for some attack
 
             allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
 
             for (int j = 0; j < ret.hits; j++) {
                 damage = lea.readInt();
-                // System.out.println("Damage: " + damage);
                 allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
             }
-            lea.skip(4); // CRC of monster [Wz Editing]
+
+            if (ServerConfig.version > 164) {
+                lea.skip(4);
+            }
             ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
         }
-        ret.position = lea.readPos();
+
+        if (ServerConfig.version > 164) {
+            ret.position = lea.readPos();
+        }
         return ret;
     }
 

@@ -657,7 +657,10 @@ public class MaplePacketCreator {
         mplew.writeInt(cidfrom);
         mplew.write(whiteBG ? 1 : 0);
         mplew.writeMapleAsciiString(text);
-        mplew.write(show);
+
+        if (ServerConfig.version > 131) {
+            mplew.write(show);
+        }
 
         return mplew.getPacket();
     }

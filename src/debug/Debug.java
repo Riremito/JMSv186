@@ -64,6 +64,22 @@ public class Debug {
             return false;
         }
 
+        switch (p.GetOpcode()) {
+            case CP_UserMove:
+            case CP_UserMeleeAttack:
+            case CP_UserShootAttack:
+            case CP_UserMagicAttack:
+            case CP_MobMove:
+            case CP_MobApplyCtrl:
+            case CP_NpcSpecialAction: {
+                return false;
+            }
+            default: {
+                break;
+            }
+
+        }
+
         Log("[CP][" + p.GetOpcodeName() + "]\n" + p.Packet());
         return true;
     }

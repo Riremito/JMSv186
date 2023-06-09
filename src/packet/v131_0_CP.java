@@ -4,7 +4,7 @@ public class v131_0_CP {
 
     public static void Set() {
         // ログインサーバー
-        ClientPacket.Header.CP_BEGIN_SOCKET.Set(0x0000);
+        ClientPacket.Header.CP_BEGIN_SOCKET.Set(0);
         {
             ClientPacket.Header.CP_CheckPassword.Set(0x0001);
             // 0x0002 something
@@ -17,10 +17,10 @@ public class v131_0_CP {
             ClientPacket.Header.CP_DeleteCharacter.Set(0x000A);
             ClientPacket.Header.CP_T_UpdateGameGuard.Set(0x000F); // GameGuardのUpdateが必要かどうか
         }
-        ClientPacket.Header.CP_END_SOCKET.Set(0x001B);
+        ClientPacket.Header.CP_END_SOCKET.Set(0);
 
         // ゲームサーバー
-        ClientPacket.Header.CP_BEGIN_USER.Set(0x001C);
+        ClientPacket.Header.CP_BEGIN_USER.Set(0);
         {
             ClientPacket.Header.CP_UserTransferFieldRequest.Set(0x0015);
             ClientPacket.Header.CP_UserTransferChannelRequest.Set(0x0016);
@@ -138,8 +138,8 @@ public class v131_0_CP {
                 // Mob
                 ClientPacket.Header.CP_BEGIN_MOB.Set(0);
                 {
-                    ClientPacket.Header.CP_MobMove.Set(0x007D);
-                    ClientPacket.Header.CP_MobApplyCtrl.Set(0x007E);
+                    //ClientPacket.Header.CP_MobMove.Set(0x007D);
+                    //ClientPacket.Header.CP_MobApplyCtrl.Set(0x007E);
                     //ClientPacket.Header.CP_MobDropPickUpRequest.Set(0x00C9);
                     //ClientPacket.Header.CP_MobHitByObstacle.Set(0x00CA);
                     //ClientPacket.Header.CP_MobHitByMob.Set(0x00CB);

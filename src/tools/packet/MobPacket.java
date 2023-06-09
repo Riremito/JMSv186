@@ -167,12 +167,11 @@ public class MobPacket {
         mplew.writeInt(life.getObjectId());
         mplew.write(1); // 1 = Control normal, 5 = Control none
         mplew.writeInt(life.getId());
-        if (ServerConfig.version > 164) {
-            addMonsterStatus(mplew, life);
+        if (ServerConfig.version <= 164) {
+            mplew.writeInt(0); // 後でなおす
         } else {
-            mplew.writeInt(0); // something
+            addMonsterStatus(mplew, life);
         }
-        // この辺からおかしい
         mplew.writeShort(life.getPosition().x);
         mplew.writeShort(life.getPosition().y);
         mplew.write(life.getStance());
@@ -191,23 +190,34 @@ public class MobPacket {
         }
         mplew.write(life.getCarnivalTeam());
 
+        if (ServerConfig.version > 131) {
+            mplew.writeInt(0);
+        }
+
         if (ServerConfig.version > 164) {
             mplew.writeInt(0);
         }
-        mplew.writeInt(0);
 
         return mplew.getPacket();
     }
 
     public static void addMonsterStatus(MaplePacketLittleEndianWriter mplew, MapleMonster life) {
-        if (life.getStati().size() <= 0) {
-            life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
+
+        if (ServerConfig.version <= 131) {
+            if (life.getStati().size() <= 1) {
+                life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
+            }
+        } else {
+            if (life.getStati().size() <= 0) {
+                life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
+            }
         }
-        mplew.writeLong(getSpecialLongMask(life.getStati().keySet()));
+        if (ServerConfig.version > 131) {
+            mplew.writeLong(getSpecialLongMask(life.getStati().keySet()));
+        }
+
         mplew.writeLong(getLongMask_NoRef(life.getStati().keySet()));
-        if(ServerConfig.version >= 188){
-            //mplew.writeInt(0);
-        }
+
         boolean ignore_imm = false;
         for (MonsterStatusEffect buff : life.getStati().values()) {
             if (buff.getStati() == MonsterStatus.MAGIC_DAMAGE_REFLECT || buff.getStati() == MonsterStatus.WEAPON_DAMAGE_REFLECT) {
@@ -245,11 +255,13 @@ public class MobPacket {
         mplew.writeInt(life.getObjectId());
         mplew.write(1); // 1 = Control normal, 5 = Control none
         mplew.writeInt(life.getId());
-        if (ServerConfig.version > 164) {
-            addMonsterStatus(mplew, life);
+
+        if (ServerConfig.version <= 164) {
+            mplew.writeInt(0); // 後でなおす
         } else {
-            mplew.writeInt(0);
+            addMonsterStatus(mplew, life);
         }
+
         mplew.writeShort(life.getPosition().x);
         mplew.writeShort(life.getPosition().y);
         mplew.write(life.getStance()); // Bitfield
@@ -257,8 +269,9 @@ public class MobPacket {
         mplew.writeShort(life.getFh()); // Origin FH
         mplew.write(life.isFake() ? -4 : newSpawn ? -2 : -1);
         mplew.write(life.getCarnivalTeam());
-        mplew.writeInt(0);
-        if (ServerConfig.version > 164) {
+
+        if (ServerConfig.version > 131) {
+            mplew.writeInt(0);
             mplew.writeInt(0);
         }
 
