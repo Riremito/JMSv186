@@ -63,7 +63,7 @@ public class LoadData {
         } else {
             MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Cash.img");
 
-            if (ServerConfig.version <= 164) {
+            if (ServerConfig.version < 186) {
                 MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img").getChildByPath("Con");
             } else {
                 MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img");

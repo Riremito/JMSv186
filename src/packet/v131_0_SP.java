@@ -4,7 +4,8 @@ public class v131_0_SP {
 
     public static void Set() {
         // ログインサーバー
-        // CLogin::OnPacket
+        // CLogin::OnPacket, CClientSocket::ProcessPacket
+        // 0052b335 0x0001 - 0x0011, 00463242 0x0009 - 0x0010
         ServerPacket.Header.LP_BEGIN_SOCKET.Set(0);
         {
             ServerPacket.Header.LP_CheckPasswordResult.Set(0x0001);
@@ -21,6 +22,7 @@ public class v131_0_SP {
 
         // ゲームサーバー
         // CWvsContext::OnPacket
+        // 00741e95 0x0016 - 0x0044
         ServerPacket.Header.LP_BEGIN_CHARACTERDATA.Set(0);
         {
             ServerPacket.Header.LP_InventoryOperation.Set(0x0016);

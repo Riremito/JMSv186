@@ -716,7 +716,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                         ret.setQuestAdd(MapleQuest.getInstance(170000), (byte) 0, null); //set it so never again
                     }
                 }
-                ret.skills.put(SkillFactory.getSkill(GameConstants.getBOF_ForJob(ret.job)), new SkillEntry(maxlevel_, (byte) 0, -1));
+
+                // 精霊の祝福
+                final ISkill bofskill = SkillFactory.getSkill(GameConstants.getBOF_ForJob(ret.job));
+
+                if (bofskill != null) {
+                    ret.skills.put(bofskill, new SkillEntry(maxlevel_, (byte) 0, -1));
+                }
+
                 ps.close();
                 rs.close();
                 // END
@@ -858,7 +865,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
 
-            ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, spawnpoint, party, buddyCapacity, monsterbookcover, dojo_pts, dojoRecord, pets, subcategory, marriageId, currentrep, totalrep, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
+            ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, spawnpoint, party, buddyCapacity, monsterbookcover, dojo_pts, dojoRecord, pets, subcategory, marriageId, currentrep, totalrep, accountid, name, world, tama) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
             ps.setInt(1, 1); // Level
             ps.setShort(2, (short) 0); // Fame
             final PlayerStats stat = chr.stats;
@@ -903,6 +910,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.setInt(34, chr.getAccountID());
             ps.setString(35, chr.name);
             ps.setByte(36, chr.world);
+            ps.setInt(37, chr.tama);
             ps.executeUpdate();
 
             rs = ps.getGeneratedKeys();
@@ -1174,22 +1182,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
             deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?");
 
-            // wzの読み込みでおかしくなったのでとりあえずコメントアウト
-            if (ServerConfig.version > 131) {
-                ps = con.prepareStatement("INSERT INTO skills (characterid, skillid, skilllevel, masterlevel, expiration) VALUES (?, ?, ?, ?, ?)");
-                ps.setInt(1, id);
+            ps = con.prepareStatement("INSERT INTO skills (characterid, skillid, skilllevel, masterlevel, expiration) VALUES (?, ?, ?, ?, ?)");
+            ps.setInt(1, id);
 
-                for (final Entry<ISkill, SkillEntry> skill : skills.entrySet()) {
-                    if (GameConstants.isApplicableSkill(skill.getKey().getId())) { //do not save additional skills
-                        ps.setInt(2, skill.getKey().getId());
-                        ps.setByte(3, skill.getValue().skillevel);
-                        ps.setByte(4, skill.getValue().masterlevel);
-                        ps.setLong(5, skill.getValue().expiration);
-                        ps.execute();
-                    }
+            for (final Entry<ISkill, SkillEntry> skill : skills.entrySet()) {
+                if (GameConstants.isApplicableSkill(skill.getKey().getId())) { //do not save additional skills
+                    ps.setInt(2, skill.getKey().getId());
+                    ps.setByte(3, skill.getValue().skillevel);
+                    ps.setByte(4, skill.getValue().masterlevel);
+                    ps.setLong(5, skill.getValue().expiration);
+                    ps.execute();
                 }
-                ps.close();
             }
+            ps.close();
 
             List<MapleCoolDownValueHolder> cd = getCooldowns();
             if (dc && cd.size() > 0) {
@@ -3112,6 +3117,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public byte getSkillLevel(final ISkill skill) {
+        // 存在しないスキルID
+        if (skill == null) {
+            return 0;
+        }
+
         final SkillEntry ret = skills.get(skill);
         if (ret == null || ret.skillevel <= 0) {
             return 0;
@@ -3124,6 +3134,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public byte getMasterLevel(final ISkill skill) {
+        // 存在しないスキルID
+        if (skill == null) {
+            return 0;
+        }
         final SkillEntry ret = skills.get(skill);
         if (ret == null) {
             return 0;

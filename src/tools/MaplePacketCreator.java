@@ -263,6 +263,11 @@ public class MaplePacketCreator {
             mplew.write(0);
             mplew.write(0);
             mplew.write(0);
+            mplew.write(0);
+            mplew.write(0);
+            mplew.write(0);
+            mplew.write(0);
+            mplew.write(0);
         }
 
         return mplew.getPacket();
@@ -1756,7 +1761,11 @@ public class MaplePacketCreator {
                 secondmask |= statup.getLeft().getValue();
             }
         }
-        mplew.writeLong(firstmask);
+
+        if (ServerConfig.version > 131) {
+            mplew.writeLong(firstmask);
+        }
+
         mplew.writeLong(secondmask);
     }
 
@@ -1909,9 +1918,13 @@ public class MaplePacketCreator {
         for (Pair<MapleBuffStat, Integer> statup : statups) {
             mplew.writeShort(statup.getRight().shortValue());
             mplew.writeInt(buffid);
-            mplew.writeInt(bufflength);
-            if (buffid == 4331003) {
-                mplew.writeZeroBytes(10);
+            if (ServerConfig.version <= 131) {
+                mplew.writeShort(bufflength);
+            } else {
+                mplew.writeInt(bufflength);
+                if (buffid == 4331003) {
+                    mplew.writeZeroBytes(10);
+                }
             }
         }
         mplew.writeShort(0); // delay,  wk charges have 600 here o.o
@@ -2381,7 +2394,10 @@ public class MaplePacketCreator {
         mplew.writeInt(skillid);
         mplew.writeInt(level);
         mplew.writeInt(masterlevel);
-        PacketHelper.addExpirationTime(mplew, expiration);
+
+        if (ServerConfig.version > 131) {
+            PacketHelper.addExpirationTime(mplew, expiration);
+        }
         mplew.write(4);
 
         return mplew.getPacket();

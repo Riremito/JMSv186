@@ -35,7 +35,6 @@ import client.SkillEntry;
 import client.BuddylistEntry;
 import client.CharacterNameAndId;
 import client.inventory.MaplePet;
-import config.ServerConfig;
 import server.quest.MapleQuest;
 import tools.Pair;
 import java.util.ArrayList;
@@ -162,11 +161,8 @@ public class CharacterTransfer implements Externalizable {
         this.mbook = chr.getMonsterBook().getCards();
         this.inventorys = chr.getInventorys();
 
-        // エラーするのでとりあえず無視
-        if (ServerConfig.version > 131) {
-            for (final Map.Entry<ISkill, SkillEntry> qs : chr.getSkills().entrySet()) {
-                this.Skills.put(qs.getKey().getId(), qs.getValue());
-            }
+        for (final Map.Entry<ISkill, SkillEntry> qs : chr.getSkills().entrySet()) {
+            this.Skills.put(qs.getKey().getId(), qs.getValue());
         }
 
         this.BlessOfFairy = chr.getBlessOfFairyOrigin();

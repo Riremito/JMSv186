@@ -99,7 +99,7 @@ public class LoginPacket {
             p.Encode1(0);
         }
 
-        if (ServerConfig.version > 164) {
+        if (ServerConfig.version > 165) {
             p.Encode1(0);
         }
 

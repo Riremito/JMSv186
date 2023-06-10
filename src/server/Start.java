@@ -58,6 +58,12 @@ public class Start {
                 v164_0_SP.Set();
                 break;
             }
+            // test
+            case 165: {
+                v164_0_CP.Set();
+                v164_0_SP.Set();
+                break;
+            }
             // ゴミ
             case 176: {
                 ClientPacket.SetForJMSv176();

@@ -201,7 +201,7 @@ public class Structure {
         p.Encode1(chr.getBuddylist().getCapacity());
 
         // 精霊の祝福
-        if (ServerConfig.version > 164) {
+        if (ServerConfig.version >= 165) {
             if (chr.getBlessOfFairyOrigin() != null) {
                 p.Encode1(1);
                 p.EncodeStr(chr.getBlessOfFairyOrigin());
@@ -238,7 +238,6 @@ public class Structure {
             // [addMonsterBookInfo]
             p.EncodeBuffer(addMonsterBookInfo(chr));
             // [QuestInfoPacket]
-
             p.EncodeBuffer(QuestInfoPacket(chr));
             // PQ rank?
             p.Encode2(0);
@@ -251,7 +250,6 @@ public class Structure {
         return p.Get().getBytes();
     }
 
-    // v131なんかおかしい
     public static final byte[] InventoryInfo(MapleCharacter chr) {
         ServerPacket p = new ServerPacket();
         // メル
@@ -552,18 +550,16 @@ public class Structure {
     public static final byte[] addSkillInfo(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        // シグナス騎士団が存在しないので精霊の祝福が存在しない (スキルID 0000012) を除外する必要がある
-        if (ServerConfig.version <= 164 || ServerConfig.version >= 187) {
-            data.Encode2(0);
-            return data.Get().getBytes();
-        }
-
         final Map<ISkill, SkillEntry> skills = chr.getSkills();
         data.Encode2(skills.size());
         for (final Map.Entry<ISkill, SkillEntry> skill : skills.entrySet()) {
             data.Encode4(skill.getKey().getId());
             data.Encode4(skill.getValue().skillevel);
-            data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
+
+            if (ServerConfig.version > 164) {
+                data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
+            }
+
             if (skill.getKey().isFourthJob()) {
                 data.Encode4(skill.getValue().masterlevel);
             }
@@ -574,11 +570,6 @@ public class Structure {
     public static final byte[] addCoolDownInfo(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
         final List<MapleCoolDownValueHolder> cd = chr.getCooldowns();
-
-        if (ServerConfig.version <= 164 || ServerConfig.version >= 187) {
-            data.Encode2(0);
-            return data.Get().getBytes();
-        }
 
         data.Encode2(cd.size());
         for (final MapleCoolDownValueHolder cooling : cd) {
@@ -670,11 +661,6 @@ public class Structure {
     public static final byte[] QuestInfoPacket(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
         Map<Integer, String> questinfo = chr.getInfoQuest_Map();
-
-        if (ServerConfig.version <= 164 || ServerConfig.version >= 187) {
-            data.Encode2(0);
-            return data.Get().getBytes();
-        }
 
         data.Encode2(questinfo.size());
         for (final Map.Entry<Integer, String> q : questinfo.entrySet()) {

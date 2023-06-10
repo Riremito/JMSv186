@@ -25,24 +25,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
 import tools.Pair;
-import java.util.regex.Pattern;
 
 import database.DatabaseConnection;
 
 public class MapleCharacterUtil {
 
-    private static final Pattern namePattern = Pattern.compile("[a-zA-Z0-9_-]{3,12}");
-    private static final Pattern petPattern = Pattern.compile("[a-zA-Z0-9_-]{4,12}");
-
     public static final boolean canCreateChar(final String name) {
-        if (name.getBytes().length < 3 || name.getBytes().length > 12 /*|| !namePattern.matcher(name).matches()*/ || getIdByName(name) != -1) {
+        // Shift-JISの文字コードの確認をしたほうが良い
+        if (name.getBytes().length < 2 || name.getBytes().length > 12 || getIdByName(name) != -1) {
             return false;
         }
-        /*        for (String z : GameConstants.RESERVED) {
-            if (name.indexOf(z) != -1) {
-                return false;
-            }
-        }*/
         return true;
     }
 
