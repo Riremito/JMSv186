@@ -40,8 +40,8 @@ public class MapleQuest implements Serializable {
     public static MapleDataProvider questData;
     public static MapleData actions;
     public static MapleData requirements;
-    public static MapleData info;
-    public static MapleData pinfo;
+    public static MapleData info = null;
+    public static MapleData pinfo = null;
 
     protected MapleQuest(final int id) {
         relevantMobs = new LinkedHashMap<Integer, Integer>();
@@ -122,26 +122,31 @@ public class MapleQuest implements Serializable {
                 ret.completeActs.add(new MapleQuestAction(MapleQuestActionType.getByWZName(completeAct.getName()), completeAct, ret));
             }
         }
-        final MapleData questInfo = info.getChildByPath(String.valueOf(id));
-        if (questInfo != null) {
-            ret.name = MapleDataTool.getString("name", questInfo, "");
-            ret.autoStart = MapleDataTool.getInt("autoStart", questInfo, 0) == 1;
-            ret.autoPreComplete = MapleDataTool.getInt("autoPreComplete", questInfo, 0) == 1;
-            ret.viewMedalItem = MapleDataTool.getInt("viewMedalItem", questInfo, 0);
-            ret.selectedSkillID = MapleDataTool.getInt("selectedSkillID", questInfo, 0);
+
+        if (info != null) {
+            final MapleData questInfo = info.getChildByPath(String.valueOf(id));
+            if (questInfo != null) {
+                ret.name = MapleDataTool.getString("name", questInfo, "");
+                ret.autoStart = MapleDataTool.getInt("autoStart", questInfo, 0) == 1;
+                ret.autoPreComplete = MapleDataTool.getInt("autoPreComplete", questInfo, 0) == 1;
+                ret.viewMedalItem = MapleDataTool.getInt("viewMedalItem", questInfo, 0);
+                ret.selectedSkillID = MapleDataTool.getInt("selectedSkillID", questInfo, 0);
+            }
         }
 
-        final MapleData pquestInfo = pinfo.getChildByPath(String.valueOf(id));
-        if (pquestInfo != null) {
-            for (MapleData d : pquestInfo.getChildByPath("rank")) {
-                List<Pair<String, Pair<String, Integer>>> pInfo = new ArrayList<Pair<String, Pair<String, Integer>>>();
-                //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
-                for (MapleData c : d) {
-                    for (MapleData b : c) {
-                        pInfo.add(new Pair<String, Pair<String, Integer>>(c.getName(), new Pair<String, Integer>(b.getName(), MapleDataTool.getInt(b, 0))));
+        if (pinfo != null) {
+            final MapleData pquestInfo = pinfo.getChildByPath(String.valueOf(id));
+            if (pquestInfo != null) {
+                for (MapleData d : pquestInfo.getChildByPath("rank")) {
+                    List<Pair<String, Pair<String, Integer>>> pInfo = new ArrayList<Pair<String, Pair<String, Integer>>>();
+                    //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
+                    for (MapleData c : d) {
+                        for (MapleData b : c) {
+                            pInfo.add(new Pair<String, Pair<String, Integer>>(c.getName(), new Pair<String, Integer>(b.getName(), MapleDataTool.getInt(b, 0))));
+                        }
                     }
+                    ret.partyQuestInfo.put(d.getName(), pInfo);
                 }
-                ret.partyQuestInfo.put(d.getName(), pInfo);
             }
         }
 
