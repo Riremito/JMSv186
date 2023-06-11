@@ -13,6 +13,8 @@ import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import client.inventory.MapleRing;
+import client.status.MonsterStatus;
+import client.status.MonsterStatusEffect;
 import config.ServerConfig;
 import constants.GameConstants;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import server.life.MapleMonster;
 import tools.KoreanDateUtil;
 import tools.Pair;
 import tools.packet.PacketHelper;
@@ -668,5 +671,99 @@ public class Structure {
             data.EncodeStr(q.getValue() == null ? "" : q.getValue());
         }
         return data.Get().getBytes();
+    }
+
+    // addMonsterStatus
+    public static final byte[] MonsterStatus(MapleMonster life) {
+        ServerPacket data = new ServerPacket();
+
+        if (ServerConfig.version <= 131) {
+            if (life.getStati().size() <= 1) {
+                life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
+            }
+        } else {
+            if (life.getStati().size() <= 0) {
+                life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
+            }
+        }
+        if (ServerConfig.version > 131) {
+            data.Encode8(getSpecialLongMask(life.getStati().keySet()));
+        }
+
+        data.Encode8(getLongMask_NoRef(life.getStati().keySet()));
+
+        boolean ignore_imm = false;
+        for (MonsterStatusEffect buff : life.getStati().values()) {
+            if (buff.getStati() == MonsterStatus.MAGIC_DAMAGE_REFLECT || buff.getStati() == MonsterStatus.WEAPON_DAMAGE_REFLECT) {
+                ignore_imm = true;
+                break;
+            }
+        }
+        for (MonsterStatusEffect buff : life.getStati().values()) {
+            if (buff.getStati() != MonsterStatus.MAGIC_DAMAGE_REFLECT && buff.getStati() != MonsterStatus.WEAPON_DAMAGE_REFLECT) {
+                if (ignore_imm) {
+                    if (buff.getStati() == MonsterStatus.MAGIC_IMMUNITY || buff.getStati() == MonsterStatus.WEAPON_IMMUNITY) {
+                        continue;
+                    }
+                }
+                data.Encode2(buff.getX().shortValue());
+                if (buff.getStati() != MonsterStatus.SUMMON) {
+                    if (buff.getMobSkill() != null) {
+                        data.Encode2(buff.getMobSkill().getSkillId());
+                        data.Encode2(buff.getMobSkill().getSkillLevel());
+                    } else if (buff.getSkill() > 0) {
+                        data.Encode4(buff.getSkill());
+                    }
+                    data.Encode2(buff.getStati().isEmpty() ? 0 : 1);
+                }
+            }
+        }
+        //wh spawn - 15 zeroes instead of 16, then 98 F4 56 A6 C7 C9 01 28, then 7 zeroes
+        return data.Get().getBytes();
+    }
+
+    public static long getSpecialLongMask(Collection<MonsterStatus> statups) {
+        long mask = 0;
+        for (MonsterStatus statup : statups) {
+            if (statup.isFirst()) {
+                mask |= statup.getValue();
+            }
+        }
+        return mask;
+    }
+
+    public static long getLongMask(Collection<MonsterStatus> statups) {
+        long mask = 0;
+        for (MonsterStatus statup : statups) {
+            if (!statup.isFirst()) {
+                mask |= statup.getValue();
+            }
+        }
+        return mask;
+    }
+
+    public static long getLongMask_NoRef(Collection<MonsterStatus> statups) {
+        long mask = 0;
+        boolean ignore_imm = false;
+        for (MonsterStatus statup : statups) {
+            if (statup == MonsterStatus.MAGIC_DAMAGE_REFLECT || statup == MonsterStatus.WEAPON_DAMAGE_REFLECT) {
+                ignore_imm = true;
+                break;
+            }
+        }
+        for (MonsterStatus statup : statups) {
+            if (statup != MonsterStatus.MAGIC_DAMAGE_REFLECT && statup != MonsterStatus.WEAPON_DAMAGE_REFLECT) {
+                if (ignore_imm) {
+                    if (statup == MonsterStatus.MAGIC_IMMUNITY || statup == MonsterStatus.WEAPON_IMMUNITY) {
+                        continue;
+                    }
+                }
+
+                if (!statup.isFirst()) {
+                    mask |= statup.getValue();
+                }
+            }
+        }
+        return mask;
     }
 }

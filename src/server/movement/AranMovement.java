@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.movement;
 
 import java.awt.Point;
+import packet.ServerPacket;
 import tools.data.output.LittleEndianWriter;
 
 public class AranMovement extends AbstractLifeMovement {
@@ -34,5 +35,12 @@ public class AranMovement extends AbstractLifeMovement {
         lew.write(getType());
         lew.write(getNewstate());
         lew.writeShort(getDuration());
+    }
+
+    @Override
+    public void serialize(ServerPacket data) {
+        data.Encode1(getType());
+        data.Encode1(getNewstate());
+        data.Encode2(getDuration());
     }
 }

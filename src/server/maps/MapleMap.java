@@ -60,6 +60,7 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import packet.content.MobPacket;
 import packet.content.ReactorPacket;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
@@ -73,13 +74,11 @@ import server.life.Spawns;
 import server.life.SpawnPoint;
 import server.life.SpawnPointAreaBoss;
 import server.life.MonsterDropEntry;
-import server.life.MonsterGlobalDropEntry;
 import server.life.MapleMonsterInformationProvider;
 import tools.FileoutputUtil;
 import tools.StringUtil;
 import tools.MaplePacketCreator;
 import tools.packet.PetPacket;
-import tools.packet.MobPacket;
 import scripting.EventManager;
 import server.MapleCarnivalFactory;
 import server.MapleCarnivalFactory.MCSkill;
@@ -492,7 +491,7 @@ public final class MapleMap {
 
     public void removeMonster(final MapleMonster monster) {
         spawnedMonstersOnMap.decrementAndGet();
-        broadcastMessage(MobPacket.killMonster(monster.getObjectId(), 0));
+        broadcastMessage(MobPacket.Kill(monster, 0));
         removeMapObject(monster);
     }
 
@@ -500,7 +499,7 @@ public final class MapleMap {
         spawnedMonstersOnMap.decrementAndGet();
         monster.setHp(0);
         monster.spawnRevives(this);
-        broadcastMessage(MobPacket.killMonster(monster.getObjectId(), 1));
+        broadcastMessage(MobPacket.Kill(monster, 1));
         removeMapObject(monster);
     }
 
@@ -528,7 +527,7 @@ public final class MapleMap {
         spawnedMonstersOnMap.decrementAndGet();
         removeMapObject(monster);
         int dropOwner = monster.killBy(chr, lastSkill);
-        broadcastMessage(MobPacket.killMonster(monster.getObjectId(), animation));
+        broadcastMessage(MobPacket.Kill(monster, animation));
 
         if (monster.getBuffToGive() > -1) {
             final int buffid = monster.getBuffToGive();
@@ -842,7 +841,7 @@ public final class MapleMap {
             final MapleMonster monster = (MapleMonster) monstermo;
             spawnedMonstersOnMap.decrementAndGet();
             monster.setHp(0);
-            broadcastMessage(MobPacket.killMonster(monster.getObjectId(), animate ? 1 : 0));
+            broadcastMessage(MobPacket.Kill(monster, animate ? 1 : 0));
             removeMapObject(monster);
         }
     }
@@ -852,7 +851,7 @@ public final class MapleMap {
             if (((MapleMonster) mmo).getId() == monsId) {
                 spawnedMonstersOnMap.decrementAndGet();
                 removeMapObject(mmo);
-                broadcastMessage(MobPacket.killMonster(mmo.getObjectId(), 1));
+                broadcastMessage(MobPacket.Kill((MapleMonster) mmo, 1));
                 break;
             }
         }
@@ -1316,7 +1315,7 @@ public final class MapleMap {
 
             @Override
             public final void sendPackets(MapleClient c) {
-                c.getSession().write(MobPacket.spawnMonster(monster, -2, 0, oid)); // TODO effect
+                c.SendPacket(MobPacket.Spawn(monster, -2, 0, oid)); // TODO effect
             }
         }, null);
         updateMonsterController(monster);
@@ -1331,7 +1330,7 @@ public final class MapleMap {
         spawnAndAddRangedMapObject(monster, new DelayedPacketCreation() {
 
             public final void sendPackets(MapleClient c) {
-                c.getSession().write(MobPacket.spawnMonster(monster, spawnType, 0, 0));
+                c.SendPacket(MobPacket.Spawn(monster, spawnType, 0, 0));
             }
         }, null);
         updateMonsterController(monster);
@@ -1348,7 +1347,7 @@ public final class MapleMap {
 
                 @Override
                 public final void sendPackets(MapleClient c) {
-                    c.getSession().write(MobPacket.spawnMonster(monster, -2, effect, 0));
+                    c.SendPacket(MobPacket.Spawn(monster, -2, effect, 0));
                 }
             }, null);
             updateMonsterController(monster);
@@ -1368,7 +1367,7 @@ public final class MapleMap {
 
             @Override
             public final void sendPackets(MapleClient c) {
-                c.getSession().write(MobPacket.spawnMonster(monster, -2, 0xfc, 0));
+                c.SendPacket(MobPacket.Spawn(monster, -2, 0xfc, 0));
 //		c.getSession().write(MobPacket.spawnFakeMonster(monster, 0));
             }
         }, null);

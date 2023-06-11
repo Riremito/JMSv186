@@ -26,6 +26,7 @@ import java.util.List;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.inventory.MapleInventoryType;
+import packet.content.MobPacket;
 import server.MapleInventoryManipulator;
 import server.Randomizer;
 import server.maps.MapleMap;
@@ -36,7 +37,6 @@ import server.maps.MapleNodes.MapleNodeInfo;
 import server.movement.LifeMovementFragment;
 import tools.MaplePacketCreator;
 import tools.Pair;
-import tools.packet.MobPacket;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class MobHandler {
@@ -130,7 +130,7 @@ public class MobHandler {
             return;
         }
 
-        c.getSession().write(MobPacket.moveMonsterResponse(monster.getObjectId(), moveid, monster.getMp(), monster.isControllerHasAggro(), realskill, level));
+        c.SendPacket(MobPacket.moveMonsterResponse(monster, moveid, realskill, level));
 
         if (res != null && chr != null) {
             if (slea.available() < 9 || slea.available() > 17) { //9.. 0 -> endPos? -> endPos again? -> 0 -> 0

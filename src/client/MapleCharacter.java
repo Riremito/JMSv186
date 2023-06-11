@@ -82,6 +82,7 @@ import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
 import minigame.Pachinko;
+import packet.content.MobPacket;
 import tools.MockIOSession;
 import scripting.EventInstanceManager;
 import scripting.NPCScriptManager;
@@ -111,7 +112,6 @@ import server.CashShop;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.packet.MTSCSPacket;
-import tools.packet.MobPacket;
 import tools.packet.PetPacket;
 import tools.packet.MonsterCarnivalPacket;
 import tools.packet.UIPacket;
@@ -3045,7 +3045,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
         monster.setController(this);
         controlled.add(monster);
-        client.getSession().write(MobPacket.controlMonster(monster, false, aggro));
+        client.SendPacket(MobPacket.Control(monster, false, aggro));
     }
 
     public void stopControllingMonster(MapleMonster monster) {
@@ -4910,7 +4910,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (movedMobs.get(mobid) > 30) { //trying to move not null monster = broadcast dead
                 for (MapleCharacter chr : getMap().getCharactersThreadsafe()) { //also broadcast to others
                     if (chr.getMoveMobs().containsKey(mobid)) { //they also tried to move this mob
-                        chr.getClient().getSession().write(MobPacket.killMonster(mobid, 1));
+                        chr.getClient().SendPacket(MobPacket.Kill(mobid, 1));
                         chr.getMoveMobs().remove(mobid);
                     }
                 }

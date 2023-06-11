@@ -40,6 +40,7 @@ import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import packet.ClientPacket;
+import packet.content.MobPacket;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
@@ -56,7 +57,6 @@ import server.maps.MapleMap;
 import server.maps.FieldLimitType;
 import server.movement.LifeMovementFragment;
 import tools.MaplePacketCreator;
-import tools.packet.MobPacket;
 import tools.packet.MTSCSPacket;
 import tools.data.input.SeekableLittleEndianAccessor;
 import tools.packet.UIPacket;
@@ -280,7 +280,7 @@ public class PlayerHandler {
                     bouncedamage = Math.min(bouncedamage, attacker.getMobMaxHp() / 10);
                     attacker.damage(chr, bouncedamage, true);
                     damage -= bouncedamage;
-                    chr.getMap().broadcastMessage(chr, MobPacket.damageMonster(oid, bouncedamage), chr.getPosition());
+                    chr.getMap().broadcastMessage(chr, MobPacket.Damage(attacker, bouncedamage), chr.getPosition());
                     is_pg = true;
                 }
             }

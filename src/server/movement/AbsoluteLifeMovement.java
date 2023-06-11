@@ -22,6 +22,7 @@ package server.movement;
 
 import config.ServerConfig;
 import java.awt.Point;
+import packet.ServerPacket;
 
 import tools.data.output.LittleEndianWriter;
 
@@ -69,5 +70,23 @@ public class AbsoluteLifeMovement extends AbstractLifeMovement {
         }
         lew.write(getNewstate());
         lew.writeShort(getDuration());
+    }
+
+    @Override
+    public void serialize(ServerPacket data) {
+        data.Encode1(getType());
+        data.Encode2(getPosition().x);
+        data.Encode2(getPosition().y);
+        data.Encode2(pixelsPerSecond.x);
+        data.Encode2(pixelsPerSecond.y);
+        data.Encode2(unk);
+
+        if (ServerConfig.version > 131) {
+            data.Encode2(offset.x);
+            data.Encode2(offset.y);
+        }
+
+        data.Encode1(getNewstate());
+        data.Encode2(getDuration());
     }
 }
