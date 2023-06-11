@@ -26,6 +26,7 @@ import tools.FileoutputUtil;
 import packet.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
+import packet.content.MobPacket;
 import packet.content.ReactorPacket;
 import packet.content.TrunkPacket;
 
@@ -793,39 +794,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InventoryHandler.UseRewardItem((byte) p.readShort(), p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case CP_MobAttackMob: {
-                // c
-                MobHandler.HypnotizeDmg(p, c.getPlayer());
-                return true;
-            }
-            case CP_MobEscortCollision: {
-                // c
-                MobHandler.MobNode(p, c.getPlayer());
-                return true;
-            }
-            case CP_MobRequestEscortInfo: {
-                // c
-                MobHandler.DisplayNode(p, c.getPlayer());
-                return true;
-            }
-            case CP_MobMove: {
-                // c
-                MobHandler.MoveMonster(p, c, c.getPlayer());
-                return true;
-            }
-            case CP_MobApplyCtrl: {
-                // c
-                MobHandler.AutoAggro(p.readInt(), c.getPlayer());
-                return true;
-            }
-            case CP_MobHitByMob: {
-                // c
-                MobHandler.FriendlyDamage(p, c.getPlayer());
-                return true;
-            }
+            case CP_MobAttackMob:
+            case CP_MobEscortCollision:
+            case CP_MobRequestEscortInfo:
+            case CP_MobMove:
+            case CP_MobApplyCtrl:
+            case CP_MobHitByMob:
             case CP_MobSelfDestruct: {
-                // pc
-                MobHandler.MonsterBomb(p.readInt(), c.getPlayer());
+                MobPacket.OnPacket(op, type, c, p);
                 return true;
             }
             case CP_UserShopRequest: {

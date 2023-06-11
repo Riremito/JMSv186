@@ -19,10 +19,11 @@ import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.maps.MapleMap;
 import server.movement.LifeMovementFragment;
+import tools.data.input.SeekableLittleEndianAccessor;
 
 public class MobPacket {
 
-    public static boolean OnPacket(ClientPacket p, ClientPacket.Header header, MapleClient c) {
+    public static boolean OnPacket(ClientPacket p, ClientPacket.Header header, MapleClient c, SeekableLittleEndianAccessor slea) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return false;
@@ -43,11 +44,11 @@ public class MobPacket {
 
         switch (header) {
             case CP_MobMove: {
-                //MobHandler.MoveMonster(p, c, c.getPlayer());
+                MobHandler.MoveMonster(slea, c, chr);
                 return true;
             }
             case CP_MobApplyCtrl: {
-                MobHandler.AutoAggro(oid, chr);
+                MobHandler.AutoAggro(chr, monster);
                 return true;
             }
             case CP_MobDropPickUpRequest: {
@@ -57,15 +58,37 @@ public class MobPacket {
                 return true;
             }
             case CP_MobHitByMob: {
-                //MobHandler.FriendlyDamage(p, chr);
+                p.Decode4(); // skip
+                int oid_to = p.Decode4();
+
+                MapleMonster monster_to = map.getMonsterByOid(oid_to);
+
+                if (monster_to == null) {
+                    return false;
+                }
+
+                MobHandler.FriendlyDamage(chr, monster, monster_to);
                 return true;
             }
             case CP_MobSelfDestruct: {
-                MobHandler.MonsterBomb(oid, chr);
+                MobHandler.MonsterBomb(chr, monster);
                 return true;
             }
             case CP_MobAttackMob: {
-                //MobHandler.HypnotizeDmg(p, chr);
+                p.Decode4();
+                int oid_to = p.Decode4();
+
+                MapleMonster monster_to = map.getMonsterByOid(oid_to);
+
+                if (monster_to == null) {
+                    return false;
+                }
+
+                p.Decode1();
+
+                int damage = p.Decode4();
+
+                MobHandler.HypnotizeDmg(chr, monster, monster_to, damage);
                 return true;
             }
             case CP_MobSkillDelayEnd: {
@@ -75,11 +98,12 @@ public class MobPacket {
                 return true;
             }
             case CP_MobEscortCollision: {
-                //MobHandler.MobNode(p, chr);
+                int newNode = p.Decode4();
+                MobHandler.MobNode(chr, monster, newNode);
                 return true;
             }
             case CP_MobRequestEscortInfo: {
-                //MobHandler.DisplayNode(p, chr);
+                MobHandler.DisplayNode(chr, monster);
                 return true;
             }
             case CP_MobEscortStopEndRequest: {
