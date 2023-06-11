@@ -2923,34 +2923,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket spawnReactor(MapleReactor reactor) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_ReactorEnterField.Get());
-        mplew.writeInt(reactor.getObjectId());
-        mplew.writeInt(reactor.getReactorId());
-        mplew.write(reactor.getState());
-        mplew.writePos(reactor.getPosition());
-        mplew.write(reactor.getFacingDirection()); // stance
-        mplew.writeMapleAsciiString(reactor.getName());
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket triggerReactor(MapleReactor reactor, int stance) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_ReactorChangeState.Get());
-        mplew.writeInt(reactor.getObjectId());
-        mplew.write(reactor.getState());
-        mplew.writePos(reactor.getPosition());
-        mplew.writeShort(stance);
-        mplew.write(0);
-        mplew.write(4); // frame delay, set to 5 since there doesn't appear to be a fixed formula for it
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket destroyReactor(MapleReactor reactor) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 

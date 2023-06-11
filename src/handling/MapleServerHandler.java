@@ -23,11 +23,10 @@ import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoSession;
 import server.MTSStorage;
 import tools.FileoutputUtil;
-import handling.world.World;
-import java.util.Map;
 import packet.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
+import packet.content.ReactorPacket;
 import packet.content.TrunkPacket;
 
 public class MapleServerHandler extends IoHandlerAdapter {
@@ -683,12 +682,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayersHandler.UseDoor(p, c.getPlayer());
                 return true;
             }
-            case CP_ReactorHit: {
-                PlayersHandler.HitReactor(p, c);
-                return true;
-            }
+            case CP_ReactorHit:
             case CP_ReactorTouch: {
-                PlayersHandler.TouchReactor(p, c);
+                ReactorPacket.OnPacket(op, type, c);
                 return true;
             }
             case CP_UserADBoardClose: {

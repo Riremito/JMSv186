@@ -117,6 +117,7 @@ public class TrunkPacket {
     }
 
     // Storage
+    // CP_UserTrunkRequest
     public static boolean OnPacket(ClientPacket p, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
 

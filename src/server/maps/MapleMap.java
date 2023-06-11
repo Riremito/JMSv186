@@ -60,6 +60,7 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import packet.content.ReactorPacket;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
@@ -920,7 +921,7 @@ public final class MapleMap {
 
     public final void destroyReactor(final int oid) {
         final MapleReactor reactor = getReactorByOid(oid);
-        broadcastMessage(MaplePacketCreator.destroyReactor(reactor));
+        broadcastMessage(ReactorPacket.Destroy(reactor));
         reactor.setAlive(false);
         removeMapObject(reactor);
         reactor.setTimerActive(false);
@@ -942,7 +943,7 @@ public final class MapleMap {
         try {
             for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
                 final MapleReactor reactor = (MapleReactor) obj;
-                broadcastMessage(MaplePacketCreator.destroyReactor(reactor));
+                broadcastMessage(ReactorPacket.Destroy(reactor));
                 reactor.setAlive(false);
                 reactor.setTimerActive(false);
                 toSpawn.add(reactor);
@@ -1383,7 +1384,7 @@ public final class MapleMap {
 
             @Override
             public final void sendPackets(MapleClient c) {
-                c.getSession().write(MaplePacketCreator.spawnReactor(reactor));
+                c.SendPacket(ReactorPacket.Spawn(reactor));
             }
         }, null);
     }
