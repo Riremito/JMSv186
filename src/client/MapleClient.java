@@ -1438,7 +1438,12 @@ public class MapleClient implements Serializable {
         return new ServerPacket(header);
     }
 
+    // 名称ミス
     public void ProcessPacket(MaplePacket packet) {
+        getSession().write(packet);
+    }
+
+    public void SendPacket(MaplePacket packet) {
         getSession().write(packet);
     }
 

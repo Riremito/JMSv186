@@ -28,6 +28,7 @@ import java.util.Map;
 import packet.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
+import packet.content.TrunkPacket;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
@@ -862,8 +863,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_UserTrunkRequest: {
-                // c
-                NPCHandler.Storage(p, c, c.getPlayer());
+                // 倉庫
+                TrunkPacket.OnPacket(op, c);
                 return true;
             }
             case CP_UserChat: {

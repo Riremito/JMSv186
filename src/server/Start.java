@@ -15,6 +15,7 @@ import handling.world.family.MapleFamilyBuff;
 import java.sql.PreparedStatement;
 import packet.ServerPacket;
 import packet.ClientPacket;
+import packet.content.ClientSideFlag;
 import packet.v131_0_CP;
 import packet.v131_0_SP;
 import packet.v164_0_CP;
@@ -118,6 +119,8 @@ public class Start {
                 return;
             }
         }
+
+        ClientSideFlag.Update();
 
         try {
             final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0");
