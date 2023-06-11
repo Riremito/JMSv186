@@ -257,7 +257,7 @@ public class TrunkPacket {
             default: {
                 Debug.ErrorLog("TrunkPacket");
                 Debug.PacketLog(p);
-                return false;
+                break;
             }
         }
 
