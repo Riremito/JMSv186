@@ -219,7 +219,7 @@ public class TrunkPacket {
                 }
 
                 storage.sendStored(c, GameConstants.getInventoryType(itemId));
-                break;
+                return true;
             }
             case MESO_INOUT: {
                 int meso = p.Decode4();
