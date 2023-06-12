@@ -257,25 +257,24 @@ public class MobPacket {
                     final short xwobble = p.Decode2();
                     final short ywobble = p.Decode2();
                     final short unk = p.Decode2();
+                    short xoffset = 0;
+                    short yoffset = 0;
 
-                    if (ServerConfig.version <= 131) {
-                        final byte newstate = p.Decode1();
-                        final short duration = p.Decode2();
-                        final AbsoluteLifeMovement alm = new AbsoluteLifeMovement(command, new Point(xpos, ypos), duration, newstate);
-                        alm.setUnk(unk);
-                        alm.setPixelsPerSecond(new Point(xwobble, ywobble));
-                        res.add(alm);
-                        return res;
+                    if (ServerConfig.version > 131) {
+                        xoffset = p.Decode2();
+                        yoffset = p.Decode2();
                     }
 
-                    final short xoffset = p.Decode2();
-                    final short yoffset = p.Decode2();
                     final byte newstate = p.Decode1();
                     final short duration = p.Decode2();
                     final AbsoluteLifeMovement alm = new AbsoluteLifeMovement(command, new Point(xpos, ypos), duration, newstate);
                     alm.setUnk(unk);
                     alm.setPixelsPerSecond(new Point(xwobble, ywobble));
-                    alm.setOffset(new Point(xoffset, yoffset));
+
+                    if (ServerConfig.version > 131) {
+                        alm.setOffset(new Point(xoffset, yoffset));
+                    }
+
                     res.add(alm);
                     break;
                 }
