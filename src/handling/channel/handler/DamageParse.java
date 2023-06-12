@@ -470,20 +470,7 @@ public class DamageParse {
     }
 
     public static final void applyAttackMagic(final AttackInfo attack, final ISkill theSkill, final MapleCharacter player, final MapleStatEffect effect) {
-        if (!player.isAlive()) {
-            player.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
-            return;
-        }
-        if (attack.real) {
-            player.getCheatTracker().checkAttack(attack.skill, attack.lastAttackTickCount);
-        }
-//	if (attack.skill != 2301002) { // heal is both an attack and a special move (healing) so we'll let the whole applying magic live in the special move part
-//	    effect.applyTo(player);
-//	}
-        if (attack.hits > effect.getAttackCount() || attack.targets > effect.getMobCount()) {
-            player.getCheatTracker().registerOffense(CheatingOffense.MISMATCHING_BULLETCOUNT);
-            return;
-        }
+
         if (attack.hits > 0 && attack.targets > 0) {
             if (!player.getStat().checkEquipDurabilitys(player, -1)) { //i guess this is how it works ?
                 player.dropMessage(5, "An item has run out of durability but has no inventory room to go to.");

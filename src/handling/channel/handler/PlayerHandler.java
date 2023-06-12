@@ -36,6 +36,7 @@ import client.PlayerStats;
 import client.anticheat.CheatingOffense;
 import config.ServerConfig;
 import constants.MapConstants;
+import debug.Debug;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -878,6 +879,49 @@ public class PlayerHandler {
         }
     }
 
+    public static final void MagicDamage(MapleClient c, AttackInfo attack) {
+        MapleCharacter chr = c.getPlayer();
+
+        attack = DamageParse.Modify_AttackCrit(attack, chr, 3);
+
+        final ISkill skill = SkillFactory.getSkill(GameConstants.getLinkedAranSkill(attack.skill));
+        final int skillLevel = chr.getSkillLevel(skill);
+        final MapleStatEffect effect = attack.getAttackEffect(chr, skillLevel, skill);
+        if (effect == null) {
+            return;
+        }
+        if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
+            if (chr.skillisCooling(attack.skill)) {
+                c.getSession().write(MaplePacketCreator.enableActions());
+                return;
+            }
+            c.getSession().write(MaplePacketCreator.skillCooldown(attack.skill, effect.getCooldown()));
+            chr.addCooldown(attack.skill, System.currentTimeMillis(), effect.getCooldown() * 1000);
+        }
+        chr.checkFollow();
+        chr.getMap().broadcastMessage(chr, MaplePacketCreator.magicAttack(chr.getId(), attack.tbyte, attack.skill, skillLevel, attack.display, attack.animation, attack.speed, attack.allDamage, attack.charge, chr.getLevel(), attack.unk), chr.getPosition());
+        DamageParse.applyAttackMagic(attack, skill, c.getPlayer(), effect);
+        WeakReference<MapleCharacter>[] clones = chr.getClones();
+        for (int i = 0; i < clones.length; i++) {
+            if (clones[i].get() != null) {
+                final MapleCharacter clone = clones[i].get();
+                final ISkill skil2 = skill;
+                final MapleStatEffect eff2 = effect;
+                final int skillLevel2 = skillLevel;
+                final AttackInfo attack2 = DamageParse.DivideAttack(attack, chr.isGM() ? 1 : 4);
+                CloneTimer.getInstance().schedule(new Runnable() {
+
+                    public void run() {
+                        //if (attack.skill != 22121000 && attack.skill != 22151001) {
+                        clone.getMap().broadcastMessage(MaplePacketCreator.magicAttack(clone.getId(), attack2.tbyte, attack2.skill, skillLevel2, attack2.display, attack2.animation, attack2.speed, attack2.allDamage, attack2.charge, clone.getLevel(), attack2.unk));
+                        //}
+                        DamageParse.applyAttackMagic(attack2, skil2, chr, eff2);
+                    }
+                }, 500 * i + 500);
+            }
+        }
+    }
+
     public static final void DropMeso(final int meso, final MapleCharacter chr) {
         if (!chr.isAlive() || (meso < 10 || meso > 50000) || (meso > chr.getMeso())) {
             chr.getClient().getSession().write(MaplePacketCreator.enableActions());
@@ -914,17 +958,7 @@ public class PlayerHandler {
         }
     }
 
-    public static final void Heal(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        if (chr == null) {
-            return;
-        }
-        chr.updateTick(slea.readInt());
-        if (slea.available() >= 8) {
-            slea.skip(4);
-        }
-        final int healHP = slea.readShort();
-        final int healMP = slea.readShort();
-
+    public static final void Heal(MapleCharacter chr, int healHP, int healMP) {
         final PlayerStats stats = chr.getStat();
 
         if (stats.getHp() <= 0) {
@@ -932,15 +966,10 @@ public class PlayerHandler {
         }
 
         if (healHP != 0) {
-            if (healHP > stats.getHealHP()) {
-                //chr.getCheatTracker().registerOffense(CheatingOffense.REGEN_HIGH_HP, String.valueOf(healHP));
-            }
             chr.addHP(healHP);
         }
+
         if (healMP != 0) {
-            if (healMP > stats.getHealMP()) {
-                //chr.getCheatTracker().registerOffense(CheatingOffense.REGEN_HIGH_MP, String.valueOf(healMP));
-            }
             chr.addMP(healMP);
         }
     }

@@ -14,5 +14,7 @@ public class DebugConfig {
     public static boolean starter_set = true;
     // gm
     public static boolean GM = false;
+    // damage debugging
+    public static boolean log_damage = true;
 
 }

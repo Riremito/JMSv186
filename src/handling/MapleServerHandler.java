@@ -29,6 +29,7 @@ import packet.SendPacket;
 import packet.content.MobPacket;
 import packet.content.ReactorPacket;
 import packet.content.TrunkPacket;
+import packet.content.UserPacket;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
@@ -547,7 +548,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_UserMagicAttack: {
                 // c
-                PlayerHandler.MagicDamage(p, c, c.getPlayer());
+                //PlayerHandler.MagicDamage(p, c, c.getPlayer());
+                UserPacket.OnPacket(op, type, c);
                 return true;
             }
             case CP_UserSkillUseRequest: {
@@ -571,7 +573,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_UserChangeStatRequest: {
-                PlayerHandler.Heal(p, c.getPlayer());
+                UserPacket.OnPacket(op, type, c);
                 return true;
             }
             case CP_UserSkillCancelRequest: {
