@@ -27,7 +27,7 @@ public class v131_0_SP {
         {
             ServerPacket.Header.LP_InventoryOperation.Set(0x0016);
             ServerPacket.Header.LP_InventoryGrow.Set(0x0017);
-            ServerPacket.Header.LP_StatChanged.Set(0x0018);
+            //ServerPacket.Header.LP_StatChanged.Set(0x0018);
             ServerPacket.Header.LP_TemporaryStatSet.Set(0x0019);
             ServerPacket.Header.LP_TemporaryStatReset.Set(0x001A);
             ServerPacket.Header.LP_ChangeSkillRecordResult.Set(0x001B);

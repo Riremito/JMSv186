@@ -801,7 +801,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_MobApplyCtrl:
             case CP_MobHitByMob:
             case CP_MobSelfDestruct: {
-                MobPacket.OnPacket(op, type, c, p);
+                MobPacket.OnPacket(op, type, c);
                 return true;
             }
             case CP_UserShopRequest: {

@@ -138,8 +138,8 @@ public class v131_0_CP {
                 // Mob
                 ClientPacket.Header.CP_BEGIN_MOB.Set(0);
                 {
-                    //ClientPacket.Header.CP_MobMove.Set(0x007D);
-                    //ClientPacket.Header.CP_MobApplyCtrl.Set(0x007E);
+                    ClientPacket.Header.CP_MobMove.Set(0x007D);
+                    ClientPacket.Header.CP_MobApplyCtrl.Set(0x007E);
                     //ClientPacket.Header.CP_MobDropPickUpRequest.Set(0x00C9);
                     //ClientPacket.Header.CP_MobHitByObstacle.Set(0x00CA);
                     //ClientPacket.Header.CP_MobHitByMob.Set(0x00CB);
