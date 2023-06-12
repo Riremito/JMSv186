@@ -1794,7 +1794,9 @@ public class MaplePacketCreator {
                 secondmask |= statup.getValue();
             }
         }
-        mplew.writeLong(firstmask);
+        if (ServerConfig.version > 131) {
+            mplew.writeLong(firstmask);
+        }
         mplew.writeLong(secondmask);
     }
 
