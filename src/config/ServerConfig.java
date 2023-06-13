@@ -3,9 +3,15 @@ package config;
 import debug.Debug;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 public class ServerConfig {
+
+    // codepage
+    public static boolean utf8 = true;
+    public static final Charset codepage_ascii = Charset.forName("MS932"); // 日本語
+    public static final Charset codepage_utf8 = Charset.forName("UTF8"); // 複数言語サポート
 
     // Version
     public static short version = 186;

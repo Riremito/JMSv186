@@ -20,9 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tools.data.input;
 
+import config.ServerConfig;
 import java.awt.Point;
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.Charset;
 
 /**
  * Provides a generic interface to a Little Endian stream of bytes.
@@ -147,12 +146,12 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
         for (int x = 0; x < n; x++) {
             ret[x] = readByte();
         }
-        return new String(ret, Charset.forName("MS932"));
-        /*        final char ret[] = new char[n];
-        for (int x = 0; x < n; x++) {
-            ret[x] = (char) readByte();
-        }
-        return new String(ret);*/
+
+        String s = new String(ret, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        byte[] bytes = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        String conv_str = new String(bytes, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+
+        return conv_str;
     }
 
     /**
