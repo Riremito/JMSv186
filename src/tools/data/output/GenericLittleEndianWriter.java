@@ -136,22 +136,19 @@ public class GenericLittleEndianWriter implements LittleEndianWriter {
     @Override
     public final void writeAsciiString(final String s) {
         byte[] bytes = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-        String conv_str = new String(bytes, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
 
-        write(conv_str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii));
+        write(bytes);
     }
 
     @Override
     public final void writeAsciiString(String s, final int max) {
-        byte[] bytes = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-        String conv_str = new String(bytes, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        byte bytes[] = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
 
-        if (conv_str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii).length > max) {
-            conv_str = conv_str.substring(0, max);
+        for (int i = 0; (i < bytes.length && i < max); i++) {
+            write(bytes[i]);
         }
 
-        write(conv_str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii));
-        for (int i = conv_str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii).length; i < max; i++) {
+        for (int i = bytes.length; i < max; i++) {
             write(0);
         }
     }
@@ -166,7 +163,7 @@ public class GenericLittleEndianWriter implements LittleEndianWriter {
         byte[] bytes = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
         String conv_str = new String(bytes, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
 
-        writeShort((short) conv_str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii).length);
+        writeShort((short) bytes.length);
         writeAsciiString(conv_str);
     }
 

@@ -61,10 +61,7 @@ public class ServerPacket {
     }
 
     public void EncodeStr(String str) {
-        byte[] bytes = str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-        String conv_str = new String(bytes, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-
-        byte[] b = conv_str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        byte[] b = str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
         Encode2((short) b.length);
 
         for (int i = 0; i < b.length; i++) {
@@ -79,10 +76,7 @@ public class ServerPacket {
     }
 
     public void EncodeBuffer(String str, int size) {
-        byte[] bytes = str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-        String conv_str = new String(bytes, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-
-        byte[] b = conv_str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        byte[] b = str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
         for (int i = 0; i < b.length; i++) {
             Encode1(b[i]);
         }

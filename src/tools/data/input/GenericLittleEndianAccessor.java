@@ -147,10 +147,7 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
             ret[x] = readByte();
         }
 
-        String s = new String(ret, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-        byte[] bytes = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-        String conv_str = new String(bytes, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-
+        String conv_str = new String(ret, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
         return conv_str;
     }
 

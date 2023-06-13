@@ -88,11 +88,7 @@ public class ClientPacket {
             buffer[i] = Decode1();
         }
 
-        String s = new String(buffer, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-        byte[] bytes = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-        String conv_str = new String(bytes, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-
-        return conv_str;
+        return new String(buffer, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
     }
 
     public enum Header {
