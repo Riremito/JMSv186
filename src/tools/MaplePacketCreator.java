@@ -987,36 +987,46 @@ public class MaplePacketCreator {
     }
 
     public static MaplePacket magicAttack(int cid, int tbyte, int skill, int level, byte display, byte animation, byte speed, List<AttackPair> damage, int charge, int lvl, byte unk) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserMagicAttack);
 
-        mplew.writeShort(ServerPacket.Header.LP_UserMagicAttack.Get());
-        mplew.writeInt(cid);
-        mplew.write(tbyte);
-        mplew.write(lvl); //?
-        mplew.write(level);
-        mplew.writeInt(skill);
+        p.Encode4(cid);
+        p.Encode1(tbyte);
 
-        mplew.write(unk); // Added on v.82
-        mplew.write(display);
-        mplew.write(animation);
-        mplew.write(speed);
-        mplew.write(0); // Mastery byte is always 0 because spells don't have a swoosh
-        mplew.writeInt(0);
+        if (ServerConfig.version > 131) {
+            p.Encode1(lvl);
+        }
+
+        p.Encode1(level);
+        p.Encode4(skill);
+
+        if (ServerConfig.version > 131) {
+            p.Encode1(unk); // Added on v.82
+        }
+
+        p.Encode1(display);
+
+        if (ServerConfig.version > 131) {
+            p.Encode1(animation);
+        }
+
+        p.Encode1(speed);
+        p.Encode1(0); // Mastery byte is always 0 because spells don't have a swoosh
+        p.Encode4(0);
 
         for (AttackPair oned : damage) {
             if (oned.attack != null) {
-                mplew.writeInt(oned.objectid);
-                mplew.write(-1);
+                p.Encode4(oned.objectid);
+                p.Encode1(-1);
                 for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    mplew.write(eachd.right ? 1 : 0);
-                    mplew.writeInt(eachd.left.intValue());
+                    p.Encode1(eachd.right ? 1 : 0);
+                    p.Encode4(eachd.left.intValue());
                 }
             }
         }
         if (charge > 0) {
-            mplew.writeInt(charge);
+            p.Encode4(charge);
         }
-        return mplew.getPacket();
+        return p.Get();
     }
 
     public static MaplePacket getNPCShop(MapleClient c, int sid, List<MapleShopItem> items) {
