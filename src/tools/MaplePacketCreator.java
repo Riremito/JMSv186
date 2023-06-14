@@ -754,21 +754,29 @@ public class MaplePacketCreator {
     }
 
     public static final MaplePacket showMesoGain(final int gain, final boolean inChat) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_Message);
 
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
         if (!inChat) {
-            mplew.write(0);
-            mplew.write(1);
-            mplew.write(0);
-            mplew.writeInt(gain);
-            mplew.writeInt(0); // inet cafe meso gain ?.o
+            p.Encode1(0);
+            p.Encode1(1);
+
+            if (ServerConfig.version > 131) {
+                p.Encode1(0);
+            }
+
+            p.Encode4(gain);
+
+            if (ServerConfig.version <= 131) {
+                p.Encode2(0); // Internet cafe bonus
+            } else {
+                p.Encode4(0);
+            }
         } else {
-            mplew.write(6);
-            mplew.writeInt(gain);
+            p.Encode1(6);
+            p.Encode4(gain);
         }
 
-        return mplew.getPacket();
+        return p.Get();
     }
 
     public static MaplePacket getShowItemGain(int itemId, short quantity) {
