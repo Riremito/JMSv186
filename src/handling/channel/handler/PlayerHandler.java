@@ -453,12 +453,16 @@ public class PlayerHandler {
         }
     }
 
-    public static final void SkillEffect(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        final int skillId = slea.readInt();
-        final byte level = slea.readByte();
-        final byte flags = slea.readByte();
-        final byte speed = slea.readByte();
-        final byte unk = slea.readByte(); // Added on v.82
+    public static final void SkillEffect(ClientPacket p, final MapleCharacter chr) {
+        final int skillId = p.Decode4();
+        final byte level = p.Decode1();
+        final byte flags = p.Decode1();
+        final byte speed = p.Decode1();
+        byte unk = 0;
+
+        if (ServerConfig.version > 131) {
+            unk = p.Decode1();
+        }
 
         final ISkill skill = SkillFactory.getSkill(skillId);
         if (chr == null) {
@@ -558,7 +562,8 @@ public class PlayerHandler {
         }
     }
 
-    public static final void closeRangeAttack(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr, final boolean energy) {
+    public static final void closeRangeAttack(MapleClient c, AttackInfo attack, final boolean energy) {
+        MapleCharacter chr = c.getPlayer();
         if (chr == null || (energy && chr.getBuffedValue(MapleBuffStat.ENERGY_CHARGE) == null && chr.getBuffedValue(MapleBuffStat.BODY_PRESSURE) == null && !GameConstants.isKOC(chr.getJob()))) {
             return;
         }
@@ -566,7 +571,7 @@ public class PlayerHandler {
             chr.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
             return;
         }
-        final AttackInfo attack = DamageParse.Modify_AttackCrit(DamageParse.parseDmgM(slea), chr, 1);
+        attack = DamageParse.Modify_AttackCrit(attack, chr, 1);
         final boolean mirror = chr.getBuffedValue(MapleBuffStat.MIRROR_IMAGE) != null;
         double maxdamage = chr.getStat().getCurrentMaxBaseDamage();
         int attackCount = (chr.getJob() >= 430 && chr.getJob() <= 434 ? 2 : 1), skillLevel = 0;
@@ -693,15 +698,9 @@ public class PlayerHandler {
         }
     }
 
-    public static final void rangedAttack(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (chr == null) {
-            return;
-        }
-        if (!chr.isAlive() || chr.getMap() == null) {
-            chr.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
-            return;
-        }
-        final AttackInfo attack = DamageParse.Modify_AttackCrit(DamageParse.parseDmgR(slea), chr, 2);
+    public static final void rangedAttack(MapleClient c, AttackInfo attack) {
+        MapleCharacter chr = c.getPlayer();
+        attack = DamageParse.Modify_AttackCrit(attack, chr, 2);
 
         int bulletCount = 1, skillLevel = 0;
         MapleStatEffect effect = null;
@@ -829,53 +828,6 @@ public class PlayerHandler {
                     public void run() {
                         clone.getMap().broadcastMessage(MaplePacketCreator.rangedAttack(clone.getId(), attack2.tbyte, attack2.skill, skillLevel2, attack2.display, attack2.animation, attack2.speed, visProjectile2, attack2.allDamage, attack2.position, clone.getLevel(), clone.getStat().passive_mastery(), attack2.unk));
                         DamageParse.applyAttack(attack2, skil2, chr, bulletCount2, basedamage2, eff2, AttackType.RANGED);
-                    }
-                }, 500 * i + 500);
-            }
-        }
-    }
-
-    public static final void MagicDamage(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (chr == null) {
-            return;
-        }
-        if (!chr.isAlive() || chr.getMap() == null) {
-            chr.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
-            return;
-        }
-        final AttackInfo attack = DamageParse.Modify_AttackCrit(DamageParse.parseDmgMa(slea), chr, 3);
-        final ISkill skill = SkillFactory.getSkill(GameConstants.getLinkedAranSkill(attack.skill));
-        final int skillLevel = chr.getSkillLevel(skill);
-        final MapleStatEffect effect = attack.getAttackEffect(chr, skillLevel, skill);
-        if (effect == null) {
-            return;
-        }
-        if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
-            if (chr.skillisCooling(attack.skill)) {
-                c.getSession().write(MaplePacketCreator.enableActions());
-                return;
-            }
-            c.getSession().write(MaplePacketCreator.skillCooldown(attack.skill, effect.getCooldown()));
-            chr.addCooldown(attack.skill, System.currentTimeMillis(), effect.getCooldown() * 1000);
-        }
-        chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, MaplePacketCreator.magicAttack(chr.getId(), attack.tbyte, attack.skill, skillLevel, attack.display, attack.animation, attack.speed, attack.allDamage, attack.charge, chr.getLevel(), attack.unk), chr.getPosition());
-        DamageParse.applyAttackMagic(attack, skill, c.getPlayer(), effect);
-        WeakReference<MapleCharacter>[] clones = chr.getClones();
-        for (int i = 0; i < clones.length; i++) {
-            if (clones[i].get() != null) {
-                final MapleCharacter clone = clones[i].get();
-                final ISkill skil2 = skill;
-                final MapleStatEffect eff2 = effect;
-                final int skillLevel2 = skillLevel;
-                final AttackInfo attack2 = DamageParse.DivideAttack(attack, chr.isGM() ? 1 : 4);
-                CloneTimer.getInstance().schedule(new Runnable() {
-
-                    public void run() {
-                        //if (attack.skill != 22121000 && attack.skill != 22151001) {
-                        clone.getMap().broadcastMessage(MaplePacketCreator.magicAttack(clone.getId(), attack2.tbyte, attack2.skill, skillLevel2, attack2.display, attack2.animation, attack2.speed, attack2.allDamage, attack2.charge, clone.getLevel(), attack2.unk));
-                        //}
-                        DamageParse.applyAttackMagic(attack2, skil2, chr, eff2);
                     }
                 }, 500 * i + 500);
             }

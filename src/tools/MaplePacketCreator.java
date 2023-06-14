@@ -902,88 +902,100 @@ public class MaplePacketCreator {
     }
 
     public static MaplePacket closeRangeAttack(int cid, int tbyte, int skill, int level, byte display, byte animation, byte speed, List<AttackPair> damage, final boolean energy, int lvl, byte mastery, byte unk, int charge) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(energy ? ServerPacket.Header.LP_UserBodyAttack.Get() : ServerPacket.Header.LP_UserMeleeAttack.Get());
-        mplew.writeInt(cid);
-        mplew.write(tbyte);
-        mplew.write(lvl); //?
-        if (skill > 0) {
-            mplew.write(level);
-            mplew.writeInt(skill);
-        } else {
-            mplew.write(0);
+        ServerPacket p = new ServerPacket(); // ?
+        p.Encode2(energy ? ServerPacket.Header.LP_UserBodyAttack.Get() : ServerPacket.Header.LP_UserMeleeAttack.Get());
+        p.Encode4(cid);
+        p.Encode1(tbyte);
+        if (ServerConfig.version > 131) {
+            p.Encode1(lvl); //?
         }
-        mplew.write(unk); // Added on v.82
-        mplew.write(display);
-        mplew.write(animation);
-        mplew.write(speed);
-        mplew.write(mastery); // Mastery
-        mplew.writeInt(0);  // E9 03 BE FC
+        if (skill > 0) {
+            p.Encode1(level);
+            p.Encode4(skill);
+        } else {
+            p.Encode1(0);
+        }
+        if (ServerConfig.version > 131) {
+            p.Encode1(unk); // Added on v.82
+        }
+        p.Encode1(display);
+        if (ServerConfig.version > 131) {
+            p.Encode1(animation);
+        }
+        p.Encode1(speed);
+        p.Encode1(mastery); // Mastery
+        p.Encode4(0);  // E9 03 BE FC
 
         if (skill == 4211006) {
             for (AttackPair oned : damage) {
                 if (oned.attack != null) {
-                    mplew.writeInt(oned.objectid);
-                    mplew.write(0x07);
-                    mplew.write(oned.attack.size());
+                    p.Encode4(oned.objectid);
+                    p.Encode1(0x07);
+                    p.Encode1(oned.attack.size());
                     for (Pair<Integer, Boolean> eachd : oned.attack) {
-                        mplew.write(eachd.right ? 1 : 0);
-                        mplew.writeInt(eachd.left);
+                        p.Encode1(eachd.right ? 1 : 0);
+                        p.Encode4(eachd.left);
                     }
                 }
             }
         } else {
             for (AttackPair oned : damage) {
                 if (oned.attack != null) {
-                    mplew.writeInt(oned.objectid);
-                    mplew.write(0x07);
+                    p.Encode4(oned.objectid);
+                    p.Encode1(0x07);
                     for (Pair<Integer, Boolean> eachd : oned.attack) {
-                        mplew.write(eachd.right ? 1 : 0);
-                        mplew.writeInt(eachd.left.intValue());
+                        p.Encode1(eachd.right ? 1 : 0);
+                        p.Encode4(eachd.left.intValue());
                     }
                 }
             }
         }
         /*        if (charge > 0) {
-            mplew.writeInt(charge); //is it supposed to be here
+            p.Encode4(charge); //is it supposed to be here
         }*/
-        return mplew.getPacket();
+        return p.Get();
     }
 
     public static MaplePacket rangedAttack(int cid, byte tbyte, int skill, int level, byte display, byte animation, byte speed, int itemid, List<AttackPair> damage, final Point pos, int lvl, byte mastery, byte unk) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        mplew.writeShort(ServerPacket.Header.LP_UserShootAttack.Get());
-        mplew.writeInt(cid);
-        mplew.write(tbyte);
-        mplew.write(lvl); //?
-        if (skill > 0) {
-            mplew.write(level);
-            mplew.writeInt(skill);
-        } else {
-            mplew.write(0);
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserShootAttack);
+
+        p.Encode4(cid);
+        p.Encode1(tbyte);
+        if (ServerConfig.version > 131) {
+            p.Encode1(lvl); //?
         }
-        mplew.write(unk); // Added on v.82
-        mplew.write(display);
-        mplew.write(animation);
-        mplew.write(speed);
-        mplew.write(mastery); // Mastery level, who cares
-        mplew.writeInt(itemid);
+        if (skill > 0) {
+            p.Encode1(level);
+            p.Encode4(skill);
+        } else {
+            p.Encode1(0);
+        }
+        if (ServerConfig.version > 131) {
+            p.Encode1(unk); // Added on v.82
+        }
+        p.Encode1(display);
+        if (ServerConfig.version > 131) {
+            p.Encode1(animation);
+        }
+        p.Encode1(speed);
+        p.Encode1(mastery); // Mastery level, who cares
+        p.Encode4(itemid);
 
         for (AttackPair oned : damage) {
             if (oned.attack != null) {
-                mplew.writeInt(oned.objectid);
-                mplew.write(0x07);
+                p.Encode4(oned.objectid);
+                p.Encode1(0x07);
                 for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    mplew.write(eachd.right ? 1 : 0);
-                    mplew.writeInt(eachd.left.intValue());
+                    p.Encode1(eachd.right ? 1 : 0);
+                    p.Encode4(eachd.left.intValue());
                 }
             }
         }
-        mplew.writePos(pos); // Position
 
-        return mplew.getPacket();
+        p.Encode2(pos.x);
+        p.Encode2(pos.y);
+        return p.Get();
     }
 
     public static MaplePacket magicAttack(int cid, int tbyte, int skill, int level, byte display, byte animation, byte speed, List<AttackPair> damage, int charge, int lvl, byte unk) {

@@ -535,30 +535,16 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.CharInfoRequest(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case CP_UserMeleeAttack: {
-                // c
-                PlayerHandler.closeRangeAttack(p, c, c.getPlayer(), false);
-                return true;
-            }
-            case CP_UserShootAttack: {
-                // c
-                PlayerHandler.rangedAttack(p, c, c.getPlayer());
-                return true;
-            }
-            case CP_UserMagicAttack: {
-                // c
-                //PlayerHandler.MagicDamage(p, c, c.getPlayer());
+            case CP_UserMeleeAttack:
+            case CP_UserShootAttack:
+            case CP_UserMagicAttack:
+            case CP_UserBodyAttack: {
                 UserPacket.OnPacket(op, type, c);
                 return true;
             }
             case CP_UserSkillUseRequest: {
                 // c
                 PlayerHandler.SpecialMove(p, c, c.getPlayer());
-                return true;
-            }
-            case CP_UserBodyAttack: {
-                // c
-                PlayerHandler.closeRangeAttack(p, c, c.getPlayer(), true);
                 return true;
             }
             case CP_UserEmotion: {
@@ -603,8 +589,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_UserSkillPrepareRequest: {
-                // c
-                PlayerHandler.SkillEffect(p, c.getPlayer());
+                UserPacket.OnPacket(op, type, c);
                 return true;
             }
             case CP_UserDropMoneyRequest: {

@@ -59,18 +59,25 @@ public class UserPacket {
                 return true;
             }
             // 攻撃処理
-            case CP_UserMeleeAttack:
+            case CP_UserMeleeAttack: {
+                AttackInfo attack = parseDmgM(p);
+                PlayerHandler.closeRangeAttack(c, attack, false);
+                return true;
+            }
             case CP_UserShootAttack: {
+                AttackInfo attack = parseDmgR(p);
+                PlayerHandler.rangedAttack(c, attack);
                 return true;
             }
             case CP_UserMagicAttack: {
-                //PlayerHandler.closeRangeAttack(p, c, c.getPlayer(), false);
-                //PlayerHandler.rangedAttack(p, c, c.getPlayer());
-                //PlayerHandler.MagicDamage(p, c, c.getPlayer());
                 AttackInfo attack = parseDmgMa(p);
 
-                // AttackInfo attack = DamageParse.Modify_AttackCrit(parseDmgMa(p), chr, 3);
                 PlayerHandler.MagicDamage(c, attack);
+                return true;
+            }
+            case CP_UserBodyAttack: {
+                AttackInfo attack = parseDmgM(p);
+                PlayerHandler.closeRangeAttack(c, attack, true);
                 return true;
             }
             case CP_UserChangeStatRequest: {
@@ -107,12 +114,246 @@ public class UserPacket {
             case CP_UserEmotion: {
                 return true;
             }
+            case CP_UserSkillPrepareRequest: {
+                PlayerHandler.SkillEffect(p, c.getPlayer());
+                return true;
+            }
             default: {
                 break;
             }
         }
 
         return false;
+    }
+
+    public static final AttackInfo parseDmgM(ClientPacket p) {
+        //System.out.println(lea.toString());
+        final AttackInfo ret = new AttackInfo();
+
+        p.Decode1(); // skip
+        if (ServerConfig.version >= 186) {
+            p.Decode4(); // -1
+            p.Decode4(); // -1
+        }
+
+        ret.tbyte = p.Decode1();
+        //System.out.println("TBYTE: " + tbyte);
+        ret.targets = (byte) ((ret.tbyte >>> 4) & 0xF);
+        ret.hits = (byte) (ret.tbyte & 0xF);
+
+        if (ServerConfig.version >= 186) {
+            p.Decode4(); // -1
+            p.Decode4(); // -1
+        }
+
+        ret.skill = p.Decode4();
+
+        if (DebugConfig.log_damage) {
+            Debug.DebugLog(p.GetOpcodeName() + ": Skill = " + ret.skill);
+        }
+
+        if (ServerConfig.version >= 186) {
+            p.Decode4();
+            p.Decode4();
+            p.Decode4();
+        }
+
+        switch (ret.skill) {
+            case 5101004: // Corkscrew
+            case 15101003: // Cygnus corkscrew
+            case 5201002: // Gernard
+            case 14111006: // Poison bomb
+            case 4341002:
+            case 4341003:
+                ret.charge = p.Decode4();
+                break;
+            default:
+                ret.charge = 0;
+                break;
+        }
+
+        ret.unk = p.Decode1(); // OK
+
+        if (ServerConfig.version <= 131) {
+            ret.display = p.Decode1(); // ?
+        } else {
+            // v186
+            ret.display = (byte) (p.Decode2() & 0xFF); // high = weapon sub class?
+        }
+
+        ret.animation = p.Decode1(); // OK
+        ret.speed = p.Decode1(); // OK
+        ret.lastAttackTickCount = p.Decode4(); // OK
+
+        if (ServerConfig.version >= 186) {
+            p.Decode4(); // 0
+        }
+
+        ret.allDamage = new ArrayList<AttackPair>();
+
+        if (ret.skill == 4211006) { // Meso Explosion
+            return parseMesoExplosion(p, ret);
+        }
+        int oid, damage;
+        List<Pair<Integer, Boolean>> allDamageNumbers;
+
+        for (int i = 0; i < ret.targets; i++) {
+            oid = p.Decode4(); // mob object id
+
+            // v131 to v186 OK
+            p.Decode1();
+            p.Decode1();
+            p.Decode1();
+            p.Decode1();
+            p.Decode2();
+            p.Decode2();
+            p.Decode2();
+            p.Decode2();
+            p.Decode2();
+
+            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
+
+            for (int j = 0; j < ret.hits; j++) {
+                damage = p.Decode4();
+
+                if (DebugConfig.log_damage) {
+                    Debug.DebugLog(p.GetOpcodeName() + ": damage = " + damage);
+                }
+
+                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
+            }
+
+            if (ServerConfig.version >= 186) {
+                p.Decode4(); // CRC of monster [Wz Editing]
+            }
+
+            ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
+        }
+
+        ret.position = new Point();
+        ret.position.x = p.Decode2();
+        ret.position.y = p.Decode2();
+
+        if (ServerConfig.version >= 186) {
+            p.Decode1();
+        }
+        return ret;
+    }
+
+    public static final AttackInfo parseDmgR(ClientPacket p) {
+        //System.out.println(lea.toString()); //<-- packet needs revision
+        final AttackInfo ret = new AttackInfo();
+
+        p.Decode1(); // skip
+        if (ServerConfig.version >= 186) {
+            p.Decode4(); // -1
+            p.Decode4(); // -1
+        }
+
+        ret.tbyte = p.Decode1();
+        //System.out.println("TBYTE: " + tbyte);
+        ret.targets = (byte) ((ret.tbyte >>> 4) & 0xF);
+        ret.hits = (byte) (ret.tbyte & 0xF);
+
+        if (ServerConfig.version >= 186) {
+            p.Decode4(); // -1
+            p.Decode4(); // -1
+        }
+
+        ret.skill = p.Decode4();
+
+        if (DebugConfig.log_damage) {
+            Debug.DebugLog(p.GetOpcodeName() + ": Skill = " + ret.skill);
+        }
+
+        if (ServerConfig.version >= 186) {
+            p.Decode4();
+            p.Decode4();
+            p.Decode4();
+        }
+
+        switch (ret.skill) {
+            case 3121004: // Hurricane
+            case 3221001: // Pierce
+            case 5221004: // Rapidfire
+            case 13111002: // Cygnus Hurricane
+            case 33121009:
+                ret.charge = p.Decode4();
+                break;
+        }
+        ret.charge = -1;
+
+        ret.unk = p.Decode1(); // OK
+
+        if (ServerConfig.version <= 131) {
+            ret.display = p.Decode1(); // ?
+        } else {
+            // v186
+            ret.display = (byte) (p.Decode2() & 0xFF); // high = weapon sub class?
+        }
+
+        ret.animation = p.Decode1(); // OK
+        ret.speed = p.Decode1(); // OK
+        ret.lastAttackTickCount = p.Decode4(); // OK
+
+        if (ServerConfig.version >= 186) {
+            p.Decode4(); // 0
+        }
+
+        ret.slot = (byte) p.Decode2();
+        ret.csstar = (byte) p.Decode2();
+        ret.AOE = p.Decode1(); // is AOE or not, TT/ Avenger = 41, Showdown = 0
+
+        int damage, oid;
+        List<Pair<Integer, Boolean>> allDamageNumbers;
+        ret.allDamage = new ArrayList<AttackPair>();
+
+        for (int i = 0; i < ret.targets; i++) {
+            oid = p.Decode4(); // mob object id
+
+            // v131 to v186 OK
+            p.Decode1();
+            p.Decode1();
+            p.Decode1();
+            p.Decode1();
+            p.Decode2();
+            p.Decode2();
+            p.Decode2();
+            p.Decode2();
+            p.Decode2();
+
+            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
+
+            for (int j = 0; j < ret.hits; j++) {
+                damage = p.Decode4();
+
+                if (DebugConfig.log_damage) {
+                    Debug.DebugLog(p.GetOpcodeName() + ": damage = " + damage);
+                }
+
+                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
+            }
+
+            if (ServerConfig.version >= 186) {
+                p.Decode4(); // CRC of monster [Wz Editing]
+            }
+
+            ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
+        }
+
+        if (ServerConfig.version >= 186) {
+            p.Decode4(); // ?
+        }
+
+        ret.position = new Point();
+        ret.position.x = p.Decode2();
+        ret.position.y = p.Decode2();
+
+        if (ServerConfig.version >= 186) {
+            p.Decode1();
+        }
+
+        return ret;
     }
 
     public static final AttackInfo parseDmgMa(ClientPacket p) {
@@ -222,6 +463,69 @@ public class UserPacket {
             p.Decode1();
         }
 
+        return ret;
+    }
+
+    public static final AttackInfo parseMesoExplosion(ClientPacket p, final AttackInfo ret) {
+        //System.out.println(lea.toString(true));
+        byte bullets;
+        int damage;
+        if (ret.hits == 0) {
+            p.Decode4();
+            bullets = p.Decode1();
+            for (int j = 0; j < bullets; j++) {
+                damage = p.Decode4();
+
+                if (DebugConfig.log_damage) {
+                    Debug.DebugLog(p.GetOpcodeName() + ": damage = " + damage);
+                }
+                ret.allDamage.add(new AttackPair(Integer.valueOf(damage), null));
+                p.Decode1();
+            }
+            p.Decode2(); // 8F 02
+            return ret;
+        }
+
+        int oid;
+        List<Pair<Integer, Boolean>> allDamageNumbers;
+
+        for (int i = 0; i < ret.targets; i++) {
+            oid = p.Decode4();
+            // ?
+            p.Decode4();
+            p.Decode4();
+            p.Decode4();
+            bullets = p.Decode1();
+            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
+            for (int j = 0; j < bullets; j++) {
+                damage = p.Decode4();
+
+                if (DebugConfig.log_damage) {
+                    Debug.DebugLog(p.GetOpcodeName() + ": damage = " + damage);
+                }
+                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false)); //m.e. never crits
+            }
+
+            if (ServerConfig.version >= 186) {
+                p.Decode4(); // CRC of monster [Wz Editing]
+            }
+
+            ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
+        }
+        p.Decode4();
+        bullets = p.Decode1();
+
+        for (int j = 0; j < bullets; j++) {
+            damage = p.Decode4();
+
+            if (DebugConfig.log_damage) {
+                Debug.DebugLog(p.GetOpcodeName() + ": damage = " + damage);
+            }
+            ret.allDamage.add(new AttackPair(Integer.valueOf(damage), null));
+            p.Decode2();
+        }
+
+        p.Decode2(); // 8F 02/ 63 02
         return ret;
     }
 
