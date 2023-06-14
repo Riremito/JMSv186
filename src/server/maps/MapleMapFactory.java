@@ -51,6 +51,7 @@ import server.life.MapleNPC;
 import server.maps.MapleNodes.MapleNodeInfo;
 import server.maps.MapleNodes.MaplePlatform;
 import tools.StringUtil;
+import wz.LoadData;
 
 public class MapleMapFactory {
 
@@ -717,6 +718,12 @@ public class MapleMapFactory {
             default:
                 return;
         }
+
+        if (!LoadData.IsValidMobID(monsterid)) {
+            Debug.ErrorLog("Invalid Mob ID = " + monsterid);
+            return;
+        }
+
         map.addAreaMonsterSpawn(MapleLifeFactory.getMonster(monsterid), pos1, pos2, pos3, mobtime, msg);
     }
 

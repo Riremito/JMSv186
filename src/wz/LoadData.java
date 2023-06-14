@@ -1,13 +1,12 @@
 package wz;
 
-import config.DebugConfig;
 import config.ServerConfig;
 import debug.Debug;
+import debug.DebugLoadTime;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -20,63 +19,118 @@ import server.quest.MapleQuest;
 public class LoadData {
 
     public static void LoadDataFromXML() {
+
+        DebugLoadTime dlt = new DebugLoadTime("initDataIDs");
         initDataIDs(); // 職業ID
+        dlt.End();
+
         initQuests();
         initLife();
         initMaker();
         initItemInformation();
     }
 
-    final private static ArrayList<Integer> list_jobid = new ArrayList<Integer>();
-    final private static ArrayList<Integer> list_npcid = new ArrayList<Integer>();
+    final private static ArrayList<Integer> jobids = new ArrayList<Integer>();
+    final private static ArrayList<Integer> skinids = new ArrayList<Integer>();
+    final private static ArrayList<Integer> faceids = new ArrayList<Integer>();
+    final private static ArrayList<Integer> hairids = new ArrayList<Integer>();
+    final private static ArrayList<Integer> mapids = new ArrayList<Integer>();
+    final private static ArrayList<Integer> npcids = new ArrayList<Integer>();
+    final private static ArrayList<Integer> mobids = new ArrayList<Integer>();
+    final private static ArrayList<Integer> reactorids = new ArrayList<Integer>();
+    final private static ArrayList<Integer> itemids = new ArrayList<Integer>();
+    final private static ArrayList<Integer> skillids = new ArrayList<Integer>();
+    final private static ArrayList<Integer> morphids = new ArrayList<Integer>();
+    final private static ArrayList<Integer> taimingmobids = new ArrayList<Integer>();
 
-    // 職業ID
-    public static boolean IsValidJobID(int jobid) {
-        return list_jobid.contains(jobid);
+    public static boolean IsValidJobID(int id) {
+        return jobids.contains(id);
     }
 
-    // NPCID
-    public static boolean IsValidNPCID(int jobid) {
-        return list_npcid.contains(jobid);
+    public static boolean IsValidSkinID(int id) {
+        return skinids.contains(id);
+    }
+
+    public static boolean IsValidFaceID(int id) {
+        return faceids.contains(id);
+    }
+
+    public static boolean IsValidHairID(int id) {
+        return hairids.contains(id);
+    }
+
+    public static boolean IsValidMapID(int id) {
+        return mapids.contains(id);
+    }
+
+    public static boolean IsValidNPCID(int id) {
+        return npcids.contains(id);
+    }
+
+    public static boolean IsValidMobID(int id) {
+        return mobids.contains(id);
+    }
+
+    public static boolean IsValidReactorID(int id) {
+        return reactorids.contains(id);
     }
 
     // test for gm command
     public static ArrayList<Integer> GetJobIDs() {
-        return list_jobid;
+        return jobids;
     }
 
     private static void initDataIDs() {
+        // 職業ID
+        LoadXMLs("Skill.wz", "(\\d+)\\.img", jobids);
+        // 肌色, 顔, 髪型
+        LoadXMLs("Character.wz", "0*(\\d+)\\.img", skinids);
+        LoadXMLs("Character.wz/Face", "0*(\\d+)\\.img", faceids);
+        LoadXMLs("Character.wz/Hair", "0*(\\d+)\\.img", hairids);
+        // NPC
+        LoadXMLs("NPC.wz", "0*(\\d+)\\.img", npcids);
+        // Mob
+        LoadXMLs("Mob.wz", "0*(\\d+)\\.img", mobids);
+        // Map
+        LoadXMLs("Map.wz/Map/Map0", "0*(\\d+)\\.img", mapids);
+        LoadXMLs("Map.wz/Map/Map1", "0*(\\d+)\\.img", mapids);
+        LoadXMLs("Map.wz/Map/Map2", "0*(\\d+)\\.img", mapids);
+        LoadXMLs("Map.wz/Map/Map3", "0*(\\d+)\\.img", mapids);
+        LoadXMLs("Map.wz/Map/Map4", "0*(\\d+)\\.img", mapids);
+        LoadXMLs("Map.wz/Map/Map5", "0*(\\d+)\\.img", mapids);
+        LoadXMLs("Map.wz/Map/Map6", "0*(\\d+)\\.img", mapids);
+        LoadXMLs("Map.wz/Map/Map7", "0*(\\d+)\\.img", mapids);
+        LoadXMLs("Map.wz/Map/Map8", "0*(\\d+)\\.img", mapids);
+        LoadXMLs("Map.wz/Map/Map9", "0*(\\d+)\\.img", mapids);
 
-        // 職業IDをSkill.wzから取得
-        {
-            MapleDataProvider wz_skill = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Skill.wz"));
-            Pattern pattern = Pattern.compile("(\\d+)\\.img"); //  // example) 100.img
-            for (MapleDataFileEntry dir : wz_skill.getRoot().getFiles()) {
-                Matcher matcher = pattern.matcher(dir.getName());
-                if (matcher.matches()) {
-                    int jobid = Integer.parseInt(matcher.group(1));
-                    list_jobid.add(jobid);
-                }
+        Debug.DebugLog("JobIDs = " + jobids.size());
+        Debug.DebugLog("SkinIDs = " + skinids.size());
+        Debug.DebugLog("FaceIDs = " + faceids.size());
+        Debug.DebugLog("HairIDs = " + hairids.size());
+        Debug.DebugLog("NPCIDs = " + npcids.size());
+        Debug.DebugLog("MobIDs = " + mobids.size());
+        Debug.DebugLog("MapIDs = " + mapids.size());
+    }
+
+    private static int LoadXMLs(String path, String regex, ArrayList<Integer> list) {
+        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
+
+        if (wz == null) {
+            Debug.ErrorLog("wz path: " + path);
+            return 0;
+        }
+
+        Pattern pattern = Pattern.compile(regex);
+
+        for (MapleDataFileEntry dir : wz.getRoot().getFiles()) {
+            Matcher matcher = pattern.matcher(dir.getName());
+            if (matcher.matches()) {
+                int id = Integer.parseInt(matcher.group(1));
+                list.add(id);
             }
         }
 
-        // NPCIDをNPC.wzから取得
-        {
-            MapleDataProvider wz_npc = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/NPC.wz"));
-            Pattern pattern = Pattern.compile("0*(\\d+)\\.img"); //  // example) 0002000.img
-            for (MapleDataFileEntry dir : wz_npc.getRoot().getFiles()) {
-                Matcher matcher = pattern.matcher(dir.getName());
-                if (matcher.matches()) {
-                    int npcid = Integer.parseInt(matcher.group(1));
-                    list_npcid.add(npcid);
-                }
-            }
-        }
-
-        if (DebugConfig.initialize_log) {
-            Debug.DebugLog("JobID = " + list_jobid);
-            Debug.DebugLog("NPCID = " + list_npcid);
-        }
+        return list.size();
     }
 
     private static void initQuests() {
