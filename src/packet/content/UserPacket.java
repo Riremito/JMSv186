@@ -26,7 +26,6 @@ import server.maps.MapleMap;
 import server.movement.LifeMovementFragment;
 import tools.AttackPair;
 import tools.Pair;
-import tools.packet.PacketHelper;
 
 public class UserPacket {
 
@@ -97,7 +96,7 @@ public class UserPacket {
 
             // 被ダメージ
             case CP_UserHit: {
-                //PlayerHandler.TakeDamage(p, c, c.getPlayer());
+                PlayerHandler.TakeDamage(p, c, c.getPlayer());
                 return true;
             }
             // チャット

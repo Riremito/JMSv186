@@ -568,7 +568,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_UserHit: {
                 // c
-                PlayerHandler.TakeDamage(p, c, c.getPlayer());
+                //PlayerHandler.TakeDamage(p, c, c.getPlayer());
+                UserPacket.OnPacket(op, type, c);
                 return true;
             }
             case CP_UserChangeStatRequest: {

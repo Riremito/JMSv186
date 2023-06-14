@@ -200,12 +200,14 @@ public class PlayerHandler {
         }
     }
 
-    public static final void TakeDamage(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void TakeDamage(ClientPacket p, final MapleClient c, final MapleCharacter chr) {
         //System.out.println(slea.toString());
-        chr.updateTick(slea.readInt());
-        final byte type = slea.readByte(); //-4 is mist, -3 and -2 are map damage.
-        slea.skip(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
-        int damage = slea.readInt();
+        chr.updateTick(p.Decode4());
+        final byte type = p.Decode1(); //-4 is mist, -3 and -2 are map damage.
+        if (ServerConfig.version > 131) {
+            p.Decode1(); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
+        }
+        int damage = p.Decode4();
 
         int oid = 0;
         int monsteridfrom = 0;
@@ -227,10 +229,10 @@ public class PlayerHandler {
         }
         final PlayerStats stats = chr.getStat();
         if (type != -2 && type != -3 && type != -4) { // Not map damage
-            monsteridfrom = slea.readInt();
-            oid = slea.readInt();
+            monsteridfrom = p.Decode4();
+            oid = p.Decode4();
             attacker = chr.getMap().getMonsterByOid(oid);
-            direction = slea.readByte();
+            direction = p.Decode1();
 
             if (attacker == null) {
                 return;
@@ -266,15 +268,15 @@ public class PlayerHandler {
             if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
                 chr.cancelMorphs();
             }
-            if (slea.available() == 3) {
-                byte level = slea.readByte();
-                if (level > 0) {
-                    final MobSkill skill = MobSkillFactory.getMobSkill(slea.readShort(), level);
-                    if (skill != null) {
-                        //skill.applyEffect(chr, attacker, false);
-                    }
+            //if (slea.available() == 3) {
+            byte level = p.Decode1();
+            if (level > 0) {
+                final MobSkill skill = MobSkillFactory.getMobSkill(p.Decode2(), level);
+                if (skill != null) {
+                    //skill.applyEffect(chr, attacker, false);
                 }
             }
+            //}
             if (type != -2 && type != -3 && type != -4) {
                 final int bouncedam_ = (Randomizer.nextInt(100) < chr.getStat().DAMreflect_rate ? chr.getStat().DAMreflect : 0) + (type == -1 && chr.getBuffedValue(MapleBuffStat.POWERGUARD) != null ? chr.getBuffedValue(MapleBuffStat.POWERGUARD) : 0) + (type == -1 && chr.getBuffedValue(MapleBuffStat.PERFECT_ARMOR) != null ? chr.getBuffedValue(MapleBuffStat.PERFECT_ARMOR) : 0);
                 if (bouncedam_ > 0 && attacker != null) {
