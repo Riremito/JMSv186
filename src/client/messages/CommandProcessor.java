@@ -41,7 +41,6 @@ import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
 import server.maps.MapleMap;
 import server.maps.SavedLocationType;
-import static server.quest.MapleQuestRequirementType.npc;
 import tools.FileoutputUtil;
 
 public class CommandProcessor {

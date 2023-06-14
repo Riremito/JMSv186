@@ -2,6 +2,8 @@ package config;
 
 public class DebugConfig {
 
+    // wzデータ読み込み
+    public static boolean initialize_log = false;
     // 管理画面
     public static boolean open_debug_ui = false;
     // Show Packet

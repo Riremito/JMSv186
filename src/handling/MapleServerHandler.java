@@ -2,7 +2,6 @@ package handling;
 
 import constants.ServerConstants;
 import client.MapleClient;
-import command.GMCommand;
 import config.*;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
@@ -26,6 +25,7 @@ import tools.FileoutputUtil;
 import packet.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
+import packet.content.AdminPacket;
 import packet.content.MobPacket;
 import packet.content.ReactorPacket;
 import packet.content.TrunkPacket;
@@ -440,11 +440,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             // GMコマンド
-            case CP_Admin: {
-                return GMCommand.Accept(p, c);
-            }
+            case CP_Admin:
             // GMコマンドの文字列
             case CP_Log: {
+                AdminPacket.OnPacket(op, type, c);
                 return true;
             }
             // 雪玉専用？
