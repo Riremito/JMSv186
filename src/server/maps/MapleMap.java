@@ -62,6 +62,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import packet.content.MobPacket;
 import packet.content.ReactorPacket;
+import packet.content.UserPacket;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
@@ -1750,7 +1751,7 @@ public final class MapleMap {
             chr.setCoconutTeam(getAndSwitchTeam() ? 0 : 1);
         }
         if (!chr.isHidden()) {
-            broadcastMessage(chr, MaplePacketCreator.spawnPlayerMapobject(chr), false);
+            broadcastMessage(chr, UserPacket.spawnPlayerMapobject(chr), false);
             if (chr.isGM() && speedRunStart > 0) {
                 endSpeedRun();
                 broadcastMessage(MaplePacketCreator.serverNotice(5, "The speed run has ended."));
@@ -1764,7 +1765,7 @@ public final class MapleMap {
             }
             sendObjectPlacement(chr);
 
-            chr.getClient().getSession().write(MaplePacketCreator.spawnPlayerMapobject(chr));
+            chr.getClient().getSession().write(UserPacket.spawnPlayerMapobject(chr));
 
             if (!onUserEnter.equals("")) {
                 MapScriptMethods.startScript_User(chr.getClient(), onUserEnter);
@@ -2150,7 +2151,7 @@ public final class MapleMap {
         }
         removeMapObject(chr);
         chr.checkFollow();
-        broadcastMessage(MaplePacketCreator.removePlayerFromMap(chr.getId()));
+        broadcastMessage(UserPacket.removePlayerFromMap(chr.getId()));
         if (!chr.isClone()) {
             for (final MapleMonster monster : chr.getControlledMonsters()) {
                 monster.setController(null);

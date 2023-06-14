@@ -42,6 +42,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import packet.ClientPacket;
 import packet.content.MobPacket;
+import packet.content.UserPacket;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
@@ -1007,9 +1008,9 @@ public class PlayerHandler {
                 map.movePlayer(chr, pos);
                 if (chr.isHidden()) {
                     chr.setLastRes(res);
-                    c.getPlayer().getMap().broadcastGMMessage(chr, MaplePacketCreator.movePlayer(chr.getId(), res, Original_Pos), false);
+                    c.getPlayer().getMap().broadcastGMMessage(chr, UserPacket.movePlayer(chr.getId(), res, Original_Pos), false);
                 } else {
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.movePlayer(chr.getId(), res, Original_Pos), false);
+                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), UserPacket.movePlayer(chr.getId(), res, Original_Pos), false);
                 }
                 return;
             }
@@ -1025,9 +1026,9 @@ public class PlayerHandler {
 
             if (chr.isHidden()) {
                 chr.setLastRes(res2);
-                c.getPlayer().getMap().broadcastGMMessage(chr, MaplePacketCreator.movePlayer(chr.getId(), res, Original_Pos), false);
+                c.getPlayer().getMap().broadcastGMMessage(chr, UserPacket.movePlayer(chr.getId(), res, Original_Pos), false);
             } else {
-                c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.movePlayer(chr.getId(), res, Original_Pos), false);
+                c.getPlayer().getMap().broadcastMessage(c.getPlayer(), UserPacket.movePlayer(chr.getId(), res, Original_Pos), false);
             }
 
 //	    if (chr.isHidden()) {
@@ -1044,7 +1045,7 @@ public class PlayerHandler {
                     final Point original_pos = fol.getPosition();
                     fol.getClient().getSession().write(MaplePacketCreator.moveFollow(Original_Pos, original_pos, pos, res));
                     MovementParse.updatePosition(res, fol, 0);
-                    map.broadcastMessage(fol, MaplePacketCreator.movePlayer(fol.getId(), res, original_pos), false);
+                    map.broadcastMessage(fol, UserPacket.movePlayer(fol.getId(), res, original_pos), false);
                 } else {
                     chr.checkFollow();
                 }
@@ -1062,7 +1063,7 @@ public class PlayerHandler {
                                     if (clone.isHidden()) {
                                         clone.setLastRes(res3);
                                     } else {
-                                        map.broadcastMessage(clone, MaplePacketCreator.movePlayer(clone.getId(), res3, Original_Pos), false);
+                                        map.broadcastMessage(clone, UserPacket.movePlayer(clone.getId(), res3, Original_Pos), false);
                                     }
                                     MovementParse.updatePosition(res3, clone, 0);
                                     map.movePlayer(clone, pos);

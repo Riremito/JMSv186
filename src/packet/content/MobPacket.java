@@ -713,7 +713,7 @@ public class MobPacket {
         return p.Get();
     }
 
-    private static byte[] serializeMovementList(List<LifeMovementFragment> moves) {
+    public static byte[] serializeMovementList(List<LifeMovementFragment> moves) {
         ServerPacket data = new ServerPacket();
         data.Encode1(moves.size());
 

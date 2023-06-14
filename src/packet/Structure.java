@@ -17,6 +17,7 @@ import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import config.ServerConfig;
 import constants.GameConstants;
+import handling.MaplePacket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +25,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import server.life.MapleMonster;
+import server.shops.AbstractPlayerStore;
+import server.shops.IMaplePlayerShop;
 import tools.KoreanDateUtil;
 import tools.Pair;
 import tools.packet.PacketHelper;
@@ -765,5 +768,36 @@ public class Structure {
             }
         }
         return mask;
+    }
+
+    // addAnnounceBox
+    public static final byte[] AnnounceBox(MapleCharacter chr) {
+        ServerPacket p = new ServerPacket();
+        if (chr.getPlayerShop() != null && chr.getPlayerShop().isOwner(chr) && chr.getPlayerShop().getShopType() != 1 && chr.getPlayerShop().isAvailable()) {
+            p.EncodeBuffer(Interaction(chr.getPlayerShop()));
+        } else {
+            p.Encode1(0);
+        }
+
+        return p.Get().getBytes();
+    }
+
+    // addInteraction
+    public static final byte[] Interaction(IMaplePlayerShop shop) {
+        ServerPacket p = new ServerPacket();
+        p.Encode1(shop.getGameType());
+        p.Encode4(((AbstractPlayerStore) shop).getObjectId());
+        p.EncodeStr(shop.getDescription());
+        if (shop.getShopType() != 1) {
+            p.Encode1(shop.getPassword().length() > 0 ? 1 : 0); //password = false
+        }
+        p.Encode1(shop.getItemId() % 10);
+        p.Encode1(shop.getSize()); //current size
+        p.Encode1(shop.getMaxSize()); //full slots... 4 = 4-1=3 = has slots, 1-1=0 = no slots
+        if (shop.getShopType() != 1) {
+            p.Encode1(shop.isOpen() ? 0 : 1);
+        }
+
+        return p.Get().getBytes();
     }
 }

@@ -27,6 +27,7 @@ import client.MapleClient;
 import handling.MaplePacket;
 import handling.world.World;
 import handling.world.guild.*;
+import packet.content.UserPacket;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -52,8 +53,8 @@ public class GuildHandler {
     }
 
     private static final void respawnPlayer(final MapleCharacter mc) {
-        mc.getMap().broadcastMessage(mc, MaplePacketCreator.removePlayerFromMap(mc.getId()), false);
-        mc.getMap().broadcastMessage(mc, MaplePacketCreator.spawnPlayerMapobject(mc), false);
+        mc.getMap().broadcastMessage(mc, UserPacket.removePlayerFromMap(mc.getId()), false);
+        mc.getMap().broadcastMessage(mc, UserPacket.spawnPlayerMapobject(mc), false);
     }
 
     private static final class Invited {

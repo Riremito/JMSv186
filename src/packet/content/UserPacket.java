@@ -1,20 +1,32 @@
 // User
 package packet.content;
 
+import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleClient;
+import client.inventory.IItem;
+import client.inventory.MapleInventoryType;
 import config.DebugConfig;
 import config.ServerConfig;
+import constants.GameConstants;
 import debug.Debug;
+import handling.MaplePacket;
 import handling.channel.handler.AttackInfo;
 import handling.channel.handler.PlayerHandler;
+import handling.world.World;
+import handling.world.guild.MapleGuild;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
+import packet.ServerPacket;
+import packet.Structure;
+import server.Randomizer;
 import server.maps.MapleMap;
+import server.movement.LifeMovementFragment;
 import tools.AttackPair;
 import tools.Pair;
+import tools.packet.PacketHelper;
 
 public class UserPacket {
 
@@ -212,5 +224,217 @@ public class UserPacket {
         }
 
         return ret;
+    }
+
+    // spawnPlayerMapobject
+    public static MaplePacket spawnPlayerMapobject(MapleCharacter chr) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserEnterField);
+        p.Encode4(chr.getId());
+        // 自分のキャラクターの場合はここで終了
+
+        if (ServerConfig.version > 131) {
+            p.Encode1(chr.getLevel());
+        }
+
+        p.EncodeStr(chr.getName());
+
+        if (chr.getGuildId() <= 0) {
+            if (ServerConfig.version <= 131) {
+                p.EncodeStr("");
+                p.Encode2(0);
+                p.Encode1(0);
+                p.Encode2(0);
+                p.Encode1(0);
+            } else {
+                p.Encode4(0);
+                p.Encode4(0);
+            }
+        } else {
+            final MapleGuild gs = World.Guild.getGuild(chr.getGuildId());
+            if (gs != null) {
+                p.EncodeStr(gs.getName());
+                p.Encode2(gs.getLogoBG());
+                p.Encode1(gs.getLogoBGColor());
+                p.Encode2(gs.getLogo());
+                p.Encode1(gs.getLogoColor());
+            } else {
+                p.Encode4(0);
+                p.Encode4(0);
+            }
+        }
+
+        List<Pair<Integer, Boolean>> buffvalue = new ArrayList<Pair<Integer, Boolean>>();
+        if (ServerConfig.version > 131) {
+            long fbuffmask = 0xFE0000L;
+            if (chr.getBuffedValue(MapleBuffStat.SOARING) != null) {
+                fbuffmask |= MapleBuffStat.SOARING.getValue();
+            }
+            if (chr.getBuffedValue(MapleBuffStat.MIRROR_IMAGE) != null) {
+                fbuffmask |= MapleBuffStat.MIRROR_IMAGE.getValue();
+            }
+            if (chr.getBuffedValue(MapleBuffStat.DARK_AURA) != null) {
+                fbuffmask |= MapleBuffStat.DARK_AURA.getValue();
+            }
+            if (chr.getBuffedValue(MapleBuffStat.BLUE_AURA) != null) {
+                fbuffmask |= MapleBuffStat.BLUE_AURA.getValue();
+            }
+            if (chr.getBuffedValue(MapleBuffStat.YELLOW_AURA) != null) {
+                fbuffmask |= MapleBuffStat.YELLOW_AURA.getValue();
+            }
+
+            p.Encode8(fbuffmask);
+        }
+
+        long buffmask = 0;
+
+        if (chr.getBuffedValue(MapleBuffStat.DARKSIGHT) != null && !chr.isHidden()) {
+            buffmask |= MapleBuffStat.DARKSIGHT.getValue();
+        }
+        if (chr.getBuffedValue(MapleBuffStat.COMBO) != null) {
+            buffmask |= MapleBuffStat.COMBO.getValue();
+            buffvalue.add(new Pair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.COMBO).intValue()), false));
+        }
+        if (chr.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null) {
+            buffmask |= MapleBuffStat.SHADOWPARTNER.getValue();
+        }
+        if (chr.getBuffedValue(MapleBuffStat.SOULARROW) != null) {
+            buffmask |= MapleBuffStat.SOULARROW.getValue();
+        }
+        if (chr.getBuffedValue(MapleBuffStat.DIVINE_BODY) != null) {
+            buffmask |= MapleBuffStat.DIVINE_BODY.getValue();
+        }
+        if (chr.getBuffedValue(MapleBuffStat.BERSERK_FURY) != null) {
+            buffmask |= MapleBuffStat.BERSERK_FURY.getValue();
+        }
+        if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
+            buffmask |= MapleBuffStat.MORPH.getValue();
+            buffvalue.add(new Pair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.MORPH).intValue()), true));
+        }
+
+        p.Encode8(buffmask);
+
+        if (ServerConfig.version > 131) {
+            for (Pair<Integer, Boolean> i : buffvalue) {
+                if (i.right) {
+                    p.Encode2(i.left.shortValue());
+                } else {
+                    p.Encode1(i.left.byteValue());
+                }
+            }
+            final int CHAR_MAGIC_SPAWN = Randomizer.nextInt();
+            //CHAR_MAGIC_SPAWN is really just tickCount
+            //this is here as it explains the 7 "dummy" buffstats which are placed into every character
+            //these 7 buffstats are placed because they have irregular packet structure.
+            //they ALL have writeShort(0); first, then a long as their variables, then server tick count
+            //0x80000, 0x100000, 0x200000, 0x400000, 0x800000, 0x1000000, 0x2000000
+
+            p.Encode2(0); //start of energy charge
+            p.Encode8(0);
+            p.Encode1(1);
+            p.Encode4(CHAR_MAGIC_SPAWN);
+            p.Encode2(0); //start of dash_speed
+            p.Encode8(0);
+            p.Encode1(1);
+            p.Encode4(CHAR_MAGIC_SPAWN);
+            p.Encode2(0); //start of dash_jump
+            p.Encode8(0);
+            p.Encode1(1);
+            p.Encode4(CHAR_MAGIC_SPAWN);
+            p.Encode2(0); //start of Monster Riding
+            int buffSrc = chr.getBuffSource(MapleBuffStat.MONSTER_RIDING);
+            if (buffSrc > 0) {
+                final IItem c_mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/);
+                final IItem mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
+                if (GameConstants.getMountItem(buffSrc) == 0 && c_mount != null) {
+                    p.Encode4(c_mount.getItemId());
+                } else if (GameConstants.getMountItem(buffSrc) == 0 && mount != null) {
+                    p.Encode4(mount.getItemId());
+                } else {
+                    p.Encode4(GameConstants.getMountItem(buffSrc));
+                }
+                p.Encode4(buffSrc);
+            } else {
+                p.Encode8(0);
+            }
+            p.Encode1(1);
+            p.Encode4(CHAR_MAGIC_SPAWN);
+            p.Encode8(0); //speed infusion behaves differently here
+            p.Encode1(1);
+            p.Encode4(CHAR_MAGIC_SPAWN);
+            p.Encode4(1);
+            p.Encode8(0); //homing beacon
+            p.Encode1(0);
+            p.Encode2(0);
+            p.Encode1(1);
+            p.Encode4(CHAR_MAGIC_SPAWN);
+            p.Encode4(0); //and finally, something ive no idea
+            p.Encode8(0);
+            p.Encode1(1);
+            p.Encode4(CHAR_MAGIC_SPAWN);
+            p.Encode2(0);
+            p.Encode2(chr.getJob());
+        }
+
+        Structure.CharLook(p, chr, false); // to do buffer
+
+        p.Encode4(0);//this is CHARID to follow
+
+        if (ServerConfig.version > 131) {
+            p.Encode4(0); //probably charid following
+            p.Encode8(Math.min(250, chr.getInventory(MapleInventoryType.CASH).countById(5110000))); //max is like 100. but w/e
+        }
+
+        p.Encode4(chr.getItemEffect());
+        p.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
+        p.Encode2(chr.getPosition().x);
+        p.Encode2(chr.getPosition().y);
+        p.Encode1(chr.getStance());
+        p.Encode2(0); // FH
+        p.Encode1(0); // pet size
+        p.Encode4(chr.getMount().getLevel()); // mount lvl
+        p.Encode4(chr.getMount().getExp()); // exp
+        p.Encode4(chr.getMount().getFatigue()); // tiredness
+        p.EncodeBuffer(Structure.AnnounceBox(chr));
+        p.Encode1(chr.getChalkboard() != null && chr.getChalkboard().length() > 0 ? 1 : 0);
+        if (chr.getChalkboard() != null && chr.getChalkboard().length() > 0) {
+            p.EncodeStr(chr.getChalkboard());
+        }
+
+        // v131ここまでOK, ここからおかしい
+        p.EncodeBuffer(Structure.addRingInfo(chr)); // byte x3?
+        // Berserk?
+
+        p.Encode2(0);
+        p.Encode4(0);
+        if (chr.getCarnivalParty() != null) {
+            p.Encode1(chr.getCarnivalParty().getTeam());
+        } else if (chr.getMapId() == 109080000) {
+            p.Encode1(chr.getCoconutTeam()); //is it 0/1 or is it 1/2?
+        }
+        return p.Get();
+    }
+
+    // removePlayerFromMap
+    public static MaplePacket removePlayerFromMap(int player_id) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserLeaveField);
+
+        p.Encode4(player_id);
+        return p.Get();
+    }
+
+    // movePlayer
+    public static MaplePacket movePlayer(int player_id, List<LifeMovementFragment> moves, Point startPos) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserMove);
+
+        p.Encode4(player_id);
+        p.Encode2(startPos.x);
+        p.Encode2(startPos.y);
+
+        if (ServerConfig.version > 131) {
+            p.Encode4(0);
+        }
+
+        p.EncodeBuffer(MobPacket.serializeMovementList(moves)); // to do move class
+        return p.Get();
     }
 }
