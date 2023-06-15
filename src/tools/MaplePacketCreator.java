@@ -944,8 +944,12 @@ public class MaplePacketCreator {
                     p.Encode4(oned.objectid);
                     p.Encode1(0x07);
                     for (Pair<Integer, Boolean> eachd : oned.attack) {
-                        p.Encode1(eachd.right ? 1 : 0);
-                        p.Encode4(eachd.left.intValue());
+                        if (ServerConfig.version <= 131) {
+                            p.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
+                        } else {
+                            p.Encode1(eachd.right ? 1 : 0);
+                            p.Encode4(eachd.left.intValue());
+                        }
                     }
                 }
             }
@@ -987,8 +991,12 @@ public class MaplePacketCreator {
                 p.Encode4(oned.objectid);
                 p.Encode1(0x07);
                 for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    p.Encode1(eachd.right ? 1 : 0);
-                    p.Encode4(eachd.left.intValue());
+                    if (ServerConfig.version <= 131) {
+                        p.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
+                    } else {
+                        p.Encode1(eachd.right ? 1 : 0);
+                        p.Encode4(eachd.left.intValue());
+                    }
                 }
             }
         }
@@ -1030,8 +1038,12 @@ public class MaplePacketCreator {
                 p.Encode4(oned.objectid);
                 p.Encode1(-1);
                 for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    p.Encode1(eachd.right ? 1 : 0);
-                    p.Encode4(eachd.left.intValue());
+                    if (ServerConfig.version <= 131) {
+                        p.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
+                    } else {
+                        p.Encode1(eachd.right ? 1 : 0);
+                        p.Encode4(eachd.left.intValue());
+                    }
                 }
             }
         }

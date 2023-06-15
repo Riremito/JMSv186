@@ -690,13 +690,13 @@ public class MobPacket {
         }
 
         p.Encode1(useskill ? 1 : 0); //?? I THINK
-        p.Encode1(skill);
-        p.Encode1(skill1);
-        p.Encode1(skill2);
-        p.Encode1(skill3);
+        p.Encode1(skill); // mode
+        p.Encode1(skill1); // skillId
+        p.Encode1(skill2); // skillLevel
+        p.Encode1(skill3); // effectDelay
+        p.Encode1(skill4); // effectDelay
 
         if (ServerConfig.version > 131) {
-            p.Encode1(skill4);
             p.EncodeZeroBytes(8); //o.o?
         }
 
