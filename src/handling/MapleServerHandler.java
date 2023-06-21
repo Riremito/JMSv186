@@ -25,6 +25,7 @@ import tools.FileoutputUtil;
 import packet.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
+import packet.ServerPacket;
 import packet.content.AdminPacket;
 import packet.content.MobPacket;
 import packet.content.ReactorPacket;
@@ -105,8 +106,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
         final byte ivSend[] = ServerConstants.Use_Fixed_IV ? new byte[]{1, 0x5F, 4, 0x3F} : serverSend;
 
         final MapleClient client = new MapleClient(
-                new MapleAESOFB(ivSend, (short) (0xFFFF - ServerConfig.version)), // Sent Cypher
-                new MapleAESOFB(ivRecv, ServerConfig.version), // Recv Cypher
+                new MapleAESOFB(ivSend, server_type == ServerType.LoginServer, true), // Sent Cypher
+                new MapleAESOFB(ivRecv, server_type == ServerType.LoginServer, false), // Recv Cypher
                 session);
         client.setChannel(channel);
 
@@ -177,6 +178,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     return;
                 }
             }
+
+            // test
+            {
+                ClientPacket p = new ClientPacket((byte[]) message);
+                Debug.PacketDebugLog(p);
+            }
+
             final MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
 
         } catch (Exception e) {
@@ -204,6 +212,33 @@ public class MapleServerHandler extends IoHandlerAdapter {
         Debug.PacketLog(p);
 
         switch (type) {
+            case CP_TEST1: {
+                {
+                    ServerPacket sp = new ServerPacket((short)0x0018);
+                    sp.Encode1(0);
+                    sp.Encode4(0);
+                    c.SendPacket(sp.Get());
+                }
+                {
+                    ServerPacket sp = new ServerPacket((short)0x0019);
+                    sp.Encode2(1);
+                    c.SendPacket(sp.Get());
+                }
+                {
+                    ServerPacket sp = new ServerPacket((short)0x001D);
+                    c.SendPacket(sp.Get());
+                }
+                {
+                    ServerPacket sp = new ServerPacket((short)0x002D);
+                    sp.Encode1(0);
+                    c.SendPacket(sp.Get());
+                }
+                return true;
+            }
+
+            case CP_TEST2: {
+                return true;
+            }
             // 独自実装
             case CP_CUSTOM_WZ_HASH: {
                 if (ServerConfig.login_server_antihack) {
@@ -316,6 +351,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 break;
             }
         }
+
         return false;
     }
 

@@ -84,6 +84,10 @@ public class Debug {
         return true;
     }
 
+    public static void PacketDebugLog(ClientPacket p) {
+        Log("[CP][" + p.GetOpcodeName() + "]\n" + p.Packet());
+    }
+
     // パケット出力 (Server Packet)
     public static boolean PacketLog(ServerPacket p) {
         if (!DebugConfig.log_packet) {

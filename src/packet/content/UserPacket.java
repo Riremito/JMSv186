@@ -233,10 +233,6 @@ public class UserPacket {
         ret.position = new Point();
         ret.position.x = p.Decode2();
         ret.position.y = p.Decode2();
-
-        if (ServerConfig.version >= 186) {
-            p.Decode1();
-        }
         return ret;
     }
 
@@ -348,11 +344,6 @@ public class UserPacket {
         ret.position = new Point();
         ret.position.x = p.Decode2();
         ret.position.y = p.Decode2();
-
-        if (ServerConfig.version >= 186) {
-            p.Decode1();
-        }
-
         return ret;
     }
 
@@ -458,11 +449,6 @@ public class UserPacket {
         ret.position = new Point();
         ret.position.x = p.Decode2();
         ret.position.y = p.Decode2();
-
-        if (ServerConfig.version >= 186) {
-            p.Decode1();
-        }
-
         return ret;
     }
 

@@ -55,8 +55,8 @@ import wz.LoadData;
 
 public class MapleMapFactory {
 
-    private static final MapleDataProvider source = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Map.wz"));
-    private static final MapleData nameData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/String.wz")).getData("Map.img");
+    public static MapleDataProvider source;
+    public static MapleData nameData;
     private final Map<Integer, MapleMap> maps = new HashMap<Integer, MapleMap>();
     private final Map<Integer, MapleMap> instanceMap = new HashMap<Integer, MapleMap>();
     private static final Map<Integer, MapleNodes> mapInfos = new HashMap<Integer, MapleNodes>();

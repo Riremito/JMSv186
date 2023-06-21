@@ -114,6 +114,10 @@ public class Start {
                 ServerPacket.SetForJMSv302();
                 break;
             }
+            // x64 test
+            case 414: {
+                break;
+            }
             default: {
                 Debug.ErrorLog("the version is not supported!");
                 return;
@@ -146,14 +150,9 @@ public class Start {
 
         //WZ
         LoadData.LoadDataFromXML();
-
-        MapleLifeFactory.loadQuestCounts();
-        ItemMakerFactory.getInstance();
-        MapleItemInformationProvider.getInstance().load();
         RandomRewards.getInstance();
-        SkillFactory.getSkill(99999999);
+
         MapleOxQuizFactory.getInstance().initialize();
-        MapleCarnivalFactory.getInstance().initialize();
         MapleGuildRanking.getInstance().getRank();
         MapleFamilyBuff.getBuffEntry();
 

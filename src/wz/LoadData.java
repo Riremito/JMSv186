@@ -1,33 +1,53 @@
 package wz;
 
+import client.SkillFactory;
 import config.ServerConfig;
 import debug.Debug;
 import debug.DebugLoadTime;
+import handling.login.LoginInformationProvider;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import provider.MapleData;
 import provider.MapleDataFileEntry;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
+import provider.MapleDataTool;
+import server.CashItemFactory;
 import server.ItemMakerFactory;
+import server.MapleCarnivalFactory;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
+import server.maps.MapleMapFactory;
 import server.quest.MapleQuest;
 
 // バージョンごとにwzの構造が変わるので、変わっていたら読み取り方法もそれに合わせて変更する必要がある
 public class LoadData {
 
     public static void LoadDataFromXML() {
+        // test
+        if (ServerConfig.version >= 414) {
+            return;
+        }
 
         DebugLoadTime dlt = new DebugLoadTime("initDataIDs");
         initDataIDs(); // 職業ID
         dlt.End();
 
+        initForbiddenName();
         initQuests();
         initLife();
         initMaker();
         initItemInformation();
+
+        // gomi
+        MapleLifeFactory.loadQuestCounts();
+        ItemMakerFactory.getInstance();
+        MapleItemInformationProvider.getInstance().load();
+        SkillFactory.getSkill(99999999);
+        MapleCarnivalFactory.getInstance().initialize();
+        initMapleMapFactory();
     }
 
     final private static ArrayList<Integer> jobids = new ArrayList<Integer>();
@@ -189,5 +209,39 @@ public class LoadData {
             MapleItemInformationProvider.insStringData = MapleItemInformationProvider.stringData.getData("Ins.img");
             MapleItemInformationProvider.petStringData = MapleItemInformationProvider.stringData.getData("Pet.img");
         }
+    }
+
+    // login server
+    private static void initForbiddenName() {
+        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz"));
+
+        if (wz == null) {
+            Debug.ErrorLog("initForbiddenName");
+            return;
+        }
+
+        final MapleData nameData = wz.getData("ForbiddenName.img");
+
+        for (final MapleData data : nameData.getChildren()) {
+            LoginInformationProvider.ForbiddenName.add(MapleDataTool.getString(data));
+        }
+
+    }
+
+    private static void initMapleMapFactory() {
+        MapleMapFactory.source = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Map.wz"));
+
+        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/String.wz"));
+
+        if (wz == null) {
+            Debug.ErrorLog("initMapleMapFactory");
+            return;
+        }
+
+        MapleMapFactory.nameData = wz.getData("Map.img");
+    }
+
+    private static void initCashItemFactory() {
+        CashItemFactory.data = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz"));
     }
 }

@@ -20,31 +20,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.login;
 
-import config.ServerConfig;
-import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
 
-import provider.MapleData;
-import provider.MapleDataProviderFactory;
-import provider.MapleDataTool;
 
 public class LoginInformationProvider {
 
     private final static LoginInformationProvider instance = new LoginInformationProvider();
-    protected final List<String> ForbiddenName = new ArrayList<String>();
+    public static List<String> ForbiddenName = new ArrayList<String>();
 
     public static LoginInformationProvider getInstance() {
         return instance;
-    }
-
-    protected LoginInformationProvider() {
-        //System.out.println("Loading LoginInformationProvider :::");
-        final String WZpath = ServerConfig.wz_path;
-        final MapleData nameData = MapleDataProviderFactory.getDataProvider(new File(WZpath + "/Etc.wz")).getData("ForbiddenName.img");
-        for (final MapleData data : nameData.getChildren()) {
-            ForbiddenName.add(MapleDataTool.getString(data));
-        }
     }
 
     public final boolean isForbiddenName(final String in) {

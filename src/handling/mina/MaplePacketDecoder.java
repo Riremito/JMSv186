@@ -22,6 +22,7 @@ package handling.mina;
 
 import client.MapleClient;
 import config.ServerConfig;
+import debug.Debug;
 import tools.MapleAESOFB;
 
 import org.apache.mina.common.ByteBuffer;
@@ -52,6 +53,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
             if (in.remaining() >= 4) {
                 final int packetHeader = in.getInt();
                 if (!client.getReceiveCrypto().checkPacket(packetHeader)) {
+                    Debug.ErrorLog("checkPacket");
                     session.close();
                     return false;
                 }
