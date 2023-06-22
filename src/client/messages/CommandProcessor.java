@@ -42,6 +42,7 @@ import server.life.MapleNPC;
 import server.maps.MapleMap;
 import server.maps.SavedLocationType;
 import tools.FileoutputUtil;
+import wz.LoadData;
 
 public class CommandProcessor {
 
@@ -219,6 +220,26 @@ public class CommandProcessor {
             // マガティア
             if ("/magatia".equals(splitted[0]) || "/マガティア".equals(splitted[0])) {
                 warp(c, 261000000);
+                return true;
+            }
+
+            if ("/nextmap".equals(splitted[0])) {
+                int index = LoadData.GetMapIDIndex(c.getPlayer().getMapId());
+                int mapid = LoadData.GetMapIDByIndex(index + 1);
+
+                if (0 <= mapid) {
+                    warp(c, mapid);
+                }
+                return true;
+            }
+
+            if ("/prevmap".equals(splitted[0]) || "/previousmap".equals(splitted[0])) {
+                int index = LoadData.GetMapIDIndex(c.getPlayer().getMapId());
+                int mapid = LoadData.GetMapIDByIndex(index - 1);
+
+                if (0 <= mapid) {
+                    warp(c, mapid);
+                }
                 return true;
             }
 

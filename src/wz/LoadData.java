@@ -100,6 +100,17 @@ public class LoadData {
         return jobids;
     }
 
+    public static int GetMapIDIndex(int id) {
+        return mapids.indexOf(id);
+    }
+
+    public static int GetMapIDByIndex(int index) {
+        if (index < 0 || mapids.size() <= index) {
+            return -1;
+        }
+        return mapids.get(index);
+    }
+
     private static void initDataIDs() {
         // 職業ID
         LoadXMLs("Skill.wz", "(\\d+)\\.img", jobids);
