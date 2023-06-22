@@ -17,14 +17,12 @@ import handling.channel.handler.PlayerHandler;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
 import java.awt.Point;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
 import packet.ServerPacket;
 import packet.Structure;
 import server.Randomizer;
-import server.Timer.CloneTimer;
 import server.maps.MapleMap;
 import server.movement.LifeMovementFragment;
 import tools.AttackPair;
@@ -52,7 +50,6 @@ public class UserPacket {
                 return true;
             }
             case CP_UserMove: {
-                //PlayerHandler.MovePlayer(p, c, c.getPlayer());
                 OnMove(p, map, chr);
                 return true;
             }
@@ -179,15 +176,20 @@ public class UserPacket {
         }
 
         ret.unk = p.Decode1(); // OK
+        ret.display = p.Decode1();
 
+        // v186, v131
+        // attack
+        // 00, 00 unk
+        // 0005, 10 display
+        // 01, 01 animation
         if (ServerConfig.version <= 131) {
-            ret.display = p.Decode1(); // ?
+            ret.animation = p.Decode1(); // OK
         } else {
             // v186
-            ret.display = (byte) (p.Decode2() & 0xFF); // high = weapon sub class?
+            ret.animation = (byte) (p.Decode2() & 0xFF); // high = weapon sub class?
         }
 
-        ret.animation = p.Decode1(); // OK
         ret.speed = p.Decode1(); // OK
         ret.lastAttackTickCount = p.Decode4(); // OK
 
@@ -286,15 +288,15 @@ public class UserPacket {
         ret.charge = -1;
 
         ret.unk = p.Decode1(); // OK
+        ret.display = p.Decode1();
 
         if (ServerConfig.version <= 131) {
-            ret.display = p.Decode1(); // ?
+            ret.animation = p.Decode1(); // OK
         } else {
             // v186
-            ret.display = (byte) (p.Decode2() & 0xFF); // high = weapon sub class?
+            ret.animation = (byte) (p.Decode2() & 0xFF); // high = weapon sub class?
         }
 
-        ret.animation = p.Decode1(); // OK
         ret.speed = p.Decode1(); // OK
         ret.lastAttackTickCount = p.Decode4(); // OK
 
@@ -399,15 +401,20 @@ public class UserPacket {
         }
 
         ret.unk = p.Decode1(); // OK
+        ret.display = p.Decode1(); // v186 2 bytes
 
+        // v186
+        // magic attack
+        // 00 unk
+        // 002E display
+        // 01 animation
         if (ServerConfig.version <= 131) {
-            ret.display = p.Decode1(); // ?
+            ret.animation = p.Decode1(); // OK
         } else {
-            // v186
-            ret.display = (byte) (p.Decode2() & 0xFF); // high = weapon sub class?
+            // v186 1 bytes, display and animation may be wrong
+            ret.animation = (byte) (p.Decode2() & 0xFF); // high = weapon sub class?
         }
 
-        ret.animation = p.Decode1(); // OK
         ret.speed = p.Decode1(); // OK
         ret.lastAttackTickCount = p.Decode4(); // OK
 
