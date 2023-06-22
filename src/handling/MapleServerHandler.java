@@ -212,33 +212,33 @@ public class MapleServerHandler extends IoHandlerAdapter {
         Debug.PacketLog(p);
 
         switch (type) {
+            /*
             case CP_TEST1: {
-                {
-                    ServerPacket sp = new ServerPacket((short)0x0018);
-                    sp.Encode1(0);
-                    sp.Encode4(0);
-                    c.SendPacket(sp.Get());
-                }
-                {
-                    ServerPacket sp = new ServerPacket((short)0x0019);
-                    sp.Encode2(1);
-                    c.SendPacket(sp.Get());
-                }
-                {
-                    ServerPacket sp = new ServerPacket((short)0x001D);
-                    c.SendPacket(sp.Get());
-                }
-                {
-                    ServerPacket sp = new ServerPacket((short)0x002D);
-                    sp.Encode1(0);
-                    c.SendPacket(sp.Get());
+                if (ServerConfig.version >= 414) {
+                    {
+                        ServerPacket sp = new ServerPacket((short) 0x0018);
+                        sp.Encode1(0);
+                        sp.Encode4(0);
+                        c.SendPacket(sp.Get());
+                    }
+                    {
+                        ServerPacket sp = new ServerPacket((short) 0x0019);
+                        sp.Encode2(1);
+                        c.SendPacket(sp.Get());
+                    }
+                    {
+                        ServerPacket sp = new ServerPacket((short) 0x001D);
+                        c.SendPacket(sp.Get());
+                    }
+                    {
+                        ServerPacket sp = new ServerPacket((short) 0x002D);
+                        sp.Encode1(0);
+                        c.SendPacket(sp.Get());
+                    }
                 }
                 return true;
             }
-
-            case CP_TEST2: {
-                return true;
-            }
+             */
             // 独自実装
             case CP_CUSTOM_WZ_HASH: {
                 if (ServerConfig.login_server_antihack) {
@@ -560,21 +560,20 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InterServerHandler.EnterCS(c, c.getPlayer(), true);
                 return true;
             }
-            case CP_UserMove: {
-                // pc
-                PlayerHandler.MovePlayer(p, c, c.getPlayer());
-                return true;
-            }
             case CP_UserCharacterInfoRequest: {
                 // 実装が悪い
                 p.readInt();
                 PlayerHandler.CharInfoRequest(p.readInt(), c, c.getPlayer());
                 return true;
             }
+            case CP_UserSkillPrepareRequest:
+            case CP_UserChangeStatRequest:
+            case CP_UserMove:
             case CP_UserMeleeAttack:
             case CP_UserShootAttack:
             case CP_UserMagicAttack:
-            case CP_UserBodyAttack: {
+            case CP_UserBodyAttack:
+            case CP_UserHit: {
                 UserPacket.OnPacket(op, type, c);
                 return true;
             }
@@ -586,16 +585,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserEmotion: {
                 // pc
                 PlayerHandler.ChangeEmotion(p.readInt(), c.getPlayer());
-                return true;
-            }
-            case CP_UserHit: {
-                // c
-                //PlayerHandler.TakeDamage(p, c, c.getPlayer());
-                UserPacket.OnPacket(op, type, c);
-                return true;
-            }
-            case CP_UserChangeStatRequest: {
-                UserPacket.OnPacket(op, type, c);
                 return true;
             }
             case CP_UserSkillCancelRequest: {
@@ -622,10 +611,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case WHEEL_OF_FORTUNE: {
                 // pc
                 PlayerHandler.UseItemEffect(p.readInt(), c, c.getPlayer());
-                return true;
-            }
-            case CP_UserSkillPrepareRequest: {
-                UserPacket.OnPacket(op, type, c);
                 return true;
             }
             case CP_UserDropMoneyRequest: {

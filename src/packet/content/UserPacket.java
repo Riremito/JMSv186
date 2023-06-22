@@ -12,19 +12,23 @@ import constants.GameConstants;
 import debug.Debug;
 import handling.MaplePacket;
 import handling.channel.handler.AttackInfo;
+import handling.channel.handler.MovementParse;
 import handling.channel.handler.PlayerHandler;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
 import java.awt.Point;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
 import packet.ServerPacket;
 import packet.Structure;
 import server.Randomizer;
+import server.Timer.CloneTimer;
 import server.maps.MapleMap;
 import server.movement.LifeMovementFragment;
 import tools.AttackPair;
+import tools.MaplePacketCreator;
 import tools.Pair;
 
 public class UserPacket {
@@ -48,6 +52,8 @@ public class UserPacket {
                 return true;
             }
             case CP_UserMove: {
+                //PlayerHandler.MovePlayer(p, c, c.getPlayer());
+                OnMove(p, map, chr);
                 return true;
             }
             case CP_UserSitRequest: {
@@ -725,6 +731,120 @@ public class UserPacket {
 
         p.EncodeBuffer(MobPacket.serializeMovementList(moves)); // to do move class
         return p.Get();
+    }
+
+    public static boolean OnMove(ClientPacket p, MapleMap map, MapleCharacter chr) {
+        final Point Original_Pos = new Point();
+
+        if (ServerConfig.version >= 186) {
+            p.Decode4(); // -1
+            p.Decode4(); // -1
+        }
+
+        p.Decode1(); // unk
+
+        if (ServerConfig.version >= 186) {
+            p.Decode4(); // -1
+            p.Decode4(); // -1
+            p.Decode4();
+            p.Decode4();
+            p.Decode4();
+        }
+
+        // v131 = start xy, v186 = updated xy
+        Original_Pos.x = p.Decode2(); // start y
+        Original_Pos.y = p.Decode2(); // start y
+
+        if (ServerConfig.version >= 186) {
+            Original_Pos.x = chr.getPosition().x;
+            Original_Pos.y = chr.getPosition().y;
+        }
+
+        if (ServerConfig.version >= 186) {
+            p.Decode2();
+            p.Decode2();
+        }
+
+        List<LifeMovementFragment> res = null;
+
+        try {
+            // player OK
+            res = MobPacket.parseMovement(p, 1);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Debug.ErrorLog("AIOBE Type1");
+            return false;
+        }
+
+        if (res == null) {
+            Debug.ErrorLog("AIOBE Type1 res == null");
+            return false;
+        }
+
+        // update char position
+        if (chr.isHidden()) {
+            chr.setLastRes(res); // crap
+            map.broadcastGMMessage(chr, UserPacket.movePlayer(chr.getId(), res, Original_Pos), false);
+        } else {
+            map.broadcastMessage(chr, UserPacket.movePlayer(chr.getId(), res, Original_Pos), false);
+        }
+
+        MovementParse.updatePosition(res, chr, 0);
+        final Point pos = chr.getPosition();
+        map.movePlayer(chr, pos);
+        if (chr.getFollowId() > 0 && chr.isFollowOn() && chr.isFollowInitiator()) {
+            final MapleCharacter fol = map.getCharacterById(chr.getFollowId());
+            if (fol != null) {
+                final Point original_pos = fol.getPosition();
+                fol.getClient().getSession().write(MaplePacketCreator.moveFollow(Original_Pos, original_pos, pos, res));
+                MovementParse.updatePosition(res, fol, 0);
+                map.broadcastMessage(fol, UserPacket.movePlayer(fol.getId(), res, original_pos), false);
+            } else {
+                chr.checkFollow();
+            }
+        }
+
+        /*
+        WeakReference<MapleCharacter>[] clones = chr.getClones();
+        for (int i = 0; i < clones.length; i++) {
+            if (clones[i].get() != null) {
+                final MapleCharacter clone = clones[i].get();
+                final List<LifeMovementFragment> res3 = new ArrayList<LifeMovementFragment>(res2);
+                CloneTimer.getInstance().schedule(new Runnable() {
+
+                    public void run() {
+                        try {
+                            if (clone.getMap() == map) {
+                                if (clone.isHidden()) {
+                                    clone.setLastRes(res3);
+                                } else {
+                                    map.broadcastMessage(clone, UserPacket.movePlayer(clone.getId(), res3, Original_Pos), false);
+                                }
+                                MovementParse.updatePosition(res3, clone, 0);
+                                map.movePlayer(clone, pos);
+                            }
+                        } catch (Exception e) {
+                            //very rarely swallowed
+                        }
+                    }
+                }, 500 * i + 500);
+            }
+        }
+         */
+        // Fall Down Floor
+        int count = chr.getFallCounter();
+        if (map.getFootholds().findBelow(chr.getPosition()) == null && chr.getPosition().y > chr.getOldPosition().y && chr.getPosition().x == chr.getOldPosition().x) {
+            if (count > 10) {
+                chr.changeMap(map, map.getPortal(0));
+                chr.setFallCounter(0);
+            } else {
+                chr.setFallCounter(++count);
+            }
+        } else if (count > 0) {
+            chr.setFallCounter(0);
+        }
+        chr.setOldPosition(new Point(chr.getPosition()));
+
+        return true;
     }
 
 }
