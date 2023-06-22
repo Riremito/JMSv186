@@ -48,6 +48,7 @@ import client.inventory.MaplePet;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import database.DatabaseConnection;
+import debug.Debug;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.PartyOperation;
@@ -2245,7 +2246,7 @@ public final class MapleMap {
                 }
             }
             o.sendSpawnData(c.getClient());
-            c.addVisibleMapObject(o);
+            //c.addVisibleMapObject(o);
         }
     }
 
@@ -2491,6 +2492,8 @@ public final class MapleMap {
         if (chr == null || chr.isClone()) {
             return;
         }
+
+        //Debug.DebugLog("CharXY = " + chr.getPosition());
         if (!chr.isMapObjectVisible(mo)) { // monster entered view range
             if (mo.getType() == MapleMapObjectType.SUMMON || mo.getPosition().distanceSq(chr.getPosition()) <= GameConstants.maxViewRangeSq()) {
                 chr.addVisibleMapObject(mo);

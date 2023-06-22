@@ -65,6 +65,7 @@ public class Debug {
         }
 
         switch (p.GetOpcode()) {
+            case CP_CheckPassword:
             case CP_UserMove:
             case CP_UserMeleeAttack:
             case CP_UserShootAttack:
