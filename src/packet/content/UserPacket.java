@@ -549,10 +549,10 @@ public class UserPacket {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserMove);
 
         p.Encode4(player_id);
-        p.Encode2(startPos.x);
-        p.Encode2(startPos.y);
+        p.Encode2((short) startPos.x);
+        p.Encode2((short) startPos.y);
 
-        if (ServerConfig.version > 131) {
+        if (131 < ServerConfig.version) {
             p.Encode4(0);
         }
 
@@ -579,8 +579,8 @@ public class UserPacket {
         }
 
         // v131 = start xy, v186 = updated xy
-        Original_Pos.x = p.Decode2(); // start y
-        Original_Pos.y = p.Decode2(); // start y
+        Original_Pos.x = (int) p.Decode2(); // start y
+        Original_Pos.y = (int) p.Decode2(); // start y
 
         if (ServerConfig.version >= 186) {
             Original_Pos.x = chr.getPosition().x;
@@ -596,7 +596,7 @@ public class UserPacket {
 
         try {
             // player OK
-            res = MobPacket.parseMovement(p, 1);
+            res = MovementPacket.CMovePath_Decode(p, 1);
         } catch (ArrayIndexOutOfBoundsException e) {
             Debug.ErrorLog("AIOBE Type1");
             return false;
@@ -629,34 +629,6 @@ public class UserPacket {
                 chr.checkFollow();
             }
         }
-
-        /*
-        WeakReference<MapleCharacter>[] clones = chr.getClones();
-        for (int i = 0; i < clones.length; i++) {
-            if (clones[i].get() != null) {
-                final MapleCharacter clone = clones[i].get();
-                final List<LifeMovementFragment> res3 = new ArrayList<LifeMovementFragment>(res2);
-                CloneTimer.getInstance().schedule(new Runnable() {
-
-                    public void run() {
-                        try {
-                            if (clone.getMap() == map) {
-                                if (clone.isHidden()) {
-                                    clone.setLastRes(res3);
-                                } else {
-                                    map.broadcastMessage(clone, UserPacket.movePlayer(clone.getId(), res3, Original_Pos), false);
-                                }
-                                MovementParse.updatePosition(res3, clone, 0);
-                                map.movePlayer(clone, pos);
-                            }
-                        } catch (Exception e) {
-                            //very rarely swallowed
-                        }
-                    }
-                }, 500 * i + 500);
-            }
-        }
-         */
         // Fall Down Floor
         int count = chr.getFallCounter();
         if (map.getFootholds().findBelow(chr.getPosition()) == null && chr.getPosition().y > chr.getOldPosition().y && chr.getPosition().x == chr.getOldPosition().x) {

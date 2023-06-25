@@ -75,15 +75,15 @@ public class AbsoluteLifeMovement extends AbstractLifeMovement {
     @Override
     public void serialize(ServerPacket data) {
         data.Encode1(getType());
-        data.Encode2(getPosition().x);
-        data.Encode2(getPosition().y);
-        data.Encode2(pixelsPerSecond.x);
-        data.Encode2(pixelsPerSecond.y);
+        data.Encode2((short) getPosition().x);
+        data.Encode2((short) getPosition().y);
+        data.Encode2((short) pixelsPerSecond.x);
+        data.Encode2((short) pixelsPerSecond.y);
         data.Encode2(unk);
 
         if (ServerConfig.version > 131) {
-            data.Encode2(offset.x);
-            data.Encode2(offset.y);
+            data.Encode2((short) offset.x);
+            data.Encode2((short) offset.y);
         }
 
         data.Encode1(getNewstate());
