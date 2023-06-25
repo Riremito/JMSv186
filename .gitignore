@@ -1,4 +1,4 @@
-/nbproject/private/
+/nbproject/
 /build/
 /dist/
 /MonitorLogs/
@@ -11,3 +11,5 @@
 /jms_wz/
 /jms_scripts/
 /bat/
+/build.xml
+/bmanifest.mf
