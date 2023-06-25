@@ -71,31 +71,6 @@ public class CheatTracker {
         takingDamageSince = System.currentTimeMillis();
     }
 
-    public final void checkAttack(final int skillId, final int tickcount) {
-        /*
-        final short AtkDelay = GameConstants.getAttackDelay(skillId);
-        if ((tickcount - lastAttackTickCount) < AtkDelay) {
-            registerOffense(CheatingOffense.FASTATTACK);
-        }
-        final long STime_TC = System.currentTimeMillis() - tickcount; // hack = - more
-        if (Server_ClientAtkTickDiff - STime_TC > 250) { // 250 is the ping, TODO
-            registerOffense(CheatingOffense.FASTATTACK2);
-        }
-        // if speed hack, client tickcount values will be running at a faster pace
-        // For lagging, it isn't an issue since TIME is running simotaniously, client
-        // will be sending values of older time
-
-//	System.out.println("Delay [" + skillId + "] = " + (tickcount - lastAttackTickCount) + ", " + (Server_ClientAtkTickDiff - STime_TC));
-        Attack_tickResetCount++; // Without this, the difference will always be at 100
-        if (Attack_tickResetCount >= (AtkDelay <= 200 ? 2 : 4)) {
-            Attack_tickResetCount = 0;
-            Server_ClientAtkTickDiff = STime_TC;
-        }
-        chr.get().updateTick(tickcount);
-        lastAttackTickCount = tickcount;
-         */
-    }
-
     public final void checkTakeDamage(final int damage) {
         /*
         numSequentialDamage++;

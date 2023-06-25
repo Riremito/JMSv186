@@ -36,7 +36,6 @@ import client.anticheat.CheatTracker;
 import client.anticheat.CheatingOffense;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
-import config.ServerConfig;
 import java.util.Map;
 import server.MapleStatEffect;
 import server.Randomizer;
@@ -51,7 +50,6 @@ import server.maps.MapleMapObjectType;
 import tools.MaplePacketCreator;
 import tools.AttackPair;
 import tools.Pair;
-import tools.data.input.LittleEndianAccessor;
 
 public class DamageParse {
 
@@ -61,9 +59,6 @@ public class DamageParse {
         if (!player.isAlive()) {
             player.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
             return;
-        }
-        if (attack.real) {
-            player.getCheatTracker().checkAttack(attack.skill, attack.lastAttackTickCount);
         }
         if (attack.skill != 0) {
             if (effect == null) {
@@ -88,18 +83,18 @@ public class DamageParse {
                     }
                 }
             }
-            if (attack.targets > effect.getMobCount()) { // Must be done here, since NPE with normal atk
+            if (attack.GetMobCount() > effect.getMobCount()) { // Must be done here, since NPE with normal atk
                 player.getCheatTracker().registerOffense(CheatingOffense.MISMATCHING_BULLETCOUNT);
                 return;
             }
         }
-        if (attack.hits > attackCount) {
+        if (attack.GetDamagePerMob() > attackCount) {
             if (attack.skill != 4211006) {
                 player.getCheatTracker().registerOffense(CheatingOffense.MISMATCHING_BULLETCOUNT);
                 return;
             }
         }
-        if (attack.hits > 0 && attack.targets > 0) {
+        if (attack.GetDamagePerMob() > 0 && attack.GetMobCount() > 0) {
             // Don't ever do this. it's too expensive.
             if (!player.getStat().checkEquipDurabilitys(player, -1)) { //i guess this is how it works ?
                 player.dropMessage(5, "An item has run out of durability but has no inventory room to go to.");
@@ -456,7 +451,7 @@ public class DamageParse {
         if (attack.skill == 4331003 && totDamageToOneMonster < hpMob) {
             return;
         }
-        if (attack.skill != 0 && (attack.targets > 0 || (attack.skill != 4331003 && attack.skill != 4341002)) && attack.skill != 21101003 && attack.skill != 5110001 && attack.skill != 15100004 && attack.skill != 11101002 && attack.skill != 13101002) {
+        if (attack.skill != 0 && (attack.GetMobCount() > 0 || (attack.skill != 4331003 && attack.skill != 4341002)) && attack.skill != 21101003 && attack.skill != 5110001 && attack.skill != 15100004 && attack.skill != 11101002 && attack.skill != 13101002) {
             effect.applyTo(player, attack.position);
         }
         if (totDamage > 1) {
@@ -471,7 +466,7 @@ public class DamageParse {
 
     public static final void applyAttackMagic(final AttackInfo attack, final ISkill theSkill, final MapleCharacter player, final MapleStatEffect effect) {
 
-        if (attack.hits > 0 && attack.targets > 0) {
+        if (attack.GetDamagePerMob() > 0 && attack.GetMobCount() > 0) {
             if (!player.getStat().checkEquipDurabilitys(player, -1)) { //i guess this is how it works ?
                 player.dropMessage(5, "An item has run out of durability but has no inventory room to go to.");
                 return;

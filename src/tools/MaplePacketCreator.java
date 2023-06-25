@@ -85,7 +85,10 @@ import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import tools.packet.PacketHelper;
 import client.MapleBeans;
+import config.DebugConfig;
 import config.ServerConfig;
+import debug.Debug;
+import handling.channel.handler.AttackInfo;
 import handling.channel.handler.BeanGame;
 import packet.ServerPacket;
 import packet.Structure;
@@ -901,95 +904,45 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket closeRangeAttack(int cid, int tbyte, int skill, int level, byte display, byte animation, byte speed, List<AttackPair> damage, final boolean energy, int lvl, byte mastery, byte unk, int charge) {
-        ServerPacket p = new ServerPacket(); // ?
-        p.Encode2(energy ? ServerPacket.Header.LP_UserBodyAttack.Get() : ServerPacket.Header.LP_UserMeleeAttack.Get());
-        p.Encode4(cid);
-        p.Encode1(tbyte);
+    // CLifePool::OnUserAttack
+    public static MaplePacket UserAttack(AttackInfo attack) {
+        ServerPacket p = new ServerPacket(attack.GetHeader());
+
+        p.Encode4(attack.CharacterId);
+        p.Encode1(attack.HitKey);
+
         if (ServerConfig.version > 131) {
-            p.Encode1(lvl); //?
+            p.Encode1(attack.m_nLevel);
         }
-        if (skill > 0) {
-            p.Encode1(level);
-            p.Encode4(skill);
+
+        p.Encode1(attack.SkillLevel); // nPassiveSLV
+        if (0 < attack.nSkillID) {
+            p.Encode4(attack.nSkillID); // nSkillID
+        }
+
+        if (ServerConfig.version > 131) {
+            p.Encode1(attack.BuffKey); // bSerialAttack
+        }
+
+        if (ServerConfig.version <= 131) {
+            p.Encode1(attack.AttackActionKey);
         } else {
-            p.Encode1(0);
+            p.Encode2(attack.AttackActionKey);
         }
-        if (ServerConfig.version > 131) {
-            p.Encode1(unk); // Added on v.82
-        }
-        p.Encode1(display);
-        if (ServerConfig.version > 131) {
-            p.Encode1(animation);
-        }
-        p.Encode1(speed);
-        p.Encode1(mastery); // Mastery
-        p.Encode4(0);  // E9 03 BE FC
 
-        if (skill == 4211006) {
-            for (AttackPair oned : damage) {
-                if (oned.attack != null) {
-                    p.Encode4(oned.objectid);
-                    p.Encode1(0x07);
-                    p.Encode1(oned.attack.size());
-                    for (Pair<Integer, Boolean> eachd : oned.attack) {
-                        p.Encode1(eachd.right ? 1 : 0);
-                        p.Encode4(eachd.left);
-                    }
-                }
-            }
-        } else {
-            for (AttackPair oned : damage) {
-                if (oned.attack != null) {
-                    p.Encode4(oned.objectid);
-                    p.Encode1(0x07);
-                    for (Pair<Integer, Boolean> eachd : oned.attack) {
-                        if (ServerConfig.version <= 131) {
-                            p.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
-                        } else {
-                            p.Encode1(eachd.right ? 1 : 0);
-                            p.Encode4(eachd.left.intValue());
-                        }
-                    }
-                }
-            }
-        }
-        /*        if (charge > 0) {
-            p.Encode4(charge); //is it supposed to be here
-        }*/
-        return p.Get();
-    }
+        p.Encode1(attack.nAttackSpeed); // nActionSpeed
+        p.Encode1(attack.nMastery); // nMastery
+        p.Encode4(attack.nBulletItemID); // nBulletItemID
 
-    public static MaplePacket rangedAttack(int cid, byte tbyte, int skill, int level, byte display, byte animation, byte speed, int itemid, List<AttackPair> damage, final Point pos, int lvl, byte mastery, byte unk) {
-
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserShootAttack);
-
-        p.Encode4(cid);
-        p.Encode1(tbyte);
-        if (ServerConfig.version > 131) {
-            p.Encode1(lvl); //?
-        }
-        if (skill > 0) {
-            p.Encode1(level);
-            p.Encode4(skill);
-        } else {
-            p.Encode1(0);
-        }
-        if (ServerConfig.version > 131) {
-            p.Encode1(unk); // Added on v.82
-        }
-        p.Encode1(display);
-        if (ServerConfig.version > 131) {
-            p.Encode1(animation);
-        }
-        p.Encode1(speed);
-        p.Encode1(mastery); // Mastery level, who cares
-        p.Encode4(itemid);
-
-        for (AttackPair oned : damage) {
+        for (AttackPair oned : attack.allDamage) {
             if (oned.attack != null) {
                 p.Encode4(oned.objectid);
                 p.Encode1(0x07);
+
+                if (attack.IsMesoExplosion()) {
+                    p.Encode1(oned.attack.size());
+                }
+
                 for (Pair<Integer, Boolean> eachd : oned.attack) {
                     if (ServerConfig.version <= 131) {
                         p.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
@@ -1001,55 +954,17 @@ public class MaplePacketCreator {
             }
         }
 
-        p.Encode2(pos.x);
-        p.Encode2(pos.y);
-        return p.Get();
-    }
-
-    public static MaplePacket magicAttack(int cid, int tbyte, int skill, int level, byte display, byte animation, byte speed, List<AttackPair> damage, int charge, int lvl, byte unk) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserMagicAttack);
-
-        p.Encode4(cid);
-        p.Encode1(tbyte);
-
-        if (ServerConfig.version > 131) {
-            p.Encode1(lvl);
+        if (attack.IsQuantumExplosion()) {
+            p.Encode4(attack.tKeyDown);
         }
 
-        p.Encode1(level);
-        p.Encode4(skill);
-
-        if (ServerConfig.version > 131) {
-            p.Encode1(unk); // Added on v.82
-        }
-
-        p.Encode1(display);
-
-        if (ServerConfig.version > 131) {
-            p.Encode1(animation);
-        }
-
-        p.Encode1(speed);
-        p.Encode1(0); // Mastery byte is always 0 because spells don't have a swoosh
-        p.Encode4(0);
-
-        for (AttackPair oned : damage) {
-            if (oned.attack != null) {
-                p.Encode4(oned.objectid);
-                p.Encode1(-1);
-                for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    if (ServerConfig.version <= 131) {
-                        p.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
-                    } else {
-                        p.Encode1(eachd.right ? 1 : 0);
-                        p.Encode4(eachd.left.intValue());
-                    }
-                }
+        if (131 < ServerConfig.version) {
+            if (attack.GetHeader() == ServerPacket.Header.LP_UserShootAttack) {
+                p.Encode2(attack.X);
+                p.Encode2(attack.Y);
             }
         }
-        if (charge > 0) {
-            p.Encode4(charge);
-        }
+
         return p.Get();
     }
 
