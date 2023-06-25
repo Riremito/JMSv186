@@ -36,7 +36,6 @@ import client.anticheat.CheatTracker;
 import client.anticheat.CheatingOffense;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
-import config.ServerConfig;
 import java.util.Map;
 import server.MapleStatEffect;
 import server.Randomizer;
@@ -51,7 +50,6 @@ import server.maps.MapleMapObjectType;
 import tools.MaplePacketCreator;
 import tools.AttackPair;
 import tools.Pair;
-import tools.data.input.LittleEndianAccessor;
 
 public class DamageParse {
 
@@ -61,9 +59,6 @@ public class DamageParse {
         if (!player.isAlive()) {
             player.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
             return;
-        }
-        if (attack.real) {
-            player.getCheatTracker().checkAttack(attack.skill, attack.lastAttackTickCount);
         }
         if (attack.skill != 0) {
             if (effect == null) {
@@ -88,18 +83,18 @@ public class DamageParse {
                     }
                 }
             }
-            if (attack.targets > effect.getMobCount()) { // Must be done here, since NPE with normal atk
+            if (attack.GetMobCount() > effect.getMobCount()) { // Must be done here, since NPE with normal atk
                 player.getCheatTracker().registerOffense(CheatingOffense.MISMATCHING_BULLETCOUNT);
                 return;
             }
         }
-        if (attack.hits > attackCount) {
+        if (attack.GetDamagePerMob() > attackCount) {
             if (attack.skill != 4211006) {
                 player.getCheatTracker().registerOffense(CheatingOffense.MISMATCHING_BULLETCOUNT);
                 return;
             }
         }
-        if (attack.hits > 0 && attack.targets > 0) {
+        if (attack.GetDamagePerMob() > 0 && attack.GetMobCount() > 0) {
             // Don't ever do this. it's too expensive.
             if (!player.getStat().checkEquipDurabilitys(player, -1)) { //i guess this is how it works ?
                 player.dropMessage(5, "An item has run out of durability but has no inventory room to go to.");
@@ -456,7 +451,7 @@ public class DamageParse {
         if (attack.skill == 4331003 && totDamageToOneMonster < hpMob) {
             return;
         }
-        if (attack.skill != 0 && (attack.targets > 0 || (attack.skill != 4331003 && attack.skill != 4341002)) && attack.skill != 21101003 && attack.skill != 5110001 && attack.skill != 15100004 && attack.skill != 11101002 && attack.skill != 13101002) {
+        if (attack.skill != 0 && (attack.GetMobCount() > 0 || (attack.skill != 4331003 && attack.skill != 4341002)) && attack.skill != 21101003 && attack.skill != 5110001 && attack.skill != 15100004 && attack.skill != 11101002 && attack.skill != 13101002) {
             effect.applyTo(player, attack.position);
         }
         if (totDamage > 1) {
@@ -470,21 +465,8 @@ public class DamageParse {
     }
 
     public static final void applyAttackMagic(final AttackInfo attack, final ISkill theSkill, final MapleCharacter player, final MapleStatEffect effect) {
-        if (!player.isAlive()) {
-            player.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
-            return;
-        }
-        if (attack.real) {
-            player.getCheatTracker().checkAttack(attack.skill, attack.lastAttackTickCount);
-        }
-//	if (attack.skill != 2301002) { // heal is both an attack and a special move (healing) so we'll let the whole applying magic live in the special move part
-//	    effect.applyTo(player);
-//	}
-        if (attack.hits > effect.getAttackCount() || attack.targets > effect.getMobCount()) {
-            player.getCheatTracker().registerOffense(CheatingOffense.MISMATCHING_BULLETCOUNT);
-            return;
-        }
-        if (attack.hits > 0 && attack.targets > 0) {
+
+        if (attack.GetDamagePerMob() > 0 && attack.GetMobCount() > 0) {
             if (!player.getStat().checkEquipDurabilitys(player, -1)) { //i guess this is how it works ?
                 player.dropMessage(5, "An item has run out of durability but has no inventory room to go to.");
                 return;
@@ -943,225 +925,4 @@ public class DamageParse {
         return attack;
     }
 
-    public static final AttackInfo parseDmgMa(final LittleEndianAccessor lea) {
-        //System.out.println(lea.toString());
-        final AttackInfo ret = new AttackInfo();
-
-        lea.skip(1);
-        lea.skip(8);
-        ret.tbyte = lea.readByte();
-        //System.out.println("TBYTE: " + tbyte);
-        ret.targets = (byte) ((ret.tbyte >>> 4) & 0xF);
-        ret.hits = (byte) (ret.tbyte & 0xF);
-        lea.skip(8); //?
-        ret.skill = lea.readInt();
-        lea.skip(12); // ORDER [4] bytes on v.79, [4] bytes on v.80, [1] byte on v.82
-        switch (ret.skill) {
-            case 2121001: // Big Bang
-            case 2221001:
-            case 2321001:
-            case 22121000: //breath
-            case 22151001:
-                ret.charge = lea.readInt();
-                break;
-            default:
-                ret.charge = -1;
-                break;
-        }
-        ret.unk = lea.readByte();
-        ret.display = lea.readByte(); // Always zero?
-        ret.animation = lea.readByte();
-        ret.speed = lea.readByte(); // Confirmed
-        lea.skip(1); // Weapon subclass
-        ret.lastAttackTickCount = lea.readInt(); // Ticks
-        lea.skip(4); //0
-
-        int oid, damage;
-        List<Pair<Integer, Boolean>> allDamageNumbers;
-        ret.allDamage = new ArrayList<AttackPair>();
-
-        for (int i = 0; i < ret.targets; i++) {
-            oid = lea.readInt();
-            lea.skip(14); // [1] Always 6?, [3] unk, [4] Pos1, [4] Pos2, [2] seems to change randomly for some attack
-
-            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
-
-            for (int j = 0; j < ret.hits; j++) {
-                damage = lea.readInt();
-                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
-            }
-            lea.skip(4); // CRC of monster [Wz Editing]
-            ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
-        }
-        ret.position = lea.readPos();
-
-        return ret;
-    }
-
-    public static final AttackInfo parseDmgM(final LittleEndianAccessor lea) {
-        //System.out.println(lea.toString());
-        final AttackInfo ret = new AttackInfo();
-
-        if (ServerConfig.version > 164) {
-            lea.skip(1);
-            lea.skip(8);
-        }
-        ret.tbyte = lea.readByte();
-        //System.out.println("TBYTE: " + tbyte);
-        ret.targets = (byte) ((ret.tbyte >>> 4) & 0xF);
-        ret.hits = (byte) (ret.tbyte & 0xF);
-
-        if (ServerConfig.version > 164) {
-            lea.skip(8);
-        }
-
-        ret.skill = lea.readInt();
-        lea.skip(12); // ORDER [4] bytes on v.79, [4] bytes on v.80, [1] byte on v.82
-        switch (ret.skill) {
-            case 5101004: // Corkscrew
-            case 15101003: // Cygnus corkscrew
-            case 5201002: // Gernard
-            case 14111006: // Poison bomb
-            case 4341002:
-            case 4341003:
-                ret.charge = lea.readInt();
-                break;
-            default:
-                ret.charge = 0;
-                break;
-        }
-        ret.unk = lea.readByte();
-        ret.display = lea.readByte(); // Always zero?
-        ret.animation = lea.readByte();
-        lea.skip(1); // Weapon class
-        ret.speed = lea.readByte(); // Confirmed
-        ret.lastAttackTickCount = lea.readInt(); // Ticks
-        lea.skip(4); //0
-
-        ret.allDamage = new ArrayList<AttackPair>();
-
-        if (ret.skill == 4211006) { // Meso Explosion
-            return parseMesoExplosion(lea, ret);
-        }
-        int oid, damage;
-        List<Pair<Integer, Boolean>> allDamageNumbers;
-
-        for (int i = 0; i < ret.targets; i++) {
-            oid = lea.readInt();
-//	    System.out.println(tools.HexTool.toString(lea.read(14)));
-            lea.skip(14); // [1] Always 6?, [3] unk, [4] Pos1, [4] Pos2, [2] seems to change randomly for some attack
-
-            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
-
-            for (int j = 0; j < ret.hits; j++) {
-                damage = lea.readInt();
-                // System.out.println("Damage: " + damage);
-                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
-            }
-            lea.skip(4); // CRC of monster [Wz Editing]
-            ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
-        }
-        ret.position = lea.readPos();
-        return ret;
-    }
-
-    public static final AttackInfo parseDmgR(final LittleEndianAccessor lea) {
-        //System.out.println(lea.toString()); //<-- packet needs revision
-        final AttackInfo ret = new AttackInfo();
-
-        lea.skip(1);
-        lea.skip(8);
-        ret.tbyte = lea.readByte();
-        //System.out.println("TBYTE: " + tbyte);
-        ret.targets = (byte) ((ret.tbyte >>> 4) & 0xF);
-        ret.hits = (byte) (ret.tbyte & 0xF);
-        lea.skip(8);
-        ret.skill = lea.readInt();
-        lea.skip(12); // ORDER [4] bytes on v.79, [4] bytes on v.80, [1] byte on v.82
-        switch (ret.skill) {
-            case 3121004: // Hurricane
-            case 3221001: // Pierce
-            case 5221004: // Rapidfire
-            case 13111002: // Cygnus Hurricane
-            case 33121009:
-                lea.skip(4); // extra 4 bytes
-                break;
-        }
-        ret.charge = -1;
-        ret.unk = lea.readByte();
-        ret.display = lea.readByte(); // Always zero?
-        ret.animation = lea.readByte();
-        lea.skip(1); // Weapon class
-        ret.speed = lea.readByte(); // Confirmed
-        ret.lastAttackTickCount = lea.readInt(); // Ticks
-        lea.skip(4); //0
-        ret.slot = (byte) lea.readShort();
-        ret.csstar = (byte) lea.readShort();
-        ret.AOE = lea.readByte(); // is AOE or not, TT/ Avenger = 41, Showdown = 0
-
-        int damage, oid;
-        List<Pair<Integer, Boolean>> allDamageNumbers;
-        ret.allDamage = new ArrayList<AttackPair>();
-
-        for (int i = 0; i < ret.targets; i++) {
-            oid = lea.readInt();
-//	    System.out.println(tools.HexTool.toString(lea.read(14)));
-            lea.skip(14); // [1] Always 6?, [3] unk, [4] Pos1, [4] Pos2, [2] seems to change randomly for some attack
-
-            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
-            for (int j = 0; j < ret.hits; j++) {
-                damage = lea.readInt();
-                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
-                //System.out.println("Hit " + j + " from " + i + " to mobid " + oid + ", damage " + damage);
-            }
-            lea.skip(4); // CRC of monster [Wz Editing]
-//	    System.out.println(tools.HexTool.toString(lea.read(4)));
-
-            ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
-        }
-        lea.skip(4);
-        ret.position = lea.readPos();
-
-        return ret;
-    }
-
-    public static final AttackInfo parseMesoExplosion(final LittleEndianAccessor lea, final AttackInfo ret) {
-        //System.out.println(lea.toString(true));
-        byte bullets;
-        if (ret.hits == 0) {
-            lea.skip(4);
-            bullets = lea.readByte();
-            for (int j = 0; j < bullets; j++) {
-                ret.allDamage.add(new AttackPair(Integer.valueOf(lea.readInt()), null));
-                lea.skip(1);
-            }
-            lea.skip(2); // 8F 02
-            return ret;
-        }
-
-        int oid;
-        List<Pair<Integer, Boolean>> allDamageNumbers;
-
-        for (int i = 0; i < ret.targets; i++) {
-            oid = lea.readInt();
-            lea.skip(12);
-            bullets = lea.readByte();
-            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
-            for (int j = 0; j < bullets; j++) {
-                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(lea.readInt()), false)); //m.e. never crits
-            }
-            ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
-            lea.skip(4); // C3 8F 41 94, 51 04 5B 01
-        }
-        lea.skip(4);
-        bullets = lea.readByte();
-
-        for (int j = 0; j < bullets; j++) {
-            ret.allDamage.add(new AttackPair(Integer.valueOf(lea.readInt()), null));
-            lea.skip(1);
-        }
-        lea.skip(2); // 8F 02/ 63 02
-
-        return ret;
-    }
 }

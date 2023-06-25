@@ -59,7 +59,6 @@ import tools.ArrayMap;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.StringUtil;
-import tools.packet.MobPacket;
 
 /**
  *
@@ -2176,66 +2175,6 @@ public class AdminCommand {
             MapleMonster monster = map.getMonsterByOid(targetId);
             if (monster != null) {
                 map.killMonster(monster, c.getPlayer(), false, false, (byte) 1);
-            }
-            return 1;
-        }
-    }
-
-    public static class HitMonsterByOID extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            MapleMap map = c.getPlayer().getMap();
-            int targetId = Integer.parseInt(splitted[1]);
-            int damage = Integer.parseInt(splitted[2]);
-            MapleMonster monster = map.getMonsterByOid(targetId);
-            if (monster != null) {
-                map.broadcastMessage(MobPacket.damageMonster(targetId, damage));
-                monster.damage(c.getPlayer(), damage, false);
-            }
-            return 1;
-        }
-    }
-
-    public static class HitAll extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            MapleMap map = c.getPlayer().getMap();
-            double range = Double.POSITIVE_INFINITY;
-            if (splitted.length > 1) {
-                int irange = Integer.parseInt(splitted[1]);
-                if (splitted.length <= 2) {
-                    range = irange * irange;
-                } else {
-                    map = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[2]));
-                }
-            }
-            int damage = Integer.parseInt(splitted[1]);
-            MapleMonster mob;
-            for (MapleMapObject monstermo : map.getMapObjectsInRange(c.getPlayer().getPosition(), range, Arrays.asList(MapleMapObjectType.MONSTER))) {
-                mob = (MapleMonster) monstermo;
-                map.broadcastMessage(MobPacket.damageMonster(mob.getObjectId(), damage));
-                mob.damage(c.getPlayer(), damage, false);
-            }
-            return 1;
-        }
-    }
-
-    public static class HitMonster extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            MapleMap map = c.getPlayer().getMap();
-            double range = Double.POSITIVE_INFINITY;
-            int damage = Integer.parseInt(splitted[1]);
-            MapleMonster mob;
-            for (MapleMapObject monstermo : map.getMapObjectsInRange(c.getPlayer().getPosition(), range, Arrays.asList(MapleMapObjectType.MONSTER))) {
-                mob = (MapleMonster) monstermo;
-                if (mob.getId() == Integer.parseInt(splitted[2])) {
-                    map.broadcastMessage(MobPacket.damageMonster(mob.getObjectId(), damage));
-                    mob.damage(c.getPlayer(), damage, false);
-                }
             }
             return 1;
         }

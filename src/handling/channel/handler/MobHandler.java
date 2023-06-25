@@ -26,6 +26,7 @@ import java.util.List;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.inventory.MapleInventoryType;
+import packet.content.MobPacket;
 import server.MapleInventoryManipulator;
 import server.Randomizer;
 import server.maps.MapleMap;
@@ -36,7 +37,6 @@ import server.maps.MapleNodes.MapleNodeInfo;
 import server.movement.LifeMovementFragment;
 import tools.MaplePacketCreator;
 import tools.Pair;
-import tools.packet.MobPacket;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class MobHandler {
@@ -130,13 +130,13 @@ public class MobHandler {
             return;
         }
 
-        c.getSession().write(MobPacket.moveMonsterResponse(monster.getObjectId(), moveid, monster.getMp(), monster.isControllerHasAggro(), realskill, level));
+        c.SendPacket(MobPacket.moveMonsterResponse(monster, moveid, realskill, level));
 
         if (res != null && chr != null) {
             if (slea.available() < 9 || slea.available() > 17) { //9.. 0 -> endPos? -> endPos again? -> 0 -> 0
                 System.out.println("slea.available != 17 (movement parsing error)");
                 System.out.println(slea.toString(true));
-                c.getSession().close();
+                //c.getSession().close();
                 return;
             }
             final MapleMap map = chr.getMap();
@@ -147,14 +147,12 @@ public class MobHandler {
         }
     }
 
-    public static final void FriendlyDamage(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
+    public static final void FriendlyDamage(MapleCharacter chr, MapleMonster mobfrom, MapleMonster mobto) {
         final MapleMap map = chr.getMap();
+
         if (map == null) {
             return;
         }
-        final MapleMonster mobfrom = map.getMonsterByOid(slea.readInt());
-        slea.skip(4); // Player ID
-        final MapleMonster mobto = map.getMonsterByOid(slea.readInt());
 
         if (mobfrom != null && mobto != null && mobto.getStats().isFriendly()) {
             final int damage = (mobto.getStats().getLevel() * Randomizer.nextInt(99)) / 2; // Temp for now until I figure out something more effective
@@ -186,25 +184,25 @@ public class MobHandler {
         }
     }
 
-    public static final void MonsterBomb(final int oid, final MapleCharacter chr) {
-        final MapleMonster monster = chr.getMap().getMonsterByOid(oid);
+    public static final void MonsterBomb(MapleCharacter chr, MapleMonster monster) {
 
-        if (monster == null || !chr.isAlive() || chr.isHidden()) {
+        if (!chr.isAlive() || chr.isHidden()) {
             return;
         }
+
         final byte selfd = monster.getStats().getSelfD();
+
         if (selfd != -1) {
             chr.getMap().killMonster(monster, chr, false, false, selfd);
         }
     }
 
-    public static final void AutoAggro(final int monsteroid, final MapleCharacter chr) {
-        if (chr == null || chr.getMap() == null || chr.isHidden()) { //no evidence :)
+    public static final void AutoAggro(MapleCharacter chr, MapleMonster monster) {
+        if (chr.getMap() == null || chr.isHidden()) { //no evidence :)
             return;
         }
-        final MapleMonster monster = chr.getMap().getMonsterByOid(monsteroid);
 
-        if (monster != null && chr.getPosition().distanceSq(monster.getPosition()) < 200000) {
+        if (chr.getPosition().distanceSq(monster.getPosition()) < 200000) {
             if (monster.getController() != null) {
                 if (chr.getMap().getCharacterById(monster.getController().getId()) == null) {
                     monster.switchController(chr, true);
@@ -217,17 +215,7 @@ public class MobHandler {
         }
     }
 
-    public static final void HypnotizeDmg(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        final MapleMonster mob_from = chr.getMap().getMonsterByOid(slea.readInt()); // From
-        slea.skip(4); // Player ID
-        final int to = slea.readInt(); // mobto
-        slea.skip(1); // Same as player damage, -1 = bump, integer = skill ID
-        final int damage = slea.readInt();
-//	slea.skip(1); // Facing direction
-//	slea.skip(4); // Some type of pos, damage display, I think
-
-        final MapleMonster mob_to = chr.getMap().getMonsterByOid(to);
-
+    public static final void HypnotizeDmg(MapleCharacter chr, MapleMonster mob_from, MapleMonster mob_to, int damage) {
         if (mob_from != null && mob_to != null && mob_to.getStats().isFriendly()) { //temp for now
             if (damage > 30000) {
                 return;
@@ -237,16 +225,11 @@ public class MobHandler {
         }
     }
 
-    public static final void DisplayNode(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        final MapleMonster mob_from = chr.getMap().getMonsterByOid(slea.readInt()); // From
-        if (mob_from != null) {
-            chr.getClient().getSession().write(MaplePacketCreator.getNodeProperties(mob_from, chr.getMap()));
-        }
+    public static final void DisplayNode(MapleCharacter chr, MapleMonster mob_from) {
+        chr.getClient().SendPacket(MaplePacketCreator.getNodeProperties(mob_from, chr.getMap()));
     }
 
-    public static final void MobNode(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        final MapleMonster mob_from = chr.getMap().getMonsterByOid(slea.readInt()); // From
-        final int newNode = slea.readInt();
+    public static final void MobNode(MapleCharacter chr, MapleMonster mob_from, int newNode) {
         final int nodeSize = chr.getMap().getNodes().size();
         if (mob_from != null && nodeSize > 0 && nodeSize >= newNode) {
             final MapleNodeInfo mni = chr.getMap().getNode(newNode);

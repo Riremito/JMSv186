@@ -36,9 +36,13 @@ import client.PlayerStats;
 import client.anticheat.CheatingOffense;
 import config.ServerConfig;
 import constants.MapConstants;
+import debug.Debug;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import packet.ClientPacket;
+import packet.content.MobPacket;
+import packet.content.UserPacket;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
@@ -55,7 +59,6 @@ import server.maps.MapleMap;
 import server.maps.FieldLimitType;
 import server.movement.LifeMovementFragment;
 import tools.MaplePacketCreator;
-import tools.packet.MobPacket;
 import tools.packet.MTSCSPacket;
 import tools.data.input.SeekableLittleEndianAccessor;
 import tools.packet.UIPacket;
@@ -197,12 +200,14 @@ public class PlayerHandler {
         }
     }
 
-    public static final void TakeDamage(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void TakeDamage(ClientPacket p, final MapleClient c, final MapleCharacter chr) {
         //System.out.println(slea.toString());
-        chr.updateTick(slea.readInt());
-        final byte type = slea.readByte(); //-4 is mist, -3 and -2 are map damage.
-        slea.skip(1); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
-        int damage = slea.readInt();
+        chr.updateTick(p.Decode4());
+        final byte type = p.Decode1(); //-4 is mist, -3 and -2 are map damage.
+        if (ServerConfig.version > 131) {
+            p.Decode1(); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
+        }
+        int damage = p.Decode4();
 
         int oid = 0;
         int monsteridfrom = 0;
@@ -224,10 +229,10 @@ public class PlayerHandler {
         }
         final PlayerStats stats = chr.getStat();
         if (type != -2 && type != -3 && type != -4) { // Not map damage
-            monsteridfrom = slea.readInt();
-            oid = slea.readInt();
+            monsteridfrom = p.Decode4();
+            oid = p.Decode4();
             attacker = chr.getMap().getMonsterByOid(oid);
-            direction = slea.readByte();
+            direction = p.Decode1();
 
             if (attacker == null) {
                 return;
@@ -263,15 +268,15 @@ public class PlayerHandler {
             if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
                 chr.cancelMorphs();
             }
-            if (slea.available() == 3) {
-                byte level = slea.readByte();
-                if (level > 0) {
-                    final MobSkill skill = MobSkillFactory.getMobSkill(slea.readShort(), level);
-                    if (skill != null) {
-                        //skill.applyEffect(chr, attacker, false);
-                    }
+            //if (slea.available() == 3) {
+            byte level = p.Decode1();
+            if (level > 0) {
+                final MobSkill skill = MobSkillFactory.getMobSkill(p.Decode2(), level);
+                if (skill != null) {
+                    //skill.applyEffect(chr, attacker, false);
                 }
             }
+            //}
             if (type != -2 && type != -3 && type != -4) {
                 final int bouncedam_ = (Randomizer.nextInt(100) < chr.getStat().DAMreflect_rate ? chr.getStat().DAMreflect : 0) + (type == -1 && chr.getBuffedValue(MapleBuffStat.POWERGUARD) != null ? chr.getBuffedValue(MapleBuffStat.POWERGUARD) : 0) + (type == -1 && chr.getBuffedValue(MapleBuffStat.PERFECT_ARMOR) != null ? chr.getBuffedValue(MapleBuffStat.PERFECT_ARMOR) : 0);
                 if (bouncedam_ > 0 && attacker != null) {
@@ -279,7 +284,7 @@ public class PlayerHandler {
                     bouncedamage = Math.min(bouncedamage, attacker.getMobMaxHp() / 10);
                     attacker.damage(chr, bouncedamage, true);
                     damage -= bouncedamage;
-                    chr.getMap().broadcastMessage(chr, MobPacket.damageMonster(oid, bouncedamage), chr.getPosition());
+                    chr.getMap().broadcastMessage(chr, MobPacket.Damage(attacker, bouncedamage), chr.getPosition());
                     is_pg = true;
                 }
             }
@@ -448,12 +453,16 @@ public class PlayerHandler {
         }
     }
 
-    public static final void SkillEffect(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        final int skillId = slea.readInt();
-        final byte level = slea.readByte();
-        final byte flags = slea.readByte();
-        final byte speed = slea.readByte();
-        final byte unk = slea.readByte(); // Added on v.82
+    public static final void SkillEffect(ClientPacket p, final MapleCharacter chr) {
+        final int skillId = p.Decode4();
+        final byte level = p.Decode1();
+        final byte flags = p.Decode1();
+        final byte speed = p.Decode1();
+        byte unk = 0;
+
+        if (ServerConfig.version > 131) {
+            unk = p.Decode1();
+        }
 
         final ISkill skill = SkillFactory.getSkill(skillId);
         if (chr == null) {
@@ -553,7 +562,8 @@ public class PlayerHandler {
         }
     }
 
-    public static final void closeRangeAttack(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr, final boolean energy) {
+    public static final void closeRangeAttack(MapleClient c, AttackInfo attack, final boolean energy) {
+        MapleCharacter chr = c.getPlayer();
         if (chr == null || (energy && chr.getBuffedValue(MapleBuffStat.ENERGY_CHARGE) == null && chr.getBuffedValue(MapleBuffStat.BODY_PRESSURE) == null && !GameConstants.isKOC(chr.getJob()))) {
             return;
         }
@@ -561,7 +571,7 @@ public class PlayerHandler {
             chr.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
             return;
         }
-        final AttackInfo attack = DamageParse.Modify_AttackCrit(DamageParse.parseDmgM(slea), chr, 1);
+        attack = DamageParse.Modify_AttackCrit(attack, chr, 1);
         final boolean mirror = chr.getBuffedValue(MapleBuffStat.MIRROR_IMAGE) != null;
         double maxdamage = chr.getStat().getCurrentMaxBaseDamage();
         int attackCount = (chr.getJob() >= 430 && chr.getJob() <= 434 ? 2 : 1), skillLevel = 0;
@@ -602,7 +612,7 @@ public class PlayerHandler {
                 }
                 chr.handleOrbconsume();
 
-            } else if (attack.targets > 0 && comboBuff != null) {
+            } else if (attack.GetMobCount() > 0 && comboBuff != null) {
                 // handle combo orbgain
                 switch (chr.getJob()) {
                     case 111:
@@ -618,19 +628,19 @@ public class PlayerHandler {
             switch (chr.getJob()) {
                 case 511:
                 case 512: {
-                    chr.handleEnergyCharge(5110001, attack.targets * attack.hits);
+                    chr.handleEnergyCharge(5110001, attack.GetMobCount() * attack.GetDamagePerMob());
                     break;
                 }
                 case 1510:
                 case 1511:
                 case 1512: {
-                    chr.handleEnergyCharge(15100004, attack.targets * attack.hits);
+                    chr.handleEnergyCharge(15100004, attack.GetMobCount() * attack.GetDamagePerMob());
                     break;
                 }
             }
             // handle sacrifice hp loss
             //after BIG BANG, TEMP
-            if (attack.targets > 0 && attack.skill == 1211002) { // handle charged blow
+            if (attack.GetMobCount() > 0 && attack.skill == 1211002) { // handle charged blow
                 final int advcharge_level = chr.getSkillLevel(SkillFactory.getSkill(1220010));
                 if (advcharge_level > 0) {
                     if (!SkillFactory.getSkill(1220010).getEffect(advcharge_level).makeChanceResult()) {
@@ -665,38 +675,13 @@ public class PlayerHandler {
             }
         }
         chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, MaplePacketCreator.closeRangeAttack(chr.getId(), attack.tbyte, attack.skill, skillLevel, attack.display, attack.animation, attack.speed, attack.allDamage, energy, chr.getLevel(), chr.getStat().passive_mastery(), attack.unk, attack.charge), chr.getPosition());
+        chr.getMap().broadcastMessage(chr, MaplePacketCreator.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttack(attack, skill, c.getPlayer(), attackCount, maxdamage, effect, mirror ? AttackType.NON_RANGED_WITH_MIRROR : AttackType.NON_RANGED);
-        WeakReference<MapleCharacter>[] clones = chr.getClones();
-        for (int i = 0; i < clones.length; i++) {
-            if (clones[i].get() != null) {
-                final MapleCharacter clone = clones[i].get();
-                final ISkill skil2 = skill;
-                final int skillLevel2 = skillLevel;
-                final int attackCount2 = attackCount;
-                final double maxdamage2 = maxdamage;
-                final MapleStatEffect eff2 = effect;
-                final AttackInfo attack2 = DamageParse.DivideAttack(attack, /*chr.isGM() ? 1 : 4*/ 4);
-                CloneTimer.getInstance().schedule(new Runnable() {
-
-                    public void run() {
-                        clone.getMap().broadcastMessage(MaplePacketCreator.closeRangeAttack(clone.getId(), attack2.tbyte, attack2.skill, skillLevel2, attack2.display, attack2.animation, attack2.speed, attack2.allDamage, energy, clone.getLevel(), clone.getStat().passive_mastery(), attack2.unk, attack2.charge));
-                        DamageParse.applyAttack(attack2, skil2, chr, attackCount2, maxdamage2, eff2, mirror ? AttackType.NON_RANGED_WITH_MIRROR : AttackType.NON_RANGED);
-                    }
-                }, 500 * i + 500);
-            }
-        }
     }
 
-    public static final void rangedAttack(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (chr == null) {
-            return;
-        }
-        if (!chr.isAlive() || chr.getMap() == null) {
-            chr.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
-            return;
-        }
-        final AttackInfo attack = DamageParse.Modify_AttackCrit(DamageParse.parseDmgR(slea), chr, 2);
+    public static final void rangedAttack(MapleClient c, AttackInfo attack) {
+        MapleCharacter chr = c.getPlayer();
+        attack = DamageParse.Modify_AttackCrit(attack, chr, 2);
 
         int bulletCount = 1, skillLevel = 0;
         MapleStatEffect effect = null;
@@ -733,17 +718,17 @@ public class PlayerHandler {
             bulletCount *= 2;
         }
         int projectile = 0, visProjectile = 0;
-        if (attack.AOE != 0 && chr.getBuffedValue(MapleBuffStat.SOULARROW) == null && attack.skill != 4111004) {
-            if (chr.getInventory(MapleInventoryType.USE).getItem(attack.slot) == null) {
+        if (attack.nShootRange0a != 0 && chr.getBuffedValue(MapleBuffStat.SOULARROW) == null && attack.skill != 4111004) {
+            if (chr.getInventory(MapleInventoryType.USE).getItem(attack.ProperBulletPosition) == null) {
                 return;
             }
-            projectile = chr.getInventory(MapleInventoryType.USE).getItem(attack.slot).getItemId();
+            projectile = chr.getInventory(MapleInventoryType.USE).getItem(attack.ProperBulletPosition).getItemId();
 
-            if (attack.csstar > 0) {
-                if (chr.getInventory(MapleInventoryType.CASH).getItem(attack.csstar) == null) {
+            if (attack.pnCashItemPos > 0) {
+                if (chr.getInventory(MapleInventoryType.CASH).getItem(attack.pnCashItemPos) == null) {
                     return;
                 }
-                visProjectile = chr.getInventory(MapleInventoryType.CASH).getItem(attack.csstar).getItemId();
+                visProjectile = chr.getInventory(MapleInventoryType.CASH).getItem(attack.pnCashItemPos).getItemId();
             } else {
                 visProjectile = projectile;
             }
@@ -805,40 +790,15 @@ public class PlayerHandler {
             }
         }
         chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, MaplePacketCreator.rangedAttack(chr.getId(), attack.tbyte, attack.skill, skillLevel, attack.display, attack.animation, attack.speed, visProjectile, attack.allDamage, attack.position, chr.getLevel(), chr.getStat().passive_mastery(), attack.unk), chr.getPosition());
+        chr.getMap().broadcastMessage(chr, MaplePacketCreator.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttack(attack, skill, chr, bulletCount, basedamage, effect, ShadowPartner != null ? AttackType.RANGED_WITH_SHADOWPARTNER : AttackType.RANGED);
-
-        WeakReference<MapleCharacter>[] clones = chr.getClones();
-        for (int i = 0; i < clones.length; i++) {
-            if (clones[i].get() != null) {
-                final MapleCharacter clone = clones[i].get();
-                final ISkill skil2 = skill;
-                final MapleStatEffect eff2 = effect;
-                final double basedamage2 = basedamage;
-                final int bulletCount2 = bulletCount;
-                final int visProjectile2 = visProjectile;
-                final int skillLevel2 = skillLevel;
-                final AttackInfo attack2 = DamageParse.DivideAttack(attack, 4/*chr.isGM() ? 1 : 4*/);
-                CloneTimer.getInstance().schedule(new Runnable() {
-
-                    public void run() {
-                        clone.getMap().broadcastMessage(MaplePacketCreator.rangedAttack(clone.getId(), attack2.tbyte, attack2.skill, skillLevel2, attack2.display, attack2.animation, attack2.speed, visProjectile2, attack2.allDamage, attack2.position, clone.getLevel(), clone.getStat().passive_mastery(), attack2.unk));
-                        DamageParse.applyAttack(attack2, skil2, chr, bulletCount2, basedamage2, eff2, AttackType.RANGED);
-                    }
-                }, 500 * i + 500);
-            }
-        }
     }
 
-    public static final void MagicDamage(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (chr == null) {
-            return;
-        }
-        if (!chr.isAlive() || chr.getMap() == null) {
-            chr.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
-            return;
-        }
-        final AttackInfo attack = DamageParse.Modify_AttackCrit(DamageParse.parseDmgMa(slea), chr, 3);
+    public static final void MagicDamage(MapleClient c, AttackInfo attack) {
+        MapleCharacter chr = c.getPlayer();
+
+        attack = DamageParse.Modify_AttackCrit(attack, chr, 3);
+
         final ISkill skill = SkillFactory.getSkill(GameConstants.getLinkedAranSkill(attack.skill));
         final int skillLevel = chr.getSkillLevel(skill);
         final MapleStatEffect effect = attack.getAttackEffect(chr, skillLevel, skill);
@@ -854,27 +814,8 @@ public class PlayerHandler {
             chr.addCooldown(attack.skill, System.currentTimeMillis(), effect.getCooldown() * 1000);
         }
         chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, MaplePacketCreator.magicAttack(chr.getId(), attack.tbyte, attack.skill, skillLevel, attack.display, attack.animation, attack.speed, attack.allDamage, attack.charge, chr.getLevel(), attack.unk), chr.getPosition());
+        chr.getMap().broadcastMessage(chr, MaplePacketCreator.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttackMagic(attack, skill, c.getPlayer(), effect);
-        WeakReference<MapleCharacter>[] clones = chr.getClones();
-        for (int i = 0; i < clones.length; i++) {
-            if (clones[i].get() != null) {
-                final MapleCharacter clone = clones[i].get();
-                final ISkill skil2 = skill;
-                final MapleStatEffect eff2 = effect;
-                final int skillLevel2 = skillLevel;
-                final AttackInfo attack2 = DamageParse.DivideAttack(attack, chr.isGM() ? 1 : 4);
-                CloneTimer.getInstance().schedule(new Runnable() {
-
-                    public void run() {
-                        //if (attack.skill != 22121000 && attack.skill != 22151001) {
-                        clone.getMap().broadcastMessage(MaplePacketCreator.magicAttack(clone.getId(), attack2.tbyte, attack2.skill, skillLevel2, attack2.display, attack2.animation, attack2.speed, attack2.allDamage, attack2.charge, clone.getLevel(), attack2.unk));
-                        //}
-                        DamageParse.applyAttackMagic(attack2, skil2, chr, eff2);
-                    }
-                }, 500 * i + 500);
-            }
-        }
     }
 
     public static final void DropMeso(final int meso, final MapleCharacter chr) {
@@ -913,17 +854,7 @@ public class PlayerHandler {
         }
     }
 
-    public static final void Heal(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        if (chr == null) {
-            return;
-        }
-        chr.updateTick(slea.readInt());
-        if (slea.available() >= 8) {
-            slea.skip(4);
-        }
-        final int healHP = slea.readShort();
-        final int healMP = slea.readShort();
-
+    public static final void Heal(MapleCharacter chr, int healHP, int healMP) {
         final PlayerStats stats = chr.getStat();
 
         if (stats.getHp() <= 0) {
@@ -931,15 +862,10 @@ public class PlayerHandler {
         }
 
         if (healHP != 0) {
-            if (healHP > stats.getHealHP()) {
-                //chr.getCheatTracker().registerOffense(CheatingOffense.REGEN_HIGH_HP, String.valueOf(healHP));
-            }
             chr.addHP(healHP);
         }
+
         if (healMP != 0) {
-            if (healMP > stats.getHealMP()) {
-                //chr.getCheatTracker().registerOffense(CheatingOffense.REGEN_HIGH_MP, String.valueOf(healMP));
-            }
             chr.addMP(healMP);
         }
     }
@@ -949,13 +875,16 @@ public class PlayerHandler {
         if (chr == null) {
             return;
         }
-        final Point Original_Pos = chr.getPosition(); // 4 bytes Added on v.80 MSEA
 
-        if (ServerConfig.version == 164) {
+        if (ServerConfig.version <= 131) {
+            slea.skip(1);
+        } else if (ServerConfig.version == 164) { // broken
             slea.skip(9);
         } else {
             slea.skip(37);
         }
+
+        final Point Original_Pos = (ServerConfig.version <= 131) ? slea.readPos() : chr.getPosition();
 
         // log.trace("Movement command received: unk1 {} unk2 {}", new Object[] { unk1, unk2 });
         List<LifeMovementFragment> res;
@@ -967,6 +896,20 @@ public class PlayerHandler {
         }
 
         if (res != null && c.getPlayer().getMap() != null) { // TODO more validation of input data
+            if (ServerConfig.version <= 131) {
+                final MapleMap map = c.getPlayer().getMap();
+                MovementParse.updatePosition(res, chr, 0);
+                final Point pos = chr.getPosition(); // chr.getTruePosition
+                map.movePlayer(chr, pos);
+                if (chr.isHidden()) {
+                    chr.setLastRes(res);
+                    c.getPlayer().getMap().broadcastGMMessage(chr, UserPacket.movePlayer(chr.getId(), res, Original_Pos), false);
+                } else {
+                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), UserPacket.movePlayer(chr.getId(), res, Original_Pos), false);
+                }
+                return;
+            }
+
             if (slea.available() < 13 || slea.available() > 26) {
                 if (ServerConfig.version != 164) {
                     System.out.println("slea.available != 13-26 (movement parsing error)\n" + slea.toString(true));
@@ -978,9 +921,9 @@ public class PlayerHandler {
 
             if (chr.isHidden()) {
                 chr.setLastRes(res2);
-                c.getPlayer().getMap().broadcastGMMessage(chr, MaplePacketCreator.movePlayer(chr.getId(), res, Original_Pos), false);
+                c.getPlayer().getMap().broadcastGMMessage(chr, UserPacket.movePlayer(chr.getId(), res, Original_Pos), false);
             } else {
-                c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.movePlayer(chr.getId(), res, Original_Pos), false);
+                c.getPlayer().getMap().broadcastMessage(c.getPlayer(), UserPacket.movePlayer(chr.getId(), res, Original_Pos), false);
             }
 
 //	    if (chr.isHidden()) {
@@ -997,7 +940,7 @@ public class PlayerHandler {
                     final Point original_pos = fol.getPosition();
                     fol.getClient().getSession().write(MaplePacketCreator.moveFollow(Original_Pos, original_pos, pos, res));
                     MovementParse.updatePosition(res, fol, 0);
-                    map.broadcastMessage(fol, MaplePacketCreator.movePlayer(fol.getId(), res, original_pos), false);
+                    map.broadcastMessage(fol, UserPacket.movePlayer(fol.getId(), res, original_pos), false);
                 } else {
                     chr.checkFollow();
                 }
@@ -1015,7 +958,7 @@ public class PlayerHandler {
                                     if (clone.isHidden()) {
                                         clone.setLastRes(res3);
                                     } else {
-                                        map.broadcastMessage(clone, MaplePacketCreator.movePlayer(clone.getId(), res3, Original_Pos), false);
+                                        map.broadcastMessage(clone, UserPacket.movePlayer(clone.getId(), res3, Original_Pos), false);
                                     }
                                     MovementParse.updatePosition(res3, clone, 0);
                                     map.movePlayer(clone, pos);
@@ -1042,9 +985,11 @@ public class PlayerHandler {
         }
     }
 
-    public static final void ChangeMapSpecial(final String portal_name, final MapleClient c, final MapleCharacter chr) {
-        final MaplePortal portal = chr.getMap().getPortal(portal_name);
-//	slea.skip(2);
+    public static final void ChangeMapSpecial(ClientPacket p, final MapleClient c) {
+        p.Decode1();
+        String portal_name = p.DecodeStr();
+
+        final MaplePortal portal = c.getPlayer().getMap().getPortal(portal_name);
 
         if (portal != null) {
             portal.enterPortal(c);

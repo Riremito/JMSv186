@@ -33,6 +33,7 @@ import java.util.concurrent.locks.Lock;
 import client.MapleCharacter;
 import client.MapleCharacterUtil;
 import client.MapleClient;
+import config.ServerConfig;
 import database.DatabaseConnection;
 import handling.MaplePacket;
 import handling.world.World;
@@ -771,7 +772,10 @@ public class MapleGuild implements java.io.Serializable {
             mplew.writeInt(mgc.getGuildRank());
             mplew.writeInt(mgc.isOnline() ? 1 : 0);
             mplew.writeInt(signature);
-            mplew.writeInt(mgc.getAllianceRank());
+
+            if (ServerConfig.version > 131) {
+                mplew.writeInt(mgc.getAllianceRank());
+            }
         }
     }
 

@@ -295,9 +295,9 @@ public class ProcessPacket {
             // 用途不明, 0x00B93F3F[0x0B] = 00B93ECA
             UNKNOWN_0B((byte) 0x0B),
             // ハート拡声器
-            MEGAPHONE_HEART((byte) 0x0C),
+            MEGAPHONE_HEART((byte) 0x0C),// v131 -> 0x08
             // ドクロ拡声器
-            MEGAPHONE_SKULL((byte) 0x0D),
+            MEGAPHONE_SKULL((byte) 0x0D), // v131 -> 0x09
             // ガシャポン
             MEGAPHONE_GASHAPON((byte) 0x0E),
             // 青文字, 名前:アイテム名(xxxx個))

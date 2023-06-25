@@ -29,16 +29,16 @@ import tools.Pair;
 public class MapleItemInformationProvider {
 
     private final static MapleItemInformationProvider instance = new MapleItemInformationProvider();
-    protected final MapleDataProvider etcData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz"));
-    protected final MapleDataProvider itemData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Item.wz"));
-    protected final MapleDataProvider equipData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Character.wz"));
-    protected final MapleDataProvider stringData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/String.wz"));
-    protected final MapleData cashStringData = stringData.getData("Cash.img");
-    protected final MapleData consumeStringData = stringData.getData("Consume.img");
-    protected final MapleData eqpStringData = stringData.getData("Eqp.img");
-    protected final MapleData etcStringData = stringData.getData("Etc.img");
-    protected final MapleData insStringData = stringData.getData("Ins.img");
-    protected final MapleData petStringData = stringData.getData("Pet.img");
+    public static MapleDataProvider etcData = null;
+    public static MapleDataProvider itemData = null;
+    public static MapleDataProvider equipData = null;
+    public static MapleDataProvider stringData = null;
+    public static MapleData cashStringData = null;
+    public static MapleData consumeStringData = null;
+    public static MapleData eqpStringData = null;
+    public static MapleData etcStringData = null;
+    public static MapleData insStringData = null;
+    public static MapleData petStringData = null;
     protected final Map<Integer, List<Integer>> scrollReqCache = new HashMap<Integer, List<Integer>>();
     protected final Map<Integer, Short> slotMaxCache = new HashMap<Integer, Short>();
     protected final Map<Integer, List<StructPotentialItem>> potentialCache = new HashMap<Integer, List<StructPotentialItem>>();
@@ -212,39 +212,29 @@ public class MapleItemInformationProvider {
         final List<Pair<Integer, String>> itemPairs = new ArrayList<Pair<Integer, String>>();
         MapleData itemsData;
 
-        itemsData = stringData.getData("Cash.img");
-        for (final MapleData itemFolder : itemsData.getChildren()) {
+        for (final MapleData itemFolder : cashStringData.getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        if (ServerConfig.version <= 164) {
-            itemsData = stringData.getData("Consume.img").getChildByPath("Con");
-        } else {
-            itemsData = stringData.getData("Consume.img");
-        }
-        for (final MapleData itemFolder : itemsData.getChildren()) {
+        for (final MapleData itemFolder : consumeStringData.getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        itemsData = stringData.getData("Eqp.img").getChildByPath("Eqp");
-        for (final MapleData eqpType : itemsData.getChildren()) {
+        for (final MapleData eqpType : eqpStringData.getChildren()) {
             for (final MapleData itemFolder : eqpType.getChildren()) {
                 itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
             }
         }
 
-        itemsData = stringData.getData("Etc.img").getChildByPath("Etc");
-        for (final MapleData itemFolder : itemsData.getChildren()) {
+        for (final MapleData itemFolder : etcStringData.getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        itemsData = stringData.getData("Ins.img");
-        for (final MapleData itemFolder : itemsData.getChildren()) {
+        for (final MapleData itemFolder : insStringData.getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        itemsData = stringData.getData("Pet.img");
-        for (final MapleData itemFolder : itemsData.getChildren()) {
+        for (final MapleData itemFolder : petStringData.getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
         return itemPairs;

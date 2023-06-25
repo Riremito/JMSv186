@@ -1,6 +1,7 @@
 package tools.admin;
 
 import client.MapleCharacter;
+import config.DebugConfig;
 import handling.channel.ChannelServer;
 import javax.swing.*;
 import java.awt.event.*;
@@ -13,6 +14,10 @@ public class main {
     static JTextField tf_mesos, tf_tama, tf_mapid, tf_jobid, tf_level;
 
     public static void main() {
+        if (!DebugConfig.open_debug_ui) {
+            return;
+        }
+
         JFrame f = new JFrame();
         f.setTitle("管理画面");
         f.setSize(800, 600);

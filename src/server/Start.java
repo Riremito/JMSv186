@@ -1,6 +1,5 @@
 package server;
 
-import client.SkillFactory;
 import config.ServerConfig;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
@@ -15,11 +14,19 @@ import handling.world.family.MapleFamilyBuff;
 import java.sql.PreparedStatement;
 import packet.ServerPacket;
 import packet.ClientPacket;
+import packet.content.PacketFlag;
+import packet.v131_0_CP;
+import packet.v131_0_SP;
+import packet.v164_0_CP;
+import packet.v164_0_SP;
+import packet.v186_1_CP;
+import packet.v186_1_SP;
+import packet.v188_0_CP;
+import packet.v188_0_SP;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
-import server.life.MapleLifeFactory;
 import server.life.PlayerNPC;
-import server.quest.MapleQuest;
+import wz.LoadData;
 
 public class Start {
 
@@ -35,14 +42,25 @@ public class Start {
         LoginServer.SetWorldConfig();
 
         // 管理画面
-        //tools.admin.main.main();
+        tools.admin.main.main();
+
         Debug.InfoLog("JMS v" + ServerConfig.version + "." + ServerConfig.version_sub);
 
         switch (ServerConfig.version) {
-            // ゴミ
+            case 131: {
+                v131_0_CP.Set();
+                v131_0_SP.Set();
+                break;
+            }
             case 164: {
-                ClientPacket.SetForJMSv164();
-                ServerPacket.SetForJMSv164();
+                v164_0_CP.Set();
+                v164_0_SP.Set();
+                break;
+            }
+            // test
+            case 165: {
+                v164_0_CP.Set();
+                v164_0_SP.Set();
                 break;
             }
             // ゴミ
@@ -53,16 +71,14 @@ public class Start {
             }
             // ゴミ
             case 184: {
-
                 ClientPacket.SetForJMSv184();
                 ServerPacket.SetForJMSv184();
                 break;
             }
-            // ゴミ
             case 186: {
+                v186_1_CP.Set();
+                v186_1_SP.Set();
 
-                ClientPacket.SetForJMSv186();
-                ServerPacket.SetForJMSv186();
                 ClientPacket.SetCustomHeader();
                 ServerPacket.SetCustomHeader();
                 break;
@@ -74,8 +90,8 @@ public class Start {
                 break;
             }
             case 188: {
-                ClientPacket.SetForJMSv188();
-                ServerPacket.SetForJMSv188();
+                v188_0_CP.Set();
+                v188_0_SP.Set();
                 break;
             }
             // 起動早い
@@ -96,17 +112,17 @@ public class Start {
                 ServerPacket.SetForJMSv302();
                 break;
             }
-            default: {
-                if (ServerConfig.version <= 186) {
-                    ClientPacket.SetForJMSv186();
-                    ServerPacket.SetForJMSv186();
-                } else {
-                    ClientPacket.SetForJMSv188();
-                    ServerPacket.SetForJMSv188();
-                }
+            // x64 test
+            case 414: {
                 break;
             }
+            default: {
+                Debug.ErrorLog("the version is not supported!");
+                return;
+            }
         }
+
+        PacketFlag.Update();
 
         try {
             final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0");
@@ -131,14 +147,10 @@ public class Start {
         LoginServer.run_startup_configurations();
 
         //WZ
-        MapleQuest.initQuests();
-        MapleLifeFactory.loadQuestCounts();
-        ItemMakerFactory.getInstance();
-        MapleItemInformationProvider.getInstance().load();
+        LoadData.LoadDataFromXML();
         RandomRewards.getInstance();
-        SkillFactory.getSkill(99999999);
+
         MapleOxQuizFactory.getInstance().initialize();
-        MapleCarnivalFactory.getInstance().initialize();
         MapleGuildRanking.getInstance().getRank();
         MapleFamilyBuff.getBuffEntry();
 

@@ -38,6 +38,7 @@ import handling.world.guild.MapleGuildAlliance;
 import handling.world.guild.MapleGuildCharacter;
 import handling.world.guild.MapleGuildSummary;
 import java.util.Collection;
+import packet.content.UserPacket;
 import server.Timer.WorldTimer;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
@@ -805,8 +806,8 @@ public class World {
                 mc.saveGuildStatus();
             }
             if (bDifferentGuild && ch > 0) {
-                mc.getMap().broadcastMessage(mc, MaplePacketCreator.removePlayerFromMap(cid), false);
-                mc.getMap().broadcastMessage(mc, MaplePacketCreator.spawnPlayerMapobject(mc), false);
+                mc.getMap().broadcastMessage(mc, UserPacket.removePlayerFromMap(cid), false);
+                mc.getMap().broadcastMessage(mc, UserPacket.spawnPlayerMapobject(mc), false);
             }
         }
     }

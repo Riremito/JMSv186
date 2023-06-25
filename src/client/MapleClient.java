@@ -40,6 +40,7 @@ import javax.script.ScriptEngine;
 
 import database.DatabaseConnection;
 import database.DatabaseException;
+import debug.Debug;
 import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -629,17 +630,6 @@ public class MapleClient implements Serializable {
     }
 
     public int auto_register(String MapleID, String pwd) {
-        /*
-        if(MapleID.toUpperCase().indexOf("GM") == 0){
-            System.out.println("GMアカウント生成:"  + MapleID);
-            return auto_register_GM(MapleID, pwd);
-        }
-        else{
-            System.out.println("アカウント生成:"  + MapleID);
-        }
-         */
-        System.out.println("アカウント生成:" + MapleID);
-
         String password1_hash = null;
         String password2_hash = null;
         try {
@@ -1448,7 +1438,12 @@ public class MapleClient implements Serializable {
         return new ServerPacket(header);
     }
 
+    // 名称ミス
     public void ProcessPacket(MaplePacket packet) {
+        getSession().write(packet);
+    }
+
+    public void SendPacket(MaplePacket packet) {
         getSession().write(packet);
     }
 

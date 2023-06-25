@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.movement;
 
 import java.awt.Point;
+import packet.ServerPacket;
 
 import tools.data.output.LittleEndianWriter;
 
@@ -48,5 +49,15 @@ public class ChairMovement extends AbstractLifeMovement {
         lew.writeShort(unk);
         lew.write(getNewstate());
         lew.writeShort(getDuration());
+    }
+
+    @Override
+    public void serialize(ServerPacket data) {
+        data.Encode1(getType());
+        data.Encode2(getPosition().x);
+        data.Encode2(getPosition().y);
+        data.Encode2(unk);
+        data.Encode1(getNewstate());
+        data.Encode2(getDuration());
     }
 }

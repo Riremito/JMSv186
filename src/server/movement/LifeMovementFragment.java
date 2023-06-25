@@ -21,11 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.movement;
 
 import java.awt.Point;
+import packet.ServerPacket;
 import tools.data.output.LittleEndianWriter;
 
 public interface LifeMovementFragment {
 
     void serialize(LittleEndianWriter lew);
+
+    void serialize(ServerPacket data);
 
     Point getPosition();
 }

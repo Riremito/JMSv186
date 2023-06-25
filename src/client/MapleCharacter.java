@@ -55,6 +55,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.io.Serializable;
 
 import client.anticheat.CheatTracker;
+import config.ServerConfig;
 import constants.ServerConstants;
 import database.DatabaseConnection;
 import database.DatabaseException;
@@ -81,6 +82,8 @@ import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
 import minigame.Pachinko;
+import packet.content.MobPacket;
+import packet.content.UserPacket;
 import tools.MockIOSession;
 import scripting.EventInstanceManager;
 import scripting.NPCScriptManager;
@@ -110,7 +113,6 @@ import server.CashShop;
 import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.packet.MTSCSPacket;
-import tools.packet.MobPacket;
 import tools.packet.PetPacket;
 import tools.packet.MonsterCarnivalPacket;
 import tools.packet.UIPacket;
@@ -715,7 +717,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                         ret.setQuestAdd(MapleQuest.getInstance(170000), (byte) 0, null); //set it so never again
                     }
                 }
-                ret.skills.put(SkillFactory.getSkill(GameConstants.getBOF_ForJob(ret.job)), new SkillEntry(maxlevel_, (byte) 0, -1));
+
+                // 精霊の祝福
+                final ISkill bofskill = SkillFactory.getSkill(GameConstants.getBOF_ForJob(ret.job));
+
+                if (bofskill != null) {
+                    ret.skills.put(bofskill, new SkillEntry(maxlevel_, (byte) 0, -1));
+                }
+
                 ps.close();
                 rs.close();
                 // END
@@ -857,7 +866,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
 
-            ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, spawnpoint, party, buddyCapacity, monsterbookcover, dojo_pts, dojoRecord, pets, subcategory, marriageId, currentrep, totalrep, accountid, name, world) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
+            ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, spawnpoint, party, buddyCapacity, monsterbookcover, dojo_pts, dojoRecord, pets, subcategory, marriageId, currentrep, totalrep, accountid, name, world, tama) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
             ps.setInt(1, 1); // Level
             ps.setShort(2, (short) 0); // Fame
             final PlayerStats stat = chr.stats;
@@ -873,8 +882,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.setString(12, "0,0,0,0,0,0,0,0,0,0"); // Remaining SP
             ps.setShort(13, (short) 0); // Remaining AP
             ps.setByte(14, (byte) 0); // GM Level
-            System.out.println("キャラクター作成: " + chr.name);
-
             ps.setByte(15, chr.skinColor);
             ps.setByte(16, chr.gender);
             ps.setShort(17, chr.job);
@@ -885,7 +892,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 ps.setInt(20, 100000000);
             } else {
                 //ps.setInt(20, type == 1 ? 0 : (type == 0 ? 130030000 : (type == 3 ? 900090000 : 914000000)));
-                ps.setInt(20, 910000000);
+                ps.setInt(20, ServerConfig.first_mapid);
             }
 
             ps.setInt(21, chr.getMeso()); // Meso
@@ -904,6 +911,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.setInt(34, chr.getAccountID());
             ps.setString(35, chr.name);
             ps.setByte(36, chr.world);
+            ps.setInt(37, chr.tama);
             ps.executeUpdate();
 
             rs = ps.getGeneratedKeys();
@@ -914,6 +922,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             ps.close();
             rs.close();
+
+            Debug.InfoLog("[NEW CHARACTER] \"" + chr.name + "\"");
+
             ps = con.prepareStatement("INSERT INTO queststatus (`queststatusid`, `characterid`, `quest`, `status`, `time`, `forfeited`, `customData`) VALUES (DEFAULT, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
             pse = con.prepareStatement("INSERT INTO queststatusmobs VALUES (DEFAULT, ?, ?, ?)");
             ps.setInt(1, chr.id);
@@ -1171,6 +1182,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             pse.close();
 
             deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?");
+
             ps = con.prepareStatement("INSERT INTO skills (characterid, skillid, skilllevel, masterlevel, expiration) VALUES (?, ?, ?, ?, ?)");
             ps.setInt(1, id);
 
@@ -1611,7 +1623,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void registerEffect(MapleStatEffect effect, long starttime, ScheduledFuture<?> schedule, List<Pair<MapleBuffStat, Integer>> statups) {
         if (effect.isHide()) {
             this.hidden = true;
-            map.broadcastMessage(this, MaplePacketCreator.removePlayerFromMap(getId()), false);
+            map.broadcastMessage(this, UserPacket.removePlayerFromMap(getId()), false);
         } else if (effect.isDragonBlood()) {
             prepareDragonBlood(effect);
         } else if (effect.isBerserk()) {
@@ -1753,7 +1765,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             cancelPlayerBuffs(buffstats);
             if (effect.isHide() && client.getChannelServer().getPlayerStorage().getCharacterById(this.getId()) != null) { //Wow this is so fking hacky...
                 this.hidden = false;
-                map.broadcastMessage(this, MaplePacketCreator.spawnPlayerMapobject(this), false);
+                map.broadcastMessage(this, UserPacket.spawnPlayerMapobject(this), false);
 
                 for (final MaplePet pet : pets) {
                     if (pet.getSummoned()) {
@@ -1762,7 +1774,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 }
                 for (final WeakReference<MapleCharacter> chr : clones) {
                     if (chr.get() != null) {
-                        map.broadcastMessage(chr.get(), MaplePacketCreator.spawnPlayerMapobject(chr.get()), false);
+                        map.broadcastMessage(chr.get(), UserPacket.spawnPlayerMapobject(chr.get()), false);
                     }
                 }
             }
@@ -3034,7 +3046,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
         monster.setController(this);
         controlled.add(monster);
-        client.getSession().write(MobPacket.controlMonster(monster, false, aggro));
+        client.SendPacket(MobPacket.Control(monster, false, aggro));
     }
 
     public void stopControllingMonster(MapleMonster monster) {
@@ -3106,6 +3118,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public byte getSkillLevel(final ISkill skill) {
+        // 存在しないスキルID
+        if (skill == null) {
+            return 0;
+        }
+
         final SkillEntry ret = skills.get(skill);
         if (ret == null || ret.skillevel <= 0) {
             return 0;
@@ -3118,6 +3135,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public byte getMasterLevel(final ISkill skill) {
+        // 存在しないスキルID
+        if (skill == null) {
+            return 0;
+        }
         final SkillEntry ret = skills.get(skill);
         if (ret == null) {
             return 0;
@@ -3561,7 +3582,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     @Override
     public void sendDestroyData(MapleClient client) {
-        client.getSession().write(MaplePacketCreator.removePlayerFromMap(this.getObjectId()));
+        client.getSession().write(UserPacket.removePlayerFromMap(this.getObjectId()));
         for (final WeakReference<MapleCharacter> chr : clones) {
             if (chr.get() != null) {
                 chr.get().sendDestroyData(client);
@@ -3572,7 +3593,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     @Override
     public void sendSpawnData(MapleClient client) {
         if (client.getPlayer().allowedToTarget(this)) {
-            client.getSession().write(MaplePacketCreator.spawnPlayerMapobject(this));
+            client.getSession().write(UserPacket.spawnPlayerMapobject(this));
 
             for (final MaplePet pet : pets) {
                 if (pet.getSummoned()) {
@@ -4890,7 +4911,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (movedMobs.get(mobid) > 30) { //trying to move not null monster = broadcast dead
                 for (MapleCharacter chr : getMap().getCharactersThreadsafe()) { //also broadcast to others
                     if (chr.getMoveMobs().containsKey(mobid)) { //they also tried to move this mob
-                        chr.getClient().getSession().write(MobPacket.killMonster(mobid, 1));
+                        chr.getClient().SendPacket(MobPacket.Kill(mobid, 1));
                         chr.getMoveMobs().remove(mobid);
                     }
                 }

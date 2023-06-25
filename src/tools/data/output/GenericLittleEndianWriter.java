@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tools.data.output;
 
+import config.ServerConfig;
 import java.awt.Point;
-import java.nio.charset.Charset;
 
 /**
  * Provides a generic writer of a little-endian sequence of bytes.
@@ -32,8 +32,6 @@ import java.nio.charset.Charset;
  */
 public class GenericLittleEndianWriter implements LittleEndianWriter {
 
-    // See http://java.sun.com/j2se/1.4.2/docs/api/java/nio/charset/Charset.html
-    private static final Charset ASCII = Charset.forName("MS932"); // ISO-8859-1, UTF-8
     private ByteOutputStream bos;
 
     /**
@@ -137,16 +135,20 @@ public class GenericLittleEndianWriter implements LittleEndianWriter {
      */
     @Override
     public final void writeAsciiString(final String s) {
-        write(s.getBytes(ASCII));
+        byte[] bytes = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+
+        write(bytes);
     }
 
     @Override
     public final void writeAsciiString(String s, final int max) {
-        if (s.length() > max) {
-            s = s.substring(0, max);
+        byte bytes[] = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+
+        for (int i = 0; (i < bytes.length && i < max); i++) {
+            write(bytes[i]);
         }
-        write(s.getBytes(ASCII));
-        for (int i = s.getBytes(ASCII).length; i < max; i++) {
+
+        for (int i = bytes.length; i < max; i++) {
             write(0);
         }
     }
@@ -158,8 +160,11 @@ public class GenericLittleEndianWriter implements LittleEndianWriter {
      */
     @Override
     public final void writeMapleAsciiString(final String s) {
-        writeShort((short) s.getBytes(ASCII).length);
-        writeAsciiString(s);
+        byte[] bytes = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        String conv_str = new String(bytes, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+
+        writeShort((short) bytes.length);
+        writeAsciiString(conv_str);
     }
 
     /**

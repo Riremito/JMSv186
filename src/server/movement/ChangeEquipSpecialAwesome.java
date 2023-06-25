@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.movement;
 
 import java.awt.Point;
+import packet.ServerPacket;
 import tools.data.output.LittleEndianWriter;
 
 public class ChangeEquipSpecialAwesome implements LifeMovementFragment {
@@ -36,6 +37,12 @@ public class ChangeEquipSpecialAwesome implements LifeMovementFragment {
     public void serialize(LittleEndianWriter lew) {
         lew.write(type);
         lew.write(wui);
+    }
+
+    @Override
+    public void serialize(ServerPacket data) {
+        data.Encode1(type);
+        data.Encode1(wui);
     }
 
     @Override

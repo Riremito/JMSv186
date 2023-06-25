@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import client.inventory.MapleMount;
 import client.BuddylistEntry;
-import client.ISkill;
 import client.inventory.IItem;
 import constants.GameConstants;
 import client.MapleBuffStat;
@@ -66,7 +65,6 @@ import server.MapleItemInformationProvider;
 import server.MapleShopItem;
 import server.MapleStatEffect;
 import server.MapleTrade;
-import server.Randomizer;
 import server.life.SummonAttackEntry;
 import server.maps.MapleSummon;
 import server.life.MapleNPC;
@@ -87,14 +85,13 @@ import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import tools.packet.PacketHelper;
 import client.MapleBeans;
-import client.MapleCoolDownValueHolder;
-import client.SkillEntry;
-import client.inventory.IEquip;
-import client.inventory.Item;
-import client.inventory.MapleInventory;
+import config.DebugConfig;
 import config.ServerConfig;
+import debug.Debug;
+import handling.channel.handler.AttackInfo;
 import handling.channel.handler.BeanGame;
 import packet.ServerPacket;
+import packet.Structure;
 
 public class MaplePacketCreator {
 
@@ -133,267 +130,25 @@ public class MaplePacketCreator {
             p.Encode4(0);
         }
         p.Encode1(1);
-        p.Encode1(1);
-        p.Encode2(0);
+        if (ServerConfig.version > 131) {
+            p.Encode1(1);
+            p.Encode2(0);
+        }
         // [chr.CRand().connectData(mplew);]
         {
             p.Encode4(0);
             p.Encode4(0);
             p.Encode4(0);
         }
-        // [addCharacterInfo]
-        p.Encode8(-1);
-        if (ServerConfig.version > 164) {
-            p.Encode1(0);
-        }
-        if (ServerConfig.version > 186) {
-            p.Encode1(0);
-        }
-        // [addCharStats]
-        {
-            // キャラクターID
-            p.Encode4(chr.getId());
-            // キャラクター名
-            p.EncodeBuffer(chr.getName(), 13);
-            // 性別
-            p.Encode1(chr.getGender());
-            // 肌の色
-            p.Encode1(chr.getSkinColor());
-            // 顔
-            p.Encode4(chr.getFace());
-            // 髪型
-            p.Encode4(chr.getHair());
-            p.EncodeZeroBytes(24);
-            // レベル
-            p.Encode1(chr.getLevel());
-            // 職業ID
-            p.Encode2(chr.getJob());
-            // [connectData]
-            // STR
-            p.Encode2(chr.getStat().str);
-            // DEX
-            p.Encode2(chr.getStat().dex);
-            // INT
-            p.Encode2(chr.getStat().int_);
-            // LUK
-            p.Encode2(chr.getStat().luk);
-            // HP, MP
-            if (ServerConfig.version <= 186) {
-                // BB前
-                p.Encode2(chr.getStat().hp);
-                p.Encode2(chr.getStat().maxhp);
-                p.Encode2(chr.getStat().mp);
-                p.Encode2(chr.getStat().maxmp);
-            } else {
-                // BB後
-                p.Encode4(chr.getStat().hp);
-                p.Encode4(chr.getStat().maxhp);
-                p.Encode4(chr.getStat().mp);
-                p.Encode4(chr.getStat().maxmp);
-            }
-            // SP情報
-            p.Encode2(chr.getRemainingAp());
-            if (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob())) {
-                p.Encode1(chr.getRemainingSpSize());
-                for (int i = 0; i < chr.getRemainingSps().length; i++) {
-                    if (chr.getRemainingSp(i) > 0) {
-                        p.Encode1(i + 1);
-                        p.Encode1(chr.getRemainingSp(i));
-                    }
-                }
-            } else {
-                p.Encode2(chr.getRemainingSp());
-            }
-            // 経験値
-            p.Encode4(chr.getExp());
-            // 人気度
-            p.Encode2(chr.getFame());
-            // Gachapon exp?
-            p.Encode4(0);
-            // マップID
-            p.Encode4(chr.getMapId());
-            // マップ入場位置
-            p.Encode1(chr.getInitialSpawnpoint());
-            if (ServerConfig.version > 176) {
-                // デュアルブレイドフラグ
-                p.Encode2(chr.getSubcategory());
-                if (ServerConfig.version >= 188) {
-                    p.Encode8(0);
-                    p.Encode4(0);
-                    p.Encode4(0);
-                } else {
-                    p.EncodeZeroBytes(20);
-                }
-            } else {
-                p.EncodeZeroBytes(16);
-            }
-        }
-        // 友達リストの上限
-        p.Encode1(chr.getBuddylist().getCapacity());
-        // 精霊の祝福
-        if (ServerConfig.version > 164) {
-            if (chr.getBlessOfFairyOrigin() != null) {
-                p.Encode1(1);
-                p.EncodeStr(chr.getBlessOfFairyOrigin());
-            } else {
-                p.Encode1(0);
-            }
-        }
-        // [addInventoryInfo]
-        {
-            // メル
-            p.Encode4(chr.getMeso());
-            // キャラクターID
-            p.Encode4(chr.getId());
-            // パチンコ玉
-            p.Encode4(chr.getTama());
-            p.Encode4(0);
-            // アイテム欄の数
-            {
-                p.Encode1(chr.getInventory(MapleInventoryType.EQUIP).getSlotLimit());
-                p.Encode1(chr.getInventory(MapleInventoryType.USE).getSlotLimit());
-                p.Encode1(chr.getInventory(MapleInventoryType.SETUP).getSlotLimit());
-                p.Encode1(chr.getInventory(MapleInventoryType.ETC).getSlotLimit());
-                p.Encode1(chr.getInventory(MapleInventoryType.CASH).getSlotLimit());
-            }
-            if (ServerConfig.version > 164) {
-                p.Encode4(0);
-                p.Encode4(0);
-            }
-            MapleInventory iv = chr.getInventory(MapleInventoryType.EQUIPPED);
-            Collection<IItem> equippedC = iv.list();
-            List<Item> equipped = new ArrayList<Item>(equippedC.size());
-            for (IItem item : equippedC) {
-                equipped.add((Item) item);
-            }
-            Collections.sort(equipped);
+        // キャラクター情報
+        p.EncodeBuffer(Structure.CharacterInfo(chr));
 
-            // 装備済みアイテム
-            {
-                for (Item item : equipped) {
-                    if (item.getPosition() < 0 && item.getPosition() > -100) {
-                        p.EncodeBuffer(addItemInfo(item, false, false));
-                    }
-                }
-                if (ServerConfig.version == 164) {
-                    p.Encode1(0);
-                } else {
-                    p.Encode2(0);
-                }
-            }
-            // 装備済みアバター?
-            {
-                for (Item item : equipped) {
-                    if (item.getPosition() <= -100 && item.getPosition() > -1000) {
-                        p.EncodeBuffer(addItemInfo(item, false, false));
-                    }
-                }
-                // その他装備済みアイテム終了?
-                if (ServerConfig.version == 164) {
-                    p.Encode1(0);
-                } else {
-                    p.Encode2(0);
-                }
-            }
-            // 装備
-            {
-                iv = chr.getInventory(MapleInventoryType.EQUIP);
-                for (IItem item : iv.list()) {
-                    p.EncodeBuffer(addItemInfo(item, false, false));
-                }
-                if (ServerConfig.version == 164) {
-                    p.Encode1(0);
-                } else {
-                    p.Encode2(0);
-                }
-            }
-            // v164だとないかも?
-            {
-                if (ServerConfig.version > 164) {
-                    for (Item item : equipped) {
-                        if (item.getPosition() <= -1000) {
-                            p.EncodeBuffer(addItemInfo(item, false, false));
-                        }
-                    }
-                    if (ServerConfig.version == 164) {
-                        p.Encode1(0);
-                    } else {
-                        p.Encode2(0);
-                    }
-                }
-            }
-            // v187.0
-            // なんかしらのデータが消費アイテムの前にあってずれている
-            // おそらくアイテム欄より後でもズレが発生してる
-            if (ServerConfig.version >= 188) {
-                p.Encode1(0);
-                p.Encode1(0);
-            }
-            // 消費
-            {
-                iv = chr.getInventory(MapleInventoryType.USE);
-                for (IItem item : iv.list()) {
-                    p.EncodeBuffer(addItemInfo(item, false, false));
-                }
-                p.Encode1(0);
-            }
-            // 設置
-            {
-                iv = chr.getInventory(MapleInventoryType.SETUP);
-                for (IItem item : iv.list()) {
-                    p.EncodeBuffer(addItemInfo(item, false, false));
-                }
-                p.Encode1(0);
-            }
-            // ETC
-            {
-                iv = chr.getInventory(MapleInventoryType.ETC);
-                for (IItem item : iv.list()) {
-                    p.EncodeBuffer(addItemInfo(item, false, false));
-                }
-                p.Encode1(0);
-            }
-            // ポイントアイテム
-            {
-                iv = chr.getInventory(MapleInventoryType.CASH);
-                for (IItem item : iv.list()) {
-                    p.EncodeBuffer(addItemInfo(item, false, false));
-                }
-                p.Encode1(0);
-            }
-        }
-        // [addSkillInfo]
-        p.EncodeBuffer(addSkillInfo(chr));
-        // [addCoolDownInfo]
-        p.EncodeBuffer(addCoolDownInfo(chr));
-        // [addQuestInfo]
-        p.EncodeBuffer(addQuestInfo(chr));
-        // [addRingInfo]
-        // 間違ってるかもしれない
-        if (ServerConfig.version < 188) {
-            p.Encode2(0);
-        }
-        p.EncodeBuffer(addRingInfo(chr));
-        if (ServerConfig.version > 164) {
-            p.Encode2(0);
-        }
-        // [addRocksInfo]
-        p.EncodeBuffer(addRocksInfo(chr));
-        p.Encode2(0);
-        // [addMonsterBookInfo]
-        p.EncodeBuffer(addMonsterBookInfo(chr));
-        // [QuestInfoPacket]
-        p.EncodeBuffer(QuestInfoPacket(chr));
-        // PQ rank?
-        p.Encode2(0);
-        if (ServerConfig.version > 164) {
-            p.Encode2(0);
-            // ログアウトギフト? (16 bytes)
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
-        }
+        // ログアウトギフト?
+        p.Encode4(0);
+        p.Encode4(0);
+        p.Encode4(0);
+        p.Encode4(0);
+
         // サーバーの時間?
         p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
         return p.Get();
@@ -406,13 +161,17 @@ public class MaplePacketCreator {
             p.Encode2(0);
         }
         p.Encode4(chr.getClient().getChannel() - 1);
-        p.Encode1(0);
+        if (ServerConfig.version > 131) {
+            p.Encode1(0);
+        }
         if (ServerConfig.version > 164) {
             p.Encode4(0);
         }
         p.Encode1((byte) chr.getPortalCount());
         p.Encode1(0);
-        p.Encode2(0);
+        if (ServerConfig.version > 131) {
+            p.Encode2(0);
+        }
         if (ServerConfig.version > 164) {
             p.Encode1(0);
         }
@@ -425,302 +184,6 @@ public class MaplePacketCreator {
         }
         p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
         return p.Get();
-    }
-
-    // 必要なデータ構造
-    public static final byte[] addItemInfo(final IItem item, final boolean zeroPosition, final boolean leaveOut) {
-        return addItemInfo(item, zeroPosition, leaveOut, false);
-    }
-
-    public static final byte[] addItemInfo(final IItem item, final boolean zeroPosition, final boolean leaveOut, final boolean trade) {
-        ServerPacket data = new ServerPacket();
-        short pos = item.getPosition();
-        if (zeroPosition) {
-            if (!leaveOut) {
-                data.Encode1(0);
-            }
-        } else {
-            if (pos <= -1) {
-                pos *= -1;
-                if (pos > 100 && pos < 1000) {
-                    pos -= 100;
-                }
-            }
-            // v164では場所は1バイトで全て表現される
-            if ((ServerConfig.version > 164 && !trade && item.getType() == 1)/* || ServerConfig.version >= 187*/) {
-                data.Encode2(pos);
-            } else {
-                data.Encode1(pos);
-            }
-        }
-        data.Encode1(item.getPet() != null ? 3 : item.getType());
-        data.Encode4(item.getItemId());
-        boolean hasUniqueId = item.getUniqueId() > 0;
-        //marriage rings arent cash items so dont have uniqueids, but we assign them anyway for the sake of rings
-        data.Encode1(hasUniqueId ? 1 : 0);
-        if (hasUniqueId) {
-            data.Encode8(item.getUniqueId());
-        }
-        if (item.getPet() != null) { // Pet
-            data.EncodeBuffer(addPetItemInfo(item, item.getPet()));
-        } else {
-            data.EncodeBuffer(addExpirationTime(item.getExpiration()));
-            if (item.getType() == 1) {
-                final IEquip equip = (IEquip) item;
-                data.Encode1(equip.getUpgradeSlots());
-                data.Encode1(equip.getLevel());
-                // 謎フラグ
-                if (ServerConfig.version > 164 && ServerConfig.version <= 184) {
-                    data.Encode1(0);
-                }
-                data.Encode2(equip.getStr());
-                data.Encode2(equip.getDex());
-                data.Encode2(equip.getInt());
-                data.Encode2(equip.getLuk());
-                data.Encode2(equip.getHp());
-                data.Encode2(equip.getMp());
-                data.Encode2(equip.getWatk());
-                data.Encode2(equip.getMatk());
-                data.Encode2(equip.getWdef());
-                data.Encode2(equip.getMdef());
-                data.Encode2(equip.getAcc());
-                data.Encode2(equip.getAvoid());
-                data.Encode2(equip.getHands());
-                data.Encode2(equip.getSpeed());
-                data.Encode2(equip.getJump());
-                data.EncodeStr(equip.getOwner());
-                // ポイントアイテムの一度も装備していないことを確認するためのフラグ
-                if (hasUniqueId) {
-                    // ポイントアイテム交換可能
-                    data.Encode2(0x10);
-                } else {
-                    data.Encode2(equip.getFlag());
-                }
-                data.Encode1(0);
-                data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // Item level
-                if (hasUniqueId) {
-                    data.Encode4(0);
-                } else {
-                    data.Encode2(0);
-                    data.Encode2(equip.getExpPercentage() * 4); // Item Exp... 98% = 25%
-                }
-                // 耐久度
-                if (ServerConfig.version > 164) {
-                    data.Encode4(equip.getDurability());
-                }
-                // ビシャスのハンマー
-                if (ServerConfig.version > 164) {
-                    if (ServerConfig.game_server_enable_hammer) {
-                        data.Encode4(equip.getViciousHammer());
-                    } else {
-                        data.Encode4(0);
-                    }
-                }
-                // 潜在能力
-                if (ServerConfig.version >= 186) {
-                    if (!hasUniqueId) {
-                        data.Encode1(equip.getState()); //7 = unique for the lulz
-                        data.Encode1(equip.getEnhance());
-                        if (ServerConfig.game_server_enable_potential) {
-                            data.Encode2(equip.getPotential1()); //potential stuff 1. total damage
-                            data.Encode2(equip.getPotential2()); //potential stuff 2. critical rate
-                            data.Encode2(equip.getPotential3()); //potential stuff 3. all stats
-                        } else {
-                            data.Encode2(0);
-                            data.Encode2(0);
-                            data.Encode2(0);
-                        }
-                    }
-                    data.Encode2(equip.getHpR());
-                    data.Encode2(equip.getMpR());
-                }
-                data.Encode8(0);
-                data.Encode8(0);
-                data.Encode4(-1);
-            } else {
-                data.Encode2(item.getQuantity());
-                data.EncodeStr(item.getOwner());
-                data.Encode2(item.getFlag());
-                if (GameConstants.isThrowingStar(item.getItemId()) || GameConstants.isBullet(item.getItemId())) {
-                    data.Encode4(2);
-                    data.Encode2(0x54);
-                    data.Encode1(0);
-                    data.Encode1(0x34);
-                }
-            }
-        }
-        return data.Get().getBytes();
-    }
-
-    public static final byte[] addPetItemInfo(final IItem item, final MaplePet pet) {
-        ServerPacket data = new ServerPacket();
-        data.EncodeBuffer(addExpirationTime(-1));
-        data.EncodeBuffer(pet.getName(), 13);
-        data.Encode1(pet.getLevel());
-        data.Encode2(pet.getCloseness());
-        data.Encode1(pet.getFullness());
-        if (item == null) {
-            data.Encode8(PacketHelper.getKoreanTimestamp((long) (System.currentTimeMillis() * 1.5)));
-        } else {
-            data.EncodeBuffer(addExpirationTime(item.getExpiration() <= System.currentTimeMillis() ? -1 : item.getExpiration()));
-        }
-        if (pet.getPetItemId() == 5000054) {
-            data.Encode4(0);
-            data.Encode4(pet.getSecondsLeft() > 0 ? pet.getSecondsLeft() : 0); //in seconds, 3600 = 1 hr.
-            data.Encode2(0);
-        } else {
-            data.Encode2(0);
-            data.Encode8(item != null && item.getExpiration() <= System.currentTimeMillis() ? 0 : 1);
-        }
-        data.EncodeZeroBytes(5);
-        return data.Get().getBytes();
-    }
-
-    public static final byte[] addExpirationTime(final long time) {
-        ServerPacket data = new ServerPacket();
-        data.Encode1(0);
-        data.Encode2(1408);
-        if (time != -1) {
-            data.Encode4(KoreanDateUtil.getItemTimestamp(time));
-            data.Encode1(1);
-        } else {
-            data.Encode4(400967355);
-            data.Encode1(2);
-        }
-        return data.Get().getBytes();
-    }
-
-    public static final byte[] addSkillInfo(final MapleCharacter chr) {
-        ServerPacket data = new ServerPacket();
-
-        // シグナス騎士団が存在しないので精霊の祝福が存在しない (スキルID 0000012) を除外する必要がある
-        if (ServerConfig.version <= 164 || ServerConfig.version >= 187) {
-            data.Encode2(0);
-            return data.Get().getBytes();
-        }
-
-        final Map<ISkill, SkillEntry> skills = chr.getSkills();
-        data.Encode2(skills.size());
-        for (final Entry<ISkill, SkillEntry> skill : skills.entrySet()) {
-            data.Encode4(skill.getKey().getId());
-            data.Encode4(skill.getValue().skillevel);
-            data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
-            if (skill.getKey().isFourthJob()) {
-                data.Encode4(skill.getValue().masterlevel);
-            }
-        }
-        return data.Get().getBytes();
-    }
-
-    public static final byte[] addCoolDownInfo(final MapleCharacter chr) {
-        ServerPacket data = new ServerPacket();
-        final List<MapleCoolDownValueHolder> cd = chr.getCooldowns();
-
-        if (ServerConfig.version <= 164 || ServerConfig.version >= 187) {
-            data.Encode2(0);
-            return data.Get().getBytes();
-        }
-
-        data.Encode2(cd.size());
-        for (final MapleCoolDownValueHolder cooling : cd) {
-            data.Encode4(cooling.skillId);
-            data.Encode2((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);
-        }
-        return data.Get().getBytes();
-    }
-
-    public static byte[] addQuestInfo(final MapleCharacter chr) {
-        ServerPacket data = new ServerPacket();
-        final List<MapleQuestStatus> started = chr.getStartedQuests();
-
-        data.Encode2(started.size());
-        for (final MapleQuestStatus q : started) {
-            data.Encode2(q.getQuest().getId());
-            data.EncodeStr(q.getCustomData() != null ? q.getCustomData() : "");
-        }
-        data.Encode2(0);
-        final List<MapleQuestStatus> completed = chr.getCompletedQuests();
-        int time;
-        data.Encode2(completed.size());
-        for (final MapleQuestStatus q : completed) {
-            data.Encode2(q.getQuest().getId());
-            time = KoreanDateUtil.getQuestTimestamp(q.getCompletionTime());
-            data.Encode4(time); // maybe start time? no effect.
-            data.Encode4(time); // completion time
-        }
-        return data.Get().getBytes();
-    }
-
-    public static final byte[] addRingInfo(final MapleCharacter chr) {
-        ServerPacket data = new ServerPacket();
-        Pair<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
-        List<MapleRing> cRing = aRing.getLeft();
-        data.Encode2(cRing.size());
-        for (MapleRing ring : cRing) {
-            data.Encode4(ring.getPartnerChrId());
-            data.EncodeBuffer(ring.getPartnerName(), 13);
-            data.Encode8(ring.getRingId());
-            data.Encode8(ring.getPartnerRingId());
-        }
-        List<MapleRing> fRing = aRing.getRight();
-        data.Encode2(fRing.size());
-        for (MapleRing ring : fRing) {
-            data.Encode4(ring.getPartnerChrId());
-            data.EncodeBuffer(ring.getPartnerName(), 13);
-            data.Encode8(ring.getRingId());
-            data.Encode8(ring.getPartnerRingId());
-            data.Encode4(ring.getItemId());
-        }
-        return data.Get().getBytes();
-    }
-
-    public static final byte[] addRocksInfo(final MapleCharacter chr) {
-        ServerPacket data = new ServerPacket();
-        final int[] mapz = chr.getRegRocks();
-        for (int i = 0; i < 5; i++) { // VIP teleport map
-            data.Encode4(mapz[i]);
-        }
-
-        final int[] map = chr.getRocks();
-        for (int i = 0; i < 10; i++) { // VIP teleport map
-            data.Encode4(map[i]);
-        }
-        return data.Get().getBytes();
-    }
-
-    public static final byte[] addMonsterBookInfo(final MapleCharacter chr) {
-        ServerPacket data = new ServerPacket();
-        data.Encode4(chr.getMonsterBookCover());
-        data.Encode1(0);
-        // [chr.getMonsterBook().addCardPacket]
-        {
-            Map<Integer, Integer> cards = chr.getMonsterBook().getCards();
-            data.Encode2(cards.size());
-            for (Entry<Integer, Integer> all : cards.entrySet()) {
-                // ID
-                data.Encode2(GameConstants.getCardShortId(all.getKey()));
-                // 登録枚数
-                data.Encode1(all.getValue());
-            }
-        }
-        return data.Get().getBytes();
-    }
-
-    public static final byte[] QuestInfoPacket(final MapleCharacter chr) {
-        ServerPacket data = new ServerPacket();
-        Map<Integer, String> questinfo = chr.getInfoQuest_Map();
-
-        if (ServerConfig.version <= 164 || ServerConfig.version >= 187) {
-            data.Encode2(0);
-            return data.Get().getBytes();
-        }
-
-        data.Encode2(questinfo.size());
-        for (final Entry<Integer, String> q : questinfo.entrySet()) {
-            data.Encode2(q.getKey());
-            data.EncodeStr(q.getValue() == null ? "" : q.getValue());
-        }
-        return data.Get().getBytes();
     }
 
     // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -797,6 +260,11 @@ public class MaplePacketCreator {
 
         if (ServerConfig.version >= 188) {
             // test
+            mplew.write(0);
+            mplew.write(0);
+            mplew.write(0);
+            mplew.write(0);
+            mplew.write(0);
             mplew.write(0);
             mplew.write(0);
             mplew.write(0);
@@ -1195,7 +663,10 @@ public class MaplePacketCreator {
         mplew.writeInt(cidfrom);
         mplew.write(whiteBG ? 1 : 0);
         mplew.writeMapleAsciiString(text);
-        mplew.write(show);
+
+        if (ServerConfig.version > 131) {
+            mplew.write(show);
+        }
 
         return mplew.getPacket();
     }
@@ -1285,21 +756,29 @@ public class MaplePacketCreator {
     }
 
     public static final MaplePacket showMesoGain(final int gain, final boolean inChat) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_Message);
 
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
         if (!inChat) {
-            mplew.write(0);
-            mplew.write(1);
-            mplew.write(0);
-            mplew.writeInt(gain);
-            mplew.writeInt(0); // inet cafe meso gain ?.o
+            p.Encode1(0);
+            p.Encode1(1);
+
+            if (ServerConfig.version > 131) {
+                p.Encode1(0);
+            }
+
+            p.Encode4(gain);
+
+            if (ServerConfig.version <= 131) {
+                p.Encode2(0); // Internet cafe bonus
+            } else {
+                p.Encode4(0);
+            }
         } else {
-            mplew.write(6);
-            mplew.writeInt(gain);
+            p.Encode1(6);
+            p.Encode4(gain);
         }
 
-        return mplew.getPacket();
+        return p.Get();
     }
 
     public static MaplePacket getShowItemGain(int itemId, short quantity) {
@@ -1382,194 +861,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket spawnPlayerMapobject(MapleCharacter chr) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserEnterField.Get());
-        mplew.writeInt(chr.getId());
-        // 自分のキャラクターの場合はここで終了
-
-        mplew.write(chr.getLevel());
-        mplew.writeMapleAsciiString(chr.getName());
-
-        if (chr.getGuildId() <= 0) {
-            mplew.writeInt(0);
-            mplew.writeInt(0);
-        } else {
-            final MapleGuild gs = World.Guild.getGuild(chr.getGuildId());
-            if (gs != null) {
-                mplew.writeMapleAsciiString(gs.getName());
-                mplew.writeShort(gs.getLogoBG());
-                mplew.write(gs.getLogoBGColor());
-                mplew.writeShort(gs.getLogo());
-                mplew.write(gs.getLogoColor());
-            } else {
-                mplew.writeInt(0);
-                mplew.writeInt(0);
-            }
-        }
-        //mplew.writeInt(3); after aftershock
-        List<Pair<Integer, Boolean>> buffvalue = new ArrayList<Pair<Integer, Boolean>>();
-        long fbuffmask = 0xFE0000L; //becomes F8000000 after bb?
-//        long fbuffmask = 0x3F80000L; //becomes F8000000 after bb?
-        //if (chr.getBuffedValue(MapleBuffStat.FINAL_CUT) != null) {
-        //    fbuffmask |= MapleBuffStat.FINAL_CUT.getValue();
-        //    buffvalue.add(new Pair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.FINAL_CUT).intValue()), false));
-        //}
-        //if (chr.getBuffedValue(MapleBuffStat.OWL_SPIRIT) != null) {
-        //    fbuffmask |= MapleBuffStat.OWL_SPIRIT.getValue();
-        //    buffvalue.add(new Pair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.OWL_SPIRIT).intValue()), false));
-        //}
-        if (chr.getBuffedValue(MapleBuffStat.SOARING) != null) {
-            fbuffmask |= MapleBuffStat.SOARING.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.MIRROR_IMAGE) != null) {
-            fbuffmask |= MapleBuffStat.MIRROR_IMAGE.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.DARK_AURA) != null) {
-            fbuffmask |= MapleBuffStat.DARK_AURA.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.BLUE_AURA) != null) {
-            fbuffmask |= MapleBuffStat.BLUE_AURA.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.YELLOW_AURA) != null) {
-            fbuffmask |= MapleBuffStat.YELLOW_AURA.getValue();
-        }
-        //if (chr.getBuffedValue(MapleBuffStat.PYRAMID_PQ) != null) {
-        //    fbuffmask |= MapleBuffStat.PYRAMID_PQ.getValue();
-        //    buffvalue.add(new Pair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.PYRAMID_PQ).intValue()), false)); //idk
-        //}
-        //if (chr.getBuffedValue(MapleBuffStat.MAGIC_SHIELD) != null) {
-        //    fbuffmask |= MapleBuffStat.MAGIC_SHIELD.getValue();
-        //    buffvalue.add(new Pair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.MAGIC_SHIELD).intValue()), false)); //idk
-        //}
-        mplew.writeLong(fbuffmask);
-        long buffmask = 0;
-
-        if (chr.getBuffedValue(MapleBuffStat.DARKSIGHT) != null && !chr.isHidden()) {
-            buffmask |= MapleBuffStat.DARKSIGHT.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.COMBO) != null) {
-            buffmask |= MapleBuffStat.COMBO.getValue();
-            buffvalue.add(new Pair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.COMBO).intValue()), false));
-        }
-        if (chr.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null) {
-            buffmask |= MapleBuffStat.SHADOWPARTNER.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.SOULARROW) != null) {
-            buffmask |= MapleBuffStat.SOULARROW.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.DIVINE_BODY) != null) {
-            buffmask |= MapleBuffStat.DIVINE_BODY.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.BERSERK_FURY) != null) {
-            buffmask |= MapleBuffStat.BERSERK_FURY.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
-            buffmask |= MapleBuffStat.MORPH.getValue();
-            buffvalue.add(new Pair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.MORPH).intValue()), true));
-        }
-
-        mplew.writeLong(buffmask);
-        for (Pair<Integer, Boolean> i : buffvalue) {
-            if (i.right) {
-                mplew.writeShort(i.left.shortValue());
-            } else {
-                mplew.write(i.left.byteValue());
-            }
-        }
-        final int CHAR_MAGIC_SPAWN = Randomizer.nextInt();
-        //CHAR_MAGIC_SPAWN is really just tickCount
-        //this is here as it explains the 7 "dummy" buffstats which are placed into every character
-        //these 7 buffstats are placed because they have irregular packet structure.
-        //they ALL have writeShort(0); first, then a long as their variables, then server tick count
-        //0x80000, 0x100000, 0x200000, 0x400000, 0x800000, 0x1000000, 0x2000000
-
-        mplew.writeShort(0); //start of energy charge
-        mplew.writeLong(0);
-        mplew.write(1);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.writeShort(0); //start of dash_speed
-        mplew.writeLong(0);
-        mplew.write(1);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.writeShort(0); //start of dash_jump
-        mplew.writeLong(0);
-        mplew.write(1);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.writeShort(0); //start of Monster Riding
-        int buffSrc = chr.getBuffSource(MapleBuffStat.MONSTER_RIDING);
-        if (buffSrc > 0) {
-            final IItem c_mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/);
-            final IItem mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
-            if (GameConstants.getMountItem(buffSrc) == 0 && c_mount != null) {
-                mplew.writeInt(c_mount.getItemId());
-            } else if (GameConstants.getMountItem(buffSrc) == 0 && mount != null) {
-                mplew.writeInt(mount.getItemId());
-            } else {
-                mplew.writeInt(GameConstants.getMountItem(buffSrc));
-            }
-            mplew.writeInt(buffSrc);
-        } else {
-            mplew.writeLong(0);
-        }
-        mplew.write(1);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.writeLong(0); //speed infusion behaves differently here
-        mplew.write(1);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.writeInt(1);
-        mplew.writeLong(0); //homing beacon
-        mplew.write(0);
-        mplew.writeShort(0);
-        mplew.write(1);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.writeInt(0); //and finally, something ive no idea
-        mplew.writeLong(0);
-        mplew.write(1);
-        mplew.writeInt(CHAR_MAGIC_SPAWN);
-        mplew.writeShort(0);
-        mplew.writeShort(chr.getJob());
-        PacketHelper.addCharLook(mplew, chr, false);
-        mplew.writeInt(0);//this is CHARID to follow
-        mplew.writeInt(0); //probably charid following
-        mplew.writeLong(Math.min(250, chr.getInventory(MapleInventoryType.CASH).countById(5110000))); //max is like 100. but w/e
-        mplew.writeInt(chr.getItemEffect());
-        mplew.writeInt(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
-        mplew.writePos(chr.getPosition());
-        mplew.write(chr.getStance());
-        mplew.writeShort(0); // FH
-        mplew.write(0); // pet size
-        mplew.writeInt(chr.getMount().getLevel()); // mount lvl
-        mplew.writeInt(chr.getMount().getExp()); // exp
-        mplew.writeInt(chr.getMount().getFatigue()); // tiredness
-        PacketHelper.addAnnounceBox(mplew, chr);
-        mplew.write(chr.getChalkboard() != null && chr.getChalkboard().length() > 0 ? 1 : 0);
-        if (chr.getChalkboard() != null && chr.getChalkboard().length() > 0) {
-            mplew.writeMapleAsciiString(chr.getChalkboard());
-        }
-        Pair<List<MapleRing>, List<MapleRing>> rings = chr.getRings(false);
-        addRingInfo(mplew, rings.getLeft());
-        addRingInfo(mplew, rings.getRight());
-        mplew.writeShort(0);
-        mplew.writeInt(0);
-        if (chr.getCarnivalParty() != null) {
-            mplew.write(chr.getCarnivalParty().getTeam());
-        } else if (chr.getMapId() == 109080000) {
-            mplew.write(chr.getCoconutTeam()); //is it 0/1 or is it 1/2?
-        }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket removePlayerFromMap(int cid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserLeaveField.Get());
-        mplew.writeInt(cid);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket facialExpression(MapleCharacter from, int expression) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -1578,18 +869,6 @@ public class MaplePacketCreator {
         mplew.writeInt(expression);
         mplew.writeInt(-1); //itemid of expression use
         mplew.write(0);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket movePlayer(int cid, List<LifeMovementFragment> moves, Point startPos) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserMove.Get());
-        mplew.writeInt(cid);
-        mplew.writePos(startPos);
-        mplew.writeInt(0);
-        PacketHelper.serializeMovementList(mplew, moves);
 
         return mplew.getPacket();
     }
@@ -1625,122 +904,68 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket closeRangeAttack(int cid, int tbyte, int skill, int level, byte display, byte animation, byte speed, List<AttackPair> damage, final boolean energy, int lvl, byte mastery, byte unk, int charge) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+    // CLifePool::OnUserAttack
+    public static MaplePacket UserAttack(AttackInfo attack) {
+        ServerPacket p = new ServerPacket(attack.GetHeader());
 
-        mplew.writeShort(energy ? ServerPacket.Header.LP_UserBodyAttack.Get() : ServerPacket.Header.LP_UserMeleeAttack.Get());
-        mplew.writeInt(cid);
-        mplew.write(tbyte);
-        mplew.write(lvl); //?
-        if (skill > 0) {
-            mplew.write(level);
-            mplew.writeInt(skill);
-        } else {
-            mplew.write(0);
+        p.Encode4(attack.CharacterId);
+        p.Encode1(attack.HitKey);
+
+        if (ServerConfig.version > 131) {
+            p.Encode1(attack.m_nLevel);
         }
-        mplew.write(unk); // Added on v.82
-        mplew.write(display);
-        mplew.write(animation);
-        mplew.write(speed);
-        mplew.write(mastery); // Mastery
-        mplew.writeInt(0);  // E9 03 BE FC
 
-        if (skill == 4211006) {
-            for (AttackPair oned : damage) {
-                if (oned.attack != null) {
-                    mplew.writeInt(oned.objectid);
-                    mplew.write(0x07);
-                    mplew.write(oned.attack.size());
-                    for (Pair<Integer, Boolean> eachd : oned.attack) {
-                        mplew.write(eachd.right ? 1 : 0);
-                        mplew.writeInt(eachd.left);
+        p.Encode1(attack.SkillLevel); // nPassiveSLV
+        if (0 < attack.nSkillID) {
+            p.Encode4(attack.nSkillID); // nSkillID
+        }
+
+        if (ServerConfig.version > 131) {
+            p.Encode1(attack.BuffKey); // bSerialAttack
+        }
+
+        if (ServerConfig.version <= 131) {
+            p.Encode1(attack.AttackActionKey);
+        } else {
+            p.Encode2(attack.AttackActionKey);
+        }
+
+        p.Encode1(attack.nAttackSpeed); // nActionSpeed
+        p.Encode1(attack.nMastery); // nMastery
+        p.Encode4(attack.nBulletItemID); // nBulletItemID
+
+        for (AttackPair oned : attack.allDamage) {
+            if (oned.attack != null) {
+                p.Encode4(oned.objectid);
+                p.Encode1(0x07);
+
+                if (attack.IsMesoExplosion()) {
+                    p.Encode1(oned.attack.size());
+                }
+
+                for (Pair<Integer, Boolean> eachd : oned.attack) {
+                    if (ServerConfig.version <= 131) {
+                        p.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
+                    } else {
+                        p.Encode1(eachd.right ? 1 : 0);
+                        p.Encode4(eachd.left.intValue());
                     }
                 }
             }
-        } else {
-            for (AttackPair oned : damage) {
-                if (oned.attack != null) {
-                    mplew.writeInt(oned.objectid);
-                    mplew.write(0x07);
-                    for (Pair<Integer, Boolean> eachd : oned.attack) {
-                        mplew.write(eachd.right ? 1 : 0);
-                        mplew.writeInt(eachd.left.intValue());
-                    }
-                }
+        }
+
+        if (attack.IsQuantumExplosion()) {
+            p.Encode4(attack.tKeyDown);
+        }
+
+        if (131 < ServerConfig.version) {
+            if (attack.GetHeader() == ServerPacket.Header.LP_UserShootAttack) {
+                p.Encode2(attack.X);
+                p.Encode2(attack.Y);
             }
         }
-        /*        if (charge > 0) {
-            mplew.writeInt(charge); //is it supposed to be here
-        }*/
-        return mplew.getPacket();
-    }
 
-    public static MaplePacket rangedAttack(int cid, byte tbyte, int skill, int level, byte display, byte animation, byte speed, int itemid, List<AttackPair> damage, final Point pos, int lvl, byte mastery, byte unk) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserShootAttack.Get());
-        mplew.writeInt(cid);
-        mplew.write(tbyte);
-        mplew.write(lvl); //?
-        if (skill > 0) {
-            mplew.write(level);
-            mplew.writeInt(skill);
-        } else {
-            mplew.write(0);
-        }
-        mplew.write(unk); // Added on v.82
-        mplew.write(display);
-        mplew.write(animation);
-        mplew.write(speed);
-        mplew.write(mastery); // Mastery level, who cares
-        mplew.writeInt(itemid);
-
-        for (AttackPair oned : damage) {
-            if (oned.attack != null) {
-                mplew.writeInt(oned.objectid);
-                mplew.write(0x07);
-                for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    mplew.write(eachd.right ? 1 : 0);
-                    mplew.writeInt(eachd.left.intValue());
-                }
-            }
-        }
-        mplew.writePos(pos); // Position
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket magicAttack(int cid, int tbyte, int skill, int level, byte display, byte animation, byte speed, List<AttackPair> damage, int charge, int lvl, byte unk) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserMagicAttack.Get());
-        mplew.writeInt(cid);
-        mplew.write(tbyte);
-        mplew.write(lvl); //?
-        mplew.write(level);
-        mplew.writeInt(skill);
-
-        mplew.write(unk); // Added on v.82
-        mplew.write(display);
-        mplew.write(animation);
-        mplew.write(speed);
-        mplew.write(0); // Mastery byte is always 0 because spells don't have a swoosh
-        mplew.writeInt(0);
-
-        for (AttackPair oned : damage) {
-            if (oned.attack != null) {
-                mplew.writeInt(oned.objectid);
-                mplew.write(-1);
-                for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    mplew.write(eachd.right ? 1 : 0);
-                    mplew.writeInt(eachd.left.intValue());
-                }
-            }
-        }
-        if (charge > 0) {
-            mplew.writeInt(charge);
-        }
-        return mplew.getPacket();
+        return p.Get();
     }
 
     public static MaplePacket getNPCShop(MapleClient c, int sid, List<MapleShopItem> items) {
@@ -2292,7 +1517,11 @@ public class MaplePacketCreator {
                 secondmask |= statup.getLeft().getValue();
             }
         }
-        mplew.writeLong(firstmask);
+
+        if (ServerConfig.version > 131) {
+            mplew.writeLong(firstmask);
+        }
+
         mplew.writeLong(secondmask);
     }
 
@@ -2321,7 +1550,9 @@ public class MaplePacketCreator {
                 secondmask |= statup.getValue();
             }
         }
-        mplew.writeLong(firstmask);
+        if (ServerConfig.version > 131) {
+            mplew.writeLong(firstmask);
+        }
         mplew.writeLong(secondmask);
     }
 
@@ -2445,9 +1676,13 @@ public class MaplePacketCreator {
         for (Pair<MapleBuffStat, Integer> statup : statups) {
             mplew.writeShort(statup.getRight().shortValue());
             mplew.writeInt(buffid);
-            mplew.writeInt(bufflength);
-            if (buffid == 4331003) {
-                mplew.writeZeroBytes(10);
+            if (ServerConfig.version <= 131) {
+                mplew.writeShort(bufflength);
+            } else {
+                mplew.writeInt(bufflength);
+                if (buffid == 4331003) {
+                    mplew.writeZeroBytes(10);
+                }
             }
         }
         mplew.writeShort(0); // delay,  wk charges have 600 here o.o
@@ -2917,7 +2152,10 @@ public class MaplePacketCreator {
         mplew.writeInt(skillid);
         mplew.writeInt(level);
         mplew.writeInt(masterlevel);
-        PacketHelper.addExpirationTime(mplew, expiration);
+
+        if (ServerConfig.version > 131) {
+            PacketHelper.addExpirationTime(mplew, expiration);
+        }
         mplew.write(4);
 
         return mplew.getPacket();
@@ -3036,83 +2274,6 @@ public class MaplePacketCreator {
         mplew.writeInt(0);
         mplew.writeInt(0);
 
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getStorage(int npcId, byte slots, Collection<IItem> items, int meso) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_TrunkResult.Get());
-        mplew.write(0x15); // 0x16
-        mplew.writeInt(npcId);
-        mplew.write(slots);
-        mplew.writeShort(0x7E);
-        mplew.writeShort(0);
-        mplew.writeInt(0);
-        mplew.writeInt(meso);
-        mplew.writeShort(0);
-        mplew.write((byte) items.size());
-        for (IItem item : items) {
-            PacketHelper.addItemInfo(mplew, item, true, true);
-        }
-        mplew.writeShort(0);
-        mplew.write(0);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getStorageFull() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_TrunkResult.Get());
-        mplew.write(0x11);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket mesoStorage(byte slots, int meso) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_TrunkResult.Get());
-        mplew.write(0x12); // 0x13
-        mplew.write(slots);
-        mplew.writeShort(2);
-        mplew.writeShort(0);
-        mplew.writeInt(0);
-        mplew.writeInt(meso);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket storeStorage(byte slots, MapleInventoryType type, Collection<IItem> items) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_TrunkResult.Get());
-        mplew.write(0x0C); // 0x0D
-        mplew.write(slots);
-        mplew.writeShort(type.getBitfieldEncoding());
-        mplew.writeShort(0);
-        mplew.writeInt(0);
-        mplew.write(items.size());
-        for (IItem item : items) {
-            PacketHelper.addItemInfo(mplew, item, true, true);
-        }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket takeOutStorage(byte slots, MapleInventoryType type, Collection<IItem> items) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_TrunkResult.Get());
-        mplew.write(0x08); // 0x09
-        mplew.write(slots);
-        mplew.writeShort(type.getBitfieldEncoding());
-        mplew.writeShort(0);
-        mplew.writeInt(0);
-        mplew.write(items.size());
-        for (IItem item : items) {
-            PacketHelper.addItemInfo(mplew, item, true, true);
-        }
         return mplew.getPacket();
     }
 
@@ -3517,34 +2678,6 @@ public class MaplePacketCreator {
             mplew.write(1);
             mplew.writeShort(id);
         }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket spawnReactor(MapleReactor reactor) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_ReactorEnterField.Get());
-        mplew.writeInt(reactor.getObjectId());
-        mplew.writeInt(reactor.getReactorId());
-        mplew.write(reactor.getState());
-        mplew.writePos(reactor.getPosition());
-        mplew.write(reactor.getFacingDirection()); // stance
-        mplew.writeMapleAsciiString(reactor.getName());
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket triggerReactor(MapleReactor reactor, int stance) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_ReactorChangeState.Get());
-        mplew.writeInt(reactor.getObjectId());
-        mplew.write(reactor.getState());
-        mplew.writePos(reactor.getPosition());
-        mplew.writeShort(stance);
-        mplew.write(0);
-        mplew.write(4); // frame delay, set to 5 since there doesn't appear to be a fixed formula for it
-
         return mplew.getPacket();
     }
 

@@ -51,11 +51,12 @@ import server.life.MapleNPC;
 import server.maps.MapleNodes.MapleNodeInfo;
 import server.maps.MapleNodes.MaplePlatform;
 import tools.StringUtil;
+import wz.LoadData;
 
 public class MapleMapFactory {
 
-    private static final MapleDataProvider source = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Map.wz"));
-    private static final MapleData nameData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/String.wz")).getData("Map.img");
+    public static MapleDataProvider source;
+    public static MapleData nameData;
     private final Map<Integer, MapleMap> maps = new HashMap<Integer, MapleMap>();
     private final Map<Integer, MapleMap> instanceMap = new HashMap<Integer, MapleMap>();
     private static final Map<Integer, MapleNodes> mapInfos = new HashMap<Integer, MapleNodes>();
@@ -86,9 +87,9 @@ public class MapleMapFactory {
                 try {
                     mapData = source.getData(getMapName(mapid));
                 } catch (Exception e) {
-                    Debug.InfoLog("Unknown MapID = " + mapid);
-                    // キノコ神社に強制移動
-                    mapid = 800000000;
+                    // 存在しないMapIDが指定された場合は指定MapIDへ強制移動する
+                    Debug.ErrorLog("Invalid MapID = " + mapid);
+                    mapid = ServerConfig.error_mapid;
                     omapid = Integer.valueOf(mapid);
                     mapData = source.getData(getMapName(mapid));
                 }
@@ -208,7 +209,7 @@ public class MapleMapFactory {
                                         //Debug.DebugLog("Spawn NPC, NPC = " + npc.getName() + " (" + npc_id + "), Map = " + MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(omapid))) + " - " + MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(omapid))) + " (" + mapid + ")");
                                     }
                                 } else {
-                                    Debug.InfoLog("spawn npc format error: " + mapid);
+                                    Debug.ErrorLog("spawn npc format error: " + mapid);
                                 }
                             }
                         }
@@ -717,6 +718,12 @@ public class MapleMapFactory {
             default:
                 return;
         }
+
+        if (!LoadData.IsValidMobID(monsterid)) {
+            Debug.ErrorLog("Invalid Mob ID = " + monsterid);
+            return;
+        }
+
         map.addAreaMonsterSpawn(MapleLifeFactory.getMonster(monsterid), pos1, pos2, pos3, mobtime, msg);
     }
 

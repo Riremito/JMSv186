@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
+import packet.ServerPacket;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
@@ -1233,5 +1234,27 @@ public class PlayerStats implements Serializable {
             return skillID + 30000000;
         }
         return skillID;
+    }
+
+    public final void connectData(ServerPacket p) {
+        p.Encode2(str);
+        p.Encode2(dex);
+        p.Encode2(int_);
+        p.Encode2(luk);
+
+        // BB前
+        if (ServerConfig.version <= 186) {
+            p.Encode2(hp);
+            p.Encode2(maxhp);
+            p.Encode2(mp);
+            p.Encode2(maxmp);
+            return;
+        }
+
+        // BB後
+        p.Encode4(hp);
+        p.Encode4(maxhp);
+        p.Encode4(mp);
+        p.Encode4(maxmp);
     }
 }

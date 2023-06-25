@@ -97,7 +97,7 @@ public class PlayersHandler {
                     target.updateSingleStat(MapleStat.FAME, target.getFame());
                 }
                 //if (!chr.isGM()) {
-                    chr.hasGivenFame(target);
+                chr.hasGivenFame(target);
                 //}
                 c.getSession().write(MaplePacketCreator.giveFameResponse(mode, target.getName(), target.getFame()));
                 target.getClient().getSession().write(MaplePacketCreator.receiveFame(mode, chr.getName()));
@@ -151,28 +151,6 @@ public class PlayersHandler {
                 }
                 break;
         }
-    }
-
-    public static void HitReactor(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final int oid = slea.readInt();
-        final int charPos = slea.readInt();
-        final short stance = slea.readShort();
-        final MapleReactor reactor = c.getPlayer().getMap().getReactorByOid(oid);
-
-        if (reactor == null || !reactor.isAlive()) {
-            return;
-        }
-        reactor.hitReactor(charPos, stance, c);
-    }
-
-    public static void TouchReactor(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final int oid = slea.readInt();
-        final boolean touched = slea.readByte() > 0;
-        final MapleReactor reactor = c.getPlayer().getMap().getReactorByOid(oid);
-        if (!touched || reactor == null || !reactor.isAlive() || reactor.getReactorId() < 6109013 || reactor.getReactorId() > 6109027) {
-            return;
-        }
-        ReactorScriptManager.getInstance().act(c, reactor); //not sure how touched boolean comes into play
     }
 
     public static void hitCoconut(SeekableLittleEndianAccessor slea, MapleClient c) {

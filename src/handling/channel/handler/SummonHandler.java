@@ -36,6 +36,7 @@ import client.anticheat.CheatingOffense;
 import client.status.MonsterStatus;
 import java.lang.ref.WeakReference;
 import java.util.Map;
+import packet.content.MobPacket;
 import server.MapleStatEffect;
 import server.Timer.CloneTimer;
 import server.movement.LifeMovementFragment;
@@ -47,7 +48,6 @@ import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 import server.maps.SummonMovementType;
 import tools.MaplePacketCreator;
-import tools.packet.MobPacket;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class SummonHandler {
@@ -203,7 +203,7 @@ public class SummonHandler {
             mob.damage(chr, toDamage, true);
             chr.checkMonsterAggro(mob);
             if (!mob.isAlive()) {
-                chr.getClient().getSession().write(MobPacket.killMonster(mob.getObjectId(), 1));
+                chr.getClient().SendPacket(MobPacket.Kill(mob, 1));
             }
             /*
             } else {

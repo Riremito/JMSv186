@@ -39,6 +39,16 @@ public class MapleDataProviderFactory {
         return getWZ(in, false);
     }
 
+    public static MapleDataProvider getDataProvider(String path) {
+        File dir = new File(ServerConfig.wz_path + "/" + path);
+
+        if (!dir.exists()) {
+            return null;
+        }
+
+        return getWZ(dir, false);
+    }
+
     public static MapleDataProvider getImageProvidingDataProvider(Object in) {
         return getWZ(in, true);
     }

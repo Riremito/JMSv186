@@ -17,6 +17,7 @@ public class ItemMakerFactory {
     private final static ItemMakerFactory instance = new ItemMakerFactory();
     protected Map<Integer, ItemMakerCreateEntry> createCache = new HashMap<Integer, ItemMakerCreateEntry>();
     protected Map<Integer, GemCreateEntry> gemCache = new HashMap<Integer, GemCreateEntry>();
+    public static MapleData info = null;
 
     public static ItemMakerFactory getInstance() {
         // DO ItemMakerFactory.getInstance() on ChannelServer startup.
@@ -28,7 +29,9 @@ public class ItemMakerFactory {
         // 0 = Item upgrade crystals
         // 1 / 2/ 4/ 8 = Item creation
 
-        final MapleData info = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz")).getData("ItemMake.img");
+        if (info == null) {
+            return;
+        }
 
         byte totalupgrades, reqMakerLevel;
         int reqLevel, cost, quantity, stimulator;

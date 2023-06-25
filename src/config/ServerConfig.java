@@ -3,9 +3,15 @@ package config;
 import debug.Debug;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 public class ServerConfig {
+
+    // codepage
+    public static boolean utf8 = false;
+    public static Charset codepage_ascii;
+    public static Charset codepage_utf8;
 
     // Version
     public static short version = 186;
@@ -47,6 +53,11 @@ public class ServerConfig {
     public static String 豆豆装备[], 豆豆坐骑[], 消耗品[], 黄金狗几率[], 小白怪[], 大白怪[], 紫色怪[], 粉色怪[], 飞侠[], 海盗[], 法师[], 战士[], 弓箭手[], 女皇[], 白怪奖励[], 色怪奖励[], 五职业奖励[], 女皇奖励[];
     public static int 海洋帽子几率, 力度搞假, 豆豆奖励范围;
 
+    // キャラクター作成後の最初のMapID
+    public static int first_mapid = 910000000; // フリーマーケット入口
+    // 存在しないMapIDへ飛んでしまった場合に強制的にワープさせる場所
+    public static int error_mapid = 800000000; // キノコ神社
+
     // propertiesファイルの読み込み
     public static void SetProperty() {
         Properties DataBase = ReadPropertyFile("properties/database.properties");
@@ -61,6 +72,25 @@ public class ServerConfig {
 
             database_user = DataBase.getProperty("database.user");
             database_password = DataBase.getProperty("database.password");
+        }
+
+        // test
+        Properties TestConfig = ReadPropertyFile("properties/test.properties");
+        {
+            // codepage
+            utf8 = Boolean.parseBoolean(TestConfig.getProperty("codepage.use_utf8"));
+            codepage_ascii = Charset.forName(TestConfig.getProperty("codepage.ascii"));
+            codepage_utf8 = Charset.forName(TestConfig.getProperty("codepage.utf8"));
+            // map
+            first_mapid = Integer.parseInt(TestConfig.getProperty("config.first_mapid"));
+            error_mapid = Integer.parseInt(TestConfig.getProperty("config.error_mapid"));
+            // debug
+            DebugConfig.log_packet = Boolean.parseBoolean(TestConfig.getProperty("debug.show_packet"));
+            DebugConfig.log_debug = Boolean.parseBoolean(TestConfig.getProperty("debug.show_debug_log"));
+            DebugConfig.log_admin = Boolean.parseBoolean(TestConfig.getProperty("debug.show_admin_log"));
+            DebugConfig.starter_set = Boolean.parseBoolean(TestConfig.getProperty("debug.starter_set"));
+            DebugConfig.GM = Boolean.parseBoolean(TestConfig.getProperty("debug.gm_mode"));
+            DebugConfig.open_debug_ui = Boolean.parseBoolean(TestConfig.getProperty("debug.admin_ui"));
         }
 
         Properties LoginServer = ReadPropertyFile("properties/login.properties");
@@ -152,7 +182,7 @@ public class ServerConfig {
             p.load(fr);
             fr.close();
         } catch (IOException e) {
-            Debug.InfoLog("設定ファイルが見つかりません (" + path + ")");
+            Debug.ErrorLog("設定ファイルが見つかりません (" + path + ")");
         }
 
         return p;

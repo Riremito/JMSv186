@@ -58,7 +58,7 @@ public class CashShopServer {
             acceptor.bind(InetSocketadd, new MapleServerHandler(-1, MapleServerHandler.ServerType.PointShopServer), cfg);
             Debug.InfoLog("Port = " + ServerConfig.cash_shop_server_port);
         } catch (final Exception e) {
-            Debug.InfoLog("Binding to port " + ServerConfig.cash_shop_server_port + " failed");
+            Debug.ErrorLog("Binding to port " + ServerConfig.cash_shop_server_port + " failed");
             e.printStackTrace();
             throw new RuntimeException("Binding failed.", e);
         }
