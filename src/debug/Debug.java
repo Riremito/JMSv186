@@ -65,6 +65,8 @@ public class Debug {
         }
 
         switch (p.GetOpcode()) {
+            case CP_SummonedMove:
+            case CP_UserChangeStatRequest:
             case CP_CheckPassword:
             case CP_UserMove:
             case CP_UserMeleeAttack:

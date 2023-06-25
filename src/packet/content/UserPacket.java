@@ -556,7 +556,7 @@ public class UserPacket {
             p.Encode4(0);
         }
 
-        p.EncodeBuffer(MobPacket.serializeMovementList(moves)); // to do move class
+        p.EncodeBuffer(MovementPacket.serializeMovementList(moves)); // to do move class
         return p.Get();
     }
 

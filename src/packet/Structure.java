@@ -17,7 +17,6 @@ import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import config.ServerConfig;
 import constants.GameConstants;
-import handling.MaplePacket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

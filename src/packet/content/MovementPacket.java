@@ -26,6 +26,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
+import packet.ServerPacket;
 import server.movement.AbsoluteLifeMovement;
 import server.movement.AranMovement;
 import server.movement.BounceMovement;
@@ -412,5 +413,16 @@ public class MovementPacket {
             return null;
         }
         return res;
+    }
+
+    public static byte[] serializeMovementList(List<LifeMovementFragment> moves) {
+        ServerPacket data = new ServerPacket();
+        data.Encode1(moves.size());
+
+        for (LifeMovementFragment move : moves) {
+            move.serialize(data);
+        }
+
+        return data.Get().getBytes();
     }
 }

@@ -63,6 +63,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import packet.content.MobPacket;
 import packet.content.ReactorPacket;
+import packet.content.SummonPacket;
 import packet.content.UserPacket;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
@@ -1166,6 +1167,14 @@ public final class MapleMap {
         return (MapleMonster) mmo;
     }
 
+    public final MapleSummon getSummonByOid(final int oid) {
+        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.SUMMON);
+        if (mmo == null) {
+            return null;
+        }
+        return (MapleSummon) mmo;
+    }
+
     public final MapleNPC getNPCByOid(final int oid) {
         MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.NPC);
         if (mmo == null) {
@@ -1422,7 +1431,7 @@ public final class MapleMap {
             @Override
             public void sendPackets(MapleClient c) {
                 if (!summon.isChangedMap() || summon.getOwnerId() == c.getPlayer().getId()) {
-                    c.getSession().write(MaplePacketCreator.spawnSummon(summon, true));
+                    c.getSession().write(SummonPacket.spawnSummon(summon, true));
                 }
             }
         }, null);

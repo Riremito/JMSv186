@@ -66,7 +66,6 @@ import server.MapleShopItem;
 import server.MapleStatEffect;
 import server.MapleTrade;
 import server.life.SummonAttackEntry;
-import server.maps.MapleSummon;
 import server.life.MapleNPC;
 import server.life.PlayerNPC;
 import server.maps.MapleMap;
@@ -85,9 +84,7 @@ import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import tools.packet.PacketHelper;
 import client.MapleBeans;
-import config.DebugConfig;
 import config.ServerConfig;
-import debug.Debug;
 import handling.channel.handler.AttackInfo;
 import handling.channel.handler.BeanGame;
 import packet.ServerPacket;
@@ -346,41 +343,6 @@ public class MaplePacketCreator {
             mplew.write(/*town ? 1 : */0);
             mplew.writeLong(oid);
         }
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket spawnSummon(MapleSummon summon, boolean animated) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_SummonedEnterField.Get());
-        mplew.writeInt(summon.getOwnerId());
-        mplew.writeInt(summon.getObjectId());
-        mplew.writeInt(summon.getSkill());
-        mplew.write(summon.getOwnerLevel() - 1);
-        mplew.write(1); //idk but nexon sends 1 for octo, so we'll leave it
-        mplew.writePos(summon.getPosition());
-        mplew.write(summon.getSkill() == 32111006 ? 5 : 4); //reaper = 5?
-        mplew.writeShort(0/*summon.getFh()*/);
-        mplew.write(summon.getMovementType().getValue());
-        mplew.write(summon.getSummonType()); // 0 = Summon can't attack - but puppets don't attack with 1 either ^.-
-        mplew.write(0/*animated ? 0 : 1*/);
-        final MapleCharacter chr = summon.getOwner();
-        mplew.write(summon.getSkill() == 4341006 && chr != null ? 1 : 0); //mirror target
-        if (summon.getSkill() == 4341006 && chr != null) {
-            PacketHelper.addCharLook(mplew, chr, true);
-        }
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket removeSummon(MapleSummon summon, boolean animated) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_SummonedLeaveField.Get());
-        mplew.writeInt(summon.getOwnerId());
-        mplew.writeInt(summon.getObjectId());
-        mplew.write(animated ? 4 : 1);
 
         return mplew.getPacket();
     }
@@ -870,37 +832,6 @@ public class MaplePacketCreator {
         mplew.writeInt(-1); //itemid of expression use
         mplew.write(0);
 
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket moveSummon(int cid, int oid, Point startPos, List<LifeMovementFragment> moves) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_SummonedMove.Get());
-        mplew.writeInt(cid);
-        mplew.writeInt(oid);
-        mplew.writePos(startPos);
-        mplew.writeInt(0);
-        PacketHelper.serializeMovementList(mplew, moves);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket summonAttack(final int cid, final int summonSkillId, final byte animation, final List<SummonAttackEntry> allDamage, final int level) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_SummonedAttack.Get());
-        mplew.writeInt(cid);
-        mplew.writeInt(summonSkillId);
-        mplew.write(level - 1); //? guess
-        mplew.write(animation);
-        mplew.write(allDamage.size());
-
-        for (final SummonAttackEntry attackEntry : allDamage) {
-            mplew.writeInt(attackEntry.getMonster().getObjectId()); // oid
-            mplew.write(7); // who knows
-            mplew.writeInt(attackEntry.getDamage()); // damage
-        }
         return mplew.getPacket();
     }
 
@@ -2558,20 +2489,6 @@ public class MaplePacketCreator {
 
         mplew.writeShort(ServerPacket.Header.LP_AffectedAreaRemoved.Get());
         mplew.writeInt(oid);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket damageSummon(int cid, int summonSkillId, int damage, int unkByte, int monsterIdFrom) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_SummonedHit.Get());
-        mplew.writeInt(cid);
-        mplew.writeInt(summonSkillId);
-        mplew.write(unkByte);
-        mplew.writeInt(damage);
-        mplew.writeInt(monsterIdFrom);
-        mplew.write(0);
 
         return mplew.getPacket();
     }

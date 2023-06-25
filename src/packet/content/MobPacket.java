@@ -11,7 +11,6 @@ import handling.MaplePacket;
 import handling.channel.handler.MobHandler;
 import handling.channel.handler.MovementParse;
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,14 +22,7 @@ import server.life.MapleMonster;
 import server.life.MobSkill;
 import server.life.MobSkillFactory;
 import server.maps.MapleMap;
-import server.movement.AbsoluteLifeMovement;
-import server.movement.AranMovement;
-import server.movement.BounceMovement;
-import server.movement.ChairMovement;
-import server.movement.ChangeEquipSpecialAwesome;
-import server.movement.JumpDownMovement;
 import server.movement.LifeMovementFragment;
-import server.movement.RelativeLifeMovement;
 import tools.Pair;
 
 public class MobPacket {
@@ -563,20 +555,9 @@ public class MobPacket {
             p.Encode2(1);
         }
 
-        p.EncodeBuffer(serializeMovementList(moves));
+        p.EncodeBuffer(MovementPacket.serializeMovementList(moves));
 
         return p.Get();
-    }
-
-    public static byte[] serializeMovementList(List<LifeMovementFragment> moves) {
-        ServerPacket data = new ServerPacket();
-        data.Encode1(moves.size());
-
-        for (LifeMovementFragment move : moves) {
-            move.serialize(data);
-        }
-
-        return data.Get().getBytes();
     }
 
     // moveMonsterResponse

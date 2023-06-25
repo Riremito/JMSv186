@@ -26,6 +26,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import constants.GameConstants;
 import client.anticheat.CheatingOffense;
+import packet.content.SummonPacket;
 import server.MapleStatEffect;
 import tools.MaplePacketCreator;
 
@@ -71,7 +72,7 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
 
     @Override
     public final void sendDestroyData(final MapleClient client) {
-        client.getSession().write(MaplePacketCreator.removeSummon(this, false));
+        client.getSession().write(SummonPacket.removeSummon(this, false));
     }
 
     public final void updateMap(final MapleMap map) {

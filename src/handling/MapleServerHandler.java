@@ -29,6 +29,7 @@ import packet.ServerPacket;
 import packet.content.AdminPacket;
 import packet.content.MobPacket;
 import packet.content.ReactorPacket;
+import packet.content.SummonPacket;
 import packet.content.TrunkPacket;
 import packet.content.UserPacket;
 
@@ -929,20 +930,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 UserInterfaceHandler.ShipObjectRequest(p.readInt(), c);
                 return true;
             }
-            case CP_SummonedHit: {
-                // 実装が悪い
-                p.skip(4);
-                SummonHandler.DamageSummon(p, c.getPlayer());
-                return true;
-            }
-            case CP_SummonedMove: {
-                // c
-                SummonHandler.MoveSummon(p, c.getPlayer());
-                return true;
-            }
-            case CP_SummonedAttack: {
-                // c
-                SummonHandler.SummonAttack(p, c, c.getPlayer());
+            // CUser::OnSummonedPacket
+            case CP_SummonedMove:
+            case CP_SummonedAttack:
+            case CP_SummonedHit:
+            case CP_SummonedSkill:
+            case CP_Remove: {
+                SummonPacket.OnPacket(op, type, c);
                 return true;
             }
             case CP_DragonMove: {

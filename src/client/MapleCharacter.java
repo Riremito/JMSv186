@@ -83,6 +83,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import minigame.Pachinko;
 import packet.content.MobPacket;
+import packet.content.SummonPacket;
 import packet.content.UserPacket;
 import tools.MockIOSession;
 import scripting.EventInstanceManager;
@@ -1687,7 +1688,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     final int summonId = mbsvh.effect.getSourceId();
                     final MapleSummon summon = summons.get(summonId);
                     if (summon != null) {
-                        map.broadcastMessage(MaplePacketCreator.removeSummon(summon, true));
+                        map.broadcastMessage(SummonPacket.removeSummon(summon, true));
                         map.removeMapObject(summon);
                         removeVisibleMapObject(summon);
                         summons.remove(summonId);
@@ -3610,7 +3611,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             if (summons != null) {
                 for (final MapleSummon summon : summons.values()) {
-                    client.getSession().write(MaplePacketCreator.spawnSummon(summon, false));
+                    client.getSession().write(SummonPacket.spawnSummon(summon, false));
                 }
             }
             if (followid > 0) {
