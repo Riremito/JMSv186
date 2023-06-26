@@ -243,6 +243,17 @@ public class CommandProcessor {
                 return true;
             }
 
+            // warphere all
+            if ("/wh".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                for (MapleCharacter victim : c.getChannelServer().getPlayerStorage().getAllCharacters()) {
+                    if (victim != chr) {
+                        victim.changeMap(c.getPlayer().getMap(), c.getPlayer().getMap().findClosestSpawnpoint(c.getPlayer().getPosition()));
+                    }
+                }
+                return true;
+            }
+
             // 転職
             if ("/jc".equals(splitted[0]) || "/jobchange".equals(splitted[0]) || "/転職".equals(splitted[0])) {
                 return CustomNPCTalk(c, 1012003, 9330104);

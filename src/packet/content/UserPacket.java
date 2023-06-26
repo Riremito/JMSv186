@@ -61,24 +61,6 @@ public class UserPacket {
                 //PlayerHandler.UseChair(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            // 攻撃処理
-            /*
-            case CP_UserMeleeAttack: {
-                AttackInfo attack = parseDmgM(p);
-                PlayerHandler.closeRangeAttack(c, attack, false);
-                return true;
-            }
-            case CP_UserShootAttack: {
-                AttackInfo attack = parseDmgR(p);
-                PlayerHandler.rangedAttack(c, attack);
-                return true;
-            }
-            case CP_UserMagicAttack: {
-                AttackInfo attack = parseDmgMa(p);
-
-                PlayerHandler.MagicDamage(c, attack);
-                return true;
-            }*/
             case CP_UserMeleeAttack: {
                 AttackInfo attack = OnAttack(p, header, chr);
                 PlayerHandler.closeRangeAttack(c, attack, false);
