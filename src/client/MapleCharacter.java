@@ -5682,4 +5682,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public IMaplePlayerShop getRemoteStore() {
         return this.remoteStore;
     }
+
+    public void SendPacket(MaplePacket packet) {
+        getClient().getSession().write(packet);
+    }
+
+    public void enableActions() {
+        UserPacket.SendCharacterStat(this);
+    }
 }

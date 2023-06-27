@@ -4,8 +4,11 @@ package packet.content;
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleClient;
+import client.MapleQuestStatus;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import client.inventory.MapleMount;
+import client.inventory.MaplePet;
 import config.DebugConfig;
 import config.ServerConfig;
 import constants.GameConstants;
@@ -16,12 +19,14 @@ import handling.channel.handler.MovementParse;
 import handling.channel.handler.PlayerHandler;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
+import handling.world.guild.MapleGuildAlliance;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
 import packet.ServerPacket;
 import packet.Structure;
+import server.MapleItemInformationProvider;
 import server.Randomizer;
 import server.maps.MapleMap;
 import server.movement.LifeMovementFragment;
@@ -119,12 +124,159 @@ public class UserPacket {
                 PlayerHandler.SkillEffect(p, c.getPlayer());
                 return true;
             }
+
+            case CP_UserCharacterInfoRequest: {
+                //PlayerHandler.CharInfoRequest(character_id, c, c.getPlayer());
+                OnCharacterInfoRequest(p, chr, map);
+                return true;
+            }
             default: {
                 break;
             }
         }
 
         return false;
+    }
+
+    // enableActions
+    public static void SendCharacterStat(MapleCharacter chr) {
+        SendCharacterStat(chr, 1, 0);
+    }
+
+    // CUser::SendCharacterStat(1,0)
+    // CWvsContext::OnStatChanged
+    public static void SendCharacterStat(MapleCharacter chr, int unlock, int statmask) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_StatChanged);
+
+        // 0 = lock   -> do not clear lock flag
+        // 1 = unlock -> clear lock flag
+        p.Encode1(unlock); // CWvsContext->bExclRequestSent
+        p.EncodeBuffer(EncodeChangeStat(chr, statmask));
+
+        // Pet
+        if ((statmask & (1 << 3)) > 0) {
+            int v5 = 0; // CVecCtrlUser::AddMovementInfo
+            p.Encode1(v5);
+        }
+
+        chr.SendPacket(p.Get());
+    }
+
+    // GW_CharacterStat::EncodeChangeStat
+    // GW_CharacterStat::DecodeChangeStat
+    public static final byte[] EncodeChangeStat(MapleCharacter chr, int statmask) {
+        ServerPacket p = new ServerPacket();
+
+        p.Encode4(statmask);
+
+        // Skin
+        if ((statmask & 1) > 0) {
+            p.Encode1(chr.getSkinColor());
+        }
+        // Face
+        if ((statmask & (1 << 1)) > 0) {
+            p.Encode4(chr.getFace());
+        }
+        // Hair
+        if ((statmask & (1 << 2)) > 0) {
+            p.Encode4(chr.getHair());
+        }
+        // Pet 1
+        if ((statmask & (1 << 3)) > 0) {
+            MaplePet pet = chr.getPet(0);
+            p.Encode8((pet != null) ? pet.getUniqueId() : 0);
+        }
+        // Level
+        if ((statmask & (1 << 4)) > 0) {
+            p.Encode1(chr.getLevel());
+        }
+        // Job
+        if ((statmask & (1 << 5)) > 0) {
+            p.Encode2(chr.getJob());
+        }
+        // STR
+        if ((statmask & (1 << 6)) > 0) {
+            p.Encode2(chr.getStat().getStr());
+        }
+        // DEX
+        if ((statmask & (1 << 7)) > 0) {
+            p.Encode2(chr.getStat().getDex());
+        }
+        // INT
+        if ((statmask & (1 << 8)) > 0) {
+            p.Encode2(chr.getStat().getInt());
+        }
+        // LUK
+        if ((statmask & (1 << 9)) > 0) {
+            p.Encode2(chr.getStat().getLuk());
+        }
+        // HP
+        if ((statmask & (1 << 10)) > 0) {
+            if (ServerConfig.version <= 186) {
+                p.Encode2(chr.getStat().getHp());
+            } else {
+                p.Encode4(chr.getStat().getHp());
+            }
+        }
+        // MAXHP
+        if ((statmask & (1 << 11)) > 0) {
+            if (ServerConfig.version <= 186) {
+                p.Encode2(chr.getStat().getMaxHp());
+            } else {
+                p.Encode4(chr.getStat().getMaxHp());
+            }
+        }
+        // MP
+        if ((statmask & (1 << 12)) > 0) {
+            if (ServerConfig.version <= 186) {
+                p.Encode2(chr.getStat().getMp());
+            } else {
+                p.Encode4(chr.getStat().getMp());
+            }
+        }
+        // MAXMP
+        if ((statmask & (1 << 13)) > 0) {
+            if (ServerConfig.version <= 186) {
+                p.Encode2(chr.getStat().getMaxMp());
+            } else {
+                p.Encode4(chr.getStat().getMaxMp());
+            }
+        }
+        // AP
+        if ((statmask & (1 << 14)) > 0) {
+            p.Encode2(chr.getRemainingAp());
+        }
+        // SP
+        if ((statmask & (1 << 15)) > 0) {
+            p.Encode2(chr.getRemainingSp());
+        }
+        // EXP
+        if ((statmask & (1 << 16)) > 0) {
+            p.Encode4(chr.getExp());
+        }
+        // 人気度
+        if ((statmask & (1 << 17)) > 0) {
+            p.Encode2(chr.getFame());
+        }
+        // Meso
+        if ((statmask & (1 << 18)) > 0) {
+            p.Encode4(chr.getMeso());
+        }
+        // Pet 2
+        if ((statmask & (1 << 19)) > 0) {
+            MaplePet pet = chr.getPet(0);
+            p.Encode8((pet != null) ? pet.getUniqueId() : 0);
+        }
+        // Pet 3
+        if ((statmask & (1 << 20)) > 0) {
+            MaplePet pet = chr.getPet(0);
+            p.Encode8((pet != null) ? pet.getUniqueId() : 0);
+        }
+        // 兵法書, GashaExp
+        if ((statmask & (1 << 21)) > 0) {
+            p.Encode4(77777);
+        }
+        return p.Get().getBytes();
     }
 
     // BMS CUser::OnAttack
@@ -628,4 +780,143 @@ public class UserPacket {
         return true;
     }
 
+    // CUser::OnCharacterInfoRequest
+    // CharInfoRequest
+    public static final boolean OnCharacterInfoRequest(ClientPacket p, MapleCharacter chr, MapleMap map) {
+        // CCheatInspector::InspectExclRequestTime
+        final int update_time = p.Decode4();
+        final int m_dwCharacterId = p.Decode4();
+        final MapleCharacter player = map.getCharacterById(m_dwCharacterId); // CUser::FindUser
+
+        if (player == null || player.isClone()) {
+            // CUser::SendCharacterStat
+            SendCharacterStat(chr); // ea
+            return false;
+        }
+
+        chr.SendPacket(CharacterInfo(player, chr.getId() == m_dwCharacterId));
+        return true;
+    }
+
+    public static final MaplePacket CharacterInfo(MapleCharacter player, boolean isSelf) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CharacterInfo);
+        p.Encode4(player.getId());
+        p.Encode1(player.getLevel());
+        p.Encode2(player.getJob());
+        p.Encode2(player.getFame());
+
+        if (131 < ServerConfig.version) {
+            p.Encode1(player.getMarriageId() > 0 ? 1 : 0); // heart red or gray
+        }
+
+        String sCommunity = "-";
+        String sAlliance = "";
+
+        // Guild
+        if (player.getGuildId() <= 0) {
+            MapleGuild guild = World.Guild.getGuild(player.getGuildId());
+            if (guild != null) {
+                sCommunity = guild.getName();
+
+                // Alliance
+                if (guild.getAllianceId() > 0) {
+                    MapleGuildAlliance alliance = World.Alliance.getAlliance(guild.getAllianceId());
+
+                    if (alliance != null) {
+                        sAlliance = alliance.getName();
+                    }
+                }
+            }
+        }
+
+        p.EncodeStr(sCommunity);
+
+        if (131 < ServerConfig.version) {
+            p.EncodeStr(sAlliance);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode1(isSelf ? 1 : 0);
+        }
+
+        // CUIUserInfo::SetMultiPetInfo
+        IItem inv_pet = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -114);
+        final int peteqid = inv_pet != null ? inv_pet.getItemId() : 0;
+        for (final MaplePet pet : player.getPets()) {
+            if (pet.getSummoned()) {
+                p.Encode1(pet.getUniqueId()); //o-o byte ?
+                p.Encode4(pet.getPetItemId()); // petid
+                p.EncodeStr(pet.getName());
+                p.Encode1(pet.getLevel()); // nLevel
+                p.Encode2(pet.getCloseness()); // pet closeness
+                p.Encode1(pet.getFullness()); // pet fullness
+                p.Encode2(0); // pet.getFlags()
+                p.Encode4(peteqid);
+            }
+        }
+
+        if (ServerConfig.version <= 131) {
+            if (player.getPets().isEmpty()) {
+                p.Encode1(0); // No Pet
+            }
+        }
+
+        if (131 < ServerConfig.version) {
+            p.Encode1(0); // End of pet
+        }
+
+        // CUIUserInfo::SetTamingMobInfo
+        IItem inv_mount = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
+        boolean TamingMobEnabled = false;
+        final MapleMount tm = player.getMount();
+
+        if (tm != null && inv_mount != null) {
+            TamingMobEnabled = MapleItemInformationProvider.getInstance().getReqLevel(inv_mount.getItemId()) <= player.getLevel();
+        }
+
+        p.Encode1(TamingMobEnabled ? 1 : 0);
+        if (tm != null && TamingMobEnabled) {
+            p.Encode4(tm.getLevel());
+            p.Encode4(tm.getExp());
+            p.Encode4(tm.getFatigue());
+        }
+
+        // CUIUserInfo::SetWishItemInfo
+        final int wishlistSize = player.getWishlistSize();
+        p.Encode1(wishlistSize);
+        if (wishlistSize > 0) {
+            // CInPacket::DecodeBuffer(v4, iPacket, 4 * wishlistSize);
+            final int[] wishlist = player.getWishlist();
+            for (int x = 0; x < wishlistSize; x++) {
+                p.Encode4(wishlist[x]);
+            }
+        }
+
+        if (131 < ServerConfig.version) {
+            // Monster Book (JMS)
+            p.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
+
+            // CUIUserInfo::SetMedalAchievementInfo
+            IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -46);
+            p.Encode4(inv_medal == null ? 0 : inv_medal.getItemId());
+            List<Integer> medalQuests = new ArrayList<Integer>();
+            List<MapleQuestStatus> completed = player.getCompletedQuests();
+            for (MapleQuestStatus q : completed) {
+                if (q.getQuest().getMedalItem() > 0 && GameConstants.getInventoryType(q.getQuest().getMedalItem()) == MapleInventoryType.EQUIP) { //chair kind medal viewmedal is weird
+                    medalQuests.add(q.getQuest().getId());
+                }
+            }
+            p.Encode2(medalQuests.size());
+            for (int x : medalQuests) {
+                p.Encode2(x);
+            }
+
+            // Chair List
+            p.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
+            // CInPacket::DecodeBuffer(v4, iPacket, 4 * chairs);
+            for (IItem chair : player.getInventory(MapleInventoryType.SETUP).list()) {
+                p.Encode4(chair.getItemId());
+            }
+        }
+        return p.Get();
+    }
 }

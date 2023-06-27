@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package handling.channel.handler;
 
 import java.awt.Point;
-import java.util.List;
 
 import client.inventory.IItem;
 import client.ISkill;
@@ -36,13 +35,10 @@ import client.PlayerStats;
 import client.anticheat.CheatingOffense;
 import config.ServerConfig;
 import constants.MapConstants;
-import debug.Debug;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import packet.ClientPacket;
 import packet.content.MobPacket;
-import packet.content.UserPacket;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
@@ -57,7 +53,6 @@ import server.life.MobSkill;
 import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import server.maps.FieldLimitType;
-import server.movement.LifeMovementFragment;
 import tools.MaplePacketCreator;
 import tools.packet.MTSCSPacket;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -185,19 +180,6 @@ public class PlayerHandler {
             }
         }
         c.getSession().write(MTSCSPacket.getTrockRefresh(chr, vip == 1, addrem == 3));
-    }
-
-    public static final void CharInfoRequest(final int objectid, final MapleClient c, final MapleCharacter chr) {
-        if (c.getPlayer() == null || c.getPlayer().getMap() == null) {
-            return;
-        }
-        final MapleCharacter player = c.getPlayer().getMap().getCharacterById(objectid);
-        c.getSession().write(MaplePacketCreator.enableActions());
-        if (player != null && !player.isClone()) {
-            //if (!player.isGM() || c.getPlayer().isGM()) {
-            c.getSession().write(MaplePacketCreator.charInfo(player, c.getPlayer().getId() == objectid));
-            //}
-        }
     }
 
     public static final void TakeDamage(ClientPacket p, final MapleClient c, final MapleCharacter chr) {

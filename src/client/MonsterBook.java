@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.io.Serializable;
 
 import database.DatabaseConnection;
+import packet.ServerPacket;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -137,12 +138,15 @@ public class MonsterBook implements Serializable {
         }
     }
 
-    public final void addCharInfoPacket(final int bookcover, final MaplePacketLittleEndianWriter mplew) {
-        mplew.writeInt(BookLevel);
-        mplew.writeInt(NormalCard);
-        mplew.writeInt(SpecialCard);
-        mplew.writeInt(NormalCard + SpecialCard);
-        mplew.writeInt(MapleItemInformationProvider.getInstance().getCardMobId(bookcover));
+    // addCharInfoPacket
+    public final byte[] MonsterBookInfo(final int bookcover) {
+        ServerPacket p = new ServerPacket();
+        p.Encode4(BookLevel);
+        p.Encode4(NormalCard);
+        p.Encode4(SpecialCard);
+        p.Encode4(NormalCard + SpecialCard);
+        p.Encode4(MapleItemInformationProvider.getInstance().getCardMobId(bookcover));
+        return p.Get().getBytes();
     }
 
     public final void updateCard(final MapleClient c, final int cardid) {

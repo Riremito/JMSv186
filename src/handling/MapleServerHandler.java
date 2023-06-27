@@ -561,12 +561,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InterServerHandler.EnterCS(c, c.getPlayer(), true);
                 return true;
             }
-            case CP_UserCharacterInfoRequest: {
-                // 実装が悪い
-                p.readInt();
-                PlayerHandler.CharInfoRequest(p.readInt(), c, c.getPlayer());
-                return true;
-            }
+            case CP_UserCharacterInfoRequest:
             case CP_UserSkillPrepareRequest:
             case CP_UserChangeStatRequest:
             case CP_UserMove:
