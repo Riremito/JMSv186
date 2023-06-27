@@ -56,6 +56,7 @@ public class MapleStatEffect implements Serializable {
     private Point lt, rb;
     private int expBuff, itemup, mesoup, cashup, berserk, illusion, booster, berserk2, cp, nuffSkill;
     private byte level;
+    private int exp; // gashaEXP, consume 237
 //    private List<Pair<Integer, Integer>> randomMorph;
     private List<MapleDisease> cureDebuffs;
 
@@ -97,6 +98,7 @@ public class MapleStatEffect implements Serializable {
         ret.cp = MapleDataTool.getInt("cp", source, 0);
         ret.nuffSkill = MapleDataTool.getInt("nuffSkill", source, 0);
         ret.mobCount = (byte) MapleDataTool.getInt("mobCount", source, 1);
+        ret.exp = MapleDataTool.getInt("exp", source, 0);
 
         if (skill) {
             switch (sourceid) {
@@ -1945,6 +1947,10 @@ public class MapleStatEffect implements Serializable {
 
     public final short getProb() {
         return prop;
+    }
+
+    public final int getExp() {
+        return exp;
     }
 
     public static class CancelEffectAction implements Runnable {

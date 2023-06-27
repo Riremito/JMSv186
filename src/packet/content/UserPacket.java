@@ -274,7 +274,7 @@ public class UserPacket {
         }
         // 兵法書, GashaExp
         if ((statmask & (1 << 21)) > 0) {
-            p.Encode4(77777);
+            p.Encode4(chr.getGashaEXP());
         }
         return p.Get().getBytes();
     }

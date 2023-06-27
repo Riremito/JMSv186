@@ -209,6 +209,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private IMaplePlayerShop remoteStore = null;
     // ポータルカウント
     private int portal_count = 1;
+    private int gashaEXP = 0;
 
     public int getPortalCount() {
         portal_count += 1;
@@ -2139,6 +2140,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return exp;
     }
 
+    public int getGashaEXP() {
+        return gashaEXP;
+    }
+
     public short getRemainingAp() {
         return remainingAp;
     }
@@ -2207,6 +2212,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void setExp(int exp) {
         this.exp = exp;
+    }
+
+    public void setGashaEXP(int gashaexp) {
+        this.gashaEXP = gashaexp;
     }
 
     public void setHair(int hair) {

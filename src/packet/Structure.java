@@ -90,7 +90,7 @@ public class Structure {
         p.Encode2(chr.getFame());
 
         if (ServerConfig.version >= 164) {
-            p.Encode4(0); // Gachapon exp
+            p.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 
         p.Encode4(chr.getMapId()); // current map id

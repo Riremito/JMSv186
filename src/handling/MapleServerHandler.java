@@ -25,8 +25,8 @@ import tools.FileoutputUtil;
 import packet.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
-import packet.ServerPacket;
 import packet.content.AdminPacket;
+import packet.content.GashaEXPPacket;
 import packet.content.MobPacket;
 import packet.content.ReactorPacket;
 import packet.content.SummonPacket;
@@ -1106,6 +1106,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case BEANS_UPDATE: {
                 BeanGame.BeanGame2(p, c);
+                return true;
+            }
+            // 兵法書
+            case CP_UserExpUpItemUseRequest:
+            case CP_UserTempExpUseRequest: {
+                GashaEXPPacket.OnPacket(op, type, c);
                 return true;
             }
             default: {

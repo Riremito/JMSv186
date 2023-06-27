@@ -126,7 +126,8 @@ public class v186_1_CP {
             ClientPacket.Header.CP_UserRepairDurability.Set(0x0073);
             ClientPacket.Header.CP_UserFollowCharacterRequest.Set(0x0074);
             ClientPacket.Header.CP_UserFollowCharacterWithdraw.Set(0x0076);
-            ClientPacket.Header.CP_UserExpUpItemUseRequest.Set(0x0077); // OK
+            ClientPacket.Header.CP_UserExpUpItemUseRequest.Set(0x0077);
+            ClientPacket.Header.CP_UserTempExpUseRequest.Set(0x0078);
             //Header.CP_UserQuestRecordSetState.Set(0x0074);
             //Header.CP_UserClientTimerEndRequest.Set(0x0075);
             //Header.SOLOMON.Set(0x0076);
