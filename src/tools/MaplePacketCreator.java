@@ -521,33 +521,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket spawnNPC(MapleNPC life, boolean show) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_NpcEnterField.Get());
-        mplew.writeInt(life.getObjectId());
-        mplew.writeInt(life.getId());
-        mplew.writeShort(life.getPosition().x);
-        mplew.writeShort(life.getCy());
-        mplew.write(life.getF() == 1 ? 0 : 1);
-        mplew.writeShort(life.getFh());
-        mplew.writeShort(life.getRx0());
-        mplew.writeShort(life.getRx1());
-        mplew.write(show ? 1 : 0);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket removeNPC(final int objectid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_NpcLeaveField.Get());
-        //mplew.writeLong(objectid);
-        mplew.writeInt(objectid);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket spawnNPCRequestController(MapleNPC life, boolean MiniMap) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 

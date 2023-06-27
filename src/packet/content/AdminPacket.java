@@ -304,7 +304,7 @@ public class AdminPacket {
         npc.setFh(map.getFootholds().findBelow(npc_xy).getId());
         npc.setCustom(true);
         map.addMapObject(npc);
-        map.broadcastMessage(MaplePacketCreator.spawnNPC(npc, true));
+        map.broadcastMessage(NPCPacket.spawnNPC(npc, true));
         return true;
     }
 }

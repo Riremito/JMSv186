@@ -48,7 +48,6 @@ import client.inventory.MaplePet;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import database.DatabaseConnection;
-import debug.Debug;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.PartyOperation;
@@ -62,6 +61,7 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import packet.content.MobPacket;
+import packet.content.NPCPacket;
 import packet.content.ReactorPacket;
 import packet.content.SummonPacket;
 import packet.content.UserPacket;
@@ -1215,7 +1215,7 @@ public final class MapleMap {
         npc.setFh(getFootholds().findBelow(pos).getId());
         npc.setCustom(true);
         addMapObject(npc);
-        broadcastMessage(MaplePacketCreator.spawnNPC(npc, true));
+        broadcastMessage(NPCPacket.spawnNPC(npc, true));
     }
 
     public final void removeNpc(final int npcid) {
@@ -1225,7 +1225,7 @@ public final class MapleMap {
             while (itr.hasNext()) {
                 MapleNPC npc = (MapleNPC) itr.next();
                 if (npc.isCustom() && npc.getId() == npcid) {
-                    broadcastMessage(MaplePacketCreator.removeNPC(npc.getObjectId()));
+                    broadcastMessage(NPCPacket.removeNPC(npc.getObjectId()));
                     itr.remove();
                 }
             }
@@ -2816,7 +2816,7 @@ public final class MapleMap {
         List<MapleNPC> npcs = getAllNPCsThreadsafe();
         for (MapleNPC npc : npcs) {
             if (npc.isCustom()) {
-                broadcastMessage(MaplePacketCreator.spawnNPC(npc, false));
+                broadcastMessage(NPCPacket.spawnNPC(npc, false));
                 removeMapObject(npc);
             }
         }
