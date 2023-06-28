@@ -24,6 +24,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import config.ServerConfig;
 import constants.GameConstants;
 import packet.ClientPacket;
 import server.MapleInventoryManipulator;
@@ -78,8 +79,15 @@ public class GashaEXPPacket {
 
         int exp_gasha = MapleItemInformationProvider.getInstance().getItemEffect(item.getItemId()).getExp();
         chr.setGashaEXP(exp_gasha);
+
         UseTempExp(chr);
-        UserPacket.SendCharacterStat(chr, 1, 1 << 21);
+
+        if (ServerConfig.version <= 131) {
+            while (UseTempExp(chr)) {
+                // loop
+            }
+        }
+
         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, nItemID, 1, true, false);
         return true;
     }
@@ -88,6 +96,11 @@ public class GashaEXPPacket {
         int exp_table = GameConstants.getExpNeededForLevel(chr.getLevel());
         int exp_current = chr.getExp();
         int exp_temp = chr.getGashaEXP();
+
+        if (exp_temp <= 0) {
+            UserPacket.SendCharacterStat(chr);
+            return false;
+        }
 
         if (exp_table - exp_current - exp_temp > 0) {
             chr.setGashaEXP(0);

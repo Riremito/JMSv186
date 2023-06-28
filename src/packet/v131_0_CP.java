@@ -80,8 +80,10 @@ public class v131_0_CP {
             ClientPacket.Header.CP_UserMapTransferRequest.Set(0x004A);
             // ?
             ClientPacket.Header.CP_UserQuestRequest.Set(0x004E);
-            //ClientPacket.Header.CP_UserExpUpItemUseRequest.Set(0x0077);
             //ClientPacket.Header.CP_BroadcastMsg.Set(0x007B);
+            ClientPacket.Header.CP_UserExpUpItemUseRequest.Set(0x0050);
+            //ClientPacket.Header.CP_UserTempExpUseRequest.Set(0x0051);
+
             ClientPacket.Header.CP_GroupMessage.Set(0x0052);
             ClientPacket.Header.CP_Whisper.Set(0x0053);
             ClientPacket.Header.CP_Messenger.Set(0x0054);
