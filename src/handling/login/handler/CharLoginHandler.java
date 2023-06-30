@@ -58,6 +58,10 @@ public class CharLoginHandler {
     public static final boolean login(ClientPacket p, final MapleClient c) {
         String login = new String(p.DecodeBuffer());
         final String pwd = new String(p.DecodeBuffer());
+        return login(c, login, pwd);
+    }
+
+    public static final boolean login(MapleClient c, String login, String pwd) {
         boolean endwith_ = false;
 
         // MapleIDは最低4文字なので、5文字以上の場合に性別変更の特殊判定を行う
@@ -137,6 +141,10 @@ public class CharLoginHandler {
     public static final void CharlistRequest(ClientPacket p, final MapleClient c) {
         int server = p.Decode1();
         final int channel = p.Decode1() + 1;
+        CharlistRequest(c, server, channel + 1);
+    }
+
+    public static final void CharlistRequest(MapleClient c, int server, int channel) {
 
         if (server == 12) {
             server = 0;
@@ -313,9 +321,21 @@ public class CharLoginHandler {
         c.getSession().write(LoginPacket.deleteCharResponse(Character_ID, state));
     }
 
-    public static final boolean Character_WithSecondPassword(ClientPacket p, final MapleClient c) {
-        final int charId = p.Decode4();
+    public static final boolean Character_WithSecondPassword(MapleClient c) {
+        List<MapleCharacter> chars = c.loadCharacters(0);
+        if (chars == null) {
+            return false;
+        }
+        final int charId = chars.get(0).getId();
+        return Character_WithSecondPassword(c, charId);
+    }
 
+    public static final boolean Character_WithSecondPassword(ClientPacket p, MapleClient c) {
+        final int charId = p.Decode4();
+        return Character_WithSecondPassword(c, charId);
+    }
+
+    public static final boolean Character_WithSecondPassword(MapleClient c, int charId) {
         if (loginFailCount(c) || !c.login_Auth(charId)) { // This should not happen unless player is hacking
             c.getSession().close();
             return false;

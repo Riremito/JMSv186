@@ -4,6 +4,7 @@ import constants.ServerConstants;
 import client.MapleClient;
 import config.*;
 import debug.Debug;
+import debug.DebugAutoLogin;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.cashshop.handler.*;
@@ -346,6 +347,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case REACHED_LOGIN_SCREEN: {
                 // @0018
                 // ログイン画面に到達した場合に送信される
+
+                if (DebugConfig.auto_login) {
+                    DebugAutoLogin.AutoLogin(c);
+                }
                 return true;
             }
             default: {
