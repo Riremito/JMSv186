@@ -37,7 +37,7 @@ public class Structure {
         CharStats(p, chr);
         CharLook(p, chr, true);
 
-        if (ServerConfig.version > 164) {
+        if (ServerConfig.version > 165) {
             p.Encode1(0);
         }
 
@@ -194,7 +194,7 @@ public class Structure {
             p.Encode8(-1);
         }
 
-        if (ServerConfig.version > 164) {
+        if (ServerConfig.version > 165) {
             p.Encode1(0);
         }
         if (ServerConfig.version > 186) {
@@ -230,7 +230,7 @@ public class Structure {
         // [addRingInfo]
         p.EncodeBuffer(addRingInfo(chr));
 
-        if (ServerConfig.version > 164 || ServerConfig.version <= 131) {
+        if (ServerConfig.version > 165 || ServerConfig.version <= 131) {
             p.Encode2(0);
         }
 
@@ -248,7 +248,7 @@ public class Structure {
             p.Encode2(0);
         }
 
-        if (ServerConfig.version > 164) {
+        if (ServerConfig.version > 165) {
             p.Encode2(0);
         }
 

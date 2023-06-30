@@ -19,6 +19,8 @@ import packet.v131_0_CP;
 import packet.v131_0_SP;
 import packet.v164_0_CP;
 import packet.v164_0_SP;
+import packet.v165_0_CP;
+import packet.v165_0_SP;
 import packet.v186_1_CP;
 import packet.v186_1_SP;
 import packet.v188_0_CP;
@@ -59,8 +61,8 @@ public class Start {
             }
             // test
             case 165: {
-                v164_0_CP.Set();
-                v164_0_SP.Set();
+                v165_0_CP.Set();
+                v165_0_SP.Set();
                 break;
             }
             // ゴミ
