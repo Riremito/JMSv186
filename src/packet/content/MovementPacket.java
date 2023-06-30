@@ -88,6 +88,7 @@ public class MovementPacket {
             movetype_4.add(0x0A); // enter map
             return true;
         }
+        // v164 jump down uses different value
         // v186.1
         // type1
         movetype_1.add(0x00);
@@ -185,7 +186,7 @@ public class MovementPacket {
                 short xoffset = 0;
                 short yoffset = 0;
 
-                if (131 < ServerConfig.version) {
+                if (164 < ServerConfig.version) {
                     xoffset = p.Decode2();
                     yoffset = p.Decode2();
                 }
@@ -196,7 +197,7 @@ public class MovementPacket {
                 alm.setUnk(unk);
                 alm.setPixelsPerSecond(new Point(xwobble, ywobble));
 
-                if (131 < ServerConfig.version) {
+                if (164 < ServerConfig.version) {
                     alm.setOffset(new Point(xoffset, yoffset));
                 }
 

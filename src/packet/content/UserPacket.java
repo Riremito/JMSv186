@@ -709,6 +709,9 @@ public class UserPacket {
             p.Decode4(); // -1
             p.Decode4();
             p.Decode4();
+        }
+
+        if (164 <= ServerConfig.version) {
             p.Decode4();
         }
 

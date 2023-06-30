@@ -141,6 +141,11 @@ public class MobPacket {
             p.Decode1();
             startPos.x = p.Decode2();
             startPos.y = p.Decode2();
+        } else if (ServerConfig.version <= 164) {
+            p.Decode1();
+            p.Decode4(); // test
+            startPos.x = p.Decode2();
+            startPos.y = p.Decode2();
         } else {
             // v186. Skipped bytes
             p.Decode4(); // 0

@@ -65,7 +65,7 @@ public class AbsoluteLifeMovement extends AbstractLifeMovement {
         lew.writePos(getPosition());
         lew.writePos(pixelsPerSecond);
         lew.writeShort(unk);
-        if (ServerConfig.version > 131) {
+        if (164 < ServerConfig.version) {
             lew.writePos(offset);
         }
         lew.write(getNewstate());
@@ -81,7 +81,7 @@ public class AbsoluteLifeMovement extends AbstractLifeMovement {
         data.Encode2((short) pixelsPerSecond.y);
         data.Encode2(unk);
 
-        if (ServerConfig.version > 131) {
+        if (164 < ServerConfig.version) {
             data.Encode2((short) offset.x);
             data.Encode2((short) offset.y);
         }
