@@ -5,6 +5,7 @@ package packet;
 public class v188_0_CP {
 
     public static void Set() {
+        ClientPacket.Header.CP_UserMigrateToITCRequest.Set(0x00AC); // OK
         // Login
         ClientPacket.Header.CP_CheckPassword.Set(0x0001);
         ClientPacket.Header.CP_WorldInfoRequest.Set(0x0003);

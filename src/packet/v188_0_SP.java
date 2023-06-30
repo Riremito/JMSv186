@@ -5,6 +5,19 @@ package packet;
 public class v188_0_SP {
 
     public static void Set() {
+        //test
+        // MTS
+        // CITC::OnPacket
+        ServerPacket.Header.LP_BEGIN_ITC.Set(0);
+        {
+            // CITC::OnChargeParamResult
+            ServerPacket.Header.LP_ITCChargeParamResult.Set(0x0194);
+            // CITC::OnQueryCashResult
+            ServerPacket.Header.LP_ITCQueryCashResult.Set(0x0195);
+            // CITC::OnNormalItemResult
+            ServerPacket.Header.LP_ITCNormalItemResult.Set(0x0196);
+        }
+        ServerPacket.Header.LP_END_ITC.Set(0);
 
         // CClientSocket::ProcessPacket
         {
