@@ -420,6 +420,7 @@ public class LoginPacket {
     }
 
     // ログインボタンを有効化するために必要
+    // CLogin::OnCheckGameGuardUpdatedResult
     public static MaplePacket CheckGameGuardUpdate() {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_T_UpdateGameGuard);
 
@@ -427,6 +428,14 @@ public class LoginPacket {
         // 1 = Enable Login Button
         p.Encode1(1);
 
+        return p.Get();
+    }
+
+    // CLogin::OnLatestConnectedWorld
+    public static MaplePacket LatestConnectedWorld() {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_LatestConnectedWorld);
+
+        p.Encode4(0); // World ID
         return p.Get();
     }
 

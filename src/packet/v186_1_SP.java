@@ -46,8 +46,8 @@ public class v186_1_SP {
             // 0x0013 安心パスワード
             // 0x0014
             // 0x0015 @0015 [00], 不法プログラムまたは悪性コードが感知されたためゲームを強制終了します。
-            // CLogin::OnCheckPinCodeResult
-            ServerPacket.Header.LP_CheckPinCodeResult.Set(0x0016); // 違うかも
+            // CLogin::OnLatestConnectedWorld
+            ServerPacket.Header.LP_LatestConnectedWorld.Set(0x0016);
             // CLogin::OnRecommendWorldMessage
             ServerPacket.Header.LP_RecommendWorldMessage.Set(0x0017);
             // CLogin::???

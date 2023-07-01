@@ -123,6 +123,7 @@ public class CharLoginHandler {
 
         if (186 <= ServerConfig.version) {
             c.SendPacket(LoginPacket.RecommendWorldMessage());
+            c.SendPacket(LoginPacket.LatestConnectedWorld());
         }
     }
 
