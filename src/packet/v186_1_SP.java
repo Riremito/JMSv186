@@ -32,19 +32,21 @@ public class v186_1_SP {
                 ServerPacket.Header.LP_MigrateCommand.Set(0x0008); // Change Channel
                 // CClientSocket::OnAliveReq
                 ServerPacket.Header.LP_AliveReq.Set(0x0009);
-                // 0x000A
-                // 0x000B
+                // CClientSocket::OnAuthenCodeChanged
+                ServerPacket.Header.LP_AuthenCodeChanged.Set(0x000A); // Internet Cafe
+                // CClientSocket::OnAuthenMessage
+                ServerPacket.Header.LP_AuthenMessage.Set(0x000B);
                 // CSecurityClient::OnPacket
                 ServerPacket.Header.LP_SecurityPacket.Set(0x000C); // HackShield HeartBeat
             }
             // 0x000D CHANNEL_SELECTED?
             // 0x000E @000E ..., @0011 00 00 を送信
-            // 0x000F [BYTE]...
+            ServerPacket.Header.LP_T_UpdateGameGuard.Set(0x000F); // GGがないので実質不要
             // 0x0010 未使用
             // 0x0011 未使用
             // 0x0012 [Str]
-            // 0x0013 安心パスワード
-            // 0x0014
+            // 0x0013 安心パスワード -> Send @0019
+            ServerPacket.Header.LP_ViewAllCharResult.Set(0x0014);
             // 0x0015 @0015 [00], 不法プログラムまたは悪性コードが感知されたためゲームを強制終了します。
             // CLogin::OnLatestConnectedWorld
             ServerPacket.Header.LP_LatestConnectedWorld.Set(0x0016);

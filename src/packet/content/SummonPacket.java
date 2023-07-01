@@ -162,7 +162,7 @@ public class SummonPacket {
             p.Encode1(summon.getSkill() == 4341006 && chr != null ? 1 : 0); //mirror target
 
             if (summon.getSkill() == 4341006 && chr != null) {
-                Structure.CharLook(p, chr, true);
+                Structure.AvatarLook(p, chr);
             }
         }
 

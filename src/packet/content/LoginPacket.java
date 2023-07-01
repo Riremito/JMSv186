@@ -331,7 +331,7 @@ public class LoginPacket {
         p.Encode1(chars.size());
 
         for (MapleCharacter chr : chars) {
-            Structure.CharEntry(p, chr, false);
+            Structure.CharEntry(p, chr, false, false);
         }
 
         if (ServerConfig.version <= 131) {
@@ -406,8 +406,8 @@ public class LoginPacket {
     public static final MaplePacket addNewCharEntry(final MapleCharacter chr, final boolean worked) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CreateNewCharacterResult);
         p.Encode1(worked ? 0 : 1);
-        Structure.CharStats(p, chr);
-        Structure.CharLook(p, chr, true);
+        Structure.GW_CharacterStat(p, chr);
+        Structure.AvatarLook(p, chr);
         return p.Get();
     }
 
@@ -419,7 +419,7 @@ public class LoginPacket {
         return p.Get();
     }
 
-    // ログインボタンを有効化するために必要
+    // v131 ログインボタンを有効化するために必要
     // CLogin::OnCheckGameGuardUpdatedResult
     public static MaplePacket CheckGameGuardUpdate() {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_T_UpdateGameGuard);
@@ -427,6 +427,32 @@ public class LoginPacket {
         // 0 = Update Game Guard
         // 1 = Enable Login Button
         p.Encode1(1);
+
+        return p.Get();
+    }
+
+    // CLogin::OnViewAllCharResult
+    public static MaplePacket ViewAllCharResult_Alloc(MapleClient c) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ViewAllCharResult);
+
+        List<MapleCharacter> chars = c.loadCharacters(0);
+        p.Encode1(1); // error code
+        p.Encode4(1); // m_nCountRelatedSvrs
+        p.Encode4(chars.size()); // m_nCountCharacters
+        return p.Get();
+    }
+
+    public static MaplePacket ViewAllCharResult(MapleClient c) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ViewAllCharResult);
+
+        List<MapleCharacter> chars = c.loadCharacters(0); // world 0 only (test)
+
+        p.Encode1(0); // error code
+        p.Encode1(0); // nWorldID
+        p.Encode1(chars.size());
+        for (MapleCharacter chr : chars) {
+            Structure.CharEntry(p, chr, false, true);
+        }
 
         return p.Get();
     }

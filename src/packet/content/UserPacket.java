@@ -631,7 +631,7 @@ public class UserPacket {
             p.Encode2(chr.getJob());
         }
 
-        Structure.CharLook(p, chr, false); // to do buffer
+        Structure.AvatarLook(p, chr); // to do buffer
 
         p.Encode4(0);//this is CHARID to follow
 

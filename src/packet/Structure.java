@@ -33,12 +33,14 @@ import tools.packet.PacketHelper;
 public class Structure {
 
     // Login Server
-    public static void CharEntry(ServerPacket p, final MapleCharacter chr, boolean ranking) {
-        CharStats(p, chr);
-        CharLook(p, chr, true);
+    public static void CharEntry(ServerPacket p, final MapleCharacter chr, boolean ranking, boolean isAll) {
+        GW_CharacterStat(p, chr);
+        AvatarLook(p, chr);
 
-        if (ServerConfig.version > 165) {
-            p.Encode1(0);
+        if (!isAll) {
+            if (ServerConfig.version > 165) {
+                p.Encode1(0);
+            }
         }
 
         p.Encode1(ranking ? 1 : 0);
@@ -51,7 +53,9 @@ public class Structure {
         }
     }
 
-    public static void CharStats(ServerPacket p, final MapleCharacter chr) {
+    // GW_CharacterStat::Decode
+    // CharStats
+    public static void GW_CharacterStat(ServerPacket p, final MapleCharacter chr) {
         p.Encode4(chr.getId());
         p.EncodeBuffer(chr.getName(), 13);
         p.Encode1(chr.getGender());
@@ -110,11 +114,13 @@ public class Structure {
         }
     }
 
-    public static void CharLook(ServerPacket p, final MapleCharacter chr, final boolean mega) {
+    // AvatarLook::Decode
+    // CharLook
+    public static void AvatarLook(ServerPacket p, final MapleCharacter chr) {
         p.Encode1(chr.getGender());
         p.Encode1(chr.getSkinColor());
         p.Encode4(chr.getFace());
-        p.Encode1(mega ? 0 : 1);
+        p.Encode1(0); // smega?
         p.Encode4(chr.getHair());
 
         final Map<Byte, Integer> myEquip = new LinkedHashMap<Byte, Integer>();
@@ -201,7 +207,7 @@ public class Structure {
             p.Encode1(0);
         }
         // キャラクター情報
-        CharStats(p, chr);
+        GW_CharacterStat(p, chr);
         // 友達リストの上限
         p.Encode1(chr.getBuddylist().getCapacity());
 

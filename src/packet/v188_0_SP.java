@@ -31,6 +31,10 @@ public class v188_0_SP {
         ServerPacket.Header.LP_CheckPinCodeResult.Set(0x0016); // 違うかも
         ServerPacket.Header.LOGIN_AUTH.Set(0x0015); // v188 005E2F84
 
+        ServerPacket.Header.LP_ViewAllCharResult.Set(0x0011);
+        ServerPacket.Header.LP_LatestConnectedWorld.Set(0x0013);
+        ServerPacket.Header.LP_RecommendWorldMessage.Set(0x0014);
+
         ServerPacket.Header.LP_BEGIN_SOCKET.Set(0);
         {
             // Header.LP_CheckPasswordResult.Set(0x0000);

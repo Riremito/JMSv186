@@ -398,6 +398,9 @@ public class v164_0_SP {
         ServerPacket.Header.LP_CheckDuplicatedIDResult.Set(0x0005);
         ServerPacket.Header.LP_CreateNewCharacterResult.Set(0x0006);
         ServerPacket.Header.LP_DeleteCharacterResult.Set(0x0007);
+
+        ServerPacket.Header.LP_ViewAllCharResult.Set(0x0014);
+        ServerPacket.Header.LP_LatestConnectedWorld.Set(0x0016);
         // ===== Change Channel =====
         ServerPacket.Header.LP_MigrateCommand.Set(0x0008);
         // ===== Login Server 2 =====
@@ -462,7 +465,7 @@ public class v164_0_SP {
         //Header.RPS_GAME.Set(Header.NPC_TALK.Get() + 0x07);
         //Header.MESSENGER.Set(Header.NPC_TALK.Get() + 0x08);
         ServerPacket.Header.LP_MiniRoom.Set(ServerPacket.Header.LP_ScriptMessage.Get() + 0x09);
-        
+
         UpdateHeaderTest();
     }
 }
