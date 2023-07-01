@@ -165,7 +165,7 @@ public class ServerPacket {
         // ログインサーバー
         LP_BEGIN_SOCKET,
         LP_CheckPasswordResult,
-        //LP_GuestIDLoginResult,
+        LP_GuestIDLoginResult,
         //LP_AccountInfoResult,
         LP_CheckUserLimitResult,
         //LP_SetAccountResult,

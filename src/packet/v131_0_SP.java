@@ -9,6 +9,7 @@ public class v131_0_SP {
         ServerPacket.Header.LP_BEGIN_SOCKET.Set(0);
         {
             ServerPacket.Header.LP_CheckPasswordResult.Set(0x0001);
+            ServerPacket.Header.LP_GuestIDLoginResult.Set(0x0002);
             ServerPacket.Header.LP_WorldInformation.Set(0x0003);
             ServerPacket.Header.LP_SelectWorldResult.Set(0x0004);
             ServerPacket.Header.LP_SelectCharacterResult.Set(0x0005);

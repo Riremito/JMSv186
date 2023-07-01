@@ -36,11 +36,11 @@ import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
 import handling.login.LoginWorker;
 import packet.ClientPacket;
+import packet.content.LoginPacket;
+import packet.content.LoginPacket.LoginResult;
 import server.MapleItemInformationProvider;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
-import tools.packet.LoginPacket;
-import tools.KoreanDateUtil;
 
 public class CharLoginHandler {
 
@@ -96,11 +96,11 @@ public class CharLoginHandler {
         }
         if (loginok != 0) {
             if (!loginFailCount(c)) {
-                c.getSession().write(LoginPacket.getLoginFailed(loginok));
+                c.SendPacket(LoginPacket.CheckPasswordResult(c, loginok));
             }
         } else if (tempbannedTill.getTimeInMillis() != 0) {
             if (!loginFailCount(c)) {
-                c.getSession().write(LoginPacket.getTempBan(KoreanDateUtil.getTempBanTimestamp(tempbannedTill.getTimeInMillis()), c.getBanReason()));
+                c.SendPacket(LoginPacket.CheckPasswordResult(c, 2)); // ?
             }
         } else {
             c.loginAttempt = 0;
@@ -141,6 +141,13 @@ public class CharLoginHandler {
     public static final void CharlistRequest(ClientPacket p, final MapleClient c) {
         int server = p.Decode1();
         final int channel = p.Decode1() + 1;
+
+        // もみじ block test
+        if (server == 1) {
+            c.SendPacket(LoginPacket.getCharList(c, LoginPacket.LoginResult.TOO_MANY_USERS));
+            return;
+        }
+
         CharlistRequest(c, server, channel + 1);
     }
 
@@ -154,15 +161,9 @@ public class CharLoginHandler {
         SelectedChannel = channel - 1;
 
         c.setWorld(server);
-        //System.out.println("Client " + c.getSession().getRemoteAddress().toString().split(":")[0] + " is connecting to server " + server + " channel " + channel + "");
         c.setChannel(channel);
 
-        final List<MapleCharacter> chars = c.loadCharacters(server);
-        if (chars != null) {
-            c.getSession().write(LoginPacket.getCharList(c.getSecondPassword() != null, chars, c.getCharacterSlots()));
-        } else {
-            c.getSession().close();
-        }
+        c.SendPacket(LoginPacket.getCharList(c, LoginResult.SUCCESS));
     }
 
     public static final void CheckCharName(ClientPacket p, final MapleClient c) {

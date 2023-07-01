@@ -40,7 +40,6 @@ import javax.script.ScriptEngine;
 
 import database.DatabaseConnection;
 import database.DatabaseException;
-import debug.Debug;
 import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -59,7 +58,6 @@ import server.maps.MapleMap;
 import server.shops.IMaplePlayerShop;
 import tools.FileoutputUtil;
 import tools.MapleAESOFB;
-import tools.packet.LoginPacket;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -78,6 +76,7 @@ import org.apache.mina.common.TrafficMask;
 import org.apache.mina.common.TransportType;
 import org.apache.mina.common.WriteFuture;
 import packet.ServerPacket;
+import packet.content.LoginPacket;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
