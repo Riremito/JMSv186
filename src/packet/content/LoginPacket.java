@@ -429,4 +429,20 @@ public class LoginPacket {
 
         return p.Get();
     }
+
+    // v186+
+    // CLogin::OnRecommendWorldMessage
+    public static MaplePacket RecommendWorldMessage() {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_RecommendWorldMessage);
+
+        String recommendedReasons[] = {"これはSELECTを押してもワールドがアクティブになるだけです", "ゴミ機能です", "XXXX"};
+        p.Encode1(recommendedReasons.length);
+
+        for (int world_id = 0; world_id < recommendedReasons.length; world_id++) {
+            p.Encode4(world_id);
+            p.EncodeStr(recommendedReasons[world_id]);
+        }
+
+        return p.Get();
+    }
 }

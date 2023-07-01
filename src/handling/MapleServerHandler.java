@@ -353,6 +353,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
+            case CP_ViewAllChar: {
+                return true;
+            }
             default: {
                 break;
             }

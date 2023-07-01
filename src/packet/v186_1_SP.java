@@ -10,7 +10,8 @@ public class v186_1_SP {
         {
             // CLogin::OnCheckPasswordResult
             ServerPacket.Header.LP_CheckPasswordResult.Set(0x0000); // 0069a00e
-            // 0x0001, LP_CheckUserLimitResult or LP_AccountInfoResult
+            // CLogin::OnGuestIDLoginResult
+            ServerPacket.Header.LP_GuestIDLoginResult.Set(0x0001);
             // CLogin::OnWorldInformation
             ServerPacket.Header.LP_WorldInformation.Set(0x0002);
             // CLogin::OnSelectWorldResult
@@ -38,16 +39,17 @@ public class v186_1_SP {
             }
             // 0x000D CHANNEL_SELECTED?
             // 0x000E @000E ..., @0011 00 00 を送信
-            // 0x000F 未使用
+            // 0x000F [BYTE]...
             // 0x0010 未使用
             // 0x0011 未使用
-            // 0x0012
-            // 0x0013
+            // 0x0012 [Str]
+            // 0x0013 安心パスワード
             // 0x0014
             // 0x0015 @0015 [00], 不法プログラムまたは悪性コードが感知されたためゲームを強制終了します。
             // CLogin::OnCheckPinCodeResult
             ServerPacket.Header.LP_CheckPinCodeResult.Set(0x0016); // 違うかも
-            // 0x0017
+            // CLogin::OnRecommendWorldMessage
+            ServerPacket.Header.LP_RecommendWorldMessage.Set(0x0017);
             // CLogin::???
             ServerPacket.Header.LOGIN_AUTH.Set(0x0018); // JMSオリジナルの可能性が高い
             // 0x0019

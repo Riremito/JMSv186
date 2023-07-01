@@ -189,7 +189,7 @@ public class ServerPacket {
         //LP_DeleteCharacterOTPRequest,
         //LP_CheckCrcResult,
         //LP_LatestConnectedWorld,
-        //LP_RecommendWorldMessage,
+        LP_RecommendWorldMessage,
         //LP_CheckExtraCharInfoResult,
         //LP_CheckSPWResult,
         LP_END_SOCKET,

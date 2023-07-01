@@ -12,6 +12,7 @@ public class v164_0_CP {
         ClientPacket.Header.CP_SelectCharacter.Set(0x0006);
         ClientPacket.Header.CP_MigrateIn.Set(0x0007);
         ClientPacket.Header.CP_CheckDuplicatedID.Set(0x0008);
+        ClientPacket.Header.CP_ViewAllChar.Set(0x000A);
         ClientPacket.Header.CP_CreateNewCharacter.Set(0x000B);
         ClientPacket.Header.CP_DeleteCharacter.Set(0x000D);
         // ログインサーバー その他

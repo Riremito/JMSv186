@@ -116,10 +116,14 @@ public class CharLoginHandler {
 
     public static final void ServerListRequest(final MapleClient c) {
         // かえで
-        c.getSession().write(LoginPacket.getServerList(0));
+        c.SendPacket(LoginPacket.getServerList(0));
         // もみじ (サーバーを分離すると接続人数を取得するのが難しくなる)
-        c.getSession().write(LoginPacket.getServerList(1, false, 16));
-        c.getSession().write(LoginPacket.getEndOfServerList());
+        c.SendPacket(LoginPacket.getServerList(1, false, 16));
+        c.SendPacket(LoginPacket.getEndOfServerList());
+
+        if (186 <= ServerConfig.version) {
+            c.SendPacket(LoginPacket.RecommendWorldMessage());
+        }
     }
 
     // 必要なさそう
