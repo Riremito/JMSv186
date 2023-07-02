@@ -188,30 +188,6 @@ public class MaplePacketCreator {
         return ContextPacket.StatChanged(null, 1, 0);
     }
 
-    public static final MaplePacket updateSp(MapleCharacter chr, final boolean itemReaction) { //this will do..
-        return updateSp(chr, itemReaction, false);
-    }
-
-    public static final MaplePacket updateSp(MapleCharacter chr, final boolean itemReaction, final boolean overrideJob) { //this will do..
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_StatChanged.Get());
-        mplew.write(itemReaction ? 1 : 0);
-        mplew.writeInt(0x8000);
-        if (overrideJob || GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob())) {
-            mplew.write(chr.getRemainingSpSize());
-            for (int i = 0; i < chr.getRemainingSps().length; i++) {
-                if (chr.getRemainingSp(i) > 0) {
-                    mplew.write(i + 1);
-                    mplew.write(chr.getRemainingSp(i));
-                }
-            }
-        } else {
-            mplew.writeShort(chr.getRemainingSp());
-        }
-        return mplew.getPacket();
-
-    }
-
     public static final MaplePacket instantMapWarp(final byte portal) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 

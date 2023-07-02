@@ -415,7 +415,7 @@ public class AdminCommand {
         @Override
         public int execute(MapleClient c, String[] splitted) {
             c.getPlayer().setRemainingSp(CommandProcessorUtil.getOptionalIntArg(splitted, 1, 1));
-            c.getSession().write(MaplePacketCreator.updateSp(c.getPlayer(), false));
+            c.getPlayer().UpdateStat(false);
             return 1;
         }
     }

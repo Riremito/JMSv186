@@ -155,20 +155,7 @@ public class PetPacket {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket emptyStatUpdate() {
-        return MaplePacketCreator.enableActions();
-    }
-
-    public static final MaplePacket petStatUpdate_Empty() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_StatChanged.Get());
-        mplew.write(0);
-        mplew.writeInt(MapleStat.PET.getValue());
-        mplew.writeZeroBytes(25);
-        return mplew.getPacket();
-    }
-
+    // need  fix
     public static final MaplePacket petStatUpdate(final MapleCharacter chr) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 

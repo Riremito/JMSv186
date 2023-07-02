@@ -21,6 +21,7 @@
 package packet.content;
 
 import client.MapleCharacter;
+import config.ServerConfig;
 import handling.MaplePacket;
 import packet.ServerPacket;
 import packet.struct.GW_CharacterStat;
@@ -42,10 +43,16 @@ public class ContextPacket {
         p.Encode1(unlock); // CWvsContext->bExclRequestSent
         p.EncodeBuffer(GW_CharacterStat.EncodeChangeStat(chr, statmask));
 
-        // Pet
-        if ((statmask & (1 << 3)) > 0) {
-            int v5 = 0; // CVecCtrlUser::AddMovementInfo
-            p.Encode1(v5);
+        if (ServerConfig.version <= 186) {
+            // Pet
+            if ((statmask & (1 << 3)) > 0) {
+                int v5 = 0; // CVecCtrlUser::AddMovementInfo
+                p.Encode1(v5);
+            }
+        } else {
+            // v188+
+            p.Encode1(0); // not 0 -> Encode1
+            p.Encode1(0); // not 0 -> Encode4, Encode4
         }
 
         return p.Get();

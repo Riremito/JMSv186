@@ -2385,7 +2385,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     dropMessage(5, "The baby Dragon hatched and appears to have something to tell you. Click the baby Dragon to start a conversation.");
                 }
             }
-            client.getSession().write(MaplePacketCreator.updateSp(this, false, isEv));
+            client.getPlayer().UpdateStat(false);
             updateSingleStat(MapleStat.JOB, newJob);
 
             int maxhp = stats.getMaxHp(), maxmp = stats.getMaxMp();
@@ -2515,13 +2515,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void gainSP(int sp) {
         this.remainingSp[GameConstants.getSkillBook(job)] += sp; //default
-        client.getSession().write(MaplePacketCreator.updateSp(this, false));
+        client.getPlayer().UpdateStat(false);
         client.getSession().write(UIPacket.getSPMsg((byte) sp, (short) job));
     }
 
     public void gainSP(int sp, final int skillbook) {
         this.remainingSp[skillbook] += sp; //default
-        client.getSession().write(MaplePacketCreator.updateSp(this, false));
+        client.getPlayer().UpdateStat(false);
         client.getSession().write(UIPacket.getSPMsg((byte) sp, (short) job));
     }
 
@@ -2529,7 +2529,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         for (int i = 0; i < remainingSp.length; i++) {
             this.remainingSp[i] = 0;
         }
-        client.getSession().write(MaplePacketCreator.updateSp(this, false));
+        client.getPlayer().UpdateStat(false);
         gainAp((short) -this.remainingAp);
     }
 
@@ -2735,7 +2735,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
      */
     public void updateSingleStat(MapleStat stat, int newval, boolean itemReaction) {
         if (stat == MapleStat.AVAILABLESP) {
-            client.getSession().write(MaplePacketCreator.updateSp(this, itemReaction, false));
+            client.getPlayer().UpdateStat(itemReaction);
             return;
         }
         Pair<MapleStat, Integer> statpair = new Pair<MapleStat, Integer>(stat, Integer.valueOf(newval));
@@ -3034,7 +3034,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             return false;
         }
         meso += gain;
-        updateSingleStat(MapleStat.MESO, meso, enableActions);
+        UpdateStat(enableActions);
         if (show) {
             client.getSession().write(MaplePacketCreator.showMesoGain(gain, inChat));
         }
@@ -3282,7 +3282,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
         if (isGM() || (job != 0 && job != 1000 && job != 2000 && job != 2001 && job != 3000)) { // Not Beginner, Nobless and Legend
             remainingSp[GameConstants.getSkillBook(this.job)] += 3;
-            client.getSession().write(MaplePacketCreator.updateSp(this, false));
+            client.getPlayer().UpdateStat(false);
         } else {
             if (level <= 10) {
                 stats.setStr((short) (stats.getStr() + remainingAp));
@@ -4915,7 +4915,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 break;
             }
         }
-        client.getSession().write(PetPacket.emptyStatUpdate());
+        client.getPlayer().UpdateStat(true);
     }
 
     public void addMoveMob(int mobid) {
@@ -5829,6 +5829,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 this.meso = getMeso();
                 this.statmask |= (1 << 18);
             }
+            // v188 ここから+1
             //this.pet2;
             //this.pet3;
             if (this.gasha_exp != getGashaEXP()) {

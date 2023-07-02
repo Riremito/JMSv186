@@ -262,7 +262,7 @@ public class StatsHandling {
                 final int skillbook = GameConstants.getSkillBookForSkill(skillid);
                 chr.setRemainingSp(chr.getRemainingSp(skillbook) - 1, skillbook);
             }
-            c.getSession().write(MaplePacketCreator.updateSp(chr, false));
+            chr.UpdateStat(false);
             chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
         } else if (!skill.canBeLearnedBy(chr.getJob())) {
         }

@@ -221,7 +221,17 @@ public class GW_CharacterStat {
         }
         // SP
         if ((statmask & (1 << 15)) > 0) {
-            p.Encode2(chr.getRemainingSp());
+            if (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob())) {
+                p.Encode1(chr.getRemainingSpSize());
+                for (int i = 0; i < chr.getRemainingSps().length; i++) {
+                    if (chr.getRemainingSp(i) > 0) {
+                        p.Encode1(i + 1);
+                        p.Encode1(chr.getRemainingSp(i));
+                    }
+                }
+            } else {
+                p.Encode2(chr.getRemainingSp());
+            }
         }
         // EXP
         if ((statmask & (1 << 16)) > 0) {
@@ -235,6 +245,7 @@ public class GW_CharacterStat {
         if ((statmask & (1 << 18)) > 0) {
             p.Encode4(chr.getMeso());
         }
+        // v188 ここから+1
         // Pet 2
         if ((statmask & (1 << 19)) > 0) {
             MaplePet pet = chr.getPet(0);
