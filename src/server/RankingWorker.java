@@ -25,6 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import database.DatabaseConnection;
+import debug.Debug;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -57,17 +58,19 @@ public class RankingWorker {
         return rankings.get(job);
     }
 
-    public final void run() {
-        System.out.println("Loading Rankings::");
+    public final boolean run() {
         loadJobCommands();
         try {
             con = DatabaseConnection.getConnection();
             updateRanking();
+
+            Debug.InfoLog("Ranking Update = OK");
+            return true;
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.err.println("Could not update rankings");
         }
-        System.out.println("Done loading Rankings :::"); //keep
+        Debug.InfoLog("Ranking Update = NG");
+        return false;
     }
 
     private void updateRanking() throws Exception {

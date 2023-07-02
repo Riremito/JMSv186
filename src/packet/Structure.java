@@ -46,9 +46,9 @@ public class Structure {
         p.Encode1(ranking ? 1 : 0);
 
         if (ranking) {
-            p.Encode4(chr.getRank());
+            p.Encode4(chr.getRank()); // all world ranking
             p.Encode4(chr.getRankMove());
-            p.Encode4(chr.getJobRank());
+            p.Encode4(chr.getJobRank()); // world ranking
             p.Encode4(chr.getJobRankMove());
         }
     }

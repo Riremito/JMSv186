@@ -336,7 +336,7 @@ public class LoginPacket {
         p.Encode1(chars.size());
 
         for (MapleCharacter chr : chars) {
-            Structure.CharEntry(p, chr, false, false);
+            Structure.CharEntry(p, chr, true, false);
         }
 
         if (ServerConfig.version <= 131) {
@@ -428,7 +428,7 @@ public class LoginPacket {
         p.Encode1(0); // nWorldID
         p.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
-            Structure.CharEntry(p, chr, false, true);
+            Structure.CharEntry(p, chr, true, true);
         }
 
         return p.Get();
