@@ -31,6 +31,7 @@ import java.util.Random;
 import packet.ClientPacket;
 import packet.ServerPacket;
 import packet.Structure;
+import packet.struct.GW_CharacterStat;
 
 /**
  *
@@ -378,8 +379,9 @@ public class LoginPacket {
 
     public static final MaplePacket addNewCharEntry(final MapleCharacter chr, final boolean worked) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CreateNewCharacterResult);
+
         p.Encode1(worked ? 0 : 1);
-        Structure.GW_CharacterStat(p, chr);
+        p.EncodeBuffer(GW_CharacterStat.Encode(chr));
         Structure.AvatarLook(p, chr);
         return p.Get();
     }

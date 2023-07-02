@@ -4,7 +4,6 @@ import client.ISkill;
 import client.MapleCharacter;
 import client.MapleCoolDownValueHolder;
 import client.MapleQuestStatus;
-import client.PlayerStats;
 import client.SkillEntry;
 import client.inventory.IEquip;
 import client.inventory.IItem;
@@ -29,12 +28,13 @@ import server.shops.IMaplePlayerShop;
 import tools.KoreanDateUtil;
 import tools.Pair;
 import tools.packet.PacketHelper;
+import packet.struct.GW_CharacterStat;
 
 public class Structure {
 
     // Login Server
     public static void CharEntry(ServerPacket p, final MapleCharacter chr, boolean ranking, boolean isAll) {
-        GW_CharacterStat(p, chr);
+        p.EncodeBuffer(GW_CharacterStat.Encode(chr));
         AvatarLook(p, chr);
 
         if (!isAll) {
@@ -50,67 +50,6 @@ public class Structure {
             p.Encode4(chr.getRankMove());
             p.Encode4(chr.getJobRank());
             p.Encode4(chr.getJobRankMove());
-        }
-    }
-
-    // GW_CharacterStat::Decode
-    // CharStats
-    public static void GW_CharacterStat(ServerPacket p, final MapleCharacter chr) {
-        p.Encode4(chr.getId());
-        p.EncodeBuffer(chr.getName(), 13);
-        p.Encode1(chr.getGender());
-        p.Encode1(chr.getSkinColor());
-        p.Encode4(chr.getFace());
-        p.Encode4(chr.getHair());
-
-        if (ServerConfig.version < 164) {
-            p.EncodeZeroBytes(8);
-        } else {
-            p.EncodeZeroBytes(24);
-        }
-
-        p.Encode1(chr.getLevel());
-        p.Encode2(chr.getJob());
-
-        PlayerStats(p, chr); // connectData
-
-        p.Encode2(chr.getRemainingAp());
-
-        // SP
-        if (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob())) {
-            final int size = chr.getRemainingSpSize();
-            p.Encode1(size);
-            for (int i = 0; i < chr.getRemainingSps().length; i++) {
-                if (chr.getRemainingSp(i) > 0) {
-                    p.Encode1(i + 1);
-                    p.Encode1(chr.getRemainingSp(i));
-                }
-            }
-        } else {
-            p.Encode2(chr.getRemainingSp());
-        }
-
-        p.Encode4(chr.getExp());
-        p.Encode2(chr.getFame());
-
-        if (ServerConfig.version >= 164) {
-            p.Encode4(chr.getGashaEXP()); // Gachapon exp
-        }
-
-        p.Encode4(chr.getMapId()); // current map id
-        p.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
-        if (ServerConfig.version > 176) {
-            // デュアルブレイドフラグ
-            p.Encode2(chr.getSubcategory());
-            if (ServerConfig.version >= 188) {
-                p.Encode8(0);
-                p.Encode4(0);
-                p.Encode4(0);
-            } else {
-                p.EncodeZeroBytes(20);
-            }
-        } else {
-            p.EncodeZeroBytes(16);
         }
     }
 
@@ -166,29 +105,6 @@ public class Structure {
         }
     }
 
-    public static void PlayerStats(ServerPacket p, MapleCharacter chr) {
-        PlayerStats stat = chr.getStat();
-        p.Encode2(stat.str);
-        p.Encode2(stat.dex);
-        p.Encode2(stat.int_);
-        p.Encode2(stat.luk);
-
-        // BB前
-        if (ServerConfig.version <= 186) {
-            p.Encode2(stat.hp);
-            p.Encode2(stat.maxhp);
-            p.Encode2(stat.mp);
-            p.Encode2(stat.maxmp);
-            return;
-        }
-
-        // BB後
-        p.Encode4(stat.hp);
-        p.Encode4(stat.maxhp);
-        p.Encode4(stat.mp);
-        p.Encode4(stat.maxmp);
-    }
-
     // Game Server
     // よく変わる構造
     public static final byte[] CharacterInfo(MapleCharacter chr) {
@@ -207,7 +123,7 @@ public class Structure {
             p.Encode1(0);
         }
         // キャラクター情報
-        GW_CharacterStat(p, chr);
+        p.EncodeBuffer(GW_CharacterStat.Encode(chr));
         // 友達リストの上限
         p.Encode1(chr.getBuddylist().getCapacity());
 
@@ -220,6 +136,9 @@ public class Structure {
                 p.Encode1(0);
             }
         }
+
+        p.EncodeBuffer(GW_CharacterStat.EncodeMoney(chr));
+        p.EncodeBuffer(GW_CharacterStat.EncodePachinko(chr));
         // [addInventoryInfo]
         p.EncodeBuffer(InventoryInfo(chr));
         // [addSkillInfo]
@@ -263,13 +182,6 @@ public class Structure {
 
     public static final byte[] InventoryInfo(MapleCharacter chr) {
         ServerPacket p = new ServerPacket();
-        // メル
-        p.Encode4(chr.getMeso());
-        // キャラクターID
-        p.Encode4(chr.getId());
-        // パチンコ玉
-        p.Encode4(chr.getTama());
-        p.Encode4(0);
         // アイテム欄の数
         {
             p.Encode1(chr.getInventory(MapleInventoryType.EQUIP).getSlotLimit());
