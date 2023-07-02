@@ -31,6 +31,7 @@ import java.util.Random;
 import packet.ClientPacket;
 import packet.ServerPacket;
 import packet.Structure;
+import packet.struct.AvatarLook;
 import packet.struct.GW_CharacterStat;
 
 /**
@@ -382,7 +383,7 @@ public class LoginPacket {
 
         p.Encode1(worked ? 0 : 1);
         p.EncodeBuffer(GW_CharacterStat.Encode(chr));
-        Structure.AvatarLook(p, chr);
+        p.EncodeBuffer(AvatarLook.Encode(chr));
         return p.Get();
     }
 

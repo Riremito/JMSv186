@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import packet.struct.AvatarLook;
 import server.life.MapleMonster;
 import server.shops.AbstractPlayerStore;
 import server.shops.IMaplePlayerShop;
@@ -35,7 +36,7 @@ public class Structure {
     // Login Server
     public static void CharEntry(ServerPacket p, final MapleCharacter chr, boolean ranking, boolean isAll) {
         p.EncodeBuffer(GW_CharacterStat.Encode(chr));
-        AvatarLook(p, chr);
+        p.EncodeBuffer(AvatarLook.Encode(chr));
 
         if (!isAll) {
             if (ServerConfig.version > 165) {
@@ -50,58 +51,6 @@ public class Structure {
             p.Encode4(chr.getRankMove());
             p.Encode4(chr.getJobRank());
             p.Encode4(chr.getJobRankMove());
-        }
-    }
-
-    // AvatarLook::Decode
-    // CharLook
-    public static void AvatarLook(ServerPacket p, final MapleCharacter chr) {
-        p.Encode1(chr.getGender());
-        p.Encode1(chr.getSkinColor());
-        p.Encode4(chr.getFace());
-        p.Encode1(0); // smega?
-        p.Encode4(chr.getHair());
-
-        final Map<Byte, Integer> myEquip = new LinkedHashMap<Byte, Integer>();
-        final Map<Byte, Integer> maskedEquip = new LinkedHashMap<Byte, Integer>();
-        MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIPPED);
-
-        for (final IItem item : equip.list()) {
-            if (item.getPosition() < -128) { //not visible
-                continue;
-            }
-            byte pos = (byte) (item.getPosition() * -1);
-
-            if (pos < 100 && myEquip.get(pos) == null) {
-                myEquip.put(pos, item.getItemId());
-            } else if ((pos > 100 || pos == -128) && pos != 111) {
-                pos = (byte) (pos == -128 ? 28 : pos - 100);
-                if (myEquip.get(pos) != null) {
-                    maskedEquip.put(pos, myEquip.get(pos));
-                }
-                myEquip.put(pos, item.getItemId());
-            } else if (myEquip.get(pos) != null) {
-                maskedEquip.put(pos, item.getItemId());
-            }
-        }
-        for (final Map.Entry<Byte, Integer> entry : myEquip.entrySet()) {
-            p.Encode1(entry.getKey());
-            p.Encode4(entry.getValue());
-        }
-        p.Encode1(0xFF); // end of visible itens
-        // masked itens
-        for (final Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
-            p.Encode1(entry.getKey());
-            p.Encode4(entry.getValue());
-        }
-        p.Encode1(0xFF); // ending markers
-
-        final IItem cWeapon = equip.getItem((byte) -111);
-        p.Encode4(cWeapon != null ? cWeapon.getItemId() : 0);
-        p.Encode4(0);
-
-        if (ServerConfig.version >= 164) {
-            p.Encode8(0);
         }
     }
 

@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import packet.ClientPacket;
 import packet.ServerPacket;
-import packet.Structure;
+import packet.struct.AvatarLook;
 import server.MapleStatEffect;
 import server.life.MapleMonster;
 import server.life.SummonAttackEntry;
@@ -162,7 +162,7 @@ public class SummonPacket {
             p.Encode1(summon.getSkill() == 4341006 && chr != null ? 1 : 0); //mirror target
 
             if (summon.getSkill() == 4341006 && chr != null) {
-                Structure.AvatarLook(p, chr);
+                p.EncodeBuffer(AvatarLook.Encode(chr));
             }
         }
 

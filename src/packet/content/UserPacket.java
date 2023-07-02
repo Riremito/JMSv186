@@ -26,6 +26,7 @@ import java.util.List;
 import packet.ClientPacket;
 import packet.ServerPacket;
 import packet.Structure;
+import packet.struct.AvatarLook;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
 import server.maps.MapleMap;
@@ -501,7 +502,7 @@ public class UserPacket {
             p.Encode2(chr.getJob());
         }
 
-        Structure.AvatarLook(p, chr); // to do buffer
+        p.EncodeBuffer(AvatarLook.Encode(chr));
 
         p.Encode4(0);//this is CHARID to follow
 
