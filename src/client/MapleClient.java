@@ -76,7 +76,7 @@ import org.apache.mina.common.TrafficMask;
 import org.apache.mina.common.TransportType;
 import org.apache.mina.common.WriteFuture;
 import packet.ServerPacket;
-import packet.content.LoginPacket;
+import packet.content.SocketPacket;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -1142,7 +1142,7 @@ public class MapleClient implements Serializable {
 
     public final void sendPing() {
         lastPing = System.currentTimeMillis();
-        session.write(LoginPacket.getPing());
+        SendPacket(SocketPacket.AliveReq());
 
         PingTimer.getInstance().schedule(new Runnable() {
 

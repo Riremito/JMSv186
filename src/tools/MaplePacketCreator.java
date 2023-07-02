@@ -183,22 +183,6 @@ public class MaplePacketCreator {
         return p.Get();
     }
 
-    // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    public static final MaplePacket getChannelChange(final int port) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_MigrateCommand.Get());
-        mplew.write(1);
-        try {
-            mplew.write(InetAddress.getByName(ServerConstants.Gateway_IP_String).getAddress());
-        } catch (UnknownHostException e) {
-            mplew.write(ServerConstants.Gateway_IP);
-        }
-        mplew.writeShort(port);
-
-        return mplew.getPacket();
-    }
-
     public static final MaplePacket enableActions() {
         return updatePlayerStats(EMPTY_STATUPDATE, true, 0);
     }

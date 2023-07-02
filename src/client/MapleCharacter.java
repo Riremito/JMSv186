@@ -83,6 +83,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import minigame.Pachinko;
 import packet.content.MobPacket;
+import packet.content.SocketPacket;
 import packet.content.SummonPacket;
 import packet.content.UserPacket;
 import tools.MockIOSession;
@@ -5202,7 +5203,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ch.removePlayer(this);
         client.updateLoginState(MapleClient.CHANGE_CHANNEL, client.getSessionIPAddress());
 
-        client.getSession().write(MaplePacketCreator.getChannelChange(toch.getPort()));
+        client.SendPacket(SocketPacket.MigrateCommand(toch.getPort()));
         saveToDB(false, false);
         getMap().removePlayer(this);
         client.setPlayer(null);

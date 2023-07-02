@@ -137,10 +137,15 @@ public class LoginPacket {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CheckPasswordResult);
 
         p.Encode1(result.Get());
-        p.Encode1(0);
-
+        /*
+        v186 Message Flag
+        00 : OK
+        20 : BAN Blue Message
+        40 : BAN Blue Message
+         */
         switch (result) {
             case SUCCESS: {
+                p.Encode1(0); // OK
                 p.Encode4(client.getAccID());
                 p.Encode1(client.getGender()); // 性別
                 p.Encode1(client.isGm() ? 1 : 0);
@@ -181,16 +186,14 @@ public class LoginPacket {
 
                 p.Encode8(0); // buf
                 p.EncodeStr(""); // v131: available name for new character, later version does not use this string
+                break;
             }
             case BLOCKED_MAPLEID_WITH_MESSAGE: {
-                /*
-                0 : 青窓なし
-                1 : 青窓
-                 */
-                p.Encode1(1);
-                p.Encode8(0);
+                p.Encode1(0x20); // 0x20 and 0x40 are blue message flag
+                break;
             }
             default: {
+                p.Encode1(0); // no blue message
                 break;
             }
         }
@@ -373,36 +376,6 @@ public class LoginPacket {
         return p.Get();
     }
 
-    public static final MaplePacket getPing() {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_AliveReq);
-
-        return p.Get();
-    }
-
-    public static final MaplePacket secondPwError(final byte mode) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CheckPinCodeResult);
-
-        /*
-            14 : Invalid password
-            15 : Second password is incorrect
-         */
-        p.Encode1(mode);
-        return p.Get();
-    }
-
-    // 必要なさそう
-    public static final MaplePacket getServerStatus(final int status) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.SERVERSTATUS);
-
-        /*
-            0 : Normal
-            1 : Highly populated
-            2 : Full
-         */
-        p.Encode2(status);
-        return p.Get();
-    }
-
     public static final MaplePacket addNewCharEntry(final MapleCharacter chr, final boolean worked) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CreateNewCharacterResult);
         p.Encode1(worked ? 0 : 1);
@@ -419,7 +392,7 @@ public class LoginPacket {
         return p.Get();
     }
 
-    // v131 ログインボタンを有効化するために必要
+    // v131+
     // CLogin::OnCheckGameGuardUpdatedResult
     public static MaplePacket CheckGameGuardUpdate() {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_T_UpdateGameGuard);
@@ -442,6 +415,7 @@ public class LoginPacket {
         return p.Get();
     }
 
+    // CLogin::OnViewAllCharResult
     public static MaplePacket ViewAllCharResult(MapleClient c) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ViewAllCharResult);
 
@@ -478,6 +452,30 @@ public class LoginPacket {
             p.EncodeStr(recommendedReasons[world_id]);
         }
 
+        return p.Get();
+    }
+
+    // not tested
+    public static final MaplePacket secondPwError(final byte mode) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CheckPinCodeResult);
+
+        /*
+            14 : Invalid password
+            15 : Second password is incorrect
+         */
+        p.Encode1(mode);
+        return p.Get();
+    }
+
+    public static final MaplePacket getServerStatus(final int status) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.SERVERSTATUS);
+
+        /*
+            0 : Normal
+            1 : Highly populated
+            2 : Full
+         */
+        p.Encode2(status);
         return p.Get();
     }
 }

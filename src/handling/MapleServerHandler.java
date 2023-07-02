@@ -30,6 +30,7 @@ import packet.content.GashaEXPPacket;
 import packet.content.LoginPacket;
 import packet.content.MobPacket;
 import packet.content.ReactorPacket;
+import packet.content.SocketPacket;
 import packet.content.SummonPacket;
 import packet.content.TrunkPacket;
 import packet.content.UserPacket;
@@ -286,6 +287,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
                         byte mem[] = {(byte) 0x90, (byte) 0x90, (byte) 0x90};
                         c.getSession().write(ProcessPacket.Custom.Patch(0x00BCCA45, mem));
                     }
+
+                    c.SendPacket(SocketPacket.AuthenMessage());
                 }
                 return true;
             }
@@ -552,11 +555,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 if (!InterServerHandler.GetLogin()) {
                     InterServerHandler.SetLogin(true);
                     Debug.UserInfoLog(c, "Enter Game");
-
+                    c.SendPacket(SocketPacket.AuthenCodeChanged()); // internet cafe
                     //Map<Integer, Integer> connected = World.getConnected();
                     //c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
                 } else {
-                    //Debug.DebugLog(c.getPlayer().getName() + " CC, MapID = " + c.getPlayer().getMapId());
                     Debug.UserInfoLog(c, "Change Channel");
                 }
                 return true;

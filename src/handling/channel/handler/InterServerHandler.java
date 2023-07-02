@@ -40,6 +40,7 @@ import handling.world.PlayerBuffStorage;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
 import packet.ClientPacket;
+import packet.content.SocketPacket;
 import server.maps.FieldLimitType;
 import tools.FileoutputUtil;
 import tools.MaplePacketCreator;
@@ -84,7 +85,7 @@ public class InterServerHandler {
         ch.removePlayer(chr);
         c.updateLoginState(MapleClient.CHANGE_CHANNEL, c.getSessionIPAddress());
 
-        c.getSession().write(MaplePacketCreator.getChannelChange(CashShopServer.getPort()));
+        c.SendPacket(SocketPacket.MigrateCommand(CashShopServer.getPort()));
         chr.saveToDB(false, false);
         chr.getMap().removePlayer(chr);
         c.setPlayer(null);

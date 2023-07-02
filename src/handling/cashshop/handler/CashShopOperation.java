@@ -18,13 +18,13 @@ import handling.channel.ChannelServer;
 import handling.world.CharacterTransfer;
 import handling.world.World;
 import java.util.List;
+import packet.content.SocketPacket;
 import server.CashItemFactory;
 import server.CashItemInfo;
 import server.CashShop;
 import server.MTSStorage;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
-import tools.MaplePacketCreator;
 import tools.packet.MTSCSPacket;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -37,7 +37,7 @@ public class CashShopOperation {
         c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
         try {
             World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
-            c.getSession().write(MaplePacketCreator.getChannelChange(ChannelServer.getInstance(c.getChannel()).getPort()));
+            c.SendPacket(SocketPacket.MigrateCommand(ChannelServer.getInstance(c.getChannel()).getPort()));
         } finally {
 //            c.getSession().close();
             chr.saveToDB(false, true);
