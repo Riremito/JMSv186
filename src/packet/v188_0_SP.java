@@ -105,8 +105,21 @@ public class v188_0_SP {
         ServerPacket.Header.LP_DropEnterField.Set(0x0130); // v188
         ServerPacket.Header.LP_DropLeaveField.Set(ServerPacket.Header.LP_DropEnterField.Get() + 1);
 
-        //Header.LP_MobEnterField.Set(0x010B);
-        //Header.LP_MobLeaveField.Set(0x010C);
+        ServerPacket.Header.LP_BEGIN_MOBPOOL.Set(0); // 0072a766
+        {
+            ServerPacket.Header.LP_MobEnterField.Set(0x010B);
+            ServerPacket.Header.LP_MobLeaveField.Set(0x010C);
+            ServerPacket.Header.LP_MobChangeController.Set(0x010D);
+        }
+        ServerPacket.Header.LP_END_MOBPOOL.Set(0);
+
+        ServerPacket.Header.LP_BEGIN_MOB.Set(0);
+        {
+            ServerPacket.Header.LP_MobMove.Set(0x010E);
+            ServerPacket.Header.LP_MobCtrlAck.Set(0x010F);
+        }
+        ServerPacket.Header.LP_END_MOB.Set(0);
+
         // 末尾
         ServerPacket.Header.LP_NO.Set(0x19A);
 

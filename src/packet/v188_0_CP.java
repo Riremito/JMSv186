@@ -80,6 +80,11 @@ public class v188_0_CP {
             ClientPacket.Header.CP_UserAbilityMassUpRequest.Set(0x0054);
             ClientPacket.Header.CP_UserChangeStatRequest.Set(0x0055);
             ClientPacket.Header.CP_UserChangeStatRequestByItemOption.Set(0x0056);
+            ClientPacket.Header.CP_UserSkillUpRequest.Set(0x0057); // v188
+            ClientPacket.Header.CP_UserSkillUseRequest.Set(0x0058);
+            ClientPacket.Header.CP_UserSkillCancelRequest.Set(0x0059);
+            ClientPacket.Header.CP_UserSkillPrepareRequest.Set(0x005A);
+            ClientPacket.Header.CP_UserDropMoneyRequest.Set(0x005B);
             /*
             ClientPacket.Header.CP_UserStatChangeItemUseRequest.Set(0x0041);
             ClientPacket.Header.CP_UserStatChangeItemCancelRequest.Set(0x0042);
@@ -102,11 +107,6 @@ public class v188_0_CP {
             ClientPacket.Header.CP_UserAbilityUpRequest.Set(0x0053);
             ClientPacket.Header.CP_UserAbilityMassUpRequest.Set(0x0054);
             ClientPacket.Header.CP_UserChangeStatRequest.Set(0x0055);
-            ClientPacket.Header.CP_UserChangeStatRequestByItemOption.Set(0x0056);
-            ClientPacket.Header.CP_UserSkillUpRequest.Set(0x0057);
-            ClientPacket.Header.CP_UserSkillUseRequest.Set(0x0058);
-            ClientPacket.Header.CP_UserSkillCancelRequest.Set(0x0059);
-            ClientPacket.Header.CP_UserSkillPrepareRequest.Set(0x005A);
              */
             ClientPacket.Header.CP_UserDropMoneyRequest.Set(0x005B); // v188
             ClientPacket.Header.CP_UserGivePopularityRequest.Set(0x005C);
@@ -305,5 +305,8 @@ public class v188_0_CP {
         }
              */
         }
+
+        ClientPacket.Header.CP_MobMove.Set(0x00CD);
+        ClientPacket.Header.CP_MobApplyCtrl.Set(0x00CE);
     }
 }

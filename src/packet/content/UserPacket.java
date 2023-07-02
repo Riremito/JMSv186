@@ -194,6 +194,9 @@ public class UserPacket {
         if (186 <= ServerConfig.version) {
             p.Decode4(); // get_rand of DR_Check
             p.Decode4(); // Crc32 of DR_Check
+            if (188 <= ServerConfig.version) {
+                p.Decode1();
+            }
             p.Decode4(); // Crc
             // v95 4 bytes SKILLLEVELDATA::GetCrc
         }
@@ -209,7 +212,10 @@ public class UserPacket {
             attack.AttackActionKey = p.Decode1();
         } else {
             attack.AttackActionKey = p.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15)
+        }
 
+        if (188 <= ServerConfig.version) {
+            p.Decode4();
         }
 
         // v95 4 bytes crc
@@ -240,7 +246,7 @@ public class UserPacket {
         }
 
         int damage;
-        List<Pair<Integer, Boolean>> allDamageNumbers;
+        List<Pair<Integer, Boolean>> allDamageNumbers = null;
         attack.allDamage = new ArrayList<AttackPair>();
 
         if (attack.IsMesoExplosion()) { // Meso Explosion
@@ -287,6 +293,13 @@ public class UserPacket {
         attack.position = new Point();
         attack.position.x = p.Decode2();
         attack.position.y = p.Decode2();
+
+        if (DebugConfig.log_damage) {
+            if (allDamageNumbers != null) {
+                Debug.DebugLog(p.GetOpcodeName() + ": damage = " + allDamageNumbers);
+            }
+        }
+
         return attack;
     }
 

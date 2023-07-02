@@ -494,6 +494,10 @@ public class Structure {
     public static final byte[] MonsterStatus(MapleMonster life) {
         ServerPacket data = new ServerPacket();
 
+        if (188 <= ServerConfig.version) {
+            data.Encode4(0);
+        }
+
         if (ServerConfig.version <= 131) {
             if (life.getStati().size() <= 1) {
                 life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
@@ -535,6 +539,7 @@ public class Structure {
                 }
             }
         }
+
         //wh spawn - 15 zeroes instead of 16, then 98 F4 56 A6 C7 C9 01 28, then 7 zeroes
         return data.Get().getBytes();
     }
