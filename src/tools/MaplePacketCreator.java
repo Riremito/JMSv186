@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import client.inventory.MapleMount;
 import client.BuddylistEntry;
 import client.inventory.IItem;
 import constants.GameConstants;
@@ -39,7 +38,6 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import client.MapleKeyLayout;
-import client.inventory.MaplePet;
 import client.MapleQuestStatus;
 import client.MapleStat;
 import client.inventory.IEquip.ScrollResult;
@@ -65,7 +63,6 @@ import server.MapleItemInformationProvider;
 import server.MapleShopItem;
 import server.MapleStatEffect;
 import server.MapleTrade;
-import server.life.SummonAttackEntry;
 import server.life.MapleNPC;
 import server.life.PlayerNPC;
 import server.maps.MapleMap;
@@ -88,8 +85,9 @@ import config.ServerConfig;
 import handling.channel.handler.AttackInfo;
 import handling.channel.handler.BeanGame;
 import packet.ServerPacket;
-import packet.Structure;
 import packet.content.ContextPacket;
+import packet.struct.CWvsContext;
+import packet.struct.CharacterData;
 
 public class MaplePacketCreator {
 
@@ -118,17 +116,17 @@ public class MaplePacketCreator {
     // プレイヤー情報の初期化
     public static final MaplePacket getCharInfo(final MapleCharacter chr) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetField);
-        if (ServerConfig.version > 176) {
+        if (186 <= ServerConfig.version) {
             p.Encode2(0);
         }
         // チャンネル
         p.Encode4(chr.getClient().getChannel() - 1);
         p.Encode1(0);
-        if (ServerConfig.version > 165) {
+        if (186 <= ServerConfig.version) {
             p.Encode4(0);
         }
         p.Encode1(1);
-        if (ServerConfig.version > 131) {
+        if (164 <= ServerConfig.version) {
             p.Encode1(1);
             p.Encode2(0);
         }
@@ -139,13 +137,12 @@ public class MaplePacketCreator {
             p.Encode4(0);
         }
         // キャラクター情報
-        p.EncodeBuffer(Structure.CharacterInfo(chr));
+        p.EncodeBuffer(CharacterData.Encode(chr));
 
-        // ログアウトギフト?
-        p.Encode4(0);
-        p.Encode4(0);
-        p.Encode4(0);
-        p.Encode4(0);
+        if (186 <= ServerConfig.version) {
+            // ログアウトギフト
+            p.EncodeBuffer(CWvsContext.LogoutGiftConfig());
+        }
 
         // サーバーの時間?
         p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));

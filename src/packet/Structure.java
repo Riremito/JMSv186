@@ -53,84 +53,10 @@ public class Structure {
         }
     }
 
-    // Game Server
-    // よく変わる構造
-    public static final byte[] CharacterInfo(MapleCharacter chr) {
-        ServerPacket p = new ServerPacket();
-
-        if (ServerConfig.version <= 131) {
-            p.Encode2(-1);
-        } else {
-            p.Encode8(-1);
-        }
-
-        if (ServerConfig.version > 165) {
-            p.Encode1(0);
-        }
-        if (ServerConfig.version > 186) {
-            p.Encode1(0);
-        }
-        // キャラクター情報
-        p.EncodeBuffer(GW_CharacterStat.Encode(chr));
-        // 友達リストの上限
-        p.Encode1(chr.getBuddylist().getCapacity());
-
-        // 精霊の祝福
-        if (ServerConfig.version >= 165) {
-            if (chr.getBlessOfFairyOrigin() != null) {
-                p.Encode1(1);
-                p.EncodeStr(chr.getBlessOfFairyOrigin());
-            } else {
-                p.Encode1(0);
-            }
-        }
-
-        p.EncodeBuffer(GW_CharacterStat.EncodeMoney(chr));
-        p.EncodeBuffer(GW_CharacterStat.EncodePachinko(chr));
-        // [addInventoryInfo]
-        p.EncodeBuffer(InventoryInfo(chr));
-        // [addSkillInfo]
-        p.EncodeBuffer(addSkillInfo(chr));
-        // [addCoolDownInfo]
-        p.EncodeBuffer(addCoolDownInfo(chr));
-        // [addQuestInfo]
-        p.EncodeBuffer(addQuestInfo(chr));
-
-        if (ServerConfig.version < 188) {
-            p.Encode2(0);
-        }
-
-        // [addRingInfo]
-        p.EncodeBuffer(addRingInfo(chr));
-
-        if (ServerConfig.version > 165 || ServerConfig.version <= 131) {
-            p.Encode2(0);
-        }
-
-        // [addRocksInfo]
-        p.EncodeBuffer(addRocksInfo(chr));
-
-        p.Encode2(0);
-
-        if (ServerConfig.version > 131) {
-            // [addMonsterBookInfo]
-            p.EncodeBuffer(addMonsterBookInfo(chr));
-            // [QuestInfoPacket]
-            p.EncodeBuffer(QuestInfoPacket(chr));
-            // PQ rank?
-            p.Encode2(0);
-        }
-
-        if (ServerConfig.version > 165) {
-            p.Encode2(0);
-        }
-
-        return p.Get().getBytes();
-    }
-
     public static final byte[] InventoryInfo(MapleCharacter chr) {
         ServerPacket p = new ServerPacket();
         // アイテム欄の数
+        // v165 to v186 Encode1 x5 OK
         {
             p.Encode1(chr.getInventory(MapleInventoryType.EQUIP).getSlotLimit());
             p.Encode1(chr.getInventory(MapleInventoryType.USE).getSlotLimit());
@@ -138,10 +64,14 @@ public class Structure {
             p.Encode1(chr.getInventory(MapleInventoryType.ETC).getSlotLimit());
             p.Encode1(chr.getInventory(MapleInventoryType.CASH).getSlotLimit());
         }
-        if (ServerConfig.version > 164) {
+
+        // v165, v186 OK
+        if (165 <= ServerConfig.version) {
+            // 0x100000
             p.Encode4(0);
             p.Encode4(0);
         }
+
         MapleInventory iv = chr.getInventory(MapleInventoryType.EQUIPPED);
         Collection<IItem> equippedC = iv.list();
         List<Item> equipped = new ArrayList<Item>(equippedC.size());
@@ -157,7 +87,7 @@ public class Structure {
                     p.EncodeBuffer(addItemInfo(item, false, false));
                 }
             }
-            if (ServerConfig.version <= 164) {
+            if (ServerConfig.version <= 165) {
                 p.Encode1(0);
             } else {
                 p.Encode2(0);
@@ -171,7 +101,7 @@ public class Structure {
                 }
             }
             // その他装備済みアイテム終了?
-            if (ServerConfig.version <= 164) {
+            if (ServerConfig.version <= 165) {
                 p.Encode1(0);
             } else {
                 p.Encode2(0);
@@ -183,7 +113,7 @@ public class Structure {
             for (IItem item : iv.list()) {
                 p.EncodeBuffer(addItemInfo(item, false, false));
             }
-            if (ServerConfig.version <= 164) {
+            if (ServerConfig.version <= 165) {
                 p.Encode1(0);
             } else {
                 p.Encode2(0);
@@ -191,13 +121,13 @@ public class Structure {
         }
         // v164だとないかも?
         {
-            if (ServerConfig.version > 164) {
+            if (186 <= ServerConfig.version) {
                 for (Item item : equipped) {
                     if (item.getPosition() <= -1000) {
                         p.EncodeBuffer(addItemInfo(item, false, false));
                     }
                 }
-                if (ServerConfig.version <= 164) {
+                if (ServerConfig.version <= 165) {
                     p.Encode1(0);
                 } else {
                     p.Encode2(0);
@@ -279,8 +209,8 @@ public class Structure {
                     pos -= 100;
                 }
             }
-            // v164では場所は1バイトで全て表現される
-            if ((ServerConfig.version > 164 && !trade && item.getType() == 1)/* || ServerConfig.version >= 187*/) {
+            // v131-v165では場所は1バイトで全て表現される
+            if ((186 <= ServerConfig.version && !trade && item.getType() == 1)) {
                 data.Encode2(pos);
             } else {
                 data.Encode1(pos);
@@ -303,7 +233,7 @@ public class Structure {
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
                 // 謎フラグ
-                if (ServerConfig.version > 164 && ServerConfig.version <= 184) {
+                if (ServerConfig.version > 165 && ServerConfig.version <= 184) {
                     data.Encode1(0);
                 }
                 data.Encode2(equip.getStr());
@@ -347,11 +277,11 @@ public class Structure {
                     data.Encode2(equip.getExpPercentage() * 4); // Item Exp... 98% = 25%
                 }
                 // 耐久度
-                if (ServerConfig.version > 164) {
+                if (186 <= ServerConfig.version) {
                     data.Encode4(equip.getDurability());
                 }
                 // ビシャスのハンマー
-                if (ServerConfig.version > 164) {
+                if (186 <= ServerConfig.version) {
                     if (ServerConfig.game_server_enable_hammer) {
                         data.Encode4(equip.getViciousHammer());
                     } else {
@@ -359,7 +289,7 @@ public class Structure {
                     }
                 }
                 // 潜在能力
-                if (ServerConfig.version >= 186) {
+                if (186 <= ServerConfig.version) {
                     if (!hasUniqueId) {
                         data.Encode1(equip.getState()); //7 = unique for the lulz
                         data.Encode1(equip.getEnhance());
@@ -427,7 +357,8 @@ public class Structure {
             data.Encode4(skill.getKey().getId());
             data.Encode4(skill.getValue().skillevel);
 
-            if (ServerConfig.version > 164) {
+            // not in v165
+            if (186 <= ServerConfig.version) {
                 data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
             }
 
@@ -459,9 +390,18 @@ public class Structure {
             data.Encode2(q.getQuest().getId());
             data.EncodeStr(q.getCustomData() != null ? q.getCustomData() : "");
         }
-        if (ServerConfig.version > 131) {
-            data.Encode2(0);
+
+        // not in v165, not in v188
+        if (186 == ServerConfig.version) {
+            data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
+
+        return data.Get().getBytes();
+    }
+
+    public static byte[] addQuestComplete(final MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+
         final List<MapleQuestStatus> completed = chr.getCompletedQuests();
         int time;
         data.Encode2(completed.size());
@@ -471,29 +411,39 @@ public class Structure {
             data.Encode4(time); // maybe start time? no effect.
             data.Encode4(time); // completion time
         }
+
         return data.Get().getBytes();
     }
 
+    // v165, v186
     public static final byte[] addRingInfo(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
         Pair<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
         List<MapleRing> cRing = aRing.getLeft();
+
         data.Encode2(cRing.size());
         for (MapleRing ring : cRing) {
+            // 33 bytes
             data.Encode4(ring.getPartnerChrId());
             data.EncodeBuffer(ring.getPartnerName(), 13);
             data.Encode8(ring.getRingId());
             data.Encode8(ring.getPartnerRingId());
         }
+
         List<MapleRing> fRing = aRing.getRight();
         data.Encode2(fRing.size());
         for (MapleRing ring : fRing) {
+            // 37 bytes
             data.Encode4(ring.getPartnerChrId());
             data.EncodeBuffer(ring.getPartnerName(), 13);
             data.Encode8(ring.getRingId());
             data.Encode8(ring.getPartnerRingId());
             data.Encode4(ring.getItemId());
         }
+
+        data.Encode2(0);
+        // if not 0, 48 bytes
+
         return data.Get().getBytes();
     }
 
@@ -513,7 +463,6 @@ public class Structure {
 
     public static final byte[] addMonsterBookInfo(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
-        data.Encode4(chr.getMonsterBookCover());
         data.Encode1(0);
         // [chr.getMonsterBook().addCardPacket]
         {

@@ -38,7 +38,7 @@ import tools.Pair;
 import java.util.Map;
 import java.util.Map.Entry;
 import packet.ServerPacket;
-import packet.Structure;
+import packet.struct.CharacterData;
 import server.MTSStorage.MTSItemInfo;
 import tools.KoreanDateUtil;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -48,7 +48,7 @@ public class MTSCSPacket {
     public static MaplePacket warpCS(MapleClient c) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetCashShop);
 
-        p.EncodeBuffer(Structure.CharacterInfo(c.getPlayer()));
+        p.EncodeBuffer(CharacterData.Encode(c.getPlayer()));
         p.EncodeStr(c.getAccountName());
         p.Encode2(0);
         if (ServerConfig.version > 164) {
@@ -534,7 +534,7 @@ public class MTSCSPacket {
     public static final MaplePacket startMTS(final MapleCharacter chr) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetITC);
 
-        p.EncodeBuffer(Structure.CharacterInfo(chr));
+        p.EncodeBuffer(CharacterData.Encode(chr));
         p.EncodeStr(chr.getClient().getAccountName());
         p.Encode4(ServerConstants.MTS_MESO);
         p.Encode4(ServerConstants.MTS_TAX);

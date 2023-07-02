@@ -45,7 +45,7 @@ public class GW_CharacterStat {
         p.Encode4(chr.getFace());
         p.Encode4(chr.getHair());
 
-        if (ServerConfig.version < 164) {
+        if (ServerConfig.version <= 131) {
             p.EncodeZeroBytes(8);
         } else {
             p.EncodeZeroBytes(24);
@@ -94,7 +94,7 @@ public class GW_CharacterStat {
         p.Encode4(chr.getExp());
         p.Encode2(chr.getFame());
 
-        if (ServerConfig.version >= 164) {
+        if (164 <= ServerConfig.version) {
             p.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 
@@ -111,7 +111,10 @@ public class GW_CharacterStat {
                 p.EncodeZeroBytes(20);
             }
         } else {
-            p.EncodeZeroBytes(16);
+            // v164, v165
+            p.Encode8(0);
+            p.Encode4(0);
+            p.Encode4(0);
         }
 
         return p.Get().getBytes();
