@@ -1096,7 +1096,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         statup.add(new Pair<MapleStat, Integer>(MapleStat.MP, Integer.valueOf(30000)));
         statup.add(new Pair<MapleStat, Integer>(MapleStat.MAXMP, Integer.valueOf(30000)));
 
-        c.getSession().write(MaplePacketCreator.updatePlayerStats(statup, c.getPlayer().getJob()));
+        c.getPlayer().UpdateStat(false);
     }
 
     public Pair<String, Map<Integer, String>> getSpeedRun(String typ) {

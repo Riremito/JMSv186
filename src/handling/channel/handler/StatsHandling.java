@@ -40,7 +40,7 @@ public class StatsHandling {
 
     public static final void DistributeAP(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
         final List<Pair<MapleStat, Integer>> statupdate = new ArrayList<Pair<MapleStat, Integer>>(2);
-        c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true, chr.getJob()));
+        c.getPlayer().UpdateStat(true);
         chr.updateTick(slea.readInt());
 
         final PlayerStats stat = chr.getStat();
@@ -164,12 +164,12 @@ public class StatsHandling {
                     statupdate.add(new Pair<MapleStat, Integer>(MapleStat.MAXMP, (int) maxmp));
                     break;
                 default:
-                    c.getSession().write(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true, chr.getJob()));
+                    c.getPlayer().UpdateStat(true);
                     return;
             }
             chr.setRemainingAp((short) (chr.getRemainingAp() - 1));
             statupdate.add(new Pair<MapleStat, Integer>(MapleStat.AVAILABLEAP, (int) chr.getRemainingAp()));
-            c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true, chr.getJob()));
+            c.getPlayer().UpdateStat(true);
         }
     }
 
@@ -287,7 +287,7 @@ public class StatsHandling {
         final PlayerStats playerst = chr.getStat();
 
         List<Pair<MapleStat, Integer>> statupdate = new ArrayList<Pair<MapleStat, Integer>>(2);
-        c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true, chr.getJob()));
+        c.getPlayer().UpdateStat(true);
 
         if (chr.getRemainingAp() == amount + amount2) {
             switch (PrimaryStat) {
@@ -320,7 +320,7 @@ public class StatsHandling {
                     statupdate.add(new Pair<MapleStat, Integer>(MapleStat.LUK, (int) playerst.getLuk()));
                     break;
                 default:
-                    c.getSession().write(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true, chr.getJob()));
+                    c.getPlayer().UpdateStat(true);
                     return;
             }
             switch (SecondaryStat) {
@@ -353,12 +353,12 @@ public class StatsHandling {
                     statupdate.add(new Pair<MapleStat, Integer>(MapleStat.LUK, (int) playerst.getLuk()));
                     break;
                 default:
-                    c.getSession().write(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true, chr.getJob()));
+                    c.getPlayer().UpdateStat(true);
                     return;
             }
             chr.setRemainingAp((short) (chr.getRemainingAp() - (amount + amount2)));
             statupdate.add(new Pair<MapleStat, Integer>(MapleStat.AVAILABLEAP, (int) chr.getRemainingAp()));
-            c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true, chr.getJob()));
+            c.getPlayer().UpdateStat(true);
         }
     }
 }

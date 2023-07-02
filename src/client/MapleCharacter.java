@@ -82,6 +82,7 @@ import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
 import minigame.Pachinko;
+import packet.content.ContextPacket;
 import packet.content.MobPacket;
 import packet.content.SocketPacket;
 import packet.content.SummonPacket;
@@ -211,6 +212,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     // ポータルカウント
     private int portal_count = 1;
     private int gashaEXP = 0;
+    private LastStat laststat = null;
 
     public int getPortalCount() {
         portal_count += 1;
@@ -2066,7 +2068,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             statups.add(new Pair<MapleStat, Integer>(MapleStat.HP, Integer.valueOf(stats.getHp())));
         }
         if (statups.size() > 0) {
-            client.getSession().write(MaplePacketCreator.updatePlayerStats(statups, getJob()));
+            client.getPlayer().UpdateStat(false);
         }
     }
 
@@ -2457,7 +2459,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             statup.add(new Pair<MapleStat, Integer>(MapleStat.HP, Integer.valueOf(maxhp)));
             statup.add(new Pair<MapleStat, Integer>(MapleStat.MP, Integer.valueOf(maxmp)));
             stats.recalcLocalStats();
-            client.getSession().write(MaplePacketCreator.updatePlayerStats(statup, getJob()));
+            client.getPlayer().UpdateStat(false);
             map.broadcastMessage(this, MaplePacketCreator.showForeignEffect(getId(), 9), false);
             silentPartyUpdate();
             guildUpdate();
@@ -2714,7 +2716,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             statups.add(new Pair<MapleStat, Integer>(MapleStat.MP, Integer.valueOf(stats.getMp())));
         }
         if (statups.size() > 0) {
-            client.getSession().write(MaplePacketCreator.updatePlayerStats(statups, getJob()));
+            client.getPlayer().UpdateStat(false);
         }
     }
 
@@ -2737,7 +2739,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             return;
         }
         Pair<MapleStat, Integer> statpair = new Pair<MapleStat, Integer>(stat, Integer.valueOf(newval));
-        client.getSession().write(MaplePacketCreator.updatePlayerStats(Collections.singletonList(statpair), itemReaction, getJob()));
+        client.getPlayer().UpdateStat(itemReaction);
     }
 
     public void gainExp(final int total, final boolean show, final boolean inChat, final boolean white) {
@@ -3296,7 +3298,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         stats.setMaxMp((short) maxmp);
         stats.setHp((short) maxhp);
         stats.setMp((short) maxmp);
-        client.getSession().write(MaplePacketCreator.updatePlayerStats(statup, getJob()));
+        client.getPlayer().UpdateStat(false);
         map.broadcastMessage(this, MaplePacketCreator.showForeignEffect(getId(), 0), false);
         stats.recalcLocalStats();
         silentPartyUpdate();
@@ -5129,7 +5131,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         stat.add(new Pair<MapleStat, Integer>(MapleStat.INT, int_));
         stat.add(new Pair<MapleStat, Integer>(MapleStat.LUK, luk));
         stat.add(new Pair<MapleStat, Integer>(MapleStat.AVAILABLEAP, total));
-        client.getSession().write(MaplePacketCreator.updatePlayerStats(stat, false, getJob()));
+        client.getPlayer().UpdateStat(false);
     }
 
     public Event_PyramidSubway getPyramidSubway() {
@@ -5699,5 +5701,173 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void enableActions() {
         UserPacket.SendCharacterStat(this);
+    }
+
+    private class LastStat {
+
+        int statmask; // for updating client side stat
+        int skin;
+        int face;
+        int hair;
+        int pet1;
+        int level;
+        int job;
+        int stat_str;
+        int stat_dex;
+        int stat_int;
+        int stat_luk;
+        int stat_hp;
+        int stat_maxhp;
+        int stat_mp;
+        int stat_maxmp;
+        int ap;
+        int sp;
+        int exp;
+        int fame;
+        int meso;
+        int pet2;
+        int pet3;
+        int gasha_exp;
+
+        LastStat(MapleCharacter chr) {
+            this.statmask = 0;
+            this.skin = getSkinColor();
+            this.face = getFace();
+            this.hair = getHair();
+            //this.pet1;
+            this.level = getLevel();
+            this.job = getJob();
+            this.stat_str = getStat().getStr();
+            this.stat_dex = getStat().getDex();
+            this.stat_int = getStat().getInt();
+            this.stat_luk = getStat().getLuk();
+            this.stat_hp = getStat().getHp();
+            this.stat_maxhp = getStat().getMaxHp();
+            this.stat_mp = getStat().getMp();
+            this.stat_maxmp = getStat().getMaxMp();
+            this.ap = getRemainingAp();
+            this.sp = getRemainingSp();
+            this.exp = getExp();
+            this.fame = getFame();
+            this.meso = getMeso();
+            //this.pet2;
+            //this.pet3;
+            this.gasha_exp = getGashaEXP();
+        }
+
+        void Update(MapleCharacter chr) {
+            if (this.skin != getSkinColor()) {
+                this.skin = getSkinColor();
+                this.statmask |= 1;
+            }
+            if (this.face != getFace()) {
+                this.face = getFace();
+                this.statmask |= (1 << 1);
+            }
+            if (this.hair != getHair()) {
+                this.hair = getHair();
+                this.statmask |= (1 << 2);
+            }
+            //this.pet1;
+            if (this.level != getLevel()) {
+                this.level = getLevel();
+                this.statmask |= (1 << 4);
+            }
+            if (this.job != getJob()) {
+                this.job = getJob();
+                this.statmask |= (1 << 5);
+            }
+            if (this.stat_str != getStat().getStr()) {
+                this.stat_str = getStat().getStr();
+                this.statmask |= (1 << 6);
+            }
+            if (this.stat_dex != getStat().getDex()) {
+                this.stat_dex = getStat().getDex();
+                this.statmask |= (1 << 7);
+            }
+            if (this.stat_int != getStat().getInt()) {
+                this.stat_int = getStat().getInt();
+                this.statmask |= (1 << 8);
+            }
+            if (this.stat_luk != getStat().getLuk()) {
+                this.stat_luk = getStat().getLuk();
+                this.statmask |= (1 << 9);
+            }
+            if (this.stat_hp != getStat().getHp()) {
+                this.stat_hp = getStat().getHp();
+                this.statmask |= (1 << 10);
+            }
+            if (this.stat_maxhp != getStat().getMaxHp()) {
+                this.stat_maxhp = getStat().getMaxHp();
+                this.statmask |= (1 << 11);
+            }
+            if (this.stat_mp != getStat().getMp()) {
+                this.stat_mp = getStat().getMp();
+                this.statmask |= (1 << 12);
+            }
+            if (this.stat_maxmp != getStat().getMaxMp()) {
+                this.stat_maxmp = getStat().getMaxMp();
+                this.statmask |= (1 << 13);
+            }
+            if (this.ap != getRemainingAp()) {
+                this.ap = getRemainingAp();
+                this.statmask |= (1 << 14);
+            }
+            if (this.sp != getRemainingSp()) {
+                this.sp = getRemainingSp();
+                this.statmask |= (1 << 15);
+            }
+            if (this.exp != getExp()) {
+                this.exp = getExp();
+                this.statmask |= (1 << 16);
+            }
+            if (this.fame != getFame()) {
+                this.fame = getFame();
+                this.statmask |= (1 << 17);
+            }
+            if (this.meso != getMeso()) {
+                this.meso = getMeso();
+                this.statmask |= (1 << 18);
+            }
+            //this.pet2;
+            //this.pet3;
+            if (this.gasha_exp != getGashaEXP()) {
+                this.gasha_exp = getGashaEXP();
+                this.statmask |= (1 << 21);
+            }
+        }
+
+        int GetStatMask() {
+            return this.statmask;
+        }
+
+        void ClearStatMask() {
+            this.statmask = 0;
+        }
+    }
+
+    public void UpdateStat(boolean unlock) {
+        if (laststat == null) {
+            laststat = new LastStat(this);
+            return;
+        }
+
+        laststat.Update(this);
+
+        SendPacket(ContextPacket.StatChanged(this, unlock ? 1 : 0, GetStatMask()));
+        ClearStatMask();
+    }
+
+    public int GetStatMask() {
+        if (laststat == null) {
+            return 0;
+        }
+        return laststat.GetStatMask();
+    }
+
+    void ClearStatMask() {
+        if (laststat != null) {
+            laststat.ClearStatMask();
+        }
     }
 }

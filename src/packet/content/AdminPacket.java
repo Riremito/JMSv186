@@ -273,7 +273,7 @@ public class AdminPacket {
 
         final List<Pair<MapleStat, Integer>> statupdate = new ArrayList<>(2);
         statupdate.add(new Pair<>(stat, point));
-        c.SendPacket(MaplePacketCreator.updatePlayerStats(statupdate, true, chr.getJob()));
+        c.getPlayer().UpdateStat(true);
         return true;
     }
 

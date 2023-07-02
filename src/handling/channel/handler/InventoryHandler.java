@@ -1398,7 +1398,7 @@ public class InventoryHandler {
                             statupdate.add(new Pair<MapleStat, Integer>(MapleStat.MAXMP, (int) maxmp));
                             break;
                     }
-                    c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true, c.getPlayer().getJob()));
+                    c.getPlayer().UpdateStat(true);
                 }
                 break;
             }

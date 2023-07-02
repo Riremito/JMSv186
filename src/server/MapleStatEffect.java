@@ -821,7 +821,7 @@ public class MapleStatEffect implements Serializable {
         }
         hpmpupdate.add(new Pair<MapleStat, Integer>(MapleStat.HP, Integer.valueOf(stat.getHp())));
 
-        applyto.getClient().getSession().write(MaplePacketCreator.updatePlayerStats(hpmpupdate, true, applyto.getJob()));
+        applyto.getClient().getPlayer().UpdateStat(true);
 
         if (expinc != 0) {
             applyto.gainExp(expinc, true, true, false);

@@ -89,6 +89,7 @@ import handling.channel.handler.AttackInfo;
 import handling.channel.handler.BeanGame;
 import packet.ServerPacket;
 import packet.Structure;
+import packet.content.ContextPacket;
 
 public class MaplePacketCreator {
 
@@ -184,76 +185,7 @@ public class MaplePacketCreator {
     }
 
     public static final MaplePacket enableActions() {
-        return updatePlayerStats(EMPTY_STATUPDATE, true, 0);
-    }
-
-    public static final MaplePacket updatePlayerStats(final List<Pair<MapleStat, Integer>> stats, final int evan) {
-        return updatePlayerStats(stats, false, evan);
-    }
-
-    public static final MaplePacket updatePlayerStats(final List<Pair<MapleStat, Integer>> stats, final boolean itemReaction, final int evan) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_StatChanged.Get());
-        mplew.write(itemReaction ? 1 : 0);
-        int updateMask = 0;
-        for (final Pair<MapleStat, Integer> statupdate : stats) {
-            updateMask |= statupdate.getLeft().getValue();
-        }
-        List<Pair<MapleStat, Integer>> mystats = stats;
-        if (mystats.size() > 1) {
-            Collections.sort(mystats, new Comparator<Pair<MapleStat, Integer>>() {
-
-                @Override
-                public int compare(final Pair<MapleStat, Integer> o1, final Pair<MapleStat, Integer> o2) {
-                    int val1 = o1.getLeft().getValue();
-                    int val2 = o2.getLeft().getValue();
-                    return (val1 < val2 ? -1 : (val1 == val2 ? 0 : 1));
-                }
-            });
-        }
-        mplew.writeInt(updateMask);
-        Integer value;
-
-        for (final Pair<MapleStat, Integer> statupdate : mystats) {
-            value = statupdate.getLeft().getValue();
-
-            if (value >= 1) {
-                if (value == 0x1) {
-                    mplew.writeShort(statupdate.getRight().shortValue());
-                } else if (value <= 0x4) {
-                    mplew.writeInt(statupdate.getRight());
-                } else if (value < 0x20) {
-                    mplew.write(statupdate.getRight().byteValue());
-                } else if (value == 0x8000) { //availablesp
-                    if (GameConstants.isEvan(evan) || GameConstants.isResist(evan)) {
-                        throw new UnsupportedOperationException("Evan/Resistance wrong updating");
-                    } else {
-                        mplew.writeShort(statupdate.getRight().shortValue());
-                    }
-                } else if (value < 0xFFFF) {
-                    mplew.writeShort(statupdate.getRight().shortValue());
-                } else {
-                    mplew.writeInt(statupdate.getRight().intValue());
-                }
-            }
-        }
-
-        if (ServerConfig.version >= 188) {
-            // test
-            mplew.write(0);
-            mplew.write(0);
-            mplew.write(0);
-            mplew.write(0);
-            mplew.write(0);
-            mplew.write(0);
-            mplew.write(0);
-            mplew.write(0);
-            mplew.write(0);
-            mplew.write(0);
-        }
-
-        return mplew.getPacket();
+        return ContextPacket.StatChanged(null, 1, 0);
     }
 
     public static final MaplePacket updateSp(MapleCharacter chr, final boolean itemReaction) { //this will do..

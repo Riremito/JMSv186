@@ -110,7 +110,7 @@ public class GashaEXPPacket {
             chr.gainExp(exp_table - exp_current, true, true, false);
         }
 
-        UserPacket.SendCharacterStat(chr, 1, 1 << 21);
+        chr.UpdateStat(true);
         return true;
     }
 }

@@ -136,7 +136,7 @@ public class GW_CharacterStat {
     }
 
     // GW_CharacterStat::DecodeChangeStat
-    // GW_CharacterStat::EncodeChangeStatv
+    // GW_CharacterStat::EncodeChangeStat
     public static byte[] EncodeChangeStat(MapleCharacter chr, int statmask) {
         ServerPacket p = new ServerPacket();
 
