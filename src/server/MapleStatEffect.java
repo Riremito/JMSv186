@@ -61,11 +61,16 @@ public class MapleStatEffect implements Serializable {
     private List<MapleDisease> cureDebuffs;
 
     public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level) {
-        return loadFromData(source, skillid, true, overtime, level);
+        return loadFromData(source, skillid, true, overtime, level, 0);
+    }
+
+    // after bigbang
+    public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level, int common_level) {
+        return loadFromData(source, skillid, true, overtime, level, common_level);
     }
 
     public static final MapleStatEffect loadItemEffectFromData(final MapleData source, final int itemid) {
-        return loadFromData(source, itemid, false, false, (byte) 1);
+        return loadFromData(source, itemid, false, false, (byte) 1, 0);
     }
 
     private static final void addBuffStatPairToListIfNotZero(final List<Pair<MapleBuffStat, Integer>> list, final MapleBuffStat buffstat, final Integer val) {
@@ -74,7 +79,7 @@ public class MapleStatEffect implements Serializable {
         }
     }
 
-    private static MapleStatEffect loadFromData(final MapleData source, final int sourceid, final boolean skill, final boolean overTime, final byte level) {
+    private static MapleStatEffect loadFromData(final MapleData source, final int sourceid, final boolean skill, final boolean overTime, final byte level, int common_level) {
         final MapleStatEffect ret = new MapleStatEffect();
         ret.sourceid = sourceid;
         ret.skill = skill;
@@ -83,22 +88,22 @@ public class MapleStatEffect implements Serializable {
             return ret;
         }
         ret.duration = MapleDataTool.getIntConvert("time", source, -1);
-        ret.hp = (short) MapleDataTool.getInt("hp", source, 0);
-        ret.hpR = MapleDataTool.getInt("hpR", source, 0) / 100.0;
-        ret.mp = (short) MapleDataTool.getInt("mp", source, 0);
-        ret.mpR = MapleDataTool.getInt("mpR", source, 0) / 100.0;
-        ret.mhpR = (byte) MapleDataTool.getInt("mhpR", source, 0);
-        ret.mmpR = (byte) MapleDataTool.getInt("mmpR", source, 0);
-        ret.mpCon = (short) MapleDataTool.getInt("mpCon", source, 0);
-        ret.hpCon = (short) MapleDataTool.getInt("hpCon", source, 0);
-        ret.prop = (short) MapleDataTool.getInt("prop", source, 100);
-        ret.cooldown = MapleDataTool.getInt("cooltime", source, 0);
-        ret.expinc = MapleDataTool.getInt("expinc", source, 0);
-        ret.morphId = MapleDataTool.getInt("morph", source, 0);
-        ret.cp = MapleDataTool.getInt("cp", source, 0);
-        ret.nuffSkill = MapleDataTool.getInt("nuffSkill", source, 0);
-        ret.mobCount = (byte) MapleDataTool.getInt("mobCount", source, 1);
-        ret.exp = MapleDataTool.getInt("exp", source, 0);
+        ret.hp = (short) MapleDataTool.getInt("hp", source, 0, common_level);
+        ret.hpR = MapleDataTool.getInt("hpR", source, 0, common_level) / 100.0;
+        ret.mp = (short) MapleDataTool.getInt("mp", source, 0, common_level);
+        ret.mpR = MapleDataTool.getInt("mpR", source, 0, common_level) / 100.0;
+        ret.mhpR = (byte) MapleDataTool.getInt("mhpR", source, 0, common_level);
+        ret.mmpR = (byte) MapleDataTool.getInt("mmpR", source, 0, common_level);
+        ret.mpCon = (short) MapleDataTool.getInt("mpCon", source, 0, common_level);
+        ret.hpCon = (short) MapleDataTool.getInt("hpCon", source, 0, common_level);
+        ret.prop = (short) MapleDataTool.getInt("prop", source, 100, common_level);
+        ret.cooldown = MapleDataTool.getInt("cooltime", source, 0, common_level);
+        ret.expinc = MapleDataTool.getInt("expinc", source, 0, common_level);
+        ret.morphId = MapleDataTool.getInt("morph", source, 0, common_level);
+        ret.cp = MapleDataTool.getInt("cp", source, 0, common_level);
+        ret.nuffSkill = MapleDataTool.getInt("nuffSkill", source, 0, common_level);
+        ret.mobCount = (byte) MapleDataTool.getInt("mobCount", source, 1, common_level);
+        ret.exp = MapleDataTool.getInt("exp", source, 0, common_level);
 
         if (skill) {
             switch (sourceid) {
@@ -133,28 +138,28 @@ public class MapleStatEffect implements Serializable {
         }
         final ArrayList<Pair<MapleBuffStat, Integer>> statups = new ArrayList<Pair<MapleBuffStat, Integer>>();
 
-        ret.mastery = (byte) MapleDataTool.getInt("mastery", source, 0);
-        ret.watk = (short) MapleDataTool.getInt("pad", source, 0);
-        ret.wdef = (short) MapleDataTool.getInt("pdd", source, 0);
-        ret.matk = (short) MapleDataTool.getInt("mad", source, 0);
-        ret.mdef = (short) MapleDataTool.getInt("mdd", source, 0);
-        ret.ehp = (short) MapleDataTool.getInt("emhp", source, 0);
-        ret.emp = (short) MapleDataTool.getInt("emmp", source, 0);
-        ret.ewatk = (short) MapleDataTool.getInt("epad", source, 0);
-        ret.ewdef = (short) MapleDataTool.getInt("epdd", source, 0);
-        ret.emdef = (short) MapleDataTool.getInt("emdd", source, 0);
+        ret.mastery = (byte) MapleDataTool.getInt("mastery", source, 0, common_level);
+        ret.watk = (short) MapleDataTool.getInt("pad", source, 0, common_level);
+        ret.wdef = (short) MapleDataTool.getInt("pdd", source, 0, common_level);
+        ret.matk = (short) MapleDataTool.getInt("mad", source, 0, common_level);
+        ret.mdef = (short) MapleDataTool.getInt("mdd", source, 0, common_level);
+        ret.ehp = (short) MapleDataTool.getInt("emhp", source, 0, common_level);
+        ret.emp = (short) MapleDataTool.getInt("emmp", source, 0, common_level);
+        ret.ewatk = (short) MapleDataTool.getInt("epad", source, 0, common_level);
+        ret.ewdef = (short) MapleDataTool.getInt("epdd", source, 0, common_level);
+        ret.emdef = (short) MapleDataTool.getInt("emdd", source, 0, common_level);
         ret.acc = (short) MapleDataTool.getIntConvert("acc", source, 0);
-        ret.avoid = (short) MapleDataTool.getInt("eva", source, 0);
-        ret.speed = (short) MapleDataTool.getInt("speed", source, 0);
-        ret.jump = (short) MapleDataTool.getInt("jump", source, 0);
-        ret.expBuff = MapleDataTool.getInt("expBuff", source, 0);
-        ret.cashup = MapleDataTool.getInt("cashBuff", source, 0);
-        ret.itemup = MapleDataTool.getInt("itemupbyitem", source, 0);
-        ret.mesoup = MapleDataTool.getInt("mesoupbyitem", source, 0);
-        ret.berserk = MapleDataTool.getInt("berserk", source, 0);
-        ret.berserk2 = MapleDataTool.getInt("berserk2", source, 0);
-        ret.booster = MapleDataTool.getInt("booster", source, 0);
-        ret.illusion = MapleDataTool.getInt("illusion", source, 0);
+        ret.avoid = (short) MapleDataTool.getInt("eva", source, 0, common_level);
+        ret.speed = (short) MapleDataTool.getInt("speed", source, 0, common_level);
+        ret.jump = (short) MapleDataTool.getInt("jump", source, 0, common_level);
+        ret.expBuff = MapleDataTool.getInt("expBuff", source, 0, common_level);
+        ret.cashup = MapleDataTool.getInt("cashBuff", source, 0, common_level);
+        ret.itemup = MapleDataTool.getInt("itemupbyitem", source, 0, common_level);
+        ret.mesoup = MapleDataTool.getInt("mesoupbyitem", source, 0, common_level);
+        ret.berserk = MapleDataTool.getInt("berserk", source, 0, common_level);
+        ret.berserk2 = MapleDataTool.getInt("berserk2", source, 0, common_level);
+        ret.booster = MapleDataTool.getInt("booster", source, 0, common_level);
+        ret.illusion = MapleDataTool.getInt("illusion", source, 0, common_level);
 
         List<MapleDisease> cure = new ArrayList<MapleDisease>(5);
         if (MapleDataTool.getInt("poison", source, 0) > 0) {
@@ -180,9 +185,9 @@ public class MapleStatEffect implements Serializable {
             ret.rb = (Point) source.getChildByPath("rb").getData();
         }
 
-        ret.x = MapleDataTool.getInt("x", source, 0);
-        ret.y = MapleDataTool.getInt("y", source, 0);
-        ret.z = MapleDataTool.getInt("z", source, 0);
+        ret.x = MapleDataTool.getInt("x", source, 0, common_level);
+        ret.y = MapleDataTool.getInt("y", source, 0, common_level);
+        ret.z = MapleDataTool.getInt("z", source, 0, common_level);
         ret.damage = (short) MapleDataTool.getIntConvert("damage", source, 100);
         ret.attackCount = (byte) MapleDataTool.getIntConvert("attackCount", source, 1);
         ret.bulletCount = (byte) MapleDataTool.getIntConvert("bulletCount", source, 1);

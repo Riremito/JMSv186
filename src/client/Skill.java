@@ -201,7 +201,23 @@ public class Skill implements ISkill {
             for (final MapleData level : data.getChildByPath("level")) {
                 ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
             }
+        } else {
+            // v188+
+            MapleData common = data.getChildByPath("common");
+            if (common != null) {
+                // after bigbang updates
+                int max_level = MapleDataTool.getInt("maxLevel", common, -1);
+                for (int level = 1; level < max_level; level++) {
+                    ret.effects.add(MapleStatEffect.loadSkillEffectFromData(common, id, isBuff, (byte) level, level)); // 変数
+                }
+            } else {
+                // old skills
+                for (final MapleData level : data.getChildByPath("level")) {
+                    ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
+                }
+            }
         }
+
         final MapleData reqDataRoot = data.getChildByPath("req");
         if (reqDataRoot != null) {
             for (final MapleData reqData : reqDataRoot.getChildren()) {
