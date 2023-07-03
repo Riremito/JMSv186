@@ -207,7 +207,7 @@ public class Skill implements ISkill {
             if (common != null) {
                 // after bigbang updates
                 int max_level = MapleDataTool.getInt("maxLevel", common, -1);
-                for (int level = 1; level < max_level; level++) {
+                for (int level = 1; level <= max_level; level++) {
                     ret.effects.add(MapleStatEffect.loadSkillEffectFromData(common, id, isBuff, (byte) level, level)); // 変数
                 }
             } else {

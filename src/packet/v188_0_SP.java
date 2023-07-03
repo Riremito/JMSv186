@@ -87,6 +87,7 @@ public class v188_0_SP {
         // CWvsContext::OnPacket
         ServerPacket.Header.LP_InventoryOperation.Set(0x0018);
         ServerPacket.Header.LP_StatChanged.Set(ServerPacket.Header.LP_InventoryOperation.Get() + 2);
+        ServerPacket.Header.LP_ChangeSkillRecordResult.Set(0x001F);
         //Header.LP_CharacterInfo.Set(Header.LP_InventoryOperation.Get() + 26);
 
         ServerPacket.Header.LP_BroadcastMsg.Set(0x003D); // v188
