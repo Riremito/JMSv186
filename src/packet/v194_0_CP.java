@@ -39,5 +39,15 @@ public class v194_0_CP {
         ClientPacket.Header.CP_DeleteCharacter.Set(0x000D);
 
         ClientPacket.Header.CP_CreateSecurityHandle.Set(0x0018); // MapLogin, name wrong?
+
+        ClientPacket.Header.CP_UserTransferFieldRequest.Set(0x001B);
+        ClientPacket.Header.CP_UserTransferChannelRequest.Set(0x001C);
+        ClientPacket.Header.CP_UserMigrateToCashShopRequest.Set(0x001D);
+        ClientPacket.Header.CP_UserMove.Set(0x001E);
+        ClientPacket.Header.CP_UserChat.Set(0x002A);
+        ClientPacket.Header.CP_UserPortalScriptRequest.Set(0x006E);
+        ClientPacket.Header.CP_UserPortalTeleportRequest.Set(0x0070);
+        ClientPacket.Header.CP_UserMigrateToITCRequest.Set(0x00C1);
+
     }
 }

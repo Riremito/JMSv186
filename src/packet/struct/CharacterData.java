@@ -123,7 +123,9 @@ public class CharacterData {
             // v188-v194
             if (188 <= ServerConfig.version) {
                 // 0x200000
-                p.EncodeBuffer(GW_WildHunterInfo.Encode());
+                if (chr.getJob() / 100 == 33) {
+                    p.EncodeBuffer(GW_WildHunterInfo.Encode());
+                }
                 // 0x400000 QuestCompleteOld
                 p.Encode2(0); // not 0, Encode2, EncodeBuffer8
                 // 0x800000

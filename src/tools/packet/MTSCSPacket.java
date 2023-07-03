@@ -50,10 +50,17 @@ public class MTSCSPacket {
 
         p.EncodeBuffer(CharacterData.Encode(c.getPlayer()));
         p.EncodeStr(c.getAccountName());
+
+        if (194 <= ServerConfig.version) {
+            p.Encode4(0);
+        }
+
         p.Encode2(0);
-        if (ServerConfig.version > 164) {
+
+        if (165 <= ServerConfig.version) {
             p.Encode2(0);
         }
+
         p.Encode1(0);
         p.EncodeZeroBytes(1080);
         p.Encode2(0);
@@ -546,6 +553,7 @@ public class MTSCSPacket {
             p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
         }
 
+        // v194 29 bytes 余り
         return p.Get();
     }
 

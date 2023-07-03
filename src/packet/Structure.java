@@ -173,6 +173,10 @@ public class Structure {
             p.Encode1(0);
         }
 
+        if (194 <= ServerConfig.version) {
+            p.Encode4(-1); // not -1...?
+        }
+
         return p.Get().getBytes();
     }
 

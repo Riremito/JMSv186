@@ -152,23 +152,38 @@ public class MaplePacketCreator {
 
         // サーバーの時間?
         p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
+
+        if (194 <= ServerConfig.version) {
+            p.Encode4(0);
+            p.Encode4(0);
+        }
+
         return p.Get();
     }
 
     // マップ移動
     public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetField);
-        if (ServerConfig.version > 176) {
-            p.Encode2(0);
+
+        if (186 <= ServerConfig.version) {
+            p.EncodeBuffer(CClientOptMan.EncodeOpt());
         }
+
         p.Encode4(chr.getClient().getChannel() - 1);
         if (ServerConfig.version > 131) {
             p.Encode1(0);
         }
-        if (ServerConfig.version > 165) {
+
+        if (186 <= ServerConfig.version) {
             p.Encode4(0);
         }
+
         p.Encode1((byte) chr.getPortalCount());
+
+        if (194 <= ServerConfig.version) {
+            p.Encode4(0);
+        }
+
         p.Encode1(0);
         if (ServerConfig.version > 131) {
             p.Encode2(0);
@@ -184,6 +199,11 @@ public class MaplePacketCreator {
             p.Encode4(chr.getStat().getHp());
         }
         p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
+
+        if (194 <= ServerConfig.version) {
+            p.Encode4(0);
+            p.Encode4(0);
+        }
         return p.Get();
     }
 

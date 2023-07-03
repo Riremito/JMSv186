@@ -352,6 +352,13 @@ public class LoginPacket {
             p.Encode1(0);
         }
 
+        if (194 <= ServerConfig.version) {
+            p.Encode4(charslots);
+            p.Encode4(0); // Character Card
+            p.Encode4(0); // idk
+            return p.Get();
+        }
+
         if (ServerConfig.version >= 302) {
             p.Encode4(0);
             p.Encode4(0);
