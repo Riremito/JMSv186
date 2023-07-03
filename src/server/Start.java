@@ -25,6 +25,8 @@ import packet.v186_1_CP;
 import packet.v186_1_SP;
 import packet.v188_0_CP;
 import packet.v188_0_SP;
+import packet.v194_0_CP;
+import packet.v194_0_SP;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.PlayerNPC;
@@ -91,6 +93,7 @@ public class Start {
                 ServerPacket.SetForJMSv187();
                 break;
             }
+            // クラッシュ確率が下がったが、画面崩壊の影響で遅い
             case 188: {
                 v188_0_CP.Set();
                 v188_0_SP.Set();
@@ -98,8 +101,8 @@ public class Start {
             }
             // 起動早い
             case 194: {
-                ClientPacket.SetForJMSv302();
-                ServerPacket.SetForJMSv302();
+                v194_0_CP.Set();
+                v194_0_SP.Set();
                 break;
             }
             // 起動まぁまぁ早い

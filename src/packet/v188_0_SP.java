@@ -2,6 +2,7 @@ package packet;
 
 // BB後でまともに動作するバージョン
 // v187.0は動作しませんでした
+// v188.0もクラッシュはしないが、画面崩壊の影響で動作が遅くなるのであまりよくなさそう
 public class v188_0_SP {
 
     public static void Set() {

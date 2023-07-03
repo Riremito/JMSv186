@@ -86,6 +86,7 @@ import handling.channel.handler.AttackInfo;
 import handling.channel.handler.BeanGame;
 import packet.ServerPacket;
 import packet.content.ContextPacket;
+import packet.struct.CClientOptMan;
 import packet.struct.CWvsContext;
 import packet.struct.CharacterData;
 
@@ -117,7 +118,7 @@ public class MaplePacketCreator {
     public static final MaplePacket getCharInfo(final MapleCharacter chr) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetField);
         if (186 <= ServerConfig.version) {
-            p.Encode2(0);
+            p.EncodeBuffer(CClientOptMan.EncodeOpt());
         }
         // チャンネル
         p.Encode4(chr.getClient().getChannel() - 1);
@@ -126,6 +127,11 @@ public class MaplePacketCreator {
             p.Encode4(0);
         }
         p.Encode1(1);
+
+        if (194 <= ServerConfig.version) {
+            p.Encode4(0);
+        }
+
         if (164 <= ServerConfig.version) {
             p.Encode1(1);
             p.Encode2(0);

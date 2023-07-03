@@ -104,6 +104,7 @@ public class Structure {
             if (ServerConfig.version <= 165) {
                 p.Encode1(0);
             } else {
+                // v186-v194
                 p.Encode2(0);
             }
         }
@@ -134,12 +135,10 @@ public class Structure {
                 }
             }
         }
-        // v187.0
-        // なんかしらのデータが消費アイテムの前にあってずれている
-        // おそらくアイテム欄より後でもズレが発生してる
-        if (ServerConfig.version >= 188) {
-            p.Encode1(0);
-            p.Encode1(0);
+
+        if (188 <= ServerConfig.version) {
+            // v188-v194
+            p.Encode2(0);
         }
         // 消費
         {
@@ -195,6 +194,8 @@ public class Structure {
         return addItemInfo(item, zeroPosition, leaveOut, false);
     }
 
+    // GW_ItemSlotBase::Decode
+    // GW_ItemSlotBase::CreateItem
     public static final byte[] addItemInfo(final IItem item, final boolean zeroPosition, final boolean leaveOut, final boolean trade) {
         ServerPacket data = new ServerPacket();
         short pos = item.getPosition();
@@ -229,6 +230,7 @@ public class Structure {
         } else {
             data.EncodeBuffer(addExpirationTime(item.getExpiration()));
             if (item.getType() == 1) {
+                // GW_ItemSlotEquip::RawDecode
                 final IEquip equip = (IEquip) item;
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
@@ -236,6 +238,8 @@ public class Structure {
                 if (ServerConfig.version > 165 && ServerConfig.version <= 184) {
                     data.Encode1(0);
                 }
+
+                // 2x15
                 data.Encode2(equip.getStr());
                 data.Encode2(equip.getDex());
                 data.Encode2(equip.getInt());
@@ -251,6 +255,7 @@ public class Structure {
                 data.Encode2(equip.getHands());
                 data.Encode2(equip.getSpeed());
                 data.Encode2(equip.getJump());
+
                 data.EncodeStr(equip.getOwner());
                 // ポイントアイテムの一度も装備していないことを確認するためのフラグ
                 if (hasUniqueId) {
@@ -310,6 +315,7 @@ public class Structure {
                 data.Encode8(0);
                 data.Encode4(-1);
             } else {
+                // GW_ItemSlotBundle::RawDecode
                 data.Encode2(item.getQuantity());
                 data.EncodeStr(item.getOwner());
                 data.Encode2(item.getFlag());
@@ -327,6 +333,7 @@ public class Structure {
     public static final byte[] addPetItemInfo(final IItem item, final MaplePet pet) {
         ServerPacket data = new ServerPacket();
         data.EncodeBuffer(addExpirationTime(-1));
+        // GW_ItemSlotPet::RawDecode
         data.EncodeBuffer(pet.getName(), 13);
         data.Encode1(pet.getLevel());
         data.Encode2(pet.getCloseness());
@@ -391,8 +398,12 @@ public class Structure {
             data.EncodeStr(q.getCustomData() != null ? q.getCustomData() : "");
         }
 
-        // not in v165, not in v188
+        // not in v165, not in v188, but in v194 ???
         if (186 == ServerConfig.version) {
+            data.Encode2(0); // not 0, EncodeStr, EncodeStr
+        }
+
+        if (194 <= ServerConfig.version) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
@@ -458,6 +469,13 @@ public class Structure {
         for (int i = 0; i < 10; i++) { // VIP teleport map
             data.Encode4(map[i]);
         }
+
+        if (194 <= ServerConfig.version) {
+            for (int i = 0; i < 13; i++) {
+                data.Encode4(999999999);
+            }
+        }
+
         return data.Get().getBytes();
     }
 

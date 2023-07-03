@@ -66,44 +66,61 @@ public class CharacterData {
             }
         }
 
-        // 0x2 (<< 1)
+        // 祝福系統
+        if (194 <= ServerConfig.version) {
+            p.Encode1(0); // not 0, EncodeStr
+            p.Encode1(0); // not 0, EncodeStr
+        }
+
+        // 0x2 (<< 1) v165-v194
         p.EncodeBuffer(GW_CharacterStat.EncodeMoney(chr));
         p.EncodeBuffer(GW_CharacterStat.EncodePachinko(chr));
-        // 0x4 (<< 2) [addInventoryInfo]
+        // 0x4 (<< 2), 0x100000, 0x4 [addInventoryInfo]
         p.EncodeBuffer(Structure.InventoryInfo(chr));
-        // 0x100 [addSkillInfo] changed
+        // 0x100 [addSkillInfo] v165 changed v186-v194
         p.EncodeBuffer(Structure.addSkillInfo(chr));
-        // 0x8000 [addCoolDownInfo] v165, v186, v188
+        // 0x8000 [addCoolDownInfo] v165-v194
         p.EncodeBuffer(Structure.addCoolDownInfo(chr));
-        // 0x200 [addQuestInfo] changed
+        // 0x200 [addQuestInfo] changed v165,v186,v188,v194
         p.EncodeBuffer(Structure.addQuestInfo(chr));
-        // 0x4000 QuestComplete v165, v186, v188
+        // 0x4000 QuestComplete v165-v194
         p.EncodeBuffer(Structure.addQuestComplete(chr));
-        // 0x400 MiniGameRecord v165, v186, v188
+        // 0x400 MiniGameRecord v165-v194
         p.Encode2(0); // not 0 -> Encode4 x5
-        // 0x800 [addRingInfo] v186, v165, v188
+        // 0x800 [addRingInfo] v165-v194
         p.EncodeBuffer(Structure.addRingInfo(chr));
-        // 0x1000 [addRocksInfo] v165, v186, v188
+        // 0x1000 [addRocksInfo] v165-v188 changed v194
         p.EncodeBuffer(Structure.addRocksInfo(chr));
-        // 0x7C JMS, Present v165, v186, v188
+        // 0x7C JMS, Present v165-v194
         p.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
 
         if (164 <= ServerConfig.version) {
-            // 0x20000 JMS v165, v186, v188
+            // 0x20000 JMS v165-v194
             p.Encode4(chr.getMonsterBookCover());
-            // 0x10000 JMS [addMonsterBookInfo] v165, v186, v188
+            // 0x10000 JMS [addMonsterBookInfo] v165-v194
             p.EncodeBuffer(Structure.addMonsterBookInfo(chr));
-            // 0x40000 (GMS 0x80000) [QuestInfoPacket] v165, v186, v188
+
+            if (194 <= ServerConfig.version) {
+                // 0x10000000
+                p.Encode4(0);
+                // 0x20000000
+                p.Encode2(0); // not 0, Encode2
+            }
+
+            // 0x40000 (GMS 0x80000) [QuestInfoPacket] v165-v194
             p.EncodeBuffer(Structure.QuestInfoPacket(chr));
-            // 0x80000 JMS v165, v186, not in v188
+
             if (ServerConfig.version <= 186) {
+                // 0x80000 JMS v165, v186, not in v188
                 p.Encode2(0);// not 0 -> Encode4, Encode2
             }
+
             if (186 == ServerConfig.version) {
                 // 0x200000 VisitorQuestLog (GMS 0x800000)
                 p.Encode2(0); // not 0 -> Encode2, Encode2
             }
 
+            // v188-v194
             if (188 <= ServerConfig.version) {
                 // 0x200000
                 p.EncodeBuffer(GW_WildHunterInfo.Encode());

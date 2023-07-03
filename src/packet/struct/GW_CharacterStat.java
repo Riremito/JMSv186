@@ -103,7 +103,8 @@ public class GW_CharacterStat {
         if (ServerConfig.version > 176) {
             // デュアルブレイドフラグ
             p.Encode2(chr.getSubcategory());
-            if (ServerConfig.version >= 188) {
+            if (188 <= ServerConfig.version) {
+                // v194 OK
                 p.Encode8(0);
                 p.Encode4(0);
                 p.Encode4(0);
