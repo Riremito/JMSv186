@@ -145,7 +145,7 @@ public class CharLoginHandler {
 
     public static final void CharlistRequest(ClientPacket p, final MapleClient c) {
         int server = p.Decode1();
-        final int channel = p.Decode1() + 1;
+        final int channel = p.Decode1();
 
         // もみじ block test
         if (server == 1) {

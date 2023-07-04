@@ -42,13 +42,12 @@ public class v194_0_SP {
         ServerPacket.Header.LP_RecommendWorldMessage.Set(0x0014);
         ServerPacket.Header.LOGIN_AUTH.Set(0x0015);
 
-        ServerPacket.Header.LP_SetField.Set(0x0088);
-        ServerPacket.Header.LP_SetITC.Set(0x0089);
-        ServerPacket.Header.LP_SetCashShop.Set(0x008A);
-
         ServerPacket.Header.LP_InventoryOperation.Set(0x0018);
         ServerPacket.Header.LP_StatChanged.Set(0x001A);
         ServerPacket.Header.LP_ChangeSkillRecordResult.Set(0x001F);
+        ServerPacket.Header.LP_SetField.Set(0x0088);
+        ServerPacket.Header.LP_SetITC.Set(0x0089);
+        ServerPacket.Header.LP_SetCashShop.Set(0x008A);
 
     }
 }

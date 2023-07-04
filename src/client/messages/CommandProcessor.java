@@ -156,6 +156,11 @@ public class CommandProcessor {
             String[] splitted = line.split(" ");
             splitted[0] = splitted[0].toLowerCase();
 
+            if ("/ea".equals(splitted[0]) || "/stuck".equals(splitted[0]) || "/unlock".equals(splitted[0])) {
+                c.getPlayer().UpdateStat(true);
+                return true;
+            }
+
             // デバッグモード
             if ("/debug".equals(splitted[0])) {
                 c.getPlayer().SetDebugger();
