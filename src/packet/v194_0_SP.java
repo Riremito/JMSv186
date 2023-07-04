@@ -45,9 +45,13 @@ public class v194_0_SP {
         ServerPacket.Header.LP_InventoryOperation.Set(0x0018);
         ServerPacket.Header.LP_StatChanged.Set(0x001A);
         ServerPacket.Header.LP_ChangeSkillRecordResult.Set(0x001F);
+        ServerPacket.Header.LP_BroadcastMsg.Set(0x0040);
+
         ServerPacket.Header.LP_SetField.Set(0x0088); // ゲームサーバーへ
         ServerPacket.Header.LP_SetITC.Set(0x0089); // MTSサーバーへ
         ServerPacket.Header.LP_SetCashShop.Set(0x008A); // ポイントショップサーバーへ
+
+        ServerPacket.Header.LP_UserChat.Set(0x00B0); // チャット
 
         ServerPacket.Header.LP_ImitatedNPCData.Set(0x0058);
         ServerPacket.Header.LP_LimitedNPCDisableInfo.Set(0x0059);
