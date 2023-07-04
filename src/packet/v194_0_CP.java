@@ -45,6 +45,12 @@ public class v194_0_CP {
         ClientPacket.Header.CP_UserMove.Set(0x001E); // 座標移動
         ClientPacket.Header.CP_UserHit.Set(0x0028); // 被ダメージ
         ClientPacket.Header.CP_UserChat.Set(0x002A); // チャット
+
+        ClientPacket.Header.CP_UserSelectNpc.Set(0x0036); // NPC会話
+        ClientPacket.Header.CP_UserScriptMessageAnswer.Set(0x003A); // NPC会話継続
+        //ClientPacket.Header.CP_UserShopRequest.Set(0x003B);
+        //ClientPacket.Header.CP_UserTrunkRequest.Set(0x003C);
+
         ClientPacket.Header.CP_UserAbilityUpRequest.Set(0x005E); // AP
         ClientPacket.Header.CP_UserAbilityMassUpRequest.Set(0x005F); // AP自動配分
         ClientPacket.Header.CP_UserChangeStatRequest.Set(0x0060); // 時間経過による自動回復
@@ -56,6 +62,7 @@ public class v194_0_CP {
         ClientPacket.Header.CP_UserCharacterInfoRequest.Set(0x0069); // キャラクター情報
         ClientPacket.Header.CP_UserPortalScriptRequest.Set(0x006E); // Map移動スクリプト
         ClientPacket.Header.CP_UserPortalTeleportRequest.Set(0x0070); // Map内移動スクリプト
+        // 0x0076 ??? quest?
         ClientPacket.Header.CP_Admin.Set(0x009C); // GMコマンド
         ClientPacket.Header.CP_Log.Set(0x009D); // GMコマンド文字列
         ClientPacket.Header.CP_FuncKeyMappedModified.Set(0x00A4); // キー設定
