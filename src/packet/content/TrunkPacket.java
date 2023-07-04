@@ -13,7 +13,7 @@ import handling.MaplePacket;
 import java.util.Collection;
 import packet.ClientPacket;
 import packet.ServerPacket;
-import packet.Structure;
+import packet.struct.GW_ItemSlotBase;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStorage;
@@ -285,7 +285,7 @@ public class TrunkPacket {
 
         p.Encode1((byte) items.size());
         for (IItem item : items) {
-            p.EncodeBuffer(Structure.addItemInfo(item, true, true));
+            p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
         }
 
         p.Encode2(0);
@@ -336,7 +336,7 @@ public class TrunkPacket {
 
         p.Encode1((byte) items.size());
         for (IItem item : items) {
-            p.EncodeBuffer(Structure.addItemInfo(item, true, true));
+            p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
         }
 
         return p.Get();
@@ -358,7 +358,7 @@ public class TrunkPacket {
 
         p.Encode1((byte) items.size());
         for (IItem item : items) {
-            p.EncodeBuffer(Structure.addItemInfo(item, true, true));
+            p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
         }
 
         return p.Get();

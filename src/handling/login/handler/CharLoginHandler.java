@@ -410,7 +410,6 @@ public class CharLoginHandler {
         chr.setMeso(777000000);
         // パチンコ玉
         chr.setTama(500000);
-
         // エリクサー
         AddItem(chr, 2000004, 100);
         // 万病治療薬
@@ -474,31 +473,22 @@ public class CharLoginHandler {
         // ドラゴン(アビス)
         AddItem(chr, 3010047);
 
-        // 拡声器
-        AddItem(chr, 3010047, 100);
-        // アイテム拡声器
-        AddItem(chr, 5076000, 100);
-        // 黒板
-        AddItem(chr, 5370000, 100);
-        // 営業許可証
-        AddItem(chr, 5140000, 100);
-        // 高性能テレポストーン
-        AddItem(chr, 5041000, 100);
-        // ガシャポンチケット
-        AddItem(chr, 5220000, 100);
+        // ポイントアイテム
+        AddItem(chr, 5071000, 100); // 拡声器
+        AddItem(chr, 5076000, 100); // アイテム拡声器
+        AddItem(chr, 5370000, 100); // 黒板
+        AddItem(chr, 5140000); // 営業許可証
+        AddItem(chr, 5041000, 100); // 高性能テレポストーン
+        AddItem(chr, 5220000, 100); // ガシャポンチケット
         if (ServerConfig.version >= 186) {
-            // ビシャスのハンマー
-            AddItem(chr, 5570000, 100);
-            // ミラクルキューブ
-            AddItem(chr, 5062000, 100);
-            // ベガの呪文書(10%)
-            AddItem(chr, 5610000, 100);
-            // ベガの呪文書(60%)
-            AddItem(chr, 5610001, 100);
+            AddItem(chr, 5570000, 100); // ビシャスのハンマー
+            AddItem(chr, 5062000, 100); // ミラクルキューブ
+            AddItem(chr, 5610000, 100); // ベガの呪文書(10%)
+            AddItem(chr, 5610001, 100); // ベガの呪文書(60%)
         }
-        // AP再分配の書
-        AddItem(chr, 5050000, 100);
+        AddItem(chr, 5050000, 100); // AP再分配の書
 
+        // プレミアムさすらいの商人ミョミョ
         return true;
     }
 }

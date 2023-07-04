@@ -23,10 +23,7 @@ package packet.struct;
 import client.inventory.IEquip;
 import client.inventory.IItem;
 import config.ServerConfig;
-import constants.GameConstants;
 import packet.ServerPacket;
-import static packet.Structure.addExpirationTime;
-import static packet.Structure.addPetItemInfo;
 
 /**
  *
