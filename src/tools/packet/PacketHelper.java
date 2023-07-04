@@ -22,32 +22,19 @@ package tools.packet;
 
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import client.inventory.IEquip;
-import client.inventory.Item;
-import client.ISkill;
 import constants.GameConstants;
-import client.inventory.MapleRing;
 import client.inventory.MaplePet;
 import client.MapleCharacter;
-import client.MapleCoolDownValueHolder;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
-import client.MapleQuestStatus;
 import client.inventory.IItem;
-import client.SkillEntry;
 import config.ServerConfig;
 import debug.Debug;
-import handling.channel.ChannelServer;
-import packet.ServerPacket;
 import packet.struct.GW_ItemSlotBase;
-import server.Start;
-import tools.Pair;
 import server.movement.LifeMovementFragment;
 import server.shops.AbstractPlayerStore;
 import server.shops.IMaplePlayerShop;
@@ -76,222 +63,6 @@ public class PacketHelper {
         }
         long time = (realTimestamp / 1000); // convert to seconds
         return ((time * 10000000) + FT_UT_OFFSET);
-    }
-
-    public static void addQuestInfo(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
-        final List<MapleQuestStatus> started = chr.getStartedQuests();
-        mplew.writeShort(started.size());
-        for (final MapleQuestStatus q : started) {
-            mplew.writeShort(q.getQuest().getId());
-            mplew.writeMapleAsciiString(q.getCustomData() != null ? q.getCustomData() : "");
-        }
-        mplew.writeShort(0);
-        final List<MapleQuestStatus> completed = chr.getCompletedQuests();
-        int time;
-        mplew.writeShort(completed.size());
-        for (final MapleQuestStatus q : completed) {
-            mplew.writeShort(q.getQuest().getId());
-            time = KoreanDateUtil.getQuestTimestamp(q.getCompletionTime());
-            mplew.writeInt(time); // maybe start time? no effect.
-            mplew.writeInt(time); // completion time
-        }
-    }
-
-    public static final void addSkillInfo(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
-        final Map<ISkill, SkillEntry> skills = chr.getSkills();
-        mplew.writeShort(skills.size());
-        for (final Entry<ISkill, SkillEntry> skill : skills.entrySet()) {
-            mplew.writeInt(skill.getKey().getId());
-            mplew.writeInt(skill.getValue().skillevel);
-            addExpirationTime(mplew, skill.getValue().expiration);
-
-            if (skill.getKey().isFourthJob()) {
-                mplew.writeInt(skill.getValue().masterlevel);
-            }
-        }
-    }
-
-    public static final void addCoolDownInfo(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
-        final List<MapleCoolDownValueHolder> cd = chr.getCooldowns();
-        mplew.writeShort(cd.size());
-        for (final MapleCoolDownValueHolder cooling : cd) {
-            mplew.writeInt(cooling.skillId);
-            mplew.writeShort((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);
-        }
-    }
-
-    public static final void addRocksInfo(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
-        final int[] mapz = chr.getRegRocks();
-        for (int i = 0; i < 5; i++) { // VIP teleport map
-            mplew.writeInt(mapz[i]);
-        }
-
-        final int[] map = chr.getRocks();
-        for (int i = 0; i < 10; i++) { // VIP teleport map
-            mplew.writeInt(map[i]);
-        }
-    }
-
-    public static final void addMonsterBookInfo(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
-        mplew.writeInt(chr.getMonsterBookCover());
-        mplew.write(0);
-        chr.getMonsterBook().addCardPacket(mplew);
-    }
-
-    public static final void addRingInfo(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
-        mplew.writeShort(0);
-        //01 00 = size
-        //01 00 00 00 = gametype?
-        //03 00 00 00 = win
-        //00 00 00 00 = tie/loss
-        //01 00 00 00 = tie/loss
-        //16 08 00 00 = points
-        Pair<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
-        List<MapleRing> cRing = aRing.getLeft();
-        mplew.writeShort(cRing.size());
-        for (MapleRing ring : cRing) {
-            mplew.writeInt(ring.getPartnerChrId());
-            mplew.writeAsciiString(ring.getPartnerName(), 13);
-            mplew.writeLong(ring.getRingId());
-            mplew.writeLong(ring.getPartnerRingId());
-        }
-        List<MapleRing> fRing = aRing.getRight();
-        mplew.writeShort(fRing.size());
-        for (MapleRing ring : fRing) {
-            mplew.writeInt(ring.getPartnerChrId());
-            mplew.writeAsciiString(ring.getPartnerName(), 13);
-            mplew.writeLong(ring.getRingId());
-            mplew.writeLong(ring.getPartnerRingId());
-            mplew.writeInt(ring.getItemId());
-        }
-        mplew.writeShort(0); //engagement ring?
-    }
-
-    public static void addInventoryInfo(MaplePacketLittleEndianWriter mplew, MapleCharacter chr) {
-        mplew.writeInt(chr.getMeso()); // mesos
-        mplew.writeInt(chr.getId());
-        mplew.writeInt(chr.getTama()); // パチンコ玉の数
-        mplew.writeInt(0); // unknown
-        mplew.write(chr.getInventory(MapleInventoryType.EQUIP).getSlotLimit()); // equip slots
-        mplew.write(chr.getInventory(MapleInventoryType.USE).getSlotLimit()); // use slots
-        mplew.write(chr.getInventory(MapleInventoryType.SETUP).getSlotLimit()); // set-up slots
-        mplew.write(chr.getInventory(MapleInventoryType.ETC).getSlotLimit()); // etc slots
-        mplew.write(chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // cash slots
-        if (ServerConfig.version > 164) {
-            mplew.write(unk1);
-            mplew.write(unk2);
-        } else {
-            mplew.writeZeroBytes(0x07);
-        }
-        MapleInventory iv = chr.getInventory(MapleInventoryType.EQUIPPED);
-        Collection<IItem> equippedC = iv.list();
-
-        List<Item> equipped = new ArrayList<Item>(equippedC.size());
-
-        for (IItem item : equippedC) {
-            equipped.add((Item) item);
-        }
-        Collections.sort(equipped);
-        if (ServerConfig.version <= 186) {
-            for (Item item : equipped) {
-                if (item.getPosition() < 0 && item.getPosition() > -100) {
-                    addItemInfo(mplew, item, false, false);
-                }
-            }
-        }
-        mplew.writeShort(0); // start of equipped nx
-
-        if (ServerConfig.version <= 186) {
-            for (Item item : equipped) {
-                if (item.getPosition() <= -100 && item.getPosition() > -1000) {
-                    addItemInfo(mplew, item, false, false);
-                }
-            }
-        }
-
-        mplew.writeShort(0); // start of equip inventory
-        iv = chr.getInventory(MapleInventoryType.EQUIP);
-        for (IItem item : iv.list()) {
-            addItemInfo(mplew, item, false, false);
-        }
-        mplew.writeShort(0); //start of other equips
-
-        if (ServerConfig.version <= 186) {
-            for (Item item : equipped) {
-                if (item.getPosition() <= -1000) {
-                    addItemInfo(mplew, item, false, false);
-                }
-            }
-        }
-
-        mplew.writeShort(0); // start of use inventory
-        iv = chr.getInventory(MapleInventoryType.USE);
-        for (IItem item : iv.list()) {
-            addItemInfo(mplew, item, false, false);
-        }
-        mplew.write(0); // start of set-up inventory
-        iv = chr.getInventory(MapleInventoryType.SETUP);
-        for (IItem item : iv.list()) {
-            addItemInfo(mplew, item, false, false);
-        }
-        mplew.write(0); // start of etc inventory
-        iv = chr.getInventory(MapleInventoryType.ETC);
-        for (IItem item : iv.list()) {
-            addItemInfo(mplew, item, false, false);
-        }
-        mplew.write(0); // start of cash inventory
-        iv = chr.getInventory(MapleInventoryType.CASH);
-        for (IItem item : iv.list()) {
-            addItemInfo(mplew, item, false, false);
-        }
-        mplew.write(0);
-    }
-
-    public static final void addCharStats(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
-        mplew.writeInt(chr.getId()); // character id
-        mplew.writeAsciiString(chr.getName(), 13);
-        mplew.write(chr.getGender()); // gender (0 = male, 1 = female)
-        mplew.write(chr.getSkinColor()); // skin color
-        mplew.writeInt(chr.getFace()); // face
-        mplew.writeInt(chr.getHair()); // hair
-
-        if (ServerConfig.version < 164) {
-            mplew.writeZeroBytes(8);
-        } else {
-            mplew.writeZeroBytes(24);
-        }
-
-        mplew.write(chr.getLevel()); // level
-        mplew.writeShort(chr.getJob()); // job
-        chr.getStat().connectData(mplew);
-        mplew.writeShort(chr.getRemainingAp()); // remaining ap
-        if (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob())) {
-            final int size = chr.getRemainingSpSize();
-            mplew.write(size);
-            for (int i = 0; i < chr.getRemainingSps().length; i++) {
-                if (chr.getRemainingSp(i) > 0) {
-                    mplew.write(i + 1);
-                    mplew.write(chr.getRemainingSp(i));
-                }
-            }
-        } else {
-            mplew.writeShort(chr.getRemainingSp()); // remaining sp
-        }
-        mplew.writeInt(chr.getExp()); // exp
-        mplew.writeShort(chr.getFame()); // fame
-
-        if (ServerConfig.version >= 164) {
-            mplew.writeInt(0); // Gachapon exp
-        }
-
-        mplew.writeInt(chr.getMapId()); // current map id
-        mplew.write(chr.getInitialSpawnpoint()); // spawnpoint
-        if (ServerConfig.version > 176) {
-            mplew.writeShort(chr.getSubcategory()); //1 here = db
-            mplew.writeZeroBytes(20); // 8 + 4 + 4 + 4
-        } else {
-            mplew.writeZeroBytes(16);
-        }
     }
 
     public static final void addCharLook(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr, final boolean mega) {
@@ -500,52 +271,6 @@ public class PacketHelper {
         if (shop.getShopType() != 1) {
             mplew.write(shop.isOpen() ? 0 : 1);
         }
-    }
-
-    public static final void addCharacterInfo(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
-        mplew.writeLong(-1);
-        if (ServerConfig.version > 164) {
-            mplew.write(0);
-        }
-
-        if (ServerConfig.version >= 187) {
-            mplew.write(0);
-        }
-
-        addCharStats(mplew, chr);
-        mplew.write(chr.getBuddylist().getCapacity());
-
-        if (ServerConfig.version > 164) {
-            // Bless
-            if (chr.getBlessOfFairyOrigin() != null) {
-                mplew.write(1);
-                mplew.writeMapleAsciiString(chr.getBlessOfFairyOrigin());
-            } else {
-                mplew.write(0);
-            }
-            // End
-        }
-
-        addInventoryInfo(mplew, chr);
-
-        // 修正が必要
-        if (ServerConfig.version <= 164) {
-            mplew.writeZeroBytes(512);
-        }
-        if (ServerConfig.version >= 187) {
-            mplew.writeZeroBytes(512);
-        }
-
-        addSkillInfo(mplew, chr);
-        addCoolDownInfo(mplew, chr);
-        addQuestInfo(mplew, chr);
-        addRingInfo(mplew, chr);
-        addRocksInfo(mplew, chr);
-        mplew.writeShort(0);
-        addMonsterBookInfo(mplew, chr);
-        chr.QuestInfoPacket(mplew); // for every questinfo: int16_t questid, string questdata
-        mplew.writeShort(0); // PQ rank
-        mplew.writeShort(0);
     }
 
     public static final void addPetItemInfo(final MaplePacketLittleEndianWriter mplew, final IItem item, final MaplePet pet) {

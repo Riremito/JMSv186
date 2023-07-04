@@ -31,6 +31,7 @@ import client.messages.commands.PlayerCommand;
 import constants.ServerConstants.CommandType;
 import constants.ServerConstants.PlayerGMRank;
 import database.DatabaseConnection;
+import handling.channel.handler.StatsHandling;
 import java.lang.reflect.Modifier;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -166,6 +167,15 @@ public class CommandProcessor {
                 chr.getStat().setHp(chr.getStat().getMaxHp());
                 chr.getStat().setMp(chr.getStat().getMaxMp());
                 chr.UpdateStat(true);
+                return true;
+            }
+
+            if ("/autosp".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                int skillid = chr.getLastSkillUp();
+                if (skillid != 0) {
+                    while (StatsHandling.DistributeSP(skillid, c, chr));
+                }
                 return true;
             }
 

@@ -300,10 +300,18 @@ public class InventoryHandler {
         }
     }
 
-    public static final void UseMagnify(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        c.getPlayer().updateTick(slea.readInt());
-        final IItem magnify = c.getPlayer().getInventory(MapleInventoryType.USE).getItem((byte) slea.readShort());
-        final IItem toReveal = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readShort());
+    public static final void UseMagnify(ClientPacket p, final MapleClient c) {
+        p.Decode4(); // time
+        short slot_use_item = p.Decode2();
+        short slot_equip_item = p.Decode2();
+
+        final IItem magnify = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot_use_item);
+        IItem toReveal = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(slot_equip_item);
+
+        if (toReveal == null) {
+            toReveal = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slot_equip_item);
+        }
+
         if (magnify == null || toReveal == null) {
             c.getSession().write(MaplePacketCreator.getInventoryFull());
             return;

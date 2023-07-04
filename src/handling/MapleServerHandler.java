@@ -740,7 +740,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_UserItemReleaseRequest: {
-                InventoryHandler.UseMagnify(p, c);
+                InventoryHandler.UseMagnify(op, c);
                 return true;
             }
             case CP_UserScriptItemUseRequest: {

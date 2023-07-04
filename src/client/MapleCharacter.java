@@ -213,6 +213,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private int portal_count = 1;
     private int gashaEXP = 0;
     private LastStat laststat = null;
+    private int last_skill_up_id = 0;
+
+    public int getLastSkillUp() {
+        return last_skill_up_id;
+    }
+
+    public void setLastSkillUp(int skillid) {
+        last_skill_up_id = skillid;
+    }
 
     public int getPortalCount() {
         portal_count += 1;

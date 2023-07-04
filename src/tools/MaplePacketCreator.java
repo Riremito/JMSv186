@@ -59,8 +59,6 @@ import handling.world.guild.MapleBBSThread;
 import handling.world.guild.MapleBBSThread.MapleBBSReply;
 import handling.world.guild.MapleGuildAlliance;
 import java.net.UnknownHostException;
-import server.MapleItemInformationProvider;
-import server.MapleShopItem;
 import server.MapleStatEffect;
 import server.MapleTrade;
 import server.life.MapleNPC;
@@ -785,23 +783,6 @@ public class MaplePacketCreator {
         }
 
         return p.Get();
-    }
-
-    public static MaplePacket addInventorySlot(MapleInventoryType type, IItem item) {
-        return addInventorySlot(type, item, false);
-    }
-
-    public static MaplePacket addInventorySlot(MapleInventoryType type, IItem item, boolean fromDrop) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(fromDrop ? 1 : 0);
-        mplew.writeShort(1); // add mode
-        mplew.write(type.getType()); // iv type
-        mplew.write(item.getPosition()); // slot id
-        PacketHelper.addItemInfo(mplew, item, true, false);
-
-        return mplew.getPacket();
     }
 
     public static MaplePacket updateInventorySlot(MapleInventoryType type, IItem item, boolean fromDrop) {

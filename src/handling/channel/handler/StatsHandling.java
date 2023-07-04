@@ -30,9 +30,9 @@ import client.MapleCharacter;
 import client.MapleStat;
 import client.PlayerStats;
 import client.SkillFactory;
+import debug.Debug;
 import server.Randomizer;
 import tools.FileoutputUtil;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -173,9 +173,11 @@ public class StatsHandling {
         }
     }
 
-    public static final void DistributeSP(final int skillid, final MapleClient c, final MapleCharacter chr) {
+    public static final boolean DistributeSP(final int skillid, final MapleClient c, final MapleCharacter chr) {
         boolean isBeginnerSkill = false;
         final int remainingSp;
+
+        chr.setLastSkillUp(skillid);
 
         switch (skillid) {
             case 1000:
@@ -237,7 +239,8 @@ public class StatsHandling {
 
         if (skill.hasRequiredSkill()) {
             if (chr.getSkillLevel(SkillFactory.getSkill(skill.getRequiredSkillId())) < skill.getRequiredSkillLevel()) {
-                return;
+                Debug.ErrorLog("Use SP 1 = " + skillid);
+                return false;
             }
         }
         final int maxlevel = skill.isFourthJob() ? chr.getMasterLevel(skill) : skill.getMaxLevel();
@@ -245,15 +248,16 @@ public class StatsHandling {
 
         if (skill.isInvisible() && chr.getSkillLevel(skill) == 0) {
             if ((skill.isFourthJob() && chr.getMasterLevel(skill) == 0) || (!skill.isFourthJob() && maxlevel < 10 && !isBeginnerSkill)) {
-                //AutobanManager.getInstance().addPoints(c, 1000, 0, "Illegal distribution of SP to invisible skills (" + skillid + ")");
-                return;
+                Debug.ErrorLog("Use SP 2 = " + skillid);
+                return false;
             }
         }
 
         for (int i : GameConstants.blockedSkills) {
             if (skill.getId() == i) {
                 chr.dropMessage(1, "You may not add this skill.");
-                return;
+                Debug.ErrorLog("Use SP 3 = " + skillid);
+                return false;
             }
         }
 
@@ -264,8 +268,17 @@ public class StatsHandling {
             }
             chr.UpdateStat(false);
             chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
-        } else if (!skill.canBeLearnedBy(chr.getJob())) {
+            return true;
         }
+        
+        if((remainingSp > 0 && curLevel + 1 <= maxlevel) && isBeginnerSkill){
+            chr.UpdateStat(false);
+            chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
+            return true;
+        }
+
+        Debug.ErrorLog("Use SP 4 = " + skillid);
+        return false;
     }
 
     public static final void AutoAssignAP(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {

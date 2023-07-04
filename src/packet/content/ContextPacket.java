@@ -37,6 +37,21 @@ import packet.struct.GW_ItemSlotBase;
 public class ContextPacket {
 
     // CWvsContext::OnInventoryOperation
+    public static MaplePacket addInventorySlot(MapleInventoryType type, IItem item) {
+        return addInventorySlot(type, item, false);
+    }
+
+    public static MaplePacket addInventorySlot(MapleInventoryType type, IItem item, boolean fromDrop) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_InventoryOperation);
+
+        p.Encode1(fromDrop ? 1 : 0);
+        p.Encode2(1); // add mode
+        p.Encode1(type.getType()); // iv type
+        p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item)); // slot id
+        p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+        return p.Get();
+    }
+
     public static MaplePacket scrolledItem(IItem scroll, IItem item, boolean destroyed, boolean potential) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_InventoryOperation);
         p.Encode1(1); // fromdrop always true
@@ -64,10 +79,7 @@ public class ContextPacket {
             p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
         }
 
-        if (!potential) {
-            p.Encode1(1);
-        }
-
+        p.Encode1(1);
         return p.Get();
     }
 
