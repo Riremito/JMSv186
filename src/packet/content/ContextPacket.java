@@ -21,10 +21,14 @@
 package packet.content;
 
 import client.MapleCharacter;
+import client.inventory.IItem;
+import client.inventory.MapleInventoryType;
 import config.ServerConfig;
+import constants.GameConstants;
 import handling.MaplePacket;
 import packet.ServerPacket;
 import packet.struct.GW_CharacterStat;
+import packet.struct.GW_ItemSlotBase;
 
 /**
  *
@@ -33,6 +37,40 @@ import packet.struct.GW_CharacterStat;
 public class ContextPacket {
 
     // CWvsContext::OnInventoryOperation
+    public static MaplePacket scrolledItem(IItem scroll, IItem item, boolean destroyed, boolean potential) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_InventoryOperation);
+        p.Encode1(1); // fromdrop always true
+        p.Encode1(destroyed ? 2 : 3);
+        p.Encode1(scroll.getQuantity() > 0 ? 1 : 3);
+        p.Encode1(GameConstants.getInventoryType(scroll.getItemId()).getType()); //can be cash
+        p.Encode2(scroll.getPosition());
+
+        if (scroll.getQuantity() > 0) {
+            p.Encode2(scroll.getQuantity());
+        }
+
+        p.Encode1(3);
+
+        if (!destroyed) {
+            p.Encode1(MapleInventoryType.EQUIP.getType());
+            p.Encode2(item.getPosition());
+            p.Encode1(0);
+        }
+
+        p.Encode1(MapleInventoryType.EQUIP.getType());
+        p.Encode2(item.getPosition());
+
+        if (!destroyed) {
+            p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+        }
+
+        if (!potential) {
+            p.Encode1(1);
+        }
+
+        return p.Get();
+    }
+
     // CWvsContext::OnInventoryGrow
     // CWvsContext::OnStatChanged
     public static final MaplePacket StatChanged(MapleCharacter chr, int unlock, int statmask) {

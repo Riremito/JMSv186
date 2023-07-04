@@ -47,20 +47,18 @@ public class v194_0_CP {
         ClientPacket.Header.CP_UserSitRequest.Set(0x0020); // イス
         ClientPacket.Header.CP_UserHit.Set(0x0028); // 被ダメージ
         ClientPacket.Header.CP_UserChat.Set(0x002A); // チャット
-
         ClientPacket.Header.CP_UserSelectNpc.Set(0x0036); // NPC会話
         ClientPacket.Header.CP_UserScriptMessageAnswer.Set(0x003A); // NPC会話継続
         ClientPacket.Header.CP_UserShopRequest.Set(0x003B);
         ClientPacket.Header.CP_UserTrunkRequest.Set(0x003C);
-
         ClientPacket.Header.CP_UserChangeSlotPositionRequest.Set(0x0046); // アイテム移動, ドロップ
         ClientPacket.Header.CP_UserStatChangeItemUseRequest.Set(0x0048); // 回復薬
         ClientPacket.Header.CP_UserConsumeCashItemUseRequest.Set(0x004F); // ポイントアイテム
-        ClientPacket.Header.CP_UserMapTransferItemUseRequest.Set(0x0057); // 帰還の書
+        ClientPacket.Header.CP_UserPortalScrollUseRequest.Set(0x0057); // 帰還の書
         ClientPacket.Header.CP_UserUpgradeItemUseRequest.Set(0x0058); // 書
         ClientPacket.Header.CP_UserHyperUpgradeItemUseRequest.Set(0x0059); // 装備強化の書
         ClientPacket.Header.CP_UserItemOptionUpgradeItemUseRequest.Set(0x005A); // 潜在能力覚醒の書
-
+        ClientPacket.Header.CP_UserItemReleaseRequest.Set(0x005D); // 虫眼鏡
         ClientPacket.Header.CP_UserAbilityUpRequest.Set(0x005E); // AP
         ClientPacket.Header.CP_UserAbilityMassUpRequest.Set(0x005F); // AP自動配分
         ClientPacket.Header.CP_UserChangeStatRequest.Set(0x0060); // 時間経過による自動回復

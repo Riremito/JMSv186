@@ -42,8 +42,10 @@ import client.MapleQuestStatus;
 import client.inventory.IItem;
 import client.SkillEntry;
 import config.ServerConfig;
+import debug.Debug;
 import handling.channel.ChannelServer;
 import packet.ServerPacket;
+import packet.struct.GW_ItemSlotBase;
 import server.Start;
 import tools.Pair;
 import server.movement.LifeMovementFragment;
@@ -355,6 +357,11 @@ public class PacketHelper {
     }
 
     public static final void addItemInfo(final MaplePacketLittleEndianWriter mplew, final IItem item, final boolean zeroPosition, final boolean leaveOut) {
+        if (zeroPosition && leaveOut) {
+            mplew.write(GW_ItemSlotBase.Encode(item));
+            return;
+        }
+        Debug.ErrorLog("!!! addItemInfo, old");
         addItemInfo(mplew, item, zeroPosition, leaveOut, false);
     }
 

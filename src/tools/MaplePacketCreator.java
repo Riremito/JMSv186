@@ -938,37 +938,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket scrolledItem(IItem scroll, IItem item, boolean destroyed, boolean potential) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(1); // fromdrop always true
-        mplew.write(destroyed ? 2 : 3);
-        mplew.write(scroll.getQuantity() > 0 ? 1 : 3);
-        mplew.write(GameConstants.getInventoryType(scroll.getItemId()).getType()); //can be cash
-        mplew.writeShort(scroll.getPosition());
-
-        if (scroll.getQuantity() > 0) {
-            mplew.writeShort(scroll.getQuantity());
-        }
-        mplew.write(3);
-        if (!destroyed) {
-            mplew.write(MapleInventoryType.EQUIP.getType());
-            mplew.writeShort(item.getPosition());
-            mplew.write(0);
-        }
-        mplew.write(MapleInventoryType.EQUIP.getType());
-        mplew.writeShort(item.getPosition());
-        if (!destroyed) {
-            PacketHelper.addItemInfo(mplew, item, true, true);
-        }
-        if (!potential) {
-            mplew.write(1);
-        }
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket getScrollEffect(int chr, ScrollResult scrollSuccess, boolean legendarySpirit) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 

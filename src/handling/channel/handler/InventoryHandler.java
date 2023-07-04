@@ -57,6 +57,7 @@ import minigame.Pachinko;
 import packet.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
+import packet.content.ContextPacket;
 import server.Randomizer;
 import server.RandomRewards;
 import server.MapleShopFactory;
@@ -337,7 +338,7 @@ public class InventoryHandler {
                     }
                 }
             }
-            c.getSession().write(MaplePacketCreator.scrolledItem(magnify, toReveal, false, true));
+            c.SendPacket(ContextPacket.scrolledItem(magnify, toReveal, false, true));
             c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.getPotentialReset(c.getPlayer().getId(), eqq.getPosition()));
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
         } else {
@@ -394,7 +395,7 @@ public class InventoryHandler {
             toHammer.setViciousHammer((byte) (toHammer.getViciousHammer() + 1));
             toHammer.setUpgradeSlots((byte) (toHammer.getUpgradeSlots() + 1));
 
-            c.getSession().write(MaplePacketCreator.scrolledItem(scroll, toHammer, false, false));
+            c.SendPacket(ContextPacket.scrolledItem(scroll, toHammer, false, false));
             chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
             chr.getMap().broadcastMessage(chr, MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), IEquip.ScrollResult.SUCCESS, legendarySpirit), vegas == 0);
             return true;
@@ -512,14 +513,14 @@ public class InventoryHandler {
         }
 
         if (scrollSuccess == IEquip.ScrollResult.CURSE) {
-            c.getSession().write(MaplePacketCreator.scrolledItem(scroll, toScroll, true, false));
+            c.SendPacket(ContextPacket.scrolledItem(scroll, toScroll, true, false));
             if (dst < 0) {
                 chr.getInventory(MapleInventoryType.EQUIPPED).removeItem(toScroll.getPosition());
             } else {
                 chr.getInventory(MapleInventoryType.EQUIP).removeItem(toScroll.getPosition());
             }
         } else if (vegas == 0) {
-            c.getSession().write(MaplePacketCreator.scrolledItem(scroll, scrolled, false, false));
+            c.SendPacket(ContextPacket.scrolledItem(scroll, scrolled, false, false));
         }
 
         chr.getMap().broadcastMessage(chr, MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), scrollSuccess, legendarySpirit), vegas == 0);
@@ -1481,7 +1482,7 @@ public class InventoryHandler {
                     final Equip eq = (Equip) item;
                     if (eq.getState() >= 5) {
                         eq.renewPotential();
-                        c.getSession().write(MaplePacketCreator.scrolledItem(toUse, item, false, true));
+                        c.SendPacket(ContextPacket.scrolledItem(toUse, item, false, true));
                         c.getSession().write(MaplePacketCreator.getPotentialEffect(c.getPlayer().getId(), eq.getItemId()));
                         c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), ScrollResult.SUCCESS, false), false);
                         c.getPlayer().forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);
