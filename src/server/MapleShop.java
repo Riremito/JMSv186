@@ -19,6 +19,7 @@ import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import database.DatabaseConnection;
+import packet.content.NPCPacket;
 import tools.MaplePacketCreator;
 
 public class MapleShop {
@@ -78,7 +79,7 @@ public class MapleShop {
 
     public void sendShop(MapleClient c) {
         c.getPlayer().setShop(this);
-        c.getSession().write(MaplePacketCreator.getNPCShop(c, getNpcId(), items));
+        c.SendPacket(NPCPacket.getNPCShop(c, getNpcId(), items));
     }
 
     public void buy(MapleClient c, int itemId, short quantity) {
@@ -110,7 +111,7 @@ public class MapleShop {
                 } else {
                     c.getPlayer().dropMessage(1, "Your Inventory is full");
                 }
-                c.getSession().write(MaplePacketCreator.confirmShopTransaction((byte) 0));
+                c.SendPacket(NPCPacket.confirmShopTransaction((byte) 0));
             }
         } else if (item != null && item.getReqItem() > 0 && quantity == 1 && c.getPlayer().haveItem(item.getReqItem(), item.getReqItemQ(), false, true)) {
             if (MapleInventoryManipulator.checkSpace(c, itemId, quantity, "")) {
@@ -128,7 +129,7 @@ public class MapleShop {
             } else {
                 c.getPlayer().dropMessage(1, "Your Inventory is full");
             }
-            c.getSession().write(MaplePacketCreator.confirmShopTransaction((byte) 0));
+            c.SendPacket(NPCPacket.confirmShopTransaction((byte) 0));
         }
     }
 
@@ -167,7 +168,7 @@ public class MapleShop {
             if (price != -1.0 && recvMesos > 0) {
                 c.getPlayer().gainMeso(recvMesos, false);
             }
-            c.getSession().write(MaplePacketCreator.confirmShopTransaction((byte) 0x8));
+            c.SendPacket(NPCPacket.confirmShopTransaction((byte) 0x8));
         }
     }
 
@@ -190,7 +191,7 @@ public class MapleShop {
                 item.setQuantity(slotMax);
                 c.getSession().write(MaplePacketCreator.updateInventorySlot(MapleInventoryType.USE, (Item) item, false));
                 c.getPlayer().gainMeso(-price, false, true, false);
-                c.getSession().write(MaplePacketCreator.confirmShopTransaction((byte) 0x8));
+                c.SendPacket(NPCPacket.confirmShopTransaction((byte) 0x8));
             }
         }
     }

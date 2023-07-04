@@ -48,8 +48,8 @@ public class v194_0_CP {
 
         ClientPacket.Header.CP_UserSelectNpc.Set(0x0036); // NPC会話
         ClientPacket.Header.CP_UserScriptMessageAnswer.Set(0x003A); // NPC会話継続
-        //ClientPacket.Header.CP_UserShopRequest.Set(0x003B);
-        //ClientPacket.Header.CP_UserTrunkRequest.Set(0x003C);
+        ClientPacket.Header.CP_UserShopRequest.Set(0x003B);
+        ClientPacket.Header.CP_UserTrunkRequest.Set(0x003C);
 
         ClientPacket.Header.CP_UserAbilityUpRequest.Set(0x005E); // AP
         ClientPacket.Header.CP_UserAbilityMassUpRequest.Set(0x005F); // AP自動配分

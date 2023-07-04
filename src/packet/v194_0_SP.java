@@ -71,6 +71,8 @@ public class v194_0_SP {
         ServerPacket.Header.LP_ReactorLeaveField.Set(0x015C);
 
         ServerPacket.Header.LP_ScriptMessage.Set(0x0176);
+        ServerPacket.Header.LP_OpenShopDlg.Set(0x0177);
+        ServerPacket.Header.LP_ShopResult.Set(0x0178);
 
         ServerPacket.Header.LP_FuncKeyMappedInit.Set(0x019E); // キー設定初期化
         //ServerPacket.Header.LP_PetConsumeItemInit.Set(0x019F);

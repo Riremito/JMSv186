@@ -787,44 +787,6 @@ public class MaplePacketCreator {
         return p.Get();
     }
 
-    public static MaplePacket getNPCShop(MapleClient c, int sid, List<MapleShopItem> items) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-
-        mplew.writeShort(ServerPacket.Header.LP_OpenShopDlg.Get());
-        mplew.writeInt(sid);
-        mplew.writeShort(items.size()); // item count
-        for (MapleShopItem item : items) {
-            mplew.writeInt(item.getItemId());
-            mplew.writeInt(item.getPrice());
-            if (ServerConfig.version <= 164) {
-                // nothing
-            } else {
-                mplew.writeInt(item.getReqItem());
-                mplew.writeInt(item.getReqItemQ());
-                mplew.writeLong(0);
-            }
-            if (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId())) {
-                mplew.writeShort(1); // stacksize o.o
-                mplew.writeShort(item.getBuyable());
-            } else {
-                mplew.writeZeroBytes(6);
-                mplew.writeShort(BitTools.doubleToShortBits(ii.getPrice(item.getItemId())));
-                mplew.writeShort(ii.getSlotMax(c, item.getItemId()));
-            }
-        }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket confirmShopTransaction(byte code) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_ShopResult.Get());
-        mplew.write(code); // 8 = sell, 0 = buy, 0x20 = due to an error
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket addInventorySlot(MapleInventoryType type, IItem item) {
         return addInventorySlot(type, item, false);
     }
