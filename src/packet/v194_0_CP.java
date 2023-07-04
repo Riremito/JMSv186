@@ -37,6 +37,7 @@ public class v194_0_CP {
         ClientPacket.Header.CP_ViewAllChar.Set(0x000A);
         ClientPacket.Header.CP_CreateNewCharacter.Set(0x000B);
         ClientPacket.Header.CP_DeleteCharacter.Set(0x000D);
+        ClientPacket.Header.CP_ExceptionLog.Set(0x0010);
         ClientPacket.Header.CP_CreateSecurityHandle.Set(0x0018); // MapLogin, name wrong?
 
         ClientPacket.Header.CP_UserTransferFieldRequest.Set(0x001B); // Map移動
@@ -62,11 +63,12 @@ public class v194_0_CP {
         ClientPacket.Header.CP_UserCharacterInfoRequest.Set(0x0069); // キャラクター情報
         ClientPacket.Header.CP_UserPortalScriptRequest.Set(0x006E); // Map移動スクリプト
         ClientPacket.Header.CP_UserPortalTeleportRequest.Set(0x0070); // Map内移動スクリプト
-        // 0x0076 ??? quest?
+        ClientPacket.Header.CP_UserQuestRequest.Set(0x0076);
         ClientPacket.Header.CP_Admin.Set(0x009C); // GMコマンド
         ClientPacket.Header.CP_Log.Set(0x009D); // GMコマンド文字列
         ClientPacket.Header.CP_FuncKeyMappedModified.Set(0x00A4); // キー設定
         ClientPacket.Header.CP_UserMigrateToITCRequest.Set(0x00C1); // MTSへ移動
+        //ClientPacket.Header.CP_QuickslotKeyMappedModified.Set(0x00D6);
         ClientPacket.Header.CP_MobMove.Set(0x00E2); // Mob移動
         ClientPacket.Header.CP_MobApplyCtrl.Set(0x00E3);
     }

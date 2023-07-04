@@ -25,7 +25,7 @@ public class ClientPacket {
     }
 
     public String Packet() {
-        short header = (short) (((short) packet[0] & 0xFF) | ((short) packet[1] & 0xFF << 8));
+        short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));
         String text = String.format("@%04X", header);
 
         for (int i = 2; i < packet.length; i++) {
@@ -40,7 +40,7 @@ public class ClientPacket {
             return Header.UNKNOWN.toString();
         }
 
-        short header = (short) (((short) packet[0] & 0xFF) | ((short) packet[1] & 0xFF << 8));
+        short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));
         return ToHeader(header).toString();
     }
 
@@ -49,7 +49,7 @@ public class ClientPacket {
             return Header.UNKNOWN;
         }
 
-        short header = (short) (((short) packet[0] & 0xFF) | ((short) packet[1] & 0xFF << 8));
+        short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));
         return ToHeader(header);
     }
 

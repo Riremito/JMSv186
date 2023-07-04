@@ -21,9 +21,18 @@
 package packet.struct;
 
 import client.MapleCharacter;
+import client.inventory.IItem;
+import client.inventory.Item;
+import client.inventory.MapleInventory;
+import client.inventory.MapleInventoryType;
 import config.ServerConfig;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import packet.ServerPacket;
 import packet.Structure;
+import packet.struct.GW_ItemSlotBase.ItemType;
 
 /**
  *
@@ -31,84 +40,123 @@ import packet.Structure;
  */
 public class CharacterData {
 
+    // all data
+    public static byte[] Encode(MapleCharacter chr) {
+        return Encode(chr, -1);
+    }
+
     // CharacterData::Decode
     // CharacterInfo
-    public static byte[] Encode(MapleCharacter chr) {
+    public static byte[] Encode(MapleCharacter chr, long datamask) {
         ServerPacket p = new ServerPacket();
 
         if (ServerConfig.version <= 131) {
-            p.Encode2(-1); // statmask
+            p.Encode2((short) datamask); // statmask
         } else {
-            p.Encode8(-1); // statmask
+            p.Encode8(datamask); // statmask
         }
 
         if (186 <= ServerConfig.version) {
-            p.Encode1(0);
+            p.Encode1(0); // nCombatOrders
         }
 
         if (187 <= ServerConfig.version) {
-            p.Encode1(0);
+            p.Encode1(0); // not 0, Encode1, Encode4(size), EncodeBuffer8, Encode4(size), EncodeBuffer8
         }
 
-        // 0x1
-        // キャラクター情報
-        p.EncodeBuffer(GW_CharacterStat.Encode(chr));
-        // 友達リストの上限
-        p.Encode1(chr.getBuddylist().getCapacity());
+        if ((datamask & 0x01) > 0) {
+            // キャラクター情報
+            p.EncodeBuffer(GW_CharacterStat.Encode(chr));
 
-        // 精霊の祝福 v165, v186
-        if (165 <= ServerConfig.version) {
-            if (chr.getBlessOfFairyOrigin() != null) {
-                p.Encode1(1);
-                p.EncodeStr(chr.getBlessOfFairyOrigin());
-            } else {
-                p.Encode1(0);
+            // 友達リストの上限
+            p.Encode1(chr.getBuddylist().getCapacity());
+
+            // 精霊の祝福 v165, v186
+            if (165 <= ServerConfig.version) {
+                if (chr.getBlessOfFairyOrigin() != null) {
+                    p.Encode1(1);
+                    p.EncodeStr(chr.getBlessOfFairyOrigin());
+                } else {
+                    p.Encode1(0);
+                }
             }
-        }
 
-        // 祝福系統
-        if (194 <= ServerConfig.version) {
-            p.Encode1(0); // not 0, EncodeStr
-            p.Encode1(0); // not 0, EncodeStr
+            // 祝福系統
+            if (194 <= ServerConfig.version) {
+                // 女王の祝福 max 24
+                p.Encode1(0); // not 0, EncodeStr
+                // ???
+                p.Encode1(0); // not 0, EncodeStr
+            }
         }
 
         // 0x2 (<< 1) v165-v194
-        p.EncodeBuffer(GW_CharacterStat.EncodeMoney(chr));
-        p.EncodeBuffer(GW_CharacterStat.EncodePachinko(chr));
+        if ((datamask & 0x02) > 0) {
+            p.EncodeBuffer(GW_CharacterStat.EncodeMoney(chr));
+            p.EncodeBuffer(GW_CharacterStat.EncodePachinko(chr));
+        }
         // 0x4 (<< 2), 0x100000, 0x4 [addInventoryInfo]
-        p.EncodeBuffer(Structure.InventoryInfo(chr));
+        if ((datamask & 0x04) > 0) {
+            p.EncodeBuffer(InventoryInfo(chr, datamask));
+        }
         // 0x100 [addSkillInfo] v165 changed v186-v194
-        p.EncodeBuffer(Structure.addSkillInfo(chr));
+        if ((datamask & 0x0100) > 0) {
+            p.EncodeBuffer(Structure.addSkillInfo(chr));
+        }
         // 0x8000 [addCoolDownInfo] v165-v194
-        p.EncodeBuffer(Structure.addCoolDownInfo(chr));
+        if ((datamask & 0x8000) > 0) {
+            p.EncodeBuffer(Structure.addCoolDownInfo(chr));
+        }
         // 0x200 [addQuestInfo] changed v165,v186,v188,v194
-        p.EncodeBuffer(Structure.addQuestInfo(chr));
+        if ((datamask & 0x200) > 0) {
+            p.EncodeBuffer(Structure.addQuestInfo(chr));
+        }
         // 0x4000 QuestComplete v165-v194
-        p.EncodeBuffer(Structure.addQuestComplete(chr));
+        if ((datamask & 0x4000) > 0) {
+            p.EncodeBuffer(Structure.addQuestComplete(chr));
+        }
         // 0x400 MiniGameRecord v165-v194
-        p.Encode2(0); // not 0 -> Encode4 x5
+        if ((datamask & 0x0400) > 0) {
+            p.Encode2(0); // not 0 -> Encode4 x5
+        }
         // 0x800 [addRingInfo] v165-v194
-        p.EncodeBuffer(Structure.addRingInfo(chr));
+        if ((datamask & 0x0800) > 0) {
+            p.EncodeBuffer(Structure.addRingInfo(chr));
+        }
         // 0x1000 [addRocksInfo] v165-v188 changed v194
-        p.EncodeBuffer(Structure.addRocksInfo(chr));
+        if ((datamask & 0x1000) > 0) {
+            p.EncodeBuffer(Structure.addRocksInfo(chr));
+        }
         // 0x7C JMS, Present v165-v194
-        p.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
+        if ((datamask & 0x7C) > 0) {
+            p.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
+        }
 
         if (164 <= ServerConfig.version) {
             // 0x20000 JMS v165-v194
-            p.Encode4(chr.getMonsterBookCover());
+            if ((datamask & 0x020000) > 0) {
+                p.Encode4(chr.getMonsterBookCover());
+            }
             // 0x10000 JMS [addMonsterBookInfo] v165-v194
-            p.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+            if ((datamask & 0x010000) > 0) {
+                p.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+            }
 
             if (194 <= ServerConfig.version) {
                 // 0x10000000
-                p.Encode4(0);
+                if ((datamask & 0x10000000) > 0) {
+                    p.Encode4(0);
+                }
                 // 0x20000000
-                p.Encode2(0); // not 0, Encode2
+                if ((datamask & 0x20000000) > 0) {
+                    p.Encode2(0); // not 0, Encode2
+                }
             }
 
             // 0x40000 (GMS 0x80000) [QuestInfoPacket] v165-v194
-            p.EncodeBuffer(Structure.QuestInfoPacket(chr));
+            if ((datamask & 0x040000) > 0) {
+                p.EncodeBuffer(Structure.QuestInfoPacket(chr));
+            }
 
             if (ServerConfig.version <= 186) {
                 // 0x80000 JMS v165, v186, not in v188
@@ -123,14 +171,136 @@ public class CharacterData {
             // v188-v194
             if (188 <= ServerConfig.version) {
                 // 0x200000
-                if (chr.getJob() / 100 == 33) {
+                if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
                     p.EncodeBuffer(GW_WildHunterInfo.Encode());
                 }
                 // 0x400000 QuestCompleteOld
-                p.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                if ((datamask & 0x400000) > 0) {
+                    p.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                }
                 // 0x800000
-                p.Encode2(0); // not 0, Encode2, Encode2
+                if ((datamask & 0x800000) > 0) {
+                    p.Encode2(0); // not 0, Encode2, Encode2
+                }
             }
+        }
+
+        return p.Get().getBytes();
+    }
+
+    public static final byte[] InventoryInfo(MapleCharacter chr, long datamask) {
+        ServerPacket p = new ServerPacket();
+        // アイテム欄の数
+        // v165-v194
+        if ((datamask & 0x80) > 0) {
+            p.Encode1(chr.getInventory(MapleInventoryType.EQUIP).getSlotLimit()); // 0x04
+            p.Encode1(chr.getInventory(MapleInventoryType.USE).getSlotLimit()); // 0x08
+            p.Encode1(chr.getInventory(MapleInventoryType.SETUP).getSlotLimit()); // 0x10
+            p.Encode1(chr.getInventory(MapleInventoryType.ETC).getSlotLimit()); // 0x20
+            p.Encode1(chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // 0x40
+        }
+
+        // v165-v194 OK
+        if (165 <= ServerConfig.version) {
+            // 0x100000
+            if ((datamask & 0x100000) > 0) {
+                p.Encode4(0);
+                p.Encode4(0);
+            }
+        }
+
+        // 装備
+        if ((datamask & 0x04) > 0) {
+            MapleInventory iv = chr.getInventory(MapleInventoryType.EQUIPPED);
+            Collection<IItem> equippedC = iv.list();
+            List<Item> equipped = new ArrayList<Item>(equippedC.size());
+            for (IItem item : equippedC) {
+                equipped.add((Item) item);
+            }
+            Collections.sort(equipped);
+
+            // 装備済みアイテム
+            for (Item item : equipped) {
+                if (item.getPosition() < 0 && item.getPosition() > -100) {
+                    p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                    p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                }
+            }
+            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+            // 装備済みアバター?
+            for (Item item : equipped) {
+                if (item.getPosition() <= -100 && item.getPosition() > -1000) {
+                    p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                    p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                }
+            }
+            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+            // 装備
+            iv = chr.getInventory(MapleInventoryType.EQUIP);
+            for (IItem item : iv.list()) {
+                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+            }
+            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+            // 装備済み -1000
+            if (186 <= ServerConfig.version) {
+                for (Item item : equipped) {
+                    if (item.getPosition() <= -1000 && item.getPosition() > -1100) {
+                        p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                        p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                    }
+                }
+                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+            }
+            // 装備済み -1100
+            if (188 <= ServerConfig.version) {
+                // v188-v194
+                for (Item item : equipped) {
+                    if (item.getPosition() <= -1100 && item.getPosition() > -1200) {
+                        p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                        p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                    }
+                }
+                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+            }
+        }
+
+        // 消費
+        if ((datamask & 0x08) > 0) {
+            for (IItem item : chr.getInventory(MapleInventoryType.USE).list()) {
+                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+            }
+            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Consume));
+        }
+        // 設置
+        if ((datamask & 0x10) > 0) {
+            for (IItem item : chr.getInventory(MapleInventoryType.SETUP).list()) {
+                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+            }
+            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Install));
+        }
+        // ETC
+        if ((datamask & 0x20) > 0) {
+            for (IItem item : chr.getInventory(MapleInventoryType.ETC).list()) {
+                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+            }
+            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Etc));
+        }
+        // ポイントアイテム
+        if ((datamask & 0x40) > 0) {
+            for (IItem item : chr.getInventory(MapleInventoryType.CASH).list()) {
+                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+            }
+            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Cash));
+        }
+        // 不明
+        if (194 <= ServerConfig.version) {
+            // func 004FB8B0
+            p.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
         }
 
         return p.Get().getBytes();

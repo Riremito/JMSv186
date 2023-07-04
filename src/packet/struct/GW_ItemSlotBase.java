@@ -20,12 +20,232 @@
  */
 package packet.struct;
 
+import client.inventory.IEquip;
+import client.inventory.IItem;
+import config.ServerConfig;
+import constants.GameConstants;
+import packet.ServerPacket;
+import static packet.Structure.addExpirationTime;
+import static packet.Structure.addPetItemInfo;
+
 /**
  *
  * @author Riremito
  */
 public class GW_ItemSlotBase {
+
+    public enum ItemType {
+        Equip,
+        Consume,
+        Install,
+        Etc,
+        Cash,
+        Pet,
+        UNKNOWN;
+    }
+
+    public static final byte[] EncodeSlot(final IItem item) {
+        ServerPacket data = new ServerPacket();
+
+        short pos = item.getPosition();
+        if (pos <= -1) {
+            pos *= -1;
+            if (pos > 100 && pos < 1000) {
+                pos -= 100;
+            }
+        }
+
+        if (ServerConfig.version <= 165) {
+            data.Encode1(pos);
+        } else {
+            // v186+
+            if (item.getType() == 1) {
+                data.Encode2(pos);
+            } else {
+                data.Encode1(pos);
+            }
+        }
+        return data.Get().getBytes();
+    }
+
+    public static final byte[] EncodeSlotEnd(ItemType it) {
+        ServerPacket data = new ServerPacket();
+
+        if (ServerConfig.version <= 165) {
+            data.Encode1(0);
+        } else {
+            // v186+
+            if (it == ItemType.Equip) {
+                data.Encode2(0);
+            } else {
+                data.Encode1(0);
+            }
+        }
+
+        return data.Get().getBytes();
+    }
+
+    // GW_ItemSlotBase::Decode
+    // addItemInfo
+    public static final byte[] Encode(final IItem item) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode1(item.getPet() != null ? 3 : item.getType());
+
+        // GW_ItemSlotBase::CreateItem
+        int it = item.getPet() != null ? 3 : item.getType();
+        switch (it) {
+            // Equip
+            case 1: {
+                data.EncodeBuffer(RawEncode(item));
+
+                final IEquip equip = (IEquip) item;
+                boolean hasUniqueId = equip.getUniqueId() > 0;
+
+                data.Encode1(equip.getUpgradeSlots());
+                data.Encode1(equip.getLevel());
+                // もしかしたらここに特定のバージョンだけ(v166-v184)変なフラグ 1 byteあるかも?
+                data.Encode2(equip.getStr());
+                data.Encode2(equip.getDex());
+                data.Encode2(equip.getInt());
+                data.Encode2(equip.getLuk());
+                data.Encode2(equip.getHp());
+                data.Encode2(equip.getMp());
+                data.Encode2(equip.getWatk());
+                data.Encode2(equip.getMatk());
+                data.Encode2(equip.getWdef());
+                data.Encode2(equip.getMdef());
+                data.Encode2(equip.getAcc());
+                data.Encode2(equip.getAvoid());
+                data.Encode2(equip.getHands());
+                data.Encode2(equip.getSpeed());
+                data.Encode2(equip.getJump());
+                data.EncodeStr(equip.getOwner());
+
+                // ポイントアイテムを一度も装備していないことを確認するためのフラグ
+                if (hasUniqueId) {
+                    // ポイントアイテム交換可能
+                    data.Encode2(0x10);
+                } else {
+                    data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
+                }
+
+                // 確認必須
+                if (ServerConfig.version <= 131) {
+                    if (!hasUniqueId) {
+                        data.Encode8(equip.getPosition() <= 0 ? -1 : item.getUniqueId());
+                    }
+                    break; // test for v131
+                }
+
+                data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
+                data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
+
+                // encode4
+                data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
+
+                // 耐久度
+                if (186 <= ServerConfig.version) {
+                    data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
+                }
+                // ビシャスのハンマー
+                if (186 <= ServerConfig.version) {
+                    if (ServerConfig.game_server_enable_hammer) {
+                        data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
+                    } else {
+                        data.Encode4(0);
+                    }
+                }
+                // 潜在能力
+                if (186 <= ServerConfig.version) {
+                    data.Encode1(equip.getState()); // option._ZtlSecureTear_nGrade
+                    data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
+                    if (ServerConfig.game_server_enable_potential) {
+                        data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
+                        data.Encode2(equip.getPotential2()); // option._ZtlSecureTear_nOption2
+                        data.Encode2(equip.getPotential3()); // option._ZtlSecureTear_nOption3
+                    } else {
+                        data.Encode2(0);
+                        data.Encode2(0);
+                        data.Encode2(0);
+                    }
+                    data.Encode2(equip.getHpR()); // option._ZtlSecureTear_nSocket1
+                    data.Encode2(equip.getMpR()); // option._ZtlSecureTear_nSocket2
+                }
+                data.Encode8(0); // liCashItemSN.QuadPartがない場合はDecodeがされないのでズレる
+                data.Encode8(0);
+                data.Encode4(-1);
+                break;
+            }
+            // Pet
+            case 3: {
+                data.EncodeBuffer(RawEncode(item));
+                // GW_ItemSlotPet::RawDecode
+                data.EncodeBuffer(item.getPet().getName(), 13);
+                data.Encode1(item.getPet().getLevel());
+                data.Encode2(item.getPet().getCloseness());
+                data.Encode1(item.getPet().getFullness());
+                data.Encode8(-1); // time
+                data.Encode2(0);
+                data.Encode2(0);
+                data.Encode4(0); // time?
+                data.Encode2(0);
+                data.Encode1(0);
+                data.Encode4(0);
+                break;
+            }
+            // Consume, Install, Etc, Cash
+            default: {
+                data.EncodeBuffer(RawEncode(item));
+                // GW_ItemSlotBundle::RawDecode
+                data.Encode2(item.getQuantity());
+                data.EncodeStr(item.getOwner());
+                data.Encode2(item.getFlag());
+
+                int item_img_num = item.getItemId() / 10000;
+
+                // 手裏剣 or 弾丸
+                if (item_img_num == 207 || item_img_num == 233) {
+                    // 8 bytes
+                    data.Encode4(2);
+                    data.Encode2(0x54);
+                    data.Encode1(0);
+                    data.Encode1(0x34);
+                }
+                break;
+            }
+        }
+
+        return data.Get().getBytes();
+    }
+
     // E8 ?? ?? ?? ?? 84 C0 74 ?? 6A 08
     // GW_ItemSlotBase::RawDecode
+    public static final byte[] RawEncode(final IItem item) {
+        ServerPacket data = new ServerPacket();
 
+        data.Encode4(item.getItemId());
+        boolean hasUniqueId = item.getUniqueId() > 0;
+
+        data.Encode1(hasUniqueId ? 1 : 0);
+
+        if (hasUniqueId) {
+            data.Encode8(item.getUniqueId());
+        }
+
+        /*
+        if (item.getPet() != null) { // Pet
+            data.EncodeBuffer(addPetItemInfo(item, item.getPet()));
+        } else {
+            data.EncodeBuffer(addExpirationTime(item.getExpiration()));
+        }
+         */
+        data.Encode8(-1); // time?
+
+        if (194 <= ServerConfig.version) {
+            data.Encode4(0);
+        }
+
+        return data.Get().getBytes();
+    }
 }
