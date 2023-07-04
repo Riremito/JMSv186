@@ -49,5 +49,9 @@ public class v194_0_SP {
         ServerPacket.Header.LP_SetITC.Set(0x0089);
         ServerPacket.Header.LP_SetCashShop.Set(0x008A);
 
+        ServerPacket.Header.LP_FuncKeyMappedInit.Set(0x019E); // キー設定初期化
+        //ServerPacket.Header.LP_PetConsumeItemInit.Set(0x019F);
+        //ServerPacket.Header.LP_PetConsumeMPItemInit.Set(0x019A);
+
     }
 }
