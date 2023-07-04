@@ -43,9 +43,9 @@ public class v194_0_SP {
         ServerPacket.Header.LOGIN_AUTH.Set(0x0015);
 
         ServerPacket.Header.LP_InventoryOperation.Set(0x0018);
-        ServerPacket.Header.LP_StatChanged.Set(0x001A);
-        ServerPacket.Header.LP_ChangeSkillRecordResult.Set(0x001F);
-        ServerPacket.Header.LP_BroadcastMsg.Set(0x0040);
+        ServerPacket.Header.LP_StatChanged.Set(0x001A); // ステータス変化
+        ServerPacket.Header.LP_ChangeSkillRecordResult.Set(0x001F); // スキルポイント変化
+        ServerPacket.Header.LP_BroadcastMsg.Set(0x0040); // メッセージ
 
         ServerPacket.Header.LP_SetField.Set(0x0088); // ゲームサーバーへ
         ServerPacket.Header.LP_SetITC.Set(0x0089); // MTSサーバーへ
@@ -55,24 +55,25 @@ public class v194_0_SP {
 
         ServerPacket.Header.LP_ImitatedNPCData.Set(0x0058);
         ServerPacket.Header.LP_LimitedNPCDisableInfo.Set(0x0059);
-        ServerPacket.Header.LP_NpcEnterField.Set(0x013F);
-        ServerPacket.Header.LP_NpcLeaveField.Set(0x0140);
+        ServerPacket.Header.LP_NpcEnterField.Set(0x013F); // NPC召喚
+        ServerPacket.Header.LP_NpcLeaveField.Set(0x0140); // NPC消滅
         ServerPacket.Header.LP_NpcChangeController.Set(0x0141);
 
-        ServerPacket.Header.LP_MobEnterField.Set(0x0124);
-        ServerPacket.Header.LP_MobLeaveField.Set(0x0125);
+        ServerPacket.Header.LP_MobEnterField.Set(0x0124); // Mob召喚
+        ServerPacket.Header.LP_MobLeaveField.Set(0x0125); // Mob消滅
         ServerPacket.Header.LP_MobChangeController.Set(0x0126);
-        ServerPacket.Header.LP_MobMove.Set(0x0127);
+        ServerPacket.Header.LP_MobMove.Set(0x0127); // Mob移動
         ServerPacket.Header.LP_MobCtrlAck.Set(0x0128);
 
         ServerPacket.Header.LP_ReactorChangeState.Set(0x0159);
         ServerPacket.Header.LP_ReactorMove.Set(0x015A);
-        ServerPacket.Header.LP_ReactorEnterField.Set(0x015B);
+        ServerPacket.Header.LP_ReactorEnterField.Set(0x015B); // 設置物
         ServerPacket.Header.LP_ReactorLeaveField.Set(0x015C);
 
-        ServerPacket.Header.LP_ScriptMessage.Set(0x0176);
-        ServerPacket.Header.LP_OpenShopDlg.Set(0x0177);
+        ServerPacket.Header.LP_ScriptMessage.Set(0x0176); // NPC会話
+        ServerPacket.Header.LP_OpenShopDlg.Set(0x0177); // NPC商店
         ServerPacket.Header.LP_ShopResult.Set(0x0178);
+        ServerPacket.Header.LP_TrunkResult.Set(0x017B); // 倉庫
 
         ServerPacket.Header.LP_FuncKeyMappedInit.Set(0x019E); // キー設定初期化
         //ServerPacket.Header.LP_PetConsumeItemInit.Set(0x019F);
