@@ -60,5 +60,7 @@ public class v194_0_CP {
         ClientPacket.Header.CP_Log.Set(0x009D); // GMコマンド文字列
         ClientPacket.Header.CP_FuncKeyMappedModified.Set(0x00A4); // キー設定
         ClientPacket.Header.CP_UserMigrateToITCRequest.Set(0x00C1); // MTSへ移動
+        ClientPacket.Header.CP_MobMove.Set(0x00E2); // Mob移動
+        ClientPacket.Header.CP_MobApplyCtrl.Set(0x00E3);
     }
 }

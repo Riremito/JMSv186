@@ -576,6 +576,10 @@ public class MobPacket {
         p.Encode1(skillId);
         p.Encode1(skillLevel);
 
+        if (194 <= ServerConfig.version) {
+            p.Encode4(0);
+        }
+
         return p.Get();
     }
 }

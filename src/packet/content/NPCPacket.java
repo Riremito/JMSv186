@@ -5,6 +5,7 @@
  */
 package packet.content;
 
+import config.ServerConfig;
 import handling.MaplePacket;
 import packet.ServerPacket;
 import server.life.MapleNPC;
@@ -14,7 +15,8 @@ import server.life.MapleNPC;
  * @author elfenlied
  */
 public class NPCPacket {
-      public static MaplePacket spawnNPC(MapleNPC life, boolean show) {
+
+    public static MaplePacket spawnNPC(MapleNPC life, boolean show) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_NpcEnterField);
 
         p.Encode4(life.getObjectId());
@@ -27,6 +29,10 @@ public class NPCPacket {
         p.Encode2(life.getRx1());
         p.Encode1(show ? 1 : 0);
 
+        if (194 <= ServerConfig.version) {
+            p.Encode1(0);
+        }
+
         return p.Get();
     }
 
@@ -35,5 +41,5 @@ public class NPCPacket {
 
         p.Encode4(objectid);
         return p.Get();
-    }  
+    }
 }
