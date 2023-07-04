@@ -161,6 +161,14 @@ public class CommandProcessor {
                 return true;
             }
 
+            if ("/heal".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                chr.getStat().setHp(chr.getStat().getMaxHp());
+                chr.getStat().setMp(chr.getStat().getMaxMp());
+                chr.UpdateStat(true);
+                return true;
+            }
+
             // デバッグモード
             if ("/debug".equals(splitted[0])) {
                 c.getPlayer().SetDebugger();

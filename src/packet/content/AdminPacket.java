@@ -12,7 +12,6 @@ import packet.ClientPacket;
 import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
 import server.maps.MapleMap;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import wz.LoadData;
 
@@ -57,6 +56,14 @@ public class AdminPacket {
                 int itemid = p.Decode4();
                 return true;
             }
+            // /exp
+            case 0x02: {
+                int exp = p.Decode4();
+                chr.setExp(exp);
+                chr.UpdateStat(true);
+                return true;
+            }
+
             // /ban test
             case 0x03: {
                 // @0086 [03] 04 00 74 65 73 74
