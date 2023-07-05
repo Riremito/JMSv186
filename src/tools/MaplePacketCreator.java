@@ -66,7 +66,6 @@ import server.life.PlayerNPC;
 import server.maps.MapleMap;
 import server.maps.MapleReactor;
 import server.maps.MapleMist;
-import server.maps.MapleMapItem;
 import server.events.MapleSnowball.MapleSnowballs;
 import server.life.MapleMonster;
 import server.maps.MapleDragon;
@@ -684,31 +683,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket dropItemFromMapObject(MapleMapItem drop, Point dropfrom, Point dropto, byte mod) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_DropEnterField.Get());
-        mplew.write(mod); // 1 animation, 2 no animation, 3 spawn disappearing item [Fade], 4 spawn disappearing item
-        mplew.writeInt(drop.getObjectId()); // item owner id
-        mplew.write(drop.getMeso() > 0 ? 1 : 0); // 1 mesos, 0 item, 2 and above all item meso bag,
-        mplew.writeInt(drop.getItemId()); // drop object ID
-        mplew.writeInt(drop.getOwner()); // owner charid
-        mplew.write(drop.getDropType()); // 0 = timeout for non-owner, 1 = timeout for non-owner's party, 2 = FFA, 3 = explosive/FFA
-        mplew.writePos(dropto);
-        mplew.writeInt(0);
-
-        if (mod != 2) {
-            mplew.writePos(dropfrom);
-            mplew.writeShort(0);
-        }
-        if (drop.getMeso() == 0) {
-            PacketHelper.addExpirationTime(mplew, drop.getItem().getExpiration());
-        }
-        mplew.writeShort(drop.isPlayerDrop() ? 0 : 1); // pet EQP pickup
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket facialExpression(MapleCharacter from, int expression) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -981,36 +955,6 @@ public class MaplePacketCreator {
         mplew.writeInt(chr.getId());
         mplew.write(0x11);
         mplew.writeInt(is_success ? 0 : 1);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket explodeDrop(int oid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_DropLeaveField.Get());
-        mplew.write(4); // 4 = Explode
-        mplew.writeInt(oid);
-        mplew.writeShort(655);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket removeItemFromMap(int oid, int animation, int cid) {
-        return removeItemFromMap(oid, animation, cid, 0);
-    }
-
-    public static MaplePacket removeItemFromMap(int oid, int animation, int cid, int slot) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_DropLeaveField.Get());
-        mplew.write(animation); // 0 = Expire, 1 = without animation, 2 = pickup, 4 = explode, 5 = pet pickup
-        mplew.writeInt(oid);
-        if (animation >= 2) {
-            mplew.writeInt(cid);
-            if (animation == 5) { // allow pet pickup?
-                mplew.writeInt(slot);
-            }
-        }
         return mplew.getPacket();
     }
 

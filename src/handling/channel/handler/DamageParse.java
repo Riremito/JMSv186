@@ -37,6 +37,8 @@ import client.anticheat.CheatingOffense;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import java.util.Map;
+import packet.content.DropPacket;
+import packet.content.DropPacket.LeaveType;
 import server.MapleStatEffect;
 import server.Randomizer;
 import server.Timer.MapTimer;
@@ -120,7 +122,7 @@ public class DamageParse {
                                 return;
                             }
                             map.removeMapObject(mapitem);
-                            map.broadcastMessage(MaplePacketCreator.explodeDrop(mapitem.getObjectId()));
+                            map.broadcastMessage(DropPacket.DropLeaveField(mapitem, LeaveType.MESO_EXPLOSION));
                             mapitem.setPickedUp(true);
                         } else {
                             player.getCheatTracker().registerOffense(CheatingOffense.ETC_EXPLOSION);

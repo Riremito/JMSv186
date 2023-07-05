@@ -53,12 +53,6 @@ public class v194_0_SP {
 
         ServerPacket.Header.LP_UserChat.Set(0x00B0); // チャット
 
-        ServerPacket.Header.LP_ImitatedNPCData.Set(0x0058);
-        ServerPacket.Header.LP_LimitedNPCDisableInfo.Set(0x0059);
-        ServerPacket.Header.LP_NpcEnterField.Set(0x013F); // NPC召喚
-        ServerPacket.Header.LP_NpcLeaveField.Set(0x0140); // NPC消滅
-        ServerPacket.Header.LP_NpcChangeController.Set(0x0141);
-
         // Mob v194
         {
             ServerPacket.Header.LP_MobEnterField.Set(0x0124); // Mob召喚
@@ -88,6 +82,21 @@ public class v194_0_SP {
             ServerPacket.Header.LP_MobTeleport.Set(0x013C);
             ServerPacket.Header.LP_MobAttackedByMob.Set(0x013D);
              */
+        }
+
+        // NPC v194
+        {
+            ServerPacket.Header.LP_ImitatedNPCData.Set(0x0058);
+            ServerPacket.Header.LP_LimitedNPCDisableInfo.Set(0x0059);
+            ServerPacket.Header.LP_NpcEnterField.Set(0x013F); // NPC召喚
+            ServerPacket.Header.LP_NpcLeaveField.Set(0x0140); // NPC消滅
+            ServerPacket.Header.LP_NpcChangeController.Set(0x0141);
+        }
+        // Drop v194 test
+        {
+            ServerPacket.Header.LP_DropEnterField.Set(0x014A);
+            // LP_DropReleaseAllFreeze is not used
+            ServerPacket.Header.LP_DropLeaveField.Set(0x014C);
         }
         // Reactor v194
         {

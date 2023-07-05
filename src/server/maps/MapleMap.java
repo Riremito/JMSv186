@@ -48,6 +48,7 @@ import client.inventory.MaplePet;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import database.DatabaseConnection;
+import debug.Debug;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.PartyOperation;
@@ -60,6 +61,9 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import packet.content.DropPacket;
+import packet.content.DropPacket.EnterType;
+import packet.content.DropPacket.LeaveType;
 import packet.content.MobPacket;
 import packet.content.NPCPacket;
 import packet.content.ReactorPacket;
@@ -1508,7 +1512,7 @@ public final class MapleMap {
     public final void disappearingItemDrop(final MapleMapObject dropper, final MapleCharacter owner, final IItem item, final Point pos) {
         final Point droppos = calcDropPos(pos, pos);
         final MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) 1, false);
-        broadcastMessage(MaplePacketCreator.dropItemFromMapObject(drop, dropper.getPosition(), droppos, (byte) 3), drop.getPosition());
+        broadcastMessage(DropPacket.DropEnterField(drop, EnterType.SPAWN, droppos, dropper.getPosition()), drop.getPosition());
     }
 
     public final void spawnMesoDrop(final int meso, final Point position, final MapleMapObject dropper, final MapleCharacter owner, final boolean playerDrop, final byte droptype) {
@@ -1519,7 +1523,7 @@ public final class MapleMap {
 
             @Override
             public void sendPackets(MapleClient c) {
-                c.getSession().write(MaplePacketCreator.dropItemFromMapObject(mdrop, dropper.getPosition(), droppos, (byte) 1));
+                c.SendPacket(DropPacket.DropEnterField(mdrop, EnterType.ANIMATION, droppos, dropper.getPosition()));
             }
         }, null);
         if (!everlast) {
@@ -1537,7 +1541,7 @@ public final class MapleMap {
 
             @Override
             public void sendPackets(MapleClient c) {
-                c.getSession().write(MaplePacketCreator.dropItemFromMapObject(mdrop, dropper.getPosition(), position, (byte) 1));
+                c.SendPacket(DropPacket.DropEnterField(mdrop, EnterType.ANIMATION, position, dropper.getPosition()));
             }
         }, null);
 
@@ -1555,11 +1559,10 @@ public final class MapleMap {
             @Override
             public void sendPackets(MapleClient c) {
                 if (questid <= 0 || c.getPlayer().getQuestStatus(questid) == 1) {
-                    c.getSession().write(MaplePacketCreator.dropItemFromMapObject(mdrop, mob.getPosition(), dropPos, (byte) 1));
+                    c.SendPacket(DropPacket.DropEnterField(mdrop, EnterType.ANIMATION, dropPos, mob.getPosition(), mob.getObjectId()));
                 }
             }
         }, null);
-//	broadcastMessage(MaplePacketCreator.dropItemFromMapObject(mdrop, mob.getPosition(), dropPos, (byte) 0));
 
         mdrop.registerExpire(120000);
         if (droptype == 0 || droptype == 1) {
@@ -1614,10 +1617,10 @@ public final class MapleMap {
 
             @Override
             public void sendPackets(MapleClient c) {
-                c.getSession().write(MaplePacketCreator.dropItemFromMapObject(mdrop, pos, pos, (byte) 1));
+                c.SendPacket(DropPacket.DropEnterField(mdrop, EnterType.ANIMATION, pos, pos));
             }
         }, null);
-        broadcastMessage(MaplePacketCreator.dropItemFromMapObject(mdrop, pos, pos, (byte) 0));
+        broadcastMessage(DropPacket.DropEnterField(mdrop, EnterType.PICK_UP_ENABLED, pos, pos));
         mdrop.registerExpire(120000);
     }
 
@@ -1629,10 +1632,10 @@ public final class MapleMap {
 
             @Override
             public void sendPackets(MapleClient c) {
-                c.getSession().write(MaplePacketCreator.dropItemFromMapObject(drop, dropper.getPosition(), droppos, (byte) 1));
+                c.SendPacket(DropPacket.DropEnterField(drop, EnterType.ANIMATION, droppos, dropper.getPosition()));
             }
         }, null);
-        broadcastMessage(MaplePacketCreator.dropItemFromMapObject(drop, dropper.getPosition(), droppos, (byte) 0));
+        broadcastMessage(DropPacket.DropEnterField(drop, EnterType.PICK_UP_ENABLED, droppos, dropper.getPosition())); // enable pick up for new players
 
         if (!everlast) {
             drop.registerExpire(120000);
@@ -1691,7 +1694,9 @@ public final class MapleMap {
             final MapleMapItem item = ((MapleMapItem) o);
             if (item.getOwner() == chr.getId()) {
                 item.setPickedUp(true);
-                broadcastMessage(MaplePacketCreator.removeItemFromMap(item.getObjectId(), 2, chr.getId()), item.getPosition());
+
+                Debug.DebugLog("PICKUP REVER");
+                broadcastMessage(DropPacket.DropLeaveField(item, LeaveType.PICK_UP, chr, 0), item.getPosition());
                 if (item.getMeso() > 0) {
                     chr.gainMeso(item.getMeso(), false);
                 } else {

@@ -45,9 +45,10 @@ public class ContextPacket {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_InventoryOperation);
 
         p.Encode1(fromDrop ? 1 : 0);
-        p.Encode2(1); // add mode
+        p.Encode1(1); // add mode
+        p.Encode1(0);
         p.Encode1(type.getType()); // iv type
-        p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item)); // slot id
+        p.Encode2(item.getPosition()); // v131-v194
         p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
         return p.Get();
     }

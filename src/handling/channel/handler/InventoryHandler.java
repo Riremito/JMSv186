@@ -46,6 +46,7 @@ import constants.GameConstants;
 import client.SkillFactory;
 import client.anticheat.CheatingOffense;
 import config.ServerConfig;
+import debug.Debug;
 import debug.DebugScriptManager;
 import handling.world.MaplePartyCharacter;
 import handling.world.World;
@@ -58,6 +59,8 @@ import packet.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
 import packet.content.ContextPacket;
+import packet.content.DropPacket;
+import packet.content.DropPacket.LeaveType;
 import server.Randomizer;
 import server.RandomRewards;
 import server.MapleShopFactory;
@@ -2121,7 +2124,8 @@ public class InventoryHandler {
 
     public static final void removeItem_Pet(final MapleCharacter chr, final MapleMapItem mapitem, int pet) {
         mapitem.setPickedUp(true);
-        chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 5, chr.getId(), pet), mapitem.getPosition());
+        Debug.DebugLog("PICKUP REMOVEITEM PET");
+        chr.getMap().broadcastMessage(DropPacket.DropLeaveField(mapitem, LeaveType.PICK_UP_PET, chr, pet), mapitem.getPosition());
         chr.getMap().removeMapObject(mapitem);
         if (mapitem.isRandDrop()) {
             chr.getMap().spawnRandDrop();
@@ -2130,7 +2134,8 @@ public class InventoryHandler {
 
     private static final void removeItem(final MapleCharacter chr, final MapleMapItem mapitem, final MapleMapObject ob) {
         mapitem.setPickedUp(true);
-        chr.getMap().broadcastMessage(MaplePacketCreator.removeItemFromMap(mapitem.getObjectId(), 2, chr.getId()), mapitem.getPosition());
+        Debug.DebugLog("PICKUP REMOVEITEM");
+        chr.getMap().broadcastMessage(DropPacket.DropLeaveField(mapitem, LeaveType.PICK_UP, chr, 0), mapitem.getPosition());
         chr.getMap().removeMapObject(ob);
         if (mapitem.isRandDrop()) {
             chr.getMap().spawnRandDrop();
