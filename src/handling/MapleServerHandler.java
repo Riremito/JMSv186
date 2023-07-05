@@ -29,6 +29,7 @@ import packet.content.AdminPacket;
 import packet.content.GashaEXPPacket;
 import packet.content.LoginPacket;
 import packet.content.MobPacket;
+import packet.content.NPCPacket;
 import packet.content.ReactorPacket;
 import packet.content.SocketPacket;
 import packet.content.SummonPacket;
@@ -825,8 +826,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_UserShopRequest: {
-                // c
-                NPCHandler.NPCShop(p, c, c.getPlayer());
+                NPCPacket.OnShopPacket(op, c);
                 return true;
             }
             case CP_UserSelectNpc: {

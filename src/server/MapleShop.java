@@ -20,6 +20,7 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import database.DatabaseConnection;
 import packet.content.NPCPacket;
+import packet.content.NPCPacket.SP_ShopFlag;
 import tools.MaplePacketCreator;
 
 public class MapleShop {
@@ -111,7 +112,7 @@ public class MapleShop {
                 } else {
                     c.getPlayer().dropMessage(1, "Your Inventory is full");
                 }
-                c.SendPacket(NPCPacket.confirmShopTransaction((byte) 0));
+                c.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.SUCCESS_BUY));
             }
         } else if (item != null && item.getReqItem() > 0 && quantity == 1 && c.getPlayer().haveItem(item.getReqItem(), item.getReqItemQ(), false, true)) {
             if (MapleInventoryManipulator.checkSpace(c, itemId, quantity, "")) {
@@ -129,7 +130,7 @@ public class MapleShop {
             } else {
                 c.getPlayer().dropMessage(1, "Your Inventory is full");
             }
-            c.SendPacket(NPCPacket.confirmShopTransaction((byte) 0));
+            c.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.SUCCESS_BUY));
         }
     }
 
@@ -168,7 +169,7 @@ public class MapleShop {
             if (price != -1.0 && recvMesos > 0) {
                 c.getPlayer().gainMeso(recvMesos, false);
             }
-            c.SendPacket(NPCPacket.confirmShopTransaction((byte) 0x8));
+            c.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.SUCCESS_SELL));
         }
     }
 
@@ -191,7 +192,7 @@ public class MapleShop {
                 item.setQuantity(slotMax);
                 c.getSession().write(MaplePacketCreator.updateInventorySlot(MapleInventoryType.USE, (Item) item, false));
                 c.getPlayer().gainMeso(-price, false, true, false);
-                c.SendPacket(NPCPacket.confirmShopTransaction((byte) 0x8));
+                c.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.SUCCESS_SELL));
             }
         }
     }
