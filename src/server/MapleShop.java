@@ -1,5 +1,6 @@
 package server;
 
+import client.MapleCharacter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -83,55 +84,51 @@ public class MapleShop {
         c.SendPacket(NPCPacket.getNPCShop(c, getNpcId(), items));
     }
 
-    public void buy(MapleClient c, int itemId, short quantity) {
-        if (quantity <= 0) {
-            return;
-        }
-        if (!GameConstants.isMountItemAvailable(itemId, c.getPlayer().getJob())) {
-            c.getPlayer().dropMessage(1, "You may not buy this item.");
-            c.getSession().write(MaplePacketCreator.enableActions());
-            return;
-        }
+    public boolean buy(MapleClient c, MapleCharacter chr, int itemId, short quantity) {
         MapleShopItem item = findById(itemId);
-        if (item != null && item.getPrice() > 0 && item.getReqItem() == 0) {
-            final int price = GameConstants.isRechargable(itemId) ? item.getPrice() : (item.getPrice() * quantity);
-            if (price >= 0 && c.getPlayer().getMeso() >= price) {
-                if (MapleInventoryManipulator.checkSpace(c, itemId, quantity, "")) {
-                    c.getPlayer().gainMeso(-price, false);
-                    if (GameConstants.isPet(itemId)) {
-                        MapleInventoryManipulator.addById(c, itemId, quantity, "", MaplePet.createPet(itemId, MapleInventoryIdentifier.getInstance()), -1);
-                    } else {
-                        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
-                        if (GameConstants.isRechargable(itemId)) {
-                            quantity = ii.getSlotMax(c, item.getItemId());
-                        }
-
-                        MapleInventoryManipulator.addById(c, itemId, quantity);
-                    }
-                } else {
-                    c.getPlayer().dropMessage(1, "Your Inventory is full");
-                }
-                c.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.SUCCESS_BUY));
-            }
-        } else if (item != null && item.getReqItem() > 0 && quantity == 1 && c.getPlayer().haveItem(item.getReqItem(), item.getReqItemQ(), false, true)) {
-            if (MapleInventoryManipulator.checkSpace(c, itemId, quantity, "")) {
-                MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(item.getReqItem()), item.getReqItem(), item.getReqItemQ(), false, false);
-                if (GameConstants.isPet(itemId)) {
-                    MapleInventoryManipulator.addById(c, itemId, quantity, "", MaplePet.createPet(itemId, MapleInventoryIdentifier.getInstance()), -1);
-                } else {
-                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-
-                    if (GameConstants.isRechargable(itemId)) {
-                        quantity = ii.getSlotMax(c, item.getItemId());
-                    }
-                    MapleInventoryManipulator.addById(c, itemId, quantity);
-                }
-            } else {
-                c.getPlayer().dropMessage(1, "Your Inventory is full");
-            }
-            c.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.SUCCESS_BUY));
+        if (quantity <= 0 || item == null) {
+            chr.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.ERROR));
+            return false;
         }
+
+        final int price = GameConstants.isRechargable(itemId) ? item.getPrice() : (item.getPrice() * quantity);
+
+        if (item.getPrice() < 0 || c.getPlayer().getMeso() < price) {
+            chr.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.ERROR_MESO));
+            return false;
+        }
+
+        if (!MapleInventoryManipulator.checkSpace(c, itemId, quantity, "")) {
+            chr.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.ERROR_INVENTORY_FULL));
+            return false;
+        }
+
+        if (0 < item.getReqItem()) {
+            if (2 <= quantity) {
+                chr.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.ERROR));
+                return false;
+            }
+
+            MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(item.getReqItem()), item.getReqItem(), item.getReqItemQ(), false, false);
+        }
+
+        chr.gainMeso(-price, false);
+
+        if (GameConstants.isPet(itemId)) {
+            MapleInventoryManipulator.addById(c, itemId, quantity, "", MaplePet.createPet(itemId, MapleInventoryIdentifier.getInstance()), -1);
+        } else {
+            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+
+            if (GameConstants.isRechargable(itemId)) {
+                quantity = ii.getSlotMax(c, item.getItemId());
+            }
+
+            MapleInventoryManipulator.addById(c, itemId, quantity);
+        }
+
+        chr.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.SUCCESS_BUY));
+        return true;
     }
 
     public void sell(MapleClient c, MapleInventoryType type, byte slot, short quantity) {
@@ -173,11 +170,12 @@ public class MapleShop {
         }
     }
 
-    public void recharge(final MapleClient c, final byte slot) {
+    public boolean recharge(final MapleClient c, final byte slot) {
         final IItem item = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (item == null || (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId()))) {
-            return;
+            c.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.ERROR));
+            return false;
         }
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         short slotMax = ii.getSlotMax(c, item.getItemId());
@@ -193,8 +191,14 @@ public class MapleShop {
                 c.getSession().write(MaplePacketCreator.updateInventorySlot(MapleInventoryType.USE, (Item) item, false));
                 c.getPlayer().gainMeso(-price, false, true, false);
                 c.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.SUCCESS_SELL));
+                return true;
+            } else {
+                c.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.ERROR_MESO));
+                return false;
             }
         }
+        c.SendPacket(NPCPacket.confirmShopTransaction(SP_ShopFlag.ERROR));
+        return false;
     }
 
     protected MapleShopItem findById(int itemId) {

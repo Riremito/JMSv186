@@ -174,7 +174,7 @@ public class NPCPacket {
 
                 final int itemId = p.Decode4();
                 final short quantity = p.Decode2();
-                shop.buy(c, itemId, quantity);
+                shop.buy(c, chr, itemId, quantity);
                 break;
             }
             case SELL_ITEM: {
