@@ -270,8 +270,8 @@ public class StatsHandling {
             chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
             return true;
         }
-        
-        if((remainingSp > 0 && curLevel + 1 <= maxlevel) && isBeginnerSkill){
+
+        if ((remainingSp > 0 && curLevel + 1 <= maxlevel) && isBeginnerSkill) {
             chr.UpdateStat(false);
             chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
             return true;

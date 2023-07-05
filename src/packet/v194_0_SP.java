@@ -59,16 +59,40 @@ public class v194_0_SP {
         ServerPacket.Header.LP_NpcLeaveField.Set(0x0140); // NPC消滅
         ServerPacket.Header.LP_NpcChangeController.Set(0x0141);
 
-        ServerPacket.Header.LP_MobEnterField.Set(0x0124); // Mob召喚
-        ServerPacket.Header.LP_MobLeaveField.Set(0x0125); // Mob消滅
-        ServerPacket.Header.LP_MobChangeController.Set(0x0126);
-        ServerPacket.Header.LP_MobMove.Set(0x0127); // Mob移動
-        ServerPacket.Header.LP_MobCtrlAck.Set(0x0128);
-
-        ServerPacket.Header.LP_ReactorChangeState.Set(0x0159);
-        ServerPacket.Header.LP_ReactorMove.Set(0x015A);
-        ServerPacket.Header.LP_ReactorEnterField.Set(0x015B); // 設置物
-        ServerPacket.Header.LP_ReactorLeaveField.Set(0x015C);
+        // Mob v194
+        {
+            ServerPacket.Header.LP_MobEnterField.Set(0x0124); // Mob召喚
+            ServerPacket.Header.LP_MobLeaveField.Set(0x0125); // Mob消滅
+            ServerPacket.Header.LP_MobChangeController.Set(0x0126);
+            ServerPacket.Header.LP_MobMove.Set(0x0127); // Mob移動
+            ServerPacket.Header.LP_MobCtrlAck.Set(0x0128);
+            ServerPacket.Header.LP_MobStatSet.Set(0x012A);
+            ServerPacket.Header.LP_MobStatReset.Set(0x012B);
+            ServerPacket.Header.LP_MobSuspendReset.Set(0x012C);
+            ServerPacket.Header.LP_MobAffected.Set(0x012D);
+            ServerPacket.Header.LP_MobDamaged.Set(0x012E);
+            ServerPacket.Header.LP_MobSpecialEffectBySkill.Set(0x012F);
+            ServerPacket.Header.LP_MobCrcKeyChanged.Set(0x0131);
+            ServerPacket.Header.LP_MobHPIndicator.Set(0x0132);
+            ServerPacket.Header.LP_MobCatchEffect.Set(0x0133);
+            ServerPacket.Header.LP_MobEffectByItem.Set(0x0134);
+            ServerPacket.Header.LP_MobSpeaking.Set(0x0135);
+            ServerPacket.Header.LP_MobSkillDelay.Set(0x0136);
+            ServerPacket.Header.LP_MobRequestResultEscortInfo.Set(0x0137);
+            ServerPacket.Header.LP_MobEscortStopEndPermmision.Set(0x0138);
+            ServerPacket.Header.LP_MobEscortStopSay.Set(0x0139);
+            ServerPacket.Header.LP_MobEscortReturnBefore.Set(0x013A);
+            ServerPacket.Header.LP_MobNextAttack.Set(0x013B);
+            ServerPacket.Header.LP_MobTeleport.Set(0x013C);
+            ServerPacket.Header.LP_MobAttackedByMob.Set(0x013D);
+        }
+        // Reactor v194
+        {
+            ServerPacket.Header.LP_ReactorChangeState.Set(0x0159);
+            ServerPacket.Header.LP_ReactorMove.Set(0x015A);
+            ServerPacket.Header.LP_ReactorEnterField.Set(0x015B); // 設置物召喚
+            ServerPacket.Header.LP_ReactorLeaveField.Set(0x015C); // 設置物消滅
+        }
 
         ServerPacket.Header.LP_ScriptMessage.Set(0x0176); // NPC会話
         ServerPacket.Header.LP_OpenShopDlg.Set(0x0177); // NPC商店

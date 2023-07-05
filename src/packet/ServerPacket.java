@@ -496,6 +496,7 @@ public class ServerPacket {
         LP_MobEscortStopSay,
         LP_MobEscortReturnBefore,
         LP_MobNextAttack,
+        LP_MobTeleport,
         LP_END_MOB,
         LP_MobAttackedByMob,
         LP_END_MOBPOOL,
