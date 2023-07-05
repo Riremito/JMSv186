@@ -288,19 +288,17 @@ public class LoginPacket {
 
             // ワールドID
             p.Encode1(serverId);
-            if (ServerConfig.version < 302) {
-                // チャンネルID
-                p.Encode2(i);
-            } else {
-                p.Encode1(i);
-                p.Encode1(0);
+            p.Encode1(i); // channel
+            p.Encode1(0);
+
+            if (201 <= ServerConfig.version) {
                 p.Encode1(0);
             }
         }
 
         p.Encode2(0);
 
-        if (ServerConfig.version >= 302) {
+        if (201 <= ServerConfig.version) {
             p.Encode4(0);
         }
 
@@ -422,6 +420,17 @@ public class LoginPacket {
         p.Encode1(1); // error code
         p.Encode4(1); // m_nCountRelatedSvrs
         p.Encode4(chars.size()); // m_nCountCharacters
+        return p.Get();
+    }
+
+    // CLogin::OnViewAllCharResult
+    public static MaplePacket ViewAllCharResult_v201(MapleClient c) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ViewAllCharResult);
+
+        List<MapleCharacter> chars = c.loadCharacters(0);
+        p.Encode1(3); // error code
+        p.Encode1(0); 
+        p.Encode1(0);
         return p.Get();
     }
 

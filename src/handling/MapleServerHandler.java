@@ -357,8 +357,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_ViewAllChar: {
-                c.SendPacket(LoginPacket.ViewAllCharResult_Alloc(c));
-                c.SendPacket(LoginPacket.ViewAllCharResult(c));
+                if (ServerConfig.version <= 194) {
+                    c.SendPacket(LoginPacket.ViewAllCharResult_Alloc(c));
+                    c.SendPacket(LoginPacket.ViewAllCharResult(c));
+                } else {
+                    c.SendPacket(LoginPacket.ViewAllCharResult_v201(c));
+                }
                 return true;
             }
             default: {

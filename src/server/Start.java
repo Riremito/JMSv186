@@ -12,21 +12,8 @@ import database.DatabaseConnection;
 import debug.Debug;
 import handling.world.family.MapleFamilyBuff;
 import java.sql.PreparedStatement;
-import packet.ServerPacket;
-import packet.ClientPacket;
+import packet.*;
 import packet.content.PacketFlag;
-import packet.v131_0_CP;
-import packet.v131_0_SP;
-import packet.v164_0_CP;
-import packet.v164_0_SP;
-import packet.v165_0_CP;
-import packet.v165_0_SP;
-import packet.v186_1_CP;
-import packet.v186_1_SP;
-import packet.v188_0_CP;
-import packet.v188_0_SP;
-import packet.v194_0_CP;
-import packet.v194_0_SP;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.PlayerNPC;
@@ -99,7 +86,7 @@ public class Start {
                 v188_0_SP.Set();
                 break;
             }
-            // 起動早い
+            // そこそこ安定して動作する
             case 194: {
                 v194_0_CP.Set();
                 v194_0_SP.Set();
@@ -107,8 +94,8 @@ public class Start {
             }
             // 起動まぁまぁ早い
             case 201: {
-                ClientPacket.SetForJMSv302();
-                ServerPacket.SetForJMSv302();
+                v201_0_CP.Set();
+                v201_0_SP.Set();
                 break;
             }
             // 起動が遅い
