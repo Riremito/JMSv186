@@ -7,6 +7,7 @@ import debug.DebugLoadTime;
 import handling.login.LoginInformationProvider;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import provider.MapleData;
@@ -109,6 +110,50 @@ public class LoadData {
             return -1;
         }
         return mapids.get(index);
+    }
+
+    public enum DataType {
+        SKIN,
+        FACE,
+        HAIR,
+        JOB,
+        MAP,
+        NPC,
+        MOB,
+        UNKNOWN;
+    }
+
+    public static int GetRandomID(DataType dt) {
+        Random rand = new Random();
+
+        switch (dt) {
+            case SKIN: {
+                return skinids.get(rand.nextInt(skinids.size()));
+            }
+            case FACE: {
+                return faceids.get(rand.nextInt(faceids.size()));
+            }
+            case HAIR: {
+                return hairids.get(rand.nextInt(hairids.size()));
+            }
+            case JOB: {
+                return jobids.get(rand.nextInt(jobids.size()));
+            }
+            case MAP: {
+                return mapids.get(rand.nextInt(mapids.size()));
+            }
+            case NPC: {
+                return npcids.get(rand.nextInt(npcids.size()));
+            }
+            case MOB: {
+                return mobids.get(rand.nextInt(mobids.size()));
+            }
+            default: {
+                break;
+            }
+        }
+
+        return -1;
     }
 
     private static void initDataIDs() {

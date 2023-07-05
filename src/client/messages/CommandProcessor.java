@@ -179,6 +179,20 @@ public class CommandProcessor {
                 return true;
             }
 
+            if ("/randombeauty".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                int skinid = LoadData.GetRandomID(LoadData.DataType.SKIN);
+                int faceid = LoadData.GetRandomID(LoadData.DataType.FACE);
+                int hairid = LoadData.GetRandomID(LoadData.DataType.HAIR);
+
+                chr.Notice("SkinID = " + skinid + ", FaceID = " + faceid + ", HairID = " + hairid);
+                chr.setSkinColor((byte) (skinid % 100));
+                chr.setFace(faceid);
+                chr.setHair(hairid);
+                chr.UpdateStat(false);
+                return true;
+            }
+
             // デバッグモード
             if ("/debug".equals(splitted[0])) {
                 c.getPlayer().SetDebugger();
