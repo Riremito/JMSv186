@@ -83,5 +83,6 @@ public class v194_0_CP {
         //ClientPacket.Header.CP_QuickslotKeyMappedModified.Set(0x00D6);
         ClientPacket.Header.CP_MobMove.Set(0x00E2); // Mob移動
         ClientPacket.Header.CP_MobApplyCtrl.Set(0x00E3);
+        ClientPacket.Header.CP_ReactorHit.Set(0x00F8); // 設置物攻撃
     }
 }

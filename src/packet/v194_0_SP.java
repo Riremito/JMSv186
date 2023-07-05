@@ -66,6 +66,8 @@ public class v194_0_SP {
             ServerPacket.Header.LP_MobChangeController.Set(0x0126);
             ServerPacket.Header.LP_MobMove.Set(0x0127); // Mob移動
             ServerPacket.Header.LP_MobCtrlAck.Set(0x0128);
+            // OK but comment out
+            /*
             ServerPacket.Header.LP_MobStatSet.Set(0x012A);
             ServerPacket.Header.LP_MobStatReset.Set(0x012B);
             ServerPacket.Header.LP_MobSuspendReset.Set(0x012C);
@@ -85,6 +87,7 @@ public class v194_0_SP {
             ServerPacket.Header.LP_MobNextAttack.Set(0x013B);
             ServerPacket.Header.LP_MobTeleport.Set(0x013C);
             ServerPacket.Header.LP_MobAttackedByMob.Set(0x013D);
+             */
         }
         // Reactor v194
         {
