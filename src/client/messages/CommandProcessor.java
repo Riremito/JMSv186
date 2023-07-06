@@ -23,14 +23,19 @@ package client.messages;
 import java.util.ArrayList;
 import client.MapleCharacter;
 import client.MapleClient;
+import client.inventory.Equip;
+import client.inventory.IItem;
+import client.inventory.MapleInventoryType;
 import client.messages.commands.*;
 import client.messages.commands.AdminCommand;
 import client.messages.commands.GMCommand;
 import client.messages.commands.InternCommand;
 import client.messages.commands.PlayerCommand;
+import constants.GameConstants;
 import constants.ServerConstants.CommandType;
 import constants.ServerConstants.PlayerGMRank;
 import database.DatabaseConnection;
+import handling.channel.ChannelServer;
 import handling.channel.handler.StatsHandling;
 import java.lang.reflect.Modifier;
 import java.sql.PreparedStatement;
@@ -38,6 +43,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import scripting.NPCScriptManager;
+import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
 import server.maps.MapleMap;
@@ -190,6 +196,23 @@ public class CommandProcessor {
                 chr.setFace(faceid);
                 chr.setHair(hairid);
                 chr.UpdateStat(false);
+                return true;
+            }
+
+            if ("/randomdrop".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                int itemid = LoadData.GetRandomID(LoadData.DataType.ITEM);
+                IItem toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
+                chr.getMap().spawnItemDrop(c.getPlayer(), c.getPlayer(), toDrop, c.getPlayer().getPosition(), true, true);
+                return true;
+            }
+
+            if ("/randommap".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                int mapid = LoadData.GetRandomID(LoadData.DataType.MAP);
+                MapleMap map = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(mapid);
+                chr.changeMap(map, map.getPortal(0));
                 return true;
             }
 

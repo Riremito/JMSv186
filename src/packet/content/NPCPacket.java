@@ -248,6 +248,7 @@ public class NPCPacket {
         p.Encode4(sid);
 
         if (194 <= ServerConfig.version) {
+            // 0 = normal shop, 1 is probably coin shop
             p.Encode1(0); // if 1, Encode1(size), Encode4, EncodeStr
         }
 
@@ -255,13 +256,14 @@ public class NPCPacket {
         for (MapleShopItem item : items) {
             p.Encode4(item.getItemId());
             p.Encode4(item.getPrice());
-            if (ServerConfig.version <= 164) {
-                // nothing
-            } else {
-                p.Encode4(item.getReqItem());
-                p.Encode4(item.getReqItemQ());
-                p.Encode8(0);
+
+            if (186 <= ServerConfig.version) {
+                p.Encode4(item.getReqItem()); // nTokenItemID
+                p.Encode4(item.getReqItemQ()); // nTokenPrice
+                p.Encode4(0); // nItemPeriod
+                p.Encode4(0); // nLevelLimited
             }
+
             if (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId())) {
                 p.Encode2(1); // stacksize o.o
                 p.Encode2(item.getBuyable());
