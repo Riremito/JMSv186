@@ -33,6 +33,83 @@ import packet.ServerPacket;
  */
 public class GW_CharacterStat {
 
+    public enum Flag {
+        // v186
+        // 0x00000001
+        SKIN(1),
+        // 0x00000002
+        FACE(1 << 1),
+        // 0x00000004
+        HAIR(1 << 2),
+        // 0x00000008
+        PET1(1 << 3),
+        // 0x00000010
+        LEVEL(1 << 4),
+        // 0x00000020
+        JOB(1 << 5),
+        // 0x00000040
+        STR(1 << 6),
+        // 0x00000080
+        DEX(1 << 7),
+        // 0x00000100
+        INT(1 << 8),
+        // 0x00000200
+        LUK(1 << 9),
+        // 0x00000400
+        HP(1 << 10),
+        // 0x00000800
+        MAXHP(1 << 11),
+        // 0x00001000
+        MP(1 << 12),
+        // 0x00002000
+        MAXMP(1 << 13),
+        // 0x00004000
+        AP(1 << 14),
+        // 0x00008000
+        SP(1 << 15),
+        // 0x00010000
+        EXP(1 << 16),
+        // 0x00020000
+        FAME(1 << 17),
+        // 0x00040000
+        MESO(1 << 18),
+        // 0x00080000
+        PET2(1 << 19),
+        // 0x00100000
+        PET3(1 << 20),
+        // 0x00200000
+        GASHAEXP(1 << 21),
+        UNKNOWN;
+
+        private int value;
+
+        Flag(int flag) {
+            value = flag;
+        }
+
+        Flag() {
+            value = -1;
+        }
+
+        public boolean set(int flag) {
+            value = flag;
+            return true;
+        }
+
+        public int get() {
+            return value;
+        }
+    }
+
+    public static void Init() {
+        if (194 <= ServerConfig.version) {
+            // something inserted
+            Flag.PET2.set(0x00100000);
+            Flag.PET3.set(0x00200000);
+            Flag.GASHAEXP.set(0x00400000);
+        }
+    }
+
     // GW_CharacterStat::Decode
     // CharStats
     public static byte[] Encode(MapleCharacter chr) {
@@ -147,48 +224,48 @@ public class GW_CharacterStat {
         p.Encode4(statmask);
 
         // Skin
-        if ((statmask & 1) > 0) {
+        if ((statmask & Flag.SKIN.get()) > 0) {
             p.Encode1(chr.getSkinColor());
         }
         // Face
-        if ((statmask & (1 << 1)) > 0) {
+        if ((statmask & Flag.FACE.get()) > 0) {
             p.Encode4(chr.getFace());
         }
         // Hair
-        if ((statmask & (1 << 2)) > 0) {
+        if ((statmask & Flag.HAIR.get()) > 0) {
             p.Encode4(chr.getHair());
         }
         // Pet 1
-        if ((statmask & (1 << 3)) > 0) {
+        if ((statmask & Flag.PET1.get()) > 0) {
             MaplePet pet = chr.getPet(0);
             p.Encode8((pet != null) ? pet.getUniqueId() : 0);
         }
         // Level
-        if ((statmask & (1 << 4)) > 0) {
+        if ((statmask & Flag.LEVEL.get()) > 0) {
             p.Encode1(chr.getLevel());
         }
         // Job
-        if ((statmask & (1 << 5)) > 0) {
+        if ((statmask & Flag.JOB.get()) > 0) {
             p.Encode2(chr.getJob());
         }
         // STR
-        if ((statmask & (1 << 6)) > 0) {
+        if ((statmask & Flag.STR.get()) > 0) {
             p.Encode2(chr.getStat().getStr());
         }
         // DEX
-        if ((statmask & (1 << 7)) > 0) {
+        if ((statmask & Flag.DEX.get()) > 0) {
             p.Encode2(chr.getStat().getDex());
         }
         // INT
-        if ((statmask & (1 << 8)) > 0) {
+        if ((statmask & Flag.INT.get()) > 0) {
             p.Encode2(chr.getStat().getInt());
         }
         // LUK
-        if ((statmask & (1 << 9)) > 0) {
+        if ((statmask & Flag.LUK.get()) > 0) {
             p.Encode2(chr.getStat().getLuk());
         }
         // HP
-        if ((statmask & (1 << 10)) > 0) {
+        if ((statmask & Flag.HP.get()) > 0) {
             if (ServerConfig.version <= 186) {
                 p.Encode2(chr.getStat().getHp());
             } else {
@@ -196,7 +273,7 @@ public class GW_CharacterStat {
             }
         }
         // MAXHP
-        if ((statmask & (1 << 11)) > 0) {
+        if ((statmask & Flag.MAXHP.get()) > 0) {
             if (ServerConfig.version <= 186) {
                 p.Encode2(chr.getStat().getMaxHp());
             } else {
@@ -204,7 +281,7 @@ public class GW_CharacterStat {
             }
         }
         // MP
-        if ((statmask & (1 << 12)) > 0) {
+        if ((statmask & Flag.MP.get()) > 0) {
             if (ServerConfig.version <= 186) {
                 p.Encode2(chr.getStat().getMp());
             } else {
@@ -212,7 +289,7 @@ public class GW_CharacterStat {
             }
         }
         // MAXMP
-        if ((statmask & (1 << 13)) > 0) {
+        if ((statmask & Flag.MAXMP.get()) > 0) {
             if (ServerConfig.version <= 186) {
                 p.Encode2(chr.getStat().getMaxMp());
             } else {
@@ -220,11 +297,11 @@ public class GW_CharacterStat {
             }
         }
         // AP
-        if ((statmask & (1 << 14)) > 0) {
+        if ((statmask & Flag.AP.get()) > 0) {
             p.Encode2(chr.getRemainingAp());
         }
         // SP
-        if ((statmask & (1 << 15)) > 0) {
+        if ((statmask & Flag.SP.get()) > 0) {
             if (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob())) {
                 p.Encode1(chr.getRemainingSpSize());
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
@@ -238,30 +315,30 @@ public class GW_CharacterStat {
             }
         }
         // EXP
-        if ((statmask & (1 << 16)) > 0) {
+        if ((statmask & Flag.EXP.get()) > 0) {
             p.Encode4(chr.getExp());
         }
         // 人気度
-        if ((statmask & (1 << 17)) > 0) {
+        if ((statmask & Flag.FAME.get()) > 0) {
             p.Encode2(chr.getFame());
         }
         // Meso
-        if ((statmask & (1 << 18)) > 0) {
+        if ((statmask & Flag.MESO.get()) > 0) {
             p.Encode4(chr.getMeso());
         }
         // v188 ここから+1
         // Pet 2
-        if ((statmask & (1 << 19)) > 0) {
+        if ((statmask & Flag.PET2.get()) > 0) {
             MaplePet pet = chr.getPet(0);
             p.Encode8((pet != null) ? pet.getUniqueId() : 0);
         }
         // Pet 3
-        if ((statmask & (1 << 20)) > 0) {
+        if ((statmask & Flag.PET3.get()) > 0) {
             MaplePet pet = chr.getPet(0);
             p.Encode8((pet != null) ? pet.getUniqueId() : 0);
         }
         // 兵法書, GashaExp
-        if ((statmask & (1 << 21)) > 0) {
+        if ((statmask & Flag.GASHAEXP.get()) > 0) {
             p.Encode4(chr.getGashaEXP());
         }
 

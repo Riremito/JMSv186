@@ -87,6 +87,7 @@ import packet.content.MobPacket;
 import packet.content.SocketPacket;
 import packet.content.SummonPacket;
 import packet.content.UserPacket;
+import packet.struct.GW_CharacterStat;
 import tools.MockIOSession;
 import scripting.EventInstanceManager;
 import scripting.NPCScriptManager;
@@ -5767,83 +5768,83 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         void Update(MapleCharacter chr) {
             if (this.skin != getSkinColor()) {
                 this.skin = getSkinColor();
-                this.statmask |= 1;
+                this.statmask |= GW_CharacterStat.Flag.SKIN.get();
             }
             if (this.face != getFace()) {
                 this.face = getFace();
-                this.statmask |= (1 << 1);
+                this.statmask |= GW_CharacterStat.Flag.FACE.get();
             }
             if (this.hair != getHair()) {
                 this.hair = getHair();
-                this.statmask |= (1 << 2);
+                this.statmask |= GW_CharacterStat.Flag.HAIR.get();
             }
             //this.pet1;
             if (this.level != getLevel()) {
                 this.level = getLevel();
-                this.statmask |= (1 << 4);
+                this.statmask |= GW_CharacterStat.Flag.LEVEL.get();
             }
             if (this.job != getJob()) {
                 this.job = getJob();
-                this.statmask |= (1 << 5);
+                this.statmask |= GW_CharacterStat.Flag.JOB.get();
             }
             if (this.stat_str != getStat().getStr()) {
                 this.stat_str = getStat().getStr();
-                this.statmask |= (1 << 6);
+                this.statmask |= GW_CharacterStat.Flag.STR.get();
             }
             if (this.stat_dex != getStat().getDex()) {
                 this.stat_dex = getStat().getDex();
-                this.statmask |= (1 << 7);
+                this.statmask |= GW_CharacterStat.Flag.DEX.get();
             }
             if (this.stat_int != getStat().getInt()) {
                 this.stat_int = getStat().getInt();
-                this.statmask |= (1 << 8);
+                this.statmask |= GW_CharacterStat.Flag.INT.get();
             }
             if (this.stat_luk != getStat().getLuk()) {
                 this.stat_luk = getStat().getLuk();
-                this.statmask |= (1 << 9);
+                this.statmask |= GW_CharacterStat.Flag.LUK.get();
             }
             if (this.stat_hp != getStat().getHp()) {
                 this.stat_hp = getStat().getHp();
-                this.statmask |= (1 << 10);
+                this.statmask |= GW_CharacterStat.Flag.HP.get();
             }
             if (this.stat_maxhp != getStat().getMaxHp()) {
                 this.stat_maxhp = getStat().getMaxHp();
-                this.statmask |= (1 << 11);
+                this.statmask |= GW_CharacterStat.Flag.MAXHP.get();
             }
             if (this.stat_mp != getStat().getMp()) {
                 this.stat_mp = getStat().getMp();
-                this.statmask |= (1 << 12);
+                this.statmask |= GW_CharacterStat.Flag.MP.get();
             }
             if (this.stat_maxmp != getStat().getMaxMp()) {
                 this.stat_maxmp = getStat().getMaxMp();
-                this.statmask |= (1 << 13);
+                this.statmask |= GW_CharacterStat.Flag.MAXMP.get();
             }
             if (this.ap != getRemainingAp()) {
                 this.ap = getRemainingAp();
-                this.statmask |= (1 << 14);
+                this.statmask |= GW_CharacterStat.Flag.AP.get();
             }
             if (this.sp != getRemainingSp()) {
                 this.sp = getRemainingSp();
-                this.statmask |= (1 << 15);
+                this.statmask |= GW_CharacterStat.Flag.SP.get();
             }
             if (this.exp != getExp()) {
                 this.exp = getExp();
-                this.statmask |= (1 << 16);
+                this.statmask |= GW_CharacterStat.Flag.EXP.get();
             }
             if (this.fame != getFame()) {
                 this.fame = getFame();
-                this.statmask |= (1 << 17);
+                this.statmask |= GW_CharacterStat.Flag.FAME.get();
             }
             if (this.meso != getMeso()) {
                 this.meso = getMeso();
-                this.statmask |= (1 << 18);
+                this.statmask |= GW_CharacterStat.Flag.MESO.get();
             }
             // v188 ここから+1
             //this.pet2;
             //this.pet3;
             if (this.gasha_exp != getGashaEXP()) {
                 this.gasha_exp = getGashaEXP();
-                this.statmask |= (1 << 21);
+                this.statmask |= GW_CharacterStat.Flag.GASHAEXP.get();
             }
         }
 
