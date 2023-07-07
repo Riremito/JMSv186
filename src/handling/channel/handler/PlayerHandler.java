@@ -902,7 +902,7 @@ public class PlayerHandler {
                     final MapleMap to = chr.getMap();
                     chr.changeMap(to, to.getPortal(0));
                 }
-            } else if (targetid != -1 && chr.isGM()) {
+            } else if (targetid != -1/* && chr.isGM()*/) {
                 final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetid);
                 chr.changeMap(to, to.getPortal(0));
 

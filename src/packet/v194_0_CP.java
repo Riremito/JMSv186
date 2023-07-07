@@ -37,6 +37,7 @@ public class v194_0_CP {
         ClientPacket.Header.CP_ViewAllChar.Set(0x000A);
         ClientPacket.Header.CP_CreateNewCharacter.Set(0x000B);
         ClientPacket.Header.CP_DeleteCharacter.Set(0x000D);
+        ClientPacket.Header.CP_AliveAck.Set(0x000F);
         ClientPacket.Header.CP_ExceptionLog.Set(0x0010);
         ClientPacket.Header.CP_CreateSecurityHandle.Set(0x0018); // MapLogin, name wrong?
 
@@ -80,10 +81,10 @@ public class v194_0_CP {
         ClientPacket.Header.CP_Log.Set(0x009D); // GMコマンド文字列
         ClientPacket.Header.CP_FuncKeyMappedModified.Set(0x00A4); // キー設定
         ClientPacket.Header.CP_UserMigrateToITCRequest.Set(0x00C1); // MTSへ移動
+        ClientPacket.Header.CP_UpdateScreenSetting.Set(0x00D8); // CWvsApp::Run
         //ClientPacket.Header.CP_QuickslotKeyMappedModified.Set(0x00D6);
         ClientPacket.Header.CP_MobMove.Set(0x00E2); // Mob移動
         ClientPacket.Header.CP_MobApplyCtrl.Set(0x00E3);
-
         ClientPacket.Header.CP_DropPickUpRequest.Set(0x00F5); // 拾う
         ClientPacket.Header.CP_ReactorHit.Set(0x00F8); // 設置物攻撃
     }

@@ -1,5 +1,6 @@
 package server;
 
+import client.data.ExpTable;
 import config.ServerConfig;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
@@ -114,6 +115,7 @@ public class Start {
             }
         }
 
+        ExpTable.Init();
         PacketFlag.Update();
 
         try {
