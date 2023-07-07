@@ -64,7 +64,7 @@ public class v194_0_CP {
         ClientPacket.Header.CP_UserConsumeCashItemUseRequest.Set(0x004F); // ポイントアイテム
         ClientPacket.Header.CP_UserSkillLearnItemUseRequest.Set(0x0052); // スキルブック, マスタリーブック
         ClientPacket.Header.CP_UserSkillResetItemUseRequest.Set(0x0053); // SP初期化呪文書
-        ClientPacket.Header.CP_UserSkillResetItemUseRequest.Set(0x0054); // モンスターブックセット
+        ClientPacket.Header.CP_JMS_MONSTERBOOK_SET.Set(0x0054); // モンスターブックセット
         ClientPacket.Header.CP_UserShopScannerItemUseRequest.Set(0x0055); // 不思議なフクロウ(消費), itemID 2310000
         ClientPacket.Header.CP_UserMapTransferItemUseRequest.Set(0x0056); // テレポストーン(消費), itemID 2320000
         ClientPacket.Header.CP_UserPortalScrollUseRequest.Set(0x0057); // 帰還の書
