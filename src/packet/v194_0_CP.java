@@ -56,9 +56,17 @@ public class v194_0_CP {
         ClientPacket.Header.CP_UserScriptMessageAnswer.Set(0x003A); // NPC会話継続
         ClientPacket.Header.CP_UserShopRequest.Set(0x003B);
         ClientPacket.Header.CP_UserTrunkRequest.Set(0x003C);
+        ClientPacket.Header.CP_ShopScannerRequest.Set(0x0041); // 不思議なフクロウのUIを開いた
         ClientPacket.Header.CP_UserChangeSlotPositionRequest.Set(0x0046); // アイテム移動, ドロップ
         ClientPacket.Header.CP_UserStatChangeItemUseRequest.Set(0x0048); // 回復薬
+        ClientPacket.Header.CP_UserMobSummonItemUseRequest.Set(0x004B); // 包み, itemID 2100000
+        ClientPacket.Header.CP_UserScriptItemUseRequest.Set(0x004E); // ミラクルキューブの欠片等の特殊消費アイテム
         ClientPacket.Header.CP_UserConsumeCashItemUseRequest.Set(0x004F); // ポイントアイテム
+        ClientPacket.Header.CP_UserSkillLearnItemUseRequest.Set(0x0052); // スキルブック, マスタリーブック
+        ClientPacket.Header.CP_UserSkillResetItemUseRequest.Set(0x0053); // SP初期化呪文書
+        ClientPacket.Header.CP_UserSkillResetItemUseRequest.Set(0x0054); // モンスターブックセット
+        ClientPacket.Header.CP_UserShopScannerItemUseRequest.Set(0x0055); // 不思議なフクロウ(消費), itemID 2310000
+        ClientPacket.Header.CP_UserMapTransferItemUseRequest.Set(0x0056); // テレポストーン(消費), itemID 2320000
         ClientPacket.Header.CP_UserPortalScrollUseRequest.Set(0x0057); // 帰還の書
         ClientPacket.Header.CP_UserUpgradeItemUseRequest.Set(0x0058); // 書
         ClientPacket.Header.CP_UserHyperUpgradeItemUseRequest.Set(0x0059); // 装備強化の書
@@ -79,9 +87,11 @@ public class v194_0_CP {
         ClientPacket.Header.CP_UserQuestRequest.Set(0x0076);
         ClientPacket.Header.CP_UserExpUpItemUseRequest.Set(0x008B); // 兵法書
         ClientPacket.Header.CP_UserTempExpUseRequest.Set(0x008C); // 兵法書の残りEXP
+        ClientPacket.Header.CP_JMS_JUKEBOX.Set(0x008D); // BGM変更, itemID 2150001, bgm:Jukebox/MorningShot
         ClientPacket.Header.CP_Admin.Set(0x009C); // GMコマンド
         ClientPacket.Header.CP_Log.Set(0x009D); // GMコマンド文字列
         ClientPacket.Header.CP_FuncKeyMappedModified.Set(0x00A4); // キー設定
+        ClientPacket.Header.CP_MarriageRequest.Set(0x00A6); // 婚約指輪
         ClientPacket.Header.CP_UserMigrateToITCRequest.Set(0x00C1); // MTSへ移動
         ClientPacket.Header.CP_UpdateScreenSetting.Set(0x00D8); // CWvsApp::Run
         //ClientPacket.Header.CP_QuickslotKeyMappedModified.Set(0x00D6);

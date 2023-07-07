@@ -195,7 +195,8 @@ public class ClientPacket {
         CP_UserDestroyPetItemRequest,
         CP_UserBridleItemUseRequest, // USE_CATCH_ITEM
         CP_UserSkillLearnItemUseRequest, // USE_SKILL_BOOK
-        //CP_UserSkillResetItemUseRequest,
+        CP_UserSkillResetItemUseRequest,
+        CP_JMS_MONSTERBOOK_SET,
         CP_UserShopScannerItemUseRequest, // USE_OWL_MINERVA
         CP_UserMapTransferItemUseRequest, // USE_TELE_ROCK
         CP_UserPortalScrollUseRequest, // USE_RETURN_SCROLL
@@ -289,6 +290,7 @@ public class ClientPacket {
         CP_UserMigrateToITCRequest,
         CP_UserExpUpItemUseRequest,
         CP_UserTempExpUseRequest,
+        CP_JMS_JUKEBOX, // ItemID 2150001
         CP_NewYearCardRequest,
         CP_RandomMorphRequest,
         CP_CashItemGachaponRequest,
