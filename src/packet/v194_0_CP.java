@@ -85,6 +85,7 @@ public class v194_0_CP {
         ClientPacket.Header.CP_UserPortalTeleportRequest.Set(0x0070); // Map内移動スクリプト
         ClientPacket.Header.CP_UserMapTransferRequest.Set(0x0071); // テレポストーン
         ClientPacket.Header.CP_UserQuestRequest.Set(0x0076);
+        ClientPacket.Header.CP_UserLotteryItemUseRequest.Set(0x007B); // 黄金豚の光るエッグ
         ClientPacket.Header.CP_UserExpUpItemUseRequest.Set(0x008B); // 兵法書
         ClientPacket.Header.CP_UserTempExpUseRequest.Set(0x008C); // 兵法書の残りEXP
         ClientPacket.Header.CP_JMS_JUKEBOX.Set(0x008D); // BGM変更, itemID 2150001, bgm:Jukebox/MorningShot

@@ -51,8 +51,55 @@ public class v194_0_SP {
         ServerPacket.Header.LP_SetITC.Set(0x0089); // MTSサーバーへ
         ServerPacket.Header.LP_SetCashShop.Set(0x008A); // ポイントショップサーバーへ
 
-        ServerPacket.Header.LP_UserChat.Set(0x00B0); // チャット
-
+        // User v194 test
+        {
+            // CUserPool::OnPacket
+            ServerPacket.Header.LP_UserEnterField.Set(0x00AE); // 他プレイヤー
+            ServerPacket.Header.LP_UserLeaveField.Set(0x00AF);
+            // CUserPool::OnUserCommonPacket
+            ServerPacket.Header.LP_UserChat.Set(0x00B0); // チャット
+            ServerPacket.Header.LP_UserChatNLCPQ.Set(0x00B1);
+            // test
+            ServerPacket.Header.LP_UserADBoard.Set(0x00B2); // 黒板
+            ServerPacket.Header.LP_UserMiniRoomBalloon.Set(0x00B3);
+            ServerPacket.Header.LP_UserConsumeItemEffect.Set(0x00B4);
+            ServerPacket.Header.LP_UserItemUpgradeEffect.Set(0x00B5); // 書
+            ServerPacket.Header.LP_UserItemHyperUpgradeEffect.Set(0x00B6); // 装備強化の書
+            ServerPacket.Header.LP_UserItemOptionUpgradeEffect.Set(0x00B7); // ミラクルキューブ
+            ServerPacket.Header.LP_UserItemReleaseEffect.Set(0x00B8); // 虫眼鏡
+            ServerPacket.Header.LP_UserItemUnreleaseEffect.Set(0x00B9); // 虫眼鏡
+            // 0x00BA 未使用
+            // 0x00BB 未使用
+            ServerPacket.Header.LP_UserTeslaTriangle.Set(0x00BC);
+            ServerPacket.Header.LP_UserFollowCharacter.Set(0x00BD);
+            ServerPacket.Header.LP_UserShowPQReward.Set(0x00BE);
+            ServerPacket.Header.LP_UserSetPhase.Set(0x00BF);
+            // 0x00C0 未使用
+            ServerPacket.Header.FISHING_CAUGHT.Set(0x00C1); // 釣り
+            ServerPacket.Header.LP_ShowPamsSongResult.Set(0x00C2); // ファムの歌
+            // CUser::OnPetPacket
+            ServerPacket.Header.LP_PetActivated.Set(0x00C3);
+            ServerPacket.Header.LP_PetEvol.Set(0x00C4);
+            ServerPacket.Header.LP_PetTransferField.Set(0x00C5);
+            ServerPacket.Header.LP_PetMove.Set(0x00C6);
+            ServerPacket.Header.LP_PetAction.Set(0x00C7);
+            ServerPacket.Header.LP_PetNameChanged.Set(0x00C8);
+            ServerPacket.Header.LP_PetLoadExceptionList.Set(0x00C9);
+            ServerPacket.Header.LP_PetActionCommand.Set(0x00CA);
+            // CUser::OnDragonPacket
+            ServerPacket.Header.LP_DragonEnterField.Set(0x00CB);
+            ServerPacket.Header.LP_DragonMove.Set(0x00CC);
+            ServerPacket.Header.LP_DragonLeaveField.Set(0x00CD); // ?
+        }
+        // Summon v194 test
+        {
+            ServerPacket.Header.LP_SummonedEnterField.Set(0x011E);
+            ServerPacket.Header.LP_SummonedLeaveField.Set(0x011F);
+            ServerPacket.Header.LP_SummonedMove.Set(0x0120);
+            ServerPacket.Header.LP_SummonedAttack.Set(0x0121);
+            ServerPacket.Header.LP_SummonedSkill.Set(0x0122);
+            ServerPacket.Header.LP_SummonedHit.Set(0x0123);
+        }
         // Mob v194
         {
             ServerPacket.Header.LP_MobEnterField.Set(0x0124); // Mob召喚
@@ -82,6 +129,7 @@ public class v194_0_SP {
             ServerPacket.Header.LP_MobTeleport.Set(0x013C);
             ServerPacket.Header.LP_MobAttackedByMob.Set(0x013D);
              */
+            // 0x013E 未使用
         }
 
         // NPC v194
@@ -91,6 +139,11 @@ public class v194_0_SP {
             ServerPacket.Header.LP_NpcEnterField.Set(0x013F); // NPC召喚
             ServerPacket.Header.LP_NpcLeaveField.Set(0x0140); // NPC消滅
             ServerPacket.Header.LP_NpcChangeController.Set(0x0141);
+            ServerPacket.Header.LP_NpcMove.Set(0x0142);
+            ServerPacket.Header.LP_NpcUpdateLimitedInfo.Set(0x0143);
+            ServerPacket.Header.LP_NpcSpecialAction.Set(0x0144);
+            ServerPacket.Header.LP_NpcSetScript.Set(0x0145);
+            // 0x0146 未使用
         }
         // CEmployeePool::OnPacket v194 test
         {
@@ -101,7 +154,7 @@ public class v194_0_SP {
         // Drop v194
         {
             ServerPacket.Header.LP_DropEnterField.Set(0x014A);
-            // LP_DropReleaseAllFreeze is not used
+            // 0x014B 未使用, LP_DropReleaseAllFreeze is not used
             ServerPacket.Header.LP_DropLeaveField.Set(0x014C);
         }
         // v194 test
