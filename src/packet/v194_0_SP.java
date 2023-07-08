@@ -125,6 +125,14 @@ public class v194_0_SP {
             ServerPacket.Header.LP_OpenGateCreated.Set(0x0154);
             ServerPacket.Header.LP_OpenGateRemoved.Set(0x0155);
         }
+        // v194
+        {
+            // 0x0156
+            ServerPacket.Header.LP_JMS_PINKBEAN_PORTAL_CREATE.Set(0x0156);
+            // 0x0157
+            // @0157 [00 or 01] [itemID], ポータルを開けませんでした。入場にはitemIDが必要です。
+            // 0x0158
+        }
         // Reactor v194
         {
             ServerPacket.Header.LP_ReactorChangeState.Set(0x0159);
@@ -141,6 +149,13 @@ public class v194_0_SP {
         ServerPacket.Header.LP_FuncKeyMappedInit.Set(0x019E); // キー設定初期化
         //ServerPacket.Header.LP_PetConsumeItemInit.Set(0x019F);
         //ServerPacket.Header.LP_PetConsumeMPItemInit.Set(0x019A);
+
+        // CBattleRecordMan::OnPacket v194
+        {
+            ServerPacket.Header.LP_BattleRecordDotDamageInfo.Set(0x01AE);
+            ServerPacket.Header.LP_BattleRecordRequestResult.Set(0x01AF);
+            // 0x01B0
+        }
 
     }
 }

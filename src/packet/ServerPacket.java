@@ -541,6 +541,7 @@ public class ServerPacket {
         LP_END_OPENGATEPOOL,
         LP_OpenGateRemoved,
         LP_BEGIN_REACTORPOOL,
+        LP_JMS_PINKBEAN_PORTAL_CREATE, // ItemID 2420004
         LP_ReactorChangeState, // REACTOR_HIT
         LP_ReactorMove,
         LP_ReactorEnterField, // REACTOR_SPAWN

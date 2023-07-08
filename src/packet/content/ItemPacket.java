@@ -21,7 +21,10 @@
 package packet.content;
 
 import client.MapleClient;
+import handling.channel.ChannelServer;
 import packet.ClientPacket;
+import packet.ServerPacket;
+import server.maps.MapleMap;
 
 /**
  *
@@ -100,15 +103,38 @@ public class ItemPacket {
                 short item_slot = p.Decode2(); // 43, 00A70E36
                 int item_id = p.Decode4(); // 2150001, 00A70E40
                 int song_time = p.Decode4(); // 113788, 00A70E4A
+                c.getPlayer().UpdateStat(true);
                 return true;
             }
-            case CP_JMS_PINKBEAN_PORTAL: {
+
+            case CP_JMS_PINKBEAN_PORTAL_ENTER: {
+                int portal_id = p.Decode4();
+                byte flag = p.Decode1();
+
+                MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(749050200);
+                c.getPlayer().changeMap(to, to.getPortal(0));
+                return true;
+            }
+            case CP_JMS_PINKBEAN_PORTAL_CREATE: {
                 // v194
                 p.Decode4(); // -2145728229, 00A6618A
                 short item_slot = p.Decode2(); // 50, 00A66198
                 int item_id = p.Decode4(); // 2420004, 00A661A6
                 short x = p.Decode2(); // -1776, 00A661C1
                 short y = p.Decode2(); // 213, 00A661DD
+
+                ServerPacket ip = new ServerPacket(ServerPacket.Header.LP_JMS_PINKBEAN_PORTAL_CREATE);
+                ip.Encode1(1);
+                ip.Encode4(item_id);
+                ip.Encode4(1234); // portal id
+                ip.Encode2(x);
+                ip.Encode2(y);
+                ip.Encode4(5555);
+                ip.Encode4(5666);
+                ip.Encode4(0);
+                ip.Encode4(0);
+                c.SendPacket(ip.Get());
+                c.getPlayer().UpdateStat(true);
                 return true;
             }
             default: {
@@ -116,6 +142,7 @@ public class ItemPacket {
             }
         }
 
+        c.getPlayer().UpdateStat(true);
         return false;
     }
 }

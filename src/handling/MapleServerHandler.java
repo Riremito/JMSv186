@@ -27,6 +27,7 @@ import packet.ProcessPacket;
 import packet.SendPacket;
 import packet.content.AdminPacket;
 import packet.content.GashaEXPPacket;
+import packet.content.ItemPacket;
 import packet.content.LoginPacket;
 import packet.content.MobPacket;
 import packet.content.NPCPacket;
@@ -1128,6 +1129,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserExpUpItemUseRequest:
             case CP_UserTempExpUseRequest: {
                 GashaEXPPacket.OnPacket(op, type, c);
+                return true;
+            }
+            case CP_JMS_JUKEBOX:
+            case CP_JMS_PINKBEAN_PORTAL_CREATE:
+            case CP_JMS_PINKBEAN_PORTAL_ENTER: {
+                ItemPacket.OnPacket(op, type, c);
                 return true;
             }
             default: {
