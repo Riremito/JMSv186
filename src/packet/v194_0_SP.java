@@ -92,11 +92,38 @@ public class v194_0_SP {
             ServerPacket.Header.LP_NpcLeaveField.Set(0x0140); // NPC消滅
             ServerPacket.Header.LP_NpcChangeController.Set(0x0141);
         }
-        // Drop v194 test
+        // CEmployeePool::OnPacket v194 test
+        {
+            ServerPacket.Header.LP_EmployeeEnterField.Set(0x0147);
+            ServerPacket.Header.LP_EmployeeLeaveField.Set(0x0148);
+            ServerPacket.Header.LP_EmployeeMiniRoomBalloon.Set(0x0149);
+        }
+        // Drop v194
         {
             ServerPacket.Header.LP_DropEnterField.Set(0x014A);
             // LP_DropReleaseAllFreeze is not used
             ServerPacket.Header.LP_DropLeaveField.Set(0x014C);
+        }
+        // v194 test
+        {
+            ServerPacket.Header.LP_CreateMessgaeBoxFailed.Set(0x014D);
+            ServerPacket.Header.LP_MessageBoxEnterField.Set(0x014E);
+            ServerPacket.Header.LP_MessageBoxLeaveField.Set(0x014F);
+        }
+        // AffectedArea v194
+        {
+            ServerPacket.Header.LP_AffectedAreaCreated.Set(0x0150);
+            ServerPacket.Header.LP_AffectedAreaRemoved.Set(0x0151);
+        }
+        // TownPortal v194 test
+        {
+            ServerPacket.Header.LP_TownPortalCreated.Set(0x0152);
+            ServerPacket.Header.LP_TownPortalRemoved.Set(0x0153);
+        }
+        // Gate v194 test
+        {
+            ServerPacket.Header.LP_OpenGateCreated.Set(0x0154);
+            ServerPacket.Header.LP_OpenGateRemoved.Set(0x0155);
         }
         // Reactor v194
         {

@@ -92,6 +92,7 @@ public class v194_0_CP {
         ClientPacket.Header.CP_Log.Set(0x009D); // GMコマンド文字列
         ClientPacket.Header.CP_FuncKeyMappedModified.Set(0x00A4); // キー設定
         ClientPacket.Header.CP_MarriageRequest.Set(0x00A6); // 婚約指輪
+        ClientPacket.Header.CP_JMS_PINKBEAN_PORTAL.Set(0x00BE);
         ClientPacket.Header.CP_UserMigrateToITCRequest.Set(0x00C1); // MTSへ移動
         ClientPacket.Header.CP_UpdateScreenSetting.Set(0x00D8); // CWvsApp::Run
         //ClientPacket.Header.CP_QuickslotKeyMappedModified.Set(0x00D6);

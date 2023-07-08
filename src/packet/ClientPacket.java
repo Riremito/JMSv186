@@ -287,6 +287,7 @@ public class ClientPacket {
         CP_FamilySummonResult,
         CP_ChatBlockUserReq,
         CP_GuildBBS,
+        CP_JMS_PINKBEAN_PORTAL,
         CP_UserMigrateToITCRequest,
         CP_UserExpUpItemUseRequest,
         CP_UserTempExpUseRequest,

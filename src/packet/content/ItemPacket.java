@@ -102,6 +102,15 @@ public class ItemPacket {
                 int song_time = p.Decode4(); // 113788, 00A70E4A
                 return true;
             }
+            case CP_JMS_PINKBEAN_PORTAL: {
+                // v194
+                p.Decode4(); // -2145728229, 00A6618A
+                short item_slot = p.Decode2(); // 50, 00A66198
+                int item_id = p.Decode4(); // 2420004, 00A661A6
+                short x = p.Decode2(); // -1776, 00A661C1
+                short y = p.Decode2(); // 213, 00A661DD
+                return true;
+            }
             default: {
                 break;
             }
