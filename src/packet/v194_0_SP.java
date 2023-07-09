@@ -51,6 +51,53 @@ public class v194_0_SP {
         ServerPacket.Header.LP_SetITC.Set(0x0089); // MTSサーバーへ
         ServerPacket.Header.LP_SetCashShop.Set(0x008A); // ポイントショップサーバーへ
 
+        // Field v194 test
+        {
+            ServerPacket.Header.LP_TransferFieldReqIgnored.Set(0x008E);
+            ServerPacket.Header.LP_TransferChannelReqIgnored.Set(0x008F);
+            ServerPacket.Header.LP_FieldSpecificData.Set(0x0090);
+            ServerPacket.Header.LP_GroupMessage.Set(0x0091);
+            ServerPacket.Header.LP_Whisper.Set(0x0092);
+            ServerPacket.Header.LP_MobSummonItemUseResult.Set(0x0093);
+            ServerPacket.Header.LP_FieldEffect.Set(0x0094);
+            ServerPacket.Header.LP_FieldObstacleOnOff.Set(0x0095);
+            ServerPacket.Header.LP_FieldObstacleOnOffStatus.Set(0x0096);
+            ServerPacket.Header.LP_FieldObstacleAllReset.Set(0x0097);
+            // 0x0098 不明
+            ServerPacket.Header.LP_BlowWeather.Set(0x0099);
+            ServerPacket.Header.LP_PlayJukeBox.Set(0x009A);
+            ServerPacket.Header.LP_AdminResult.Set(0x009B);
+            ServerPacket.Header.LP_Quiz.Set(0x009C);
+            ServerPacket.Header.LP_Desc.Set(0x009D);
+            ServerPacket.Header.LP_Clock.Set(0x009E);
+            // 0x009F
+            // 0x00A0
+            ServerPacket.Header.LP_SetQuestClear.Set(0x00A1);
+            ServerPacket.Header.LP_SetQuestTime.Set(0x00A2);
+            ServerPacket.Header.LP_SetObjectState.Set(0x00A3);
+            ServerPacket.Header.LP_DestroyClock.Set(0x00A4);
+            // 0x00A5
+            ServerPacket.Header.LP_StalkResult.Set(0x00A6);
+            // 0x00A7-0x00A8
+            ServerPacket.Header.LP_QuickslotMappedInit.Set(0x00A9);
+            ServerPacket.Header.LP_FootHoldInfo.Set(0x00AA);
+            ServerPacket.Header.LP_RequestFootHoldInfo.Set(0x00AB);
+            // 0x00AC
+            // 0x00AD 不明
+            ServerPacket.Header.LP_HontaleTimer.Set(0x0171);
+            // 0x0172
+            ServerPacket.Header.LP_ChaosZakumTimer.Set(0x0173);
+            ServerPacket.Header.LP_HontailTimer.Set(0x0174);
+            ServerPacket.Header.LP_ZakumTimer.Set(0x0175);
+            // 0x0176-0x017A
+            ServerPacket.Header.LP_TrunkResult.Set(0x017B); // 倉庫
+            // 0x017C-0x017D
+            ServerPacket.Header.LP_RPSGame.Set(0x017E);
+            ServerPacket.Header.LP_Messenger.Set(0x017F);
+            ServerPacket.Header.LP_MiniRoom.Set(0x0180);
+            // 0x0181-0x018C
+            ServerPacket.Header.LP_Parcel.Set(0x018D); // 宅配
+        }
         // User v194 test
         {
             // CUserPool::OnPacket
@@ -116,7 +163,8 @@ public class v194_0_SP {
             // CUserPool::OnUserLocalPacket
             ServerPacket.Header.LP_UserSitResult.Set(0x00DE5); // 3
             ServerPacket.Header.LP_UserEmotionLocal.Set(0x00E6); // 3
-            ServerPacket.Header.LP_UserEffectLocal.Set(0x00E7); // 3
+            // flag id broken (portal sound)
+            //ServerPacket.Header.LP_UserEffectLocal.Set(0x00E7); // 3
             ServerPacket.Header.LP_UserTeleport.Set(0x00E8); // 3
             // 0x00E9 未使用
             ServerPacket.Header.LP_MesoGive_Succeeded.Set(0x00EA); // 3
@@ -272,7 +320,6 @@ public class v194_0_SP {
         ServerPacket.Header.LP_ScriptMessage.Set(0x0176); // NPC会話
         ServerPacket.Header.LP_OpenShopDlg.Set(0x0177); // NPC商店
         ServerPacket.Header.LP_ShopResult.Set(0x0178);
-        ServerPacket.Header.LP_TrunkResult.Set(0x017B); // 倉庫
 
         ServerPacket.Header.LP_FuncKeyMappedInit.Set(0x019E); // キー設定初期化
         //ServerPacket.Header.LP_PetConsumeItemInit.Set(0x019F);
