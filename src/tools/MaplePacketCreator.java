@@ -3042,7 +3042,12 @@ public class MaplePacketCreator {
 
         mplew.writeShort(ServerPacket.Header.LP_SkillCooltimeSet.Get());
         mplew.writeInt(sid);
-        mplew.writeShort(time);
+
+        if (ServerConfig.version <= 186) {
+            mplew.writeShort(time);
+        } else {
+            mplew.writeInt(time);
+        }
 
         return mplew.getPacket();
     }

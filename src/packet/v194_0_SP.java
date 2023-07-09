@@ -90,6 +90,81 @@ public class v194_0_SP {
             ServerPacket.Header.LP_DragonEnterField.Set(0x00CB);
             ServerPacket.Header.LP_DragonMove.Set(0x00CC);
             ServerPacket.Header.LP_DragonLeaveField.Set(0x00CD); // ?
+            // CUserPool::OnUserRemotePacket
+            ServerPacket.Header.LP_UserMove.Set(0x00CF); // 2
+            ServerPacket.Header.LP_UserMeleeAttack.Set(0x00D0); // 1
+            ServerPacket.Header.LP_UserShootAttack.Set(0x00D1); // 1
+            ServerPacket.Header.LP_UserMagicAttack.Set(0x00D2); // 1
+            ServerPacket.Header.LP_UserBodyAttack.Set(0x00D3); // 1
+            ServerPacket.Header.LP_UserSkillPrepare.Set(0x00D4); // 1
+            ServerPacket.Header.LP_UserMovingShootAttackPrepare.Set(0x00D5); // 1
+            ServerPacket.Header.LP_UserSkillCancel.Set(0x00D6); // 1
+            ServerPacket.Header.LP_UserHit.Set(0x00D7); // 1
+            ServerPacket.Header.LP_UserEmotion.Set(0x00D8); // 1
+            ServerPacket.Header.LP_UserSetActiveEffectItem.Set(0x00D9); // 1
+            ServerPacket.Header.LP_UserShowUpgradeTombEffect.Set(0x00DA); // 1
+            ServerPacket.Header.LP_UserSetActivePortableChair.Set(0x00DB); // 2
+            ServerPacket.Header.LP_UserAvatarModified.Set(0x00DC); // 2
+            ServerPacket.Header.LP_UserEffectRemote.Set(0x00DD); // 1
+            ServerPacket.Header.LP_UserTemporaryStatSet.Set(0x00DE); // 2
+            ServerPacket.Header.LP_UserTemporaryStatReset.Set(0x00DF); // 2
+            ServerPacket.Header.LP_UserHP.Set(0x00E0); // 2
+            ServerPacket.Header.LP_UserGuildNameChanged.Set(0x00E1); // 2
+            ServerPacket.Header.LP_UserGuildMarkChanged.Set(0x00E2); // 2
+            // 0x00E3 不明
+            ServerPacket.Header.LP_UserThrowGrenade.Set(0x00E4); // 2
+            // CUserPool::OnUserLocalPacket
+            ServerPacket.Header.LP_UserSitResult.Set(0x00DE5); // 3
+            ServerPacket.Header.LP_UserEmotionLocal.Set(0x00E6); // 3
+            ServerPacket.Header.LP_UserEffectLocal.Set(0x00E7); // 3
+            ServerPacket.Header.LP_UserTeleport.Set(0x00E8); // 3
+            // 0x00E9 未使用
+            ServerPacket.Header.LP_MesoGive_Succeeded.Set(0x00EA); // 3
+            ServerPacket.Header.LP_MesoGive_Failed.Set(0x00EB); // 3
+            ServerPacket.Header.LP_FieldFadeInOut.Set(0x00EC); // 3
+            ServerPacket.Header.LP_FieldFadeOutForce.Set(0x00ED); // 3
+            ServerPacket.Header.LP_Random_Mesobag_Succeed.Set(0x00EE); // 3
+            ServerPacket.Header.LP_Random_Mesobag_Failed.Set(0x00EF); // 3
+            ServerPacket.Header.LP_UserQuestResult.Set(0x00F0); //3
+            ServerPacket.Header.LP_NotifyHPDecByField.Set(0x00F1); //3
+            // 0x00F2 不明
+            ServerPacket.Header.LP_UserBalloonMsg.Set(0x00F3); //3
+            ServerPacket.Header.LP_PlayEventSound.Set(0x00F4);
+            ServerPacket.Header.LP_PlayMinigameSound.Set(0x00F5); //3
+            // 0x00F6 不明
+            ServerPacket.Header.LP_UserMakerResult.Set(0x00F7); //3
+            ServerPacket.Header.LP_UserOpenConsultBoard.Set(0x00F8); //3
+            ServerPacket.Header.LP_UserOpenClassCompetitionPage.Set(0x00F9); //3
+            ServerPacket.Header.LP_UserOpenUI.Set(0x00FA); //3
+            ServerPacket.Header.LP_UserOpenUIWithOption.Set(0x00FB); //3
+            ServerPacket.Header.LP_SetDirectionMode.Set(0x00FC); //3
+            ServerPacket.Header.LP_SetStandAloneMode.Set(0x00FD); //3
+            ServerPacket.Header.LP_UserHireTutor.Set(0x00FE); //3
+            ServerPacket.Header.LP_UserTutorMsg.Set(0x00FF); //3
+            ServerPacket.Header.LP_IncCombo.Set(0x0100); //3
+            // 0x0101 Combo
+            ServerPacket.Header.TAMA_BOX_SUCCESS.Set(0x0102); // 3
+            ServerPacket.Header.TAMA_BOX_FAILURE.Set(0x0103); // 3
+            ServerPacket.Header.LP_UserRandomEmotion.Set(0x0104); // 3
+            ServerPacket.Header.LP_ResignQuestReturn.Set(0x0105); // 3
+            ServerPacket.Header.LP_PassMateName.Set(0x0106); // 3
+            ServerPacket.Header.LP_SetRadioSchedule.Set(0x0107); // 3
+            ServerPacket.Header.LP_UserOpenSkillGuide.Set(0x0108); // 3
+            ServerPacket.Header.LP_UserNoticeMsg.Set(0x0109); // 3
+            ServerPacket.Header.LP_UserChatMsg.Set(0x010A); // 3
+            ServerPacket.Header.LP_UserBuffzoneEffect.Set(0x010B); // 3
+            // 0x010C 不明
+            ServerPacket.Header.LP_UserTimeBombAttack.Set(0x010D); // 3
+            ServerPacket.Header.LP_UserPassiveMove.Set(0x010E); // 3
+            ServerPacket.Header.LP_UserFollowCharacterFailed.Set(0x010F); // 3
+            ServerPacket.Header.LP_UserRequestVengeance.Set(0x0110); // 3
+            ServerPacket.Header.LP_UserRequestExJablin.Set(0x0111); // 3
+            // 0x0112 不明
+            // 0x0113 採集
+            // 0x0114-0x0116 不明
+            ServerPacket.Header.LP_QuestGuideResult.Set(0x0117); // 3
+            // 0x0118-0x011B 不明
+            ServerPacket.Header.LP_SkillCooltimeSet.Set(0x011C); // 3
         }
         // Summon v194 test
         {
