@@ -275,7 +275,7 @@ public class v194_0_SP {
             // 0x00E3 不明
             ServerPacket.Header.LP_UserThrowGrenade.Set(0x00E4); // 2
             // CUserPool::OnUserLocalPacket
-            ServerPacket.Header.LP_UserSitResult.Set(0x00DE5); // 3
+            ServerPacket.Header.LP_UserSitResult.Set(0x00E5); // 3
             ServerPacket.Header.LP_UserEmotionLocal.Set(0x00E6); // 3
             // flag id broken (portal sound)
             //ServerPacket.Header.LP_UserEffectLocal.Set(0x00E7); // 3

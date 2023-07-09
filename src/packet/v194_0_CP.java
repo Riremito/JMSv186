@@ -45,13 +45,16 @@ public class v194_0_CP {
         ClientPacket.Header.CP_UserTransferChannelRequest.Set(0x001C); // CH変更
         ClientPacket.Header.CP_UserMigrateToCashShopRequest.Set(0x001D); // ポイントショップへ移動
         ClientPacket.Header.CP_UserMove.Set(0x001E); // 座標移動
-        ClientPacket.Header.CP_UserSitRequest.Set(0x0020); // イス
+        ClientPacket.Header.CP_UserSitRequest.Set(0x001F); // マップ上のイス
+        ClientPacket.Header.CP_UserPortableChairSitRequest.Set(0x0020); // イス
         ClientPacket.Header.CP_UserMeleeAttack.Set(0x0023); // 攻撃
         ClientPacket.Header.CP_UserShootAttack.Set(0x0024); // 遠距離攻撃
         ClientPacket.Header.CP_UserMagicAttack.Set(0x0025); // 魔法攻撃
         ClientPacket.Header.CP_UserBodyAttack.Set(0x0026);
         ClientPacket.Header.CP_UserHit.Set(0x0028); // 被ダメージ
         ClientPacket.Header.CP_UserChat.Set(0x002A); // チャット
+        ClientPacket.Header.CP_UserADBoardClose.Set(0x002B); // 黒板終了
+        ClientPacket.Header.CP_UserEmotion.Set(0x002C); // 表情
         ClientPacket.Header.CP_UserSelectNpc.Set(0x0036); // NPC会話
         ClientPacket.Header.CP_UserScriptMessageAnswer.Set(0x003A); // NPC会話継続
         ClientPacket.Header.CP_UserShopRequest.Set(0x003B);
@@ -88,16 +91,21 @@ public class v194_0_CP {
         ClientPacket.Header.CP_UserLotteryItemUseRequest.Set(0x007B); // 黄金豚の光るエッグ
         ClientPacket.Header.CP_UserExpUpItemUseRequest.Set(0x008B); // 兵法書
         ClientPacket.Header.CP_UserTempExpUseRequest.Set(0x008C); // 兵法書の残りEXP
+        ClientPacket.Header.CP_UserUseGachaponBoxRequest.Set(0x008E); // マジェスティックボックス
         ClientPacket.Header.CP_JMS_JUKEBOX.Set(0x008D); // BGM変更, itemID 2150001, bgm:Jukebox/MorningShot
+        ClientPacket.Header.CP_Messenger.Set(0x0092); // チャットルーム
         ClientPacket.Header.CP_Admin.Set(0x009C); // GMコマンド
         ClientPacket.Header.CP_Log.Set(0x009D); // GMコマンド文字列
         ClientPacket.Header.CP_FuncKeyMappedModified.Set(0x00A4); // キー設定
         ClientPacket.Header.CP_MarriageRequest.Set(0x00A6); // 婚約指輪
+        ClientPacket.Header.CP_FamilyChartRequest.Set(0x00AD);
+        ClientPacket.Header.CP_FamilyInfoRequest.Set(0x00AE);
+        ClientPacket.Header.CP_FamilyRegisterJunior.Set(0x00AF);
         ClientPacket.Header.CP_JMS_PINKBEAN_PORTAL_ENTER.Set(0x00BD);
         ClientPacket.Header.CP_JMS_PINKBEAN_PORTAL_CREATE.Set(0x00BE);
         ClientPacket.Header.CP_UserMigrateToITCRequest.Set(0x00C1); // MTSへ移動
+        ClientPacket.Header.CP_QuickslotKeyMappedModified.Set(0x00D6);
         ClientPacket.Header.CP_UpdateScreenSetting.Set(0x00D8); // CWvsApp::Run
-        //ClientPacket.Header.CP_QuickslotKeyMappedModified.Set(0x00D6);
         ClientPacket.Header.CP_MobMove.Set(0x00E2); // Mob移動
         ClientPacket.Header.CP_MobApplyCtrl.Set(0x00E3);
         ClientPacket.Header.CP_DropPickUpRequest.Set(0x00F5); // 拾う
