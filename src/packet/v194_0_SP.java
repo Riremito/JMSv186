@@ -42,15 +42,129 @@ public class v194_0_SP {
         ServerPacket.Header.LP_RecommendWorldMessage.Set(0x0014);
         ServerPacket.Header.LOGIN_AUTH.Set(0x0015);
 
-        ServerPacket.Header.LP_InventoryOperation.Set(0x0018);
-        ServerPacket.Header.LP_StatChanged.Set(0x001A); // ステータス変化
-        ServerPacket.Header.LP_ChangeSkillRecordResult.Set(0x001F); // スキルポイント変化
-        ServerPacket.Header.LP_BroadcastMsg.Set(0x0040); // メッセージ
-
-        ServerPacket.Header.LP_SetField.Set(0x0088); // ゲームサーバーへ
-        ServerPacket.Header.LP_SetITC.Set(0x0089); // MTSサーバーへ
-        ServerPacket.Header.LP_SetCashShop.Set(0x008A); // ポイントショップサーバーへ
-
+        // CWvsContext::OnPacket v194
+        {
+            ServerPacket.Header.LP_InventoryOperation.Set(0x0018); // アイテム欄
+            ServerPacket.Header.LP_InventoryGrow.Set(0x0019);
+            ServerPacket.Header.LP_StatChanged.Set(0x001A); // ステータス変化
+            ServerPacket.Header.LP_TemporaryStatSet.Set(0x001B);
+            ServerPacket.Header.LP_TemporaryStatReset.Set(0x001C);
+            ServerPacket.Header.LP_ForcedStatSet.Set(0x001D);
+            ServerPacket.Header.LP_ForcedStatReset.Set(0x001E);
+            ServerPacket.Header.LP_ChangeSkillRecordResult.Set(0x001F); // スキルポイント変化
+            ServerPacket.Header.LP_SkillUseResult.Set(0x0020);
+            // 0x0021 不明
+            ServerPacket.Header.LP_GivePopularityResult.Set(0x0022);
+            ServerPacket.Header.LP_Message.Set(0x0023);
+            ServerPacket.Header.LP_MemoResult.Set(0x0024);
+            ServerPacket.Header.LP_MapTransferResult.Set(0x0025);
+            ServerPacket.Header.LP_AntiMacroResult.Set(0x0026);
+            // 0x0027 未使用
+            ServerPacket.Header.LP_ClaimResult.Set(0x0028);
+            ServerPacket.Header.LP_SetClaimSvrAvailableTime.Set(0x0029);
+            ServerPacket.Header.LP_ClaimSvrStatusChanged.Set(0x002A);
+            ServerPacket.Header.LP_SetTamingMobInfo.Set(0x002B);
+            ServerPacket.Header.LP_QuestClear.Set(0x002C);
+            ServerPacket.Header.LP_EntrustedShopCheckResult.Set(0x002D);
+            ServerPacket.Header.LP_SkillLearnItemResult.Set(0x002E);
+            ServerPacket.Header.LP_SkillResetItemResult.Set(0x002F);
+            // 0x0030 不明
+            ServerPacket.Header.LP_GatherItemResult.Set(0x0031);
+            ServerPacket.Header.LP_SortItemResult.Set(0x0032);
+            // 0x0033 未使用
+            // 0x0034 未使用
+            ServerPacket.Header.LP_CharacterInfo.Set(0x0035);
+            // 0x0036 不明
+            ServerPacket.Header.LP_PartyResult.Set(0x0037);
+            // 0x0038 未使用
+            ServerPacket.Header.LP_ExpeditionRequest.Set(0x0039);
+            ServerPacket.Header.LP_FriendResult.Set(0x003A);
+            // 0x003B 未使用
+            ServerPacket.Header.LP_GuildRequest.Set(0x003C);
+            ServerPacket.Header.LP_AllianceResult.Set(0x003D);
+            ServerPacket.Header.LP_TownPortal.Set(0x003E); // ミスティックドア
+            ServerPacket.Header.LP_OpenGate.Set(0x003F);
+            ServerPacket.Header.LP_BroadcastMsg.Set(0x0040); // メッセージ
+            ServerPacket.Header.LP_IncubatorResult.Set(0x0041); // ピグミー
+            ServerPacket.Header.LP_ShopScannerResult.Set(0x0042);
+            ServerPacket.Header.LP_ShopLinkResult.Set(0x0043);
+            ServerPacket.Header.LP_MarriageRequest.Set(0x0044);
+            ServerPacket.Header.LP_MarriageResult.Set(0x0046);
+            ServerPacket.Header.LP_WeddingGiftResult.Set(0x0046);
+            ServerPacket.Header.LP_MarriedPartnerMapTransfer.Set(0x0047);
+            ServerPacket.Header.LP_CashPetFoodResult.Set(0x0048);
+            ServerPacket.Header.LP_SetWeekEventMessage.Set(0x0049);
+            ServerPacket.Header.LP_SetPotionDiscountRate.Set(0x004A);
+            ServerPacket.Header.LP_BridleMobCatchFail.Set(0x004B);
+            // 0x004C 未使用
+            ServerPacket.Header.MINIGAME_PACHINKO_UPDATE_TAMA.Set(0x004D);
+            // 0x004E パチンコ
+            // 0x004F パチンコ
+            // 0x0050 占い
+            // 0x0051 占い
+            // 0x0052 不明
+            ServerPacket.Header.FISHING_BOARD_UPDATE.Set(0x0053);
+            // 0x0054-0x0056 v186 参照
+            ServerPacket.Header.LP_ImitatedNPCResult.Set(0x0057);
+            // NPC
+            //ServerPacket.Header.LP_ImitatedNPCData.Set(0x0058);
+            //ServerPacket.Header.LP_LimitedNPCDisableInfo.Set(0x0059);
+            ServerPacket.Header.LP_MonsterBookSetCard.Set(0x005A);
+            ServerPacket.Header.LP_MonsterBookSetCover.Set(0x005B);
+            // 0x005C-0x005E 不明
+            ServerPacket.Header.LP_MapleTVUseRes.Set(0x005F);
+            ServerPacket.Header.LP_AvatarMegaphoneUpdateMessage.Set(0x0060);
+            ServerPacket.Header.LP_AvatarMegaphoneClearMessage.Set(0x0061);
+            ServerPacket.Header.LP_HourChanged.Set(0x0062);
+            ServerPacket.Header.LP_MiniMapOnOff.Set(0x0063);
+            ServerPacket.Header.LP_ConsultAuthkeyUpdate.Set(0x0064);
+            ServerPacket.Header.LP_ClassCompetitionAuthkeyUpdate.Set(0x0065);
+            ServerPacket.Header.LP_WebBoardAuthkeyUpdate.Set(0x0066);
+            ServerPacket.Header.LP_SessionValue.Set(0x0067);
+            ServerPacket.Header.LP_PartyValue.Set(0x0068);
+            ServerPacket.Header.LP_FieldSetVariable.Set(0x0069);
+            ServerPacket.Header.LP_BonusExpRateChanged.Set(0x006A);
+            ServerPacket.Header.LP_FamilyChartResult.Set(0x006B);
+            ServerPacket.Header.LP_FamilyInfoResult.Set(0x006C);
+            ServerPacket.Header.LP_FamilyResult.Set(0x006D);
+            ServerPacket.Header.LP_FamilyJoinRequest.Set(0x006E);
+            ServerPacket.Header.LP_FamilyJoinRequestResult.Set(0x006F);
+            ServerPacket.Header.LP_FamilyJoinAccepted.Set(0x0070);
+            ServerPacket.Header.LP_FamilyPrivilegeList.Set(0x0071);
+            ServerPacket.Header.LP_FamilyFamousPointIncResult.Set(0x0072);
+            ServerPacket.Header.LP_FamilyNotifyLoginOrLogout.Set(0x0073);
+            ServerPacket.Header.LP_FamilySetPrivilege.Set(0x0074);
+            ServerPacket.Header.LP_FamilySummonRequest.Set(0x0075);
+            ServerPacket.Header.LP_NotifyLevelUp.Set(0x0076);
+            ServerPacket.Header.LP_NotifyWedding.Set(0x0077);
+            ServerPacket.Header.LP_NotifyJobChange.Set(0x0078);
+            ServerPacket.Header.LP_SetBuyEquipExt.Set(0x0079);
+            ServerPacket.Header.LP_SetPassenserRequest.Set(0x007A);
+            ServerPacket.Header.LP_SuccessInUseGachaponBox.Set(0x007B);
+            ServerPacket.Header.LP_ScriptProgressMessage.Set(0x007C);
+            ServerPacket.Header.LP_DataCRCCheckFailed.Set(0x007D);
+            // 0x007E 不明
+            ServerPacket.Header.LP_ShowSlotMessage.Set(0x007F);
+            ServerPacket.Header.LP_WildHunterInfo.Set(0x0080);
+            // 0x0081-0x0082 不明
+            ServerPacket.Header.LP_StageChange.Set(0x0083);
+            ServerPacket.Header.LP_TransferChannel.Set(0x0084);
+            ServerPacket.Header.LP_AskUserWhetherUsePamsSong.Set(0x0085);
+            // 0x0086 不明
+            ServerPacket.Header.LP_MacroSysDataInit.Set(0x0087);
+        }
+        // CStage::OnPacket v194
+        {
+            ServerPacket.Header.LP_SetField.Set(0x0088); // ゲームサーバーへ
+            ServerPacket.Header.LP_SetITC.Set(0x0089); // MTSサーバーへ
+            ServerPacket.Header.LP_SetCashShop.Set(0x008A); // ポイントショップサーバーへ
+        }
+        // CMapLoadable::OnPacket v194
+        {
+            ServerPacket.Header.LP_SetBackgroundEffect.Set(0x008B);
+            ServerPacket.Header.LP_SetMapObjectVisible.Set(0x008C);
+            ServerPacket.Header.LP_ClearBackgroundEffect.Set(0x008D);
+        }
         // Field v194 test
         {
             ServerPacket.Header.LP_TransferFieldReqIgnored.Set(0x008E);
