@@ -435,6 +435,16 @@ public class v194_0_SP {
         ServerPacket.Header.LP_OpenShopDlg.Set(0x0177); // NPC商店
         ServerPacket.Header.LP_ShopResult.Set(0x0178);
 
+        // PointShop v194
+        ServerPacket.Header.LP_BEGIN_CASHSHOP.Set(0); // 00493582
+        {
+            // 0x018E-0x018F
+            ServerPacket.Header.CS_UPDATE.Set(0x0190); //  LP_CashShopChargeParamResult
+            //ServerPacket.Header.CS_OPERATION.Set(0x0191); // LP_CashShopQueryCashResult
+            // 0x0192-0x019D
+        }
+        ServerPacket.Header.LP_END_CASHSHOP.Set(0);
+
         ServerPacket.Header.LP_FuncKeyMappedInit.Set(0x019E); // キー設定初期化
         //ServerPacket.Header.LP_PetConsumeItemInit.Set(0x019F);
         //ServerPacket.Header.LP_PetConsumeMPItemInit.Set(0x019A);
@@ -444,6 +454,12 @@ public class v194_0_SP {
             ServerPacket.Header.LP_BattleRecordDotDamageInfo.Set(0x01AE);
             ServerPacket.Header.LP_BattleRecordRequestResult.Set(0x01AF);
             // 0x01B0
+        }
+        // MTS v194
+        {
+            ServerPacket.Header.LP_ITCChargeParamResult.Set(0x01B2);
+            ServerPacket.Header.LP_ITCQueryCashResult.Set(0x01B3);
+            ServerPacket.Header.LP_ITCNormalItemResult.Set(0x01B4);
         }
 
     }

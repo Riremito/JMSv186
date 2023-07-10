@@ -110,5 +110,15 @@ public class v194_0_CP {
         ClientPacket.Header.CP_MobApplyCtrl.Set(0x00E3);
         ClientPacket.Header.CP_DropPickUpRequest.Set(0x00F5); // 拾う
         ClientPacket.Header.CP_ReactorHit.Set(0x00F8); // 設置物攻撃
+
+        ClientPacket.Header.CP_CashShopChargeParamRequest.Set(0x0115); // PS 充填
+        ClientPacket.Header.CP_CashShopQueryCashRequest.Set(0x0116); // PS ポイント確認
+        ClientPacket.Header.CP_CashShopCashItemRequest.Set(0x0117); // PS 画面操作
+        ClientPacket.Header.CP_CashShopCheckCouponRequest.Set(0x0118); // PS クーポン
+        ClientPacket.Header.RECOMMENDED_AVATAR.Set(0x011B); // CP_CashShopCoodinationRequest
+
+        ClientPacket.Header.CP_ITCChargeParamRequest.Set(0x012D); // MTS 充填
+        ClientPacket.Header.CP_ITCQueryCashRequest.Set(0x012E); // MTS ポイント確認
+        ClientPacket.Header.CP_ITCItemRequest.Set(0x012F); // MTS 画面操作
     }
 }
