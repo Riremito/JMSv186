@@ -461,6 +461,28 @@ public class v194_0_SP {
             ServerPacket.Header.LP_ITCQueryCashResult.Set(0x01B3);
             ServerPacket.Header.LP_ITCNormalItemResult.Set(0x01B4);
         }
+        // MapleTV v194 test
+        {
+            ServerPacket.Header.LP_MapleTVUpdateMessage.Set(0x01B5);
+            ServerPacket.Header.LP_MapleTVClearMessage.Set(0x01B6);
+            ServerPacket.Header.LP_MapleTVSendMessageResult.Set(0x01B7);
+        }
+        // Vicious Hammer v194
+        {
+            // 0x01B9 未使用
+            ServerPacket.Header.LP_GoldHammerResult.Set(0x01BA);
+            // 0x01BB 未使用
+            // 0x01BC 未使用
+        }
+        // Vega v194
+        {
+            // 0x01BD 未使用
+            ServerPacket.Header.LP_VegaResult.Set(0x01BE);
+            // 0x01BE 未使用
+            // 0x01BF 未使用
+        }
+        // 0x01C1 　不明
+        ServerPacket.Header.LP_LogoutGift.Set(0x01C2);
 
     }
 }
