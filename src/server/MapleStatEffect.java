@@ -38,6 +38,7 @@ import server.maps.MapleMist;
 import server.maps.MapleSummon;
 import server.maps.SummonMovementType;
 import java.util.EnumMap;
+import packet.content.ContextPacket;
 import server.MapleCarnivalFactory.MCSkill;
 import server.Timer.BuffTimer;
 import tools.MaplePacketCreator;
@@ -87,7 +88,7 @@ public class MapleStatEffect implements Serializable {
         if (source == null) {
             return ret;
         }
-        ret.duration = MapleDataTool.getIntConvert("time", source, -1);
+        ret.duration = MapleDataTool.getInt("time", source, -1, common_level);
         ret.hp = (short) MapleDataTool.getInt("hp", source, 0, common_level);
         ret.hpR = MapleDataTool.getInt("hpR", source, 0, common_level) / 100.0;
         ret.mp = (short) MapleDataTool.getInt("mp", source, 0, common_level);
@@ -148,7 +149,7 @@ public class MapleStatEffect implements Serializable {
         ret.ewatk = (short) MapleDataTool.getInt("epad", source, 0, common_level);
         ret.ewdef = (short) MapleDataTool.getInt("epdd", source, 0, common_level);
         ret.emdef = (short) MapleDataTool.getInt("emdd", source, 0, common_level);
-        ret.acc = (short) MapleDataTool.getIntConvert("acc", source, 0);
+        ret.acc = (short) MapleDataTool.getInt("acc", source, 0, common_level);
         ret.avoid = (short) MapleDataTool.getInt("eva", source, 0, common_level);
         ret.speed = (short) MapleDataTool.getInt("speed", source, 0, common_level);
         ret.jump = (short) MapleDataTool.getInt("jump", source, 0, common_level);
@@ -878,6 +879,7 @@ public class MapleStatEffect implements Serializable {
         }
         if (overTime && !isEnergyCharge()) {
             applyBuffEffect(applyfrom, applyto, primary, newDuration);
+            //applyto.SendPacket(ContextPacket.TemporaryStatSet(applyto,  sourceid));
         }
         if (skill) {
             removeMonsterBuff(applyfrom);

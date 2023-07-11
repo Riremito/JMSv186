@@ -47,7 +47,7 @@ public class v194_0_SP {
             ServerPacket.Header.LP_InventoryOperation.Set(0x0018); // アイテム欄
             ServerPacket.Header.LP_InventoryGrow.Set(0x0019);
             ServerPacket.Header.LP_StatChanged.Set(0x001A); // ステータス変化
-            ServerPacket.Header.LP_TemporaryStatSet.Set(0x001B);
+            ServerPacket.Header.LP_TemporaryStatSet.Set(0x001B); // バフスキル
             ServerPacket.Header.LP_TemporaryStatReset.Set(0x001C);
             ServerPacket.Header.LP_ForcedStatSet.Set(0x001D);
             ServerPacket.Header.LP_ForcedStatReset.Set(0x001E);

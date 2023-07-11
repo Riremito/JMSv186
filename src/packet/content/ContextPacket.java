@@ -29,6 +29,7 @@ import handling.MaplePacket;
 import packet.ServerPacket;
 import packet.struct.GW_CharacterStat;
 import packet.struct.GW_ItemSlotBase;
+import packet.struct.SecondaryStat;
 
 /**
  *
@@ -108,7 +109,17 @@ public class ContextPacket {
 
         return p.Get();
     }
+
     // CWvsContext::OnTemporaryStatSet
+    public static final MaplePacket TemporaryStatSet(MapleCharacter chr, int skill_id) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
+        // SecondaryStat::DecodeForLocal
+        p.EncodeBuffer(SecondaryStat.EncodeForLocal(chr, skill_id));
+        p.Encode2(0); // delay
+        p.Encode1(0);
+        return p.Get();
+    }
+
     // CWvsContext::OnTemporaryStatReset
     // CWvsContext::OnForcedStatSet
     // CWvsContext::OnForcedStatReset

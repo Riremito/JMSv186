@@ -1101,6 +1101,10 @@ public class MaplePacketCreator {
             }
         }
 
+        if (194 <= ServerConfig.version) {
+            mplew.writeZeroBytes(4);
+        }
+
         if (ServerConfig.version > 131) {
             mplew.writeLong(firstmask);
         }
@@ -1119,7 +1123,15 @@ public class MaplePacketCreator {
                 secondmask |= statup.getLeft().getValue();
             }
         }
-        mplew.writeLong(firstmask);
+
+        if (194 <= ServerConfig.version) {
+            mplew.writeZeroBytes(4);
+        }
+
+        if (ServerConfig.version > 131) {
+            mplew.writeLong(firstmask);
+        }
+
         mplew.writeLong(secondmask);
     }
 
@@ -1133,9 +1145,15 @@ public class MaplePacketCreator {
                 secondmask |= statup.getValue();
             }
         }
+
+        if (194 <= ServerConfig.version) {
+            mplew.writeZeroBytes(4);
+        }
+
         if (ServerConfig.version > 131) {
             mplew.writeLong(firstmask);
         }
+
         mplew.writeLong(secondmask);
     }
 

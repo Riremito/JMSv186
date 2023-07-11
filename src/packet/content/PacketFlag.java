@@ -9,5 +9,6 @@ public class PacketFlag {
         TrunkPacket.Init();
         NPCPacket.Init();
         GW_CharacterStat.Init();
+        SecondaryStat.Init();
     }
 }
