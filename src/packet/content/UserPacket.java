@@ -206,6 +206,12 @@ public class UserPacket {
             attack.tKeyDown = p.Decode4();
         }
 
+        if (194 <= ServerConfig.version) {
+            if (attack.AttackHeader == ClientPacket.Header.CP_UserShootAttack) {
+                p.Decode1();
+            }
+        }
+
         attack.BuffKey = p.Decode1();
 
         if (ServerConfig.version <= 131) {

@@ -110,6 +110,7 @@ public class AttackInfo {
             case 4341002:
             case 4341003:
             // Shoot
+            case 9001011: // (GM) Lightning Vulcan
             case 3121004: // Hurricane
             case 3221001: // Pierce
             case 5221004: // Rapidfire

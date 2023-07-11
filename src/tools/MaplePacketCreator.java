@@ -1218,6 +1218,11 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(ServerPacket.Header.LP_TemporaryStatSet.Get());
+
+        if (194 <= ServerConfig.version) {
+            mplew.writeZeroBytes(4);
+        }
+
         mplew.writeLong(MapleBuffStat.HOMING_BEACON.getValue());
         mplew.writeLong(0);
 
@@ -1418,6 +1423,10 @@ public class MaplePacketCreator {
 
         mplew.writeShort(ServerPacket.Header.LP_TemporaryStatReset.Get());
 
+        if (194 <= ServerConfig.version) {
+            mplew.writeZeroBytes(4);
+        }
+
         mplew.writeLong(MapleBuffStat.HOMING_BEACON.getValue());
         mplew.writeLong(0);
 
@@ -1428,6 +1437,11 @@ public class MaplePacketCreator {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(ServerPacket.Header.LP_TemporaryStatReset.Get());
+
+        if (194 <= ServerConfig.version) {
+            mplew.writeZeroBytes(4);
+        }
+
         mplew.writeLong(first ? mask : 0);
         mplew.writeLong(first ? 0 : mask);
         mplew.write(1);
