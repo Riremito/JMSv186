@@ -10,5 +10,6 @@ public class PacketFlag {
         NPCPacket.Init();
         GW_CharacterStat.Init();
         SecondaryStat.Init();
+        ContextPacket.Message_Init();
     }
 }

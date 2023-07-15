@@ -38,6 +38,9 @@ import tools.Pair;
 import java.util.Map;
 import java.util.Map.Entry;
 import packet.ServerPacket;
+import packet.content.ContextPacket;
+import packet.content.ContextPacket.MessageArg;
+import packet.content.ContextPacket.MessageType;
 import packet.struct.CharacterData;
 import server.MTSStorage.MTSItemInfo;
 import tools.KoreanDateUtil;
@@ -96,20 +99,6 @@ public class MTSCSPacket {
         mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(21);
         mplew.writeLong(charmsleft);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket itemExpired(int itemid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        // 1E 00 02 83 C9 51 00
-
-        // 21 00 08 02
-        // 50 62 25 00
-        // 50 62 25 00
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(2);
-        mplew.writeInt(itemid);
 
         return mplew.getPacket();
     }

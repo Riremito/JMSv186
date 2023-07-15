@@ -17,6 +17,10 @@ public class ServerConfig {
     public static short version = 186;
     public static byte version_sub = 1;
 
+    public static int GetVersion() {
+        return version;
+    }
+
     public static void SetVersion(int ver1, int ver2) {
         version = (short) ver1;
         version_sub = (byte) ver2;

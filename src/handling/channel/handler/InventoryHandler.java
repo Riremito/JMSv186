@@ -2115,7 +2115,7 @@ public class InventoryHandler {
                 } else {
                     ii.getItemEffect(id).applyTo(c.getPlayer());
                 }
-                c.getSession().write(MaplePacketCreator.getShowItemGain(id, (byte) 1));
+                c.SendPacket(ContextPacket.DropPickUpMessage(id, (byte) 1));
                 return true;
             }
         }

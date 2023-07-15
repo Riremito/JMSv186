@@ -32,6 +32,7 @@ import java.io.Serializable;
 
 import database.DatabaseConnection;
 import packet.ServerPacket;
+import packet.content.ContextPacket;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -175,7 +176,7 @@ public class MonsterBook implements Serializable {
                     NormalCard += 1;
                 }
                 c.getSession().write(MonsterBookPacket.addCard(false, cardid, 5));
-                c.getSession().write(MonsterBookPacket.showGainCard(cardid));
+                c.SendPacket(ContextPacket.showGainCard(cardid));
                 c.getSession().write(MaplePacketCreator.showSpecialEffect(14));
                 cards.put(cardid, 5);
                 calculateLevel();
@@ -190,7 +191,7 @@ public class MonsterBook implements Serializable {
         // New card
         cards.put(cardid, 5);
         c.getSession().write(MonsterBookPacket.addCard(false, cardid, 5));
-        c.getSession().write(MonsterBookPacket.showGainCard(cardid));
+        c.SendPacket(ContextPacket.showGainCard(cardid));
         c.getSession().write(MaplePacketCreator.showSpecialEffect(14));
         calculateLevel();
     }

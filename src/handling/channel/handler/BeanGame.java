@@ -510,7 +510,6 @@ public class BeanGame {
     }
 
     public static final void BeanGame2(LittleEndianAccessor slea, MapleClient c) {
-        c.getSession().write(MaplePacketCreator.updateBeansMSG(c.getPlayer().getTama()));
         c.getSession().write(MaplePacketCreator.enableActions());
     }
 }

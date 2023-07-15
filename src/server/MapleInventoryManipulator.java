@@ -406,7 +406,7 @@ public class MapleInventoryManipulator {
         }
         c.getPlayer().havePartyQuest(item.getItemId());
         if (show) {
-            c.getSession().write(MaplePacketCreator.getShowItemGain(item.getItemId(), item.getQuantity()));
+            c.SendPacket(ContextPacket.DropPickUpMessage(item.getItemId(), item.getQuantity()));
         }
         return true;
     }

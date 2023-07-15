@@ -23,12 +23,13 @@ package server.maps;
 import java.awt.Point;
 
 import client.MapleCharacter;
+import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.MaplePartyCharacter;
+import packet.content.ContextPacket;
 import server.Randomizer;
 import server.Timer.MapTimer;
 import server.life.MapleLifeFactory;
-import tools.MaplePacketCreator;
 
 public class Event_DojoAgent {
 
@@ -128,6 +129,11 @@ public class Event_DojoAgent {
         return canenter;
     }
 
+    public static MaplePacket Mulung_Pts(int recv, int total) {
+        // どうやらバージョンごとにメッセージが切り替わっていて統一されていない?
+        return ContextPacket.showQuestMsg("修練点数を" + recv + "点獲得しました。総修練点数が" + total + "になりました。");
+    }
+
     // Resting rooms :
     // 925020600 ~ 925020609
     // 925021200 ~ 925021209
@@ -152,14 +158,14 @@ public class Event_DojoAgent {
                             final int point = (points * 3);
                             chr.modifyCSPoints(1, point * 4, true);
                             chr.setDojo(chr.getDojo() + point);
-                            chr.getClient().getSession().write(MaplePacketCreator.Mulung_Pts(point, chr.getDojo()));
+                            chr.SendPacket(Mulung_Pts(point, chr.getDojo()));
                         }
                     }
                 } else {
                     final int point = ((points + 1) * 3);
                     c.modifyCSPoints(1, point * 4, true);
                     c.setDojo(c.getDojo() + point);
-                    c.getClient().getSession().write(MaplePacketCreator.Mulung_Pts(point, c.getDojo()));
+                    c.SendPacket(Mulung_Pts(point, c.getDojo()));
                 }
 
             }

@@ -37,44 +37,11 @@ public class UIPacket {
         return mplew.getPacket();
     }
 
-    public static MaplePacket getSPMsg(byte sp, short job) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(4);
-        mplew.writeShort(job);
-        mplew.write(sp);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getGPMsg(int itemid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        // Temporary transformed as a dragon, even with the skill ......
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(7);
-        mplew.writeInt(itemid);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket getTopMsg(String msg) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(ServerPacket.Header.LP_ScriptProgressMessage.Get());
         mplew.writeMapleAsciiString(msg);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getStatusMsg(int itemid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        // Temporary transformed as a dragon, even with the skill ......
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(8);
-        mplew.writeInt(itemid);
 
         return mplew.getPacket();
     }

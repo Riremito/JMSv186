@@ -200,6 +200,34 @@ public class LoadData {
         LoadEquipXMLs("Character.wz/", itemids);
         LoadXMLs("Item.wz/Pet/", "0*(\\d+)\\.img", itemids);
         Debug.DebugLog("ItemIDs = " + itemids.size());
+        //LoadTownMaps();
+    }
+
+    private static int LoadTownMaps() {
+        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider("Map.wz/Map");
+        Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
+
+        for (MapleDataDirectoryEntry map_dir : wz.getRoot().getSubdirectories()) {
+            Debug.DebugLog("dir = " + map_dir.getName());
+
+            for (MapleDataFileEntry dir : map_dir.getFiles()) {
+                Matcher img_matcher = img_pattern.matcher(dir.getName());
+                if (img_matcher.matches()) {
+                    int map_id = Integer.parseInt(img_matcher.group(1));
+
+                    MapleDataProvider map_root = MapleDataProviderFactory.getDataProvider("Map.wz/Map/" + map_dir.getName() + "/");
+                    MapleData map_data = map_root.getData(dir.getName());
+                    if (MapleDataTool.getInt("info/town", map_data) != 0) {
+                        int map_id_return = MapleDataTool.getInt("info/returnMap", map_data);
+                        if (map_id_return == map_id) {
+                            Debug.DebugLog("town mapid = " + map_id);
+                        }
+                    }
+                }
+            }
+        }
+
+        return 0;
     }
 
     private static int LoadItemXMLs(String path, ArrayList<Integer> list) {

@@ -40,12 +40,12 @@ import handling.world.PlayerBuffStorage;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
 import packet.ClientPacket;
+import packet.content.ContextPacket;
 import packet.content.SocketPacket;
 import server.maps.FieldLimitType;
 import tools.FileoutputUtil;
 import tools.MaplePacketCreator;
 import tools.packet.FamilyPacket;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 public class InterServerHandler {
 
@@ -204,7 +204,7 @@ public class InterServerHandler {
 
         for (MapleQuestStatus status : player.getStartedQuests()) {
             if (status.hasMobKills()) {
-                c.getSession().write(MaplePacketCreator.updateQuestMobKills(status));
+                c.SendPacket(ContextPacket.updateQuestMobKills(status));
             }
         }
         final CharacterNameAndId pendingBuddyRequest = player.getBuddylist().pollPendingRequest();

@@ -42,17 +42,6 @@ public class MonsterBookPacket {
         return mplew.getPacket();
     }
 
-    public static MaplePacket showGainCard(final int itemid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(0);
-        mplew.write(2);
-        mplew.writeInt(itemid);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket showForeginCardEffect(int id) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 

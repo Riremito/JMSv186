@@ -25,6 +25,7 @@ import java.awt.Point;
 import client.MapleClient;
 import client.MapleQuestStatus;
 import client.SkillFactory;
+import packet.content.ContextPacket;
 import scripting.EventManager;
 import scripting.NPCScriptManager;
 import server.Randomizer;
@@ -658,7 +659,7 @@ public class MapScriptMethods {
                         MapleQuest.getInstance(m.questid - 1995).forceStart(c.getPlayer(), 0, String.valueOf(number));
                         c.getPlayer().dropMessage(-1, "Visited " + number + "/" + m.maps.length + " regions.");
                         c.getPlayer().dropMessage(-1, "Title " + String.valueOf(m) + " Explorer currently in progress");
-                        c.getSession().write(MaplePacketCreator.showQuestMsg("Title " + String.valueOf(m) + " Explorer currently in progress " + number + "/" + m.maps.length + " completed"));
+                        c.SendPacket(ContextPacket.showQuestMsg("Title " + String.valueOf(m) + " Explorer currently in progress " + number + "/" + m.maps.length + " completed"));
                     }
                 }
                 break;

@@ -22,29 +22,24 @@ package tools;
 
 import java.awt.Point;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import client.BuddylistEntry;
 import client.inventory.IItem;
-import constants.GameConstants;
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import client.MapleKeyLayout;
-import client.MapleQuestStatus;
 import client.MapleStat;
 import client.inventory.IEquip.ScrollResult;
 import client.MapleDisease;
 import client.inventory.MapleRing;
 import client.SkillMacro;
-import handling.ByteArrayMaplePacket;
 import handling.MaplePacket;
 import constants.ServerConstants;
 import handling.world.MapleParty;
@@ -53,10 +48,7 @@ import handling.world.PartyOperation;
 import handling.world.guild.MapleGuild;
 import handling.world.guild.MapleGuildCharacter;
 import handling.channel.MapleGuildRanking.GuildRankingInfo;
-import handling.channel.handler.InventoryHandler;
-import handling.world.World;
 import handling.world.guild.MapleBBSThread;
-import handling.world.guild.MapleBBSThread.MapleBBSReply;
 import handling.world.guild.MapleGuildAlliance;
 import java.net.UnknownHostException;
 import server.MapleStatEffect;
@@ -69,23 +61,30 @@ import server.maps.MapleMist;
 import server.events.MapleSnowball.MapleSnowballs;
 import server.life.MapleMonster;
 import server.maps.MapleDragon;
-import server.maps.MapleNodes.MapleNodeInfo;
-import server.maps.MapleNodes.MaplePlatform;
 import server.movement.LifeMovementFragment;
 import server.shops.HiredMerchant;
-import server.shops.MaplePlayerShopItem;
 import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import tools.packet.PacketHelper;
 import client.MapleBeans;
 import config.ServerConfig;
+import constants.GameConstants;
 import handling.channel.handler.AttackInfo;
 import handling.channel.handler.BeanGame;
+import handling.channel.handler.InventoryHandler;
+import handling.world.World;
+import handling.world.guild.MapleBBSThread.MapleBBSReply;
+import java.util.ArrayList;
+import java.util.Comparator;
 import packet.ServerPacket;
 import packet.content.ContextPacket;
+import packet.content.ContextPacket.DropPickUpMessageType;
 import packet.struct.CClientOptMan;
 import packet.struct.CWvsContext;
 import packet.struct.CharacterData;
+import server.maps.MapleNodes.MapleNodeInfo;
+import server.maps.MapleNodes.MaplePlatform;
+import server.shops.MaplePlayerShopItem;
 
 public class MaplePacketCreator {
 
@@ -537,120 +536,15 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket getPacketFromHexString(String hex) {
-        return new ByteArrayMaplePacket(HexTool.getByteArrayFromHexString(hex));
-    }
-
-    public static final MaplePacket GainEXP_Monster(final int gain, final boolean white, final int partyinc, final int Class_Bonus_EXP, final int Equipment_Bonus_EXP, final int Premium_Bonus_EXP) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(3); // 3 = exp, 4 = fame, 5 = mesos, 6 = guildpoints
-        mplew.write(white ? 1 : 0);
-        mplew.writeInt(gain);
-        mplew.write(0); // Not in chat
-        mplew.writeInt(0); // Event Bonus
-        mplew.writeShort(0);
-        mplew.writeInt(0); //wedding bonus
-        mplew.writeInt(0); //party ring bonus
-        mplew.write(0);
-        mplew.writeInt(partyinc); // Party size
-        mplew.writeInt(Equipment_Bonus_EXP); //Equipment Bonus EXP
-        mplew.writeInt(Premium_Bonus_EXP); // Premium bonus EXP
-        mplew.writeInt(0); //Rainbow Week Bonus EXP
-        mplew.writeInt(Class_Bonus_EXP); // Class bonus EXP
-        mplew.write(0);
-
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket GainEXP_Others(final int gain, final boolean inChat, final boolean white) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(3); // 3 = exp, 4 = fame, 5 = mesos, 6 = guildpoints
-        mplew.write(white ? 1 : 0);
-        mplew.writeInt(gain);
-        mplew.write(inChat ? 1 : 0);
-        mplew.writeInt(0); // monster book bonus
-        mplew.write(0); // Party percentage
-        mplew.writeShort(0); // Party bouns
-        mplew.writeZeroBytes(8);
-
-        if (inChat) {
-            mplew.writeZeroBytes(4); // some ring bonus/ party exp ??
-            mplew.writeZeroBytes(10);
-        } else { // some ring bonus/ party exp
-            mplew.writeInt(0); // Party size
-            mplew.writeZeroBytes(4); // Item equip bonus EXP
-        }
-        mplew.writeZeroBytes(4); // Premium bonus EXP
-        mplew.writeZeroBytes(4); // Class bonus EXP
-        mplew.writeInt(0);
-        mplew.write(0);
-
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket getShowFameGain(final int gain) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(5);
-        mplew.writeInt(gain);
-
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket showMesoGain(final int gain, final boolean inChat) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_Message);
-
-        if (!inChat) {
-            p.Encode1(0);
-            p.Encode1(1);
-
-            if (ServerConfig.version > 131) {
-                p.Encode1(0);
-            }
-
-            p.Encode4(gain);
-
-            if (ServerConfig.version <= 131) {
-                p.Encode2(0); // Internet cafe bonus
-            } else {
-                p.Encode4(0);
-            }
-        } else {
-            p.Encode1(6);
-            p.Encode4(gain);
-        }
-
-        return p.Get();
-    }
-
-    public static MaplePacket getShowItemGain(int itemId, short quantity) {
-        return getShowItemGain(itemId, quantity, false);
-    }
-
     public static MaplePacket getShowItemGain(int itemId, short quantity, boolean inChat) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
-        if (inChat) {
-            mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
-            mplew.write(3);
-            mplew.write(1); // item count
-            mplew.writeInt(itemId);
-            mplew.writeInt(quantity);
-            /*	    for (int i = 0; i < count; i++) { // if ItemCount is handled.
-            mplew.writeInt(itemId);
-            mplew.writeInt(quantity);
-            }*/
-        } else {
-            mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-            mplew.writeShort(0);
-            mplew.writeInt(itemId);
-            mplew.writeInt(quantity);
-        }
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(3);
+        mplew.write(1); // item count
+        mplew.writeInt(itemId);
+        mplew.writeInt(quantity);
+
         return mplew.getPacket();
     }
 
@@ -1032,39 +926,6 @@ public class MaplePacketCreator {
         if (fake > 0) {
             mplew.writeInt(fake);
         }
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket updateQuest(final MapleQuestStatus quest) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(1);
-        mplew.writeShort(quest.getQuest().getId());
-        mplew.write(quest.getStatus());
-        switch (quest.getStatus()) {
-            case 0:
-                mplew.writeZeroBytes(10);
-                break;
-            case 1:
-                mplew.writeMapleAsciiString(quest.getCustomData() != null ? quest.getCustomData() : "");
-                break;
-            case 2:
-                mplew.writeLong(PacketHelper.getTime(System.currentTimeMillis()));
-                break;
-        }
-
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket updateInfoQuest(final int quest, final String data) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(0x0B);
-        mplew.writeShort(quest);
-        mplew.writeMapleAsciiString(data);
-
         return mplew.getPacket();
     }
 
@@ -1776,24 +1637,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket updateQuestMobKills(final MapleQuestStatus status) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(1);
-        mplew.writeShort(status.getQuest().getId());
-        mplew.write(1);
-
-        final StringBuilder sb = new StringBuilder();
-        for (final int kills : status.getMobKills().values()) {
-            sb.append(StringUtil.getLeftPaddedStr(String.valueOf(kills), '0', 3));
-        }
-        mplew.writeMapleAsciiString(sb.toString());
-        mplew.writeZeroBytes(8);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket getShowQuestCompletion(int id) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -1868,26 +1711,6 @@ public class MaplePacketCreator {
         mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
         mplew.write(1);
         mplew.write(0);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getShowInventoryFull() {
-        return getShowInventoryStatus(0xff);
-    }
-
-    public static MaplePacket showItemUnavailable() {
-        return getShowInventoryStatus(0xfe);
-    }
-
-    public static MaplePacket getShowInventoryStatus(int mode) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(0);
-        mplew.write(mode);
-        mplew.writeInt(0);
-        mplew.writeInt(0);
 
         return mplew.getPacket();
     }
@@ -3185,19 +3008,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket showQuestMsg(final String msg) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(10);
-        mplew.writeMapleAsciiString(msg);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket Mulung_Pts(int recv, int total) {
-        // どうやらバージョンごとにメッセージが切り替わっていて統一されていない?
-        return showQuestMsg("修練点数を" + recv + "点獲得しました。総修練点数が" + total + "になりました。");
-    }
-
     public static MaplePacket showOXQuiz(int questionSet, int questionId, boolean askQuestion) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_Quiz.Get());
@@ -3934,19 +3744,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket updateBeansMSG(int beansCount) {
-        return updateBeansMSG(0, beansCount);
-    }
-
-    public static MaplePacket updateBeansMSG(int cid, int beansCount) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_Message.Get());
-        mplew.write(21);
-        mplew.writeInt(beansCount);
-        return mplew.getPacket();
-    }
-
     public static MaplePacket updateBeans(int beansCount) {
         return updateBeans(0, beansCount);
     }
@@ -4068,5 +3865,14 @@ public class MaplePacketCreator {
             mplew.writeInt(bean.getNumber());
         }
         return mplew.getPacket();
+    }
+
+    // context packet
+    public static MaplePacket getShowInventoryFull() {
+        return ContextPacket.getShowInventoryStatus(DropPickUpMessageType.PICKUP_INVENTORY_FULL);
+    }
+
+    public static MaplePacket showItemUnavailable() {
+        return ContextPacket.getShowInventoryStatus(DropPickUpMessageType.PICKUP_UNAVAILABLE);
     }
 }
