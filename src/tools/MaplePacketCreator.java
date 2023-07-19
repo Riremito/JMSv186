@@ -1475,7 +1475,7 @@ public class MaplePacketCreator {
         mplew.writeInt(npc);
         mplew.write(msgType);
         // v164に存在しない
-        if (ServerConfig.version >= 186) {
+        if (186 <= ServerConfig.GetVersion()) {
             mplew.write(type); // 1 = No ESC, 3 = show character + no sec
         }
         mplew.writeMapleAsciiString(talk);

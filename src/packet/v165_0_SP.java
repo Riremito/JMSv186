@@ -55,12 +55,8 @@ public class v165_0_SP {
             ServerPacket.Header.LP_SkillLearnItemResult.Set(0x0029);
             // not used
             ServerPacket.Header.LP_CharacterInfo.Set(0x002B);
-            ServerPacket.Header.LP_PartyResult.Set(0x002C);
-            ServerPacket.Header.LP_FriendResult.Set(0x002D);
-            ServerPacket.Header.LP_GuildRequest.Set(0x002E);
-            ServerPacket.Header.LP_GuildResult.Set(0x002F);
-            ServerPacket.Header.LP_TownPortal.Set(0x0030);
-            ServerPacket.Header.LP_BroadcastMsg.Set(0x0031);
+
+            ServerPacket.Header.LP_BroadcastMsg.Set(0x0037);
         }
         ServerPacket.Header.LP_END_CHARACTERDATA.Set(0);
 
@@ -81,6 +77,8 @@ public class v165_0_SP {
             // ServerPacket.Header.LP_SetMapObjectVisible.Set(0);
             ServerPacket.Header.LP_ClearBackgroundEffect.Set(0x006D);
         }
+
+        ServerPacket.Header.LP_UserChat.Set(0x0085);
 
         // 0x0097 - 0x00AA -> +2
         // C_UNK_UserRemote::OnPacket (JMS)
@@ -138,6 +136,15 @@ public class v165_0_SP {
             // something 2 headers are added
         }
         ServerPacket.Header.LP_END_USERLOCAL.Set(0);
+
+        // NPC v165
+        {
+            ServerPacket.Header.LP_NpcEnterField.Set(0x00DA);
+            ServerPacket.Header.LP_NpcLeaveField.Set(0x00DB);
+            ServerPacket.Header.LP_NpcChangeController.Set(0x00DC);
+            ServerPacket.Header.LP_ScriptMessage.Set(0x0108);
+        }
+
     }
 
 }
