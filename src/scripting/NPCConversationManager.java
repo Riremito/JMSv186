@@ -281,7 +281,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         byte nextval = 2;
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.version <= 165) {
             nextval = 1;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
@@ -297,7 +297,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
         byte nextval = 2;
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.version <= 165) {
             nextval = 1;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", type));
@@ -322,7 +322,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         byte nextval = 0x0C;
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.version <= 165) {
             nextval = 0x0B;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
@@ -338,7 +338,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
         byte nextval = 0x0D;
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.version <= 165) {
             nextval = 0x0C;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
@@ -363,7 +363,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         byte nextval = 5;
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.version <= 165) {
             nextval = 4;
         }
 
@@ -381,7 +381,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         byte nextval = 5;
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.version <= 165) {
             nextval = 4;
         }
 

@@ -41,18 +41,10 @@ public class v165_0_SP {
         ServerPacket.Header.LP_BEGIN_CHARACTERDATA.Set(0);
         {
             ServerPacket.Header.LP_InventoryOperation.Set(0x0016); // OK
-            ServerPacket.Header.LP_InventoryGrow.Set(0x0017);
             ServerPacket.Header.LP_StatChanged.Set(0x0018);
-            ServerPacket.Header.LP_TemporaryStatSet.Set(0x0019);
-            ServerPacket.Header.LP_TemporaryStatReset.Set(0x001A);
-            ServerPacket.Header.LP_ChangeSkillRecordResult.Set(0x001B);
-            ServerPacket.Header.LP_GivePopularityResult.Set(0x001D);
+            ServerPacket.Header.LP_ChangeSkillRecordResult.Set(0x001D);
             ServerPacket.Header.LP_Message.Set(0x001E);
             ServerPacket.Header.LP_MapTransferResult.Set(0x0020);
-            ServerPacket.Header.LP_InitialQuizStart.Set(0x0021);
-            ServerPacket.Header.LP_QuestClear.Set(0x0027);
-            ServerPacket.Header.LP_EntrustedShopCheckResult.Set(0x0028);
-            ServerPacket.Header.LP_SkillLearnItemResult.Set(0x0029);
             // not used
             ServerPacket.Header.LP_CharacterInfo.Set(0x002B);
 
@@ -122,18 +114,6 @@ public class v165_0_SP {
             ServerPacket.Header.LP_UserPetSkillChanged.Set(ServerPacket.Header.LP_UserSitResult.Get() + 8);
             ServerPacket.Header.LP_UserBalloonMsg.Set(ServerPacket.Header.LP_UserSitResult.Get() + 9);
             ServerPacket.Header.LP_PlayEventSound.Set(ServerPacket.Header.LP_UserSitResult.Get() + 10);
-            // 0x00B6 == v186 0x00E8
-            ServerPacket.Header.LP_UserMakerResult.Set(ServerPacket.Header.LP_UserSitResult.Get() + 12);
-            ServerPacket.Header.LP_UserOpenConsultBoard.Set(ServerPacket.Header.LP_UserSitResult.Get() + 13);
-            ServerPacket.Header.LP_UserOpenClassCompetitionPage.Set(ServerPacket.Header.LP_UserSitResult.Get() + 14);
-            // 0x00BA ???
-            ServerPacket.Header.LP_SetStandAloneMode.Set(ServerPacket.Header.LP_UserSitResult.Get() + 16);
-            // 0x00BC ???
-            ServerPacket.Header.TAMA_BOX_SUCCESS.Set(ServerPacket.Header.LP_UserSitResult.Get() + 18);
-            ServerPacket.Header.TAMA_BOX_FAILURE.Set(ServerPacket.Header.LP_UserSitResult.Get() + 19);
-            ServerPacket.Header.LP_UserRandomEmotion.Set(ServerPacket.Header.LP_UserSitResult.Get() + 20);
-            ServerPacket.Header.LP_SkillCooltimeSet.Set(ServerPacket.Header.LP_UserSitResult.Get() + 21);
-            // something 2 headers are added
         }
         ServerPacket.Header.LP_END_USERLOCAL.Set(0);
 
