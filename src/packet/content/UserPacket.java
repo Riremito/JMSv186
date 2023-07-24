@@ -197,8 +197,11 @@ public class UserPacket {
             if (188 <= ServerConfig.version) {
                 p.Decode1();
             }
-            p.Decode4(); // Crc
             // v95 4 bytes SKILLLEVELDATA::GetCrc
+        }
+
+        if (164 <= ServerConfig.version) {
+            p.Decode4(); // Crc
         }
 
         attack.tKeyDown = 0;
@@ -214,7 +217,7 @@ public class UserPacket {
 
         attack.BuffKey = p.Decode1();
 
-        if (ServerConfig.version <= 131) {
+        if (ServerConfig.version <= 165) {
             attack.AttackActionKey = p.Decode1();
         } else {
             attack.AttackActionKey = p.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15)
@@ -281,7 +284,7 @@ public class UserPacket {
                 allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
             }
 
-            if (186 <= ServerConfig.version) {
+            if (164 <= ServerConfig.version) {
                 p.Decode4(); // CMob::GetCrc(v366->pMob)
             }
 

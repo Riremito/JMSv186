@@ -410,6 +410,8 @@ public class v164_0_SP {
         ServerPacket.Header.LP_InventoryOperation.Set(0x0016);
         ServerPacket.Header.LP_InventoryGrow.Set(ServerPacket.Header.LP_InventoryOperation.Get() + 0x01);
         ServerPacket.Header.LP_StatChanged.Set(ServerPacket.Header.LP_InventoryOperation.Get() + 0x02);
+        ServerPacket.Header.LP_ChangeSkillRecordResult.Set(0x001D);
+        ServerPacket.Header.LP_Message.Set(0x0020);
         ServerPacket.Header.LP_BroadcastMsg.Set(0x0037);
         // ===== Cash Shop =====
         // 0x0066 + 1

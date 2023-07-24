@@ -25,6 +25,9 @@ public class v164_0_CP {
         ClientPacket.Header.CP_UserMove.Set(0x001F);
         ClientPacket.Header.CP_UserChat.Set(0x0027);
         ClientPacket.Header.CP_UserMeleeAttack.Set(0x0022);
+        ClientPacket.Header.CP_UserShootAttack.Set(0x0023);
+        ClientPacket.Header.CP_UserMagicAttack.Set(0x0024);
+        ClientPacket.Header.CP_UserHit.Set(0x0026);
 
         ClientPacket.Header.CP_UserSelectNpc.Set(0x0030);
         ClientPacket.Header.CP_UserRemoteShopOpenRequest.Set(ClientPacket.Header.CP_UserSelectNpc.Get() + 0x01);
@@ -101,5 +104,8 @@ public class v164_0_CP {
                 //Header.CP_END_MOB.Set(0x00D3);
             }
         }
+
+        ClientPacket.Header.CP_DropPickUpRequest.Set(0x00B3);
     }
+
 }
