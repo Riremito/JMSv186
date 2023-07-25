@@ -106,6 +106,7 @@ public class v164_0_CP {
         }
 
         ClientPacket.Header.CP_DropPickUpRequest.Set(0x00B3);
+        ClientPacket.Header.CP_ReactorHit.Set(0x00B6);
     }
 
 }

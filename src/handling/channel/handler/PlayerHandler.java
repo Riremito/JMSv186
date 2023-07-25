@@ -442,7 +442,7 @@ public class PlayerHandler {
         final byte speed = p.Decode1();
         byte unk = 0;
 
-        if (ServerConfig.version > 131) {
+        if (186 <= ServerConfig.GetVersion()) {
             unk = p.Decode1();
         }
 
