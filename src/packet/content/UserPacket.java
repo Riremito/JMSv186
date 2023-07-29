@@ -376,44 +376,45 @@ public class UserPacket {
     }
 
     // spawnPlayerMapobject
+    // CUserPool::OnUserEnterField
     public static MaplePacket spawnPlayerMapobject(MapleCharacter chr) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserEnterField);
         p.Encode4(chr.getId());
         // 自分のキャラクターの場合はここで終了
 
-        if (ServerConfig.version > 131) {
+        if (131 < ServerConfig.GetVersion()) {
             p.Encode1(chr.getLevel());
         }
 
         p.EncodeStr(chr.getName());
 
-        if (chr.getGuildId() <= 0) {
-            if (ServerConfig.version <= 131) {
-                p.EncodeStr("");
-                p.Encode2(0);
-                p.Encode1(0);
-                p.Encode2(0);
-                p.Encode1(0);
-            } else {
-                p.Encode4(0);
-                p.Encode4(0);
-            }
+        if (194 <= ServerConfig.GetVersion()) {
+            p.EncodeStr("");
+        }
+
+        // guild
+        MapleGuild gs = null;
+        if (0 < chr.getGuildId()) {
+            gs = World.Guild.getGuild(chr.getGuildId());
+        }
+        if (gs != null) {
+            // guild info
+            p.EncodeStr(gs.getName());
+            p.Encode2(gs.getLogoBG());
+            p.Encode1(gs.getLogoBGColor());
+            p.Encode2(gs.getLogo());
+            p.Encode1(gs.getLogoColor());
         } else {
-            final MapleGuild gs = World.Guild.getGuild(chr.getGuildId());
-            if (gs != null) {
-                p.EncodeStr(gs.getName());
-                p.Encode2(gs.getLogoBG());
-                p.Encode1(gs.getLogoBGColor());
-                p.Encode2(gs.getLogo());
-                p.Encode1(gs.getLogoColor());
-            } else {
-                p.Encode4(0);
-                p.Encode4(0);
-            }
+            // empty guild
+            p.EncodeStr("");
+            p.Encode2(0);
+            p.Encode1(0);
+            p.Encode2(0);
+            p.Encode1(0);
         }
 
         List<Pair<Integer, Boolean>> buffvalue = new ArrayList<Pair<Integer, Boolean>>();
-        if (ServerConfig.version > 131) {
+        if (131 < ServerConfig.GetVersion()) {
             long fbuffmask = 0xFE0000L;
             if (chr.getBuffedValue(MapleBuffStat.SOARING) != null) {
                 fbuffmask |= MapleBuffStat.SOARING.getValue();
@@ -462,7 +463,12 @@ public class UserPacket {
 
         p.Encode8(buffmask);
 
-        if (ServerConfig.version > 131) {
+        if (131 < ServerConfig.GetVersion()) {
+            // buffmask
+            if (194 <= ServerConfig.GetVersion()) {
+                p.Encode4(0);
+            }
+
             for (Pair<Integer, Boolean> i : buffvalue) {
                 if (i.right) {
                     p.Encode2(i.left.shortValue());
@@ -477,50 +483,56 @@ public class UserPacket {
             //they ALL have writeShort(0); first, then a long as their variables, then server tick count
             //0x80000, 0x100000, 0x200000, 0x400000, 0x800000, 0x1000000, 0x2000000
 
-            p.Encode2(0); //start of energy charge
-            p.Encode8(0);
-            p.Encode1(1);
-            p.Encode4(CHAR_MAGIC_SPAWN);
-            p.Encode2(0); //start of dash_speed
-            p.Encode8(0);
-            p.Encode1(1);
-            p.Encode4(CHAR_MAGIC_SPAWN);
-            p.Encode2(0); //start of dash_jump
-            p.Encode8(0);
-            p.Encode1(1);
-            p.Encode4(CHAR_MAGIC_SPAWN);
-            p.Encode2(0); //start of Monster Riding
-            int buffSrc = chr.getBuffSource(MapleBuffStat.MONSTER_RIDING);
-            if (buffSrc > 0) {
-                final IItem c_mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/);
-                final IItem mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
-                if (GameConstants.getMountItem(buffSrc) == 0 && c_mount != null) {
-                    p.Encode4(c_mount.getItemId());
-                } else if (GameConstants.getMountItem(buffSrc) == 0 && mount != null) {
-                    p.Encode4(mount.getItemId());
-                } else {
-                    p.Encode4(GameConstants.getMountItem(buffSrc));
-                }
-                p.Encode4(buffSrc);
-            } else {
-                p.Encode8(0);
-            }
-            p.Encode1(1);
-            p.Encode4(CHAR_MAGIC_SPAWN);
-            p.Encode8(0); //speed infusion behaves differently here
-            p.Encode1(1);
-            p.Encode4(CHAR_MAGIC_SPAWN);
-            p.Encode4(1);
-            p.Encode8(0); //homing beacon
+            p.Encode1(0); //start of energy charge
             p.Encode1(0);
-            p.Encode2(0);
-            p.Encode1(1);
-            p.Encode4(CHAR_MAGIC_SPAWN);
-            p.Encode4(0); //and finally, something ive no idea
-            p.Encode8(0);
-            p.Encode1(1);
-            p.Encode4(CHAR_MAGIC_SPAWN);
-            p.Encode2(0);
+
+            if (ServerConfig.GetVersion() <= 186) {
+                p.Encode4(0);
+                p.Encode4(0);
+                p.Encode1(1);
+                p.Encode4(CHAR_MAGIC_SPAWN);
+                p.Encode2(0); //start of dash_speed
+                p.Encode8(0);
+                p.Encode1(1);
+                p.Encode4(CHAR_MAGIC_SPAWN);
+                p.Encode2(0); //start of dash_jump
+                p.Encode8(0);
+                p.Encode1(1);
+                p.Encode4(CHAR_MAGIC_SPAWN);
+                p.Encode2(0); //start of Monster Riding
+                int buffSrc = chr.getBuffSource(MapleBuffStat.MONSTER_RIDING);
+                if (buffSrc > 0) {
+                    final IItem c_mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/);
+                    final IItem mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
+                    if (GameConstants.getMountItem(buffSrc) == 0 && c_mount != null) {
+                        p.Encode4(c_mount.getItemId());
+                    } else if (GameConstants.getMountItem(buffSrc) == 0 && mount != null) {
+                        p.Encode4(mount.getItemId());
+                    } else {
+                        p.Encode4(GameConstants.getMountItem(buffSrc));
+                    }
+                    p.Encode4(buffSrc);
+                } else {
+                    p.Encode8(0);
+                }
+                p.Encode1(1);
+                p.Encode4(CHAR_MAGIC_SPAWN);
+                p.Encode8(0); //speed infusion behaves differently here
+                p.Encode1(1);
+                p.Encode4(CHAR_MAGIC_SPAWN);
+                p.Encode4(1);
+                p.Encode8(0); //homing beacon
+                p.Encode1(0);
+                p.Encode2(0);
+                p.Encode1(1);
+                p.Encode4(CHAR_MAGIC_SPAWN);
+                p.Encode4(0); //and finally, something ive no idea
+                p.Encode8(0);
+                p.Encode1(1);
+                p.Encode4(CHAR_MAGIC_SPAWN);
+                p.Encode2(0);
+            }
+
             p.Encode2(chr.getJob());
         }
 
@@ -528,9 +540,17 @@ public class UserPacket {
 
         p.Encode4(0);//this is CHARID to follow
 
-        if (ServerConfig.version > 131) {
+        if (131 < ServerConfig.GetVersion()) {
             p.Encode4(0); //probably charid following
-            p.Encode8(Math.min(250, chr.getInventory(MapleInventoryType.CASH).countById(5110000))); //max is like 100. but w/e
+            p.Encode4(0);
+
+            if (194 <= ServerConfig.GetVersion()) {
+                p.Encode4(0);
+                p.Encode4(0);
+                p.Encode4(0);
+            }
+
+            p.Encode4(0);
         }
 
         p.Encode4(chr.getItemEffect());

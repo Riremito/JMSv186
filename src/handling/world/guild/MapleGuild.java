@@ -48,7 +48,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import packet.content.ContextPacket;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
-import tools.packet.UIPacket;
 
 public class MapleGuild implements java.io.Serializable {
 
