@@ -696,12 +696,21 @@ public class UserPacket {
 
     public static final MaplePacket CharacterInfo(MapleCharacter player, boolean isSelf) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CharacterInfo);
+
+        boolean pet_summoned = false;
+        for (final MaplePet pet : player.getPets()) {
+            if (pet.getSummoned()) {
+                pet_summoned = true;
+                break;
+            }
+        }
+
         p.Encode4(player.getId());
         p.Encode1(player.getLevel());
         p.Encode2(player.getJob());
         p.Encode2(player.getFame());
 
-        if (131 < ServerConfig.version) {
+        if (131 < ServerConfig.GetVersion()) {
             p.Encode1(player.getMarriageId() > 0 ? 1 : 0); // heart red or gray
         }
 
@@ -727,36 +736,52 @@ public class UserPacket {
 
         p.EncodeStr(sCommunity);
 
-        if (131 < ServerConfig.version) {
+        if (131 < ServerConfig.GetVersion()) {
             p.EncodeStr(sAlliance);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode1(isSelf ? 1 : 0);
+
+            if (ServerConfig.GetVersion() <= 186) {
+                p.Encode4(0);
+                p.Encode4(0);
+                p.Encode1(isSelf ? 1 : 0);
+                p.Encode1(pet_summoned ? 1 : 0);
+            } else {
+                p.Encode1(pet_summoned ? 1 : 0); // v188+ not used
+                p.Encode1(isSelf ? 1 : 0);
+            }
         }
 
         // CUIUserInfo::SetMultiPetInfo
+        if (188 <= ServerConfig.GetVersion()) {
+            p.Encode1(pet_summoned ? 1 : 0); // pet info on
+        }
+
         IItem inv_pet = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -114);
         final int peteqid = inv_pet != null ? inv_pet.getItemId() : 0;
+        int pet_count = 0;
         for (final MaplePet pet : player.getPets()) {
             if (pet.getSummoned()) {
-                p.Encode1(pet.getUniqueId()); //o-o byte ?
+
+                if (0 < pet_count) {
+                    p.Encode1(1); // Next Pet
+                }
+
                 p.Encode4(pet.getPetItemId()); // petid
+
+                if (194 <= ServerConfig.GetVersion()) {
+                    p.Encode4(0);
+                }
+
                 p.EncodeStr(pet.getName());
                 p.Encode1(pet.getLevel()); // nLevel
                 p.Encode2(pet.getCloseness()); // pet closeness
                 p.Encode1(pet.getFullness()); // pet fullness
                 p.Encode2(0); // pet.getFlags()
                 p.Encode4(peteqid);
+                pet_count++;
             }
         }
 
-        if (ServerConfig.version <= 131) {
-            if (player.getPets().isEmpty()) {
-                p.Encode1(0); // No Pet
-            }
-        }
-
-        if (131 < ServerConfig.version) {
+        if (0 < pet_count || ServerConfig.GetVersion() <= 131) {
             p.Encode1(0); // End of pet
         }
 
@@ -787,11 +812,11 @@ public class UserPacket {
             }
         }
 
-        if (131 < ServerConfig.version) {
+        if (131 < ServerConfig.GetVersion()) {
             // Monster Book (JMS)
             p.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
 
-            // CUIUserInfo::SetMedalAchievementInfo
+            // MedalAchievementInfo::Decode
             IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -46);
             p.Encode4(inv_medal == null ? 0 : inv_medal.getItemId());
             List<Integer> medalQuests = new ArrayList<Integer>();
@@ -806,11 +831,13 @@ public class UserPacket {
                 p.Encode2(x);
             }
 
-            // Chair List
-            p.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
-            // CInPacket::DecodeBuffer(v4, iPacket, 4 * chairs);
-            for (IItem chair : player.getInventory(MapleInventoryType.SETUP).list()) {
-                p.Encode4(chair.getItemId());
+            if (ServerConfig.GetVersion() <= 186) {
+                // Chair List
+                p.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
+                // CInPacket::DecodeBuffer(v4, iPacket, 4 * chairs);
+                for (IItem chair : player.getInventory(MapleInventoryType.SETUP).list()) {
+                    p.Encode4(chair.getItemId());
+                }
             }
         }
         return p.Get();

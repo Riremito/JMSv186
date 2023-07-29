@@ -91,6 +91,7 @@ public class v188_0_SP {
         ServerPacket.Header.LP_ChangeSkillRecordResult.Set(0x001F);
         //Header.LP_CharacterInfo.Set(Header.LP_InventoryOperation.Get() + 26);
 
+        ServerPacket.Header.LP_CharacterInfo.Set(0x0033);
         ServerPacket.Header.LP_BroadcastMsg.Set(0x003D); // v188
         ServerPacket.Header.LP_UserChat.Set(0x00A4); // v188 test v186+1
 
