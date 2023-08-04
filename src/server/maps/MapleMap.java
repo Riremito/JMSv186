@@ -2521,6 +2521,12 @@ public final class MapleMap {
         }
     }
 
+    public void spawnMerchant(MapleCharacter chr) {
+        for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
+            obj.sendSpawnData(chr.getClient());
+        }
+    }
+
     public void moveMonster(MapleMonster monster, Point reportedPos) {
         monster.setPosition(reportedPos);
         mutex.lock();

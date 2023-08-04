@@ -2337,6 +2337,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (map.getId() == nowmapid) {
             client.getSession().write(warpPacket);
             Debug.DebugLog(getName() + " Enter Map = " + to.getId());
+            to.spawnMerchant(this); // show merchant
 
             map.removePlayer(this);
             if (!isClone() && client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {
