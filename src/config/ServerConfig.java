@@ -177,6 +177,10 @@ public class ServerConfig {
         }
     }
 
+    public static boolean IsGMTestMode() {
+        return DebugConfig.GM;
+    }
+
     public static Properties ReadPropertyFile(final String path) {
         final Properties p = new Properties();
 

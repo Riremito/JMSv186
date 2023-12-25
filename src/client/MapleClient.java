@@ -1227,6 +1227,10 @@ public class MapleClient implements Serializable {
         return gm;
     }
 
+    public void setGM() {
+        gm = true;
+    }
+
     public final void setScriptEngine(final String name, final ScriptEngine e) {
         engines.put(name, e);
     }

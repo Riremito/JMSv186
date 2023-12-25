@@ -67,6 +67,7 @@ public class Start {
                 ServerPacket.SetForJMSv184();
                 break;
             }
+            case 185:
             case 186: {
                 v186_1_CP.Set();
                 v186_1_SP.Set();

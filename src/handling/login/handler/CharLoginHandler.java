@@ -63,6 +63,7 @@ public class CharLoginHandler {
 
     public static final boolean login(MapleClient c, String login, String pwd) {
         boolean endwith_ = false;
+        boolean startwith_GM = false;
 
         // MapleIDは最低4文字なので、5文字以上の場合に性別変更の特殊判定を行う
         if (login.length() >= 5 && login.endsWith("_")) {
@@ -70,6 +71,13 @@ public class CharLoginHandler {
             endwith_ = true;
 
             Debug.InfoLog("[FEMALE MODE] \"" + login + "\"");
+        }
+
+        if (ServerConfig.IsGMTestMode()) {
+            if (login.startsWith("GM")) {
+                startwith_GM = true;
+                Debug.InfoLog("[GM MODE] \"" + login + "\"");
+            }
         }
 
         c.setAccountName(login);
@@ -83,6 +91,16 @@ public class CharLoginHandler {
                 Debug.InfoLog("[NEW MAPLEID] \"" + login + "\"");
                 loginok = c.login(login, pwd, ipBan || macBan);
             }
+        }
+
+        // アカウントの性別変更
+        if (endwith_) {
+            c.setGender((byte) 1);
+        }
+
+        // GM test
+        if (startwith_GM) {
+            c.setGM();
         }
 
         final Calendar tempbannedTill = c.getTempBanCalendar();
@@ -104,10 +122,6 @@ public class CharLoginHandler {
             }
         } else {
             c.loginAttempt = 0;
-            // アカウントの性別変更
-            if (endwith_) {
-                c.setGender((byte) 1);
-            }
             LoginWorker.registerClient(c);
             return true;
         }
