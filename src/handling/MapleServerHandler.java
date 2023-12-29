@@ -31,6 +31,7 @@ import packet.content.ItemPacket;
 import packet.content.LoginPacket;
 import packet.content.MobPacket;
 import packet.content.NPCPacket;
+import packet.content.PortalPacket;
 import packet.content.ReactorPacket;
 import packet.content.SocketPacket;
 import packet.content.SummonPacket;
@@ -645,7 +646,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_UserTransferFieldRequest: {
                 // c
-                PlayerHandler.ChangeMap(p, c, c.getPlayer());
+                if (!PortalPacket.OnPacket(op, type, c)) {
+                    PlayerHandler.ChangeMap(p, c, c.getPlayer());
+                }
                 if (c.getPlayer().GetInformation()) {
                     c.getPlayer().Info("MapID = " + c.getPlayer().getMapId());
                 }
