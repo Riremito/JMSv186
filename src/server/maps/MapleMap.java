@@ -1256,7 +1256,7 @@ public final class MapleMap {
     public final void spawnZakum(final int x, final int y) {
         final Point pos = new Point(x, y);
         final MapleMonster mainb = MapleLifeFactory.getMonster(8800000);
-        final Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
+        final Point spos = calcPointBelow(new Point(pos.x, pos.y));
         mainb.setPosition(spos);
         mainb.setFake(true);
         // Might be possible to use the map object for reference in future.

@@ -239,17 +239,12 @@ public class MobPacket {
         p.Encode1(life.getStance());
         p.Encode2(0); // FH
         p.Encode2(life.getFh()); // Origin FH
+        p.Encode1(spawnType);
 
-        if (effect != 0 || link != 0) {
-            p.Encode1(effect != 0 ? effect : -3);
+        if (spawnType == -3 || 0 <= spawnType) {
             p.Encode4(link);
-        } else {
-            if (spawnType == 0) {
-                p.Encode4(effect);
-            }
-            p.Encode1(spawnType); // newSpawn ? -2 : -1
-            //0xFB when wh spawns
         }
+
         p.Encode1(life.getCarnivalTeam());
 
         if (ServerConfig.version > 131) {
