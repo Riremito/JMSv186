@@ -1327,10 +1327,9 @@ public final class MapleMap {
         checkRemoveAfter(monster);
         monster.setLinkOid(oid);
         spawnAndAddRangedMapObject(monster, new DelayedPacketCreation() {
-
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(MobPacket.Spawn(monster, -2, 0, oid)); // TODO effect
+                c.SendPacket(MobPacket.Spawn(monster, -3, 0, oid)); // TODO effect
             }
         }, null);
         updateMonsterController(monster);
@@ -1382,7 +1381,7 @@ public final class MapleMap {
 
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(MobPacket.Spawn(monster, 0xfc, 0, 0));
+                c.SendPacket(MobPacket.Spawn(monster, -4, 0, 0));
             }
         }, null);
         updateMonsterController(monster);
