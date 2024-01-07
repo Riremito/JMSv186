@@ -1382,8 +1382,7 @@ public final class MapleMap {
 
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(MobPacket.Spawn(monster, -2, 0xfc, 0));
-//		c.getSession().write(MobPacket.spawnFakeMonster(monster, 0));
+                c.SendPacket(MobPacket.Spawn(monster, 0xfc, 0, 0));
             }
         }, null);
         updateMonsterController(monster);
