@@ -37,15 +37,18 @@ import constants.ServerConstants.PlayerGMRank;
 import database.DatabaseConnection;
 import handling.channel.ChannelServer;
 import handling.channel.handler.StatsHandling;
+import java.awt.Point;
 import java.lang.reflect.Modifier;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
+import static packet.content.ItemPacket.CreatePinkBeanEventPortal;
 import scripting.NPCScriptManager;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
+import server.maps.MapleDynamicPortal;
 import server.maps.MapleMap;
 import server.maps.SavedLocationType;
 import tools.FileoutputUtil;
@@ -348,6 +351,28 @@ public class CommandProcessor {
                     ;
                 }
                 c.getPlayer().Notice("無効なNPCIDです");
+                return true;
+            }
+
+            if ("/addportal".equals(splitted[0])) {
+                if (splitted.length < 2) {
+                    return true;
+                }
+                int map_id_to = Integer.parseInt(splitted[1]);
+
+                if (!LoadData.IsValidMapID(map_id_to)) {
+                    return false;
+                }
+
+                MapleCharacter chr = c.getPlayer();
+                Point player_xy = chr.getPosition();
+                MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
+                c.getPlayer().getMap().addMapObject(dynamic_portal);
+                //ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(chr.getMapId()).addMapObject(dynamic_portal);
+
+                c.getPlayer().getMap().broadcastMessage(CreatePinkBeanEventPortal(dynamic_portal));
+
+                c.getPlayer().Notice("AddPortal: from " + c.getPlayer().getMapId() + " to " + map_id_to);
                 return true;
             }
 

@@ -20,10 +20,13 @@
  */
 package packet.content;
 
+import client.MapleCharacter;
 import client.MapleClient;
+import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import packet.ClientPacket;
 import packet.ServerPacket;
+import server.maps.MapleDynamicPortal;
 import server.maps.MapleMap;
 
 /**
@@ -111,8 +114,15 @@ public class ItemPacket {
                 int portal_id = p.Decode4();
                 byte flag = p.Decode1();
 
-                MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(749050200);
-                c.getPlayer().changeMap(to, to.getPortal(0));
+                //MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(749050200);
+                //c.getPlayer().changeMap(to, to.getPortal(0));
+                MapleCharacter chr = c.getPlayer();
+                MapleDynamicPortal dynamic_portal = chr.getMap().findDynamicPortal(portal_id);
+                if (dynamic_portal == null) {
+                    c.getPlayer().UpdateStat(true);
+                    return true;
+                }
+                dynamic_portal.warp(chr);
                 return true;
             }
             case CP_JMS_PINKBEAN_PORTAL_CREATE: {
@@ -122,19 +132,9 @@ public class ItemPacket {
                 int item_id = p.Decode4(); // 2420004, 00A661A6
                 short x = p.Decode2(); // -1776, 00A661C1
                 short y = p.Decode2(); // 213, 00A661DD
-
-                ServerPacket ip = new ServerPacket(ServerPacket.Header.LP_JMS_PINKBEAN_PORTAL_CREATE);
-                ip.Encode1(1);
-                ip.Encode4(item_id);
-                ip.Encode4(1234); // portal id
-                ip.Encode2(x);
-                ip.Encode2(y);
-                ip.Encode4(5555);
-                ip.Encode4(5666);
-                ip.Encode4(0);
-                ip.Encode4(0);
-                //c.SendPacket(ip.Get());
-                c.getPlayer().getMap().broadcastMessage(ip.Get());
+                MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(item_id, 749050200, x, y);
+                c.getPlayer().getMap().addMapObject(dynamic_portal);
+                c.getPlayer().getMap().broadcastMessage(CreatePinkBeanEventPortal(dynamic_portal));
                 c.getPlayer().UpdateStat(true);
                 return true;
             }
@@ -145,5 +145,19 @@ public class ItemPacket {
 
         c.getPlayer().UpdateStat(true);
         return false;
+    }
+
+    public static MaplePacket CreatePinkBeanEventPortal(MapleDynamicPortal dynamic_portal) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_PINKBEAN_PORTAL_CREATE);
+        sp.Encode1(1);
+        sp.Encode4(dynamic_portal.getItemID()); // item id
+        sp.Encode4(dynamic_portal.getObjectId()); // object id
+        sp.Encode2(dynamic_portal.getPosition().x);
+        sp.Encode2(dynamic_portal.getPosition().y);
+        sp.Encode4(0);
+        sp.Encode4(0);
+        sp.Encode2(dynamic_portal.getPosition().x);
+        sp.Encode2(dynamic_portal.getPosition().y);
+        return sp.Get();
     }
 }

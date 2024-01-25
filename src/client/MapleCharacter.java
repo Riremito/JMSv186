@@ -2338,6 +2338,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             client.getSession().write(warpPacket);
             Debug.DebugLog(getName() + " Enter Map = " + to.getId());
             to.spawnMerchant(this); // show merchant
+            to.spawnDynamicPortal(this); // show dynamic portal;
 
             map.removePlayer(this);
             if (!isClone() && client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {

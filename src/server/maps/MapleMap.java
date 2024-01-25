@@ -64,6 +64,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import packet.content.DropPacket;
 import packet.content.DropPacket.EnterType;
 import packet.content.DropPacket.LeaveType;
+import packet.content.ItemPacket;
 import packet.content.MobPacket;
 import packet.content.NPCPacket;
 import packet.content.ReactorPacket;
@@ -1426,6 +1427,15 @@ public final class MapleMap {
         });
     }
 
+    public final void spawnDynamicPortal(MapleDynamicPortal dynamic_portal) {
+        spawnAndAddRangedMapObject(dynamic_portal, new DelayedPacketCreation() {
+            @Override
+            public final void sendPackets(MapleClient c) {
+                c.SendPacket(ItemPacket.CreatePinkBeanEventPortal(dynamic_portal));
+            }
+        }, null);
+    }
+
     public final void spawnSummon(final MapleSummon summon) {
         summon.updateMap(this);
         spawnAndAddRangedMapObject(summon, new DelayedPacketCreation() {
@@ -2523,6 +2533,35 @@ public final class MapleMap {
         for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
             obj.sendSpawnData(chr.getClient());
         }
+    }
+
+    public void spawnDynamicPortal(MapleCharacter chr) {
+        for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+            ((MapleDynamicPortal) obj).sendSpawnPacket(chr.getClient());
+        }
+    }
+
+    public MapleDynamicPortal findDynamicPortal(int portal_id) {
+        for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+            MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
+            if (dynamic_portal.getObjectId() == portal_id) {
+                return dynamic_portal;
+            }
+        }
+        return null;
+    }
+
+    public MapleDynamicPortal findDynamicPortalLink(int map_id_to) {
+        Debug.InfoLog("findDynamicPortalLink map_id_to" + map_id_to);
+        for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+            MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
+
+            Debug.InfoLog("findDynamicPortalLink obj_to" + dynamic_portal.getMapID());
+            if (dynamic_portal.getMapID() == map_id_to) {
+                return dynamic_portal;
+            }
+        }
+        return null;
     }
 
     public void moveMonster(MapleMonster monster, Point reportedPos) {
