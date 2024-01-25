@@ -479,7 +479,7 @@ public class v186_1_SP {
             ServerPacket.Header.LP_END_TOWNPORTALPOOL.Set(0);
             // 0x0132
             // 0x0133
-            // 0x0134 crash
+            ServerPacket.Header.LP_JMS_PINKBEAN_PORTAL_CREATE.Set(0x0134);
             // 0x0135 ポータルを開けませんでした。
             // 0x0136
             // 設置物

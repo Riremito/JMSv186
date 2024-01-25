@@ -133,7 +133,8 @@ public class ItemPacket {
                 ip.Encode4(5666);
                 ip.Encode4(0);
                 ip.Encode4(0);
-                c.SendPacket(ip.Get());
+                //c.SendPacket(ip.Get());
+                c.getPlayer().getMap().broadcastMessage(ip.Get());
                 c.getPlayer().UpdateStat(true);
                 return true;
             }

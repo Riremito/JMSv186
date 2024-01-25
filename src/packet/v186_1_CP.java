@@ -175,8 +175,8 @@ public class v186_1_CP {
             // 0x00A3
             ClientPacket.Header.CP_GuildBBS.Set(0x00A4);
             // 0x00A5
-            // 0x00A6
-            // 0x00A7
+            ClientPacket.Header.CP_JMS_PINKBEAN_PORTAL_ENTER.Set(0x00A6);
+            ClientPacket.Header.CP_JMS_PINKBEAN_PORTAL_CREATE.Set(0x00A7);
             // 0x00A8
             // 0x00A9
             ClientPacket.Header.CP_UserMigrateToITCRequest.Set(0x00AA);
