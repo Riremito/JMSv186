@@ -35,6 +35,7 @@ import constants.GameConstants;
 import constants.ServerConstants.CommandType;
 import constants.ServerConstants.PlayerGMRank;
 import database.DatabaseConnection;
+import debug.Debug;
 import handling.channel.ChannelServer;
 import handling.channel.handler.StatsHandling;
 import java.awt.Point;
@@ -47,6 +48,7 @@ import static packet.content.ItemPacket.CreatePinkBeanEventPortal;
 import scripting.NPCScriptManager;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
+import server.life.MapleMonster;
 import server.life.MapleNPC;
 import server.maps.MapleDynamicPortal;
 import server.maps.MapleMap;
@@ -216,6 +218,23 @@ public class CommandProcessor {
                 int mapid = LoadData.GetRandomID(LoadData.DataType.MAP);
                 MapleMap map = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(mapid);
                 chr.changeMap(map, map.getPortal(0));
+                return true;
+            }
+
+            if ("/randomspawn".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+
+                int mob_count = 1;
+                if (splitted.length >= 2) {
+                    mob_count = Integer.parseInt(splitted[1]);
+                }
+
+                for (int i = 0; i < mob_count; i++) {
+                    int mobid = LoadData.GetRandomID(LoadData.DataType.MOB);
+                    Debug.InfoLog("RandomSpawn: " + mobid);
+                    MapleMonster mob = MapleLifeFactory.getMonster(mobid);
+                    chr.getMap().spawnMonsterOnGroundBelow(mob, c.getPlayer().getPosition());
+                }
                 return true;
             }
 
