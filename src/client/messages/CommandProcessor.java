@@ -229,6 +229,10 @@ public class CommandProcessor {
                     mob_count = Integer.parseInt(splitted[1]);
                 }
 
+                if (10 < mob_count) {
+                    mob_count = 10;
+                }
+
                 for (int i = 0; i < mob_count; i++) {
                     int mobid = LoadData.GetRandomID(LoadData.DataType.MOB);
                     Debug.InfoLog("RandomSpawn: " + mobid);
