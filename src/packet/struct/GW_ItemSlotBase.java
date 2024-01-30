@@ -89,7 +89,7 @@ public class GW_ItemSlotBase {
 
         data.Encode1(item.getPet() != null ? 3 : item.getType());
 
-        // GW_ItemSlotBase::CreateItem
+        // GW_ItemSlotBase::CreateItem call bellow
         int it = item.getPet() != null ? 3 : item.getType();
         switch (it) {
             // Equip
@@ -142,11 +142,11 @@ public class GW_ItemSlotBase {
                 data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
 
                 // 耐久度
-                if (186 <= ServerConfig.version) {
+                if (180 <= ServerConfig.version) {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
                 // ビシャスのハンマー
-                if (186 <= ServerConfig.version) {
+                if (180 <= ServerConfig.version) {
                     if (ServerConfig.game_server_enable_hammer) {
                         data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
                     } else {

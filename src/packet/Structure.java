@@ -5,20 +5,12 @@ import client.MapleCharacter;
 import client.MapleCoolDownValueHolder;
 import client.MapleQuestStatus;
 import client.SkillEntry;
-import client.inventory.IEquip;
-import client.inventory.IItem;
-import client.inventory.Item;
-import client.inventory.MapleInventory;
-import client.inventory.MapleInventoryType;
-import client.inventory.MaplePet;
 import client.inventory.MapleRing;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import config.ServerConfig;
 import constants.GameConstants;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import packet.struct.AvatarLook;
@@ -27,7 +19,6 @@ import server.shops.AbstractPlayerStore;
 import server.shops.IMaplePlayerShop;
 import tools.KoreanDateUtil;
 import tools.Pair;
-import tools.packet.PacketHelper;
 import packet.struct.GW_CharacterStat;
 
 public class Structure {
@@ -77,7 +68,7 @@ public class Structure {
             data.Encode4(skill.getValue().skillevel);
 
             // not in v165
-            if (186 <= ServerConfig.version) {
+            if (180 <= ServerConfig.version) {
                 data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
             }
 

@@ -56,7 +56,7 @@ public class CharacterData {
             p.Encode8(datamask); // statmask
         }
 
-        if (186 <= ServerConfig.version) {
+        if (180 <= ServerConfig.version) {
             p.Encode1(0); // nCombatOrders
         }
 
@@ -243,7 +243,7 @@ public class CharacterData {
             }
             p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             // 装備済み -1000
-            if (186 <= ServerConfig.version) {
+            if (180 <= ServerConfig.version) {
                 for (Item item : equipped) {
                     if (item.getPosition() <= -1000 && item.getPosition() > -1100) {
                         p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));

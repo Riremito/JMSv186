@@ -155,7 +155,7 @@ public class GW_CharacterStat {
         p.Encode2(chr.getRemainingAp());
 
         // SP
-        if (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob())) {
+        if (180 < ServerConfig.version && (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob()))) {
             final int size = chr.getRemainingSpSize();
             p.Encode1(size);
             for (int i = 0; i < chr.getRemainingSps().length; i++) {
@@ -177,7 +177,7 @@ public class GW_CharacterStat {
 
         p.Encode4(chr.getMapId()); // current map id
         p.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
-        if (ServerConfig.version > 176) {
+        if (180 <= ServerConfig.version) {
             // デュアルブレイドフラグ
             p.Encode2(chr.getSubcategory());
             if (188 <= ServerConfig.version) {
@@ -186,7 +186,10 @@ public class GW_CharacterStat {
                 p.Encode4(0);
                 p.Encode4(0);
             } else {
-                p.EncodeZeroBytes(20);
+                p.Encode8(0);
+                p.Encode4(0);
+                p.Encode4(0);
+                p.Encode4(0);
             }
         } else {
             // v164, v165

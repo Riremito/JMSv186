@@ -119,7 +119,7 @@ public class MaplePacketCreator {
         // チャンネル
         p.Encode4(chr.getClient().getChannel() - 1);
         p.Encode1(0);
-        if (186 <= ServerConfig.version) {
+        if (180 <= ServerConfig.version) {
             p.Encode4(0);
         }
         p.Encode1(1);

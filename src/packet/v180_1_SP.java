@@ -47,6 +47,6 @@ public class v180_1_SP {
         ServerPacket.Header.LP_RecommendWorldMessage.Set(0x0017);
         ServerPacket.Header.LOGIN_AUTH.Set(0x0018);
 
-        //ServerPacket.Header.LP_SetField.Set(0x007B);
+        ServerPacket.Header.LP_SetField.Set(0x007A);
     }
 }
