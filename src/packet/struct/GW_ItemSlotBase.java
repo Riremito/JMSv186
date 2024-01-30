@@ -102,6 +102,10 @@ public class GW_ItemSlotBase {
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
                 // もしかしたらここに特定のバージョンだけ(v166-v184)変なフラグ 1 byteあるかも?
+                if (184 <= ServerConfig.version && ServerConfig.version <= 185) {
+                    data.Encode1(equip.getState());
+                }
+
                 data.Encode2(equip.getStr());
                 data.Encode2(equip.getDex());
                 data.Encode2(equip.getInt());
@@ -145,30 +149,45 @@ public class GW_ItemSlotBase {
                 if (180 <= ServerConfig.version) {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
-                // ビシャスのハンマー
-                if (180 <= ServerConfig.version) {
-                    if (ServerConfig.game_server_enable_hammer) {
-                        data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
-                    } else {
-                        data.Encode4(0);
+
+                // 通常
+                if (!(184 <= ServerConfig.version && ServerConfig.version <= 185)) {
+
+                    // ビシャスのハンマー
+                    if (180 <= ServerConfig.version) {
+                        if (ServerConfig.game_server_enable_hammer) {
+                            data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
+                        } else {
+                            data.Encode4(0);
+                        }
                     }
-                }
-                // 潜在能力
-                if (186 <= ServerConfig.version) {
-                    data.Encode1(equip.getState()); // option._ZtlSecureTear_nGrade
+                    // 潜在能力
+                    if (186 <= ServerConfig.version) {
+                        data.Encode1(equip.getState()); // option._ZtlSecureTear_nGrade
+                        data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
+                        if (ServerConfig.game_server_enable_potential) {
+                            data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
+                            data.Encode2(equip.getPotential2()); // option._ZtlSecureTear_nOption2
+                            data.Encode2(equip.getPotential3()); // option._ZtlSecureTear_nOption3
+                        } else {
+                            data.Encode2(0);
+                            data.Encode2(0);
+                            data.Encode2(0);
+                        }
+                        data.Encode2(equip.getHpR()); // option._ZtlSecureTear_nSocket1
+                        data.Encode2(equip.getMpR()); // option._ZtlSecureTear_nSocket2
+                    }
+                } // 特殊パターン
+                else {
                     data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
-                    if (ServerConfig.game_server_enable_potential) {
-                        data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
-                        data.Encode2(equip.getPotential2()); // option._ZtlSecureTear_nOption2
-                        data.Encode2(equip.getPotential3()); // option._ZtlSecureTear_nOption3
-                    } else {
-                        data.Encode2(0);
-                        data.Encode2(0);
-                        data.Encode2(0);
-                    }
+                    data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
+                    data.Encode2(equip.getPotential2()); // option._ZtlSecureTear_nOption2
+                    data.Encode2(equip.getPotential3()); // option._ZtlSecureTear_nOption3
                     data.Encode2(equip.getHpR()); // option._ZtlSecureTear_nSocket1
                     data.Encode2(equip.getMpR()); // option._ZtlSecureTear_nSocket2
+                    data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
                 }
+
                 data.Encode8(0); // liCashItemSN.QuadPartがない場合はDecodeがされないのでズレる
                 data.Encode8(0);
                 data.Encode4(-1);

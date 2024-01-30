@@ -102,7 +102,7 @@ public class Structure {
         }
 
         // not in v165, not in v188, but in v194 ???
-        if (186 == ServerConfig.version) {
+        if (184 <= ServerConfig.version && ServerConfig.version <= 186) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 

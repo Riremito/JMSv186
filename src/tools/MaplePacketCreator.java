@@ -113,7 +113,7 @@ public class MaplePacketCreator {
     // プレイヤー情報の初期化
     public static final MaplePacket getCharInfo(final MapleCharacter chr) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetField);
-        if (186 <= ServerConfig.version) {
+        if (184 <= ServerConfig.version) {
             p.EncodeBuffer(CClientOptMan.EncodeOpt());
         }
         // チャンネル
@@ -141,7 +141,7 @@ public class MaplePacketCreator {
         // キャラクター情報
         p.EncodeBuffer(CharacterData.Encode(chr));
 
-        if (186 <= ServerConfig.version) {
+        if (184 <= ServerConfig.version) {
             // ログアウトギフト
             p.EncodeBuffer(CWvsContext.LogoutGiftConfig());
         }
