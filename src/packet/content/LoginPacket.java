@@ -167,7 +167,7 @@ public class LoginPacket {
                     p.Encode1(0);
                 }
 
-                if (186 <= ServerConfig.version) {
+                if (180 <= ServerConfig.version) {
                     p.Encode1(0);
                 }
 
@@ -429,7 +429,7 @@ public class LoginPacket {
 
         List<MapleCharacter> chars = c.loadCharacters(0);
         p.Encode1(3); // error code
-        p.Encode1(0); 
+        p.Encode1(0);
         p.Encode1(0);
         return p.Get();
     }

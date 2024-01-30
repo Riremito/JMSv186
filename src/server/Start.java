@@ -61,6 +61,11 @@ public class Start {
                 ServerPacket.SetForJMSv176();
                 break;
             }
+            case 180: {
+                v180_1_CP.Set();
+                v180_1_SP.Set();
+                break;
+            }
             // ゴミ
             case 184: {
                 ClientPacket.SetForJMSv184();
