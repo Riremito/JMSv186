@@ -38,7 +38,6 @@ import server.maps.MapleMist;
 import server.maps.MapleSummon;
 import server.maps.SummonMovementType;
 import java.util.EnumMap;
-import packet.content.ContextPacket;
 import server.MapleCarnivalFactory.MCSkill;
 import server.Timer.BuffTimer;
 import tools.MaplePacketCreator;
@@ -1112,7 +1111,7 @@ public class MapleStatEffect implements Serializable {
         }
     }
 
-    public final void applyComboBuff(final MapleCharacter applyto, short combo) {
+    public final void applyComboBuff(final MapleCharacter applyto, int combo) {
         final List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.ARAN_COMBO, (int) combo));
         applyto.getClient().getSession().write(MaplePacketCreator.giveBuff(sourceid, 99999, stat, this)); // Hackish timing, todo find out
 

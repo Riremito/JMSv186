@@ -141,7 +141,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private String name, chalktext, BlessOfFairy_Origin;
     private long lastCombo, lastfametime, keydown_skill;
     private byte dojoRecord, gmLevel, gender, initialSpawnPoint, skinColor, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones, subcategory; // Make this a quest record, TODO : Transfer it somehow with the current data
-    private short level, mulung_energy, combo, availableCP, totalCP, fame, hpApUsed, job, remainingAp;
+    private int level, mulung_energy, combo, availableCP, totalCP, fame, hpApUsed, job, remainingAp;
     private int accountid, id, meso, exp, hair, face, mapid, bookCover, dojo,
             guildid = 0, fallcounter = 0, maplepoints, acash, chair, itemEffect, points, vpoints,
             rank = 1, rankMove = 0, jobRank = 1, jobRankMove = 0, marriageId, marriageItemId = 0,
@@ -885,21 +885,21 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.setInt(1, 1); // Level
             ps.setShort(2, (short) 0); // Fame
             final PlayerStats stat = chr.stats;
-            ps.setShort(3, stat.getStr()); // Str
-            ps.setShort(4, stat.getDex()); // Dex
-            ps.setShort(5, stat.getInt()); // Int
-            ps.setShort(6, stat.getLuk()); // Luk
+            ps.setInt(3, stat.getStr()); // Str
+            ps.setInt(4, stat.getDex()); // Dex
+            ps.setInt(5, stat.getInt()); // Int
+            ps.setInt(6, stat.getLuk()); // Luk
             ps.setInt(7, 0); // EXP
-            ps.setShort(8, stat.getHp()); // HP
-            ps.setShort(9, stat.getMp());
-            ps.setShort(10, stat.getMaxHp()); // MP
-            ps.setShort(11, stat.getMaxMp());
+            ps.setInt(8, stat.getHp()); // HP
+            ps.setInt(9, stat.getMp());
+            ps.setInt(10, stat.getMaxHp()); // MP
+            ps.setInt(11, stat.getMaxMp());
             ps.setString(12, "0,0,0,0,0,0,0,0,0,0"); // Remaining SP
             ps.setShort(13, (short) 0); // Remaining AP
             ps.setByte(14, (byte) 0); // GM Level
             ps.setByte(15, chr.skinColor);
             ps.setByte(16, chr.gender);
-            ps.setShort(17, chr.job);
+            ps.setInt(17, chr.job);
             ps.setInt(18, chr.hair);
             ps.setInt(19, chr.face);
 
@@ -1052,16 +1052,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
             ps = con.prepareStatement("UPDATE characters SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, monsterbookcover = ?, dojo_pts = ?, dojoRecord = ?, pets = ?, subcategory = ?, marriageId = ?, currentrep = ?, totalrep = ?, name = ?, tama = ? WHERE id = ?", DatabaseConnection.RETURN_GENERATED_KEYS);
             ps.setInt(1, level);
-            ps.setShort(2, fame);
-            ps.setShort(3, stats.getStr());
-            ps.setShort(4, stats.getDex());
-            ps.setShort(5, stats.getLuk());
-            ps.setShort(6, stats.getInt());
+            ps.setInt(2, fame);
+            ps.setInt(3, stats.getStr());
+            ps.setInt(4, stats.getDex());
+            ps.setInt(5, stats.getLuk());
+            ps.setInt(6, stats.getInt());
             ps.setInt(7, exp);
-            ps.setShort(8, stats.getHp() < 1 ? 50 : stats.getHp());
-            ps.setShort(9, stats.getMp());
-            ps.setShort(10, stats.getMaxHp());
-            ps.setShort(11, stats.getMaxMp());
+            ps.setInt(8, stats.getHp() < 1 ? 50 : stats.getHp());
+            ps.setInt(9, stats.getMp());
+            ps.setInt(10, stats.getMaxHp());
+            ps.setInt(11, stats.getMaxMp());
             final StringBuilder sps = new StringBuilder();
             for (int i = 0; i < remainingSp.length; i++) {
                 sps.append(remainingSp[i]);
@@ -1069,11 +1069,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             final String sp = sps.toString();
             ps.setString(12, sp.substring(0, sp.length() - 1));
-            ps.setShort(13, remainingAp);
+            ps.setInt(13, remainingAp);
             ps.setByte(14, gmLevel);
             ps.setByte(15, skinColor);
             ps.setByte(16, gender);
-            ps.setShort(17, job);
+            ps.setInt(17, job);
             ps.setInt(18, hair);
             ps.setInt(19, face);
             if (!fromcs && map != null) {
@@ -1086,7 +1086,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 ps.setInt(20, mapid);
             }
             ps.setInt(21, meso);
-            ps.setShort(22, hpApUsed);
+            ps.setInt(22, hpApUsed);
             if (map == null) {
                 ps.setByte(23, (byte) 0);
             } else {
@@ -2121,11 +2121,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return this.BlessOfFairy_Origin;
     }
 
-    public final short getLevel() {
+    public final int getLevel() {
         return level;
     }
 
-    public final short getFame() {
+    public final int getFame() {
         return fame;
     }
 
@@ -2157,7 +2157,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return gashaEXP;
     }
 
-    public short getRemainingAp() {
+    public int getRemainingAp() {
         return remainingAp;
     }
 
@@ -2183,7 +2183,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return ret;
     }
 
-    public short getHpApUsed() {
+    public int getHpApUsed() {
         return hpApUsed;
     }
 
@@ -2203,7 +2203,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         this.skinColor = skinColor;
     }
 
-    public short getJob() {
+    public int getJob() {
         return job;
     }
 
@@ -4326,11 +4326,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         client.getSession().write(MaplePacketCreator.sendGhostPoint(type, inc));
     }
 
-    public final short getCombo() {
+    public final int getCombo() {
         return combo;
     }
 
-    public void setCombo(final short combo) {
+    public void setCombo(final int combo) {
         this.combo = combo;
     }
 

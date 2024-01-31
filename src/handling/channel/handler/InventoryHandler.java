@@ -1217,7 +1217,7 @@ public class InventoryHandler {
                             break;
                         }
                         case 2048: // hp
-                            short maxhp = playerst.getMaxHp();
+                            int maxhp = playerst.getMaxHp();
 
                             if (job == 0) { // Beginner
                                 maxhp += Randomizer.rand(8, 12);
@@ -1267,7 +1267,7 @@ public class InventoryHandler {
                             break;
 
                         case 8192: // mp
-                            short maxmp = playerst.getMaxMp();
+                            int maxmp = playerst.getMaxMp();
 
                             if (job == 0) { // Beginner
                                 maxmp += Randomizer.rand(6, 8);
@@ -1328,7 +1328,7 @@ public class InventoryHandler {
                             break;
                         }
                         case 2048: // HP
-                            short maxhp = playerst.getMaxHp();
+                            int maxhp = playerst.getMaxHp();
                             if (job == 0) { // Beginner
                                 maxhp -= 12;
                             } else if (job >= 100 && job <= 132) { // Warrior
@@ -1376,7 +1376,7 @@ public class InventoryHandler {
                             statupdate.add(new Pair<MapleStat, Integer>(MapleStat.MAXHP, (int) maxhp));
                             break;
                         case 8192: // MP
-                            short maxmp = playerst.getMaxMp();
+                            int maxmp = playerst.getMaxMp();
                             if (job == 0) { // Beginner
                                 maxmp -= 8;
                             } else if (job >= 100 && job <= 132) { // Warrior

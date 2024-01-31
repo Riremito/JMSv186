@@ -76,7 +76,7 @@ public class StatsHandling {
                     statupdate.add(new Pair<MapleStat, Integer>(MapleStat.LUK, (int) stat.getLuk()));
                     break;
                 case 2048: // HP
-                    short maxhp = stat.getMaxHp();
+                    int maxhp = stat.getMaxHp();
                     if (chr.getHpApUsed() >= 10000 || maxhp >= 30000) {
                         return;
                     }
@@ -127,7 +127,7 @@ public class StatsHandling {
                     statupdate.add(new Pair<MapleStat, Integer>(MapleStat.MAXHP, (int) maxhp));
                     break;
                 case 8192: // MP
-                    short maxmp = stat.getMaxMp();
+                    int maxmp = stat.getMaxMp();
                     if (chr.getHpApUsed() >= 10000 || stat.getMaxMp() >= 30000) {
                         return;
                     }

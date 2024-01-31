@@ -369,7 +369,7 @@ public class PlayerHandler {
 
     public static final void AranCombo(final MapleClient c, final MapleCharacter chr) {
         if (chr != null && chr.getJob() >= 2000 && chr.getJob() <= 2112) {
-            short combo = chr.getCombo();
+            int combo = chr.getCombo();
             final long curr = System.currentTimeMillis();
 
             if (combo > 0 && (curr - chr.getLastCombo()) > 7000) {
