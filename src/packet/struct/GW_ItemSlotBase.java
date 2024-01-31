@@ -101,7 +101,7 @@ public class GW_ItemSlotBase {
 
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
-                // もしかしたらここに特定のバージョンだけ(v166-v184)変なフラグ 1 byteあるかも?
+                // v184-v185 潜在内部実装時 (動作はしないがデータの位置が違う)
                 if (184 <= ServerConfig.version && ServerConfig.version <= 185) {
                     data.Encode1(equip.getState());
                 }
@@ -128,6 +128,13 @@ public class GW_ItemSlotBase {
                     // ポイントアイテム交換可能
                     data.Encode2(0x10);
                 } else {
+                    /*
+                    0x0001 封印
+                    0x0002 滑り防止効果
+                    0x0004 寒気防止効果
+                    0x0008
+                    0x0010 1回交換可能
+                     */
                     data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
                 }
 
