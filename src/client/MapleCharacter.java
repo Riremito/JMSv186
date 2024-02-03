@@ -2268,7 +2268,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         this.old = x;
     }
 
-    public void setRemainingAp(short remainingAp) {
+    public void setRemainingAp(int remainingAp) {
         this.remainingAp = remainingAp;
     }
 
@@ -2282,6 +2282,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void setGender(byte gender) {
         this.gender = gender;
+    }
+
+    public void setJob(int job) {
+        this.job = job;
     }
 
     public void setInvincible(boolean invinc) {
@@ -4244,8 +4248,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         diseases.clear();
     }
 
-    public void setLevel(final short level) {
-        this.level = (short) (level - 1);
+    public void setLevel(final int level) {
+        this.level = level;
     }
 
     public void sendNote(String to, String msg) {

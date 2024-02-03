@@ -36,6 +36,7 @@ import constants.ServerConstants.CommandType;
 import constants.ServerConstants.PlayerGMRank;
 import database.DatabaseConnection;
 import debug.Debug;
+import debug.DebugJob;
 import handling.channel.ChannelServer;
 import handling.channel.handler.StatsHandling;
 import java.awt.Point;
@@ -376,7 +377,7 @@ public class CommandProcessor {
                 c.getPlayer().Notice("無効なNPCIDです");
                 return true;
             }
-
+            // ポータル追加
             if ("/addportal".equals(splitted[0])) {
                 if (splitted.length < 2) {
                     return true;
@@ -396,6 +397,24 @@ public class CommandProcessor {
                 c.getPlayer().getMap().broadcastMessage(CreatePinkBeanEventPortal(dynamic_portal));
 
                 c.getPlayer().Notice("AddPortal: from " + c.getPlayer().getMapId() + " to " + map_id_to);
+                return true;
+            }
+            // ステータス初期化
+            if ("/resetstat".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                DebugJob.ResetStat(chr);
+                chr.Notice("Reset Stat!");
+                return true;
+            }
+            if ("/defstat".equals(splitted[0])) {
+                if (splitted.length < 2) {
+                    return false;
+                }
+
+                int job_id = Integer.parseInt(splitted[1]);
+                MapleCharacter chr = c.getPlayer();
+                DebugJob.DefStat(chr, job_id);
+                chr.Notice("Def Stat!");
                 return true;
             }
 
