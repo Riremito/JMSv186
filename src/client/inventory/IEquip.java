@@ -92,4 +92,6 @@ public interface IEquip extends IItem {
     public short getHpR();
 
     public short getMpR();
+
+    public int getIncAttackSpeed();
 }

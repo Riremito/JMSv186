@@ -105,7 +105,7 @@ public class GW_ItemSlotBase {
                 if (184 <= ServerConfig.version && ServerConfig.version <= 185) {
                     data.Encode1(equip.getState());
                 }
-
+                // data.Encode2((short) equip.getIncAttackSpeed());
                 data.Encode2(equip.getStr());
                 data.Encode2(equip.getDex());
                 data.Encode2(equip.getInt());

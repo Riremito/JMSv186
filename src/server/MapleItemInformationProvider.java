@@ -1,6 +1,5 @@
 package server;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -21,7 +20,6 @@ import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
 import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.StructSetItem.SetItem;
 import tools.Pair;
@@ -857,6 +855,9 @@ public class MapleItemInformationProvider {
                                     nEquip.setHpR((short) (nEquip.getHpR() + stat.getValue().intValue()));
                                 } else if (key.equals("MMPr")) {
                                     nEquip.setMpR((short) (nEquip.getMpR() + stat.getValue().intValue()));
+                                    // 攻撃速度の書
+                                } else if (key.equals("attackSpeed")) {
+                                    nEquip.setIncAttackSpeed(nEquip.getIncAttackSpeed() + stat.getValue().intValue());
                                 }
                             }
                             break;
