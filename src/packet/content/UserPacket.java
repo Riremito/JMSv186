@@ -563,23 +563,33 @@ public class UserPacket {
         p.Encode4(chr.getMount().getLevel()); // mount lvl
         p.Encode4(chr.getMount().getExp()); // exp
         p.Encode4(chr.getMount().getFatigue()); // tiredness
+        // MiniRoomBalloon (ゲーム) 1 byte flag + data
         p.EncodeBuffer(Structure.AnnounceBox(chr));
-        p.Encode1(chr.getChalkboard() != null && chr.getChalkboard().length() > 0 ? 1 : 0);
-        if (chr.getChalkboard() != null && chr.getChalkboard().length() > 0) {
-            p.EncodeStr(chr.getChalkboard());
+        // ADBoardBalloon (黒板) 1 byte flag + data
+        {
+            p.Encode1(chr.getChalkboard() != null && chr.getChalkboard().length() > 0 ? 1 : 0);
+            if (chr.getChalkboard() != null && chr.getChalkboard().length() > 0) {
+                p.EncodeStr(chr.getChalkboard());
+            }
+        }
+        p.Encode1(0);//count4 -> buf0x10 4
+        p.Encode1(0);//count4 -> buf0x10 4
+        // MarriageRecord 1 byte flag + data
+        {
+            p.Encode1(0);
+        }
+        p.Encode1(chr.getEffectMask()); // Effect
+        p.Encode4(0); // not in KMST, in GMS v95: m_nPhase
+
+        // 特殊マップ専用
+        // MonsterCarnival
+        if (chr.checkSpecificMap(980000000, 1000) || chr.checkSpecificMap(980030000, 1000)) {
+            p.Encode1((chr.getCarnivalParty() != null) ? chr.getCarnivalParty().getTeam() : 0); // sub_5CD27E
+        } // Coconut
+        else if (chr.checkSpecificMap(109080000, 1000)) {
+            p.Encode1(chr.getCoconutTeam()); // 0059F0ED
         }
 
-        // v131ここまでOK, ここからおかしい
-        p.EncodeBuffer(Structure.addRingInfo(chr)); // byte x3?
-        // Berserk?
-
-        p.Encode2(0);
-        p.Encode4(0);
-        if (chr.getCarnivalParty() != null) {
-            p.Encode1(chr.getCarnivalParty().getTeam());
-        } else if (chr.getMapId() == 109080000) {
-            p.Encode1(chr.getCoconutTeam()); //is it 0/1 or is it 1/2?
-        }
         return p.Get();
     }
 

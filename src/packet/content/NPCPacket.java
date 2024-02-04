@@ -219,7 +219,7 @@ public class NPCPacket {
         p.Encode2(life.getRx1());
         p.Encode1(show ? 1 : 0);
 
-        if (194 <= ServerConfig.version) {
+        if (194 <= ServerConfig.GetVersion()) {
             p.Encode1(0);
         }
 

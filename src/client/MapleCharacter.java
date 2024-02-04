@@ -2105,6 +2105,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return mapid;
     }
 
+    public boolean checkSpecificMap(int map_id_base, int map_id_range) {
+        int map_id = getMapId();
+
+        if (map_id_base == 0) {
+            return false;
+        }
+
+        if ((map_id / map_id_base) != 1) {
+            return false;
+        }
+
+        if ((map_id - map_id_base) >= map_id_range) {
+            return false;
+        }
+
+        return true;
+    }
+
     public byte getInitialSpawnpoint() {
         return initialSpawnPoint;
     }
@@ -4376,6 +4394,37 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 }
             }, 10000);
         }
+    }
+
+    public boolean IsBerserk() {
+        final ISkill BerserkX = SkillFactory.getSkill(1320006);
+        final int skilllevel = getSkillLevel(BerserkX);
+
+        if (skilllevel < 1) {
+            return false;
+        }
+
+        final MapleStatEffect ampStat = BerserkX.getEffect(skilllevel);
+        if (stats.getHp() * 100 / stats.getMaxHp() <= ampStat.getX()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public byte getEffectMask() {
+        byte mask = 0;
+
+        // CUser::LoadDarkForceEffect
+        if (IsBerserk()) {
+            mask |= 1;
+        }
+
+        // CDragon::CreateEffect
+        // mask |= 2;
+        // CUser::LoadSwallowingEffect
+        // mask |= 4;
+        return mask;
     }
 
     private void prepareBeholderEffect() {

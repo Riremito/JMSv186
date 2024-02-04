@@ -1788,8 +1788,8 @@ public final class MapleMap {
             }
             sendObjectPlacement(chr);
 
-            chr.getClient().getSession().write(UserPacket.spawnPlayerMapobject(chr));
-
+            // 多分不要
+            // chr.getClient().getSession().write(UserPacket.spawnPlayerMapobject(chr));
             if (!onUserEnter.equals("")) {
                 MapScriptMethods.startScript_User(chr.getClient(), onUserEnter);
             }
@@ -2268,7 +2268,7 @@ public final class MapleMap {
                 }
             }
             o.sendSpawnData(c.getClient());
-            //c.addVisibleMapObject(o);
+            c.addVisibleMapObject(o);
         }
     }
 
@@ -2588,8 +2588,9 @@ public final class MapleMap {
                 player.removeVisibleMapObject(mo);
             }
         }
+        // 表示可能範囲のNPC等を表示
         for (MapleMapObject mo : getMapObjectsInRange(player.getPosition(), GameConstants.maxViewRangeSq())) {
-            if (!player.isMapObjectVisible(mo)) {
+            if (!player.isMapObjectVisible(mo) && mo.getObjectId() != player.getObjectId()) {
                 mo.sendSpawnData(player.getClient());
                 player.addVisibleMapObject(mo);
             }
