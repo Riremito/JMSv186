@@ -415,23 +415,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket itemMegaphone(String msg, boolean whisper, int channel, IItem item) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_BroadcastMsg.Get());
-        mplew.write(8);
-        mplew.writeMapleAsciiString(msg);
-        mplew.write(channel - 1);
-        mplew.write(whisper ? 1 : 0);
-
-        if (item == null) {
-            mplew.write(0);
-        } else {
-            PacketHelper.addItemInfo(mplew, item, false, false, true);
-        }
-        return mplew.getPacket();
-    }
-
     public static MaplePacket spawnNPCRequestController(MapleNPC life, boolean MiniMap) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 

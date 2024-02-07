@@ -410,10 +410,14 @@ public class CommandProcessor {
                 if (splitted.length < 2) {
                     return false;
                 }
+                int level = 0;
+                if (splitted.length >= 3) {
+                    level = Integer.parseInt(splitted[2]);
+                }
 
                 int job_id = Integer.parseInt(splitted[1]);
                 MapleCharacter chr = c.getPlayer();
-                DebugJob.DefStat(chr, job_id);
+                DebugJob.DefStat(chr, job_id, level);
                 chr.Notice("Def Stat!");
                 return true;
             }

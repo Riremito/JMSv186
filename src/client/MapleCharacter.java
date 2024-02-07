@@ -2613,6 +2613,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     }
 
+    public void ResetSkill() {
+        for (Entry<ISkill, SkillEntry> skil : skills.entrySet()) {
+            SendPacket(MaplePacketCreator.updateSkill(skil.getKey().getId(), 0, 0, -1));
+        }
+        skills.clear();
+    }
+
     public void playerDead() {
         final MapleStatEffect statss = getStatForBuff(MapleBuffStat.SOUL_STONE);
         if (statss != null) {

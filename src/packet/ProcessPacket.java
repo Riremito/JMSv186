@@ -4,8 +4,7 @@ package packet;
 import client.inventory.IItem;
 import handling.MaplePacket;
 import java.util.List;
-import tools.data.output.MaplePacketLittleEndianWriter;
-import tools.packet.PacketHelper;
+import packet.struct.GW_ItemSlotBase;
 
 public class ProcessPacket {
 
@@ -379,13 +378,9 @@ public class ProcessPacket {
             p.EncodeStr(text);
             p.Encode1((byte) (channel - 1));
             p.Encode1(ear);
-            // アイテム判定
-            if (showitem == 0x00) {
-                p.Encode1(showitem);
-            } else {
-                MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-                PacketHelper.addItemInfo(mplew, item, false, false, true);
-                p.EncodeBuffer(mplew.getPacket().getBytes());
+            p.Encode1(showitem);
+            if (showitem != 0) {
+                p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
             }
             return p.Get();
         }
