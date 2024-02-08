@@ -67,7 +67,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
             in.get(decryptedPacket, 0, decoderState.packetlength);
             decoderState.packetlength = -1;
 
-            if (ServerConfig.version < 164) {
+            if (!ServerConfig.PacketEncryptionEnabled()) {
                 client.getReceiveCrypto().updateIv();
             } else {
                 client.getReceiveCrypto().crypt(decryptedPacket);

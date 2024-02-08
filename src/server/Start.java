@@ -26,6 +26,7 @@ public class Start {
     private static boolean LoadConfig() {
         if (ServerConfig.IsJMS()) {
             if (ServerConfig.GetVersion() == 131) {
+                ServerConfig.SetPacketEncryption(false);
                 v131_0_CP.Set();
                 v131_0_SP.Set();
                 return true;

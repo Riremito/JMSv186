@@ -51,7 +51,7 @@ public class MaplePacketEncoder implements ProtocolEncoder {
             try {
                 final byte[] header = send_crypto.getPacketHeader(unencrypted.length);
 //		MapleCustomEncryption.encryptData(unencrypted); // Encrypting Data
-                if (ServerConfig.version < 164) {
+                if (!ServerConfig.PacketEncryptionEnabled()) {
                     send_crypto.updateIv();
                 } else {
                     send_crypto.crypt(unencrypted); // Crypt it with IV

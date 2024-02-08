@@ -8,7 +8,6 @@ public class TWMS_v122_1_SP {
 
     public static void Set() {
         ServerPacket.Header.LP_CheckPasswordResult.Set(0x0000);
-        ServerPacket.Header.LP_GuestIDLoginResult.Set(0x0001);
         ServerPacket.Header.LP_WorldInformation.Set(0x0002);
         ServerPacket.Header.LP_SelectWorldResult.Set(0x0003);
         ServerPacket.Header.LP_SelectCharacterResult.Set(0x0004);
@@ -25,7 +24,7 @@ public class TWMS_v122_1_SP {
         ServerPacket.Header.LP_ViewAllCharResult.Set(0x0014);
         ServerPacket.Header.LP_LatestConnectedWorld.Set(0x0016);
         ServerPacket.Header.LP_RecommendWorldMessage.Set(0x0017);
-        ServerPacket.Header.LOGIN_AUTH.Set(0x0018);
+        ServerPacket.Header.LOGIN_AUTH.Set(0x001A);
 
         ServerPacket.Header.LP_SetField.Set(0x007A);
     }

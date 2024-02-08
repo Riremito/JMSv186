@@ -23,7 +23,7 @@ public class TWMS_v122_1_CP {
         ClientPacket.Header.CP_ExceptionLog.Set(0x000F);
         ClientPacket.Header.CP_SecurityPacket.Set(0x0010);
         ClientPacket.Header.CP_CheckPinCode.Set(0x0014);
-        ClientPacket.Header.REACHED_LOGIN_SCREEN.Set(0x0017);
-        ClientPacket.Header.CP_CreateSecurityHandle.Set(0x0019);
+        ClientPacket.Header.REACHED_LOGIN_SCREEN.Set(0x0018);
+        ClientPacket.Header.CP_CreateSecurityHandle.Set(0x001D);
     }
 }

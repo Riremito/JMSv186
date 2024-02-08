@@ -68,7 +68,7 @@ public class MapleAESOFB {
 
     public MapleAESOFB(byte iv[], boolean isLogin, boolean isOutbound) {
         // 暗号化
-        if (ServerConfig.version >= 164) {
+        if (ServerConfig.PacketEncryptionEnabled()) {
             try {
                 cipher = Cipher.getInstance("AES");
                 if (ServerConfig.version < 414) {

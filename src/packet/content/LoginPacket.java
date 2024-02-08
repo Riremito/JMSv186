@@ -132,6 +132,25 @@ public class LoginPacket {
         return CheckPasswordResult(client, LoginResult.Find(result));
     }
 
+    public static byte[] Success_Login_TWMS(MapleClient client) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode4(client.getAccID());
+        data.Encode1(client.getGender());
+        data.Encode1(client.isGm() ? 1 : 0);
+        data.Encode1(client.isGm() ? 1 : 0);
+        data.Encode4(0); // buffer4
+        data.EncodeStr(client.getAccountName());
+        data.Encode4(0);
+        data.Encode1(0);
+        data.Encode1(0);
+        data.Encode1(0);
+        data.Encode8(0); // buffer
+        data.Encode1(0);
+        data.Encode8(0); // buffer
+        return data.Get().getBytes();
+    }
+
     // CLogin::OnCheckPasswordResult
     // CClientSocket::OnCheckPassword
     // getAuthSuccessRequest, getLoginFailed
@@ -147,32 +166,38 @@ public class LoginPacket {
          */
         switch (result) {
             case SUCCESS: {
+                if (ServerConfig.IsTWMS()) {
+                    p.EncodeBuffer(Success_Login_TWMS(client));
+                    break;
+                }
+
                 p.Encode1(0); // OK
                 p.Encode4(client.getAccID());
                 p.Encode1(client.getGender()); // 性別
                 p.Encode1(client.isGm() ? 1 : 0);
 
-                if (164 <= ServerConfig.version) {
+                if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())) {
                     p.Encode1(client.isGm() ? 1 : 0);
                 }
 
                 p.EncodeStr(client.getAccountName());
                 p.EncodeStr(client.getAccountName());
+
                 p.Encode1(0);
                 p.Encode1(0);
                 p.Encode1(0);
                 p.Encode1(0);
 
-                if (164 <= ServerConfig.version) {
+                if (164 <= ServerConfig.GetVersion()) {
                     p.Encode1(0);
                 }
 
-                if (180 <= ServerConfig.version) {
+                if (180 <= ServerConfig.GetVersion()) {
                     p.Encode1(0);
                 }
 
                 // 2次パスワード
-                if (188 <= ServerConfig.version) {
+                if (188 <= ServerConfig.GetVersion()) {
                     // -1, 無視
                     // 0, 初期化
                     // 1, 登録済み
@@ -180,7 +205,7 @@ public class LoginPacket {
                 }
 
                 // 旧かんたん会員
-                if (ServerConfig.version >= 302) {
+                if (302 <= ServerConfig.GetVersion()) {
                     // 0, 旧かんたん会員
                     // 1, 通常
                     p.Encode1(1);
@@ -312,6 +337,25 @@ public class LoginPacket {
         return p.Get();
     }
 
+    public static byte[] CharList_TWMS(MapleClient c) {
+        ServerPacket data = new ServerPacket();
+        data.Encode4(1000000);
+        List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
+        int charslots = c.getCharacterSlots();
+        // キャラクターの数
+
+        data.Encode1(chars.size());
+
+        for (MapleCharacter chr : chars) {
+            Structure.CharEntry(data, chr, true, false);
+        }
+
+        data.Encode2(3); // 2nd password state
+        data.Encode8(charslots);
+        data.Encode8(0);
+        return data.Get().getBytes();
+    }
+
     // キャラクターセレクト
     // getCharList
     // public static final MaplePacket getCharList(final boolean secondpw, final List<MapleCharacter> chars, int charslots) {
@@ -322,6 +366,11 @@ public class LoginPacket {
 
         if (result != LoginResult.SUCCESS) {
             // error
+            return p.Get();
+        }
+
+        if (ServerConfig.IsTWMS()) {
+            p.EncodeBuffer(CharList_TWMS(c));
             return p.Get();
         }
 

@@ -8,6 +8,16 @@ import java.util.Properties;
 
 public class ServerConfig {
 
+    private static boolean packet_encryption = true;
+
+    public static void SetPacketEncryption(boolean encryption_flag) {
+        packet_encryption = encryption_flag;
+    }
+
+    public static boolean PacketEncryptionEnabled() {
+        return packet_encryption;
+    }
+
     public enum Region {
         KMS,
         JMS,
