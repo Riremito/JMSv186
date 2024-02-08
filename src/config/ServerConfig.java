@@ -8,24 +8,176 @@ import java.util.Properties;
 
 public class ServerConfig {
 
+    public enum Region {
+        KMS,
+        JMS,
+        CMS,
+        TWMS,
+        MSEA,
+        GMS,
+        EMS,
+        unk,
+    }
+
+    public static boolean IsJMS() {
+        return GetRegion() == Region.JMS;
+    }
+
+    public static boolean IsCMS() {
+        return GetRegion() == Region.CMS;
+    }
+
+    public static boolean IsTWMS() {
+        return GetRegion() == Region.TWMS;
+    }
+
+    public static boolean IsMSEA() {
+        return GetRegion() == Region.MSEA;
+    }
+
+    private static boolean job_pirate = true;
+    private static boolean job_KOC = true;
+    private static boolean job_Aran = true;
+    private static boolean job_Evan = true;
+    private static boolean job_DB = true;
+    private static boolean job_Resistance = true;
+    private static boolean is_postBB = false;
+
+    public static boolean IsPostBB() {
+        return is_postBB;
+    }
+
+    public static boolean IsPreBB() {
+        return !IsPostBB();
+    }
+
+    public static boolean SetContentFlag() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (100 < GetVersion()) {
+                    is_postBB = true;
+                }
+                return true;
+            }
+            case JMS: {
+                if (186 < GetVersion()) {
+                    is_postBB = true;
+                }
+                return true;
+            }
+            case CMS: {
+                if (86 < GetVersion()) {
+                    is_postBB = true;
+                }
+                return true;
+            }
+            case TWMS: {
+                if (122 < GetVersion()) {
+                    is_postBB = true;
+                }
+                return true;
+            }
+            case MSEA: {
+                if (102 < GetVersion()) {
+                    is_postBB = true;
+                }
+                return true;
+            }
+            case GMS: {
+                if (92 < GetVersion()) {
+                    is_postBB = true;
+                }
+                return true;
+            }
+            case EMS: {
+                if (72 < GetVersion()) {
+                    is_postBB = true;
+                }
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     // codepage
     public static boolean utf8 = false;
     public static Charset codepage_ascii;
     public static Charset codepage_utf8;
 
     // Version
+    private static Region region_name = Region.JMS;
+    private static byte region_number = 3; // JMS
     public static short version = 186;
-    public static byte version_sub = 1;
+    private static byte version_sub = 1;
+
+    public static byte GetRegionNumber() {
+        return region_number;
+    }
+
+    public static Region GetRegion() {
+        return region_name;
+    }
 
     public static int GetVersion() {
         return version;
+    }
+
+    public static int GetSubVersion() {
+        return version_sub;
+    }
+
+    public static String GetRegionName() {
+        return "" + region_name;
+    }
+
+    public static boolean SetRegionNumber(int region_num) {
+        region_number = (byte) region_num;
+
+        switch (region_number) {
+            case 1: {
+                region_name = Region.KMS;
+                return true;
+            }
+            case 3: {
+                region_name = Region.JMS;
+                return true;
+            }
+            case 4: {
+                region_name = Region.CMS;
+                return true;
+            }
+            case 6: {
+                region_name = Region.TWMS;
+                return true;
+            }
+            case 7: {
+                region_name = Region.MSEA;
+                return true;
+            }
+            case 8: {
+                region_name = Region.GMS;
+                return true;
+            }
+            case 9: {
+                region_name = Region.EMS;
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        region_name = Region.unk;
+        return false;
     }
 
     public static void SetVersion(int ver1, int ver2) {
         version = (short) ver1;
         version_sub = (byte) ver2;
     }
-
     public static String wz_path, script_path;
 
     // コマンドライン引数からファイルパスを取得
@@ -71,7 +223,11 @@ public class ServerConfig {
             if (database_url.isEmpty()) {
                 String database_host = DataBase.getProperty("database.host");
                 String database_port = DataBase.getProperty("database.port");
-                database_url = "jdbc:mysql://" + database_host + ":" + database_port + "/v" + version + "?autoReconnect=true&characterEncoding=utf8";
+                if (IsJMS()) {
+                    database_url = "jdbc:mysql://" + database_host + ":" + database_port + "/v" + version + "?autoReconnect=true&characterEncoding=utf8";
+                } else {
+                    database_url = "jdbc:mysql://" + database_host + ":" + database_port + "/" + GetRegionName() + "_v" + version + "?autoReconnect=true&characterEncoding=utf8";
+                }
             }
 
             database_user = DataBase.getProperty("database.user");

@@ -1,6 +1,7 @@
 package server;
 
 import client.data.ExpTable;
+import config.DebugConfig;
 import config.ServerConfig;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
@@ -22,11 +23,110 @@ import wz.LoadData;
 
 public class Start {
 
+    private static boolean LoadConfig() {
+        if (ServerConfig.IsJMS()) {
+            if (ServerConfig.GetVersion() == 131) {
+                v131_0_CP.Set();
+                v131_0_SP.Set();
+                return true;
+            }
+            if (ServerConfig.GetVersion() == 164) {
+                v164_0_CP.Set();
+                v164_0_SP.Set();
+                return true;
+            }
+            if (ServerConfig.GetVersion() == 165) {
+                v165_0_CP.Set();
+                v165_0_SP.Set();
+                return true;
+            }
+            if (ServerConfig.GetVersion() == 176) {
+                ClientPacket.SetForJMSv176();
+                ServerPacket.SetForJMSv176();
+                return true;
+            }
+            if (ServerConfig.GetVersion() == 180) {
+                v180_1_CP.Set();
+                v180_1_SP.Set();
+                return true;
+            }
+            if (ServerConfig.GetVersion() == 184) {
+                ClientPacket.SetForJMSv184();
+                ServerPacket.SetForJMSv184();
+                return true;
+            }
+            if (ServerConfig.GetVersion() == 186 || ServerConfig.GetVersion() == 185) {
+                v186_1_CP.Set();
+                v186_1_SP.Set();
+                ClientPacket.SetCustomHeader();
+                ServerPacket.SetCustomHeader();
+                return true;
+            }
+            if (ServerConfig.GetVersion() == 187) {
+                ClientPacket.SetForJMSv187();
+                ServerPacket.SetForJMSv187();
+                return true;
+            }
+            if (ServerConfig.GetVersion() == 188) {
+                v188_0_CP.Set();
+                v188_0_SP.Set();
+                return true;
+            }
+            if (ServerConfig.GetVersion() == 194) {
+                v194_0_CP.Set();
+                v194_0_SP.Set();
+                return true;
+            }
+            if (ServerConfig.GetVersion() == 201) {
+                v201_0_CP.Set();
+                v201_0_SP.Set();
+                return true;
+            }
+            if (ServerConfig.GetVersion() == 302) {
+                ClientPacket.SetForJMSv302();
+                ServerPacket.SetForJMSv302();
+                return true;
+            }
+            if (ServerConfig.GetVersion() == 414) {
+                return true;
+            }
+            return false;
+        }
+
+        if (ServerConfig.IsCMS()) {
+            if (ServerConfig.GetVersion() == 86) {
+                //CMS_v122_1_CP.Set();
+                //CMS_v122_1_SP.Set();
+                return true;
+            }
+            return false;
+        }
+
+        if (ServerConfig.IsTWMS()) {
+            if (ServerConfig.GetVersion() == 122) {
+                TWMS_v122_1_CP.Set();
+                TWMS_v122_1_SP.Set();
+                DebugConfig.do_not_load_wz_xml = true;
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
     public final static void main(final String args[]) {
         // バージョン設定
         if (args.length >= 2) {
             ServerConfig.SetVersion(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
         }
+
+        // 他言語版版
+        if (args.length >= 3) {
+            ServerConfig.SetRegionNumber(Integer.parseInt(args[2]));
+        }
+
+        // バージョンによるコンテンツの有無を設定
+        ServerConfig.SetContentFlag();
 
         // 設定の読み込み
         ServerConfig.SetDataPath();
@@ -36,89 +136,10 @@ public class Start {
         // 管理画面
         tools.admin.main.main();
 
-        Debug.InfoLog("JMS v" + ServerConfig.version + "." + ServerConfig.version_sub);
-
-        switch (ServerConfig.version) {
-            case 131: {
-                v131_0_CP.Set();
-                v131_0_SP.Set();
-                break;
-            }
-            case 164: {
-                v164_0_CP.Set();
-                v164_0_SP.Set();
-                break;
-            }
-            // test
-            case 165: {
-                v165_0_CP.Set();
-                v165_0_SP.Set();
-                break;
-            }
-            // ゴミ
-            case 176: {
-                ClientPacket.SetForJMSv176();
-                ServerPacket.SetForJMSv176();
-                break;
-            }
-            case 180: {
-                v180_1_CP.Set();
-                v180_1_SP.Set();
-                break;
-            }
-            // ゴミ
-            case 184: {
-                ClientPacket.SetForJMSv184();
-                ServerPacket.SetForJMSv184();
-                break;
-            }
-            case 185:
-            case 186: {
-                v186_1_CP.Set();
-                v186_1_SP.Set();
-
-                ClientPacket.SetCustomHeader();
-                ServerPacket.SetCustomHeader();
-                break;
-            }
-            // ゴミ
-            case 187: {
-                ClientPacket.SetForJMSv187();
-                ServerPacket.SetForJMSv187();
-                break;
-            }
-            // クラッシュ確率が下がったが、画面崩壊の影響で遅い
-            case 188: {
-                v188_0_CP.Set();
-                v188_0_SP.Set();
-                break;
-            }
-            // そこそこ安定して動作する
-            case 194: {
-                v194_0_CP.Set();
-                v194_0_SP.Set();
-                break;
-            }
-            // 起動まぁまぁ早い
-            case 201: {
-                v201_0_CP.Set();
-                v201_0_SP.Set();
-                break;
-            }
-            // 起動が遅い
-            case 302: {
-                ClientPacket.SetForJMSv302();
-                ServerPacket.SetForJMSv302();
-                break;
-            }
-            // x64 test
-            case 414: {
-                break;
-            }
-            default: {
-                Debug.ErrorLog("the version is not supported!");
-                return;
-            }
+        Debug.InfoLog(ServerConfig.GetRegionName() + " v" + ServerConfig.GetVersion() + "." + ServerConfig.GetSubVersion());
+        if (!LoadConfig()) {
+            Debug.ErrorLog("the version is not supported!");
+            return;
         }
 
         ExpTable.Init();
@@ -147,7 +168,9 @@ public class Start {
         LoginServer.run_startup_configurations();
 
         //WZ
-        LoadData.LoadDataFromXML();
+        if (!DebugConfig.do_not_load_wz_xml) {
+            LoadData.LoadDataFromXML();
+        }
         RandomRewards.getInstance();
 
         MapleOxQuizFactory.getInstance().initialize();

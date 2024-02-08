@@ -105,19 +105,19 @@ public class LoginPacket {
     public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.HELLO); // dummy header
 
-        if (ServerConfig.version < 414) {
-            p.Encode2(ServerConfig.version);
-            p.EncodeStr(String.valueOf(ServerConfig.version_sub));
+        if (ServerConfig.GetVersion() < 414) {
+            p.Encode2(ServerConfig.GetVersion());
+            p.EncodeStr(String.valueOf(ServerConfig.GetSubVersion()));
             p.EncodeBuffer(recvIv);
             p.EncodeBuffer(sendIv);
-            p.Encode1(3); // JMS
+            p.Encode1(ServerConfig.GetRegionNumber()); // JMS = 3
         } else {
             // x64
-            p.Encode2(ServerConfig.version);
-            p.EncodeStr("1:" + ServerConfig.version_sub); // 1:1 ?
+            p.Encode2(ServerConfig.GetVersion());
+            p.EncodeStr("1:" + ServerConfig.GetSubVersion()); // 1:1
             p.EncodeBuffer(recvIv);
             p.EncodeBuffer(sendIv);
-            p.Encode1(3); // JMS
+            p.Encode1(ServerConfig.GetRegionNumber());
             p.Encode1(0);
             p.Encode1(5);
             p.Encode1(1);
