@@ -386,6 +386,15 @@ public class LoginPacket {
             Structure.CharEntry(p, chr, true, false);
         }
 
+        // BIGBANG
+        if (ServerConfig.GetVersion() == 187) {
+            p.Encode1(2); // 2次パス無視
+            p.Encode1(0);
+            p.Encode4(charslots);
+            p.Encode4(0); // Character Cards
+            return p.Get();
+        }
+
         if (ServerConfig.version <= 131) {
             p.Encode1(3); // charslots
             p.Encode1(0);
