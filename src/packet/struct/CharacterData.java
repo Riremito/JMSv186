@@ -50,13 +50,14 @@ public class CharacterData {
     public static byte[] Encode(MapleCharacter chr, long datamask) {
         ServerPacket p = new ServerPacket();
 
-        if (ServerConfig.GetVersion() <= 131) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) {
             p.Encode2((short) datamask); // statmask
         } else {
             p.Encode8(datamask); // statmask
         }
 
-        if (180 <= ServerConfig.GetVersion()) {
+        if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()) {
             p.Encode1(0); // nCombatOrders
         }
 
@@ -72,7 +73,8 @@ public class CharacterData {
             p.Encode1(chr.getBuddylist().getCapacity());
 
             // 精霊の祝福 v165, v186
-            if (165 <= ServerConfig.GetVersion()) {
+            if ((ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion())
+                    || ServerConfig.IsTWMS()) {
                 if (chr.getBlessOfFairyOrigin() != null) {
                     p.Encode1(1);
                     p.EncodeStr(chr.getBlessOfFairyOrigin());
@@ -82,14 +84,17 @@ public class CharacterData {
             }
 
             // 祝福系統
-            if (194 <= ServerConfig.GetVersion()) {
+            if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
                 // 女王の祝福 max 24
                 p.Encode1(0); // not 0, EncodeStr
                 // ???
                 p.Encode1(0); // not 0, EncodeStr
             }
-        }
 
+            if (ServerConfig.IsTWMS()) {
+                p.Encode8(0);
+            }
+        }
         // 0x2 (<< 1) v165-v194
         if ((datamask & 0x02) > 0) {
             p.EncodeBuffer(GW_CharacterStat.EncodeMoney(chr));
@@ -127,64 +132,92 @@ public class CharacterData {
         if ((datamask & 0x1000) > 0) {
             p.EncodeBuffer(Structure.addRocksInfo(chr));
         }
-        // 0x7C JMS, Present v165-v194
-        if ((datamask & 0x7C) > 0) {
-            p.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
-        }
-
-        if (164 <= ServerConfig.GetVersion()) {
-            // 0x20000 JMS v165-v194
-            if ((datamask & 0x020000) > 0) {
-                p.Encode4(chr.getMonsterBookCover());
-            }
-            // 0x10000 JMS [addMonsterBookInfo] v165-v194
-            if ((datamask & 0x010000) > 0) {
-                p.EncodeBuffer(Structure.addMonsterBookInfo(chr));
-            }
-
-            if (194 <= ServerConfig.GetVersion()) {
-                // 0x10000000
-                if ((datamask & 0x10000000) > 0) {
-                    p.Encode4(0);
+        switch (ServerConfig.GetRegion()) {
+            case TWMS: {
+                if ((datamask & 0x20000) > 0) {
+                    p.Encode4(chr.getMonsterBookCover());
                 }
-                // 0x20000000
-                if ((datamask & 0x20000000) > 0) {
-                    p.Encode2(0); // not 0, Encode2
+                if ((datamask & 0x10000) > 0) {
+                    p.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                 }
-            }
-
-            // 0x40000 (GMS 0x80000) [QuestInfoPacket] v165-v194
-            if ((datamask & 0x040000) > 0) {
-                p.EncodeBuffer(Structure.QuestInfoPacket(chr));
-            }
-
-            if (ServerConfig.IsPreBB()) {
-                // 0x80000 JMS v165, v186, not in v188
-                p.Encode2(0);// not 0 -> Encode4, Encode2
-            }
-
-            if (ServerConfig.GetVersion() == 186) {
-                // 0x200000 VisitorQuestLog (GMS 0x800000)
-                p.Encode2(0); // not 0 -> Encode2, Encode2
-            }
-
-            // v188-v194
-            if (ServerConfig.IsPostBB()) {
-                // 0x200000
-                if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
-                    p.EncodeBuffer(GW_WildHunterInfo.Encode());
+                if ((datamask & 0x40000) > 0) {
+                    p.EncodeBuffer(Structure.QuestInfoPacket(chr));
                 }
-                // 0x400000 QuestCompleteOld
+                if ((datamask & 0x80000) > 0) {
+                    p.Encode2(0);
+                }
+                if ((datamask & 0x200000) > 0) {
+                    p.Encode2(0);
+                }
                 if ((datamask & 0x400000) > 0) {
                     p.Encode2(0); // not 0, Encode2, EncodeBuffer8
                 }
-                // 0x800000
-                if ((datamask & 0x800000) > 0) {
-                    p.Encode2(0); // not 0, Encode2, Encode2
+                break;
+            }
+            case JMS:
+            default: {
+                // 0x7C JMS, Present v165-v194
+                if (ServerConfig.IsJMS()) {
+                    if ((datamask & 0x7C) > 0) {
+                        p.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
+                    }
                 }
+                if (ServerConfig.IsJMS()
+                        && 164 <= ServerConfig.GetVersion()) {
+                    // 0x20000 JMS v165-v194
+                    if ((datamask & 0x020000) > 0) {
+                        p.Encode4(chr.getMonsterBookCover());
+                    }
+                    // 0x10000 JMS [addMonsterBookInfo] v165-v194
+                    if ((datamask & 0x010000) > 0) {
+                        p.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    }
+
+                    if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+                        // 0x10000000
+                        if ((datamask & 0x10000000) > 0) {
+                            p.Encode4(0);
+                        }
+                        // 0x20000000
+                        if ((datamask & 0x20000000) > 0) {
+                            p.Encode2(0); // not 0, Encode2
+                        }
+                    }
+
+                    // 0x40000 (GMS 0x80000) [QuestInfoPacket] v165-v194
+                    if ((datamask & 0x040000) > 0) {
+                        p.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    }
+
+                    if (ServerConfig.IsPreBB() && (datamask & 0x80000) > 0) {
+                        // 0x80000 JMS v165, v186, not in v188
+                        p.Encode2(0);// not 0 -> Encode4, Encode2
+                    }
+
+                    if (ServerConfig.GetVersion() == 186 && (datamask & 0x200000) > 0) {
+                        // 0x200000 VisitorQuestLog (GMS 0x800000)
+                        p.Encode2(0); // not 0 -> Encode2, Encode2
+                    }
+
+                    // v188-v194
+                    if (ServerConfig.IsPostBB()) {
+                        // 0x200000
+                        if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
+                            p.EncodeBuffer(GW_WildHunterInfo.Encode());
+                        }
+                        // 0x400000 QuestCompleteOld
+                        if ((datamask & 0x400000) > 0) {
+                            p.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                        }
+                        // 0x800000
+                        if ((datamask & 0x800000) > 0) {
+                            p.Encode2(0); // not 0, Encode2, Encode2
+                        }
+                    }
+                }
+                break;
             }
         }
-
         return p.Get().getBytes();
     }
 
@@ -201,7 +234,8 @@ public class CharacterData {
         }
 
         // v165-v194 OK
-        if (165 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion()
+                || ServerConfig.IsTWMS()) {
             // 0x100000
             if ((datamask & 0x100000) > 0) {
                 p.Encode4(0);
@@ -243,7 +277,8 @@ public class CharacterData {
             }
             p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             // 装備済み -1000
-            if (180 <= ServerConfig.GetVersion()) {
+            if (ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()
+                    || ServerConfig.IsTWMS()) {
                 for (Item item : equipped) {
                     if (item.getPosition() <= -1000 && item.getPosition() > -1100) {
                         p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
@@ -297,7 +332,7 @@ public class CharacterData {
             p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Cash));
         }
         // 不明
-        if (194 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
             // func 004FB8B0
             p.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
         }

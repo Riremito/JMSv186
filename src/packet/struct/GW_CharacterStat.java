@@ -171,16 +171,16 @@ public class GW_CharacterStat {
         p.Encode4(chr.getExp());
         p.Encode2(chr.getFame());
 
-        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()
+                || ServerConfig.IsTWMS()) {
             p.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 
-        p.Encode4(chr.getMapId()); // current map id
-
         if (ServerConfig.IsTWMS()) {
             p.Encode8(0);
-            p.Encode4(0);
         }
+
+        p.Encode4(chr.getMapId()); // current map id
 
         p.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
 

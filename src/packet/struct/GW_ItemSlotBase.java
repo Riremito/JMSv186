@@ -52,7 +52,7 @@ public class GW_ItemSlotBase {
             }
         }
 
-        if (ServerConfig.version <= 165) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
             data.Encode1(pos);
         } else {
             // v186+
@@ -68,7 +68,7 @@ public class GW_ItemSlotBase {
     public static final byte[] EncodeSlotEnd(ItemType it) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.version <= 165) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
             data.Encode1(0);
         } else {
             // v186+
@@ -102,7 +102,7 @@ public class GW_ItemSlotBase {
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
                 // v184-v185 潜在内部実装時 (動作はしないがデータの位置が違う)
-                if (184 <= ServerConfig.version && ServerConfig.version <= 185) {
+                if (ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185) {
                     data.Encode1(equip.getState());
                 }
                 // data.Encode2((short) equip.getIncAttackSpeed());
@@ -139,7 +139,7 @@ public class GW_ItemSlotBase {
                 }
 
                 // 確認必須
-                if (ServerConfig.version <= 131) {
+                if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) {
                     if (!hasUniqueId) {
                         data.Encode8(equip.getPosition() <= 0 ? -1 : item.getUniqueId());
                     }
@@ -153,15 +153,17 @@ public class GW_ItemSlotBase {
                 data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
 
                 // 耐久度
-                if (180 <= ServerConfig.version) {
+                if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
+                        || ServerConfig.IsTWMS()) {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
 
                 // 通常
-                if (!(184 <= ServerConfig.version && ServerConfig.version <= 185)) {
+                if (!(ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185)) {
 
                     // ビシャスのハンマー
-                    if (180 <= ServerConfig.version) {
+                    if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
+                            || ServerConfig.IsTWMS()) {
                         if (ServerConfig.game_server_enable_hammer) {
                             data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
                         } else {
@@ -169,7 +171,8 @@ public class GW_ItemSlotBase {
                         }
                     }
                     // 潜在能力
-                    if (186 <= ServerConfig.version) {
+                    if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
+                            || ServerConfig.IsTWMS()) {
                         data.Encode1(equip.getState()); // option._ZtlSecureTear_nGrade
                         data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
                         if (ServerConfig.game_server_enable_potential) {

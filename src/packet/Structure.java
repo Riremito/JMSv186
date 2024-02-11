@@ -46,7 +46,8 @@ public class Structure {
             data.Encode4(skill.getValue().skillevel);
 
             // not in v165
-            if (180 <= ServerConfig.version) {
+            if (ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()
+                    || ServerConfig.IsTWMS()) {
                 data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
             }
 
@@ -80,11 +81,11 @@ public class Structure {
         }
 
         // not in v165, not in v188, but in v194 ???
-        if (184 <= ServerConfig.version && ServerConfig.version <= 186) {
+        if (ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 186) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if (194 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
@@ -151,7 +152,7 @@ public class Structure {
             data.Encode4(map[i]);
         }
 
-        if (194 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }
