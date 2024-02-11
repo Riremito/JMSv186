@@ -72,21 +72,24 @@ public class AvatarLook {
             p.Encode1(entry.getKey());
             p.Encode4(entry.getValue());
         }
-        p.Encode1(0xFF); // end of visible itens
+        p.Encode1(0xFF); // end of visible items
         // masked itens
         for (final Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
             p.Encode1(entry.getKey());
             p.Encode4(entry.getValue());
         }
         p.Encode1(0xFF); // ending markers
-
         final IItem cWeapon = equip.getItem((byte) -111);
         p.Encode4(cWeapon != null ? cWeapon.getItemId() : 0);
 
-        p.Encode4(0); // pet 1?
+        if (ServerConfig.IsTWMS()) {
+            p.EncodeZeroBytes(12);
+        } else {
+            p.Encode4(0); // pet 1?
 
-        if (164 <= ServerConfig.version) {
-            p.Encode8(0); // pet 2 and 3?
+            if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
+                p.Encode8(0); // pet 2 and 3?
+            }
         }
 
         return p.Get().getBytes();

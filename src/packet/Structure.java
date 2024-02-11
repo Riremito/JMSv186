@@ -13,37 +13,15 @@ import constants.GameConstants;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import packet.struct.AvatarLook;
 import server.life.MapleMonster;
 import server.shops.AbstractPlayerStore;
 import server.shops.IMaplePlayerShop;
 import tools.KoreanDateUtil;
 import tools.Pair;
-import packet.struct.GW_CharacterStat;
 
 public class Structure {
 
     // Login Server
-    public static void CharEntry(ServerPacket p, final MapleCharacter chr, boolean ranking, boolean isAll) {
-        p.EncodeBuffer(GW_CharacterStat.Encode(chr));
-        p.EncodeBuffer(AvatarLook.Encode(chr));
-
-        if (!isAll) {
-            if (ServerConfig.version > 165) {
-                p.Encode1(0);
-            }
-        }
-
-        p.Encode1(ranking ? 1 : 0);
-
-        if (ranking) {
-            p.Encode4(chr.getRank()); // all world ranking
-            p.Encode4(chr.getRankMove());
-            p.Encode4(chr.getJobRank()); // world ranking
-            p.Encode4(chr.getJobRankMove());
-        }
-    }
-
     public static final byte[] addExpirationTime(final long time) {
         ServerPacket data = new ServerPacket();
         data.Encode1(0);

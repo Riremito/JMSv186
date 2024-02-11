@@ -116,13 +116,13 @@ public class GW_CharacterStat {
         ServerPacket p = new ServerPacket();
 
         p.Encode4(chr.getId());
-        p.EncodeBuffer(chr.getName(), 13);
+        p.EncodeBuffer(chr.getName(), ServerConfig.IsJMS() ? 13 : 15);
         p.Encode1(chr.getGender());
         p.Encode1(chr.getSkinColor());
         p.Encode4(chr.getFace());
         p.Encode4(chr.getHair());
 
-        if (ServerConfig.version <= 131) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) {
             p.EncodeZeroBytes(8);
         } else {
             p.EncodeZeroBytes(24);
@@ -139,7 +139,7 @@ public class GW_CharacterStat {
         p.Encode2(stat.luk);
 
         // BB前
-        if (ServerConfig.version <= 186) {
+        if (ServerConfig.IsPreBB()) {
             p.Encode2(stat.hp);
             p.Encode2(stat.maxhp);
             p.Encode2(stat.mp);
@@ -155,7 +155,7 @@ public class GW_CharacterStat {
         p.Encode2(chr.getRemainingAp());
 
         // SP
-        if (180 < ServerConfig.version && (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob()))) {
+        if (((ServerConfig.IsJMS() && 180 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS()) && (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob()))) {
             final int size = chr.getRemainingSpSize();
             p.Encode1(size);
             for (int i = 0; i < chr.getRemainingSps().length; i++) {
@@ -171,16 +171,31 @@ public class GW_CharacterStat {
         p.Encode4(chr.getExp());
         p.Encode2(chr.getFame());
 
-        if (164 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
             p.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 
         p.Encode4(chr.getMapId()); // current map id
+
+        if (ServerConfig.IsTWMS()) {
+            p.Encode8(0);
+            p.Encode4(0);
+        }
+
         p.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
-        if (180 <= ServerConfig.version) {
+
+        if (ServerConfig.IsTWMS()) {
+            p.Encode2(chr.getSubcategory());
+            p.EncodeZeroBytes(25);
+            p.Encode1(0);
+            p.Encode1(0);
+            p.Encode1(0);
+            p.Encode1(0);
+            p.Encode1(0);
+        } else if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS()) {
             // デュアルブレイドフラグ
             p.Encode2(chr.getSubcategory());
-            if (188 <= ServerConfig.version) {
+            if (ServerConfig.IsJMS() && 188 <= ServerConfig.GetVersion()) {
                 // v194 OK
                 p.Encode8(0);
                 p.Encode4(0);

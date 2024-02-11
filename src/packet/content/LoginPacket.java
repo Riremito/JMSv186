@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Random;
 import packet.ClientPacket;
 import packet.ServerPacket;
-import packet.Structure;
 import packet.struct.AvatarLook;
 import packet.struct.GW_CharacterStat;
 
@@ -347,7 +346,14 @@ public class LoginPacket {
         data.Encode1(chars.size());
 
         for (MapleCharacter chr : chars) {
-            Structure.CharEntry(data, chr, true, false);
+            data.EncodeBuffer(GW_CharacterStat.Encode(chr));
+            data.EncodeBuffer(AvatarLook.Encode(chr));
+            data.Encode1(0);
+            data.Encode1(1);
+            data.Encode4(chr.getRank());
+            data.Encode4(chr.getRankMove());
+            data.Encode4(chr.getJobRank());
+            data.Encode4(chr.getJobRankMove());
         }
 
         data.Encode2(3); // 2nd password state
@@ -383,7 +389,19 @@ public class LoginPacket {
         p.Encode1(chars.size());
 
         for (MapleCharacter chr : chars) {
-            Structure.CharEntry(p, chr, true, false);
+            //Structure.CharEntry(p, chr, true, false);
+            p.EncodeBuffer(GW_CharacterStat.Encode(chr));
+            p.EncodeBuffer(AvatarLook.Encode(chr));
+
+            if (ServerConfig.IsJMS() && 165 < ServerConfig.GetVersion()) {
+                p.Encode1(0);
+            }
+
+            p.Encode1(1); // ranking
+            p.Encode4(chr.getRank()); // all world ranking
+            p.Encode4(chr.getRankMove());
+            p.Encode4(chr.getJobRank()); // world ranking
+            p.Encode4(chr.getJobRankMove());
         }
 
         // BIGBANG
@@ -395,36 +413,36 @@ public class LoginPacket {
             return p.Get();
         }
 
-        if (ServerConfig.version <= 131) {
+        if (ServerConfig.GetVersion() <= 131) {
             p.Encode1(3); // charslots
             p.Encode1(0);
             return p.Get();
         }
 
         // 2次パスワードの利用状態
-        if (ServerConfig.version <= 186) {
+        if (ServerConfig.GetVersion() <= 186) {
             p.Encode2(2);
         } else {
             p.Encode1(0);
         }
 
-        if (194 <= ServerConfig.version) {
+        if (194 <= ServerConfig.GetVersion()) {
             p.Encode4(charslots);
             p.Encode4(0); // Character Card
             p.Encode4(0); // idk
             return p.Get();
         }
 
-        if (ServerConfig.version >= 302) {
+        if (ServerConfig.GetVersion() >= 302) {
             p.Encode4(0);
             p.Encode4(0);
             p.Encode4(0);
             p.Encode4(charslots);
-        } else if (ServerConfig.version >= 190) {
+        } else if (ServerConfig.GetVersion() >= 190) {
             p.Encode4(0);
             p.Encode4(0);
             p.Encode4(charslots);
-        } else if (ServerConfig.version <= 176) {
+        } else if (ServerConfig.GetVersion() <= 176) {
             p.Encode4(charslots);
         } else {
             p.Encode8(charslots);
@@ -502,7 +520,13 @@ public class LoginPacket {
         p.Encode1(0); // nWorldID
         p.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
-            Structure.CharEntry(p, chr, true, true);
+            p.EncodeBuffer(GW_CharacterStat.Encode(chr));
+            p.EncodeBuffer(AvatarLook.Encode(chr));
+            p.Encode1(1); // ranking
+            p.Encode4(chr.getRank()); // all world ranking
+            p.Encode4(chr.getRankMove());
+            p.Encode4(chr.getJobRank()); // world ranking
+            p.Encode4(chr.getJobRankMove());
         }
 
         return p.Get();

@@ -26,6 +26,6 @@ public class TWMS_v122_1_SP {
         ServerPacket.Header.LP_RecommendWorldMessage.Set(0x0017);
         ServerPacket.Header.LOGIN_AUTH.Set(0x001A);
 
-        ServerPacket.Header.LP_SetField.Set(0x007A);
+        ServerPacket.Header.LP_SetField.Set(0x0085);
     }
 }

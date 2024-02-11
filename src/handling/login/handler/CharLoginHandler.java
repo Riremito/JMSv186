@@ -194,7 +194,8 @@ public class CharLoginHandler {
     public static final void CreateChar(ClientPacket p, final MapleClient c) {
         final String name = new String(p.DecodeBuffer());
 
-        if (ServerConfig.version <= 164) {
+        // very old ver, please merge it
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) {
             final int face = p.Decode4();
             final int hair = p.Decode4();
             final int hairColor = 0;
@@ -208,7 +209,7 @@ public class CharLoginHandler {
             MapleCharacter newchar = MapleCharacter.getDefault(c, 1);
 
             // サイコロ
-            if (ServerConfig.version <= 131) {
+            if (ServerConfig.GetVersion() <= 131) {
                 newchar.getStat().str = p.Decode1();
                 newchar.getStat().dex = p.Decode1();
                 newchar.getStat().int_ = p.Decode1();
@@ -255,7 +256,8 @@ public class CharLoginHandler {
 
         short db = 0;
 
-        if (ServerConfig.version > 176) {
+        if ((ServerConfig.IsJMS() && 176 < ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()) {
             db = p.Decode2();
         }
 
@@ -420,6 +422,11 @@ public class CharLoginHandler {
         if (!DebugConfig.starter_set) {
             return false;
         }
+
+        if (!ServerConfig.IsJMS()) {
+            return false;
+        }
+
         // メル
         chr.setMeso(777000000);
         // パチンコ玉

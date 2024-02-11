@@ -29,7 +29,7 @@ public class LoadData {
 
     public static void LoadDataFromXML() {
         // test
-        if (ServerConfig.version >= 414) {
+        if (ServerConfig.GetVersion() >= 414) {
             return;
         }
 
@@ -312,7 +312,8 @@ public class LoadData {
         MapleQuest.requirements = MapleQuest.questData.getData("Check.img");
         MapleQuest.info = MapleQuest.questData.getData("QuestInfo.img");
 
-        if (ServerConfig.version >= 164) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()) {
             MapleQuest.pinfo = MapleQuest.questData.getData("PQuest.img");
         }
     }
@@ -324,13 +325,15 @@ public class LoadData {
         MapleLifeFactory.mobStringData = MapleLifeFactory.stringDataWZ.getData("Mob.img");
         MapleLifeFactory.npcStringData = MapleLifeFactory.stringDataWZ.getData("Npc.img");
 
-        if (ServerConfig.version >= 164) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()) {
             MapleLifeFactory.npclocData = MapleLifeFactory.etcDataWZ.getData("NpcLocation.img");
         }
     }
 
     private static void initMaker() {
-        if (ServerConfig.version >= 164) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()) {
             ItemMakerFactory.info = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz")).getData("ItemMake.img");
         }
     }
@@ -341,7 +344,7 @@ public class LoadData {
         MapleItemInformationProvider.equipData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Character.wz"));
         MapleItemInformationProvider.stringData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/String.wz"));
 
-        if (ServerConfig.version < 164) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164) {
             MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Cash");
             MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Con");
             MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Eqp");
@@ -351,7 +354,7 @@ public class LoadData {
         } else {
             MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Cash.img");
 
-            if (ServerConfig.version < 180) {
+            if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 180) {
                 MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img").getChildByPath("Con");
             } else {
                 MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img");

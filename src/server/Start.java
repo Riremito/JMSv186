@@ -107,7 +107,6 @@ public class Start {
             if (ServerConfig.GetVersion() == 122) {
                 TWMS_v122_1_CP.Set();
                 TWMS_v122_1_SP.Set();
-                DebugConfig.do_not_load_wz_xml = true;
                 return true;
             }
             return false;
