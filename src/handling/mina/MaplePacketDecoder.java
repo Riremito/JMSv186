@@ -29,6 +29,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import tools.MapleCustomEncryption;
 
 public class MaplePacketDecoder extends CumulativeProtocolDecoder {
 
@@ -71,6 +72,10 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
                 client.getReceiveCrypto().updateIv();
             } else {
                 client.getReceiveCrypto().crypt(decryptedPacket);
+
+                if (ServerConfig.IsCMS()) {
+                    MapleCustomEncryption.decryptData(decryptedPacket);
+                }
             }
 
 //	    MapleCustomEncryption.decryptData(decryptedPacket);

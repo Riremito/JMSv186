@@ -31,6 +31,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
+import tools.MapleCustomEncryption;
 
 public class MaplePacketEncoder implements ProtocolEncoder {
 
@@ -54,6 +55,9 @@ public class MaplePacketEncoder implements ProtocolEncoder {
                 if (!ServerConfig.PacketEncryptionEnabled()) {
                     send_crypto.updateIv();
                 } else {
+                    if (ServerConfig.IsCMS()) {
+                        MapleCustomEncryption.encryptData(unencrypted);
+                    }
                     send_crypto.crypt(unencrypted); // Crypt it with IV
                 }
                 System.arraycopy(header, 0, ret, 0, 4); // Copy the header > "Ret", first 4 bytes

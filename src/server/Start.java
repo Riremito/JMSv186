@@ -95,9 +95,14 @@ public class Start {
         }
 
         if (ServerConfig.IsCMS()) {
+            if (ServerConfig.GetVersion() == 85) {
+                CMS_v85_1_CP.Set();
+                CMS_v85_1_SP.Set();
+                return true;
+            }
             if (ServerConfig.GetVersion() == 86) {
-                //CMS_v122_1_CP.Set();
-                //CMS_v122_1_SP.Set();
+                CMS_v86_1_CP.Set();
+                CMS_v86_1_SP.Set();
                 return true;
             }
             return false;
