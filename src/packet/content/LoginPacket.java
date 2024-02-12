@@ -150,6 +150,30 @@ public class LoginPacket {
         return data.Get().getBytes();
     }
 
+    public static byte[] Success_Login_CMS(MapleClient client) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode4(client.getAccID());
+        data.Encode1(client.getGender());
+        data.Encode1(client.isGm() ? 1 : 0);
+        data.Encode1(client.isGm() ? 1 : 0);
+        data.EncodeStr(client.getAccountName());
+        data.Encode4(0);
+        data.Encode1(0);
+        data.Encode1(0);
+        data.Encode1(0);
+        data.Encode8(0); // buffer
+        data.Encode1(0);
+        data.Encode8(0); // buffer
+        data.Encode8(0); // buffer
+        data.EncodeStr("");
+        data.Encode1(0);
+        data.EncodeStr(String.valueOf(client.getAccID()));
+        data.EncodeStr(client.getAccountName());
+        data.Encode1(1);
+        return data.Get().getBytes();
+    }
+
     // CLogin::OnCheckPasswordResult
     // CClientSocket::OnCheckPassword
     // getAuthSuccessRequest, getLoginFailed
@@ -167,6 +191,10 @@ public class LoginPacket {
             case SUCCESS: {
                 if (ServerConfig.IsTWMS()) {
                     p.EncodeBuffer(Success_Login_TWMS(client));
+                    break;
+                }
+                if (ServerConfig.IsCMS()) {
+                    p.EncodeBuffer(Success_Login_CMS(client));
                     break;
                 }
 
@@ -299,6 +327,11 @@ public class LoginPacket {
         p.Encode2(100);
         // チャンネル数
         p.Encode1(internalserver ? ChannelServer.getChannels() : externalch);
+
+        if (ServerConfig.IsCMS()) {
+            p.Encode4(0);
+        }
+
         // チャンネル情報
         for (int i = 0; i < (internalserver ? ChannelServer.getChannels() : externalch); i++) {
             // チャンネル名
@@ -315,14 +348,14 @@ public class LoginPacket {
             p.Encode1(i); // channel
             p.Encode1(0);
 
-            if (201 <= ServerConfig.version) {
+            if (ServerConfig.IsJMS() && 201 <= ServerConfig.GetVersion()) {
                 p.Encode1(0);
             }
         }
 
         p.Encode2(0);
 
-        if (201 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 201 <= ServerConfig.GetVersion()) {
             p.Encode4(0);
         }
 
