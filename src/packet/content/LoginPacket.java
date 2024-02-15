@@ -329,7 +329,7 @@ public class LoginPacket {
         p.Encode1(internalserver ? ChannelServer.getChannels() : externalch);
 
         if (ServerConfig.IsCMS()) {
-            p.Encode4(0);
+            p.Encode4(500); // 0 causes 0 div
         }
 
         // チャンネル情報
@@ -374,10 +374,8 @@ public class LoginPacket {
         data.Encode4(1000000);
         List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
         int charslots = c.getCharacterSlots();
-        // キャラクターの数
 
         data.Encode1(chars.size());
-
         for (MapleCharacter chr : chars) {
             data.EncodeBuffer(GW_CharacterStat.Encode(chr));
             data.EncodeBuffer(AvatarLook.Encode(chr));
@@ -392,6 +390,26 @@ public class LoginPacket {
         data.Encode2(3); // 2nd password state
         data.Encode8(charslots);
         data.Encode8(0);
+        return data.Get().getBytes();
+    }
+
+    public static byte[] CharList_CMS(MapleClient c) {
+        ServerPacket data = new ServerPacket();
+        data.Encode4(1000000);
+        List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
+        int charslots = c.getCharacterSlots();
+
+        data.Encode1(chars.size());
+        for (MapleCharacter chr : chars) {
+            data.EncodeBuffer(GW_CharacterStat.Encode(chr));
+            data.EncodeBuffer(AvatarLook.Encode(chr));
+            data.Encode1(0);
+        }
+
+        data.Encode1(3);
+        data.Encode1(0);
+        data.Encode4(charslots);
+        data.Encode4(0); // card
         return data.Get().getBytes();
     }
 
@@ -410,6 +428,11 @@ public class LoginPacket {
 
         if (ServerConfig.IsTWMS()) {
             p.EncodeBuffer(CharList_TWMS(c));
+            return p.Get();
+        }
+
+        if (ServerConfig.IsCMS()) {
+            p.EncodeBuffer(CharList_CMS(c));
             return p.Get();
         }
 
@@ -496,8 +519,10 @@ public class LoginPacket {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CreateNewCharacterResult);
 
         p.Encode1(worked ? 0 : 1);
-        p.EncodeBuffer(GW_CharacterStat.Encode(chr));
-        p.EncodeBuffer(AvatarLook.Encode(chr));
+        if (worked) {
+            p.EncodeBuffer(GW_CharacterStat.Encode(chr));
+            p.EncodeBuffer(AvatarLook.Encode(chr));
+        }
         return p.Get();
     }
 
@@ -602,7 +627,7 @@ public class LoginPacket {
     }
 
     public static final MaplePacket getServerStatus(final int status) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.SERVERSTATUS);
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CheckUserLimitResult);
 
         /*
             0 : Normal

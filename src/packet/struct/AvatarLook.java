@@ -82,7 +82,7 @@ public class AvatarLook {
         final IItem cWeapon = equip.getItem((byte) -111);
         p.Encode4(cWeapon != null ? cWeapon.getItemId() : 0);
 
-        if (ServerConfig.IsTWMS()) {
+        if (ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
             p.EncodeZeroBytes(12);
         } else {
             p.Encode4(0); // pet 1?

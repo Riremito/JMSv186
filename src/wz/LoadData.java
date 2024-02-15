@@ -97,6 +97,10 @@ public class LoadData {
         return reactorids.contains(id);
     }
 
+    public static boolean IsValidItemID(int id) {
+        return itemids.contains(id);
+    }
+
     // test for gm command
     public static ArrayList<Integer> GetJobIDs() {
         return jobids;

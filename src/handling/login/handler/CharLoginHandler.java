@@ -41,6 +41,7 @@ import packet.content.LoginPacket.LoginResult;
 import server.MapleItemInformationProvider;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
+import wz.LoadData;
 
 public class CharLoginHandler {
 
@@ -257,7 +258,8 @@ public class CharLoginHandler {
         short db = 0;
 
         if ((ServerConfig.IsJMS() && 176 < ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()) {
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             db = p.Decode2();
         }
 
@@ -270,6 +272,18 @@ public class CharLoginHandler {
         final int shoes = p.Decode4();
         final int weapon = p.Decode4();
         final byte gender = c.getGender();
+
+        if (!LoadData.IsValidFaceID(face)
+                || !LoadData.IsValidHairID(hair)
+                //|| !LoadData.IsValidSkinID(skinColor)
+                || !LoadData.IsValidItemID(top)
+                || !LoadData.IsValidItemID(bottom)
+                || !LoadData.IsValidItemID(shoes)
+                || !LoadData.IsValidItemID(weapon)) {
+            Debug.DebugLog("Character creation error");
+            c.getSession().write(LoginPacket.addNewCharEntry(null, false));
+            return;
+        }
 
         MapleCharacter newchar = MapleCharacter.getDefault(c, JobType);
         newchar.setWorld((byte) c.getWorld());
