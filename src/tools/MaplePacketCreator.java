@@ -113,7 +113,8 @@ public class MaplePacketCreator {
     // プレイヤー情報の初期化
     public static final MaplePacket getCharInfo(final MapleCharacter chr) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetField);
-        if (ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion()) {
+        if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion())
+                || ServerConfig.IsCMS()) {
             p.EncodeBuffer(CClientOptMan.EncodeOpt());
         }
         // チャンネル
@@ -124,7 +125,8 @@ public class MaplePacketCreator {
         }
 
         if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()) {
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Encode4(0);
         }
 
@@ -134,8 +136,13 @@ public class MaplePacketCreator {
             p.Encode4(0);
         }
 
+        if (ServerConfig.IsCMS()) {
+            p.Encode1(0);
+        }
+
         if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()) {
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Encode1(1);
             p.Encode2(0);
         }
@@ -149,7 +156,8 @@ public class MaplePacketCreator {
         p.EncodeBuffer(CharacterData.Encode(chr));
 
         if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()) {
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             // ログアウトギフト
             p.EncodeBuffer(CWvsContext.LogoutGiftConfig());
         }

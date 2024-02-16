@@ -47,7 +47,8 @@ public class Structure {
 
             // not in v165
             if (ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()
-                    || ServerConfig.IsTWMS()) {
+                    || ServerConfig.IsTWMS()
+                    || ServerConfig.IsCMS()) {
                 data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
             }
 

@@ -391,6 +391,10 @@ public class CharLoginHandler {
     }
 
     public static boolean AddItem(MapleCharacter chr, int itemid, int count) {
+        if (!LoadData.IsValidItemID(itemid)) {
+            return false;
+        }
+
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         // 存在しないitemid
         if (!ii.itemExists(itemid)) {
@@ -437,10 +441,6 @@ public class CharLoginHandler {
             return false;
         }
 
-        if (!ServerConfig.IsJMS()) {
-            return false;
-        }
-
         // メル
         chr.setMeso(777000000);
         // パチンコ玉
@@ -468,12 +468,9 @@ public class CharLoginHandler {
         AddItem(chr, 2043003, 100);
         AddItem(chr, 2049100, 100);
         AddItem(chr, 2049003, 100);
-
-        if (ServerConfig.version >= 186) {
-            AddItem(chr, 2049300, 100);
-            AddItem(chr, 2049400, 100);
-            AddItem(chr, 2470000, 100);
-        }
+        AddItem(chr, 2049300, 100);
+        AddItem(chr, 2049400, 100);
+        AddItem(chr, 2470000, 100);
 
         // 魔法の石
         AddItem(chr, 4006000, 100);
@@ -500,10 +497,8 @@ public class CharLoginHandler {
         AddItem(chr, 1051140);
         // エレメントピアス
         AddItem(chr, 1032062);
-        if (ServerConfig.version >= 186) {
-            // 錬金術師の指輪
-            AddItem(chr, 1112400);
-        }
+        // 錬金術師の指輪
+        AddItem(chr, 1112400);
 
         // ドラゴン(アビス)
         AddItem(chr, 3010047);
@@ -515,12 +510,10 @@ public class CharLoginHandler {
         AddItem(chr, 5140000); // 営業許可証
         AddItem(chr, 5041000, 100); // 高性能テレポストーン
         AddItem(chr, 5220000, 100); // ガシャポンチケット
-        if (ServerConfig.version >= 186) {
-            AddItem(chr, 5570000, 100); // ビシャスのハンマー
-            AddItem(chr, 5062000, 100); // ミラクルキューブ
-            AddItem(chr, 5610000, 100); // ベガの呪文書(10%)
-            AddItem(chr, 5610001, 100); // ベガの呪文書(60%)
-        }
+        AddItem(chr, 5570000, 100); // ビシャスのハンマー
+        AddItem(chr, 5062000, 100); // ミラクルキューブ
+        AddItem(chr, 5610000, 100); // ベガの呪文書(10%)
+        AddItem(chr, 5610001, 100); // ベガの呪文書(60%)
         AddItem(chr, 5050000, 100); // AP再分配の書
 
         // プレミアムさすらいの商人ミョミョ
