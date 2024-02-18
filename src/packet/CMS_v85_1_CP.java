@@ -40,11 +40,21 @@ public class CMS_v85_1_CP {
         // test
         Header.CP_UserChat.Set(0x0032);
         Header.CP_UserSelectNpc.Set(0x003B);
+        Header.CP_UserScriptMessageAnswer.Set(0x003D);
         Header.CP_UserPortalScriptRequest.Set(0x006C);
         Header.CP_UserPortalTeleportRequest.Set(Header.CP_UserPortalScriptRequest.Get() + 1);
 
         Header.CP_UserTransferFieldRequest.Set(0x0023);
         Header.CP_UserTransferChannelRequest.Set(Header.CP_UserTransferFieldRequest.Get() + 1);
         Header.CP_UserMigrateToCashShopRequest.Set(Header.CP_UserTransferFieldRequest.Get() + 2);
+
+        Header.CP_UserMove.Set(0x0026);
+        Header.CP_UserSitRequest.Set(Header.CP_UserMove.Get() + 1);
+        Header.CP_UserPortableChairSitRequest.Set(Header.CP_UserMove.Get() + 2);
+        Header.CP_UserMeleeAttack.Set(0x0029);
+        Header.CP_UserShootAttack.Set(Header.CP_UserMeleeAttack.Get() + 1);
+        Header.CP_UserMagicAttack.Set(Header.CP_UserMeleeAttack.Get() + 2);
+        Header.CP_UserBodyAttack.Set(Header.CP_UserMeleeAttack.Get() + 3);
+        Header.CP_UserHit.Set(0x002D);
     }
 }

@@ -620,21 +620,27 @@ public class UserPacket {
     public static boolean OnMove(ClientPacket p, MapleMap map, MapleCharacter chr) {
         final Point Original_Pos = new Point();
 
-        if (ServerConfig.version >= 186) {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Decode4(); // -1
             p.Decode4(); // -1
         }
 
         p.Decode1(); // unk
 
-        if (ServerConfig.version >= 186) {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Decode4(); // -1
             p.Decode4(); // -1
             p.Decode4();
             p.Decode4();
         }
 
-        if (164 <= ServerConfig.version) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Decode4();
         }
 
@@ -642,12 +648,16 @@ public class UserPacket {
         Original_Pos.x = (int) p.Decode2(); // start y
         Original_Pos.y = (int) p.Decode2(); // start y
 
-        if (ServerConfig.version >= 186) {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             Original_Pos.x = chr.getPosition().x;
             Original_Pos.y = chr.getPosition().y;
         }
 
-        if (ServerConfig.version >= 186) {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Decode2();
             p.Decode2();
         }

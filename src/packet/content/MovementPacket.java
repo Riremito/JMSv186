@@ -186,7 +186,9 @@ public class MovementPacket {
                 short xoffset = 0;
                 short yoffset = 0;
 
-                if (164 < ServerConfig.version) {
+                if ((ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion())
+                        || ServerConfig.IsTWMS()
+                        || ServerConfig.IsCMS()) {
                     xoffset = p.Decode2();
                     yoffset = p.Decode2();
                 }
@@ -197,7 +199,9 @@ public class MovementPacket {
                 alm.setUnk(unk);
                 alm.setPixelsPerSecond(new Point(xwobble, ywobble));
 
-                if (164 < ServerConfig.version) {
+                if ((ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion())
+                        || ServerConfig.IsTWMS()
+                        || ServerConfig.IsCMS()) {
                     alm.setOffset(new Point(xoffset, yoffset));
                 }
 
