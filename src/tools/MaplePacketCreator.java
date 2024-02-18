@@ -112,6 +112,16 @@ public class MaplePacketCreator {
 
     // プレイヤー情報の初期化
     public static final MaplePacket getCharInfo(final MapleCharacter chr) {
+        return SetField(chr, true, null, 0);
+    }
+
+    // マップ移動
+    public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
+        return SetField(chr, false, to, spawnPoint);
+    }
+
+    // CStage::OnSetField
+    public static final MaplePacket SetField(MapleCharacter chr, boolean loggedin, MapleMap to, int spawnPoint) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetField);
         if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion())
                 || ServerConfig.IsCMS()) {
@@ -120,7 +130,7 @@ public class MaplePacketCreator {
         // チャンネル
         p.Encode4(chr.getClient().getChannel() - 1);
 
-        if (ServerConfig.IsJMS()) {
+        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
             p.Encode1(0);
         }
 
@@ -130,7 +140,7 @@ public class MaplePacketCreator {
             p.Encode4(0);
         }
 
-        p.Encode1(1);
+        p.Encode1(chr.getPortalCount());
 
         if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
             p.Encode4(0);
@@ -140,26 +150,44 @@ public class MaplePacketCreator {
             p.Encode1(0);
         }
 
+        p.Encode1(loggedin ? 1 : 0); // 1 = all data, 0 = map change
         if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
                 || ServerConfig.IsCMS()) {
-            p.Encode1(1);
             p.Encode2(0);
         }
-        // [chr.CRand().connectData(mplew);]
-        {
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
-        }
-        // キャラクター情報
-        p.EncodeBuffer(CharacterData.Encode(chr));
 
-        if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
-            // ログアウトギフト
-            p.EncodeBuffer(CWvsContext.LogoutGiftConfig());
+        if (loggedin) {
+            // [chr.CRand().connectData(mplew);]
+            {
+                p.Encode4(0);
+                p.Encode4(0);
+                p.Encode4(0);
+            }
+            // キャラクター情報
+            p.EncodeBuffer(CharacterData.Encode(chr));
+
+            if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion())
+                    || ServerConfig.IsTWMS()
+                    || ServerConfig.IsCMS()) {
+                // ログアウトギフト
+                p.EncodeBuffer(CWvsContext.LogoutGiftConfig());
+            }
+        } else {
+            if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
+                    || ServerConfig.IsTWMS()
+                    || ServerConfig.IsCMS()) {
+                p.Encode1(0);
+            }
+
+            p.Encode4(to.getId());
+            p.Encode1(spawnPoint);
+
+            if (ServerConfig.IsPreBB()) {
+                p.Encode2(chr.getStat().getHp());
+            } else {
+                p.Encode4(chr.getStat().getHp());
+            }
         }
 
         // サーバーの時間?
@@ -170,52 +198,6 @@ public class MaplePacketCreator {
             p.Encode4(0);
         }
 
-        return p.Get();
-    }
-
-    // マップ移動
-    public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetField);
-
-        if (186 <= ServerConfig.version) {
-            p.EncodeBuffer(CClientOptMan.EncodeOpt());
-        }
-
-        p.Encode4(chr.getClient().getChannel() - 1);
-        if (ServerConfig.version > 131) {
-            p.Encode1(0);
-        }
-
-        if (186 <= ServerConfig.version) {
-            p.Encode4(0);
-        }
-
-        p.Encode1((byte) chr.getPortalCount());
-
-        if (194 <= ServerConfig.version) {
-            p.Encode4(0);
-        }
-
-        p.Encode1(0);
-        if (ServerConfig.version > 131) {
-            p.Encode2(0);
-        }
-        if (ServerConfig.version > 165) {
-            p.Encode1(0);
-        }
-        p.Encode4(to.getId());
-        p.Encode1(spawnPoint);
-        if (ServerConfig.version <= 186) {
-            p.Encode2(chr.getStat().getHp());
-        } else {
-            p.Encode4(chr.getStat().getHp());
-        }
-        p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
-
-        if (194 <= ServerConfig.version) {
-            p.Encode4(0);
-            p.Encode4(0);
-        }
         return p.Get();
     }
 
