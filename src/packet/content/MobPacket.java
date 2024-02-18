@@ -137,11 +137,11 @@ public class MobPacket {
 
         final Point startPos = monster.getPosition();
 
-        if (ServerConfig.version <= 131) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) {
             p.Decode1();
             startPos.x = p.Decode2();
             startPos.y = p.Decode2();
-        } else if (ServerConfig.version <= 164) {
+        } else if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) {
             p.Decode1();
             p.Decode4(); // test
             startPos.x = p.Decode2();
@@ -229,7 +229,7 @@ public class MobPacket {
         p.Encode4(life.getObjectId());
         p.Encode1(1); // 1 = Control normal, 5 = Control none
         p.Encode4(life.getId());
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) {
             p.Encode4(0); // 後でなおす
         } else {
             p.EncodeBuffer(Structure.MonsterStatus(life));
@@ -247,11 +247,15 @@ public class MobPacket {
 
         p.Encode1(life.getCarnivalTeam());
 
-        if (ServerConfig.version > 131) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Encode4(0);
         }
 
-        if (ServerConfig.version > 164) {
+        if ((ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Encode4(0);
         }
 
@@ -285,7 +289,7 @@ public class MobPacket {
         p.Encode1(1); // 1 = Control normal, 5 = Control none
         p.Encode4(life.getId());
 
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) {
             p.Encode4(0); // 後でなおす
         } else {
             p.EncodeBuffer(Structure.MonsterStatus(life));
@@ -299,7 +303,9 @@ public class MobPacket {
         p.Encode1(life.isFake() ? -4 : newSpawn ? -2 : -1);
         p.Encode1(life.getCarnivalTeam());
 
-        if (ServerConfig.version > 131) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Encode4(0);
             p.Encode4(0);
         }
@@ -532,7 +538,9 @@ public class MobPacket {
 
         p.Encode4(oid);
 
-        if (ServerConfig.version > 131) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Encode2(0); //moveid but always 0
         }
 
@@ -543,14 +551,18 @@ public class MobPacket {
         p.Encode1(skill3); // effectDelay
         p.Encode1(skill4); // effectDelay
 
-        if (ServerConfig.version > 131) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.EncodeZeroBytes(8); //o.o?
         }
 
         p.Encode2(startPos.x);
         p.Encode2(startPos.y);
 
-        if (ServerConfig.version > 131) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Encode2(8); //? sometimes 0? sometimes 22? sometimes random numbers?
             p.Encode2(1);
         }

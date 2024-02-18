@@ -79,6 +79,7 @@ import java.util.Comparator;
 import packet.ServerPacket;
 import packet.content.ContextPacket;
 import packet.content.ContextPacket.DropPickUpMessageType;
+import packet.content.ScriptManPacket;
 import packet.struct.CClientOptMan;
 import packet.struct.CWvsContext;
 import packet.struct.CharacterData;
@@ -484,18 +485,18 @@ public class MaplePacketCreator {
     }
 
     public static MaplePacket getChatText(int cidfrom, String text, boolean whiteBG, int show) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserChat.Get());
-        mplew.writeInt(cidfrom);
-        mplew.write(whiteBG ? 1 : 0);
-        mplew.writeMapleAsciiString(text);
-
-        if (ServerConfig.version > 131) {
-            mplew.write(show);
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserChat);
+        p.Encode4(cidfrom);
+        p.Encode1(whiteBG ? 1 : 0);
+        p.EncodeStr(text);
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
+            p.Encode1((byte) show);
         }
-
-        return mplew.getPacket();
+        // if LP_UserChatNLCPQ, add more str
+        // p.EncodeStr("");
+        return p.Get();
     }
 
     public static MaplePacket GameMaster_Func(int value) {
@@ -1449,80 +1450,46 @@ public class MaplePacketCreator {
     }
 
     public static MaplePacket getNPCTalk(int npc, byte msgType, String talk, String endBytes, byte type) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_ScriptMessage.Get());
-        mplew.write(4);
-        mplew.writeInt(npc);
-        mplew.write(msgType);
-        // v164に存在しない
-        if (186 <= ServerConfig.GetVersion()) {
-            mplew.write(type); // 1 = No ESC, 3 = show character + no sec
+        byte[] ebb = HexTool.getByteArrayFromHexString(endBytes);
+        boolean prev = false, next = false;
+        if (ebb.length == 2) {
+            if (ebb[0] == 1) {
+                prev = true;
+            }
+            if (ebb[0] == 2) {
+                next = true;
+            }
         }
-        mplew.writeMapleAsciiString(talk);
-        mplew.write(HexTool.getByteArrayFromHexString(endBytes));
 
-        return mplew.getPacket();
+        return ScriptManPacket.ScriptMessage(npc, msgType, type, talk, prev, next);
     }
 
     public static final MaplePacket getMapSelection(final int npcid, final String sel) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_ScriptMessage.Get());
-        mplew.write(4);
-        mplew.writeInt(npcid);
-        mplew.writeShort(0xE);
-        mplew.writeInt(0);
-        mplew.writeInt(5);
-        mplew.writeMapleAsciiString(sel);
-
-        return mplew.getPacket();
+        return ScriptManPacket.ScriptMessage(npcid, (byte) 14, (byte) 0, sel, false, false);
     }
 
     public static MaplePacket getNPCTalkStyle(int npc, String talk, int... args) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_ScriptMessage.Get());
-        mplew.write(4);
-        mplew.writeInt(npc);
-        mplew.writeShort(8);
-        mplew.writeMapleAsciiString(talk);
-        mplew.write(args.length);
+        ServerPacket sp = new ServerPacket();
+        sp.EncodeBuffer(ScriptManPacket.ScriptMessage(npc, (byte) 8, (byte) 0, talk, false, false).getBytes());
+        sp.Encode1(args.length);
 
         for (int i = 0; i < args.length; i++) {
-            mplew.writeInt(args[i]);
+            sp.Encode4(args[i]);
         }
-        return mplew.getPacket();
+        return sp.Get();
     }
 
     public static MaplePacket getNPCTalkNum(int npc, String talk, int def, int min, int max) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_ScriptMessage.Get());
-        mplew.write(4);
-        mplew.writeInt(npc);
-        mplew.writeShort(4);
-        mplew.writeMapleAsciiString(talk);
-        mplew.writeInt(def);
-        mplew.writeInt(min);
-        mplew.writeInt(max);
-        mplew.writeInt(0);
-
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket();
+        sp.EncodeBuffer(ScriptManPacket.ScriptMessage(npc, (byte) 5, (byte) 0, talk, false, false).getBytes());
+        sp.Encode4(def);
+        sp.Encode4(min);
+        sp.Encode4(max);
+        return sp.Get();
     }
 
     public static MaplePacket getNPCTalkText(int npc, String talk) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_ScriptMessage.Get());
-        mplew.write(4);
-        mplew.writeInt(npc);
-        mplew.writeShort(3);
-        mplew.writeMapleAsciiString(talk);
-        mplew.writeInt(0);
-        mplew.writeInt(0);
-
-        return mplew.getPacket();
+        return ScriptManPacket.ScriptMessage(npc, (byte) 3, (byte) 0, talk, false, false);
     }
 
     public static MaplePacket showForeignEffect(int cid, int effect) {

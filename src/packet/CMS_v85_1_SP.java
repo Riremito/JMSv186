@@ -46,6 +46,8 @@ public class CMS_v85_1_SP {
         Header.LP_SetCashShop.Set(Header.LP_SetField.Get() + 2);
 
         // CField::OnPacket
+        // CUserPool::OnPacket
+        Header.LP_UserChat.Set(0x00B0);
         // CNpcPool::OnPacket
         Header.LP_ImitatedNPCData.Set(0x005D);
         Header.LP_LimitedNPCDisableInfo.Set(0x005E);
@@ -58,5 +60,18 @@ public class CMS_v85_1_SP {
         Header.LP_NpcSetScript.Set(0x0134);
         // CScriptMan::OnPacket
         Header.LP_ScriptMessage.Set(0x0174);
+        // CMobPool::OnPacket
+        ServerPacket.Header.LP_MobEnterField.Set(0x0111);
+        ServerPacket.Header.LP_MobLeaveField.Set(0x0112);
+        ServerPacket.Header.LP_MobChangeController.Set(0x0113);
+        ServerPacket.Header.LP_MobMove.Set(0x0114);
+        ServerPacket.Header.LP_MobCtrlAck.Set(0x0115);
+        ServerPacket.Header.LP_MobCtrlHint.Set(0x0116);
+        ServerPacket.Header.LP_MobStatSet.Set(0x0117);
+        ServerPacket.Header.LP_MobStatReset.Set(0x0118);
+        ServerPacket.Header.LP_MobSuspendReset.Set(0x0119);
+        ServerPacket.Header.LP_MobAffected.Set(0x011A);
+        ServerPacket.Header.LP_MobDamaged.Set(0x011B);
+        ServerPacket.Header.LP_MobHPIndicator.Set(0x011F);
     }
 }

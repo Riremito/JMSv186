@@ -56,5 +56,8 @@ public class CMS_v85_1_CP {
         Header.CP_UserMagicAttack.Set(Header.CP_UserMeleeAttack.Get() + 2);
         Header.CP_UserBodyAttack.Set(Header.CP_UserMeleeAttack.Get() + 3);
         Header.CP_UserHit.Set(0x002D);
+        // Mob
+        ClientPacket.Header.CP_MobMove.Set(0x00D2);
+        ClientPacket.Header.CP_MobApplyCtrl.Set(0x00D3);
     }
 }

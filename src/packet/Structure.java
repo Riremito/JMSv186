@@ -195,11 +195,11 @@ public class Structure {
     public static final byte[] MonsterStatus(MapleMonster life) {
         ServerPacket data = new ServerPacket();
 
-        if (188 <= ServerConfig.version) {
+        if (ServerConfig.IsPostBB()) {
             data.Encode4(0);
         }
 
-        if (ServerConfig.version <= 131) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) {
             if (life.getStati().size() <= 1) {
                 life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
             }
@@ -208,7 +208,9 @@ public class Structure {
                 life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
             }
         }
-        if (ServerConfig.version > 131) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             data.Encode8(getSpecialLongMask(life.getStati().keySet()));
         }
 

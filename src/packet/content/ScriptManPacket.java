@@ -30,7 +30,7 @@ import packet.ServerPacket;
  * @author Riremito
  */
 public class ScriptManPacket {
-    
+
     public enum Flag {
         SM_SAY(0),
         SM_SAY_IMAGE(1),
@@ -48,26 +48,26 @@ public class ScriptManPacket {
         SM_ASK_BOX_TEXT(14),
         SM_ASK_SLIDE_MENU(15),
         UNKNOWN(-1);
-        
+
         private int value;
-        
+
         Flag(int flag) {
             value = flag;
         }
-        
+
         Flag() {
             value = -1;
         }
-        
+
         public boolean set(int flag) {
             value = flag;
             return true;
         }
-        
+
         public int get() {
             return value;
         }
-        
+
         public static Flag get(int v) {
             for (final Flag f : Flag.values()) {
                 if (f.get() == v) {
@@ -81,23 +81,24 @@ public class ScriptManPacket {
     // CScriptMan::OnPacket
     // CScriptMan::OnScriptMessage
     // getNPCTalk, getMapSelection, getNPCTalkStyle, getNPCTalkNum, getNPCTalkText, getEvanTutorial
-    public static MaplePacket ScriptMessage(int npcid, byte type, String text, boolean prev, boolean next) {
+    public static MaplePacket ScriptMessage(int npcid, byte type, byte param, String text, boolean prev, boolean next) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ScriptMessage);
-        
         Flag flag = Flag.get(type);
-        int param = 0;
-        
         p.Encode1(4); // nSpeakerTypeID, not used
         p.Encode4(npcid); // nSpeakerTemplateID, npcid
         p.Encode1(flag.get()); // nMsgType
 
-        if (186 <= ServerConfig.GetVersion()) {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Encode1(param); // v186+, not used
         }
-        
+
         switch (flag) {
             case SM_SAY: {
-                if (186 <= ServerConfig.GetVersion()) {
+                if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
+                        || ServerConfig.IsTWMS()
+                        || ServerConfig.IsCMS()) {
                     if ((param & 4) > 0) {
                         p.Encode4(0); // nSpeakerTemplateID
                     }
@@ -108,29 +109,49 @@ public class ScriptManPacket {
                 break;
             }
             case SM_SAY_IMAGE: {
-                p.Encode1(0);
+                p.Encode1(0); // number of text
                 p.EncodeStr(text);
                 break;
             }
             case SM_ASK_YES_NO: {
+                p.EncodeStr(text);
                 break;
             }
             case SM_ASK_TEXT: {
+                p.EncodeStr(text);
+                p.EncodeStr("");
+                p.Encode2(0);
+                p.Encode2(0);
                 break;
             }
             case SM_ASK_NUMBER: {
+                p.EncodeStr(text);
+                //p.Encode4(0);
+                //p.Encode4(0);
+                //p.Encode4(0);
                 break;
             }
             case SM_ASK_MENU: {
+                p.EncodeStr(text);
                 break;
             }
             case SM_ASK_QUIZ: {
+                p.Encode1(0);
+                p.EncodeStr(text);
+                p.EncodeStr("");
+                p.EncodeStr("");
+                p.Encode4(0);
+                p.Encode4(0);
+                p.Encode4(0);
                 break;
             }
             case SM_ASK_SPEED_QUIZ: {
                 break;
             }
             case SM_ASK_AVATAR: {
+                p.EncodeStr(text);
+                // 1 byte size
+                // 4 bytes array
                 break;
             }
             case SM_ASK_MEMBER_SHOP_AVATAR: {
@@ -149,6 +170,9 @@ public class ScriptManPacket {
                 break;
             }
             case SM_ASK_SLIDE_MENU: {
+                p.Encode4(0);
+                p.Encode4(5);
+                p.EncodeStr(text);
                 break;
             }
             default: {
@@ -156,8 +180,8 @@ public class ScriptManPacket {
                 break;
             }
         }
-        
+
         return p.Get();
     }
-    
+
 }
