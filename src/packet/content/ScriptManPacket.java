@@ -167,12 +167,12 @@ public class ScriptManPacket {
                 break;
             }
             case SM_ASK_BOX_TEXT: {
-                break;
-            }
-            case SM_ASK_SLIDE_MENU: {
                 p.Encode4(0);
                 p.Encode4(5);
                 p.EncodeStr(text);
+                break;
+            }
+            case SM_ASK_SLIDE_MENU: {
                 break;
             }
             default: {
