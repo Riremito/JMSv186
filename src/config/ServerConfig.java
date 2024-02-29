@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Properties;
+import packet.ClientPacket;
+import packet.ServerPacket;
 
 public class ServerConfig {
 
@@ -341,6 +343,32 @@ public class ServerConfig {
             力度搞假 = Integer.parseInt(Pachinko.getProperty("ldgj"));
             豆豆奖励范围 = Integer.parseInt(Pachinko.getProperty("ddjlfw"));
         }
+
+        Properties ServerPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ServerPacket.properties");
+        if (ServerPacketHeader != null) {
+            ServerPacket.Load(ServerPacketHeader);
+
+            Debug.DebugLog("[SP]");
+            for (ServerPacket.Header header : ServerPacket.Header.values()) {
+                int val = header.Get();
+                if (val != -1) {
+                    Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
+                }
+            }
+        }
+
+        Properties ClientPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ClientPacket.properties");
+        if (ClientPacketHeader != null) {
+            ClientPacket.Load(ClientPacketHeader);
+
+            Debug.DebugLog("[CP]");
+            for (ClientPacket.Header header : ClientPacket.Header.values()) {
+                int val = header.Get();
+                if (val != -1) {
+                    Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
+                }
+            }
+        }
     }
 
     public static boolean IsGMTestMode() {
@@ -357,8 +385,10 @@ public class ServerConfig {
             fr.close();
         } catch (IOException e) {
             Debug.ErrorLog("設定ファイルが見つかりません (" + path + ")");
+            return null;
         }
 
         return p;
     }
+
 }

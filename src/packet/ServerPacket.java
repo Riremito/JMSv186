@@ -5,6 +5,7 @@ import config.ServerConfig;
 import handling.ByteArrayMaplePacket;
 import handling.MaplePacket;
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class ServerPacket {
 
@@ -1199,6 +1200,58 @@ public class ServerPacket {
         Header.LP_AliveReq.Set(0x0009);
         Header.LP_CheckPinCodeResult.Set(0x0016);
         Header.LOGIN_AUTH.Set(0x0018);
+    }
+
+    public static boolean Load(Properties props) {
+
+        for (Header header : Header.values()) {
+            String[] vars = props.getProperty(header.name(), "@FFFF").trim().split(" ");
+            int base = -1;
+            int offset = 0;
+            switch (vars.length) {
+                case 1: {
+                    if ("@FFFF".length() <= vars[0].length() && vars[0].charAt(0) == '@') {
+                        base = Integer.parseInt(vars[0].substring(1), 16);
+                    } else {
+                        base = Integer.parseInt(vars[0]);
+                    }
+                    break;
+                }
+                case 3: {
+                    // + or -
+                    if (vars[1].length() != 1 || (vars[1].charAt(0) != '+' && vars[1].charAt(0) != '-')) {
+                        continue;
+                    }
+                    offset = Integer.parseInt(vars[2]);
+                    if (vars[1].charAt(0) == '-') {
+                        offset = -offset;
+                    }
+                    // get base value
+                    if ("@FFFF".length() <= vars[0].length() && vars[0].charAt(0) == '@') {
+                        base = Integer.parseInt(vars[0].substring(1), 16);
+                    } else {
+                        for (Header base_header : Header.values()) {
+                            if (base_header.name().equals(vars[0])) {
+                                base = base_header.Get();
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+
+            if (base == -1) {
+                continue;
+            }
+
+            header.Set((short) (base + offset));
+        }
+
+        return true;
     }
 
 }
