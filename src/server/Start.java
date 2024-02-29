@@ -13,6 +13,9 @@ import java.sql.SQLException;
 import database.DatabaseConnection;
 import debug.Debug;
 import handling.world.family.MapleFamilyBuff;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import packet.*;
 import packet.content.PacketFlag;
@@ -23,100 +26,34 @@ import wz.LoadData;
 
 public class Start {
 
-    private static boolean LoadConfig() {
-        if (ServerConfig.IsJMS()) {
-            if (ServerConfig.GetVersion() == 131) {
-                ServerConfig.SetPacketEncryption(false);
-                v131_0_CP.Set();
-                v131_0_SP.Set();
-                return true;
+    private static void HeaderDump() {
+        FileWriter fw;
+        try {
+            fw = new FileWriter("properties/packet/" + ServerConfig.GetRegionName() + "_v" + ServerConfig.GetVersion() + "_ServerPacket.properties");
+            PrintWriter pw = new PrintWriter(fw);
+            for (ServerPacket.Header header : ServerPacket.Header.values()) {
+                int val = (short) header.Get();
+                if (val != -1) {
+                    Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
+                    pw.println(header.name() + " = " + String.format("@%04X", val));
+                }
             }
-            if (ServerConfig.GetVersion() == 164) {
-                v164_0_CP.Set();
-                v164_0_SP.Set();
-                return true;
-            }
-            if (ServerConfig.GetVersion() == 165) {
-                v165_0_CP.Set();
-                v165_0_SP.Set();
-                return true;
-            }
-            if (ServerConfig.GetVersion() == 176) {
-                ClientPacket.SetForJMSv176();
-                ServerPacket.SetForJMSv176();
-                return true;
-            }
-            if (ServerConfig.GetVersion() == 180) {
-                v180_1_CP.Set();
-                v180_1_SP.Set();
-                return true;
-            }
-            if (ServerConfig.GetVersion() == 184) {
-                ClientPacket.SetForJMSv184();
-                ServerPacket.SetForJMSv184();
-                return true;
-            }
-            if (ServerConfig.GetVersion() == 186 || ServerConfig.GetVersion() == 185) {
-                v186_1_CP.Set();
-                v186_1_SP.Set();
-                ClientPacket.SetCustomHeader();
-                ServerPacket.SetCustomHeader();
-                return true;
-            }
-            if (ServerConfig.GetVersion() == 187) {
-                ClientPacket.SetForJMSv187();
-                ServerPacket.SetForJMSv187();
-                return true;
-            }
-            if (ServerConfig.GetVersion() == 188) {
-                v188_0_CP.Set();
-                v188_0_SP.Set();
-                return true;
-            }
-            if (ServerConfig.GetVersion() == 194) {
-                v194_0_CP.Set();
-                v194_0_SP.Set();
-                return true;
-            }
-            if (ServerConfig.GetVersion() == 201) {
-                v201_0_CP.Set();
-                v201_0_SP.Set();
-                return true;
-            }
-            if (ServerConfig.GetVersion() == 302) {
-                ClientPacket.SetForJMSv302();
-                ServerPacket.SetForJMSv302();
-                return true;
-            }
-            if (ServerConfig.GetVersion() == 414) {
-                return true;
-            }
-            return false;
-        }
+            pw.close();
+            fw.close();
 
-        if (ServerConfig.IsCMS()) {
-            if (ServerConfig.GetVersion() == 85) {
-                CMS_v85_1_CP.Set();
-                CMS_v85_1_SP.Set();
-                return true;
+            fw = new FileWriter("properties/packet/" + ServerConfig.GetRegionName() + "_v" + ServerConfig.GetVersion() + "_ClientPacket.properties");
+            pw = new PrintWriter(fw);
+            for (ClientPacket.Header header : ClientPacket.Header.values()) {
+                int val = (short) header.Get();
+                if (val != -1) {
+                    Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
+                    pw.println(header.name() + " = " + String.format("@%04X", val));
+                }
             }
-            if (ServerConfig.GetVersion() == 86) {
-                CMS_v86_1_CP.Set();
-                CMS_v86_1_SP.Set();
-                return true;
-            }
-            return false;
+            pw.close();
+            fw.close();
+        } catch (IOException e) {
         }
-
-        if (ServerConfig.IsTWMS()) {
-            if (ServerConfig.GetVersion() == 122) {
-                TWMS_v122_1_CP.Set();
-                TWMS_v122_1_SP.Set();
-                return true;
-            }
-            return false;
-        }
-        return false;
     }
 
     public final static void main(final String args[]) {
@@ -142,9 +79,10 @@ public class Start {
         tools.admin.main.main();
 
         Debug.InfoLog(ServerConfig.GetRegionName() + " v" + ServerConfig.GetVersion() + "." + ServerConfig.GetSubVersion());
-        if (!LoadConfig()) {
-            Debug.ErrorLog("the version is not supported!");
-            return;
+
+        //HeaderDump();
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() == 131) {
+            ServerConfig.SetPacketEncryption(false);
         }
 
         ExpTable.Init();
