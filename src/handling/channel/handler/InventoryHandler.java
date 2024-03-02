@@ -54,7 +54,7 @@ import java.awt.Rectangle;
 import java.util.Collections;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
-import minigame.Pachinko;
+import packet.server.response.Pachinko;
 import packet.client.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;

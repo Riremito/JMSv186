@@ -1,4 +1,4 @@
-package minigame;
+package packet.server.response;
 
 import client.MapleCharacter;
 import handling.MaplePacket;

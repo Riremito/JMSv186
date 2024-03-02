@@ -81,7 +81,7 @@ import handling.world.guild.MapleGuildCharacter;
 import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
-import minigame.Pachinko;
+import packet.server.response.Pachinko;
 import packet.client.handling.ContextPacket;
 import packet.client.handling.MobPacket;
 import packet.client.handling.SocketPacket;
