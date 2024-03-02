@@ -13,7 +13,7 @@ import handling.MaplePacket;
 import java.util.Collection;
 import packet.client.ClientPacket;
 import packet.server.ServerPacket;
-import packet.struct.GW_ItemSlotBase;
+import packet.server.response.struct.GW_ItemSlotBase;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStorage;

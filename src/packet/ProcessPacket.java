@@ -5,7 +5,7 @@ import packet.server.ServerPacket;
 import client.inventory.IItem;
 import handling.MaplePacket;
 import java.util.List;
-import packet.struct.GW_ItemSlotBase;
+import packet.server.response.struct.GW_ItemSlotBase;
 
 public class ProcessPacket {
 

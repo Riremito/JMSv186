@@ -34,7 +34,7 @@ import client.inventory.MapleInventoryType;
 import client.inventory.IItem;
 import config.ServerConfig;
 import debug.Debug;
-import packet.struct.GW_ItemSlotBase;
+import packet.server.response.struct.GW_ItemSlotBase;
 import server.movement.LifeMovementFragment;
 import server.shops.AbstractPlayerStore;
 import server.shops.IMaplePlayerShop;

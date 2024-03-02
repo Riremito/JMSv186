@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Random;
 import packet.client.ClientPacket;
 import packet.server.ServerPacket;
-import packet.struct.AvatarLook;
-import packet.struct.GW_CharacterStat;
+import packet.server.response.struct.AvatarLook;
+import packet.server.response.struct.GW_CharacterStat;
 
 /**
  *

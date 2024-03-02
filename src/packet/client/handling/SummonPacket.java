@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import packet.client.ClientPacket;
 import packet.server.ServerPacket;
-import packet.struct.AvatarLook;
+import packet.server.response.struct.AvatarLook;
 import server.MapleStatEffect;
 import server.life.MapleMonster;
 import server.life.SummonAttackEntry;

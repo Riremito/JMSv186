@@ -29,9 +29,9 @@ import constants.GameConstants;
 import debug.Debug;
 import handling.MaplePacket;
 import packet.server.ServerPacket;
-import packet.struct.GW_CharacterStat;
-import packet.struct.GW_ItemSlotBase;
-import packet.struct.SecondaryStat;
+import packet.server.response.struct.GW_CharacterStat;
+import packet.server.response.struct.GW_ItemSlotBase;
+import packet.server.response.struct.SecondaryStat;
 import tools.StringUtil;
 
 /**

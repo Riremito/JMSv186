@@ -26,7 +26,7 @@ import java.util.List;
 import packet.client.ClientPacket;
 import packet.server.ServerPacket;
 import packet.Structure;
-import packet.struct.AvatarLook;
+import packet.server.response.struct.AvatarLook;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
 import server.maps.MapleMap;

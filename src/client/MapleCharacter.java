@@ -87,7 +87,7 @@ import packet.client.handling.MobPacket;
 import packet.client.handling.SocketPacket;
 import packet.client.handling.SummonPacket;
 import packet.client.handling.UserPacket;
-import packet.struct.GW_CharacterStat;
+import packet.server.response.struct.GW_CharacterStat;
 import tools.MockIOSession;
 import scripting.EventInstanceManager;
 import scripting.NPCScriptManager;

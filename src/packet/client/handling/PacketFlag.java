@@ -1,6 +1,7 @@
 package packet.client.handling;
 
-import packet.struct.*;
+import packet.server.response.struct.SecondaryStat;
+import packet.server.response.struct.GW_CharacterStat;
 
 public class PacketFlag {
 

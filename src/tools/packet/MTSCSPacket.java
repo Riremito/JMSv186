@@ -41,7 +41,7 @@ import packet.server.ServerPacket;
 import packet.client.handling.ContextPacket;
 import packet.client.handling.ContextPacket.MessageArg;
 import packet.client.handling.ContextPacket.MessageType;
-import packet.struct.CharacterData;
+import packet.server.response.struct.CharacterData;
 import server.MTSStorage.MTSItemInfo;
 import tools.KoreanDateUtil;
 import tools.data.output.MaplePacketLittleEndianWriter;

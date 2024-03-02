@@ -18,7 +18,7 @@
  * You should not develop private server for your business.
  * You should not ban anyone who tries hacking in private server.
  */
-package packet.struct;
+package packet.server.response.struct;
 
 import client.ISkill;
 import client.MapleCharacter;
