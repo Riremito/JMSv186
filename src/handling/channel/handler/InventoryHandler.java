@@ -54,13 +54,15 @@ import java.awt.Rectangle;
 import java.util.Collections;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
-import packet.server.response.Pachinko;
+import packet.server.response.PachinkoResponse;
 import packet.client.ClientPacket;
-import packet.ProcessPacket;
 import packet.SendPacket;
 import packet.client.handling.ContextPacket;
 import packet.client.handling.DropPacket;
 import packet.client.handling.DropPacket.LeaveType;
+import packet.server.response.DueyResponse;
+import packet.server.response.VegaSpellResponse;
+import packet.server.response.ViciousHammerResponse;
 import server.Randomizer;
 import server.RandomRewards;
 import server.MapleShopFactory;
@@ -544,8 +546,8 @@ public class InventoryHandler {
         // ベガの呪文書
         if (vegas != 0) {
             c.getPlayer().forceReAddItem(toScroll, MapleInventoryType.EQUIP);
-            c.ProcessPacket(ProcessPacket.VegaScroll.Start());
-            c.ProcessPacket(ProcessPacket.VegaScroll.Result((scrollSuccess == ScrollResult.SUCCESS)));
+            c.ProcessPacket(VegaSpellResponse.Start());
+            c.ProcessPacket(VegaSpellResponse.Result((scrollSuccess == ScrollResult.SUCCESS)));
         }
 
         return true;
@@ -1018,7 +1020,7 @@ public class InventoryHandler {
 
         switch (itemId) {
             case 5330000: {
-                c.getSession().write(ProcessPacket.HomeDelivery.Open(true, false));
+                c.getSession().write(DueyResponse.Open(true, false));
                 break;
             }
             case 5201000:
@@ -1026,10 +1028,10 @@ public class InventoryHandler {
             case 5201002: {
                 final int tama = MapleItemInformationProvider.getInstance().getInt(itemId, "info/dama");
                 if (c.getPlayer().gainTama(tama, true)) {
-                    c.ProcessPacket(Pachinko.TamaBoxSuccess(tama));
+                    c.ProcessPacket(PachinkoResponse.TamaBoxSuccess(tama));
                     used = true;
                 } else {
-                    c.ProcessPacket(Pachinko.TamaBoxFailure());
+                    c.ProcessPacket(PachinkoResponse.TamaBoxFailure());
                 }
                 break;
             }
@@ -1539,10 +1541,10 @@ public class InventoryHandler {
 
                         c.getPlayer().forceReAddItem(item, MapleInventoryType.EQUIP);
                         // ビシャスのハンマーのアニメーションの終わる通知待ち状態へ
-                        c.ProcessPacket(ProcessPacket.ViciousHammer.Update(item.getViciousHammer()));
+                        c.ProcessPacket(ViciousHammerResponse.Update(item.getViciousHammer()));
                         used = true;
                     } else {
-                        c.ProcessPacket(ProcessPacket.ViciousHammer.Failure(1));
+                        c.ProcessPacket(ViciousHammerResponse.Failure(1));
                     }
                 }
 

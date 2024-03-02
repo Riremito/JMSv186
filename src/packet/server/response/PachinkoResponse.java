@@ -4,7 +4,7 @@ import client.MapleCharacter;
 import handling.MaplePacket;
 import packet.server.ServerPacket;
 
-public class Pachinko {
+public class PachinkoResponse {
 
     // パチンコ情報の更新
     public static MaplePacket UpdateTama(MapleCharacter chr) {

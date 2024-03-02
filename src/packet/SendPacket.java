@@ -10,6 +10,9 @@ import debug.Debug;
 import handling.world.World;
 import java.util.LinkedList;
 import java.util.List;
+import packet.server.response.DueyResponse;
+import packet.server.response.MegaphoneResponse;
+import packet.server.response.ViciousHammerResponse;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 
@@ -86,7 +89,7 @@ public class SendPacket {
             switch (Action.Find(action)) {
                 // 配送
                 case SEND: {
-                    c.ProcessPacket(ProcessPacket.HomeDelivery.Send());
+                    c.ProcessPacket(DueyResponse.Send());
                     return true;
                 }
                 // 閉じる
@@ -113,7 +116,7 @@ public class SendPacket {
             // 用途不明
             int hammered = p.Decode4();
             // 関数に成功可否を渡しても良いと思われるが、成功確率が100%なので意味がない
-            c.ProcessPacket(ProcessPacket.ViciousHammer.Success());
+            c.ProcessPacket(ViciousHammerResponse.Success());
             return true;
         }
     }
@@ -178,14 +181,14 @@ public class SendPacket {
                     // メガホン
                     case 5070000: {
                         String message = new String(p.DecodeBuffer());
-                        c.getPlayer().getMap().broadcastMessage(ProcessPacket.Megaphone.MegaphoneBlue(GetSenderName(c) + " : " + message));
+                        c.getPlayer().getMap().broadcastMessage(MegaphoneResponse.MegaphoneBlue(GetSenderName(c) + " : " + message));
                         return true;
                     }
                     // 拡声器
                     case 5071000: {
                         String message = new String(p.DecodeBuffer());
                         byte ear = p.Decode1();
-                        World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.Megaphone(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear).getBytes());
+                        World.Broadcast.broadcastSmega(MegaphoneResponse.Megaphone(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear).getBytes());
                         return true;
                     }
                     // 高機能拡声器 (使えない)
@@ -197,14 +200,14 @@ public class SendPacket {
                         String message = new String(p.DecodeBuffer());
                         byte ear = p.Decode1();
                         byte channel = (byte) c.getChannel();
-                        World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.MegaphoneHeart(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear).getBytes());
+                        World.Broadcast.broadcastSmega(MegaphoneResponse.MegaphoneHeart(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear).getBytes());
                         return true;
                     }
                     // ドクロ拡声器
                     case 5074000: {
                         String message = new String(p.DecodeBuffer());
                         byte ear = p.Decode1();
-                        World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.MegaphoneSkull(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear).getBytes());
+                        World.Broadcast.broadcastSmega(MegaphoneResponse.MegaphoneSkull(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear).getBytes());
                         return true;
                     }
                     // MapleTV
@@ -228,7 +231,7 @@ public class SendPacket {
                             int slot = p.Decode4();
                             item = c.getPlayer().getInventory(MapleInventoryType.getByType((byte) type)).getItem((short) slot);
                         }
-                        World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.MegaphoneItem(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear, showitem, item).getBytes());
+                        World.Broadcast.broadcastSmega(MegaphoneResponse.MegaphoneItem(GetSenderName(c) + " : " + message, (byte) c.getChannel(), ear, showitem, item).getBytes());
                         return true;
                     }
                     // 三連拡声器
@@ -245,7 +248,7 @@ public class SendPacket {
                             messages.add(sender + " : " + message);
                         }
                         byte ear = p.Decode1();
-                        World.Broadcast.broadcastSmega(ProcessPacket.Megaphone.MegaphoneTriple(messages, (byte) c.getChannel(), ear).getBytes());
+                        World.Broadcast.broadcastSmega(MegaphoneResponse.MegaphoneTriple(messages, (byte) c.getChannel(), ear).getBytes());
                         return true;
                     }
                     default: {

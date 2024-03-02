@@ -23,7 +23,6 @@ import org.apache.mina.common.IoSession;
 import server.MTSStorage;
 import tools.FileoutputUtil;
 import packet.client.ClientPacket;
-import packet.ProcessPacket;
 import packet.SendPacket;
 import packet.client.handling.AdminPacket;
 import packet.client.handling.GashaEXPPacket;
@@ -37,6 +36,7 @@ import packet.client.handling.SocketPacket;
 import packet.client.handling.SummonPacket;
 import packet.client.handling.TrunkPacket;
 import packet.client.handling.UserPacket;
+import packet.server.response.addon.AddonResponse;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
@@ -284,11 +284,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
 
                     if (ServerConfig.login_server_antihack && ServerConfig.version == 186) {
-                        c.getSession().write(ProcessPacket.Custom.Hash());
-                        c.getSession().write(ProcessPacket.Custom.Scan(0x008625B5, (short) 3)); // damage hack check
+                        c.getSession().write(AddonResponse.Hash());
+                        c.getSession().write(AddonResponse.Scan(0x008625B5, (short) 3)); // damage hack check
                         // test
                         byte mem[] = {(byte) 0x90, (byte) 0x90, (byte) 0x90};
-                        c.getSession().write(ProcessPacket.Custom.Patch(0x00BCCA45, mem));
+                        c.getSession().write(AddonResponse.Patch(0x00BCCA45, mem));
                     }
 
                     c.SendPacket(SocketPacket.AuthenMessage());

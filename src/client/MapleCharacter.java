@@ -81,7 +81,7 @@ import handling.world.guild.MapleGuildCharacter;
 import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
-import packet.server.response.Pachinko;
+import packet.server.response.PachinkoResponse;
 import packet.client.handling.ContextPacket;
 import packet.client.handling.MobPacket;
 import packet.client.handling.SocketPacket;
@@ -5731,7 +5731,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void gainTama(int s) {
         this.tama += s;
-        client.ProcessPacket(Pachinko.UpdateTama(this));
+        client.ProcessPacket(PachinkoResponse.UpdateTama(this));
     }
 
     public int getBeansRange() {

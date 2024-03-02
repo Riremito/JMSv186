@@ -68,7 +68,7 @@ import server.MapleCarnivalChallenge;
 import java.util.HashMap;
 import handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
-import packet.ProcessPacket;
+import packet.server.response.DueyResponse;
 import server.MapleShop;
 import server.MapleShopItem;
 import server.MapleStatEffect;
@@ -985,7 +985,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void openDuey() {
         c.getPlayer().setConversation(1);
-        c.getSession().write(ProcessPacket.HomeDelivery.Open(false, true));
+        c.getSession().write(DueyResponse.Open(false, true));
     }
 
     public void openMerchantItemStore() {
