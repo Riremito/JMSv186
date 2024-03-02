@@ -14,7 +14,7 @@ import database.DatabaseConnection;
 import debug.Debug;
 import handling.world.family.MapleFamilyBuff;
 import java.sql.PreparedStatement;
-import packet.content.PacketFlag;
+import packet.client.handling.PacketFlag;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.PlayerNPC;

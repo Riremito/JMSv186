@@ -36,7 +36,7 @@ import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import java.util.Collections;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import packet.content.ContextPacket;
+import packet.client.handling.ContextPacket;
 import server.MapleCarnivalParty;
 import server.MapleItemInformationProvider;
 import server.MapleSquad;

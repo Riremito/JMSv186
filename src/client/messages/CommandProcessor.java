@@ -45,7 +45,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
-import static packet.content.ItemPacket.CreatePinkBeanEventPortal;
+import static packet.client.handling.ItemPacket.CreatePinkBeanEventPortal;
 import scripting.NPCScriptManager;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;

@@ -25,7 +25,7 @@ import java.awt.Point;
 import client.MapleClient;
 import client.MapleQuestStatus;
 import client.SkillFactory;
-import packet.content.ContextPacket;
+import packet.client.handling.ContextPacket;
 import scripting.EventManager;
 import scripting.NPCScriptManager;
 import server.Randomizer;

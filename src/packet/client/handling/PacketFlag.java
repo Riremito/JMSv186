@@ -1,4 +1,4 @@
-package packet.content;
+package packet.client.handling;
 
 import packet.struct.*;
 

@@ -24,7 +24,7 @@ import java.awt.Point;
 
 import client.MapleCharacter;
 import handling.world.World;
-import packet.content.ReactorPacket;
+import packet.client.handling.ReactorPacket;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
 import server.Timer.EventTimer;

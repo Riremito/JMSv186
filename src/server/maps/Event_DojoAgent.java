@@ -26,7 +26,7 @@ import client.MapleCharacter;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.MaplePartyCharacter;
-import packet.content.ContextPacket;
+import packet.client.handling.ContextPacket;
 import server.Randomizer;
 import server.Timer.MapTimer;
 import server.life.MapleLifeFactory;

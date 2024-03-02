@@ -25,18 +25,18 @@ import tools.FileoutputUtil;
 import packet.client.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
-import packet.content.AdminPacket;
-import packet.content.GashaEXPPacket;
-import packet.content.ItemPacket;
-import packet.content.LoginPacket;
-import packet.content.MobPacket;
-import packet.content.NPCPacket;
-import packet.content.PortalPacket;
-import packet.content.ReactorPacket;
-import packet.content.SocketPacket;
-import packet.content.SummonPacket;
-import packet.content.TrunkPacket;
-import packet.content.UserPacket;
+import packet.client.handling.AdminPacket;
+import packet.client.handling.GashaEXPPacket;
+import packet.client.handling.ItemPacket;
+import packet.client.handling.LoginPacket;
+import packet.client.handling.MobPacket;
+import packet.client.handling.NPCPacket;
+import packet.client.handling.PortalPacket;
+import packet.client.handling.ReactorPacket;
+import packet.client.handling.SocketPacket;
+import packet.client.handling.SummonPacket;
+import packet.client.handling.TrunkPacket;
+import packet.client.handling.UserPacket;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 

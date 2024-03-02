@@ -34,7 +34,7 @@ import client.MapleStat;
 import client.SkillFactory;
 import java.util.ArrayList;
 import java.util.List;
-import packet.content.ContextPacket;
+import packet.client.handling.ContextPacket;
 import provider.MapleData;
 import provider.MapleDataTool;
 import server.MapleInventoryManipulator;

@@ -18,7 +18,7 @@ import client.inventory.MaplePet;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
-import packet.content.ContextPacket;
+import packet.client.handling.ContextPacket;
 import server.maps.AramiaFireWorks;
 import tools.packet.MTSCSPacket;
 import tools.MaplePacketCreator;

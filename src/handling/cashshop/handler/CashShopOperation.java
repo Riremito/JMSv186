@@ -18,7 +18,7 @@ import handling.channel.ChannelServer;
 import handling.world.CharacterTransfer;
 import handling.world.World;
 import java.util.List;
-import packet.content.SocketPacket;
+import packet.client.handling.SocketPacket;
 import server.CashItemFactory;
 import server.CashItemInfo;
 import server.CashShop;

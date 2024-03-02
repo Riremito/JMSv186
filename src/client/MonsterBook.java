@@ -32,7 +32,7 @@ import java.io.Serializable;
 
 import database.DatabaseConnection;
 import packet.server.ServerPacket;
-import packet.content.ContextPacket;
+import packet.client.handling.ContextPacket;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;

@@ -53,7 +53,7 @@ import tools.packet.PetPacket;
 import tools.packet.UIPacket;
 import client.inventory.MapleInventoryIdentifier;
 import handling.world.World;
-import packet.content.ContextPacket;
+import packet.client.handling.ContextPacket;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
 

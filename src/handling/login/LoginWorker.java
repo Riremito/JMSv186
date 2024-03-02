@@ -26,8 +26,8 @@ import client.MapleClient;
 import handling.channel.ChannelServer;
 import server.Timer.PingTimer;
 import handling.login.handler.CharLoginHandler;
-import packet.content.LoginPacket;
-import packet.content.LoginPacket.LoginResult;
+import packet.client.handling.LoginPacket;
+import packet.client.handling.LoginPacket.LoginResult;
 
 public class LoginWorker {
 
