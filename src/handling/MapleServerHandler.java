@@ -23,8 +23,8 @@ import org.apache.mina.common.IoSession;
 import server.MTSStorage;
 import tools.FileoutputUtil;
 import packet.client.ClientPacket;
-import packet.SendPacket;
 import packet.client.handling.AdminPacket;
+import packet.client.handling.DueyPacket;
 import packet.client.handling.GashaEXPPacket;
 import packet.client.handling.ItemPacket;
 import packet.client.handling.LoginPacket;
@@ -36,6 +36,8 @@ import packet.client.handling.SocketPacket;
 import packet.client.handling.SummonPacket;
 import packet.client.handling.TrunkPacket;
 import packet.client.handling.UserPacket;
+import packet.client.handling.ViciousHammerPacket;
+import packet.client.handling.addon.AddonPacket;
 import packet.server.response.addon.AddonResponse;
 
 public class MapleServerHandler extends IoHandlerAdapter {
@@ -248,7 +250,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             // 独自実装
             case CP_CUSTOM_WZ_HASH: {
                 if (ServerConfig.login_server_antihack) {
-                    if (SendPacket.Custom.Hash(p)) {
+                    if (AddonPacket.Hash(p)) {
                         Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz OK");
                     } else {
                         Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz NG");
@@ -258,7 +260,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_CUSTOM_MEMORY_SCAN: {
                 if (ServerConfig.login_server_antihack) {
-                    if (SendPacket.Custom.Scan(p)) {
+                    if (AddonPacket.Scan(p)) {
                         Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory OK");
                     } else {
                         Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory NG");
@@ -487,10 +489,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
         // CUser::OnSummonedPacket
         switch (type) {
             case CP_UserParcelRequest: {
-                return SendPacket.HomeDelivery.Accept(c, op);
+                return DueyPacket.Accept(c, op);
             }
             case CP_GoldHammerRequest: {
-                return SendPacket.ViciousHammer.Accept(c, op);
+                return ViciousHammerPacket.Accept(c, op);
             }
             // サーバーメッセージ
             case CP_BroadcastMsg: {

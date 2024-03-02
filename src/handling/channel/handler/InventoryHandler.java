@@ -56,7 +56,7 @@ import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import packet.server.response.PachinkoResponse;
 import packet.client.ClientPacket;
-import packet.SendPacket;
+import packet.client.handling.CashItemPacket;
 import packet.client.handling.ContextPacket;
 import packet.client.handling.DropPacket;
 import packet.client.handling.DropPacket.LeaveType;
@@ -1825,7 +1825,7 @@ public class InventoryHandler {
             default: {
                 // 拡声器
                 if (itemId / 10000 == 507) {
-                    used = SendPacket.CashItem.Use(c, op);
+                    used = CashItemPacket.Use(c, op);
                 } else if (itemId / 10000 == 512) {
                     final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                     final String msg = ii.getMsg(itemId).replaceFirst("%s", c.getPlayer().getName()).replaceFirst("%s", slea.readMapleAsciiString());
