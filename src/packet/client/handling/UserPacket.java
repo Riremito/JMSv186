@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import packet.client.ClientPacket;
 import packet.server.ServerPacket;
-import packet.Structure;
+import packet.server.response.struct.Structure;
 import packet.server.response.struct.AvatarLook;
 import server.MapleItemInformationProvider;
 import server.Randomizer;

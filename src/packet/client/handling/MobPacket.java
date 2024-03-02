@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import packet.client.ClientPacket;
 import packet.server.ServerPacket;
-import packet.Structure;
+import packet.server.response.struct.Structure;
 import server.Randomizer;
 import server.life.MapleMonster;
 import server.life.MobSkill;

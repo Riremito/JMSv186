@@ -1,4 +1,4 @@
-package packet;
+package packet.server.response.struct;
 
 import packet.server.ServerPacket;
 import client.ISkill;

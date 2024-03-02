@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import packet.server.ServerPacket;
-import packet.Structure;
 import packet.server.response.struct.GW_ItemSlotBase.ItemType;
 
 /**
