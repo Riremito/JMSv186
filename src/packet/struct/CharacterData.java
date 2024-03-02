@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 import packet.Structure;
 import packet.struct.GW_ItemSlotBase.ItemType;
 

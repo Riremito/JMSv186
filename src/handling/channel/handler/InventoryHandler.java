@@ -55,7 +55,7 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import minigame.Pachinko;
-import packet.ClientPacket;
+import packet.client.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
 import packet.content.ContextPacket;

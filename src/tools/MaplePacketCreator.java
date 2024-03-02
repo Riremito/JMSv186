@@ -76,7 +76,7 @@ import handling.world.World;
 import handling.world.guild.MapleBBSThread.MapleBBSReply;
 import java.util.ArrayList;
 import java.util.Comparator;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 import packet.content.ContextPacket;
 import packet.content.ContextPacket.DropPickUpMessageType;
 import packet.content.ScriptManPacket;

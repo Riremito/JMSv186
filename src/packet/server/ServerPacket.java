@@ -1,5 +1,5 @@
 // サーバー側から送信されるパケットのヘッダの定義
-package packet;
+package packet.server;
 
 import config.ServerConfig;
 import handling.ByteArrayMaplePacket;

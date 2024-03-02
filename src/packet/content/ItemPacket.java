@@ -24,8 +24,8 @@ import client.MapleCharacter;
 import client.MapleClient;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
-import packet.ClientPacket;
-import packet.ServerPacket;
+import packet.client.ClientPacket;
+import packet.server.ServerPacket;
 import server.maps.MapleDynamicPortal;
 import server.maps.MapleMap;
 

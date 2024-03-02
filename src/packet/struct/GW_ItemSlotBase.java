@@ -23,7 +23,7 @@ package packet.struct;
 import client.inventory.IEquip;
 import client.inventory.IItem;
 import config.ServerConfig;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 
 /**
  *

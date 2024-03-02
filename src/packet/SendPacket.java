@@ -1,6 +1,7 @@
 // クライアントから送信されたパケットに対応する処理
 package packet;
 
+import packet.client.ClientPacket;
 import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;

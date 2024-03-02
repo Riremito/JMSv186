@@ -24,7 +24,7 @@ import config.ServerConfig;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 
 import server.maps.AnimatedMapleMapObject;
 import server.movement.*;

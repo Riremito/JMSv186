@@ -31,7 +31,7 @@ import client.RockPaperScissors;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 import server.MapleInventoryManipulator;
 import server.life.MapleNPC;
 import server.quest.MapleQuest;

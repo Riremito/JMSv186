@@ -3,8 +3,8 @@ package packet.content;
 
 import client.MapleClient;
 import handling.MaplePacket;
-import packet.ClientPacket;
-import packet.ServerPacket;
+import packet.client.ClientPacket;
+import packet.server.ServerPacket;
 import scripting.ReactorScriptManager;
 import server.maps.MapleReactor;
 

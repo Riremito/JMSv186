@@ -1,6 +1,7 @@
 // クライアントへ送信するパケットの生成
 package packet;
 
+import packet.server.ServerPacket;
 import client.inventory.IItem;
 import handling.MaplePacket;
 import java.util.List;

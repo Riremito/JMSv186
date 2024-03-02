@@ -3,7 +3,7 @@ package packet.content;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import packet.ClientPacket;
+import packet.client.ClientPacket;
 import server.maps.MapleMap;
 
 public class PortalPacket {

@@ -28,8 +28,8 @@ import handling.channel.ChannelServer;
 import handling.login.LoginServer;
 import java.util.List;
 import java.util.Random;
-import packet.ClientPacket;
-import packet.ServerPacket;
+import packet.client.ClientPacket;
+import packet.server.ServerPacket;
 import packet.struct.AvatarLook;
 import packet.struct.GW_CharacterStat;
 

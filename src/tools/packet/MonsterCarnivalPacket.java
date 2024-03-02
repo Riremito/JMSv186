@@ -22,7 +22,7 @@ package tools.packet;
 
 import client.MapleCharacter;
 import handling.MaplePacket;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 import server.MapleCarnivalParty;
 import tools.data.output.MaplePacketLittleEndianWriter;
 

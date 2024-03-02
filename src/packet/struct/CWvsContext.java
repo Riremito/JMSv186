@@ -20,7 +20,7 @@
  */
 package packet.struct;
 
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 
 /**
  *

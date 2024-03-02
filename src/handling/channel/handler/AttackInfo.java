@@ -28,8 +28,8 @@ import constants.GameConstants;
 import client.MapleCharacter;
 import client.SkillFactory;
 import config.ServerConfig;
-import packet.ClientPacket;
-import packet.ServerPacket;
+import packet.client.ClientPacket;
+import packet.server.ServerPacket;
 import server.MapleStatEffect;
 import tools.AttackPair;
 

@@ -25,7 +25,7 @@ import client.inventory.IItem;
 import client.MapleClient;
 import handling.MaplePacket;
 import java.util.List;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 import server.MerchItemPackage;
 import server.shops.AbstractPlayerStore.BoughtItem;
 import server.shops.HiredMerchant;

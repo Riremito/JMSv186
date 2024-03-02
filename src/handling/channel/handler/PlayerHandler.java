@@ -37,7 +37,7 @@ import config.ServerConfig;
 import constants.MapConstants;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
-import packet.ClientPacket;
+import packet.client.ClientPacket;
 import packet.content.MobPacket;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;

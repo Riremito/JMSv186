@@ -22,7 +22,7 @@ import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoSession;
 import server.MTSStorage;
 import tools.FileoutputUtil;
-import packet.ClientPacket;
+import packet.client.ClientPacket;
 import packet.ProcessPacket;
 import packet.SendPacket;
 import packet.content.AdminPacket;

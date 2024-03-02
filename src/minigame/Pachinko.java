@@ -2,7 +2,7 @@ package minigame;
 
 import client.MapleCharacter;
 import handling.MaplePacket;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 
 public class Pachinko {
 

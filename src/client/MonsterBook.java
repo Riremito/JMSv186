@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import java.io.Serializable;
 
 import database.DatabaseConnection;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 import packet.content.ContextPacket;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;

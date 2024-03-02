@@ -1,5 +1,6 @@
 package packet;
 
+import packet.server.ServerPacket;
 import client.ISkill;
 import client.MapleCharacter;
 import client.MapleCoolDownValueHolder;

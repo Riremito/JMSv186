@@ -39,7 +39,7 @@ import handling.world.PartyOperation;
 import handling.world.PlayerBuffStorage;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
-import packet.ClientPacket;
+import packet.client.ClientPacket;
 import packet.content.ContextPacket;
 import packet.content.SocketPacket;
 import server.maps.FieldLimitType;

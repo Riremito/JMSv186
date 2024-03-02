@@ -27,7 +27,7 @@ import client.inventory.MapleInventoryType;
 import config.ServerConfig;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 
 /**
  *

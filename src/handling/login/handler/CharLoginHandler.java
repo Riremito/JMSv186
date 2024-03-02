@@ -35,7 +35,7 @@ import debug.Debug;
 import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
 import handling.login.LoginWorker;
-import packet.ClientPacket;
+import packet.client.ClientPacket;
 import packet.content.LoginPacket;
 import packet.content.LoginPacket.LoginResult;
 import server.MapleItemInformationProvider;

@@ -8,7 +8,7 @@ import debug.Debug;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import packet.ClientPacket;
+import packet.client.ClientPacket;
 import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
 import server.maps.MapleMap;

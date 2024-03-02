@@ -7,8 +7,8 @@ import client.MapleClient;
 import config.DebugConfig;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import packet.ServerPacket;
-import packet.ClientPacket;
+import packet.server.ServerPacket;
+import packet.client.ClientPacket;
 
 public class Debug {
 

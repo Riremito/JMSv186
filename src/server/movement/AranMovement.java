@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.movement;
 
 import java.awt.Point;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 import tools.data.output.LittleEndianWriter;
 
 public class AranMovement extends AbstractLifeMovement {

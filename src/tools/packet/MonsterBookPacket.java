@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tools.packet;
 
 import handling.MaplePacket;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 public class MonsterBookPacket {

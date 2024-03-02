@@ -26,7 +26,7 @@ import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
 import constants.GameConstants;
-import packet.ClientPacket;
+import packet.client.ClientPacket;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.maps.MapleMap;

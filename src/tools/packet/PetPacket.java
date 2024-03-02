@@ -27,7 +27,7 @@ import client.inventory.MaplePet;
 import client.MapleStat;
 import client.MapleCharacter;
 import handling.MaplePacket;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 import server.movement.LifeMovementFragment;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;

@@ -23,7 +23,7 @@ package packet.content;
 import client.MapleCharacter;
 import handling.MaplePacket;
 import java.awt.Point;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 import server.maps.MapleMapItem;
 
 /**

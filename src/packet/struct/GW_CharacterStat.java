@@ -25,7 +25,7 @@ import client.PlayerStats;
 import client.inventory.MaplePet;
 import config.ServerConfig;
 import constants.GameConstants;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 
 /**
  *

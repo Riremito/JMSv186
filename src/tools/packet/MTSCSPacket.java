@@ -37,7 +37,7 @@ import constants.ServerConstants;
 import tools.Pair;
 import java.util.Map;
 import java.util.Map.Entry;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 import packet.content.ContextPacket;
 import packet.content.ContextPacket.MessageArg;
 import packet.content.ContextPacket.MessageType;

@@ -1,5 +1,5 @@
 // クライアント側から送信されるパケットのヘッダの定義
-package packet;
+package packet.client;
 
 import config.ServerConfig;
 import java.util.Properties;

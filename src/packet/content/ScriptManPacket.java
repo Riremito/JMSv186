@@ -23,7 +23,7 @@ package packet.content;
 import config.ServerConfig;
 import debug.Debug;
 import handling.MaplePacket;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 
 /**
  *

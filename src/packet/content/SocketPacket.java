@@ -21,7 +21,7 @@
 package packet.content;
 
 import handling.MaplePacket;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
 
 /**
  *
