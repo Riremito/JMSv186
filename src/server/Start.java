@@ -13,11 +13,7 @@ import java.sql.SQLException;
 import database.DatabaseConnection;
 import debug.Debug;
 import handling.world.family.MapleFamilyBuff;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.PreparedStatement;
-import packet.*;
 import packet.content.PacketFlag;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
@@ -25,36 +21,6 @@ import server.life.PlayerNPC;
 import wz.LoadData;
 
 public class Start {
-
-    private static void HeaderDump() {
-        FileWriter fw;
-        try {
-            fw = new FileWriter("properties/packet/" + ServerConfig.GetRegionName() + "_v" + ServerConfig.GetVersion() + "_ServerPacket.properties");
-            PrintWriter pw = new PrintWriter(fw);
-            for (ServerPacket.Header header : ServerPacket.Header.values()) {
-                int val = (short) header.Get();
-                if (val != -1) {
-                    Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
-                    pw.println(header.name() + " = " + String.format("@%04X", val));
-                }
-            }
-            pw.close();
-            fw.close();
-
-            fw = new FileWriter("properties/packet/" + ServerConfig.GetRegionName() + "_v" + ServerConfig.GetVersion() + "_ClientPacket.properties");
-            pw = new PrintWriter(fw);
-            for (ClientPacket.Header header : ClientPacket.Header.values()) {
-                int val = (short) header.Get();
-                if (val != -1) {
-                    Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
-                    pw.println(header.name() + " = " + String.format("@%04X", val));
-                }
-            }
-            pw.close();
-            fw.close();
-        } catch (IOException e) {
-        }
-    }
 
     public final static void main(final String args[]) {
         // バージョン設定
@@ -79,8 +45,6 @@ public class Start {
         tools.admin.main.main();
 
         Debug.InfoLog(ServerConfig.GetRegionName() + " v" + ServerConfig.GetVersion() + "." + ServerConfig.GetSubVersion());
-
-        //HeaderDump();
         if (ServerConfig.IsJMS() && ServerConfig.GetVersion() == 131) {
             ServerConfig.SetPacketEncryption(false);
         }
