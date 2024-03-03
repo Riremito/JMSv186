@@ -9,6 +9,7 @@ import constants.BeansConstants;
 import constants.GameConstants;
 import java.util.ArrayList;
 import java.util.List;
+import packet.server.response.PachinkoResponse;
 import tools.FileoutputUtil;
 import server.Randomizer;
 import tools.data.input.LittleEndianAccessor;
@@ -89,7 +90,7 @@ public class BeanGame {
                     set进洞次数(7);
                 }
                 //  FileoutputUtil.log("log\\打豆豆进洞颜色.log", "进洞颜色" + beansInfo + "\r\n");
-                c.getSession().write(MaplePacketCreator.BeansJDCS(get进洞次数(), 加速旋转, 蓝, 绿, 红));
+                c.getSession().write(PachinkoResponse.BeansJDCS(get进洞次数(), 加速旋转, 蓝, 绿, 红));
                 break;
             case 4:
                 //记录进洞次数的黄色豆豆。最多只有7个。
@@ -264,14 +265,14 @@ public class BeanGame {
                     打中女皇出现特效A = false;
                     打中女皇出现特效B = false;
                 }
-                c.getSession().write(MaplePacketCreator.BeansJDXZ(get进洞次数(), 第一排, 第三排, 第二排, 启动打怪效果, 中奖率, 加速旋转, 打中女皇出现特效A, 打中女皇出现特效B));
+                c.getSession().write(PachinkoResponse.BeansJDXZ(get进洞次数(), 第一排, 第三排, 第二排, 启动打怪效果, 中奖率, 加速旋转, 打中女皇出现特效A, 打中女皇出现特效B));
                 if (第二排 != 9) {
                     if (Randomizer.nextInt(Integer.parseInt(黄金狗几率[0])) == Integer.parseInt(黄金狗几率[1]) && 黄金狗设置局数 == 0) {
                         黄金狗设置局数 = 1;
-                        c.getSession().write(MaplePacketCreator.BeansHJG((byte) 1));
+                        c.getSession().write(PachinkoResponse.BeansHJG((byte) 1));
                     } else {
                         黄金狗设置局数 = 0;
-                        c.getSession().write(MaplePacketCreator.BeansHJG((byte) 0));
+                        c.getSession().write(PachinkoResponse.BeansHJG((byte) 0));
                     }
                 }
                 break;
@@ -305,7 +306,7 @@ public class BeanGame {
                                         break;
                                     }
                                 }
-                                c.getSession().write(MaplePacketCreator.BeansUP(itemId));
+                                c.getSession().write(PachinkoResponse.BeansUP(itemId));
                             }
                             break;
                         case 1://紫色怪
@@ -320,7 +321,7 @@ public class BeanGame {
                                         break;
                                     }
                                 }
-                                c.getSession().write(MaplePacketCreator.BeansUP(itemId));
+                                c.getSession().write(PachinkoResponse.BeansUP(itemId));
                             } else if (Randomizer.nextInt(Integer.parseInt(色怪奖励[2])) > Randomizer.nextInt(Integer.parseInt(色怪奖励[3]))) {
                                 for (int i = 0; i < 消耗品.length; i++) {
                                     if (Randomizer.nextInt(消耗品.length) == i) {
@@ -329,7 +330,7 @@ public class BeanGame {
                                         break;
                                     }
                                 }
-                                c.getSession().write(MaplePacketCreator.BeansUP(itemId));
+                                c.getSession().write(PachinkoResponse.BeansUP(itemId));
                             }
                             break;
                         case 2://飞侠
@@ -347,7 +348,7 @@ public class BeanGame {
                                         break;
                                     }
                                 }
-                                c.getSession().write(MaplePacketCreator.BeansUP(itemId));
+                                c.getSession().write(PachinkoResponse.BeansUP(itemId));
                             } else if (Randomizer.nextInt(Integer.parseInt(五职业奖励[6])) > Randomizer.nextInt(Integer.parseInt(五职业奖励[7]))) {
                                 for (int i = 0; i < 豆豆坐骑.length; i++) {
                                     if (Randomizer.nextInt(豆豆坐骑.length) == i) {
@@ -355,7 +356,7 @@ public class BeanGame {
                                         break;
                                     }
                                 }
-                                c.getSession().write(MaplePacketCreator.BeansUP(itemId));
+                                c.getSession().write(PachinkoResponse.BeansUP(itemId));
                             } else if (Randomizer.nextInt(Integer.parseInt(五职业奖励[2])) > Randomizer.nextInt(Integer.parseInt(五职业奖励[3]))) {
                                 for (int i = 0; i < 消耗品.length; i++) {
                                     if (Randomizer.nextInt(消耗品.length) == i) {
@@ -364,7 +365,7 @@ public class BeanGame {
                                         break;
                                     }
                                 }
-                                c.getSession().write(MaplePacketCreator.BeansUP(itemId));
+                                c.getSession().write(PachinkoResponse.BeansUP(itemId));
                             }
                             break;
                         case 9://女皇
@@ -375,9 +376,9 @@ public class BeanGame {
                                         break;
                                     }
                                 }
-                                c.getSession().write(MaplePacketCreator.BeansUP(itemId));
+                                c.getSession().write(PachinkoResponse.BeansUP(itemId));
                             } else if (x == 海洋帽子几率) {
-                                c.getSession().write(MaplePacketCreator.BeansUP(海洋帽子));
+                                c.getSession().write(PachinkoResponse.BeansUP(海洋帽子));
                             } else if (Randomizer.nextInt(Integer.parseInt(女皇奖励[6])) > Randomizer.nextInt(Integer.parseInt(女皇奖励[7]))) {
                                 for (int i = 0; i < 豆豆坐骑.length; i++) {
                                     if (Randomizer.nextInt(豆豆坐骑.length) == i) {
@@ -385,7 +386,7 @@ public class BeanGame {
                                         break;
                                     }
                                 }
-                                c.getSession().write(MaplePacketCreator.BeansUP(itemId));
+                                c.getSession().write(PachinkoResponse.BeansUP(itemId));
                             } else if (Randomizer.nextInt(Integer.parseInt(女皇奖励[2])) > Randomizer.nextInt(Integer.parseInt(女皇奖励[3]))) {
                                 for (int i = 0; i < 消耗品.length; i++) {
                                     if (Randomizer.nextInt(消耗品.length) == i) {
@@ -394,7 +395,7 @@ public class BeanGame {
                                         break;
                                     }
                                 }
-                                c.getSession().write(MaplePacketCreator.BeansUP(itemId));
+                                c.getSession().write(PachinkoResponse.BeansUP(itemId));
                             }
                             break;
                         default:
@@ -408,21 +409,21 @@ public class BeanGame {
                     // chr.gainExp(1, true, false, true);
                     if (chr.getMapId() == 809030000) {
                         String notea = "恭喜你打豆豆成功中奖！当前中奖获得豆豆：" + 奖励豆豆 + "个！";
-                        c.getSession().write(MaplePacketCreator.BeansGameMessage(0x01, 0x01, notea));
+                        c.getSession().write(PachinkoResponse.BeansGameMessage(0x01, 0x01, notea));
                     }
                     if (黄金狗设置局数 > 0 && 第二排 == 9) {
                         黄金狗设置局数 = 0;
-                        c.getSession().write(MaplePacketCreator.BeansHJG((byte) 0));
+                        c.getSession().write(PachinkoResponse.BeansHJG((byte) 0));
                     }
-                    c.getSession().write(MaplePacketCreator.BeansZJgeidd(true, 奖励豆豆));
+                    c.getSession().write(PachinkoResponse.BeansZJgeidd(true, 奖励豆豆));
                 }
                 break;
             case 7:
                 if (黄金狗设置局数 > 0) {
                     黄金狗设置局数 = 0;
-                    c.getSession().write(MaplePacketCreator.BeansHJG((byte) 0));
+                    c.getSession().write(PachinkoResponse.BeansHJG((byte) 0));
                 }
-                c.getSession().write(MaplePacketCreator.BeansZJgeidd(true, 0));
+                c.getSession().write(PachinkoResponse.BeansZJgeidd(true, 0));
                 break;
             case 0x0B:
                 //0B[11] - 点start/stop的时候获得start/stop时豆豆的力度和序号
@@ -461,7 +462,7 @@ public class BeanGame {
             for (int i = 0; i < 5; i++) {
                 beansInfo.add(new MapleBeans(chr.getBeansRange() + rand(-100, 100), getBeanType(), chr.getBeansNum() + i));
             }
-            c.getSession().write(MaplePacketCreator.showBeans(beansInfo));
+            c.getSession().write(PachinkoResponse.showBeans(beansInfo));
         }
     }
 

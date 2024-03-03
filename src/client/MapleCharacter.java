@@ -5711,7 +5711,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     // パチンコ
     // CMS v72から流用
     public boolean StartPachinko(int type) {
-        client.getSession().write(MaplePacketCreator.openBeans(this, type));
+        client.getSession().write(PachinkoResponse.openBeans(this, type));
         return true;
     }
 
