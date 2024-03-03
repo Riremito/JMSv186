@@ -35,6 +35,7 @@ import handling.world.MaplePartyCharacter;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.concurrent.locks.Lock;
+import packet.server.response.LocalResponse;
 import packet.server.response.PetResponse;
 import server.Randomizer;
 import server.MapleInventoryManipulator;
@@ -121,7 +122,7 @@ public class PetHandler {
                 pet.setCloseness(newCloseness);
                 if (newCloseness >= GameConstants.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
-                    c.getSession().write(PetResponse.showOwnPetLevelUp(petIndex));
+                    c.getSession().write(LocalResponse.showOwnPetLevelUp(petIndex));
                     chr.getMap().broadcastMessage(PetResponse.showPetLevelUp(chr, petIndex));
                 }
                 c.getSession().write(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
@@ -170,7 +171,7 @@ public class PetHandler {
                 if (newCloseness >= GameConstants.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
 
-                    c.getSession().write(PetResponse.showOwnPetLevelUp(index));
+                    c.getSession().write(LocalResponse.showOwnPetLevelUp(index));
                     chr.getMap().broadcastMessage(PetResponse.showPetLevelUp(chr, index));
                 }
             }

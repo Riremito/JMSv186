@@ -26,6 +26,7 @@ import client.MapleClient;
 import client.MapleQuestStatus;
 import client.SkillFactory;
 import packet.client.handling.ContextPacket;
+import packet.server.response.LocalResponse;
 import packet.server.response.TestResponse;
 import scripting.EventManager;
 import scripting.NPCScriptManager;
@@ -745,7 +746,7 @@ public class MapScriptMethods {
                 c.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000016), (byte) -1, (byte) 0);
                 c.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000017), (byte) -1, (byte) 0);
                 c.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000018), (byte) -1, (byte) 0);
-                c.getSession().write(TestResponse.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
+                c.getSession().write(LocalResponse.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
                 c.getSession().write(TestResponse.IntroDisableUI(false));
                 c.getSession().write(TestResponse.IntroLock(false));
                 c.getSession().write(MaplePacketCreator.enableActions());
@@ -754,7 +755,7 @@ public class MapScriptMethods {
             case rienArrow: {
                 if (c.getPlayer().getInfoQuest(21019).equals("miss=o;helper=clear")) {
                     c.getPlayer().updateInfoQuest(21019, "miss=o;arr=o;helper=clear");
-                    c.getSession().write(TestResponse.AranTutInstructionalBalloon("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3"));
+                    c.getSession().write(LocalResponse.AranTutInstructionalBalloon("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3"));
                 }
                 break;
             }
@@ -837,7 +838,7 @@ public class MapScriptMethods {
     private static void showIntro(final MapleClient c, final String data) {
         c.getSession().write(TestResponse.IntroDisableUI(true));
         c.getSession().write(TestResponse.IntroLock(true));
-        c.getSession().write(TestResponse.ShowWZEffect(data));
+        c.getSession().write(LocalResponse.ShowWZEffect(data));
     }
 
     private static void sendDojoClock(MapleClient c, int time) {

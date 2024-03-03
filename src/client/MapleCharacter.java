@@ -89,6 +89,7 @@ import packet.client.handling.SummonPacket;
 import packet.client.handling.UserPacket;
 import packet.server.response.FreeMarketResponse;
 import packet.server.response.FriendResponse;
+import packet.server.response.LocalResponse;
 import packet.server.response.MonsterCarnivalResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
@@ -1541,7 +1542,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     cancelBuffStats(MapleBuffStat.DRAGONBLOOD);
                 } else {
                     addHP(-bloodEffect.getX());
-                    client.getSession().write(MaplePacketCreator.showOwnBuffEffect(bloodEffect.getSourceId(), 5));
+                    client.getSession().write(LocalResponse.showOwnBuffEffect(bloodEffect.getSourceId(), 5));
                     map.broadcastMessage(MapleCharacter.this, MaplePacketCreator.showBuffeffect(getId(), bloodEffect.getSourceId(), 5), false);
                 }
             }
@@ -1961,7 +1962,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     if (energyLevel < 10000) {
                         energyLevel += (echeff.getX() * targets);
 
-                        client.getSession().write(MaplePacketCreator.showOwnBuffEffect(skillid, 2));
+                        client.getSession().write(LocalResponse.showOwnBuffEffect(skillid, 2));
                         map.broadcastMessage(this, MaplePacketCreator.showBuffeffect(id, skillid, 2), false);
 
                         if (energyLevel >= 10000) {
@@ -2650,7 +2651,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 if (charms > 0xFF) {
                     charms = 0xFF;
                 }
-                client.getSession().write(TestResponse.useCharm((byte) charms, (byte) 0));
+                client.getSession().write(LocalResponse.useCharm((byte) charms, (byte) 0));
             } else {
                 float diepercentage = 0.0f;
                 int expforlevel = GameConstants.getExpNeededForLevel(level);
@@ -2713,13 +2714,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void healHP(int delta) {
         addHP(delta);
-        client.getSession().write(MaplePacketCreator.showOwnHpHealed(delta));
+        client.getSession().write(LocalResponse.showOwnHpHealed(delta));
         getMap().broadcastMessage(this, MaplePacketCreator.showHpHealed(getId(), delta), false);
     }
 
     public void healMP(int delta) {
         addMP(delta);
-        client.getSession().write(MaplePacketCreator.showOwnHpHealed(delta));
+        client.getSession().write(LocalResponse.showOwnHpHealed(delta));
         getMap().broadcastMessage(this, MaplePacketCreator.showHpHealed(getId(), delta), false);
     }
 
@@ -4392,7 +4393,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (skilllevel >= 1) {
             final MapleStatEffect ampStat = BerserkX.getEffect(skilllevel);
             stats.Berserk = stats.getHp() * 100 / stats.getMaxHp() <= ampStat.getX();
-            client.getSession().write(MaplePacketCreator.showOwnBuffEffect(1320006, 1, (byte) (stats.Berserk ? 1 : 0)));
+            client.getSession().write(LocalResponse.showOwnBuffEffect(1320006, 1, (byte) (stats.Berserk ? 1 : 0)));
             map.broadcastMessage(this, MaplePacketCreator.showBuffeffect(getId(), 1320006, 1, (byte) (stats.Berserk ? 1 : 0)), false);
 
             BerserkSchedule = BuffTimer.getInstance().schedule(new Runnable() {
@@ -4458,7 +4459,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     if (berserkLvl == 0 || remhppercentage >= berserkLvl + 10) {
                         addHP(healEffect.getHp());
                     }
-                    client.getSession().write(MaplePacketCreator.showOwnBuffEffect(1321007, 2));
+                    client.getSession().write(LocalResponse.showOwnBuffEffect(1321007, 2));
                     map.broadcastMessage(MaplePacketCreator.summonSkill(getId(), 1321007, 5));
                     map.broadcastMessage(MapleCharacter.this, MaplePacketCreator.showBuffeffect(getId(), 1321007, 2), false);
                 }
@@ -4474,7 +4475,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 @Override
                 public void run() {
                     buffEffect.applyTo(MapleCharacter.this);
-                    client.getSession().write(MaplePacketCreator.showOwnBuffEffect(1321007, 2));
+                    client.getSession().write(LocalResponse.showOwnBuffEffect(1321007, 2));
                     map.broadcastMessage(MaplePacketCreator.summonSkill(getId(), 1321007, Randomizer.nextInt(3) + 6));
                     map.broadcastMessage(MapleCharacter.this, MaplePacketCreator.showBuffeffect(getId(), 1321007, 2), false);
                 }
@@ -4799,7 +4800,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
         if (possessed > 0) {
             MapleInventoryManipulator.removeById(getClient(), type, id, possessed, true, false);
-            getClient().getSession().write(MaplePacketCreator.getShowItemGain(id, (short) -possessed, true));
+            getClient().getSession().write(LocalResponse.getShowItemGain(id, (short) -possessed, true));
         }
         /*if (type == MapleInventoryType.EQUIP) { //check equipped
         type = MapleInventoryType.EQUIPPED;

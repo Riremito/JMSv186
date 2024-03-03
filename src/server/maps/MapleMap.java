@@ -70,6 +70,7 @@ import packet.client.handling.NPCPacket;
 import packet.client.handling.ReactorPacket;
 import packet.client.handling.SummonPacket;
 import packet.client.handling.UserPacket;
+import packet.server.response.LocalResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
 import server.MapleItemInformationProvider;
@@ -552,7 +553,7 @@ public final class MapleMap {
                             case 8810018:
                             case 8810122:
                             case 8820001:
-                                mc.getClient().getSession().write(MaplePacketCreator.showOwnBuffEffect(buffid, 11)); // HT nine spirit
+                                mc.getClient().getSession().write(LocalResponse.showOwnBuffEffect(buffid, 11)); // HT nine spirit
                                 broadcastMessage(mc, MaplePacketCreator.showBuffeffect(mc.getId(), buffid, 11), false); // HT nine spirit
                                 break;
                         }

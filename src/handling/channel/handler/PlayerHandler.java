@@ -40,6 +40,7 @@ import java.lang.ref.WeakReference;
 import packet.client.ClientPacket;
 import packet.client.handling.MobPacket;
 import packet.server.response.FriendResponse;
+import packet.server.response.LocalResponse;
 import packet.server.response.TestResponse;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -895,7 +896,7 @@ public class PlayerHandler {
                     final MapleMap to = chr.getMap().getReturnMap();
                     chr.changeMap(to, to.getPortal(0));
                 } else {
-                    c.getSession().write(TestResponse.useWheel((byte) (chr.getInventory(MapleInventoryType.CASH).countById(5510000) - 1)));
+                    c.getSession().write(LocalResponse.useWheel((byte) (chr.getInventory(MapleInventoryType.CASH).countById(5510000) - 1)));
                     chr.getStat().setHp(((chr.getStat().getMaxHp() / 100) * 40));
                     MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, 5510000, 1, true, false);
 

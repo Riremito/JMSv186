@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 import packet.server.ServerPacket;
+import packet.server.response.LocalResponse;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
@@ -863,7 +864,7 @@ public class PlayerStats implements Serializable {
         }
         if (changed) {
             chr.equipChanged();
-            chr.getClient().getSession().write(MaplePacketCreator.showItemLevelupEffect());
+            chr.getClient().getSession().write(LocalResponse.showItemLevelupEffect());
             chr.getMap().broadcastMessage(chr, MaplePacketCreator.showForeignItemLevelupEffect(chr.getId()), false);
         }
         return changed;

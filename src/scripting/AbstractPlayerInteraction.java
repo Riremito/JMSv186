@@ -52,6 +52,7 @@ import tools.MaplePacketCreator;
 import client.inventory.MapleInventoryIdentifier;
 import handling.world.World;
 import packet.client.handling.ContextPacket;
+import packet.server.response.LocalResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.TestResponse;
 import server.events.MapleEvent;
@@ -167,7 +168,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void playPortalSE() {
-        c.getSession().write(MaplePacketCreator.showOwnBuffEffect(0, 8));
+        c.getSession().write(LocalResponse.showOwnBuffEffect(0, 8));
     }
 
     private final MapleMap getWarpMap(final int map) {
@@ -470,7 +471,7 @@ public abstract class AbstractPlayerInteraction {
         } else {
             MapleInventoryManipulator.removeById(cg, GameConstants.getInventoryType(id), id, -quantity, true, false);
         }
-        cg.getSession().write(MaplePacketCreator.getShowItemGain(id, quantity, true));
+        cg.getSession().write(LocalResponse.getShowItemGain(id, quantity, true));
         return item_info;
     }
 
@@ -634,7 +635,7 @@ public abstract class AbstractPlayerInteraction {
             } else {
                 MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, -quantity, true, false);
             }
-            chr.getClient().getSession().write(MaplePacketCreator.getShowItemGain(id, quantity, true));
+            chr.getClient().getSession().write(LocalResponse.getShowItemGain(id, quantity, true));
         }
     }
 
@@ -718,7 +719,7 @@ public abstract class AbstractPlayerInteraction {
             final int possesed = chr.getInventory(GameConstants.getInventoryType(id)).countById(id);
             if (possesed > 0) {
                 MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(id), id, possesed, true, false);
-                chr.getClient().getSession().write(MaplePacketCreator.getShowItemGain(id, (short) -possesed, true));
+                chr.getClient().getSession().write(LocalResponse.getShowItemGain(id, (short) -possesed, true));
             }
         }
     }
@@ -820,7 +821,7 @@ public abstract class AbstractPlayerInteraction {
 
     public final void dojo_getUp() {
         c.SendPacket(ContextPacket.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
-        c.getSession().write(MaplePacketCreator.Mulung_DojoUp2());
+        c.getSession().write(LocalResponse.Mulung_DojoUp2());
         c.getSession().write(MaplePacketCreator.instantMapWarp((byte) 6));
     }
 
@@ -907,15 +908,15 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void AranTutInstructionalBubble(final String data) {
-        c.getSession().write(TestResponse.AranTutInstructionalBalloon(data));
+        c.getSession().write(LocalResponse.AranTutInstructionalBalloon(data));
     }
 
     public final void ShowWZEffect(final String data) {
-        c.getSession().write(TestResponse.AranTutInstructionalBalloon(data));
+        c.getSession().write(LocalResponse.AranTutInstructionalBalloon(data));
     }
 
     public final void showWZEffect(final String data) {
-        c.getSession().write(TestResponse.ShowWZEffect(data));
+        c.getSession().write(LocalResponse.ShowWZEffect(data));
     }
 
     public final void EarnTitleMsg(final String data) {

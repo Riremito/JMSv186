@@ -62,6 +62,7 @@ import packet.client.handling.DropPacket;
 import packet.client.handling.DropPacket.LeaveType;
 import packet.server.response.DueyResponse;
 import packet.server.response.FreeMarketResponse;
+import packet.server.response.LocalResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.TemporaryStatResponse;
 import packet.server.response.TestResponse;
@@ -224,7 +225,7 @@ public class InventoryHandler {
                                 }
                                 MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(itemId), itemId, 1, false, false);
 
-                                c.getSession().write(MaplePacketCreator.showRewardItemAnimation(reward.itemid, reward.effect));
+                                c.getSession().write(LocalResponse.showRewardItemAnimation(reward.itemid, reward.effect));
                                 chr.getMap().broadcastMessage(chr, MaplePacketCreator.showRewardItemAnimation(reward.itemid, reward.effect, chr.getId()), false);
                                 rewarded = true;
                                 return true;
@@ -993,7 +994,7 @@ public class InventoryHandler {
             }
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.ETC, (byte) slot, (short) 1, true);
             MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, keyIDforRemoval, 1, true, false);
-            c.getSession().write(MaplePacketCreator.getShowItemGain(reward, (short) amount, true));
+            c.getSession().write(LocalResponse.getShowItemGain(reward, (short) amount, true));
 
             if (GameConstants.gachaponRareItem(item.getItemId()) > 0) {
                 World.Broadcast.broadcastMessage(MaplePacketCreator.getGachaponMega("[" + box + " Chest] " + c.getPlayer().getName(), " : Lucky winner of Gachapon!", item, (byte) 2).getBytes());
@@ -1751,7 +1752,7 @@ public class InventoryHandler {
                     }
                     if (pet.getCloseness() >= GameConstants.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                         pet.setLevel(pet.getLevel() + 1);
-                        c.getSession().write(PetResponse.showOwnPetLevelUp(c.getPlayer().getPetIndex(pet)));
+                        c.getSession().write(LocalResponse.showOwnPetLevelUp(c.getPlayer().getPetIndex(pet)));
                         c.getPlayer().getMap().broadcastMessage(PetResponse.showPetLevelUp(c.getPlayer(), petindex));
                     }
                 }

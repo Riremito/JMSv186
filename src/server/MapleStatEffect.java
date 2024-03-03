@@ -38,6 +38,7 @@ import server.maps.MapleMist;
 import server.maps.MapleSummon;
 import server.maps.SummonMovementType;
 import java.util.EnumMap;
+import packet.server.response.LocalResponse;
 import packet.server.response.TemporaryStatResponse;
 import server.MapleCarnivalFactory.MCSkill;
 import server.Timer.BuffTimer;
@@ -744,7 +745,7 @@ public class MapleStatEffect implements Serializable {
                         if (absorbMp > 0) {
                             mob.setMp(mob.getMp() - absorbMp);
                             applyto.getStat().setMp((short) (applyto.getStat().getMp() + absorbMp));
-                            applyto.getClient().getSession().write(MaplePacketCreator.showOwnBuffEffect(sourceid, 1));
+                            applyto.getClient().getSession().write(LocalResponse.showOwnBuffEffect(sourceid, 1));
                             applyto.getMap().broadcastMessage(applyto, MaplePacketCreator.showBuffeffect(applyto.getId(), sourceid, 1), false);
                         }
                     }
@@ -831,7 +832,7 @@ public class MapleStatEffect implements Serializable {
 
         if (expinc != 0) {
             applyto.gainExp(expinc, true, true, false);
-            applyto.getClient().getSession().write(MaplePacketCreator.showSpecialEffect(17));
+            applyto.getClient().getSession().write(LocalResponse.showSpecialEffect(17));
         } else if (GameConstants.isMonsterCard(sourceid)) {
             applyto.getMonsterBook().addCard(applyto.getClient(), sourceid);
         } else if (isSpiritClaw() && !applyto.isClone()) {
@@ -984,7 +985,7 @@ public class MapleStatEffect implements Serializable {
                 }
                 for (MapleCharacter chr : awarded) {
                     applyTo(applyfrom, chr, false, null, newDuration);
-                    chr.getClient().getSession().write(MaplePacketCreator.showOwnBuffEffect(sourceid, 2));
+                    chr.getClient().getSession().write(LocalResponse.showOwnBuffEffect(sourceid, 2));
                     chr.getMap().broadcastMessage(chr, MaplePacketCreator.showBuffeffect(chr.getId(), sourceid, 2), false);
                 }
             }
@@ -998,7 +999,7 @@ public class MapleStatEffect implements Serializable {
                 if (affected != applyfrom && (isGmBuff() || applyfrom.getParty().equals(affected.getParty()))) {
                     if ((isResurrection() && !affected.isAlive()) || (!isResurrection() && affected.isAlive())) {
                         applyTo(applyfrom, affected, false, null, newDuration);
-                        affected.getClient().getSession().write(MaplePacketCreator.showOwnBuffEffect(sourceid, 2));
+                        affected.getClient().getSession().write(LocalResponse.showOwnBuffEffect(sourceid, 2));
                         affected.getMap().broadcastMessage(affected, MaplePacketCreator.showBuffeffect(affected.getId(), sourceid, 2), false);
                     }
                     if (isTimeLeap()) {

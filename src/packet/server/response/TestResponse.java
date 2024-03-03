@@ -130,16 +130,6 @@ public class TestResponse {
         return mplew.getPacket();
     }
 
-    public static MaplePacket useCharm(byte charmsleft, byte daysleft) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
-        mplew.write(6);
-        mplew.write(1);
-        mplew.write(charmsleft);
-        mplew.write(daysleft);
-        return mplew.getPacket();
-    }
-
     public static MaplePacket useChalkboard(final int charid, final String msg) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserADBoard.Get());
@@ -150,14 +140,6 @@ public class TestResponse {
             mplew.write(1);
             mplew.writeMapleAsciiString(msg);
         }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket useWheel(byte charmsleft) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
-        mplew.write(21);
-        mplew.writeLong(charmsleft);
         return mplew.getPacket();
     }
 
@@ -214,23 +196,6 @@ public class TestResponse {
         mplew.writeInt(200); // IDK
         mplew.writeShort(0);
         mplew.writeInt(10000); // Probably delay
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket ShowWZEffect(final String data) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
-        mplew.write(19);
-        mplew.writeMapleAsciiString(data);
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket AranTutInstructionalBalloon(final String data) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
-        mplew.write(24);
-        mplew.writeMapleAsciiString(data);
-        mplew.writeInt(1);
         return mplew.getPacket();
     }
 

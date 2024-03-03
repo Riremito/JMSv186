@@ -494,32 +494,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket getShowItemGain(int itemId, short quantity, boolean inChat) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
-        mplew.write(3);
-        mplew.write(1); // item count
-        mplew.writeInt(itemId);
-        mplew.writeInt(quantity);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket showRewardItemAnimation(int itemId, String effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
-        mplew.write(0x0F);
-        mplew.writeInt(itemId);
-        mplew.write(effect != null && effect.length() > 0 ? 1 : 0);
-        if (effect != null && effect.length() > 0) {
-            mplew.writeMapleAsciiString(effect);
-        }
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket showRewardItemAnimation(int itemId, String effect, int from_playerid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -790,14 +764,6 @@ public class MaplePacketCreator {
         mplew.writeShort(ServerPacket.Header.LP_UserItemReleaseEffect.Get());
         mplew.writeInt(chr);
         mplew.writeShort(pos);
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket ItemMakerResult(boolean is_success) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
-        mplew.write(0x11);
-        mplew.writeInt(is_success ? 0 : 1);
         return mplew.getPacket();
     }
 
@@ -1112,40 +1078,8 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket showOwnBuffEffect(int skillid, int effectid) {
-        return showOwnBuffEffect(skillid, effectid, (byte) 3);
-    }
-
-    public static MaplePacket showOwnBuffEffect(int skillid, int effectid, byte direction) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
-        mplew.write(effectid);
-        mplew.writeInt(skillid);
-        mplew.write(1); //skill level = 1 for the lulz
-        mplew.write(1); //0 = doesnt show? or is this even here
-        if (direction != (byte) 3) {
-            mplew.write(direction);
-        }
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket showItemLevelupEffect() {
-        return showSpecialEffect(17);
-    }
-
     public static MaplePacket showForeignItemLevelupEffect(int cid) {
         return showSpecialEffect(cid, 17);
-    }
-
-    public static MaplePacket showSpecialEffect(int effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
-        mplew.write(effect);
-
-        return mplew.getPacket();
     }
 
     public static MaplePacket showSpecialEffect(int cid, int effect) {
@@ -1737,15 +1671,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket Mulung_DojoUp2() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
-        mplew.write(8); // portal sound
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket showOXQuiz(int questionSet, int questionId, boolean askQuestion) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_Quiz.Get());
@@ -2038,14 +1963,6 @@ public class MaplePacketCreator {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.Get());
         mplew.writeInt(cid);
-        mplew.write(0x0A); //Type 
-        mplew.writeInt(amount);
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket showOwnHpHealed(final int amount) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
         mplew.write(0x0A); //Type 
         mplew.writeInt(amount);
         return mplew.getPacket();
