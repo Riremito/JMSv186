@@ -26,6 +26,7 @@ import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import handling.world.PartyOperation;
 import handling.world.World;
+import packet.server.response.PartyResponse;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -43,12 +44,12 @@ public class PartyHandler {
                         c.getPlayer().receivePartyMemberHP();
                         c.getPlayer().updatePartyMemberHP();
                     } else {
-                        c.getSession().write(MaplePacketCreator.partyStatusMessage(17));
+                        c.getSession().write(PartyResponse.partyStatusMessage(17));
                     }
                 } else if (action != 0x16) {
                     final MapleCharacter cfrom = c.getChannelServer().getPlayerStorage().getCharacterById(party.getLeader().getId());
                     if (cfrom != null) {
-                        cfrom.getClient().getSession().write(MaplePacketCreator.partyStatusMessage(23, c.getPlayer().getName()));
+                        cfrom.getClient().getSession().write(PartyResponse.partyStatusMessage(23, c.getPlayer().getName()));
                     }
                 }
             } else {
@@ -70,11 +71,11 @@ public class PartyHandler {
                 if (c.getPlayer().getParty() == null) {
                     party = World.Party.createParty(partyplayer);
                     c.getPlayer().setParty(party);
-                    c.getSession().write(MaplePacketCreator.partyCreated(party.getId()));
+                    c.getSession().write(PartyResponse.partyCreated(party.getId()));
 
                 } else {
                     if (partyplayer.equals(party.getLeader()) && party.getMembers().size() == 1) { //only one, reupdate
-                        c.getSession().write(MaplePacketCreator.partyCreated(party.getId()));
+                        c.getSession().write(PartyResponse.partyCreated(party.getId()));
                     } else {
                         c.getPlayer().dropMessage(5, "You can't create a party as you are already in one");
                     }
@@ -112,7 +113,7 @@ public class PartyHandler {
                             c.getPlayer().receivePartyMemberHP();
                             c.getPlayer().updatePartyMemberHP();
                         } else {
-                            c.getSession().write(MaplePacketCreator.partyStatusMessage(17));
+                            c.getSession().write(PartyResponse.partyStatusMessage(17));
                         }
                     } else {
                         c.getPlayer().dropMessage(5, "The party you are trying to join does not exist");
@@ -127,16 +128,16 @@ public class PartyHandler {
                 if (invited != null) {
                     if (invited.getParty() == null && party != null) {
                         if (party.getMembers().size() < 6) {
-                            c.getSession().write(MaplePacketCreator.partyStatusMessage(22, invited.getName()));
-                            invited.getClient().getSession().write(MaplePacketCreator.partyInvite(c.getPlayer()));
+                            c.getSession().write(PartyResponse.partyStatusMessage(22, invited.getName()));
+                            invited.getClient().getSession().write(PartyResponse.partyInvite(c.getPlayer()));
                         } else {
-                            c.getSession().write(MaplePacketCreator.partyStatusMessage(16));
+                            c.getSession().write(PartyResponse.partyStatusMessage(16));
                         }
                     } else {
-                        c.getSession().write(MaplePacketCreator.partyStatusMessage(17));
+                        c.getSession().write(PartyResponse.partyStatusMessage(17));
                     }
                 } else {
-                    c.getSession().write(MaplePacketCreator.partyStatusMessage(19));
+                    c.getSession().write(PartyResponse.partyStatusMessage(19));
                 }
                 break;
             case 5: // expel

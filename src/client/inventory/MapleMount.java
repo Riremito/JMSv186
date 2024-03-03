@@ -29,6 +29,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.io.Serializable;
 
 import database.DatabaseConnection;
+import packet.server.response.TemporaryStatResponse;
 import server.Randomizer;
 import tools.MaplePacketCreator;
 
@@ -171,7 +172,7 @@ public class MapleMount implements Serializable {
         final MapleCharacter chr = owner.get();
         if (chr != null) {
 //	    cancelSchedule();
-            chr.getMap().broadcastMessage(MaplePacketCreator.updateMount(chr, false));
+            chr.getMap().broadcastMessage(TemporaryStatResponse.updateMount(chr, false));
         }
     }
 }

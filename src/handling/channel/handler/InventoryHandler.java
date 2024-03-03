@@ -63,6 +63,7 @@ import packet.client.handling.DropPacket.LeaveType;
 import packet.server.response.DueyResponse;
 import packet.server.response.FreeMarketResponse;
 import packet.server.response.PetResponse;
+import packet.server.response.TemporaryStatResponse;
 import packet.server.response.TestResponse;
 import packet.server.response.VegaSpellResponse;
 import packet.server.response.ViciousHammerResponse;
@@ -686,7 +687,7 @@ public class InventoryHandler {
                     levelup = true;
                 }
             }
-            chr.getMap().broadcastMessage(MaplePacketCreator.updateMount(chr, levelup));
+            chr.getMap().broadcastMessage(TemporaryStatResponse.updateMount(chr, levelup));
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
         }
         c.getSession().write(MaplePacketCreator.enableActions());
@@ -1763,7 +1764,7 @@ public class InventoryHandler {
                 final int itemSearch = slea.readInt();
                 final List<HiredMerchant> hms = c.getChannelServer().searchMerchant(itemSearch);
                 if (hms.size() > 0) {
-                    c.getSession().write(MaplePacketCreator.getOwlSearched(itemSearch, hms));
+                    c.getSession().write(FreeMarketResponse.getOwlSearched(itemSearch, hms));
                     used = true;
                 } else {
                     c.getPlayer().dropMessage(1, "Unable to find the item.");
@@ -2206,7 +2207,7 @@ public class InventoryHandler {
             final int itemSearch = slea.readInt();
             final List<HiredMerchant> hms = c.getChannelServer().searchMerchant(itemSearch);
             if (hms.size() > 0) {
-                c.getSession().write(MaplePacketCreator.getOwlSearched(itemSearch, hms));
+                c.getSession().write(FreeMarketResponse.getOwlSearched(itemSearch, hms));
                 MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, itemid, 1, true, false);
             } else {
                 c.getPlayer().dropMessage(1, "Unable to find the item.");
@@ -2218,7 +2219,7 @@ public class InventoryHandler {
     public static final void Owl(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         if (c.getPlayer().haveItem(5230000, 1, true, false) || c.getPlayer().haveItem(2310000, 1, true, false)) {
             if (c.getPlayer().getMapId() >= 910000000 && c.getPlayer().getMapId() <= 910000022) {
-                c.getSession().write(MaplePacketCreator.getOwlOpen());
+                c.getSession().write(FreeMarketResponse.getOwlOpen());
             } else {
                 c.getPlayer().dropMessage(5, "This can only be used inside the Free Market.");
                 c.getSession().write(MaplePacketCreator.enableActions());

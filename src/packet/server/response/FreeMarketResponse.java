@@ -21,7 +21,10 @@ package packet.server.response;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.IItem;
+import client.inventory.MapleInventoryType;
+import constants.GameConstants;
 import handling.MaplePacket;
+import handling.channel.handler.InventoryHandler;
 import java.util.List;
 import packet.server.ServerPacket;
 import packet.server.response.struct.TestHelper;
@@ -568,6 +571,59 @@ public class FreeMarketResponse {
         mplew.write(-1);
         mplew.writeMapleAsciiString(minigame.getDescription());
         mplew.writeShort(minigame.getPieceType());
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getOwlSearched(final int itemSearch, final List<HiredMerchant> hms) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_ShopScannerResult.Get());
+        mplew.write(6);
+        mplew.writeInt(0);
+        mplew.writeInt(itemSearch);
+        int size = 0;
+        for (HiredMerchant hm : hms) {
+            size += hm.searchItem(itemSearch).size();
+        }
+        mplew.writeInt(size);
+        for (HiredMerchant hm : hms) {
+            final List<MaplePlayerShopItem> items = hm.searchItem(itemSearch);
+            for (MaplePlayerShopItem item : items) {
+                mplew.writeMapleAsciiString(hm.getOwnerName());
+                mplew.writeInt(hm.getMap().getId());
+                mplew.writeMapleAsciiString(hm.getDescription());
+                mplew.writeInt(item.item.getQuantity()); //I THINK.
+                mplew.writeInt(item.bundles); //I THINK.
+                mplew.writeInt(item.price);
+                switch (InventoryHandler.OWL_ID) {
+                    case 0:
+                        mplew.writeInt(hm.getOwnerId()); //store ID
+                        break;
+                    case 1:
+                        mplew.writeInt(hm.getStoreId());
+                        break;
+                    default:
+                        mplew.writeInt(hm.getObjectId());
+                        break;
+                }
+                mplew.write(hm.getFreeSlot() == -1 ? 1 : 0);
+                mplew.write(GameConstants.getInventoryType(itemSearch).getType()); //position?
+                if (GameConstants.getInventoryType(itemSearch) == MapleInventoryType.EQUIP) {
+                    TestHelper.addItemInfo(mplew, item.item, true, true);
+                }
+            }
+        }
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getOwlOpen() {
+        //best items! hardcoded
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_ShopScannerResult.Get());
+        mplew.write(7);
+        mplew.write(GameConstants.owlItems.length);
+        for (int i : GameConstants.owlItems) {
+            mplew.writeInt(i);
+        } //these are the most searched items. too lazy to actually make
         return mplew.getPacket();
     }
 

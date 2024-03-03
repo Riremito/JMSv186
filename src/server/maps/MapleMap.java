@@ -70,6 +70,7 @@ import packet.client.handling.NPCPacket;
 import packet.client.handling.ReactorPacket;
 import packet.client.handling.SummonPacket;
 import packet.client.handling.UserPacket;
+import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
@@ -1414,7 +1415,7 @@ public final class MapleMap {
             public final void sendPackets(MapleClient c) {
                 c.getSession().write(MaplePacketCreator.spawnDoor(door.getOwner().getId(), door.getTargetPosition(), false));
                 if (door.getOwner().getParty() != null && (door.getOwner() == c.getPlayer() || door.getOwner().getParty().containsMembers(new MaplePartyCharacter(c.getPlayer())))) {
-                    c.getSession().write(MaplePacketCreator.partyPortal(door.getTown().getId(), door.getTarget().getId(), door.getSkill(), door.getTargetPosition()));
+                    c.getSession().write(PartyResponse.partyPortal(door.getTown().getId(), door.getTarget().getId(), door.getSkill(), door.getTargetPosition()));
                 }
                 c.getSession().write(MaplePacketCreator.spawnPortal(door.getTown().getId(), door.getTarget().getId(), door.getSkill(), door.getTargetPosition()));
                 c.getSession().write(MaplePacketCreator.enableActions());
@@ -1813,7 +1814,7 @@ public final class MapleMap {
         }
         if (chr.getParty() != null && !chr.isClone()) {
             chr.silentPartyUpdate();
-            chr.getClient().getSession().write(MaplePacketCreator.updateParty(chr.getClient().getChannel(), chr.getParty(), PartyOperation.SILENT_UPDATE, null));
+            chr.getClient().getSession().write(PartyResponse.updateParty(chr.getClient().getChannel(), chr.getParty(), PartyOperation.SILENT_UPDATE, null));
             chr.updatePartyMemberHP();
             chr.receivePartyMemberHP();
         }

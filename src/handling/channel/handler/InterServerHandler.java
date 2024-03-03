@@ -43,6 +43,7 @@ import packet.client.ClientPacket;
 import packet.client.handling.ContextPacket;
 import packet.client.handling.SocketPacket;
 import packet.server.response.FamilyResponse;
+import packet.server.response.FriendResponse;
 import packet.server.response.GuildResponse;
 import server.maps.FieldLimitType;
 import tools.FileoutputUtil;
@@ -156,7 +157,7 @@ public class InterServerHandler {
                 ble.setChannel(onlineBuddy.getChannel());
                 player.getBuddylist().put(ble);
             }
-            c.getSession().write(MaplePacketCreator.updateBuddylist(player.getBuddylist().getBuddies()));
+            c.getSession().write(FriendResponse.updateBuddylist(player.getBuddylist().getBuddies()));
 
             // Start of Messenger
             final MapleMessenger messenger = player.getMessenger();
@@ -211,7 +212,7 @@ public class InterServerHandler {
         final CharacterNameAndId pendingBuddyRequest = player.getBuddylist().pollPendingRequest();
         if (pendingBuddyRequest != null) {
             player.getBuddylist().put(new BuddylistEntry(pendingBuddyRequest.getName(), pendingBuddyRequest.getId(), "ETC", -1, false, pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
-            c.getSession().write(MaplePacketCreator.requestBuddylistAdd(pendingBuddyRequest.getId(), pendingBuddyRequest.getName(), pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
+            c.getSession().write(FriendResponse.requestBuddylistAdd(pendingBuddyRequest.getId(), pendingBuddyRequest.getName(), pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
         }
         player.expirationTask();
         if (player.getJob() == 132) { // DARKKNIGHT

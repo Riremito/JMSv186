@@ -47,6 +47,7 @@ import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import packet.client.handling.ContextPacket;
 import packet.server.response.GuildResponse;
+import packet.server.response.PartyResponse;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -435,11 +436,11 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public final void guildChat(final String name, final int cid, final String msg) {
-        broadcast(MaplePacketCreator.multiChat(name, msg, 2), cid);
+        broadcast(PartyResponse.multiChat(name, msg, 2), cid);
     }
 
     public final void allianceChat(final String name, final int cid, final String msg) {
-        broadcast(MaplePacketCreator.multiChat(name, msg, 3), cid);
+        broadcast(PartyResponse.multiChat(name, msg, 3), cid);
     }
 
     public final String getRankTitle(final int rank) {

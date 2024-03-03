@@ -39,7 +39,9 @@ import handling.world.guild.MapleGuildCharacter;
 import handling.world.guild.MapleGuildSummary;
 import java.util.Collection;
 import packet.client.handling.UserPacket;
+import packet.server.response.FriendResponse;
 import packet.server.response.GuildResponse;
+import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
 import server.Timer.WorldTimer;
 import server.maps.MapleMap;
@@ -172,7 +174,7 @@ public class World {
                 if (ch > 0) {
                     MapleCharacter chr = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(partychar.getName());
                     if (chr != null && !chr.getName().equalsIgnoreCase(namefrom)) { //Extra check just in case
-                        chr.getClient().getSession().write(MaplePacketCreator.multiChat(namefrom, chattext, 1));
+                        chr.getClient().getSession().write(PartyResponse.multiChat(namefrom, chattext, 1));
                     }
                 }
             }
@@ -217,7 +219,7 @@ public class World {
                         } else {
                             chr.setParty(party);
                         }
-                        chr.getClient().getSession().write(MaplePacketCreator.updateParty(chr.getClient().getChannel(), party, operation, target));
+                        chr.getClient().getSession().write(PartyResponse.updateParty(chr.getClient().getChannel(), party, operation, target));
                     }
                 }
             }
@@ -228,7 +230,7 @@ public class World {
                     if (ch > 0) {
                         MapleCharacter chr = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(target.getName());
                         if (chr != null) {
-                            chr.getClient().getSession().write(MaplePacketCreator.updateParty(chr.getClient().getChannel(), party, operation, target));
+                            chr.getClient().getSession().write(PartyResponse.updateParty(chr.getClient().getChannel(), party, operation, target));
                             chr.setParty(null);
                         }
                     }
@@ -259,7 +261,7 @@ public class World {
                 if (ch > 0) {
                     MapleCharacter chr = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterById(characterId);
                     if (chr != null && chr.getBuddylist().containsVisible(cidFrom)) {
-                        chr.getClient().getSession().write(MaplePacketCreator.multiChat(nameFrom, chattext, 0));
+                        chr.getClient().getSession().write(PartyResponse.multiChat(nameFrom, chattext, 0));
                     }
                 }
             }
@@ -282,7 +284,7 @@ public class World {
                                 mcChannel = channel - 1;
                             }
                             chr.getBuddylist().put(ble);
-                            chr.getClient().getSession().write(MaplePacketCreator.updateBuddyChannel(ble.getCharacterId(), mcChannel));
+                            chr.getClient().getSession().write(FriendResponse.updateBuddyChannel(ble.getCharacterId(), mcChannel));
                         }
                     }
                 }
@@ -299,13 +301,13 @@ public class World {
                         case ADDED:
                             if (buddylist.contains(cidFrom)) {
                                 buddylist.put(new BuddylistEntry(name, cidFrom, group, channel, true, level, job));
-                                addChar.getClient().getSession().write(MaplePacketCreator.updateBuddyChannel(cidFrom, channel - 1));
+                                addChar.getClient().getSession().write(FriendResponse.updateBuddyChannel(cidFrom, channel - 1));
                             }
                             break;
                         case DELETED:
                             if (buddylist.contains(cidFrom)) {
                                 buddylist.put(new BuddylistEntry(name, cidFrom, group, -1, buddylist.get(cidFrom).isVisible(), level, job));
-                                addChar.getClient().getSession().write(MaplePacketCreator.updateBuddyChannel(cidFrom, -1));
+                                addChar.getClient().getSession().write(FriendResponse.updateBuddyChannel(cidFrom, -1));
                             }
                             break;
                     }

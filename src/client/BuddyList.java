@@ -32,6 +32,7 @@ import java.util.Map;
 import java.io.Serializable;
 
 import database.DatabaseConnection;
+import packet.server.response.FriendResponse;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
@@ -159,7 +160,7 @@ public class BuddyList implements Serializable {
     public void addBuddyRequest(MapleClient c, int cidFrom, String nameFrom, int channelFrom, int levelFrom, int jobFrom) {
         put(new BuddylistEntry(nameFrom, cidFrom, "ETC", channelFrom, false, levelFrom, jobFrom));
         if (pendingRequests.isEmpty()) {
-            c.getSession().write(MaplePacketCreator.requestBuddylistAdd(cidFrom, nameFrom, levelFrom, jobFrom));
+            c.getSession().write(FriendResponse.requestBuddylistAdd(cidFrom, nameFrom, levelFrom, jobFrom));
         } else {
             pendingRequests.push(new CharacterNameAndId(cidFrom, nameFrom, levelFrom, jobFrom, "ETC"));
         }
