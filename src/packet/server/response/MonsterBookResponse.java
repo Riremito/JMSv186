@@ -20,7 +20,6 @@ package packet.server.response;
 
 import handling.MaplePacket;
 import packet.server.ServerPacket;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -29,31 +28,26 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 public class MonsterBookResponse {
 
     public static MaplePacket addCard(boolean full, int cardid, int level) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MonsterBookSetCard.Get());
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MonsterBookSetCard);
+        sp.Encode1(full ? 0 : 1);
         if (!full) {
-            mplew.write(1);
-            mplew.writeInt(cardid);
-            mplew.writeInt(level);
-        } else {
-            mplew.write(0);
+            sp.Encode4(cardid);
+            sp.Encode4(level);
         }
-        return mplew.getPacket();
+        return sp.Get();
     }
 
     public static MaplePacket showForeginCardEffect(int id) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.Get());
-        mplew.writeInt(id);
-        mplew.write(14); //14
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectRemote);
+        sp.Encode4(id);
+        sp.Encode1(14); //14
+        return sp.Get();
     }
 
     public static MaplePacket changeCover(int cardid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MonsterBookSetCover.Get());
-        mplew.writeInt(cardid);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MonsterBookSetCover);
+        sp.Encode4(cardid);
+        return sp.Get();
     }
 
 }
