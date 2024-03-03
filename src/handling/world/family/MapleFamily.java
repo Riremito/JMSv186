@@ -37,8 +37,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import packet.server.response.FamilyResponse;
 import tools.MaplePacketCreator;
-import tools.packet.FamilyPacket;
 
 public class MapleFamily implements java.io.Serializable {
 
@@ -247,7 +247,7 @@ public class MapleFamily implements java.io.Serializable {
         final MapleFamilyCharacter mgc = getMFC(cid);
         if (mgc != null && mgc.getFamilyId() == id) {
             if (mgc.isOnline() != online) {
-                broadcast(FamilyPacket.familyLoggedIn(online, mgc.getName()), cid, mgc.getId() == leaderid ? null : mgc.getPedigree());
+                broadcast(FamilyResponse.familyLoggedIn(online, mgc.getName()), cid, mgc.getId() == leaderid ? null : mgc.getPedigree());
             }
             mgc.setOnline(online);
             mgc.setChannel((byte) channel);
@@ -266,7 +266,7 @@ public class MapleFamily implements java.io.Serializable {
             if (mgc.isOnline()) {
                 List<Integer> dummy = new ArrayList<Integer>();
                 dummy.add(mgc.getId());
-                broadcast(FamilyPacket.changeRep(addrep), -1, dummy);
+                broadcast(FamilyResponse.changeRep(addrep), -1, dummy);
                 World.Family.setFamily(id, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep() + addrep, mgc.getTotalRep() + addrep, mgc.getId());
             } else {
                 setOfflineFamilyStatus(id, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep() + addrep, mgc.getTotalRep() + addrep, mgc.getId());

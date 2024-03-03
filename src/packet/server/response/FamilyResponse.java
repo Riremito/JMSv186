@@ -1,89 +1,39 @@
 /*
-This file is part of the OdinMS Maple Story Server
-Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc> 
-Matthias Butz <matze@odinms.de>
-Jan Christian Meyer <vimes@odinms.de>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License version 3
-as published by the Free Software Foundation. You may not use, modify
-or distribute this program under any other version of the
-GNU Affero General Public License.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2024 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
  */
-package tools.packet;
+package packet.server.response;
 
 import client.MapleCharacter;
 import handling.MaplePacket;
 import handling.world.World;
 import handling.world.family.MapleFamily;
 import handling.world.family.MapleFamilyBuff;
-import handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import handling.world.family.MapleFamilyCharacter;
 import java.util.List;
 import packet.server.ServerPacket;
 import tools.Pair;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
-public class FamilyPacket {
-
-    public static MaplePacket getFamilyData() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_FamilyPrivilegeList.Get());
-        List<MapleFamilyBuffEntry> entries = MapleFamilyBuff.getBuffEntry();
-        mplew.writeInt(entries.size()); // Number of events
-
-        for (MapleFamilyBuffEntry entry : entries) {
-            mplew.write(entry.type);
-            mplew.writeInt(entry.rep);
-            mplew.writeInt(entry.count);
-            mplew.writeMapleAsciiString(entry.name);
-            mplew.writeMapleAsciiString(entry.desc);
-        }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket changeRep(int r) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FamilyFamousPointIncResult.Get());
-        mplew.writeInt(r);
-        mplew.writeInt(0);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getFamilyInfo(MapleCharacter chr) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FamilyInfoResult.Get());
-        mplew.writeInt(chr.getCurrentRep()); //rep
-        mplew.writeInt(chr.getTotalRep()); // total rep
-        mplew.writeInt(chr.getTotalRep()); //rep recorded today
-        mplew.writeShort(chr.getNoJuniors());
-        mplew.writeShort(2);
-        mplew.writeShort(chr.getNoJuniors());
-        MapleFamily family = World.Family.getFamily(chr.getFamilyId());
-        if (family != null) {
-            mplew.writeInt(family.getLeaderId()); //??? 9D 60 03 00
-            mplew.writeMapleAsciiString(family.getLeaderName());
-            mplew.writeMapleAsciiString(family.getNotice()); //message?
-        } else {
-            mplew.writeLong(0);
-        }
-        List<Pair<Integer, Integer>> b = chr.usedBuffs();
-        mplew.writeInt(b.size());
-        for (Pair<Integer, Integer> ii : b) {
-            mplew.writeInt(ii.getLeft()); //buffid
-            mplew.writeInt(ii.getRight()); //times used
-        }
-        return mplew.getPacket();
-    }
+/**
+ *
+ * @author Riremito
+ */
+public class FamilyResponse {
 
     public static void addFamilyCharInfo(MapleFamilyCharacter ldr, MaplePacketLittleEndianWriter mplew) {
         mplew.writeInt(ldr.getId());
@@ -104,14 +54,15 @@ public class FamilyPacket {
         mplew.writeShort(ServerPacket.Header.LP_FamilyChartResult.Get());
         mplew.writeInt(chr.getId());
         MapleFamily family = World.Family.getFamily(chr.getFamilyId());
-        int descendants = 2, gens = 0, generations = 0;
+        int descendants = 2;
+        int gens = 0;
+        int generations = 0;
         if (family == null) {
             mplew.writeInt(2);
             addFamilyCharInfo(new MapleFamilyCharacter(chr, 0, 0, 0, 0), mplew); //leader
         } else {
             mplew.writeInt(family.getMFC(chr.getId()).getPedigree().size() + 1); //+ 1 for leader, but we don't want leader seeing all msgs
             addFamilyCharInfo(family.getMFC(family.getLeaderId()), mplew);
-
             if (chr.getSeniorId() > 0) {
                 MapleFamilyCharacter senior = family.getMFC(chr.getSeniorId());
                 if (senior.getSeniorId() > 0) {
@@ -191,7 +142,6 @@ public class FamilyPacket {
                 }
             }
         }
-
         List<Pair<Integer, Integer>> b = chr.usedBuffs();
         mplew.writeInt(b.size());
         for (Pair<Integer, Integer> ii : b) {
@@ -202,22 +152,33 @@ public class FamilyPacket {
         return mplew.getPacket();
     }
 
-    public static MaplePacket sendFamilyInvite(int cid, int otherLevel, int otherJob, String inviter) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_FamilyJoinRequest.Get());
-        mplew.writeInt(cid); //the inviter
-        mplew.writeInt(otherLevel);
-        mplew.writeInt(otherJob);
-        mplew.writeMapleAsciiString(inviter);
-
-        return mplew.getPacket();
+    public static MaplePacket cancelFamilyBuff() {
+        return familyBuff(0, 0, 0, 0);
     }
 
-    public static MaplePacket getSeniorMessage(String name) {
+    public static MaplePacket getFamilyInfo(MapleCharacter chr) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FamilyJoinAccepted.Get());
-        mplew.writeMapleAsciiString(name);
+        mplew.writeShort(ServerPacket.Header.LP_FamilyInfoResult.Get());
+        mplew.writeInt(chr.getCurrentRep()); //rep
+        mplew.writeInt(chr.getTotalRep()); // total rep
+        mplew.writeInt(chr.getTotalRep()); //rep recorded today
+        mplew.writeShort(chr.getNoJuniors());
+        mplew.writeShort(2);
+        mplew.writeShort(chr.getNoJuniors());
+        MapleFamily family = World.Family.getFamily(chr.getFamilyId());
+        if (family != null) {
+            mplew.writeInt(family.getLeaderId()); //??? 9D 60 03 00
+            mplew.writeMapleAsciiString(family.getLeaderName());
+            mplew.writeMapleAsciiString(family.getNotice()); //message?
+        } else {
+            mplew.writeLong(0);
+        }
+        List<Pair<Integer, Integer>> b = chr.usedBuffs();
+        mplew.writeInt(b.size());
+        for (Pair<Integer, Integer> ii : b) {
+            mplew.writeInt(ii.getLeft()); //buffid
+            mplew.writeInt(ii.getRight()); //times used
+        }
         return mplew.getPacket();
     }
 
@@ -226,6 +187,47 @@ public class FamilyPacket {
         mplew.writeShort(ServerPacket.Header.LP_FamilyJoinRequestResult.Get());
         mplew.write(accepted ? 1 : 0);
         mplew.writeMapleAsciiString(added);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket familyLoggedIn(boolean online, String name) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_FamilyNotifyLoginOrLogout.Get());
+        mplew.write(online ? 1 : 0);
+        mplew.writeMapleAsciiString(name);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket changeRep(int r) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_FamilyFamousPointIncResult.Get());
+        mplew.writeInt(r);
+        mplew.writeInt(0);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getFamilyData() {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_FamilyPrivilegeList.Get());
+        List<MapleFamilyBuff.MapleFamilyBuffEntry> entries = MapleFamilyBuff.getBuffEntry();
+        mplew.writeInt(entries.size()); // Number of events
+        for (MapleFamilyBuff.MapleFamilyBuffEntry entry : entries) {
+            mplew.write(entry.type);
+            mplew.writeInt(entry.rep);
+            mplew.writeInt(entry.count);
+            mplew.writeMapleAsciiString(entry.name);
+            mplew.writeMapleAsciiString(entry.desc);
+        }
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket sendFamilyInvite(int cid, int otherLevel, int otherJob, String inviter) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_FamilyJoinRequest.Get());
+        mplew.writeInt(cid); //the inviter
+        mplew.writeInt(otherLevel);
+        mplew.writeInt(otherJob);
+        mplew.writeMapleAsciiString(inviter);
         return mplew.getPacket();
     }
 
@@ -244,14 +246,9 @@ public class FamilyPacket {
         return mplew.getPacket();
     }
 
-    public static MaplePacket cancelFamilyBuff() {
-        return familyBuff(0, 0, 0, 0);
-    }
-
-    public static MaplePacket familyLoggedIn(boolean online, String name) {
+    public static MaplePacket getSeniorMessage(String name) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FamilyNotifyLoginOrLogout.Get());
-        mplew.write(online ? 1 : 0);
+        mplew.writeShort(ServerPacket.Header.LP_FamilyJoinAccepted.Get());
         mplew.writeMapleAsciiString(name);
         return mplew.getPacket();
     }
@@ -263,4 +260,5 @@ public class FamilyPacket {
         mplew.writeMapleAsciiString(mapname);
         return mplew.getPacket();
     }
+    
 }

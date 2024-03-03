@@ -42,10 +42,10 @@ import handling.world.guild.MapleGuild;
 import packet.client.ClientPacket;
 import packet.client.handling.ContextPacket;
 import packet.client.handling.SocketPacket;
+import packet.server.response.FamilyResponse;
 import server.maps.FieldLimitType;
 import tools.FileoutputUtil;
 import tools.MaplePacketCreator;
-import tools.packet.FamilyPacket;
 
 public class InterServerHandler {
 
@@ -189,11 +189,11 @@ public class InterServerHandler {
             if (player.getFamilyId() > 0) {
                 World.Family.setFamilyMemberOnline(player.getMFC(), true, c.getChannel());
             }
-            c.getSession().write(FamilyPacket.getFamilyInfo(player));
+            c.getSession().write(FamilyResponse.getFamilyInfo(player));
         } catch (Exception e) {
             FileoutputUtil.outputFileError(FileoutputUtil.Login_Error, e);
         }
-        c.getSession().write(FamilyPacket.getFamilyData());
+        c.getSession().write(FamilyResponse.getFamilyData());
         player.sendMacros();
         player.showNote();
         player.updatePartyMemberHP();
