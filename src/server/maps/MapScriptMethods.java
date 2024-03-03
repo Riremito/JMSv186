@@ -26,6 +26,7 @@ import client.MapleClient;
 import client.MapleQuestStatus;
 import client.SkillFactory;
 import packet.client.handling.ContextPacket;
+import packet.server.response.TestResponse;
 import scripting.EventManager;
 import scripting.NPCScriptManager;
 import server.Randomizer;
@@ -36,7 +37,6 @@ import server.quest.MapleQuest;
 import server.quest.MapleQuest.MedalQuest;
 import tools.FileoutputUtil;
 import tools.MaplePacketCreator;
-import tools.packet.UIPacket;
 
 public class MapScriptMethods {
 
@@ -537,8 +537,8 @@ public class MapScriptMethods {
             case mirrorCave:
             case babyPigMap:
             case evanleaveD: {
-                c.getSession().write(UIPacket.IntroDisableUI(false));
-                c.getSession().write(UIPacket.IntroLock(false));
+                c.getSession().write(TestResponse.IntroDisableUI(false));
+                c.getSession().write(TestResponse.IntroLock(false));
                 c.getSession().write(MaplePacketCreator.enableActions());
                 break;
             }
@@ -587,8 +587,8 @@ public class MapScriptMethods {
                         data = "Effect/Direction4.img/promotion/Scene3";
                         break;
                     case 900090004:
-                        c.getSession().write(UIPacket.IntroDisableUI(false));
-                        c.getSession().write(UIPacket.IntroLock(false));
+                        c.getSession().write(TestResponse.IntroDisableUI(false));
+                        c.getSession().write(TestResponse.IntroLock(false));
                         c.getSession().write(MaplePacketCreator.enableActions());
                         final MapleMap mapto = c.getChannelServer().getMapFactory().getMap(900010000);
                         c.getPlayer().changeMap(mapto, mapto.getPortal(0));
@@ -597,18 +597,18 @@ public class MapScriptMethods {
                 showIntro(c, data);
                 break;
             case TD_MC_title: {
-                c.getSession().write(UIPacket.IntroDisableUI(false));
-                c.getSession().write(UIPacket.IntroLock(false));
+                c.getSession().write(TestResponse.IntroDisableUI(false));
+                c.getSession().write(TestResponse.IntroLock(false));
                 c.getSession().write(MaplePacketCreator.enableActions());
-                c.getSession().write(UIPacket.MapEff("temaD/enter/mushCatle"));
+                c.getSession().write(TestResponse.MapEff("temaD/enter/mushCatle"));
                 break;
             }
             case explorationPoint: {
                 if (c.getPlayer().getMapId() == 104000000) {
-                    c.getSession().write(UIPacket.IntroDisableUI(false));
-                    c.getSession().write(UIPacket.IntroLock(false));
+                    c.getSession().write(TestResponse.IntroDisableUI(false));
+                    c.getSession().write(TestResponse.IntroLock(false));
                     c.getSession().write(MaplePacketCreator.enableActions());
-                    c.getSession().write(UIPacket.MapNameDisplay(c.getPlayer().getMapId()));
+                    c.getSession().write(TestResponse.MapNameDisplay(c.getPlayer().getMapId()));
                 }
                 MedalQuest m = null;
                 for (MedalQuest mq : MedalQuest.values()) {
@@ -666,8 +666,8 @@ public class MapScriptMethods {
             }
             case go10000:
             case go1020000:
-                c.getSession().write(UIPacket.IntroDisableUI(false));
-                c.getSession().write(UIPacket.IntroLock(false));
+                c.getSession().write(TestResponse.IntroDisableUI(false));
+                c.getSession().write(TestResponse.IntroLock(false));
                 c.getSession().write(MaplePacketCreator.enableActions());
             case go20000:
             case go30000:
@@ -680,7 +680,7 @@ public class MapScriptMethods {
             case go1010200:
             case go1010300:
             case go1010400: {
-                c.getSession().write(UIPacket.MapNameDisplay(c.getPlayer().getMapId()));
+                c.getSession().write(TestResponse.MapNameDisplay(c.getPlayer().getMapId()));
                 break;
             }
             case goArcher: {
@@ -745,16 +745,16 @@ public class MapScriptMethods {
                 c.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000016), (byte) -1, (byte) 0);
                 c.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000017), (byte) -1, (byte) 0);
                 c.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000018), (byte) -1, (byte) 0);
-                c.getSession().write(UIPacket.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
-                c.getSession().write(UIPacket.IntroDisableUI(false));
-                c.getSession().write(UIPacket.IntroLock(false));
+                c.getSession().write(TestResponse.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
+                c.getSession().write(TestResponse.IntroDisableUI(false));
+                c.getSession().write(TestResponse.IntroLock(false));
                 c.getSession().write(MaplePacketCreator.enableActions());
                 break;
             }
             case rienArrow: {
                 if (c.getPlayer().getInfoQuest(21019).equals("miss=o;helper=clear")) {
                     c.getPlayer().updateInfoQuest(21019, "miss=o;arr=o;helper=clear");
-                    c.getSession().write(UIPacket.AranTutInstructionalBalloon("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3"));
+                    c.getSession().write(TestResponse.AranTutInstructionalBalloon("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3"));
                 }
                 break;
             }
@@ -762,8 +762,8 @@ public class MapScriptMethods {
                 if (c.getPlayer().getQuestStatus(21101) == 2 && c.getPlayer().getInfoQuest(21019).equals("miss=o;arr=o;helper=clear")) {
                     c.getPlayer().updateInfoQuest(21019, "miss=o;arr=o;ck=1;helper=clear");
                 }
-                c.getSession().write(UIPacket.IntroDisableUI(false));
-                c.getSession().write(UIPacket.IntroLock(false));
+                c.getSession().write(TestResponse.IntroDisableUI(false));
+                c.getSession().write(TestResponse.IntroLock(false));
                 break;
             }
             case check_count: {
@@ -835,9 +835,9 @@ public class MapScriptMethods {
     }
 
     private static void showIntro(final MapleClient c, final String data) {
-        c.getSession().write(UIPacket.IntroDisableUI(true));
-        c.getSession().write(UIPacket.IntroLock(true));
-        c.getSession().write(UIPacket.ShowWZEffect(data));
+        c.getSession().write(TestResponse.IntroDisableUI(true));
+        c.getSession().write(TestResponse.IntroLock(true));
+        c.getSession().write(TestResponse.ShowWZEffect(data));
     }
 
     private static void sendDojoClock(MapleClient c, int time) {

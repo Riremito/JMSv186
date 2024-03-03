@@ -24,6 +24,7 @@ import handling.MaplePacket;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import packet.server.ServerPacket;
+import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import tools.packet.PacketHelper;
 
@@ -167,6 +168,107 @@ public class TestResponse {
         mplew.write(0);
         mplew.writeMapleAsciiString(newname);
         mplew.write(slot);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket Aran_Start() {
+        return MaplePacketCreator.environmentChange("Aran/balloon", 4);
+    }
+
+    public static MaplePacket fishingUpdate(byte type, int id) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.FISHING_BOARD_UPDATE.Get());
+        mplew.write(type);
+        mplew.writeInt(id);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getTopMsg(String msg) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_ScriptProgressMessage.Get());
+        mplew.writeMapleAsciiString(msg);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket summonHelper(boolean summon) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserHireTutor.Get());
+        mplew.write(summon ? 1 : 0);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket summonMessage(int type) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserTutorMsg.Get());
+        mplew.write(1);
+        mplew.writeInt(type);
+        mplew.writeInt(7000); // probably the delay
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket summonMessage(String message) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserTutorMsg.Get());
+        mplew.write(0);
+        mplew.writeMapleAsciiString(message);
+        mplew.writeInt(200); // IDK
+        mplew.writeShort(0);
+        mplew.writeInt(10000); // Probably delay
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket ShowWZEffect(final String data) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(19);
+        mplew.writeMapleAsciiString(data);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket AranTutInstructionalBalloon(final String data) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(24);
+        mplew.writeMapleAsciiString(data);
+        mplew.writeInt(1);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket IntroDisableUI(boolean enable) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SetStandAloneMode.Get());
+        mplew.write(enable ? 1 : 0);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket IntroLock(boolean enable) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SetDirectionMode.Get());
+        mplew.write(enable ? 1 : 0);
+        mplew.writeInt(enable ? 1 : 0);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket MapEff(final String path) {
+        return MaplePacketCreator.environmentChange(path, 3);
+    }
+
+    public static final MaplePacket MapNameDisplay(final int mapid) {
+        return MaplePacketCreator.environmentChange("maplemap/enter/" + mapid, 3);
+    }
+
+    public static MaplePacket fishingCaught(int chrid) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.FISHING_CAUGHT.Get());
+        mplew.writeInt(chrid);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket EarnTitleMsg(final String msg) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        // "You have acquired the Pig's Weakness skill."
+        mplew.writeShort(ServerPacket.Header.EARN_TITLE_MSG.Get());
+        mplew.writeMapleAsciiString(msg);
         return mplew.getPacket();
     }
 }

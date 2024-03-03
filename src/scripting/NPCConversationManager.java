@@ -54,7 +54,6 @@ import server.maps.AramiaFireWorks;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
 import tools.Pair;
-import tools.packet.PlayerShopPacket;
 import server.MapleItemInformationProvider;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
@@ -69,6 +68,7 @@ import java.util.HashMap;
 import handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
 import packet.server.response.DueyResponse;
+import packet.server.response.FreeMarketResponse;
 import server.MapleShop;
 import server.MapleShopItem;
 import server.MapleStatEffect;
@@ -990,7 +990,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void openMerchantItemStore() {
         c.getPlayer().setConversation(3);
-        c.getSession().write(PlayerShopPacket.merchItemStore((byte) 0x22));
+        c.getSession().write(FreeMarketResponse.merchItemStore((byte) 0x22));
         c.getPlayer().dropMessage(5, "Please enter ANY 13 characters.");
     }
 

@@ -56,7 +56,6 @@ import server.maps.MapleMap;
 import server.maps.FieldLimitType;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
-import tools.packet.UIPacket;
 
 public class PlayerHandler {
 
@@ -920,14 +919,14 @@ public class PlayerHandler {
                         chr.changeMap(to, to.getPortal(0));
                     }
                 } else if (divi == 9140901 && targetid == 140000000) {
-                    c.getSession().write(UIPacket.IntroDisableUI(false));
-                    c.getSession().write(UIPacket.IntroLock(false));
+                    c.getSession().write(TestResponse.IntroDisableUI(false));
+                    c.getSession().write(TestResponse.IntroLock(false));
                     c.getSession().write(MaplePacketCreator.enableActions());
                     final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetid);
                     chr.changeMap(to, to.getPortal(0));
                 } else if (divi == 9140902 && (targetid == 140030000 || targetid == 140000000)) { //thing is. dont really know which one!
-                    c.getSession().write(UIPacket.IntroDisableUI(false));
-                    c.getSession().write(UIPacket.IntroLock(false));
+                    c.getSession().write(TestResponse.IntroDisableUI(false));
+                    c.getSession().write(TestResponse.IntroLock(false));
                     c.getSession().write(MaplePacketCreator.enableActions());
                     final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetid);
                     chr.changeMap(to, to.getPortal(0));
@@ -936,42 +935,42 @@ public class PlayerHandler {
                     chr.changeMap(to, to.getPortal(0));
                 } else if (divi / 1000 == 9000 && targetid / 100000 == 9000) {
                     if (targetid < 900090000 || targetid > 900090004) { //1 movie
-                        c.getSession().write(UIPacket.IntroDisableUI(false));
-                        c.getSession().write(UIPacket.IntroLock(false));
+                        c.getSession().write(TestResponse.IntroDisableUI(false));
+                        c.getSession().write(TestResponse.IntroLock(false));
                         c.getSession().write(MaplePacketCreator.enableActions());
                     }
                     final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetid);
                     chr.changeMap(to, to.getPortal(0));
                 } else if (divi / 10 == 1020 && targetid == 1020000) { // Adventurer movie clip Intro
-                    c.getSession().write(UIPacket.IntroDisableUI(false));
-                    c.getSession().write(UIPacket.IntroLock(false));
+                    c.getSession().write(TestResponse.IntroDisableUI(false));
+                    c.getSession().write(TestResponse.IntroLock(false));
                     c.getSession().write(MaplePacketCreator.enableActions());
                     final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetid);
                     chr.changeMap(to, to.getPortal(0));
 
                 } else if (chr.getMapId() == 900090101 && targetid == 100030100) {
-                    c.getSession().write(UIPacket.IntroDisableUI(false));
-                    c.getSession().write(UIPacket.IntroLock(false));
+                    c.getSession().write(TestResponse.IntroDisableUI(false));
+                    c.getSession().write(TestResponse.IntroLock(false));
                     c.getSession().write(MaplePacketCreator.enableActions());
                     final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetid);
                     chr.changeMap(to, to.getPortal(0));
                 } else if (chr.getMapId() == 2010000 && targetid == 104000000) {
-                    c.getSession().write(UIPacket.IntroDisableUI(false));
-                    c.getSession().write(UIPacket.IntroLock(false));
+                    c.getSession().write(TestResponse.IntroDisableUI(false));
+                    c.getSession().write(TestResponse.IntroLock(false));
                     c.getSession().write(MaplePacketCreator.enableActions());
                     final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetid);
                     chr.changeMap(to, to.getPortal(0));
                 } else if (chr.getMapId() == 106020001 || chr.getMapId() == 106020502) {
                     if (targetid == (chr.getMapId() - 1)) {
-                        c.getSession().write(UIPacket.IntroDisableUI(false));
-                        c.getSession().write(UIPacket.IntroLock(false));
+                        c.getSession().write(TestResponse.IntroDisableUI(false));
+                        c.getSession().write(TestResponse.IntroLock(false));
                         c.getSession().write(MaplePacketCreator.enableActions());
                         final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetid);
                         chr.changeMap(to, to.getPortal(0));
                     }
                 } else if (chr.getMapId() == 0 && targetid == 10000) {
-                    c.getSession().write(UIPacket.IntroDisableUI(false));
-                    c.getSession().write(UIPacket.IntroLock(false));
+                    c.getSession().write(TestResponse.IntroDisableUI(false));
+                    c.getSession().write(TestResponse.IntroLock(false));
                     c.getSession().write(MaplePacketCreator.enableActions());
                     final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(targetid);
                     chr.changeMap(to, to.getPortal(0));

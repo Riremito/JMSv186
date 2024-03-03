@@ -61,6 +61,7 @@ import packet.client.handling.ContextPacket;
 import packet.client.handling.DropPacket;
 import packet.client.handling.DropPacket.LeaveType;
 import packet.server.response.DueyResponse;
+import packet.server.response.FreeMarketResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.TestResponse;
 import packet.server.response.VegaSpellResponse;
@@ -88,7 +89,6 @@ import server.shops.IMaplePlayerShop;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
 import tools.MaplePacketCreator;
-import tools.packet.PlayerShopPacket;
 
 public class InventoryHandler {
 
@@ -2283,7 +2283,7 @@ public class InventoryHandler {
                         merchant.setOpen(false);
                         merchant.removeAllVisitors((byte) 16, (byte) 0);
                         c.getPlayer().setPlayerShop(merchant);
-                        c.getSession().write(PlayerShopPacket.getHiredMerch(c.getPlayer(), merchant, false));
+                        c.getSession().write(FreeMarketResponse.getHiredMerch(c.getPlayer(), merchant, false));
                     } else {
                         if (!merchant.isOpen() || !merchant.isAvailable()) {
                             c.getPlayer().dropMessage(1, "This shop is in maintenance, please come by later.");
@@ -2295,7 +2295,7 @@ public class InventoryHandler {
                             } else {
                                 c.getPlayer().setPlayerShop(merchant);
                                 merchant.addVisitor(c.getPlayer());
-                                c.getSession().write(PlayerShopPacket.getHiredMerch(c.getPlayer(), merchant, false));
+                                c.getSession().write(FreeMarketResponse.getHiredMerch(c.getPlayer(), merchant, false));
                             }
                         }
                     }

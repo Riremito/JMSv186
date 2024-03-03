@@ -47,7 +47,6 @@ import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import tools.FileoutputUtil;
 import tools.MaplePacketCreator;
-import tools.packet.UIPacket;
 
 public class EventInstanceManager {
 

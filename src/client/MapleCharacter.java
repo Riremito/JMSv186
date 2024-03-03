@@ -87,6 +87,8 @@ import packet.client.handling.MobPacket;
 import packet.client.handling.SocketPacket;
 import packet.client.handling.SummonPacket;
 import packet.client.handling.UserPacket;
+import packet.server.response.FreeMarketResponse;
+import packet.server.response.MonsterCarnivalResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.TestResponse;
 import packet.server.response.struct.GW_CharacterStat;
@@ -118,8 +120,6 @@ import server.shops.IMaplePlayerShop;
 import server.CashShop;
 import tools.MaplePacketCreator;
 import tools.Pair;
-import tools.packet.MonsterCarnivalPacket;
-import tools.packet.UIPacket;
 import server.MapleCarnivalChallenge;
 import server.MapleInventoryManipulator;
 import server.Timer.BuffTimer;
@@ -133,7 +133,6 @@ import server.maps.MapleFoothold;
 import server.movement.LifeMovementFragment;
 import tools.ConcurrentEnumMap;
 import tools.FileoutputUtil;
-import tools.packet.PlayerShopPacket;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Serializable {
 
@@ -1594,7 +1593,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     {
                         final int caught_meso = Randomizer.rand(bait_level * 10000, bait_level * 100000);
                         gainMeso(caught_meso, true);
-                        client.getSession().write(UIPacket.fishingUpdate((byte) 1, caught_meso));
+                        client.getSession().write(TestResponse.fishingUpdate((byte) 1, caught_meso));
                         break;
                     }
                     case 1: // EXP
@@ -1605,7 +1604,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                             caught_exp += 1;
                         }
                         gainExp(caught_exp, true, false, true);
-                        client.getSession().write(UIPacket.fishingUpdate((byte) 2, caught_exp));
+                        client.getSession().write(TestResponse.fishingUpdate((byte) 2, caught_exp));
                         break;
                     }
                     default: {
@@ -1614,7 +1613,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                         break;
                     }
                 }
-                map.broadcastMessage(UIPacket.fishingCaught(id));
+                map.broadcastMessage(TestResponse.fishingCaught(id));
             }
         }, time, time);
     }
@@ -4617,9 +4616,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void dropMessage(int type, String message) {
         if (type == -1) {
-            client.getSession().write(UIPacket.getTopMsg(message));
+            client.getSession().write(TestResponse.getTopMsg(message));
         } else if (type == -2) {
-            client.getSession().write(PlayerShopPacket.shopChat(message, 0)); //0 or what
+            client.getSession().write(FreeMarketResponse.shopChat(message, 0)); //0 or what
         } else {
             client.getSession().write(MaplePacketCreator.serverNotice(type, message));
         }
@@ -4704,15 +4703,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void startMonsterCarnival(final int enemyavailable, final int enemytotal) {
-        client.getSession().write(MonsterCarnivalPacket.startMonsterCarnival(this, enemyavailable, enemytotal));
+        client.getSession().write(MonsterCarnivalResponse.startMonsterCarnival(this, enemyavailable, enemytotal));
     }
 
     public void CPUpdate(final boolean party, final int available, final int total, final int team) {
-        client.getSession().write(MonsterCarnivalPacket.CPUpdate(party, available, total, team));
+        client.getSession().write(MonsterCarnivalResponse.CPUpdate(party, available, total, team));
     }
 
     public void playerDiedCPQ(final String name, final int lostCP, final int team) {
-        client.getSession().write(MonsterCarnivalPacket.playerDiedMessage(name, lostCP, team));
+        client.getSession().write(MonsterCarnivalResponse.playerDiedMessage(name, lostCP, team));
     }
 
     public void setAchievementFinished(int id) {

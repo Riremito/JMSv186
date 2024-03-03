@@ -26,8 +26,8 @@ import client.inventory.IItem;
 import client.inventory.ItemFlag;
 import client.MapleCharacter;
 import client.MapleClient;
+import packet.server.response.FreeMarketResponse;
 import server.MapleInventoryManipulator;
-import tools.packet.PlayerShopPacket;
 
 public class MaplePlayerShop extends AbstractPlayerStore {
 
@@ -72,7 +72,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
                 c.getPlayer().dropMessage(1, "You do not have enough mesos.");
                 //}
             }
-            getMCOwner().getClient().getSession().write(PlayerShopPacket.shopItemUpdate(this));
+            getMCOwner().getClient().getSession().write(FreeMarketResponse.shopItemUpdate(this));
         }
     }
 
@@ -100,7 +100,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
             }
         }
 
-        owner.getClient().getSession().write(PlayerShopPacket.shopErrorMessage(reason, 0));
+        owner.getClient().getSession().write(FreeMarketResponse.shopErrorMessage(reason, 0));
         owner.setPlayerShop(null);
         update();
     }
@@ -112,7 +112,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
         for (int i = 0; i < 3; i++) {
             MapleCharacter chr = getVisitor(i);
             if (chr.getName().equals(name)) {
-                chr.getClient().getSession().write(PlayerShopPacket.shopErrorMessage(5, 1));
+                chr.getClient().getSession().write(FreeMarketResponse.shopErrorMessage(5, 1));
                 chr.setPlayerShop(null);
                 removeVisitor(chr);
             }

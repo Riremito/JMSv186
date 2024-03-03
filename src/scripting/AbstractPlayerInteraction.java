@@ -49,11 +49,11 @@ import server.life.MapleMonster;
 import server.life.MapleLifeFactory;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
-import tools.packet.UIPacket;
 import client.inventory.MapleInventoryIdentifier;
 import handling.world.World;
 import packet.client.handling.ContextPacket;
 import packet.server.response.PetResponse;
+import packet.server.response.TestResponse;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
 
@@ -863,14 +863,14 @@ public abstract class AbstractPlayerInteraction {
         if (!c.getPlayer().hasSummon()) {
             playerSummonHint(true);
         }
-        c.getSession().write(UIPacket.summonMessage(msg));
+        c.getSession().write(TestResponse.summonMessage(msg));
     }
 
     public final void summonMsg(final int type) {
         if (!c.getPlayer().hasSummon()) {
             playerSummonHint(true);
         }
-        c.getSession().write(UIPacket.summonMessage(type));
+        c.getSession().write(TestResponse.summonMessage(type));
     }
 
     public final void showInstruction(final String msg, final int width, final int height) {
@@ -879,7 +879,7 @@ public abstract class AbstractPlayerInteraction {
 
     public final void playerSummonHint(final boolean summon) {
         c.getPlayer().setHasSummon(summon);
-        c.getSession().write(UIPacket.summonHelper(summon));
+        c.getSession().write(TestResponse.summonHelper(summon));
     }
 
     public final String getInfoQuest(final int id) {
@@ -899,7 +899,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void Aran_Start() {
-        c.getSession().write(UIPacket.Aran_Start());
+        c.getSession().write(TestResponse.Aran_Start());
     }
 
     public final void evanTutorial(final String data, final int v1) {
@@ -907,24 +907,24 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void AranTutInstructionalBubble(final String data) {
-        c.getSession().write(UIPacket.AranTutInstructionalBalloon(data));
+        c.getSession().write(TestResponse.AranTutInstructionalBalloon(data));
     }
 
     public final void ShowWZEffect(final String data) {
-        c.getSession().write(UIPacket.AranTutInstructionalBalloon(data));
+        c.getSession().write(TestResponse.AranTutInstructionalBalloon(data));
     }
 
     public final void showWZEffect(final String data) {
-        c.getSession().write(UIPacket.ShowWZEffect(data));
+        c.getSession().write(TestResponse.ShowWZEffect(data));
     }
 
     public final void EarnTitleMsg(final String data) {
-        c.getSession().write(UIPacket.EarnTitleMsg(data));
+        c.getSession().write(TestResponse.EarnTitleMsg(data));
     }
 
     public final void MovieClipIntroUI(final boolean enabled) {
-        c.getSession().write(UIPacket.IntroDisableUI(enabled));
-        c.getSession().write(UIPacket.IntroLock(enabled));
+        c.getSession().write(TestResponse.IntroDisableUI(enabled));
+        c.getSession().write(TestResponse.IntroLock(enabled));
     }
 
     public MapleInventoryType getInvType(int i) {
@@ -974,7 +974,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public void showMapEffect(String path) {
-        getClient().getSession().write(UIPacket.MapEff(path));
+        getClient().getSession().write(TestResponse.MapEff(path));
     }
 
     public int itemQuantity(int itemid) {
