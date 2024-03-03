@@ -126,16 +126,6 @@ public class PetResponse {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket showPetLevelUp(final MapleCharacter chr, final int index) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.Get());
-        mplew.writeInt(chr.getId());
-        mplew.write(4);
-        mplew.write(0);
-        mplew.writeInt(index);
-        return mplew.getPacket();
-    }
-
     public static final MaplePacket updatePet(final MaplePet pet, final IItem item) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());

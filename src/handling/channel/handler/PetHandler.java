@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.concurrent.locks.Lock;
 import packet.server.response.LocalResponse;
 import packet.server.response.PetResponse;
+import packet.server.response.RemoteResponse;
 import server.Randomizer;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -123,7 +124,7 @@ public class PetHandler {
                 if (newCloseness >= GameConstants.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
                     c.getSession().write(LocalResponse.showOwnPetLevelUp(petIndex));
-                    chr.getMap().broadcastMessage(PetResponse.showPetLevelUp(chr, petIndex));
+                    chr.getMap().broadcastMessage(RemoteResponse.showPetLevelUp(chr, petIndex));
                 }
                 c.getSession().write(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
             }
@@ -172,7 +173,7 @@ public class PetHandler {
                     pet.setLevel(pet.getLevel() + 1);
 
                     c.getSession().write(LocalResponse.showOwnPetLevelUp(index));
-                    chr.getMap().broadcastMessage(PetResponse.showPetLevelUp(chr, index));
+                    chr.getMap().broadcastMessage(RemoteResponse.showPetLevelUp(chr, index));
                 }
             }
             c.getSession().write(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));

@@ -64,6 +64,7 @@ import packet.server.response.DueyResponse;
 import packet.server.response.FreeMarketResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.PetResponse;
+import packet.server.response.RemoteResponse;
 import packet.server.response.TemporaryStatResponse;
 import packet.server.response.TestResponse;
 import packet.server.response.VegaSpellResponse;
@@ -226,7 +227,7 @@ public class InventoryHandler {
                                 MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(itemId), itemId, 1, false, false);
 
                                 c.getSession().write(LocalResponse.showRewardItemAnimation(reward.itemid, reward.effect));
-                                chr.getMap().broadcastMessage(chr, MaplePacketCreator.showRewardItemAnimation(reward.itemid, reward.effect, chr.getId()), false);
+                                chr.getMap().broadcastMessage(chr, RemoteResponse.showRewardItemAnimation(reward.itemid, reward.effect, chr.getId()), false);
                                 rewarded = true;
                                 return true;
                             }
@@ -1753,7 +1754,7 @@ public class InventoryHandler {
                     if (pet.getCloseness() >= GameConstants.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                         pet.setLevel(pet.getLevel() + 1);
                         c.getSession().write(LocalResponse.showOwnPetLevelUp(c.getPlayer().getPetIndex(pet)));
-                        c.getPlayer().getMap().broadcastMessage(PetResponse.showPetLevelUp(c.getPlayer(), petindex));
+                        c.getPlayer().getMap().broadcastMessage(RemoteResponse.showPetLevelUp(c.getPlayer(), petindex));
                     }
                 }
                 c.getSession().write(PetResponse.updatePet(pet, c.getPlayer().getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));

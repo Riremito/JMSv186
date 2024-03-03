@@ -31,6 +31,7 @@ import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import constants.GameConstants;
 import packet.server.response.LocalResponse;
+import packet.server.response.RemoteResponse;
 import server.ItemMakerFactory;
 import server.ItemMakerFactory.GemCreateEntry;
 import server.ItemMakerFactory.ItemMakerCreateEntry;
@@ -75,7 +76,7 @@ public class ItemMakerHandler {
                     MapleInventoryManipulator.addById(c, randGemGiven, (byte) (taken == randGemGiven ? 9 : 1)); // Gem is always 1
 
                     c.getSession().write(LocalResponse.ItemMakerResult(true));
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMakerResultTo(c.getPlayer(), true), false);
+                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), RemoteResponse.ItemMakerResultTo(c.getPlayer(), true), false);
                 } else if (GameConstants.isOtherGem(toCreate)) {
                     //non-gems that are gems
                     //stim and numEnchanter always 0
@@ -104,7 +105,7 @@ public class ItemMakerHandler {
                     }
 
                     c.getSession().write(LocalResponse.ItemMakerResult(true));
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMakerResultTo(c.getPlayer(), true), false);
+                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), RemoteResponse.ItemMakerResultTo(c.getPlayer(), true), false);
                 } else {
                     final boolean stimulator = slea.readByte() > 0;
                     final int numEnchanter = slea.readInt();
@@ -151,7 +152,7 @@ public class ItemMakerHandler {
                     }
                     MapleInventoryManipulator.addbyItem(c, toGive);
                     c.getSession().write(LocalResponse.ItemMakerResult(true));
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMakerResultTo(c.getPlayer(), true), false);
+                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), RemoteResponse.ItemMakerResultTo(c.getPlayer(), true), false);
                 }
                 break;
             }
@@ -162,7 +163,7 @@ public class ItemMakerHandler {
                     MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, etc, 100, false, false);
 
                     c.getSession().write(LocalResponse.ItemMakerResult(true));
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMakerResultTo(c.getPlayer(), true), false);
+                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), RemoteResponse.ItemMakerResultTo(c.getPlayer(), true), false);
                 }
                 break;
             }
@@ -183,7 +184,7 @@ public class ItemMakerHandler {
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.EQUIP, slot, (byte) 1, false);
                 }
                 c.getSession().write(LocalResponse.ItemMakerResult(true));
-                c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.ItemMakerResultTo(c.getPlayer(), true), false);
+                c.getPlayer().getMap().broadcastMessage(c.getPlayer(), RemoteResponse.ItemMakerResultTo(c.getPlayer(), true), false);
                 break;
             }
         }

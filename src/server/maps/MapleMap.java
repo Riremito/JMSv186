@@ -73,6 +73,7 @@ import packet.client.handling.UserPacket;
 import packet.server.response.LocalResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
+import packet.server.response.RemoteResponse;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
@@ -554,7 +555,7 @@ public final class MapleMap {
                             case 8810122:
                             case 8820001:
                                 mc.getClient().getSession().write(LocalResponse.showOwnBuffEffect(buffid, 11)); // HT nine spirit
-                                broadcastMessage(mc, MaplePacketCreator.showBuffeffect(mc.getId(), buffid, 11), false); // HT nine spirit
+                                broadcastMessage(mc, RemoteResponse.showBuffeffect(mc.getId(), buffid, 11), false); // HT nine spirit
                                 break;
                         }
                     }

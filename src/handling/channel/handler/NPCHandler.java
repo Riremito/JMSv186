@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import packet.server.ServerPacket;
 import packet.server.response.LocalResponse;
+import packet.server.response.RemoteResponse;
 import server.MapleInventoryManipulator;
 import server.life.MapleNPC;
 import server.quest.MapleQuest;
@@ -143,7 +144,7 @@ public class NPCHandler {
                 final int npc = slea.readInt();
                 NPCScriptManager.getInstance().endQuest(c, npc, quest, false);
                 c.getSession().write(LocalResponse.showSpecialEffect(10)); // Quest completion
-                chr.getMap().broadcastMessage(chr, MaplePacketCreator.showSpecialEffect(chr.getId(), 10), false);
+                chr.getMap().broadcastMessage(chr, RemoteResponse.showSpecialEffect(chr.getId(), 10), false);
                 break;
             }
         }

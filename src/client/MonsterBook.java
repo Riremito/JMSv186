@@ -35,6 +35,7 @@ import packet.server.ServerPacket;
 import packet.client.handling.ContextPacket;
 import packet.server.response.LocalResponse;
 import packet.server.response.MonsterBookResponse;
+import packet.server.response.RemoteResponse;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -164,7 +165,7 @@ public class MonsterBook implements Serializable {
 
     public final void addCard(final MapleClient c, final int cardid) {
         changed = true;
-        c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MonsterBookResponse.showForeginCardEffect(c.getPlayer().getId()), false);
+        c.getPlayer().getMap().broadcastMessage(c.getPlayer(), RemoteResponse.showForeginCardEffect(c.getPlayer().getId()), false);
 
         if (cards.containsKey(cardid)) {
             final int levels = cards.get(cardid);

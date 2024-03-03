@@ -494,21 +494,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket showRewardItemAnimation(int itemId, String effect, int from_playerid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.Get());
-        mplew.writeInt(from_playerid);
-        mplew.write(0x0F);
-        mplew.writeInt(itemId);
-        mplew.write(effect != null && effect.length() > 0 ? 1 : 0);
-        if (effect != null && effect.length() > 0) {
-            mplew.writeMapleAsciiString(effect);
-        }
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket facialExpression(MapleCharacter from, int expression) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -764,15 +749,6 @@ public class MaplePacketCreator {
         mplew.writeShort(ServerPacket.Header.LP_UserItemReleaseEffect.Get());
         mplew.writeInt(chr);
         mplew.writeShort(pos);
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket ItemMakerResultTo(MapleCharacter chr, boolean is_success) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.Get());
-        mplew.writeInt(chr.getId());
-        mplew.write(0x11);
-        mplew.writeInt(is_success ? 0 : 1);
         return mplew.getPacket();
     }
 
@@ -1047,49 +1023,6 @@ public class MaplePacketCreator {
 
     public static MaplePacket getNPCTalkText(int npc, String talk) {
         return ScriptManPacket.ScriptMessage(npc, (byte) 3, (byte) 0, talk, false, false);
-    }
-
-    public static MaplePacket showForeignEffect(int cid, int effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.Get());
-        mplew.writeInt(cid);
-        mplew.write(effect); // 0 = Level up, 8 = job change
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket showBuffeffect(int cid, int skillid, int effectid) {
-        return showBuffeffect(cid, skillid, effectid, (byte) 3);
-    }
-
-    public static MaplePacket showBuffeffect(int cid, int skillid, int effectid, byte direction) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.Get());
-        mplew.writeInt(cid);
-        mplew.write(effectid); //ehh?
-        mplew.writeInt(skillid);
-        mplew.write(1); //skill level = 1 for the lulz
-        mplew.write(1); //actually skill level ? 0 = dosnt show
-        if (direction != (byte) 3) {
-            mplew.write(direction);
-        }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket showForeignItemLevelupEffect(int cid) {
-        return showSpecialEffect(cid, 17);
-    }
-
-    public static MaplePacket showSpecialEffect(int cid, int effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.Get());
-        mplew.writeInt(cid);
-        mplew.write(effect);
-
-        return mplew.getPacket();
     }
 
     public static MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
@@ -1955,16 +1888,6 @@ public class MaplePacketCreator {
     public static final MaplePacket temporaryStats_Reset() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_ForcedStatReset.Get());
-        return mplew.getPacket();
-    }
-
-    //its likely that durability items use this
-    public static final MaplePacket showHpHealed(final int cid, final int amount) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.Get());
-        mplew.writeInt(cid);
-        mplew.write(0x0A); //Type 
-        mplew.writeInt(amount);
         return mplew.getPacket();
     }
 

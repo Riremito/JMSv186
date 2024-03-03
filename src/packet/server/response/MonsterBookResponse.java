@@ -37,13 +37,6 @@ public class MonsterBookResponse {
         return sp.Get();
     }
 
-    public static MaplePacket showForeginCardEffect(int id) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectRemote);
-        sp.Encode4(id);
-        sp.Encode1(14); //14
-        return sp.Get();
-    }
-
     public static MaplePacket changeCover(int cardid) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MonsterBookSetCover);
         sp.Encode4(cardid);

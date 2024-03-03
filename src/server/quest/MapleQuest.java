@@ -13,6 +13,7 @@ import client.MapleQuestStatus;
 import config.ServerConfig;
 import java.util.ArrayList;
 import packet.server.response.LocalResponse;
+import packet.server.response.RemoteResponse;
 import scripting.NPCScriptManager;
 import provider.MapleData;
 import provider.MapleDataProvider;
@@ -259,7 +260,7 @@ public class MapleQuest implements Serializable {
             // completion time is set by the constructor
 
             c.getClient().getSession().write(LocalResponse.showSpecialEffect(10)); // Quest completion
-            c.getMap().broadcastMessage(c, MaplePacketCreator.showSpecialEffect(c.getId(), 10), false);
+            c.getMap().broadcastMessage(c, RemoteResponse.showSpecialEffect(c.getId(), 10), false);
         }
     }
 

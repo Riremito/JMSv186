@@ -41,6 +41,7 @@ import packet.client.ClientPacket;
 import packet.client.handling.MobPacket;
 import packet.server.response.FriendResponse;
 import packet.server.response.LocalResponse;
+import packet.server.response.RemoteResponse;
 import packet.server.response.TestResponse;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -517,7 +518,7 @@ public class PlayerHandler {
                         mob.switchController(chr, mob.isControllerHasAggro());
                     }
                 }
-                chr.getMap().broadcastMessage(chr, MaplePacketCreator.showBuffeffect(chr.getId(), skillid, 1, slea.readByte()), chr.getPosition());
+                chr.getMap().broadcastMessage(chr, RemoteResponse.showBuffeffect(chr.getId(), skillid, 1, slea.readByte()), chr.getPosition());
                 c.getSession().write(MaplePacketCreator.enableActions());
                 break;
             default:
