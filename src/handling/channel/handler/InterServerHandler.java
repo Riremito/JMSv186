@@ -43,6 +43,7 @@ import packet.client.ClientPacket;
 import packet.client.handling.ContextPacket;
 import packet.client.handling.SocketPacket;
 import packet.server.response.FamilyResponse;
+import packet.server.response.GuildResponse;
 import server.maps.FieldLimitType;
 import tools.FileoutputUtil;
 import tools.MaplePacketCreator;
@@ -167,7 +168,7 @@ public class InterServerHandler {
             // Start of Guild and alliance
             if (player.getGuildId() > 0) {
                 World.Guild.setGuildMemberOnline(player.getMGC(), true, c.getChannel());
-                c.getSession().write(MaplePacketCreator.showGuildInfo(player));
+                c.getSession().write(GuildResponse.showGuildInfo(player));
                 final MapleGuild gs = World.Guild.getGuild(player.getGuildId());
                 if (gs != null) {
                     final List<MaplePacket> packetList = World.Alliance.getAllianceInfo(gs.getAllianceId(), true);

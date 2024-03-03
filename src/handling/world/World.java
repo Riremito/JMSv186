@@ -39,6 +39,7 @@ import handling.world.guild.MapleGuildCharacter;
 import handling.world.guild.MapleGuildSummary;
 import java.util.Collection;
 import packet.client.handling.UserPacket;
+import packet.server.response.GuildResponse;
 import packet.server.response.PetResponse;
 import server.Timer.WorldTimer;
 import server.maps.MapleMap;
@@ -781,7 +782,7 @@ public class World {
         }
 
         public static void changeEmblem(int gid, int affectedPlayers, MapleGuildSummary mgs) {
-            Broadcast.sendGuildPacket(affectedPlayers, MaplePacketCreator.guildEmblemChange(gid, mgs.getLogoBG(), mgs.getLogoBGColor(), mgs.getLogo(), mgs.getLogoColor()), -1, gid);
+            Broadcast.sendGuildPacket(affectedPlayers, GuildResponse.guildEmblemChange(gid, mgs.getLogoBG(), mgs.getLogoBGColor(), mgs.getLogo(), mgs.getLogoColor()), -1, gid);
             setGuildAndRank(affectedPlayers, -1, -1, -1);	//respawn player
         }
 
@@ -1088,8 +1089,8 @@ public class World {
         public static void sendGuild(final int allianceid) {
             final MapleGuildAlliance alliance = getAlliance(allianceid);
             if (alliance != null) {
-                sendGuild(MaplePacketCreator.getAllianceUpdate(alliance), -1, allianceid);
-                sendGuild(MaplePacketCreator.getGuildAlliance(alliance), -1, allianceid);
+                sendGuild(GuildResponse.getAllianceUpdate(alliance), -1, allianceid);
+                sendGuild(GuildResponse.getGuildAlliance(alliance), -1, allianceid);
             }
         }
 
@@ -1118,10 +1119,10 @@ public class World {
 
             final MapleGuildAlliance alliance = getAlliance(allianceid);
 
-            sendGuild(MaplePacketCreator.createGuildAlliance(alliance), -1, allianceid);
-            sendGuild(MaplePacketCreator.getAllianceInfo(alliance), -1, allianceid);
-            sendGuild(MaplePacketCreator.getGuildAlliance(alliance), -1, allianceid);
-            sendGuild(MaplePacketCreator.changeAlliance(alliance, true), -1, allianceid);
+            sendGuild(GuildResponse.createGuildAlliance(alliance), -1, allianceid);
+            sendGuild(GuildResponse.getAllianceInfo(alliance), -1, allianceid);
+            sendGuild(GuildResponse.getGuildAlliance(alliance), -1, allianceid);
+            sendGuild(GuildResponse.changeAlliance(alliance, true), -1, allianceid);
             return true;
         }
 
@@ -1147,16 +1148,16 @@ public class World {
                 for (int i = 0; i < alliance.getNoGuilds(); i++) {
                     if (gid == alliance.getGuildId(i)) {
                         guild.setAllianceId(allianceid);
-                        guild.broadcast(MaplePacketCreator.getAllianceInfo(alliance));
-                        guild.broadcast(MaplePacketCreator.getGuildAlliance(alliance));
-                        guild.broadcast(MaplePacketCreator.changeAlliance(alliance, true));
+                        guild.broadcast(GuildResponse.getAllianceInfo(alliance));
+                        guild.broadcast(GuildResponse.getGuildAlliance(alliance));
+                        guild.broadcast(GuildResponse.changeAlliance(alliance, true));
                         guild.changeARank();
                         guild.writeToDB(false);
                     } else {
                         final MapleGuild g_ = Guild.getGuild(alliance.getGuildId(i));
                         if (g_ != null) {
-                            g_.broadcast(MaplePacketCreator.addGuildToAlliance(alliance, guild));
-                            g_.broadcast(MaplePacketCreator.changeGuildInAlliance(alliance, guild, true));
+                            g_.broadcast(GuildResponse.addGuildToAlliance(alliance, guild));
+                            g_.broadcast(GuildResponse.changeGuildInAlliance(alliance, guild, true));
                         }
                     }
                 }
@@ -1178,11 +1179,11 @@ public class World {
                     if (g_ == null || gid == alliance.getGuildId(i)) {
                         guild.changeARank(5);
                         guild.setAllianceId(0);
-                        guild.broadcast(MaplePacketCreator.disbandAlliance(allianceid));
+                        guild.broadcast(GuildResponse.disbandAlliance(allianceid));
                     } else if (g_ != null) {
                         guild.broadcast(MaplePacketCreator.serverNotice(5, "[" + g_.getName() + "] Guild has left the alliance."));
-                        guild.broadcast(MaplePacketCreator.changeGuildInAlliance(alliance, g_, false));
-                        guild.broadcast(MaplePacketCreator.removeGuildFromAlliance(alliance, g_, expelled));
+                        guild.broadcast(GuildResponse.changeGuildInAlliance(alliance, g_, false));
+                        guild.broadcast(GuildResponse.removeGuildFromAlliance(alliance, g_, expelled));
                     }
 
                 }
@@ -1203,10 +1204,10 @@ public class World {
             final MapleGuildAlliance alliance = getAlliance(allianceid);
             if (alliance != null) {
                 if (start) {
-                    ret.add(MaplePacketCreator.getAllianceInfo(alliance));
-                    ret.add(MaplePacketCreator.getGuildAlliance(alliance));
+                    ret.add(GuildResponse.getAllianceInfo(alliance));
+                    ret.add(GuildResponse.getGuildAlliance(alliance));
                 }
-                ret.add(MaplePacketCreator.getAllianceUpdate(alliance));
+                ret.add(GuildResponse.getAllianceUpdate(alliance));
             }
             return ret;
         }

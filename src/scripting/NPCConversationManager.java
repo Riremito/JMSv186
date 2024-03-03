@@ -69,6 +69,7 @@ import handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
 import packet.server.response.DueyResponse;
 import packet.server.response.FreeMarketResponse;
+import packet.server.response.GuildResponse;
 import server.MapleShop;
 import server.MapleShopItem;
 import server.MapleStatEffect;
@@ -814,7 +815,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void genericGuildMessage(int code) {
-        c.getSession().write(MaplePacketCreator.genericGuildMessage((byte) code));
+        c.getSession().write(GuildResponse.genericGuildMessage((byte) code));
     }
 
     public void disbandGuild() {
@@ -839,7 +840,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void displayGuildRanks() {
-        c.getSession().write(MaplePacketCreator.showGuildRanks(npc, MapleGuildRanking.getInstance().getRank()));
+        c.getSession().write(GuildResponse.showGuildRanks(npc, MapleGuildRanking.getInstance().getRank()));
     }
 
     public boolean removePlayerFromInstance() {
