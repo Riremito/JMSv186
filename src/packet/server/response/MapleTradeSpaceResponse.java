@@ -26,10 +26,10 @@ import handling.MaplePacket;
 import java.util.List;
 import packet.server.ServerPacket;
 import packet.server.response.struct.CharacterData;
+import packet.server.response.struct.TestHelper;
 import server.MTSStorage;
 import tools.KoreanDateUtil;
 import tools.data.output.MaplePacketLittleEndianWriter;
-import tools.packet.PacketHelper;
 
 /**
  *
@@ -77,7 +77,7 @@ public class MapleTradeSpaceResponse {
     }
 
     public static final void addMTSItemInfo(final MaplePacketLittleEndianWriter mplew, final MTSStorage.MTSItemInfo item) {
-        PacketHelper.addItemInfo(mplew, item.getItem(), true, true);
+        TestHelper.addItemInfo(mplew, item.getItem(), true, true);
         mplew.writeInt(item.getId()); //id
         mplew.writeInt(item.getTaxes()); //this + below = price
         mplew.writeInt(item.getPrice()); //price
@@ -100,7 +100,7 @@ public class MapleTradeSpaceResponse {
         p.Encode4(24);
         p.Encode4(168);
         if (ServerConfig.version > 131) {
-            p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
+            p.Encode8(TestHelper.getTime(System.currentTimeMillis()));
         }
         // v194 29 bytes 余り
         return p.Get();
@@ -190,7 +190,7 @@ public class MapleTradeSpaceResponse {
         mplew.writeInt(items.size());
         int i = 0;
         for (IItem item : items) {
-            PacketHelper.addItemInfo(mplew, item, true, true);
+            TestHelper.addItemInfo(mplew, item, true, true);
             mplew.writeInt(Integer.MAX_VALUE - i); //fake ID
             mplew.writeInt(110);
             mplew.writeInt(1011); //fake

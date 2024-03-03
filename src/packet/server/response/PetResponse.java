@@ -25,9 +25,9 @@ import client.inventory.MaplePet;
 import handling.MaplePacket;
 import java.util.List;
 import packet.server.ServerPacket;
+import packet.server.response.struct.TestHelper;
 import server.movement.LifeMovementFragment;
 import tools.data.output.MaplePacketLittleEndianWriter;
-import tools.packet.PacketHelper;
 
 /**
  *
@@ -64,7 +64,7 @@ public class PetResponse {
         mplew.writeInt(cid);
         mplew.writeInt(slot);
         mplew.writeLong(pid);
-        PacketHelper.serializeMovementList(mplew, moves);
+        TestHelper.serializeMovementList(mplew, moves);
         return mplew.getPacket();
     }
 
@@ -160,7 +160,7 @@ public class PetResponse {
         mplew.writeInt(pet.getPetItemId());
         mplew.write(1);
         mplew.writeLong(pet.getUniqueId());
-        PacketHelper.addPetItemInfo(mplew, item, pet);
+        TestHelper.addPetItemInfo(mplew, item, pet);
         return mplew.getPacket();
     }
     

@@ -65,7 +65,6 @@ import server.movement.LifeMovementFragment;
 import server.shops.HiredMerchant;
 import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
-import tools.packet.PacketHelper;
 import client.MapleBeans;
 import config.ServerConfig;
 import constants.GameConstants;
@@ -83,6 +82,7 @@ import packet.client.handling.ScriptManPacket;
 import packet.server.response.struct.CClientOptMan;
 import packet.server.response.struct.CWvsContext;
 import packet.server.response.struct.CharacterData;
+import packet.server.response.struct.TestHelper;
 import server.maps.MapleNodes.MapleNodeInfo;
 import server.maps.MapleNodes.MaplePlatform;
 import server.shops.MaplePlayerShopItem;
@@ -192,7 +192,7 @@ public class MaplePacketCreator {
         }
 
         // サーバーの時間?
-        p.Encode8(PacketHelper.getTime(System.currentTimeMillis()));
+        p.Encode8(TestHelper.getTime(System.currentTimeMillis()));
 
         if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
             p.Encode4(0);
@@ -395,7 +395,7 @@ public class MaplePacketCreator {
         mplew.writeMapleAsciiString(name + " : " + message);
         mplew.writeInt(0x01010000);
         //mplew.writeMapleAsciiString(name);
-        PacketHelper.addItemInfo(mplew, item, true, true);
+        TestHelper.addItemInfo(mplew, item, true, true);
         mplew.writeZeroBytes(10);
         return mplew.getPacket();
     }
@@ -409,7 +409,7 @@ public class MaplePacketCreator {
         mplew.writeMapleAsciiString(message);
         mplew.writeInt(channel - 1); // channel
         mplew.write(ear ? 1 : 0);
-        PacketHelper.addCharLook(mplew, chr, true);
+        TestHelper.addCharLook(mplew, chr, true);
 
         return mplew.getPacket();
     }
@@ -736,7 +736,7 @@ public class MaplePacketCreator {
         } else {
             mplew.write(pos);
         }
-        PacketHelper.addItemInfo(mplew, item, true, true);
+        TestHelper.addItemInfo(mplew, item, true, true);
         if (item.getPosition() < 0) {
             mplew.write(2); //?
         }
@@ -761,7 +761,7 @@ public class MaplePacketCreator {
         } else {
             mplew.write(pos);
         }
-        PacketHelper.addItemInfo(mplew, item, true, true);
+        TestHelper.addItemInfo(mplew, item, true, true);
         if (item.getPosition() < 0) {
             mplew.write(1); //?
         }
@@ -840,7 +840,7 @@ public class MaplePacketCreator {
         mplew.writeShort(ServerPacket.Header.LP_UserAvatarModified.Get());
         mplew.writeInt(chr.getId());
         mplew.write(1);
-        PacketHelper.addCharLook(mplew, chr, false);
+        TestHelper.addCharLook(mplew, chr, false);
         Pair<List<MapleRing>, List<MapleRing>> rings = chr.getRings(false);
         addRingInfo(mplew, rings.getLeft());
         addRingInfo(mplew, rings.getRight());
@@ -1323,7 +1323,7 @@ public class MaplePacketCreator {
 
         mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
         mplew.write(HexTool.getByteArrayFromHexString("04 0" + slot));
-        PacketHelper.addCharLook(mplew, c, false);
+        TestHelper.addCharLook(mplew, c, false);
         mplew.writeMapleAsciiString(c.getName());
         mplew.writeShort(c.getJob());
 
@@ -1345,7 +1345,7 @@ public class MaplePacketCreator {
         mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
         mplew.write(4);
         mplew.write(1);
-        PacketHelper.addCharLook(mplew, c, false);
+        TestHelper.addCharLook(mplew, c, false);
         mplew.writeMapleAsciiString(c.getName());
         mplew.writeShort(c.getJob());
 
@@ -1383,7 +1383,7 @@ public class MaplePacketCreator {
         //mplew.write(0xE);
         mplew.write(0xD);
         mplew.write(number);
-        PacketHelper.addItemInfo(mplew, item, false, false, true);
+        TestHelper.addItemInfo(mplew, item, false, false, true);
 
         return mplew.getPacket();
     }
@@ -1399,12 +1399,12 @@ public class MaplePacketCreator {
 
         if (number == 1) {
             mplew.write(0);
-            PacketHelper.addCharLook(mplew, trade.getPartner().getChr(), false);
+            TestHelper.addCharLook(mplew, trade.getPartner().getChr(), false);
             mplew.writeMapleAsciiString(trade.getPartner().getChr().getName());
             mplew.writeShort(trade.getPartner().getChr().getJob());
         }
         mplew.write(number);
-        PacketHelper.addCharLook(mplew, c.getPlayer(), false);
+        TestHelper.addCharLook(mplew, c.getPlayer(), false);
         mplew.writeMapleAsciiString(c.getPlayer().getName());
         mplew.writeShort(c.getPlayer().getJob());
         mplew.write(0xFF);
@@ -1578,7 +1578,7 @@ public class MaplePacketCreator {
         mplew.writeInt(masterlevel);
 
         if (ServerConfig.version > 131) {
-            PacketHelper.addExpirationTime(mplew, expiration);
+            TestHelper.addExpirationTime(mplew, expiration);
         }
         mplew.write(4);
 
@@ -2596,7 +2596,7 @@ public class MaplePacketCreator {
         mplew.writeInt(rs.localthreadID);
         mplew.writeInt(rs.ownerID);
         mplew.writeMapleAsciiString(rs.name);
-        mplew.writeLong(PacketHelper.getKoreanTimestamp(rs.timestamp));
+        mplew.writeLong(TestHelper.getKoreanTimestamp(rs.timestamp));
         mplew.writeInt(rs.icon);
         mplew.writeInt(rs.getReplyCount());
     }
@@ -2609,7 +2609,7 @@ public class MaplePacketCreator {
 
         mplew.writeInt(thread.localthreadID);
         mplew.writeInt(thread.ownerID);
-        mplew.writeLong(PacketHelper.getKoreanTimestamp(thread.timestamp));
+        mplew.writeLong(TestHelper.getKoreanTimestamp(thread.timestamp));
         mplew.writeMapleAsciiString(thread.name);
         mplew.writeMapleAsciiString(thread.text);
         mplew.writeInt(thread.icon);
@@ -2617,7 +2617,7 @@ public class MaplePacketCreator {
         for (MapleBBSReply reply : thread.replies.values()) {
             mplew.writeInt(reply.replyid);
             mplew.writeInt(reply.ownerID);
-            mplew.writeLong(PacketHelper.getKoreanTimestamp(reply.timestamp));
+            mplew.writeLong(TestHelper.getKoreanTimestamp(reply.timestamp));
             mplew.writeMapleAsciiString(reply.content);
         }
         return mplew.getPacket();
@@ -2728,7 +2728,7 @@ public class MaplePacketCreator {
         mplew.writeShort(ServerPacket.Header.LP_Messenger.Get());
         mplew.write(0x00);
         mplew.write(position);
-        PacketHelper.addCharLook(mplew, chr, true);
+        TestHelper.addCharLook(mplew, chr, true);
         mplew.writeMapleAsciiString(from);
         mplew.writeShort(channel);
 
@@ -2751,7 +2751,7 @@ public class MaplePacketCreator {
         mplew.writeShort(ServerPacket.Header.LP_Messenger.Get());
         mplew.write(0x07);
         mplew.write(position);
-        PacketHelper.addCharLook(mplew, chr, true);
+        TestHelper.addCharLook(mplew, chr, true);
         mplew.writeMapleAsciiString(from);
         mplew.writeShort(channel);
 
@@ -3163,7 +3163,7 @@ public class MaplePacketCreator {
         mplew.writePos(startPos);
         mplew.writeInt(0);
 
-        PacketHelper.serializeMovementList(mplew, moves);
+        TestHelper.serializeMovementList(mplew, moves);
 
         return mplew.getPacket();
     }
@@ -3415,7 +3415,7 @@ public class MaplePacketCreator {
                 mplew.write(hm.getFreeSlot() == -1 ? 1 : 0);
                 mplew.write(GameConstants.getInventoryType(itemSearch).getType()); //position?
                 if (GameConstants.getInventoryType(itemSearch) == MapleInventoryType.EQUIP) {
-                    PacketHelper.addItemInfo(mplew, item.item, true, true);
+                    TestHelper.addItemInfo(mplew, item.item, true, true);
                 }
             }
         }
@@ -3501,7 +3501,7 @@ public class MaplePacketCreator {
         mplew.writeShort(ServerPacket.Header.LP_UserPassiveMove.Get());
         mplew.writePos(otherStart);
         mplew.writePos(myStart);
-        PacketHelper.serializeMovementList(mplew, moves);
+        TestHelper.serializeMovementList(mplew, moves);
         mplew.write(0x11); //what? could relate to movePlayer
         for (int i = 0; i < 8; i++) {
             mplew.write(0x88); //?? sometimes 44

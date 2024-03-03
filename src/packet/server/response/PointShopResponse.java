@@ -27,12 +27,12 @@ import java.util.List;
 import java.util.Map;
 import packet.server.ServerPacket;
 import packet.server.response.struct.CharacterData;
+import packet.server.response.struct.TestHelper;
 import server.CashItemFactory;
 import server.CashItemInfo;
 import server.CashShop;
 import tools.Pair;
 import tools.data.output.MaplePacketLittleEndianWriter;
-import tools.packet.PacketHelper;
 
 /**
  *
@@ -278,7 +278,7 @@ public class PointShopResponse {
         mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
         mplew.write(107);
         mplew.writeShort(pos);
-        PacketHelper.addItemInfo(mplew, item, true, true);
+        TestHelper.addItemInfo(mplew, item, true, true);
         return mplew.getPacket();
     }
 
@@ -313,7 +313,7 @@ public class PointShopResponse {
         mplew.writeInt(isFirst ? sn : 0);
         mplew.writeShort(quantity);
         mplew.writeAsciiString(sender, 13); //owner for the lulzlzlzl
-        PacketHelper.addExpirationTime(mplew, expire);
+        TestHelper.addExpirationTime(mplew, expire);
         mplew.writeLong(isFirst ? 0 : sn);
         //if (isFirst && uniqueid > 0 && GameConstants.isEffectRing(itemid)) {
         //	MapleRing ring = MapleRing.loadFromDb(uniqueid);

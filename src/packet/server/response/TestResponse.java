@@ -24,9 +24,9 @@ import handling.MaplePacket;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import packet.server.ServerPacket;
+import packet.server.response.struct.TestHelper;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
-import tools.packet.PacketHelper;
 
 /**
  *
@@ -83,7 +83,7 @@ public class TestResponse {
             mplew.writeInt(notes.getInt("id"));
             mplew.writeMapleAsciiString(notes.getString("from"));
             mplew.writeMapleAsciiString(notes.getString("message"));
-            mplew.writeLong(PacketHelper.getKoreanTimestamp(notes.getLong("timestamp")));
+            mplew.writeLong(TestHelper.getKoreanTimestamp(notes.getLong("timestamp")));
             mplew.write(notes.getInt("gift"));
             notes.next();
         }

@@ -24,6 +24,7 @@ import client.inventory.IItem;
 import handling.MaplePacket;
 import java.util.List;
 import packet.server.ServerPacket;
+import packet.server.response.struct.TestHelper;
 import server.MerchItemPackage;
 import server.shops.AbstractPlayerStore;
 import server.shops.HiredMerchant;
@@ -33,7 +34,6 @@ import server.shops.MaplePlayerShop;
 import server.shops.MaplePlayerShopItem;
 import tools.Pair;
 import tools.data.output.MaplePacketLittleEndianWriter;
-import tools.packet.PacketHelper;
 
 /**
  *
@@ -61,7 +61,7 @@ public class FreeMarketResponse {
             mplew.writeShort(item.bundles);
             mplew.writeShort(item.item.getQuantity());
             mplew.writeInt(item.price);
-            PacketHelper.addItemInfo(mplew, item.item, true, true);
+            TestHelper.addItemInfo(mplew, item.item, true, true);
         }
         return mplew.getPacket();
     }
@@ -71,7 +71,7 @@ public class FreeMarketResponse {
         mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
         mplew.write(4);
         mplew.write(slot);
-        PacketHelper.addCharLook(mplew, chr, false);
+        TestHelper.addCharLook(mplew, chr, false);
         mplew.writeMapleAsciiString(chr.getName());
         mplew.writeShort(chr.getJob());
         return mplew.getPacket();
@@ -82,7 +82,7 @@ public class FreeMarketResponse {
         mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
         mplew.write(4);
         mplew.write(slot);
-        PacketHelper.addCharLook(mplew, c, false);
+        TestHelper.addCharLook(mplew, c, false);
         mplew.writeMapleAsciiString(c.getName());
         mplew.writeShort(c.getJob());
         addGameInfo(mplew, c, game);
@@ -129,7 +129,7 @@ public class FreeMarketResponse {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserMiniRoomBalloon.Get());
         mplew.writeInt(c.getId());
-        PacketHelper.addAnnounceBox(mplew, c);
+        TestHelper.addAnnounceBox(mplew, c);
         return mplew.getPacket();
     }
 
@@ -151,7 +151,7 @@ public class FreeMarketResponse {
         mplew.writePos(hm.getPosition());
         mplew.writeShort(0);
         mplew.writeMapleAsciiString(hm.getOwnerName());
-        PacketHelper.addInteraction(mplew, hm);
+        TestHelper.addInteraction(mplew, hm);
         return mplew.getPacket();
     }
 
@@ -178,7 +178,7 @@ public class FreeMarketResponse {
         mplew.write(0);
         mplew.write(pack.getItems().size());
         for (final IItem item : pack.getItems()) {
-            PacketHelper.addItemInfo(mplew, item, true, true);
+            TestHelper.addItemInfo(mplew, item, true, true);
         }
         mplew.writeZeroBytes(3);
         return mplew.getPacket();
@@ -201,7 +201,7 @@ public class FreeMarketResponse {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_EmployeeMiniRoomBalloon.Get());
         mplew.writeInt(shop.getOwnerId());
-        PacketHelper.addInteraction(mplew, shop);
+        TestHelper.addInteraction(mplew, shop);
         return mplew.getPacket();
     }
 
@@ -357,12 +357,12 @@ public class FreeMarketResponse {
                 break;
         }
         mplew.writeShort(ips.getVisitorSlot(chr));
-        PacketHelper.addCharLook(mplew, ((MaplePlayerShop) ips).getMCOwner(), false);
+        TestHelper.addCharLook(mplew, ((MaplePlayerShop) ips).getMCOwner(), false);
         mplew.writeMapleAsciiString(ips.getOwnerName());
         mplew.writeShort(((MaplePlayerShop) ips).getMCOwner().getJob());
         for (final Pair<Byte, MapleCharacter> storechr : ips.getVisitors()) {
             mplew.write(storechr.left);
-            PacketHelper.addCharLook(mplew, storechr.right, false);
+            TestHelper.addCharLook(mplew, storechr.right, false);
             mplew.writeMapleAsciiString(storechr.right.getName());
             mplew.writeShort(storechr.right.getJob());
         }
@@ -374,7 +374,7 @@ public class FreeMarketResponse {
             mplew.writeShort(item.bundles);
             mplew.writeShort(item.item.getQuantity());
             mplew.writeInt(item.price);
-            PacketHelper.addItemInfo(mplew, item.item, true, true);
+            TestHelper.addItemInfo(mplew, item.item, true, true);
         }
         return mplew.getPacket();
     }
@@ -416,7 +416,7 @@ public class FreeMarketResponse {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserMiniRoomBalloon.Get());
         mplew.writeInt(c.getId());
-        PacketHelper.addAnnounceBox(mplew, c);
+        TestHelper.addAnnounceBox(mplew, c);
         return mplew.getPacket();
     }
 
@@ -452,7 +452,7 @@ public class FreeMarketResponse {
         mplew.writeMapleAsciiString("雇用商人");
         for (final Pair<Byte, MapleCharacter> storechr : merch.getVisitors()) {
             mplew.write(storechr.left);
-            PacketHelper.addCharLook(mplew, storechr.right, false);
+            TestHelper.addCharLook(mplew, storechr.right, false);
             mplew.writeMapleAsciiString(storechr.right.getName());
             mplew.writeShort(storechr.right.getJob());
         }
@@ -479,7 +479,7 @@ public class FreeMarketResponse {
             mplew.writeShort(item.bundles);
             mplew.writeShort(item.item.getQuantity());
             mplew.writeInt(item.price);
-            PacketHelper.addItemInfo(mplew, item.item, true, true);
+            TestHelper.addItemInfo(mplew, item.item, true, true);
         }
         return mplew.getPacket();
     }
@@ -549,12 +549,12 @@ public class FreeMarketResponse {
         mplew.write(minigame.getGameType());
         mplew.write(minigame.getMaxSize());
         mplew.writeShort(minigame.getVisitorSlot(c.getPlayer()));
-        PacketHelper.addCharLook(mplew, minigame.getMCOwner(), false);
+        TestHelper.addCharLook(mplew, minigame.getMCOwner(), false);
         mplew.writeMapleAsciiString(minigame.getOwnerName());
         mplew.writeShort(minigame.getMCOwner().getJob());
         for (Pair<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
             mplew.write(visitorz.getLeft());
-            PacketHelper.addCharLook(mplew, visitorz.getRight(), false);
+            TestHelper.addCharLook(mplew, visitorz.getRight(), false);
             mplew.writeMapleAsciiString(visitorz.getRight().getName());
             mplew.writeShort(visitorz.getRight().getJob());
         }
