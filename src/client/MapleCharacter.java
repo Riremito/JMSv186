@@ -87,6 +87,7 @@ import packet.client.handling.MobPacket;
 import packet.client.handling.SocketPacket;
 import packet.client.handling.SummonPacket;
 import packet.client.handling.UserPacket;
+import packet.server.response.TestResponse;
 import packet.server.response.struct.GW_CharacterStat;
 import tools.MockIOSession;
 import scripting.EventInstanceManager;
@@ -116,7 +117,6 @@ import server.shops.IMaplePlayerShop;
 import server.CashShop;
 import tools.MaplePacketCreator;
 import tools.Pair;
-import tools.packet.MTSCSPacket;
 import tools.packet.PetPacket;
 import tools.packet.MonsterCarnivalPacket;
 import tools.packet.UIPacket;
@@ -2648,7 +2648,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 if (charms > 0xFF) {
                     charms = 0xFF;
                 }
-                client.getSession().write(MTSCSPacket.useCharm((byte) charms, (byte) 0));
+                client.getSession().write(TestResponse.useCharm((byte) charms, (byte) 0));
             } else {
                 float diepercentage = 0.0f;
                 int expforlevel = GameConstants.getExpNeededForLevel(level);
@@ -4294,7 +4294,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             rs.last();
             int count = rs.getRow();
             rs.first();
-            client.getSession().write(MTSCSPacket.showNotes(rs, count));
+            client.getSession().write(TestResponse.showNotes(rs, count));
             rs.close();
             ps.close();
         } catch (SQLException e) {
@@ -4482,7 +4482,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void setChalkboard(String text) {
         this.chalktext = text;
-        map.broadcastMessage(MTSCSPacket.useChalkboard(getId(), text));
+        map.broadcastMessage(TestResponse.useChalkboard(getId(), text));
     }
 
     public String getChalkboard() {

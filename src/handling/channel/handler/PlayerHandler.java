@@ -39,6 +39,7 @@ import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import packet.client.ClientPacket;
 import packet.client.handling.MobPacket;
+import packet.server.response.TestResponse;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
@@ -54,7 +55,6 @@ import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import server.maps.FieldLimitType;
 import tools.MaplePacketCreator;
-import tools.packet.MTSCSPacket;
 import tools.data.input.SeekableLittleEndianAccessor;
 import tools.packet.UIPacket;
 
@@ -179,7 +179,7 @@ public class PlayerHandler {
                 }
             }
         }
-        c.getSession().write(MTSCSPacket.getTrockRefresh(chr, vip == 1, addrem == 3));
+        c.getSession().write(TestResponse.getTrockRefresh(chr, vip == 1, addrem == 3));
     }
 
     public static final void TakeDamage(ClientPacket p, final MapleClient c, final MapleCharacter chr) {
@@ -895,7 +895,7 @@ public class PlayerHandler {
                     final MapleMap to = chr.getMap().getReturnMap();
                     chr.changeMap(to, to.getPortal(0));
                 } else {
-                    c.getSession().write(MTSCSPacket.useWheel((byte) (chr.getInventory(MapleInventoryType.CASH).countById(5510000) - 1)));
+                    c.getSession().write(TestResponse.useWheel((byte) (chr.getInventory(MapleInventoryType.CASH).countById(5510000) - 1)));
                     chr.getStat().setHp(((chr.getStat().getMaxHp() / 100) * 40));
                     MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, 5510000, 1, true, false);
 

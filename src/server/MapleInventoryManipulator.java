@@ -19,8 +19,8 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import packet.client.handling.ContextPacket;
+import packet.server.response.PointShopResponse;
 import server.maps.AramiaFireWorks;
-import tools.packet.MTSCSPacket;
 import tools.MaplePacketCreator;
 
 public class MapleInventoryManipulator {
@@ -36,7 +36,7 @@ public class MapleInventoryManipulator {
         }
         chr.getCashInventory().addToInventory(ring);
         //chr.getClient().getSession().write(MTSCSPacket.confirmToCSInventory(ring, chr.getClient().getAccID(), csi.getSN()));
-        chr.getClient().getSession().write(MTSCSPacket.showBoughtCSItem(ring, sn, chr.getClient().getAccID()));
+        chr.getClient().getSession().write(PointShopResponse.showBoughtCSItem(ring, sn, chr.getClient().getAccID()));
     }
 
     public static boolean addbyItem(final MapleClient c, final IItem item) {

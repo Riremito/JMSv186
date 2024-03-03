@@ -61,6 +61,7 @@ import packet.client.handling.ContextPacket;
 import packet.client.handling.DropPacket;
 import packet.client.handling.DropPacket.LeaveType;
 import packet.server.response.DueyResponse;
+import packet.server.response.TestResponse;
 import packet.server.response.VegaSpellResponse;
 import packet.server.response.ViciousHammerResponse;
 import server.Randomizer;
@@ -84,7 +85,6 @@ import server.maps.MapleMist;
 import server.shops.HiredMerchant;
 import server.shops.IMaplePlayerShop;
 import tools.Pair;
-import tools.packet.MTSCSPacket;
 import tools.packet.PetPacket;
 import tools.data.input.SeekableLittleEndianAccessor;
 import tools.MaplePacketCreator;
@@ -1064,10 +1064,10 @@ public class InventoryHandler {
                 }
 
                 if (c.getPlayer().gainMeso(randommeso, false)) {
-                    c.getSession().write(MTSCSPacket.RandomMesoBagSuccess((byte) (r + 1), randommeso));
+                    c.getSession().write(TestResponse.RandomMesoBagSuccess((byte) (r + 1), randommeso));
                     used = true;
                 } else {
-                    c.getSession().write(MTSCSPacket.RandomMesoBagFailed());
+                    c.getSession().write(TestResponse.RandomMesoBagFailed());
                 }
                 break;
             }
@@ -1684,7 +1684,7 @@ public class InventoryHandler {
                     pet.setName(nName);
                     c.getSession().write(PetPacket.updatePet(pet, c.getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
                     c.getSession().write(MaplePacketCreator.enableActions());
-                    c.getPlayer().getMap().broadcastMessage(MTSCSPacket.changePetName(c.getPlayer(), nName, slo));
+                    c.getPlayer().getMap().broadcastMessage(TestResponse.changePetName(c.getPlayer(), nName, slo));
                     used = true;
                 }
                 break;
@@ -1848,9 +1848,9 @@ public class InventoryHandler {
                         if (Math.random() > 0.1) {
                             final int gainmes = Randomizer.nextInt(mesars);
                             c.getPlayer().gainMeso(gainmes, false);
-                            c.getSession().write(MTSCSPacket.sendMesobagSuccess(gainmes));
+                            c.getSession().write(TestResponse.sendMesobagSuccess(gainmes));
                         } else {
-                            c.getSession().write(MTSCSPacket.sendMesobagFailed());
+                            c.getSession().write(TestResponse.sendMesobagFailed());
                         }
                     }
                 } else if (itemId / 10000 == 562) {
