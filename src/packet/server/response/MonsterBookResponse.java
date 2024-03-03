@@ -1,36 +1,36 @@
 /*
-This file is part of the OdinMS Maple Story Server
-Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc> 
-Matthias Butz <matze@odinms.de>
-Jan Christian Meyer <vimes@odinms.de>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License version 3
-as published by the Free Software Foundation. You may not use, modify
-or distribute this program under any other version of the
-GNU Affero General Public License.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2024 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
  */
-package tools.packet;
+package packet.server.response;
 
 import handling.MaplePacket;
 import packet.server.ServerPacket;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
-public class MonsterBookPacket {
+/**
+ *
+ * @author Riremito
+ */
+public class MonsterBookResponse {
 
     public static MaplePacket addCard(boolean full, int cardid, int level) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
         mplew.writeShort(ServerPacket.Header.LP_MonsterBookSetCard.Get());
-
         if (!full) {
             mplew.write(1);
             mplew.writeInt(cardid);
@@ -38,26 +38,22 @@ public class MonsterBookPacket {
         } else {
             mplew.write(0);
         }
-
         return mplew.getPacket();
     }
 
     public static MaplePacket showForeginCardEffect(int id) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
         mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.Get());
         mplew.writeInt(id);
-        mplew.write(0x0E); //14
-
+        mplew.write(14); //14
         return mplew.getPacket();
     }
 
     public static MaplePacket changeCover(int cardid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
         mplew.writeShort(ServerPacket.Header.LP_MonsterBookSetCover.Get());
         mplew.writeInt(cardid);
-
         return mplew.getPacket();
     }
+
 }

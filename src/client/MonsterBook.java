@@ -33,10 +33,10 @@ import java.io.Serializable;
 import database.DatabaseConnection;
 import packet.server.ServerPacket;
 import packet.client.handling.ContextPacket;
+import packet.server.response.MonsterBookResponse;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
-import tools.packet.MonsterBookPacket;
 
 public class MonsterBook implements Serializable {
 
@@ -151,7 +151,7 @@ public class MonsterBook implements Serializable {
     }
 
     public final void updateCard(final MapleClient c, final int cardid) {
-        c.getSession().write(MonsterBookPacket.changeCover(cardid));
+        c.getSession().write(MonsterBookResponse.changeCover(cardid));
     }
 
     public final int getLevel(final int cardid) {
@@ -163,19 +163,19 @@ public class MonsterBook implements Serializable {
 
     public final void addCard(final MapleClient c, final int cardid) {
         changed = true;
-        c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MonsterBookPacket.showForeginCardEffect(c.getPlayer().getId()), false);
+        c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MonsterBookResponse.showForeginCardEffect(c.getPlayer().getId()), false);
 
         if (cards.containsKey(cardid)) {
             final int levels = cards.get(cardid);
             if (levels >= 5) {
-                c.getSession().write(MonsterBookPacket.addCard(true, cardid, levels));
+                c.getSession().write(MonsterBookResponse.addCard(true, cardid, levels));
             } else {
                 if (GameConstants.isSpecialCard(cardid)) {
                     SpecialCard += 1;
                 } else {
                     NormalCard += 1;
                 }
-                c.getSession().write(MonsterBookPacket.addCard(false, cardid, 5));
+                c.getSession().write(MonsterBookResponse.addCard(false, cardid, 5));
                 c.SendPacket(ContextPacket.showGainCard(cardid));
                 c.getSession().write(MaplePacketCreator.showSpecialEffect(14));
                 cards.put(cardid, 5);
@@ -190,7 +190,7 @@ public class MonsterBook implements Serializable {
         }
         // New card
         cards.put(cardid, 5);
-        c.getSession().write(MonsterBookPacket.addCard(false, cardid, 5));
+        c.getSession().write(MonsterBookResponse.addCard(false, cardid, 5));
         c.SendPacket(ContextPacket.showGainCard(cardid));
         c.getSession().write(MaplePacketCreator.showSpecialEffect(14));
         calculateLevel();
