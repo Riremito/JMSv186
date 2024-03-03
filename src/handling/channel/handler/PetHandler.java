@@ -35,6 +35,7 @@ import handling.world.MaplePartyCharacter;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.concurrent.locks.Lock;
+import packet.server.response.PetResponse;
 import server.Randomizer;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -43,7 +44,6 @@ import server.movement.LifeMovementFragment;
 import server.maps.FieldLimitType;
 import server.maps.MapleMapItem;
 import tools.MaplePacketCreator;
-import tools.packet.PetPacket;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class PetHandler {
@@ -94,7 +94,7 @@ public class PetHandler {
         if (chr == null || chr.getMap() == null || petid/*chr.getPetIndex(petid)*/ < 0) {
             return;
         }
-        chr.getMap().broadcastMessage(chr, PetPacket.petChat(chr.getId(), command, text, petid/*chr.getPetIndex(petid)*/), true);
+        chr.getMap().broadcastMessage(chr, PetResponse.petChat(chr.getId(), command, text, petid/*chr.getPetIndex(petid)*/), true);
     }
 
     public static final void PetCommand(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
@@ -121,13 +121,13 @@ public class PetHandler {
                 pet.setCloseness(newCloseness);
                 if (newCloseness >= GameConstants.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
-                    c.getSession().write(PetPacket.showOwnPetLevelUp(petIndex));
-                    chr.getMap().broadcastMessage(PetPacket.showPetLevelUp(chr, petIndex));
+                    c.getSession().write(PetResponse.showOwnPetLevelUp(petIndex));
+                    chr.getMap().broadcastMessage(PetResponse.showPetLevelUp(chr, petIndex));
                 }
-                c.getSession().write(PetPacket.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+                c.getSession().write(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
             }
         }
-        chr.getMap().broadcastMessage(chr, PetPacket.commandResponse(chr.getId(), command, petIndex, success, false), true);
+        chr.getMap().broadcastMessage(chr, PetResponse.commandResponse(chr.getId(), command, petIndex, success, false), true);
     }
 
     public static final void PetFood(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
@@ -170,12 +170,12 @@ public class PetHandler {
                 if (newCloseness >= GameConstants.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
 
-                    c.getSession().write(PetPacket.showOwnPetLevelUp(index));
-                    chr.getMap().broadcastMessage(PetPacket.showPetLevelUp(chr, index));
+                    c.getSession().write(PetResponse.showOwnPetLevelUp(index));
+                    chr.getMap().broadcastMessage(PetResponse.showPetLevelUp(chr, index));
                 }
             }
-            c.getSession().write(PetPacket.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
-            chr.getMap().broadcastMessage(c.getPlayer(), PetPacket.commandResponse(chr.getId(), (byte) 1, index, true, true), true);
+            c.getSession().write(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+            chr.getMap().broadcastMessage(c.getPlayer(), PetResponse.commandResponse(chr.getId(), (byte) 1, index, true, true), true);
         } else {
             if (gainCloseness) {
                 int newCloseness = pet.getCloseness() - 1;
@@ -187,8 +187,8 @@ public class PetHandler {
                     pet.setLevel(pet.getLevel() - 1);
                 }
             }
-            c.getSession().write(PetPacket.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
-            chr.getMap().broadcastMessage(chr, PetPacket.commandResponse(chr.getId(), (byte) 1, chr.getPetIndex(pet), false, true), true);
+            c.getSession().write(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+            chr.getMap().broadcastMessage(chr, PetResponse.commandResponse(chr.getId(), (byte) 1, chr.getPetIndex(pet), false, true), true);
         }
         MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, itemId, 1, true, false);
         c.getSession().write(MaplePacketCreator.enableActions());
@@ -204,7 +204,7 @@ public class PetHandler {
                 return;
             }
             chr.getPet(slot).updatePosition(res);
-            chr.getMap().broadcastMessage(chr, PetPacket.movePet(chr.getId(), petId, slot, res), false);
+            chr.getMap().broadcastMessage(chr, PetResponse.movePet(chr.getId(), petId, slot, res), false);
             if (chr.getPlayerShop() != null || chr.getConversation() > 0 || chr.getTrade() != null) { //hack
                 return;
             }

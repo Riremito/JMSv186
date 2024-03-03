@@ -70,6 +70,7 @@ import packet.client.handling.NPCPacket;
 import packet.client.handling.ReactorPacket;
 import packet.client.handling.SummonPacket;
 import packet.client.handling.UserPacket;
+import packet.server.response.PetResponse;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
@@ -86,7 +87,6 @@ import server.life.MapleMonsterInformationProvider;
 import tools.FileoutputUtil;
 import tools.StringUtil;
 import tools.MaplePacketCreator;
-import tools.packet.PetPacket;
 import scripting.EventManager;
 import server.MapleCarnivalFactory;
 import server.MapleCarnivalFactory.MCSkill;
@@ -1808,7 +1808,7 @@ public final class MapleMap {
         }
         for (final MaplePet pet : chr.getPets()) {
             if (pet.getSummoned()) {
-                broadcastMessage(chr, PetPacket.showPet(chr, pet, false, false), false);
+                broadcastMessage(chr, PetResponse.showPet(chr, pet, false, false), false);
             }
         }
         if (chr.getParty() != null && !chr.isClone()) {

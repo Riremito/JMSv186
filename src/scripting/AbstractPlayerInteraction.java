@@ -49,11 +49,11 @@ import server.life.MapleMonster;
 import server.life.MapleLifeFactory;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
-import tools.packet.PetPacket;
 import tools.packet.UIPacket;
 import client.inventory.MapleInventoryIdentifier;
 import handling.world.World;
 import packet.client.handling.ContextPacket;
+import packet.server.response.PetResponse;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
 
@@ -755,7 +755,7 @@ public abstract class AbstractPlayerInteraction {
         final MaplePet pet = getPlayer().getPet(index);
         if (pet != null) {
             pet.setCloseness(pet.getCloseness() + closeness);
-            getClient().getSession().write(PetPacket.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+            getClient().getSession().write(PetResponse.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
         }
     }
 
@@ -763,7 +763,7 @@ public abstract class AbstractPlayerInteraction {
         for (final MaplePet pet : getPlayer().getPets()) {
             if (pet != null) {
                 pet.setCloseness(pet.getCloseness() + closeness);
-                getClient().getSession().write(PetPacket.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+                getClient().getSession().write(PetResponse.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
             }
         }
     }
