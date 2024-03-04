@@ -18,6 +18,7 @@ import packet.client.handling.PacketFlag;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.PlayerNPC;
+import test.ToolMan;
 import wz.LoadData;
 
 public class Start {
@@ -42,7 +43,7 @@ public class Start {
         LoginServer.SetWorldConfig();
 
         // 管理画面
-        tools.admin.main.main();
+        ToolMan.Open();
 
         Debug.InfoLog(ServerConfig.GetRegionName() + " v" + ServerConfig.GetVersion() + "." + ServerConfig.GetSubVersion());
         if (ServerConfig.IsJMS() && ServerConfig.GetVersion() == 131) {
