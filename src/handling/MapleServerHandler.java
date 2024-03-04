@@ -27,7 +27,6 @@ import packet.client.handling.AdminPacket;
 import packet.client.handling.DueyPacket;
 import packet.client.handling.GashaEXPPacket;
 import packet.client.handling.ItemPacket;
-import packet.client.handling.LoginPacket;
 import packet.client.handling.MobPacket;
 import packet.client.handling.NPCPacket;
 import packet.client.handling.PortalPacket;
@@ -38,6 +37,7 @@ import packet.client.handling.TrunkPacket;
 import packet.client.handling.UserPacket;
 import packet.client.handling.ViciousHammerPacket;
 import packet.client.handling.addon.AddonPacket;
+import packet.server.response.LoginResponse;
 import packet.server.response.addon.AddonResponse;
 
 public class MapleServerHandler extends IoHandlerAdapter {
@@ -122,7 +122,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         MaplePacketDecoder.DecoderState decoderState = new MaplePacketDecoder.DecoderState();
         session.setAttribute(MaplePacketDecoder.DECODER_STATE_KEY, decoderState);
 
-        session.write(LoginPacket.getHello(ServerConstants.Use_Fixed_IV ? serverSend : ivSend, ServerConstants.Use_Fixed_IV ? serverRecv : ivRecv));
+        session.write(LoginResponse.getHello(ServerConstants.Use_Fixed_IV ? serverSend : ivSend, ServerConstants.Use_Fixed_IV ? serverRecv : ivRecv));
         session.setAttribute(MapleClient.CLIENT_KEY, client);
         session.setIdleTime(IdleStatus.READER_IDLE, 60);
         session.setIdleTime(IdleStatus.WRITER_IDLE, 60);
@@ -270,13 +270,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // GameGuard
             case CP_T_UpdateGameGuard: {
-                c.getSession().write(LoginPacket.CheckGameGuardUpdate());
+                c.getSession().write(LoginResponse.CheckGameGuardUpdate());
                 break;
             }
             // ログイン画面
             case CP_CreateSecurityHandle: {
                 // +p
-                c.getSession().write(LoginPacket.LoginAUTH(p, c));
+                c.getSession().write(LoginResponse.LoginAUTH(p, c));
                 return true;
             }
             // ログイン
@@ -363,10 +363,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_ViewAllChar: {
                 if (ServerConfig.version <= 194) {
-                    c.SendPacket(LoginPacket.ViewAllCharResult_Alloc(c));
-                    c.SendPacket(LoginPacket.ViewAllCharResult(c));
+                    c.SendPacket(LoginResponse.ViewAllCharResult_Alloc(c));
+                    c.SendPacket(LoginResponse.ViewAllCharResult(c));
                 } else {
-                    c.SendPacket(LoginPacket.ViewAllCharResult_v201(c));
+                    c.SendPacket(LoginResponse.ViewAllCharResult_v201(c));
                 }
                 return true;
             }

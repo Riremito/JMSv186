@@ -36,8 +36,8 @@ import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
 import handling.login.LoginWorker;
 import packet.client.ClientPacket;
-import packet.client.handling.LoginPacket;
-import packet.client.handling.LoginPacket.LoginResult;
+import packet.server.response.LoginResponse;
+import packet.server.response.LoginResponse.LoginResult;
 import server.MapleItemInformationProvider;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -115,11 +115,11 @@ public class CharLoginHandler {
         }
         if (loginok != 0) {
             if (!loginFailCount(c)) {
-                c.SendPacket(LoginPacket.CheckPasswordResult(c, loginok));
+                c.SendPacket(LoginResponse.CheckPasswordResult(c, loginok));
             }
         } else if (tempbannedTill.getTimeInMillis() != 0) {
             if (!loginFailCount(c)) {
-                c.SendPacket(LoginPacket.CheckPasswordResult(c, 2)); // ?
+                c.SendPacket(LoginResponse.CheckPasswordResult(c, 2)); // ?
             }
         } else {
             c.loginAttempt = 0;
@@ -131,14 +131,14 @@ public class CharLoginHandler {
 
     public static final void ServerListRequest(final MapleClient c) {
         // かえで
-        c.SendPacket(LoginPacket.getServerList(0));
+        c.SendPacket(LoginResponse.getServerList(0));
         // もみじ (サーバーを分離すると接続人数を取得するのが難しくなる)
-        c.SendPacket(LoginPacket.getServerList(1, false, 16));
-        c.SendPacket(LoginPacket.getEndOfServerList());
+        c.SendPacket(LoginResponse.getServerList(1, false, 16));
+        c.SendPacket(LoginResponse.getEndOfServerList());
 
         if (186 <= ServerConfig.version) {
-            c.SendPacket(LoginPacket.RecommendWorldMessage());
-            c.SendPacket(LoginPacket.LatestConnectedWorld());
+            c.SendPacket(LoginResponse.RecommendWorldMessage());
+            c.SendPacket(LoginResponse.LatestConnectedWorld());
         }
     }
 
@@ -150,11 +150,11 @@ public class CharLoginHandler {
         final int numPlayer = LoginServer.getUsersOn();
         final int userLimit = LoginServer.getUserLimit();
         if (numPlayer >= userLimit) {
-            c.getSession().write(LoginPacket.getServerStatus(2));
+            c.getSession().write(LoginResponse.getServerStatus(2));
         } else if (numPlayer * 2 >= userLimit) {
-            c.getSession().write(LoginPacket.getServerStatus(1));
+            c.getSession().write(LoginResponse.getServerStatus(1));
         } else {
-            c.getSession().write(LoginPacket.getServerStatus(0));
+            c.getSession().write(LoginResponse.getServerStatus(0));
         }
     }
 
@@ -164,7 +164,7 @@ public class CharLoginHandler {
 
         // もみじ block test
         if (server == 1) {
-            c.SendPacket(LoginPacket.getCharList(c, LoginPacket.LoginResult.TOO_MANY_USERS));
+            c.SendPacket(LoginResponse.getCharList(c, LoginResult.TOO_MANY_USERS));
             return;
         }
 
@@ -183,12 +183,12 @@ public class CharLoginHandler {
         c.setWorld(server);
         c.setChannel(channel);
 
-        c.SendPacket(LoginPacket.getCharList(c, LoginResult.SUCCESS));
+        c.SendPacket(LoginResponse.getCharList(c, LoginResult.SUCCESS));
     }
 
     public static final void CheckCharName(ClientPacket p, final MapleClient c) {
         String name = new String(p.DecodeBuffer());
-        c.getSession().write(LoginPacket.charNameResponse(name,
+        c.getSession().write(LoginResponse.charNameResponse(name,
                 !MapleCharacterUtil.canCreateChar(name) || LoginInformationProvider.getInstance().isForbiddenName(name)));
     }
 
@@ -246,10 +246,10 @@ public class CharLoginHandler {
             if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
                 AddStarterSet(newchar);
                 MapleCharacter.saveNewCharToDB(newchar, 1, false);
-                c.getSession().write(LoginPacket.addNewCharEntry(newchar, true));
+                c.getSession().write(LoginResponse.addNewCharEntry(newchar, true));
                 c.createdChar(newchar.getId());
             } else {
-                c.getSession().write(LoginPacket.addNewCharEntry(newchar, false));
+                c.getSession().write(LoginResponse.addNewCharEntry(newchar, false));
             }
             return;
         }
@@ -281,7 +281,7 @@ public class CharLoginHandler {
                 || !LoadData.IsValidItemID(shoes)
                 || !LoadData.IsValidItemID(weapon)) {
             Debug.DebugLog("Character creation error");
-            c.getSession().write(LoginPacket.addNewCharEntry(null, false));
+            c.getSession().write(LoginResponse.addNewCharEntry(null, false));
             return;
         }
 
@@ -327,10 +327,10 @@ public class CharLoginHandler {
             AddStarterSet(newchar);
             MapleCharacter.saveNewCharToDB(newchar, JobType, JobType == 1 && db > 0);
 
-            c.getSession().write(LoginPacket.addNewCharEntry(newchar, true));
+            c.getSession().write(LoginResponse.addNewCharEntry(newchar, true));
             c.createdChar(newchar.getId());
         } else {
-            c.getSession().write(LoginPacket.addNewCharEntry(newchar, false));
+            c.getSession().write(LoginResponse.addNewCharEntry(newchar, false));
         }
     }
 
@@ -354,7 +354,7 @@ public class CharLoginHandler {
             state = (byte) c.deleteCharacter(Character_ID);
         }
 
-        c.getSession().write(LoginPacket.deleteCharResponse(Character_ID, state));
+        c.getSession().write(LoginResponse.deleteCharResponse(Character_ID, state));
     }
 
     public static final boolean Character_WithSecondPassword(MapleClient c) {
