@@ -16,7 +16,7 @@
  *
  *
  */
-package packet.client.handling.addon;
+package packet.client.request.addon;
 
 import config.ServerConfig;
 import debug.Debug;

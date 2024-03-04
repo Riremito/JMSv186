@@ -35,7 +35,7 @@ import packet.client.request.SummonPacket;
 import packet.client.request.TrunkPacket;
 import packet.client.request.UserPacket;
 import packet.client.request.ViciousHammerPacket;
-import packet.client.handling.addon.AddonPacket;
+import packet.client.request.addon.AddonPacket;
 import packet.client.request.LoginRequest;
 import packet.server.response.LoginResponse;
 import packet.server.response.addon.AddonResponse;
