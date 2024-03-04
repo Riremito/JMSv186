@@ -25,7 +25,7 @@ import java.util.Map.Entry;
 import client.MapleClient;
 import handling.channel.ChannelServer;
 import server.Timer.PingTimer;
-import handling.login.handler.CharLoginHandler;
+import packet.client.request.LoginRequest;
 import packet.server.response.LoginResponse;
 import packet.server.response.LoginResponse.LoginResult;
 
@@ -71,6 +71,6 @@ public class LoginWorker {
         }
 
         // 2次パスワード要求する場合は入力を待つ必要がある, -1で無視すれば不要
-        CharLoginHandler.ServerListRequest(c);
+        LoginRequest.ServerListRequest(c);
     }
 }

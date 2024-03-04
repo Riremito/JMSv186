@@ -10,7 +10,6 @@ import handling.channel.ChannelServer;
 import handling.cashshop.handler.*;
 import handling.channel.handler.*;
 import handling.login.LoginServer;
-import handling.login.handler.*;
 import handling.mina.MaplePacketDecoder;
 import server.Randomizer;
 import tools.MapleAESOFB;
@@ -37,6 +36,7 @@ import packet.client.request.TrunkPacket;
 import packet.client.request.UserPacket;
 import packet.client.request.ViciousHammerPacket;
 import packet.client.handling.addon.AddonPacket;
+import packet.client.request.LoginRequest;
 import packet.server.response.LoginResponse;
 import packet.server.response.addon.AddonResponse;
 
@@ -281,7 +281,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // ログイン
             case CP_CheckPassword: {
-                if (CharLoginHandler.login(p, c)) {
+                if (LoginRequest.login(p, c)) {
                     InterServerHandler.SetLogin(false);
                     Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
 
@@ -299,41 +299,41 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_Check2ndPassword: {
                 if (ServerConfig.version >= 188) {
-                    CharLoginHandler.ServerListRequest(c);
+                    LoginRequest.ServerListRequest(c);
                 }
                 return true;
             }
             // サーバー一覧
             case CP_WorldInfoRequest: {
                 // +p
-                CharLoginHandler.ServerListRequest(c);
+                LoginRequest.ServerListRequest(c);
                 return true;
             }
             // サーバーの状態
             case CP_CheckUserLimit: {
                 // +p
-                CharLoginHandler.ServerStatusRequest(c);
+                LoginRequest.ServerStatusRequest(c);
                 return true;
             }
             // キャラクター一覧
             case CP_SelectWorld: {
-                CharLoginHandler.CharlistRequest(p, c);
+                LoginRequest.CharlistRequest(p, c);
                 return true;
             }
             // キャラクター作成時の名前重複確認
             case CP_CheckDuplicatedID: {
                 // p
-                CharLoginHandler.CheckCharName(p, c);
+                LoginRequest.CheckCharName(p, c);
                 return true;
             }
             // キャラクター作成
             case CP_CreateNewCharacter: {
-                CharLoginHandler.CreateChar(p, c);
+                LoginRequest.CreateChar(p, c);
                 return true;
             }
             // キャラクター削除
             case CP_DeleteCharacter: {
-                CharLoginHandler.DeleteChar(p, c);
+                LoginRequest.DeleteChar(p, c);
                 return true;
             }
             // クラッシュデータ
@@ -346,7 +346,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             // キャラクター選択
             case CP_SelectCharacter:
             case CP_CheckPinCode: {
-                if (CharLoginHandler.Character_WithSecondPassword(p, c)) {
+                if (LoginRequest.Character_WithSecondPassword(p, c)) {
                     InterServerHandler.SetLogin(false);
                 }
                 return true;

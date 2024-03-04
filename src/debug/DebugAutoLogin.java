@@ -21,7 +21,7 @@
 package debug;
 
 import client.MapleClient;
-import handling.login.handler.CharLoginHandler;
+import packet.client.request.LoginRequest;
 
 /**
  *
@@ -32,16 +32,16 @@ public class DebugAutoLogin {
     // need to send packet when client reached to login screen, if client did not reach to login screen, client does not go to in game
     public static boolean AutoLogin(MapleClient c) {
         Debug.InfoLog("Auto Login Test");
-        if (!CharLoginHandler.login(c, "test1", "testtest")) {
-            if (!CharLoginHandler.login(c, "test2", "testtest")) {
+        if (!LoginRequest.login(c, "test1", "testtest")) {
+            if (!LoginRequest.login(c, "test2", "testtest")) {
                 return true;
             }
         }
 
-        CharLoginHandler.ServerListRequest(c); // world list
-        CharLoginHandler.ServerStatusRequest(c); // channel status
-        CharLoginHandler.CharlistRequest(c, 0, 1); // select 1st character
-        CharLoginHandler.Character_WithSecondPassword(c); // no characters = stop
+        LoginRequest.ServerListRequest(c); // world list
+        LoginRequest.ServerStatusRequest(c); // channel status
+        LoginRequest.CharlistRequest(c, 0, 1); // select 1st character
+        LoginRequest.Character_WithSecondPassword(c); // no characters = stop
         return true;
     }
 }
