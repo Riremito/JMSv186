@@ -1,20 +1,41 @@
-package handling.cashshop.handler;
+/*
+ * Copyright (C) 2024 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
+package packet.client.request;
 
-import client.inventory.Equip;
-import constants.GameConstants;
-import client.inventory.IItem;
 import client.MapleClient;
+import client.inventory.Equip;
+import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import constants.GameConstants;
 import constants.ServerConstants;
 import packet.server.response.MapleTradeSpaceResponse;
 import server.MTSCart;
 import server.MTSStorage;
-import server.MTSStorage.MTSItemInfo;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import tools.data.input.SeekableLittleEndianAccessor;
 
-public class MTSOperation {
+/**
+ *
+ * @author Riremito
+ */
+public class MapleTradeSpaceRequest {
 
     public static void MTSOperation(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MTSCart cart = MTSStorage.getInstance().getCart(c.getPlayer().getId());
@@ -24,9 +45,11 @@ public class MTSOperation {
             return;
         }
         final byte op = slea.readByte();
-        if (op == 2) { //put up for sale
+        if (op == 2) {
+            //put up for sale
             final byte invType = slea.readByte(); //1 = equip 2 = everything else
-            if (invType != 1 && invType != 2) { //pet?
+            if (invType != 1 && invType != 2) {
+                //pet?
                 c.getSession().write(MapleTradeSpaceResponse.getMTSFailSell());
                 doMTSPackets(cart, c);
                 return;
@@ -35,17 +58,18 @@ public class MTSOperation {
             if (slea.readByte() != 0) {
                 c.getSession().write(MapleTradeSpaceResponse.getMTSFailSell());
                 doMTSPackets(cart, c);
-                return;//we don't like uniqueIDs
+                return; //we don't like uniqueIDs
             }
             slea.skip(8); //expiration, don't matter
-            short stars = 1, quantity = 1;
+            short stars = 1;
+            short quantity = 1;
             byte slot = 0;
             if (invType == 1) {
                 slea.skip(32);
             } else {
                 stars = slea.readShort(); //the entire quantity of the item
             }
-            slea.readMapleAsciiString();//owner
+            slea.readMapleAsciiString(); //owner
             //again? =/
             if (invType == 1) {
                 slea.skip(48);
@@ -54,7 +78,7 @@ public class MTSOperation {
             } else {
                 slea.readShort(); //flag
                 if (GameConstants.isThrowingStar(itemid) || GameConstants.isBullet(itemid)) {
-                    slea.skip(8);//recharge ID thing
+                    slea.skip(8); //recharge ID thing
                 }
                 slot = (byte) slea.readInt();
                 if (GameConstants.isThrowingStar(itemid) || GameConstants.isBullet(itemid)) {
@@ -84,15 +108,17 @@ public class MTSOperation {
             if (quantity >= 50 && GameConstants.isUpgradeScroll(item.getItemId())) {
                 c.setMonitored(true); //hack check
             }
-            final long expiration = (System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000));
+            final long expiration = System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000);
             item.setQuantity(quantity);
             MTSStorage.getInstance().addToBuyNow(cart, item, price, c.getPlayer().getId(), c.getPlayer().getName(), expiration);
             MapleInventoryManipulator.removeFromSlot(c, type, slot, quantity, false);
             c.getPlayer().gainMeso(-ServerConstants.MTS_MESO, false);
             c.getSession().write(MapleTradeSpaceResponse.getMTSConfirmSell());
-        } else if (op == 5) { //change page/tab
+        } else if (op == 5) {
+            //change page/tab
             cart.changeInfo(slea.readInt(), slea.readInt(), slea.readInt());
-        } else if (op == 7) { //cancel sale
+        } else if (op == 7) {
+            //cancel sale
             if (!MTSStorage.getInstance().removeFromBuyNow(slea.readInt(), c.getPlayer().getId(), true)) {
                 c.getSession().write(MapleTradeSpaceResponse.getMTSFailCancel());
             } else {
@@ -100,7 +126,8 @@ public class MTSOperation {
                 sendMTSPackets(cart, c, true);
                 return;
             }
-        } else if (op == 8) { //transfer item
+        } else if (op == 8) {
+            //transfer item
             final int id = Integer.MAX_VALUE - slea.readInt(); //fake id
             if (id >= cart.getInventory().size()) {
                 c.getPlayer().dropMessage(1, "Please try it again later.");
@@ -129,14 +156,16 @@ public class MTSOperation {
                 //System.out.println("CheckSpace return false");
                 c.getSession().write(MapleTradeSpaceResponse.getMTSFailBuy());
             }
-        } else if (op == 9) { //add to cart
+        } else if (op == 9) {
+            //add to cart
             final int id = slea.readInt();
             if (MTSStorage.getInstance().checkCart(id, c.getPlayer().getId()) && cart.addToCart(id)) {
                 c.getSession().write(MapleTradeSpaceResponse.addToCartMessage(false, false));
             } else {
                 c.getSession().write(MapleTradeSpaceResponse.addToCartMessage(true, false));
             }
-        } else if (op == 10) { //delete from cart
+        } else if (op == 10) {
+            //delete from cart
             final int id = slea.readInt();
             if (cart.getCart().contains(id)) {
                 cart.removeFromCart(id);
@@ -144,8 +173,9 @@ public class MTSOperation {
             } else {
                 c.getSession().write(MapleTradeSpaceResponse.addToCartMessage(true, true));
             }
-        } else if (op == 16 || op == 17) { //buyNow, buy from cart
-            final MTSItemInfo mts = MTSStorage.getInstance().getSingleItem(slea.readInt());
+        } else if (op == 16 || op == 17) {
+            //buyNow, buy from cart
+            final MTSStorage.MTSItemInfo mts = MTSStorage.getInstance().getSingleItem(slea.readInt());
             if (mts != null && mts.getCharacterId() != c.getPlayer().getId()) {
                 if (c.getPlayer().getCSPoints(1) > mts.getRealPrice()) {
                     if (MTSStorage.getInstance().removeFromBuyNow(mts.getId(), c.getPlayer().getId(), false)) {
@@ -169,18 +199,14 @@ public class MTSOperation {
         doMTSPackets(cart, c);
     }
 
+    private static void doMTSPackets(final MTSCart cart, final MapleClient c) {
+        sendMTSPackets(cart, c, false);
+    }
+
     public static void MTSUpdate(final MTSCart cart, final MapleClient c) {
         c.getPlayer().modifyCSPoints(1, MTSStorage.getInstance().getCart(c.getPlayer().getId()).getSetOwedNX(), false);
         c.getSession().write(MapleTradeSpaceResponse.getMTSWantedListingOver(0, 0));
         doMTSPackets(cart, c);
-    }
-
-    public static void OnChargeParamResult(final MapleClient c) {
-        c.getSession().write(MapleTradeSpaceResponse.openWebSite());
-    }
-
-    private static void doMTSPackets(final MTSCart cart, final MapleClient c) {
-        sendMTSPackets(cart, c, false);
     }
 
     private static void sendMTSPackets(final MTSCart cart, final MapleClient c, final boolean changed) {
@@ -191,4 +217,9 @@ public class MTSOperation {
         //c.getSession().write(MTSCSPacket.enableCSUse());
         MTSStorage.getInstance().checkExpirations();
     }
+
+    public static void OnChargeParamResult(final MapleClient c) {
+        c.getSession().write(MapleTradeSpaceResponse.openWebSite());
+    }
+    
 }

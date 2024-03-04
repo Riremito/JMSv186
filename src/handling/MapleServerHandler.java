@@ -7,7 +7,6 @@ import debug.Debug;
 import debug.DebugAutoLogin;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
-import handling.cashshop.handler.*;
 import handling.channel.handler.*;
 import handling.login.LoginServer;
 import handling.mina.MaplePacketDecoder;
@@ -37,6 +36,8 @@ import packet.client.request.UserPacket;
 import packet.client.request.ViciousHammerPacket;
 import packet.client.request.addon.AddonPacket;
 import packet.client.request.LoginRequest;
+import packet.client.request.MapleTradeSpaceRequest;
+import packet.client.request.PointShopRequest;
 import packet.server.response.LoginResponse;
 import packet.server.response.addon.AddonResponse;
 
@@ -385,18 +386,18 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_MigrateIn: {
                 // +p
                 final int playerid = p.readInt();
-                CashShopOperation.EnterCS(playerid, c);
+                PointShopRequest.EnterCS(playerid, c);
                 Debug.UserInfoLog(c, "Enter PointShop");
                 return true;
             }
             case CP_UserTransferFieldRequest: {
                 // c
-                CashShopOperation.LeaveCS(p, c, c.getPlayer());
+                PointShopRequest.LeaveCS(p, c, c.getPlayer());
                 return true;
             }
             case CP_CashShopCashItemRequest: {
                 // c
-                CashShopOperation.BuyCashItem(p, c, c.getPlayer());
+                PointShopRequest.BuyCashItem(p, c, c.getPlayer());
                 return true;
             }
             case CP_CashShopCheckCouponRequest: {
@@ -405,19 +406,19 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 //FileoutputUtil.log(FileoutputUtil.PacketEx_Log, "Coupon : \n" + p.toString(true));
                 //System.out.println(p.toString());
                 p.skip(2);
-                CashShopOperation.CouponCode(p.readMapleAsciiString(), c);
+                PointShopRequest.CouponCode(p.readMapleAsciiString(), c);
                 return true;
             }
             case CP_CashShopChargeParamRequest: {
                 // p
                 // 充填ボタンをクリックした場合の処理
                 // 公式サイトが開くような処理だったと思うが、特に何もしない
-                CashShopOperation.CSUpdate(c);
+                PointShopRequest.CSUpdate(c);
                 return true;
             }
             case CP_CashShopQueryCashRequest: {
                 // p
-                CashShopOperation.CSUpdate(c);
+                PointShopRequest.CSUpdate(c);
                 return true;
             }
             case RECOMMENDED_AVATAR: {
@@ -444,27 +445,27 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_MigrateIn: {
                 // +p
                 final int playerid = p.readInt();
-                CashShopOperation.EnterCS(playerid, c);
+                PointShopRequest.EnterCS(playerid, c);
                 Debug.UserInfoLog(c, "Enter MTS");
                 return true;
             }
             case CP_UserTransferFieldRequest: {
                 // c
-                CashShopOperation.LeaveCS(p, c, c.getPlayer());
+                PointShopRequest.LeaveCS(p, c, c.getPlayer());
                 return true;
             }
             case CP_ITCChargeParamRequest: {
                 // 公式サイト開くだけなので不要だが、何かしらのパケットを送らないと画面がパケット受信するまで操作不能になる
-                MTSOperation.OnChargeParamResult(c);
+                MapleTradeSpaceRequest.OnChargeParamResult(c);
                 return true;
             }
             case CP_ITCQueryCashRequest: {
                 // p
-                MTSOperation.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
+                MapleTradeSpaceRequest.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
                 return true;
             }
             case CP_ITCItemRequest: {
-                MTSOperation.MTSOperation(p, c);
+                MapleTradeSpaceRequest.MTSOperation(p, c);
                 return true;
             }
             default: {
