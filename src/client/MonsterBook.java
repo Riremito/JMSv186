@@ -32,7 +32,7 @@ import java.io.Serializable;
 
 import database.DatabaseConnection;
 import packet.server.ServerPacket;
-import packet.client.handling.ContextPacket;
+import packet.client.request.ContextPacket;
 import packet.server.response.LocalResponse;
 import packet.server.response.MonsterBookResponse;
 import packet.server.response.RemoteResponse;

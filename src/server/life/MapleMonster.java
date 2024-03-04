@@ -50,7 +50,7 @@ import handling.MaplePacket;
 import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import java.awt.Point;
-import packet.client.handling.MobPacket;
+import packet.client.request.MobPacket;
 import scripting.EventInstanceManager;
 import server.MapleItemInformationProvider;
 import server.Randomizer;

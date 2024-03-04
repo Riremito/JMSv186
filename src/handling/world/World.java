@@ -38,7 +38,7 @@ import handling.world.guild.MapleGuildAlliance;
 import handling.world.guild.MapleGuildCharacter;
 import handling.world.guild.MapleGuildSummary;
 import java.util.Collection;
-import packet.client.handling.UserPacket;
+import packet.client.request.UserPacket;
 import packet.server.response.FriendResponse;
 import packet.server.response.GuildResponse;
 import packet.server.response.PartyResponse;

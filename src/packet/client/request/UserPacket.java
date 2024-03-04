@@ -1,5 +1,5 @@
 // User
-package packet.client.handling;
+package packet.client.request;
 
 import client.MapleBuffStat;
 import client.MapleCharacter;

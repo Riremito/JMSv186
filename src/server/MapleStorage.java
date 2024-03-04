@@ -20,7 +20,7 @@ import client.inventory.MapleInventoryType;
 import database.DatabaseConnection;
 import database.DatabaseException;
 import java.util.EnumMap;
-import packet.client.handling.TrunkPacket;
+import packet.client.request.TrunkPacket;
 import tools.MaplePacketCreator;
 import tools.Pair;
 

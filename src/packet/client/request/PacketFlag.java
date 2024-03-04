@@ -1,4 +1,4 @@
-package packet.client.handling;
+package packet.client.request;
 
 import packet.server.response.struct.SecondaryStat;
 import packet.server.response.struct.GW_CharacterStat;

@@ -1,5 +1,5 @@
 // 設置物
-package packet.client.handling;
+package packet.client.request;
 
 import client.MapleClient;
 import handling.MaplePacket;

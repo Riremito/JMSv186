@@ -45,7 +45,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import packet.client.handling.ContextPacket;
+import packet.client.request.ContextPacket;
 import packet.server.response.GuildResponse;
 import packet.server.response.PartyResponse;
 import tools.MaplePacketCreator;

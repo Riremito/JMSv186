@@ -76,7 +76,7 @@ import org.apache.mina.common.TrafficMask;
 import org.apache.mina.common.TransportType;
 import org.apache.mina.common.WriteFuture;
 import packet.server.ServerPacket;
-import packet.client.handling.SocketPacket;
+import packet.client.request.SocketPacket;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;

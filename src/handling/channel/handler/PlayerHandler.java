@@ -38,7 +38,7 @@ import constants.MapConstants;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import packet.client.ClientPacket;
-import packet.client.handling.MobPacket;
+import packet.client.request.MobPacket;
 import packet.server.response.FriendResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.RemoteResponse;

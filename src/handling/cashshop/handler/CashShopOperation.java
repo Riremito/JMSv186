@@ -18,7 +18,7 @@ import handling.channel.ChannelServer;
 import handling.world.CharacterTransfer;
 import handling.world.World;
 import java.util.List;
-import packet.client.handling.SocketPacket;
+import packet.client.request.SocketPacket;
 import packet.server.response.MapleTradeSpaceResponse;
 import packet.server.response.PointShopResponse;
 import server.CashItemFactory;

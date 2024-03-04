@@ -51,7 +51,7 @@ import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
 import client.inventory.MapleInventoryIdentifier;
 import handling.world.World;
-import packet.client.handling.ContextPacket;
+import packet.client.request.ContextPacket;
 import packet.server.response.LocalResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.TestResponse;

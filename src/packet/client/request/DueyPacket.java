@@ -16,7 +16,7 @@
  *
  *
  */
-package packet.client.handling;
+package packet.client.request;
 
 import client.MapleClient;
 import packet.client.ClientPacket;

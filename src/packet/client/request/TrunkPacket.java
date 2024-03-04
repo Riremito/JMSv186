@@ -1,5 +1,5 @@
 // 倉庫
-package packet.client.handling;
+package packet.client.request;
 
 import client.MapleCharacter;
 import client.MapleClient;

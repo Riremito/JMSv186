@@ -26,9 +26,9 @@ import client.MapleCharacter;
 import client.MapleClient;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import packet.client.handling.DropPacket;
-import packet.client.handling.DropPacket.EnterType;
-import packet.client.handling.DropPacket.LeaveType;
+import packet.client.request.DropPacket;
+import packet.client.request.DropPacket.EnterType;
+import packet.client.request.DropPacket.LeaveType;
 
 public class MapleMapItem extends AbstractMapleMapObject {
 

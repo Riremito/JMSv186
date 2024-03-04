@@ -34,7 +34,7 @@ import client.MapleStat;
 import client.SkillFactory;
 import java.util.ArrayList;
 import java.util.List;
-import packet.client.handling.ContextPacket;
+import packet.client.request.ContextPacket;
 import packet.server.response.LocalResponse;
 import provider.MapleData;
 import provider.MapleDataTool;

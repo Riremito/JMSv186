@@ -38,7 +38,7 @@ import database.DatabaseConnection;
 import handling.channel.ChannelServer;
 import handling.world.World;
 import java.util.ArrayList;
-import packet.client.handling.NPCPacket;
+import packet.client.request.NPCPacket;
 import server.maps.*;
 import tools.MaplePacketCreator;
 
