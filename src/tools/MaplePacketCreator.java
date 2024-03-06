@@ -1263,28 +1263,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket musicChange(String song) {
-        return environmentChange(song, 6);
-    }
-
-    public static MaplePacket showEffect(String effect) {
-        return environmentChange(effect, 3);
-    }
-
-    public static MaplePacket playSound(String sound) {
-        return environmentChange(sound, 4);
-    }
-
-    public static MaplePacket environmentChange(String env, int mode) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_FieldEffect.Get());
-        mplew.write(mode);
-        mplew.writeMapleAsciiString(env);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket environmentMove(String env, int mode) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -2198,21 +2176,6 @@ public class MaplePacketCreator {
         mplew.write(0); //mode, 0 = engage, 1 = cancel, 2 = answer.. etc
         mplew.writeMapleAsciiString(name); // name
         mplew.writeInt(cid); // playerid
-        return mplew.getPacket();
-    }
-
-    /**
-     *
-     * @param type - (0:Light&Long 1:Heavy&Short)
-     * @param delay - seconds
-     * @return
-     */
-    public static MaplePacket trembleEffect(int type, int delay) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FieldEffect.Get());
-        mplew.write(1);
-        mplew.write(type);
-        mplew.writeInt(delay);
         return mplew.getPacket();
     }
 

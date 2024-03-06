@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import packet.server.ServerPacket;
 import packet.server.response.struct.TestHelper;
-import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -153,10 +152,6 @@ public class TestResponse {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket Aran_Start() {
-        return MaplePacketCreator.environmentChange("Aran/balloon", 4);
-    }
-
     public static MaplePacket fishingUpdate(byte type, int id) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.FISHING_BOARD_UPDATE.Get());
@@ -212,14 +207,6 @@ public class TestResponse {
         mplew.write(enable ? 1 : 0);
         mplew.writeInt(enable ? 1 : 0);
         return mplew.getPacket();
-    }
-
-    public static final MaplePacket MapEff(final String path) {
-        return MaplePacketCreator.environmentChange(path, 3);
-    }
-
-    public static final MaplePacket MapNameDisplay(final int mapid) {
-        return MaplePacketCreator.environmentChange("maplemap/enter/" + mapid, 3);
     }
 
     public static MaplePacket fishingCaught(int chrid) {

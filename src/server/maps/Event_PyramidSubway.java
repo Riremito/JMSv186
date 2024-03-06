@@ -26,6 +26,7 @@ import handling.channel.ChannelServer;
 import handling.world.MaplePartyCharacter;
 import java.awt.Point;
 import java.util.concurrent.ScheduledFuture;
+import packet.server.response.FieldResponse;
 import server.Randomizer;
 import server.Timer.MapTimer;
 import server.quest.MapleQuest;
@@ -92,17 +93,17 @@ public class Event_PyramidSubway {
                 final MapleCharacter chr = ourMap.getCharacterById(mpc.getId());
                 if (chr != null) {
                     chr.getClient().getSession().write(MaplePacketCreator.getClock(time));
-                    chr.getClient().getSession().write(MaplePacketCreator.showEffect("killing/first/number/" + stage));
-                    chr.getClient().getSession().write(MaplePacketCreator.showEffect("killing/first/stage"));
-                    chr.getClient().getSession().write(MaplePacketCreator.showEffect("killing/first/start"));
+                    chr.getClient().getSession().write(FieldResponse.showEffect("killing/first/number/" + stage));
+                    chr.getClient().getSession().write(FieldResponse.showEffect("killing/first/stage"));
+                    chr.getClient().getSession().write(FieldResponse.showEffect("killing/first/start"));
                     fullUpdate(chr, stage);
                 }
             }
         } else {
             c.getClient().getSession().write(MaplePacketCreator.getClock(time));
-            c.getClient().getSession().write(MaplePacketCreator.showEffect("killing/first/number/" + stage));
-            c.getClient().getSession().write(MaplePacketCreator.showEffect("killing/first/stage"));
-            c.getClient().getSession().write(MaplePacketCreator.showEffect("killing/first/start"));
+            c.getClient().getSession().write(FieldResponse.showEffect("killing/first/number/" + stage));
+            c.getClient().getSession().write(FieldResponse.showEffect("killing/first/stage"));
+            c.getClient().getSession().write(FieldResponse.showEffect("killing/first/start"));
             fullUpdate(c, stage);
         }
         if (type != -1 && (stage == 4 || stage == 5)) { //yetis. temporary
@@ -315,7 +316,7 @@ public class Event_PyramidSubway {
             exp = (((kill * 2) + (cool * 10)) + pt) * c.getClient().getChannelServer().getExpRate();
             c.gainExp(exp, true, false, false);
         }
-        c.getClient().getSession().write(MaplePacketCreator.showEffect("killing/clear"));
+        c.getClient().getSession().write(FieldResponse.showEffect("killing/clear"));
         c.getClient().getSession().write(MaplePacketCreator.sendPyramidResult(rank, exp));
         dispose(c);
     }
@@ -367,7 +368,7 @@ public class Event_PyramidSubway {
     }
 
     public final void broadcastEffect(final MapleCharacter c, final String effect) {
-        c.getClient().getSession().write(MaplePacketCreator.showEffect(effect));
+        c.getClient().getSession().write(FieldResponse.showEffect(effect));
     }
 
     public final void broadcastEnergy(final MapleCharacter c, final String type, final int amount) {
@@ -505,18 +506,18 @@ public class Event_PyramidSubway {
                 final MapleCharacter chr = oldMap.getCharacterById(mpc.getId());
                 if (chr != null && chr.getId() != c.getId() && chr.getLevel() >= minLevel && chr.getLevel() <= maxLevel) {
                     if (clear == 1) {
-                        chr.getClient().getSession().write(MaplePacketCreator.showEffect("killing/clear"));
+                        chr.getClient().getSession().write(FieldResponse.showEffect("killing/clear"));
                     } else if (clear == 2) {
-                        chr.getClient().getSession().write(MaplePacketCreator.showEffect("killing/fail"));
+                        chr.getClient().getSession().write(FieldResponse.showEffect("killing/fail"));
                     }
                     chr.changeMap(map, map.getPortal(0));
                 }
             }
         }
         if (clear == 1) {
-            c.getClient().getSession().write(MaplePacketCreator.showEffect("killing/clear"));
+            c.getClient().getSession().write(FieldResponse.showEffect("killing/clear"));
         } else if (clear == 2) {
-            c.getClient().getSession().write(MaplePacketCreator.showEffect("killing/fail"));
+            c.getClient().getSession().write(FieldResponse.showEffect("killing/fail"));
         }
         c.changeMap(map, map.getPortal(0));
     }

@@ -332,30 +332,6 @@ public class MobPacket {
         return p.Get();
     }
 
-    // showBossHP
-    public static MaplePacket ShowBossHP(MapleMonster m) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_FieldEffect);
-
-        p.Encode1(5);
-        p.Encode4(m.getId());
-
-        if (m.getHp() > Integer.MAX_VALUE) {
-            p.Encode4((int) (((double) m.getHp() / m.getMobMaxHp()) * Integer.MAX_VALUE));
-        } else {
-            p.Encode4((int) m.getHp());
-        }
-
-        if (m.getMobMaxHp() > Integer.MAX_VALUE) {
-            p.Encode4(Integer.MAX_VALUE);
-        } else {
-            p.Encode4((int) m.getMobMaxHp());
-        }
-
-        p.Encode1(m.getStats().getTagColor());
-        p.Encode1(m.getStats().getTagBgColor());
-        return p.Get();
-    }
-
     // damageMonster
     public static MaplePacket Damage(MapleMonster m, final long damage) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_MobDamaged);

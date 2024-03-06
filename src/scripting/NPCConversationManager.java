@@ -68,6 +68,7 @@ import java.util.HashMap;
 import handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
 import packet.server.response.DueyResponse;
+import packet.server.response.FieldResponse;
 import packet.server.response.FreeMarketResponse;
 import packet.server.response.GuildResponse;
 import server.MapleShop;
@@ -625,25 +626,25 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void showEffect(boolean broadcast, String effect) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect(effect));
+            c.getPlayer().getMap().broadcastMessage(FieldResponse.showEffect(effect));
         } else {
-            c.getSession().write(MaplePacketCreator.showEffect(effect));
+            c.getSession().write(FieldResponse.showEffect(effect));
         }
     }
 
     public void playSound(boolean broadcast, String sound) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.playSound(sound));
+            c.getPlayer().getMap().broadcastMessage(FieldResponse.playSound(sound));
         } else {
-            c.getSession().write(MaplePacketCreator.playSound(sound));
+            c.getSession().write(FieldResponse.playSound(sound));
         }
     }
 
     public void environmentChange(boolean broadcast, String env) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.environmentChange(env, 2));
+            c.getPlayer().getMap().broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Object, env)));
         } else {
-            c.getSession().write(MaplePacketCreator.environmentChange(env, 2));
+            c.getSession().write(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Object, env)));
         }
     }
 

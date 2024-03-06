@@ -26,6 +26,7 @@ import client.MapleClient;
 import client.MapleQuestStatus;
 import client.SkillFactory;
 import packet.client.request.ContextPacket;
+import packet.server.response.FieldResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.TestResponse;
 import scripting.EventManager;
@@ -355,8 +356,8 @@ public class MapScriptMethods {
                 //926010070-926010089 - 50 Yetis (specialized? immortality)
                 //TODO also find positions to spawn these at
                 c.getPlayer().getMap().resetFully();
-                c.getSession().write(MaplePacketCreator.showEffect("killing/bonus/bonus"));
-                c.getSession().write(MaplePacketCreator.showEffect("killing/bonus/stage"));
+                c.getSession().write(FieldResponse.showEffect("killing/bonus/bonus"));
+                c.getSession().write(FieldResponse.showEffect("killing/bonus/stage"));
                 Point pos1 = null, pos2 = null, pos3 = null;
                 int spawnPer = 0;
                 int mobId = 0;
@@ -601,7 +602,7 @@ public class MapScriptMethods {
                 c.getSession().write(TestResponse.IntroDisableUI(false));
                 c.getSession().write(TestResponse.IntroLock(false));
                 c.getSession().write(MaplePacketCreator.enableActions());
-                c.getSession().write(TestResponse.MapEff("temaD/enter/mushCatle"));
+                c.getSession().write(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Screen, "temaD/enter/mushCatle")));
                 break;
             }
             case explorationPoint: {
@@ -609,7 +610,7 @@ public class MapScriptMethods {
                     c.getSession().write(TestResponse.IntroDisableUI(false));
                     c.getSession().write(TestResponse.IntroLock(false));
                     c.getSession().write(MaplePacketCreator.enableActions());
-                    c.getSession().write(TestResponse.MapNameDisplay(c.getPlayer().getMapId()));
+                    c.getSession().write(FieldResponse.MapNameDisplay(c.getPlayer().getMapId()));
                 }
                 MedalQuest m = null;
                 for (MedalQuest mq : MedalQuest.values()) {
@@ -681,7 +682,7 @@ public class MapScriptMethods {
             case go1010200:
             case go1010300:
             case go1010400: {
-                c.getSession().write(TestResponse.MapNameDisplay(c.getPlayer().getMapId()));
+                c.getSession().write(FieldResponse.MapNameDisplay(c.getPlayer().getMapId()));
                 break;
             }
             case goArcher: {
@@ -782,7 +783,7 @@ public class MapScriptMethods {
             }
             case Massacre_result: { //clear, give exp, etc.
                 //if (c.getPlayer().getPyramidSubway() == null) {
-                c.getSession().write(MaplePacketCreator.showEffect("killing/fail"));
+                c.getSession().write(FieldResponse.showEffect("killing/fail"));
                 //} else {
                 //	c.getSession().write(MaplePacketCreator.showEffect("killing/clear"));
                 //}
@@ -846,10 +847,10 @@ public class MapScriptMethods {
     }
 
     private static void sendDojoStart(MapleClient c, int stage) {
-        c.getSession().write(MaplePacketCreator.environmentChange("Dojang/start", 4));
-        c.getSession().write(MaplePacketCreator.environmentChange("dojang/start/stage", 3));
-        c.getSession().write(MaplePacketCreator.environmentChange("dojang/start/number/" + stage, 3));
-        c.getSession().write(MaplePacketCreator.trembleEffect(0, 1));
+        c.getSession().write(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Sound, "Dojang/start")));
+        c.getSession().write(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Screen, "dojang/start/stage")));
+        c.getSession().write(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Screen, "dojang/start/number/" + stage)));
+        c.SendPacket(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Tremble, 0, 1)));
     }
 
     private static void handlePinkBeanStart(MapleClient c) {

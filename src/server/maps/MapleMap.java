@@ -70,6 +70,7 @@ import packet.client.request.NPCPacket;
 import packet.client.request.ReactorPacket;
 import packet.client.request.SummonPacket;
 import packet.client.request.UserPacket;
+import packet.server.response.FieldResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
@@ -1878,7 +1879,7 @@ public final class MapleMap {
                         music = "Bgm06/FinalFight";
                         break;
                 }
-                chr.getClient().getSession().write(MaplePacketCreator.musicChange(music));
+                chr.getClient().getSession().write(FieldResponse.musicChange(music));
                 //maybe timer too for zak/ht
             }
             for (final WeakReference<MapleCharacter> chrz : chr.getClones()) {
@@ -3112,7 +3113,7 @@ public final class MapleMap {
     }
 
     public final void changeEnvironment(final String ms, final int type) {
-        broadcastMessage(MaplePacketCreator.environmentChange(ms, type));
+        broadcastMessage(FieldResponse.environmentChange(ms, type));
     }
 
     public final void toggleEnvironment(final String ms) {

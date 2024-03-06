@@ -46,6 +46,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import static packet.client.request.ItemPacket.CreatePinkBeanEventPortal;
+import packet.server.response.FieldResponse;
 import scripting.NPCScriptManager;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
@@ -419,6 +420,11 @@ public class CommandProcessor {
                 MapleCharacter chr = c.getPlayer();
                 DebugJob.DefStat(chr, job_id, level);
                 chr.Notice("Def Stat!");
+                return true;
+            }
+
+            if ("/slot".equals(splitted[0])) {
+                FieldResponse.MiroSlot(c.getPlayer());
                 return true;
             }
 

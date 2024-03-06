@@ -61,6 +61,7 @@ import packet.client.request.ContextPacket;
 import packet.client.request.DropPacket;
 import packet.client.request.DropPacket.LeaveType;
 import packet.server.response.DueyResponse;
+import packet.server.response.FieldResponse;
 import packet.server.response.FreeMarketResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.PetResponse;
@@ -1646,7 +1647,7 @@ public class InventoryHandler {
                 break;
             }
             case 5100000: { // Congratulatory Song
-                c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.musicChange("Jukebox/Congratulation"));
+                c.getPlayer().getMap().broadcastMessage(FieldResponse.musicChange("Jukebox/Congratulation"));
                 used = true;
                 break;
             }

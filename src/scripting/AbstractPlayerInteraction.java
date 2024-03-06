@@ -52,6 +52,7 @@ import tools.MaplePacketCreator;
 import client.inventory.MapleInventoryIdentifier;
 import handling.world.World;
 import packet.client.request.ContextPacket;
+import packet.server.response.FieldResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.TestResponse;
@@ -476,7 +477,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void changeMusic(final String songName) {
-        getPlayer().getMap().broadcastMessage(MaplePacketCreator.musicChange(songName));
+        getPlayer().getMap().broadcastMessage(FieldResponse.musicChange(songName));
     }
 
     public final void worldMessage(final int type, final String message) {
@@ -900,7 +901,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void Aran_Start() {
-        c.getSession().write(TestResponse.Aran_Start());
+        c.getSession().write(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Sound, "Aran/balloon")));
     }
 
     public final void evanTutorial(final String data, final int v1) {
@@ -975,7 +976,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public void showMapEffect(String path) {
-        getClient().getSession().write(TestResponse.MapEff(path));
+        getClient().getSession().write(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Screen, path)));
     }
 
     public int itemQuantity(int itemid) {

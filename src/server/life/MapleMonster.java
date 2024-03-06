@@ -51,6 +51,7 @@ import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import java.awt.Point;
 import packet.client.request.MobPacket;
+import packet.server.response.FieldResponse;
 import scripting.EventInstanceManager;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
@@ -282,7 +283,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     if (sponge.get().hp <= 0) {
                         map.killMonster(sponge.get(), from, true, false, (byte) 1, lastSkill);
                     } else {
-                        map.broadcastMessage(MobPacket.ShowBossHP(sponge.get()));
+                        map.broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_MobHPTag, sponge.get())));
                     }
                 }
             }
@@ -299,7 +300,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 if (sponge.get() == null/* && hp > 0*/) {
                     switch (stats.getHPDisplayType()) {
                         case 0:
-                            map.broadcastMessage(MobPacket.ShowBossHP(this), this.getPosition());
+                            map.broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_MobHPTag, this)), this.getPosition());
                             break;
                         case 1:
                             map.broadcastMessage(from, MobPacket.damageFriendlyMob(this, damage, true), false);
@@ -596,8 +597,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     map.spawnRevives(mob, this.getObjectId());
 
                     if (mob.getId() == 9300216) {
-                        map.broadcastMessage(MaplePacketCreator.environmentChange("Dojang/clear", 4));
-                        map.broadcastMessage(MaplePacketCreator.environmentChange("dojang/end/clear", 3));
+                        map.broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Sound, "Dojang/clear")));
+                        map.broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Screen, "dojang/end/clear")));
                     }
                 }
                 break;
