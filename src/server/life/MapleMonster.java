@@ -324,11 +324,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 }
 
                 if (hp <= 0) {
-                    /*
                     if (stats.getHPDisplayType() == 0) {
-                        map.broadcastMessage(MobPacket.showBossHP(this), this.getPosition());
+                        this.setHp(0);
+                        map.broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_MobHPTag, this)));
                     }
-                     */
                     map.killMonster(this, from, true, false, (byte) 1, lastSkill);
                 }
             }

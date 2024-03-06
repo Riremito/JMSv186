@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 import packet.client.request.NPCPacket;
+import packet.server.response.FieldResponse;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -2135,6 +2136,11 @@ public class AdminCommand {
             MapleMonster mob;
             for (MapleMapObject monstermo : map.getMapObjectsInRange(c.getPlayer().getPosition(), range, Arrays.asList(MapleMapObjectType.MONSTER))) {
                 mob = (MapleMonster) monstermo;
+
+                if (mob.getStats().getHPDisplayType() == 0) {
+                    mob.setHp(0);
+                    map.broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_MobHPTag, mob)));
+                }
                 map.killMonster(mob, c.getPlayer(), false, false, (byte) 1);
             }
             return 1;

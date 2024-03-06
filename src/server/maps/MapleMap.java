@@ -595,7 +595,6 @@ public final class MapleMap {
                 doShrine(true);
             }
         } else if (mobid == 8500002) {
-            World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, "ビシャスプラントが討伐されました").getBytes());
             if (mapid == 220080001) {
                 if (speedRunStart > 0) {
                     type = SpeedRunType.Papulatus;
@@ -674,7 +673,6 @@ public final class MapleMap {
                 FileoutputUtil.log(FileoutputUtil.Pinkbean_Log, MapDebug_Log());
             }
         } else if (mobid == 8800002) {
-            World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, "ジャクムが討伐されました").getBytes());
             if (mapid == 280030000) {
                 for (MapleCharacter c : getCharactersThreadsafe()) {
                     c.finishAchievement(15);
