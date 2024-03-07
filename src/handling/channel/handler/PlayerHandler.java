@@ -39,7 +39,6 @@ import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import packet.client.ClientPacket;
 import packet.client.request.MobPacket;
-import packet.server.response.FriendResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.RemoteResponse;
 import packet.server.response.TestResponse;
@@ -415,7 +414,7 @@ public class PlayerHandler {
         if (itemId != 5510000) {
             chr.setItemEffect(itemId);
         }
-        chr.getMap().broadcastMessage(chr, FriendResponse.itemEffect(chr.getId(), itemId), false);
+        chr.getMap().broadcastMessage(chr, TestResponse.itemEffect(chr.getId(), itemId), false);
     }
 
     public static final void CancelItemEffect(final int id, final MapleCharacter chr) {

@@ -23,6 +23,7 @@ import tools.FileoutputUtil;
 import packet.client.ClientPacket;
 import packet.client.request.AdminPacket;
 import packet.client.request.DueyPacket;
+import packet.client.request.FriendRequest;
 import packet.client.request.GashaEXPPacket;
 import packet.client.request.ItemPacket;
 import packet.client.request.MobPacket;
@@ -935,7 +936,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_FriendRequest: {
-                BuddyListHandler.BuddyOperation(p, c);
+                FriendRequest.BuddyOperation(p, c);
                 return true;
             }
             case CYGNUS_SUMMON: {

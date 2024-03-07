@@ -19,6 +19,8 @@
 package packet.server.response;
 
 import client.BuddylistEntry;
+import client.MapleCharacter;
+import debug.Debug;
 import handling.MaplePacket;
 import java.util.Collection;
 import packet.server.ServerPacket;
@@ -30,6 +32,172 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  * @author Riremito
  */
 public class FriendResponse {
+
+    public enum FriendOps {
+        FriendReq_LoadFriend(0x0),
+        FriendReq_SetFriend(0x1),
+        FriendReq_AcceptFriend(0x2),
+        FriendReq_DeleteFriend(0x3),
+        FriendReq_NotifyLogin(0x4),
+        FriendReq_NotifyLogout(0x5),
+        FriendReq_IncMaxCount(0x6),
+        FriendRes_LoadFriend_Done(0x7),
+        FriendRes_NotifyChange_FriendInfo(0x8),
+        FriendRes_Invite(0x9),
+        FriendRes_SetFriend_Done(0xA),
+        FriendRes_SetFriend_FullMe(0xB),
+        FriendRes_SetFriend_FullOther(0xC),
+        FriendRes_SetFriend_AlreadySet(0xD),
+        FriendRes_SetFriend_Master(0xE),
+        FriendRes_SetFriend_UnknownUser(0xF),
+        FriendRes_SetFriend_Unknown(0x10),
+        FriendRes_AcceptFriend_Unknown(0x11),
+        FriendRes_DeleteFriend_Done(0x12),
+        FriendRes_DeleteFriend_Unknown(0x13),
+        FriendRes_Notify(0x14),
+        FriendRes_IncMaxCount_Done(0x15),
+        FriendRes_IncMaxCount_Unknown(0x16),
+        FriendRes_PleaseWait(0x17),
+        UNKNOWN(-1);
+
+        private int value;
+
+        FriendOps(int flag) {
+            value = flag;
+        }
+
+        FriendOps() {
+            value = -1;
+        }
+
+        public int get() {
+            return value;
+        }
+
+        public static FriendOps find(int val) {
+            for (final FriendOps o : FriendOps.values()) {
+                if (o.get() == val) {
+                    return o;
+                }
+            }
+            return UNKNOWN;
+        }
+    }
+
+    // CWvsContext::OnFriendResult
+    public static MaplePacket FriendResult(FriendOps flag, MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FriendResult);
+
+        sp.Encode1(flag.get());
+
+        switch (flag) {
+            case FriendReq_LoadFriend: {
+                break;
+            }
+            case FriendReq_SetFriend: {
+                break;
+            }
+            case FriendReq_AcceptFriend: {
+                break;
+            }
+            case FriendReq_DeleteFriend: {
+                break;
+            }
+            case FriendReq_NotifyLogin: {
+                break;
+            }
+            case FriendReq_NotifyLogout: {
+                break;
+            }
+            case FriendReq_IncMaxCount: {
+                break;
+            }
+            case FriendRes_LoadFriend_Done: {
+                sp.EncodeBuffer(Reset_Encode(chr));
+                break;
+            }
+            case FriendRes_NotifyChange_FriendInfo: {
+                break;
+            }
+            case FriendRes_Invite: {
+                break;
+            }
+            case FriendRes_SetFriend_Done: {
+                sp.EncodeBuffer(Reset_Encode(chr));
+                break;
+            }
+            case FriendRes_SetFriend_FullMe: {
+                break;
+            }
+            case FriendRes_SetFriend_FullOther: {
+                break;
+            }
+            case FriendRes_SetFriend_AlreadySet: {
+                break;
+            }
+            case FriendRes_SetFriend_Master: {
+                break;
+            }
+            case FriendRes_SetFriend_UnknownUser: {
+                break;
+            }
+            case FriendRes_SetFriend_Unknown: {
+                break;
+            }
+            case FriendRes_AcceptFriend_Unknown: {
+                break;
+            }
+            case FriendRes_DeleteFriend_Done: {
+                sp.EncodeBuffer(Reset_Encode(chr));
+                break;
+            }
+            case FriendRes_DeleteFriend_Unknown: {
+                break;
+            }
+            case FriendRes_Notify: {
+                break;
+            }
+            case FriendRes_IncMaxCount_Done: {
+                break;
+            }
+            case FriendRes_IncMaxCount_Unknown: {
+                break;
+            }
+            case FriendRes_PleaseWait: {
+                break;
+            }
+            default: {
+                Debug.ErrorLog("FieldEffect not coded : " + flag);
+                break;
+            }
+        }
+
+        return sp.Get();
+    }
+
+    // CWvsContext::CFriend::Reset
+    public static byte[] Reset_Encode(MapleCharacter chr) {
+        Collection<BuddylistEntry> friend_list = chr.getBuddylist().getBuddies();
+        ServerPacket data_friend = new ServerPacket();
+        ServerPacket data_in_shop = new ServerPacket();
+
+        for (BuddylistEntry friend : friend_list) {
+            // 39 bytes
+            data_friend.Encode4(friend.getCharacterId());
+            data_friend.EncodeBuffer(friend.getName(), 13);
+            data_friend.Encode1(0);
+            data_friend.Encode4(friend.getChannel() == -1 ? -1 : friend.getChannel() - 1);
+            data_friend.EncodeBuffer(friend.getGroup(), 17);
+            // 4 bytes
+            data_in_shop.Encode4(0);
+        }
+
+        ServerPacket data = new ServerPacket();
+        data.Encode1(friend_list.size());
+        data.EncodeBuffer(data_friend.Get().getBytes());
+        data.EncodeBuffer(data_in_shop.Get().getBytes());
+        return data.Get().getBytes();
+    }
 
     public static MaplePacket updateBuddyCapacity(int capacity) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
@@ -43,14 +211,6 @@ public class FriendResponse {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_FriendResult.Get());
         mplew.write(message);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket itemEffect(int characterid, int itemid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserSetActiveEffectItem.Get());
-        mplew.writeInt(characterid);
-        mplew.writeInt(itemid);
         return mplew.getPacket();
     }
 
@@ -100,5 +260,5 @@ public class FriendResponse {
         mplew.writeShort(1);
         return mplew.getPacket();
     }
-    
+
 }

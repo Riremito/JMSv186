@@ -223,4 +223,12 @@ public class TestResponse {
         mplew.writeMapleAsciiString(msg);
         return mplew.getPacket();
     }
+
+    public static MaplePacket itemEffect(int characterid, int itemid) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserSetActiveEffectItem.Get());
+        mplew.writeInt(characterid);
+        mplew.writeInt(itemid);
+        return mplew.getPacket();
+    }
 }
