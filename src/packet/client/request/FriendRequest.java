@@ -88,12 +88,12 @@ public class FriendRequest {
                 return;
             }
             if (ble != null && (ble.getGroup().equals(groupName) || !ble.isVisible())) {
-                c.getSession().write(FriendResponse.buddylistMessage((byte) 11));
+                c.getSession().write(FriendResponse.buddylistMessage(FriendResponse.FriendOps.FriendRes_SetFriend_FullMe));
             } else if (ble != null && ble.isVisible()) {
                 ble.setGroup(groupName);
-                c.getSession().write(FriendResponse.updateBuddylist(buddylist.getBuddies()));
+                c.getSession().write(FriendResponse.updateBuddylist(c.getPlayer()));
             } else if (buddylist.isFull()) {
-                c.getSession().write(FriendResponse.buddylistMessage((byte) 11));
+                c.getSession().write(FriendResponse.buddylistMessage(FriendResponse.FriendOps.FriendRes_SetFriend_FullMe));
             } else {
                 try {
                     CharacterIdNameBuddyCapacity charWithId = null;
@@ -139,7 +139,7 @@ public class FriendRequest {
                             ps.close();
                         }
                         if (buddyAddResult == BuddyList.BuddyAddResult.BUDDYLIST_FULL) {
-                            c.getSession().write(FriendResponse.buddylistMessage((byte) 12));
+                            c.getSession().write(FriendResponse.buddylistMessage(FriendResponse.FriendOps.FriendRes_SetFriend_FullOther));
                         } else {
                             int displayChannel = -1;
                             int otherCid = charWithId.getId();
@@ -156,10 +156,10 @@ public class FriendRequest {
                                 ps.close();
                             }
                             buddylist.put(new BuddylistEntry(charWithId.getName(), otherCid, groupName, displayChannel, true, charWithId.getLevel(), charWithId.getJob()));
-                            c.getSession().write(FriendResponse.updateBuddylist(buddylist.getBuddies()));
+                            c.getSession().write(FriendResponse.updateBuddylist(c.getPlayer()));
                         }
                     } else {
-                        c.getSession().write(FriendResponse.buddylistMessage((byte) 15));
+                        c.getSession().write(FriendResponse.buddylistMessage(FriendResponse.FriendOps.FriendRes_SetFriend_UnknownUser));
                     }
                 } catch (SQLException e) {
                     System.err.println("SQL THROW" + e);
@@ -195,14 +195,14 @@ public class FriendRequest {
                     }
                     if (otherName != null) {
                         buddylist.put(new BuddylistEntry(otherName, otherCid, "ETC", channel, true, otherLevel, otherJob));
-                        c.getSession().write(FriendResponse.updateBuddylist(buddylist.getBuddies()));
+                        c.getSession().write(FriendResponse.updateBuddylist(c.getPlayer()));
                         notifyRemoteChannel(c, channel, otherCid, "ETC", BuddyList.BuddyOperation.ADDED);
                     }
                 } catch (SQLException e) {
                     System.err.println("SQL THROW" + e);
                 }
             } else {
-                c.getSession().write(FriendResponse.buddylistMessage((byte) 11));
+                c.getSession().write(FriendResponse.buddylistMessage(FriendResponse.FriendOps.FriendRes_SetFriend_FullMe));
             }
             nextPendingRequest(c);
         } else if (mode == 3) {
@@ -213,7 +213,7 @@ public class FriendRequest {
                 notifyRemoteChannel(c, World.Find.findChannel(otherCid), otherCid, blz.getGroup(), BuddyList.BuddyOperation.DELETED);
             }
             buddylist.remove(otherCid);
-            c.getSession().write(FriendResponse.updateBuddylist(c.getPlayer().getBuddylist().getBuddies()));
+            c.getSession().write(FriendResponse.updateBuddylist(c.getPlayer()));
             nextPendingRequest(c);
         } else {
             System.out.println("Unknown buddylist: " + slea.toString());

@@ -24,8 +24,6 @@ import debug.Debug;
 import handling.MaplePacket;
 import java.util.Collection;
 import packet.server.ServerPacket;
-import tools.StringUtil;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -84,13 +82,32 @@ public class FriendResponse {
         }
     }
 
+    public static class FriendResultStruct {
+
+        FriendOps flag;
+        int nFriendMax;
+        MapleCharacter chr;
+        int friend_id;
+        int friend_channel;
+        int friend_level;
+        int friend_job;
+        String friend_name;
+        String friend_tag;
+    }
+
     // CWvsContext::OnFriendResult
-    public static MaplePacket FriendResult(FriendOps flag, MapleCharacter chr) {
+    public static MaplePacket FriendResult(FriendResultStruct frs) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FriendResult);
 
-        sp.Encode1(flag.get());
+        sp.Encode1(frs.flag.get());
 
-        switch (flag) {
+        switch (frs.flag) {
+            case FriendRes_LoadFriend_Done:
+            case FriendRes_SetFriend_Done:
+            case FriendRes_DeleteFriend_Done: {
+                sp.EncodeBuffer(Reset_Encode(frs.chr));
+                break;
+            }
             case FriendReq_LoadFriend: {
                 break;
             }
@@ -112,24 +129,31 @@ public class FriendResponse {
             case FriendReq_IncMaxCount: {
                 break;
             }
-            case FriendRes_LoadFriend_Done: {
-                sp.EncodeBuffer(Reset_Encode(chr));
-                break;
-            }
             case FriendRes_NotifyChange_FriendInfo: {
                 break;
             }
             case FriendRes_Invite: {
-                break;
-            }
-            case FriendRes_SetFriend_Done: {
-                sp.EncodeBuffer(Reset_Encode(chr));
+                // 9
+                sp.Encode4(frs.friend_id);
+                sp.EncodeStr(frs.friend_name);
+                sp.Encode4(frs.friend_level);
+                sp.Encode4(frs.friend_job);
+                // CWvsContext::CFriend::Insert, 39 bytes
+                sp.Encode4(frs.friend_id);
+                sp.EncodeBuffer(frs.friend_name, 13);
+                sp.Encode1(0);
+                sp.Encode4(frs.friend_channel == -1 ? -1 : frs.friend_channel - 1); // please add channel
+                sp.EncodeBuffer(frs.friend_tag, 17);
+                // 1 byte
+                sp.Encode1(1);
                 break;
             }
             case FriendRes_SetFriend_FullMe: {
+                // none
                 break;
             }
             case FriendRes_SetFriend_FullOther: {
+                // none
                 break;
             }
             case FriendRes_SetFriend_AlreadySet: {
@@ -139,6 +163,7 @@ public class FriendResponse {
                 break;
             }
             case FriendRes_SetFriend_UnknownUser: {
+                // none
                 break;
             }
             case FriendRes_SetFriend_Unknown: {
@@ -147,17 +172,17 @@ public class FriendResponse {
             case FriendRes_AcceptFriend_Unknown: {
                 break;
             }
-            case FriendRes_DeleteFriend_Done: {
-                sp.EncodeBuffer(Reset_Encode(chr));
-                break;
-            }
             case FriendRes_DeleteFriend_Unknown: {
                 break;
             }
             case FriendRes_Notify: {
+                sp.Encode4(frs.friend_id);
+                sp.Encode1(0);
+                sp.Encode4(frs.friend_channel);
                 break;
             }
             case FriendRes_IncMaxCount_Done: {
+                sp.Encode1(frs.nFriendMax);
                 break;
             }
             case FriendRes_IncMaxCount_Unknown: {
@@ -167,7 +192,7 @@ public class FriendResponse {
                 break;
             }
             default: {
-                Debug.ErrorLog("FieldEffect not coded : " + flag);
+                Debug.ErrorLog("FieldEffect not coded : " + frs.flag);
                 break;
             }
         }
@@ -200,65 +225,48 @@ public class FriendResponse {
     }
 
     public static MaplePacket updateBuddyCapacity(int capacity) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FriendResult.Get());
-        mplew.write(21);
-        mplew.write(capacity);
-        return mplew.getPacket();
+        FriendResultStruct frs = new FriendResultStruct();
+        frs.flag = FriendOps.FriendRes_IncMaxCount_Done;
+        frs.nFriendMax = capacity;
+
+        return FriendResult(frs);
     }
 
-    public static MaplePacket buddylistMessage(byte message) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FriendResult.Get());
-        mplew.write(message);
-        return mplew.getPacket();
+    // test
+    public static MaplePacket buddylistMessage(FriendOps flag) {
+        FriendResultStruct frs = new FriendResultStruct();
+        frs.flag = flag;
+        return FriendResult(frs);
     }
 
-    public static MaplePacket updateBuddylist(Collection<BuddylistEntry> buddylist) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FriendResult.Get());
-        mplew.write(7);
-        mplew.write(buddylist.size());
-        for (BuddylistEntry buddy : buddylist) {
-            if (buddy.isVisible()) {
-                mplew.writeInt(buddy.getCharacterId());
-                mplew.writeAsciiString(StringUtil.getRightPaddedStr(buddy.getName(), '\u0000', 13));
-                mplew.write(0);
-                mplew.writeInt(buddy.getChannel() == -1 ? -1 : buddy.getChannel() - 1);
-                mplew.writeAsciiString(StringUtil.getRightPaddedStr(buddy.getGroup(), '\u0000', 17));
-            }
-        }
-        for (int x = 0; x < buddylist.size(); x++) {
-            mplew.writeInt(0);
-        }
-        return mplew.getPacket();
+    public static MaplePacket updateBuddylist(MapleCharacter chr) {
+        FriendResultStruct frs = new FriendResultStruct();
+        frs.flag = FriendOps.FriendRes_LoadFriend_Done;
+        frs.chr = chr;
+
+        return FriendResult(frs);
     }
 
-    public static MaplePacket updateBuddyChannel(int characterid, int channel) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FriendResult.Get());
-        mplew.write(20);
-        mplew.writeInt(characterid);
-        mplew.write(0);
-        mplew.writeInt(channel);
-        return mplew.getPacket();
+    public static MaplePacket updateBuddyChannel(int friend_id, int friend_channel) {
+        FriendResultStruct frs = new FriendResultStruct();
+        frs.flag = FriendOps.FriendRes_Notify;
+        frs.friend_id = friend_id;
+        frs.friend_channel = friend_channel;
+
+        return FriendResult(frs);
     }
 
-    public static MaplePacket requestBuddylistAdd(int cidFrom, String nameFrom, int levelFrom, int jobFrom) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FriendResult.Get());
-        mplew.write(9);
-        mplew.writeInt(cidFrom);
-        mplew.writeMapleAsciiString(nameFrom);
-        mplew.writeInt(levelFrom);
-        mplew.writeInt(jobFrom);
-        mplew.writeInt(cidFrom);
-        mplew.writeAsciiString(StringUtil.getRightPaddedStr(nameFrom, '\u0000', 13));
-        mplew.write(1);
-        mplew.writeInt(0);
-        mplew.writeAsciiString(StringUtil.getRightPaddedStr("ETC", '\u0000', 16));
-        mplew.writeShort(1);
-        return mplew.getPacket();
+    public static MaplePacket requestBuddylistAdd(int friend_id, String name, int level, int job) {
+        FriendResultStruct frs = new FriendResultStruct();
+        frs.flag = FriendOps.FriendRes_Invite;
+        frs.friend_id = friend_id;
+        frs.friend_channel = 0; // todo
+        frs.friend_name = name;
+        frs.friend_level = level;
+        frs.friend_job = job;
+        frs.friend_tag = "マイ友未指定"; // JMS
+
+        return FriendResult(frs);
     }
 
 }
