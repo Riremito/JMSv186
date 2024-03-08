@@ -198,9 +198,9 @@ public class FriendRequest {
                     otherJob = otherChar.getJob();
                 }
                 if (otherName != null) {
-                    buddylist.put(new BuddylistEntry(otherName, friend_id, "ETC", channel, true, otherLevel, otherJob));
+                    buddylist.put(new BuddylistEntry(otherName, friend_id, "マイ友未指定", channel, true, otherLevel, otherJob));
                     c.getSession().write(FriendResponse.updateBuddylist(c.getPlayer()));
-                    notifyRemoteChannel(c, channel, friend_id, "ETC", BuddyList.BuddyOperation.ADDED);
+                    notifyRemoteChannel(c, channel, friend_id, "マイ友未指定", BuddyList.BuddyOperation.ADDED);
                 }
             } catch (SQLException e) {
                 System.err.println("SQL THROW" + e);

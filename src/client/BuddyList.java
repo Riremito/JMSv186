@@ -33,8 +33,6 @@ import java.io.Serializable;
 
 import database.DatabaseConnection;
 import packet.server.response.FriendResponse;
-import tools.MaplePacketCreator;
-import tools.Pair;
 
 public class BuddyList implements Serializable {
 
@@ -158,11 +156,11 @@ public class BuddyList implements Serializable {
     }
 
     public void addBuddyRequest(MapleClient c, int cidFrom, String nameFrom, int channelFrom, int levelFrom, int jobFrom) {
-        put(new BuddylistEntry(nameFrom, cidFrom, "ETC", channelFrom, false, levelFrom, jobFrom));
+        put(new BuddylistEntry(nameFrom, cidFrom, "マイ友未指定", channelFrom, false, levelFrom, jobFrom));
         if (pendingRequests.isEmpty()) {
             c.getSession().write(FriendResponse.requestBuddylistAdd(cidFrom, nameFrom, levelFrom, jobFrom));
         } else {
-            pendingRequests.push(new CharacterNameAndId(cidFrom, nameFrom, levelFrom, jobFrom, "ETC"));
+            pendingRequests.push(new CharacterNameAndId(cidFrom, nameFrom, levelFrom, jobFrom, "マイ友未指定"));
         }
     }
 }
