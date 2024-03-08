@@ -936,7 +936,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_FriendRequest: {
-                FriendRequest.BuddyOperation(p, c);
+                FriendRequest.OnPacket(op, c);
                 return true;
             }
             case CYGNUS_SUMMON: {

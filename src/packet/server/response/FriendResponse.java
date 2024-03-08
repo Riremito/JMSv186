@@ -32,6 +32,7 @@ import packet.server.ServerPacket;
 public class FriendResponse {
 
     public enum FriendOps {
+        // Request
         FriendReq_LoadFriend(0x0),
         FriendReq_SetFriend(0x1),
         FriendReq_AcceptFriend(0x2),
@@ -39,6 +40,7 @@ public class FriendResponse {
         FriendReq_NotifyLogin(0x4),
         FriendReq_NotifyLogout(0x5),
         FriendReq_IncMaxCount(0x6),
+        // Response
         FriendRes_LoadFriend_Done(0x7),
         FriendRes_NotifyChange_FriendInfo(0x8),
         FriendRes_Invite(0x9),
@@ -108,27 +110,6 @@ public class FriendResponse {
                 sp.EncodeBuffer(Reset_Encode(frs.chr));
                 break;
             }
-            case FriendReq_LoadFriend: {
-                break;
-            }
-            case FriendReq_SetFriend: {
-                break;
-            }
-            case FriendReq_AcceptFriend: {
-                break;
-            }
-            case FriendReq_DeleteFriend: {
-                break;
-            }
-            case FriendReq_NotifyLogin: {
-                break;
-            }
-            case FriendReq_NotifyLogout: {
-                break;
-            }
-            case FriendReq_IncMaxCount: {
-                break;
-            }
             case FriendRes_NotifyChange_FriendInfo: {
                 break;
             }
@@ -192,7 +173,7 @@ public class FriendResponse {
                 break;
             }
             default: {
-                Debug.ErrorLog("FieldEffect not coded : " + frs.flag);
+                Debug.ErrorLog("FriendResult not coded : " + frs.flag);
                 break;
             }
         }
