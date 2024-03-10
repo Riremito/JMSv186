@@ -82,7 +82,7 @@ public class PartyResponse {
                 mplew.writeInt(target.getId());
                 mplew.write(op == PartyOperation.CHANGE_LEADER_DC ? 1 : 0);
                 break;
-                //1D = expel function not available in this map.
+            //1D = expel function not available in this map.
         }
         return mplew.getPacket();
     }
@@ -197,5 +197,5 @@ public class PartyResponse {
         mplew.writeMapleAsciiString(charname);
         return mplew.getPacket();
     }
-    
+
 }

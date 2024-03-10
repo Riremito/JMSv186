@@ -443,6 +443,15 @@ public class LoginResponse {
             p.Encode4(chr.getJobRank()); // world ranking
             p.Encode4(chr.getJobRankMove());
         }
+
+        if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
+            p.Encode1(2); // 2次パス無視
+            p.Encode4(charslots);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(0);
+            return p.Get();
+        }
         // BIGBANG
         if (ServerConfig.GetVersion() == 187) {
             p.Encode1(2); // 2次パス無視
@@ -468,12 +477,7 @@ public class LoginResponse {
             p.Encode4(0); // idk
             return p.Get();
         }
-        if (ServerConfig.GetVersion() >= 302) {
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(charslots);
-        } else if (ServerConfig.GetVersion() >= 190) {
+        if (ServerConfig.GetVersion() >= 190) {
             p.Encode4(0);
             p.Encode4(0);
             p.Encode4(charslots);

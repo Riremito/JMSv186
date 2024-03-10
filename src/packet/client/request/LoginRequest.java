@@ -121,6 +121,18 @@ public class LoginRequest {
         if ((ServerConfig.IsJMS() && 176 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
             db = p.Decode2();
         }
+
+        if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
+            p.Decode1(); // 01
+            p.Decode1(); // 00
+            p.Decode1(); // 07
+
+            // Kanna
+            if (JobType == 9) {
+                c.setGender((byte) 1);
+            }
+        }
+
         final int face = p.Decode4();
         final int hair = p.Decode4();
         final int hairColor = 0;

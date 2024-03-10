@@ -43,6 +43,11 @@ public class AvatarLook {
         p.Encode1(chr.getGender()); // nGender
         p.Encode1(chr.getSkinColor()); // nSkin
         p.Encode4(chr.getFace()); // nFace
+
+        if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
+            p.Encode4(0);
+        }
+
         p.Encode1(0); // ignored byte
         p.Encode4(chr.getHair());
 
@@ -81,6 +86,15 @@ public class AvatarLook {
         p.Encode1(0xFF); // ending markers
         final IItem cWeapon = equip.getItem((byte) -111);
         p.Encode4(cWeapon != null ? cWeapon.getItemId() : 0);
+
+        if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode1(0);
+            p.EncodeZeroBytes(12);
+            // DemonSlayer -> Encode4
+            return p.Get().getBytes();
+        }
 
         if (ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
             p.EncodeZeroBytes(12);

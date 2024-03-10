@@ -168,6 +168,48 @@ public class GW_CharacterStat {
             p.Encode2(chr.getRemainingSp());
         }
 
+        if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(chr.getMapId());
+            p.Encode1(chr.getInitialSpawnpoint());
+            p.Encode2(chr.getSubcategory());
+            // job 3100 -> Encode4, Demon Slayer
+            p.Encode1(0);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.EncodeZeroBytes(12);
+            p.Encode4(0);
+            p.Encode1(0);
+            p.Encode4(0);
+            p.Encode1(0);
+            p.Encode4(0);
+            p.Encode1(0);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode4(0);
+            p.Encode1(0);
+
+            for (int i = 0; i < 6; i++) {
+                p.Encode4(0);
+                p.Encode1(0);
+                p.Encode4(0);
+            }
+
+            p.Encode4(0);
+            p.Encode4(0);
+            p.EncodeZeroBytes(8);
+            p.Encode4(0);
+            p.Encode4(0);
+            return p.Get().getBytes();
+        }
+
         p.Encode4(chr.getExp());
         p.Encode2(chr.getFame());
 
