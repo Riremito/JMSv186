@@ -28,6 +28,7 @@ package server.maps;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import packet.server.response.EvanDragonResponse;
 import tools.MaplePacketCreator;
 
 public class MapleDragon extends AbstractAnimatedMapleMapObject {
@@ -48,12 +49,12 @@ public class MapleDragon extends AbstractAnimatedMapleMapObject {
 
     @Override
     public void sendSpawnData(MapleClient client) {
-        client.getSession().write(MaplePacketCreator.spawnDragon(this));
+        client.getSession().write(EvanDragonResponse.spawnDragon(this));
     }
 
     @Override
     public void sendDestroyData(MapleClient client) {
-        client.getSession().write(MaplePacketCreator.removeDragon(this.owner));
+        client.getSession().write(EvanDragonResponse.removeDragon(this.owner));
     }
 
     public int getOwner() {

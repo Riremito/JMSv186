@@ -47,7 +47,6 @@ import server.maps.MapleReactor;
 import server.maps.MapleMist;
 import server.events.MapleSnowball.MapleSnowballs;
 import server.life.MapleMonster;
-import server.maps.MapleDragon;
 import server.movement.LifeMovementFragment;
 import tools.data.output.MaplePacketLittleEndianWriter;
 import config.ServerConfig;
@@ -1759,38 +1758,6 @@ public class MaplePacketCreator {
     public static MaplePacket stopClock() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_DestroyClock.Get());
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket spawnDragon(MapleDragon d) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_DragonEnterField.Get());
-        mplew.writeInt(d.getOwner());
-        mplew.writeInt(d.getPosition().x);
-        mplew.writeInt(d.getPosition().y);
-        mplew.write(d.getStance()); //stance?
-        mplew.writeShort(0);
-        mplew.writeShort(d.getJobId());
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket removeDragon(int chrid) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_DragonLeaveField.Get());
-        mplew.writeInt(chrid);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket moveDragon(MapleDragon d, Point startPos, List<LifeMovementFragment> moves) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_DragonMove.Get()); //not sure
-        mplew.writeInt(d.getOwner());
-        mplew.writePos(startPos);
-        mplew.writeInt(0);
-
-        TestHelper.serializeMovementList(mplew, moves);
-
         return mplew.getPacket();
     }
 

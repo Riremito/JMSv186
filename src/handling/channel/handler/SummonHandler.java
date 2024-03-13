@@ -38,6 +38,7 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import packet.client.request.MobPacket;
 import packet.client.request.SummonPacket;
+import packet.server.response.EvanDragonResponse;
 import server.MapleStatEffect;
 import server.Timer.CloneTimer;
 import server.movement.LifeMovementFragment;
@@ -59,7 +60,7 @@ public class SummonHandler {
             final Point pos = chr.getDragon().getPosition();
             MovementParse.updatePosition(res, chr.getDragon(), 0);
             if (!chr.isHidden()) {
-                chr.getMap().broadcastMessage(chr, MaplePacketCreator.moveDragon(chr.getDragon(), pos, res), chr.getPosition());
+                chr.getMap().broadcastMessage(chr, EvanDragonResponse.moveDragon(chr.getDragon(), pos, res), chr.getPosition());
             }
 
             WeakReference<MapleCharacter>[] clones = chr.getClones();
@@ -77,7 +78,7 @@ public class SummonHandler {
                                     MovementParse.updatePosition(res3, clone.getDragon(), 0);
 
                                     if (!clone.isHidden()) {
-                                        map.broadcastMessage(clone, MaplePacketCreator.moveDragon(clone.getDragon(), startPos, res3), clone.getPosition());
+                                        map.broadcastMessage(clone, EvanDragonResponse.moveDragon(clone.getDragon(), startPos, res3), clone.getPosition());
                                     }
 
                                 }

@@ -87,6 +87,7 @@ import packet.client.request.MobPacket;
 import packet.client.request.SocketPacket;
 import packet.client.request.SummonPacket;
 import packet.client.request.UserPacket;
+import packet.server.response.EvanDragonResponse;
 import packet.server.response.FreeMarketResponse;
 import packet.server.response.FriendResponse;
 import packet.server.response.LocalResponse;
@@ -2503,7 +2504,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             guildUpdate();
             familyUpdate();
             if (dragon != null) {
-                map.broadcastMessage(MaplePacketCreator.removeDragon(this.id));
+                map.broadcastMessage(EvanDragonResponse.removeDragon(this.id));
                 map.removeMapObject(dragon);
                 dragon = null;
             }
@@ -3664,7 +3665,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 }
             }
             if (dragon != null) {
-                client.getSession().write(MaplePacketCreator.spawnDragon(dragon));
+                client.getSession().write(EvanDragonResponse.spawnDragon(dragon));
             }
             if (summons != null) {
                 for (final MapleSummon summon : summons.values()) {

@@ -70,6 +70,7 @@ import packet.client.request.NPCPacket;
 import packet.client.request.ReactorPacket;
 import packet.client.request.SummonPacket;
 import packet.client.request.UserPacket;
+import packet.server.response.EvanDragonResponse;
 import packet.server.response.FieldResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.PartyResponse;
@@ -1456,7 +1457,7 @@ public final class MapleMap {
 
             @Override
             public void sendPackets(MapleClient c) {
-                c.getSession().write(MaplePacketCreator.spawnDragon(summon));
+                c.getSession().write(EvanDragonResponse.spawnDragon(summon));
             }
         }, null);
     }
