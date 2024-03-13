@@ -23,6 +23,7 @@ import tools.FileoutputUtil;
 import packet.client.ClientPacket;
 import packet.client.request.AdminPacket;
 import packet.client.request.DueyPacket;
+import packet.client.request.EvanDragonRequest;
 import packet.client.request.FriendRequest;
 import packet.client.request.GashaEXPPacket;
 import packet.client.request.ItemPacket;
@@ -960,7 +961,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_DragonMove: {
                 // c
-                SummonHandler.MoveDragon(p, c.getPlayer());
+                EvanDragonRequest.MoveDragon(p, c.getPlayer());
                 return true;
             }
             case CP_UserActivatePetRequest: {

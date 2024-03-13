@@ -29,7 +29,6 @@ package server.maps;
 import client.MapleCharacter;
 import client.MapleClient;
 import packet.server.response.EvanDragonResponse;
-import tools.MaplePacketCreator;
 
 public class MapleDragon extends AbstractAnimatedMapleMapObject {
 

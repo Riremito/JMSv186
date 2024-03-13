@@ -34,32 +34,51 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 public class EvanDragonResponse {
 
     public static MaplePacket moveDragon(MapleDragon d, Point startPos, List<LifeMovementFragment> moves) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DragonMove);
+        sp.Encode4(d.getOwner());
+        sp.Encode2(startPos.x);
+        sp.Encode2(startPos.y);
+        sp.Encode4(0);
+
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_DragonMove.Get()); //not sure
-        mplew.writeInt(d.getOwner());
-        mplew.writePos(startPos);
-        mplew.writeInt(0);
+
         TestHelper.serializeMovementList(mplew, moves);
-        return mplew.getPacket();
+
+        sp.EncodeBuffer(mplew.getPacket().getBytes());
+
+        /*
+        List<LifeMovementFragment> res = null;
+        try {
+            // player OK
+            res = MovementPacket.CMovePath_Decode(cp, 3);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Debug.ErrorLog("AIOBE Type3");
+        }
+
+        if (res == null) {
+            Debug.ErrorLog("AIOBE Type3 res == null");
+        }
+         */
+        return sp.Get();
     }
 
     public static MaplePacket removeDragon(int chrid) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_DragonLeaveField.Get());
-        mplew.writeInt(chrid);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DragonLeaveField);
+
+        sp.Encode4(chrid);
+        return sp.Get();
     }
 
     public static MaplePacket spawnDragon(MapleDragon d) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_DragonEnterField.Get());
-        mplew.writeInt(d.getOwner());
-        mplew.writeInt(d.getPosition().x);
-        mplew.writeInt(d.getPosition().y);
-        mplew.write(d.getStance()); //stance?
-        mplew.writeShort(0);
-        mplew.writeShort(d.getJobId());
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DragonEnterField);
+
+        sp.Encode4(d.getOwner());
+        sp.Encode4(d.getPosition().x);
+        sp.Encode4(d.getPosition().y);
+        sp.Encode1(d.getStance());
+        sp.Encode2(0);
+        sp.Encode2(d.getJobId());
+        return sp.Get();
     }
-    
+
 }
