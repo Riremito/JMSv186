@@ -19,13 +19,9 @@
 package packet.server.response;
 
 import handling.MaplePacket;
-import java.awt.Point;
-import java.util.List;
+import packet.client.request.struct.CMovePath;
 import packet.server.ServerPacket;
-import packet.server.response.struct.TestHelper;
 import server.maps.MapleDragon;
-import server.movement.LifeMovementFragment;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -33,32 +29,10 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class EvanDragonResponse {
 
-    public static MaplePacket moveDragon(MapleDragon d, Point startPos, List<LifeMovementFragment> moves) {
+    public static MaplePacket moveDragon(MapleDragon dragon, CMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DragonMove);
-        sp.Encode4(d.getOwner());
-        sp.Encode2(startPos.x);
-        sp.Encode2(startPos.y);
-        sp.Encode4(0);
-
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        TestHelper.serializeMovementList(mplew, moves);
-
-        sp.EncodeBuffer(mplew.getPacket().getBytes());
-
-        /*
-        List<LifeMovementFragment> res = null;
-        try {
-            // player OK
-            res = MovementPacket.CMovePath_Decode(cp, 3);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            Debug.ErrorLog("AIOBE Type3");
-        }
-
-        if (res == null) {
-            Debug.ErrorLog("AIOBE Type3 res == null");
-        }
-         */
+        sp.Encode4(dragon.getOwner());
+        sp.EncodeBuffer(data.get());
         return sp.Get();
     }
 

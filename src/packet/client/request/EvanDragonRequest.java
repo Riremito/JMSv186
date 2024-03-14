@@ -19,12 +19,11 @@
 package packet.client.request;
 
 import client.MapleCharacter;
-import handling.channel.handler.MovementParse;
-import java.awt.Point;
-import java.util.List;
+import client.MapleClient;
+import packet.client.ClientPacket;
+import packet.client.request.struct.CMovePath;
 import packet.server.response.EvanDragonResponse;
-import server.movement.LifeMovementFragment;
-import tools.data.input.SeekableLittleEndianAccessor;
+import server.maps.MapleDragon;
 
 /**
  *
@@ -32,16 +31,24 @@ import tools.data.input.SeekableLittleEndianAccessor;
  */
 public class EvanDragonRequest {
 
-    public static final void MoveDragon(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        slea.skip(8); //POS
-        final List<LifeMovementFragment> res = MovementParse.parseMovement(slea, 5);
-        if (chr != null && chr.getDragon() != null) {
-            final Point pos = chr.getDragon().getPosition();
-            MovementParse.updatePosition(res, chr.getDragon(), 0);
-            if (!chr.isHidden()) {
-                chr.getMap().broadcastMessage(chr, EvanDragonResponse.moveDragon(chr.getDragon(), pos, res), chr.getPosition());
-            }
+    // CDragon::OnMove
+    public static boolean OnMove(ClientPacket cp, MapleClient c) {
+        MapleCharacter chr = c.getPlayer();
+        if (chr == null || chr.isHidden()) {
+            return false;
         }
+
+        MapleDragon dragon = chr.getDragon();
+        if (dragon == null) {
+            return false;
+        }
+
+        // CMovePath::Decode
+        CMovePath data = CMovePath.Decode(cp);
+        dragon.setPosition(data.getEnd());
+        //dragon.setStance(0);
+        chr.getMap().broadcastMessage(chr, EvanDragonResponse.moveDragon(dragon, data), chr.getPosition());
+        return true;
     }
 
 }

@@ -92,6 +92,28 @@ public class ClientPacket {
         return new String(buffer, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
     }
 
+    public byte[] DecodeAll() {
+        int length = packet.length - decoded;
+        byte[] buffer = new byte[length];
+
+        for (int i = 0; i < length; i++) {
+            buffer[i] = Decode1();
+        }
+
+        return buffer;
+    }
+
+    public byte[] DecodeMovePath() {
+        int length = packet.length - decoded - 8; // short x 4
+        byte[] buffer = new byte[length];
+
+        for (int i = 0; i < length; i++) {
+            buffer[i] = Decode1();
+        }
+
+        return buffer;
+    }
+
     public enum Header {
         // 独自仕様
         CP_CUSTOM_,

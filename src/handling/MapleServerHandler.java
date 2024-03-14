@@ -479,11 +479,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
     // Game Server
     // CClientSocket::ProcessPacket
-    public static final boolean handleGamePacket(final SeekableLittleEndianAccessor p, final MapleClient c, ClientPacket op) throws Exception {
-        short header = op.Decode2();
+    public static final boolean handleGamePacket(final SeekableLittleEndianAccessor p, final MapleClient c, ClientPacket cp) throws Exception {
+        short header = cp.Decode2();
         ClientPacket.Header type = ClientPacket.ToHeader(header);
 
-        Debug.PacketLog(op);
+        Debug.PacketLog(cp);
 
         // CClientSocket::ProcessUserPacket
         // CUser::OnPacket
@@ -492,10 +492,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
         // CUser::OnSummonedPacket
         switch (type) {
             case CP_UserParcelRequest: {
-                return DueyPacket.Accept(c, op);
+                return DueyPacket.Accept(c, cp);
             }
             case CP_GoldHammerRequest: {
-                return ViciousHammerPacket.Accept(c, op);
+                return ViciousHammerPacket.Accept(c, cp);
             }
             // サーバーメッセージ
             case CP_BroadcastMsg: {
@@ -505,7 +505,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_Admin:
             // GMコマンドの文字列
             case CP_Log: {
-                AdminPacket.OnPacket(op, type, c);
+                AdminPacket.OnPacket(cp, type, c);
                 return true;
             }
             // 雪玉専用？
@@ -557,7 +557,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             //
             case CP_UserTransferChannelRequest: {
                 // c
-                InterServerHandler.ChangeChannel(op, c, c.getPlayer());
+                InterServerHandler.ChangeChannel(cp, c, c.getPlayer());
                 return true;
             }
             case CP_MigrateIn: {
@@ -594,7 +594,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserMagicAttack:
             case CP_UserBodyAttack:
             case CP_UserHit: {
-                UserPacket.OnPacket(op, type, c);
+                UserPacket.OnPacket(cp, type, c);
                 return true;
             }
             case CP_UserSkillUseRequest: {
@@ -651,7 +651,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_UserTransferFieldRequest: {
                 // c
-                if (!PortalPacket.OnPacket(op, type, c)) {
+                if (!PortalPacket.OnPacket(cp, type, c)) {
                     PlayerHandler.ChangeMap(p, c, c.getPlayer());
                 }
                 if (c.getPlayer().GetInformation()) {
@@ -660,7 +660,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_UserPortalScriptRequest: {
-                PlayerHandler.ChangeMapSpecial(op, c);
+                PlayerHandler.ChangeMapSpecial(cp, c);
                 return true;
             }
             case CP_UserPortalTeleportRequest: {
@@ -715,7 +715,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_ReactorHit:
             case CP_ReactorTouch: {
-                ReactorPacket.OnPacket(op, type, c);
+                ReactorPacket.OnPacket(cp, type, c);
                 return true;
             }
             case CP_UserADBoardClose: {
@@ -745,7 +745,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_UserConsumeCashItemUseRequest: {
-                InventoryHandler.UseCashItem(p, c, op);
+                InventoryHandler.UseCashItem(p, c, cp);
                 return true;
             }
             case CP_UserStatChangeItemUseRequest: {
@@ -754,7 +754,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_UserItemReleaseRequest: {
-                InventoryHandler.UseMagnify(op, c);
+                InventoryHandler.UseMagnify(cp, c);
                 return true;
             }
             case CP_UserScriptItemUseRequest: {
@@ -831,11 +831,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_MobApplyCtrl:
             case CP_MobHitByMob:
             case CP_MobSelfDestruct: {
-                MobPacket.OnPacket(op, type, c);
+                MobPacket.OnPacket(cp, type, c);
                 return true;
             }
             case CP_UserShopRequest: {
-                NPCPacket.OnShopPacket(op, c);
+                NPCPacket.OnShopPacket(cp, c);
                 return true;
             }
             case CP_UserSelectNpc: {
@@ -865,11 +865,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_UserTrunkRequest: {
                 // 倉庫
-                TrunkPacket.OnPacket(op, c);
+                TrunkPacket.OnPacket(cp, c);
                 return true;
             }
             case CP_UserChat: {
-                ChatHandler.GeneralChat(op, c);
+                ChatHandler.GeneralChat(cp, c);
                 return true;
             }
             case CP_GroupMessage: {
@@ -937,7 +937,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_FriendRequest: {
-                FriendRequest.OnPacket(op, c);
+                FriendRequest.OnPacket(cp, c);
                 return true;
             }
             case CYGNUS_SUMMON: {
@@ -956,12 +956,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_SummonedHit:
             case CP_SummonedSkill:
             case CP_Remove: {
-                SummonPacket.OnPacket(op, type, c);
+                SummonPacket.OnPacket(cp, type, c);
                 return true;
             }
             case CP_DragonMove: {
-                // c
-                EvanDragonRequest.MoveDragon(p, c.getPlayer());
+                //EvanDragonRequest.MoveDragon(p, c.getPlayer());
+                EvanDragonRequest.OnMove(cp, c);
                 return true;
             }
             case CP_UserActivatePetRequest: {
@@ -1136,13 +1136,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
             // 兵法書
             case CP_UserExpUpItemUseRequest:
             case CP_UserTempExpUseRequest: {
-                GashaEXPPacket.OnPacket(op, type, c);
+                GashaEXPPacket.OnPacket(cp, type, c);
                 return true;
             }
             case CP_JMS_JUKEBOX:
             case CP_JMS_PINKBEAN_PORTAL_CREATE:
             case CP_JMS_PINKBEAN_PORTAL_ENTER: {
-                ItemPacket.OnPacket(op, type, c);
+                ItemPacket.OnPacket(cp, type, c);
                 return true;
             }
             default: {
