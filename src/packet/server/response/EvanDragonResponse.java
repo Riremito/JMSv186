@@ -62,6 +62,7 @@ public class EvanDragonResponse {
         return sp.Get();
     }
 
+    // not coded in GMS v95, but KMST v2.1029 removes dragon when you change other job.
     public static MaplePacket removeDragon(int chrid) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DragonLeaveField);
 
@@ -75,8 +76,8 @@ public class EvanDragonResponse {
         sp.Encode4(d.getOwner());
         sp.Encode4(d.getPosition().x);
         sp.Encode4(d.getPosition().y);
-        sp.Encode1(d.getStance());
-        sp.Encode2(0);
+        sp.Encode1(d.getStance()); // move action (left, right)
+        sp.Encode2(0); // not used
         sp.Encode2(d.getJobId());
         return sp.Get();
     }

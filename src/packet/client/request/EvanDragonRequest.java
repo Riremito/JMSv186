@@ -21,12 +21,8 @@ package packet.client.request;
 import client.MapleCharacter;
 import handling.channel.handler.MovementParse;
 import java.awt.Point;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 import packet.server.response.EvanDragonResponse;
-import server.Timer;
-import server.maps.MapleMap;
 import server.movement.LifeMovementFragment;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -45,30 +41,7 @@ public class EvanDragonRequest {
             if (!chr.isHidden()) {
                 chr.getMap().broadcastMessage(chr, EvanDragonResponse.moveDragon(chr.getDragon(), pos, res), chr.getPosition());
             }
-            WeakReference<MapleCharacter>[] clones = chr.getClones();
-            for (int i = 0; i < clones.length; i++) {
-                if (clones[i].get() != null) {
-                    final MapleMap map = chr.getMap();
-                    final MapleCharacter clone = clones[i].get();
-                    final List<LifeMovementFragment> res3 = new ArrayList<LifeMovementFragment>(res);
-                    Timer.CloneTimer.getInstance().schedule(new Runnable() {
-                        public void run() {
-                            try {
-                                if (clone.getMap() == map && clone.getDragon() != null) {
-                                    final Point startPos = clone.getDragon().getPosition();
-                                    MovementParse.updatePosition(res3, clone.getDragon(), 0);
-                                    if (!clone.isHidden()) {
-                                        map.broadcastMessage(clone, EvanDragonResponse.moveDragon(clone.getDragon(), startPos, res3), clone.getPosition());
-                                    }
-                                }
-                            } catch (Exception e) {
-                                //very rarely swallowed
-                            }
-                        }
-                    }, 500 * i + 500);
-                }
-            }
         }
     }
-    
+
 }
