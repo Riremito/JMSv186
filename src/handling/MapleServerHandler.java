@@ -34,7 +34,7 @@ import packet.client.request.ReactorPacket;
 import packet.client.request.SocketPacket;
 import packet.client.request.SummonPacket;
 import packet.client.request.TrunkPacket;
-import packet.client.request.UserPacket;
+import packet.client.request.UserRequest;
 import packet.client.request.ViciousHammerPacket;
 import packet.client.request.addon.AddonPacket;
 import packet.client.request.LoginRequest;
@@ -594,7 +594,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserMagicAttack:
             case CP_UserBodyAttack:
             case CP_UserHit: {
-                UserPacket.OnPacket(cp, type, c);
+                UserRequest.OnPacket(cp, type, c);
                 return true;
             }
             case CP_UserSkillUseRequest: {

@@ -35,7 +35,7 @@ import tools.AttackPair;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
-public class UserPacket {
+public class UserRequest {
 
     public static boolean OnPacket(ClientPacket p, ClientPacket.Header header, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
@@ -680,9 +680,9 @@ public class UserPacket {
         // update char position
         if (chr.isHidden()) {
             chr.setLastRes(res); // crap
-            map.broadcastGMMessage(chr, UserPacket.movePlayer(chr.getId(), res, Original_Pos), false);
+            map.broadcastGMMessage(chr, UserRequest.movePlayer(chr.getId(), res, Original_Pos), false);
         } else {
-            map.broadcastMessage(chr, UserPacket.movePlayer(chr.getId(), res, Original_Pos), false);
+            map.broadcastMessage(chr, UserRequest.movePlayer(chr.getId(), res, Original_Pos), false);
         }
 
         MovementParse.updatePosition(res, chr, 0);
@@ -694,7 +694,7 @@ public class UserPacket {
                 final Point original_pos = fol.getPosition();
                 fol.getClient().getSession().write(MaplePacketCreator.moveFollow(Original_Pos, original_pos, pos, res));
                 MovementParse.updatePosition(res, fol, 0);
-                map.broadcastMessage(fol, UserPacket.movePlayer(fol.getId(), res, original_pos), false);
+                map.broadcastMessage(fol, UserRequest.movePlayer(fol.getId(), res, original_pos), false);
             } else {
                 chr.checkFollow();
             }
