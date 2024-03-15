@@ -105,6 +105,11 @@ public class ClientPacket {
 
     public byte[] DecodeMovePath() {
         int length = packet.length - decoded - 8; // short x 4
+
+        if (GetOpcode() == Header.CP_UserMove) {
+            length -= 1 + 9;
+        }
+
         byte[] buffer = new byte[length];
 
         for (int i = 0; i < length; i++) {
@@ -112,6 +117,15 @@ public class ClientPacket {
         }
 
         return buffer;
+    }
+
+    public int getMoveAction() {
+        int length = packet.length - decoded - 8; // short x 4
+
+        if (GetOpcode() == Header.CP_UserMove) {
+            length -= 1 + 9;
+        }
+        return (int) packet[decoded + length - 3];
     }
 
     public enum Header {

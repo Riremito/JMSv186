@@ -45,8 +45,8 @@ public class EvanDragonRequest {
 
         // CMovePath::Decode
         CMovePath data = CMovePath.Decode(cp);
+        dragon.setStance(data.getAction());
         dragon.setPosition(data.getEnd());
-        //dragon.setStance(0);
         chr.getMap().broadcastMessage(chr, EvanDragonResponse.moveDragon(dragon, data), chr.getPosition());
         return true;
     }

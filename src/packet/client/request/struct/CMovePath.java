@@ -30,9 +30,19 @@ public class CMovePath {
     private byte data[] = null;
     Point move_start;
     Point move_end;
+    int action;
 
     public CMovePath(ClientPacket cp) {
+        this.action = cp.getMoveAction();
         this.data = cp.DecodeMovePath();
+        if (cp.GetOpcode() == ClientPacket.Header.CP_UserMove) {
+            // m_aKeyPadState is enabled
+            cp.Decode1();
+            for (int i = 0; i < 9; i++) {
+                // m_aSendBuff
+                cp.Decode1();
+            }
+        }
         int move_start_x = (int) cp.Decode2();
         int move_start_y = (int) cp.Decode2();
         int move_end_x = (int) cp.Decode2();
@@ -51,6 +61,10 @@ public class CMovePath {
 
     public Point getEnd() {
         return move_end;
+    }
+
+    public int getAction() {
+        return action;
     }
 
     // CMovePath::Decode

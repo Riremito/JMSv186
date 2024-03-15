@@ -35,6 +35,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import packet.client.request.MovementPacket;
+import packet.client.request.struct.CMovePath;
 import packet.server.ServerPacket;
 import packet.server.response.struct.AvatarLook;
 import packet.server.response.struct.Structure;
@@ -175,17 +176,12 @@ public class UserResponse {
         return p.Get();
     }
 
-    // movePlayer
-    public static MaplePacket movePlayer(int player_id, List<LifeMovementFragment> moves, Point startPos) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserMove);
-        p.Encode4(player_id);
-        p.Encode2((short) startPos.x);
-        p.Encode2((short) startPos.y);
-        if (131 < ServerConfig.version) {
-            p.Encode4(0);
-        }
-        p.EncodeBuffer(MovementPacket.serializeMovementList(moves)); // to do move class
-        return p.Get();
+    public static MaplePacket movePlayer(MapleCharacter chr, CMovePath data) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserMove);
+
+        sp.Encode4(chr.getId());
+        sp.EncodeBuffer(data.get());
+        return sp.Get();
     }
 
     // spawnPlayerMapobject

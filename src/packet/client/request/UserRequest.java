@@ -10,17 +10,15 @@ import config.DebugConfig;
 import config.ServerConfig;
 import debug.Debug;
 import handling.channel.handler.AttackInfo;
-import handling.channel.handler.MovementParse;
 import handling.channel.handler.PlayerHandler;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import packet.client.ClientPacket;
+import packet.client.request.struct.CMovePath;
 import packet.server.response.UserResponse;
 import server.maps.MapleMap;
-import server.movement.LifeMovementFragment;
 import tools.AttackPair;
-import tools.MaplePacketCreator;
 import tools.Pair;
 
 public class UserRequest {
@@ -364,7 +362,9 @@ public class UserRequest {
     }
 
     public static boolean OnMove(ClientPacket cp, MapleMap map, MapleCharacter chr) {
-        final Point Original_Pos = new Point();
+        if (chr.isHidden()) {
+            return false;
+        }
 
         if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
@@ -390,75 +390,12 @@ public class UserRequest {
             cp.Decode4();
         }
 
-        // v131 = start xy, v186 = updated xy
-        Original_Pos.x = (int) cp.Decode2(); // start y
-        Original_Pos.y = (int) cp.Decode2(); // start y
-
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
-            Original_Pos.x = chr.getPosition().x;
-            Original_Pos.y = chr.getPosition().y;
-        }
-
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
-            cp.Decode2();
-            cp.Decode2();
-        }
-
-        List<LifeMovementFragment> res = null;
-
-        try {
-            // player OK
-            res = MovementPacket.CMovePath_Decode(cp, 1);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            Debug.ErrorLog("AIOBE Type1");
-            return false;
-        }
-
-        if (res == null) {
-            Debug.ErrorLog("AIOBE Type1 res == null");
-            return false;
-        }
-
-        // update char position
-        if (chr.isHidden()) {
-            chr.setLastRes(res); // crap
-            map.broadcastGMMessage(chr, UserResponse.movePlayer(chr.getId(), res, Original_Pos), false);
-        } else {
-            map.broadcastMessage(chr, UserResponse.movePlayer(chr.getId(), res, Original_Pos), false);
-        }
-
-        MovementParse.updatePosition(res, chr, 0);
-        final Point pos = chr.getPosition();
-        map.movePlayer(chr, pos);
-        if (chr.getFollowId() > 0 && chr.isFollowOn() && chr.isFollowInitiator()) {
-            final MapleCharacter fol = map.getCharacterById(chr.getFollowId());
-            if (fol != null) {
-                final Point original_pos = fol.getPosition();
-                fol.getClient().getSession().write(MaplePacketCreator.moveFollow(Original_Pos, original_pos, pos, res));
-                MovementParse.updatePosition(res, fol, 0);
-                map.broadcastMessage(fol, UserResponse.movePlayer(fol.getId(), res, original_pos), false);
-            } else {
-                chr.checkFollow();
-            }
-        }
-        // Fall Down Floor
-        int count = chr.getFallCounter();
-        if (map.getFootholds().findBelow(chr.getPosition()) == null && chr.getPosition().y > chr.getOldPosition().y && chr.getPosition().x == chr.getOldPosition().x) {
-            if (count > 10) {
-                chr.changeMap(map, map.getPortal(0));
-                chr.setFallCounter(0);
-            } else {
-                chr.setFallCounter(++count);
-            }
-        } else if (count > 0) {
-            chr.setFallCounter(0);
-        }
-        chr.setOldPosition(new Point(chr.getPosition()));
-
+        CMovePath data = CMovePath.Decode(cp);
+        chr.setStance(data.getAction());
+        chr.setPosition(data.getEnd());
+        map.movePlayer(chr, chr.getPosition());
+        // need to update stance
+        map.broadcastMessage(chr, UserResponse.movePlayer(chr, data), false);
         return true;
     }
 
