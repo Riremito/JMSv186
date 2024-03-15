@@ -97,6 +97,7 @@ import packet.server.response.PetResponse;
 import packet.server.response.RemoteResponse;
 import packet.server.response.TemporaryStatResponse;
 import packet.server.response.TestResponse;
+import packet.server.response.UserResponse;
 import packet.server.response.struct.GW_CharacterStat;
 import tools.MockIOSession;
 import scripting.EventInstanceManager;
@@ -1643,7 +1644,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void registerEffect(MapleStatEffect effect, long starttime, ScheduledFuture<?> schedule, List<Pair<MapleBuffStat, Integer>> statups) {
         if (effect.isHide()) {
             this.hidden = true;
-            map.broadcastMessage(this, UserRequest.removePlayerFromMap(getId()), false);
+            map.broadcastMessage(this, UserResponse.removePlayerFromMap(getId()), false);
         } else if (effect.isDragonBlood()) {
             prepareDragonBlood(effect);
         } else if (effect.isBerserk()) {
@@ -1785,7 +1786,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             cancelPlayerBuffs(buffstats);
             if (effect.isHide() && client.getChannelServer().getPlayerStorage().getCharacterById(this.getId()) != null) { //Wow this is so fking hacky...
                 this.hidden = false;
-                map.broadcastMessage(this, UserRequest.spawnPlayerMapobject(this), false);
+                map.broadcastMessage(this, UserResponse.spawnPlayerMapobject(this), false);
 
                 for (final MaplePet pet : pets) {
                     if (pet.getSummoned()) {
@@ -1794,7 +1795,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 }
                 for (final WeakReference<MapleCharacter> chr : clones) {
                     if (chr.get() != null) {
-                        map.broadcastMessage(chr.get(), UserRequest.spawnPlayerMapobject(chr.get()), false);
+                        map.broadcastMessage(chr.get(), UserResponse.spawnPlayerMapobject(chr.get()), false);
                     }
                 }
             }
@@ -3641,7 +3642,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     @Override
     public void sendDestroyData(MapleClient client) {
-        client.getSession().write(UserRequest.removePlayerFromMap(this.getObjectId()));
+        client.getSession().write(UserResponse.removePlayerFromMap(this.getObjectId()));
         for (final WeakReference<MapleCharacter> chr : clones) {
             if (chr.get() != null) {
                 chr.get().sendDestroyData(client);
@@ -3652,7 +3653,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     @Override
     public void sendSpawnData(MapleClient client) {
         if (client.getPlayer().allowedToTarget(this)) {
-            client.getSession().write(UserRequest.spawnPlayerMapobject(this));
+            client.getSession().write(UserResponse.spawnPlayerMapobject(this));
 
             for (final MaplePet pet : pets) {
                 if (pet.getSummoned()) {

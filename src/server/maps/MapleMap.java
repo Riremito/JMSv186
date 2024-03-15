@@ -76,6 +76,7 @@ import packet.server.response.LocalResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.RemoteResponse;
+import packet.server.response.UserResponse;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
@@ -1777,7 +1778,7 @@ public final class MapleMap {
             chr.setCoconutTeam(getAndSwitchTeam() ? 0 : 1);
         }
         if (!chr.isHidden()) {
-            broadcastMessage(chr, UserRequest.spawnPlayerMapobject(chr), false);
+            broadcastMessage(chr, UserResponse.spawnPlayerMapobject(chr), false);
             if (chr.isGM() && speedRunStart > 0) {
                 endSpeedRun();
                 broadcastMessage(MaplePacketCreator.serverNotice(5, "The speed run has ended."));
@@ -2177,7 +2178,7 @@ public final class MapleMap {
         }
         removeMapObject(chr);
         chr.checkFollow();
-        broadcastMessage(UserRequest.removePlayerFromMap(chr.getId()));
+        broadcastMessage(UserResponse.removePlayerFromMap(chr.getId()));
         if (!chr.isClone()) {
             for (final MapleMonster monster : chr.getControlledMonsters()) {
                 monster.setController(null);

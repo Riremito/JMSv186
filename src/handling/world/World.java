@@ -43,6 +43,7 @@ import packet.server.response.FriendResponse;
 import packet.server.response.GuildResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
+import packet.server.response.UserResponse;
 import server.Timer.WorldTimer;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
@@ -809,8 +810,8 @@ public class World {
                 mc.saveGuildStatus();
             }
             if (bDifferentGuild && ch > 0) {
-                mc.getMap().broadcastMessage(mc, UserRequest.removePlayerFromMap(cid), false);
-                mc.getMap().broadcastMessage(mc, UserRequest.spawnPlayerMapobject(mc), false);
+                mc.getMap().broadcastMessage(mc, UserResponse.removePlayerFromMap(cid), false);
+                mc.getMap().broadcastMessage(mc, UserResponse.spawnPlayerMapobject(mc), false);
             }
         }
     }
