@@ -15,7 +15,7 @@ import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import tools.Pair;
 
-public class MobPacket {
+public class MobRequest {
 
     public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
         MapleCharacter chr = c.getPlayer();

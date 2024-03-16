@@ -27,7 +27,7 @@ import packet.client.request.EvanDragonRequest;
 import packet.client.request.FriendRequest;
 import packet.client.request.GashaEXPPacket;
 import packet.client.request.ItemPacket;
-import packet.client.request.MobPacket;
+import packet.client.request.MobRequest;
 import packet.client.request.NPCPacket;
 import packet.client.request.PortalPacket;
 import packet.client.request.ReactorPacket;
@@ -831,7 +831,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_MobApplyCtrl:
             case CP_MobHitByMob:
             case CP_MobSelfDestruct: {
-                MobPacket.OnPacket(cp, type, c);
+                MobRequest.OnPacket(cp, type, c);
                 return true;
             }
             case CP_UserShopRequest: {

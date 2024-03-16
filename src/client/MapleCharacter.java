@@ -83,7 +83,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import packet.server.response.PachinkoResponse;
 import packet.client.request.ContextPacket;
-import packet.client.request.MobPacket;
+import packet.client.request.MobRequest;
 import packet.client.request.SocketPacket;
 import packet.client.request.SummonPacket;
 import packet.client.request.UserRequest;

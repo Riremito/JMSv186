@@ -65,7 +65,7 @@ import packet.client.request.DropPacket;
 import packet.client.request.DropPacket.EnterType;
 import packet.client.request.DropPacket.LeaveType;
 import packet.client.request.ItemPacket;
-import packet.client.request.MobPacket;
+import packet.client.request.MobRequest;
 import packet.client.request.NPCPacket;
 import packet.client.request.ReactorPacket;
 import packet.client.request.SummonPacket;
