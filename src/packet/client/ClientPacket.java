@@ -119,15 +119,6 @@ public class ClientPacket {
         return buffer;
     }
 
-    public int getMoveAction() {
-        int length = packet.length - decoded - 8; // short x 4
-
-        if (GetOpcode() == Header.CP_UserMove) {
-            length -= 1 + 9;
-        }
-        return (int) packet[decoded + length - 3];
-    }
-
     public enum Header {
         // 独自仕様
         CP_CUSTOM_,

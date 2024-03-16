@@ -18,6 +18,7 @@
  */
 package packet.client.request.struct;
 
+import config.ServerConfig;
 import java.awt.Point;
 import packet.client.ClientPacket;
 
@@ -33,8 +34,9 @@ public class CMovePath {
     int action;
 
     public CMovePath(ClientPacket cp) {
-        this.action = cp.getMoveAction();
-        this.data = cp.DecodeMovePath();
+        //this.action = cp.getMoveAction();
+        data = cp.DecodeMovePath();
+
         if (cp.GetOpcode() == ClientPacket.Header.CP_UserMove) {
             // m_aKeyPadState is enabled
             cp.Decode1();
@@ -43,12 +45,22 @@ public class CMovePath {
                 cp.Decode1();
             }
         }
-        int move_start_x = (int) cp.Decode2();
-        int move_start_y = (int) cp.Decode2();
-        int move_end_x = (int) cp.Decode2();
-        int move_end_y = (int) cp.Decode2();
-        move_start = new Point(move_start_x, move_start_y);
-        move_end = new Point(move_end_x, move_end_y);
+
+        // offset
+        int offset_start_x = 0;
+        int offset_start_y = 2;
+        // JMS under v165 / JMS v186 or later and post BB, very early version's offset is 13
+        int offset_end_x = (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) ? (data.length - 13) : (data.length - 17);
+        int offset_end_y = (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) ? (data.length - 11) : (data.length - 15);
+        int offset_action = data.length - 3;
+        // data for updating coordinates
+        action = data[offset_action];
+        move_start = new Point(ShortToInt(offset_start_x), ShortToInt(offset_start_y));
+        move_end = new Point(ShortToInt(offset_end_x), ShortToInt(offset_end_y));
+    }
+
+    private int ShortToInt(int offset) {
+        return (short) (((short) data[offset] & 0xFF) | (((short) data[offset + 1] & 0xFF) << 8));
     }
 
     public byte[] get() {

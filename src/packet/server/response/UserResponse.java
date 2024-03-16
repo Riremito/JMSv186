@@ -31,17 +31,14 @@ import handling.MaplePacket;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
 import handling.world.guild.MapleGuildAlliance;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import packet.client.request.MovementPacket;
 import packet.client.request.struct.CMovePath;
 import packet.server.ServerPacket;
 import packet.server.response.struct.AvatarLook;
 import packet.server.response.struct.Structure;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
-import server.movement.LifeMovementFragment;
 import tools.Pair;
 
 /**
