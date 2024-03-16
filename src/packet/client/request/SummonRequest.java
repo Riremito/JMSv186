@@ -53,7 +53,7 @@ import server.movement.LifeMovementFragment;
  *
  * @author Riremito
  */
-public class SummonPacket {
+public class SummonRequest {
 
     // CUser::OnSummonedPacket
     public static boolean OnPacket(ClientPacket p, ClientPacket.Header header, MapleClient c) {
@@ -344,7 +344,7 @@ public class SummonPacket {
         }
 
         if (summon.isGaviota()) {
-            chr.getMap().broadcastMessage(SummonPacket.removeSummon(summon, true));
+            chr.getMap().broadcastMessage(SummonRequest.removeSummon(summon, true));
             chr.getMap().removeMapObject(summon);
             chr.removeVisibleMapObject(summon);
             chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);

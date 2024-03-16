@@ -32,7 +32,7 @@ import packet.client.request.NPCPacket;
 import packet.client.request.PortalPacket;
 import packet.client.request.ReactorPacket;
 import packet.client.request.SocketPacket;
-import packet.client.request.SummonPacket;
+import packet.client.request.SummonRequest;
 import packet.client.request.TrunkPacket;
 import packet.client.request.UserRequest;
 import packet.client.request.ViciousHammerPacket;
@@ -956,7 +956,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_SummonedHit:
             case CP_SummonedSkill:
             case CP_Remove: {
-                SummonPacket.OnPacket(cp, type, c);
+                SummonRequest.OnPacket(cp, type, c);
                 return true;
             }
             case CP_DragonMove: {

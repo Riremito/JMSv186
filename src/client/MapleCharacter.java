@@ -85,7 +85,7 @@ import packet.server.response.PachinkoResponse;
 import packet.client.request.ContextPacket;
 import packet.client.request.MobRequest;
 import packet.client.request.SocketPacket;
-import packet.client.request.SummonPacket;
+import packet.client.request.SummonRequest;
 import packet.client.request.UserRequest;
 import packet.server.response.EvanDragonResponse;
 import packet.server.response.FreeMarketResponse;
@@ -1709,7 +1709,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     final int summonId = mbsvh.effect.getSourceId();
                     final MapleSummon summon = summons.get(summonId);
                     if (summon != null) {
-                        map.broadcastMessage(SummonPacket.removeSummon(summon, true));
+                        map.broadcastMessage(SummonRequest.removeSummon(summon, true));
                         map.removeMapObject(summon);
                         removeVisibleMapObject(summon);
                         summons.remove(summonId);
@@ -3671,7 +3671,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             if (summons != null) {
                 for (final MapleSummon summon : summons.values()) {
-                    client.getSession().write(SummonPacket.spawnSummon(summon, false));
+                    client.getSession().write(SummonRequest.spawnSummon(summon, false));
                 }
             }
             if (followid > 0) {

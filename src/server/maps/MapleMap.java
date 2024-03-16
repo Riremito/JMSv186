@@ -68,7 +68,7 @@ import packet.client.request.ItemPacket;
 import packet.client.request.MobRequest;
 import packet.client.request.NPCPacket;
 import packet.client.request.ReactorPacket;
-import packet.client.request.SummonPacket;
+import packet.client.request.SummonRequest;
 import packet.client.request.UserRequest;
 import packet.server.response.EvanDragonResponse;
 import packet.server.response.FieldResponse;
@@ -1448,7 +1448,7 @@ public final class MapleMap {
             @Override
             public void sendPackets(MapleClient c) {
                 if (!summon.isChangedMap() || summon.getOwnerId() == c.getPlayer().getId()) {
-                    c.getSession().write(SummonPacket.spawnSummon(summon, true));
+                    c.getSession().write(SummonRequest.spawnSummon(summon, true));
                 }
             }
         }, null);
