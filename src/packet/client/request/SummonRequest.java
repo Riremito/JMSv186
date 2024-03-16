@@ -30,24 +30,20 @@ import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import config.ServerConfig;
 import debug.Debug;
-import handling.MaplePacket;
-import handling.channel.handler.MovementParse;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import packet.client.ClientPacket;
-import packet.server.ServerPacket;
+import packet.client.request.struct.CMovePath;
 import packet.server.response.MobResponse;
-import packet.server.response.struct.AvatarLook;
+import packet.server.response.SummonResponse;
 import server.MapleStatEffect;
 import server.life.MapleMonster;
 import server.life.SummonAttackEntry;
 import server.maps.MapleMap;
 import server.maps.MapleSummon;
 import server.maps.SummonMovementType;
-import server.movement.LifeMovementFragment;
 
 /**
  *
@@ -56,7 +52,7 @@ import server.movement.LifeMovementFragment;
 public class SummonRequest {
 
     // CUser::OnSummonedPacket
-    public static boolean OnPacket(ClientPacket p, ClientPacket.Header header, MapleClient c) {
+    public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return false;
@@ -67,10 +63,10 @@ public class SummonRequest {
             return false;
         }
 
-        int oid = p.Decode4(); // older version = SkillID
+        int oid = cp.Decode4(); // older version = SkillID
 
         MapleSummon summon = null;
-        if (ServerConfig.version <= 131) {
+        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
             for (MapleSummon sms : chr.getSummons().values()) {
                 if (sms.getSkill() == oid) {
                     summon = sms;
@@ -89,33 +85,15 @@ public class SummonRequest {
             case CP_SummonedMove: {
                 // CSummoned::OnMove
                 // CField::OnSummonedMove
-                // SummonHandler.MoveSummon(p, c.getPlayer());
-                if (summon.getMovementType() == SummonMovementType.STATIONARY) {
-                    return true;
-                }
-                final Point pos = summon.getPosition();
-
-                if (ServerConfig.version <= 131) {
-                    pos.x = (int) p.Decode2();
-                    pos.y = (int) p.Decode2();
-                } else {
-                    p.Decode4(); // -1
-                    p.Decode4(); // -1
-                }
-                final List<LifeMovementFragment> res = MovementPacket.parseMovement(p, 4);
-
-                MovementParse.updatePosition(res, summon, 0);
-                if (!summon.isChangedMap()) {
-                    chr.getMap().broadcastMessage(chr, moveSummon(summon, pos, res), summon.getPosition());
-                }
+                OnMove(cp, chr, summon);
                 return true;
             }
             case CP_SummonedAttack: {
-                SummonAttack(p, summon, chr);
+                SummonAttack(cp, summon, chr);
                 return true;
             }
             case CP_SummonedHit: {
-                DamageSummon(p, chr);
+                DamageSummon(cp, chr);
                 return true;
             }
             case CP_SummonedSkill: {
@@ -131,118 +109,20 @@ public class SummonRequest {
             }
         }
 
-        Debug.ErrorLog("Not coded: " + p.GetOpcodeName());
+        Debug.ErrorLog("Not coded: " + cp.GetOpcodeName());
         return false;
     }
 
-    public static MaplePacket spawnSummon(MapleSummon summon, boolean animated) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SummonedEnterField);
-
-        p.Encode4(summon.getOwnerId());
-
-        if (131 < ServerConfig.version) {
-            p.Encode4(summon.getObjectId());
+    public static boolean OnMove(ClientPacket cp, MapleCharacter chr, MapleSummon summon) {
+        if (summon.getMovementType() == SummonMovementType.STATIONARY || summon.isChangedMap()) {
+            return false;
         }
 
-        p.Encode4(summon.getSkill());
-
-        if (131 < ServerConfig.version) {
-            p.Encode1(summon.getOwnerLevel() - 1);
-        }
-        p.Encode1(summon.getSkillLevel());
-        p.Encode2((short) summon.getPosition().x);
-        p.Encode2((short) summon.getPosition().y);
-        p.Encode1(summon.getSkill() == 32111006 ? 5 : 4); // summon.getStance();
-        p.Encode2(summon.getFh());
-        p.Encode1(summon.getMovementType().getValue());
-        p.Encode1(summon.getSummonType()); // 0 = Summon can't attack - but puppets don't attack with 1 either ^.-
-        p.Encode1(animated ? 0 : 1);
-
-        if (186 <= ServerConfig.version) {
-            final MapleCharacter chr = summon.getOwner();
-            p.Encode1(summon.getSkill() == 4341006 && chr != null ? 1 : 0); //mirror target
-
-            if (summon.getSkill() == 4341006 && chr != null) {
-                p.EncodeBuffer(AvatarLook.Encode(chr));
-            }
-        }
-
-        return p.Get();
-    }
-
-    public static MaplePacket removeSummon(MapleSummon summon, boolean animated) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SummonedLeaveField);
-
-        p.Encode4(summon.getOwnerId());
-
-        if (ServerConfig.version <= 131) {
-            p.Encode4(summon.getSkill());
-        } else {
-            p.Encode4(summon.getObjectId());
-        }
-
-        p.Encode1(animated ? 4 : 1);
-        return p.Get();
-    }
-
-    public static MaplePacket moveSummon(MapleSummon summon, Point startPos, List<LifeMovementFragment> moves) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SummonedMove);
-        p.Encode4(summon.getOwnerId());
-
-        if (ServerConfig.version <= 131) {
-            p.Encode4(summon.getSkill());
-        } else {
-            p.Encode4(summon.getObjectId());
-        }
-
-        p.Encode2((short) startPos.x);
-        p.Encode2((short) startPos.y);
-
-        if (131 < ServerConfig.version) {
-            p.Encode4(0);
-        }
-
-        p.EncodeBuffer(MovementPacket.serializeMovementList(moves));
-        return p.Get();
-    }
-
-    // v131 broken
-    public static MaplePacket summonAttack(final int cid, final int summonSkillId, final byte animation, final List<SummonAttackEntry> allDamage, final int level) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SummonedAttack);
-        p.Encode4(cid);
-        p.Encode4(summonSkillId);
-
-        if (131 < ServerConfig.version) {
-            p.Encode1(level - 1); //? guess
-        }
-
-        p.Encode1(animation);
-        p.Encode1(allDamage.size());
-
-        for (final SummonAttackEntry attackEntry : allDamage) {
-            p.Encode4(attackEntry.getMonster().getObjectId()); // oid
-
-            if (ServerConfig.version <= 131) {
-                p.Encode1(6);
-            } else {
-                p.Encode1(7); // who knows
-            }
-
-            p.Encode4(attackEntry.getDamage()); // damage
-        }
-        return p.Get();
-    }
-
-    public static MaplePacket damageSummon(int cid, int summonSkillId, int damage, int unkByte, int monsterIdFrom) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SummonedHit);
-
-        p.Encode4(cid);
-        p.Encode4(summonSkillId);
-        p.Encode1(unkByte);
-        p.Encode4(damage);
-        p.Encode4(monsterIdFrom);
-        p.Encode1(0);
-        return p.Get();
+        CMovePath data = CMovePath.Decode(cp);
+        summon.setStance(data.getAction());
+        summon.setPosition(data.getEnd());
+        chr.getMap().broadcastMessage(chr, SummonResponse.moveSummon(summon, data), summon.getPosition());
+        return true;
     }
 
     // SummonAttack
@@ -255,7 +135,7 @@ public class SummonRequest {
             return;
         }
 
-        if (131 < ServerConfig.version) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
             p.Decode4();
             p.Decode4();
 
@@ -269,14 +149,14 @@ public class SummonRequest {
 
         final byte animation = p.Decode1();
 
-        if (131 < ServerConfig.version) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
             p.Decode4();
             p.Decode4();
         }
 
         final byte numAttacked = p.Decode1();
 
-        if (131 < ServerConfig.version) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
             p.Decode2(); // x
             p.Decode2(); // y
             p.Decode2(); // x
@@ -311,13 +191,13 @@ public class SummonRequest {
             allDamage.add(new SummonAttackEntry(mob, damage));
         }
 
-        if (ServerConfig.version <= 131) {
+        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
             p.Decode2(); // X
             p.Decode2(); // Y
         }
 
         if (!summon.isChangedMap()) {
-            map.broadcastMessage(chr, summonAttack(summon.getOwnerId(), summon.getObjectId(), animation, allDamage, chr.getLevel()), summon.getPosition());
+            map.broadcastMessage(chr, SummonResponse.summonAttack(summon.getOwnerId(), summon.getObjectId(), animation, allDamage, chr.getLevel()), summon.getPosition());
         }
         final ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());
         final MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
@@ -344,7 +224,7 @@ public class SummonRequest {
         }
 
         if (summon.isGaviota()) {
-            chr.getMap().broadcastMessage(SummonRequest.removeSummon(summon, true));
+            chr.getMap().broadcastMessage(SummonResponse.removeSummon(summon, true));
             chr.getMap().removeMapObject(summon);
             chr.removeVisibleMapObject(summon);
             chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
@@ -367,7 +247,7 @@ public class SummonRequest {
                 if (summon.getHP() <= 0) {
                     chr.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
                 }
-                chr.getMap().broadcastMessage(chr, damageSummon(chr.getId(), summon.getSkill(), damage, unkByte, monsterIdFrom), summon.getPosition());
+                chr.getMap().broadcastMessage(chr, SummonResponse.damageSummon(chr.getId(), summon.getSkill(), damage, unkByte, monsterIdFrom), summon.getPosition());
                 break;
             }
         }

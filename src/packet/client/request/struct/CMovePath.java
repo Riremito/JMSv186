@@ -42,10 +42,11 @@ public class CMovePath {
                 break;
             }
             case CP_DragonMove: {
-                ignore_bytes = 1 + 2 * 4; // v164-v186 OK
+                ignore_bytes = 1 + 2 * 4; // v186
                 break;
             }
             case CP_SummonedMove: {
+                ignore_bytes = 1 + 2 * 4; // v186
                 break;
             }
             case CP_PetMove: {

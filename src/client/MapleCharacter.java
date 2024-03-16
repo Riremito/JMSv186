@@ -96,6 +96,7 @@ import packet.server.response.MonsterCarnivalResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.RemoteResponse;
+import packet.server.response.SummonResponse;
 import packet.server.response.TemporaryStatResponse;
 import packet.server.response.TestResponse;
 import packet.server.response.UserResponse;
@@ -1709,7 +1710,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     final int summonId = mbsvh.effect.getSourceId();
                     final MapleSummon summon = summons.get(summonId);
                     if (summon != null) {
-                        map.broadcastMessage(SummonRequest.removeSummon(summon, true));
+                        map.broadcastMessage(SummonResponse.removeSummon(summon, true));
                         map.removeMapObject(summon);
                         removeVisibleMapObject(summon);
                         summons.remove(summonId);
@@ -3671,7 +3672,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             if (summons != null) {
                 for (final MapleSummon summon : summons.values()) {
-                    client.getSession().write(SummonRequest.spawnSummon(summon, false));
+                    client.getSession().write(SummonResponse.spawnSummon(summon, false));
                 }
             }
             if (followid > 0) {

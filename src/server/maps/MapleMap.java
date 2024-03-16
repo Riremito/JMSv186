@@ -77,6 +77,7 @@ import packet.server.response.MobResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.RemoteResponse;
+import packet.server.response.SummonResponse;
 import packet.server.response.UserResponse;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
@@ -1448,7 +1449,7 @@ public final class MapleMap {
             @Override
             public void sendPackets(MapleClient c) {
                 if (!summon.isChangedMap() || summon.getOwnerId() == c.getPlayer().getId()) {
-                    c.getSession().write(SummonRequest.spawnSummon(summon, true));
+                    c.getSession().write(SummonResponse.spawnSummon(summon, true));
                 }
             }
         }, null);
