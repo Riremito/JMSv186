@@ -91,6 +91,7 @@ import packet.server.response.EvanDragonResponse;
 import packet.server.response.FreeMarketResponse;
 import packet.server.response.FriendResponse;
 import packet.server.response.LocalResponse;
+import packet.server.response.MobResponse;
 import packet.server.response.MonsterCarnivalResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
@@ -3106,7 +3107,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
         monster.setController(this);
         controlled.add(monster);
-        client.SendPacket(MobPacket.Control(monster, false, aggro));
+        client.SendPacket(MobResponse.Control(monster, false, aggro));
     }
 
     public void stopControllingMonster(MapleMonster monster) {
@@ -5002,7 +5003,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (movedMobs.get(mobid) > 30) { //trying to move not null monster = broadcast dead
                 for (MapleCharacter chr : getMap().getCharactersThreadsafe()) { //also broadcast to others
                     if (chr.getMoveMobs().containsKey(mobid)) { //they also tried to move this mob
-                        chr.getClient().SendPacket(MobPacket.Kill(mobid, 1));
+                        chr.getClient().SendPacket(MobResponse.Kill(mobid, 1));
                         chr.getMoveMobs().remove(mobid);
                     }
                 }

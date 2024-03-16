@@ -73,6 +73,7 @@ import packet.client.request.UserRequest;
 import packet.server.response.EvanDragonResponse;
 import packet.server.response.FieldResponse;
 import packet.server.response.LocalResponse;
+import packet.server.response.MobResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.RemoteResponse;
@@ -505,7 +506,7 @@ public final class MapleMap {
 
     public void removeMonster(final MapleMonster monster) {
         spawnedMonstersOnMap.decrementAndGet();
-        broadcastMessage(MobPacket.Kill(monster, 0));
+        broadcastMessage(MobResponse.Kill(monster, 0));
         removeMapObject(monster);
     }
 
@@ -513,7 +514,7 @@ public final class MapleMap {
         spawnedMonstersOnMap.decrementAndGet();
         monster.setHp(0);
         monster.spawnRevives(this);
-        broadcastMessage(MobPacket.Kill(monster, 1));
+        broadcastMessage(MobResponse.Kill(monster, 1));
         removeMapObject(monster);
     }
 
@@ -541,7 +542,7 @@ public final class MapleMap {
         spawnedMonstersOnMap.decrementAndGet();
         removeMapObject(monster);
         int dropOwner = monster.killBy(chr, lastSkill);
-        broadcastMessage(MobPacket.Kill(monster, animation));
+        broadcastMessage(MobResponse.Kill(monster, animation));
 
         if (monster.getBuffToGive() > -1) {
             final int buffid = monster.getBuffToGive();
@@ -853,7 +854,7 @@ public final class MapleMap {
             final MapleMonster monster = (MapleMonster) monstermo;
             spawnedMonstersOnMap.decrementAndGet();
             monster.setHp(0);
-            broadcastMessage(MobPacket.Kill(monster, animate ? 1 : 0));
+            broadcastMessage(MobResponse.Kill(monster, animate ? 1 : 0));
             removeMapObject(monster);
         }
     }
@@ -863,7 +864,7 @@ public final class MapleMap {
             if (((MapleMonster) mmo).getId() == monsId) {
                 spawnedMonstersOnMap.decrementAndGet();
                 removeMapObject(mmo);
-                broadcastMessage(MobPacket.Kill((MapleMonster) mmo, 1));
+                broadcastMessage(MobResponse.Kill((MapleMonster) mmo, 1));
                 break;
             }
         }
@@ -1334,7 +1335,7 @@ public final class MapleMap {
         spawnAndAddRangedMapObject(monster, new DelayedPacketCreation() {
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(MobPacket.Spawn(monster, -3, 0, oid)); // TODO effect
+                c.SendPacket(MobResponse.Spawn(monster, -3, 0, oid)); // TODO effect
             }
         }, null);
         updateMonsterController(monster);
@@ -1349,7 +1350,7 @@ public final class MapleMap {
         spawnAndAddRangedMapObject(monster, new DelayedPacketCreation() {
 
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(MobPacket.Spawn(monster, spawnType, 0, 0));
+                c.SendPacket(MobResponse.Spawn(monster, spawnType, 0, 0));
             }
         }, null);
         updateMonsterController(monster);
@@ -1366,7 +1367,7 @@ public final class MapleMap {
 
                 @Override
                 public final void sendPackets(MapleClient c) {
-                    c.SendPacket(MobPacket.Spawn(monster, -2, effect, 0));
+                    c.SendPacket(MobResponse.Spawn(monster, -2, effect, 0));
                 }
             }, null);
             updateMonsterController(monster);
@@ -1386,7 +1387,7 @@ public final class MapleMap {
 
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(MobPacket.Spawn(monster, -4, 0, 0));
+                c.SendPacket(MobResponse.Spawn(monster, -4, 0, 0));
             }
         }, null);
         updateMonsterController(monster);
@@ -1724,8 +1725,8 @@ public final class MapleMap {
         if (itemId > 0) {
             startMapEffect(msg, itemId, false);
         }
-        broadcastMessage(MobPacket.talkMonster(objectid, itemId, msg)); //5120035
-        broadcastMessage(MobPacket.removeTalkMonster(objectid));
+        broadcastMessage(MobResponse.talkMonster(objectid, itemId, msg)); //5120035
+        broadcastMessage(MobResponse.removeTalkMonster(objectid));
     }
 
     public final void startMapEffect(final String msg, final int itemId) {

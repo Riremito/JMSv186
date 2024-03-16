@@ -34,25 +34,48 @@ public class CMovePath {
     int action;
 
     public CMovePath(ClientPacket cp) {
-        //this.action = cp.getMoveAction();
-        data = cp.DecodeMovePath();
+        int ignore_bytes = 0; // 末尾検索
 
-        if (cp.GetOpcode() == ClientPacket.Header.CP_UserMove) {
-            // m_aKeyPadState is enabled
-            cp.Decode1();
-            for (int i = 0; i < 9; i++) {
-                // m_aSendBuff
-                cp.Decode1();
+        switch (cp.GetOpcode()) {
+            case CP_UserMove: {
+                ignore_bytes = 1 + 1 * 9 + 2 * 4; // v164-v186 OK
+                break;
+            }
+            case CP_DragonMove: {
+                ignore_bytes = 1 + 2 * 4; // v164-v186 OK
+                break;
+            }
+            case CP_SummonedMove: {
+                break;
+            }
+            case CP_PetMove: {
+                break;
+            }
+            case CP_MobMove: {
+                ignore_bytes = 1 + 2 * 4;
+                if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
+                    ignore_bytes += 1 * 4 + 4;
+                }
+
+                if (ServerConfig.IsPostBB()) {
+                    ignore_bytes += 8; // 25 bytes
+                }
+                break;
+            }
+            default: {
+                break;
             }
         }
+
+        data = cp.DecodeMovePath();
 
         // offset
         int offset_start_x = 0;
         int offset_start_y = 2;
         // JMS under v165 / JMS v186 or later and post BB, very early version's offset is 13
-        int offset_end_x = (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) ? (data.length - 13) : (data.length - 17);
-        int offset_end_y = (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) ? (data.length - 11) : (data.length - 15);
-        int offset_action = data.length - 3;
+        int offset_end_x = (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) ? (data.length - 13 - ignore_bytes) : (data.length - 17 - ignore_bytes);
+        int offset_end_y = (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) ? (data.length - 11 - ignore_bytes) : (data.length - 15 - ignore_bytes);
+        int offset_action = data.length - 3 - ignore_bytes;
         // data for updating coordinates
         action = data[offset_action];
         move_start = new Point(ShortToInt(offset_start_x), ShortToInt(offset_start_y));

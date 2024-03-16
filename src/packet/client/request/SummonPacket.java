@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import packet.client.ClientPacket;
 import packet.server.ServerPacket;
+import packet.server.response.MobResponse;
 import packet.server.response.struct.AvatarLook;
 import server.MapleStatEffect;
 import server.life.MapleMonster;
@@ -338,7 +339,7 @@ public class SummonPacket {
             mob.damage(chr, toDamage, true);
             chr.checkMonsterAggro(mob);
             if (!mob.isAlive()) {
-                chr.getClient().SendPacket(MobPacket.Kill(mob, 1));
+                chr.getClient().SendPacket(MobResponse.Kill(mob, 1));
             }
         }
 

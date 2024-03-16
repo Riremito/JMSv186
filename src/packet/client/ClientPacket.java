@@ -104,11 +104,7 @@ public class ClientPacket {
     }
 
     public byte[] DecodeMovePath() {
-        int length = packet.length - decoded - 8; // short x 4
-
-        if (GetOpcode() == Header.CP_UserMove) {
-            length -= 1 + 9;
-        }
+        int length = packet.length - decoded;
 
         byte[] buffer = new byte[length];
 
