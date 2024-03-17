@@ -88,7 +88,7 @@ public class SummonResponse {
             p.Encode4(summon.getObjectId());
         }
         p.Encode4(summon.getSkill());
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
             p.Encode1(summon.getOwnerLevel() - 1);
         }
         p.Encode1(summon.getSkillLevel());

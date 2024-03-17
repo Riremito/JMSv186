@@ -1,5 +1,6 @@
 package packet.client.request;
 
+import packet.client.request.struct.CMovePath;
 import packet.server.response.struct.SecondaryStat;
 import packet.server.response.struct.GW_CharacterStat;
 
@@ -11,5 +12,6 @@ public class PacketFlag {
         GW_CharacterStat.Init();
         SecondaryStat.Init();
         ContextPacket.Message_Init();
+        CMovePath.setJumpDown();
     }
 }

@@ -34,6 +34,20 @@ public class CMovePath {
     Point move_end;
     int action;
 
+    private static byte JUMP_DOWN_ACTION = 0x0C; // v186
+
+    public static boolean setJumpDown() {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
+            JUMP_DOWN_ACTION = 0x0C;
+            return true;
+        }
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())) {
+            JUMP_DOWN_ACTION = 0x0F;
+            return true;
+        }
+        return false;
+    }
+
     public CMovePath(ClientPacket cp) {
         int ignore_bytes = 0; // 末尾検索
 
@@ -83,7 +97,7 @@ public class CMovePath {
         move_start = new Point(ShortToInt(offset_start_x), ShortToInt(offset_start_y));
         move_end = new Point(ShortToInt(offset_end_x), ShortToInt(offset_end_y));
         // jump down check
-        if (move_end.y == 0 && ShortToInt(offset_end_y + 4) == 0 && data[offset_end_y - 5] == 0x0C) {
+        if (((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) || move_end.y == 0) && ShortToInt(offset_end_y + 4) == 0 && data[offset_end_y - 5] == JUMP_DOWN_ACTION) {
             // fh 0
             move_end.x = ShortToInt(offset_end_x - 2);
             move_end.y = ShortToInt(offset_end_y - 2);
