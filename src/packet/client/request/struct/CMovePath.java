@@ -84,7 +84,7 @@ public class CMovePath {
         move_end = new Point(ShortToInt(offset_end_x), ShortToInt(offset_end_y));
         // jump down check
         if (move_end.y == 0 && ShortToInt(offset_end_y + 4) == 0 && data[offset_end_y - 5] == 0x0C) {
-            // fh 0, fhFallStart 1
+            // fh 0
             move_end.x = ShortToInt(offset_end_x - 2);
             move_end.y = ShortToInt(offset_end_y - 2);
             //Debug.DebugLog("JUMPDOWN DETECTED!");
