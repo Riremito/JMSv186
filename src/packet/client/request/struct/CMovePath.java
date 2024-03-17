@@ -19,6 +19,7 @@
 package packet.client.request.struct;
 
 import config.ServerConfig;
+import debug.Debug;
 import java.awt.Point;
 import packet.client.ClientPacket;
 
@@ -81,6 +82,13 @@ public class CMovePath {
         action = data[offset_action];
         move_start = new Point(ShortToInt(offset_start_x), ShortToInt(offset_start_y));
         move_end = new Point(ShortToInt(offset_end_x), ShortToInt(offset_end_y));
+        // jump down check
+        if (move_end.y == 0 && ShortToInt(offset_end_y + 4) == 0 && data[offset_end_y - 5] == 0x0C) {
+            // fh 0, fhFallStart 1
+            move_end.x = ShortToInt(offset_end_x - 2);
+            move_end.y = ShortToInt(offset_end_y - 2);
+            //Debug.DebugLog("JUMPDOWN DETECTED!");
+        }
     }
 
     private int ShortToInt(int offset) {

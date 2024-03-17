@@ -391,10 +391,9 @@ public class UserRequest {
         }
 
         CMovePath data = CMovePath.Decode(cp);
-        chr.setStance(data.getAction());
         chr.setPosition(data.getEnd());
+        chr.setStance(data.getAction());
         map.movePlayer(chr, chr.getPosition());
-        // need to update stance
         map.broadcastMessage(chr, UserResponse.movePlayer(chr, data), false);
         return true;
     }
