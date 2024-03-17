@@ -23,6 +23,7 @@ package packet.server.response.struct;
 import client.inventory.IEquip;
 import client.inventory.IItem;
 import config.ServerConfig;
+import java.sql.Timestamp;
 import packet.server.ServerPacket;
 
 /**
@@ -214,7 +215,7 @@ public class GW_ItemSlotBase {
                 data.Encode1(item.getPet().getLevel());
                 data.Encode2(item.getPet().getCloseness());
                 data.Encode1(item.getPet().getFullness());
-                data.Encode8(-1); // time
+                data.Encode8((Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000); // time
                 data.Encode2(0);
                 data.Encode2(0);
                 data.Encode4(0); // time?
