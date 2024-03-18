@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Riremito
+ * Copyright (C) 2024 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,30 +15,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
 package packet.client.request;
 
 import client.MapleCharacter;
 import client.MapleClient;
 import handling.MaplePacket;
-import handling.channel.ChannelServer;
 import packet.client.ClientPacket;
 import packet.server.ServerPacket;
 import server.maps.MapleDynamicPortal;
-import server.maps.MapleMap;
 
 /**
  *
  * @author Riremito
  */
-public class ItemPacket {
-
+public class ItemRequest {
+    
     public static boolean OnPacket(ClientPacket p, ClientPacket.Header header, MapleClient c) {
-
         switch (header) {
             case CP_UserConsumeCashItemUseRequest: {
+                return true;
+            }
+            case CP_UserDestroyPetItemRequest: {
+                // 期限切れデンデン
+                c.getPlayer().UpdateStat(true);
                 return true;
             }
             case CP_UserStatChangeItemUseRequest: {
@@ -109,11 +109,9 @@ public class ItemPacket {
                 c.getPlayer().UpdateStat(true);
                 return true;
             }
-
             case CP_JMS_PINKBEAN_PORTAL_ENTER: {
                 int portal_id = p.Decode4();
                 byte flag = p.Decode1();
-
                 //MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(749050200);
                 //c.getPlayer().changeMap(to, to.getPortal(0));
                 MapleCharacter chr = c.getPlayer();
@@ -142,11 +140,10 @@ public class ItemPacket {
                 break;
             }
         }
-
         c.getPlayer().UpdateStat(true);
         return false;
     }
-
+    
     public static MaplePacket CreatePinkBeanEventPortal(MapleDynamicPortal dynamic_portal) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_PINKBEAN_PORTAL_CREATE);
         sp.Encode1(1);
@@ -160,4 +157,5 @@ public class ItemPacket {
         sp.Encode2(dynamic_portal.getPosition().y);
         return sp.Get();
     }
+    
 }

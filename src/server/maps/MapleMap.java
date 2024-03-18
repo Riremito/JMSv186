@@ -64,12 +64,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import packet.client.request.DropPacket;
 import packet.client.request.DropPacket.EnterType;
 import packet.client.request.DropPacket.LeaveType;
-import packet.client.request.ItemPacket;
-import packet.client.request.MobRequest;
+import packet.client.request.ItemRequest;
 import packet.client.request.NPCPacket;
 import packet.client.request.ReactorPacket;
-import packet.client.request.SummonRequest;
-import packet.client.request.UserRequest;
 import packet.server.response.EvanDragonResponse;
 import packet.server.response.FieldResponse;
 import packet.server.response.LocalResponse;
@@ -1437,7 +1434,7 @@ public final class MapleMap {
         spawnAndAddRangedMapObject(dynamic_portal, new DelayedPacketCreation() {
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(ItemPacket.CreatePinkBeanEventPortal(dynamic_portal));
+                c.SendPacket(ItemRequest.CreatePinkBeanEventPortal(dynamic_portal));
             }
         }, null);
     }

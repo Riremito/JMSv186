@@ -26,7 +26,7 @@ import packet.client.request.DueyPacket;
 import packet.client.request.EvanDragonRequest;
 import packet.client.request.FriendRequest;
 import packet.client.request.GashaEXPPacket;
-import packet.client.request.ItemPacket;
+import packet.client.request.ItemRequest;
 import packet.client.request.MobRequest;
 import packet.client.request.NPCPacket;
 import packet.client.request.PortalPacket;
@@ -1139,10 +1139,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 GashaEXPPacket.OnPacket(cp, type, c);
                 return true;
             }
+            case CP_UserDestroyPetItemRequest:
             case CP_JMS_JUKEBOX:
             case CP_JMS_PINKBEAN_PORTAL_CREATE:
             case CP_JMS_PINKBEAN_PORTAL_ENTER: {
-                ItemPacket.OnPacket(cp, type, c);
+                ItemRequest.OnPacket(cp, type, c);
                 return true;
             }
             default: {
