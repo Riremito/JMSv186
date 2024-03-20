@@ -82,8 +82,8 @@ public class PetResponse {
     }
 
     // showPet
-    public static MaplePacket Activated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetActivated);
+    public static MaplePacket Activated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
+        ServerPacket sp = new ServerPacket(transfer_field ? ServerPacket.Header.LP_PetTransferField : ServerPacket.Header.LP_PetActivated);
         sp.Encode4(chr.getId());
         sp.Encode4(chr.getPetIndex(pet));
         sp.Encode1(spawn ? 1 : 0);
@@ -105,11 +105,15 @@ public class PetResponse {
     }
 
     public static MaplePacket Activated(MapleCharacter chr, MaplePet pet) {
-        return Activated(chr, pet, true, DeActivatedMsg.UNKNOWN);
+        return Activated(chr, pet, true, DeActivatedMsg.UNKNOWN, false);
     }
 
     public static MaplePacket Deactivated(MapleCharacter chr, MaplePet pet, DeActivatedMsg msg) {
-        return Activated(chr, pet, false, msg);
+        return Activated(chr, pet, false, msg, false);
+    }
+
+    public static MaplePacket TransferField(MapleCharacter chr, MaplePet pet) {
+        return Activated(chr, pet, true, DeActivatedMsg.UNKNOWN, true);
     }
 
     // need  fix
