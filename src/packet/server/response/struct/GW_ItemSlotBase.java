@@ -218,7 +218,7 @@ public class GW_ItemSlotBase {
                 // 魔法の効力期限, Windows時間
                 data.Encode8((Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000); // time
                 data.Encode2(0);
-                data.Encode2(0);
+                data.Encode2(item.getPet().getFlags());
                 // 魔法の時間, デンデン専用 (残り時間)
                 data.Encode4((item.getItemId() == 5000054) ? 3600 : 0);
                 data.Encode2(0);
@@ -265,16 +265,9 @@ public class GW_ItemSlotBase {
             data.Encode8(item.getUniqueId());
         }
 
-        /*
-        if (item.getPet() != null) { // Pet
-            data.EncodeBuffer(addPetItemInfo(item, item.getPet()));
-        } else {
-            data.EncodeBuffer(addExpirationTime(item.getExpiration()));
-        }
-         */
         data.Encode8(-1); // time?
 
-        if (194 <= ServerConfig.version) {
+        if (ServerConfig.IsPostBB()) {
             data.Encode4(0);
         }
 

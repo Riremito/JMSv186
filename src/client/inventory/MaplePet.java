@@ -45,6 +45,7 @@ public class MaplePet implements Serializable {
     private byte fullness = 100, level = 1;
     private short inventorypos = 0, closeness = 0;
     private boolean summoned = false;
+    private short skill_mask = -1; // 0xFFFF
 
     private MaplePet(final int petitemid, final int uniqueid) {
         this.petitemid = petitemid;
@@ -247,5 +248,9 @@ public class MaplePet implements Serializable {
 
     public final void setSecondsLeft(int sl) {
         this.secondsLeft = sl;
+    }
+
+    public short getFlags() {
+        return skill_mask;
     }
 }

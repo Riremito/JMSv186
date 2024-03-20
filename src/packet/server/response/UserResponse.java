@@ -112,7 +112,7 @@ public class UserResponse {
                 p.Encode1(pet.getLevel()); // nLevel
                 p.Encode2(pet.getCloseness()); // pet closeness
                 p.Encode1(pet.getFullness()); // pet fullness
-                p.Encode2(0); // pet.getFlags()
+                p.Encode2(pet.getFlags());
                 p.Encode4(peteqid);
                 pet_count++;
             }
