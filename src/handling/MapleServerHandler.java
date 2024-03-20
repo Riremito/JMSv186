@@ -999,7 +999,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_PetDropPickUpRequest: {
                 // c
-                InventoryHandler.Pickup_Pet(p, c, c.getPlayer());
+                PetRequest.Pickup_Pet(p, c, c.getPlayer());
                 return true;
             }
             case CP_PetStatChangeItemUseRequest: {
