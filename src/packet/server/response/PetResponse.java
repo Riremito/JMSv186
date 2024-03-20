@@ -25,6 +25,7 @@ import client.inventory.MaplePet;
 import handling.MaplePacket;
 import java.util.List;
 import packet.server.ServerPacket;
+import packet.server.response.struct.GW_ItemSlotBase;
 import packet.server.response.struct.TestHelper;
 import server.movement.LifeMovementFragment;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -35,7 +36,81 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class PetResponse {
 
-    private static final byte[] ITEM_MAGIC = new byte[]{(byte) 128, 5};
+    /*
+        @00B4 : LP_PetActivated, CUserLocal::OnPetActivated, CUserRemote::OnPetActivated
+        @00B5 : LP_PetEvol
+        @00B6 : LP_PetTransferField
+        @00B7 : LP_PetMove
+        @00B8 : LP_PetAction
+        @00B9 : LP_PetNameChanged
+        @00BA : LP_PetLoadExceptionList
+        @00BB : LP_PetActionCommand
+     */
+    public enum DeActivatedMsg {
+        // アイテムクリック時の動作だと思う
+        PET_NO_MSG(0),
+        // ペットはお腹がすいたので、家に帰ってしまいました。
+        PET_WENT_BACK_HOME(1),
+        // ペットが魔法の効力が切れて人形に戻りました。
+        PET_TURNED_BACK_INTO_DOLL(2),
+        // ここではペットが使用不可です。
+        PET_COULD_NOT_USE_THIS_LOCATION(3),
+        UNKNOWN(-1);
+
+        private int value;
+
+        DeActivatedMsg(int flag) {
+            value = flag;
+        }
+
+        DeActivatedMsg() {
+            value = -1;
+        }
+
+        public int get() {
+            return value;
+        }
+
+        public static DeActivatedMsg find(int val) {
+            for (final DeActivatedMsg o : DeActivatedMsg.values()) {
+                if (o.get() == val) {
+                    return o;
+                }
+            }
+            return UNKNOWN;
+        }
+    }
+
+    // showPet
+    public static MaplePacket Activated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetActivated);
+        sp.Encode4(chr.getId());
+        sp.Encode4(chr.getPetIndex(pet));
+        sp.Encode1(spawn ? 1 : 0);
+
+        if (spawn) {
+            sp.Encode1(0);
+            sp.Encode4(pet.getPetItemId());
+            sp.EncodeStr(pet.getName());
+            sp.Encode8(pet.getUniqueId()); // buffer
+            sp.Encode2(pet.getPos().x);
+            sp.Encode2(pet.getPos().y);
+            sp.Encode1(pet.getStance());
+            sp.Encode2(pet.getFh());
+        } else {
+            sp.Encode1(msg.get());
+        }
+
+        return sp.Get();
+    }
+
+    public static MaplePacket Activated(MapleCharacter chr, MaplePet pet) {
+        return Activated(chr, pet, true, DeActivatedMsg.UNKNOWN);
+    }
+
+    public static MaplePacket Deactivated(MapleCharacter chr, MaplePet pet, DeActivatedMsg msg) {
+        return Activated(chr, pet, false, msg);
+    }
 
     // need  fix
     public static final MaplePacket petStatUpdate(final MapleCharacter chr) {
@@ -68,29 +143,6 @@ public class PetResponse {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket showPet(final MapleCharacter chr, final MaplePet pet, final boolean remove, final boolean hunger) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_PetActivated.Get());
-        mplew.writeInt(chr.getId());
-        mplew.writeInt(chr.getPetIndex(pet));
-        if (remove) {
-            mplew.write(0);
-            mplew.write(hunger ? 1 : 0);
-        } else {
-            mplew.write(1);
-            mplew.write(0); //1?
-            mplew.writeInt(pet.getPetItemId());
-            mplew.writeMapleAsciiString(pet.getName());
-            mplew.writeLong(pet.getUniqueId());
-            mplew.writeShort(pet.getPos().x);
-            mplew.writeShort(pet.getPos().y - 20);
-            mplew.write(pet.getStance());
-            mplew.writeInt(pet.getFh());
-            mplew.writeInt(0);
-        }
-        return mplew.getPacket();
-    }
-
     public static final MaplePacket petChat(final int cid, final int un, final String text, final int slot) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_PetAction.Get());
@@ -117,32 +169,19 @@ public class PetResponse {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket removePet(final int cid, final int index) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_PetActivated.Get());
-        mplew.writeInt(cid);
-        mplew.writeInt(index);
-        mplew.writeShort(0);
-        return mplew.getPacket();
-    }
-
     public static final MaplePacket updatePet(final MaplePet pet, final IItem item) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(0);
-        mplew.write(2);
-        mplew.write(3);
-        mplew.write(5);
-        mplew.writeShort(pet.getInventoryPosition());
-        mplew.write(0);
-        mplew.write(5);
-        mplew.writeShort(pet.getInventoryPosition());
-        mplew.write(3);
-        mplew.writeInt(pet.getPetItemId());
-        mplew.write(1);
-        mplew.writeLong(pet.getUniqueId());
-        TestHelper.addPetItemInfo(mplew, item, pet);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_InventoryOperation);
+
+        sp.Encode1(0);
+        sp.Encode1(2);
+        sp.Encode1(3);
+        sp.Encode1(5);
+        sp.Encode2(pet.getInventoryPosition());
+        sp.Encode1(0);
+        sp.Encode1(5);
+        sp.Encode2(pet.getInventoryPosition());
+        sp.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+        return sp.Get();
     }
 
 }

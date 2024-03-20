@@ -1811,7 +1811,7 @@ public final class MapleMap {
         }
         for (final MaplePet pet : chr.getPets()) {
             if (pet.getSummoned()) {
-                broadcastMessage(chr, PetResponse.showPet(chr, pet, false, false), false);
+                broadcastMessage(chr, PetResponse.Activated(chr, pet), false);
             }
         }
         if (chr.getParty() != null && !chr.isClone()) {

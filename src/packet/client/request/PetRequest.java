@@ -18,10 +18,48 @@
  */
 package packet.client.request;
 
+import client.MapleClient;
+import packet.client.ClientPacket;
+
 /**
  *
  * @author Riremito
  */
 public class PetRequest {
-    
+
+    // CUserPool::OnUserCommonPacket
+    public static boolean OnPetPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+
+        // between CP_BEGIN_PET and CP_END_PET
+        switch (header) {
+            case CP_PetMove: {
+
+                return true;
+            }
+            case CP_PetAction: {
+
+                return true;
+            }
+            case CP_PetInteractionRequest: {
+
+                return true;
+            }
+            case CP_PetDropPickUpRequest: {
+
+                return true;
+            }
+            case CP_PetStatChangeItemUseRequest: {
+
+                return true;
+            }
+            case CP_PetUpdateExceptionListRequest: {
+
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
 }

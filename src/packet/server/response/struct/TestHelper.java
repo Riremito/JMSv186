@@ -23,7 +23,6 @@ import client.inventory.IEquip;
 import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
-import client.inventory.MaplePet;
 import config.ServerConfig;
 import constants.GameConstants;
 import debug.Debug;
@@ -121,28 +120,6 @@ public class TestHelper {
         }
     }
 
-    public static final void addPetItemInfo(final MaplePacketLittleEndianWriter mplew, final IItem item, final MaplePet pet) {
-        TestHelper.addExpirationTime(mplew, -1); //always
-        mplew.writeAsciiString(pet.getName(), 13);
-        mplew.write(pet.getLevel());
-        mplew.writeShort(pet.getCloseness());
-        mplew.write(pet.getFullness());
-        if (item == null) {
-            mplew.writeLong(TestHelper.getKoreanTimestamp((long) (System.currentTimeMillis() * 1.5)));
-        } else {
-            TestHelper.addExpirationTime(mplew, item.getExpiration() <= System.currentTimeMillis() ? -1 : item.getExpiration());
-        }
-        if (pet.getPetItemId() == 5000054) {
-            mplew.writeInt(0);
-            mplew.writeInt(pet.getSecondsLeft() > 0 ? pet.getSecondsLeft() : 0); //in seconds, 3600 = 1 hr.
-            mplew.writeShort(0);
-        } else {
-            mplew.writeShort(0);
-            mplew.writeLong(item != null && item.getExpiration() <= System.currentTimeMillis() ? 0 : 1);
-        }
-        mplew.writeZeroBytes(5); // 1C 5C 98 C6 01
-    }
-
     public static final void addItemInfo(final MaplePacketLittleEndianWriter mplew, final IItem item, final boolean zeroPosition, final boolean leaveOut) {
         if (zeroPosition && leaveOut) {
             mplew.write(GW_ItemSlotBase.Encode(item));
@@ -181,7 +158,7 @@ public class TestHelper {
         }
         if (item.getPet() != null) {
             // Pet
-            addPetItemInfo(mplew, item, item.getPet());
+            //addPetItemInfo(mplew, item, item.getPet());
         } else {
             addExpirationTime(mplew, item.getExpiration());
             if (item.getType() == 1) {
@@ -289,5 +266,5 @@ public class TestHelper {
         long time = realTimestamp / 1000 / 60; // convert to minutes
         return (time * 600000000) + FT_UT_OFFSET;
     }
-    
+
 }

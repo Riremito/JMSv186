@@ -83,9 +83,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import packet.server.response.PachinkoResponse;
 import packet.client.request.ContextPacket;
-import packet.client.request.MobRequest;
 import packet.client.request.SocketPacket;
-import packet.client.request.SummonRequest;
 import packet.client.request.UserRequest;
 import packet.server.response.EvanDragonResponse;
 import packet.server.response.FreeMarketResponse;
@@ -95,6 +93,7 @@ import packet.server.response.MobResponse;
 import packet.server.response.MonsterCarnivalResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
+import packet.server.response.PetResponse.DeActivatedMsg;
 import packet.server.response.RemoteResponse;
 import packet.server.response.SummonResponse;
 import packet.server.response.TemporaryStatResponse;
@@ -1792,7 +1791,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
                 for (final MaplePet pet : pets) {
                     if (pet.getSummoned()) {
-                        map.broadcastMessage(this, PetResponse.showPet(this, pet, false, false), false);
+                        map.broadcastMessage(this, PetResponse.Activated(this, pet), false);
                     }
                 }
                 for (final WeakReference<MapleCharacter> chr : clones) {
@@ -3659,7 +3658,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
             for (final MaplePet pet : pets) {
                 if (pet.getSummoned()) {
-                    client.getSession().write(PetResponse.showPet(this, pet, false, false));
+                    client.getSession().write(PetResponse.Activated(this, pet));
                 }
             }
             for (final WeakReference<MapleCharacter> chr : clones) {
@@ -3794,7 +3793,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void unequipPet(MaplePet pet, boolean shiftLeft, boolean hunger) {
         if (pet.getSummoned()) {
             pet.saveToDb();
-            map.broadcastMessage(this, PetResponse.showPet(this, pet, true, hunger), true);
+
+            map.broadcastMessage(this, PetResponse.Deactivated(this, pet, hunger ? DeActivatedMsg.PET_WENT_BACK_HOME : DeActivatedMsg.PET_NO_MSG), true);
+
             //List<Pair<MapleStat, Integer>> stats = new ArrayList<Pair<MapleStat, Integer>>();
             //stats.add(new Pair<MapleStat, Integer>(MapleStat.PET, Integer.valueOf(0)));
             removePet(pet, shiftLeft);
@@ -4984,7 +4985,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
                         addPet(pet);
                         if (broadcast) {
-                            getMap().broadcastMessage(this, PetResponse.showPet(this, pet, false, false), true);
+                            getMap().broadcastMessage(this, PetResponse.Activated(this, pet), true);
 
                             //final List<Pair<MapleStat, Integer>> stats = new ArrayList<Pair<MapleStat, Integer>>(1);
                             //stats.add(new Pair<MapleStat, Integer>(MapleStat.PET, Integer.valueOf(pet.getUniqueId())));
