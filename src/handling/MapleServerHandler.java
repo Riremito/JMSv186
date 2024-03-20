@@ -39,6 +39,7 @@ import packet.client.request.ViciousHammerPacket;
 import packet.client.request.addon.AddonPacket;
 import packet.client.request.LoginRequest;
 import packet.client.request.MapleTradeSpaceRequest;
+import packet.client.request.PetRequest;
 import packet.client.request.PointShopRequest;
 import packet.server.response.LoginResponse;
 import packet.server.response.addon.AddonResponse;
@@ -966,12 +967,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_UserActivatePetRequest: {
                 // c
-                PetHandler.SpawnPet(p, c, c.getPlayer());
+                PetRequest.SpawnPet(p, c, c.getPlayer());
                 return true;
             }
             case CP_PetMove: {
                 // c
-                PetHandler.MovePet(p, c.getPlayer());
+                PetRequest.MovePet(p, c.getPlayer());
                 return true;
             }
             case CP_PetAction: {
@@ -983,17 +984,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // p.readShort()
                 // p.readMapleAsciiString()
                 //PetHandler.PetChat((int) p.readLong(), p.readShort(), p.readMapleAsciiString(), c.getPlayer());
-                PetHandler.PetChat(p, c.getPlayer());
+                PetRequest.PetChat(p, c.getPlayer());
                 return true;
             }
             case CP_PetInteractionRequest: {
                 // c
-                PetHandler.PetCommand(p, c, c.getPlayer());
+                PetRequest.PetCommand(p, c, c.getPlayer());
                 return true;
             }
             case CP_UserPetFoodItemUseRequest: {
                 // c
-                PetHandler.PetFood(p, c, c.getPlayer());
+                PetRequest.PetFood(p, c, c.getPlayer());
                 return true;
             }
             case CP_PetDropPickUpRequest: {
@@ -1003,7 +1004,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_PetStatChangeItemUseRequest: {
                 // c
-                PetHandler.Pet_AutoPotion(p, c, c.getPlayer());
+                PetRequest.Pet_AutoPotion(p, c, c.getPlayer());
                 return true;
             }
             case CP_MCarnivalRequest: {
