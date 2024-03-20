@@ -56,15 +56,10 @@ public class CMovePath {
                 ignore_bytes = 1 + 1 * 9 + 2 * 4; // v164-v186 OK
                 break;
             }
-            case CP_DragonMove: {
-                ignore_bytes = 1 + 2 * 4; // v186
-                break;
-            }
-            case CP_SummonedMove: {
-                ignore_bytes = 1 + 2 * 4; // v186
-                break;
-            }
+            case CP_DragonMove:
+            case CP_SummonedMove:
             case CP_PetMove: {
+                ignore_bytes = 1 + 2 * 4; // v186
                 break;
             }
             case CP_MobMove: {

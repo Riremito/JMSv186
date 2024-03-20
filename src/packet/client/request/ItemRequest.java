@@ -30,15 +30,10 @@ import server.maps.MapleDynamicPortal;
  * @author Riremito
  */
 public class ItemRequest {
-    
+
     public static boolean OnPacket(ClientPacket p, ClientPacket.Header header, MapleClient c) {
         switch (header) {
             case CP_UserConsumeCashItemUseRequest: {
-                return true;
-            }
-            case CP_UserDestroyPetItemRequest: {
-                // 期限切れデンデン
-                c.getPlayer().UpdateStat(true);
                 return true;
             }
             case CP_UserStatChangeItemUseRequest: {
@@ -143,7 +138,7 @@ public class ItemRequest {
         c.getPlayer().UpdateStat(true);
         return false;
     }
-    
+
     public static MaplePacket CreatePinkBeanEventPortal(MapleDynamicPortal dynamic_portal) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_PINKBEAN_PORTAL_CREATE);
         sp.Encode1(1);
@@ -157,5 +152,5 @@ public class ItemRequest {
         sp.Encode2(dynamic_portal.getPosition().y);
         return sp.Get();
     }
-    
+
 }

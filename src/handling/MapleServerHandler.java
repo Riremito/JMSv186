@@ -481,8 +481,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
     // Game Server
     // CClientSocket::ProcessPacket
     public static final boolean handleGamePacket(final SeekableLittleEndianAccessor p, final MapleClient c, ClientPacket cp) throws Exception {
-        short header = cp.Decode2();
-        ClientPacket.Header type = ClientPacket.ToHeader(header);
+        short header_val = cp.Decode2();
+        ClientPacket.Header header = ClientPacket.ToHeader(header_val);
 
         Debug.PacketLog(cp);
 
@@ -491,7 +491,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         // CUser::OnPetPacket
         // CUser::OnFieldPacket
         // CUser::OnSummonedPacket
-        switch (type) {
+        switch (header) {
             case CP_UserParcelRequest: {
                 return DueyPacket.Accept(c, cp);
             }
@@ -506,7 +506,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_Admin:
             // GMコマンドの文字列
             case CP_Log: {
-                AdminPacket.OnPacket(cp, type, c);
+                AdminPacket.OnPacket(cp, header, c);
                 return true;
             }
             // 雪玉専用？
@@ -595,7 +595,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserMagicAttack:
             case CP_UserBodyAttack:
             case CP_UserHit: {
-                UserRequest.OnPacket(cp, type, c);
+                UserRequest.OnPacket(cp, header, c);
                 return true;
             }
             case CP_UserSkillUseRequest: {
@@ -652,7 +652,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_UserTransferFieldRequest: {
                 // c
-                if (!PortalPacket.OnPacket(cp, type, c)) {
+                if (!PortalPacket.OnPacket(cp, header, c)) {
                     PlayerHandler.ChangeMap(p, c, c.getPlayer());
                 }
                 if (c.getPlayer().GetInformation()) {
@@ -716,7 +716,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_ReactorHit:
             case CP_ReactorTouch: {
-                ReactorPacket.OnPacket(cp, type, c);
+                ReactorPacket.OnPacket(cp, header, c);
                 return true;
             }
             case CP_UserADBoardClose: {
@@ -832,7 +832,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_MobApplyCtrl:
             case CP_MobHitByMob:
             case CP_MobSelfDestruct: {
-                MobRequest.OnPacket(cp, type, c);
+                MobRequest.OnPacket(cp, header, c);
                 return true;
             }
             case CP_UserShopRequest: {
@@ -957,54 +957,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_SummonedHit:
             case CP_SummonedSkill:
             case CP_Remove: {
-                SummonRequest.OnPacket(cp, type, c);
+                SummonRequest.OnPacket(cp, header, c);
                 return true;
             }
             case CP_DragonMove: {
                 //EvanDragonRequest.MoveDragon(p, c.getPlayer());
                 EvanDragonRequest.OnMove(cp, c);
-                return true;
-            }
-            case CP_UserActivatePetRequest: {
-                // c
-                PetRequest.SpawnPet(p, c, c.getPlayer());
-                return true;
-            }
-            case CP_PetMove: {
-                // c
-                PetRequest.MovePet(p, c.getPlayer());
-                return true;
-            }
-            case CP_PetAction: {
-                if (p.available() < 12) {
-                    return false;
-                }
-                // p.readShort()
-                // nullついてない文字数
-                // p.readShort()
-                // p.readMapleAsciiString()
-                //PetHandler.PetChat((int) p.readLong(), p.readShort(), p.readMapleAsciiString(), c.getPlayer());
-                PetRequest.PetChat(p, c.getPlayer());
-                return true;
-            }
-            case CP_PetInteractionRequest: {
-                // c
-                PetRequest.PetCommand(p, c, c.getPlayer());
-                return true;
-            }
-            case CP_UserPetFoodItemUseRequest: {
-                // c
-                PetRequest.PetFood(p, c, c.getPlayer());
-                return true;
-            }
-            case CP_PetDropPickUpRequest: {
-                // c
-                PetRequest.Pickup_Pet(p, c, c.getPlayer());
-                return true;
-            }
-            case CP_PetStatChangeItemUseRequest: {
-                // c
-                PetRequest.Pet_AutoPotion(p, c, c.getPlayer());
                 return true;
             }
             case CP_MCarnivalRequest: {
@@ -1137,14 +1095,26 @@ public class MapleServerHandler extends IoHandlerAdapter {
             // 兵法書
             case CP_UserExpUpItemUseRequest:
             case CP_UserTempExpUseRequest: {
-                GashaEXPPacket.OnPacket(cp, type, c);
+                GashaEXPPacket.OnPacket(cp, header, c);
                 return true;
             }
-            case CP_UserDestroyPetItemRequest:
             case CP_JMS_JUKEBOX:
             case CP_JMS_PINKBEAN_PORTAL_CREATE:
             case CP_JMS_PINKBEAN_PORTAL_ENTER: {
-                ItemRequest.OnPacket(cp, type, c);
+                ItemRequest.OnPacket(cp, header, c);
+                return true;
+            }
+            // Pet
+            case CP_UserDestroyPetItemRequest:
+            case CP_UserActivatePetRequest:
+            case CP_UserPetFoodItemUseRequest:
+            case CP_PetMove:
+            case CP_PetAction:
+            case CP_PetInteractionRequest:
+            case CP_PetDropPickUpRequest:
+            case CP_PetStatChangeItemUseRequest:
+            case CP_PetUpdateExceptionListRequest: {
+                PetRequest.OnPetPacket(c, header, cp);
                 return true;
             }
             default: {

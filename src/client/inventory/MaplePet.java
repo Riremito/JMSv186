@@ -200,11 +200,11 @@ public class MaplePet implements Serializable {
         this.Fh = Fh;
     }
 
-    public final Point getPos() {
+    public final Point getPosition() {
         return pos;
     }
 
-    public final void setPos(final Point pos) {
+    public final void setPosition(final Point pos) {
         this.pos = pos;
     }
 
@@ -234,7 +234,7 @@ public class MaplePet implements Serializable {
         for (final LifeMovementFragment move : movement) {
             if (move instanceof LifeMovement) {
                 if (move instanceof AbsoluteLifeMovement) {
-                    setPos(((LifeMovement) move).getPosition());
+                    setPosition(((LifeMovement) move).getPosition());
                 }
                 setStance(((LifeMovement) move).getNewstate());
             }

@@ -4929,15 +4929,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         coconutteam = team;
     }
 
-    public void spawnPet(byte slot) {
+    public void spawnPet(short slot) {
         spawnPet(slot, false, true);
     }
 
-    public void spawnPet(byte slot, boolean lead) {
+    public void spawnPet(short slot, boolean lead) {
         spawnPet(slot, lead, true);
     }
 
-    public void spawnPet(byte slot, boolean lead, boolean broadcast) {
+    public void spawnPet(short slot, boolean lead, boolean broadcast) {
         final IItem item = getInventory(MapleInventoryType.CASH).getItem(slot);
         if (item == null || item.getItemId() > 5000100 || item.getItemId() < 5000000) {
             return;
@@ -4974,7 +4974,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                             //			    shiftPetsRight();
                         }
                         final Point pos = getPosition();
-                        pet.setPos(pos);
+                        pet.setPosition(pos);
                         try {
                             pet.setFh(getMap().getFootholds().findBelow(pos).getId());
                         } catch (NullPointerException e) {
