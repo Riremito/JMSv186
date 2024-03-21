@@ -35,7 +35,6 @@ import client.inventory.ItemFlag;
 import client.inventory.MaplePet;
 import client.inventory.MapleMount;
 import client.MapleCharacter;
-import client.MapleCharacterUtil;
 import client.MapleClient;
 import client.MapleDisease;
 import client.inventory.MapleInventoryType;
@@ -1649,48 +1648,6 @@ public class InventoryHandler {
             case 5100000: { // Congratulatory Song
                 c.getPlayer().getMap().broadcastMessage(FieldResponse.musicChange("Jukebox/Congratulation"));
                 used = true;
-                break;
-            }
-            case 5170000: { // Pet name change
-                final int uniqueid = (int) slea.readLong();
-                MaplePet pet = c.getPlayer().getPet(0);
-                int slo = 0;
-
-                if (pet == null) {
-                    break;
-                }
-                if (pet.getUniqueId() != uniqueid) {
-                    pet = c.getPlayer().getPet(1);
-                    slo = 1;
-                    if (pet != null) {
-                        if (pet.getUniqueId() != uniqueid) {
-                            pet = c.getPlayer().getPet(2);
-                            slo = 2;
-                            if (pet != null) {
-                                if (pet.getUniqueId() != uniqueid) {
-                                    break;
-                                }
-                            } else {
-                                break;
-                            }
-                        }
-                    } else {
-                        break;
-                    }
-                }
-                String nName = slea.readMapleAsciiString();
-                for (String z : GameConstants.RESERVED) {
-                    if (pet.getName().indexOf(z) != -1 || nName.indexOf(z) != -1) {
-                        break;
-                    }
-                }
-                if (MapleCharacterUtil.canChangePetName(nName)) {
-                    pet.setName(nName);
-                    c.getSession().write(PetResponse.updatePet(pet, c.getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
-                    c.getSession().write(MaplePacketCreator.enableActions());
-                    c.getPlayer().getMap().broadcastMessage(TestResponse.changePetName(c.getPlayer(), nName, slo));
-                    used = true;
-                }
                 break;
             }
             case 5240000:

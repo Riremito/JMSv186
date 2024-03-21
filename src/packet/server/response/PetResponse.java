@@ -133,6 +133,14 @@ public class PetResponse {
         return sp.Get();
     }
 
+    public static MaplePacket changePetName(MapleCharacter chr, int pet_index, String pet_name) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetNameChanged);
+        sp.Encode4(chr.getId());
+        sp.Encode4(pet_index);
+        sp.EncodeStr(pet_name);
+        return sp.Get();
+    }
+
     // need  fix
     public static final MaplePacket petStatUpdate(final MapleCharacter chr) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();

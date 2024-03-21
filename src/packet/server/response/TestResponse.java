@@ -142,16 +142,6 @@ public class TestResponse {
         return mplew.getPacket();
     }
 
-    public static MaplePacket changePetName(MapleCharacter chr, String newname, int slot) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_PetNameChanged.Get());
-        mplew.writeInt(chr.getId());
-        mplew.write(0);
-        mplew.writeMapleAsciiString(newname);
-        mplew.write(slot);
-        return mplew.getPacket();
-    }
-
     public static MaplePacket fishingUpdate(byte type, int id) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.FISHING_BOARD_UPDATE.Get());

@@ -746,7 +746,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_UserConsumeCashItemUseRequest: {
-                InventoryHandler.UseCashItem(p, c, cp);
+                if (!ItemRequest.OnPacket(header, cp, c)) {
+                    InventoryHandler.UseCashItem(p, c, cp); // to do remove
+                }
                 return true;
             }
             case CP_UserStatChangeItemUseRequest: {
@@ -1101,7 +1103,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_JMS_JUKEBOX:
             case CP_JMS_PINKBEAN_PORTAL_CREATE:
             case CP_JMS_PINKBEAN_PORTAL_ENTER: {
-                ItemRequest.OnPacket(cp, header, c);
+                ItemRequest.OnPacket(header, cp, c);
                 return true;
             }
             // Pet
@@ -1114,7 +1116,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_PetDropPickUpRequest:
             case CP_PetStatChangeItemUseRequest:
             case CP_PetUpdateExceptionListRequest: {
-                PetRequest.OnPetPacket(c, header, cp);
+                PetRequest.OnPetPacket(header, cp, c);
                 return true;
             }
             default: {

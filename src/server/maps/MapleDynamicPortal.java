@@ -25,6 +25,7 @@ import client.MapleClient;
 import handling.channel.ChannelServer;
 import java.awt.Point;
 import packet.client.request.ItemRequest;
+import packet.server.response.ItemResponse;
 
 /**
  *
@@ -75,7 +76,7 @@ public class MapleDynamicPortal extends AbstractMapleMapObject {
 
     // do not use spawn data
     public final void sendSpawnPacket(final MapleClient client) {
-        client.SendPacket(ItemRequest.CreatePinkBeanEventPortal(this));
+        client.SendPacket(ItemResponse.CreatePinkBeanEventPortal(this));
     }
 
     @Override

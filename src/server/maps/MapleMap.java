@@ -69,6 +69,7 @@ import packet.client.request.NPCPacket;
 import packet.client.request.ReactorPacket;
 import packet.server.response.EvanDragonResponse;
 import packet.server.response.FieldResponse;
+import packet.server.response.ItemResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.MobResponse;
 import packet.server.response.PartyResponse;
@@ -1434,7 +1435,7 @@ public final class MapleMap {
         spawnAndAddRangedMapObject(dynamic_portal, new DelayedPacketCreation() {
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(ItemRequest.CreatePinkBeanEventPortal(dynamic_portal));
+                c.SendPacket(ItemResponse.CreatePinkBeanEventPortal(dynamic_portal));
             }
         }, null);
     }

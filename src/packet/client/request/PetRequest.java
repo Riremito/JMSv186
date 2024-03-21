@@ -55,7 +55,7 @@ import tools.data.input.SeekableLittleEndianAccessor;
 public class PetRequest {
 
     // CUserPool::OnUserCommonPacket
-    public static boolean OnPetPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPetPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null || chr.getMap() == null) {
             return false;

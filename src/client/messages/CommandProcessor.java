@@ -47,6 +47,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import packet.client.request.ItemRequest;
 import packet.server.response.FieldResponse;
+import packet.server.response.ItemResponse;
 import scripting.NPCScriptManager;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
@@ -395,7 +396,7 @@ public class CommandProcessor {
                 c.getPlayer().getMap().addMapObject(dynamic_portal);
                 //ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(chr.getMapId()).addMapObject(dynamic_portal);
 
-                c.getPlayer().getMap().broadcastMessage(ItemRequest.CreatePinkBeanEventPortal(dynamic_portal));
+                c.getPlayer().getMap().broadcastMessage(ItemResponse.CreatePinkBeanEventPortal(dynamic_portal));
 
                 c.getPlayer().Notice("AddPortal: from " + c.getPlayer().getMapId() + " to " + map_id_to);
                 return true;
