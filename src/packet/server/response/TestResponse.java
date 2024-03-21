@@ -46,33 +46,6 @@ public class TestResponse {
         return p.Get();
     }
 
-    public static MaplePacket sendMesobagSuccess(int mesos) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MesoGive_Succeeded.Get());
-        mplew.writeInt(mesos);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket RandomMesoBagSuccess(byte type, int mesos) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Random_Mesobag_Succeed.Get());
-        mplew.write(type);
-        mplew.writeInt(mesos);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket sendMesobagFailed() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MesoGive_Failed.Get());
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket RandomMesoBagFailed() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Random_Mesobag_Failed.Get());
-        return mplew.getPacket();
-    }
-
     public static MaplePacket showNotes(ResultSet notes, int count) throws SQLException {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_MemoResult.Get());

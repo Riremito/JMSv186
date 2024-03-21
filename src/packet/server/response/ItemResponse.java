@@ -42,4 +42,27 @@ public class ItemResponse {
         return sp.Get();
     }
 
+    public static MaplePacket sendMesobagSuccess(int mesos) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Succeeded);
+        sp.Encode4(mesos);
+        return sp.Get();
+    }
+
+    public static MaplePacket sendMesobagFailed() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Failed);
+        return sp.Get();
+    }
+
+    public static MaplePacket RandomMesoBagSuccess(byte type, int mesos) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Random_Mesobag_Succeed);
+        sp.Encode1(type);
+        sp.Encode4(mesos);
+        return sp.Get();
+    }
+
+    public static MaplePacket RandomMesoBagFailed() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Random_Mesobag_Failed);
+        return sp.Get();
+    }
+
 }

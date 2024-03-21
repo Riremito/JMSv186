@@ -51,22 +51,18 @@ import handling.world.MaplePartyCharacter;
 import handling.world.World;
 import java.awt.Rectangle;
 import java.util.Collections;
-import java.util.Random;
 import java.util.concurrent.locks.Lock;
-import packet.server.response.PachinkoResponse;
 import packet.client.ClientPacket;
-import packet.client.request.CashItemPacket;
 import packet.client.request.ContextPacket;
 import packet.client.request.DropPacket;
 import packet.client.request.DropPacket.LeaveType;
-import packet.server.response.DueyResponse;
 import packet.server.response.FieldResponse;
 import packet.server.response.FreeMarketResponse;
+import packet.server.response.ItemResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.RemoteResponse;
 import packet.server.response.TemporaryStatResponse;
-import packet.server.response.TestResponse;
 import packet.server.response.VegaSpellResponse;
 import packet.server.response.ViciousHammerResponse;
 import server.Randomizer;
@@ -1022,58 +1018,6 @@ public class InventoryHandler {
         boolean used = false, cc = false;
 
         switch (itemId) {
-            case 5330000: {
-                c.getSession().write(DueyResponse.Open(true, false));
-                break;
-            }
-            case 5201000:
-            case 5201001:
-            case 5201002: {
-                final int tama = MapleItemInformationProvider.getInstance().getInt(itemId, "info/dama");
-                if (c.getPlayer().gainTama(tama, true)) {
-                    c.ProcessPacket(PachinkoResponse.TamaBoxSuccess(tama));
-                    used = true;
-                } else {
-                    c.ProcessPacket(PachinkoResponse.TamaBoxFailure());
-                }
-                break;
-            }
-            case 5202000: {
-                int randommeso = 0;
-                final int meso = MapleItemInformationProvider.getInstance().getInt(itemId, "info/meso");
-                final int mesomax = MapleItemInformationProvider.getInstance().getInt(itemId, "info/mesomax");
-                final int mesomin = MapleItemInformationProvider.getInstance().getInt(itemId, "info/mesomin");
-                final int mesostdev = MapleItemInformationProvider.getInstance().getInt(itemId, "info/mesostdev");
-
-                Random random = new Random();
-                int r = random.nextInt(4);
-
-                switch (r) {
-                    case 0:
-                        randommeso = mesomin;
-                        break;
-                    case 1:
-                        randommeso = mesostdev;
-                        break;
-                    case 2:
-                        randommeso = meso;
-                        break;
-                    case 3:
-                        randommeso = mesomax;
-                        break;
-                    default:
-                        randommeso = mesomin;
-                        break;
-                }
-
-                if (c.getPlayer().gainMeso(randommeso, false)) {
-                    c.getSession().write(TestResponse.RandomMesoBagSuccess((byte) (r + 1), randommeso));
-                    used = true;
-                } else {
-                    c.getSession().write(TestResponse.RandomMesoBagFailed());
-                }
-                break;
-            }
             case 5043001: // NPC Teleport Rock
             case 5043000: { // NPC Teleport Rock
                 final short questid = slea.readShort();
@@ -1784,10 +1728,7 @@ public class InventoryHandler {
                 break;
             }
             default: {
-                // 拡声器
-                if (itemId / 10000 == 507) {
-                    used = CashItemPacket.Use(c, op);
-                } else if (itemId / 10000 == 512) {
+                if (itemId / 10000 == 512) {
                     final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                     final String msg = ii.getMsg(itemId).replaceFirst("%s", c.getPlayer().getName()).replaceFirst("%s", slea.readMapleAsciiString());
                     c.getPlayer().getMap().startMapEffect(msg, itemId);
@@ -1809,9 +1750,9 @@ public class InventoryHandler {
                         if (Math.random() > 0.1) {
                             final int gainmes = Randomizer.nextInt(mesars);
                             c.getPlayer().gainMeso(gainmes, false);
-                            c.getSession().write(TestResponse.sendMesobagSuccess(gainmes));
+                            c.getSession().write(ItemResponse.sendMesobagSuccess(gainmes));
                         } else {
-                            c.getSession().write(TestResponse.sendMesobagFailed());
+                            c.getSession().write(ItemResponse.sendMesobagFailed());
                         }
                     }
                 } else if (itemId / 10000 == 562) {
