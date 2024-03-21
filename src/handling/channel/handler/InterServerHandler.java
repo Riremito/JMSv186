@@ -27,6 +27,7 @@ import client.CharacterNameAndId;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleQuestStatus;
+import client.inventory.MaplePet;
 import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -45,7 +46,9 @@ import packet.client.request.SocketPacket;
 import packet.server.response.FamilyResponse;
 import packet.server.response.FriendResponse;
 import packet.server.response.GuildResponse;
+import packet.server.response.PetResponse;
 import server.maps.FieldLimitType;
+import server.maps.MapleMap;
 import tools.FileoutputUtil;
 import tools.MaplePacketCreator;
 
@@ -132,13 +135,18 @@ public class InterServerHandler {
         channelServer.addPlayer(player);
 
         c.getSession().write(MaplePacketCreator.getCharInfo(player));
-        //
-
-        /*        if (player.isGM()) {
-            SkillFactory.getSkill(9001004).getEffect(1).applyTo(player);
-        }*/
-        c.getSession().write(MaplePacketCreator.temporaryStats_Reset()); // .
+        c.getSession().write(MaplePacketCreator.temporaryStats_Reset());
         player.getMap().addPlayer(player);
+
+        player.spawnSavedPets();
+        MapleMap player_map = player.getMap();
+        if (player_map != null) {
+            for (final MaplePet pet : player.getPets()) {
+                if (pet.getSummoned()) {
+                    player_map.broadcastMessage(player, PetResponse.TransferField(player, pet), true);
+                }
+            }
+        }
 
         try {
             player.silentGiveBuffs(PlayerBuffStorage.getBuffsFromStorage(player.getId()));
@@ -218,8 +226,6 @@ public class InterServerHandler {
         if (player.getJob() == 132) { // DARKKNIGHT
             player.checkBerserk();
         }
-        player.spawnClones();
-        player.spawnSavedPets();
     }
 
     public static final void ChangeChannel(ClientPacket p, final MapleClient c, final MapleCharacter chr) {

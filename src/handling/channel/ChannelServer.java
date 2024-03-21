@@ -224,9 +224,7 @@ public class ChannelServer implements Serializable {
 
     public final void addPlayer(final MapleCharacter chr) {
         getPlayerStorage().registerPlayer(chr);
-        if (ServerConfig.version == 186) {
-            chr.getClient().getSession().write(MaplePacketCreator.serverMessage(serverMessage));
-        }
+        chr.getClient().getSession().write(MaplePacketCreator.serverMessage(serverMessage));
     }
 
     public final PlayerStorage getPlayerStorage() {
