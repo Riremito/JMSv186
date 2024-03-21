@@ -29,7 +29,6 @@ import client.inventory.PetDataFactory;
 import constants.GameConstants;
 import handling.channel.handler.InventoryHandler;
 import handling.world.MaplePartyCharacter;
-import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -58,7 +57,7 @@ public class PetRequest {
     // CUserPool::OnUserCommonPacket
     public static boolean OnPetPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
-        if (chr == null) {
+        if (chr == null || chr.getMap() == null) {
             return false;
         }
         // between CP_BEGIN_PET and CP_END_PET and some packets
@@ -84,6 +83,7 @@ public class PetRequest {
             }
             // PetChat
             case CP_PetAction: {
+                OnAction(cp, chr);
                 return true;
             }
             // PetCommand
@@ -125,6 +125,23 @@ public class PetRequest {
         pet.setStance(data.getAction());
         pet.setPosition(data.getEnd());
         map.broadcastMessage(chr, PetResponse.movePet(chr, pet_index, data), false);
+        return true;
+    }
+
+    public static boolean OnAction(ClientPacket cp, MapleCharacter chr) {
+        int pet_index = cp.Decode4();
+        byte nType = cp.Decode1();
+        byte nAction = cp.Decode1();
+        String pet_message = cp.DecodeStr();
+
+        MaplePet pet = chr.getPet(pet_index);
+        MapleMap map = chr.getMap();
+
+        if (pet == null || map == null) {
+            return false;
+        }
+
+        map.broadcastMessage(chr, PetResponse.petChat(chr, pet_index, nType, nAction, pet_message), false);
         return true;
     }
 
@@ -286,17 +303,6 @@ public class PetRequest {
         }
         MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, itemId, 1, true, false);
         c.getSession().write(MaplePacketCreator.enableActions());
-    }
-
-    public static final void PetChat( /*final int petid, final short command, final String text, */final SeekableLittleEndianAccessor slea, MapleCharacter chr) throws UnsupportedEncodingException {
-        int petid = slea.readInt();
-        short command = slea.readShort();
-        short text_length = slea.readShort();
-        String text = new String(slea.read(text_length), "SHIFT_JIS");
-        if (chr == null || chr.getMap() == null || petid < 0) {
-            return;
-        }
-        chr.getMap().broadcastMessage(chr, PetResponse.petChat(chr.getId(), command, text, petid), true);
     }
 
     public static final void Pickup_Pet(MapleCharacter chr, MapleMapItem mapitem, int pet_index) {

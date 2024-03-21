@@ -23,12 +23,9 @@ import client.MapleStat;
 import client.inventory.IItem;
 import client.inventory.MaplePet;
 import handling.MaplePacket;
-import java.util.List;
 import packet.client.request.struct.CMovePath;
 import packet.server.ServerPacket;
 import packet.server.response.struct.GW_ItemSlotBase;
-import packet.server.response.struct.TestHelper;
-import server.movement.LifeMovementFragment;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -57,21 +54,21 @@ public class PetResponse {
         // ここではペットが使用不可です。
         PET_COULD_NOT_USE_THIS_LOCATION(3),
         UNKNOWN(-1);
-        
+
         private int value;
-        
+
         DeActivatedMsg(int flag) {
             value = flag;
         }
-        
+
         DeActivatedMsg() {
             value = -1;
         }
-        
+
         public int get() {
             return value;
         }
-        
+
         public static DeActivatedMsg find(int val) {
             for (final DeActivatedMsg o : DeActivatedMsg.values()) {
                 if (o.get() == val) {
@@ -88,7 +85,7 @@ public class PetResponse {
         sp.Encode4(chr.getId());
         sp.Encode4(chr.getPetIndex(pet));
         sp.Encode1(spawn ? 1 : 0);
-        
+
         if (spawn) {
             sp.Encode1(0);
             sp.Encode4(pet.getPetItemId());
@@ -101,27 +98,38 @@ public class PetResponse {
         } else {
             sp.Encode1(msg.get());
         }
-        
+
         return sp.Get();
     }
-    
+
     public static MaplePacket Activated(MapleCharacter chr, MaplePet pet) {
         return Activated(chr, pet, true, DeActivatedMsg.UNKNOWN, false);
     }
-    
+
     public static MaplePacket Deactivated(MapleCharacter chr, MaplePet pet, DeActivatedMsg msg) {
         return Activated(chr, pet, false, msg, false);
     }
-    
+
     public static MaplePacket TransferField(MapleCharacter chr, MaplePet pet) {
         return Activated(chr, pet, true, DeActivatedMsg.UNKNOWN, true);
     }
-    
+
     public static final MaplePacket movePet(MapleCharacter chr, int pet_index, CMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetMove);
         sp.Encode4(chr.getId());
         sp.Encode4(pet_index);
         sp.EncodeBuffer(data.get());
+        return sp.Get();
+    }
+
+    public static final MaplePacket petChat(MapleCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetAction);
+        sp.Encode4(chr.getId());
+        sp.Encode4(pet_index);
+        sp.Encode1(nType);
+        sp.Encode1(nAction);
+        sp.EncodeStr(pet_message);
+        // post BB may have extra 1 bytes
         return sp.Get();
     }
 
@@ -145,18 +153,7 @@ public class PetResponse {
         mplew.write(0);
         return mplew.getPacket();
     }
-    
-    public static final MaplePacket petChat(final int cid, final int un, final String text, final int slot) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_PetAction.Get());
-        mplew.writeInt(cid);
-        mplew.writeInt(slot);
-        mplew.writeShort(un);
-        mplew.writeMapleAsciiString(text);
-        mplew.write(0); //hasQuoteRing
-        return mplew.getPacket();
-    }
-    
+
     public static final MaplePacket commandResponse(final int cid, final byte command, final int slot, final boolean success, final boolean food) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_PetActionCommand.Get());
@@ -171,10 +168,10 @@ public class PetResponse {
         }
         return mplew.getPacket();
     }
-    
+
     public static final MaplePacket updatePet(final MaplePet pet, final IItem item) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_InventoryOperation);
-        
+
         sp.Encode1(0);
         sp.Encode1(2);
         sp.Encode1(3);
@@ -186,5 +183,5 @@ public class PetResponse {
         sp.EncodeBuffer(GW_ItemSlotBase.Encode(item));
         return sp.Get();
     }
-    
+
 }
