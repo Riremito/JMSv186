@@ -7,8 +7,8 @@ import client.MapleClient;
 import config.DebugConfig;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import packet.ServerPacket;
-import packet.ClientPacket;
+import packet.server.ServerPacket;
+import packet.client.ClientPacket;
 
 public class Debug {
 
@@ -65,6 +65,14 @@ public class Debug {
         }
 
         switch (p.GetOpcode()) {
+            case CP_AliveAck:
+            case CP_FuncKeyMappedModified:
+            case CP_QuickslotKeyMappedModified:
+            case CP_UserSkillUseRequest:
+            case CP_UpdateScreenSetting:
+            case CP_SecurityPacket:
+            case CP_SummonedMove:
+            case CP_UserChangeStatRequest:
             case CP_CheckPassword:
             case CP_UserMove:
             case CP_UserMeleeAttack:

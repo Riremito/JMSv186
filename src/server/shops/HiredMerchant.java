@@ -29,11 +29,11 @@ import client.MapleClient;
 import handling.channel.ChannelServer;
 import java.util.LinkedList;
 import java.util.List;
+import packet.server.response.FreeMarketResponse;
 import server.MapleInventoryManipulator;
 import server.Timer.EtcTimer;
 import server.maps.MapleMapObjectType;
 import tools.MaplePacketCreator;
-import tools.packet.PlayerShopPacket;
 
 public class HiredMerchant extends AbstractPlayerStore {
 
@@ -113,7 +113,7 @@ public class HiredMerchant extends AbstractPlayerStore {
         }
         if (remove) {
             ChannelServer.getInstance(channel).removeMerchant(this);
-            getMap().broadcastMessage(PlayerShopPacket.destroyHiredMerchant(getOwnerId()));
+            getMap().broadcastMessage(FreeMarketResponse.destroyHiredMerchant(getOwnerId()));
         }
         getMap().removeMapObject(this);
         schedule = null;
@@ -135,14 +135,14 @@ public class HiredMerchant extends AbstractPlayerStore {
     @Override
     public void sendDestroyData(MapleClient client) {
         if (isAvailable()) {
-            client.getSession().write(PlayerShopPacket.destroyHiredMerchant(getOwnerId()));
+            client.getSession().write(FreeMarketResponse.destroyHiredMerchant(getOwnerId()));
         }
     }
 
     @Override
     public void sendSpawnData(MapleClient client) {
         if (isAvailable()) {
-            client.getSession().write(PlayerShopPacket.spawnHiredMerchant(this));
+            client.getSession().write(FreeMarketResponse.spawnHiredMerchant(this));
         }
     }
 
@@ -159,10 +159,10 @@ public class HiredMerchant extends AbstractPlayerStore {
     }
 
     public final void sendBlackList(final MapleClient c) {
-        c.getSession().write(PlayerShopPacket.MerchantBlackListView(blacklist));
+        c.getSession().write(FreeMarketResponse.MerchantBlackListView(blacklist));
     }
 
     public final void sendVisitor(final MapleClient c) {
-        c.getSession().write(PlayerShopPacket.MerchantVisitorView(visitors));
+        c.getSession().write(FreeMarketResponse.MerchantVisitorView(visitors));
     }
 }

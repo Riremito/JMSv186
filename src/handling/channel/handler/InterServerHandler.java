@@ -27,6 +27,7 @@ import client.CharacterNameAndId;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleQuestStatus;
+import client.inventory.MaplePet;
 import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -39,12 +40,17 @@ import handling.world.PartyOperation;
 import handling.world.PlayerBuffStorage;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
-import packet.ClientPacket;
+import packet.client.ClientPacket;
+import packet.client.request.ContextPacket;
+import packet.client.request.SocketPacket;
+import packet.server.response.FamilyResponse;
+import packet.server.response.FriendResponse;
+import packet.server.response.GuildResponse;
+import packet.server.response.PetResponse;
 import server.maps.FieldLimitType;
+import server.maps.MapleMap;
 import tools.FileoutputUtil;
 import tools.MaplePacketCreator;
-import tools.packet.FamilyPacket;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 public class InterServerHandler {
 
@@ -84,7 +90,7 @@ public class InterServerHandler {
         ch.removePlayer(chr);
         c.updateLoginState(MapleClient.CHANGE_CHANNEL, c.getSessionIPAddress());
 
-        c.getSession().write(MaplePacketCreator.getChannelChange(CashShopServer.getPort()));
+        c.SendPacket(SocketPacket.MigrateCommand(CashShopServer.getPort()));
         chr.saveToDB(false, false);
         chr.getMap().removePlayer(chr);
         c.setPlayer(null);
@@ -101,6 +107,9 @@ public class InterServerHandler {
         } else {
             player = MapleCharacter.ReconstructChr(transfer, c, true);
         }
+
+        player.UpdateStat(true);
+
         c.setPlayer(player);
         c.setAccID(player.getAccountID());
 
@@ -126,13 +135,18 @@ public class InterServerHandler {
         channelServer.addPlayer(player);
 
         c.getSession().write(MaplePacketCreator.getCharInfo(player));
-        //
-
-        /*        if (player.isGM()) {
-            SkillFactory.getSkill(9001004).getEffect(1).applyTo(player);
-        }*/
-        c.getSession().write(MaplePacketCreator.temporaryStats_Reset()); // .
+        c.getSession().write(MaplePacketCreator.temporaryStats_Reset());
         player.getMap().addPlayer(player);
+
+        player.spawnSavedPets();
+        MapleMap player_map = player.getMap();
+        if (player_map != null) {
+            for (final MaplePet pet : player.getPets()) {
+                if (pet.getSummoned()) {
+                    player_map.broadcastMessage(player, PetResponse.TransferField(player, pet), true);
+                }
+            }
+        }
 
         try {
             player.silentGiveBuffs(PlayerBuffStorage.getBuffsFromStorage(player.getId()));
@@ -151,7 +165,7 @@ public class InterServerHandler {
                 ble.setChannel(onlineBuddy.getChannel());
                 player.getBuddylist().put(ble);
             }
-            c.getSession().write(MaplePacketCreator.updateBuddylist(player.getBuddylist().getBuddies()));
+            c.getSession().write(FriendResponse.updateBuddylist(player));
 
             // Start of Messenger
             final MapleMessenger messenger = player.getMessenger();
@@ -163,7 +177,7 @@ public class InterServerHandler {
             // Start of Guild and alliance
             if (player.getGuildId() > 0) {
                 World.Guild.setGuildMemberOnline(player.getMGC(), true, c.getChannel());
-                c.getSession().write(MaplePacketCreator.showGuildInfo(player));
+                c.getSession().write(GuildResponse.showGuildInfo(player));
                 final MapleGuild gs = World.Guild.getGuild(player.getGuildId());
                 if (gs != null) {
                     final List<MaplePacket> packetList = World.Alliance.getAllianceInfo(gs.getAllianceId(), true);
@@ -185,11 +199,11 @@ public class InterServerHandler {
             if (player.getFamilyId() > 0) {
                 World.Family.setFamilyMemberOnline(player.getMFC(), true, c.getChannel());
             }
-            c.getSession().write(FamilyPacket.getFamilyInfo(player));
+            c.getSession().write(FamilyResponse.getFamilyInfo(player));
         } catch (Exception e) {
             FileoutputUtil.outputFileError(FileoutputUtil.Login_Error, e);
         }
-        c.getSession().write(FamilyPacket.getFamilyData());
+        c.getSession().write(FamilyResponse.getFamilyData());
         player.sendMacros();
         player.showNote();
         player.updatePartyMemberHP();
@@ -200,20 +214,18 @@ public class InterServerHandler {
 
         for (MapleQuestStatus status : player.getStartedQuests()) {
             if (status.hasMobKills()) {
-                c.getSession().write(MaplePacketCreator.updateQuestMobKills(status));
+                c.SendPacket(ContextPacket.updateQuestMobKills(status));
             }
         }
         final CharacterNameAndId pendingBuddyRequest = player.getBuddylist().pollPendingRequest();
         if (pendingBuddyRequest != null) {
-            player.getBuddylist().put(new BuddylistEntry(pendingBuddyRequest.getName(), pendingBuddyRequest.getId(), "ETC", -1, false, pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
-            c.getSession().write(MaplePacketCreator.requestBuddylistAdd(pendingBuddyRequest.getId(), pendingBuddyRequest.getName(), pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
+            player.getBuddylist().put(new BuddylistEntry(pendingBuddyRequest.getName(), pendingBuddyRequest.getId(), "マイ友未指定", -1, false, pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
+            c.getSession().write(FriendResponse.requestBuddylistAdd(pendingBuddyRequest.getId(), pendingBuddyRequest.getName(), pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
         }
         player.expirationTask();
         if (player.getJob() == 132) { // DARKKNIGHT
             player.checkBerserk();
         }
-        player.spawnClones();
-        player.spawnSavedPets();
     }
 
     public static final void ChangeChannel(ClientPacket p, final MapleClient c, final MapleCharacter chr) {

@@ -28,8 +28,8 @@ import constants.GameConstants;
 import client.MapleCharacter;
 import client.SkillFactory;
 import config.ServerConfig;
-import packet.ClientPacket;
-import packet.ServerPacket;
+import packet.client.ClientPacket;
+import packet.server.ServerPacket;
 import server.MapleStatEffect;
 import tools.AttackPair;
 
@@ -110,6 +110,7 @@ public class AttackInfo {
             case 4341002:
             case 4341003:
             // Shoot
+            case 9001011: // (GM) Lightning Vulcan
             case 3121004: // Hurricane
             case 3221001: // Pierce
             case 5221004: // Rapidfire

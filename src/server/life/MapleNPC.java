@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.life;
 
 import client.MapleClient;
+import packet.client.request.NPCPacket;
 import server.MapleShopFactory;
 import server.maps.MapleMapObjectType;
-import tools.MaplePacketCreator;
 
 public class MapleNPC extends AbstractLoadedMapleLife {
 
@@ -48,14 +48,14 @@ public class MapleNPC extends AbstractLoadedMapleLife {
         if (getId() >= 9901000) {
             return;
         } else {
-            client.getSession().write(MaplePacketCreator.spawnNPC(this, true));
+            client.getSession().write(NPCPacket.spawnNPC(this, true));
             //client.getSession().write(MaplePacketCreator.spawnNPCRequestController(this, true));
         }
     }
 
     @Override
     public final void sendDestroyData(final MapleClient client) {
-        client.getSession().write(MaplePacketCreator.removeNPC(getObjectId()));
+        client.getSession().write(NPCPacket.removeNPC(getObjectId()));
     }
 
     @Override

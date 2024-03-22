@@ -30,9 +30,9 @@ import client.MapleCharacter;
 import client.MapleStat;
 import client.PlayerStats;
 import client.SkillFactory;
+import debug.Debug;
 import server.Randomizer;
 import tools.FileoutputUtil;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -40,7 +40,7 @@ public class StatsHandling {
 
     public static final void DistributeAP(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
         final List<Pair<MapleStat, Integer>> statupdate = new ArrayList<Pair<MapleStat, Integer>>(2);
-        c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true, chr.getJob()));
+        c.getPlayer().UpdateStat(true);
         chr.updateTick(slea.readInt());
 
         final PlayerStats stat = chr.getStat();
@@ -76,7 +76,7 @@ public class StatsHandling {
                     statupdate.add(new Pair<MapleStat, Integer>(MapleStat.LUK, (int) stat.getLuk()));
                     break;
                 case 2048: // HP
-                    short maxhp = stat.getMaxHp();
+                    int maxhp = stat.getMaxHp();
                     if (chr.getHpApUsed() >= 10000 || maxhp >= 30000) {
                         return;
                     }
@@ -127,7 +127,7 @@ public class StatsHandling {
                     statupdate.add(new Pair<MapleStat, Integer>(MapleStat.MAXHP, (int) maxhp));
                     break;
                 case 8192: // MP
-                    short maxmp = stat.getMaxMp();
+                    int maxmp = stat.getMaxMp();
                     if (chr.getHpApUsed() >= 10000 || stat.getMaxMp() >= 30000) {
                         return;
                     }
@@ -164,18 +164,20 @@ public class StatsHandling {
                     statupdate.add(new Pair<MapleStat, Integer>(MapleStat.MAXMP, (int) maxmp));
                     break;
                 default:
-                    c.getSession().write(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true, chr.getJob()));
+                    c.getPlayer().UpdateStat(true);
                     return;
             }
             chr.setRemainingAp((short) (chr.getRemainingAp() - 1));
             statupdate.add(new Pair<MapleStat, Integer>(MapleStat.AVAILABLEAP, (int) chr.getRemainingAp()));
-            c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true, chr.getJob()));
+            c.getPlayer().UpdateStat(true);
         }
     }
 
-    public static final void DistributeSP(final int skillid, final MapleClient c, final MapleCharacter chr) {
+    public static final boolean DistributeSP(final int skillid, final MapleClient c, final MapleCharacter chr) {
         boolean isBeginnerSkill = false;
         final int remainingSp;
+
+        chr.setLastSkillUp(skillid);
 
         switch (skillid) {
             case 1000:
@@ -237,7 +239,8 @@ public class StatsHandling {
 
         if (skill.hasRequiredSkill()) {
             if (chr.getSkillLevel(SkillFactory.getSkill(skill.getRequiredSkillId())) < skill.getRequiredSkillLevel()) {
-                return;
+                Debug.ErrorLog("Use SP 1 = " + skillid);
+                return false;
             }
         }
         final int maxlevel = skill.isFourthJob() ? chr.getMasterLevel(skill) : skill.getMaxLevel();
@@ -245,15 +248,16 @@ public class StatsHandling {
 
         if (skill.isInvisible() && chr.getSkillLevel(skill) == 0) {
             if ((skill.isFourthJob() && chr.getMasterLevel(skill) == 0) || (!skill.isFourthJob() && maxlevel < 10 && !isBeginnerSkill)) {
-                //AutobanManager.getInstance().addPoints(c, 1000, 0, "Illegal distribution of SP to invisible skills (" + skillid + ")");
-                return;
+                Debug.ErrorLog("Use SP 2 = " + skillid);
+                return false;
             }
         }
 
         for (int i : GameConstants.blockedSkills) {
             if (skill.getId() == i) {
                 chr.dropMessage(1, "You may not add this skill.");
-                return;
+                Debug.ErrorLog("Use SP 3 = " + skillid);
+                return false;
             }
         }
 
@@ -262,10 +266,19 @@ public class StatsHandling {
                 final int skillbook = GameConstants.getSkillBookForSkill(skillid);
                 chr.setRemainingSp(chr.getRemainingSp(skillbook) - 1, skillbook);
             }
-            c.getSession().write(MaplePacketCreator.updateSp(chr, false));
+            chr.UpdateStat(false);
             chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
-        } else if (!skill.canBeLearnedBy(chr.getJob())) {
+            return true;
         }
+
+        if ((remainingSp > 0 && curLevel + 1 <= maxlevel) && isBeginnerSkill) {
+            chr.UpdateStat(false);
+            chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
+            return true;
+        }
+
+        Debug.ErrorLog("Use SP 4 = " + skillid);
+        return false;
     }
 
     public static final void AutoAssignAP(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
@@ -287,7 +300,7 @@ public class StatsHandling {
         final PlayerStats playerst = chr.getStat();
 
         List<Pair<MapleStat, Integer>> statupdate = new ArrayList<Pair<MapleStat, Integer>>(2);
-        c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true, chr.getJob()));
+        c.getPlayer().UpdateStat(true);
 
         if (chr.getRemainingAp() == amount + amount2) {
             switch (PrimaryStat) {
@@ -320,7 +333,7 @@ public class StatsHandling {
                     statupdate.add(new Pair<MapleStat, Integer>(MapleStat.LUK, (int) playerst.getLuk()));
                     break;
                 default:
-                    c.getSession().write(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true, chr.getJob()));
+                    c.getPlayer().UpdateStat(true);
                     return;
             }
             switch (SecondaryStat) {
@@ -353,12 +366,12 @@ public class StatsHandling {
                     statupdate.add(new Pair<MapleStat, Integer>(MapleStat.LUK, (int) playerst.getLuk()));
                     break;
                 default:
-                    c.getSession().write(MaplePacketCreator.updatePlayerStats(MaplePacketCreator.EMPTY_STATUPDATE, true, chr.getJob()));
+                    c.getPlayer().UpdateStat(true);
                     return;
             }
             chr.setRemainingAp((short) (chr.getRemainingAp() - (amount + amount2)));
             statupdate.add(new Pair<MapleStat, Integer>(MapleStat.AVAILABLEAP, (int) chr.getRemainingAp()));
-            c.getSession().write(MaplePacketCreator.updatePlayerStats(statupdate, true, chr.getJob()));
+            c.getPlayer().UpdateStat(true);
         }
     }
 }

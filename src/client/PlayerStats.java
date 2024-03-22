@@ -38,7 +38,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
+import packet.server.response.LocalResponse;
+import packet.server.response.RemoteResponse;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
@@ -55,7 +57,7 @@ public class PlayerStats implements Serializable {
     private Map<Integer, Integer> setHandling = new HashMap<Integer, Integer>();
     private List<Equip> durabilityHandling = new ArrayList<Equip>(), equipLevelHandling = new ArrayList<Equip>();
     private transient float shouldHealHP, shouldHealMP;
-    public short str, dex, luk, int_, hp, maxhp, mp, maxmp;
+    public int str, dex, luk, int_, hp, maxhp, mp, maxmp;
     private transient short passive_sharpeye_percent, localmaxhp, localmaxmp;
     private transient byte passive_mastery, passive_sharpeye_rate;
     private transient int localstr, localdex, localluk, localint_;
@@ -85,38 +87,38 @@ public class PlayerStats implements Serializable {
         relocHeal();
     }
 
-    public final short getStr() {
+    public final int getStr() {
         return str;
     }
 
-    public final short getDex() {
+    public final int getDex() {
         return dex;
     }
 
-    public final short getLuk() {
+    public final int getLuk() {
         return luk;
     }
 
-    public final short getInt() {
+    public final int getInt() {
         return int_;
     }
 
-    public final void setStr(final short str) {
+    public final void setStr(final int str) {
         this.str = str;
         recalcLocalStats();
     }
 
-    public final void setDex(final short dex) {
+    public final void setDex(final int dex) {
         this.dex = dex;
         recalcLocalStats();
     }
 
-    public final void setLuk(final short luk) {
+    public final void setLuk(final int luk) {
         this.luk = luk;
         recalcLocalStats();
     }
 
-    public final void setInt(final short int_) {
+    public final void setInt(final int int_) {
         this.int_ = int_;
         recalcLocalStats();
     }
@@ -126,7 +128,7 @@ public class PlayerStats implements Serializable {
     }
 
     public final boolean setHp(int newhp, boolean silent) {
-        final short oldHp = hp;
+        final int oldHp = hp;
         int thp = newhp;
         if (thp < 0) {
             thp = 0;
@@ -149,7 +151,7 @@ public class PlayerStats implements Serializable {
     }
 
     public final boolean setMp(final int newmp) {
-        final short oldMp = mp;
+        final int oldMp = mp;
         int tmp = newmp;
         if (tmp < 0) {
             tmp = 0;
@@ -161,29 +163,29 @@ public class PlayerStats implements Serializable {
         return mp != oldMp;
     }
 
-    public final void setMaxHp(final short hp) {
+    public final void setMaxHp(final int hp) {
         this.maxhp = hp;
         recalcLocalStats();
     }
 
-    public final void setMaxMp(final short mp) {
+    public final void setMaxMp(final int mp) {
         this.maxmp = mp;
         recalcLocalStats();
     }
 
-    public final short getHp() {
+    public final int getHp() {
         return hp;
     }
 
-    public final short getMaxHp() {
+    public final int getMaxHp() {
         return maxhp;
     }
 
-    public final short getMp() {
+    public final int getMp() {
         return mp;
     }
 
-    public final short getMaxMp() {
+    public final int getMaxMp() {
         return maxmp;
     }
 
@@ -863,8 +865,8 @@ public class PlayerStats implements Serializable {
         }
         if (changed) {
             chr.equipChanged();
-            chr.getClient().getSession().write(MaplePacketCreator.showItemLevelupEffect());
-            chr.getMap().broadcastMessage(chr, MaplePacketCreator.showForeignItemLevelupEffect(chr.getId()), false);
+            chr.getClient().getSession().write(LocalResponse.showItemLevelupEffect());
+            chr.getMap().broadcastMessage(chr, RemoteResponse.showForeignItemLevelupEffect(chr.getId()), false);
         }
         return changed;
     }

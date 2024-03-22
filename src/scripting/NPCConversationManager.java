@@ -54,7 +54,6 @@ import server.maps.AramiaFireWorks;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
 import tools.Pair;
-import tools.packet.PlayerShopPacket;
 import server.MapleItemInformationProvider;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
@@ -68,7 +67,10 @@ import server.MapleCarnivalChallenge;
 import java.util.HashMap;
 import handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
-import packet.ProcessPacket;
+import packet.server.response.DueyResponse;
+import packet.server.response.FieldResponse;
+import packet.server.response.FreeMarketResponse;
+import packet.server.response.GuildResponse;
 import server.MapleShop;
 import server.MapleShopItem;
 import server.MapleStatEffect;
@@ -281,7 +283,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         byte nextval = 2;
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
             nextval = 1;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
@@ -297,7 +299,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
         byte nextval = 2;
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
             nextval = 1;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", type));
@@ -322,7 +324,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         byte nextval = 0x0C;
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
             nextval = 0x0B;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
@@ -338,7 +340,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
         byte nextval = 0x0D;
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
             nextval = 0x0C;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
@@ -363,7 +365,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         byte nextval = 5;
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
             nextval = 4;
         }
 
@@ -381,7 +383,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
 
         byte nextval = 5;
-        if (ServerConfig.version <= 164) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
             nextval = 4;
         }
 
@@ -624,25 +626,25 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void showEffect(boolean broadcast, String effect) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.showEffect(effect));
+            c.getPlayer().getMap().broadcastMessage(FieldResponse.showEffect(effect));
         } else {
-            c.getSession().write(MaplePacketCreator.showEffect(effect));
+            c.getSession().write(FieldResponse.showEffect(effect));
         }
     }
 
     public void playSound(boolean broadcast, String sound) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.playSound(sound));
+            c.getPlayer().getMap().broadcastMessage(FieldResponse.playSound(sound));
         } else {
-            c.getSession().write(MaplePacketCreator.playSound(sound));
+            c.getSession().write(FieldResponse.playSound(sound));
         }
     }
 
     public void environmentChange(boolean broadcast, String env) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.environmentChange(env, 2));
+            c.getPlayer().getMap().broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Object, env)));
         } else {
-            c.getSession().write(MaplePacketCreator.environmentChange(env, 2));
+            c.getSession().write(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Object, env)));
         }
     }
 
@@ -814,7 +816,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void genericGuildMessage(int code) {
-        c.getSession().write(MaplePacketCreator.genericGuildMessage((byte) code));
+        c.getSession().write(GuildResponse.genericGuildMessage((byte) code));
     }
 
     public void disbandGuild() {
@@ -839,7 +841,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void displayGuildRanks() {
-        c.getSession().write(MaplePacketCreator.showGuildRanks(npc, MapleGuildRanking.getInstance().getRank()));
+        c.getSession().write(GuildResponse.showGuildRanks(npc, MapleGuildRanking.getInstance().getRank()));
     }
 
     public boolean removePlayerFromInstance() {
@@ -985,12 +987,12 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void openDuey() {
         c.getPlayer().setConversation(1);
-        c.getSession().write(ProcessPacket.HomeDelivery.Open(false, true));
+        c.getSession().write(DueyResponse.Open(false, true));
     }
 
     public void openMerchantItemStore() {
         c.getPlayer().setConversation(3);
-        c.getSession().write(PlayerShopPacket.merchItemStore((byte) 0x22));
+        c.getSession().write(FreeMarketResponse.merchItemStore((byte) 0x22));
         c.getPlayer().dropMessage(5, "Please enter ANY 13 characters.");
     }
 
@@ -1096,7 +1098,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         statup.add(new Pair<MapleStat, Integer>(MapleStat.MP, Integer.valueOf(30000)));
         statup.add(new Pair<MapleStat, Integer>(MapleStat.MAXMP, Integer.valueOf(30000)));
 
-        c.getSession().write(MaplePacketCreator.updatePlayerStats(statup, c.getPlayer().getJob()));
+        c.getPlayer().UpdateStat(false);
     }
 
     public Pair<String, Map<Integer, String>> getSpeedRun(String typ) {

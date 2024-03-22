@@ -1,5 +1,7 @@
 package server;
 
+import client.data.ExpTable;
+import config.DebugConfig;
 import config.ServerConfig;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
@@ -12,20 +14,11 @@ import database.DatabaseConnection;
 import debug.Debug;
 import handling.world.family.MapleFamilyBuff;
 import java.sql.PreparedStatement;
-import packet.ServerPacket;
-import packet.ClientPacket;
-import packet.content.PacketFlag;
-import packet.v131_0_CP;
-import packet.v131_0_SP;
-import packet.v164_0_CP;
-import packet.v164_0_SP;
-import packet.v186_1_CP;
-import packet.v186_1_SP;
-import packet.v188_0_CP;
-import packet.v188_0_SP;
+import packet.client.request.PacketFlag;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.PlayerNPC;
+import test.ToolMan;
 import wz.LoadData;
 
 public class Start {
@@ -36,92 +29,28 @@ public class Start {
             ServerConfig.SetVersion(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
         }
 
+        // 他言語版版
+        if (args.length >= 3) {
+            ServerConfig.SetRegionNumber(Integer.parseInt(args[2]));
+        }
+
+        // バージョンによるコンテンツの有無を設定
+        ServerConfig.SetContentFlag();
+
         // 設定の読み込み
         ServerConfig.SetDataPath();
         ServerConfig.SetProperty();
         LoginServer.SetWorldConfig();
 
         // 管理画面
-        tools.admin.main.main();
+        ToolMan.Open();
 
-        Debug.InfoLog("JMS v" + ServerConfig.version + "." + ServerConfig.version_sub);
-
-        switch (ServerConfig.version) {
-            case 131: {
-                v131_0_CP.Set();
-                v131_0_SP.Set();
-                break;
-            }
-            case 164: {
-                v164_0_CP.Set();
-                v164_0_SP.Set();
-                break;
-            }
-            // test
-            case 165: {
-                v164_0_CP.Set();
-                v164_0_SP.Set();
-                break;
-            }
-            // ゴミ
-            case 176: {
-                ClientPacket.SetForJMSv176();
-                ServerPacket.SetForJMSv176();
-                break;
-            }
-            // ゴミ
-            case 184: {
-                ClientPacket.SetForJMSv184();
-                ServerPacket.SetForJMSv184();
-                break;
-            }
-            case 186: {
-                v186_1_CP.Set();
-                v186_1_SP.Set();
-
-                ClientPacket.SetCustomHeader();
-                ServerPacket.SetCustomHeader();
-                break;
-            }
-            // ゴミ
-            case 187: {
-                ClientPacket.SetForJMSv187();
-                ServerPacket.SetForJMSv187();
-                break;
-            }
-            case 188: {
-                v188_0_CP.Set();
-                v188_0_SP.Set();
-                break;
-            }
-            // 起動早い
-            case 194: {
-                ClientPacket.SetForJMSv302();
-                ServerPacket.SetForJMSv302();
-                break;
-            }
-            // 起動まぁまぁ早い
-            case 201: {
-                ClientPacket.SetForJMSv302();
-                ServerPacket.SetForJMSv302();
-                break;
-            }
-            // 起動が遅い
-            case 302: {
-                ClientPacket.SetForJMSv302();
-                ServerPacket.SetForJMSv302();
-                break;
-            }
-            // x64 test
-            case 414: {
-                break;
-            }
-            default: {
-                Debug.ErrorLog("the version is not supported!");
-                return;
-            }
+        Debug.InfoLog(ServerConfig.GetRegionName() + " v" + ServerConfig.GetVersion() + "." + ServerConfig.GetSubVersion());
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() == 131) {
+            ServerConfig.SetPacketEncryption(false);
         }
 
+        ExpTable.Init();
         PacketFlag.Update();
 
         try {
@@ -147,7 +76,9 @@ public class Start {
         LoginServer.run_startup_configurations();
 
         //WZ
-        LoadData.LoadDataFromXML();
+        if (!DebugConfig.do_not_load_wz_xml) {
+            LoadData.LoadDataFromXML();
+        }
         RandomRewards.getInstance();
 
         MapleOxQuizFactory.getInstance().initialize();
@@ -172,8 +103,8 @@ public class Start {
         PlayerNPC.loadAll();// touch - so we see database problems early...
         World.registerRespawn();
         LoginServer.setOn(); //now or later
+        RankingWorker.getInstance().run();
         Debug.InfoLog("OK");
-//        RankingWorker.getInstance().run();
     }
 
     public static class Shutdown implements Runnable {

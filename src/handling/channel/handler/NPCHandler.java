@@ -28,15 +28,13 @@ import client.MapleCharacter;
 import constants.GameConstants;
 import client.MapleQuestStatus;
 import client.RockPaperScissors;
-import client.inventory.ItemFlag;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import packet.ServerPacket;
-import packet.content.TrunkPacket;
-import server.MapleShop;
+import packet.server.ServerPacket;
+import packet.server.response.LocalResponse;
+import packet.server.response.RemoteResponse;
 import server.MapleInventoryManipulator;
-import server.MapleStorage;
 import server.life.MapleNPC;
 import server.quest.MapleQuest;
 import scripting.NPCScriptManager;
@@ -64,50 +62,6 @@ public class NPCHandler {
             return;
         }
         c.getSession().write(mplew.getPacket());
-    }
-
-    public static final void NPCShop(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        final byte bmode = slea.readByte();
-        if (chr == null) {
-            return;
-        }
-
-        switch (bmode) {
-            case 0: {
-                final MapleShop shop = chr.getShop();
-                if (shop == null) {
-                    return;
-                }
-                slea.skip(2);
-                final int itemId = slea.readInt();
-                final short quantity = slea.readShort();
-                shop.buy(c, itemId, quantity);
-                break;
-            }
-            case 1: {
-                final MapleShop shop = chr.getShop();
-                if (shop == null) {
-                    return;
-                }
-                final byte slot = (byte) slea.readShort();
-                final int itemId = slea.readInt();
-                final short quantity = slea.readShort();
-                shop.sell(c, GameConstants.getInventoryType(itemId), slot, quantity);
-                break;
-            }
-            case 2: {
-                final MapleShop shop = chr.getShop();
-                if (shop == null) {
-                    return;
-                }
-                final byte slot = (byte) slea.readShort();
-                shop.recharge(c, slot);
-                break;
-            }
-            default:
-                chr.setConversation(0);
-                break;
-        }
     }
 
     public static final void NPCTalk(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
@@ -189,8 +143,8 @@ public class NPCHandler {
             case 5: { // Scripted End Quest
                 final int npc = slea.readInt();
                 NPCScriptManager.getInstance().endQuest(c, npc, quest, false);
-                c.getSession().write(MaplePacketCreator.showSpecialEffect(10)); // Quest completion
-                chr.getMap().broadcastMessage(chr, MaplePacketCreator.showSpecialEffect(chr.getId(), 10), false);
+                c.getSession().write(LocalResponse.showSpecialEffect(10)); // Quest completion
+                chr.getMap().broadcastMessage(chr, RemoteResponse.showSpecialEffect(chr.getId(), 10), false);
                 break;
             }
         }

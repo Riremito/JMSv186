@@ -106,6 +106,7 @@ public enum ItemLoader {
                     equip.setExpiration(rs.getLong("expiredate"));
                     equip.setUpgradeSlots(rs.getByte("upgradeslots"));
                     equip.setLevel(rs.getByte("level"));
+                    // not coded, incattackSpeed
                     equip.setStr(rs.getShort("str"));
                     equip.setDex(rs.getShort("dex"));
                     equip.setInt(rs.getShort("int"));
@@ -277,6 +278,7 @@ public enum ItemLoader {
                 IEquip equip = (IEquip) item;
                 pse.setInt(2, equip.getUpgradeSlots());
                 pse.setInt(3, equip.getLevel());
+                // not coded, incattackSpeed
                 pse.setInt(4, equip.getStr());
                 pse.setInt(5, equip.getDex());
                 pse.setInt(6, equip.getInt());

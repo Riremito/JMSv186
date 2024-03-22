@@ -31,6 +31,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
+import packet.client.request.NPCPacket;
+import packet.server.response.FieldResponse;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -414,7 +416,7 @@ public class AdminCommand {
         @Override
         public int execute(MapleClient c, String[] splitted) {
             c.getPlayer().setRemainingSp(CommandProcessorUtil.getOptionalIntArg(splitted, 1, 1));
-            c.getSession().write(MaplePacketCreator.updateSp(c.getPlayer(), false));
+            c.getPlayer().UpdateStat(false);
             return 1;
         }
     }
@@ -2134,6 +2136,11 @@ public class AdminCommand {
             MapleMonster mob;
             for (MapleMapObject monstermo : map.getMapObjectsInRange(c.getPlayer().getPosition(), range, Arrays.asList(MapleMapObjectType.MONSTER))) {
                 mob = (MapleMonster) monstermo;
+
+                if (mob.getStats().getHPDisplayType() == 0) {
+                    mob.setHp(0);
+                    map.broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_MobHPTag, mob)));
+                }
                 map.killMonster(mob, c.getPlayer(), false, false, (byte) 1);
             }
             return 1;
@@ -2254,7 +2261,7 @@ public class AdminCommand {
                 npc.setFh(c.getPlayer().getMap().getFootholds().findBelow(c.getPlayer().getPosition()).getId());
                 npc.setCustom(true);
                 c.getPlayer().getMap().addMapObject(npc);
-                c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.spawnNPC(npc, true));
+                c.getPlayer().getMap().broadcastMessage(NPCPacket.spawnNPC(npc, true));
 
                 // ファイルへ追記
                 try (FileWriter fw = new FileWriter(ServerConfig.script_path + "map/temp/" + c.getPlayer().getMapId() + ".txt", true)) {

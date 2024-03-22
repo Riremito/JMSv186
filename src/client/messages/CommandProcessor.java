@@ -23,22 +23,37 @@ package client.messages;
 import java.util.ArrayList;
 import client.MapleCharacter;
 import client.MapleClient;
+import client.inventory.Equip;
+import client.inventory.IItem;
+import client.inventory.MapleInventoryType;
 import client.messages.commands.*;
 import client.messages.commands.AdminCommand;
 import client.messages.commands.GMCommand;
 import client.messages.commands.InternCommand;
 import client.messages.commands.PlayerCommand;
+import constants.GameConstants;
 import constants.ServerConstants.CommandType;
 import constants.ServerConstants.PlayerGMRank;
 import database.DatabaseConnection;
+import debug.Debug;
+import debug.DebugJob;
+import handling.channel.ChannelServer;
+import handling.channel.handler.StatsHandling;
+import java.awt.Point;
 import java.lang.reflect.Modifier;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
+import packet.client.request.ItemRequest;
+import packet.server.response.FieldResponse;
+import packet.server.response.ItemResponse;
 import scripting.NPCScriptManager;
+import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
+import server.life.MapleMonster;
 import server.life.MapleNPC;
+import server.maps.MapleDynamicPortal;
 import server.maps.MapleMap;
 import server.maps.SavedLocationType;
 import tools.FileoutputUtil;
@@ -156,6 +171,80 @@ public class CommandProcessor {
             String[] splitted = line.split(" ");
             splitted[0] = splitted[0].toLowerCase();
 
+            if ("/ea".equals(splitted[0]) || "/stuck".equals(splitted[0]) || "/unlock".equals(splitted[0])) {
+                c.getPlayer().UpdateStat(true);
+                return true;
+            }
+
+            if ("/heal".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                chr.getStat().setHp(chr.getStat().getMaxHp());
+                chr.getStat().setMp(chr.getStat().getMaxMp());
+                chr.UpdateStat(true);
+                return true;
+            }
+
+            if ("/autosp".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                int skillid = chr.getLastSkillUp();
+                if (skillid != 0) {
+                    while (StatsHandling.DistributeSP(skillid, c, chr));
+                }
+                return true;
+            }
+
+            if ("/randombeauty".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                int skinid = LoadData.GetRandomID(LoadData.DataType.SKIN);
+                int faceid = LoadData.GetRandomID(LoadData.DataType.FACE);
+                int hairid = LoadData.GetRandomID(LoadData.DataType.HAIR);
+
+                chr.Notice("SkinID = " + skinid + ", FaceID = " + faceid + ", HairID = " + hairid);
+                chr.setSkinColor((byte) (skinid % 100));
+                chr.setFace(faceid);
+                chr.setHair(hairid);
+                chr.UpdateStat(false);
+                return true;
+            }
+
+            if ("/randomdrop".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                int itemid = LoadData.GetRandomID(LoadData.DataType.ITEM);
+                IItem toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
+                chr.getMap().spawnItemDrop(c.getPlayer(), c.getPlayer(), toDrop, c.getPlayer().getPosition(), true, true);
+                return true;
+            }
+
+            if ("/randommap".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                int mapid = LoadData.GetRandomID(LoadData.DataType.MAP);
+                MapleMap map = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(mapid);
+                chr.changeMap(map, map.getPortal(0));
+                return true;
+            }
+
+            if ("/randomspawn".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+
+                int mob_count = 1;
+                if (splitted.length >= 2) {
+                    mob_count = Integer.parseInt(splitted[1]);
+                }
+
+                if (10 < mob_count) {
+                    mob_count = 10;
+                }
+
+                for (int i = 0; i < mob_count; i++) {
+                    int mobid = LoadData.GetRandomID(LoadData.DataType.MOB);
+                    Debug.InfoLog("RandomSpawn: " + mobid);
+                    MapleMonster mob = MapleLifeFactory.getMonster(mobid);
+                    chr.getMap().spawnMonsterOnGroundBelow(mob, c.getPlayer().getPosition());
+                }
+                return true;
+            }
+
             // デバッグモード
             if ("/debug".equals(splitted[0])) {
                 c.getPlayer().SetDebugger();
@@ -243,6 +332,17 @@ public class CommandProcessor {
                 return true;
             }
 
+            // warphere all
+            if ("/wh".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                for (MapleCharacter victim : c.getChannelServer().getPlayerStorage().getAllCharacters()) {
+                    if (victim != chr) {
+                        victim.changeMap(c.getPlayer().getMap(), c.getPlayer().getMap().findClosestSpawnpoint(c.getPlayer().getPosition()));
+                    }
+                }
+                return true;
+            }
+
             // 転職
             if ("/jc".equals(splitted[0]) || "/jobchange".equals(splitted[0]) || "/転職".equals(splitted[0])) {
                 return CustomNPCTalk(c, 1012003, 9330104);
@@ -277,6 +377,55 @@ public class CommandProcessor {
                     ;
                 }
                 c.getPlayer().Notice("無効なNPCIDです");
+                return true;
+            }
+            // ポータル追加
+            if ("/addportal".equals(splitted[0])) {
+                if (splitted.length < 2) {
+                    return true;
+                }
+                int map_id_to = Integer.parseInt(splitted[1]);
+
+                if (!LoadData.IsValidMapID(map_id_to)) {
+                    return false;
+                }
+
+                MapleCharacter chr = c.getPlayer();
+                Point player_xy = chr.getPosition();
+                MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
+                c.getPlayer().getMap().addMapObject(dynamic_portal);
+                //ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(chr.getMapId()).addMapObject(dynamic_portal);
+
+                c.getPlayer().getMap().broadcastMessage(ItemResponse.CreatePinkBeanEventPortal(dynamic_portal));
+
+                c.getPlayer().Notice("AddPortal: from " + c.getPlayer().getMapId() + " to " + map_id_to);
+                return true;
+            }
+            // ステータス初期化
+            if ("/resetstat".equals(splitted[0])) {
+                MapleCharacter chr = c.getPlayer();
+                DebugJob.ResetStat(chr);
+                chr.Notice("Reset Stat!");
+                return true;
+            }
+            if ("/defstat".equals(splitted[0])) {
+                if (splitted.length < 2) {
+                    return false;
+                }
+                int level = 0;
+                if (splitted.length >= 3) {
+                    level = Integer.parseInt(splitted[2]);
+                }
+
+                int job_id = Integer.parseInt(splitted[1]);
+                MapleCharacter chr = c.getPlayer();
+                DebugJob.DefStat(chr, job_id, level);
+                chr.Notice("Def Stat!");
+                return true;
+            }
+
+            if ("/slot".equals(splitted[0])) {
+                FieldResponse.MiroSlot(c.getPlayer());
                 return true;
             }
 

@@ -20,132 +20,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.channel.handler;
 
-import java.awt.Point;
-import java.util.List;
-
-import client.MapleClient;
 import client.MapleCharacter;
 import client.inventory.MapleInventoryType;
-import packet.content.MobPacket;
 import server.MapleInventoryManipulator;
 import server.Randomizer;
 import server.maps.MapleMap;
 import server.life.MapleMonster;
-import server.life.MobSkill;
-import server.life.MobSkillFactory;
 import server.maps.MapleNodes.MapleNodeInfo;
-import server.movement.LifeMovementFragment;
 import tools.MaplePacketCreator;
-import tools.Pair;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 public class MobHandler {
-
-    public static final void MoveMonster(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (chr == null || chr.getMap() == null) {
-            return; //?
-        }
-        final int oid = slea.readInt();
-        final MapleMonster monster = chr.getMap().getMonsterByOid(oid);
-
-        if (monster == null) { // movin something which is not a monster
-            chr.addMoveMob(oid);
-            return;
-        }
-        final short moveid = slea.readShort();
-        final boolean useSkill = slea.readByte() > 0;
-        final byte skill = slea.readByte();
-        final int skill1 = slea.readByte() & 0xFF; // unsigned?
-        final int skill2 = slea.readByte();
-        final int skill3 = slea.readByte();
-        final int skill4 = slea.readByte();
-        int realskill = 0;
-        int level = 0;
-
-        if (useSkill) {// && (skill == -1 || skill == 0)) {
-            final byte size = monster.getNoSkills();
-            boolean used = false;
-
-            if (size > 0) {
-                final Pair<Integer, Integer> skillToUse = monster.getSkills().get((byte) Randomizer.nextInt(size));
-                realskill = skillToUse.getLeft();
-                level = skillToUse.getRight();
-                // Skill ID and Level
-                final MobSkill mobSkill = MobSkillFactory.getMobSkill(realskill, level);
-
-                if (mobSkill != null && !mobSkill.checkCurrentBuff(chr, monster)) {
-                    final long now = System.currentTimeMillis();
-                    final long ls = monster.getLastSkillUsed(realskill);
-
-                    if (ls == 0 || ((now - ls) > mobSkill.getCoolTime())) {
-                        monster.setLastSkillUsed(realskill, now, mobSkill.getCoolTime());
-
-                        final int reqHp = (int) (((float) monster.getHp() / monster.getMobMaxHp()) * 100); // In case this monster have 2.1b and above HP
-                        if (reqHp <= mobSkill.getHP()) {
-                            used = true;
-                            mobSkill.applyEffect(chr, monster, true);
-                        }
-                    }
-                }
-            }
-            if (!used) {
-                realskill = 0;
-                level = 0;
-            }
-        }
-        slea.skip(33);
-        if (monster.getId() == 8300006 || monster.getId() == 8300007) { //dragon
-            final byte offset = slea.readByte();
-            if (offset <= 0 && slea.available() > 17) { //movement parse error
-                //dragon have to skip extra 28 byte o.o
-                slea.skip(27); //including offset
-            } else {
-                //test more
-                slea.skip(3);
-                int totalSkippedBytes = 8; //include if statement after it
-                if (slea.readInt() == 1) {
-                    totalSkippedBytes += 4;
-                    if (slea.readInt() == 16768460) { //CC DD FF 00
-                        totalSkippedBytes += 4;
-                        if (slea.readInt() == 16768460) { //CC DD FF 00
-                            totalSkippedBytes += 4;
-                            if (slea.readInt() == 1728919371) { //4B 37 0D 67
-                                totalSkippedBytes += 8;
-                                slea.skip(8);
-                            }
-                        }
-                    }
-                }
-                if (totalSkippedBytes != 28) { //all passed
-                    slea.seek(slea.getPosition() - totalSkippedBytes);
-                }
-            }
-        }
-        final Point startPos = monster.getPosition();
-        List<LifeMovementFragment> res = null;
-        try {
-            res = MovementParse.parseMovement(slea, 2);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("AIOBE Type2:\n" + slea.toString(true));
-            return;
-        }
-
-        c.SendPacket(MobPacket.moveMonsterResponse(monster, moveid, realskill, level));
-
-        if (res != null && chr != null) {
-            if (slea.available() < 9 || slea.available() > 17) { //9.. 0 -> endPos? -> endPos again? -> 0 -> 0
-                System.out.println("slea.available != 17 (movement parsing error)");
-                System.out.println(slea.toString(true));
-                //c.getSession().close();
-                return;
-            }
-            final MapleMap map = chr.getMap();
-            MovementParse.updatePosition(res, monster, -1);
-            map.moveMonster(monster, monster.getPosition());
-            map.broadcastMessage(chr, MobPacket.moveMonster(useSkill, skill, skill1, skill2, skill3, skill4, monster.getObjectId(), startPos, monster.getPosition(), res), monster.getPosition());
-            chr.getCheatTracker().checkMoveMonster(monster.getPosition());
-        }
-    }
 
     public static final void FriendlyDamage(MapleCharacter chr, MapleMonster mobfrom, MapleMonster mobto) {
         final MapleMap map = chr.getMap();

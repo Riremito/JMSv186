@@ -45,6 +45,7 @@ public class MaplePet implements Serializable {
     private byte fullness = 100, level = 1;
     private short inventorypos = 0, closeness = 0;
     private boolean summoned = false;
+    private short skill_mask = -1; // 0xFFFF
 
     private MaplePet(final int petitemid, final int uniqueid) {
         this.petitemid = petitemid;
@@ -200,11 +201,11 @@ public class MaplePet implements Serializable {
         this.Fh = Fh;
     }
 
-    public final Point getPos() {
+    public final Point getPosition() {
         return pos;
     }
 
-    public final void setPos(final Point pos) {
+    public final void setPosition(final Point pos) {
         this.pos = pos;
     }
 
@@ -234,7 +235,7 @@ public class MaplePet implements Serializable {
         for (final LifeMovementFragment move : movement) {
             if (move instanceof LifeMovement) {
                 if (move instanceof AbsoluteLifeMovement) {
-                    setPos(((LifeMovement) move).getPosition());
+                    setPosition(((LifeMovement) move).getPosition());
                 }
                 setStance(((LifeMovement) move).getNewstate());
             }
@@ -247,5 +248,9 @@ public class MaplePet implements Serializable {
 
     public final void setSecondsLeft(int sl) {
         this.secondsLeft = sl;
+    }
+
+    public short getFlags() {
+        return skill_mask;
     }
 }

@@ -40,7 +40,6 @@ import javax.script.ScriptEngine;
 
 import database.DatabaseConnection;
 import database.DatabaseException;
-import debug.Debug;
 import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -59,7 +58,6 @@ import server.maps.MapleMap;
 import server.shops.IMaplePlayerShop;
 import tools.FileoutputUtil;
 import tools.MapleAESOFB;
-import tools.packet.LoginPacket;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -77,7 +75,8 @@ import org.apache.mina.common.IoSessionConfig;
 import org.apache.mina.common.TrafficMask;
 import org.apache.mina.common.TransportType;
 import org.apache.mina.common.WriteFuture;
-import packet.ServerPacket;
+import packet.server.ServerPacket;
+import packet.client.request.SocketPacket;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -1143,7 +1142,7 @@ public class MapleClient implements Serializable {
 
     public final void sendPing() {
         lastPing = System.currentTimeMillis();
-        session.write(LoginPacket.getPing());
+        SendPacket(SocketPacket.AliveReq());
 
         PingTimer.getInstance().schedule(new Runnable() {
 
@@ -1226,6 +1225,10 @@ public class MapleClient implements Serializable {
 
     public final boolean isGm() {
         return gm;
+    }
+
+    public void setGM() {
+        gm = true;
     }
 
     public final void setScriptEngine(final String name, final ScriptEngine e) {

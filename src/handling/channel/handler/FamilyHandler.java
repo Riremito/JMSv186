@@ -30,22 +30,22 @@ import handling.world.family.MapleFamilyBuff;
 import handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import handling.world.family.MapleFamilyCharacter;
 import java.util.List;
+import packet.server.response.FamilyResponse;
 import server.maps.FieldLimitType;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
-import tools.packet.FamilyPacket;
 
 public class FamilyHandler {
 
     public static final void RequestFamily(final SeekableLittleEndianAccessor slea, MapleClient c) {
         MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
         if (chr != null) {
-            c.getSession().write(FamilyPacket.getFamilyPedigree(chr));
+            c.getSession().write(FamilyResponse.getFamilyPedigree(chr));
         }
     }
 
     public static final void OpenFamily(final SeekableLittleEndianAccessor slea, MapleClient c) {
-        c.getSession().write(FamilyPacket.getFamilyInfo(c.getPlayer()));
+        c.getSession().write(FamilyResponse.getFamilyInfo(c.getPlayer()));
     }
 
     public static final void UseFamily(final SeekableLittleEndianAccessor slea, MapleClient c) {
@@ -84,7 +84,7 @@ public class FamilyHandler {
                 } else if (victim.getTeleportName().length() > 0) {
                     c.getPlayer().dropMessage(1, "Another character has requested to summon this character. Please try again later.");
                 } else if (victim.getFamilyId() == c.getPlayer().getFamilyId() && !FieldLimitType.VipRock.check(victim.getMap().getFieldLimit()) && victim.getId() != c.getPlayer().getId()) {
-                    victim.getClient().getSession().write(FamilyPacket.familySummonRequest(c.getPlayer().getName(), c.getPlayer().getMap().getMapName()));
+                    victim.getClient().getSession().write(FamilyResponse.familySummonRequest(c.getPlayer().getName(), c.getPlayer().getMap().getMapName()));
                     victim.setTeleportName(c.getPlayer().getName());
                 } else {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
@@ -136,7 +136,7 @@ public class FamilyHandler {
         }
         if (success) { //again
             c.getPlayer().setCurrentRep(c.getPlayer().getCurrentRep() - entry.rep);
-            c.getSession().write(FamilyPacket.changeRep(-entry.rep));
+            c.getSession().write(FamilyResponse.changeRep(-entry.rep));
             c.getPlayer().useFamilyBuff(entry);
         } else {
             c.getPlayer().dropMessage(5, "An error occured.");
@@ -167,7 +167,7 @@ public class FamilyHandler {
         } else if (c.getPlayer().getJunior1() > 0 && c.getPlayer().getJunior2() > 0) {
             c.getPlayer().dropMessage(1, "You have 2 juniors already.");
         } else if (c.getPlayer().isGM() || !addChr.isGM()) {
-            addChr.getClient().getSession().write(FamilyPacket.sendFamilyInvite(c.getPlayer().getId(), c.getPlayer().getLevel(), c.getPlayer().getJob(), c.getPlayer().getName()));
+            addChr.getClient().getSession().write(FamilyResponse.sendFamilyInvite(c.getPlayer().getId(), c.getPlayer().getLevel(), c.getPlayer().getJob(), c.getPlayer().getName()));
         }
         c.getSession().write(MaplePacketCreator.enableActions());
     }
@@ -192,7 +192,7 @@ public class FamilyHandler {
             if (accepted) {
                 c.getPlayer().changeMap(tt.getMap(), tt.getMap().getPortal(0));
                 tt.setCurrentRep(tt.getCurrentRep() - cost.rep);
-                tt.getClient().getSession().write(FamilyPacket.changeRep(-cost.rep));
+                tt.getClient().getSession().write(FamilyResponse.changeRep(-cost.rep));
                 tt.useFamilyBuff(cost);
             } else {
                 tt.dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
@@ -272,10 +272,10 @@ public class FamilyHandler {
                 && inviter.getLevel() - 20 < c.getPlayer().getLevel() && inviter.getLevel() >= 10 && inviter.getName().equals(slea.readMapleAsciiString()) && inviter.getNoJuniors() < 2
                 /*&& inviter.getFamily().getGens() < 1000*/ && c.getPlayer().getLevel() >= 10) {
             boolean accepted = slea.readByte() > 0;
-            inviter.getClient().getSession().write(FamilyPacket.sendFamilyJoinResponse(accepted, c.getPlayer().getName()));
+            inviter.getClient().getSession().write(FamilyResponse.sendFamilyJoinResponse(accepted, c.getPlayer().getName()));
             if (accepted) {
                 //c.getSession().write(FamilyPacket.sendFamilyMessage(0));
-                c.getSession().write(FamilyPacket.getSeniorMessage(inviter.getName()));
+                c.getSession().write(FamilyResponse.getSeniorMessage(inviter.getName()));
                 MapleFamilyCharacter old = c.getPlayer().getMFC();
                 if (inviter.getFamilyId() != 0) {
 
@@ -322,7 +322,7 @@ public class FamilyHandler {
 
                     }
                 }
-                c.getSession().write(FamilyPacket.getFamilyInfo(c.getPlayer()));
+                c.getSession().write(FamilyResponse.getFamilyInfo(c.getPlayer()));
             }
         }
     }

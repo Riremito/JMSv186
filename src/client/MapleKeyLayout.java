@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package client;
 
+import config.ServerConfig;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
@@ -54,7 +55,13 @@ public class MapleKeyLayout implements Serializable {
 
     public final void writeData(final MaplePacketLittleEndianWriter mplew) {
         Pair<Byte, Integer> binding;
-        for (int x = 0; x < 94; x++) {
+        int maxkeymap = 94;
+
+        if (194 <= ServerConfig.version) {
+            maxkeymap = 126;
+        }
+
+        for (int x = 0; x < maxkeymap; x++) {
             binding = keymap.get(Integer.valueOf(x));
             if (binding != null) {
                 mplew.write(binding.getLeft());

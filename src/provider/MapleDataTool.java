@@ -24,6 +24,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 import provider.WzXML.MapleDataType;
+import tools.CaltechEval;
 
 public class MapleDataTool {
 
@@ -72,7 +73,7 @@ public class MapleDataTool {
             return def;
         } else {
             if (data.getType() == MapleDataType.STRING) {
-                return Integer.parseInt(getString(data));
+                return (int) Long.parseLong(getString(data));
             } else if (data.getType() == MapleDataType.SHORT) {
                 return Integer.valueOf(((Short) data.getData()).shortValue());
             } else {
@@ -123,6 +124,42 @@ public class MapleDataTool {
         } else {
             return getInt(d, def);
         }
+    }
+
+    // parseEval
+    public static int getInt(String path, MapleData source, int def, int common_level) {
+        // level dir OK
+        if (common_level == 0) {
+            return getInt(path, source, def);
+        }
+        // common dir
+        final MapleData data = source.getChildByPath(path);
+        if (data == null) {
+            return def;
+        }
+        if (data.getType() != MapleDataType.STRING) {
+            return MapleDataTool.getIntConvert(path, source, def);
+        }
+        String d = MapleDataTool.getString(data).toLowerCase();
+        if (d.contains("\\r\\n")) {
+            d = d.replace("\\r\\n", "");
+        }
+        if (d.endsWith("u") || d.endsWith("y")) {
+            d = d.substring(0, d.length() - 1) + "x";
+        } else if (d.endsWith("%")) {
+            d = d.substring(0, d.length() - 1);
+        }
+        d = d.replace("x", String.valueOf(common_level));
+        if (d.substring(0, 1).equals("-")) { // -30+3*x
+            if (d.substring(1, 2).equals("u") || d.substring(1, 2).equals("d")) { //  -u(x/2)
+                d = "n(" + d.substring(1, d.length()) + ")"; // n(u(x/2))
+            } else {
+                d = "n" + d.substring(1, d.length()); // n30+3*x
+            }
+        } else if (d.substring(0, 1).equals("=")) { // lol nexon and their mistakes
+            d = d.substring(1, d.length());
+        }
+        return (int) (new CaltechEval(d).evaluate());
     }
 
     public static BufferedImage getImage(MapleData data) {

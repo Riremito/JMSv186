@@ -7,9 +7,11 @@ import debug.DebugLoadTime;
 import handling.login.LoginInformationProvider;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import provider.MapleData;
+import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -27,7 +29,7 @@ public class LoadData {
 
     public static void LoadDataFromXML() {
         // test
-        if (ServerConfig.version >= 414) {
+        if (ServerConfig.GetVersion() >= 414) {
             return;
         }
 
@@ -95,6 +97,10 @@ public class LoadData {
         return reactorids.contains(id);
     }
 
+    public static boolean IsValidItemID(int id) {
+        return itemids.contains(id);
+    }
+
     // test for gm command
     public static ArrayList<Integer> GetJobIDs() {
         return jobids;
@@ -109,6 +115,54 @@ public class LoadData {
             return -1;
         }
         return mapids.get(index);
+    }
+
+    public enum DataType {
+        SKIN,
+        FACE,
+        HAIR,
+        JOB,
+        MAP,
+        NPC,
+        MOB,
+        ITEM,
+        UNKNOWN;
+    }
+
+    public static int GetRandomID(DataType dt) {
+        Random rand = new Random();
+
+        switch (dt) {
+            case SKIN: {
+                return skinids.get(rand.nextInt(skinids.size()));
+            }
+            case FACE: {
+                return faceids.get(rand.nextInt(faceids.size()));
+            }
+            case HAIR: {
+                return hairids.get(rand.nextInt(hairids.size()));
+            }
+            case JOB: {
+                return jobids.get(rand.nextInt(jobids.size()));
+            }
+            case MAP: {
+                return mapids.get(rand.nextInt(mapids.size()));
+            }
+            case NPC: {
+                return npcids.get(rand.nextInt(npcids.size()));
+            }
+            case MOB: {
+                return mobids.get(rand.nextInt(mobids.size()));
+            }
+            case ITEM: {
+                return itemids.get(rand.nextInt(itemids.size()));
+            }
+            default: {
+                break;
+            }
+        }
+
+        return -1;
     }
 
     private static void initDataIDs() {
@@ -141,6 +195,98 @@ public class LoadData {
         Debug.DebugLog("NPCIDs = " + npcids.size());
         Debug.DebugLog("MobIDs = " + mobids.size());
         Debug.DebugLog("MapIDs = " + mapids.size());
+
+        // test
+        LoadItemXMLs("Item.wz/Cash/", itemids);
+        LoadItemXMLs("Item.wz/Consume/", itemids);
+        LoadItemXMLs("Item.wz/Etc/", itemids);
+        LoadItemXMLs("Item.wz/Install/", itemids);
+        LoadEquipXMLs("Character.wz/", itemids);
+        LoadXMLs("Item.wz/Pet/", "0*(\\d+)\\.img", itemids);
+        Debug.DebugLog("ItemIDs = " + itemids.size());
+        //LoadTownMaps();
+    }
+
+    private static int LoadTownMaps() {
+        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider("Map.wz/Map");
+        Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
+
+        for (MapleDataDirectoryEntry map_dir : wz.getRoot().getSubdirectories()) {
+            Debug.DebugLog("dir = " + map_dir.getName());
+
+            for (MapleDataFileEntry dir : map_dir.getFiles()) {
+                Matcher img_matcher = img_pattern.matcher(dir.getName());
+                if (img_matcher.matches()) {
+                    int map_id = Integer.parseInt(img_matcher.group(1));
+
+                    MapleDataProvider map_root = MapleDataProviderFactory.getDataProvider("Map.wz/Map/" + map_dir.getName() + "/");
+                    MapleData map_data = map_root.getData(dir.getName());
+                    if (MapleDataTool.getInt("info/town", map_data) != 0) {
+                        int map_id_return = MapleDataTool.getInt("info/returnMap", map_data);
+                        if (map_id_return == map_id) {
+                            Debug.DebugLog("town mapid = " + map_id);
+                        }
+                    }
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    private static int LoadItemXMLs(String path, ArrayList<Integer> list) {
+        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
+
+        if (wz == null) {
+            Debug.ErrorLog("wz path: " + path);
+            return 0;
+        }
+
+        Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
+        Pattern id_pattern = Pattern.compile("0*(\\d+)");
+
+        for (MapleDataFileEntry dir : wz.getRoot().getFiles()) {
+            Matcher img_matcher = img_pattern.matcher(dir.getName());
+            if (img_matcher.matches()) {
+                for (MapleData data : wz.getData(dir.getName()).getChildren()) {
+                    Matcher id_matcher = id_pattern.matcher(data.getName());
+                    if (id_matcher.matches()) {
+                        int id = Integer.parseInt(data.getName());
+                        list.add(id);
+                    } else {
+                        Debug.DebugLog("invalid item data = " + dir.getName() + " -> " + data.getName());
+                    }
+                }
+            }
+        }
+
+        return list.size();
+    }
+
+    private static int LoadEquipXMLs(String path, ArrayList<Integer> list) {
+        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
+
+        if (wz == null) {
+            Debug.ErrorLog("wz path: " + path);
+            return 0;
+        }
+
+        Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
+
+        for (MapleDataDirectoryEntry equip_dir : wz.getRoot().getSubdirectories()) {
+            for (MapleDataFileEntry dir : equip_dir.getFiles()) {
+                Matcher img_matcher = img_pattern.matcher(dir.getName());
+                if (img_matcher.matches()) {
+                    int id = Integer.parseInt(img_matcher.group(1));
+                    // ignore hair
+                    if (1000000 <= id) {
+                        list.add(id);
+                    }
+                }
+            }
+        }
+
+        return list.size();
     }
 
     private static int LoadXMLs(String path, String regex, ArrayList<Integer> list) {
@@ -170,7 +316,8 @@ public class LoadData {
         MapleQuest.requirements = MapleQuest.questData.getData("Check.img");
         MapleQuest.info = MapleQuest.questData.getData("QuestInfo.img");
 
-        if (ServerConfig.version >= 164) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()) {
             MapleQuest.pinfo = MapleQuest.questData.getData("PQuest.img");
         }
     }
@@ -182,13 +329,15 @@ public class LoadData {
         MapleLifeFactory.mobStringData = MapleLifeFactory.stringDataWZ.getData("Mob.img");
         MapleLifeFactory.npcStringData = MapleLifeFactory.stringDataWZ.getData("Npc.img");
 
-        if (ServerConfig.version >= 164) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()) {
             MapleLifeFactory.npclocData = MapleLifeFactory.etcDataWZ.getData("NpcLocation.img");
         }
     }
 
     private static void initMaker() {
-        if (ServerConfig.version >= 164) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()) {
             ItemMakerFactory.info = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz")).getData("ItemMake.img");
         }
     }
@@ -199,7 +348,7 @@ public class LoadData {
         MapleItemInformationProvider.equipData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Character.wz"));
         MapleItemInformationProvider.stringData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/String.wz"));
 
-        if (ServerConfig.version < 164) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164) {
             MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Cash");
             MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Con");
             MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Eqp");
@@ -209,7 +358,7 @@ public class LoadData {
         } else {
             MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Cash.img");
 
-            if (ServerConfig.version < 184) {
+            if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 180) {
                 MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img").getChildByPath("Con");
             } else {
                 MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img");

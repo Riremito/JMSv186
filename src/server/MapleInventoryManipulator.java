@@ -18,8 +18,9 @@ import client.inventory.MaplePet;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
+import packet.client.request.ContextPacket;
+import packet.server.response.PointShopResponse;
 import server.maps.AramiaFireWorks;
-import tools.packet.MTSCSPacket;
 import tools.MaplePacketCreator;
 
 public class MapleInventoryManipulator {
@@ -35,7 +36,7 @@ public class MapleInventoryManipulator {
         }
         chr.getCashInventory().addToInventory(ring);
         //chr.getClient().getSession().write(MTSCSPacket.confirmToCSInventory(ring, chr.getClient().getAccID(), csi.getSN()));
-        chr.getClient().getSession().write(MTSCSPacket.showBoughtCSItem(ring, sn, chr.getClient().getAccID()));
+        chr.getClient().getSession().write(PointShopResponse.showBoughtCSItem(ring, sn, chr.getClient().getAccID()));
     }
 
     public static boolean addbyItem(final MapleClient c, final IItem item) {
@@ -53,7 +54,7 @@ public class MapleInventoryManipulator {
             return newSlot;
         }
         if (!fromcs) {
-            c.getSession().write(MaplePacketCreator.addInventorySlot(type, item));
+            c.SendPacket(ContextPacket.addInventorySlot(type, item));
         }
         c.getPlayer().havePartyQuest(item.getItemId());
         return newSlot;
@@ -149,7 +150,7 @@ public class MapleInventoryManipulator {
                             pet.setInventoryPosition(newSlot);
                             c.getPlayer().addPet(pet);
                         }
-                        c.getSession().write(MaplePacketCreator.addInventorySlot(type, nItem));
+                        c.SendPacket(ContextPacket.addInventorySlot(type, nItem));
                         if (GameConstants.isRechargable(itemId) && quantity == 0) {
                             break;
                         }
@@ -173,7 +174,7 @@ public class MapleInventoryManipulator {
                     nItem.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
                 }
 
-                c.getSession().write(MaplePacketCreator.addInventorySlot(type, nItem));
+                c.SendPacket(ContextPacket.addInventorySlot(type, nItem));
                 c.getSession().write(MaplePacketCreator.enableActions());
             }
         } else {
@@ -192,7 +193,7 @@ public class MapleInventoryManipulator {
                     c.getSession().write(MaplePacketCreator.getShowInventoryFull());
                     return -1;
                 }
-                c.getSession().write(MaplePacketCreator.addInventorySlot(type, nEquip));
+                c.SendPacket(ContextPacket.addInventorySlot(type, nEquip));
             } else {
                 throw new InventoryException("Trying to create equip with non-one quantity");
             }
@@ -254,7 +255,7 @@ public class MapleInventoryManipulator {
                             return null;
                         }
                         recieved = true;
-                        c.getSession().write(MaplePacketCreator.addInventorySlot(type, nItem));
+                        c.SendPacket(ContextPacket.addInventorySlot(type, nItem));
                         if (GameConstants.isRechargable(itemId) && quantity == 0) {
                             break;
                         }
@@ -274,7 +275,7 @@ public class MapleInventoryManipulator {
                 if (newSlot == -1) {
                     return null;
                 }
-                c.getSession().write(MaplePacketCreator.addInventorySlot(type, nItem));
+                c.SendPacket(ContextPacket.addInventorySlot(type, nItem));
                 c.getPlayer().havePartyQuest(nItem.getItemId());
                 return nItem;
             }
@@ -286,7 +287,7 @@ public class MapleInventoryManipulator {
                 if (newSlot == -1) {
                     return null;
                 }
-                c.getSession().write(MaplePacketCreator.addInventorySlot(type, item, true));
+                c.SendPacket(ContextPacket.addInventorySlot(type, item, true));
                 c.getPlayer().havePartyQuest(item.getItemId());
                 return item;
             } else {
@@ -353,7 +354,7 @@ public class MapleInventoryManipulator {
                         item.setQuantity((short) (quantity + newQ));
                         return false;
                     }
-                    c.getSession().write(MaplePacketCreator.addInventorySlot(type, nItem, true));
+                    c.SendPacket(ContextPacket.addInventorySlot(type, nItem, true));
                 }
             } else {
                 // Throwing Stars and Bullets - Add all into one slot regardless of quantity.
@@ -367,7 +368,7 @@ public class MapleInventoryManipulator {
                     c.getSession().write(MaplePacketCreator.getShowInventoryFull());
                     return false;
                 }
-                c.getSession().write(MaplePacketCreator.addInventorySlot(type, nItem));
+                c.SendPacket(ContextPacket.addInventorySlot(type, nItem));
                 c.getSession().write(MaplePacketCreator.enableActions());
             }
         } else {
@@ -382,7 +383,7 @@ public class MapleInventoryManipulator {
                     c.getSession().write(MaplePacketCreator.getShowInventoryFull());
                     return false;
                 }
-                c.getSession().write(MaplePacketCreator.addInventorySlot(type, item, true));
+                c.SendPacket(ContextPacket.addInventorySlot(type, item, true));
             } else {
                 throw new RuntimeException("Trying to create equip with non-one quantity");
             }
@@ -405,7 +406,7 @@ public class MapleInventoryManipulator {
         }
         c.getPlayer().havePartyQuest(item.getItemId());
         if (show) {
-            c.getSession().write(MaplePacketCreator.getShowItemGain(item.getItemId(), item.getQuantity()));
+            c.SendPacket(ContextPacket.DropPickUpMessage(item.getItemId(), item.getQuantity()));
         }
         return true;
     }

@@ -29,6 +29,7 @@ public class Equip extends Item implements IEquip, Serializable {
     private byte upgradeSlots = 0, level = 0, vicioushammer = 0, enhance = 0;
     private short str = 0, dex = 0, _int = 0, luk = 0, hp = 0, mp = 0, watk = 0, matk = 0, wdef = 0, mdef = 0, acc = 0, avoid = 0, hands = 0, speed = 0, jump = 0, potential1 = 0, potential2 = 0, potential3 = 0, hpR = 0, mpR = 0;
     private int itemEXP = 0, durability = -1;
+    private int incattackSpeed = 0; // 攻撃速度の書
 
     public Equip(int id, short position, byte flag) {
         super(id, position, (short) 1, flag);
@@ -435,7 +436,7 @@ public class Equip extends Item implements IEquip, Serializable {
         setPotential1((short) rank);
         setPotential2((short) (Randomizer.nextInt(10) == 1 ? rank : 0)); //1/10 chance of 3 line
         setPotential3((short) 0); //just set it theoretically
-        */
+         */
         //0.04% chance unique, 4% chance epic, else rare
         final int rank = -7;
         setPotential1((short) rank);
@@ -467,5 +468,15 @@ public class Equip extends Item implements IEquip, Serializable {
 
     public void setMpR(final short mp) {
         this.mpR = mp;
+    }
+
+    // 攻撃速度の書
+    @Override
+    public int getIncAttackSpeed() {
+        return incattackSpeed;
+    }
+
+    public void setIncAttackSpeed(int incattackSpeed) {
+        this.incattackSpeed = incattackSpeed;
     }
 }

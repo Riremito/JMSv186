@@ -27,6 +27,7 @@ public enum MapleMapObjectType {
     ITEM,
     PLAYER,
     DOOR,
+    DYNAMIC_PORTAL,
     SUMMON,
     SHOP,
     MIST,

@@ -1,6 +1,5 @@
 package server;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -21,7 +20,6 @@ import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
 import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.StructSetItem.SetItem;
 import tools.Pair;
@@ -857,6 +855,9 @@ public class MapleItemInformationProvider {
                                     nEquip.setHpR((short) (nEquip.getHpR() + stat.getValue().intValue()));
                                 } else if (key.equals("MMPr")) {
                                     nEquip.setMpR((short) (nEquip.getMpR() + stat.getValue().intValue()));
+                                    // 攻撃速度の書
+                                } else if (key.equals("attackSpeed")) {
+                                    nEquip.setIncAttackSpeed(nEquip.getIncAttackSpeed() + stat.getValue().intValue());
                                 }
                             }
                             break;
@@ -976,7 +977,22 @@ public class MapleItemInformationProvider {
             range = 10;
         } // Normal
         else {
-            return randomizeStats(equip);
+            equip.setStr(getRandStat(equip.getStr(), 5));
+            equip.setDex(getRandStat(equip.getDex(), 5));
+            equip.setInt(getRandStat(equip.getInt(), 5));
+            equip.setLuk(getRandStat(equip.getLuk(), 5));
+            equip.setMatk(getRandStat(equip.getMatk(), 5));
+            equip.setWatk(getRandStat(equip.getWatk(), 5));
+            equip.setAcc(getRandStat(equip.getAcc(), 5));
+            equip.setAvoid(getRandStat(equip.getAvoid(), 5));
+            equip.setJump(getRandStat(equip.getJump(), 5));
+            equip.setHands(getRandStat(equip.getHands(), 5));
+            equip.setSpeed(getRandStat(equip.getSpeed(), 5));
+            equip.setWdef(getRandStat(equip.getWdef(), 10));
+            equip.setMdef(getRandStat(equip.getMdef(), 10));
+            equip.setHp(getRandStat(equip.getHp(), 10));
+            equip.setMp(getRandStat(equip.getMp(), 10));
+            return equip;
         }
 
         // Legend以上なら存在しない能力値も付与

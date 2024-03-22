@@ -36,6 +36,7 @@ import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import java.util.Collections;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import packet.client.request.ContextPacket;
 import server.MapleCarnivalParty;
 import server.MapleItemInformationProvider;
 import server.MapleSquad;
@@ -46,7 +47,6 @@ import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import tools.FileoutputUtil;
 import tools.MaplePacketCreator;
-import tools.packet.UIPacket;
 
 public class EventInstanceManager {
 
@@ -783,6 +783,6 @@ public class EventInstanceManager {
 
     public void applyBuff(final MapleCharacter chr, final int id) {
         MapleItemInformationProvider.getInstance().getItemEffect(id).applyTo(chr);
-        chr.getClient().getSession().write(UIPacket.getStatusMsg(id));
+        chr.getClient().getSession().write(ContextPacket.getStatusMsg(id));
     }
 }

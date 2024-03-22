@@ -29,7 +29,7 @@ import handling.channel.ChannelServer;
 import handling.world.MapleMessenger;
 import handling.world.MapleMessengerCharacter;
 import handling.world.World;
-import packet.ClientPacket;
+import packet.client.ClientPacket;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -39,13 +39,17 @@ public class ChatHandler {
         MapleCharacter chr = c.getPlayer();
         byte unk = 0;
 
-        if (ServerConfig.version > 176) {
+        if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             p.Decode4();
         }
 
         String text = p.DecodeStr();
 
-        if (ServerConfig.version >= 164) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
+                || ServerConfig.IsTWMS()
+                || ServerConfig.IsCMS()) {
             unk = p.Decode1();
         }
 

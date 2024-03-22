@@ -39,7 +39,7 @@ import client.inventory.MapleRing;
 import client.inventory.MapleInventoryIdentifier;
 import client.inventory.MapleInventoryType;
 import database.DatabaseConnection;
-import tools.packet.MTSCSPacket;
+import packet.server.response.PointShopResponse;
 import tools.Pair;
 
 public class CashShop implements Serializable {
@@ -101,7 +101,7 @@ public class CashShop implements Serializable {
         if (toberemove.size() > 0) {
             for (IItem item : toberemove) {
                 removeFromInventory(item);
-                c.getSession().write(MTSCSPacket.cashItemExpired(item.getUniqueId()));
+                c.getSession().write(PointShopResponse.cashItemExpired(item.getUniqueId()));
             }
             toberemove.clear();
         }

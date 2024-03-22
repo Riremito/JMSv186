@@ -40,7 +40,7 @@ public class GameConstants {
             MapleMapObjectType.SUMMON,
             MapleMapObjectType.NPC,
             MapleMapObjectType.MIST));
-    private static final int[] exp = {0, 15, 34, 57, 92, 135, 372, 560, 840, 1242, 1144,
+    private static int[] exp = {0, 15, 34, 57, 92, 135, 372, 560, 840, 1242, 1144,
         1573, 2144, 2800, 3640, 4700, 5893, 7360, 9144, 11120, 13478,
         16268, 19320, 22881, 27009, 31478, 36601, 42446, 48722, 55816, 76560,
         86784, 98208, 110932, 124432, 139372, 155865, 173280, 192400, 213345, 235372,
@@ -84,6 +84,15 @@ public class GameConstants {
             return Integer.MAX_VALUE;
         }
         return exp[level];
+    }
+
+    public static boolean setExpTable(int level, int req_exp) {
+        if (level < 0 || level >= exp.length) {
+            return false;
+        }
+
+        exp[level] = req_exp;
+        return true;
     }
 
     public static int getClosenessNeededForLevel(final int level) {

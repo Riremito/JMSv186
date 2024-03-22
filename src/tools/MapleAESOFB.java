@@ -68,10 +68,10 @@ public class MapleAESOFB {
 
     public MapleAESOFB(byte iv[], boolean isLogin, boolean isOutbound) {
         // 暗号化
-        if (ServerConfig.version >= 164) {
+        if (ServerConfig.PacketEncryptionEnabled()) {
             try {
                 cipher = Cipher.getInstance("AES");
-                if (ServerConfig.version < 414) {
+                if (!(ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion())) {
                     cipher.init(Cipher.ENCRYPT_MODE, skey);
                 } else {
                     // Thank you for reading code!
@@ -90,7 +90,7 @@ public class MapleAESOFB {
         this.isCP = isOutbound; // ClientPacket
         this.setIv(iv);
 
-        short vesrion = isOutbound ? (short) (0xFFFF - ServerConfig.version) : ServerConfig.version;
+        short vesrion = isOutbound ? (short) (0xFFFF - (short) ServerConfig.GetVersion()) : (short) ServerConfig.GetVersion();
         this.mapleVersion = (short) (((vesrion >> 8) & 0xFF) | ((vesrion << 8) & 0xFF00));
     }
 
@@ -100,7 +100,7 @@ public class MapleAESOFB {
 
     public byte[] crypt(byte[] data) {
         // v414
-        if (ServerConfig.version >= 414) {
+        if (ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion()) {
             //return crypt_v414(data);
         }
 
@@ -228,7 +228,7 @@ public class MapleAESOFB {
 
     public byte[] getPacketHeader(int length) {
         // x64
-        if (ServerConfig.version >= 414) {
+        if (ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion()) {
             return getPacketHeader_v414(length);
         }
 
@@ -247,7 +247,7 @@ public class MapleAESOFB {
     public byte[] getPacketHeader_v414(int length) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         int uSeqSnd = ((iv[2] & 0xFF) | (iv[3] << 8)) & 0xFFFF;
-        uSeqSnd ^= (0xFFFF - ServerConfig.version);
+        uSeqSnd ^= (0xFFFF - (short) ServerConfig.GetVersion());
 
         mplew.writeShort((short) uSeqSnd);
         if (length >= 0xFF00) {
@@ -261,7 +261,7 @@ public class MapleAESOFB {
 
     public boolean checkPacket(byte[] packet) {
         // x64
-        if (ServerConfig.version >= 414) {
+        if (ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion()) {
             // KMS v373
             return true;
         }
