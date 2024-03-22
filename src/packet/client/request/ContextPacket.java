@@ -98,9 +98,9 @@ public class ContextPacket {
         p.Encode1(unlock); // CWvsContext->bExclRequestSent
         p.EncodeBuffer(GW_CharacterStat.EncodeChangeStat(chr, statmask));
 
-        if (ServerConfig.version <= 186) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 186) {
             // Pet
-            if ((statmask & (1 << 3)) > 0) {
+            if ((statmask & GW_CharacterStat.Flag.PET1.get()) > 0) {
                 int v5 = 0; // CVecCtrlUser::AddMovementInfo
                 p.Encode1(v5);
             }

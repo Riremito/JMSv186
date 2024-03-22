@@ -19,7 +19,6 @@
 package packet.server.response;
 
 import client.MapleCharacter;
-import client.MapleStat;
 import client.inventory.IItem;
 import client.inventory.MaplePet;
 import handling.MaplePacket;
@@ -139,27 +138,6 @@ public class PetResponse {
         sp.Encode4(pet_index);
         sp.EncodeStr(pet_name);
         return sp.Get();
-    }
-
-    // need  fix
-    public static final MaplePacket petStatUpdate(final MapleCharacter chr) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_StatChanged.Get());
-        mplew.write(0);
-        mplew.writeInt(MapleStat.PET.getValue());
-        byte count = 0;
-        for (final MaplePet pet : chr.getPets()) {
-            if (pet.getSummoned()) {
-                mplew.writeLong(pet.getUniqueId());
-                count++;
-            }
-        }
-        while (count < 3) {
-            mplew.writeZeroBytes(8);
-            count++;
-        }
-        mplew.write(0);
-        return mplew.getPacket();
     }
 
     public static final MaplePacket commandResponse(final int cid, final byte command, final int slot, final boolean success, final boolean food) {

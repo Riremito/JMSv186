@@ -301,7 +301,7 @@ public class GW_CharacterStat {
         // Pet 1
         if ((statmask & Flag.PET1.get()) > 0) {
             MaplePet pet = chr.getPet(0);
-            p.Encode8((pet != null) ? pet.getUniqueId() : 0);
+            p.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
         }
         // Level
         if ((statmask & Flag.LEVEL.get()) > 0) {
@@ -392,13 +392,13 @@ public class GW_CharacterStat {
         // v188 ここから+1
         // Pet 2
         if ((statmask & Flag.PET2.get()) > 0) {
-            MaplePet pet = chr.getPet(0);
-            p.Encode8((pet != null) ? pet.getUniqueId() : 0);
+            MaplePet pet = chr.getPet(1);
+            p.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
         }
         // Pet 3
         if ((statmask & Flag.PET3.get()) > 0) {
-            MaplePet pet = chr.getPet(0);
-            p.Encode8((pet != null) ? pet.getUniqueId() : 0);
+            MaplePet pet = chr.getPet(2);
+            p.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
         }
         // 兵法書, GashaExp
         if ((statmask & Flag.GASHAEXP.get()) > 0) {

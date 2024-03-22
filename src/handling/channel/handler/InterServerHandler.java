@@ -139,6 +139,7 @@ public class InterServerHandler {
         player.getMap().addPlayer(player);
 
         player.spawnSavedPets();
+        player.UpdateStat(true);
         MapleMap player_map = player.getMap();
         if (player_map != null) {
             for (final MaplePet pet : player.getPets()) {

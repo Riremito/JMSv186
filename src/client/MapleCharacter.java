@@ -3793,24 +3793,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void unequipPet(MaplePet pet, boolean shiftLeft, boolean hunger) {
         if (pet.getSummoned()) {
             pet.saveToDb();
-
             map.broadcastMessage(this, PetResponse.Deactivated(this, pet, hunger ? DeActivatedMsg.PET_WENT_BACK_HOME : DeActivatedMsg.PET_NO_MSG), true);
-
-            //List<Pair<MapleStat, Integer>> stats = new ArrayList<Pair<MapleStat, Integer>>();
-            //stats.add(new Pair<MapleStat, Integer>(MapleStat.PET, Integer.valueOf(0)));
             removePet(pet, shiftLeft);
-            client.getSession().write(PetResponse.petStatUpdate(this));
-            client.getSession().write(MaplePacketCreator.enableActions());
+            UpdateStat(true);
         }
     }
 
-    /*    public void shiftPetsRight() {
-    if (pets[2] == null) {
-    pets[2] = pets[1];
-    pets[1] = pets[0];
-    pets[0] = null;
-    }
-    }*/
     public final long getLastFameTime() {
         return lastfametime;
     }
@@ -4986,10 +4974,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                         addPet(pet);
                         if (broadcast) {
                             getMap().broadcastMessage(this, PetResponse.Activated(this, pet), true);
-
-                            //final List<Pair<MapleStat, Integer>> stats = new ArrayList<Pair<MapleStat, Integer>>(1);
-                            //stats.add(new Pair<MapleStat, Integer>(MapleStat.PET, Integer.valueOf(pet.getUniqueId())));
-                            client.getSession().write(PetResponse.petStatUpdate(this));
                         }
                     }
                 }
@@ -5181,7 +5165,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 spawnPet(petStore[i], false, false);
             }
         }
-        client.getSession().write(PetResponse.petStatUpdate(this));
         petStore = new byte[]{-1, -1, -1};
     }
 
@@ -5790,7 +5773,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         int skin;
         int face;
         int hair;
-        int pet1;
+        long pet1;
         int level;
         int job;
         int stat_str;
@@ -5806,8 +5789,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         int exp;
         int fame;
         int meso;
-        int pet2;
-        int pet3;
+        long pet2;
+        long pet3;
         int gasha_exp;
 
         LastStat(MapleCharacter chr) {
@@ -5815,7 +5798,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             this.skin = getSkinColor();
             this.face = getFace();
             this.hair = getHair();
-            //this.pet1;
+            this.pet1 = 0;
             this.level = getLevel();
             this.job = getJob();
             this.stat_str = getStat().getStr();
@@ -5831,9 +5814,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             this.exp = getExp();
             this.fame = getFame();
             this.meso = getMeso();
-            //this.pet2;
-            //this.pet3;
+            this.pet2 = 0;
+            this.pet3 = 0;
             this.gasha_exp = getGashaEXP();
+
+            // pet
+            MaplePet pet = chr.getPet(0);
+            if (pet != null && pet.getSummoned()) {
+                this.pet1 = pet.getUniqueId();
+            }
+            pet = chr.getPet(1);
+            if (pet != null && pet.getSummoned()) {
+                this.pet2 = pet.getUniqueId();
+            }
+            pet = chr.getPet(2);
+            if (pet != null && pet.getSummoned()) {
+                this.pet3 = pet.getUniqueId();
+            }
         }
 
         void Update(MapleCharacter chr) {
@@ -5849,7 +5846,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 this.hair = getHair();
                 this.statmask |= GW_CharacterStat.Flag.HAIR.get();
             }
-            //this.pet1;
             if (this.level != getLevel()) {
                 this.level = getLevel();
                 this.statmask |= GW_CharacterStat.Flag.LEVEL.get();
@@ -5916,6 +5912,26 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (this.gasha_exp != getGashaEXP()) {
                 this.gasha_exp = getGashaEXP();
                 this.statmask |= GW_CharacterStat.Flag.GASHAEXP.get();
+            }
+            // pet
+            MaplePet new_pet1 = chr.getPet(0);
+            MaplePet new_pet2 = chr.getPet(1);
+            MaplePet new_pet3 = chr.getPet(2);
+            long new_pet1_val = (new_pet1 != null && new_pet1.getSummoned()) ? new_pet1.getUniqueId() : 0;
+            long new_pet2_val = (new_pet2 != null && new_pet2.getSummoned()) ? new_pet2.getUniqueId() : 0;
+            long new_pet3_val = (new_pet3 != null && new_pet3.getSummoned()) ? new_pet3.getUniqueId() : 0;
+
+            if (this.pet1 != new_pet1_val) {
+                this.pet1 = new_pet1_val;
+                this.statmask |= GW_CharacterStat.Flag.PET1.get();
+            }
+            if (this.pet2 != new_pet2_val) {
+                this.pet2 = new_pet2_val;
+                this.statmask |= GW_CharacterStat.Flag.PET2.get();
+            }
+            if (this.pet3 != new_pet3_val) {
+                this.pet3 = new_pet3_val;
+                this.statmask |= GW_CharacterStat.Flag.PET3.get();
             }
         }
 
