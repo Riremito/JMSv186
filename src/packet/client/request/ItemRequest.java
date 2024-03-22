@@ -193,6 +193,11 @@ public class ItemRequest {
                 }
                 return true;
             }
+            // pet food
+            case 524: {
+                PetRequest.OnPetFood(chr, MapleInventoryType.CASH, item_slot, item_id);
+                return true;
+            }
             default: {
                 break;
             }

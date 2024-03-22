@@ -62,6 +62,15 @@ public class PetRequest {
         }
         // between CP_BEGIN_PET and CP_END_PET and some packets
         switch (header) {
+            case CP_UserPetFoodItemUseRequest: {
+                int timestamp = cp.Decode4();
+                short item_slot = cp.Decode2();
+                int item_id = cp.Decode4();
+
+                OnPetFood(chr, MapleInventoryType.USE, item_slot, item_id);
+                chr.updateTick(timestamp);
+                return true;
+            }
             // 期限切れデンデン使用時のステータス更新とPointShopへ入場準備
             case CP_UserDestroyPetItemRequest: {
                 c.getPlayer().UpdateStat(true); // OK, CANCEL 有効化
@@ -110,6 +119,36 @@ public class PetRequest {
             }
         }
         return false;
+    }
+
+    public static boolean OnPetFood(MapleCharacter chr, MapleInventoryType item_type, short item_slot, int item_id) {
+        MaplePet pet = chr.getPet(0);
+        MapleMap map = chr.getMap();
+
+        if (pet == null || map == null) {
+            return false;
+        }
+
+        IItem toUse = chr.getInventory(item_type).getItem(item_slot);
+        if (toUse == null || toUse.getItemId() != item_id || toUse.getQuantity() < 1) {
+            chr.SendPacket(MaplePacketCreator.enableActions());
+            return false;
+        }
+
+        int inc_fullness = MapleItemInformationProvider.getInstance().getInt(item_id, "spec/inc");
+        int pet_previous_level = pet.getLevel();
+        pet.feed(inc_fullness, (item_type == MapleInventoryType.CASH) ? 100 : 10);
+        MapleInventoryManipulator.removeById(chr.getClient(), item_type, item_id, 1, true, false);
+        chr.enableActions();
+
+        // 情報更新
+        chr.SendPacket(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+        // pet level up
+        if (pet_previous_level < pet.getLevel()) {
+            chr.SendPacket(LocalResponse.showOwnPetLevelUp(0));
+            map.broadcastMessage(RemoteResponse.showPetLevelUp(chr, 0));
+        }
+        return true;
     }
 
     public static boolean OnMove(ClientPacket cp, MapleCharacter chr) {
@@ -201,7 +240,7 @@ public class PetRequest {
                     newCloseness = 30000;
                 }
                 pet.setCloseness(newCloseness);
-                if (newCloseness >= GameConstants.getClosenessNeededForLevel(pet.getLevel() + 1)) {
+                if (newCloseness >= MaplePet.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
                     c.getSession().write(LocalResponse.showOwnPetLevelUp(petIndex));
                     chr.getMap().broadcastMessage(RemoteResponse.showPetLevelUp(chr, petIndex));
@@ -240,69 +279,6 @@ public class PetRequest {
         } else {
             c.getSession().write(MaplePacketCreator.enableActions());
         }
-    }
-
-    public static final void PetFood(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        int previousFullness = 100;
-        MaplePet pet = null;
-        if (chr == null) {
-            return;
-        }
-        for (final MaplePet pets : chr.getPets()) {
-            if (pets.getSummoned()) {
-                if (pets.getFullness() < previousFullness) {
-                    previousFullness = pets.getFullness();
-                    pet = pets;
-                }
-            }
-        }
-        if (pet == null) {
-            c.getSession().write(MaplePacketCreator.enableActions());
-            return;
-        }
-        slea.skip(6);
-        final int itemId = slea.readInt();
-        boolean gainCloseness = false;
-        if (Randomizer.nextInt(99) <= 50) {
-            gainCloseness = true;
-        }
-        if (pet.getFullness() < 100) {
-            int newFullness = pet.getFullness() + 30;
-            if (newFullness > 100) {
-                newFullness = 100;
-            }
-            pet.setFullness(newFullness);
-            final byte index = chr.getPetIndex(pet);
-            if (gainCloseness && pet.getCloseness() < 30000) {
-                int newCloseness = pet.getCloseness() + 1;
-                if (newCloseness > 30000) {
-                    newCloseness = 30000;
-                }
-                pet.setCloseness(newCloseness);
-                if (newCloseness >= GameConstants.getClosenessNeededForLevel(pet.getLevel() + 1)) {
-                    pet.setLevel(pet.getLevel() + 1);
-                    c.getSession().write(LocalResponse.showOwnPetLevelUp(index));
-                    chr.getMap().broadcastMessage(RemoteResponse.showPetLevelUp(chr, index));
-                }
-            }
-            c.getSession().write(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
-            chr.getMap().broadcastMessage(c.getPlayer(), PetResponse.commandResponse(chr.getId(), (byte) 1, index, true, true), true);
-        } else {
-            if (gainCloseness) {
-                int newCloseness = pet.getCloseness() - 1;
-                if (newCloseness < 0) {
-                    newCloseness = 0;
-                }
-                pet.setCloseness(newCloseness);
-                if (newCloseness < GameConstants.getClosenessNeededForLevel(pet.getLevel())) {
-                    pet.setLevel(pet.getLevel() - 1);
-                }
-            }
-            c.getSession().write(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
-            chr.getMap().broadcastMessage(chr, PetResponse.commandResponse(chr.getId(), (byte) 1, chr.getPetIndex(pet), false, true), true);
-        }
-        MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, itemId, 1, true, false);
-        c.getSession().write(MaplePacketCreator.enableActions());
     }
 
     public static final void Pickup_Pet(MapleCharacter chr, MapleMapItem mapitem, int pet_index) {

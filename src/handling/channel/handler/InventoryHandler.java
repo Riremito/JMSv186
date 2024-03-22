@@ -32,7 +32,6 @@ import client.inventory.IEquip.ScrollResult;
 import client.inventory.IItem;
 import client.ISkill;
 import client.inventory.ItemFlag;
-import client.inventory.MaplePet;
 import client.inventory.MapleMount;
 import client.MapleCharacter;
 import client.MapleClient;
@@ -60,7 +59,6 @@ import packet.server.response.FieldResponse;
 import packet.server.response.FreeMarketResponse;
 import packet.server.response.ItemResponse;
 import packet.server.response.LocalResponse;
-import packet.server.response.PetResponse;
 import packet.server.response.RemoteResponse;
 import packet.server.response.TemporaryStatResponse;
 import packet.server.response.VegaSpellResponse;
@@ -1591,76 +1589,6 @@ public class InventoryHandler {
             }
             case 5100000: { // Congratulatory Song
                 c.getPlayer().getMap().broadcastMessage(FieldResponse.musicChange("Jukebox/Congratulation"));
-                used = true;
-                break;
-            }
-            case 5240000:
-            case 5240001:
-            case 5240002:
-            case 5240003:
-            case 5240004:
-            case 5240005:
-            case 5240006:
-            case 5240007:
-            case 5240008:
-            case 5240009:
-            case 5240010:
-            case 5240011:
-            case 5240012:
-            case 5240013:
-            case 5240014:
-            case 5240015:
-            case 5240016:
-            case 5240017:
-            case 5240018:
-            case 5240019:
-            case 5240020:
-            case 5240021:
-            case 5240022:
-            case 5240023:
-            case 5240024:
-            case 5240025:
-            case 5240026:
-            case 5240027:
-            case 5240028: { // Pet food
-                MaplePet pet = c.getPlayer().getPet(0);
-
-                if (pet == null) {
-                    break;
-                }
-                if (!pet.canConsume(itemId)) {
-                    pet = c.getPlayer().getPet(1);
-                    if (pet != null) {
-                        if (!pet.canConsume(itemId)) {
-                            pet = c.getPlayer().getPet(2);
-                            if (pet != null) {
-                                if (!pet.canConsume(itemId)) {
-                                    break;
-                                }
-                            } else {
-                                break;
-                            }
-                        }
-                    } else {
-                        break;
-                    }
-                }
-                final byte petindex = c.getPlayer().getPetIndex(pet);
-                pet.setFullness(100);
-                if (pet.getCloseness() < 30000) {
-                    if (pet.getCloseness() + 100 > 30000) {
-                        pet.setCloseness(30000);
-                    } else {
-                        pet.setCloseness(pet.getCloseness() + 100);
-                    }
-                    if (pet.getCloseness() >= GameConstants.getClosenessNeededForLevel(pet.getLevel() + 1)) {
-                        pet.setLevel(pet.getLevel() + 1);
-                        c.getSession().write(LocalResponse.showOwnPetLevelUp(c.getPlayer().getPetIndex(pet)));
-                        c.getPlayer().getMap().broadcastMessage(RemoteResponse.showPetLevelUp(c.getPlayer(), petindex));
-                    }
-                }
-                c.getSession().write(PetResponse.updatePet(pet, c.getPlayer().getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
-                c.getPlayer().getMap().broadcastMessage(c.getPlayer(), PetResponse.commandResponse(c.getPlayer().getId(), (byte) 1, petindex, true, true), true);
                 used = true;
                 break;
             }

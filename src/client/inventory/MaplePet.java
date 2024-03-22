@@ -39,6 +39,16 @@ import server.movement.LifeMovementFragment;
 public class MaplePet implements Serializable {
 
     private static final long serialVersionUID = 9179541993413738569L;
+
+    private static int pet_level_limit = 30;
+    private static int pet_closeness_limit = 30000;
+    private static int pet_fullness_limit = 100;
+    private static final int[] closeness_table = {0, 1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22547, 26074, 30000};
+
+    public static int getClosenessNeededForLevel(final int level) {
+        return closeness_table[level - 1];
+    }
+
     private String name;
     private int Fh = 0, stance = 0, uniqueid, petitemid, secondsLeft = 0;
     private Point pos;
@@ -252,5 +262,47 @@ public class MaplePet implements Serializable {
 
     public short getFlags() {
         return skill_mask;
+    }
+
+    // 親密度
+    public boolean addCloseness(int val) {
+        if (pet_closeness_limit <= (int) this.closeness) {
+            return false;
+        }
+        this.closeness += val;
+        if (pet_closeness_limit < (int) this.closeness) {
+            this.closeness = (short) pet_closeness_limit;
+        }
+        return getClosenessNeededForLevel(getLevel() + 1) <= this.closeness;
+    }
+
+    // エサやり
+    public void feed(int inc_fullness, int inc_closeness) {
+        // 満腹時かつ通常エサの場合は親密度を下げる
+        if (pet_fullness_limit <= this.fullness && inc_closeness != 100) {
+            inc_closeness = -1;
+        }
+        // 満腹度設定
+        if (pet_fullness_limit < (this.fullness + inc_fullness)) {
+            this.fullness = (byte) pet_fullness_limit;
+        } else {
+            this.fullness += inc_fullness;
+        }
+        // 親密度設定
+        if (inc_closeness < 0 && (this.closeness + inc_closeness) < 0) {
+            this.closeness = 0;
+        }
+        if (0 < inc_closeness && pet_closeness_limit < (this.closeness + inc_closeness)) {
+            this.closeness = (short) pet_closeness_limit;
+        } else {
+            this.closeness += inc_closeness;
+        }
+        // レベル設定
+        if ((getLevel() <= pet_level_limit - 1) && getClosenessNeededForLevel(getLevel() + 1) <= this.closeness) {
+            level += 1;
+            if (pet_level_limit < level) {
+                level = (byte) pet_level_limit;
+            }
+        }
     }
 }
