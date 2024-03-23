@@ -88,6 +88,7 @@ import packet.client.request.UserRequest;
 import packet.server.response.EvanDragonResponse;
 import packet.server.response.FreeMarketResponse;
 import packet.server.response.FriendResponse;
+import packet.server.response.KeyMapResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.MobResponse;
 import packet.server.response.MonsterCarnivalResponse;
@@ -141,6 +142,7 @@ import server.maps.MapleFoothold;
 import server.movement.LifeMovementFragment;
 import tools.ConcurrentEnumMap;
 import tools.FileoutputUtil;
+import wz.LoadData;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Serializable {
 
@@ -222,6 +224,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private int gashaEXP = 0;
     private LastStat laststat = null;
     private int last_skill_up_id = 0;
+    // ペット回復薬
+    private int pet_auto_hp_item_id = 0;
+    private int pet_auto_mp_item_id = 0;
+    private int pet_auto_cure_item_id = 0;
 
     public int getLastSkillUp() {
         return last_skill_up_id;
@@ -5756,6 +5762,39 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void enableActions() {
         UserRequest.SendCharacterStat(this);
+    }
+
+    public void setPetAutoHPItem(int item_id) {
+        if (LoadData.IsValidItemID(item_id)) {
+            this.pet_auto_hp_item_id = item_id;
+            SendPacket(KeyMapResponse.getPetAutoHP(this));
+        }
+    }
+
+    public void setPetAutoMPItem(int item_id) {
+        if (LoadData.IsValidItemID(item_id)) {
+            this.pet_auto_mp_item_id = item_id;
+            SendPacket(KeyMapResponse.getPetAutoMP(this));
+        }
+    }
+
+    public void setPetAutoCureItem(int item_id) {
+        if (LoadData.IsValidItemID(item_id)) {
+            this.pet_auto_cure_item_id = item_id;
+            SendPacket(KeyMapResponse.getPetAutoCure(this));
+        }
+    }
+
+    public int getPetAutoHPItem() {
+        return this.pet_auto_hp_item_id;
+    }
+
+    public int getPetAutoMPItem() {
+        return this.pet_auto_mp_item_id;
+    }
+
+    public int getPetAutoCureItem() {
+        return this.pet_auto_cure_item_id;
     }
 
     private class LastStat {

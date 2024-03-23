@@ -627,9 +627,10 @@ public class ServerPacket {
         LP_END_CASHSHOP,
         LP_BEGIN_FUNCKEYMAPPED,
         LP_FuncKeyMappedInit, // KEYMAP
-        LP_PetConsumeItemInit, // PET_AUTO_HEAL
         LP_END_FUNCKEYMAPPED,
+        LP_PetConsumeItemInit, // PET_AUTO_HEAL
         LP_PetConsumeMPItemInit,
+        LP_JMS_PetConsumeCureItemInit,
         LP_CheckSSN2OnCreateNewCharacterResult,
         LP_CheckSPWOnCreateNewCharacterResult,
         LP_FirstSSNOnCreateNewCharacterResult,

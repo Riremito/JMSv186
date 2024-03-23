@@ -94,6 +94,24 @@ public class KeyMapResponse {
         return sp.Get();
     }
 
+    public static MaplePacket getPetAutoHP(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetConsumeItemInit);
+        sp.Encode4(chr.getPetAutoHPItem());
+        return sp.Get();
+    }
+
+    public static MaplePacket getPetAutoMP(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetConsumeMPItemInit);
+        sp.Encode4(chr.getPetAutoMPItem());
+        return sp.Get();
+    }
+
+    public static MaplePacket getPetAutoCure(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_PetConsumeCureItemInit);
+        sp.Encode4(chr.getPetAutoCureItem());
+        return sp.Get();
+    }
+
     // LP_PetConsumeItemInit
     // LP_PetConsumeMPItemInit
 }

@@ -37,11 +37,11 @@ public class KeyMapRequest {
      */
     public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
-        
+
         if (chr == null) {
             return false;
         }
-        
+
         switch (header) {
             // ChangeSkillMacro
             case CP_UserMacroSysDataModified: {
@@ -52,10 +52,10 @@ public class KeyMapRequest {
                     int skill_id_1 = cp.Decode4();
                     int skill_id_2 = cp.Decode4();
                     int skill_id_3 = cp.Decode4();
-                    
+
                     chr.updateMacros(i, new SkillMacro(skill_id_1, skill_id_2, skill_id_3, name, shout, i));
                 }
-                
+
                 return true;
             }
             // ChangeKeymap
@@ -72,28 +72,28 @@ public class KeyMapRequest {
         }
         return false;
     }
-    
+
     public enum FuncKeyMappedType {
         KEY_NORMAL(0),
         KEY_PET_HP(1),
         KEY_PET_MP(2),
         KEY_PET_CURE(3),
         UNKNOWN(-1);
-        
+
         private int value;
-        
+
         FuncKeyMappedType(int flag) {
             value = flag;
         }
-        
+
         FuncKeyMappedType() {
             value = -1;
         }
-        
+
         public int get() {
             return value;
         }
-        
+
         public static FuncKeyMappedType find(int val) {
             for (final FuncKeyMappedType o : FuncKeyMappedType.values()) {
                 if (o.get() == val) {
@@ -103,10 +103,10 @@ public class KeyMapRequest {
             return UNKNOWN;
         }
     }
-    
+
     public static boolean OnFuncKeyMappedModified(ClientPacket cp, MapleCharacter chr) {
         int funckey_type = cp.Decode4();
-        
+
         switch (FuncKeyMappedType.find(funckey_type)) {
             case KEY_NORMAL: {
                 int count = cp.Decode4();
@@ -118,10 +118,19 @@ public class KeyMapRequest {
                 }
                 return true;
             }
-            case KEY_PET_HP:
-            case KEY_PET_MP:
+            case KEY_PET_HP: {
+                int item_id = cp.Decode4();
+                chr.setPetAutoHPItem(item_id);
+                return true;
+            }
+            case KEY_PET_MP: {
+                int item_id = cp.Decode4();
+                chr.setPetAutoMPItem(item_id);
+                return true;
+            }
             case KEY_PET_CURE: {
                 int item_id = cp.Decode4();
+                chr.setPetAutoCureItem(item_id);
                 return true;
             }
             default: {
@@ -129,8 +138,7 @@ public class KeyMapRequest {
                 break;
             }
         }
-        
+
         return false;
     }
-    
 }
