@@ -27,6 +27,7 @@ import packet.client.request.EvanDragonRequest;
 import packet.client.request.FriendRequest;
 import packet.client.request.GashaEXPPacket;
 import packet.client.request.ItemRequest;
+import packet.client.request.KeyMapRequest;
 import packet.client.request.MobRequest;
 import packet.client.request.NPCPacket;
 import packet.client.request.PortalPacket;
@@ -645,11 +646,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayerHandler.ChangeMonsterBookCover(p.readInt(), c, c.getPlayer());
                 return true;
             }
-            case CP_FuncKeyMappedModified: {
-                // c
-                PlayerHandler.ChangeKeymap(p, c.getPlayer());
-                return true;
-            }
             case CP_UserTransferFieldRequest: {
                 // c
                 if (!PortalPacket.OnPacket(cp, header, c)) {
@@ -685,11 +681,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_RequestIncCombo: {
                 // pc
                 PlayerHandler.AranCombo(c, c.getPlayer());
-                return true;
-            }
-            case CP_UserMacroSysDataModified: {
-                // c
-                PlayerHandler.ChangeSkillMacro(p, c.getPlayer());
                 return true;
             }
             case CP_UserGivePopularityRequest: {
@@ -1119,6 +1110,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PetRequest.OnPetPacket(header, cp, c);
                 return true;
             }
+            // KeyMap
+            case CP_UserMacroSysDataModified:
+            case CP_FuncKeyMappedModified:
+            case CP_QuickslotKeyMappedModified: {
+                KeyMapRequest.OnPacket(header, cp, c);
+                return true;
+            }
+
             default: {
                 break;
             }

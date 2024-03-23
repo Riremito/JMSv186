@@ -46,6 +46,7 @@ import packet.client.request.SocketPacket;
 import packet.server.response.FamilyResponse;
 import packet.server.response.FriendResponse;
 import packet.server.response.GuildResponse;
+import packet.server.response.KeyMapResponse;
 import packet.server.response.PetResponse;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
@@ -205,13 +206,13 @@ public class InterServerHandler {
             FileoutputUtil.outputFileError(FileoutputUtil.Login_Error, e);
         }
         c.getSession().write(FamilyResponse.getFamilyData());
-        player.sendMacros();
         player.showNote();
         player.updatePartyMemberHP();
         player.startFairySchedule(false);
         player.baseSkills(); //fix people who've lost skills.
 
-        c.getSession().write(MaplePacketCreator.getKeymap(player.getKeyLayout()));
+        c.getSession().write(KeyMapResponse.getKeymap(player, false));
+        c.getSession().write(KeyMapResponse.getMacros(player));
 
         for (MapleQuestStatus status : player.getStartedQuests()) {
             if (status.hasMobKills()) {

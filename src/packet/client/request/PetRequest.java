@@ -26,7 +26,6 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import client.inventory.PetCommand;
 import client.inventory.PetDataFactory;
-import constants.GameConstants;
 import handling.channel.handler.InventoryHandler;
 import handling.world.MaplePartyCharacter;
 import java.util.LinkedList;

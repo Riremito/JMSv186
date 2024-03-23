@@ -25,7 +25,6 @@ import java.awt.Point;
 import client.inventory.IItem;
 import client.ISkill;
 import client.SkillFactory;
-import client.SkillMacro;
 import constants.GameConstants;
 import client.inventory.MapleInventoryType;
 import client.MapleBuffStat;
@@ -38,7 +37,6 @@ import constants.MapConstants;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import packet.client.ClientPacket;
-import packet.client.request.MobRequest;
 import packet.server.response.LocalResponse;
 import packet.server.response.MobResponse;
 import packet.server.response.RemoteResponse;
@@ -79,35 +77,6 @@ public class PlayerHandler {
         if (bookid == 0 || GameConstants.isMonsterCard(bookid)) {
             chr.setMonsterBookCover(bookid);
             chr.getMonsterBook().updateCard(c, bookid);
-        }
-    }
-
-    public static void ChangeSkillMacro(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        final int num = slea.readByte();
-        String name;
-        int shout, skill1, skill2, skill3;
-        SkillMacro macro;
-
-        for (int i = 0; i < num; i++) {
-            name = slea.readMapleAsciiString();
-            shout = slea.readByte();
-            skill1 = slea.readInt();
-            skill2 = slea.readInt();
-            skill3 = slea.readInt();
-
-            macro = new SkillMacro(skill1, skill2, skill3, name, shout, i);
-            chr.updateMacros(i, macro);
-        }
-    }
-
-    public static final void ChangeKeymap(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        if (slea.available() > 8 && chr != null) { // else = pet auto pot
-            chr.updateTick(slea.readInt());
-            final int numChanges = slea.readInt();
-
-            for (int i = 0; i < numChanges; i++) {
-                chr.changeKeybinding(slea.readInt(), slea.readByte(), slea.readInt());
-            }
         }
     }
 

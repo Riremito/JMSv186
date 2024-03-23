@@ -3434,15 +3434,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
     }
 
-    public void sendMacros() {
-        for (int i = 0; i < 5; i++) {
-            if (skillMacros[i] != null) {
-                client.getSession().write(MaplePacketCreator.getMacros(skillMacros));
-                break;
-            }
-        }
-    }
-
     public void updateMacros(int position, SkillMacro updateMacro) {
         skillMacros[position] = updateMacro;
     }

@@ -31,11 +31,9 @@ import client.inventory.IItem;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
-import client.MapleKeyLayout;
 import client.MapleStat;
 import client.inventory.IEquip.ScrollResult;
 import client.inventory.MapleRing;
-import client.SkillMacro;
 import handling.MaplePacket;
 import constants.ServerConstants;
 import java.net.UnknownHostException;
@@ -1051,17 +1049,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket getKeymap(MapleKeyLayout layout) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_FuncKeyMappedInit.Get());
-        mplew.write(0);
-
-        layout.writeData(mplew);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket getWhisper(String sender, int channel, String text) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -1501,30 +1488,6 @@ public class MaplePacketCreator {
         mplew.write(canuse ? 1 : 0);
         mplew.write(success ? 1 : 0);
 
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getMacros(SkillMacro[] macros) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_MacroSysDataInit.Get());
-        int count = 0;
-        for (int i = 0; i < 5; i++) {
-            if (macros[i] != null) {
-                count++;
-            }
-        }
-        mplew.write(count); // number of macros
-        for (int i = 0; i < 5; i++) {
-            SkillMacro macro = macros[i];
-            if (macro != null) {
-                mplew.writeMapleAsciiString(macro.getName());
-                mplew.write(macro.getShout());
-                mplew.writeInt(macro.getSkill1());
-                mplew.writeInt(macro.getSkill2());
-                mplew.writeInt(macro.getSkill3());
-            }
-        }
         return mplew.getPacket();
     }
 
