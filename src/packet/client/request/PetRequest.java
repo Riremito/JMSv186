@@ -53,6 +53,8 @@ import tools.data.input.SeekableLittleEndianAccessor;
  */
 public class PetRequest {
 
+    private static final int EXCEPTION_LIST_MESO = 0x7FFFFFFF;
+
     // CUserPool::OnUserCommonPacket
     public static boolean OnPetPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
@@ -110,7 +112,11 @@ public class PetRequest {
                 return true;
             }
             case CP_PetUpdateExceptionListRequest: {
-
+                int unk1 = cp.Decode4(); // not used
+                byte item_count = cp.Decode1();
+                for (int i = 0; i < item_count; i++) {
+                    int item_id = cp.Decode4();
+                }
                 return true;
             }
             default: {

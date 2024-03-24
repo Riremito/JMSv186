@@ -213,16 +213,16 @@ public class GW_ItemSlotBase {
                 // GW_ItemSlotPet::RawDecode
                 data.EncodeBuffer(item.getPet().getName(), 13);
                 data.Encode1(item.getPet().getLevel());
-                data.Encode2(item.getPet().getCloseness());
-                data.Encode1(item.getPet().getFullness());
+                data.Encode2(item.getPet().getCloseness()); // nTameness_CS
+                data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
                 // 魔法の効力期限, Windows時間
-                data.Encode8((Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000); // time
-                data.Encode2(0);
-                data.Encode2(item.getPet().getFlags());
+                data.Encode8((Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000); // dateDead
+                data.Encode2(0); // nPetAttribute_CS
+                data.Encode2(item.getPet().getFlags()); // usPetSkill_CS
                 // 魔法の時間, デンデン専用 (残り時間)
-                data.Encode4((item.getItemId() == 5000054) ? 3600 : 0);
-                data.Encode2(0);
-                data.Encode1(0);
+                data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
+                data.Encode2(0); // nAttribute_CS
+                data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                 data.Encode4(0);
                 break;
             }
