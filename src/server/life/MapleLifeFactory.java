@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.life;
 
-import config.ServerConfig;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +30,6 @@ import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
 import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import provider.WzXML.MapleDataType;
 import tools.Pair;
@@ -98,6 +95,22 @@ public class MapleLifeFactory {
         return questCount.get(id);
     }
 
+    // fix broken MP mob
+    public static boolean IsBrokenMPMob(int mob_id) {
+        switch (mob_id) {
+            // レプラコーン, leprechaun
+            case 9400583:
+            case 9400584: {
+                // enable 8000 damage candy attack skill
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     public static MapleMonster getMonster(int mid) {
         MapleMonsterStats stats = monsterStats.get(Integer.valueOf(mid));
 
@@ -110,7 +123,9 @@ public class MapleLifeFactory {
             stats = new MapleMonsterStats();
 
             stats.setHp(MapleDataTool.getIntConvert("maxHP", monsterInfoData));
-            stats.setMp(MapleDataTool.getIntConvert("maxMP", monsterInfoData, 0));
+            int mp = MapleDataTool.getIntConvert("maxMP", monsterInfoData, 0);
+            stats.setMp(IsBrokenMPMob(mid) ? 30000 : mp);
+
             stats.setExp(MapleDataTool.getIntConvert("exp", monsterInfoData, 0));
             stats.setLevel((short) MapleDataTool.getIntConvert("level", monsterInfoData));
             stats.setRemoveAfter(MapleDataTool.getIntConvert("removeAfter", monsterInfoData, 0));
