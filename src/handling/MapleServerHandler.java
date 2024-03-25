@@ -742,13 +742,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
-            case CP_UserStatChangeItemUseRequest: {
-                // c
-                InventoryHandler.UseItem(p, c, c.getPlayer());
-                return true;
-            }
             case CP_UserItemReleaseRequest: {
-                InventoryHandler.UseMagnify(cp, c);
+                ItemRequest.UseMagnify(cp, c);
                 return true;
             }
             case CP_UserScriptItemUseRequest: {
@@ -758,13 +753,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_UserPortalScrollUseRequest: {
                 // c
-                InventoryHandler.UseReturnScroll(p, c, c.getPlayer());
+                ItemRequest.UseReturnScroll(p, c, c.getPlayer());
                 return true;
             }
             case CP_UserUpgradeItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
-                if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (ServerConfig.version > 131) ? (byte) p.readShort() : (byte) p.readByte(), c, c.getPlayer())) {
+                if (ItemRequest.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (ServerConfig.version > 131) ? (byte) p.readShort() : (byte) p.readByte(), c, c.getPlayer())) {
                     c.getPlayer().saveToDB(false, false);
                 }
                 return true;
@@ -772,7 +767,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserItemOptionUpgradeItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
-                if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) 0, c, c.getPlayer())) {
+                if (ItemRequest.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) 0, c, c.getPlayer())) {
                     c.getPlayer().saveToDB(false, false);
                 }
                 return true;
@@ -780,14 +775,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserHyperUpgradeItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
-                if (InventoryHandler.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) 0, c, c.getPlayer())) {
+                if (ItemRequest.UseUpgradeScroll((byte) p.readShort(), (byte) p.readShort(), (byte) 0, c, c.getPlayer())) {
                     c.getPlayer().saveToDB(false, false);
                 }
                 return true;
             }
             case CP_UserMobSummonItemUseRequest: {
                 // c
-                InventoryHandler.UseSummonBag(p, c, c.getPlayer());
+                ItemRequest.UseSummonBag(p, c, c.getPlayer());
                 return true;
             }
             case USE_TREASUER_CHEST: {
@@ -798,19 +793,19 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserSkillLearnItemUseRequest: {
                 // 実装が悪い
                 p.readInt();
-                if (InventoryHandler.UseSkillBook((byte) p.readShort(), p.readInt(), c, c.getPlayer())) {
+                if (ItemRequest.UseSkillBook((byte) p.readShort(), p.readInt(), c, c.getPlayer())) {
                     c.getPlayer().saveToDB(false, false);
                 }
                 return true;
             }
             case CP_UserBridleItemUseRequest: {
                 // c
-                InventoryHandler.UseCatchItem(p, c, c.getPlayer());
+                ItemRequest.UseCatchItem(p, c, c.getPlayer());
                 return true;
             }
             case CP_UserTamingMobFoodItemUseRequest: {
                 // c
-                InventoryHandler.UseMountFood(p, c, c.getPlayer());
+                ItemRequest.UseMountFood(p, c, c.getPlayer());
                 return true;
             }
             case CP_UserUseGachaponBoxRequest: {
@@ -1091,6 +1086,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 GashaEXPPacket.OnPacket(cp, header, c);
                 return true;
             }
+            case CP_UserStatChangeItemUseRequest:
             case CP_JMS_JUKEBOX:
             case CP_JMS_PINKBEAN_PORTAL_CREATE:
             case CP_JMS_PINKBEAN_PORTAL_ENTER: {

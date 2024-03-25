@@ -20,7 +20,6 @@ package packet.client.request;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import client.MapleDisease;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
@@ -40,7 +39,6 @@ import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
 import server.life.MapleMonster;
-import server.maps.FieldLimitType;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
 import server.maps.MapleMapObjectType;
@@ -58,7 +56,7 @@ public class PetRequest {
     // CUserPool::OnUserCommonPacket
     public static boolean OnPetPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
-        if (chr == null || chr.getMap() == null) {
+        if (chr == null || !chr.isAlive() || chr.getMap() == null) {
             return false;
         }
         // between CP_BEGIN_PET and CP_END_PET and some packets
@@ -108,7 +106,7 @@ public class PetRequest {
             }
             // Pet_AutoPotion
             case CP_PetStatChangeItemUseRequest: {
-
+                OnStatChangeItemUse(cp, chr);
                 return true;
             }
             case CP_PetUpdateExceptionListRequest: {
@@ -223,6 +221,14 @@ public class PetRequest {
         return true;
     }
 
+    public static boolean OnStatChangeItemUse(ClientPacket cp, MapleCharacter chr) {
+        byte unk1 = cp.Decode1();
+        int timestamp = cp.Decode4();
+        short item_slot = cp.Decode2();
+        int item_id = cp.Decode4();
+        return ItemRequest.UseItem(chr, item_slot, item_id, timestamp);
+    }
+
     public static final void PetCommand(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
         final int petIndex = slea.readInt();
         /*chr.getPetIndex(slea.readInt());*/
@@ -254,36 +260,6 @@ public class PetRequest {
             }
         }
         chr.getMap().broadcastMessage(chr, PetResponse.commandResponse(chr.getId(), command, petIndex, success, false), true);
-    }
-
-    public static final void Pet_AutoPotion(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        slea.skip(13);
-        final byte slot = slea.readByte();
-        if (chr == null || !chr.isAlive() || chr.getMapId() == 749040100 || chr.getMap() == null || chr.hasDisease(MapleDisease.POTION)) {
-            return;
-        }
-        final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
-        if (toUse == null || toUse.getQuantity() < 1) {
-            c.getSession().write(MaplePacketCreator.enableActions());
-            return;
-        }
-        final long time = System.currentTimeMillis();
-        if (chr.getNextConsume() > time) {
-            chr.dropMessage(5, "You may not use this item yet.");
-            c.getSession().write(MaplePacketCreator.enableActions());
-            return;
-        }
-        if (!FieldLimitType.PotionUse.check(chr.getMap().getFieldLimit()) || chr.getMapId() == 610030600) {
-            //cwk quick hack
-            if (MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyTo(chr)) {
-                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
-                if (chr.getMap().getConsumeItemCoolTime() > 0) {
-                    chr.setNextConsume(time + (chr.getMap().getConsumeItemCoolTime() * 1000));
-                }
-            }
-        } else {
-            c.getSession().write(MaplePacketCreator.enableActions());
-        }
     }
 
     public static final void Pickup_Pet(MapleCharacter chr, MapleMapItem mapitem, int pet_index) {

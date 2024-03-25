@@ -20,22 +20,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.channel.handler;
 
-import java.util.Map;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 import java.awt.Point;
 
 import client.inventory.Equip;
-import client.inventory.IEquip;
 import client.inventory.IEquip.ScrollResult;
 import client.inventory.IItem;
 import client.ISkill;
 import client.inventory.ItemFlag;
-import client.inventory.MapleMount;
 import client.MapleCharacter;
 import client.MapleClient;
-import client.MapleDisease;
 import client.inventory.MapleInventoryType;
 import client.inventory.MapleInventory;
 import client.MapleStat;
@@ -45,7 +41,6 @@ import client.SkillFactory;
 import client.anticheat.CheatingOffense;
 import config.ServerConfig;
 import debug.Debug;
-import debug.DebugScriptManager;
 import handling.world.MaplePartyCharacter;
 import handling.world.World;
 import java.awt.Rectangle;
@@ -55,13 +50,12 @@ import packet.client.ClientPacket;
 import packet.client.request.ContextPacket;
 import packet.client.request.DropPacket;
 import packet.client.request.DropPacket.LeaveType;
+import packet.client.request.ItemRequest;
 import packet.server.response.FieldResponse;
 import packet.server.response.FreeMarketResponse;
 import packet.server.response.ItemResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.RemoteResponse;
-import packet.server.response.TemporaryStatResponse;
-import packet.server.response.VegaSpellResponse;
 import packet.server.response.ViciousHammerResponse;
 import server.Randomizer;
 import server.RandomRewards;
@@ -79,7 +73,6 @@ import server.maps.MapleMapObjectType;
 import server.life.MapleMonster;
 import server.life.MapleLifeFactory;
 import scripting.NPCScriptManager;
-import server.StructPotentialItem;
 import server.maps.MapleMist;
 import server.shops.HiredMerchant;
 import server.shops.IMaplePlayerShop;
@@ -235,458 +228,6 @@ public class InventoryHandler {
             }
         }
         return false;
-    }
-
-    public static final void UseItem(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (chr == null || !chr.isAlive() || chr.getMapId() == 749040100 || chr.getMap() == null || chr.hasDisease(MapleDisease.POTION)) {
-            c.getSession().write(MaplePacketCreator.enableActions());
-            return;
-        }
-        final long time = System.currentTimeMillis();
-        if (chr.getNextConsume() > time) {
-            chr.dropMessage(5, "You may not use this item yet.");
-            c.getSession().write(MaplePacketCreator.enableActions());
-            return;
-        }
-        c.getPlayer().updateTick(slea.readInt());
-        final byte slot = (byte) slea.readShort();
-        final int itemId = slea.readInt();
-        final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
-
-        // デバッグモード, 獣の肉を使用
-        if (itemId == 2010001) {
-            c.getSession().write(MaplePacketCreator.enableActions());
-            try {
-                DebugScriptManager.getInstance().executeDebugScript(c);
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-
-        if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId) {
-            c.getSession().write(MaplePacketCreator.enableActions());
-            return;
-        }
-        if (!FieldLimitType.PotionUse.check(chr.getMap().getFieldLimit()) || chr.getMapId() == 610030600) { //cwk quick hack
-            if (MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyTo(chr)) {
-                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
-                if (chr.getMap().getConsumeItemCoolTime() > 0) {
-                    chr.setNextConsume(time + (chr.getMap().getConsumeItemCoolTime() * 1000));
-                }
-            }
-
-        } else {
-            c.getSession().write(MaplePacketCreator.enableActions());
-        }
-    }
-
-    public static final void UseReturnScroll(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (!chr.isAlive()) {
-            c.getSession().write(MaplePacketCreator.enableActions());
-            return;
-        }
-        c.getPlayer().updateTick(slea.readInt());
-        final byte slot = (byte) slea.readShort();
-        final int itemId = slea.readInt();
-        final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
-
-        if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId) {
-            c.getSession().write(MaplePacketCreator.enableActions());
-            return;
-        }
-        if (MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyReturnScroll(chr)) {
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
-        } else {
-            c.getSession().write(MaplePacketCreator.enableActions());
-        }
-    }
-
-    public static final void UseMagnify(ClientPacket p, final MapleClient c) {
-        p.Decode4(); // time
-        short slot_use_item = p.Decode2();
-        short slot_equip_item = p.Decode2();
-
-        final IItem magnify = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot_use_item);
-        IItem toReveal = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(slot_equip_item);
-
-        if (toReveal == null) {
-            toReveal = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slot_equip_item);
-        }
-
-        if (magnify == null || toReveal == null) {
-            c.getSession().write(MaplePacketCreator.getInventoryFull());
-            return;
-        }
-        final Equip eqq = (Equip) toReveal;
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        final int reqLevel = ii.getReqLevel(eqq.getItemId()) / 10;
-        if (eqq.getState() == 1 && (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3))) {
-            final List<List<StructPotentialItem>> pots = new LinkedList<List<StructPotentialItem>>(ii.getAllPotentialInfo().values());
-            int new_state = Math.abs(eqq.getPotential1());
-            if (new_state > 7 || new_state < 5) { //luls
-                new_state = 5;
-            }
-            final int lines = (eqq.getPotential2() != 0 ? 3 : 2);
-            while (eqq.getState() != new_state) {
-                //31001 = haste, 31002 = door, 31003 = se, 31004 = hb
-                for (int i = 0; i < lines; i++) { //2 or 3 line
-                    boolean rewarded = false;
-                    while (!rewarded) {
-                        StructPotentialItem pot = pots.get(Randomizer.nextInt(pots.size())).get(reqLevel);
-                        if (pot != null && pot.reqLevel / 10 <= reqLevel && GameConstants.optionTypeFits(pot.optionType, eqq.getItemId()) && GameConstants.potentialIDFits(pot.potentialID, new_state, i)) { //optionType
-                            //have to research optionType before making this truely sea-like
-                            if (i == 0) {
-                                eqq.setPotential1(pot.potentialID);
-                            } else if (i == 1) {
-                                eqq.setPotential2(pot.potentialID);
-                            } else if (i == 2) {
-                                eqq.setPotential3(pot.potentialID);
-                            }
-                            rewarded = true;
-                        }
-                    }
-                }
-            }
-            c.SendPacket(ContextPacket.scrolledItem(magnify, toReveal, false, true));
-            c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.getPotentialReset(c.getPlayer().getId(), eqq.getPosition()));
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
-        } else {
-            c.getSession().write(MaplePacketCreator.getInventoryFull());
-            return;
-        }
-    }
-
-    public static final boolean UseUpgradeScroll(final byte slot, final byte dst, final byte ws, final MapleClient c, final MapleCharacter chr) {
-        return UseUpgradeScroll(slot, dst, ws, c, chr, 0);
-    }
-
-    public static final boolean UseUpgradeScroll(final byte slot, final byte dst, final byte ws, final MapleClient c, final MapleCharacter chr, final int vegas) {
-        boolean whiteScroll = true;
-        boolean legendarySpirit = false; // legendary spirit skill
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-
-        /*
-        if ((ws & 2) == 2) {
-            whiteScroll = true;
-        }
-         */
-        IEquip toScroll;
-        if (dst < 0) {
-            toScroll = (IEquip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
-        } else { // legendary spirit
-            legendarySpirit = true;
-            toScroll = (IEquip) chr.getInventory(MapleInventoryType.EQUIP).getItem(dst);
-        }
-        if (toScroll == null) {
-            return false;
-        }
-        final byte oldLevel = toScroll.getLevel();
-        final byte oldEnhance = toScroll.getEnhance();
-        final byte oldState = toScroll.getState();
-        final byte oldFlag = toScroll.getFlag();
-        final byte oldSlots = toScroll.getUpgradeSlots();
-
-        IItem scroll = chr.getInventory(MapleInventoryType.USE).getItem(slot);
-        if (scroll == null) {
-            c.getSession().write(MaplePacketCreator.getInventoryFull());
-            return false;
-        }
-
-        // 黄金つち (ビシャスのハンマー)
-        if (scroll.getItemId() == 2470000) {
-            final Equip toHammer = (Equip) toScroll;
-
-            if (toHammer.getViciousHammer() >= 2 || toHammer.getUpgradeSlots() > 120) {
-                c.getSession().write(MaplePacketCreator.getInventoryFull());
-                return false;
-            }
-
-            toHammer.setViciousHammer((byte) (toHammer.getViciousHammer() + 1));
-            toHammer.setUpgradeSlots((byte) (toHammer.getUpgradeSlots() + 1));
-
-            c.SendPacket(ContextPacket.scrolledItem(scroll, toHammer, false, false));
-            chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
-            chr.getMap().broadcastMessage(chr, MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), IEquip.ScrollResult.SUCCESS, legendarySpirit), vegas == 0);
-            return true;
-        }
-
-        if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
-            if (toScroll.getUpgradeSlots() < 1) {
-                c.getSession().write(MaplePacketCreator.getInventoryFull());
-                return false;
-            }
-        } else if (GameConstants.isEquipScroll(scroll.getItemId())) {
-            if (toScroll.getUpgradeSlots() >= 1 || toScroll.getEnhance() >= 100 || vegas > 0 || ii.isCash(toScroll.getItemId())) {
-                c.getSession().write(MaplePacketCreator.getInventoryFull());
-                return false;
-            }
-        } else if (GameConstants.isPotentialScroll(scroll.getItemId())) {
-            if (toScroll.getState() >= 1 || (toScroll.getLevel() == 0 && toScroll.getUpgradeSlots() == 0) || vegas > 0 || ii.isCash(toScroll.getItemId())) {
-                c.getSession().write(MaplePacketCreator.getInventoryFull());
-                return false;
-            }
-        }
-        if (!GameConstants.canScroll(toScroll.getItemId()) && !GameConstants.isChaosScroll(toScroll.getItemId())) {
-            c.getSession().write(MaplePacketCreator.getInventoryFull());
-            return false;
-        }
-        if ((GameConstants.isCleanSlate(scroll.getItemId()) || GameConstants.isTablet(scroll.getItemId()) || GameConstants.isChaosScroll(scroll.getItemId())) && (vegas > 0 || ii.isCash(toScroll.getItemId()))) {
-            c.getSession().write(MaplePacketCreator.getInventoryFull());
-            return false;
-        }
-        if (GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() < 0) { //not a durability item
-            c.getSession().write(MaplePacketCreator.getInventoryFull());
-            return false;
-        } else if (!GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() >= 0) {
-            c.getSession().write(MaplePacketCreator.getInventoryFull());
-            return false;
-        }
-
-        IItem wscroll = null;
-
-        // Anti cheat and validation
-        List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
-        if (scrollReqs.size() > 0 && !scrollReqs.contains(toScroll.getItemId())) {
-            c.getSession().write(MaplePacketCreator.getInventoryFull());
-            return false;
-        }
-
-        if (whiteScroll) {
-            wscroll = chr.getInventory(MapleInventoryType.USE).findById(2340000);
-            if (wscroll == null) {
-                whiteScroll = false;
-            }
-        }
-        if (scroll.getItemId() == 2049115 && toScroll.getItemId() != 1003068) {
-            //ravana
-            return false;
-        }
-        if (GameConstants.isTablet(scroll.getItemId())) {
-            switch (scroll.getItemId() % 1000 / 100) {
-                case 0: //1h
-                    if (GameConstants.isTwoHanded(toScroll.getItemId()) || !GameConstants.isWeapon(toScroll.getItemId())) {
-                        return false;
-                    }
-                    break;
-                case 1: //2h
-                    if (!GameConstants.isTwoHanded(toScroll.getItemId()) || !GameConstants.isWeapon(toScroll.getItemId())) {
-                        return false;
-                    }
-                    break;
-                case 2: //armor
-                    if (GameConstants.isAccessory(toScroll.getItemId()) || GameConstants.isWeapon(toScroll.getItemId())) {
-                        return false;
-                    }
-                    break;
-                case 3: //accessory
-                    if (!GameConstants.isAccessory(toScroll.getItemId()) || GameConstants.isWeapon(toScroll.getItemId())) {
-                        return false;
-                    }
-                    break;
-            }
-        } else if (!GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isChaosScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
-            if (!ii.canScroll(scroll.getItemId(), toScroll.getItemId())) {
-                return false;
-            }
-        }
-        if (GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isAccessory(toScroll.getItemId())) {
-            return false;
-        }
-        if (scroll.getQuantity() <= 0) {
-            return false;
-        }
-
-        if (legendarySpirit && vegas == 0) {
-            if (chr.getSkillLevel(SkillFactory.getSkill(1003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(10001003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(20001003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(20011003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(30001003)) <= 0) {
-                return false;
-            }
-        }
-
-        // Scroll Success/ Failure/ Curse
-        final IEquip scrolled = (IEquip) ii.scrollEquipWithId(toScroll, scroll, whiteScroll, chr, vegas);
-        ScrollResult scrollSuccess;
-        if (scrolled == null) {
-            scrollSuccess = IEquip.ScrollResult.CURSE;
-        } else if (scrolled.getLevel() > oldLevel || scrolled.getEnhance() > oldEnhance || scrolled.getState() > oldState || scrolled.getFlag() > oldFlag) {
-            scrollSuccess = IEquip.ScrollResult.SUCCESS;
-        } else if ((GameConstants.isCleanSlate(scroll.getItemId()) && scrolled.getUpgradeSlots() > oldSlots)) {
-            scrollSuccess = IEquip.ScrollResult.SUCCESS;
-        } else {
-            scrollSuccess = IEquip.ScrollResult.FAIL;
-        }
-
-        // Update
-        chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
-        if (whiteScroll) {
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false, false);
-        }
-
-        if (scrollSuccess == IEquip.ScrollResult.CURSE) {
-            c.SendPacket(ContextPacket.scrolledItem(scroll, toScroll, true, false));
-            if (dst < 0) {
-                chr.getInventory(MapleInventoryType.EQUIPPED).removeItem(toScroll.getPosition());
-            } else {
-                chr.getInventory(MapleInventoryType.EQUIP).removeItem(toScroll.getPosition());
-            }
-        } else if (vegas == 0) {
-            c.SendPacket(ContextPacket.scrolledItem(scroll, scrolled, false, false));
-        }
-
-        chr.getMap().broadcastMessage(chr, MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), scrollSuccess, legendarySpirit), vegas == 0);
-
-        // equipped item was scrolled and changed
-        if (dst < 0 && (scrollSuccess == IEquip.ScrollResult.SUCCESS || scrollSuccess == IEquip.ScrollResult.CURSE) && vegas == 0) {
-            chr.equipChanged();
-        }
-
-        // ベガの呪文書
-        if (vegas != 0) {
-            c.getPlayer().forceReAddItem(toScroll, MapleInventoryType.EQUIP);
-            c.ProcessPacket(VegaSpellResponse.Start());
-            c.ProcessPacket(VegaSpellResponse.Result((scrollSuccess == ScrollResult.SUCCESS)));
-        }
-
-        return true;
-    }
-
-    public static final boolean UseSkillBook(final byte slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
-        final IItem toUse = chr.getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
-
-        if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId) {
-            return false;
-        }
-        final Map<String, Integer> skilldata = MapleItemInformationProvider.getInstance().getSkillStats(toUse.getItemId());
-        if (skilldata == null) { // Hacking or used an unknown item
-            return false;
-        }
-        boolean canuse = false, success = false;
-        int skill = 0, maxlevel = 0;
-
-        final int SuccessRate = skilldata.get("success");
-        final int ReqSkillLevel = skilldata.get("reqSkillLevel");
-        final int MasterLevel = skilldata.get("masterLevel");
-
-        byte i = 0;
-        Integer CurrentLoopedSkillId;
-        while (true) {
-            CurrentLoopedSkillId = skilldata.get("skillid" + i);
-            i++;
-            if (CurrentLoopedSkillId == null) {
-                break; // End of data
-            }
-            final ISkill CurrSkillData = SkillFactory.getSkill(CurrentLoopedSkillId);
-            if (CurrSkillData != null && CurrSkillData.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(CurrSkillData) >= ReqSkillLevel && chr.getMasterLevel(CurrSkillData) < MasterLevel) {
-                canuse = true;
-                if (Randomizer.nextInt(100) <= SuccessRate && SuccessRate != 0) {
-                    success = true;
-                    chr.changeSkillLevel(CurrSkillData, chr.getSkillLevel(CurrSkillData), (byte) MasterLevel);
-                } else {
-                    success = false;
-                }
-                MapleInventoryManipulator.removeFromSlot(c, GameConstants.getInventoryType(itemId), slot, (short) 1, false);
-                break;
-            }
-        }
-        c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.useSkillBook(chr, skill, maxlevel, canuse, success));
-        c.getSession().write(MaplePacketCreator.enableActions());
-        return canuse;
-    }
-
-    public static final void UseCatchItem(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        c.getPlayer().updateTick(slea.readInt());
-        final byte slot = (byte) slea.readShort();
-        final int itemid = slea.readInt();
-        final MapleMonster mob = chr.getMap().getMonsterByOid(slea.readInt());
-        final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
-
-        if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemid && mob != null) {
-            switch (itemid) {
-                case 2270004: { //Purification Marble
-                    final MapleMap map = chr.getMap();
-
-                    if (mob.getHp() <= mob.getMobMaxHp() / 2) {
-                        map.broadcastMessage(MaplePacketCreator.catchMonster(mob.getId(), itemid, (byte) 1));
-                        map.killMonster(mob, chr, true, false, (byte) 0);
-                        MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, itemid, 1, false, false);
-                        MapleInventoryManipulator.addById(c, 4001169, (short) 1);
-                    } else {
-                        map.broadcastMessage(MaplePacketCreator.catchMonster(mob.getId(), itemid, (byte) 0));
-                        chr.dropMessage(5, "The monster has too much physical strength, so you cannot catch it.");
-                    }
-                    break;
-                }
-                case 2270002: { // Characteristic Stone
-                    final MapleMap map = chr.getMap();
-
-                    if (mob.getHp() <= mob.getMobMaxHp() / 2) {
-                        map.broadcastMessage(MaplePacketCreator.catchMonster(mob.getId(), itemid, (byte) 1));
-                        map.killMonster(mob, chr, true, false, (byte) 0);
-                        MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, itemid, 1, false, false);
-                    } else {
-                        map.broadcastMessage(MaplePacketCreator.catchMonster(mob.getId(), itemid, (byte) 0));
-                        chr.dropMessage(5, "The monster has too much physical strength, so you cannot catch it.");
-                    }
-                    break;
-                }
-                case 2270000: { // Pheromone Perfume
-                    if (mob.getId() != 9300101) {
-                        break;
-                    }
-                    final MapleMap map = c.getPlayer().getMap();
-
-                    map.broadcastMessage(MaplePacketCreator.catchMonster(mob.getId(), itemid, (byte) 1));
-                    map.killMonster(mob, chr, true, false, (byte) 0);
-                    MapleInventoryManipulator.addById(c, 1902000, (short) 1, null);
-                    MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, itemid, 1, false, false);
-                    break;
-                }
-                case 2270003: { // Cliff's Magic Cane
-                    if (mob.getId() != 9500320) {
-                        break;
-                    }
-                    final MapleMap map = c.getPlayer().getMap();
-
-                    if (mob.getHp() <= mob.getMobMaxHp() / 2) {
-                        map.broadcastMessage(MaplePacketCreator.catchMonster(mob.getId(), itemid, (byte) 1));
-                        map.killMonster(mob, chr, true, false, (byte) 0);
-                        MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, itemid, 1, false, false);
-                    } else {
-                        map.broadcastMessage(MaplePacketCreator.catchMonster(mob.getId(), itemid, (byte) 0));
-                        chr.dropMessage(5, "The monster has too much physical strength, so you cannot catch it.");
-                    }
-                    break;
-                }
-            }
-        }
-        c.getSession().write(MaplePacketCreator.enableActions());
-    }
-
-    public static final void UseMountFood(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        c.getPlayer().updateTick(slea.readInt());
-        final byte slot = (byte) slea.readShort();
-        final int itemid = slea.readInt(); //2260000 usually
-        final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
-        final MapleMount mount = chr.getMount();
-
-        if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemid && mount != null) {
-            final int fatigue = mount.getFatigue();
-
-            boolean levelup = false;
-            mount.setFatigue((byte) -30);
-
-            if (fatigue > 0) {
-                mount.increaseExp();
-                final int level = mount.getLevel();
-                if (mount.getExp() >= GameConstants.getMountExpNeededForLevel(level + 1) && level < 31) {
-                    mount.setLevel((byte) (level + 1));
-                    levelup = true;
-                }
-            }
-            chr.getMap().broadcastMessage(TemporaryStatResponse.updateMount(chr, levelup));
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
-        }
-        c.getSession().write(MaplePacketCreator.enableActions());
     }
 
     public static final void UseScriptedNPCItem(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
@@ -901,41 +442,6 @@ public class InventoryHandler {
                 MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (byte) 1, false);
                 c.getPlayer().changeSkillLevel(SkillFactory.getSkill(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
                 c.getPlayer().dropMessage(5, "The skill has been attained.");
-            }
-        }
-        c.getSession().write(MaplePacketCreator.enableActions());
-    }
-
-    public static final void UseSummonBag(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (!chr.isAlive()) {
-            c.getSession().write(MaplePacketCreator.enableActions());
-            return;
-        }
-        c.getPlayer().updateTick(slea.readInt());
-        final byte slot = (byte) slea.readShort();
-        final int itemId = slea.readInt();
-        final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
-
-        if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId) {
-
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
-
-            if (c.getPlayer().isGM() || !FieldLimitType.SummoningBag.check(chr.getMap().getFieldLimit())) {
-                final List<Pair<Integer, Integer>> toSpawn = MapleItemInformationProvider.getInstance().getSummonMobs(itemId);
-
-                if (toSpawn == null) {
-                    c.getSession().write(MaplePacketCreator.enableActions());
-                    return;
-                }
-                MapleMonster ht;
-                int type = 0;
-
-                for (int i = 0; i < toSpawn.size(); i++) {
-                    if (Randomizer.nextInt(99) <= toSpawn.get(i).getRight()) {
-                        ht = MapleLifeFactory.getMonster(toSpawn.get(i).getLeft());
-                        chr.getMap().spawnMonster_sSack(ht, chr.getPosition(), type);
-                    }
-                }
             }
         }
         c.getSession().write(MaplePacketCreator.enableActions());
@@ -1501,7 +1007,7 @@ public class InventoryHandler {
                 final byte dst = (byte) slea.readInt();
                 slea.readInt(); // Inventory type, always use
                 final byte src = (byte) slea.readInt();
-                used = UseUpgradeScroll(src, dst, (byte) 2, c, c.getPlayer(), itemId); //cannot use ws with vega but we dont care
+                used = ItemRequest.UseUpgradeScroll(src, dst, (byte) 2, c, c.getPlayer(), itemId); //cannot use ws with vega but we dont care
                 if (used) {
                     c.getPlayer().saveToDB(false, false);
                 }
@@ -1684,7 +1190,7 @@ public class InventoryHandler {
                         }
                     }
                 } else if (itemId / 10000 == 562) {
-                    UseSkillBook(slot, itemId, c, c.getPlayer()); //this should handle removing
+                    ItemRequest.UseSkillBook(slot, itemId, c, c.getPlayer()); //this should handle removing
                 } else if (itemId / 10000 == 553) {
                     UseRewardItem(slot, itemId, c, c.getPlayer());// this too
                 } else {
