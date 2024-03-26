@@ -88,7 +88,6 @@ import packet.client.request.UserRequest;
 import packet.server.response.EvanDragonResponse;
 import packet.server.response.FreeMarketResponse;
 import packet.server.response.FriendResponse;
-import packet.server.response.KeyMapResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.MobResponse;
 import packet.server.response.MonsterCarnivalResponse;
@@ -1053,6 +1052,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (isClone()) {
             return;
         }
+
         Connection con = DatabaseConnection.getConnection();
 
         PreparedStatement ps = null;
@@ -5765,23 +5765,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void setPetAutoHPItem(int item_id) {
-        if (LoadData.IsValidItemID(item_id)) {
+        if (item_id == 0 || LoadData.IsValidItemID(item_id)) {
             this.pet_auto_hp_item_id = item_id;
-            SendPacket(KeyMapResponse.getPetAutoHP(this));
         }
     }
 
     public void setPetAutoMPItem(int item_id) {
-        if (LoadData.IsValidItemID(item_id)) {
+        if (item_id == 0 || LoadData.IsValidItemID(item_id)) {
             this.pet_auto_mp_item_id = item_id;
-            SendPacket(KeyMapResponse.getPetAutoMP(this));
         }
     }
 
     public void setPetAutoCureItem(int item_id) {
-        if (LoadData.IsValidItemID(item_id)) {
+        if (item_id == 0 || LoadData.IsValidItemID(item_id)) {
             this.pet_auto_cure_item_id = item_id;
-            SendPacket(KeyMapResponse.getPetAutoCure(this));
         }
     }
 

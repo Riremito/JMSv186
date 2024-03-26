@@ -182,6 +182,10 @@ public class ItemRequest {
         return false;
     }
 
+    public static boolean UseItem(MapleCharacter chr, short item_slot, int item_id) {
+        return UseItem(chr, item_slot, item_id, 0);
+    }
+
     public static boolean UseItem(MapleCharacter chr, short item_slot, int item_id, int timestamp) {
         IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
 
@@ -215,7 +219,9 @@ public class ItemRequest {
             chr.setNextConsume(time + (chr.getMap().getConsumeItemCoolTime() * 1000));
         }
 
-        chr.updateTick(timestamp);
+        if (timestamp != 0) {
+            chr.updateTick(timestamp);
+        }
         return true;
     }
 

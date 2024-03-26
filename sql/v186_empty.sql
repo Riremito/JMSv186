@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: localhost
--- 生成日時: 2024 年 1 月 31 日 14:07
+-- 生成日時: 2024 年 3 月 26 日 04:08
 -- サーバのバージョン: 5.6.12-log
 -- PHP のバージョン: 5.4.12
 
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `ranking1` (`id`,`banned`,`gm`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=46 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=6 ;
 
 -- --------------------------------------------------------
 
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `auth_server_channel` (
   `number` int(11) DEFAULT NULL,
   `key` varchar(40) NOT NULL DEFAULT '',
   PRIMARY KEY (`channelid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=21 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `auth_server_channel_ip` (
   `value` tinytext NOT NULL,
   PRIMARY KEY (`channelconfigid`),
   KEY `channelid` (`channelid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=20 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS `auth_server_cs` (
   `key` varchar(40) NOT NULL,
   `world` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`CashShopServerId`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS `auth_server_login` (
   `key` varchar(40) NOT NULL DEFAULT '',
   `world` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`loginserverid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=3 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS `auth_server_mts` (
   `key` varchar(40) NOT NULL,
   `world` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`MTSServerId`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -182,7 +182,7 @@ CREATE TABLE IF NOT EXISTS `bbs_replies` (
   `content` varchar(26) NOT NULL DEFAULT '',
   `guildid` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`replyid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=79675 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `bbs_threads` (
   `guildid` int(10) unsigned NOT NULL,
   `localthreadid` int(10) unsigned NOT NULL,
   PRIMARY KEY (`threadid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=746782 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -332,7 +332,7 @@ CREATE TABLE IF NOT EXISTS `characters` (
   KEY `party` (`party`),
   KEY `ranking1` (`level`,`exp`),
   KEY `ranking2` (`gm`,`job`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=32599 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=7 ;
 
 -- --------------------------------------------------------
 
@@ -346,7 +346,7 @@ CREATE TABLE IF NOT EXISTS `character_slots` (
   `worldid` int(11) NOT NULL DEFAULT '0',
   `charslots` int(11) NOT NULL DEFAULT '6',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=41 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 -- --------------------------------------------------------
 
@@ -363,7 +363,7 @@ CREATE TABLE IF NOT EXISTS `cheatlog` (
   `param` tinytext NOT NULL,
   PRIMARY KEY (`id`),
   KEY `cid` (`characterid`) USING BTREE
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=829883 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -433,7 +433,7 @@ CREATE TABLE IF NOT EXISTS `csitems` (
   KEY `accountid` (`accountid`),
   KEY `packageid` (`packageid`),
   KEY `characterid_2` (`characterid`,`inventorytype`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=5876 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -490,7 +490,7 @@ CREATE TABLE IF NOT EXISTS `drop_data_vana` (
   `chance` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `mobid` (`dropperid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=10087 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -608,7 +608,7 @@ CREATE TABLE IF NOT EXISTS `famelog` (
   `when` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`famelogid`),
   KEY `characterid` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -664,7 +664,7 @@ CREATE TABLE IF NOT EXISTS `gmlog` (
   `command` tinytext NOT NULL,
   `mapid` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`gmlogid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -830,7 +830,7 @@ CREATE TABLE IF NOT EXISTS `inventoryequipment` (
   `mpR` smallint(5) NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=35596 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=12094 ;
 
 -- --------------------------------------------------------
 
@@ -859,7 +859,7 @@ CREATE TABLE IF NOT EXISTS `inventoryitems` (
   KEY `accountid` (`accountid`),
   KEY `packageid` (`packageid`),
   KEY `characterid_2` (`characterid`,`inventorytype`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=151104325 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=44020 ;
 
 -- --------------------------------------------------------
 
@@ -890,7 +890,7 @@ CREATE TABLE IF NOT EXISTS `inventoryslot` (
   `etc` tinyint(3) unsigned DEFAULT NULL,
   `cash` tinyint(3) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=5665 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=719 ;
 
 -- --------------------------------------------------------
 
@@ -933,7 +933,7 @@ CREATE TABLE IF NOT EXISTS `keymap` (
   `action` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `keymap_ibfk_1` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=224912 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=29001 ;
 
 -- --------------------------------------------------------
 
@@ -972,7 +972,7 @@ CREATE TABLE IF NOT EXISTS `monsterbook` (
   `cardid` int(10) unsigned NOT NULL DEFAULT '0',
   `level` tinyint(2) unsigned DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=240 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=31 ;
 
 -- --------------------------------------------------------
 
@@ -987,7 +987,7 @@ CREATE TABLE IF NOT EXISTS `mountdata` (
   `Exp` int(10) unsigned NOT NULL DEFAULT '0',
   `Fatigue` int(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=71 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 -- --------------------------------------------------------
 
@@ -1216,7 +1216,7 @@ CREATE TABLE IF NOT EXISTS `pets` (
   `fullness` int(3) unsigned NOT NULL,
   `seconds` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`petid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=29 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=41 ;
 
 -- --------------------------------------------------------
 
@@ -1288,7 +1288,7 @@ CREATE TABLE IF NOT EXISTS `questinfo` (
   `customData` varchar(555) DEFAULT NULL,
   PRIMARY KEY (`questinfoid`),
   KEY `characterid` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=16563 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=653 ;
 
 -- --------------------------------------------------------
 
@@ -1320,7 +1320,7 @@ CREATE TABLE IF NOT EXISTS `queststatus` (
   `customData` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`queststatusid`),
   KEY `characterid` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=88467468 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=12227 ;
 
 -- --------------------------------------------------------
 
@@ -1335,7 +1335,7 @@ CREATE TABLE IF NOT EXISTS `queststatusmobs` (
   `count` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`queststatusmobid`),
   KEY `queststatusid` (`queststatusid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=125 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1351,35 +1351,39 @@ CREATE TABLE IF NOT EXISTS `reactordrops` (
   `questid` int(5) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`reactordropid`),
   KEY `reactorid` (`reactorid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 PACK_KEYS=1 AUTO_INCREMENT=729 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 PACK_KEYS=1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
 --
--- ビュー用の代替構造 `readable_cheatlog`
+-- テーブルの構造 `readable_cheatlog`
 --
+
 CREATE TABLE IF NOT EXISTS `readable_cheatlog` (
-`accountname` varchar(13)
-,`accountid` int(11)
-,`name` varchar(13)
-,`characterid` int(11)
-,`offense` tinytext
-,`count` int(11)
-,`lastoffensetime` timestamp
-,`param` tinytext
-);
+  `accountname` varchar(13) DEFAULT NULL,
+  `accountid` int(11) DEFAULT NULL,
+  `name` varchar(13) DEFAULT NULL,
+  `characterid` int(11) DEFAULT NULL,
+  `offense` tinytext,
+  `count` int(11) DEFAULT NULL,
+  `lastoffensetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `param` tinytext
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 -- --------------------------------------------------------
 
 --
--- ビュー用の代替構造 `readable_last_hour_cheatlog`
+-- テーブルの構造 `readable_last_hour_cheatlog`
 --
+
 CREATE TABLE IF NOT EXISTS `readable_last_hour_cheatlog` (
-`accountname` varchar(13)
-,`accountid` int(11)
-,`name` varchar(13)
-,`characterid` int(11)
-,`numrepos` decimal(32,0)
-);
+  `accountname` varchar(13) DEFAULT NULL,
+  `accountid` int(11) DEFAULT NULL,
+  `name` varchar(13) DEFAULT NULL,
+  `characterid` int(11) DEFAULT NULL,
+  `numrepos` decimal(32,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 -- --------------------------------------------------------
 
 --
@@ -1438,7 +1442,7 @@ CREATE TABLE IF NOT EXISTS `savedlocations` (
   `map` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `savedlocations_ibfk_1` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=6319 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=244 ;
 
 -- --------------------------------------------------------
 
@@ -1456,7 +1460,7 @@ CREATE TABLE IF NOT EXISTS `shopitems` (
   `reqitemq` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`shopitemid`),
   KEY `shopid` (`shopid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4101 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1486,7 +1490,7 @@ CREATE TABLE IF NOT EXISTS `skillmacros` (
   `name` varchar(30) DEFAULT NULL,
   `shout` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=251 ;
 
 -- --------------------------------------------------------
 
@@ -1503,7 +1507,7 @@ CREATE TABLE IF NOT EXISTS `skills` (
   `expiration` bigint(20) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`id`),
   KEY `skills_ibfk_1` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=264786 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=9480 ;
 
 -- --------------------------------------------------------
 
@@ -1549,7 +1553,7 @@ CREATE TABLE IF NOT EXISTS `storages` (
   `meso` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`storageid`),
   KEY `accountid` (`accountid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=38 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=6 ;
 
 -- --------------------------------------------------------
 
@@ -1562,7 +1566,7 @@ CREATE TABLE IF NOT EXISTS `trocklocations` (
   `characterid` int(11) DEFAULT NULL,
   `mapid` int(11) DEFAULT NULL,
   PRIMARY KEY (`trockid`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=606 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=123 ;
 
 -- --------------------------------------------------------
 
@@ -1608,127 +1612,19 @@ CREATE TABLE IF NOT EXISTS `zaksquads` (
 -- --------------------------------------------------------
 
 --
--- ビュー用の構造 `readable_cheatlog`
---
-DROP TABLE IF EXISTS `readable_cheatlog`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `readable_cheatlog` AS select `a`.`name` AS `accountname`,`a`.`id` AS `accountid`,`c`.`name` AS `name`,`c`.`id` AS `characterid`,`cl`.`offense` AS `offense`,`cl`.`count` AS `count`,`cl`.`lastoffensetime` AS `lastoffensetime`,`cl`.`param` AS `param` from ((`cheatlog` `cl` join `characters` `c`) join `accounts` `a`) where ((`cl`.`id` = `c`.`id`) and (`a`.`id` = `c`.`accountid`) and (`a`.`banned` = 0));
-
--- --------------------------------------------------------
-
---
--- ビュー用の構造 `readable_last_hour_cheatlog`
---
-DROP TABLE IF EXISTS `readable_last_hour_cheatlog`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `readable_last_hour_cheatlog` AS select `a`.`name` AS `accountname`,`a`.`id` AS `accountid`,`c`.`name` AS `name`,`c`.`id` AS `characterid`,sum(`cl`.`count`) AS `numrepos` from ((`cheatlog` `cl` join `characters` `c`) join `accounts` `a`) where ((`cl`.`id` = `c`.`id`) and (`a`.`id` = `c`.`accountid`) and (timestampdiff(HOUR,`cl`.`lastoffensetime`,now()) < 1) and (`a`.`banned` = 0)) group by `cl`.`id` order by sum(`cl`.`count`) desc;
-
---
--- ダンプしたテーブルの制約
+-- テーブルの構造 `__root`
 --
 
---
--- テーブルの制約 `buddies`
---
-ALTER TABLE `buddies`
-  ADD CONSTRAINT `buddies_ibfk_1` FOREIGN KEY (`characterid`) REFERENCES `characters` (`id`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `csequipment`
---
-ALTER TABLE `csequipment`
-  ADD CONSTRAINT `csequipment_ibfk_1` FOREIGN KEY (`inventoryitemid`) REFERENCES `csitems` (`inventoryitemid`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `dueyequipment`
---
-ALTER TABLE `dueyequipment`
-  ADD CONSTRAINT `dueyequipment_ibfk_1` FOREIGN KEY (`inventoryitemid`) REFERENCES `dueyitems` (`inventoryitemid`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `famelog`
---
-ALTER TABLE `famelog`
-  ADD CONSTRAINT `famelog_ibfk_1` FOREIGN KEY (`characterid`) REFERENCES `characters` (`id`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `hiredmerchequipment`
---
-ALTER TABLE `hiredmerchequipment`
-  ADD CONSTRAINT `hiredmerchequipment_ibfk_1` FOREIGN KEY (`inventoryitemid`) REFERENCES `hiredmerchitems` (`inventoryitemid`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `inventoryequipment`
---
-ALTER TABLE `inventoryequipment`
-  ADD CONSTRAINT `inventoryequipment_ibfk_1` FOREIGN KEY (`inventoryitemid`) REFERENCES `inventoryitems` (`inventoryitemid`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `inventorylog`
---
-ALTER TABLE `inventorylog`
-  ADD CONSTRAINT `inventorylog_ibfk_1` FOREIGN KEY (`inventoryitemid`) REFERENCES `inventoryitems` (`inventoryitemid`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `keymap`
---
-ALTER TABLE `keymap`
-  ADD CONSTRAINT `keymap_ibfk_1` FOREIGN KEY (`characterid`) REFERENCES `characters` (`id`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `mtsequipment`
---
-ALTER TABLE `mtsequipment`
-  ADD CONSTRAINT `mtsequipment_ibfk_1` FOREIGN KEY (`inventoryitemid`) REFERENCES `mtsitems` (`inventoryitemid`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `mtstransferequipment`
---
-ALTER TABLE `mtstransferequipment`
-  ADD CONSTRAINT `mtstransferequipment_ibfk_1` FOREIGN KEY (`inventoryitemid`) REFERENCES `mtstransfer` (`inventoryitemid`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `playernpcs`
---
-ALTER TABLE `playernpcs`
-  ADD CONSTRAINT `playernpcs_ibfk_1` FOREIGN KEY (`charid`) REFERENCES `characters` (`id`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `playernpcs_equip`
---
-ALTER TABLE `playernpcs_equip`
-  ADD CONSTRAINT `playernpcs_equip_ibfk_1` FOREIGN KEY (`charid`) REFERENCES `characters` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `playernpcs_equip_ibfk_2` FOREIGN KEY (`npcid`) REFERENCES `playernpcs` (`scriptid`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `questinfo`
---
-ALTER TABLE `questinfo`
-  ADD CONSTRAINT `questinfo_ibfk_1` FOREIGN KEY (`characterid`) REFERENCES `characters` (`id`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `queststatus`
---
-ALTER TABLE `queststatus`
-  ADD CONSTRAINT `queststatus_ibfk_1` FOREIGN KEY (`characterid`) REFERENCES `characters` (`id`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `queststatusmobs`
---
-ALTER TABLE `queststatusmobs`
-  ADD CONSTRAINT `queststatusmobs_ibfk_1` FOREIGN KEY (`queststatusid`) REFERENCES `queststatus` (`queststatusid`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `savedlocations`
---
-ALTER TABLE `savedlocations`
-  ADD CONSTRAINT `savedlocations_ibfk_1` FOREIGN KEY (`characterid`) REFERENCES `characters` (`id`) ON DELETE CASCADE;
-
---
--- テーブルの制約 `skills`
---
-ALTER TABLE `skills`
-  ADD CONSTRAINT `skills_ibfk_1` FOREIGN KEY (`characterid`) REFERENCES `characters` (`id`) ON DELETE CASCADE;
+CREATE TABLE IF NOT EXISTS `__root` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `maple_id` int(11) DEFAULT NULL,
+  `character_id` int(11) DEFAULT NULL,
+  `data_name` varchar(64) DEFAULT NULL,
+  `value_int` int(11) DEFAULT NULL,
+  `value_str` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id` (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

@@ -534,5 +534,5 @@ public class PointShopRequest {
                 return MapleInventoryType.UNDEFINED;
         }
     }
-    
+
 }

@@ -28,6 +28,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleQuestStatus;
 import client.inventory.MaplePet;
+import database.ExtraDB;
 import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -71,11 +72,7 @@ public class InterServerHandler {
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }
-        //if (c.getChannel() == 1 && !c.getPlayer().isGM()) {
-        //    c.getPlayer().dropMessage(5, "You may not enter on this channel. Please change channels and try again.");
-        //    c.getSession().write(MaplePacketCreator.enableActions());
-        //    return;
-        //}
+
         final ChannelServer ch = ChannelServer.getInstance(c.getChannel());
 
         chr.changeRemoval();
@@ -93,6 +90,7 @@ public class InterServerHandler {
 
         c.SendPacket(SocketPacket.MigrateCommand(CashShopServer.getPort()));
         chr.saveToDB(false, false);
+        ExtraDB.saveData(chr);
         chr.getMap().removePlayer(chr);
         c.setPlayer(null);
         c.setReceiving(false);
@@ -108,6 +106,8 @@ public class InterServerHandler {
         } else {
             player = MapleCharacter.ReconstructChr(transfer, c, true);
         }
+
+        ExtraDB.loadData(player);
 
         player.UpdateStat(true);
 
@@ -213,6 +213,9 @@ public class InterServerHandler {
 
         c.getSession().write(KeyMapResponse.getKeymap(player, false));
         c.getSession().write(KeyMapResponse.getMacros(player));
+        c.getSession().write(KeyMapResponse.getPetAutoHP(player));
+        c.getSession().write(KeyMapResponse.getPetAutoMP(player));
+        c.getSession().write(KeyMapResponse.getPetAutoCure(player));
 
         for (MapleQuestStatus status : player.getStartedQuests()) {
             if (status.hasMobKills()) {
@@ -236,6 +239,7 @@ public class InterServerHandler {
             return;
         }
 
+        ExtraDB.saveData(chr);
         int channel = p.Decode1() + 1;
         chr.changeChannel(channel);
     }

@@ -23,6 +23,7 @@ import client.MapleClient;
 import client.SkillMacro;
 import debug.Debug;
 import packet.client.ClientPacket;
+import packet.server.response.KeyMapResponse;
 
 /**
  *
@@ -121,16 +122,19 @@ public class KeyMapRequest {
             case KEY_PET_HP: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoHPItem(item_id);
+                chr.SendPacket(KeyMapResponse.getPetAutoHP(chr));
                 return true;
             }
             case KEY_PET_MP: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoMPItem(item_id);
+                chr.SendPacket(KeyMapResponse.getPetAutoMP(chr));
                 return true;
             }
             case KEY_PET_CURE: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoCureItem(item_id);
+                chr.SendPacket(KeyMapResponse.getPetAutoCure(chr));
                 return true;
             }
             default: {

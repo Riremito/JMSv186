@@ -40,6 +40,7 @@ import javax.script.ScriptEngine;
 
 import database.DatabaseConnection;
 import database.DatabaseException;
+import database.ExtraDB;
 import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -887,6 +888,10 @@ public class MapleClient implements Serializable {
 
             removalTask();
             player.saveToDB(true, fromCS);
+            // 追加データ
+            if (!fromCS) {
+                ExtraDB.saveData(player);
+            }
             if (shutdown) {
                 player = null;
                 receiving = false;
