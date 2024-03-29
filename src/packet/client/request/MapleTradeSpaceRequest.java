@@ -24,6 +24,8 @@ import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import constants.GameConstants;
 import constants.ServerConstants;
+import handling.channel.handler.InterServerHandler;
+import packet.client.ClientPacket;
 import packet.server.response.MapleTradeSpaceResponse;
 import server.MTSCart;
 import server.MTSStorage;
@@ -36,6 +38,44 @@ import tools.data.input.SeekableLittleEndianAccessor;
  * @author Riremito
  */
 public class MapleTradeSpaceRequest {
+
+    public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+
+        switch (header) {
+            // 入場リクエスト
+            case CP_UserMigrateToITCRequest: {
+                InterServerHandler.EnterCS(c, c.getPlayer(), true);
+                return true;
+            }
+            // 退出
+            case CP_UserTransferFieldRequest: {
+                PointShopRequest.LeaveCS(c, c.getPlayer());
+                return true;
+            }
+            // 入場
+            case CP_MigrateIn: {
+                int character_id = cp.Decode4();
+                PointShopRequest.EnterCS(character_id, c);
+                return true;
+            }
+            case CP_ITCChargeParamRequest: {
+                MapleTradeSpaceRequest.OnChargeParamResult(c);
+                return true;
+            }
+            case CP_ITCQueryCashRequest: {
+                MapleTradeSpaceRequest.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
+                return true;
+            }
+            case CP_ITCItemRequest: {
+                //MapleTradeSpaceRequest.MTSOperation(p, c);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
 
     public static void MTSOperation(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         final MTSCart cart = MTSStorage.getInstance().getCart(c.getPlayer().getId());
@@ -221,5 +261,5 @@ public class MapleTradeSpaceRequest {
     public static void OnChargeParamResult(final MapleClient c) {
         c.getSession().write(MapleTradeSpaceResponse.openWebSite());
     }
-    
+
 }

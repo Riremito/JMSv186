@@ -27,14 +27,17 @@ import client.inventory.MapleInventoryIdentifier;
 import client.inventory.MapleInventoryType;
 import client.inventory.MapleRing;
 import constants.GameConstants;
+import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
+import handling.channel.handler.InterServerHandler;
 import handling.world.CharacterTransfer;
 import handling.world.World;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import packet.client.ClientPacket;
 import packet.server.response.MapleTradeSpaceResponse;
 import packet.server.response.PointShopResponse;
 import server.CashItemFactory;
@@ -51,6 +54,86 @@ import tools.data.input.SeekableLittleEndianAccessor;
  * @author Riremito
  */
 public class PointShopRequest {
+
+    public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+
+        switch (header) {
+            // 入場リクエスト
+            case CP_UserMigrateToCashShopRequest: {
+                InterServerHandler.EnterCS(c, c.getPlayer(), false);
+                return true;
+            }
+            // 退出
+            case CP_UserTransferFieldRequest: {
+                LeaveCS(c, c.getPlayer());
+                return true;
+            }
+            // 入場
+            case CP_MigrateIn: {
+                int character_id = cp.Decode4();
+                EnterCS(character_id, c);
+                return true;
+            }
+            // 充填ボタンをクリックした場合の処理
+            case CP_CashShopChargeParamRequest: {
+                // 公式サイトが開くような処理だったと思うが、特に何もしない
+                CSUpdate(c);
+                return true;
+            }
+            case CP_CashShopQueryCashRequest: {
+                CSUpdate(c);
+                return true;
+            }
+            case CP_CashShopCashItemRequest: {
+                // PointShopRequest.BuyCashItem(p, c, c.getPlayer());
+                return false;
+            }
+            case CP_CashShopCheckCouponRequest: {
+                String character_name = cp.DecodeStr();
+                String coupon_code = cp.DecodeStr();
+                byte coupon_15 = cp.Decode1();
+                if (!character_name.equals("")) {
+                    String message = cp.DecodeStr();
+                }
+                // PointShopRequest.CouponCode
+                Debug.DebugLog("Coupon Code = " + coupon_code);
+                CSUpdate(c);
+                return false;
+            }
+            case CP_CashShopMemberShopRequest: {
+                return false;
+            }
+            case CP_CashShopGiftMateInfoRequest: {
+                return false;
+            }
+            case CP_CashShopSearchLog: {
+                return false;
+            }
+            case CP_CashShopCoodinationRequest: {
+                return false;
+            }
+            case CP_CashShopCheckMileageRequest: {
+                return false;
+            }
+            case CP_CashShopNaverUsageInfoRequest: {
+                return false;
+            }
+            // アバターランダムボックスのオープン処理
+            case CP_CashGachaponOpenRequest: {
+                CSUpdate(c);
+                return false;
+            }
+            // オススメアバターを選択した時の処理
+            case RECOMMENDED_AVATAR: {
+                CSUpdate(c);
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
 
     public static void EnterCS(final int playerid, final MapleClient c) {
         CharacterTransfer transfer = CashShopServer.getPlayerStorage().getPendingCharacter(playerid);
@@ -92,6 +175,20 @@ public class PointShopRequest {
             CashShopServer.getPlayerStorage().registerPlayer(chr);
             c.getSession().write(PointShopResponse.warpCS(c));
             CSUpdate(c);
+        }
+    }
+
+    public static void LeaveCS(MapleClient c, MapleCharacter chr) {
+        CashShopServer.getPlayerStorageMTS().deregisterPlayer(chr);
+        CashShopServer.getPlayerStorage().deregisterPlayer(chr);
+        c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
+        try {
+            World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
+            c.SendPacket(SocketPacket.MigrateCommand(ChannelServer.getInstance(c.getChannel()).getPort()));
+        } finally {
+            chr.saveToDB(false, true);
+            c.setPlayer(null);
+            c.setReceiving(false);
         }
     }
 
@@ -498,21 +595,6 @@ public class PointShopRequest {
             c.getSession().write(PointShopResponse.sendCSFail(0));
         }
         doCSPackets(c);
-    }
-
-    public static void LeaveCS(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        CashShopServer.getPlayerStorageMTS().deregisterPlayer(chr);
-        CashShopServer.getPlayerStorage().deregisterPlayer(chr);
-        c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
-        try {
-            World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
-            c.SendPacket(SocketPacket.MigrateCommand(ChannelServer.getInstance(c.getChannel()).getPort()));
-        } finally {
-            //            c.getSession().close();
-            chr.saveToDB(false, true);
-            c.setPlayer(null);
-            c.setReceiving(false);
-        }
     }
 
     private static final void doCSPackets(MapleClient c) {
