@@ -169,11 +169,11 @@ public class PointShopRequest {
         c.updateLoginState(MapleClient.LOGIN_LOGGEDIN, c.getSessionIPAddress());
         if (mts) {
             CashShopServer.getPlayerStorageMTS().registerPlayer(chr);
-            c.getSession().write(MapleTradeSpaceResponse.startMTS(chr));
+            c.getSession().write(MapleTradeSpaceResponse.SetITC(chr));
             MapleTradeSpaceRequest.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
         } else {
             CashShopServer.getPlayerStorage().registerPlayer(chr);
-            c.getSession().write(PointShopResponse.warpCS(c));
+            c.getSession().write(PointShopResponse.SetCashShop(c));
             CSUpdate(c);
         }
     }

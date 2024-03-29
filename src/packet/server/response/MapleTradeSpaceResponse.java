@@ -37,6 +37,26 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class MapleTradeSpaceResponse {
 
+    // CStage::OnSetITC
+    public static final MaplePacket SetITC(final MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetITC);
+        sp.EncodeBuffer(CharacterData.Encode(chr));
+        // CITC::LoadData
+        {
+            sp.EncodeStr(chr.getClient().getAccountName());
+            sp.Encode4(ServerConstants.MTS_MESO); // m_nRegisterFeeMeso
+            sp.Encode4(ServerConstants.MTS_TAX); // m_nCommissionRate
+            sp.Encode4(ServerConstants.MTS_BASE); // m_nCommissionBase
+            sp.Encode4(24); // m_nAuctionDurationMin
+            sp.Encode4(168); // m_nAuctionDurationMax
+            if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
+                sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
+            }
+        }
+        // v194 29 bytes 余り
+        return sp.Get();
+    }
+
     public static final MaplePacket getMTSConfirmCancel() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
@@ -87,23 +107,6 @@ public class MapleTradeSpaceResponse {
         mplew.writeMapleAsciiString(item.getSeller()); //account name (what was nexon thinking?)
         mplew.writeMapleAsciiString(item.getSeller()); //char name
         mplew.writeZeroBytes(28);
-    }
-
-    //======================================MTS===========================================
-    public static final MaplePacket startMTS(final MapleCharacter chr) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetITC);
-        p.EncodeBuffer(CharacterData.Encode(chr));
-        p.EncodeStr(chr.getClient().getAccountName());
-        p.Encode4(ServerConstants.MTS_MESO);
-        p.Encode4(ServerConstants.MTS_TAX);
-        p.Encode4(ServerConstants.MTS_BASE);
-        p.Encode4(24);
-        p.Encode4(168);
-        if (ServerConfig.version > 131) {
-            p.Encode8(TestHelper.getTime(System.currentTimeMillis()));
-        }
-        // v194 29 bytes 余り
-        return p.Get();
     }
 
     public static final MaplePacket getMTSConfirmTransfer(final int quantity, final int pos) {
@@ -212,5 +215,5 @@ public class MapleTradeSpaceResponse {
         }
         return mplew.getPacket();
     }
-    
+
 }

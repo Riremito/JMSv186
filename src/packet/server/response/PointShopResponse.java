@@ -40,23 +40,31 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class PointShopResponse {
 
-    public static MaplePacket warpCS(MapleClient c) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetCashShop);
-        p.EncodeBuffer(CharacterData.Encode(c.getPlayer()));
-        p.EncodeStr(c.getAccountName());
-        if (194 <= ServerConfig.version) {
-            p.Encode4(0);
+    // CStage::OnSetCashShop
+    public static MaplePacket SetCashShop(MapleClient c) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetCashShop);
+        sp.EncodeBuffer(CharacterData.Encode(c.getPlayer()));
+        // CCashShop::LoadData
+        {
+            sp.EncodeStr(c.getAccountName());
+            // CWvsContext::SetSaleInfo
+            {
+                if (ServerConfig.IsPostBB()) {
+                    sp.Encode4(0); // NotSaleCount
+                }
+                sp.Encode2(0); // non 0, CS_COMMODITY::DecodeModifiedData
+                if (ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion()) {
+                    sp.Encode2(0); // non 0, Decode4, DecodeStr
+                }
+                sp.Encode1(0); // DiscountRate
+            }
+            sp.EncodeZeroBytes(1080);
+            sp.Encode2(0); // CCashShop::DecodeStock
+            sp.Encode2(0); // CCashShop::DecodeLimitGoods
         }
-        p.Encode2(0);
-        if (165 <= ServerConfig.version) {
-            p.Encode2(0);
-        }
-        p.Encode1(0);
-        p.EncodeZeroBytes(1080);
-        p.Encode2(0);
-        p.Encode2(0);
-        p.Encode1(0);
-        return p.Get();
+        sp.Encode1(0); // m_bEventOn
+        // m_nHighestCharacterLevelInThisAccount
+        return sp.Get();
     }
 
     public static MaplePacket showBoughtCSQuestItem(int price, short quantity, byte position, int itemid) {
@@ -99,7 +107,7 @@ public class PointShopResponse {
     public static MaplePacket showBoughtCSItem(int itemid, int sn, int uniqueid, int accid, int quantity, String giftFrom, long expire) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(88 /*0x5A*/ ); //use to be 4a
+        mplew.write(88 /*0x5A*/); //use to be 4a
         addCashItemInfo(mplew, uniqueid, accid, itemid, sn, quantity, giftFrom, expire);
         return mplew.getPacket();
     }
@@ -107,7 +115,7 @@ public class PointShopResponse {
     public static MaplePacket showBoughtCSItem(IItem item, int sn, int accid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(88 /*0x5A*/ );
+        mplew.write(88 /*0x5A*/);
         addCashItemInfo(mplew, item, accid, sn);
         return mplew.getPacket();
     }
@@ -340,5 +348,5 @@ public class PointShopResponse {
         mplew.write(err);
         return mplew.getPacket();
     }
-    
+
 }
