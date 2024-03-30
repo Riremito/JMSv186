@@ -40,6 +40,28 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class PointShopResponse {
 
+    /*
+        @016D : LP_CashShopChargeParamResult
+        @016E : LP_JMS_POINTSHOP_PRESENT_DIALOG
+        @016F : LP_CashShopQueryCashResult
+        @0170 : LP_CashShopCashItemResult
+        @0171 : LP_CashShopPurchaseExpChanged
+        @0172 : LP_CashShopGiftMateInfoResult
+        @0173 : LP_JMS_
+        @0174 : LP_JMS_POINTSHOP_KOC_PRESENT_DIALOG
+        @0175 : LP_JMSD
+        LP_CashShopCheckDuplicatedIDResult
+        LP_CashShopCheckNameChangePossibleResult
+        LP_CashShopRegisterNewCharacterResult
+        @0177 : LP_CashShopGachaponStampItemResult
+        @0178 : LP_CashShopCheckTransferWorldPossibleResult
+        LP_CashShopCashItemGachaponResult
+        @0179 : LP_CashShopCashGachaponOpenResult
+        LP_ChangeMaplePointResult
+        LP_CashShopOneADay
+        LP_CashShopNoticeFreeCashItem
+        LP_CashShopMemberShopResult
+     */
     // CStage::OnSetCashShop
     public static MaplePacket SetCashShop(MapleClient c) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetCashShop);
@@ -67,9 +89,93 @@ public class PointShopResponse {
         return sp.Get();
     }
 
+    // CCashShop::OnChargeParamResult, 充填ボタン
+    public static MaplePacket ChargeParamResult() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopChargeParamResult);
+        sp.EncodeStr("nexon_id"); // nexon id
+        return sp.Get();
+    }
+
+    // おめでとうございます！ポイントショップのインベントリにのプレゼントをお送りしました。
+    public static MaplePacket presentDialog() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_POINTSHOP_PRESENT_DIALOG);
+        // 多分未実装
+        return sp.Get();
+    }
+
+    // CCashShop::OnQueryCashResult
+    public static MaplePacket QueryCashResult(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopQueryCashResult);
+        sp.Encode4(chr.getCSPoints(1)); // NEXON POINT
+        sp.Encode4(chr.getCSPoints(2)); // MAPLE POINT
+        return sp.Get();
+    }
+
+    // CCashShop::OnCashItemResult
+    public static MaplePacket CashItemResult() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopCashItemResult);
+        return sp.Get();
+    }
+
+    // CCashShop::OnPurchaseExpChanged
+    public static MaplePacket PurchaseExpChanged() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopPurchaseExpChanged);
+        sp.Encode1(0); // m_nPurchaseExp
+        return sp.Get();
+    }
+
+    // CCashShop::OnGiftMateInfoResult
+    public static MaplePacket GiftMateInfoResult() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopGiftMateInfoResult);
+        // not coded
+        return sp.Get();
+    }
+
+    // 謎処理
+    // -> @00FA [2E] [item_id?]
+    public static MaplePacket ForceRequest(int item_id) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_POINTSHOP_FORCE_REQUEST);
+        sp.Encode4(1); // item list size
+        sp.Encode4(item_id); // buffer4
+        sp.Encode1(1); // force request or not
+        return sp.Get();
+    }
+
+    // 騎士団ショッピングのおまけアイテム"アイテム名"をプレゼントしました。インベントリをご確認ください。
+    public static MaplePacket PresentForKOC(int item_id) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_POINTSHOP_KOC_PRESENT_DIALOG);
+        sp.Encode4(item_id);
+        return sp.Get();
+    }
+
+    // フリークーポンの期限の告知
+    public static MaplePacket FreeCouponDialog() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_POINTSHOP_FREE_COUPON_DIALOG);
+        sp.Encode1(1); // show dialog
+        sp.Encode8(-1); // date
+        return sp.Get();
+    }
+
+    // CCashShop::OnCheckTransferWorldPossibleResult
+    // -> CP_CashShopCashItemRequest, @00FA [31] [FFFFFFFF] [WORLD_ID (4 bytes)]
+    public static MaplePacket CheckTransferWorldPossibleResult() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopCheckTransferWorldPossibleResult);
+        sp.Encode4(0); // not used
+        sp.Encode1(0); // dialog message
+        sp.Encode1(1); // having world list
+
+        String world_list[] = {"かえで", "もみじ"};
+
+        sp.Encode4(world_list.length); // world list size
+        for (String world : world_list) {
+            sp.EncodeStr(world);
+        }
+        return sp.Get();
+    }
+
     public static MaplePacket showBoughtCSQuestItem(int price, short quantity, byte position, int itemid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(144);
         mplew.writeInt(price);
         mplew.writeShort(quantity);
@@ -80,7 +186,7 @@ public class PointShopResponse {
 
     public static MaplePacket showCouponRedeemedItem(int itemid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.writeShort(96);
         mplew.writeInt(0);
         mplew.writeInt(1);
@@ -93,7 +199,7 @@ public class PointShopResponse {
 
     public static MaplePacket showCouponRedeemedItem(Map<Integer, IItem> items, int mesos, int maplePoints, MapleClient c) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(96); //use to be 4c
         mplew.write(items.size());
         for (Map.Entry<Integer, IItem> item : items.entrySet()) {
@@ -106,7 +212,7 @@ public class PointShopResponse {
 
     public static MaplePacket showBoughtCSItem(int itemid, int sn, int uniqueid, int accid, int quantity, String giftFrom, long expire) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(88 /*0x5A*/); //use to be 4a
         addCashItemInfo(mplew, uniqueid, accid, itemid, sn, quantity, giftFrom, expire);
         return mplew.getPacket();
@@ -114,7 +220,7 @@ public class PointShopResponse {
 
     public static MaplePacket showBoughtCSItem(IItem item, int sn, int accid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(88 /*0x5A*/);
         addCashItemInfo(mplew, item, accid, sn);
         return mplew.getPacket();
@@ -122,7 +228,7 @@ public class PointShopResponse {
 
     public static MaplePacket sendWishList(MapleCharacter chr, boolean update) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(update ? 86 : 82); //+12
         int[] list = chr.getWishlist();
         for (int i = 0; i < 10; i++) {
@@ -133,7 +239,7 @@ public class PointShopResponse {
 
     public static MaplePacket showBoughtCSPackage(Map<Integer, IItem> ccc, int accid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(140); //use to be 7a
         mplew.write(ccc.size());
         for (Map.Entry<Integer, IItem> sn : ccc.entrySet()) {
@@ -143,17 +249,9 @@ public class PointShopResponse {
         return mplew.getPacket();
     }
 
-    public static MaplePacket showNXMapleTokens(MapleCharacter chr) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_UPDATE.Get());
-        mplew.writeInt(chr.getCSPoints(1)); // A-cash
-        mplew.writeInt(chr.getCSPoints(2)); // MPoint
-        return mplew.getPacket();
-    }
-
     public static MaplePacket increasedInvSlots(int inv, int slots) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(99);
         mplew.write(inv);
         mplew.writeShort(slots);
@@ -163,7 +261,7 @@ public class PointShopResponse {
     //also used for character slots !
     public static MaplePacket increasedStorageSlots(int slots) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(101);
         mplew.writeShort(slots);
         return mplew.getPacket();
@@ -171,7 +269,7 @@ public class PointShopResponse {
 
     public static MaplePacket cashItemExpired(int uniqueid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(113); //use to be 5d
         mplew.writeLong(uniqueid);
         return mplew.getPacket();
@@ -179,7 +277,7 @@ public class PointShopResponse {
 
     public static MaplePacket confirmToCSInventory(IItem item, int accId, int sn) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(109);
         addCashItemInfo(mplew, item, accId, sn, false);
         return mplew.getPacket();
@@ -253,7 +351,7 @@ public class PointShopResponse {
     //work on this packet a little more
     public static MaplePacket getCSGifts(MapleClient c) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(80); //use to be 40
         List<Pair<IItem, String>> mci = c.getPlayer().getCashInventory().loadGifts();
         mplew.writeShort(mci.size());
@@ -268,7 +366,7 @@ public class PointShopResponse {
 
     public static MaplePacket getCSInventory(MapleClient c) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(78); // use to be 3e
         CashShop mci = c.getPlayer().getCashInventory();
         mplew.writeShort(mci.getItemsSize());
@@ -283,7 +381,7 @@ public class PointShopResponse {
 
     public static MaplePacket confirmFromCSInventory(IItem item, short pos) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(107);
         mplew.writeShort(pos);
         TestHelper.addItemInfo(mplew, item, true, true);
@@ -292,7 +390,7 @@ public class PointShopResponse {
 
     public static MaplePacket sendGift(int price, int itemid, int quantity, String receiver) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(142); //use to be 7C
         mplew.writeMapleAsciiString(receiver);
         mplew.writeInt(itemid);
@@ -343,7 +441,7 @@ public class PointShopResponse {
 
     public static MaplePacket sendCSFail(int err) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(104);
         mplew.write(err);
         return mplew.getPacket();

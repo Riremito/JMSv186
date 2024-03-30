@@ -408,6 +408,7 @@ public class ClientPacket {
         CP_CashShopQueryCashRequest,
         CP_CashShopCashItemRequest,
         CP_CashShopCheckCouponRequest,
+        CP_JMS_RECOMMENDED_AVATAR,
         CP_CashShopMemberShopRequest,
         CP_CashShopGiftMateInfoRequest,
         CP_CashShopSearchLog,
@@ -457,7 +458,6 @@ public class ClientPacket {
         // JMS headers
         REACHED_LOGIN_SCREEN, // 名称不明, ログイン画面に到達
         GM_COMMAND_MAPLETV, // Super Megaphone Exploitのパケット
-        RECOMMENDED_AVATAR, // おすすめアバター
         BEANS_OPERATION, // PACHINKO_GAME, パチンコ
         BEANS_UPDATE, // PACHINKO_UPDATE, パチンコ
         CP_JMS_MONSTERBOOK_SET,
