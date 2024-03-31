@@ -64,7 +64,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import packet.client.request.DropPacket;
 import packet.client.request.DropPacket.EnterType;
 import packet.client.request.DropPacket.LeaveType;
-import packet.client.request.ItemRequest;
 import packet.client.request.NPCPacket;
 import packet.client.request.ReactorPacket;
 import packet.server.response.EvanDragonResponse;
@@ -2387,6 +2386,14 @@ public final class MapleMap {
 
     public final MapleFootholdTree getFootholds() {
         return footholds;
+    }
+
+    public MapleFoothold findFootHold(int foothold_id) {
+        // not set
+        if (footholds == null) {
+            return null;
+        }
+        return footholds.findFootHold(foothold_id);
     }
 
     public final void loadMonsterRate(final boolean first) {

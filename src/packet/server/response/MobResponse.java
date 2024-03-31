@@ -21,7 +21,9 @@ package packet.server.response;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import config.ServerConfig;
+import debug.Debug;
 import handling.MaplePacket;
+import java.awt.Point;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,7 @@ import packet.server.ServerPacket;
 import packet.server.response.struct.Structure;
 import server.life.MapleMonster;
 import server.life.MobSkill;
+import server.maps.MapleFoothold;
 
 /**
  *
@@ -200,32 +203,44 @@ public class MobResponse {
 
     // spawnMonster
     public static MaplePacket Spawn(MapleMonster life, int spawnType, int effect, int link) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_MobEnterField);
-        p.Encode4(life.getObjectId());
-        p.Encode1(1); // 1 = Control normal, 5 = Control none
-        p.Encode4(life.getId());
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobEnterField);
+        sp.Encode4(life.getObjectId());
+        sp.Encode1(1); // 1 = Control normal, 5 = Control none
+        sp.Encode4(life.getId());
         if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) {
-            p.Encode4(0); // 後でなおす
+            sp.Encode4(0); // 後でなおす
         } else {
-            p.EncodeBuffer(Structure.MonsterStatus(life));
+            sp.EncodeBuffer(Structure.MonsterStatus(life));
         }
-        p.Encode2(life.getPosition().x);
-        p.Encode2(life.getPosition().y);
-        p.Encode1(life.getStance());
-        p.Encode2(0); // FH
-        p.Encode2(life.getFh()); // Origin FH
-        p.Encode1(spawnType);
+
+        // need to fix foothold fall down issue!
+        /*
+        MapleFoothold foothold_fix = life.getMap().getFootholds().findBelow(life.getPosition());
+        if (foothold_fix != null) {
+            Debug.DebugLog("FH fix: " + life.getFh() + " -> " + foothold_fix.getId());
+            life.setFh(foothold_fix.getId());
+            life.setPosition(new Point(life.getPosition().x, foothold_fix.getY2()));
+        }
+         */
+        sp.Encode2(life.getPosition().x); // m_ptPosPrev.x
+        sp.Encode2(life.getPosition().y); // m_ptPosPrev.y
+        sp.Encode1(life.getStance()); // m_nMoveAction_CS
+        sp.Encode2(life.getFh()); // pvcMobActiveObj
+        sp.Encode2(life.getOriginFh()); // m_pInterface
+
+        //Debug.DebugLog("FH: " + life.getFh() + ", OriginFH: " + life.getOriginFh());
+        sp.Encode1(spawnType);
         if (spawnType == -3 || 0 <= spawnType) {
-            p.Encode4(link);
+            sp.Encode4(link); // dwOption
         }
-        p.Encode1(life.getCarnivalTeam());
+        sp.Encode1(life.getCarnivalTeam()); // m_nTeamForMCarnival
         if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
-            p.Encode4(0);
+            sp.Encode4(0); // nEffectItemID
         }
         if ((ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
-            p.Encode4(0);
+            sp.Encode4(0); // m_nPhase
         }
-        return p.Get();
+        return sp.Get();
     }
 
     public static MaplePacket removeTalkMonster(int oid) {
@@ -312,5 +327,5 @@ public class MobResponse {
         p.Encode4(1); //?
         return p.Get();
     }
-    
+
 }

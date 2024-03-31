@@ -233,4 +233,13 @@ public class MapleFootholdTree {
     public final int getMinDropX() {
         return minDropX;
     }
+
+    public MapleFoothold findFootHold(int foothold_id) {
+        for (MapleFoothold fh : footholds) {
+            if (fh.getId() == foothold_id) {
+                return fh;
+            }
+        }
+        return null;
+    }
 }

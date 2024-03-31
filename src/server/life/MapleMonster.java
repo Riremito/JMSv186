@@ -50,7 +50,6 @@ import handling.MaplePacket;
 import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import java.awt.Point;
-import packet.client.request.MobRequest;
 import packet.server.response.FieldResponse;
 import packet.server.response.MobResponse;
 import scripting.EventInstanceManager;

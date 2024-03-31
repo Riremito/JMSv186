@@ -145,6 +145,7 @@ public class MobRequest {
         CMovePath data = CMovePath.Decode(cp);
         monster.setStance(data.getAction());
         monster.setPosition(data.getEnd());
+        monster.setFh(data.getFootHoldId());
 
         final MapleMap map = chr.getMap();
         map.moveMonster(monster, monster.getPosition());
