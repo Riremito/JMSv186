@@ -883,6 +883,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return ret;
     }
 
+    // 初期スロット数
+    private static final byte DEFAULT_INV_SLOT_EQUIP = 24;
+    private static final byte DEFAULT_INV_SLOT_USE = 24;
+    private static final byte DEFAULT_INV_SLOT_SETUP = 24;
+    private static final byte DEFAULT_INV_SLOT_ETC = 24;
+    private static final byte DEFAULT_INV_SLOT_CASH = 96;
+    private static final byte DEFAULT_INV_SLOT_STORAGE = 4;
+
     public static void saveNewCharToDB(final MapleCharacter chr, final int type, final boolean db) {
         Connection con = DatabaseConnection.getConnection();
 
@@ -980,11 +988,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
             ps = con.prepareStatement("INSERT INTO inventoryslot (characterid, `equip`, `use`, `setup`, `etc`, `cash`) VALUES (?, ?, ?, ?, ?, ?)");
             ps.setInt(1, chr.id);
-            ps.setByte(2, chr.getInventory(MapleInventoryType.EQUIP).getSlotLimit()); // Eq
-            ps.setByte(3, chr.getInventory(MapleInventoryType.USE).getSlotLimit()); // Use
-            ps.setByte(4, chr.getInventory(MapleInventoryType.SETUP).getSlotLimit()); // Setup
-            ps.setByte(5, chr.getInventory(MapleInventoryType.ETC).getSlotLimit()); // ETC
-            ps.setByte(6, chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // Cash
+            ps.setByte(2, DEFAULT_INV_SLOT_EQUIP); // Eq
+            ps.setByte(3, DEFAULT_INV_SLOT_USE); // Use
+            ps.setByte(4, DEFAULT_INV_SLOT_SETUP); // Setup
+            ps.setByte(5, DEFAULT_INV_SLOT_ETC); // ETC
+            ps.setByte(6, DEFAULT_INV_SLOT_CASH); // Cash
             ps.execute();
             ps.close();
 
@@ -4109,6 +4117,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             default:
                 return 0;
         }
+    }
+
+    public boolean checkNexonPoint(int value) {
+        // 購入不可
+        if (acash < value) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean useNexonPoint(int value) {
+        // マイナス値不可
+        if (value < 0 || acash < value) {
+            return false;
+        }
+        acash -= value;
+        return true;
     }
 
     public final boolean hasEquipped(int itemid) {

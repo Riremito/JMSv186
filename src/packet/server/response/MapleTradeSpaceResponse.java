@@ -57,6 +57,14 @@ public class MapleTradeSpaceResponse {
         return sp.Get();
     }
 
+    public static MaplePacket QueryCashResult(final MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCQueryCashResult);
+
+        sp.Encode4(chr.getCSPoints(1));
+        sp.Encode4(chr.getCSPoints(2));
+        return sp.Get();
+    }
+
     public static final MaplePacket getMTSConfirmCancel() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
@@ -77,14 +85,6 @@ public class MapleTradeSpaceResponse {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
         mplew.write(29);
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket showMTSCash(final MapleCharacter p) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCQueryCashResult.Get());
-        mplew.writeInt(p.getCSPoints(1));
-        mplew.writeInt(p.getCSPoints(2));
         return mplew.getPacket();
     }
 

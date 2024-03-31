@@ -23,11 +23,41 @@ package packet.ops;
  * @author Riremito
  */
 public enum CashItemOps {
+    // JMS v186
+    CashItemReq_Buy(0x03),
+    CashItemReq_Gift(0x04),
+    CashItemReq_SetWish(0x05),
+    CashItemReq_IncSlotCount(0x06),
+    CashItemReq_IncTrunkCount(0x07),
+    CashItemReq_MoveLtoS(0x0E),
+    CashItemReq_MoveStoL(0x0F),
+    CashItemReq_Destroy(0x1B),
+    CashItemReq_BuyNormal(0x21),
+    CashItemRes_LoadLocker_Done(0x4E),
+    CashItemRes_LoadLocker_Failed(0x4F),
+    CashItemRes_LoadGift_Done(0x50),
+    CashItemRes_LoadGift_Failed(0x51),
+    CashItemRes_LoadWish_Done(0x52),
+    CashItemRes_LoadWish_Failed(0x53),
+    CashItemRes_Buy_Done(0x58),
+    CashItemRes_Buy_Failed(0x59),
+    CashItemRes_IncSlotCount_Done(0x61),
+    CashItemRes_IncSlotCount_Failed(0x62),
+    CashItemRes_IncTrunkCount_Done(0x63),
+    CashItemRes_IncTrunkCount_Failed(0x64),
+    CashItemRes_MoveLtoS_Done(0x6B),
+    CashItemRes_MoveLtoS_Failed(0x6C),
+    CashItemRes_MoveStoL_Done(0x6D),
+    CashItemRes_MoveStoL_Failed(0x6E),
+    CashItemRes_Destroy_Done(0x6F),
+    CashItemRes_Destroy_Failed(0x70),
+    CashItemRes_BuyNormal_Done(0x90),
+    CashItemRes_BuyNormal_Failed(0x91),
     // GMS v95
-    CashItemReq_WebShopOrderGetList(0x0),
-    CashItemReq_LoadLocker(0x1),
-    CashItemReq_LoadWish(0x2),
-    CashItemReq_Buy(0x3),
+    //CashItemReq_WebShopOrderGetList(0x0),
+    //CashItemReq_LoadLocker(0x1),
+    //CashItemReq_LoadWish(0x2),
+    /*
     CashItemReq_Gift(0x4),
     CashItemReq_SetWish(0x5),
     CashItemReq_IncSlotCount(0x6),
@@ -57,8 +87,7 @@ public enum CashItemOps {
     CashItemReq_GiftCoupon(0x1E),
     CashItemReq_Couple(0x1F),
     CashItemReq_BuyPackage(0x20),
-    CashItemReq_GiftPackage(0x21),
-    CashItemReq_BuyNormal(0x22),
+    //CashItemReq_GiftPackage(0x21),
     CashItemReq_ApplyWishListEvent(0x23),
     CashItemReq_MovePetStat(0x24),
     CashItemReq_FriendShip(0x25),
@@ -218,6 +247,7 @@ public enum CashItemOps {
     CashItemRes_Give_Failed(0xBF),
     CashItemRes_GashItemGachapon_Failed(0xC0),
     CashItemRes_CashItemGachapon_Done(0xC1),
+     */
     UNKNOWN(-1);
 
     private int value;

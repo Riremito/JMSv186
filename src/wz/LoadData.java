@@ -50,6 +50,7 @@ public class LoadData {
         SkillFactory.getSkill(99999999);
         MapleCarnivalFactory.getInstance().initialize();
         initMapleMapFactory();
+        initCashItemFactory();
     }
 
     final private static ArrayList<Integer> jobids = new ArrayList<Integer>();
@@ -403,5 +404,6 @@ public class LoadData {
 
     private static void initCashItemFactory() {
         CashItemFactory.data = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz"));
+        CashItemFactory.getInstance().initialize();
     }
 }

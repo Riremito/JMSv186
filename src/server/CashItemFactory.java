@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Collection;
 import java.util.Map.Entry;
 import provider.MapleData;
 import provider.MapleDataProvider;
@@ -118,17 +117,6 @@ public class CashItemFactory {
             }
         }
         return ret;
-    }
-
-    public final Collection<CashModInfo> getAllModInfo() {
-        if (!initialized) {
-            initialize();
-        }
-        return itemMods.values();
-    }
-
-    public final int[] getBestItems() {
-        return bestItems;
     }
 
     public final int getItemSN(int itemid) {

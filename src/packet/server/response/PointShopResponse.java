@@ -21,16 +21,17 @@ package packet.server.response;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.IItem;
+import client.inventory.MapleInventoryType;
 import config.ServerConfig;
 import handling.MaplePacket;
 import java.util.List;
 import java.util.Map;
+import packet.ops.CashItemOps;
 import packet.server.ServerPacket;
 import packet.server.response.struct.CharacterData;
 import packet.server.response.struct.TestHelper;
 import server.CashItemFactory;
 import server.CashItemInfo;
-import server.CashShop;
 import tools.Pair;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -111,9 +112,93 @@ public class PointShopResponse {
         return sp.Get();
     }
 
+    public static class CashItemStruct {
+
+        public MapleInventoryType inc_slot_type;
+
+        public CashItemStruct(MapleInventoryType inc_slot_type) {
+            this.inc_slot_type = inc_slot_type;
+        }
+
+    }
+
+    public static MaplePacket CashItemResult(CashItemOps ops, MapleClient c) {
+        return CashItemResult(ops, c, null);
+    }
+
     // CCashShop::OnCashItemResult
-    public static MaplePacket CashItemResult() {
+    public static MaplePacket CashItemResult(CashItemOps ops, MapleClient c, CashItemStruct cis) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopCashItemResult);
+
+        sp.Encode1(ops.get());
+        switch (ops) {
+            // getCSInventory
+            case CashItemRes_LoadLocker_Done: {
+                sp.Encode2(0); // cash item count
+                sp.Encode2(c.getPlayer().getStorage().getSlots()); // m_nTrunkCount
+                sp.Encode2(c.getCharacterSlots()); // m_nCharacterSlotCount
+                sp.Encode2(0);// m_nBuyCharacterCount
+                sp.Encode2(c.getCharaterCount());// m_nCharacterCount
+                break;
+            }
+            case CashItemRes_Buy_Done: {
+                break;
+            }
+            case CashItemRes_Buy_Failed: {
+                break;
+            }
+            case CashItemRes_IncSlotCount_Done: {
+                sp.Encode1(cis.inc_slot_type.getType());
+                sp.Encode2(c.getPlayer().getInventory(cis.inc_slot_type).getSlotLimit());
+                break;
+            }
+            case CashItemRes_IncSlotCount_Failed: {
+                break;
+            }
+            case CashItemRes_IncTrunkCount_Done: {
+                sp.Encode2(c.getPlayer().getStorage().getSlots());
+                break;
+            }
+            case CashItemRes_IncTrunkCount_Failed: {
+                break;
+            }
+            case CashItemRes_MoveLtoS_Done: {
+                break;
+            }
+            case CashItemRes_MoveLtoS_Failed: {
+                break;
+            }
+            case CashItemRes_MoveStoL_Done: {
+                break;
+            }
+            case CashItemRes_MoveStoL_Failed: {
+                break;
+            }
+            case CashItemRes_Destroy_Done: {
+                break;
+            }
+            case CashItemRes_Destroy_Failed: {
+                break;
+            }
+            case CashItemRes_BuyNormal_Done: {
+                break;
+            }
+            case CashItemRes_BuyNormal_Failed: {
+                break;
+            }
+            /*
+            case CashItemRes_TransferWorld_Done: {
+                break;
+            }
+            case CashItemRes_TransferWorld_Failed: {
+                break;
+            }
+             */
+            default: {
+                break;
+            }
+        }
+
         return sp.Get();
     }
 
@@ -173,6 +258,22 @@ public class PointShopResponse {
         return sp.Get();
     }
 
+    public static MaplePacket showBoughtCSItem(IItem item, int sn, int accid) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
+        mplew.write(88 /*0x5A*/);
+        addCashItemInfo(mplew, item, accid, sn);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket confirmToCSInventory(IItem item, int accId, int sn) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
+        mplew.write(109);
+        addCashItemInfo(mplew, item, accId, sn, false);
+        return mplew.getPacket();
+    }
+
     public static MaplePacket showBoughtCSQuestItem(int price, short quantity, byte position, int itemid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
@@ -210,22 +311,6 @@ public class PointShopResponse {
         return mplew.getPacket();
     }
 
-    public static MaplePacket showBoughtCSItem(int itemid, int sn, int uniqueid, int accid, int quantity, String giftFrom, long expire) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
-        mplew.write(88 /*0x5A*/); //use to be 4a
-        addCashItemInfo(mplew, uniqueid, accid, itemid, sn, quantity, giftFrom, expire);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket showBoughtCSItem(IItem item, int sn, int accid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
-        mplew.write(88 /*0x5A*/);
-        addCashItemInfo(mplew, item, accid, sn);
-        return mplew.getPacket();
-    }
-
     public static MaplePacket sendWishList(MapleCharacter chr, boolean update) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
@@ -258,28 +343,11 @@ public class PointShopResponse {
         return mplew.getPacket();
     }
 
-    //also used for character slots !
-    public static MaplePacket increasedStorageSlots(int slots) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
-        mplew.write(101);
-        mplew.writeShort(slots);
-        return mplew.getPacket();
-    }
-
     public static MaplePacket cashItemExpired(int uniqueid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(113); //use to be 5d
         mplew.writeLong(uniqueid);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket confirmToCSInventory(IItem item, int accId, int sn) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
-        mplew.write(109);
-        addCashItemInfo(mplew, item, accId, sn, false);
         return mplew.getPacket();
     }
 
@@ -361,21 +429,6 @@ public class PointShopResponse {
             mplew.writeAsciiString(mcz.getLeft().getGiftFrom(), 13);
             mplew.writeAsciiString(mcz.getRight(), 73);
         }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getCSInventory(MapleClient c) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
-        mplew.write(78); // use to be 3e
-        CashShop mci = c.getPlayer().getCashInventory();
-        mplew.writeShort(mci.getItemsSize());
-        for (IItem itemz : mci.getInventory()) {
-            addCashItemInfo(mplew, itemz, c.getAccID(), 0); //test
-        }
-        mplew.writeShort(c.getPlayer().getStorage().getSlots());
-        mplew.writeInt(c.getCharacterSlots());
-        mplew.writeShort(4); //00 00 04 00 <-- added?
         return mplew.getPacket();
     }
 

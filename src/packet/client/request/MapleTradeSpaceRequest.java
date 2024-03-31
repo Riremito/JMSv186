@@ -253,7 +253,7 @@ public class MapleTradeSpaceRequest {
         c.getSession().write(MTSStorage.getInstance().getCurrentMTS(cart));
         c.getSession().write(MTSStorage.getInstance().getCurrentNotYetSold(cart));
         c.getSession().write(MTSStorage.getInstance().getCurrentTransfer(cart, changed));
-        c.getSession().write(MapleTradeSpaceResponse.showMTSCash(c.getPlayer()));
+        c.getSession().write(MapleTradeSpaceResponse.QueryCashResult(c.getPlayer()));
         //c.getSession().write(MTSCSPacket.enableCSUse());
         MTSStorage.getInstance().checkExpirations();
     }
