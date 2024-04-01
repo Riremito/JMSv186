@@ -73,7 +73,6 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
 
     public void setFh(int fh) {
         this.fh = fh;
-        this.originFh = fh;
     }
 
     public int getCy() {
