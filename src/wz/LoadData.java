@@ -438,6 +438,6 @@ public class LoadData {
 
     private static void initCashItemFactory() {
         CashItemFactory.data = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz"));
-        CashItemFactory.getInstance().initialize();
+        CashItemFactory.commodity = CashItemFactory.data.getData("Commodity.img");
     }
 }

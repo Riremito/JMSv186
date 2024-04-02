@@ -22,7 +22,8 @@ public class CashItemFactory {
     private final Map<Integer, CashItemInfo> itemStats = new HashMap<Integer, CashItemInfo>();
     private final Map<Integer, List<CashItemInfo>> itemPackage = new HashMap<Integer, List<CashItemInfo>>();
     private final Map<Integer, CashModInfo> itemMods = new HashMap<Integer, CashModInfo>();
-    public static MapleDataProvider data;
+    public static MapleDataProvider data = null;
+    public static MapleData commodity = null;
 
     public static final CashItemFactory getInstance() {
         return instance;
@@ -65,17 +66,37 @@ public class CashItemFactory {
         initialized = true;
     }
 
-    public final CashItemInfo getItem(int sn) {
-        final CashItemInfo stats = itemStats.get(Integer.valueOf(sn));
-        final CashModInfo z = getModInfo(sn);
-        if (z != null && z.showUp) {
-            return z.toCItem(stats); //null doesnt matter
+    public final CashItemInfo getItem(int item_SN) {
+        final CashItemInfo cii = itemStats.get(Integer.valueOf(item_SN));
+
+        // OK
+        if (cii != null) {
+            return cii;
         }
-        if (stats == null || !stats.onSale()) {
-            return null;
+
+        // Load
+        for (MapleData field : commodity.getChildren()) {
+            int SN = MapleDataTool.getIntConvert("SN", field, 0);
+
+            if (SN <= 0 || item_SN != SN) {
+                continue;
+            }
+
+            int ItemId = MapleDataTool.getIntConvert("ItemId", field, 0);
+
+            CashItemInfo stats = new CashItemInfo(ItemId,
+                    MapleDataTool.getIntConvert("Count", field, 1),
+                    MapleDataTool.getIntConvert("Price", field, 0),
+                    SN,
+                    MapleDataTool.getIntConvert("Period", field, 0),
+                    MapleDataTool.getIntConvert("Gender", field, 2),
+                    MapleDataTool.getIntConvert("OnSale", field, 0) > 0);
+
+            itemStats.put(SN, stats);
+            return stats;
         }
-        //hmm
-        return stats;
+
+        return null;
     }
 
     public final List<CashItemInfo> getPackageItems(int itemId) {
