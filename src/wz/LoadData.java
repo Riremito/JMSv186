@@ -34,23 +34,57 @@ public class LoadData {
         }
 
         DebugLoadTime dlt = new DebugLoadTime("initDataIDs");
-        initDataIDs(); // 職業ID
+        initDataIDs();
         dlt.End();
 
+        dlt = new DebugLoadTime("initForbiddenName");
         initForbiddenName();
+        dlt.End();
+
+        dlt = new DebugLoadTime("initQuests");
         initQuests();
+        dlt.End();
+
+        dlt = new DebugLoadTime("initLife");
         initLife();
+        dlt.End();
+
+        dlt = new DebugLoadTime("initMaker");
         initMaker();
+        dlt.End();
+
+        dlt = new DebugLoadTime("initItemInformation");
         initItemInformation();
+        dlt.End();
 
         // gomi
+        dlt = new DebugLoadTime("MapleLifeFactory");
         MapleLifeFactory.loadQuestCounts();
+        dlt.End();
+
+        dlt = new DebugLoadTime("ItemMakerFactory");
         ItemMakerFactory.getInstance();
+        dlt.End();
+
+        dlt = new DebugLoadTime("MapleItemInformationProvider");
         MapleItemInformationProvider.getInstance().load();
+        dlt.End();
+
+        dlt = new DebugLoadTime("SkillFactory");
         SkillFactory.getSkill(99999999);
+        dlt.End();
+
+        dlt = new DebugLoadTime("MapleCarnivalFactory");
         MapleCarnivalFactory.getInstance().initialize();
+        dlt.End();
+
+        dlt = new DebugLoadTime("initMapleMapFactory");
         initMapleMapFactory();
+        dlt.End();
+
+        dlt = new DebugLoadTime("initCashItemFactory");
         initCashItemFactory();
+        dlt.End();
     }
 
     final private static ArrayList<Integer> jobids = new ArrayList<Integer>();
