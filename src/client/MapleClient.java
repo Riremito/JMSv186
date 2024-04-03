@@ -1275,9 +1275,6 @@ public class MapleClient implements Serializable {
     }
 
     public int getCharacterSlots() {
-        if (isGm()) {
-            return 15;
-        }
         if (charslots != DEFAULT_CHARSLOT) {
             return charslots; //save a sql
         }
