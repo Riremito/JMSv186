@@ -46,6 +46,7 @@ import server.MTSStorage;
 import server.MapleInventoryManipulator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
+import wz.LoadData;
 
 /**
  *
@@ -110,8 +111,8 @@ public class PointShopRequest {
             }
             // アバターランダムボックスのオープン処理
             case CP_CashGachaponOpenRequest: {
-                c.enableCSActions();
-                return false;
+                long box_SN = cp.Decode8();
+                return OnGachaponOpen(c, box_SN);
             }
             // オススメアバターを選択した時の処理
             case CP_JMS_RECOMMENDED_AVATAR: {
@@ -399,6 +400,14 @@ public class PointShopRequest {
                 long item_unique_id = cp.Decode8(); // buffer8
                 return DestoryItem(chr, nexon_id, item_unique_id);
             }
+            // 0x05
+            case CashItemReq_SetWish:
+            // 0x1F
+            case CashItemReq_BuyPackage: {
+                // not coded
+                c.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_SetWish_Failed, c));
+                return true;
+            }
             // 0x21
             case CashItemReq_BuyNormal: {
                 int item_SN = cp.Decode4();
@@ -501,6 +510,32 @@ public class PointShopRequest {
 
         chr.getCashInventory().removeFromInventory(item);
         chr.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_Destroy_Done, chr.getClient(), new PointShopResponse.CashItemStruct(item)));
+        return true;
+    }
+
+    private static boolean OnGachaponOpen(MapleClient c, long box_SN) {
+        MapleCharacter chr = c.getPlayer();
+
+        if (chr == null) {
+            return false;
+        }
+
+        IItem box_item = chr.getCashInventory().findByCashId(box_SN);
+
+        if (box_item == null || box_item.getQuantity() < 1) {
+            return false;
+        }
+
+        int test_item_SN = CashItemFactory.getInstance().getItemSN(1002239); // test
+        CashItemInfo cashitem = CashItemFactory.getInstance().getItem(test_item_SN);
+        IItem item = chr.getCashInventory().toItem(cashitem);
+
+        if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && LoadData.IsValidItemID(item.getItemId())) {
+            chr.getCashInventory().removeFromInventory(box_item);
+            chr.getCashInventory().addToInventory(item);
+            c.SendPacket(PointShopResponse.OnCashItemGachaponResult(box_item, item, c));
+        }
+
         return true;
     }
 

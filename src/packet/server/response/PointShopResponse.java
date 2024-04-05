@@ -154,12 +154,18 @@ public class PointShopResponse {
                 sp.Encode2(c.getCharaterCount());// m_nCharacterCount
                 break;
             }
+            // test
+            case CashItemRes_SetWish_Failed: {
+                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_NoStock.get());
+                break;
+            }
             // showBoughtCSItem
             case CashItemRes_Buy_Done: {
                 sp.EncodeBuffer(GW_CashItemInfo.Encode(cis.item, c));
                 break;
             }
             case CashItemRes_Buy_Failed: {
+                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_NoRemainCash.get());
                 break;
             }
             case CashItemRes_IncSlotCount_Done: {
@@ -276,12 +282,21 @@ public class PointShopResponse {
         return sp.Get();
     }
 
-    public static MaplePacket confirmToCSInventory(IItem item, int accId, int sn) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
-        mplew.write(109);
-        addCashItemInfo(mplew, item, accId, sn, false);
-        return mplew.getPacket();
+    // アバターランダムボックス
+    public static MaplePacket OnCashItemGachaponResult(IItem box_item, IItem item, MapleClient c) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopCashItemGachaponResult);
+
+        sp.Encode1(CashItemOps.CashItemRes_CashItemGachapon_Done.get());
+        sp.Encode8(box_item.getUniqueId());
+        sp.Encode4(0); // nNumber
+        sp.EncodeBuffer(GW_CashItemInfo.Encode(item, c));
+        // CUICashItemGachapon::OnCashItemGachaponResult
+        {
+            sp.Encode4(item.getItemId()); // m_nSelectedItemID
+            sp.Encode1(1); // m_nSelectedItemCount
+            sp.Encode1(1); // m_bJackpot, 0 (CashGachaponNormal) or 1 (CashGachaponJackpot)
+        }
+        return sp.Get();
     }
 
     public static MaplePacket showBoughtCSQuestItem(int price, short quantity, byte position, int itemid) {
