@@ -27,7 +27,6 @@ import client.inventory.MapleInventoryType;
 import client.MapleStat;
 import client.anticheat.CheatingOffense;
 import constants.GameConstants;
-import scripting.ReactorScriptManager;
 import server.events.MapleCoconut;
 import server.events.MapleCoconut.MapleCoconuts;
 import server.MapleInventoryManipulator;
@@ -36,7 +35,6 @@ import server.events.MapleEventType;
 import server.maps.MapleDoor;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
-import server.maps.MapleReactor;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -51,7 +49,7 @@ public class PlayersHandler {
                 String msg = slea.readMapleAsciiString();
                 boolean fame = slea.readByte() > 0;
                 slea.readInt(); //0?
-                IItem itemz = chr.getCashInventory().findByCashId((int) slea.readLong());
+                IItem itemz = chr.getCashInventory().findByCashId(slea.readLong());
                 if (itemz == null || !itemz.getGiftFrom().equalsIgnoreCase(name) || !chr.getCashInventory().canSendNote(itemz.getUniqueId())) {
                     return;
                 }

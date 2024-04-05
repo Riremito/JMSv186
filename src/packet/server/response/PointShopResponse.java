@@ -26,6 +26,7 @@ import config.ServerConfig;
 import handling.MaplePacket;
 import java.util.List;
 import java.util.Map;
+import packet.ops.CashItemFailReasonOps;
 import packet.ops.CashItemOps;
 import packet.server.ServerPacket;
 import packet.server.response.struct.CharacterData;
@@ -188,10 +189,13 @@ public class PointShopResponse {
             case CashItemRes_MoveStoL_Failed: {
                 break;
             }
+            // onfirmFromCSInventory
             case CashItemRes_Destroy_Done: {
+                sp.Encode8(cis.item.getUniqueId());
                 break;
             }
             case CashItemRes_Destroy_Failed: {
+                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_InvalidPassportID.get()); // msg
                 break;
             }
             case CashItemRes_BuyNormal_Done: {
@@ -435,15 +439,6 @@ public class PointShopResponse {
             mplew.writeAsciiString(mcz.getLeft().getGiftFrom(), 13);
             mplew.writeAsciiString(mcz.getRight(), 73);
         }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket confirmFromCSInventory(IItem item, short pos) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
-        mplew.write(107);
-        mplew.writeShort(pos);
-        TestHelper.addItemInfo(mplew, item, true, true);
         return mplew.getPacket();
     }
 

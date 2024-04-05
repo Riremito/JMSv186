@@ -397,7 +397,7 @@ public class PointShopRequest {
             case CashItemReq_Destroy: {
                 String nexon_id = cp.DecodeStr();
                 long item_unique_id = cp.Decode8(); // buffer8
-                return DestoryItem(chr, item_unique_id);
+                return DestoryItem(chr, nexon_id, item_unique_id);
             }
             // 0x21
             case CashItemReq_BuyNormal: {
@@ -491,16 +491,17 @@ public class PointShopRequest {
         return true;
     }
 
-    private static boolean DestoryItem(MapleCharacter chr, long item_unique_id) {
-        IItem item = chr.getCashInventory().findByCashId((int) item_unique_id);
+    private static boolean DestoryItem(MapleCharacter chr, String nexon_id, long item_unique_id) {
+        IItem item = chr.getCashInventory().findByCashId(item_unique_id);
 
-        if (item != null && item.getQuantity() > 0 && item.getOwner().equals(chr.getName())) {
-            chr.getCashInventory().removeFromInventory(item);
-            //chr.SendPacket(PointShopResponse.confirmFromCSInventory(item, pos));
-            return true;
+        if (item == null || item.getQuantity() < 1 || !chr.getClient().getAccountName().equals(nexon_id)) {
+            chr.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_Destroy_Failed, chr.getClient()));
+            return false;
         }
 
-        return false;
+        chr.getCashInventory().removeFromInventory(item);
+        chr.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_Destroy_Done, chr.getClient(), new PointShopResponse.CashItemStruct(item)));
+        return true;
     }
 
     public static void CouponCode(final String code, final MapleClient c) {
