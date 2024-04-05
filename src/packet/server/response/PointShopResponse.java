@@ -29,9 +29,11 @@ import java.util.Map;
 import packet.ops.CashItemOps;
 import packet.server.ServerPacket;
 import packet.server.response.struct.CharacterData;
+import packet.server.response.struct.GW_CashItemInfo;
 import packet.server.response.struct.TestHelper;
 import server.CashItemFactory;
 import server.CashItemInfo;
+import server.CashShop;
 import tools.Pair;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -115,9 +117,14 @@ public class PointShopResponse {
     public static class CashItemStruct {
 
         public MapleInventoryType inc_slot_type;
+        public IItem item;
 
         public CashItemStruct(MapleInventoryType inc_slot_type) {
             this.inc_slot_type = inc_slot_type;
+        }
+
+        public CashItemStruct(IItem item) {
+            this.item = item;
         }
 
     }
@@ -134,14 +141,21 @@ public class PointShopResponse {
         switch (ops) {
             // getCSInventory
             case CashItemRes_LoadLocker_Done: {
-                sp.Encode2(0); // cash item count
+                CashShop csi = c.getPlayer().getCashInventory();
+
+                sp.Encode2(csi.getItemsSize()); // cash item count
+                for (IItem item : csi.getInventory()) {
+                    sp.EncodeBuffer(GW_CashItemInfo.Encode(item, c));
+                }
                 sp.Encode2(c.getPlayer().getStorage().getSlots()); // m_nTrunkCount
                 sp.Encode2(c.getCharacterSlots()); // m_nCharacterSlotCount
                 sp.Encode2(0);// m_nBuyCharacterCount
                 sp.Encode2(c.getCharaterCount());// m_nCharacterCount
                 break;
             }
+            // showBoughtCSItem
             case CashItemRes_Buy_Done: {
+                sp.EncodeBuffer(GW_CashItemInfo.Encode(cis.item, c));
                 break;
             }
             case CashItemRes_Buy_Failed: {
@@ -256,14 +270,6 @@ public class PointShopResponse {
             sp.EncodeStr(world);
         }
         return sp.Get();
-    }
-
-    public static MaplePacket showBoughtCSItem(IItem item, int sn, int accid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
-        mplew.write(88 /*0x5A*/);
-        addCashItemInfo(mplew, item, accid, sn);
-        return mplew.getPacket();
     }
 
     public static MaplePacket confirmToCSInventory(IItem item, int accId, int sn) {

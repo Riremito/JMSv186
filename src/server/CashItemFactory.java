@@ -99,6 +99,36 @@ public class CashItemFactory {
         return null;
     }
 
+    public final int getItemSN(int itemid) {
+        for (Entry<Integer, CashItemInfo> ci : itemStats.entrySet()) {
+            if (ci.getValue().getId() == itemid) {
+                return ci.getValue().getSN();
+            }
+        }
+
+        // Load
+        for (MapleData field : commodity.getChildren()) {
+            int ItemId = MapleDataTool.getIntConvert("ItemId", field, 0);
+            if (ItemId != itemid) {
+                continue;
+            }
+
+            int SN = MapleDataTool.getIntConvert("SN", field, 0);
+            CashItemInfo stats = new CashItemInfo(ItemId,
+                    MapleDataTool.getIntConvert("Count", field, 1),
+                    MapleDataTool.getIntConvert("Price", field, 0),
+                    SN,
+                    MapleDataTool.getIntConvert("Period", field, 0),
+                    MapleDataTool.getIntConvert("Gender", field, 2),
+                    MapleDataTool.getIntConvert("OnSale", field, 0) > 0);
+
+            itemStats.put(SN, stats);
+            return SN;
+        }
+
+        return 0;
+    }
+
     public final List<CashItemInfo> getPackageItems(int itemId) {
         if (itemPackage.get(itemId) != null) {
             return itemPackage.get(itemId);
@@ -138,14 +168,5 @@ public class CashItemFactory {
             }
         }
         return ret;
-    }
-
-    public final int getItemSN(int itemid) {
-        for (Entry<Integer, CashItemInfo> ci : itemStats.entrySet()) {
-            if (ci.getValue().getId() == itemid) {
-                return ci.getValue().getSN();
-            }
-        }
-        return 0;
     }
 }

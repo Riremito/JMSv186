@@ -436,7 +436,7 @@ public class PointShopRequest {
         IItem item = chr.getCashInventory().toItem(cashitem);
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount()) {
             chr.getCashInventory().addToInventory(item);
-            c.getSession().write(PointShopResponse.showBoughtCSItem(item, cashitem.getSN(), c.getAccID()));
+            c.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_Buy_Done, c, new PointShopResponse.CashItemStruct(item)));
             chr.useNexonPoint(cashitem.getPrice());
         } else {
             Debug.ErrorLog("BuyCashItem : ERR");
