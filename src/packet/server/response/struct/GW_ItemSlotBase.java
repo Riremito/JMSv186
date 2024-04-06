@@ -257,7 +257,7 @@ public class GW_ItemSlotBase {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(item.getItemId());
-        boolean hasUniqueId = item.getUniqueId() > 0;
+        boolean hasUniqueId = item.getUniqueId() > 0 && item.getType() != 1;
 
         data.Encode1(hasUniqueId ? 1 : 0);
 

@@ -76,7 +76,7 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         return null;
     }
 
-    public IItem findByUniqueId(int itemId) {
+    public IItem findByUniqueId(long itemId) {
         for (IItem item : inventory.values()) {
             if (item.getUniqueId() == itemId) {
                 return item;
