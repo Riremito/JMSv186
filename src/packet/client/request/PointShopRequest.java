@@ -353,6 +353,7 @@ public class PointShopRequest {
             return false;
         }
         IItem item_dst = item_src.copy();
+        item_dst.setUniqueId(item_src.getUniqueId());
         // アイテム欄へ移動
         short dst_slot = MapleInventoryManipulator.addbyItem(chr.getClient(), item_dst, true);
         // ポイントショップ上から削除
@@ -379,6 +380,7 @@ public class PointShopRequest {
             return false;
         }
         IItem item_dst = item_src.copy();
+        item_dst.setUniqueId(item_src.getUniqueId());
         // ポイントショップへ移動
         chr.getCashInventory().addToInventory(item_dst);
         // アイテム欄から削除

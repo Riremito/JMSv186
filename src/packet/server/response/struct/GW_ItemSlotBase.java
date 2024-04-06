@@ -98,7 +98,7 @@ public class GW_ItemSlotBase {
                 data.EncodeBuffer(RawEncode(item));
 
                 final IEquip equip = (IEquip) item;
-                boolean hasUniqueId = equip.getUniqueId() > 0;
+                boolean hasUniqueId = 0 < equip.getUniqueId();
 
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
@@ -202,7 +202,10 @@ public class GW_ItemSlotBase {
                     data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
                 }
 
-                data.Encode8(0); // liCashItemSN.QuadPartがない場合はDecodeがされないのでズレる
+                if (!hasUniqueId) {
+                    data.Encode8(0);
+                }
+
                 data.Encode8(0);
                 data.Encode4(-1);
                 break;
@@ -257,7 +260,7 @@ public class GW_ItemSlotBase {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(item.getItemId());
-        boolean hasUniqueId = item.getUniqueId() > 0 && item.getType() != 1;
+        boolean hasUniqueId = 0 < item.getUniqueId();
 
         data.Encode1(hasUniqueId ? 1 : 0);
 
