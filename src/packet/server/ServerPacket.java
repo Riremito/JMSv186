@@ -617,6 +617,7 @@ public class ServerPacket {
         LP_JMS_POINTSHOP_FORCE_REQUEST,
         LP_JMS_POINTSHOP_KOC_PRESENT_DIALOG,
         LP_JMS_POINTSHOP_FREE_COUPON_DIALOG,
+        LP_JMS_GACHAPON_STAMP_AND_OTOSHIDAMA_DIALOG,
         LP_CashShopCheckDuplicatedIDResult,
         LP_CashShopCheckNameChangePossibleResult,
         LP_CashShopRegisterNewCharacterResult,

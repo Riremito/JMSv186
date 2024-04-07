@@ -325,6 +325,18 @@ public class PointShopResponse {
         return sp.Get();
     }
 
+    // ガシャポンスタンプとお年玉の累積ポイント告知
+    public static MaplePacket GachaponStampAndOtoshidamaDialog() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_GACHAPON_STAMP_AND_OTOSHIDAMA_DIALOG);
+        sp.Encode4(5); // Xポイントで購入
+        sp.Encode4(4); // X個のスタンプGET
+        sp.Encode4(3); // 次はXポイントでスタンプをGETできます
+        sp.Encode4(2); // 累積Xポイント
+        sp.Encode4(1); // 入手した個数は計X個
+        sp.Encode4(4000426); // item id 4031351 or 4000426
+        return sp.Get();
+    }
+
     // CCashShop::OnCheckTransferWorldPossibleResult
     // -> CP_CashShopCashItemRequest, @00FA [31] [FFFFFFFF] [WORLD_ID (4 bytes)]
     public static MaplePacket CheckTransferWorldPossibleResult() {
