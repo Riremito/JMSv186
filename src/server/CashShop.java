@@ -91,6 +91,15 @@ public class CashShop implements Serializable {
         return null;
     }
 
+    public IItem findItem(int item_id) {
+        for (IItem item : inventory) {
+            if (item.getItemId() == item_id) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     public void checkExpire(MapleClient c) {
         List<IItem> toberemove = new ArrayList<IItem>();
         for (IItem item : inventory) {

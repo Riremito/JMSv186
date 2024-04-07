@@ -276,4 +276,8 @@ public class GW_ItemSlotBase {
 
         return data.Get().getBytes();
     }
+
+    public static long getTestExpiration() {
+        return (Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000;
+    }
 }

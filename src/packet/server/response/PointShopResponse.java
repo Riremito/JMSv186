@@ -24,6 +24,7 @@ import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
 import handling.MaplePacket;
+import java.util.ArrayList;
 import packet.ops.CashItemFailReasonOps;
 import packet.ops.CashItemOps;
 import packet.server.ServerPacket;
@@ -114,6 +115,11 @@ public class PointShopResponse {
 
         public MapleInventoryType inc_slot_type;
         public IItem item;
+        // coupon
+        public ArrayList<IItem> coupon_items_cash;
+        public int coupon_maple_point;
+        public ArrayList<IItem> coupon_items_normal;
+        public int coupon_meso;
 
         public CashItemStruct(MapleInventoryType inc_slot_type) {
             this.inc_slot_type = inc_slot_type;
@@ -121,6 +127,13 @@ public class PointShopResponse {
 
         public CashItemStruct(IItem item) {
             this.item = item;
+        }
+
+        public CashItemStruct(ArrayList<IItem> coupon_items_cash, int coupon_maple_point, ArrayList<IItem> coupon_items_normal, int coupon_meso) {
+            this.coupon_items_cash = coupon_items_cash;
+            this.coupon_maple_point = coupon_maple_point;
+            this.coupon_items_normal = coupon_items_normal;
+            this.coupon_meso = coupon_meso;
         }
 
     }
@@ -157,13 +170,44 @@ public class PointShopResponse {
             }
             // showBoughtCSItem
             // CCashShop::OnCashItemResBuyDone
-            case CashItemRes_Buy_Done: {
+            case CashItemRes_Buy_Done:
+            case CashItemRes_FreeCashItem_Done: {
                 sp.EncodeBuffer(GW_CashItemInfo.Encode(cis.item, c));
                 break;
             }
             // CCashShop::OnCashItemResBuyFailed
             case CashItemRes_Buy_Failed: {
                 sp.Encode1(CashItemFailReasonOps.CashItemFailReason_NoRemainCash.get());
+                break;
+            }
+            case CashItemRes_UseCoupon_Done: {
+                int cash_item_count = cis.coupon_items_cash == null ? 0 : cis.coupon_items_cash.size();
+                int normal_item_count = cis.coupon_items_normal == null ? 0 : cis.coupon_items_normal.size();
+                sp.Encode1(cash_item_count);
+                if (0 < cash_item_count) {
+                    // buffer 55 bytes
+                    for (IItem item : cis.coupon_items_cash) {
+                        sp.EncodeBuffer(GW_CashItemInfo.Encode(item, c));
+                    }
+                }
+                sp.Encode4(cis.coupon_maple_point);
+                sp.Encode4(normal_item_count);
+                if (0 < normal_item_count) {
+                    // buffer 8 bytes
+                    for (IItem item : cis.coupon_items_normal) {
+                        sp.Encode2(item.getQuantity());
+                        sp.Encode2(0);
+                        sp.Encode4(item.getItemId());
+                    }
+                }
+                sp.Encode4(cis.coupon_meso);
+                break;
+            }
+            case CashItemRes_GiftCoupon_Done: {
+                break;
+            }
+            case CashItemRes_UseCoupon_Failed: {
+                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_InvalidCoupon.get());
                 break;
             }
             // CCashShop::OnCashItemResIncSlotCountDone
@@ -272,10 +316,12 @@ public class PointShopResponse {
     }
 
     // フリークーポンの期限の告知
-    public static MaplePacket FreeCouponDialog() {
+    public static MaplePacket FreeCouponDialog(boolean has_free_coupon, long free_coupon_date) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_POINTSHOP_FREE_COUPON_DIALOG);
-        sp.Encode1(1); // show dialog
-        sp.Encode8(-1); // date
+        sp.Encode1(has_free_coupon ? 1 : 0); // enable free coupon
+        if (has_free_coupon) {
+            sp.Encode8(free_coupon_date);
+        }
         return sp.Get();
     }
 

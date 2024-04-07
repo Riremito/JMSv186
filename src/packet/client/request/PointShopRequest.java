@@ -29,10 +29,12 @@ import handling.channel.ChannelServer;
 import handling.channel.handler.InterServerHandler;
 import handling.world.CharacterTransfer;
 import handling.world.World;
+import java.util.ArrayList;
 import packet.client.ClientPacket;
 import packet.ops.CashItemOps;
 import packet.server.response.MapleTradeSpaceResponse;
 import packet.server.response.PointShopResponse;
+import packet.server.response.struct.GW_ItemSlotBase;
 import server.CashItemFactory;
 import server.CashItemInfo;
 import server.MTSStorage;
@@ -92,13 +94,13 @@ public class PointShopRequest {
                 String character_name = cp.DecodeStr();
                 String coupon_code = cp.DecodeStr();
                 byte coupon_15 = cp.Decode1();
+                String message = "";
                 if (!character_name.equals("")) {
-                    String message = cp.DecodeStr();
+                    message = cp.DecodeStr();
                 }
-                // PointShopRequest.CouponCode
-                Debug.DebugLog("Coupon Code = " + coupon_code);
+                OnCheckCoupon(c, character_name, coupon_code, (coupon_15 != 0), message);
                 c.enableCSActions();
-                return false;
+                return true;
             }
             // アバターランダムボックスのオープン処理
             case CP_CashGachaponOpenRequest: {
@@ -153,13 +155,14 @@ public class PointShopRequest {
         c.updateLoginState(MapleClient.LOGIN_LOGGEDIN, c.getSessionIPAddress());
         if (mts) {
             CashShopServer.getPlayerStorageMTS().registerPlayer(chr);
-            c.getSession().write(MapleTradeSpaceResponse.SetITC(chr));
+            c.SendPacket(MapleTradeSpaceResponse.SetITC(chr));
             MapleTradeSpaceRequest.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
         } else {
             CashShopServer.getPlayerStorage().registerPlayer(chr);
-            c.getSession().write(PointShopResponse.SetCashShop(c));
-            c.getSession().write(PointShopResponse.QueryCashResult(c.getPlayer()));
-            c.getSession().write(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_LoadLocker_Done, c));
+            c.SendPacket(PointShopResponse.SetCashShop(c));
+            c.SendPacket(PointShopResponse.QueryCashResult(c.getPlayer()));
+            c.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_LoadLocker_Done, c));
+            updateFreeCouponDate(c.getPlayer());
         }
     }
 
@@ -177,6 +180,26 @@ public class PointShopRequest {
         }
     }
 
+    private static int FREE_COUPON_ITEM_ID = 5221000;
+
+    private static void updateFreeCouponDate(MapleCharacter chr) {
+        IItem item = chr.getCashInventory().findItem(FREE_COUPON_ITEM_ID);
+        if (item != null) {
+            chr.SendPacket(PointShopResponse.FreeCouponDialog(true, GW_ItemSlotBase.getTestExpiration()));
+        } else {
+            chr.SendPacket(PointShopResponse.FreeCouponDialog(false, 0));
+        }
+    }
+
+    private static boolean checkBuyDestroy(MapleCharacter chr, int item_id) {
+        if (item_id == FREE_COUPON_ITEM_ID) {
+            updateFreeCouponDate(chr);
+            return true;
+        }
+
+        return false;
+    }
+
     // BuyCashItem
     public static boolean OnCashItem(ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
@@ -191,23 +214,23 @@ public class PointShopRequest {
         switch (flag) {
             // 0x03
             case CashItemReq_Buy: {
-                byte unk1 = cp.Decode1();
+                byte use_maple_point = cp.Decode1();
                 int item_SN = cp.Decode4();
-                return BuyCashItem(item_SN, c);
+                return BuyCashItem(use_maple_point, item_SN, c);
             }
             // 0x06
             case CashItemReq_IncSlotCount: {
-                byte unk1 = cp.Decode1();
+                byte use_maple_point = cp.Decode1();
                 byte is_slot8 = cp.Decode1();
 
                 // 8 slot
                 if (is_slot8 != 0) {
                     int item_SN = cp.Decode4();
-                    return BuyCashItem(item_SN, c);
+                    return BuyCashItem(use_maple_point, item_SN, c);
                 }
                 // 4 slot
                 byte inv_type = cp.Decode1();
-                if (IncSlotCount4(inv_type, chr)) {
+                if (IncSlotCount4(use_maple_point, inv_type, chr)) {
                     c.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_IncSlotCount_Done, c, new PointShopResponse.CashItemStruct(MapleInventoryType.getByType(inv_type))));
                 } else {
                     // faield   
@@ -216,9 +239,9 @@ public class PointShopRequest {
             }
             // 0x07
             case CashItemReq_IncTrunkCount: {
-                byte unk1 = cp.Decode1();
+                byte use_maple_point = cp.Decode1();
                 byte unk2 = cp.Decode1();
-                if (IncTrunkCount4(chr)) {
+                if (IncTrunkCount4(use_maple_point, chr)) {
                     c.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_IncTrunkCount_Done, c));
                 } else {
                     // failed
@@ -255,7 +278,12 @@ public class PointShopRequest {
             // 0x21
             case CashItemReq_BuyNormal: {
                 int item_SN = cp.Decode4();
-                return BuyCashItem(item_SN, c);
+                return BuyNormalItem(item_SN, c);
+            }
+            // 0x2A
+            case CashItemReq_FreeCashItem: {
+                int item_SN = cp.Decode4();
+                return BuyFreeItem(item_SN, c);
             }
             default: {
                 Debug.ErrorLog("OnCashItem not coded : " + type);
@@ -266,7 +294,37 @@ public class PointShopRequest {
         return false;
     }
 
-    private static boolean BuyCashItem(int item_SN, MapleClient c) {
+    private static boolean checkPoint(MapleCharacter chr, byte use_maple_point, int price) {
+        boolean is_maple_point = 0 < use_maple_point;
+
+        if (is_maple_point) {
+            // Maple Point 残高不足
+            if (!chr.checkMaplePoint(price)) {
+                Debug.ErrorLog("BuyCashItem : mp");
+                return false;
+            }
+        } else {
+            // Nexon Point 残高不足
+            if (!chr.checkNexonPoint(price)) {
+                Debug.ErrorLog("BuyCashItem : np");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean usePoint(MapleCharacter chr, byte use_maple_point, int price) {
+        boolean is_maple_point = 0 < use_maple_point;
+
+        if (is_maple_point) {
+            chr.useMaplePoint(price);
+        } else {
+            chr.useNexonPoint(price);
+        }
+        return true;
+    }
+
+    private static boolean BuyCashItem(byte use_maple_point, int item_SN, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         CashItemInfo cashitem = CashItemFactory.getInstance().getItem(item_SN);
 
@@ -280,9 +338,7 @@ public class PointShopRequest {
             return false;
         }
 
-        // Nexon Point 残高不足
-        if (!chr.checkNexonPoint(cashitem.getPrice())) {
-            Debug.ErrorLog("BuyCashItem : np");
+        if (!checkPoint(chr, use_maple_point, cashitem.getPrice())) {
             return false;
         }
 
@@ -290,9 +346,45 @@ public class PointShopRequest {
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount()) {
             chr.getCashInventory().addToInventory(item);
             c.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_Buy_Done, c, new PointShopResponse.CashItemStruct(item)));
-            chr.useNexonPoint(cashitem.getPrice());
+            usePoint(chr, use_maple_point, cashitem.getPrice());
+            checkBuyDestroy(chr, item.getItemId());
         } else {
             Debug.ErrorLog("BuyCashItem : ERR");
+        }
+
+        return true;
+    }
+
+    // 修正が必要、まぁ動くからいいか...
+    private static boolean BuyNormalItem(int item_SN, MapleClient c) {
+        return BuyCashItem((byte) 0, item_SN, c);
+    }
+
+    private static boolean BuyFreeItem(int item_SN, MapleClient c) {
+        MapleCharacter chr = c.getPlayer();
+        CashItemInfo cashitem = CashItemFactory.getInstance().getItem(item_SN);
+
+        if (chr == null) {
+            Debug.ErrorLog("BuyFreeItem : chr");
+            return false;
+        }
+
+        if (cashitem == null) {
+            Debug.ErrorLog("BuyFreeItem : Invalid Item");
+            return false;
+        }
+
+        if (chr.getCashInventory().findItem(FREE_COUPON_ITEM_ID) == null) {
+            Debug.ErrorLog("BuyFreeItem : No Free Coupon");
+            return false;
+        }
+
+        IItem item = chr.getCashInventory().toItem(cashitem);
+        if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount()) {
+            chr.getCashInventory().addToInventory(item);
+            c.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_FreeCashItem_Done, c, new PointShopResponse.CashItemStruct(item)));
+        } else {
+            Debug.ErrorLog("BuyFreeItem : ERR");
         }
 
         return true;
@@ -302,17 +394,17 @@ public class PointShopRequest {
     private static final int SLOT_LIMIT = 96;
     private static final int TRUNK_SLOT_LIMIT = 60;
 
-    private static boolean IncSlotCount4(byte inv_type, MapleCharacter chr) {
-        return IncSlotCount(inv_type, chr, 4);
+    private static boolean IncSlotCount4(byte use_maple_point, byte inv_type, MapleCharacter chr) {
+        return IncSlotCount(use_maple_point, inv_type, chr, 4);
     }
 
-    private static boolean IncSlotCount8(int item_SN, MapleCharacter chr) {
+    private static boolean IncSlotCount8(byte use_maple_point, int item_SN, MapleCharacter chr) {
         // not coded
-        return IncSlotCount((byte) 0, chr, 8);
+        return IncSlotCount(use_maple_point, (byte) 0, chr, 8);
     }
 
-    private static boolean IncSlotCount(byte inv_type, MapleCharacter chr, int inc_slot) {
-        if (!chr.checkNexonPoint(INC_INVENTORY_SLOT_PRICE)) {
+    private static boolean IncSlotCount(byte use_maple_point, byte inv_type, MapleCharacter chr, int inc_slot) {
+        if (!checkPoint(chr, use_maple_point, INC_INVENTORY_SLOT_PRICE)) {
             // 残高不足
             return false;
         }
@@ -323,13 +415,13 @@ public class PointShopRequest {
             return false;
         }
 
-        chr.useNexonPoint(INC_INVENTORY_SLOT_PRICE);
+        usePoint(chr, use_maple_point, INC_INVENTORY_SLOT_PRICE);
         chr.getInventory(type).addSlot((byte) inc_slot);
         return true;
     }
 
-    private static boolean IncTrunkCount4(MapleCharacter chr) {
-        if (!chr.checkNexonPoint(INC_INVENTORY_SLOT_PRICE)) {
+    private static boolean IncTrunkCount4(byte use_maple_point, MapleCharacter chr) {
+        if (!checkPoint(chr, use_maple_point, INC_INVENTORY_SLOT_PRICE)) {
             // 残高不足
             return false;
         }
@@ -339,7 +431,7 @@ public class PointShopRequest {
             return false;
         }
 
-        chr.useNexonPoint(INC_INVENTORY_SLOT_PRICE);
+        usePoint(chr, use_maple_point, INC_INVENTORY_SLOT_PRICE);
         chr.getStorage().increaseSlots((byte) 4);
         return true;
     }
@@ -399,6 +491,78 @@ public class PointShopRequest {
 
         chr.getCashInventory().removeFromInventory(item);
         chr.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_Destroy_Done, chr.getClient(), new PointShopResponse.CashItemStruct(item)));
+        checkBuyDestroy(chr, item.getItemId());
+        return true;
+    }
+
+    // クーポン
+    static final int COUPON_CODE_LENGTH_1 = 30;
+    static final int COUPON_CODE_LENGTH_2 = 15;
+    static final int COUPON_GIFT_NAME_LIMIT = 12;
+    static final int COUPON_GIFT_MESSAGE_LIMIT = 34 + 1 + 34; // 34 + LF + 34
+    static final String COUPON_CODE_30_TEST_CODE = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+    static final String COUPON_CODE_15_TEST_CODE = "XXXXXXXXXXXXXXX";
+
+    private static boolean OnCheckCoupon(MapleClient c, String character_name, String coupon_code, boolean is_coupon_15, String message) {
+        MapleCharacter chr = c.getPlayer();
+
+        if (is_coupon_15) {
+            if (coupon_code.length() != COUPON_CODE_LENGTH_2) {
+                return false;
+            }
+            // coupon code 15 test
+            if (!coupon_code.equals(COUPON_CODE_15_TEST_CODE)) {
+                chr.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_UseCoupon_Failed, chr.getClient()));
+                return true;
+            }
+        } else {
+            if (coupon_code.length() != COUPON_CODE_LENGTH_1) {
+                return false;
+            }
+            // coupon code 30 test
+            if (!coupon_code.equals(COUPON_CODE_30_TEST_CODE)) {
+                chr.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_UseCoupon_Failed, chr.getClient()));
+                return true;
+            }
+        }
+
+        // use
+        if (character_name.equals("")) {
+            ArrayList<IItem> items_cash = new ArrayList<IItem>();
+            ArrayList<IItem> items_normal = new ArrayList<IItem>();
+            // test
+            {
+                int test_item_SN = CashItemFactory.getInstance().getItemSN(1002239); // test
+                CashItemInfo cashitem = CashItemFactory.getInstance().getItem(test_item_SN);
+                IItem item = chr.getCashInventory().toItem(cashitem);
+
+                if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && LoadData.IsValidItemID(item.getItemId())) {
+                    chr.getCashInventory().addToInventory(item);
+                    items_cash.add(item); // リストへ追加
+                } else {
+                    // error
+                    chr.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_UseCoupon_Failed, chr.getClient()));
+                    return true;
+                }
+            }
+            // OK
+            int maple_point = 1500;
+            int meso = 500000;
+            chr.addMaplePoint(maple_point);
+            chr.addMeso(meso);
+            PointShopResponse.CashItemStruct test_coupon_result = new PointShopResponse.CashItemStruct(items_cash, maple_point, items_normal, meso);
+            chr.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_UseCoupon_Done, chr.getClient(), test_coupon_result));
+        } else {
+            if (COUPON_GIFT_NAME_LIMIT < character_name.length()) {
+                return false;
+            }
+            if (COUPON_GIFT_MESSAGE_LIMIT < message.length()) {
+                return false;
+            }
+            // not coded
+            chr.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_UseCoupon_Failed, chr.getClient()));
+        }
+
         return true;
     }
 

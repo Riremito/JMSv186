@@ -4127,12 +4127,43 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return true;
     }
 
+    public boolean checkMaplePoint(int value) {
+        if (maplepoints < value) {
+            return false;
+        }
+        return true;
+    }
+
     public boolean useNexonPoint(int value) {
         // マイナス値不可
         if (value < 0 || acash < value) {
             return false;
         }
         acash -= value;
+        return true;
+    }
+
+    public boolean useMaplePoint(int value) {
+        if (value < 0 || maplepoints < value) {
+            return false;
+        }
+        maplepoints -= value;
+        return true;
+    }
+
+    public boolean addMaplePoint(int value) {
+        if (value < 0) {
+            return false;
+        }
+        maplepoints += value;
+        return true;
+    }
+
+    public boolean addMeso(int value) {
+        if (value < 0) {
+            return false;
+        }
+        meso += value;
         return true;
     }
 
