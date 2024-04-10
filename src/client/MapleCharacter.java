@@ -3787,6 +3787,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return pets;
     }
 
+    public boolean isPetSummoned() {
+        for (final MaplePet pet : getPets()) {
+            if (pet.getSummoned()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public final void unequipAllPets() {
         for (final MaplePet pet : pets) {
             if (pet != null) {

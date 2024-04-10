@@ -80,13 +80,83 @@ public class PointShopResponse {
                 }
                 sp.Encode1(0); // DiscountRate
             }
-            sp.EncodeZeroBytes(1080);
+            sp.EncodeBuffer(getBestItems(), 1080);
             sp.Encode2(0); // CCashShop::DecodeStock
             sp.Encode2(0); // CCashShop::DecodeLimitGoods
         }
         sp.Encode1(0); // m_bEventOn
         // m_nHighestCharacterLevelInThisAccount
         return sp.Get();
+    }
+
+    public static enum BestItemCategory {
+        BestItemCategory_Main(1),
+        BestItemCategory_Event(2),
+        BestItemCategory_Equip(3),
+        BestItemCategory_Consume(4), // use
+        BestItemCategory_Install(5), // special
+        BestItemCategory_Etc(6),
+        BestItemCategory_Pet(7),
+        BestItemCategory_Package(8),
+        UNKNOWN(-1);
+
+        private int value;
+
+        BestItemCategory(int flag) {
+            value = flag;
+        }
+
+        BestItemCategory() {
+            value = -1;
+        }
+
+        public int get() {
+            return value;
+        }
+    }
+    private static boolean best_item_initilized = false;
+    private static int best_item_category[] = new int[9 * 5 * 2];
+    private static int best_item_gender[] = new int[9 * 5 * 2];
+    private static int best_item_item_SN[] = new int[9 * 5 * 2];
+
+    // 1080 bytes buffer
+    private static byte[] getBestItems() {
+        ServerPacket data = new ServerPacket();
+
+        if (!best_item_initilized) {
+            best_item_initilized = true;
+            // equip
+            best_item_category[BestItemCategory.BestItemCategory_Equip.get() * 5 * 2] = BestItemCategory.BestItemCategory_Equip.get();
+            best_item_gender[BestItemCategory.BestItemCategory_Equip.get() * 5 * 2] = 0;
+            best_item_item_SN[BestItemCategory.BestItemCategory_Equip.get() * 5 * 2] = 20900059;
+            best_item_category[BestItemCategory.BestItemCategory_Equip.get() * 5 * 2 + 1] = BestItemCategory.BestItemCategory_Equip.get();
+            best_item_gender[BestItemCategory.BestItemCategory_Equip.get() * 5 * 2 + 1] = 0;
+            best_item_item_SN[BestItemCategory.BestItemCategory_Equip.get() * 5 * 2 + 1] = 20900031;
+            // consume
+            best_item_category[BestItemCategory.BestItemCategory_Consume.get() * 5 * 2] = BestItemCategory.BestItemCategory_Consume.get();
+            best_item_gender[BestItemCategory.BestItemCategory_Consume.get() * 5 * 2] = 0;
+            best_item_item_SN[BestItemCategory.BestItemCategory_Consume.get() * 5 * 2] = 10003562;
+            // install or special
+            best_item_category[BestItemCategory.BestItemCategory_Install.get() * 5 * 2] = BestItemCategory.BestItemCategory_Install.get();
+            best_item_gender[BestItemCategory.BestItemCategory_Install.get() * 5 * 2] = 0;
+            best_item_item_SN[BestItemCategory.BestItemCategory_Install.get() * 5 * 2] = 80000184;
+            // etc
+            best_item_category[BestItemCategory.BestItemCategory_Etc.get() * 5 * 2] = BestItemCategory.BestItemCategory_Etc.get();
+            best_item_gender[BestItemCategory.BestItemCategory_Etc.get() * 5 * 2] = 0;
+            best_item_item_SN[BestItemCategory.BestItemCategory_Etc.get() * 5 * 2] = 50200009;
+            // pet
+            best_item_category[BestItemCategory.BestItemCategory_Pet.get() * 5 * 2] = BestItemCategory.BestItemCategory_Pet.get();
+            best_item_gender[BestItemCategory.BestItemCategory_Pet.get() * 5 * 2] = 0;
+            best_item_item_SN[BestItemCategory.BestItemCategory_Pet.get() * 5 * 2] = 60000038;
+        }
+
+        for (int i = 0; i < best_item_category.length; i++) {
+            data.Encode4(best_item_category[i]);
+            data.Encode4(best_item_gender[i]);
+            data.Encode4(best_item_item_SN[i]);
+        }
+
+        return data.Get().getBytes();
     }
 
     // CCashShop::OnChargeParamResult, 充填ボタン

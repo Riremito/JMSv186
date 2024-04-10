@@ -28,6 +28,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleQuestStatus;
 import client.inventory.MaplePet;
+import config.ServerConfig;
 import database.ExtraDB;
 import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
@@ -213,9 +214,13 @@ public class InterServerHandler {
 
         c.getSession().write(KeyMapResponse.getKeymap(player, false));
         c.getSession().write(KeyMapResponse.getMacros(player));
-        c.getSession().write(KeyMapResponse.getPetAutoHP(player));
-        c.getSession().write(KeyMapResponse.getPetAutoMP(player));
-        c.getSession().write(KeyMapResponse.getPetAutoCure(player));
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+            c.getSession().write(KeyMapResponse.getPetAutoHP(player));
+            c.getSession().write(KeyMapResponse.getPetAutoMP(player));
+            c.getSession().write(KeyMapResponse.getPetAutoCure(player));
+        } else {
+            c.getSession().write(KeyMapResponse.getPetAutoHPMP_JMS_v131(player));
+        }
 
         for (MapleQuestStatus status : player.getStartedQuests()) {
             if (status.hasMobKills()) {

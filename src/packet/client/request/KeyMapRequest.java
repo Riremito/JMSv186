@@ -21,6 +21,7 @@ package packet.client.request;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.SkillMacro;
+import config.ServerConfig;
 import debug.Debug;
 import packet.client.ClientPacket;
 import packet.server.response.KeyMapResponse;
@@ -122,19 +123,29 @@ public class KeyMapRequest {
             case KEY_PET_HP: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoHPItem(item_id);
-                chr.SendPacket(KeyMapResponse.getPetAutoHP(chr));
+                if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+                    chr.SendPacket(KeyMapResponse.getPetAutoHP(chr));
+                } else {
+                    chr.SendPacket(KeyMapResponse.getPetAutoHPMP_JMS_v131(chr));
+                }
                 return true;
             }
             case KEY_PET_MP: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoMPItem(item_id);
-                chr.SendPacket(KeyMapResponse.getPetAutoMP(chr));
+                if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+                    chr.SendPacket(KeyMapResponse.getPetAutoMP(chr));
+                } else {
+                    chr.SendPacket(KeyMapResponse.getPetAutoHPMP_JMS_v131(chr));
+                }
                 return true;
             }
             case KEY_PET_CURE: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoCureItem(item_id);
-                chr.SendPacket(KeyMapResponse.getPetAutoCure(chr));
+                if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+                    chr.SendPacket(KeyMapResponse.getPetAutoCure(chr));
+                }
                 return true;
             }
             default: {
