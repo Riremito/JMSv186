@@ -74,11 +74,11 @@ public class PointShopResponse {
                 if (ServerConfig.IsPostBB()) {
                     sp.Encode4(0); // NotSaleCount
                 }
-                sp.Encode2(0); // non 0, CS_COMMODITY::DecodeModifiedData
+                sp.EncodeBuffer(getModifiedData());
                 if (ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion()) {
                     sp.Encode2(0); // non 0, Decode4, DecodeStr
                 }
-                sp.Encode1(0); // DiscountRate
+                sp.EncodeBuffer(getDiscountRates());
             }
             sp.EncodeBuffer(getBestItems(), 1080);
             sp.Encode2(0); // CCashShop::DecodeStock
@@ -87,6 +87,39 @@ public class PointShopResponse {
         sp.Encode1(0); // m_bEventOn
         // m_nHighestCharacterLevelInThisAccount
         return sp.Get();
+    }
+
+    private static byte[] getModifiedData() {
+        ServerPacket data = new ServerPacket();
+        data.Encode2(0); // count
+        /*
+        data.Encode4(80000184); // SN
+        // CS_COMMODITY::DecodeModifiedData
+        {
+            data.Encode4(0x01 | 0x02 | 0x04 | 0x0400); // flag
+            data.Encode4(3010142); // 0x01 : itemid
+            data.Encode2(1); // 0x02 : count
+            data.Encode4(77); // 0x04: price
+            data.Encode1(1); //0x0400 : OnSale
+        }
+        */
+        return data.Get().getBytes();
+    }
+
+    private static byte[] getDiscountRates() {
+        ServerPacket data = new ServerPacket();
+        data.Encode1(0); // count
+        /*
+        data.Encode1(6 * 10); // count max 9*30, ただし1 byteなので全ては利用不可
+        for (int category = 2; category < 8; category++) {
+            for (int sub_category = 0; sub_category < 10; sub_category++) {
+                data.Encode1(category); // category
+                data.Encode1(sub_category); // sub category
+                data.Encode1(99); // discount rate
+            }
+        }
+         */
+        return data.Get().getBytes();
     }
 
     public static enum BestItemCategory {
