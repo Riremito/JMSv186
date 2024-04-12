@@ -23,7 +23,6 @@ import handling.MaplePacket;
 import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import handling.world.PartyOperation;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import packet.server.ServerPacket;
@@ -84,17 +83,6 @@ public class PartyResponse {
                 break;
             //1D = expel function not available in this map.
         }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket partyPortal(int townId, int targetId, int skillId, Point position) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_PartyResult.Get());
-        mplew.writeShort(40);
-        mplew.writeInt(townId);
-        mplew.writeInt(targetId);
-        mplew.writeInt(skillId);
-        mplew.writePos(position);
         return mplew.getPacket();
     }
 

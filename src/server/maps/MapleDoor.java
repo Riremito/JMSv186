@@ -28,45 +28,69 @@ import java.util.List;
 import client.MapleCharacter;
 import client.MapleClient;
 import java.lang.ref.WeakReference;
-import packet.server.response.PartyResponse;
+import packet.server.response.MysticDoorResponse;
 import server.MaplePortal;
 import tools.MaplePacketCreator;
 
 public class MapleDoor extends AbstractMapleMapObject {
 
     private WeakReference<MapleCharacter> owner;
-    private MapleMap town;
+    private MapleMap map_town;
     private MaplePortal townPortal;
-    private MapleMap target;
+    private MapleMap map_field;
     private int skillId, ownerId;
-    private Point targetPosition;
+    private boolean is_town_door;
+    MapleDoor linked_door = null;
+    private int map_id;
+    private MapleMap map;
 
     public MapleDoor(final MapleCharacter owner, final Point targetPosition, final int skillId) {
         super();
         this.owner = new WeakReference<MapleCharacter>(owner);
         this.ownerId = owner.getId();
-        this.target = owner.getMap();
-        this.targetPosition = targetPosition;
-        setPosition(this.targetPosition);
-        this.town = this.target.getReturnMap();
+        this.map_field = owner.getMap();
+        setPosition(targetPosition);
+        this.map_town = this.map_field.getReturnMap();
         this.townPortal = getFreePortal();
         this.skillId = skillId;
+        this.is_town_door = false;
+        this.map_id = this.map_field.getId();
+        this.map = owner.getMap();
     }
 
     public MapleDoor(final MapleDoor origDoor) {
         super();
         this.owner = new WeakReference<MapleCharacter>(origDoor.owner.get());
-        this.town = origDoor.town;
+        this.map_town = origDoor.map_town;
         this.townPortal = origDoor.townPortal;
-        this.target = origDoor.target;
-        this.targetPosition = origDoor.targetPosition;
+        this.map_field = origDoor.map_field;
         this.townPortal = origDoor.townPortal;
         this.skillId = origDoor.skillId;
         this.ownerId = origDoor.ownerId;
         setPosition(townPortal.getPosition());
+        this.is_town_door = true;
+        linked_door = origDoor;
+        this.map_id = this.map_town.getId();
+        this.map = this.map_town;
     }
 
-    public final int getSkill() {
+    public MapleDoor getLink() {
+        return linked_door;
+    }
+
+    public void setLink(MapleDoor linked_door) {
+        this.linked_door = linked_door;
+    }
+
+    public MapleMap getMap() {
+        return this.map;
+    }
+
+    public int getMapId() {
+        return this.map_id;
+    }
+
+    public final int getSkillId() {
         return skillId;
     }
 
@@ -74,10 +98,18 @@ public class MapleDoor extends AbstractMapleMapObject {
         return ownerId;
     }
 
+    public int getTownMapId() {
+        return map_town.getId();
+    }
+
+    public int getFieldMapId() {
+        return map_field.getId();
+    }
+
     private final MaplePortal getFreePortal() {
         final List<MaplePortal> freePortals = new ArrayList<MaplePortal>();
 
-        for (final MaplePortal port : town.getPortals()) {
+        for (final MaplePortal port : map_town.getPortals()) {
             if (port.getType() == 6) {
                 freePortals.add(port);
             }
@@ -95,7 +127,7 @@ public class MapleDoor extends AbstractMapleMapObject {
                 }
             }
         });
-        for (final MapleMapObject obj : town.getAllDoorsThreadsafe()) {
+        for (final MapleMapObject obj : map_town.getAllDoorsThreadsafe()) {
             final MapleDoor door = (MapleDoor) obj;
             /// hmm
             if (door.getOwner() != null && door.getOwner().getParty() != null && getOwner() != null && getOwner().getParty() != null && getOwner().getParty().getMemberById(door.getOwnerId()) != null) {
@@ -113,12 +145,12 @@ public class MapleDoor extends AbstractMapleMapObject {
         if (getOwner() == null) {
             return;
         }
-        if (target.getId() == client.getPlayer().getMapId() || getOwnerId() == client.getPlayer().getId() || (getOwner() != null && getOwner().getParty() != null && getOwner().getParty().getMemberById(client.getPlayer().getId()) != null)) {
-            client.getSession().write(MaplePacketCreator.spawnDoor(getOwnerId(), town.getId() == client.getPlayer().getMapId() ? townPortal.getPosition() : targetPosition, true));
+        if (map_field.getId() == client.getPlayer().getMapId() || getOwnerId() == client.getPlayer().getId() || (getOwner() != null && getOwner().getParty() != null && getOwner().getParty().getMemberById(client.getPlayer().getId()) != null)) {
+            client.getSession().write(MysticDoorResponse.spawnDoor(getOwnerId(), map_town.getId() == client.getPlayer().getMapId() ? townPortal.getPosition() : getPosition(), true));
             if (getOwner() != null && getOwner().getParty() != null && (getOwnerId() == client.getPlayer().getId() || getOwner().getParty().getMemberById(client.getPlayer().getId()) != null)) {
-                client.getSession().write(PartyResponse.partyPortal(town.getId(), target.getId(), skillId, targetPosition));
+                client.SendPacket(MysticDoorResponse.partyPortal(this));
             }
-            client.getSession().write(MaplePacketCreator.spawnPortal(town.getId(), target.getId(), skillId, targetPosition));
+            client.SendPacket(MysticDoorResponse.setMysticDoorInfo(this));
         }
     }
 
@@ -127,24 +159,26 @@ public class MapleDoor extends AbstractMapleMapObject {
         if (getOwner() == null) {
             return;
         }
-        if (target.getId() == client.getPlayer().getMapId() || getOwnerId() == client.getPlayer().getId() || (getOwner() != null && getOwner().getParty() != null && getOwner().getParty().getMemberById(client.getPlayer().getId()) != null)) {
+        if (map_field.getId() == client.getPlayer().getMapId() || getOwnerId() == client.getPlayer().getId() || (getOwner() != null && getOwner().getParty() != null && getOwner().getParty().getMemberById(client.getPlayer().getId()) != null)) {
             if (getOwner().getParty() != null && (getOwnerId() == client.getPlayer().getId() || getOwner().getParty().getMemberById(client.getPlayer().getId()) != null)) {
-                client.getSession().write(PartyResponse.partyPortal(999999999, 999999999, 0, new Point(-1, -1)));
+                //client.SendPacket(MysticDoorResponse.resetPartyMysticDoorInfo());
             }
-            client.getSession().write(MaplePacketCreator.removeDoor(getOwnerId(), false));
-            client.getSession().write(MaplePacketCreator.removeDoor(getOwnerId(), true));
+            client.SendPacket(MysticDoorResponse.removeDoor(this));
         }
     }
 
     public final void warp(final MapleCharacter chr, final boolean toTown) {
         if (chr.getId() == getOwnerId() || (getOwner() != null && getOwner().getParty() != null && getOwner().getParty().getMemberById(chr.getId()) != null)) {
+            /*
             if (!toTown) {
-                chr.changeMap(target, targetPosition);
+                chr.changeMap(map_field, getPosition()); // ?
             } else {
-                chr.changeMap(town, townPortal);
+                chr.changeMap(map_town, townPortal);
             }
+             */
+            chr.changeMapDoor(this);
         } else {
-            chr.getClient().getSession().write(MaplePacketCreator.enableActions());
+            chr.SendPacket(MaplePacketCreator.enableActions());
         }
     }
 
@@ -153,7 +187,7 @@ public class MapleDoor extends AbstractMapleMapObject {
     }
 
     public final MapleMap getTown() {
-        return town;
+        return map_town;
     }
 
     public final MaplePortal getTownPortal() {
@@ -161,11 +195,7 @@ public class MapleDoor extends AbstractMapleMapObject {
     }
 
     public final MapleMap getTarget() {
-        return target;
-    }
-
-    public final Point getTargetPosition() {
-        return targetPosition;
+        return map_field;
     }
 
     @Override

@@ -78,6 +78,7 @@ import handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import handling.world.family.MapleFamilyCharacter;
 import handling.world.guild.MapleGuild;
 import handling.world.guild.MapleGuildCharacter;
+import static java.lang.ProcessBuilder.Redirect.to;
 import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -2356,8 +2357,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         changeMap(map, map.getPortal(portal));
     }
 
+    // old
     public void changeMap(final MapleMap to, final Point pos) {
         changeMapInternal(to, pos, MaplePacketCreator.getWarpToMap(to, 0x81, this), null);
+    }
+
+    public void changeMapDoor(MapleDoor door) {
+        changeMapInternal(door.getLink().getMap(), door.getLink().getPosition(), MaplePacketCreator.getWarpToMap(door.getLink().getMap(), 0x80, this), null);
     }
 
     public void changeMap(final MapleMap to, final MaplePortal pto) {

@@ -39,6 +39,7 @@ import server.maps.MapleSummon;
 import server.maps.SummonMovementType;
 import java.util.EnumMap;
 import packet.server.response.LocalResponse;
+import packet.server.response.MysticDoorResponse;
 import packet.server.response.RemoteResponse;
 import packet.server.response.TemporaryStatResponse;
 import server.MapleCarnivalFactory.MCSkill;
@@ -912,13 +913,15 @@ public class MapleStatEffect implements Serializable {
         } else if (isMagicDoor()) { // Magic Door
             MapleDoor door = new MapleDoor(applyto, new Point(applyto.getPosition()), sourceid); // Current Map door
             if (door.getTownPortal() != null) {
+                MapleDoor townDoor = new MapleDoor(door); // Town door
+                door.setLink(townDoor);
+                door.getTown().spawnDoor(townDoor);
+                townDoor.setLink(door);
 
                 applyto.getMap().spawnDoor(door);
                 applyto.addDoor(door);
-
-                MapleDoor townDoor = new MapleDoor(door); // Town door
                 applyto.addDoor(townDoor);
-                door.getTown().spawnDoor(townDoor);
+                //applyto.SendPacket(MysticDoorResponse.setMysticDoorInfo(door));
 
                 if (applyto.getParty() != null) { // update town doors
                     applyto.silentPartyUpdate();

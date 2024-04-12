@@ -53,15 +53,14 @@ public class MapleTradeSpaceResponse {
                 sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
             }
         }
-        // v194 29 bytes 余り
         return sp.Get();
     }
 
     public static MaplePacket QueryCashResult(final MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCQueryCashResult);
 
-        sp.Encode4(chr.getCSPoints(1));
-        sp.Encode4(chr.getCSPoints(2));
+        sp.Encode4(chr.getCSPoints(1)); // Nexon Point
+        sp.Encode4(chr.getCSPoints(2)); // Maple Point
         return sp.Get();
     }
 

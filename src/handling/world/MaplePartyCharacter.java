@@ -57,8 +57,8 @@ public class MaplePartyCharacter implements Serializable {
 
             this.doorTown = door.getTown().getId();
             this.doorTarget = door.getTarget().getId();
-            this.doorSkill = door.getSkill();
-            this.doorPosition = door.getTargetPosition();
+            this.doorSkill = door.getSkillId();
+            this.doorPosition = door.getPosition();
         } else {
             this.doorPosition = new Point(maplechar.getPosition());
         }

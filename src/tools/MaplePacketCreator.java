@@ -189,47 +189,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket spawnPortal(final int townId, final int targetId, final int skillId, final Point pos) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_TownPortal.Get());
-        mplew.writeInt(townId);
-        mplew.writeInt(targetId);
-        mplew.writeInt(skillId);
-        if (pos != null) {
-            mplew.writePos(pos);
-        }
-
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket spawnDoor(final int oid, final Point pos, final boolean town) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_TownPortalCreated.Get());
-        mplew.write(town ? 1 : 0);
-        mplew.writeInt(oid);
-        mplew.writePos(pos);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket removeDoor(int oid, boolean town) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        if (town) {
-            mplew.writeShort(ServerPacket.Header.LP_TownPortal.Get());
-            mplew.writeInt(999999999);
-            mplew.writeLong(999999999);
-        } else {
-            mplew.writeShort(ServerPacket.Header.LP_TownPortalRemoved.Get());
-            mplew.write(/*town ? 1 : */0);
-            mplew.writeLong(oid);
-        }
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket getRelogResponse() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(3);
 
