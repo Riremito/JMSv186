@@ -32,8 +32,6 @@ import server.events.MapleCoconut.MapleCoconuts;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.events.MapleEventType;
-import server.maps.MapleDoor;
-import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -106,19 +104,6 @@ public class PlayersHandler {
             case NOT_THIS_MONTH:
                 c.getSession().write(MaplePacketCreator.giveFameErrorResponse(4));
                 break;
-        }
-    }
-
-    public static void UseDoor(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        final int oid = slea.readInt();
-        final boolean mode = slea.readByte() == 0; // specifies if backwarp or not, 1 town to target, 0 target to town
-
-        for (MapleMapObject obj : chr.getMap().getAllDoorsThreadsafe()) {
-            final MapleDoor door = (MapleDoor) obj;
-            if (door.getOwnerId() == oid) {
-                door.warp(chr, mode);
-                break;
-            }
         }
     }
 

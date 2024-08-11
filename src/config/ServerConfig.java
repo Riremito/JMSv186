@@ -122,7 +122,7 @@ public class ServerConfig {
     // Version
     private static Region region_name = Region.JMS;
     private static byte region_number = 3; // JMS
-    public static short version = 186;
+    public static int version = 186;
     private static byte version_sub = 1;
 
     public static byte GetRegionNumber() {
@@ -187,7 +187,7 @@ public class ServerConfig {
     }
 
     public static void SetVersion(int ver1, int ver2) {
-        version = (short) ver1;
+        version = ver1;
         version_sub = (byte) ver2;
     }
     public static String wz_path, script_path;

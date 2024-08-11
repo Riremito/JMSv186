@@ -161,7 +161,7 @@ public class GW_ItemSlotBase {
                 }
 
                 // 通常
-                if (!(ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185)) {
+                if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || !(ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185)) {
 
                     // ビシャスのハンマー
                     if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
@@ -270,7 +270,7 @@ public class GW_ItemSlotBase {
 
         data.Encode8(-1); // time?
 
-        if (ServerConfig.IsPostBB()) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 188) && ServerConfig.IsPostBB()) {
             data.Encode4(0);
         }
 

@@ -1413,14 +1413,15 @@ public final class MapleMap {
     }
 
     public final void spawnDoor(final MapleDoor door) {
+        Debug.DebugLog("Spawn Door : " + door.getMapId());
         spawnAndAddRangedMapObject(door, new DelayedPacketCreation() {
 
             public final void sendPackets(MapleClient c) {
-                c.getSession().write(MysticDoorResponse.spawnDoor(door.getOwner().getId(), door.getPosition(), false));
+                //c.getSession().write(MysticDoorResponse.spawnDoor(door.getOwner().getId(), door.getPosition(), false));
                 if (door.getOwner().getParty() != null && (door.getOwner() == c.getPlayer() || door.getOwner().getParty().containsMembers(new MaplePartyCharacter(c.getPlayer())))) {
                     //c.getSession().write(PartyResponse.partyPortal(door.getTown().getId(), door.getTarget().getId(), door.getSkill(), door.getTargetPosition()));
                 }
-                c.getSession().write(MysticDoorResponse.setMysticDoorInfo(door));
+                //c.getSession().write(MysticDoorResponse.setMysticDoorInfo(door));
                 c.getSession().write(MaplePacketCreator.enableActions());
             }
         }, new SpawnCondition() {

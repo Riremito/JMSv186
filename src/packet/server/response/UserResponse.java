@@ -48,7 +48,7 @@ import tools.Pair;
 public class UserResponse {
 
     public static final MaplePacket CharacterInfo(MapleCharacter player, boolean isSelf) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CharacterInfo);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CharacterInfo);
         boolean pet_summoned = false;
         for (final MaplePet pet : player.getPets()) {
             if (pet.getSummoned()) {
@@ -56,12 +56,12 @@ public class UserResponse {
                 break;
             }
         }
-        p.Encode4(player.getId());
-        p.Encode1(player.getLevel());
-        p.Encode2(player.getJob());
-        p.Encode2(player.getFame());
+        sp.Encode4(player.getId());
+        sp.Encode1(player.getLevel());
+        sp.Encode2(player.getJob());
+        sp.Encode2(player.getFame());
         if (131 < ServerConfig.GetVersion()) {
-            p.Encode1(player.getMarriageId() > 0 ? 1 : 0); // heart red or gray
+            sp.Encode1(player.getMarriageId() > 0 ? 1 : 0); // heart red or gray
         }
         String sCommunity = "-";
         String sAlliance = "";
@@ -79,22 +79,22 @@ public class UserResponse {
                 }
             }
         }
-        p.EncodeStr(sCommunity);
+        sp.EncodeStr(sCommunity);
         if (131 < ServerConfig.GetVersion()) {
-            p.EncodeStr(sAlliance);
+            sp.EncodeStr(sAlliance);
             if (ServerConfig.GetVersion() <= 186) {
-                p.Encode4(0);
-                p.Encode4(0);
-                p.Encode1(isSelf ? 1 : 0);
-                p.Encode1(pet_summoned ? 1 : 0);
+                sp.Encode4(0);
+                sp.Encode4(0);
+                sp.Encode1(isSelf ? 1 : 0);
+                sp.Encode1(pet_summoned ? 1 : 0);
             } else {
-                p.Encode1(pet_summoned ? 1 : 0); // v188+ not used
-                p.Encode1(isSelf ? 1 : 0);
+                sp.Encode1(pet_summoned ? 1 : 0); // v188+ not used
+                sp.Encode1(isSelf ? 1 : 0);
             }
         }
         // CUIUserInfo::SetMultiPetInfo
         if (188 <= ServerConfig.GetVersion()) {
-            p.Encode1(pet_summoned ? 1 : 0); // pet info on
+            sp.Encode1(pet_summoned ? 1 : 0); // pet info on
         }
         IItem inv_pet = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -114);
         final int peteqid = inv_pet != null ? inv_pet.getItemId() : 0;
@@ -102,23 +102,23 @@ public class UserResponse {
         for (final MaplePet pet : player.getPets()) {
             if (pet.getSummoned()) {
                 if (0 < pet_count) {
-                    p.Encode1(1); // Next Pet
+                    sp.Encode1(1); // Next Pet
                 }
-                p.Encode4(pet.getPetItemId()); // petid
+                sp.Encode4(pet.getPetItemId()); // petid
                 if (194 <= ServerConfig.GetVersion()) {
-                    p.Encode4(0);
+                    sp.Encode4(0);
                 }
-                p.EncodeStr(pet.getName());
-                p.Encode1(pet.getLevel()); // nLevel
-                p.Encode2(pet.getCloseness()); // pet closeness
-                p.Encode1(pet.getFullness()); // pet fullness
-                p.Encode2(pet.getFlags());
-                p.Encode4(peteqid);
+                sp.EncodeStr(pet.getName());
+                sp.Encode1(pet.getLevel()); // nLevel
+                sp.Encode2(pet.getCloseness()); // pet closeness
+                sp.Encode1(pet.getFullness()); // pet fullness
+                sp.Encode2(pet.getFlags());
+                sp.Encode4(peteqid);
                 pet_count++;
             }
         }
         if (0 < pet_count || ServerConfig.GetVersion() <= 131) {
-            p.Encode1(0); // End of pet
+            sp.Encode1(0); // End of pet
         }
         // CUIUserInfo::SetTamingMobInfo
         IItem inv_mount = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
@@ -127,28 +127,28 @@ public class UserResponse {
         if (tm != null && inv_mount != null) {
             TamingMobEnabled = MapleItemInformationProvider.getInstance().getReqLevel(inv_mount.getItemId()) <= player.getLevel();
         }
-        p.Encode1(TamingMobEnabled ? 1 : 0);
+        sp.Encode1(TamingMobEnabled ? 1 : 0);
         if (tm != null && TamingMobEnabled) {
-            p.Encode4(tm.getLevel());
-            p.Encode4(tm.getExp());
-            p.Encode4(tm.getFatigue());
+            sp.Encode4(tm.getLevel());
+            sp.Encode4(tm.getExp());
+            sp.Encode4(tm.getFatigue());
         }
         // CUIUserInfo::SetWishItemInfo
         final int wishlistSize = player.getWishlistSize();
-        p.Encode1(wishlistSize);
+        sp.Encode1(wishlistSize);
         if (wishlistSize > 0) {
             // CInPacket::DecodeBuffer(v4, iPacket, 4 * wishlistSize);
             final int[] wishlist = player.getWishlist();
             for (int x = 0; x < wishlistSize; x++) {
-                p.Encode4(wishlist[x]);
+                sp.Encode4(wishlist[x]);
             }
         }
         if (131 < ServerConfig.GetVersion()) {
             // Monster Book (JMS)
-            p.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
+            sp.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
             // MedalAchievementInfo::Decode
             IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -46);
-            p.Encode4(inv_medal == null ? 0 : inv_medal.getItemId());
+            sp.Encode4(inv_medal == null ? 0 : inv_medal.getItemId());
             List<Integer> medalQuests = new ArrayList<Integer>();
             List<MapleQuestStatus> completed = player.getCompletedQuests();
             for (MapleQuestStatus q : completed) {
@@ -157,20 +157,20 @@ public class UserResponse {
                     medalQuests.add(q.getQuest().getId());
                 }
             }
-            p.Encode2(medalQuests.size());
+            sp.Encode2(medalQuests.size());
             for (int x : medalQuests) {
-                p.Encode2(x);
+                sp.Encode2(x);
             }
             if (ServerConfig.GetVersion() <= 186) {
                 // Chair List
-                p.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
+                sp.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
                 // CInPacket::DecodeBuffer(v4, iPacket, 4 * chairs);
                 for (IItem chair : player.getInventory(MapleInventoryType.SETUP).list()) {
-                    p.Encode4(chair.getItemId());
+                    sp.Encode4(chair.getItemId());
                 }
             }
         }
-        return p.Get();
+        return sp.Get();
     }
 
     public static MaplePacket movePlayer(MapleCharacter chr, CMovePath data) {
@@ -184,15 +184,15 @@ public class UserResponse {
     // spawnPlayerMapobject
     // CUserPool::OnUserEnterField
     public static MaplePacket spawnPlayerMapobject(MapleCharacter chr) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserEnterField);
-        p.Encode4(chr.getId());
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEnterField);
+        sp.Encode4(chr.getId());
         // 自分のキャラクターの場合はここで終了
         if (131 < ServerConfig.GetVersion()) {
-            p.Encode1(chr.getLevel());
+            sp.Encode1(chr.getLevel());
         }
-        p.EncodeStr(chr.getName());
+        sp.EncodeStr(chr.getName());
         if (194 <= ServerConfig.GetVersion()) {
-            p.EncodeStr("");
+            sp.EncodeStr("");
         }
         // guild
         MapleGuild gs = null;
@@ -201,18 +201,18 @@ public class UserResponse {
         }
         if (gs != null) {
             // guild info
-            p.EncodeStr(gs.getName());
-            p.Encode2(gs.getLogoBG());
-            p.Encode1(gs.getLogoBGColor());
-            p.Encode2(gs.getLogo());
-            p.Encode1(gs.getLogoColor());
+            sp.EncodeStr(gs.getName());
+            sp.Encode2(gs.getLogoBG());
+            sp.Encode1(gs.getLogoBGColor());
+            sp.Encode2(gs.getLogo());
+            sp.Encode1(gs.getLogoColor());
         } else {
             // empty guild
-            p.EncodeStr("");
-            p.Encode2(0);
-            p.Encode1(0);
-            p.Encode2(0);
-            p.Encode1(0);
+            sp.EncodeStr("");
+            sp.Encode2(0);
+            sp.Encode1(0);
+            sp.Encode2(0);
+            sp.Encode1(0);
         }
         List<Pair<Integer, Boolean>> buffvalue = new ArrayList<Pair<Integer, Boolean>>();
         if (131 < ServerConfig.GetVersion()) {
@@ -232,7 +232,7 @@ public class UserResponse {
             if (chr.getBuffedValue(MapleBuffStat.YELLOW_AURA) != null) {
                 fbuffmask |= MapleBuffStat.YELLOW_AURA.getValue();
             }
-            p.Encode8(fbuffmask);
+            sp.Encode8(fbuffmask);
         }
         long buffmask = 0;
         if (chr.getBuffedValue(MapleBuffStat.DARKSIGHT) != null && !chr.isHidden()) {
@@ -258,17 +258,17 @@ public class UserResponse {
             buffmask |= MapleBuffStat.MORPH.getValue();
             buffvalue.add(new Pair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.MORPH).intValue()), true));
         }
-        p.Encode8(buffmask);
+        sp.Encode8(buffmask);
         if (131 < ServerConfig.GetVersion()) {
             // buffmask
             if (194 <= ServerConfig.GetVersion()) {
-                p.Encode4(0);
+                sp.Encode4(0);
             }
             for (Pair<Integer, Boolean> i : buffvalue) {
                 if (i.right) {
-                    p.Encode2(i.left.shortValue());
+                    sp.Encode2(i.left.shortValue());
                 } else {
-                    p.Encode1(i.left.byteValue());
+                    sp.Encode1(i.left.byteValue());
                 }
             }
             final int CHAR_MAGIC_SPAWN = Randomizer.nextInt();
@@ -277,111 +277,118 @@ public class UserResponse {
             //these 7 buffstats are placed because they have irregular packet structure.
             //they ALL have writeShort(0); first, then a long as their variables, then server tick count
             //0x80000, 0x100000, 0x200000, 0x400000, 0x800000, 0x1000000, 0x2000000
-            p.Encode1(0); //start of energy charge
-            p.Encode1(0);
+            sp.Encode1(0); //start of energy charge
+            sp.Encode1(0);
             if (ServerConfig.GetVersion() <= 186) {
-                p.Encode4(0);
-                p.Encode4(0);
-                p.Encode1(1);
-                p.Encode4(CHAR_MAGIC_SPAWN);
-                p.Encode2(0); //start of dash_speed
-                p.Encode8(0);
-                p.Encode1(1);
-                p.Encode4(CHAR_MAGIC_SPAWN);
-                p.Encode2(0); //start of dash_jump
-                p.Encode8(0);
-                p.Encode1(1);
-                p.Encode4(CHAR_MAGIC_SPAWN);
-                p.Encode2(0); //start of Monster Riding
+                sp.Encode4(0);
+                sp.Encode4(0);
+                sp.Encode1(1);
+                sp.Encode4(CHAR_MAGIC_SPAWN);
+                sp.Encode2(0); //start of dash_speed
+                sp.Encode8(0);
+                sp.Encode1(1);
+                sp.Encode4(CHAR_MAGIC_SPAWN);
+                sp.Encode2(0); //start of dash_jump
+                sp.Encode8(0);
+                sp.Encode1(1);
+                sp.Encode4(CHAR_MAGIC_SPAWN);
+                sp.Encode2(0); //start of Monster Riding
                 int buffSrc = chr.getBuffSource(MapleBuffStat.MONSTER_RIDING);
                 if (buffSrc > 0) {
                     final IItem c_mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118 /*-122*/);
                     final IItem mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18 /*-22*/);
                     if (GameConstants.getMountItem(buffSrc) == 0 && c_mount != null) {
-                        p.Encode4(c_mount.getItemId());
+                        sp.Encode4(c_mount.getItemId());
                     } else if (GameConstants.getMountItem(buffSrc) == 0 && mount != null) {
-                        p.Encode4(mount.getItemId());
+                        sp.Encode4(mount.getItemId());
                     } else {
-                        p.Encode4(GameConstants.getMountItem(buffSrc));
+                        sp.Encode4(GameConstants.getMountItem(buffSrc));
                     }
-                    p.Encode4(buffSrc);
+                    sp.Encode4(buffSrc);
                 } else {
-                    p.Encode8(0);
+                    sp.Encode8(0);
                 }
-                p.Encode1(1);
-                p.Encode4(CHAR_MAGIC_SPAWN);
-                p.Encode8(0); //speed infusion behaves differently here
-                p.Encode1(1);
-                p.Encode4(CHAR_MAGIC_SPAWN);
-                p.Encode4(1);
-                p.Encode8(0); //homing beacon
-                p.Encode1(0);
-                p.Encode2(0);
-                p.Encode1(1);
-                p.Encode4(CHAR_MAGIC_SPAWN);
-                p.Encode4(0); //and finally, something ive no idea
-                p.Encode8(0);
-                p.Encode1(1);
-                p.Encode4(CHAR_MAGIC_SPAWN);
-                p.Encode2(0);
+                sp.Encode1(1);
+                sp.Encode4(CHAR_MAGIC_SPAWN);
+                sp.Encode8(0); //speed infusion behaves differently here
+                sp.Encode1(1);
+                sp.Encode4(CHAR_MAGIC_SPAWN);
+                sp.Encode4(1);
+                sp.Encode8(0); //homing beacon
+                sp.Encode1(0);
+                sp.Encode2(0);
+                sp.Encode1(1);
+                sp.Encode4(CHAR_MAGIC_SPAWN);
+                sp.Encode4(0); //and finally, something ive no idea
+                sp.Encode8(0);
+                sp.Encode1(1);
+                sp.Encode4(CHAR_MAGIC_SPAWN);
+                sp.Encode2(0);
             }
-            p.Encode2(chr.getJob());
+            sp.Encode2(chr.getJob());
         }
-        p.EncodeBuffer(AvatarLook.Encode(chr));
-        p.Encode4(0); //this is CHARID to follow
+        sp.EncodeBuffer(AvatarLook.Encode(chr));
+        sp.Encode4(0); //this is CHARID to follow
         if (131 < ServerConfig.GetVersion()) {
-            p.Encode4(0); //probably charid following
-            p.Encode4(0);
+            sp.Encode4(0); //probably charid following
+            sp.Encode4(0);
             if (194 <= ServerConfig.GetVersion()) {
-                p.Encode4(0);
-                p.Encode4(0);
-                p.Encode4(0);
+                sp.Encode4(0);
+                sp.Encode4(0);
+                sp.Encode4(0);
             }
-            p.Encode4(0);
+            sp.Encode4(0);
         }
-        p.Encode4(chr.getItemEffect());
-        p.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
-        p.Encode2(chr.getPosition().x);
-        p.Encode2(chr.getPosition().y);
-        p.Encode1(chr.getStance());
-        p.Encode2(0); // FH
-        p.Encode1(0); // pet size
-        p.Encode4(chr.getMount().getLevel()); // mount lvl
-        p.Encode4(chr.getMount().getExp()); // exp
-        p.Encode4(chr.getMount().getFatigue()); // tiredness
+        sp.Encode4(chr.getItemEffect());
+        sp.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
+        sp.Encode2(chr.getPosition().x);
+        sp.Encode2(chr.getPosition().y);
+        sp.Encode1(chr.getStance());
+        sp.Encode2(0); // FH
+        sp.Encode1(0); // pet size
+        sp.Encode4(chr.getMount().getLevel()); // mount lvl
+        sp.Encode4(chr.getMount().getExp()); // exp
+        sp.Encode4(chr.getMount().getFatigue()); // tiredness
         // MiniRoomBalloon (ゲーム) 1 byte flag + data
-        p.EncodeBuffer(Structure.AnnounceBox(chr));
+        sp.EncodeBuffer(Structure.AnnounceBox(chr));
         // ADBoardBalloon (黒板) 1 byte flag + data
         {
-            p.Encode1(chr.getChalkboard() != null && chr.getChalkboard().length() > 0 ? 1 : 0);
+            sp.Encode1(chr.getChalkboard() != null && chr.getChalkboard().length() > 0 ? 1 : 0);
             if (chr.getChalkboard() != null && chr.getChalkboard().length() > 0) {
-                p.EncodeStr(chr.getChalkboard());
+                sp.EncodeStr(chr.getChalkboard());
             }
         }
-        p.Encode1(0); //count4 -> buf0x10 4
-        p.Encode1(0); //count4 -> buf0x10 4
+        sp.Encode1(0); //count4 -> buf0x10 4
+        sp.Encode1(0); //count4 -> buf0x10 4
         // MarriageRecord 1 byte flag + data
         {
-            p.Encode1(0);
+            sp.Encode1(0);
         }
-        p.Encode1(chr.getEffectMask()); // Effect
-        p.Encode4(0); // not in KMST, in GMS v95: m_nPhase
+        sp.Encode1(chr.getEffectMask()); // Effect
+        sp.Encode4(0); // not in KMST, in GMS v95: m_nPhase
         // 特殊マップ専用
         // MonsterCarnival
         if (chr.checkSpecificMap(980000000, 1000) || chr.checkSpecificMap(980030000, 1000)) {
-            p.Encode1((chr.getCarnivalParty() != null) ? chr.getCarnivalParty().getTeam() : 0); // sub_5CD27E
+            sp.Encode1((chr.getCarnivalParty() != null) ? chr.getCarnivalParty().getTeam() : 0); // sub_5CD27E
         } // Coconut
         else if (chr.checkSpecificMap(109080000, 1000)) {
-            p.Encode1(chr.getCoconutTeam()); // 0059F0ED
+            sp.Encode1(chr.getCoconutTeam()); // 0059F0ED
         }
-        return p.Get();
+        return sp.Get();
     }
 
     // removePlayerFromMap
     public static MaplePacket removePlayerFromMap(int player_id) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserLeaveField);
-        p.Encode4(player_id);
-        return p.Get();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserLeaveField);
+        sp.Encode4(player_id);
+        return sp.Get();
+    }
+
+    public static MaplePacket skillCancel(MapleCharacter chr, int skillId) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserSkillCancel);
+        sp.Encode4(chr.getId());
+        sp.Encode4(skillId);
+        return sp.Get();
     }
 
 }

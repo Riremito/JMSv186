@@ -392,20 +392,6 @@ public class PlayerHandler {
                 MapleItemInformationProvider.getInstance().getItemEffect(-id), false, -1);
     }
 
-    public static final void CancelBuffHandler(final int sourceid, final MapleCharacter chr) {
-        if (chr == null) {
-            return;
-        }
-        final ISkill skill = SkillFactory.getSkill(sourceid);
-
-        if (skill.isChargeSkill()) {
-            chr.setKeyDownSkill_Time(0);
-            chr.getMap().broadcastMessage(chr, MaplePacketCreator.skillCancel(chr, sourceid), false);
-        } else {
-            chr.cancelEffect(skill.getEffect(1), false, -1);
-        }
-    }
-
     public static final void SkillEffect(ClientPacket p, final MapleCharacter chr) {
         final int skillId = p.Decode4();
         final byte level = p.Decode1();

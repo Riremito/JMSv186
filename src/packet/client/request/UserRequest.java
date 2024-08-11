@@ -1,9 +1,11 @@
 // User
 package packet.client.request;
 
+import client.ISkill;
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleClient;
+import client.SkillFactory;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import config.DebugConfig;
@@ -74,7 +76,7 @@ public class UserRequest {
                 return true;
             }
             case CP_UserChangeStatRequest: {
-                if (ServerConfig.version > 131) {
+                if (ServerConfig.IsJMS() && 131 < ServerConfig.GetVersion()) {
                     cp.Decode4(); // time1
                 }
 
@@ -115,6 +117,11 @@ public class UserRequest {
             case CP_UserCharacterInfoRequest: {
                 //PlayerHandler.CharInfoRequest(character_id, c, c.getPlayer());
                 OnCharacterInfoRequest(cp, chr, map);
+                return true;
+            }
+            // buff
+            case CP_UserSkillCancelRequest: {
+                OnSkillCanselRequest(cp, chr);
                 return true;
             }
             default: {
@@ -413,6 +420,21 @@ public class UserRequest {
         }
 
         chr.SendPacket(UserResponse.CharacterInfo(player, chr.getId() == m_dwCharacterId));
+        return true;
+    }
+
+    // CancelBuffHandler
+    public static boolean OnSkillCanselRequest(ClientPacket cp, MapleCharacter chr) {
+        int skill_id = cp.Decode4();
+        ISkill skill = SkillFactory.getSkill(skill_id);
+
+        if (skill.isChargeSkill()) {
+            chr.setKeyDownSkill_Time(0);
+            chr.getMap().broadcastMessage(chr, UserResponse.skillCancel(chr, skill_id), false);
+        } else {
+            chr.cancelEffect(skill.getEffect(1), false, -1);
+        }
+
         return true;
     }
 

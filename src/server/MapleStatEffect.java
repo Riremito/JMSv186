@@ -911,6 +911,10 @@ public class MapleStatEffect implements Serializable {
                 applyfrom.cancelEffectFromBuffStat(MapleBuffStat.MIRROR_IMAGE);
             }
         } else if (isMagicDoor()) { // Magic Door
+            if (!applyto.getDoors().isEmpty()) {
+                applyto.removeDoor();
+                applyto.silentPartyUpdate();
+            }
             MapleDoor door = new MapleDoor(applyto, new Point(applyto.getPosition()), sourceid); // Current Map door
             if (door.getTownPortal() != null) {
                 MapleDoor townDoor = new MapleDoor(door); // Town door
@@ -924,8 +928,11 @@ public class MapleStatEffect implements Serializable {
                 //applyto.SendPacket(MysticDoorResponse.setMysticDoorInfo(door));
 
                 if (applyto.getParty() != null) { // update town doors
-                    applyto.silentPartyUpdate();
+                    //applyto.silentPartyUpdate();
                 }
+
+                applyto.SendPacket(MysticDoorResponse.spawnDoor(door, false));
+
             } else {
                 applyto.dropMessage(5, "You may not spawn a door because all doors in the town are taken.");
             }

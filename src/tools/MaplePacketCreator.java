@@ -1248,16 +1248,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket skillCancel(MapleCharacter from, int skillId) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserSkillCancel.Get());
-        mplew.writeInt(from.getId());
-        mplew.writeInt(skillId);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket showMagnet(int mobid, byte success) { // Monster Magnet
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 

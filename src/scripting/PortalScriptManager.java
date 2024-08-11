@@ -42,7 +42,7 @@ public class PortalScriptManager {
 
     private static final PortalScriptManager instance = new PortalScriptManager();
     private final Map<String, PortalScript> scripts = new HashMap<String, PortalScript>();
-    private final static ScriptEngineFactory sef = new ScriptEngineManager().getEngineByName("javascript").getFactory();
+    private final static ScriptEngineFactory sef = new ScriptEngineManager().getEngineByName("nashorn").getFactory();
 
     public final static PortalScriptManager getInstance() {
         return instance;

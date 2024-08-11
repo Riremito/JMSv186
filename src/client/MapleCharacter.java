@@ -78,7 +78,6 @@ import handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import handling.world.family.MapleFamilyCharacter;
 import handling.world.guild.MapleGuild;
 import handling.world.guild.MapleGuildCharacter;
-import static java.lang.ProcessBuilder.Redirect.to;
 import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -92,6 +91,7 @@ import packet.server.response.FriendResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.MobResponse;
 import packet.server.response.MonsterCarnivalResponse;
+import packet.server.response.MysticDoorResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.PetResponse.DeActivatedMsg;
@@ -2362,8 +2362,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         changeMapInternal(to, pos, MaplePacketCreator.getWarpToMap(to, 0x81, this), null);
     }
 
-    public void changeMapDoor(MapleDoor door) {
-        changeMapInternal(door.getLink().getMap(), door.getLink().getPosition(), MaplePacketCreator.getWarpToMap(door.getLink().getMap(), 0x80, this), null);
+    public void enterTownPortal(MapleDoor door) {
+        SendPacket(MysticDoorResponse.setMysticDoorInfo(door));
+        SendPacket(MysticDoorResponse.removeDoor(door));
+        changeMapInternal(door.getLink().getMap(), door.getLink().getPosition(), MaplePacketCreator.getWarpToMap(door.getLink().getMap(), (byte) door.getTownPortal().getId(), this), null);
+        SendPacket(MysticDoorResponse.removeDoor(door.getLink()));
+        SendPacket(MysticDoorResponse.spawnDoor(door.getLink(), false));
+        SendPacket(MysticDoorResponse.setMysticDoorInfo(door.getLink()));
     }
 
     public void changeMap(final MapleMap to, final MaplePortal pto) {

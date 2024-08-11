@@ -13,6 +13,8 @@ public interface MaplePortal {
 
     int getId();
 
+    int getMysticDoorId();
+
     Point getPosition();
 
     String getName();

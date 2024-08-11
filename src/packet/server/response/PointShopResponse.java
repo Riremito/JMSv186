@@ -91,18 +91,17 @@ public class PointShopResponse {
 
     private static byte[] getModifiedData() {
         ServerPacket data = new ServerPacket();
-        data.Encode2(0); // count
-        /*
-        data.Encode4(80000184); // SN
+        //data.Encode2(0); // count
+        data.Encode2(1); // count
+        data.Encode4(50200133); // SN
         // CS_COMMODITY::DecodeModifiedData
         {
             data.Encode4(0x01 | 0x02 | 0x04 | 0x0400); // flag
-            data.Encode4(3010142); // 0x01 : itemid
-            data.Encode2(1); // 0x02 : count
-            data.Encode4(77); // 0x04: price
+            data.Encode4(5062000); // 0x01 : itemid
+            data.Encode2(77); // 0x02 : count
+            data.Encode4(7777); // 0x04: price
             data.Encode1(1); //0x0400 : OnSale
         }
-        */
         return data.Get().getBytes();
     }
 

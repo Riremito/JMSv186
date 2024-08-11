@@ -53,13 +53,12 @@ public class MysticDoorResponse {
     }
 
     // spawnDoor
-    public static final MaplePacket spawnDoor(final int oid, final Point pos, final boolean town) {
+    public static final MaplePacket spawnDoor(MapleDoor door, boolean isTown) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TownPortalCreated);
-
-        sp.Encode1(town ? 1 : 0);
-        sp.Encode4(oid);
-        sp.Encode2((short) pos.x);
-        sp.Encode2((short) pos.y);
+        sp.Encode1(isTown ? 1 : 0);
+        sp.Encode4(door.getOwnerId());
+        sp.Encode2((short) door.getPosition().x);
+        sp.Encode2((short) door.getPosition().y);
         return sp.Get();
     }
 
@@ -75,7 +74,7 @@ public class MysticDoorResponse {
     public static MaplePacket partyPortal(MapleDoor door) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PartyResult);
         sp.Encode1(40);
-        sp.Encode1(0); // number
+        sp.Encode1(door.getTownPortal().getMysticDoorId()); // number
         sp.Encode4(door.getMapId());
         sp.Encode4(door.getLink().getMapId());
         sp.Encode4(door.getSkillId());

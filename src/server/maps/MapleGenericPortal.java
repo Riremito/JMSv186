@@ -45,6 +45,12 @@ public class MapleGenericPortal implements MaplePortal {
         return id;
     }
 
+    @Override
+    public final int getMysticDoorId() {
+        int val = (int) ((byte) id);
+        return val + 128;
+    }
+
     public final void setId(int id) {
         this.id = id;
     }
@@ -129,7 +135,7 @@ public class MapleGenericPortal implements MaplePortal {
                     //    return;
                     //}
                 }
-                */
+                 */
                 c.getPlayer().changeMapPortal(to, to.getPortal(getTarget()) == null ? to.getPortal(0) : to.getPortal(getTarget())); //late resolving makes this harder but prevents us from loading the whole world at once
             }
         }

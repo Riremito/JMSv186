@@ -22,15 +22,14 @@ package server.maps;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import client.MapleCharacter;
 import client.MapleClient;
+import debug.Debug;
 import java.lang.ref.WeakReference;
 import packet.server.response.MysticDoorResponse;
 import server.MaplePortal;
-import tools.MaplePacketCreator;
+import server.Randomizer;
 
 public class MapleDoor extends AbstractMapleMapObject {
 
@@ -110,34 +109,21 @@ public class MapleDoor extends AbstractMapleMapObject {
         final List<MaplePortal> freePortals = new ArrayList<MaplePortal>();
 
         for (final MaplePortal port : map_town.getPortals()) {
-            if (port.getType() == 6) {
+            if (port.getType() == MaplePortal.DOOR_PORTAL) {
                 freePortals.add(port);
+                Debug.DebugLog("MYSTIC = " + (byte) port.getId());
             }
         }
-        Collections.sort(freePortals, new Comparator<MaplePortal>() {
-
-            @Override
-            public final int compare(final MaplePortal o1, final MaplePortal o2) {
-                if (o1.getId() < o2.getId()) {
-                    return -1;
-                } else if (o1.getId() == o2.getId()) {
-                    return 0;
-                } else {
-                    return 1;
-                }
-            }
-        });
+        // already used
         for (final MapleMapObject obj : map_town.getAllDoorsThreadsafe()) {
-            final MapleDoor door = (MapleDoor) obj;
-            /// hmm
-            if (door.getOwner() != null && door.getOwner().getParty() != null && getOwner() != null && getOwner().getParty() != null && getOwner().getParty().getMemberById(door.getOwnerId()) != null) {
-                freePortals.remove(door.getTownPortal());
-            }
+            MapleDoor door = (MapleDoor) obj;
+            freePortals.remove(door.getTownPortal());
         }
         if (freePortals.size() <= 0) {
             return null;
         }
-        return freePortals.iterator().next();
+
+        return freePortals.get(Randomizer.nextInt(freePortals.size()));
     }
 
     @Override
@@ -146,11 +132,11 @@ public class MapleDoor extends AbstractMapleMapObject {
             return;
         }
         if (map_field.getId() == client.getPlayer().getMapId() || getOwnerId() == client.getPlayer().getId() || (getOwner() != null && getOwner().getParty() != null && getOwner().getParty().getMemberById(client.getPlayer().getId()) != null)) {
-            client.getSession().write(MysticDoorResponse.spawnDoor(getOwnerId(), map_town.getId() == client.getPlayer().getMapId() ? townPortal.getPosition() : getPosition(), true));
+            //client.getSession().write(MysticDoorResponse.spawnDoor(getOwnerId(), map_town.getId() == client.getPlayer().getMapId() ? townPortal.getPosition() : getPosition(), true));
             if (getOwner() != null && getOwner().getParty() != null && (getOwnerId() == client.getPlayer().getId() || getOwner().getParty().getMemberById(client.getPlayer().getId()) != null)) {
-                client.SendPacket(MysticDoorResponse.partyPortal(this));
+                //client.SendPacket(MysticDoorResponse.partyPortal(this));
             }
-            client.SendPacket(MysticDoorResponse.setMysticDoorInfo(this));
+            //client.SendPacket(MysticDoorResponse.setMysticDoorInfo(this));
         }
     }
 
@@ -163,23 +149,8 @@ public class MapleDoor extends AbstractMapleMapObject {
             if (getOwner().getParty() != null && (getOwnerId() == client.getPlayer().getId() || getOwner().getParty().getMemberById(client.getPlayer().getId()) != null)) {
                 //client.SendPacket(MysticDoorResponse.resetPartyMysticDoorInfo());
             }
-            client.SendPacket(MysticDoorResponse.removeDoor(this));
         }
-    }
-
-    public final void warp(final MapleCharacter chr, final boolean toTown) {
-        if (chr.getId() == getOwnerId() || (getOwner() != null && getOwner().getParty() != null && getOwner().getParty().getMemberById(chr.getId()) != null)) {
-            /*
-            if (!toTown) {
-                chr.changeMap(map_field, getPosition()); // ?
-            } else {
-                chr.changeMap(map_town, townPortal);
-            }
-             */
-            chr.changeMapDoor(this);
-        } else {
-            chr.SendPacket(MaplePacketCreator.enableActions());
-        }
+        client.SendPacket(MysticDoorResponse.removeDoor(this));
     }
 
     public final MapleCharacter getOwner() {

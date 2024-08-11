@@ -39,6 +39,7 @@ import packet.client.request.ViciousHammerPacket;
 import packet.client.request.addon.AddonPacket;
 import packet.client.request.LoginRequest;
 import packet.client.request.MapleTradeSpaceRequest;
+import packet.client.request.MysticDoorRequest;
 import packet.client.request.PetRequest;
 import packet.client.request.PointShopRequest;
 import packet.server.response.LoginResponse;
@@ -492,7 +493,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserShootAttack:
             case CP_UserMagicAttack:
             case CP_UserBodyAttack:
-            case CP_UserHit: {
+            case CP_UserHit:
+            case CP_UserSkillCancelRequest: {
                 UserRequest.OnPacket(cp, header, c);
                 return true;
             }
@@ -504,11 +506,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserEmotion: {
                 // pc
                 PlayerHandler.ChangeEmotion(p.readInt(), c.getPlayer());
-                return true;
-            }
-            case CP_UserSkillCancelRequest: {
-                // pc
-                PlayerHandler.CancelBuffHandler(p.readInt(), c.getPlayer());
                 return true;
             }
             case CP_UserStatChangeItemCancelRequest: {
@@ -595,11 +592,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_MemoRequest: {
                 // c
                 PlayersHandler.Note(p, c.getPlayer());
-                return true;
-            }
-            case CP_EnterTownPortalRequest: {
-                // c
-                PlayersHandler.UseDoor(p, c.getPlayer());
                 return true;
             }
             case CP_ReactorHit:
@@ -1008,6 +1000,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_FuncKeyMappedModified:
             case CP_QuickslotKeyMappedModified: {
                 KeyMapRequest.OnPacket(header, cp, c);
+                return true;
+            }
+            // ミスティックドア
+            case CP_EnterTownPortalRequest: {
+                MysticDoorRequest.TryEnterTownPortal(cp, c);
                 return true;
             }
             // ポイントショップ
