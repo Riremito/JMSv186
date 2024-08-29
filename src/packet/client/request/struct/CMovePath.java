@@ -93,13 +93,18 @@ public class CMovePath {
         move_start = new Point(ShortToInt(offset_start_x), ShortToInt(offset_start_y));
         move_end = new Point(ShortToInt(offset_end_x), ShortToInt(offset_end_y));
         foothold_id = readShort(offset_end_fh);
-        // jump down check
-        if (((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) || move_end.y == 0) && ShortToInt(offset_end_y + 4) == 0 && data[offset_end_y - 5] == JUMP_DOWN_ACTION) {
-            // fh 0
-            move_end.x = ShortToInt(offset_end_x - 2);
-            move_end.y = ShortToInt(offset_end_y - 2);
-            foothold_id = readShort(offset_end_fh - 2);
-            //Debug.DebugLog("JUMPDOWN DETECTED!");
+
+        // bandaid fix
+        //Debug.DebugLog("XY = " + move_end);
+        if (data[offset_end_x - 3] == JUMP_DOWN_ACTION && ShortToInt(offset_end_y + 4) == 0) {
+            Point move_end_test = new Point(ShortToInt(offset_end_x - 2), ShortToInt(offset_end_y - 2));
+            int vector_0 = (move_end_test.x - move_start.x) * (move_end_test.x - move_start.x) + (move_end_test.y - move_start.y) * (move_end_test.y - move_start.y);
+            int vector_1 = (move_end.x - move_start.x) * (move_end.x - move_start.x) + (move_end.y - move_start.y) * (move_end.y - move_start.y);
+            if (vector_0 < vector_1) {
+                //Debug.DebugLog("XY = " + move_end_test + ", JUMPDOWN DETECTED!");
+                move_end = move_end_test;
+                foothold_id = readShort(offset_end_fh - 2);
+            }
         }
     }
 
