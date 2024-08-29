@@ -72,10 +72,10 @@ public class KeyMapResponse {
         sp.Encode1(keymap_reset ? 1 : 0);
 
         if (!keymap_reset) {
-            int KEY_MAP_SIZE = 94;
+            int KEY_MAP_SIZE = 94; // 470
 
-            if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
-                KEY_MAP_SIZE = 126;
+            if (ServerConfig.IsPostBB()) {
+                KEY_MAP_SIZE = 126; // 630
             }
 
             for (int i = 0; i < KEY_MAP_SIZE; i++) {

@@ -66,43 +66,43 @@ public class ServerConfig {
     public static boolean SetContentFlag() {
         switch (GetRegion()) {
             case KMS: {
-                if (100 < GetVersion()) {
+                if (101 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
             }
             case JMS: {
-                if (186 < GetVersion()) {
+                if (187 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
             }
             case CMS: {
-                if (86 < GetVersion()) {
+                if (87 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
             }
             case TWMS: {
-                if (122 < GetVersion()) {
+                if (123 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
             }
             case MSEA: {
-                if (102 < GetVersion()) {
+                if (103 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
             }
             case GMS: {
-                if (92 < GetVersion()) {
+                if (93 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
             }
             case EMS: {
-                if (72 < GetVersion()) {
+                if (73 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
