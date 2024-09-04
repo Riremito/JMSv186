@@ -286,12 +286,24 @@ public class LoginResponse {
         if (worked) {
             p.EncodeBuffer(GW_CharacterStat.Encode(chr));
             p.EncodeBuffer(AvatarLook.Encode(chr));
+            if (ServerConfig.IsKMS()) {
+                p.Encode1(0);
+                p.Encode1(0);
+                p.EncodeZeroBytes(16);
+            }
         }
+
+        if (ServerConfig.IsKMS()) {
+            p.Encode1(0);
+            p.Encode1(0);
+            p.Encode4(0);
+        }
+
         return p.Get();
     }
 
-    // v131+
-    // CLogin::OnCheckGameGuardUpdatedResult
+// v131+
+// CLogin::OnCheckGameGuardUpdatedResult
     public static MaplePacket CheckGameGuardUpdate() {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_T_UpdateGameGuard);
         // 0 = Update Game Guard
@@ -444,14 +456,22 @@ public class LoginResponse {
         }
         List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
         int charslots = c.getCharacterSlots();
-        p.EncodeStr("");
+
+        if (ServerConfig.IsJMS()) {
+            p.EncodeStr("");
+        }
+
+        if (ServerConfig.IsKMS() || ServerConfig.IsCMS()) {
+            p.Encode4(1000000);
+        }
+
         // キャラクターの数
         p.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
             //Structure.CharEntry(p, chr, true, false);
             p.EncodeBuffer(GW_CharacterStat.Encode(chr));
             p.EncodeBuffer(AvatarLook.Encode(chr));
-            if (ServerConfig.IsJMS() && 165 < ServerConfig.GetVersion()) {
+            if ((ServerConfig.IsJMS() && 165 < ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
                 p.Encode1(0);
             }
             p.Encode1(1); // ranking
@@ -459,6 +479,13 @@ public class LoginResponse {
             p.Encode4(chr.getRankMove());
             p.Encode4(chr.getJobRank()); // world ranking
             p.Encode4(chr.getJobRankMove());
+        }
+
+        if (ServerConfig.IsKMS()) {
+            p.Encode1(2);
+            p.Encode1(0);
+            p.Encode4(charslots);
+            return p.Get();
         }
 
         if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {

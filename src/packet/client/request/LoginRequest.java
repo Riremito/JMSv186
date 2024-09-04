@@ -118,7 +118,7 @@ public class LoginRequest {
         }
         final int JobType = p.Decode4();
         short db = 0;
-        if ((ServerConfig.IsJMS() && 176 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
+        if ((ServerConfig.IsJMS() && 176 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
             db = p.Decode2();
         }
 
@@ -197,6 +197,9 @@ public class LoginRequest {
     }
 
     public static final void CharlistRequest(ClientPacket p, final MapleClient c) {
+        if (ServerConfig.IsKMS()) {
+            byte unk = p.Decode1();
+        }
         int server = p.Decode1();
         final int channel = p.Decode1();
         // もみじ block test

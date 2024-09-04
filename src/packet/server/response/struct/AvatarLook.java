@@ -87,6 +87,11 @@ public class AvatarLook {
         final IItem cWeapon = equip.getItem((byte) -111);
         p.Encode4(cWeapon != null ? cWeapon.getItemId() : 0);
 
+        if (ServerConfig.IsKMS()) {
+            p.Encode4(0);
+            return p.Get().getBytes();
+        }
+
         if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
             p.Encode4(0);
             p.Encode4(0);

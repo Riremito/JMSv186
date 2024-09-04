@@ -116,13 +116,13 @@ public class GW_CharacterStat {
         ServerPacket p = new ServerPacket();
 
         p.Encode4(chr.getId());
-        p.EncodeBuffer(chr.getName(), (ServerConfig.IsJMS() || ServerConfig.IsCMS()) ? 13 : 15);
+        p.EncodeBuffer(chr.getName(), (ServerConfig.IsKMS() ||ServerConfig.IsJMS() || ServerConfig.IsCMS()) ? 13 : 15);
         p.Encode1(chr.getGender());
         p.Encode1(chr.getSkinColor());
         p.Encode4(chr.getFace());
         p.Encode4(chr.getHair());
 
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) {
+        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) || ServerConfig.IsKMS()) {
             p.EncodeZeroBytes(8);
         } else {
             p.EncodeZeroBytes(24);
@@ -227,7 +227,7 @@ public class GW_CharacterStat {
         p.Encode4(chr.getMapId()); // current map id
         p.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
 
-        if (ServerConfig.IsCMS()) {
+        if (ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
             p.Encode2(chr.getSubcategory());
         } else if (ServerConfig.IsTWMS()) {
             p.Encode2(chr.getSubcategory());
