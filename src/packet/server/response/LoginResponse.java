@@ -98,6 +98,48 @@ public class LoginResponse {
         }
     }
 
+    // サーバーのバージョン情報
+    public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.HELLO); // dummy header
+        if (ServerConfig.GetVersion() < 414) {
+
+            switch (ServerConfig.GetRegion()) {
+                case KMS: {
+                    long xor_version = 0;
+                    xor_version ^= ServerConfig.GetVersion();
+                    xor_version ^= 1 << 15;
+                    xor_version ^= ServerConfig.GetSubVersion() << 16;
+
+                    p.Encode2(291); // magic number
+                    p.EncodeStr(String.valueOf(xor_version));
+                    break;
+                }
+                default: {
+                    p.Encode2(ServerConfig.GetVersion());
+                    p.EncodeStr(String.valueOf(ServerConfig.GetSubVersion()));
+                    break;
+                }
+            }
+
+            p.EncodeBuffer(recvIv);
+            p.EncodeBuffer(sendIv);
+            p.Encode1(ServerConfig.GetRegionNumber()); // JMS = 3
+        } else {
+            // x64
+            p.Encode2(ServerConfig.GetVersion());
+            p.EncodeStr("1:" + ServerConfig.GetSubVersion()); // 1:1
+            p.EncodeBuffer(recvIv);
+            p.EncodeBuffer(sendIv);
+            p.Encode1(ServerConfig.GetRegionNumber());
+            p.Encode1(0);
+            p.Encode1(5);
+            p.Encode1(1);
+        }
+        // ヘッダにサイズを書き込む
+        p.SetHello();
+        return p.Get();
+    }
+
     // v186+
     // CLogin::OnRecommendWorldMessage
     public static MaplePacket RecommendWorldMessage() {
@@ -357,31 +399,6 @@ public class LoginResponse {
         if (ServerConfig.IsJMS() && 201 <= ServerConfig.GetVersion()) {
             p.Encode4(0);
         }
-        return p.Get();
-    }
-
-    // サーバーのバージョン情報
-    public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.HELLO); // dummy header
-        if (ServerConfig.GetVersion() < 414) {
-            p.Encode2(ServerConfig.GetVersion());
-            p.EncodeStr(String.valueOf(ServerConfig.GetSubVersion()));
-            p.EncodeBuffer(recvIv);
-            p.EncodeBuffer(sendIv);
-            p.Encode1(ServerConfig.GetRegionNumber()); // JMS = 3
-        } else {
-            // x64
-            p.Encode2(ServerConfig.GetVersion());
-            p.EncodeStr("1:" + ServerConfig.GetSubVersion()); // 1:1
-            p.EncodeBuffer(recvIv);
-            p.EncodeBuffer(sendIv);
-            p.Encode1(ServerConfig.GetRegionNumber());
-            p.Encode1(0);
-            p.Encode1(5);
-            p.Encode1(1);
-        }
-        // ヘッダにサイズを書き込む
-        p.SetHello();
         return p.Get();
     }
 

@@ -47,6 +47,7 @@ public class MapleAESOFB {
     private boolean isCP; // x64
 
     private final static SecretKeySpec skey = new SecretKeySpec(new byte[]{0x13, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, (byte) 0xB4, 0x00, 0x00, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00}, "AES");
+    private final static SecretKeySpec skey_kms = new SecretKeySpec(new byte[]{0x15, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, (byte) 0xB4, 0x00, 0x00, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00}, "AES");
 
     private static final byte[] funnyBytes = new byte[]{(byte) 0xEC, (byte) 0x3F, (byte) 0x77, (byte) 0xA4, (byte) 0x45, (byte) 0xD0, (byte) 0x71, (byte) 0xBF, (byte) 0xB7, (byte) 0x98, (byte) 0x20, (byte) 0xFC,
         (byte) 0x4B, (byte) 0xE9, (byte) 0xB3, (byte) 0xE1, (byte) 0x5C, (byte) 0x22, (byte) 0xF7, (byte) 0x0C, (byte) 0x44, (byte) 0x1B, (byte) 0x81, (byte) 0xBD, (byte) 0x63, (byte) 0x8D, (byte) 0xD4, (byte) 0xC3,
@@ -72,7 +73,7 @@ public class MapleAESOFB {
             try {
                 cipher = Cipher.getInstance("AES");
                 if (!(ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion())) {
-                    cipher.init(Cipher.ENCRYPT_MODE, skey);
+                    cipher.init(Cipher.ENCRYPT_MODE, (ServerConfig.GetRegion() == ServerConfig.Region.KMS) ? skey_kms : skey);
                 } else {
                     // Thank you for reading code!
                     //cipher.init(Cipher.ENCRYPT_MODE, skey_x64);
@@ -135,6 +136,36 @@ public class MapleAESOFB {
             e.printStackTrace();
         }
         return data;
+    }
+
+    // KMS v2.95
+    public static byte[] getFunnyBytes() {
+        return funnyBytes;
+    }
+
+    public byte[] kms_encrypt(byte[] data) {
+        byte[] tempiv = this.iv;
+        updateIv();
+        for (int i = 0; i < data.length; i++) {
+            int input = data[i] & 0xFF;
+            int crypted = (getFunnyBytes()[tempiv[0] & 0xFF] ^ (((0x10 * input | (input >> 4)) >> 1) & 0x55 | 2 * ((0x10 * input | (input >> 4)) & 0xD5))) & 0xFF;
+            data[i] = (byte) crypted;
+            funnyShit((byte) input, tempiv);
+        }
+        return data;
+    }
+
+    public byte[] kms_decrypt(byte[] ddata) {
+        byte[] ivtemp = this.iv;
+        updateIv();
+        for (int i = 0; i < ddata.length; i++) {
+            int first = ((ddata[i] & 0xFF) ^ getFunnyBytes()[(ivtemp[0] & 0xFF)]) & 0xFF;
+            int second = (((first >> 1) & 0x55) | ((first & 0xD5) << 1)) & 0xFF;
+            int finals = ((second << 4) | (second >> 4)) & 0xFF;
+            ddata[i] = (byte) finals;
+            funnyShit(ddata[i], ivtemp);
+        }
+        return ddata;
     }
 
     // JMS v414 x64

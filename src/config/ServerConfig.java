@@ -31,6 +31,10 @@ public class ServerConfig {
         unk,
     }
 
+    public static boolean IsKMS() {
+        return GetRegion() == Region.KMS;
+    }
+
     public static boolean IsJMS() {
         return GetRegion() == Region.JMS;
     }
