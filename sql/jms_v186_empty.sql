@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: localhost
--- 生成日時: 2024 年 3 月 26 日 04:08
+-- 生成日時: 2024 年 9 月 04 日 13:09
 -- サーバのバージョン: 5.6.12-log
 -- PHP のバージョン: 5.4.12
 
@@ -15,12 +15,6 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
-
---
--- データベース: `v186`
---
-CREATE DATABASE IF NOT EXISTS `v186` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `v186`;
 
 -- --------------------------------------------------------
 
@@ -60,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `ranking1` (`id`,`banned`,`gm`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=13 ;
 
 -- --------------------------------------------------------
 
@@ -332,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `characters` (
   KEY `party` (`party`),
   KEY `ranking1` (`level`,`exp`),
   KEY `ranking2` (`gm`,`job`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=24 ;
 
 -- --------------------------------------------------------
 
@@ -346,7 +340,7 @@ CREATE TABLE IF NOT EXISTS `character_slots` (
   `worldid` int(11) NOT NULL DEFAULT '0',
   `charslots` int(11) NOT NULL DEFAULT '6',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 -- --------------------------------------------------------
 
@@ -402,7 +396,7 @@ CREATE TABLE IF NOT EXISTS `csequipment` (
   `mpR` smallint(5) NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=42634 ;
 
 -- --------------------------------------------------------
 
@@ -433,7 +427,7 @@ CREATE TABLE IF NOT EXISTS `csitems` (
   KEY `accountid` (`accountid`),
   KEY `packageid` (`packageid`),
   KEY `characterid_2` (`characterid`,`inventorytype`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=55365 ;
 
 -- --------------------------------------------------------
 
@@ -830,7 +824,7 @@ CREATE TABLE IF NOT EXISTS `inventoryequipment` (
   `mpR` smallint(5) NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=12094 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=50457 ;
 
 -- --------------------------------------------------------
 
@@ -859,7 +853,7 @@ CREATE TABLE IF NOT EXISTS `inventoryitems` (
   KEY `accountid` (`accountid`),
   KEY `packageid` (`packageid`),
   KEY `characterid_2` (`characterid`,`inventorytype`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=44020 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=160265 ;
 
 -- --------------------------------------------------------
 
@@ -890,7 +884,7 @@ CREATE TABLE IF NOT EXISTS `inventoryslot` (
   `etc` tinyint(3) unsigned DEFAULT NULL,
   `cash` tinyint(3) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=719 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=2986 ;
 
 -- --------------------------------------------------------
 
@@ -933,7 +927,7 @@ CREATE TABLE IF NOT EXISTS `keymap` (
   `action` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `keymap_ibfk_1` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=29001 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=115864 ;
 
 -- --------------------------------------------------------
 
@@ -972,7 +966,7 @@ CREATE TABLE IF NOT EXISTS `monsterbook` (
   `cardid` int(10) unsigned NOT NULL DEFAULT '0',
   `level` tinyint(2) unsigned DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=31 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -987,7 +981,7 @@ CREATE TABLE IF NOT EXISTS `mountdata` (
   `Exp` int(10) unsigned NOT NULL DEFAULT '0',
   `Fatigue` int(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=24 ;
 
 -- --------------------------------------------------------
 
@@ -1216,7 +1210,7 @@ CREATE TABLE IF NOT EXISTS `pets` (
   `fullness` int(3) unsigned NOT NULL,
   `seconds` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`petid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=41 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=87 ;
 
 -- --------------------------------------------------------
 
@@ -1288,7 +1282,7 @@ CREATE TABLE IF NOT EXISTS `questinfo` (
   `customData` varchar(555) DEFAULT NULL,
   PRIMARY KEY (`questinfoid`),
   KEY `characterid` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=653 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=3011 ;
 
 -- --------------------------------------------------------
 
@@ -1320,7 +1314,7 @@ CREATE TABLE IF NOT EXISTS `queststatus` (
   `customData` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`queststatusid`),
   KEY `characterid` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=12227 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=48174 ;
 
 -- --------------------------------------------------------
 
@@ -1442,7 +1436,7 @@ CREATE TABLE IF NOT EXISTS `savedlocations` (
   `map` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `savedlocations_ibfk_1` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=244 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=809 ;
 
 -- --------------------------------------------------------
 
@@ -1507,7 +1501,7 @@ CREATE TABLE IF NOT EXISTS `skills` (
   `expiration` bigint(20) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`id`),
   KEY `skills_ibfk_1` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=9480 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=35381 ;
 
 -- --------------------------------------------------------
 
@@ -1553,7 +1547,7 @@ CREATE TABLE IF NOT EXISTS `storages` (
   `meso` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`storageid`),
   KEY `accountid` (`accountid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=13 ;
 
 -- --------------------------------------------------------
 
@@ -1624,7 +1618,7 @@ CREATE TABLE IF NOT EXISTS `__root` (
   `value_str` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=21 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=72 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
