@@ -73,7 +73,9 @@ public class MapleAESOFB {
             try {
                 cipher = Cipher.getInstance("AES");
                 if (!(ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion())) {
-                    cipher.init(Cipher.ENCRYPT_MODE, (ServerConfig.GetRegion() == ServerConfig.Region.KMS) ? skey_kms : skey);
+                    if (!ServerConfig.IsKMS()) {
+                        cipher.init(Cipher.ENCRYPT_MODE, skey);
+                    }
                 } else {
                     // Thank you for reading code!
                     //cipher.init(Cipher.ENCRYPT_MODE, skey_x64);
