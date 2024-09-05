@@ -64,7 +64,7 @@ public class CMovePath {
             }
             case CP_MobMove: {
                 ignore_bytes = 1 + 2 * 4;
-                if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
+                if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
                     ignore_bytes += 1 * 4 + 4;
                 }
 

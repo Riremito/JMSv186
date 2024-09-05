@@ -125,18 +125,18 @@ public class MobRequest {
         final int skill3 = cp.Decode1();
         final int skill4 = cp.Decode1();
 
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
             cp.Decode4(); // 0
             cp.Decode4(); // 0
         }
 
         cp.Decode1();
 
-        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()|| ServerConfig.IsKMS()) {
             cp.Decode4();
         }
 
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())|| ServerConfig.IsKMS()) {
             cp.Decode4();
             cp.Decode4();
             cp.Decode4();

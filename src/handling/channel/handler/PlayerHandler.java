@@ -153,14 +153,14 @@ public class PlayerHandler {
         c.getSession().write(TestResponse.getTrockRefresh(chr, vip == 1, addrem == 3));
     }
 
-    public static final void TakeDamage(ClientPacket p, final MapleClient c, final MapleCharacter chr) {
+    public static final void TakeDamage(ClientPacket cp, final MapleClient c, final MapleCharacter chr) {
         //System.out.println(slea.toString());
-        chr.updateTick(p.Decode4());
-        final byte type = p.Decode1(); //-4 is mist, -3 and -2 are map damage.
-        if (ServerConfig.version > 131) {
-            p.Decode1(); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
+        chr.updateTick(cp.Decode4());
+        final byte type = cp.Decode1(); //-4 is mist, -3 and -2 are map damage.
+        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
+            cp.Decode1(); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
         }
-        int damage = p.Decode4();
+        int damage = cp.Decode4();
 
         int oid = 0;
         int monsteridfrom = 0;
@@ -182,10 +182,10 @@ public class PlayerHandler {
         }
         final PlayerStats stats = chr.getStat();
         if (type != -2 && type != -3 && type != -4) { // Not map damage
-            monsteridfrom = p.Decode4();
-            oid = p.Decode4();
+            monsteridfrom = cp.Decode4();
+            oid = cp.Decode4();
             attacker = chr.getMap().getMonsterByOid(oid);
-            direction = p.Decode1();
+            direction = cp.Decode1();
 
             if (attacker == null) {
                 return;
@@ -222,9 +222,9 @@ public class PlayerHandler {
                 chr.cancelMorphs();
             }
             //if (slea.available() == 3) {
-            byte level = p.Decode1();
+            byte level = cp.Decode1();
             if (level > 0) {
-                final MobSkill skill = MobSkillFactory.getMobSkill(p.Decode2(), level);
+                final MobSkill skill = MobSkillFactory.getMobSkill(cp.Decode2(), level);
                 if (skill != null) {
                     //skill.applyEffect(chr, attacker, false);
                 }

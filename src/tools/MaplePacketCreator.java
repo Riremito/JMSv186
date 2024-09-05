@@ -340,7 +340,8 @@ public class MaplePacketCreator {
         p.EncodeStr(text);
         if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
+                || ServerConfig.IsCMS()
+                || ServerConfig.IsKMS()) {
             p.Encode1((byte) show);
         }
         // if LP_UserChatNLCPQ, add more str

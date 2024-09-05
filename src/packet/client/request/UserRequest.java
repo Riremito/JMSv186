@@ -162,7 +162,7 @@ public class UserRequest {
         attack.FieldKey = cp.Decode1();
 
         // DR_Check
-        if (186 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) {
             cp.Decode4(); // pDrInfo.dr0
             cp.Decode4(); // pDrInfo.dr1
         }
@@ -170,7 +170,7 @@ public class UserRequest {
         attack.HitKey = cp.Decode1(); // nDamagePerMob | (16 * nCount)
 
         // DR_Check
-        if (186 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) {
             cp.Decode4(); // pDrInfo.dr2
             cp.Decode4(); // pDrInfo.dr3
         }
@@ -184,16 +184,16 @@ public class UserRequest {
         }
 
         // v95 1 byte cd->nCombatOrders
-        if (186 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) {
             cp.Decode4(); // get_rand of DR_Check
             cp.Decode4(); // Crc32 of DR_Check
-            if (188 <= ServerConfig.version) {
+            if (ServerConfig.IsPostBB()) {
                 cp.Decode1();
             }
             // v95 4 bytes SKILLLEVELDATA::GetCrc
         }
 
-        if (164 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
             cp.Decode4(); // Crc
         }
 
@@ -202,7 +202,7 @@ public class UserRequest {
             attack.tKeyDown = cp.Decode4();
         }
 
-        if (194 <= ServerConfig.version) {
+        if (ServerConfig.IsPostBB() && ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
             if (attack.AttackHeader == ClientPacket.Header.CP_UserShootAttack) {
                 cp.Decode1();
             }
@@ -210,13 +210,13 @@ public class UserRequest {
 
         attack.BuffKey = cp.Decode1();
 
-        if (ServerConfig.version <= 165) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
             attack.AttackActionKey = cp.Decode1();
         } else {
             attack.AttackActionKey = cp.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15)
         }
 
-        if (188 <= ServerConfig.version) {
+        if (ServerConfig.IsPostBB()) {
             cp.Decode4();
         }
 
@@ -225,7 +225,7 @@ public class UserRequest {
         attack.nAttackSpeed = cp.Decode1();
         attack.tAttackTime = cp.Decode4();
 
-        if (186 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
             cp.Decode4(); // dwID
         }
 
@@ -277,14 +277,14 @@ public class UserRequest {
                 allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
             }
 
-            if (164 <= ServerConfig.version) {
+            if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
                 cp.Decode4(); // CMob::GetCrc(v366->pMob)
             }
 
             attack.allDamage.add(new AttackPair(Integer.valueOf(nTargetID), allDamageNumbers));
         }
 
-        if (186 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
             if (attack.AttackHeader == ClientPacket.Header.CP_UserShootAttack) {
                 cp.Decode4(); // v292->CUser::CLife::IVecCtrlOwner::vfptr->GetPos?
             }

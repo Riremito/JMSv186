@@ -212,7 +212,8 @@ public class Structure {
         }
         if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
+                || ServerConfig.IsCMS()
+                || ServerConfig.IsKMS()) {
             data.Encode8(getSpecialLongMask(life.getStati().keySet()));
         }
 
