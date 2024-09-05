@@ -103,7 +103,7 @@ public class GW_ItemSlotBase {
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
                 // v184-v185 潜在内部実装時 (動作はしないがデータの位置が違う)
-                if (ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185) {
+                if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185) || ServerConfig.IsKMS()) {
                     data.Encode1(equip.getState());
                 }
                 // data.Encode2((short) equip.getIncAttackSpeed());
@@ -156,7 +156,8 @@ public class GW_ItemSlotBase {
                 // 耐久度
                 if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
                         || ServerConfig.IsTWMS()
-                        || ServerConfig.IsCMS()) {
+                        || ServerConfig.IsCMS()
+                        || ServerConfig.IsKMS()) {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
 
@@ -176,8 +177,11 @@ public class GW_ItemSlotBase {
                     // 潜在能力
                     if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
                             || ServerConfig.IsTWMS()
-                            || ServerConfig.IsCMS()) {
-                        data.Encode1(equip.getState()); // option._ZtlSecureTear_nGrade
+                            || ServerConfig.IsCMS()
+                            || ServerConfig.IsKMS()) {
+                        if (!ServerConfig.IsKMS()) {
+                            data.Encode1(equip.getState()); // option._ZtlSecureTear_nGrade
+                        }
                         data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
                         if (ServerConfig.game_server_enable_potential) {
                             data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1

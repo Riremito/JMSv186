@@ -131,7 +131,6 @@ public class MapleAESOFB {
                 remaining -= llength;
                 llength = 0x5B4;
             }
-            updateIv();
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
         } catch (BadPaddingException e) {
@@ -141,33 +140,29 @@ public class MapleAESOFB {
     }
 
     // KMS v2.95
-    public static byte[] getFunnyBytes() {
-        return funnyBytes;
-    }
-
     public byte[] kms_encrypt(byte[] data) {
         byte[] tempiv = this.iv;
         updateIv();
         for (int i = 0; i < data.length; i++) {
             int input = data[i] & 0xFF;
-            int crypted = (getFunnyBytes()[tempiv[0] & 0xFF] ^ (((0x10 * input | (input >> 4)) >> 1) & 0x55 | 2 * ((0x10 * input | (input >> 4)) & 0xD5))) & 0xFF;
+            int crypted = (funnyBytes[tempiv[0] & 0xFF] ^ (((0x10 * input | (input >> 4)) >> 1) & 0x55 | 2 * ((0x10 * input | (input >> 4)) & 0xD5))) & 0xFF;
             data[i] = (byte) crypted;
             funnyShit((byte) input, tempiv);
         }
         return data;
     }
 
-    public byte[] kms_decrypt(byte[] ddata) {
+    public byte[] kms_decrypt(byte[] data) {
         byte[] ivtemp = this.iv;
         updateIv();
-        for (int i = 0; i < ddata.length; i++) {
-            int first = ((ddata[i] & 0xFF) ^ getFunnyBytes()[(ivtemp[0] & 0xFF)]) & 0xFF;
+        for (int i = 0; i < data.length; i++) {
+            int first = ((data[i] & 0xFF) ^ funnyBytes[(ivtemp[0] & 0xFF)]) & 0xFF;
             int second = (((first >> 1) & 0x55) | ((first & 0xD5) << 1)) & 0xFF;
             int finals = ((second << 4) | (second >> 4)) & 0xFF;
-            ddata[i] = (byte) finals;
-            funnyShit(ddata[i], ivtemp);
+            data[i] = (byte) finals;
+            funnyShit(data[i], ivtemp);
         }
-        return ddata;
+        return data;
     }
 
     // JMS v414 x64

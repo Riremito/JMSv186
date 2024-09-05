@@ -52,17 +52,18 @@ public class MaplePacketEncoder implements ProtocolEncoder {
             try {
                 final byte[] header = send_crypto.getPacketHeader(unencrypted.length);
 
-                if (ServerConfig.IsKMS()) {
-                    send_crypto.kms_encrypt(unencrypted); // Crypt it with IV
-                } else {
-                    if (!ServerConfig.PacketEncryptionEnabled()) {
-                        send_crypto.updateIv();
-                    } else {
-                        if (ServerConfig.IsCMS()) {
-                            MapleCustomEncryption.encryptData(unencrypted);
-                        }
-                        send_crypto.crypt(unencrypted); // Crypt it with IV
+                if (ServerConfig.PacketEncryptionEnabled()) {
+                    if (ServerConfig.IsCMS()) {
+                        MapleCustomEncryption.encryptData(unencrypted);
                     }
+                    if (ServerConfig.IsKMS()) {
+                        send_crypto.kms_encrypt(unencrypted);
+                    } else {
+                        send_crypto.crypt(unencrypted);
+                    }
+                }
+                if (!ServerConfig.IsKMS()) {
+                    send_crypto.updateIv();
                 }
 
                 System.arraycopy(header, 0, ret, 0, 4); // Copy the header > "Ret", first 4 bytes

@@ -127,7 +127,8 @@ public class MaplePacketCreator {
         p.Encode1(loggedin ? 1 : 0); // 1 = all data, 0 = map change
         if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
+                || ServerConfig.IsCMS()
+                || ServerConfig.IsKMS()) {
             p.Encode2(0);
         }
 
@@ -150,7 +151,8 @@ public class MaplePacketCreator {
         } else {
             if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
                     || ServerConfig.IsTWMS()
-                    || ServerConfig.IsCMS()) {
+                    || ServerConfig.IsCMS()
+                    || ServerConfig.IsKMS()) {
                 p.Encode1(0);
             }
 

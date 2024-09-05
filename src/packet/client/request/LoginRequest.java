@@ -221,16 +221,22 @@ public class LoginRequest {
         c.SendPacket(LoginResponse.getCharList(c, LoginResponse.LoginResult.SUCCESS));
     }
 
-    public static final void DeleteChar(ClientPacket p, final MapleClient c) {
+    public static final void DeleteChar(ClientPacket cp, final MapleClient c) {
         byte state = 0;
         // BB後
-        if (ServerConfig.version >= 188) {
-            String MapleID = p.DecodeStr();
+        if (ServerConfig.IsPostBB()) {
+            String MapleID = cp.DecodeStr();
             if (!MapleID.equals(c.getAccountName())) {
                 // state = 0以外にすると切断されます
             }
         }
-        final int Character_ID = p.Decode4();
+
+        if (ServerConfig.IsKMS()) {
+            byte unk1 = cp.Decode1();
+            int unk2 = cp.Decode4();
+        }
+
+        final int Character_ID = cp.Decode4();
         if (!c.login_Auth(Character_ID)) {
             c.getSession().close();
             return;

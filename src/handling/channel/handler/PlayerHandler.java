@@ -809,15 +809,28 @@ public class PlayerHandler {
         }
     }
 
-    public static final void ChangeMapSpecial(ClientPacket p, final MapleClient c) {
-        p.Decode1();
-        String portal_name = p.DecodeStr();
+    public static final void ChangeMapSpecial(ClientPacket cp, final MapleClient c) {
+        cp.Decode1();
+        String portal_name = cp.DecodeStr();
 
         final MaplePortal portal = c.getPlayer().getMap().getPortal(portal_name);
 
         if (portal != null) {
             portal.enterPortal(c);
         }
+    }
+
+    public static final void ChangeMap(MapleClient c, String portal_name) {
+        final MaplePortal portal = c.getPlayer().getMap().getPortal(portal_name);
+
+        if (portal != null) {
+            portal.enterPortal(c);
+        }
+    }
+
+    public static final void ChangeMap(MapleClient c, int map_id) {
+        final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(map_id);
+        c.getPlayer().changeMap(to, to.getPortal(0));
     }
 
     public static final void ChangeMap(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
