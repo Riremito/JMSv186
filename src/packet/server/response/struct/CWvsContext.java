@@ -30,12 +30,12 @@ public class CWvsContext {
 
     // CWvsContext::OnSetLogoutGiftConfig
     public static byte[] LogoutGiftConfig() {
-        ServerPacket p = new ServerPacket();
+        ServerPacket data = new ServerPacket();
 
-        p.Encode4(0); // something
-        p.Encode4(0); // item1?
-        p.Encode4(0); // item2?
-        p.Encode4(0); // item3?
-        return p.Get().getBytes();
+        data.Encode4(0); // something
+        data.Encode4(0); // item1?
+        data.Encode4(0); // item2?
+        data.Encode4(0); // item3?
+        return data.Get().getBytes();
     }
 }

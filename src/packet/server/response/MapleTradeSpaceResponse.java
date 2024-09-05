@@ -20,12 +20,9 @@ package packet.server.response;
 
 import client.MapleCharacter;
 import client.inventory.IItem;
-import config.ServerConfig;
-import constants.ServerConstants;
 import handling.MaplePacket;
 import java.util.List;
 import packet.server.ServerPacket;
-import packet.server.response.struct.CharacterData;
 import packet.server.response.struct.TestHelper;
 import server.MTSStorage;
 import tools.KoreanDateUtil;
@@ -36,25 +33,6 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  * @author Riremito
  */
 public class MapleTradeSpaceResponse {
-
-    // CStage::OnSetITC
-    public static final MaplePacket SetITC(final MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetITC);
-        sp.EncodeBuffer(CharacterData.Encode(chr));
-        // CITC::LoadData
-        {
-            sp.EncodeStr(chr.getClient().getAccountName());
-            sp.Encode4(ServerConstants.MTS_MESO); // m_nRegisterFeeMeso
-            sp.Encode4(ServerConstants.MTS_TAX); // m_nCommissionRate
-            sp.Encode4(ServerConstants.MTS_BASE); // m_nCommissionBase
-            sp.Encode4(24); // m_nAuctionDurationMin
-            sp.Encode4(168); // m_nAuctionDurationMax
-            if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
-                sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
-            }
-        }
-        return sp.Get();
-    }
 
     public static MaplePacket QueryCashResult(final MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCQueryCashResult);

@@ -22,13 +22,11 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
-import config.ServerConfig;
 import handling.MaplePacket;
 import java.util.ArrayList;
 import packet.ops.CashItemFailReasonOps;
 import packet.ops.CashItemOps;
 import packet.server.ServerPacket;
-import packet.server.response.struct.CharacterData;
 import packet.server.response.struct.GW_CashItemInfo;
 import packet.server.response.struct.GW_ItemSlotBase;
 import server.CashShop;
@@ -41,55 +39,28 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 public class PointShopResponse {
 
     /*
-        @016D : LP_CashShopChargeParamResult
-        @016E : LP_JMS_POINTSHOP_PRESENT_DIALOG
-        @016F : LP_CashShopQueryCashResult
-        @0170 : LP_CashShopCashItemResult
-        @0171 : LP_CashShopPurchaseExpChanged
-        @0172 : LP_CashShopGiftMateInfoResult
-        @0173 : LP_JMS_
-        @0174 : LP_JMS_POINTSHOP_KOC_PRESENT_DIALOG
-        @0175 : LP_JMSD
-        LP_CashShopCheckDuplicatedIDResult
-        LP_CashShopCheckNameChangePossibleResult
-        LP_CashShopRegisterNewCharacterResult
-        @0177 : LP_CashShopGachaponStampItemResult
-        @0178 : LP_CashShopCheckTransferWorldPossibleResult
-        LP_CashShopCashItemGachaponResult
-        @0179 : LP_CashShopCashGachaponOpenResult
-        LP_ChangeMaplePointResult
-        LP_CashShopOneADay
-        LP_CashShopNoticeFreeCashItem
-        LP_CashShopMemberShopResult
+    @016D : LP_CashShopChargeParamResult
+    @016E : LP_JMS_POINTSHOP_PRESENT_DIALOG
+    @016F : LP_CashShopQueryCashResult
+    @0170 : LP_CashShopCashItemResult
+    @0171 : LP_CashShopPurchaseExpChanged
+    @0172 : LP_CashShopGiftMateInfoResult
+    @0173 : LP_JMS_
+    @0174 : LP_JMS_POINTSHOP_KOC_PRESENT_DIALOG
+    @0175 : LP_JMSD
+    LP_CashShopCheckDuplicatedIDResult
+    LP_CashShopCheckNameChangePossibleResult
+    LP_CashShopRegisterNewCharacterResult
+    @0177 : LP_CashShopGachaponStampItemResult
+    @0178 : LP_CashShopCheckTransferWorldPossibleResult
+    LP_CashShopCashItemGachaponResult
+    @0179 : LP_CashShopCashGachaponOpenResult
+    LP_ChangeMaplePointResult
+    LP_CashShopOneADay
+    LP_CashShopNoticeFreeCashItem
+    LP_CashShopMemberShopResult
      */
-    // CStage::OnSetCashShop
-    public static MaplePacket SetCashShop(MapleClient c) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetCashShop);
-        sp.EncodeBuffer(CharacterData.Encode(c.getPlayer()));
-        // CCashShop::LoadData
-        {
-            sp.EncodeStr(c.getAccountName());
-            // CWvsContext::SetSaleInfo
-            {
-                if (ServerConfig.IsPostBB()) {
-                    sp.Encode4(0); // NotSaleCount
-                }
-                sp.EncodeBuffer(getModifiedData());
-                if (ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion()) {
-                    sp.Encode2(0); // non 0, Decode4, DecodeStr
-                }
-                sp.EncodeBuffer(getDiscountRates());
-            }
-            sp.EncodeBuffer(getBestItems(), 1080);
-            sp.Encode2(0); // CCashShop::DecodeStock
-            sp.Encode2(0); // CCashShop::DecodeLimitGoods
-        }
-        sp.Encode1(0); // m_bEventOn
-        // m_nHighestCharacterLevelInThisAccount
-        return sp.Get();
-    }
-
-    private static byte[] getModifiedData() {
+    public static byte[] getModifiedData() {
         ServerPacket data = new ServerPacket();
         //data.Encode2(0); // count
         data.Encode2(1); // count
@@ -105,7 +76,7 @@ public class PointShopResponse {
         return data.Get().getBytes();
     }
 
-    private static byte[] getDiscountRates() {
+    public static byte[] getDiscountRates() {
         ServerPacket data = new ServerPacket();
         data.Encode1(0); // count
         /*
@@ -152,7 +123,7 @@ public class PointShopResponse {
     private static int best_item_item_SN[] = new int[9 * 5 * 2];
 
     // 1080 bytes buffer
-    private static byte[] getBestItems() {
+    public static byte[] getBestItems() {
         ServerPacket data = new ServerPacket();
 
         if (!best_item_initilized) {

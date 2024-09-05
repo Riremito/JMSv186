@@ -34,6 +34,7 @@ import packet.client.ClientPacket;
 import packet.ops.CashItemOps;
 import packet.server.response.MapleTradeSpaceResponse;
 import packet.server.response.PointShopResponse;
+import packet.server.response.StageResponse;
 import packet.server.response.struct.GW_ItemSlotBase;
 import server.CashItemFactory;
 import server.CashItemInfo;
@@ -155,11 +156,11 @@ public class PointShopRequest {
         c.updateLoginState(MapleClient.LOGIN_LOGGEDIN, c.getSessionIPAddress());
         if (mts) {
             CashShopServer.getPlayerStorageMTS().registerPlayer(chr);
-            c.SendPacket(MapleTradeSpaceResponse.SetITC(chr));
+            c.SendPacket(StageResponse.SetITC(chr));
             MapleTradeSpaceRequest.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
         } else {
             CashShopServer.getPlayerStorage().registerPlayer(chr);
-            c.SendPacket(PointShopResponse.SetCashShop(c));
+            c.SendPacket(StageResponse.SetCashShop(c));
             c.SendPacket(PointShopResponse.QueryCashResult(c.getPlayer()));
             c.SendPacket(PointShopResponse.CashItemResult(CashItemOps.CashItemRes_LoadLocker_Done, c));
             updateFreeCouponDate(c.getPlayer());

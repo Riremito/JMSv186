@@ -47,31 +47,31 @@ public class CharacterData {
     // CharacterData::Decode
     // CharacterInfo
     public static byte[] Encode(MapleCharacter chr, long datamask) {
-        ServerPacket p = new ServerPacket();
+        ServerPacket data = new ServerPacket();
 
         if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) {
-            p.Encode2((short) datamask); // statmask
+            data.Encode2((short) datamask); // statmask
         } else {
-            p.Encode8(datamask); // statmask
+            data.Encode8(datamask); // statmask
         }
 
         if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
                 || ServerConfig.IsCMS()
                 || ServerConfig.IsKMS()) {
-            p.Encode1(0); // nCombatOrders
+            data.Encode1(0); // nCombatOrders
         }
 
         if (ServerConfig.IsPostBB()) {
-            p.Encode1(0); // not 0, Encode1, Encode4(size), EncodeBuffer8, Encode4(size), EncodeBuffer8
+            data.Encode1(0); // not 0, Encode1, Encode4(size), EncodeBuffer8, Encode4(size), EncodeBuffer8
         }
 
         if ((datamask & 0x01) > 0) {
             // キャラクター情報
-            p.EncodeBuffer(GW_CharacterStat.Encode(chr));
+            data.EncodeBuffer(GW_CharacterStat.Encode(chr));
 
             // 友達リストの上限
-            p.Encode1(chr.getBuddylist().getCapacity());
+            data.Encode1(chr.getBuddylist().getCapacity());
 
             // 精霊の祝福 v165, v186
             if ((ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion())
@@ -79,128 +79,122 @@ public class CharacterData {
                     || ServerConfig.IsCMS()
                     || ServerConfig.IsKMS()) {
                 if (chr.getBlessOfFairyOrigin() != null) {
-                    p.Encode1(1);
-                    p.EncodeStr(chr.getBlessOfFairyOrigin());
+                    data.Encode1(1);
+                    data.EncodeStr(chr.getBlessOfFairyOrigin());
                 } else {
-                    p.Encode1(0);
+                    data.Encode1(0);
                 }
             }
 
             // 祝福系統
             if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
                 // 女王の祝福 max 24
-                p.Encode1(0); // not 0, EncodeStr
+                data.Encode1(0); // not 0, EncodeStr
                 // ???
-                p.Encode1(0); // not 0, EncodeStr
+                data.Encode1(0); // not 0, EncodeStr
             }
 
             if (ServerConfig.IsTWMS()) {
-                p.Encode8(0);
+                data.Encode8(0);
             }
         }
         // 0x2 (<< 1) v165-v194
         if ((datamask & 0x02) > 0) {
-            p.EncodeBuffer(GW_CharacterStat.EncodeMoney(chr));
+            data.EncodeBuffer(GW_CharacterStat.EncodeMoney(chr));
             if (ServerConfig.IsJMS()
                     || ServerConfig.IsTWMS()
                     || ServerConfig.IsCMS()) {
-                p.EncodeBuffer(GW_CharacterStat.EncodePachinko(chr));
+                data.EncodeBuffer(GW_CharacterStat.EncodePachinko(chr));
             }
         }
         // 0x4 (<< 2), 0x100000, 0x4 [addInventoryInfo]
         if ((datamask & 0x04) > 0) {
-            p.EncodeBuffer(InventoryInfo(chr, datamask));
+            data.EncodeBuffer(InventoryInfo(chr, datamask));
         }
         // 0x100 [addSkillInfo] v165 changed v186-v194
         if ((datamask & 0x0100) > 0) {
-            p.EncodeBuffer(Structure.addSkillInfo(chr));
+            data.EncodeBuffer(Structure.addSkillInfo(chr));
         }
         // 0x8000 [addCoolDownInfo] v165-v194
         if ((datamask & 0x8000) > 0) {
-            p.EncodeBuffer(Structure.addCoolDownInfo(chr));
+            data.EncodeBuffer(Structure.addCoolDownInfo(chr));
         }
         // 0x200 [addQuestInfo] changed v165,v186,v188,v194
         if ((datamask & 0x200) > 0) {
-            p.EncodeBuffer(Structure.addQuestInfo(chr));
+            data.EncodeBuffer(Structure.addQuestInfo(chr));
         }
         // 0x4000 QuestComplete v165-v194
         if ((datamask & 0x4000) > 0) {
-            p.EncodeBuffer(Structure.addQuestComplete(chr));
+            data.EncodeBuffer(Structure.addQuestComplete(chr));
         }
         // 0x400 MiniGameRecord v165-v194
         if ((datamask & 0x0400) > 0) {
-            p.Encode2(0); // not 0 -> Encode4 x5
+            data.Encode2(0); // not 0 -> Encode4 x5
         }
         // 0x800 [addRingInfo] v165-v194
         if ((datamask & 0x0800) > 0) {
-            p.EncodeBuffer(Structure.addRingInfo(chr));
+            data.EncodeBuffer(Structure.addRingInfo(chr));
         }
         // 0x1000 [addRocksInfo] v165-v188 changed v194
         if ((datamask & 0x1000) > 0) {
-            p.EncodeBuffer(Structure.addRocksInfo(chr));
+            data.EncodeBuffer(Structure.addRocksInfo(chr));
         }
         switch (ServerConfig.GetRegion()) {
             case KMS: {
                 if ((datamask & 0x20000) > 0) {
-                    p.Encode4(chr.getMonsterBookCover());
+                    data.Encode4(chr.getMonsterBookCover());
                 }
                 if ((datamask & 0x10000) > 0) {
-                    p.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                 }
                 if ((datamask & 0x40000) > 0) {
-                    p.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                 }
                 if ((datamask & 0x80000) > 0) {
-                    p.Encode2(0);
-                }
-                if ((datamask & 0x200000) > 0) {
-                    p.Encode2(0);
-                }
-                if ((datamask & 0x400000) > 0) {
-                    p.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                    data.Encode2(0);
                 }
                 break;
             }
             case TWMS: {
                 if ((datamask & 0x20000) > 0) {
-                    p.Encode4(chr.getMonsterBookCover());
+                    data.Encode4(chr.getMonsterBookCover());
                 }
                 if ((datamask & 0x10000) > 0) {
-                    p.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                 }
                 if ((datamask & 0x40000) > 0) {
-                    p.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                 }
                 if ((datamask & 0x80000) > 0) {
-                    p.Encode2(0);
+                    data.Encode2(0);
                 }
                 if ((datamask & 0x200000) > 0) {
-                    p.Encode2(0);
+                    data.Encode2(0);
                 }
                 if ((datamask & 0x400000) > 0) {
-                    p.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                    data.Encode2(0); // not 0, Encode2, EncodeBuffer8
                 }
                 break;
             }
             case CMS: {
                 if ((datamask & 0x20000) > 0) {
-                    p.Encode4(chr.getMonsterBookCover());
+                    data.Encode4(chr.getMonsterBookCover());
                 }
                 if ((datamask & 0x10000) > 0) {
-                    p.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                 }
                 if ((datamask & 0x40000) > 0) {
-                    p.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                 }
                 if ((datamask & 0x80000) > 0) {
-                    p.Encode2(0);
+                    data.Encode2(0);
                 }
                 // 宅配?
                 if ((datamask & 0x200000) > 0) {
-                    p.Encode2(0);
+                    data.Encode2(0);
                 }
                 if ((datamask & 0x400000) > 0) {
-                    p.Encode2(0); // not 0, Encode2, EncodeBuffer20
+                    data.Encode2(0); // not 0, Encode2, EncodeBuffer20
                 }
                 break;
             }
@@ -209,66 +203,66 @@ public class CharacterData {
                 // 0x7C JMS, Present v165-v194
                 if (ServerConfig.IsJMS()) {
                     if ((datamask & 0x7C) > 0) {
-                        p.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
+                        data.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
                     }
                 }
                 if (ServerConfig.IsJMS()
                         && 164 <= ServerConfig.GetVersion()) {
                     // 0x20000 JMS v165-v194
                     if ((datamask & 0x020000) > 0) {
-                        p.Encode4(chr.getMonsterBookCover());
+                        data.Encode4(chr.getMonsterBookCover());
                     }
                     // 0x10000 JMS [addMonsterBookInfo] v165-v194
                     if ((datamask & 0x010000) > 0) {
-                        p.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                     }
 
                     if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
                         // 0x10000000
                         if ((datamask & 0x10000000) > 0) {
-                            p.Encode4(0);
+                            data.Encode4(0);
                         }
                         // 0x20000000
                         if ((datamask & 0x20000000) > 0) {
-                            p.Encode2(0); // not 0, Encode2
+                            data.Encode2(0); // not 0, Encode2
                         }
                     }
 
                     // 0x40000 (GMS 0x80000) [QuestInfoPacket] v165-v194
                     if ((datamask & 0x040000) > 0) {
-                        p.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                     }
 
                     if (ServerConfig.IsPreBB() && (datamask & 0x80000) > 0) {
                         // 0x80000 JMS v165, v186, not in v188
-                        p.Encode2(0);// not 0 -> Encode4, Encode2
+                        data.Encode2(0);// not 0 -> Encode4, Encode2
                     }
 
                     if (ServerConfig.GetVersion() == 186 && (datamask & 0x200000) > 0) {
                         // 0x200000 VisitorQuestLog (GMS 0x800000)
-                        p.Encode2(0); // not 0 -> Encode2, Encode2
+                        data.Encode2(0); // not 0 -> Encode2, Encode2
                     }
 
                     // v188-v194
                     if (ServerConfig.IsPostBB()) {
                         // 0x200000
                         if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
-                            p.EncodeBuffer(GW_WildHunterInfo.Encode());
+                            data.EncodeBuffer(GW_WildHunterInfo.Encode());
                         }
                         // 0x400000 QuestCompleteOld
                         if ((datamask & 0x400000) > 0) {
-                            p.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                            data.Encode2(0); // not 0, Encode2, EncodeBuffer8
                         }
                         // 0x800000
                         if ((datamask & 0x800000) > 0) {
-                            p.Encode2(0); // not 0, Encode2, Encode2
+                            data.Encode2(0); // not 0, Encode2, Encode2
                         }
                     }
                 }
                 break;
             }
         }
-        return p.Get().getBytes();
+        return data.Get().getBytes();
     }
 
     public static final byte[] InventoryInfo(MapleCharacter chr, long datamask) {
