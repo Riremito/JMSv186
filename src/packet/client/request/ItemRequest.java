@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import packet.client.ClientPacket;
+import packet.server.response.ContextResponse;
 import packet.server.response.DueyResponse;
 import packet.server.response.ItemResponse;
 import packet.server.response.MegaphoneResponse;
@@ -580,7 +581,7 @@ public class ItemRequest {
                     }
                 }
             }
-            c.SendPacket(ContextPacket.scrolledItem(magnify, toReveal, false, true));
+            c.SendPacket(ContextResponse.scrolledItem(magnify, toReveal, false, true));
             c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.getPotentialReset(c.getPlayer().getId(), eqq.getPosition()));
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
         } else {
@@ -675,7 +676,7 @@ public class ItemRequest {
             }
             toHammer.setViciousHammer((byte) (toHammer.getViciousHammer() + 1));
             toHammer.setUpgradeSlots((byte) (toHammer.getUpgradeSlots() + 1));
-            c.SendPacket(ContextPacket.scrolledItem(scroll, toHammer, false, false));
+            c.SendPacket(ContextResponse.scrolledItem(scroll, toHammer, false, false));
             chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
             chr.getMap().broadcastMessage(chr, MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), IEquip.ScrollResult.SUCCESS, legendarySpirit), vegas == 0);
             return true;
@@ -790,14 +791,14 @@ public class ItemRequest {
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false, false);
         }
         if (scrollSuccess == IEquip.ScrollResult.CURSE) {
-            c.SendPacket(ContextPacket.scrolledItem(scroll, toScroll, true, false));
+            c.SendPacket(ContextResponse.scrolledItem(scroll, toScroll, true, false));
             if (dst < 0) {
                 chr.getInventory(MapleInventoryType.EQUIPPED).removeItem(toScroll.getPosition());
             } else {
                 chr.getInventory(MapleInventoryType.EQUIP).removeItem(toScroll.getPosition());
             }
         } else if (vegas == 0) {
-            c.SendPacket(ContextPacket.scrolledItem(scroll, scrolled, false, false));
+            c.SendPacket(ContextResponse.scrolledItem(scroll, scrolled, false, false));
         }
         chr.getMap().broadcastMessage(chr, MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), scrollSuccess, legendarySpirit), vegas == 0);
         // equipped item was scrolled and changed

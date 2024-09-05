@@ -82,74 +82,76 @@ public class ScriptManPacket {
     // CScriptMan::OnScriptMessage
     // getNPCTalk, getMapSelection, getNPCTalkStyle, getNPCTalkNum, getNPCTalkText, getEvanTutorial
     public static MaplePacket ScriptMessage(int npcid, byte type, byte param, String text, boolean prev, boolean next) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ScriptMessage);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ScriptMessage);
         Flag flag = Flag.get(type);
-        p.Encode1(4); // nSpeakerTypeID, not used
-        p.Encode4(npcid); // nSpeakerTemplateID, npcid
-        p.Encode1(flag.get()); // nMsgType
+        sp.Encode1(4); // nSpeakerTypeID, not used
+        sp.Encode4(npcid); // nSpeakerTemplateID, npcid
+        sp.Encode1(flag.get()); // nMsgType
 
         if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
-            p.Encode1(param); // v186+, not used
+                || ServerConfig.IsCMS()
+                || ServerConfig.IsKMS()) {
+            sp.Encode1(param); // v186+, not used
         }
 
         switch (flag) {
             case SM_SAY: {
                 if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
                         || ServerConfig.IsTWMS()
-                        || ServerConfig.IsCMS()) {
+                        || ServerConfig.IsCMS()
+                        || ServerConfig.IsKMS()) {
                     if ((param & 4) > 0) {
-                        p.Encode4(0); // nSpeakerTemplateID
+                        sp.Encode4(0); // nSpeakerTemplateID
                     }
                 }
-                p.EncodeStr(text);
-                p.Encode1(prev ? 1 : 0);
-                p.Encode1(next ? 1 : 0);
+                sp.EncodeStr(text);
+                sp.Encode1(prev ? 1 : 0);
+                sp.Encode1(next ? 1 : 0);
                 break;
             }
             case SM_SAY_IMAGE: {
-                p.Encode1(0); // number of text
-                p.EncodeStr(text);
+                sp.Encode1(0); // number of text
+                sp.EncodeStr(text);
                 break;
             }
             case SM_ASK_YES_NO: {
-                p.EncodeStr(text);
+                sp.EncodeStr(text);
                 break;
             }
             case SM_ASK_TEXT: {
-                p.EncodeStr(text);
-                p.EncodeStr("");
-                p.Encode2(0);
-                p.Encode2(0);
+                sp.EncodeStr(text);
+                sp.EncodeStr("");
+                sp.Encode2(0);
+                sp.Encode2(0);
                 break;
             }
             case SM_ASK_NUMBER: {
-                p.EncodeStr(text);
+                sp.EncodeStr(text);
                 //p.Encode4(0);
                 //p.Encode4(0);
                 //p.Encode4(0);
                 break;
             }
             case SM_ASK_MENU: {
-                p.EncodeStr(text);
+                sp.EncodeStr(text);
                 break;
             }
             case SM_ASK_QUIZ: {
-                p.Encode1(0);
-                p.EncodeStr(text);
-                p.EncodeStr("");
-                p.EncodeStr("");
-                p.Encode4(0);
-                p.Encode4(0);
-                p.Encode4(0);
+                sp.Encode1(0);
+                sp.EncodeStr(text);
+                sp.EncodeStr("");
+                sp.EncodeStr("");
+                sp.Encode4(0);
+                sp.Encode4(0);
+                sp.Encode4(0);
                 break;
             }
             case SM_ASK_SPEED_QUIZ: {
                 break;
             }
             case SM_ASK_AVATAR: {
-                p.EncodeStr(text);
+                sp.EncodeStr(text);
                 // 1 byte size
                 // 4 bytes array
                 break;
@@ -167,9 +169,9 @@ public class ScriptManPacket {
                 break;
             }
             case SM_ASK_BOX_TEXT: {
-                p.Encode4(0);
-                p.Encode4(5);
-                p.EncodeStr(text);
+                sp.Encode4(0);
+                sp.Encode4(5);
+                sp.EncodeStr(text);
                 break;
             }
             case SM_ASK_SLIDE_MENU: {
@@ -181,7 +183,7 @@ public class ScriptManPacket {
             }
         }
 
-        return p.Get();
+        return sp.Get();
     }
 
 }

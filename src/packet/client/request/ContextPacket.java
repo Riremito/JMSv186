@@ -20,18 +20,11 @@
  */
 package packet.client.request;
 
-import client.MapleCharacter;
 import client.MapleQuestStatus;
-import client.inventory.IItem;
-import client.inventory.MapleInventoryType;
 import config.ServerConfig;
-import constants.GameConstants;
 import debug.Debug;
 import handling.MaplePacket;
 import packet.server.ServerPacket;
-import packet.server.response.struct.GW_CharacterStat;
-import packet.server.response.struct.GW_ItemSlotBase;
-import packet.server.response.struct.SecondaryStat;
 import tools.StringUtil;
 
 /**
@@ -39,89 +32,6 @@ import tools.StringUtil;
  * @author Riremito
  */
 public class ContextPacket {
-
-    // CWvsContext::OnInventoryOperation
-    public static MaplePacket addInventorySlot(MapleInventoryType type, IItem item) {
-        return addInventorySlot(type, item, false);
-    }
-
-    public static MaplePacket addInventorySlot(MapleInventoryType type, IItem item, boolean fromDrop) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_InventoryOperation);
-
-        p.Encode1(fromDrop ? 1 : 0);
-        p.Encode1(1); // add mode
-        p.Encode1(0);
-        p.Encode1(type.getType()); // iv type
-        p.Encode2(item.getPosition()); // v131-v194
-        p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
-        return p.Get();
-    }
-
-    public static MaplePacket scrolledItem(IItem scroll, IItem item, boolean destroyed, boolean potential) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_InventoryOperation);
-        p.Encode1(1); // fromdrop always true
-        p.Encode1(destroyed ? 2 : 3);
-        p.Encode1(scroll.getQuantity() > 0 ? 1 : 3);
-        p.Encode1(GameConstants.getInventoryType(scroll.getItemId()).getType()); //can be cash
-        p.Encode2(scroll.getPosition());
-
-        if (scroll.getQuantity() > 0) {
-            p.Encode2(scroll.getQuantity());
-        }
-
-        p.Encode1(3);
-
-        if (!destroyed) {
-            p.Encode1(MapleInventoryType.EQUIP.getType());
-            p.Encode2(item.getPosition());
-            p.Encode1(0);
-        }
-
-        p.Encode1(MapleInventoryType.EQUIP.getType());
-        p.Encode2(item.getPosition());
-
-        if (!destroyed) {
-            p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
-        }
-
-        p.Encode1(1);
-        return p.Get();
-    }
-
-    // CWvsContext::OnInventoryGrow
-    // CWvsContext::OnStatChanged
-    public static final MaplePacket StatChanged(MapleCharacter chr, int unlock, int statmask) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_StatChanged);
-
-        // 0 = lock   -> do not clear lock flag
-        // 1 = unlock -> clear lock flag
-        p.Encode1(unlock); // CWvsContext->bExclRequestSent
-        p.EncodeBuffer(GW_CharacterStat.EncodeChangeStat(chr, statmask));
-
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 186) {
-            // Pet
-            if ((statmask & GW_CharacterStat.Flag.PET1.get()) > 0) {
-                int v5 = 0; // CVecCtrlUser::AddMovementInfo
-                p.Encode1(v5);
-            }
-        } else {
-            // v188+
-            p.Encode1(0); // not 0 -> Encode1
-            p.Encode1(0); // not 0 -> Encode4, Encode4
-        }
-
-        return p.Get();
-    }
-
-    // CWvsContext::OnTemporaryStatSet
-    public static final MaplePacket TemporaryStatSet(MapleCharacter chr, int skill_id) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
-        // SecondaryStat::DecodeForLocal
-        p.EncodeBuffer(SecondaryStat.EncodeForLocal(chr, skill_id));
-        p.Encode2(0); // delay
-        p.Encode1(0);
-        return p.Get();
-    }
 
     // CWvsContext::OnTemporaryStatReset
     // CWvsContext::OnForcedStatSet

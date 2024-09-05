@@ -51,6 +51,7 @@ import packet.client.request.ContextPacket;
 import packet.client.request.DropPacket;
 import packet.client.request.DropPacket.LeaveType;
 import packet.client.request.ItemRequest;
+import packet.server.response.ContextResponse;
 import packet.server.response.FieldResponse;
 import packet.server.response.FreeMarketResponse;
 import packet.server.response.ItemResponse;
@@ -946,7 +947,7 @@ public class InventoryHandler {
                     final Equip eq = (Equip) item;
                     if (eq.getState() >= 5) {
                         eq.renewPotential();
-                        c.SendPacket(ContextPacket.scrolledItem(toUse, item, false, true));
+                        c.SendPacket(ContextResponse.scrolledItem(toUse, item, false, true));
                         c.getSession().write(MaplePacketCreator.getPotentialEffect(c.getPlayer().getId(), eq.getItemId()));
                         c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), ScrollResult.SUCCESS, false), false);
                         c.getPlayer().forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);

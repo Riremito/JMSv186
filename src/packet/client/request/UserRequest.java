@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import packet.client.ClientPacket;
 import packet.client.request.struct.CMovePath;
+import packet.server.response.ContextResponse;
 import packet.server.response.UserResponse;
 import server.maps.MapleMap;
 import tools.AttackPair;
@@ -140,7 +141,7 @@ public class UserRequest {
     // CUser::SendCharacterStat(1,0)
     // CWvsContext::OnStatChanged
     public static void SendCharacterStat(MapleCharacter chr, int unlock, int statmask) {
-        chr.SendPacket(ContextPacket.StatChanged(chr, unlock, statmask));
+        chr.SendPacket(ContextResponse.StatChanged(chr, unlock, statmask));
     }
 
     // BMS CUser::OnAttack

@@ -23,6 +23,7 @@ import database.DatabaseConnection;
 import packet.client.request.NPCPacket;
 import packet.client.request.NPCPacket.SP_ShopFlag;
 import tools.MaplePacketCreator;
+import wz.LoadData;
 
 public class MapleShop {
 
@@ -76,7 +77,9 @@ public class MapleShop {
     }
 
     public void addItem(MapleShopItem item) {
-        items.add(item);
+        if (LoadData.IsValidItemID(item.getItemId())) {
+            items.add(item);
+        }
     }
 
     public void sendShop(MapleClient c) {

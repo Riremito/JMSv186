@@ -74,6 +74,10 @@ public class KeyMapResponse {
         if (!keymap_reset) {
             int KEY_MAP_SIZE = 94; // 470
 
+            if (ServerConfig.IsKMS()) {
+                KEY_MAP_SIZE = 89; // 445
+            }
+
             if (ServerConfig.IsPostBB()) {
                 KEY_MAP_SIZE = 126; // 630
             }

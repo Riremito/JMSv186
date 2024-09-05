@@ -55,6 +55,7 @@ import packet.server.ServerPacket;
 import packet.client.request.ContextPacket;
 import packet.client.request.ContextPacket.DropPickUpMessageType;
 import packet.client.request.ScriptManPacket;
+import packet.server.response.ContextResponse;
 import packet.server.response.StageResponse;
 import packet.server.response.struct.TestHelper;
 import server.maps.MapleNodes.MapleNodeInfo;
@@ -93,7 +94,7 @@ public class MaplePacketCreator {
     }
 
     public static final MaplePacket enableActions() {
-        return ContextPacket.StatChanged(null, 1, 0);
+        return ContextResponse.StatChanged(null, 1, 0);
     }
 
     public static final MaplePacket instantMapWarp(final byte portal) {
@@ -897,24 +898,6 @@ public class MaplePacketCreator {
 
     public static MaplePacket getNPCTalkText(int npc, String talk) {
         return ScriptManPacket.ScriptMessage(npc, (byte) 3, (byte) 0, talk, false, false);
-    }
-
-    public static MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_ChangeSkillRecordResult.Get());
-        mplew.write(1);
-        mplew.writeShort(1);
-        mplew.writeInt(skillid);
-        mplew.writeInt(level);
-        mplew.writeInt(masterlevel);
-
-        if (ServerConfig.version > 131) {
-            TestHelper.addExpirationTime(mplew, expiration);
-        }
-        mplew.write(4);
-
-        return mplew.getPacket();
     }
 
     public static MaplePacket getShowQuestCompletion(int id) {
