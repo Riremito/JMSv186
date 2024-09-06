@@ -49,7 +49,8 @@ public class Structure {
             // not in v165
             if (ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()
                     || ServerConfig.IsTWMS()
-                    || ServerConfig.IsCMS()) {
+                    || ServerConfig.IsCMS()
+                    || ServerConfig.IsKMS()) {
                 data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
             }
 
@@ -154,7 +155,7 @@ public class Structure {
             data.Encode4(map[i]);
         }
 
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+        if ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }
@@ -211,7 +212,8 @@ public class Structure {
         }
         if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
+                || ServerConfig.IsCMS()
+                || ServerConfig.IsKMS()) {
             data.Encode8(getSpecialLongMask(life.getStati().keySet()));
         }
 

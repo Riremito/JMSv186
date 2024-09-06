@@ -66,8 +66,6 @@ public class Debug {
 
         switch (p.GetOpcode()) {
             case CP_AliveAck:
-            case CP_FuncKeyMappedModified:
-            case CP_QuickslotKeyMappedModified:
             case CP_UserSkillUseRequest:
             case CP_UpdateScreenSetting:
             case CP_SecurityPacket:

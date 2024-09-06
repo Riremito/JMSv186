@@ -23,6 +23,7 @@ import client.MapleCharacter;
 import debug.Debug;
 import handling.MaplePacket;
 import java.util.Collection;
+import packet.ops.FriendOps;
 import packet.server.ServerPacket;
 
 /**
@@ -30,59 +31,6 @@ import packet.server.ServerPacket;
  * @author Riremito
  */
 public class FriendResponse {
-
-    public enum FriendOps {
-        // Request
-        FriendReq_LoadFriend(0x0),
-        FriendReq_SetFriend(0x1),
-        FriendReq_AcceptFriend(0x2),
-        FriendReq_DeleteFriend(0x3),
-        FriendReq_NotifyLogin(0x4),
-        FriendReq_NotifyLogout(0x5),
-        FriendReq_IncMaxCount(0x6),
-        // Response
-        FriendRes_LoadFriend_Done(0x7),
-        FriendRes_NotifyChange_FriendInfo(0x8),
-        FriendRes_Invite(0x9),
-        FriendRes_SetFriend_Done(0xA),
-        FriendRes_SetFriend_FullMe(0xB),
-        FriendRes_SetFriend_FullOther(0xC),
-        FriendRes_SetFriend_AlreadySet(0xD),
-        FriendRes_SetFriend_Master(0xE),
-        FriendRes_SetFriend_UnknownUser(0xF),
-        FriendRes_SetFriend_Unknown(0x10),
-        FriendRes_AcceptFriend_Unknown(0x11),
-        FriendRes_DeleteFriend_Done(0x12),
-        FriendRes_DeleteFriend_Unknown(0x13),
-        FriendRes_Notify(0x14),
-        FriendRes_IncMaxCount_Done(0x15),
-        FriendRes_IncMaxCount_Unknown(0x16),
-        FriendRes_PleaseWait(0x17),
-        UNKNOWN(-1);
-
-        private int value;
-
-        FriendOps(int flag) {
-            value = flag;
-        }
-
-        FriendOps() {
-            value = -1;
-        }
-
-        public int get() {
-            return value;
-        }
-
-        public static FriendOps find(int val) {
-            for (final FriendOps o : FriendOps.values()) {
-                if (o.get() == val) {
-                    return o;
-                }
-            }
-            return UNKNOWN;
-        }
-    }
 
     public static class FriendResultStruct {
 

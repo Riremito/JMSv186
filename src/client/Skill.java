@@ -197,7 +197,7 @@ public class Skill implements ISkill {
         }
         ret.chargeskill = data.getChildByPath("keydown") != null;
 
-        if (ServerConfig.version <= 186) {
+        if (ServerConfig.IsPreBB()) {
             for (final MapleData level : data.getChildByPath("level")) {
                 ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
             }

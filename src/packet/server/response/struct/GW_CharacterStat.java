@@ -116,14 +116,16 @@ public class GW_CharacterStat {
         ServerPacket p = new ServerPacket();
 
         p.Encode4(chr.getId());
-        p.EncodeBuffer(chr.getName(), (ServerConfig.IsJMS() || ServerConfig.IsCMS()) ? 13 : 15);
+        p.EncodeBuffer(chr.getName(), (ServerConfig.IsKMS() || ServerConfig.IsJMS() || ServerConfig.IsCMS()) ? 13 : 15);
         p.Encode1(chr.getGender());
         p.Encode1(chr.getSkinColor());
         p.Encode4(chr.getFace());
         p.Encode4(chr.getHair());
 
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) {
+        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) || (ServerConfig.IsPreBB() && ServerConfig.IsKMS())) {
             p.EncodeZeroBytes(8);
+        } else if ((ServerConfig.IsPostBB() && ServerConfig.IsKMS())) {
+            // no data
         } else {
             p.EncodeZeroBytes(24);
         }
@@ -227,7 +229,7 @@ public class GW_CharacterStat {
         p.Encode4(chr.getMapId()); // current map id
         p.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
 
-        if (ServerConfig.IsCMS()) {
+        if (ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
             p.Encode2(chr.getSubcategory());
         } else if (ServerConfig.IsTWMS()) {
             p.Encode2(chr.getSubcategory());
@@ -301,7 +303,7 @@ public class GW_CharacterStat {
         // Pet 1
         if ((statmask & Flag.PET1.get()) > 0) {
             MaplePet pet = chr.getPet(0);
-            p.Encode8((pet != null) ? pet.getUniqueId() : 0);
+            p.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
         }
         // Level
         if ((statmask & Flag.LEVEL.get()) > 0) {
@@ -392,13 +394,13 @@ public class GW_CharacterStat {
         // v188 ここから+1
         // Pet 2
         if ((statmask & Flag.PET2.get()) > 0) {
-            MaplePet pet = chr.getPet(0);
-            p.Encode8((pet != null) ? pet.getUniqueId() : 0);
+            MaplePet pet = chr.getPet(1);
+            p.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
         }
         // Pet 3
         if ((statmask & Flag.PET3.get()) > 0) {
-            MaplePet pet = chr.getPet(0);
-            p.Encode8((pet != null) ? pet.getUniqueId() : 0);
+            MaplePet pet = chr.getPet(2);
+            p.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
         }
         // 兵法書, GashaExp
         if ((statmask & Flag.GASHAEXP.get()) > 0) {

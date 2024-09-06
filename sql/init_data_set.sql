@@ -19,8 +19,6 @@ SET time_zone = "+00:00";
 --
 -- データベース: `v186`
 --
-CREATE DATABASE IF NOT EXISTS `v186` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `v186`;
 
 -- --------------------------------------------------------
 

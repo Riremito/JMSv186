@@ -64,7 +64,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import packet.client.request.DropPacket;
 import packet.client.request.DropPacket.EnterType;
 import packet.client.request.DropPacket.LeaveType;
-import packet.client.request.ItemRequest;
 import packet.client.request.NPCPacket;
 import packet.client.request.ReactorPacket;
 import packet.server.response.EvanDragonResponse;
@@ -72,6 +71,7 @@ import packet.server.response.FieldResponse;
 import packet.server.response.ItemResponse;
 import packet.server.response.LocalResponse;
 import packet.server.response.MobResponse;
+import packet.server.response.MysticDoorResponse;
 import packet.server.response.PartyResponse;
 import packet.server.response.PetResponse;
 import packet.server.response.RemoteResponse;
@@ -1413,14 +1413,15 @@ public final class MapleMap {
     }
 
     public final void spawnDoor(final MapleDoor door) {
+        Debug.DebugLog("Spawn Door : " + door.getMapId());
         spawnAndAddRangedMapObject(door, new DelayedPacketCreation() {
 
             public final void sendPackets(MapleClient c) {
-                c.getSession().write(MaplePacketCreator.spawnDoor(door.getOwner().getId(), door.getTargetPosition(), false));
+                //c.getSession().write(MysticDoorResponse.spawnDoor(door.getOwner().getId(), door.getPosition(), false));
                 if (door.getOwner().getParty() != null && (door.getOwner() == c.getPlayer() || door.getOwner().getParty().containsMembers(new MaplePartyCharacter(c.getPlayer())))) {
-                    c.getSession().write(PartyResponse.partyPortal(door.getTown().getId(), door.getTarget().getId(), door.getSkill(), door.getTargetPosition()));
+                    //c.getSession().write(PartyResponse.partyPortal(door.getTown().getId(), door.getTarget().getId(), door.getSkill(), door.getTargetPosition()));
                 }
-                c.getSession().write(MaplePacketCreator.spawnPortal(door.getTown().getId(), door.getTarget().getId(), door.getSkill(), door.getTargetPosition()));
+                //c.getSession().write(MysticDoorResponse.setMysticDoorInfo(door));
                 c.getSession().write(MaplePacketCreator.enableActions());
             }
         }, new SpawnCondition() {
@@ -2387,6 +2388,14 @@ public final class MapleMap {
 
     public final MapleFootholdTree getFootholds() {
         return footholds;
+    }
+
+    public MapleFoothold findFootHold(int foothold_id) {
+        // not set
+        if (footholds == null) {
+            return null;
+        }
+        return footholds.findFootHold(foothold_id);
     }
 
     public final void loadMonsterRate(final boolean first) {

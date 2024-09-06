@@ -20,12 +20,9 @@ package packet.server.response;
 
 import client.MapleCharacter;
 import client.inventory.IItem;
-import config.ServerConfig;
-import constants.ServerConstants;
 import handling.MaplePacket;
 import java.util.List;
 import packet.server.ServerPacket;
-import packet.server.response.struct.CharacterData;
 import packet.server.response.struct.TestHelper;
 import server.MTSStorage;
 import tools.KoreanDateUtil;
@@ -36,6 +33,14 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  * @author Riremito
  */
 public class MapleTradeSpaceResponse {
+
+    public static MaplePacket QueryCashResult(final MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCQueryCashResult);
+
+        sp.Encode4(chr.getCSPoints(1)); // Nexon Point
+        sp.Encode4(chr.getCSPoints(2)); // Maple Point
+        return sp.Get();
+    }
 
     public static final MaplePacket getMTSConfirmCancel() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
@@ -60,14 +65,6 @@ public class MapleTradeSpaceResponse {
         return mplew.getPacket();
     }
 
-    public static final MaplePacket showMTSCash(final MapleCharacter p) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCQueryCashResult.Get());
-        mplew.writeInt(p.getCSPoints(1));
-        mplew.writeInt(p.getCSPoints(2));
-        return mplew.getPacket();
-    }
-
     public static final MaplePacket getMTSFailCancel() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
@@ -87,23 +84,6 @@ public class MapleTradeSpaceResponse {
         mplew.writeMapleAsciiString(item.getSeller()); //account name (what was nexon thinking?)
         mplew.writeMapleAsciiString(item.getSeller()); //char name
         mplew.writeZeroBytes(28);
-    }
-
-    //======================================MTS===========================================
-    public static final MaplePacket startMTS(final MapleCharacter chr) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetITC);
-        p.EncodeBuffer(CharacterData.Encode(chr));
-        p.EncodeStr(chr.getClient().getAccountName());
-        p.Encode4(ServerConstants.MTS_MESO);
-        p.Encode4(ServerConstants.MTS_TAX);
-        p.Encode4(ServerConstants.MTS_BASE);
-        p.Encode4(24);
-        p.Encode4(168);
-        if (ServerConfig.version > 131) {
-            p.Encode8(TestHelper.getTime(System.currentTimeMillis()));
-        }
-        // v194 29 bytes 余り
-        return p.Get();
     }
 
     public static final MaplePacket getMTSConfirmTransfer(final int quantity, final int pos) {
@@ -212,5 +192,5 @@ public class MapleTradeSpaceResponse {
         }
         return mplew.getPacket();
     }
-    
+
 }

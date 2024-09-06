@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package client;
 
-import config.ServerConfig;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
@@ -29,7 +28,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.io.Serializable;
 
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 import database.DatabaseConnection;
 import tools.Pair;
@@ -53,24 +51,8 @@ public class MapleKeyLayout implements Serializable {
         return keymap;
     }
 
-    public final void writeData(final MaplePacketLittleEndianWriter mplew) {
-        Pair<Byte, Integer> binding;
-        int maxkeymap = 94;
-
-        if (194 <= ServerConfig.version) {
-            maxkeymap = 126;
-        }
-
-        for (int x = 0; x < maxkeymap; x++) {
-            binding = keymap.get(Integer.valueOf(x));
-            if (binding != null) {
-                mplew.write(binding.getLeft());
-                mplew.writeInt(binding.getRight());
-            } else {
-                mplew.write(0);
-                mplew.writeInt(0);
-            }
-        }
+    public Map<Integer, Pair<Byte, Integer>> get() {
+        return keymap;
     }
 
     public final void saveKeys(final int charid) throws SQLException {

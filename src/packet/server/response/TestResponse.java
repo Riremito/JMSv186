@@ -19,7 +19,6 @@
 package packet.server.response;
 
 import client.MapleCharacter;
-import client.inventory.IItem;
 import handling.MaplePacket;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -86,19 +85,6 @@ public class TestResponse {
                 mplew.writeInt(map[i]);
             }
         }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket showXmasSurprise(int idFirst, IItem item, int accid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.XMAS_SURPRISE.Get());
-        mplew.write(230);
-        mplew.writeLong(idFirst); //uniqueid of the xmas surprise itself
-        mplew.writeInt(0);
-        PointShopResponse.addCashItemInfo(mplew, item, accid, 0); //info of the new item, but packet shows 0 for sn?
-        mplew.writeInt(item.getItemId());
-        mplew.write(1);
-        mplew.write(1);
         return mplew.getPacket();
     }
 

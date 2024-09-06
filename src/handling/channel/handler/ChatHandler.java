@@ -35,22 +35,23 @@ import tools.data.input.SeekableLittleEndianAccessor;
 
 public class ChatHandler {
 
-    public static final void GeneralChat(ClientPacket p, final MapleClient c) {
+    public static final void GeneralChat(ClientPacket cp, final MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         byte unk = 0;
 
         if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
-            p.Decode4();
+                || ServerConfig.IsCMS()
+                || ServerConfig.IsKMS()) {
+            cp.Decode4();
         }
 
-        String text = p.DecodeStr();
+        String text = cp.DecodeStr();
 
         if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
                 || ServerConfig.IsCMS()) {
-            unk = p.Decode1();
+            unk = cp.Decode1();
         }
 
         if (chr != null && !CommandProcessor.processCommand(c, text, CommandType.NORMAL)) {

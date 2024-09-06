@@ -31,11 +31,9 @@ import client.inventory.IItem;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
-import client.MapleKeyLayout;
 import client.MapleStat;
 import client.inventory.IEquip.ScrollResult;
 import client.inventory.MapleRing;
-import client.SkillMacro;
 import handling.MaplePacket;
 import constants.ServerConstants;
 import java.net.UnknownHostException;
@@ -57,9 +55,8 @@ import packet.server.ServerPacket;
 import packet.client.request.ContextPacket;
 import packet.client.request.ContextPacket.DropPickUpMessageType;
 import packet.client.request.ScriptManPacket;
-import packet.server.response.struct.CClientOptMan;
-import packet.server.response.struct.CWvsContext;
-import packet.server.response.struct.CharacterData;
+import packet.server.response.ContextResponse;
+import packet.server.response.StageResponse;
 import packet.server.response.struct.TestHelper;
 import server.maps.MapleNodes.MapleNodeInfo;
 import server.maps.MapleNodes.MaplePlatform;
@@ -88,97 +85,16 @@ public class MaplePacketCreator {
 
     // プレイヤー情報の初期化
     public static final MaplePacket getCharInfo(final MapleCharacter chr) {
-        return SetField(chr, true, null, 0);
+        return StageResponse.SetField(chr, true, null, 0);
     }
 
     // マップ移動
     public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
-        return SetField(chr, false, to, spawnPoint);
-    }
-
-    // CStage::OnSetField
-    public static final MaplePacket SetField(MapleCharacter chr, boolean loggedin, MapleMap to, int spawnPoint) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetField);
-        if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion())
-                || ServerConfig.IsCMS()) {
-            p.EncodeBuffer(CClientOptMan.EncodeOpt());
-        }
-        // チャンネル
-        p.Encode4(chr.getClient().getChannel() - 1);
-
-        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
-            p.Encode1(0);
-        }
-
-        if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
-            p.Encode4(0);
-        }
-
-        p.Encode1(chr.getPortalCount());
-
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
-            p.Encode4(0);
-        }
-
-        if (ServerConfig.IsCMS()) {
-            p.Encode1(0);
-        }
-
-        p.Encode1(loggedin ? 1 : 0); // 1 = all data, 0 = map change
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
-            p.Encode2(0);
-        }
-
-        if (loggedin) {
-            // [chr.CRand().connectData(mplew);]
-            {
-                p.Encode4(0);
-                p.Encode4(0);
-                p.Encode4(0);
-            }
-            // キャラクター情報
-            p.EncodeBuffer(CharacterData.Encode(chr));
-
-            if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion())
-                    || ServerConfig.IsTWMS()
-                    || ServerConfig.IsCMS()) {
-                // ログアウトギフト
-                p.EncodeBuffer(CWvsContext.LogoutGiftConfig());
-            }
-        } else {
-            if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
-                    || ServerConfig.IsTWMS()
-                    || ServerConfig.IsCMS()) {
-                p.Encode1(0);
-            }
-
-            p.Encode4(to.getId());
-            p.Encode1(spawnPoint);
-
-            if (ServerConfig.IsPreBB()) {
-                p.Encode2(chr.getStat().getHp());
-            } else {
-                p.Encode4(chr.getStat().getHp());
-            }
-        }
-
-        // サーバーの時間?
-        p.Encode8(TestHelper.getTime(System.currentTimeMillis()));
-
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
-            p.Encode4(0);
-            p.Encode4(0);
-        }
-
-        return p.Get();
+        return StageResponse.SetField(chr, false, to, spawnPoint);
     }
 
     public static final MaplePacket enableActions() {
-        return ContextPacket.StatChanged(null, 1, 0);
+        return ContextResponse.StatChanged(null, 1, 0);
     }
 
     public static final MaplePacket instantMapWarp(final byte portal) {
@@ -187,47 +103,6 @@ public class MaplePacketCreator {
         mplew.writeShort(ServerPacket.Header.LP_UserTeleport.Get());
         mplew.write(0);
         mplew.write(portal); // 6
-
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket spawnPortal(final int townId, final int targetId, final int skillId, final Point pos) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_TownPortal.Get());
-        mplew.writeInt(townId);
-        mplew.writeInt(targetId);
-        mplew.writeInt(skillId);
-        if (pos != null) {
-            mplew.writePos(pos);
-        }
-
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket spawnDoor(final int oid, final Point pos, final boolean town) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_TownPortalCreated.Get());
-        mplew.write(town ? 1 : 0);
-        mplew.writeInt(oid);
-        mplew.writePos(pos);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket removeDoor(int oid, boolean town) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        if (town) {
-            mplew.writeShort(ServerPacket.Header.LP_TownPortal.Get());
-            mplew.writeInt(999999999);
-            mplew.writeLong(999999999);
-        } else {
-            mplew.writeShort(ServerPacket.Header.LP_TownPortalRemoved.Get());
-            mplew.write(/*town ? 1 : */0);
-            mplew.writeLong(oid);
-        }
 
         return mplew.getPacket();
     }
@@ -466,7 +341,8 @@ public class MaplePacketCreator {
         p.EncodeStr(text);
         if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
+                || ServerConfig.IsCMS()
+                || ServerConfig.IsKMS()) {
             p.Encode1((byte) show);
         }
         // if LP_UserChatNLCPQ, add more str
@@ -1024,40 +900,11 @@ public class MaplePacketCreator {
         return ScriptManPacket.ScriptMessage(npc, (byte) 3, (byte) 0, talk, false, false);
     }
 
-    public static MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_ChangeSkillRecordResult.Get());
-        mplew.write(1);
-        mplew.writeShort(1);
-        mplew.writeInt(skillid);
-        mplew.writeInt(level);
-        mplew.writeInt(masterlevel);
-
-        if (ServerConfig.version > 131) {
-            TestHelper.addExpirationTime(mplew, expiration);
-        }
-        mplew.write(4);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket getShowQuestCompletion(int id) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(ServerPacket.Header.LP_QuestClear.Get());
         mplew.writeShort(id);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getKeymap(MapleKeyLayout layout) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_FuncKeyMappedInit.Get());
-        mplew.write(0);
-
-        layout.writeData(mplew);
 
         return mplew.getPacket();
     }
@@ -1302,16 +1149,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket skillCancel(MapleCharacter from, int skillId) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserSkillCancel.Get());
-        mplew.writeInt(from.getId());
-        mplew.writeInt(skillId);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket showMagnet(int mobid, byte success) { // Monster Magnet
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -1501,30 +1338,6 @@ public class MaplePacketCreator {
         mplew.write(canuse ? 1 : 0);
         mplew.write(success ? 1 : 0);
 
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getMacros(SkillMacro[] macros) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_MacroSysDataInit.Get());
-        int count = 0;
-        for (int i = 0; i < 5; i++) {
-            if (macros[i] != null) {
-                count++;
-            }
-        }
-        mplew.write(count); // number of macros
-        for (int i = 0; i < 5; i++) {
-            SkillMacro macro = macros[i];
-            if (macro != null) {
-                mplew.writeMapleAsciiString(macro.getName());
-                mplew.write(macro.getShout());
-                mplew.writeInt(macro.getSkill1());
-                mplew.writeInt(macro.getSkill2());
-                mplew.writeInt(macro.getSkill3());
-            }
-        }
         return mplew.getPacket();
     }
 

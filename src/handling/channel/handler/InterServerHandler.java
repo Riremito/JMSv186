@@ -28,6 +28,8 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleQuestStatus;
 import client.inventory.MaplePet;
+import config.ServerConfig;
+import database.ExtraDB;
 import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -46,6 +48,7 @@ import packet.client.request.SocketPacket;
 import packet.server.response.FamilyResponse;
 import packet.server.response.FriendResponse;
 import packet.server.response.GuildResponse;
+import packet.server.response.KeyMapResponse;
 import packet.server.response.PetResponse;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
@@ -70,11 +73,7 @@ public class InterServerHandler {
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }
-        //if (c.getChannel() == 1 && !c.getPlayer().isGM()) {
-        //    c.getPlayer().dropMessage(5, "You may not enter on this channel. Please change channels and try again.");
-        //    c.getSession().write(MaplePacketCreator.enableActions());
-        //    return;
-        //}
+
         final ChannelServer ch = ChannelServer.getInstance(c.getChannel());
 
         chr.changeRemoval();
@@ -92,6 +91,7 @@ public class InterServerHandler {
 
         c.SendPacket(SocketPacket.MigrateCommand(CashShopServer.getPort()));
         chr.saveToDB(false, false);
+        ExtraDB.saveData(chr);
         chr.getMap().removePlayer(chr);
         c.setPlayer(null);
         c.setReceiving(false);
@@ -107,6 +107,8 @@ public class InterServerHandler {
         } else {
             player = MapleCharacter.ReconstructChr(transfer, c, true);
         }
+
+        ExtraDB.loadData(player);
 
         player.UpdateStat(true);
 
@@ -139,6 +141,7 @@ public class InterServerHandler {
         player.getMap().addPlayer(player);
 
         player.spawnSavedPets();
+        player.UpdateStat(true);
         MapleMap player_map = player.getMap();
         if (player_map != null) {
             for (final MaplePet pet : player.getPets()) {
@@ -204,13 +207,20 @@ public class InterServerHandler {
             FileoutputUtil.outputFileError(FileoutputUtil.Login_Error, e);
         }
         c.getSession().write(FamilyResponse.getFamilyData());
-        player.sendMacros();
         player.showNote();
         player.updatePartyMemberHP();
         player.startFairySchedule(false);
         player.baseSkills(); //fix people who've lost skills.
 
-        c.getSession().write(MaplePacketCreator.getKeymap(player.getKeyLayout()));
+        c.getSession().write(KeyMapResponse.getKeymap(player, false));
+        c.getSession().write(KeyMapResponse.getMacros(player));
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+            c.getSession().write(KeyMapResponse.getPetAutoHP(player));
+            c.getSession().write(KeyMapResponse.getPetAutoMP(player));
+            c.getSession().write(KeyMapResponse.getPetAutoCure(player));
+        } else {
+            c.getSession().write(KeyMapResponse.getPetAutoHPMP_JMS_v131(player));
+        }
 
         for (MapleQuestStatus status : player.getStartedQuests()) {
             if (status.hasMobKills()) {
@@ -234,6 +244,7 @@ public class InterServerHandler {
             return;
         }
 
+        ExtraDB.saveData(chr);
         int channel = p.Decode1() + 1;
         chr.changeChannel(channel);
     }

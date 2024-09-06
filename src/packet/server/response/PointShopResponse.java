@@ -21,17 +21,15 @@ package packet.server.response;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.IItem;
-import config.ServerConfig;
+import client.inventory.MapleInventoryType;
 import handling.MaplePacket;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
+import packet.ops.CashItemFailReasonOps;
+import packet.ops.CashItemOps;
 import packet.server.ServerPacket;
-import packet.server.response.struct.CharacterData;
-import packet.server.response.struct.TestHelper;
-import server.CashItemFactory;
-import server.CashItemInfo;
+import packet.server.response.struct.GW_CashItemInfo;
+import packet.server.response.struct.GW_ItemSlotBase;
 import server.CashShop;
-import tools.Pair;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -40,305 +38,417 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class PointShopResponse {
 
-    public static MaplePacket warpCS(MapleClient c) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SetCashShop);
-        p.EncodeBuffer(CharacterData.Encode(c.getPlayer()));
-        p.EncodeStr(c.getAccountName());
-        if (194 <= ServerConfig.version) {
-            p.Encode4(0);
+    /*
+    @016D : LP_CashShopChargeParamResult
+    @016E : LP_JMS_POINTSHOP_PRESENT_DIALOG
+    @016F : LP_CashShopQueryCashResult
+    @0170 : LP_CashShopCashItemResult
+    @0171 : LP_CashShopPurchaseExpChanged
+    @0172 : LP_CashShopGiftMateInfoResult
+    @0173 : LP_JMS_
+    @0174 : LP_JMS_POINTSHOP_KOC_PRESENT_DIALOG
+    @0175 : LP_JMSD
+    LP_CashShopCheckDuplicatedIDResult
+    LP_CashShopCheckNameChangePossibleResult
+    LP_CashShopRegisterNewCharacterResult
+    @0177 : LP_CashShopGachaponStampItemResult
+    @0178 : LP_CashShopCheckTransferWorldPossibleResult
+    LP_CashShopCashItemGachaponResult
+    @0179 : LP_CashShopCashGachaponOpenResult
+    LP_ChangeMaplePointResult
+    LP_CashShopOneADay
+    LP_CashShopNoticeFreeCashItem
+    LP_CashShopMemberShopResult
+     */
+    public static byte[] getModifiedData() {
+        ServerPacket data = new ServerPacket();
+        //data.Encode2(0); // count
+        data.Encode2(1); // count
+        data.Encode4(50200133); // SN
+        // CS_COMMODITY::DecodeModifiedData
+        {
+            data.Encode4(0x01 | 0x02 | 0x04 | 0x0400); // flag
+            data.Encode4(5062000); // 0x01 : itemid
+            data.Encode2(77); // 0x02 : count
+            data.Encode4(7777); // 0x04: price
+            data.Encode1(1); //0x0400 : OnSale
         }
-        p.Encode2(0);
-        if (165 <= ServerConfig.version) {
-            p.Encode2(0);
+        return data.Get().getBytes();
+    }
+
+    public static byte[] getDiscountRates() {
+        ServerPacket data = new ServerPacket();
+        data.Encode1(0); // count
+        /*
+        data.Encode1(6 * 10); // count max 9*30, ただし1 byteなので全ては利用不可
+        for (int category = 2; category < 8; category++) {
+            for (int sub_category = 0; sub_category < 10; sub_category++) {
+                data.Encode1(category); // category
+                data.Encode1(sub_category); // sub category
+                data.Encode1(99); // discount rate
+            }
         }
-        p.Encode1(0);
-        p.EncodeZeroBytes(1080);
-        p.Encode2(0);
-        p.Encode2(0);
-        p.Encode1(0);
-        return p.Get();
+         */
+        return data.Get().getBytes();
     }
 
-    public static MaplePacket showBoughtCSQuestItem(int price, short quantity, byte position, int itemid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(144);
-        mplew.writeInt(price);
-        mplew.writeShort(quantity);
-        mplew.writeShort(position);
-        mplew.writeInt(itemid);
-        return mplew.getPacket();
-    }
+    public static enum BestItemCategory {
+        BestItemCategory_Main(1),
+        BestItemCategory_Event(2),
+        BestItemCategory_Equip(3),
+        BestItemCategory_Consume(4), // use
+        BestItemCategory_Install(5), // special
+        BestItemCategory_Etc(6),
+        BestItemCategory_Pet(7),
+        BestItemCategory_Package(8),
+        UNKNOWN(-1);
 
-    public static MaplePacket showCouponRedeemedItem(int itemid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.writeShort(96);
-        mplew.writeInt(0);
-        mplew.writeInt(1);
-        mplew.writeShort(1);
-        mplew.writeShort(26);
-        mplew.writeInt(itemid);
-        mplew.writeInt(0);
-        return mplew.getPacket();
-    }
+        private int value;
 
-    public static MaplePacket showCouponRedeemedItem(Map<Integer, IItem> items, int mesos, int maplePoints, MapleClient c) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(96); //use to be 4c
-        mplew.write(items.size());
-        for (Map.Entry<Integer, IItem> item : items.entrySet()) {
-            addCashItemInfo(mplew, item.getValue(), c.getAccID(), item.getKey().intValue());
+        BestItemCategory(int flag) {
+            value = flag;
         }
-        mplew.writeLong(maplePoints);
-        mplew.writeInt(mesos);
-        return mplew.getPacket();
-    }
 
-    public static MaplePacket showBoughtCSItem(int itemid, int sn, int uniqueid, int accid, int quantity, String giftFrom, long expire) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(88 /*0x5A*/ ); //use to be 4a
-        addCashItemInfo(mplew, uniqueid, accid, itemid, sn, quantity, giftFrom, expire);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket showBoughtCSItem(IItem item, int sn, int accid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(88 /*0x5A*/ );
-        addCashItemInfo(mplew, item, accid, sn);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket sendWishList(MapleCharacter chr, boolean update) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(update ? 86 : 82); //+12
-        int[] list = chr.getWishlist();
-        for (int i = 0; i < 10; i++) {
-            mplew.writeInt(list[i] != -1 ? list[i] : 0);
+        BestItemCategory() {
+            value = -1;
         }
-        return mplew.getPacket();
-    }
 
-    public static MaplePacket showBoughtCSPackage(Map<Integer, IItem> ccc, int accid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(140); //use to be 7a
-        mplew.write(ccc.size());
-        for (Map.Entry<Integer, IItem> sn : ccc.entrySet()) {
-            addCashItemInfo(mplew, sn.getValue(), accid, sn.getKey().intValue());
+        public int get() {
+            return value;
         }
-        mplew.writeShort(0);
-        return mplew.getPacket();
+    }
+    private static boolean best_item_initilized = false;
+    private static int best_item_category[] = new int[9 * 5 * 2];
+    private static int best_item_gender[] = new int[9 * 5 * 2];
+    private static int best_item_item_SN[] = new int[9 * 5 * 2];
+
+    // 1080 bytes buffer
+    public static byte[] getBestItems() {
+        ServerPacket data = new ServerPacket();
+
+        if (!best_item_initilized) {
+            best_item_initilized = true;
+            // equip
+            best_item_category[BestItemCategory.BestItemCategory_Equip.get() * 5 * 2] = BestItemCategory.BestItemCategory_Equip.get();
+            best_item_gender[BestItemCategory.BestItemCategory_Equip.get() * 5 * 2] = 0;
+            best_item_item_SN[BestItemCategory.BestItemCategory_Equip.get() * 5 * 2] = 20900059;
+            best_item_category[BestItemCategory.BestItemCategory_Equip.get() * 5 * 2 + 1] = BestItemCategory.BestItemCategory_Equip.get();
+            best_item_gender[BestItemCategory.BestItemCategory_Equip.get() * 5 * 2 + 1] = 0;
+            best_item_item_SN[BestItemCategory.BestItemCategory_Equip.get() * 5 * 2 + 1] = 20900031;
+            // consume
+            best_item_category[BestItemCategory.BestItemCategory_Consume.get() * 5 * 2] = BestItemCategory.BestItemCategory_Consume.get();
+            best_item_gender[BestItemCategory.BestItemCategory_Consume.get() * 5 * 2] = 0;
+            best_item_item_SN[BestItemCategory.BestItemCategory_Consume.get() * 5 * 2] = 10003562;
+            // install or special
+            best_item_category[BestItemCategory.BestItemCategory_Install.get() * 5 * 2] = BestItemCategory.BestItemCategory_Install.get();
+            best_item_gender[BestItemCategory.BestItemCategory_Install.get() * 5 * 2] = 0;
+            best_item_item_SN[BestItemCategory.BestItemCategory_Install.get() * 5 * 2] = 80000184;
+            // etc
+            best_item_category[BestItemCategory.BestItemCategory_Etc.get() * 5 * 2] = BestItemCategory.BestItemCategory_Etc.get();
+            best_item_gender[BestItemCategory.BestItemCategory_Etc.get() * 5 * 2] = 0;
+            best_item_item_SN[BestItemCategory.BestItemCategory_Etc.get() * 5 * 2] = 50200009;
+            // pet
+            best_item_category[BestItemCategory.BestItemCategory_Pet.get() * 5 * 2] = BestItemCategory.BestItemCategory_Pet.get();
+            best_item_gender[BestItemCategory.BestItemCategory_Pet.get() * 5 * 2] = 0;
+            best_item_item_SN[BestItemCategory.BestItemCategory_Pet.get() * 5 * 2] = 60000038;
+        }
+
+        for (int i = 0; i < best_item_category.length; i++) {
+            data.Encode4(best_item_category[i]);
+            data.Encode4(best_item_gender[i]);
+            data.Encode4(best_item_item_SN[i]);
+        }
+
+        return data.Get().getBytes();
     }
 
-    public static MaplePacket showNXMapleTokens(MapleCharacter chr) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_UPDATE.Get());
-        mplew.writeInt(chr.getCSPoints(1)); // A-cash
-        mplew.writeInt(chr.getCSPoints(2)); // MPoint
-        return mplew.getPacket();
+    // CCashShop::OnChargeParamResult, 充填ボタン
+    public static MaplePacket ChargeParamResult() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopChargeParamResult);
+        sp.EncodeStr("nexon_id"); // nexon id
+        return sp.Get();
     }
 
-    public static MaplePacket increasedInvSlots(int inv, int slots) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(99);
-        mplew.write(inv);
-        mplew.writeShort(slots);
-        return mplew.getPacket();
+    // おめでとうございます！ポイントショップのインベントリにのプレゼントをお送りしました。
+    public static MaplePacket presentDialog() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_POINTSHOP_PRESENT_DIALOG);
+        // 多分未実装
+        return sp.Get();
     }
 
-    //also used for character slots !
-    public static MaplePacket increasedStorageSlots(int slots) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(101);
-        mplew.writeShort(slots);
-        return mplew.getPacket();
+    // CCashShop::OnQueryCashResult
+    public static MaplePacket QueryCashResult(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopQueryCashResult);
+        sp.Encode4(chr.getCSPoints(1)); // NEXON POINT
+        sp.Encode4(chr.getCSPoints(2)); // MAPLE POINT
+        return sp.Get();
+    }
+
+    public static class CashItemStruct {
+
+        public MapleInventoryType inc_slot_type;
+        public IItem item;
+        // coupon
+        public ArrayList<IItem> coupon_items_cash;
+        public int coupon_maple_point;
+        public ArrayList<IItem> coupon_items_normal;
+        public int coupon_meso;
+
+        public CashItemStruct(MapleInventoryType inc_slot_type) {
+            this.inc_slot_type = inc_slot_type;
+        }
+
+        public CashItemStruct(IItem item) {
+            this.item = item;
+        }
+
+        public CashItemStruct(ArrayList<IItem> coupon_items_cash, int coupon_maple_point, ArrayList<IItem> coupon_items_normal, int coupon_meso) {
+            this.coupon_items_cash = coupon_items_cash;
+            this.coupon_maple_point = coupon_maple_point;
+            this.coupon_items_normal = coupon_items_normal;
+            this.coupon_meso = coupon_meso;
+        }
+
+    }
+
+    public static MaplePacket CashItemResult(CashItemOps ops, MapleClient c) {
+        return CashItemResult(ops, c, null);
+    }
+
+    // CCashShop::OnCashItemResult
+    public static MaplePacket CashItemResult(CashItemOps ops, MapleClient c, CashItemStruct cis) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopCashItemResult);
+
+        sp.Encode1(ops.get());
+        switch (ops) {
+            // getCSInventory
+            case CashItemRes_LoadLocker_Done: {
+                CashShop csi = c.getPlayer().getCashInventory();
+
+                sp.Encode2(csi.getItemsSize()); // cash item count
+                for (IItem item : csi.getInventory()) {
+                    sp.EncodeBuffer(GW_CashItemInfo.Encode(item, c));
+                }
+                sp.Encode2(c.getPlayer().getStorage().getSlots()); // m_nTrunkCount
+                sp.Encode2(c.getCharacterSlots()); // m_nCharacterSlotCount
+                sp.Encode2(0);// m_nBuyCharacterCount
+                sp.Encode2(c.getCharaterCount());// m_nCharacterCount
+                break;
+            }
+            // test
+            // CCashShop::OnCashItemResSetWishFailed
+            case CashItemRes_SetWish_Failed: {
+                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_NoStock.get());
+                break;
+            }
+            // showBoughtCSItem
+            // CCashShop::OnCashItemResBuyDone
+            case CashItemRes_Buy_Done:
+            case CashItemRes_FreeCashItem_Done: {
+                sp.EncodeBuffer(GW_CashItemInfo.Encode(cis.item, c));
+                break;
+            }
+            // CCashShop::OnCashItemResBuyFailed
+            case CashItemRes_Buy_Failed: {
+                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_NoRemainCash.get());
+                break;
+            }
+            case CashItemRes_UseCoupon_Done: {
+                int cash_item_count = cis.coupon_items_cash == null ? 0 : cis.coupon_items_cash.size();
+                int normal_item_count = cis.coupon_items_normal == null ? 0 : cis.coupon_items_normal.size();
+                sp.Encode1(cash_item_count);
+                if (0 < cash_item_count) {
+                    // buffer 55 bytes
+                    for (IItem item : cis.coupon_items_cash) {
+                        sp.EncodeBuffer(GW_CashItemInfo.Encode(item, c));
+                    }
+                }
+                sp.Encode4(cis.coupon_maple_point);
+                sp.Encode4(normal_item_count);
+                if (0 < normal_item_count) {
+                    // buffer 8 bytes
+                    for (IItem item : cis.coupon_items_normal) {
+                        sp.Encode2(item.getQuantity());
+                        sp.Encode2(0);
+                        sp.Encode4(item.getItemId());
+                    }
+                }
+                sp.Encode4(cis.coupon_meso);
+                break;
+            }
+            case CashItemRes_GiftCoupon_Done: {
+                break;
+            }
+            case CashItemRes_UseCoupon_Failed: {
+                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_InvalidCoupon.get());
+                break;
+            }
+            // CCashShop::OnCashItemResIncSlotCountDone
+            case CashItemRes_IncSlotCount_Done: {
+                sp.Encode1(cis.inc_slot_type.getType());
+                sp.Encode2(c.getPlayer().getInventory(cis.inc_slot_type).getSlotLimit());
+                break;
+            }
+            // CCashShop::OnCashItemResIncSlotCountFailed
+            case CashItemRes_IncSlotCount_Failed: {
+                break;
+            }
+            // CCashShop::OnCashItemResIncTrunkCountDone
+            case CashItemRes_IncTrunkCount_Done: {
+                sp.Encode2(c.getPlayer().getStorage().getSlots());
+                break;
+            }
+            // CCashShop::OnCashItemResIncTrunkCountFailed
+            case CashItemRes_IncTrunkCount_Failed: {
+                break;
+            }
+            // CCashShop::OnCashItemResMoveLtoSDone
+            case CashItemRes_MoveLtoS_Done: {
+                sp.Encode2(cis.item.getPosition()); // 2 bytes 固定
+                sp.EncodeBuffer(GW_ItemSlotBase.Encode(cis.item));
+                break;
+            }
+            // CCashShop::OnCashItemResMoveLtoSFailed
+            case CashItemRes_MoveLtoS_Failed: {
+                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_NoEmptyPos.get());
+                break;
+            }
+            // CCashShop::OnCashItemResMoveStoLDone
+            case CashItemRes_MoveStoL_Done: {
+                sp.EncodeBuffer(GW_CashItemInfo.Encode(cis.item, c));
+                break;
+            }
+            // CCashShop::OnCashItemResMoveStoLFailed
+            case CashItemRes_MoveStoL_Failed: {
+                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_NoEmptyPos.get());
+                break;
+            }
+            // CCashShop::OnCashItemResDestroyDone
+            case CashItemRes_Destroy_Done: {
+                sp.Encode8(cis.item.getUniqueId());
+                break;
+            }
+            // CCashShop::OnCashItemResDestroyFailed
+            case CashItemRes_Destroy_Failed: {
+                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_InvalidPassportID.get()); // msg
+                break;
+            }
+            // CCashShop::OnCashItemResBuyNormalDone
+            case CashItemRes_BuyNormal_Done: {
+                break;
+            }
+            // CCashShop::OnCashItemResBuyNormalFailed
+            case CashItemRes_BuyNormal_Failed: {
+                break;
+            }
+            /*
+            case CashItemRes_TransferWorld_Done: {
+                break;
+            }
+            case CashItemRes_TransferWorld_Failed: {
+                break;
+            }
+             */
+            default: {
+                break;
+            }
+        }
+
+        return sp.Get();
+    }
+
+    // CCashShop::OnPurchaseExpChanged
+    public static MaplePacket PurchaseExpChanged() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopPurchaseExpChanged);
+        sp.Encode1(0); // m_nPurchaseExp
+        return sp.Get();
+    }
+
+    // CCashShop::OnGiftMateInfoResult
+    public static MaplePacket GiftMateInfoResult() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopGiftMateInfoResult);
+        // not coded
+        return sp.Get();
+    }
+
+    // 謎処理
+    // -> @00FA [2E] [item_id?]
+    public static MaplePacket ForceRequest(int item_id) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_POINTSHOP_FORCE_REQUEST);
+        sp.Encode4(1); // item list size
+        sp.Encode4(item_id); // buffer4
+        sp.Encode1(1); // force request or not
+        return sp.Get();
+    }
+
+    // 騎士団ショッピングのおまけアイテム"アイテム名"をプレゼントしました。インベントリをご確認ください。
+    public static MaplePacket PresentForKOC(int item_id) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_POINTSHOP_KOC_PRESENT_DIALOG);
+        sp.Encode4(item_id);
+        return sp.Get();
+    }
+
+    // フリークーポンの期限の告知
+    public static MaplePacket FreeCouponDialog(boolean has_free_coupon, long free_coupon_date) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_POINTSHOP_FREE_COUPON_DIALOG);
+        sp.Encode1(has_free_coupon ? 1 : 0); // enable free coupon
+        if (has_free_coupon) {
+            sp.Encode8(free_coupon_date);
+        }
+        return sp.Get();
+    }
+
+    // ガシャポンスタンプとお年玉の累積ポイント告知
+    public static MaplePacket GachaponStampAndOtoshidamaDialog() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_GACHAPON_STAMP_AND_OTOSHIDAMA_DIALOG);
+        sp.Encode4(5); // Xポイントで購入
+        sp.Encode4(4); // X個のスタンプGET
+        sp.Encode4(3); // 次はXポイントでスタンプをGETできます
+        sp.Encode4(2); // 累積Xポイント
+        sp.Encode4(1); // 入手した個数は計X個
+        sp.Encode4(4000426); // item id 4031351 or 4000426
+        return sp.Get();
+    }
+
+    // CCashShop::OnCheckTransferWorldPossibleResult
+    // -> CP_CashShopCashItemRequest, @00FA [31] [FFFFFFFF] [WORLD_ID (4 bytes)]
+    public static MaplePacket CheckTransferWorldPossibleResult() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopCheckTransferWorldPossibleResult);
+        sp.Encode4(0); // not used
+        sp.Encode1(0); // dialog message
+        sp.Encode1(1); // having world list
+
+        String world_list[] = {"かえで", "もみじ"};
+
+        sp.Encode4(world_list.length); // world list size
+        for (String world : world_list) {
+            sp.EncodeStr(world);
+        }
+        return sp.Get();
+    }
+
+    // アバターランダムボックス
+    public static MaplePacket OnCashItemGachaponResult(IItem box_item, IItem item, MapleClient c) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopCashItemGachaponResult);
+
+        sp.Encode1(CashItemOps.CashItemRes_CashItemGachapon_Done.get());
+        sp.Encode8(box_item.getUniqueId());
+        sp.Encode4(0); // nNumber
+        sp.EncodeBuffer(GW_CashItemInfo.Encode(item, c));
+        // CUICashItemGachapon::OnCashItemGachaponResult
+        {
+            sp.Encode4(item.getItemId()); // m_nSelectedItemID
+            sp.Encode1(1); // m_nSelectedItemCount
+            sp.Encode1(1); // m_bJackpot, 0 (CashGachaponNormal) or 1 (CashGachaponJackpot)
+        }
+        return sp.Get();
     }
 
     public static MaplePacket cashItemExpired(int uniqueid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
         mplew.write(113); //use to be 5d
         mplew.writeLong(uniqueid);
         return mplew.getPacket();
     }
-
-    public static MaplePacket confirmToCSInventory(IItem item, int accId, int sn) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(109);
-        addCashItemInfo(mplew, item, accId, sn, false);
-        return mplew.getPacket();
-    }
-
-    public static void addModCashItemInfo(MaplePacketLittleEndianWriter mplew, CashItemInfo.CashModInfo item) {
-        int flags = item.flags;
-        mplew.writeInt(item.sn);
-        mplew.writeInt(flags);
-        if ((flags & 1) != 0) {
-            mplew.writeInt(item.itemid);
-        }
-        if ((flags & 2) != 0) {
-            mplew.writeShort(item.count);
-        }
-        if ((flags & 4) != 0) {
-            mplew.writeInt(item.discountPrice);
-        }
-        if ((flags & 8) != 0) {
-            mplew.write(item.unk_1 - 1);
-        }
-        if ((flags & 16) != 0) {
-            mplew.write(item.priority);
-        }
-        if ((flags & 32) != 0) {
-            mplew.writeShort(item.period);
-        }
-        if ((flags & 64) != 0) {
-            mplew.writeInt(0);
-        }
-        if ((flags & 128) != 0) {
-            mplew.writeInt(item.meso);
-        }
-        if ((flags & 256) != 0) {
-            mplew.write(item.unk_2 - 1);
-        }
-        if ((flags & 512) != 0) {
-            mplew.write(item.gender);
-        }
-        if ((flags & 1024) != 0) {
-            mplew.write(item.showUp ? 1 : 0);
-        }
-        if ((flags & 2048) != 0) {
-            mplew.write(item.mark);
-        }
-        if ((flags & 4096) != 0) {
-            mplew.write(item.unk_3 - 1);
-        }
-        if ((flags & 8192) != 0) {
-            mplew.writeShort(0);
-        }
-        if ((flags & 16384) != 0) {
-            mplew.writeShort(0);
-        }
-        if ((flags & 32768) != 0) {
-            mplew.writeShort(0);
-        }
-        if ((flags & 65536) != 0) {
-            List<CashItemInfo> pack = CashItemFactory.getInstance().getPackageItems(item.sn);
-            if (pack == null) {
-                mplew.write(0);
-            } else {
-                mplew.write(pack.size());
-                for (int i = 0; i < pack.size(); i++) {
-                    mplew.writeInt(pack.get(i).getSN());
-                }
-            }
-        }
-    }
-
-    //work on this packet a little more
-    public static MaplePacket getCSGifts(MapleClient c) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(80); //use to be 40
-        List<Pair<IItem, String>> mci = c.getPlayer().getCashInventory().loadGifts();
-        mplew.writeShort(mci.size());
-        for (Pair<IItem, String> mcz : mci) {
-            mplew.writeLong(mcz.getLeft().getUniqueId());
-            mplew.writeInt(mcz.getLeft().getItemId());
-            mplew.writeAsciiString(mcz.getLeft().getGiftFrom(), 13);
-            mplew.writeAsciiString(mcz.getRight(), 73);
-        }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getCSInventory(MapleClient c) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(78); // use to be 3e
-        CashShop mci = c.getPlayer().getCashInventory();
-        mplew.writeShort(mci.getItemsSize());
-        for (IItem itemz : mci.getInventory()) {
-            addCashItemInfo(mplew, itemz, c.getAccID(), 0); //test
-        }
-        mplew.writeShort(c.getPlayer().getStorage().getSlots());
-        mplew.writeInt(c.getCharacterSlots());
-        mplew.writeShort(4); //00 00 04 00 <-- added?
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket confirmFromCSInventory(IItem item, short pos) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(107);
-        mplew.writeShort(pos);
-        TestHelper.addItemInfo(mplew, item, true, true);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket sendGift(int price, int itemid, int quantity, String receiver) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(142); //use to be 7C
-        mplew.writeMapleAsciiString(receiver);
-        mplew.writeInt(itemid);
-        mplew.writeShort(quantity);
-        mplew.writeShort(0); //maplePoints
-        mplew.writeInt(price);
-        return mplew.getPacket();
-    }
-
-    public static final void addCashItemInfo(MaplePacketLittleEndianWriter mplew, IItem item, int accId, int sn) {
-        addCashItemInfo(mplew, item, accId, sn, true);
-    }
-
-    public static final void addCashItemInfo(MaplePacketLittleEndianWriter mplew, IItem item, int accId, int sn, boolean isFirst) {
-        addCashItemInfo(mplew, item.getUniqueId(), accId, item.getItemId(), sn, item.getQuantity(), item.getGiftFrom(), item.getExpiration(), isFirst); //owner for the lulz
-    }
-
-    public static final void addCashItemInfo(MaplePacketLittleEndianWriter mplew, int uniqueid, int accId, int itemid, int sn, int quantity, String sender, long expire) {
-        addCashItemInfo(mplew, uniqueid, accId, itemid, sn, quantity, sender, expire, true);
-    }
-
-    public static final void addCashItemInfo(MaplePacketLittleEndianWriter mplew, int uniqueid, int accId, int itemid, int sn, int quantity, String sender, long expire, boolean isFirst) {
-        mplew.writeLong(uniqueid > 0 ? uniqueid : 0);
-        mplew.writeLong(accId);
-        mplew.writeInt(itemid);
-        mplew.writeInt(isFirst ? sn : 0);
-        mplew.writeShort(quantity);
-        mplew.writeAsciiString(sender, 13); //owner for the lulzlzlzl
-        TestHelper.addExpirationTime(mplew, expire);
-        mplew.writeLong(isFirst ? 0 : sn);
-        //if (isFirst && uniqueid > 0 && GameConstants.isEffectRing(itemid)) {
-        //	MapleRing ring = MapleRing.loadFromDb(uniqueid);
-        //	if (ring != null) { //or is this only for friendship rings, i wonder. and does isFirst even matter
-        //		mplew.writeMapleAsciiString(ring.getPartnerName());
-        //		mplew.writeInt(itemid);
-        //		mplew.writeShort(quantity);
-        //	}
-        //}
-    }
-
-    public static MaplePacket enableCSUse() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(10);
-        mplew.write(1);
-        mplew.writeInt(0);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket sendCSFail(int err) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.CS_OPERATION.Get());
-        mplew.write(104);
-        mplew.write(err);
-        return mplew.getPacket();
-    }
-    
 }

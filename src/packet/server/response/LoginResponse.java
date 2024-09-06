@@ -98,6 +98,48 @@ public class LoginResponse {
         }
     }
 
+    // サーバーのバージョン情報
+    public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.HELLO); // dummy header
+        if (ServerConfig.GetVersion() < 414) {
+
+            switch (ServerConfig.GetRegion()) {
+                case KMS: {
+                    long xor_version = 0;
+                    xor_version ^= ServerConfig.GetVersion();
+                    xor_version ^= 1 << 15;
+                    xor_version ^= ServerConfig.GetSubVersion() << 16;
+
+                    p.Encode2(291); // magic number
+                    p.EncodeStr(String.valueOf(xor_version));
+                    break;
+                }
+                default: {
+                    p.Encode2(ServerConfig.GetVersion());
+                    p.EncodeStr(String.valueOf(ServerConfig.GetSubVersion()));
+                    break;
+                }
+            }
+
+            p.EncodeBuffer(recvIv);
+            p.EncodeBuffer(sendIv);
+            p.Encode1(ServerConfig.GetRegionNumber()); // JMS = 3
+        } else {
+            // x64
+            p.Encode2(ServerConfig.GetVersion());
+            p.EncodeStr("1:" + ServerConfig.GetSubVersion()); // 1:1
+            p.EncodeBuffer(recvIv);
+            p.EncodeBuffer(sendIv);
+            p.Encode1(ServerConfig.GetRegionNumber());
+            p.Encode1(0);
+            p.Encode1(5);
+            p.Encode1(1);
+        }
+        // ヘッダにサイズを書き込む
+        p.SetHello();
+        return p.Get();
+    }
+
     // v186+
     // CLogin::OnRecommendWorldMessage
     public static MaplePacket RecommendWorldMessage() {
@@ -172,8 +214,8 @@ public class LoginResponse {
     // CClientSocket::OnCheckPassword
     // getAuthSuccessRequest, getLoginFailed
     public static final MaplePacket CheckPasswordResult(MapleClient client, LoginResult result) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CheckPasswordResult);
-        p.Encode1(result.Get());
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CheckPasswordResult);
+        sp.Encode1(result.Get());
         /*
         v186 Message Flag
         00 : OK
@@ -183,59 +225,68 @@ public class LoginResponse {
         switch (result) {
             case SUCCESS: {
                 if (ServerConfig.IsTWMS()) {
-                    p.EncodeBuffer(Success_Login_TWMS(client));
+                    sp.EncodeBuffer(Success_Login_TWMS(client));
                     break;
                 }
                 if (ServerConfig.IsCMS()) {
-                    p.EncodeBuffer(Success_Login_CMS(client));
+                    sp.EncodeBuffer(Success_Login_CMS(client));
                     break;
                 }
-                p.Encode1(0); // OK
-                p.Encode4(client.getAccID());
-                p.Encode1(client.getGender()); // 性別
-                p.Encode1(client.isGm() ? 1 : 0);
+                if (!ServerConfig.IsKMS()) {
+                    sp.Encode1(0); // OK
+                }
+                sp.Encode4(client.getAccID());
+                sp.Encode1(client.getGender()); // 性別
+                sp.Encode1(client.isGm() ? 1 : 0);
+                if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
+                    sp.Encode1(client.isGm() ? 1 : 0);
+                }
+                sp.EncodeStr(client.getAccountName());
+                if (ServerConfig.IsKMS()) {
+                    sp.Encode4(3); // should be 3 for KMS v2.114 to ignore personal number
+                } else {
+                    sp.EncodeStr(client.getAccountName());
+                }
+
+                sp.Encode1(ServerConfig.IsKMS() ? 1 : 0); // should be 1 for KMS v2.114 to ignore personal number
+                sp.Encode1(0);
+                sp.Encode1(0);
+                if (!ServerConfig.IsKMS()) {
+                    sp.Encode1(0);
+                }
                 if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
-                    p.Encode1(client.isGm() ? 1 : 0);
+                    sp.Encode1(0);
                 }
-                p.EncodeStr(client.getAccountName());
-                p.EncodeStr(client.getAccountName());
-                p.Encode1(0);
-                p.Encode1(0);
-                p.Encode1(0);
-                p.Encode1(0);
-                if (164 <= ServerConfig.GetVersion()) {
-                    p.Encode1(0);
-                }
-                if (180 <= ServerConfig.GetVersion()) {
-                    p.Encode1(0);
+                if (ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()) {
+                    sp.Encode1(0);
                 }
                 // 2次パスワード
-                if (188 <= ServerConfig.GetVersion()) {
+                if (ServerConfig.IsPostBB() && ServerConfig.IsJMS()) {
                     // -1, 無視
                     // 0, 初期化
                     // 1, 登録済み
-                    p.Encode1(-1);
+                    sp.Encode1(-1);
                 }
                 // 旧かんたん会員
-                if (302 <= ServerConfig.GetVersion()) {
+                if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
                     // 0, 旧かんたん会員
                     // 1, 通常
-                    p.Encode1(1);
+                    sp.Encode1(1);
                 }
-                p.Encode8(0); // buf
-                p.EncodeStr(""); // v131: available name for new character, later version does not use this string
+                sp.Encode8(0); // buf
+                sp.EncodeStr(""); // v131: available name for new character, later version does not use this string
                 break;
             }
             case BLOCKED_MAPLEID_WITH_MESSAGE: {
-                p.Encode1(32); // 0x20 and 0x40 are blue message flag
+                sp.Encode1(32); // 0x20 and 0x40 are blue message flag
                 break;
             }
             default: {
-                p.Encode1(0); // no blue message
+                sp.Encode1(0); // no blue message
                 break;
             }
         }
-        return p.Get();
+        return sp.Get();
     }
 
     public static final MaplePacket addNewCharEntry(final MapleCharacter chr, final boolean worked) {
@@ -244,12 +295,24 @@ public class LoginResponse {
         if (worked) {
             p.EncodeBuffer(GW_CharacterStat.Encode(chr));
             p.EncodeBuffer(AvatarLook.Encode(chr));
+            if (ServerConfig.IsKMS()) {
+                p.Encode1(0);
+                p.Encode1(0);
+                p.EncodeZeroBytes(16);
+            }
         }
+
+        if (ServerConfig.IsKMS()) {
+            p.Encode1(0);
+            p.Encode1(0);
+            p.Encode4(0);
+        }
+
         return p.Get();
     }
 
-    // v131+
-    // CLogin::OnCheckGameGuardUpdatedResult
+// v131+
+// CLogin::OnCheckGameGuardUpdatedResult
     public static MaplePacket CheckGameGuardUpdate() {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_T_UpdateGameGuard);
         // 0 = Update Game Guard
@@ -360,31 +423,6 @@ public class LoginResponse {
         return p.Get();
     }
 
-    // サーバーのバージョン情報
-    public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.HELLO); // dummy header
-        if (ServerConfig.GetVersion() < 414) {
-            p.Encode2(ServerConfig.GetVersion());
-            p.EncodeStr(String.valueOf(ServerConfig.GetSubVersion()));
-            p.EncodeBuffer(recvIv);
-            p.EncodeBuffer(sendIv);
-            p.Encode1(ServerConfig.GetRegionNumber()); // JMS = 3
-        } else {
-            // x64
-            p.Encode2(ServerConfig.GetVersion());
-            p.EncodeStr("1:" + ServerConfig.GetSubVersion()); // 1:1
-            p.EncodeBuffer(recvIv);
-            p.EncodeBuffer(sendIv);
-            p.Encode1(ServerConfig.GetRegionNumber());
-            p.Encode1(0);
-            p.Encode1(5);
-            p.Encode1(1);
-        }
-        // ヘッダにサイズを書き込む
-        p.SetHello();
-        return p.Get();
-    }
-
     public static byte[] CharList_TWMS(MapleClient c) {
         ServerPacket data = new ServerPacket();
         data.Encode4(1000000);
@@ -427,14 +465,22 @@ public class LoginResponse {
         }
         List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
         int charslots = c.getCharacterSlots();
-        p.EncodeStr("");
+
+        if (ServerConfig.IsJMS()) {
+            p.EncodeStr("");
+        }
+
+        if (ServerConfig.IsKMS() || ServerConfig.IsCMS()) {
+            p.Encode4(1000000);
+        }
+
         // キャラクターの数
         p.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
             //Structure.CharEntry(p, chr, true, false);
             p.EncodeBuffer(GW_CharacterStat.Encode(chr));
             p.EncodeBuffer(AvatarLook.Encode(chr));
-            if (ServerConfig.IsJMS() && 165 < ServerConfig.GetVersion()) {
+            if ((ServerConfig.IsJMS() && 165 < ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
                 p.Encode1(0);
             }
             p.Encode1(1); // ranking
@@ -442,6 +488,16 @@ public class LoginResponse {
             p.Encode4(chr.getRankMove());
             p.Encode4(chr.getJobRank()); // world ranking
             p.Encode4(chr.getJobRankMove());
+        }
+
+        if (ServerConfig.IsKMS()) {
+            p.Encode1(2);
+            p.Encode1(0);
+            p.Encode4(charslots);
+            if (ServerConfig.IsPostBB()) {
+                p.Encode4(0);
+            }
+            return p.Get();
         }
 
         if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {

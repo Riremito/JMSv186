@@ -88,8 +88,6 @@ public class Start {
         Debug.InfoLog("Start Game Server");
         ChannelServer.startChannel_Main();
 
-        CashItemFactory.getInstance().initialize();
-
         Debug.InfoLog("Start Cash Shop Server");
         CashShopServer.run_startup_configurations();
         MTSStorage.load();

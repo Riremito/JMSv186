@@ -81,13 +81,22 @@ public class CashShop implements Serializable {
         return inventory;
     }
 
-    public IItem findByCashId(int cashId) {
+    public IItem findByCashId(long cashId) {
         for (IItem item : inventory) {
             if (item.getUniqueId() == cashId) {
                 return item;
             }
         }
 
+        return null;
+    }
+
+    public IItem findItem(int item_id) {
+        for (IItem item : inventory) {
+            if (item.getItemId() == item_id) {
+                return item;
+            }
+        }
         return null;
     }
 

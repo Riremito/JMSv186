@@ -98,12 +98,12 @@ public class GW_ItemSlotBase {
                 data.EncodeBuffer(RawEncode(item));
 
                 final IEquip equip = (IEquip) item;
-                boolean hasUniqueId = equip.getUniqueId() > 0;
+                boolean hasUniqueId = 0 < equip.getUniqueId();
 
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
                 // v184-v185 潜在内部実装時 (動作はしないがデータの位置が違う)
-                if (ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185) {
+                if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185) || (ServerConfig.IsKMS() && ServerConfig.GetVersion() == 95)) {
                     data.Encode1(equip.getState());
                 }
                 // data.Encode2((short) equip.getIncAttackSpeed());
@@ -156,17 +156,19 @@ public class GW_ItemSlotBase {
                 // 耐久度
                 if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
                         || ServerConfig.IsTWMS()
-                        || ServerConfig.IsCMS()) {
+                        || ServerConfig.IsCMS()
+                        || ServerConfig.IsKMS()) {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
 
                 // 通常
-                if (!(ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185)) {
+                if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || !(ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185)) {
 
                     // ビシャスのハンマー
                     if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
                             || ServerConfig.IsTWMS()
-                            || ServerConfig.IsCMS()) {
+                            || ServerConfig.IsCMS()
+                            || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
                         if (ServerConfig.game_server_enable_hammer) {
                             data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
                         } else {
@@ -176,8 +178,11 @@ public class GW_ItemSlotBase {
                     // 潜在能力
                     if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
                             || ServerConfig.IsTWMS()
-                            || ServerConfig.IsCMS()) {
-                        data.Encode1(equip.getState()); // option._ZtlSecureTear_nGrade
+                            || ServerConfig.IsCMS()
+                            || ServerConfig.IsKMS()) {
+                        if (!(ServerConfig.IsKMS() && ServerConfig.GetVersion() == 95)) {
+                            data.Encode1(equip.getState()); // option._ZtlSecureTear_nGrade
+                        }
                         data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
                         if (ServerConfig.game_server_enable_potential) {
                             data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
@@ -202,7 +207,10 @@ public class GW_ItemSlotBase {
                     data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
                 }
 
-                data.Encode8(0); // liCashItemSN.QuadPartがない場合はDecodeがされないのでズレる
+                if (!hasUniqueId) {
+                    data.Encode8(0);
+                }
+
                 data.Encode8(0);
                 data.Encode4(-1);
                 break;
@@ -213,16 +221,16 @@ public class GW_ItemSlotBase {
                 // GW_ItemSlotPet::RawDecode
                 data.EncodeBuffer(item.getPet().getName(), 13);
                 data.Encode1(item.getPet().getLevel());
-                data.Encode2(item.getPet().getCloseness());
-                data.Encode1(item.getPet().getFullness());
+                data.Encode2(item.getPet().getCloseness()); // nTameness_CS
+                data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
                 // 魔法の効力期限, Windows時間
-                data.Encode8((Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000); // time
-                data.Encode2(0);
-                data.Encode2(item.getPet().getFlags());
+                data.Encode8((Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000); // dateDead
+                data.Encode2(0); // nPetAttribute_CS
+                data.Encode2(item.getPet().getFlags()); // usPetSkill_CS
                 // 魔法の時間, デンデン専用 (残り時間)
-                data.Encode4((item.getItemId() == 5000054) ? 3600 : 0);
-                data.Encode2(0);
-                data.Encode1(0);
+                data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
+                data.Encode2(0); // nAttribute_CS
+                data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                 data.Encode4(0);
                 break;
             }
@@ -257,7 +265,7 @@ public class GW_ItemSlotBase {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(item.getItemId());
-        boolean hasUniqueId = item.getUniqueId() > 0;
+        boolean hasUniqueId = 0 < item.getUniqueId();
 
         data.Encode1(hasUniqueId ? 1 : 0);
 
@@ -267,10 +275,14 @@ public class GW_ItemSlotBase {
 
         data.Encode8(-1); // time?
 
-        if (ServerConfig.IsPostBB()) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 188) && ServerConfig.IsPostBB()) {
             data.Encode4(0);
         }
 
         return data.Get().getBytes();
+    }
+
+    public static long getTestExpiration() {
+        return (Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000;
     }
 }

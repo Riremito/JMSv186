@@ -608,11 +608,16 @@ public class ServerPacket {
         LP_END_FIELD,
         LP_Parcel,
         LP_BEGIN_CASHSHOP,
-        LP_CashShopChargeParamResult, // CS_UPDATE
-        LP_CashShopQueryCashResult, // CS_OPERATION
-        LP_CashShopCashItemResult,
+        LP_CashShopChargeParamResult,
+        LP_JMS_POINTSHOP_PRESENT_DIALOG,
+        LP_CashShopQueryCashResult, // CS_UPDATE
+        LP_CashShopCashItemResult, // CS_OPERATION
         LP_CashShopPurchaseExpChanged,
         LP_CashShopGiftMateInfoResult,
+        LP_JMS_POINTSHOP_FORCE_REQUEST,
+        LP_JMS_POINTSHOP_KOC_PRESENT_DIALOG,
+        LP_JMS_POINTSHOP_FREE_COUPON_DIALOG,
+        LP_JMS_GACHAPON_STAMP_AND_OTOSHIDAMA_DIALOG,
         LP_CashShopCheckDuplicatedIDResult,
         LP_CashShopCheckNameChangePossibleResult,
         LP_CashShopRegisterNewCharacterResult,
@@ -627,9 +632,10 @@ public class ServerPacket {
         LP_END_CASHSHOP,
         LP_BEGIN_FUNCKEYMAPPED,
         LP_FuncKeyMappedInit, // KEYMAP
-        LP_PetConsumeItemInit, // PET_AUTO_HEAL
         LP_END_FUNCKEYMAPPED,
+        LP_PetConsumeItemInit, // PET_AUTO_HEAL
         LP_PetConsumeMPItemInit,
+        LP_JMS_PetConsumeCureItemInit,
         LP_CheckSSN2OnCreateNewCharacterResult,
         LP_CheckSPWOnCreateNewCharacterResult,
         LP_FirstSSNOnCreateNewCharacterResult,
@@ -710,8 +716,6 @@ public class ServerPacket {
         MONSTER_PROPERTIES,
         REMOVE_TALK_MONSTER,
         SHOW_MAGNET,
-        CS_UPDATE,
-        CS_OPERATION,
         UPDATE_BEANS,
         TIP_BEANS, // PACHINKO_TIPS
         OPEN_BEANS, // PACHINKO_OPEN

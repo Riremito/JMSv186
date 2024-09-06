@@ -40,6 +40,7 @@ import javax.script.ScriptEngine;
 
 import database.DatabaseConnection;
 import database.DatabaseException;
+import database.ExtraDB;
 import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -77,6 +78,8 @@ import org.apache.mina.common.TransportType;
 import org.apache.mina.common.WriteFuture;
 import packet.server.ServerPacket;
 import packet.client.request.SocketPacket;
+import packet.server.response.MapleTradeSpaceResponse;
+import packet.server.response.PointShopResponse;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -405,6 +408,10 @@ public class MapleClient implements Serializable {
 
     public final boolean login_Auth(final int id) {
         return allowedChar.contains(id);
+    }
+
+    public int getCharaterCount() {
+        return allowedChar.size();
     }
 
     public final List<MapleCharacter> loadCharacters(final int serverId) { // TODO make this less costly zZz
@@ -887,6 +894,10 @@ public class MapleClient implements Serializable {
 
             removalTask();
             player.saveToDB(true, fromCS);
+            // 追加データ
+            if (!fromCS) {
+                ExtraDB.saveData(player);
+            }
             if (shutdown) {
                 player = null;
                 receiving = false;
@@ -1264,9 +1275,6 @@ public class MapleClient implements Serializable {
     }
 
     public int getCharacterSlots() {
-        if (isGm()) {
-            return 15;
-        }
         if (charslots != DEFAULT_CHARSLOT) {
             return charslots; //save a sql
         }
@@ -1448,6 +1456,16 @@ public class MapleClient implements Serializable {
 
     public void SendPacket(MaplePacket packet) {
         getSession().write(packet);
+    }
+
+    // Point Shop
+    public void enableCSActions() {
+        getSession().write(PointShopResponse.QueryCashResult(player));
+    }
+
+    // MTS
+    public void enableMTSSActions() {
+        getSession().write(MapleTradeSpaceResponse.QueryCashResult(player));
     }
 
 }

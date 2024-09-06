@@ -25,7 +25,6 @@ import java.awt.Point;
 import client.inventory.IItem;
 import client.ISkill;
 import client.SkillFactory;
-import client.SkillMacro;
 import constants.GameConstants;
 import client.inventory.MapleInventoryType;
 import client.MapleBuffStat;
@@ -38,7 +37,6 @@ import constants.MapConstants;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import packet.client.ClientPacket;
-import packet.client.request.MobRequest;
 import packet.server.response.LocalResponse;
 import packet.server.response.MobResponse;
 import packet.server.response.RemoteResponse;
@@ -79,35 +77,6 @@ public class PlayerHandler {
         if (bookid == 0 || GameConstants.isMonsterCard(bookid)) {
             chr.setMonsterBookCover(bookid);
             chr.getMonsterBook().updateCard(c, bookid);
-        }
-    }
-
-    public static void ChangeSkillMacro(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        final int num = slea.readByte();
-        String name;
-        int shout, skill1, skill2, skill3;
-        SkillMacro macro;
-
-        for (int i = 0; i < num; i++) {
-            name = slea.readMapleAsciiString();
-            shout = slea.readByte();
-            skill1 = slea.readInt();
-            skill2 = slea.readInt();
-            skill3 = slea.readInt();
-
-            macro = new SkillMacro(skill1, skill2, skill3, name, shout, i);
-            chr.updateMacros(i, macro);
-        }
-    }
-
-    public static final void ChangeKeymap(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        if (slea.available() > 8 && chr != null) { // else = pet auto pot
-            chr.updateTick(slea.readInt());
-            final int numChanges = slea.readInt();
-
-            for (int i = 0; i < numChanges; i++) {
-                chr.changeKeybinding(slea.readInt(), slea.readByte(), slea.readInt());
-            }
         }
     }
 
@@ -184,14 +153,14 @@ public class PlayerHandler {
         c.getSession().write(TestResponse.getTrockRefresh(chr, vip == 1, addrem == 3));
     }
 
-    public static final void TakeDamage(ClientPacket p, final MapleClient c, final MapleCharacter chr) {
+    public static final void TakeDamage(ClientPacket cp, final MapleClient c, final MapleCharacter chr) {
         //System.out.println(slea.toString());
-        chr.updateTick(p.Decode4());
-        final byte type = p.Decode1(); //-4 is mist, -3 and -2 are map damage.
-        if (ServerConfig.version > 131) {
-            p.Decode1(); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
+        chr.updateTick(cp.Decode4());
+        final byte type = cp.Decode1(); //-4 is mist, -3 and -2 are map damage.
+        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
+            cp.Decode1(); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
         }
-        int damage = p.Decode4();
+        int damage = cp.Decode4();
 
         int oid = 0;
         int monsteridfrom = 0;
@@ -213,10 +182,10 @@ public class PlayerHandler {
         }
         final PlayerStats stats = chr.getStat();
         if (type != -2 && type != -3 && type != -4) { // Not map damage
-            monsteridfrom = p.Decode4();
-            oid = p.Decode4();
+            monsteridfrom = cp.Decode4();
+            oid = cp.Decode4();
             attacker = chr.getMap().getMonsterByOid(oid);
-            direction = p.Decode1();
+            direction = cp.Decode1();
 
             if (attacker == null) {
                 return;
@@ -253,9 +222,9 @@ public class PlayerHandler {
                 chr.cancelMorphs();
             }
             //if (slea.available() == 3) {
-            byte level = p.Decode1();
+            byte level = cp.Decode1();
             if (level > 0) {
-                final MobSkill skill = MobSkillFactory.getMobSkill(p.Decode2(), level);
+                final MobSkill skill = MobSkillFactory.getMobSkill(cp.Decode2(), level);
                 if (skill != null) {
                     //skill.applyEffect(chr, attacker, false);
                 }
@@ -421,20 +390,6 @@ public class PlayerHandler {
     public static final void CancelItemEffect(final int id, final MapleCharacter chr) {
         chr.cancelEffect(
                 MapleItemInformationProvider.getInstance().getItemEffect(-id), false, -1);
-    }
-
-    public static final void CancelBuffHandler(final int sourceid, final MapleCharacter chr) {
-        if (chr == null) {
-            return;
-        }
-        final ISkill skill = SkillFactory.getSkill(sourceid);
-
-        if (skill.isChargeSkill()) {
-            chr.setKeyDownSkill_Time(0);
-            chr.getMap().broadcastMessage(chr, MaplePacketCreator.skillCancel(chr, sourceid), false);
-        } else {
-            chr.cancelEffect(skill.getEffect(1), false, -1);
-        }
     }
 
     public static final void SkillEffect(ClientPacket p, final MapleCharacter chr) {
@@ -854,15 +809,28 @@ public class PlayerHandler {
         }
     }
 
-    public static final void ChangeMapSpecial(ClientPacket p, final MapleClient c) {
-        p.Decode1();
-        String portal_name = p.DecodeStr();
+    public static final void ChangeMapSpecial(ClientPacket cp, final MapleClient c) {
+        cp.Decode1();
+        String portal_name = cp.DecodeStr();
 
         final MaplePortal portal = c.getPlayer().getMap().getPortal(portal_name);
 
         if (portal != null) {
             portal.enterPortal(c);
         }
+    }
+
+    public static final void ChangeMap(MapleClient c, String portal_name) {
+        final MaplePortal portal = c.getPlayer().getMap().getPortal(portal_name);
+
+        if (portal != null) {
+            portal.enterPortal(c);
+        }
+    }
+
+    public static final void ChangeMap(MapleClient c, int map_id) {
+        final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(map_id);
+        c.getPlayer().changeMap(to, to.getPortal(0));
     }
 
     public static final void ChangeMap(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {

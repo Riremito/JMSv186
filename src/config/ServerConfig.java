@@ -31,6 +31,10 @@ public class ServerConfig {
         unk,
     }
 
+    public static boolean IsKMS() {
+        return GetRegion() == Region.KMS;
+    }
+
     public static boolean IsJMS() {
         return GetRegion() == Region.JMS;
     }
@@ -66,43 +70,43 @@ public class ServerConfig {
     public static boolean SetContentFlag() {
         switch (GetRegion()) {
             case KMS: {
-                if (100 < GetVersion()) {
+                if (101 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
             }
             case JMS: {
-                if (186 < GetVersion()) {
+                if (187 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
             }
             case CMS: {
-                if (86 < GetVersion()) {
+                if (87 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
             }
             case TWMS: {
-                if (122 < GetVersion()) {
+                if (123 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
             }
             case MSEA: {
-                if (102 < GetVersion()) {
+                if (103 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
             }
             case GMS: {
-                if (92 < GetVersion()) {
+                if (93 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
             }
             case EMS: {
-                if (72 < GetVersion()) {
+                if (73 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
@@ -122,7 +126,7 @@ public class ServerConfig {
     // Version
     private static Region region_name = Region.JMS;
     private static byte region_number = 3; // JMS
-    public static short version = 186;
+    public static int version = 186;
     private static byte version_sub = 1;
 
     public static byte GetRegionNumber() {
@@ -187,7 +191,7 @@ public class ServerConfig {
     }
 
     public static void SetVersion(int ver1, int ver2) {
-        version = (short) ver1;
+        version = ver1;
         version_sub = (byte) ver2;
     }
     public static String wz_path, script_path;

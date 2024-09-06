@@ -63,7 +63,7 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
         this.hide = hide;
     }
 
-    public int originFh() {
+    public int getOriginFh() {
         return originFh;
     }
 

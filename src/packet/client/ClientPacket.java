@@ -131,23 +131,23 @@ public class ClientPacket {
         CP_CheckPassword, // LOGIN_PASSWORD
         CP_Check2ndPassword, // v188 test
         CP_Check2ndPassword_cancel, // v188 test
-        //CP_GuestIDLogin,
+        CP_GuestIDLogin,
         CP_AccountInfoRequest,
         CP_WorldInfoRequest, // SERVERLIST_REQUEST
         CP_SelectWorld, // CHARLIST_REQUEST
         CP_CheckUserLimit,
-        //CP_ConfirmEULA,
-        //CP_SetGender,
+        CP_ConfirmEULA,
+        CP_SetGender,
         CP_CheckPinCode,
-        //CP_UpdatePinCode,
+        CP_UpdatePinCode,
         CP_WorldRequest,
         CP_LogoutWorld,
         CP_ViewAllChar,
-        //CP_SelectCharacterByVAC,
-        //CP_VACFlagSet,
-        //CP_CheckNameChangePossible,
-        //CP_RegisterNewCharacter,
-        //CP_CheckTransferWorldPossible,
+        CP_SelectCharacterByVAC,
+        CP_VACFlagSet,
+        CP_CheckNameChangePossible,
+        CP_RegisterNewCharacter,
+        CP_CheckTransferWorldPossible,
         CP_SelectCharacter, // CHAR_SELECT
         CP_MigrateIn, // PLAYER_LOGGEDIN
         CP_CheckDuplicatedID, // CHECK_CHAR_NAME
@@ -157,17 +157,17 @@ public class ClientPacket {
         CP_AliveAck,
         CP_ExceptionLog,
         CP_SecurityPacket,
-        //CP_EnableSPWRequest,
-        //CP_CheckSPWRequest,
-        //CP_EnableSPWRequestByACV,
-        //CP_CheckSPWRequestByACV,
-        //CP_CheckOTPRequest,
-        //CP_CheckDeleteCharacterOTP,
+        CP_EnableSPWRequest,
+        CP_CheckSPWRequest,
+        CP_EnableSPWRequestByACV,
+        CP_CheckSPWRequestByACV,
+        CP_CheckOTPRequest,
+        CP_CheckDeleteCharacterOTP,
         CP_CreateSecurityHandle,
-        //CP_SSOErrorLog,
-        //CP_ClientDumpLog,
-        //CP_CheckExtraCharInfo,
-        //CP_CreateNewCharacter_Ex,
+        CP_SSOErrorLog,
+        CP_ClientDumpLog,
+        CP_CheckExtraCharInfo,
+        CP_CreateNewCharacter_Ex,
         CP_END_SOCKET,
         // ゲームサーバー
         CP_BEGIN_USER,
@@ -181,7 +181,7 @@ public class ClientPacket {
         CP_UserShootAttack, // RANGED_ATTACK
         CP_UserMagicAttack, // MAGIC_ATTACK
         CP_UserBodyAttack,
-        //CP_UserMovingShootAttackPrepare,
+        CP_UserMovingShootAttackPrepare,
         CP_UserHit, // TAKE_DAMAGE
         CP_UserAttackUser,
         CP_UserChat, // GENERAL_CHAT
@@ -220,14 +220,13 @@ public class ClientPacket {
         CP_UserBridleItemUseRequest, // USE_CATCH_ITEM
         CP_UserSkillLearnItemUseRequest, // USE_SKILL_BOOK
         CP_UserSkillResetItemUseRequest,
-        CP_JMS_MONSTERBOOK_SET,
         CP_UserShopScannerItemUseRequest, // USE_OWL_MINERVA
         CP_UserMapTransferItemUseRequest, // USE_TELE_ROCK
         CP_UserPortalScrollUseRequest, // USE_RETURN_SCROLL
         CP_UserUpgradeItemUseRequest, // USE_UPGRADE_SCROLL
         CP_UserHyperUpgradeItemUseRequest,
         CP_UserItemOptionUpgradeItemUseRequest,
-        //CP_UserUIOpenItemUseRequest,
+        CP_UserUIOpenItemUseRequest,
         CP_UserItemReleaseRequest,
         CP_UserAbilityUpRequest, // DISTRIBUTE_AP
         CP_UserAbilityMassUpRequest,
@@ -257,23 +256,23 @@ public class ClientPacket {
         CP_UserSelectNpcItemUseRequest,
         CP_UserLotteryItemUseRequest,
         CP_UserItemMakeRequest,
-        //CP_UserSueCharacterRequest,
+        CP_UserSueCharacterRequest,
         CP_UserUseGachaponBoxRequest,
-        //CP_UserUseGachaponRemoteRequest,
-        //CP_UserUseWaterOfLife,
+        CP_UserUseGachaponRemoteRequest,
+        CP_UserUseWaterOfLife,
         CP_UserRepairDurabilityAll,
         CP_UserRepairDurability,
         CP_UserQuestRecordSetState,
         CP_UserClientTimerEndRequest,
         CP_UserFollowCharacterRequest,
         CP_UserFollowCharacterWithdraw,
-        //CP_UserSelectPQReward,
-        //CP_UserRequestPQReward,
+        CP_UserSelectPQReward,
+        CP_UserRequestPQReward,
         CP_SetPassenserResult,
         CP_BroadcastMsg,
         CP_GroupMessage, // PARTYCHAT
         CP_Whisper, // WHISPER
-        //CP_CoupleMessage,
+        CP_CoupleMessage,
         CP_Messenger,
         CP_MiniRoom,
         CP_PartyRequest,
@@ -311,12 +310,9 @@ public class ClientPacket {
         CP_FamilySummonResult,
         CP_ChatBlockUserReq,
         CP_GuildBBS,
-        CP_JMS_PINKBEAN_PORTAL_ENTER,
-        CP_JMS_PINKBEAN_PORTAL_CREATE,
         CP_UserMigrateToITCRequest,
         CP_UserExpUpItemUseRequest,
         CP_UserTempExpUseRequest,
-        CP_JMS_JUKEBOX, // ItemID 2150001
         CP_NewYearCardRequest,
         CP_RandomMorphRequest,
         CP_CashItemGachaponRequest,
@@ -355,8 +351,8 @@ public class ClientPacket {
         CP_UpdateScreenSetting,
         CP_UserAttackUser_Specific,
         CP_UserPamsSongUseRequest,
-        //CP_QuestGuideRequest,
-        //CP_UserRepeatEffectRemove,
+        CP_QuestGuideRequest,
+        CP_UserRepeatEffectRemove,
         CP_END_USER,
         CP_BEGIN_FIELD,
         CP_BEGIN_LIFEPOOL,
@@ -403,8 +399,8 @@ public class ClientPacket {
         CP_INVITE_PARTY_MATCH,
         CP_CANCEL_INVITE_PARTY_MATCH,
         CP_END_PARTY_MATCH,
-        //CP_RequestFootHoldInfo,
-        //CP_FootHoldInfo,
+        CP_RequestFootHoldInfo,
+        CP_FootHoldInfo,
         CP_END_FIELD,
         // ポイントショップ
         CP_BEGIN_CASHSHOP,
@@ -412,11 +408,17 @@ public class ClientPacket {
         CP_CashShopQueryCashRequest,
         CP_CashShopCashItemRequest,
         CP_CashShopCheckCouponRequest,
+        CP_JMS_RECOMMENDED_AVATAR,
+        CP_CashShopMemberShopRequest,
         CP_CashShopGiftMateInfoRequest,
+        CP_CashShopSearchLog,
+        CP_CashShopCoodinationRequest,
+        CP_CashShopCheckMileageRequest,
+        CP_CashShopNaverUsageInfoRequest,
         CP_END_CASHSHOP,
-        //CP_CheckSSN2OnCreateNewCharacter,
-        //CP_CheckSPWOnCreateNewCharacter,
-        //CP_FirstSSNOnCreateNewCharacter,
+        CP_CheckSSN2OnCreateNewCharacter,
+        CP_CheckSPWOnCreateNewCharacter,
+        CP_FirstSSNOnCreateNewCharacter,
         // 多分絵具とかアイテム集める系のUI
         CP_BEGIN_RAISE,
         CP_RaiseRefesh,
@@ -424,51 +426,56 @@ public class ClientPacket {
         CP_RaiseIncExp,
         CP_RaiseAddPiece,
         CP_END_RAISE,
-        //CP_SendMateMail,
-        //CP_RequestGuildBoardAuthKey,
-        //CP_RequestConsultAuthKey,
-        //CP_RequestClassCompetitionAuthKey,
-        //CP_RequestWebBoardAuthKey,
+        CP_SendMateMail,
+        CP_RequestGuildBoardAuthKey,
+        CP_RequestConsultAuthKey,
+        CP_RequestClassCompetitionAuthKey,
+        CP_RequestWebBoardAuthKey,
         CP_BEGIN_ITEMUPGRADE,
         // ビシャスのハンマー
         CP_GoldHammerRequest,
-        //CP_GoldHammerComplete,
-        //CP_ItemUpgradeComplete,
+        CP_GoldHammerComplete,
+        CP_ItemUpgradeComplete,
         CP_END_ITEMUPGRADE,
         CP_BEGIN_BATTLERECORD,
         CP_BATTLERECORD_ONOFF_REQUEST,
         CP_END_BATTLERECORD,
-        //CP_BEGIN_MAPLETV,
+        CP_BEGIN_MAPLETV,
         CP_MapleTVSendMessageRequest,
-        //CP_MapleTVUpdateViewCount,
-        //CP_END_MAPLETV,
+        CP_MapleTVUpdateViewCount,
+        CP_END_MAPLETV,
         // MTS
         CP_BEGIN_ITC,
         CP_ITCChargeParamRequest,
         CP_ITCQueryCashRequest,
         CP_ITCItemRequest,
         CP_END_ITC,
-        //CP_BEGIN_CHARACTERSALE,
-        //CP_CheckDuplicatedIDInCS,
-        //CP_END_CHARACTERSALE,
+        CP_BEGIN_CHARACTERSALE,
+        CP_CheckDuplicatedIDInCS,
+        CP_END_CHARACTERSALE,
         CP_LogoutGiftSelect,
         CP_NO,
-        // ヘッダに対応する処理の名前を定義
-        UNKNOWN_BEGIN,
-        UNKNOWN,
+        // JMS headers
         REACHED_LOGIN_SCREEN, // 名称不明, ログイン画面に到達
-        WHEEL_OF_FORTUNE, // 不明
         GM_COMMAND_MAPLETV, // Super Megaphone Exploitのパケット
+        BEANS_OPERATION, // PACHINKO_GAME, パチンコ
+        BEANS_UPDATE, // PACHINKO_UPDATE, パチンコ
+        CP_JMS_MONSTERBOOK_SET,
+        CP_JMS_PINKBEAN_PORTAL_ENTER,
+        CP_JMS_PINKBEAN_PORTAL_CREATE,
+        CP_JMS_JUKEBOX, // ItemID 2150001
+        // old header names
+        WHEEL_OF_FORTUNE, // 不明
         SOLOMON, // 名称不明
         USE_TREASUER_CHEST, // 名称不明
         CYGNUS_SUMMON, // 名称不明
         LEFT_KNOCK_BACK, // イベント関連?
-        RECOMMENDED_AVATAR, // おすすめアバター
         UPDATE_QUEST, // 不明
         QUEST_ITEM, // 不明
         USE_ITEM_QUEST, // 多分Quest Value Addition Exploitのパケット
-        BEANS_OPERATION, // PACHINKO_GAME, パチンコ
-        BEANS_UPDATE, // PACHINKO_UPDATE, パチンコ
+        // ヘッダに対応する処理の名前を定義
+        UNKNOWN_BEGIN,
+        UNKNOWN,
         UNKNOWN_END;
 
         // 定義値の変更や取得

@@ -168,7 +168,7 @@ public class NPCPacket {
             case BUY_ITEM: {
                 p.Decode2();
 
-                if (194 <= ServerConfig.version) {
+                if (ServerConfig.IsPostBB() && ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
                     p.Decode1();
                 }
 
@@ -239,41 +239,44 @@ public class NPCPacket {
     public static MaplePacket getNPCShop(MapleClient c, int sid, List<MapleShopItem> items) {
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_OpenShopDlg);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_OpenShopDlg);
 
-        if (194 <= ServerConfig.version) {
-            p.Encode1(0);
+        if (ServerConfig.IsPostBB() && ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+            sp.Encode1(0);
         }
 
-        p.Encode4(sid);
+        sp.Encode4(sid);
 
-        if (194 <= ServerConfig.version) {
+        if (ServerConfig.IsPostBB() && ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
             // 0 = normal shop, 1 is probably coin shop
-            p.Encode1(0); // if 1, Encode1(size), Encode4, EncodeStr
+            sp.Encode1(0); // if 1, Encode1(size), Encode4, EncodeStr
         }
 
-        p.Encode2(items.size()); // item count
+        sp.Encode2(items.size()); // item count
         for (MapleShopItem item : items) {
-            p.Encode4(item.getItemId());
-            p.Encode4(item.getPrice());
+            sp.Encode4(item.getItemId());
+            sp.Encode4(item.getPrice());
 
-            if (186 <= ServerConfig.version) {
-                p.Encode4(item.getReqItem()); // nTokenItemID
-                p.Encode4(item.getReqItemQ()); // nTokenPrice
-                p.Encode4(0); // nItemPeriod
-                p.Encode4(0); // nLevelLimited
+            if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
+                sp.Encode4(item.getReqItem()); // nTokenItemID
+                sp.Encode4(item.getReqItemQ()); // nTokenPrice
+                if (!ServerConfig.IsKMS()) {
+                    sp.Encode4(0); // nItemPeriod
+                }
+                sp.Encode4(0); // nLevelLimited
             }
 
             if (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId())) {
-                p.Encode2(1); // stacksize o.o
-                p.Encode2(item.getBuyable());
+                sp.Encode2(1); // stacksize o.o
+                sp.Encode2(item.getBuyable());
             } else {
-                p.EncodeZeroBytes(6);
-                p.Encode2(BitTools.doubleToShortBits(ii.getPrice(item.getItemId())));
-                p.Encode2(ii.getSlotMax(c, item.getItemId()));
+                sp.EncodeZeroBytes(6);
+                sp.Encode2(BitTools.doubleToShortBits(ii.getPrice(item.getItemId())));
+                sp.Encode2(ii.getSlotMax(c, item.getItemId()));
             }
         }
-        return p.Get();
+
+        return sp.Get();
     }
 
     // CShopDlg::OnPacket

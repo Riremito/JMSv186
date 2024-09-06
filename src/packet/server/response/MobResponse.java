@@ -21,6 +21,7 @@ package packet.server.response;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import config.ServerConfig;
+import debug.Debug;
 import handling.MaplePacket;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +42,7 @@ public class MobResponse {
     public static MaplePacket moveMonster(boolean useskill, int skill, int skill1, int skill2, int skill3, int skill4, int oid, CMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobMove);
         sp.Encode4(oid);
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
             sp.Encode1(0); // bNotForceLandingWhenDiscard
             sp.Encode1(0); // bNotChangeAction
         }
@@ -54,7 +55,7 @@ public class MobResponse {
             sp.Encode1(skill3); // effectDelay
             sp.Encode1(skill4); // effectDelay
         }
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
             sp.Encode4(0); //  if this is not 0, Encode4 x2 x loop count
             sp.Encode4(0); //  if this is not 0, Encode4 x loop count
         }
@@ -200,32 +201,38 @@ public class MobResponse {
 
     // spawnMonster
     public static MaplePacket Spawn(MapleMonster life, int spawnType, int effect, int link) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_MobEnterField);
-        p.Encode4(life.getObjectId());
-        p.Encode1(1); // 1 = Control normal, 5 = Control none
-        p.Encode4(life.getId());
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobEnterField);
+        sp.Encode4(life.getObjectId());
+        sp.Encode1(1); // 1 = Control normal, 5 = Control none
+        sp.Encode4(life.getId());
         if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) {
-            p.Encode4(0); // 後でなおす
+            sp.Encode4(0); // 後でなおす
         } else {
-            p.EncodeBuffer(Structure.MonsterStatus(life));
+            sp.EncodeBuffer(Structure.MonsterStatus(life));
         }
-        p.Encode2(life.getPosition().x);
-        p.Encode2(life.getPosition().y);
-        p.Encode1(life.getStance());
-        p.Encode2(0); // FH
-        p.Encode2(life.getFh()); // Origin FH
-        p.Encode1(spawnType);
+
+        // credit to 垂垂 for fixing mob fall down issue
+        if (life.getFh() == 0) {
+            Debug.DebugLog("Spawn FH = 0");
+        }
+
+        sp.Encode2(life.getPosition().x); // m_ptPosPrev.x
+        sp.Encode2(life.getPosition().y); // m_ptPosPrev.y
+        sp.Encode1(life.getStance()); // m_nMoveAction_CS
+        sp.Encode2(life.getFh()); // pvcMobActiveObj
+        sp.Encode2(life.getOriginFh()); // m_pInterface
+        sp.Encode1(spawnType);
         if (spawnType == -3 || 0 <= spawnType) {
-            p.Encode4(link);
+            sp.Encode4(link); // dwOption
         }
-        p.Encode1(life.getCarnivalTeam());
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
-            p.Encode4(0);
+        sp.Encode1(life.getCarnivalTeam()); // m_nTeamForMCarnival
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
+            sp.Encode4(0); // nEffectItemID
         }
-        if ((ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
-            p.Encode4(0);
+        if ((ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
+            sp.Encode4(0); // m_nPhase
         }
-        return p.Get();
+        return sp.Get();
     }
 
     public static MaplePacket removeTalkMonster(int oid) {
@@ -259,36 +266,42 @@ public class MobResponse {
 
     // controlMonster
     public static MaplePacket Control(MapleMonster life, boolean newSpawn, boolean aggro) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_MobChangeController);
-        p.Encode1(aggro ? 2 : 1);
-        p.Encode4(life.getObjectId());
-        p.Encode1(1); // 1 = Control normal, 5 = Control none
-        p.Encode4(life.getId());
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobChangeController);
+        sp.Encode1(aggro ? 2 : 1);
+        sp.Encode4(life.getObjectId());
+        sp.Encode1(1); // 1 = Control normal, 5 = Control none
+        sp.Encode4(life.getId());
         if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) {
-            p.Encode4(0); // 後でなおす
+            sp.Encode4(0); // 後でなおす
         } else {
-            p.EncodeBuffer(Structure.MonsterStatus(life));
+            sp.EncodeBuffer(Structure.MonsterStatus(life));
         }
-        p.Encode2(life.getPosition().x);
-        p.Encode2(life.getPosition().y);
-        p.Encode1(life.getStance()); // Bitfield
-        p.Encode2(0); // FH
-        p.Encode2(life.getFh()); // Origin FH
-        p.Encode1(life.isFake() ? -4 : newSpawn ? -2 : -1);
-        p.Encode1(life.getCarnivalTeam());
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
-            p.Encode4(0);
-            p.Encode4(0);
+
+        // credit to 垂垂 for fixing mob fall down issue
+        if (life.getFh() == 0) {
+            Debug.DebugLog("Control FH = 0");
         }
-        return p.Get();
+
+        sp.Encode2(life.getPosition().x);
+        sp.Encode2(life.getPosition().y);
+        sp.Encode1(life.getStance()); // Bitfield
+        sp.Encode2(life.getFh()); // FH
+        sp.Encode2(life.getOriginFh()); // Origin FH
+        sp.Encode1(life.isFake() ? -4 : newSpawn ? -2 : -1);
+        sp.Encode1(life.getCarnivalTeam());
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
+            sp.Encode4(0);
+            sp.Encode4(0);
+        }
+        return sp.Get();
     }
 
     // stopControllingMonster
     public static MaplePacket StopControl(MapleMonster m) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_MobChangeController);
-        p.Encode1(0);
-        p.Encode4(m.getObjectId());
-        return p.Get();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobChangeController);
+        sp.Encode1(0);
+        sp.Encode4(m.getObjectId());
+        return sp.Get();
     }
 
     // showMonsterHP
@@ -312,5 +325,5 @@ public class MobResponse {
         p.Encode4(1); //?
         return p.Get();
     }
-    
+
 }

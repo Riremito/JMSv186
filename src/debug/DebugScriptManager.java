@@ -26,7 +26,7 @@ import javax.script.ScriptException;
 public class DebugScriptManager {
 
     private static final DebugScriptManager instance = new DebugScriptManager();
-    private final static ScriptEngineFactory sef = new ScriptEngineManager().getEngineByName("javascript").getFactory();
+    private final static ScriptEngineFactory sef = new ScriptEngineManager().getEngineByName("nashorn").getFactory();
 
     public final static DebugScriptManager getInstance() {
         return instance;

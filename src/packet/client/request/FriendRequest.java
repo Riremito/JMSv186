@@ -32,6 +32,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import packet.client.ClientPacket;
+import packet.ops.FriendOps;
 import packet.server.response.FriendResponse;
 
 /**
@@ -42,7 +43,7 @@ public class FriendRequest {
 
     public static boolean OnPacket(ClientPacket cp, MapleClient c) {
         byte bf = cp.Decode1();
-        FriendResponse.FriendOps flag = FriendResponse.FriendOps.find(bf);
+        FriendOps flag = FriendOps.find(bf);
 
         switch (flag) {
             case FriendReq_LoadFriend: {
@@ -91,12 +92,12 @@ public class FriendRequest {
             return;
         }
         if (ble != null && (ble.getGroup().equals(friend_tag) || !ble.isVisible())) {
-            c.getSession().write(FriendResponse.buddylistMessage(FriendResponse.FriendOps.FriendRes_SetFriend_FullMe));
+            c.getSession().write(FriendResponse.buddylistMessage(FriendOps.FriendRes_SetFriend_FullMe));
         } else if (ble != null && ble.isVisible()) {
             ble.setGroup(friend_tag);
             c.getSession().write(FriendResponse.updateBuddylist(c.getPlayer()));
         } else if (buddylist.isFull()) {
-            c.getSession().write(FriendResponse.buddylistMessage(FriendResponse.FriendOps.FriendRes_SetFriend_FullMe));
+            c.getSession().write(FriendResponse.buddylistMessage(FriendOps.FriendRes_SetFriend_FullMe));
         } else {
             try {
                 CharacterIdNameBuddyCapacity charWithId = null;
@@ -142,7 +143,7 @@ public class FriendRequest {
                         ps.close();
                     }
                     if (buddyAddResult == BuddyList.BuddyAddResult.BUDDYLIST_FULL) {
-                        c.getSession().write(FriendResponse.buddylistMessage(FriendResponse.FriendOps.FriendRes_SetFriend_FullOther));
+                        c.getSession().write(FriendResponse.buddylistMessage(FriendOps.FriendRes_SetFriend_FullOther));
                     } else {
                         int displayChannel = -1;
                         int otherCid = charWithId.getId();
@@ -162,7 +163,7 @@ public class FriendRequest {
                         c.getSession().write(FriendResponse.updateBuddylist(c.getPlayer()));
                     }
                 } else {
-                    c.getSession().write(FriendResponse.buddylistMessage(FriendResponse.FriendOps.FriendRes_SetFriend_UnknownUser));
+                    c.getSession().write(FriendResponse.buddylistMessage(FriendOps.FriendRes_SetFriend_UnknownUser));
                 }
             } catch (SQLException e) {
                 System.err.println("SQL THROW" + e);
@@ -206,7 +207,7 @@ public class FriendRequest {
                 System.err.println("SQL THROW" + e);
             }
         } else {
-            c.getSession().write(FriendResponse.buddylistMessage(FriendResponse.FriendOps.FriendRes_SetFriend_FullMe));
+            c.getSession().write(FriendResponse.buddylistMessage(FriendOps.FriendRes_SetFriend_FullMe));
         }
         nextPendingRequest(c);
     }

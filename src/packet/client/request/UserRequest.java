@@ -1,9 +1,11 @@
 // User
 package packet.client.request;
 
+import client.ISkill;
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleClient;
+import client.SkillFactory;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import config.DebugConfig;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import packet.client.ClientPacket;
 import packet.client.request.struct.CMovePath;
+import packet.server.response.ContextResponse;
 import packet.server.response.UserResponse;
 import server.maps.MapleMap;
 import tools.AttackPair;
@@ -74,7 +77,7 @@ public class UserRequest {
                 return true;
             }
             case CP_UserChangeStatRequest: {
-                if (ServerConfig.version > 131) {
+                if (ServerConfig.IsJMS() && 131 < ServerConfig.GetVersion()) {
                     cp.Decode4(); // time1
                 }
 
@@ -117,6 +120,11 @@ public class UserRequest {
                 OnCharacterInfoRequest(cp, chr, map);
                 return true;
             }
+            // buff
+            case CP_UserSkillCancelRequest: {
+                OnSkillCanselRequest(cp, chr);
+                return true;
+            }
             default: {
                 break;
             }
@@ -133,7 +141,7 @@ public class UserRequest {
     // CUser::SendCharacterStat(1,0)
     // CWvsContext::OnStatChanged
     public static void SendCharacterStat(MapleCharacter chr, int unlock, int statmask) {
-        chr.SendPacket(ContextPacket.StatChanged(chr, unlock, statmask));
+        chr.SendPacket(ContextResponse.StatChanged(chr, unlock, statmask));
     }
 
     // BMS CUser::OnAttack
@@ -155,7 +163,7 @@ public class UserRequest {
         attack.FieldKey = cp.Decode1();
 
         // DR_Check
-        if (186 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) {
             cp.Decode4(); // pDrInfo.dr0
             cp.Decode4(); // pDrInfo.dr1
         }
@@ -163,7 +171,7 @@ public class UserRequest {
         attack.HitKey = cp.Decode1(); // nDamagePerMob | (16 * nCount)
 
         // DR_Check
-        if (186 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) {
             cp.Decode4(); // pDrInfo.dr2
             cp.Decode4(); // pDrInfo.dr3
         }
@@ -177,16 +185,16 @@ public class UserRequest {
         }
 
         // v95 1 byte cd->nCombatOrders
-        if (186 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) {
             cp.Decode4(); // get_rand of DR_Check
             cp.Decode4(); // Crc32 of DR_Check
-            if (188 <= ServerConfig.version) {
+            if (ServerConfig.IsPostBB()) {
                 cp.Decode1();
             }
             // v95 4 bytes SKILLLEVELDATA::GetCrc
         }
 
-        if (164 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
             cp.Decode4(); // Crc
         }
 
@@ -195,7 +203,7 @@ public class UserRequest {
             attack.tKeyDown = cp.Decode4();
         }
 
-        if (194 <= ServerConfig.version) {
+        if (ServerConfig.IsPostBB() && ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
             if (attack.AttackHeader == ClientPacket.Header.CP_UserShootAttack) {
                 cp.Decode1();
             }
@@ -203,13 +211,13 @@ public class UserRequest {
 
         attack.BuffKey = cp.Decode1();
 
-        if (ServerConfig.version <= 165) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
             attack.AttackActionKey = cp.Decode1();
         } else {
             attack.AttackActionKey = cp.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15)
         }
 
-        if (188 <= ServerConfig.version) {
+        if (ServerConfig.IsPostBB()) {
             cp.Decode4();
         }
 
@@ -218,7 +226,7 @@ public class UserRequest {
         attack.nAttackSpeed = cp.Decode1();
         attack.tAttackTime = cp.Decode4();
 
-        if (186 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
             cp.Decode4(); // dwID
         }
 
@@ -270,14 +278,14 @@ public class UserRequest {
                 allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
             }
 
-            if (164 <= ServerConfig.version) {
+            if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
                 cp.Decode4(); // CMob::GetCrc(v366->pMob)
             }
 
             attack.allDamage.add(new AttackPair(Integer.valueOf(nTargetID), allDamageNumbers));
         }
 
-        if (186 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
             if (attack.AttackHeader == ClientPacket.Header.CP_UserShootAttack) {
                 cp.Decode4(); // v292->CUser::CLife::IVecCtrlOwner::vfptr->GetPos?
             }
@@ -413,6 +421,21 @@ public class UserRequest {
         }
 
         chr.SendPacket(UserResponse.CharacterInfo(player, chr.getId() == m_dwCharacterId));
+        return true;
+    }
+
+    // CancelBuffHandler
+    public static boolean OnSkillCanselRequest(ClientPacket cp, MapleCharacter chr) {
+        int skill_id = cp.Decode4();
+        ISkill skill = SkillFactory.getSkill(skill_id);
+
+        if (skill.isChargeSkill()) {
+            chr.setKeyDownSkill_Time(0);
+            chr.getMap().broadcastMessage(chr, UserResponse.skillCancel(chr, skill_id), false);
+        } else {
+            chr.cancelEffect(skill.getEffect(1), false, -1);
+        }
+
         return true;
     }
 

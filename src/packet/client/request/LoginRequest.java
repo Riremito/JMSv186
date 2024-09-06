@@ -118,7 +118,7 @@ public class LoginRequest {
         }
         final int JobType = p.Decode4();
         short db = 0;
-        if ((ServerConfig.IsJMS() && 176 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
+        if ((ServerConfig.IsJMS() && 176 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
             db = p.Decode2();
         }
 
@@ -197,6 +197,9 @@ public class LoginRequest {
     }
 
     public static final void CharlistRequest(ClientPacket p, final MapleClient c) {
+        if (ServerConfig.IsKMS()) {
+            byte unk = p.Decode1();
+        }
         int server = p.Decode1();
         final int channel = p.Decode1();
         // もみじ block test
@@ -218,16 +221,22 @@ public class LoginRequest {
         c.SendPacket(LoginResponse.getCharList(c, LoginResponse.LoginResult.SUCCESS));
     }
 
-    public static final void DeleteChar(ClientPacket p, final MapleClient c) {
+    public static final void DeleteChar(ClientPacket cp, final MapleClient c) {
         byte state = 0;
         // BB後
-        if (ServerConfig.version >= 188) {
-            String MapleID = p.DecodeStr();
+        if (ServerConfig.IsPostBB() && !ServerConfig.IsKMS()) {
+            String MapleID = cp.DecodeStr();
             if (!MapleID.equals(c.getAccountName())) {
                 // state = 0以外にすると切断されます
             }
         }
-        final int Character_ID = p.Decode4();
+
+        if (ServerConfig.IsKMS()) {
+            byte unk1 = cp.Decode1();
+            int unk2 = cp.Decode4();
+        }
+
+        final int Character_ID = cp.Decode4();
         if (!c.login_Auth(Character_ID)) {
             c.getSession().close();
             return;
