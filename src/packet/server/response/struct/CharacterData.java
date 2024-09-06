@@ -87,7 +87,7 @@ public class CharacterData {
             }
 
             // 祝福系統
-            if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+            if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
                 // 女王の祝福 max 24
                 data.Encode1(0); // not 0, EncodeStr
                 // ???
@@ -141,17 +141,31 @@ public class CharacterData {
         }
         switch (ServerConfig.GetRegion()) {
             case KMS: {
-                if ((datamask & 0x20000) > 0) {
-                    data.Encode4(chr.getMonsterBookCover());
-                }
-                if ((datamask & 0x10000) > 0) {
-                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                if (ServerConfig.IsPreBB()) {
+                    if ((datamask & 0x20000) > 0) {
+                        data.Encode4(chr.getMonsterBookCover());
+                    }
+                    if ((datamask & 0x10000) > 0) {
+                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    }
                 }
                 if ((datamask & 0x40000) > 0) {
                     data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                 }
-                if ((datamask & 0x80000) > 0) {
-                    data.Encode2(0);
+
+                if (ServerConfig.IsPreBB()) {
+                    if ((datamask & 0x80000) > 0) {
+                        data.Encode2(0);
+                    }
+                }
+
+                if (ServerConfig.IsPostBB()) {
+                    if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
+                        data.EncodeBuffer(GW_WildHunterInfo.Encode());
+                    }
+                    if ((datamask & 0x400000) > 0) {
+                        data.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                    }
                 }
                 break;
             }
@@ -380,7 +394,7 @@ public class CharacterData {
             p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Cash));
         }
         // 不明
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
             // func 004FB8B0
             p.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
         }

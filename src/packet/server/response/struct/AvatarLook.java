@@ -88,7 +88,12 @@ public class AvatarLook {
         p.Encode4(cWeapon != null ? cWeapon.getItemId() : 0);
 
         if (ServerConfig.IsKMS()) {
-            p.Encode4(0);
+            if (ServerConfig.IsPostBB()) {
+                p.EncodeZeroBytes(12);
+            } else {
+
+                p.Encode4(0);
+            }
             return p.Get().getBytes();
         }
 

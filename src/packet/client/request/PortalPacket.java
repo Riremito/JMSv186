@@ -12,7 +12,7 @@ public class PortalPacket {
 
     // CP_UserTransferFieldRequest, CP_UserPortalScriptRequest, CP_UserPortalTeleportRequest
     public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
-
+        MapleCharacter chr = c.getPlayer();
         switch (header) {
             // ポータル or /map
             case CP_UserTransferFieldRequest: {
@@ -28,7 +28,12 @@ public class PortalPacket {
                     }
                     byte unk4 = cp.Decode1();
                     byte unk5 = cp.Decode1();
-                    if (map_id != -1) {
+
+                    if (!chr.isAlive() && map_id == 0) {
+                        chr.getStat().setHp((short) 50);
+                        final MapleMap to = chr.getMap().getReturnMap();
+                        chr.changeMap(to, to.getPortal(0));
+                    } else if (map_id != -1) {
                         PlayerHandler.ChangeMap(c, map_id);
                     } else {
                         PlayerHandler.ChangeMap(c, portal_name);
@@ -37,8 +42,6 @@ public class PortalPacket {
                 } else {
                     byte portal_count = cp.Decode1();
                     int map_id = cp.Decode4();
-
-                    MapleCharacter chr = c.getPlayer();
                     // 復活
                     if (!chr.isAlive() && map_id == 0) {
                         String portal_name = cp.DecodeStr();

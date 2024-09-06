@@ -155,7 +155,7 @@ public class Structure {
             data.Encode4(map[i]);
         }
 
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+        if ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }

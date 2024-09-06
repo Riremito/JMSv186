@@ -51,8 +51,12 @@ public class StageResponse {
         if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
             sp.Encode4(0);
         }
+        if ((ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
+            sp.Encode4(0);
+        }
+
         sp.Encode1(chr.getPortalCount());
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
             sp.Encode4(0);
         }
         if (ServerConfig.IsCMS()) {
@@ -89,9 +93,11 @@ public class StageResponse {
         }
         // サーバーの時間?
         sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
             sp.Encode4(0);
-            sp.Encode4(0);
+            if (!ServerConfig.IsKMS()) {
+                sp.Encode4(0);
+            }
         }
         return sp.Get();
     }
@@ -124,7 +130,7 @@ public class StageResponse {
             sp.EncodeStr(c.getAccountName());
             // CWvsContext::SetSaleInfo
             {
-                if (ServerConfig.IsPostBB()) {
+                if (ServerConfig.IsJMS() && ServerConfig.IsPostBB()) {
                     sp.Encode4(0); // NotSaleCount
                 }
                 sp.EncodeBuffer(PointShopResponse.getModifiedData());

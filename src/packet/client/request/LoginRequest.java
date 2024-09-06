@@ -224,7 +224,7 @@ public class LoginRequest {
     public static final void DeleteChar(ClientPacket cp, final MapleClient c) {
         byte state = 0;
         // BB後
-        if (ServerConfig.IsPostBB()) {
+        if (ServerConfig.IsPostBB() && !ServerConfig.IsKMS()) {
             String MapleID = cp.DecodeStr();
             if (!MapleID.equals(c.getAccountName())) {
                 // state = 0以外にすると切断されます

@@ -243,12 +243,12 @@ public class LoginResponse {
                 }
                 sp.EncodeStr(client.getAccountName());
                 if (ServerConfig.IsKMS()) {
-                    sp.Encode4(0);
+                    sp.Encode4(3); // should be 3 for KMS v2.114 to ignore personal number
                 } else {
                     sp.EncodeStr(client.getAccountName());
                 }
 
-                sp.Encode1(0);
+                sp.Encode1(ServerConfig.IsKMS() ? 1 : 0); // should be 1 for KMS v2.114 to ignore personal number
                 sp.Encode1(0);
                 sp.Encode1(0);
                 if (!ServerConfig.IsKMS()) {
@@ -261,7 +261,7 @@ public class LoginResponse {
                     sp.Encode1(0);
                 }
                 // 2次パスワード
-                if (ServerConfig.IsPostBB()) {
+                if (ServerConfig.IsPostBB() && ServerConfig.IsJMS()) {
                     // -1, 無視
                     // 0, 初期化
                     // 1, 登録済み
@@ -494,6 +494,9 @@ public class LoginResponse {
             p.Encode1(2);
             p.Encode1(0);
             p.Encode4(charslots);
+            if (ServerConfig.IsPostBB()) {
+                p.Encode4(0);
+            }
             return p.Get();
         }
 

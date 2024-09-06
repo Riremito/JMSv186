@@ -103,7 +103,7 @@ public class GW_ItemSlotBase {
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
                 // v184-v185 潜在内部実装時 (動作はしないがデータの位置が違う)
-                if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185) || ServerConfig.IsKMS()) {
+                if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185) || (ServerConfig.IsKMS() && ServerConfig.GetVersion() == 95)) {
                     data.Encode1(equip.getState());
                 }
                 // data.Encode2((short) equip.getIncAttackSpeed());
@@ -167,7 +167,8 @@ public class GW_ItemSlotBase {
                     // ビシャスのハンマー
                     if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
                             || ServerConfig.IsTWMS()
-                            || ServerConfig.IsCMS()) {
+                            || ServerConfig.IsCMS()
+                            || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
                         if (ServerConfig.game_server_enable_hammer) {
                             data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
                         } else {
@@ -179,7 +180,7 @@ public class GW_ItemSlotBase {
                             || ServerConfig.IsTWMS()
                             || ServerConfig.IsCMS()
                             || ServerConfig.IsKMS()) {
-                        if (!ServerConfig.IsKMS()) {
+                        if (!(ServerConfig.IsKMS() && ServerConfig.GetVersion() == 95)) {
                             data.Encode1(equip.getState()); // option._ZtlSecureTear_nGrade
                         }
                         data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC

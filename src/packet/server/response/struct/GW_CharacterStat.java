@@ -116,14 +116,16 @@ public class GW_CharacterStat {
         ServerPacket p = new ServerPacket();
 
         p.Encode4(chr.getId());
-        p.EncodeBuffer(chr.getName(), (ServerConfig.IsKMS() ||ServerConfig.IsJMS() || ServerConfig.IsCMS()) ? 13 : 15);
+        p.EncodeBuffer(chr.getName(), (ServerConfig.IsKMS() || ServerConfig.IsJMS() || ServerConfig.IsCMS()) ? 13 : 15);
         p.Encode1(chr.getGender());
         p.Encode1(chr.getSkinColor());
         p.Encode4(chr.getFace());
         p.Encode4(chr.getHair());
 
-        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) || ServerConfig.IsKMS()) {
+        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) || (ServerConfig.IsPreBB() && ServerConfig.IsKMS())) {
             p.EncodeZeroBytes(8);
+        } else if ((ServerConfig.IsPostBB() && ServerConfig.IsKMS())) {
+            // no data
         } else {
             p.EncodeZeroBytes(24);
         }
