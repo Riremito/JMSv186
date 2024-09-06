@@ -188,10 +188,11 @@ public class UserRequest {
         if (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) {
             cp.Decode4(); // get_rand of DR_Check
             cp.Decode4(); // Crc32 of DR_Check
-            if (ServerConfig.IsPostBB()) {
-                cp.Decode1();
-            }
             // v95 4 bytes SKILLLEVELDATA::GetCrc
+        }
+
+        if (ServerConfig.IsPostBB()) {
+            cp.Decode1();
         }
 
         if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
@@ -346,7 +347,7 @@ public class UserRequest {
                 allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false)); //m.e. never crits
             }
 
-            if (ServerConfig.version >= 186) {
+            if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 186)) {
                 cp.Decode4(); // CRC of monster [Wz Editing]
             }
 

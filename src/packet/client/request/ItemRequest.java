@@ -535,10 +535,10 @@ public class ItemRequest {
         c.getSession().write(MaplePacketCreator.enableActions());
     }
 
-    public static final void UseMagnify(ClientPacket p, final MapleClient c) {
-        p.Decode4(); // time
-        short slot_use_item = p.Decode2();
-        short slot_equip_item = p.Decode2();
+    public static final void UseMagnify(ClientPacket cp, final MapleClient c) {
+        cp.Decode4(); // time
+        short slot_use_item = cp.Decode2();
+        short slot_equip_item = cp.Decode2();
         final IItem magnify = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot_use_item);
         IItem toReveal = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(slot_equip_item);
         if (toReveal == null) {

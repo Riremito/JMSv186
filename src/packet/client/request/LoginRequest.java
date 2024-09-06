@@ -408,7 +408,7 @@ public class LoginRequest {
         // もみじ (サーバーを分離すると接続人数を取得するのが難しくなる)
         c.SendPacket(LoginResponse.getServerList(1, false, 16));
         c.SendPacket(LoginResponse.getEndOfServerList());
-        if (186 <= ServerConfig.version) {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
             c.SendPacket(LoginResponse.RecommendWorldMessage());
             c.SendPacket(LoginResponse.LatestConnectedWorld());
         }

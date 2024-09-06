@@ -60,7 +60,7 @@ public class SecondaryStat {
     }
 
     public static void Init() {
-        if (194 <= ServerConfig.version) {
+        if ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion())) {
         }
     }
 
@@ -98,7 +98,7 @@ public class SecondaryStat {
         p.Encode4(0); // mask3
         p.Encode4(0); // mask4
 
-        if (194 <= ServerConfig.version) {
+        if ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion())) {
             p.Encode4(buff_mask1); // mask5
         }
 

@@ -289,7 +289,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     InterServerHandler.SetLogin(false);
                     Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
 
-                    if (ServerConfig.login_server_antihack && ServerConfig.version == 186) {
+                    if (ServerConfig.login_server_antihack && (ServerConfig.IsJMS() && ServerConfig.GetVersion() == 186)) {
                         c.getSession().write(AddonResponse.Hash());
                         c.getSession().write(AddonResponse.Scan(0x008625B5, (short) 3)); // damage hack check
                         // test
@@ -302,7 +302,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_Check2ndPassword: {
-                if (ServerConfig.version >= 188) {
+                if (ServerConfig.IsJMS() && ServerConfig.IsPostBB()) {
                     LoginRequest.ServerListRequest(c);
                 }
                 return true;
@@ -366,7 +366,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_ViewAllChar: {
-                if (ServerConfig.version <= 194) {
+                if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 194) {
                     c.SendPacket(LoginResponse.ViewAllCharResult_Alloc(c));
                     c.SendPacket(LoginResponse.ViewAllCharResult(c));
                 } else {

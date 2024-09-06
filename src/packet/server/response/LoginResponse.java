@@ -564,7 +564,7 @@ public class LoginResponse {
     public static final MaplePacket LoginAUTH(ClientPacket p, MapleClient c) {
         // JMS v186.1には3つのログイン画面が存在するのでランダムに割り振ってみる
         String[] LoginScreen = {"MapLogin", "MapLogin1", "MapLogin2"};
-        if (ServerConfig.version != 186) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() == 186)) {
             return LoginAUTH(LoginScreen[0]);
         }
         return LoginAUTH(LoginScreen[(new Random().nextInt(3))]);
@@ -572,13 +572,13 @@ public class LoginResponse {
 
     // ログイン画面へ切り替え
     public static final MaplePacket LoginAUTH(String LoginScreen) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LOGIN_AUTH);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LOGIN_AUTH);
         // ログイン画面の名称
-        p.EncodeStr(LoginScreen);
-        if (ServerConfig.version >= 187) {
-            p.Encode4(0);
+        sp.EncodeStr(LoginScreen);
+        if (ServerConfig.IsPostBB()) {
+            sp.Encode4(0);
         }
-        return p.Get();
+        return sp.Get();
     }
 
     // CLogin::OnViewAllCharResult

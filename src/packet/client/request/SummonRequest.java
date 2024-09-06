@@ -126,7 +126,7 @@ public class SummonRequest {
     }
 
     // SummonAttack
-    public static void SummonAttack(ClientPacket p, MapleSummon summon, MapleCharacter chr) {
+    public static void SummonAttack(ClientPacket cp, MapleSummon summon, MapleCharacter chr) {
         final MapleMap map = chr.getMap();
 
         final SummonSkillEntry sse = SkillFactory.getSummonData(summon.getSkill());
@@ -136,64 +136,64 @@ public class SummonRequest {
         }
 
         if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
-            p.Decode4();
-            p.Decode4();
+            cp.Decode4();
+            cp.Decode4();
 
-            int tick = p.Decode4();
+            int tick = cp.Decode4();
             chr.updateTick(tick);
             summon.CheckSummonAttackFrequency(chr, tick);
 
-            p.Decode4();
-            p.Decode4();
+            cp.Decode4();
+            cp.Decode4();
         }
 
-        final byte animation = p.Decode1();
+        final byte animation = cp.Decode1();
 
         if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
-            p.Decode4();
-            p.Decode4();
+            cp.Decode4();
+            cp.Decode4();
         }
 
-        final byte numAttacked = p.Decode1();
+        final byte numAttacked = cp.Decode1();
 
         if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
-            p.Decode2(); // x
-            p.Decode2(); // y
-            p.Decode2(); // x
-            p.Decode2(); // y
+            cp.Decode2(); // x
+            cp.Decode2(); // y
+            cp.Decode2(); // x
+            cp.Decode2(); // y
         }
 
         final List<SummonAttackEntry> allDamage = new ArrayList<SummonAttackEntry>();
         chr.getCheatTracker().checkSummonAttack();
 
         for (int i = 0; i < numAttacked; i++) {
-            final MapleMonster mob = map.getMonsterByOid(p.Decode4());
+            final MapleMonster mob = map.getMonsterByOid(cp.Decode4());
 
             if (mob == null) {
                 continue;
             }
 
-            if (186 <= ServerConfig.version) {
-                p.Decode4(); // MobID
+            if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 186)) {
+                cp.Decode4(); // MobID
             }
 
-            p.Decode1();
-            p.Decode1();
-            p.Decode1();
-            p.Decode1();
-            p.Decode2();
-            p.Decode2();
-            p.Decode2();
-            p.Decode2();
-            p.Decode2();
+            cp.Decode1();
+            cp.Decode1();
+            cp.Decode1();
+            cp.Decode1();
+            cp.Decode2();
+            cp.Decode2();
+            cp.Decode2();
+            cp.Decode2();
+            cp.Decode2();
 
-            final int damage = p.Decode4();
+            final int damage = cp.Decode4();
             allDamage.add(new SummonAttackEntry(mob, damage));
         }
 
         if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
-            p.Decode2(); // X
-            p.Decode2(); // Y
+            cp.Decode2(); // X
+            cp.Decode2(); // Y
         }
 
         if (!summon.isChangedMap()) {

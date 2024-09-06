@@ -98,7 +98,7 @@ public class TrunkPacket {
     }
 
     public static void Init() {
-        if (ServerConfig.version <= 131) {
+        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
             // SS
             CP_Flag.ITEM_OUT.set(0x03);
             CP_Flag.ITEM_IN.set(0x04);
@@ -275,7 +275,7 @@ public class TrunkPacket {
         p.Encode1(slots);
         p.Encode2(0x7E);
 
-        if (ServerConfig.version > 131) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
             p.Encode2(0);
             p.Encode4(0);
         }
@@ -310,7 +310,7 @@ public class TrunkPacket {
         p.Encode1(slots);
         p.Encode2(2);
 
-        if (ServerConfig.version > 131) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
             p.Encode2(0);
             p.Encode4(0);
         }
@@ -329,7 +329,7 @@ public class TrunkPacket {
         p.Encode1(slots);
         p.Encode2(type.getBitfieldEncoding());
 
-        if (ServerConfig.version > 131) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
             p.Encode2(0);
             p.Encode4(0);
         }
@@ -351,7 +351,7 @@ public class TrunkPacket {
         p.Encode1(slots);
         p.Encode2(type.getBitfieldEncoding());
 
-        if (ServerConfig.version > 131) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
             p.Encode2(0);
             p.Encode4(0);
         }

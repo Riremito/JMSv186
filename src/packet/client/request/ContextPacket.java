@@ -145,7 +145,7 @@ public class ContextPacket {
     }
 
     public static void Message_Init() {
-        if (194 <= ServerConfig.version) {
+        if ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion())) {
             MessageType.MS_DropPickUpMessage.set(0);
             MessageType.MS_QuestRecordMessage.set(1);
             MessageType.MS_CashItemExpireMessage.set(2);
@@ -212,13 +212,13 @@ public class ContextPacket {
                         break;
                     }
                     case PICKUP_MESO: {
-                        if (164 <= ServerConfig.version) {
+                        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
                             p.Encode1(0);
                         }
 
                         p.Encode4(ma.Inc_Meso);
 
-                        if (ServerConfig.version <= 131) {
+                        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
                             p.Encode2(0); // Internet cafe bonus
                         } else {
                             p.Encode4(0);

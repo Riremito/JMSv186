@@ -110,7 +110,7 @@ public class NPCPacket {
     }
 
     public static void Init() {
-        if (194 <= ServerConfig.version) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 194) {
             // v194
             // 0, 5 = OK
             // 0 OK?
@@ -260,7 +260,7 @@ public class NPCPacket {
             if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
                 sp.Encode4(item.getReqItem()); // nTokenItemID
                 sp.Encode4(item.getReqItemQ()); // nTokenPrice
-                if (!ServerConfig.IsKMS()) {
+                if (!(ServerConfig.IsKMS() && ServerConfig.IsPreBB())) {
                     sp.Encode4(0); // nItemPeriod
                 }
                 sp.Encode4(0); // nLevelLimited

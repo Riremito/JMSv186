@@ -508,7 +508,7 @@ public class InventoryHandler {
     }
 
     public static final void UseCashItem(final SeekableLittleEndianAccessor slea, final MapleClient c, ClientPacket op) {
-        if (ServerConfig.version > 131) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())) {
             c.getPlayer().updateTick(slea.readInt());
         }
         final byte slot = (byte) slea.readShort();

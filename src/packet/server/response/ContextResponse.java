@@ -110,7 +110,7 @@ public class ContextResponse {
         // 1 = unlock -> clear lock flag
         sp.Encode1(unlock); // CWvsContext->bExclRequestSent
         sp.EncodeBuffer(GW_CharacterStat.EncodeChangeStat(chr, statmask));
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 186) {
+        if (ServerConfig.IsPreBB()) {
             // Pet
             if ((statmask & GW_CharacterStat.Flag.PET1.get()) > 0) {
                 int v5 = 0; // CVecCtrlUser::AddMovementInfo

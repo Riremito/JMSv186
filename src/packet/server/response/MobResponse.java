@@ -160,17 +160,17 @@ public class MobResponse {
 
     // moveMonsterResponse
     public static MaplePacket moveMonsterResponse(MapleMonster m, short moveid, int skillId, int skillLevel) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_MobCtrlAck);
-        p.Encode4(m.getObjectId());
-        p.Encode2(moveid);
-        p.Encode1(m.isControllerHasAggro() ? 1 : 0);
-        p.Encode2(m.getMp());
-        p.Encode1(skillId);
-        p.Encode1(skillLevel);
-        if (194 <= ServerConfig.version) {
-            p.Encode4(0);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobCtrlAck);
+        sp.Encode4(m.getObjectId());
+        sp.Encode2(moveid);
+        sp.Encode1(m.isControllerHasAggro() ? 1 : 0);
+        sp.Encode2(m.getMp());
+        sp.Encode1(skillId);
+        sp.Encode1(skillLevel);
+        if (ServerConfig.IsPostBB() && ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()))) {
+            sp.Encode4(0);
         }
-        return p.Get();
+        return sp.Get();
     }
 
     // damageMonster

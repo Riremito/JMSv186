@@ -388,7 +388,7 @@ public class MaplePacketCreator {
         p.Encode4(attack.CharacterId);
         p.Encode1(attack.HitKey);
 
-        if (ServerConfig.version > 131) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
             p.Encode1(attack.m_nLevel);
         }
 
@@ -397,11 +397,11 @@ public class MaplePacketCreator {
             p.Encode4(attack.nSkillID); // nSkillID
         }
 
-        if (ServerConfig.version > 131) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
             p.Encode1(attack.BuffKey); // bSerialAttack
         }
 
-        if (ServerConfig.version <= 131) {
+        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
             p.Encode1(attack.AttackActionKey);
         } else {
             p.Encode2(attack.AttackActionKey);
@@ -421,7 +421,7 @@ public class MaplePacketCreator {
                 }
 
                 for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    if (ServerConfig.version <= 131) {
+                    if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
                         p.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
                     } else {
                         p.Encode1(eachd.right ? 1 : 0);
@@ -435,7 +435,7 @@ public class MaplePacketCreator {
             p.Encode4(attack.tKeyDown);
         }
 
-        if (131 < ServerConfig.version) {
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
             if (attack.GetHeader() == ServerPacket.Header.LP_UserShootAttack) {
                 p.Encode2(attack.X);
                 p.Encode2(attack.Y);

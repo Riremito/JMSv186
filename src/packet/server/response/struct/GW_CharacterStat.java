@@ -102,7 +102,7 @@ public class GW_CharacterStat {
     }
 
     public static void Init() {
-        if (194 <= ServerConfig.version) {
+        if ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion())) {
             // something inserted
             Flag.PET2.set(0x00100000);
             Flag.PET3.set(0x00200000);
@@ -331,7 +331,7 @@ public class GW_CharacterStat {
         }
         // HP
         if ((statmask & Flag.HP.get()) > 0) {
-            if (ServerConfig.version <= 186) {
+            if (ServerConfig.IsPreBB()) {
                 p.Encode2(chr.getStat().getHp());
             } else {
                 p.Encode4(chr.getStat().getHp());
@@ -339,7 +339,7 @@ public class GW_CharacterStat {
         }
         // MAXHP
         if ((statmask & Flag.MAXHP.get()) > 0) {
-            if (ServerConfig.version <= 186) {
+            if (ServerConfig.IsPreBB()) {
                 p.Encode2(chr.getStat().getMaxHp());
             } else {
                 p.Encode4(chr.getStat().getMaxHp());
@@ -347,7 +347,7 @@ public class GW_CharacterStat {
         }
         // MP
         if ((statmask & Flag.MP.get()) > 0) {
-            if (ServerConfig.version <= 186) {
+            if (ServerConfig.IsPreBB()) {
                 p.Encode2(chr.getStat().getMp());
             } else {
                 p.Encode4(chr.getStat().getMp());
@@ -355,7 +355,7 @@ public class GW_CharacterStat {
         }
         // MAXMP
         if ((statmask & Flag.MAXMP.get()) > 0) {
-            if (ServerConfig.version <= 186) {
+            if (ServerConfig.IsPreBB()) {
                 p.Encode2(chr.getStat().getMaxMp());
             } else {
                 p.Encode4(chr.getStat().getMaxMp());

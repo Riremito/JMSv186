@@ -82,7 +82,7 @@ public class GashaEXPPacket {
 
         UseTempExp(chr);
 
-        if (ServerConfig.version <= 131) {
+        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
             while (UseTempExp(chr)) {
                 // loop
             }

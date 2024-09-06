@@ -182,7 +182,7 @@ public class MapleMapFactory {
                 }
 
                 // 設定ファイルに定義されたNPCを設置
-                if (ServerConfig.version == 186) {
+                if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() == 186)) {
                     Path file = Paths.get(ServerConfig.script_path + "map/" + mapid + ".txt");
                     try {
                         if (!Files.notExists(file)) {

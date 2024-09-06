@@ -30,22 +30,22 @@ import constants.GameConstants;
 public class ExpTable {
 
     public static boolean Init() {
+        // BIG BANG
+        if (ServerConfig.IsPostBB()) {
+            for (int level = 0; level < v194Table.length; level++) {
+                GameConstants.setExpTable(level, v194Table[level]);
+            }
+            return true;
+        }
         // Pre-BB early
-        if (ServerConfig.version <= 131) {
+        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
             for (int level = 0; level < v131Table.length; level++) {
                 GameConstants.setExpTable(level, v131Table[level]);
             }
             return true;
         }
         // pre-BB later
-        if (ServerConfig.version <= 165) {
-            return true;
-        }
-        // BIG BANG
-        if (188 <= ServerConfig.version) {
-            for (int level = 0; level < v194Table.length; level++) {
-                GameConstants.setExpTable(level, v194Table[level]);
-            }
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())) {
             return true;
         }
         return false;
