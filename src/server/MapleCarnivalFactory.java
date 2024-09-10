@@ -2,6 +2,7 @@ package server;
 
 import client.MapleDisease;
 import config.ServerConfig;
+import debug.Debug;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +32,20 @@ public class MapleCarnivalFactory {
         if (skills.size() != 0) {
             return;
         }
+
         for (MapleData z : dataRoot.getData("MCSkill.img")) {
-            skills.put(Integer.parseInt(z.getName()), new MCSkill(MapleDataTool.getInt("spendCP", z, 0), MapleDataTool.getInt("mobSkillID", z, 0), MapleDataTool.getInt("level", z, 0), MapleDataTool.getInt("target", z, 1) > 1));
+
+            // THMS meme
+            int mobSkillID = 0;
+            try {
+                mobSkillID = MapleDataTool.getInt("mobSkillID", z, 0);
+            } catch (NumberFormatException e) {
+                // MCSkill.img/4/mobSkillID
+                Debug.ErrorLog("MCSkill.img/" + z.getName() + "/mobSkillID");
+                continue;
+            }
+
+            skills.put(Integer.parseInt(z.getName()), new MCSkill(MapleDataTool.getInt("spendCP", z, 0), mobSkillID, MapleDataTool.getInt("level", z, 0), MapleDataTool.getInt("target", z, 1) > 1));
         }
         for (MapleData z : dataRoot.getData("MCGuardian.img")) {
             guardians.put(Integer.parseInt(z.getName()), new MCSkill(MapleDataTool.getInt("spendCP", z, 0), MapleDataTool.getInt("mobSkillID", z, 0), MapleDataTool.getInt("level", z, 0), true));

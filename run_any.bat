@@ -7,7 +7,7 @@ if %MS_REGION_NAME%==JMS (
 	set MS_REGIONCODE=6
 ) else if %MS_REGION_NAME%==CMS (
 	set MS_REGIONCODE=4
-) else if %MS_REGION_NAME%==MSEA (
+) else if %MS_REGION_NAME%==THMS (
 	set MS_REGIONCODE=7
 ) else if %MS_REGION_NAME%==KMS (
 	set MS_REGIONCODE=1

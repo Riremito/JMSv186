@@ -29,7 +29,7 @@ public class Start {
             ServerConfig.SetVersion(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
         }
 
-        // 他言語版版
+        // 他言語版
         if (args.length >= 3) {
             ServerConfig.SetRegionNumber(Integer.parseInt(args[2]));
         }

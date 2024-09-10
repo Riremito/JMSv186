@@ -100,7 +100,7 @@ public class LoginResponse {
 
     // サーバーのバージョン情報
     public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.HELLO); // dummy header
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.HELLO); // dummy header
         if (ServerConfig.GetVersion() < 414) {
 
             switch (ServerConfig.GetRegion()) {
@@ -110,34 +110,34 @@ public class LoginResponse {
                     xor_version ^= 1 << 15;
                     xor_version ^= ServerConfig.GetSubVersion() << 16;
 
-                    p.Encode2(291); // magic number
-                    p.EncodeStr(String.valueOf(xor_version));
+                    sp.Encode2(291); // magic number
+                    sp.EncodeStr(String.valueOf(xor_version));
                     break;
                 }
                 default: {
-                    p.Encode2(ServerConfig.GetVersion());
-                    p.EncodeStr(String.valueOf(ServerConfig.GetSubVersion()));
+                    sp.Encode2(ServerConfig.GetVersion());
+                    sp.EncodeStr(String.valueOf(ServerConfig.GetSubVersion()));
                     break;
                 }
             }
 
-            p.EncodeBuffer(recvIv);
-            p.EncodeBuffer(sendIv);
-            p.Encode1(ServerConfig.GetRegionNumber()); // JMS = 3
+            sp.EncodeBuffer(recvIv);
+            sp.EncodeBuffer(sendIv);
+            sp.Encode1(ServerConfig.GetRegionNumber()); // JMS = 3
         } else {
             // x64
-            p.Encode2(ServerConfig.GetVersion());
-            p.EncodeStr("1:" + ServerConfig.GetSubVersion()); // 1:1
-            p.EncodeBuffer(recvIv);
-            p.EncodeBuffer(sendIv);
-            p.Encode1(ServerConfig.GetRegionNumber());
-            p.Encode1(0);
-            p.Encode1(5);
-            p.Encode1(1);
+            sp.Encode2(ServerConfig.GetVersion());
+            sp.EncodeStr("1:" + ServerConfig.GetSubVersion()); // 1:1
+            sp.EncodeBuffer(recvIv);
+            sp.EncodeBuffer(sendIv);
+            sp.Encode1(ServerConfig.GetRegionNumber());
+            sp.Encode1(0);
+            sp.Encode1(5);
+            sp.Encode1(1);
         }
         // ヘッダにサイズを書き込む
-        p.SetHello();
-        return p.Get();
+        sp.SetHello();
+        return sp.Get();
     }
 
     // v186+

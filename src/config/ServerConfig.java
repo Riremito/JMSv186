@@ -25,7 +25,7 @@ public class ServerConfig {
         JMS,
         CMS,
         TWMS,
-        MSEA,
+        THMS,
         GMS,
         EMS,
         unk,
@@ -47,8 +47,8 @@ public class ServerConfig {
         return GetRegion() == Region.TWMS;
     }
 
-    public static boolean IsMSEA() {
-        return GetRegion() == Region.MSEA;
+    public static boolean IsTHMS() {
+        return GetRegion() == Region.THMS;
     }
 
     private static boolean job_pirate = true;
@@ -93,8 +93,8 @@ public class ServerConfig {
                 }
                 return true;
             }
-            case MSEA: {
-                if (103 <= GetVersion()) {
+            case THMS: {
+                if (90 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
@@ -170,7 +170,7 @@ public class ServerConfig {
                 return true;
             }
             case 7: {
-                region_name = Region.MSEA;
+                region_name = Region.THMS;
                 return true;
             }
             case 8: {
