@@ -31,6 +31,7 @@ import client.messages.commands.AdminCommand;
 import client.messages.commands.GMCommand;
 import client.messages.commands.InternCommand;
 import client.messages.commands.PlayerCommand;
+import config.ServerConfig;
 import constants.GameConstants;
 import constants.ServerConstants.CommandType;
 import constants.ServerConstants.PlayerGMRank;
@@ -45,7 +46,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
-import packet.client.request.ItemRequest;
 import packet.server.response.FieldResponse;
 import packet.server.response.ItemResponse;
 import scripting.NPCScriptManager;
@@ -170,6 +170,12 @@ public class CommandProcessor {
         if (line.charAt(0) == PlayerGMRank.MAPLE.getCommandPrefix()) {
             String[] splitted = line.split(" ");
             splitted[0] = splitted[0].toLowerCase();
+
+            if ("/reload".equals(splitted[0])) {
+                ServerConfig.ReloadHeader();
+                c.getPlayer().UpdateStat(true);
+                return true;
+            }
 
             if ("/ea".equals(splitted[0]) || "/stuck".equals(splitted[0]) || "/unlock".equals(splitted[0])) {
                 c.getPlayer().UpdateStat(true);

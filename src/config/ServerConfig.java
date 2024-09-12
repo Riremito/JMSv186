@@ -375,6 +375,21 @@ public class ServerConfig {
         }
     }
 
+    public static void ReloadHeader() {
+        Properties ServerPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ServerPacket.properties");
+        if (ServerPacketHeader != null) {
+            ServerPacket.Reset();
+            ServerPacket.Load(ServerPacketHeader);
+            Debug.InfoLog("ServerPacket is reloaded!");
+        }
+        Properties ClientPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ClientPacket.properties");
+        if (ClientPacketHeader != null) {
+            ClientPacket.Reset();
+            ClientPacket.Load(ClientPacketHeader);
+            Debug.InfoLog("ClientPacket is reloaded!");
+        }
+    }
+
     public static boolean IsGMTestMode() {
         return DebugConfig.GM;
     }

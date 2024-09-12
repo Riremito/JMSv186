@@ -742,6 +742,12 @@ public class ServerPacket {
         }
     }
 
+    public static void Reset() {
+        for (Header header : Header.values()) {
+            header.Set(0xFFFF);
+        }
+    }
+
     public static boolean Load(Properties props) {
 
         for (Header header : Header.values()) {

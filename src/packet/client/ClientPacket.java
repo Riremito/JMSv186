@@ -508,6 +508,12 @@ public class ClientPacket {
         Header.CP_CUSTOM_MEMORY_SCAN.Set(0x77BB);
     }
 
+    public static void Reset() {
+        for (Header header : Header.values()) {
+            header.Set(0xFFFF);
+        }
+    }
+
     public static boolean Load(Properties props) {
 
         for (Header header : Header.values()) {
