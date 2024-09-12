@@ -88,7 +88,7 @@ public class ScriptManPacket {
         sp.Encode4(npcid); // nSpeakerTemplateID, npcid
         sp.Encode1(flag.get()); // nMsgType
 
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
+        if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
                 || ServerConfig.IsCMS()
                 || ServerConfig.IsKMS()) {
