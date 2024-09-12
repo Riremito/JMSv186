@@ -257,10 +257,10 @@ public class NPCPacket {
             sp.Encode4(item.getItemId());
             sp.Encode4(item.getPrice());
 
-            if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
+            if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
                 sp.Encode4(item.getReqItem()); // nTokenItemID
                 sp.Encode4(item.getReqItemQ()); // nTokenPrice
-                if (!(ServerConfig.IsKMS() && ServerConfig.IsPreBB())) {
+                if (ServerConfig.IsPostBB() || (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
                     sp.Encode4(0); // nItemPeriod
                 }
                 sp.Encode4(0); // nLevelLimited
