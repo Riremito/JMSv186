@@ -38,18 +38,18 @@ public class AvatarLook {
     // AvatarLook::Decode, AvatarLook::AvatarLook
     // CharLook
     public static byte[] Encode(MapleCharacter chr) {
-        ServerPacket p = new ServerPacket();
+        ServerPacket data = new ServerPacket();
 
-        p.Encode1(chr.getGender()); // nGender
-        p.Encode1(chr.getSkinColor()); // nSkin
-        p.Encode4(chr.getFace()); // nFace
+        data.Encode1(chr.getGender()); // nGender
+        data.Encode1(chr.getSkinColor()); // nSkin
+        data.Encode4(chr.getFace()); // nFace
 
         if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
-            p.Encode4(0);
+            data.Encode4(0);
         }
 
-        p.Encode1(0); // ignored byte
-        p.Encode4(chr.getHair());
+        data.Encode1(0); // ignored byte
+        data.Encode4(chr.getHair());
 
         final Map<Byte, Integer> myEquip = new LinkedHashMap<Byte, Integer>();
         final Map<Byte, Integer> maskedEquip = new LinkedHashMap<Byte, Integer>();
@@ -74,48 +74,48 @@ public class AvatarLook {
             }
         }
         for (final Map.Entry<Byte, Integer> entry : myEquip.entrySet()) {
-            p.Encode1(entry.getKey());
-            p.Encode4(entry.getValue());
+            data.Encode1(entry.getKey());
+            data.Encode4(entry.getValue());
         }
-        p.Encode1(0xFF); // end of visible items
+        data.Encode1(0xFF); // end of visible items
         // masked itens
         for (final Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
-            p.Encode1(entry.getKey());
-            p.Encode4(entry.getValue());
+            data.Encode1(entry.getKey());
+            data.Encode4(entry.getValue());
         }
-        p.Encode1(0xFF); // ending markers
+        data.Encode1(0xFF); // ending markers
         final IItem cWeapon = equip.getItem((byte) -111);
-        p.Encode4(cWeapon != null ? cWeapon.getItemId() : 0);
+        data.Encode4(cWeapon != null ? cWeapon.getItemId() : 0);
 
         if (ServerConfig.IsKMS()) {
             if (ServerConfig.IsPostBB()) {
-                p.EncodeZeroBytes(12);
+                data.EncodeZeroBytes(12);
             } else {
 
-                p.Encode4(0);
+                data.Encode4(0);
             }
-            return p.Get().getBytes();
+            return data.Get().getBytes();
         }
 
         if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode1(0);
-            p.EncodeZeroBytes(12);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode1(0);
+            data.EncodeZeroBytes(12);
             // DemonSlayer -> Encode4
-            return p.Get().getBytes();
+            return data.Get().getBytes();
         }
 
         if (ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
-            p.EncodeZeroBytes(12);
+            data.EncodeZeroBytes(12);
         } else {
-            p.Encode4(0); // pet 1?
+            data.Encode4(0); // pet 1?
 
             if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
-                p.Encode8(0); // pet 2 and 3?
+                data.Encode8(0); // pet 2 and 3?
             }
         }
 
-        return p.Get().getBytes();
+        return data.Get().getBytes();
     }
 }

@@ -280,15 +280,15 @@ public class CharacterData {
     }
 
     public static final byte[] InventoryInfo(MapleCharacter chr, long datamask) {
-        ServerPacket p = new ServerPacket();
+        ServerPacket data = new ServerPacket();
         // アイテム欄の数
         // v165-v194
         if ((datamask & 0x80) > 0) {
-            p.Encode1(chr.getInventory(MapleInventoryType.EQUIP).getSlotLimit()); // 0x04
-            p.Encode1(chr.getInventory(MapleInventoryType.USE).getSlotLimit()); // 0x08
-            p.Encode1(chr.getInventory(MapleInventoryType.SETUP).getSlotLimit()); // 0x10
-            p.Encode1(chr.getInventory(MapleInventoryType.ETC).getSlotLimit()); // 0x20
-            p.Encode1(chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // 0x40
+            data.Encode1(chr.getInventory(MapleInventoryType.EQUIP).getSlotLimit()); // 0x04
+            data.Encode1(chr.getInventory(MapleInventoryType.USE).getSlotLimit()); // 0x08
+            data.Encode1(chr.getInventory(MapleInventoryType.SETUP).getSlotLimit()); // 0x10
+            data.Encode1(chr.getInventory(MapleInventoryType.ETC).getSlotLimit()); // 0x20
+            data.Encode1(chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // 0x40
         }
 
         // v165-v194 OK
@@ -298,8 +298,8 @@ public class CharacterData {
                 || ServerConfig.IsKMS()) {
             // 0x100000
             if ((datamask & 0x100000) > 0) {
-                p.Encode4(0);
-                p.Encode4(0);
+                data.Encode4(0);
+                data.Encode4(0);
             }
         }
 
@@ -316,26 +316,26 @@ public class CharacterData {
             // 装備済みアイテム
             for (Item item : equipped) {
                 if (item.getPosition() < 0 && item.getPosition() > -100) {
-                    p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
-                    p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                    data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                    data.EncodeBuffer(GW_ItemSlotBase.Encode(item));
                 }
             }
-            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+            data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             // 装備済みアバター?
             for (Item item : equipped) {
                 if (item.getPosition() <= -100 && item.getPosition() > -1000) {
-                    p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
-                    p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                    data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                    data.EncodeBuffer(GW_ItemSlotBase.Encode(item));
                 }
             }
-            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+            data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             // 装備
             iv = chr.getInventory(MapleInventoryType.EQUIP);
             for (IItem item : iv.list()) {
-                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
-                p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                data.EncodeBuffer(GW_ItemSlotBase.Encode(item));
             }
-            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+            data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             // 装備済み -1000
             if (ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()
                     || ServerConfig.IsTWMS()
@@ -343,62 +343,62 @@ public class CharacterData {
                     || ServerConfig.IsKMS()) {
                 for (Item item : equipped) {
                     if (item.getPosition() <= -1000 && item.getPosition() > -1100) {
-                        p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
-                        p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                        data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                        data.EncodeBuffer(GW_ItemSlotBase.Encode(item));
                     }
                 }
-                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             }
             // 装備済み -1100
             if (ServerConfig.IsPostBB()) {
                 for (Item item : equipped) {
                     if (item.getPosition() <= -1100 && item.getPosition() > -1200) {
-                        p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
-                        p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                        data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                        data.EncodeBuffer(GW_ItemSlotBase.Encode(item));
                     }
                 }
-                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             }
         }
 
         // 消費
         if ((datamask & 0x08) > 0) {
             for (IItem item : chr.getInventory(MapleInventoryType.USE).list()) {
-                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
-                p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                data.EncodeBuffer(GW_ItemSlotBase.Encode(item));
             }
-            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Consume));
+            data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Consume));
         }
         // 設置
         if ((datamask & 0x10) > 0) {
             for (IItem item : chr.getInventory(MapleInventoryType.SETUP).list()) {
-                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
-                p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                data.EncodeBuffer(GW_ItemSlotBase.Encode(item));
             }
-            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Install));
+            data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Install));
         }
         // ETC
         if ((datamask & 0x20) > 0) {
             for (IItem item : chr.getInventory(MapleInventoryType.ETC).list()) {
-                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
-                p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                data.EncodeBuffer(GW_ItemSlotBase.Encode(item));
             }
-            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Etc));
+            data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Etc));
         }
         // ポイントアイテム
         if ((datamask & 0x40) > 0) {
             for (IItem item : chr.getInventory(MapleInventoryType.CASH).list()) {
-                p.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
-                p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                data.EncodeBuffer(GW_ItemSlotBase.Encode(item));
             }
-            p.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Cash));
+            data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Cash));
         }
         // 不明
         if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
             // func 004FB8B0
-            p.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
+            data.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
         }
 
-        return p.Get().getBytes();
+        return data.Get().getBytes();
     }
 }

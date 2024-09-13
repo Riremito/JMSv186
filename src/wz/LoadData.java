@@ -204,7 +204,7 @@ public class LoadData {
         // 職業ID
         LoadXMLs("Skill.wz", "(\\d+)\\.img", jobids);
         // 肌色, 顔, 髪型
-        LoadXMLs("Character.wz", "0*(\\d+)\\.img", skinids);
+        LoadSkinXMLs("Character.wz", "0*(\\d+)\\.img", skinids);
         LoadXMLs("Character.wz/Face", "0*(\\d+)\\.img", faceids);
         LoadXMLs("Character.wz/Hair", "0*(\\d+)\\.img", hairids);
         // NPC
@@ -317,6 +317,29 @@ public class LoadData {
                     if (1000000 <= id) {
                         list.add(id);
                     }
+                }
+            }
+        }
+
+        return list.size();
+    }
+
+    private static int LoadSkinXMLs(String path, String regex, ArrayList<Integer> list) {
+        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
+
+        if (wz == null) {
+            Debug.ErrorLog("wz path: " + path);
+            return 0;
+        }
+
+        Pattern pattern = Pattern.compile(regex);
+
+        for (MapleDataFileEntry dir : wz.getRoot().getFiles()) {
+            Matcher matcher = pattern.matcher(dir.getName());
+            if (matcher.matches()) {
+                int id = Integer.parseInt(matcher.group(1)) % 100;
+                if (!list.contains(id)) {
+                    list.add(id);
                 }
             }
         }

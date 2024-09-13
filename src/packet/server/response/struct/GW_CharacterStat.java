@@ -113,154 +113,154 @@ public class GW_CharacterStat {
     // GW_CharacterStat::Decode
     // CharStats
     public static byte[] Encode(MapleCharacter chr) {
-        ServerPacket p = new ServerPacket();
+        ServerPacket data = new ServerPacket();
 
-        p.Encode4(chr.getId());
-        p.EncodeBuffer(chr.getName(), (ServerConfig.IsKMS() || ServerConfig.IsJMS() || ServerConfig.IsCMS()) ? 13 : 15);
-        p.Encode1(chr.getGender());
-        p.Encode1(chr.getSkinColor());
-        p.Encode4(chr.getFace());
-        p.Encode4(chr.getHair());
+        data.Encode4(chr.getId());
+        data.EncodeBuffer(chr.getName(), (ServerConfig.IsKMS() || ServerConfig.IsJMS() || ServerConfig.IsCMS()) ? 13 : 15);
+        data.Encode1(chr.getGender());
+        data.Encode1(chr.getSkinColor());
+        data.Encode4(chr.getFace());
+        data.Encode4(chr.getHair());
 
         if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) || (ServerConfig.IsPreBB() && ServerConfig.IsKMS())) {
-            p.EncodeZeroBytes(8);
+            data.EncodeZeroBytes(8);
         } else if ((ServerConfig.IsPostBB() && ServerConfig.IsKMS())) {
             // no data
         } else {
-            p.EncodeZeroBytes(24);
+            data.EncodeZeroBytes(24);
         }
 
-        p.Encode1(chr.getLevel());
-        p.Encode2(chr.getJob());
+        data.Encode1(chr.getLevel());
+        data.Encode2(chr.getJob());
 
         PlayerStats stat = chr.getStat();
 
-        p.Encode2(stat.str);
-        p.Encode2(stat.dex);
-        p.Encode2(stat.int_);
-        p.Encode2(stat.luk);
+        data.Encode2(stat.str);
+        data.Encode2(stat.dex);
+        data.Encode2(stat.int_);
+        data.Encode2(stat.luk);
 
         // BB前
         if (ServerConfig.IsPreBB()) {
-            p.Encode2(stat.hp);
-            p.Encode2(stat.maxhp);
-            p.Encode2(stat.mp);
-            p.Encode2(stat.maxmp);
+            data.Encode2(stat.hp);
+            data.Encode2(stat.maxhp);
+            data.Encode2(stat.mp);
+            data.Encode2(stat.maxmp);
         } else {
             // BB後 (v187+)
-            p.Encode4(stat.hp);
-            p.Encode4(stat.maxhp);
-            p.Encode4(stat.mp);
-            p.Encode4(stat.maxmp);
+            data.Encode4(stat.hp);
+            data.Encode4(stat.maxhp);
+            data.Encode4(stat.mp);
+            data.Encode4(stat.maxmp);
         }
 
-        p.Encode2(chr.getRemainingAp());
+        data.Encode2(chr.getRemainingAp());
 
         // SP
         if (((ServerConfig.IsJMS() && 180 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) && (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob()))) {
             final int size = chr.getRemainingSpSize();
-            p.Encode1(size);
+            data.Encode1(size);
             for (int i = 0; i < chr.getRemainingSps().length; i++) {
                 if (chr.getRemainingSp(i) > 0) {
-                    p.Encode1(i + 1);
-                    p.Encode1(chr.getRemainingSp(i));
+                    data.Encode1(i + 1);
+                    data.Encode1(chr.getRemainingSp(i));
                 }
             }
         } else {
-            p.Encode2(chr.getRemainingSp());
+            data.Encode2(chr.getRemainingSp());
         }
 
         if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(chr.getMapId());
-            p.Encode1(chr.getInitialSpawnpoint());
-            p.Encode2(chr.getSubcategory());
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(chr.getMapId());
+            data.Encode1(chr.getInitialSpawnpoint());
+            data.Encode2(chr.getSubcategory());
             // job 3100 -> Encode4, Demon Slayer
-            p.Encode1(0);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.EncodeZeroBytes(12);
-            p.Encode4(0);
-            p.Encode1(0);
-            p.Encode4(0);
-            p.Encode1(0);
-            p.Encode4(0);
-            p.Encode1(0);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode4(0);
-            p.Encode1(0);
+            data.Encode1(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.EncodeZeroBytes(12);
+            data.Encode4(0);
+            data.Encode1(0);
+            data.Encode4(0);
+            data.Encode1(0);
+            data.Encode4(0);
+            data.Encode1(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode1(0);
 
             for (int i = 0; i < 6; i++) {
-                p.Encode4(0);
-                p.Encode1(0);
-                p.Encode4(0);
+                data.Encode4(0);
+                data.Encode1(0);
+                data.Encode4(0);
             }
 
-            p.Encode4(0);
-            p.Encode4(0);
-            p.EncodeZeroBytes(8);
-            p.Encode4(0);
-            p.Encode4(0);
-            return p.Get().getBytes();
+            data.Encode4(0);
+            data.Encode4(0);
+            data.EncodeZeroBytes(8);
+            data.Encode4(0);
+            data.Encode4(0);
+            return data.Get().getBytes();
         }
 
-        p.Encode4(chr.getExp());
-        p.Encode2(chr.getFame());
+        data.Encode4(chr.getExp());
+        data.Encode2(chr.getFame());
 
         if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()
                 || ServerConfig.IsTWMS()
                 || ServerConfig.IsCMS()) {
-            p.Encode4(chr.getGashaEXP()); // Gachapon exp
+            data.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 
         if (ServerConfig.IsTWMS()
                 || ServerConfig.IsCMS()) {
-            p.Encode8(0);
+            data.Encode8(0);
         }
 
-        p.Encode4(chr.getMapId()); // current map id
-        p.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
+        data.Encode4(chr.getMapId()); // current map id
+        data.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
 
         if (ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
-            p.Encode2(chr.getSubcategory());
+            data.Encode2(chr.getSubcategory());
         } else if (ServerConfig.IsTWMS()) {
-            p.Encode2(chr.getSubcategory());
-            p.EncodeZeroBytes(25);
-            p.Encode1(0);
-            p.Encode1(0);
-            p.Encode1(0);
-            p.Encode1(0);
-            p.Encode1(0);
+            data.Encode2(chr.getSubcategory());
+            data.EncodeZeroBytes(25);
+            data.Encode1(0);
+            data.Encode1(0);
+            data.Encode1(0);
+            data.Encode1(0);
+            data.Encode1(0);
         } else if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())) {
             // デュアルブレイドフラグ
-            p.Encode2(chr.getSubcategory());
+            data.Encode2(chr.getSubcategory());
             if (ServerConfig.IsJMS() && 188 <= ServerConfig.GetVersion()) {
                 // v194 OK
-                p.Encode8(0);
-                p.Encode4(0);
-                p.Encode4(0);
+                data.Encode8(0);
+                data.Encode4(0);
+                data.Encode4(0);
             } else {
-                p.Encode8(0);
-                p.Encode4(0);
-                p.Encode4(0);
-                p.Encode4(0);
+                data.Encode8(0);
+                data.Encode4(0);
+                data.Encode4(0);
+                data.Encode4(0);
             }
         } else {
             // v164, v165
-            p.Encode8(0);
-            p.Encode4(0);
-            p.Encode4(0);
+            data.Encode8(0);
+            data.Encode4(0);
+            data.Encode4(0);
         }
 
-        return p.Get().getBytes();
+        return data.Get().getBytes();
     }
 
     // GW_CharacterStat::DecodeMoney
@@ -284,129 +284,129 @@ public class GW_CharacterStat {
     // GW_CharacterStat::DecodeChangeStat
     // GW_CharacterStat::EncodeChangeStat
     public static byte[] EncodeChangeStat(MapleCharacter chr, int statmask) {
-        ServerPacket p = new ServerPacket();
+        ServerPacket data = new ServerPacket();
 
-        p.Encode4(statmask);
+        data.Encode4(statmask);
 
         // Skin
         if ((statmask & Flag.SKIN.get()) > 0) {
-            p.Encode1(chr.getSkinColor());
+            data.Encode1(chr.getSkinColor());
         }
         // Face
         if ((statmask & Flag.FACE.get()) > 0) {
-            p.Encode4(chr.getFace());
+            data.Encode4(chr.getFace());
         }
         // Hair
         if ((statmask & Flag.HAIR.get()) > 0) {
-            p.Encode4(chr.getHair());
+            data.Encode4(chr.getHair());
         }
         // Pet 1
         if ((statmask & Flag.PET1.get()) > 0) {
             MaplePet pet = chr.getPet(0);
-            p.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
+            data.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
         }
         // Level
         if ((statmask & Flag.LEVEL.get()) > 0) {
-            p.Encode1(chr.getLevel());
+            data.Encode1(chr.getLevel());
         }
         // Job
         if ((statmask & Flag.JOB.get()) > 0) {
-            p.Encode2(chr.getJob());
+            data.Encode2(chr.getJob());
         }
         // STR
         if ((statmask & Flag.STR.get()) > 0) {
-            p.Encode2(chr.getStat().getStr());
+            data.Encode2(chr.getStat().getStr());
         }
         // DEX
         if ((statmask & Flag.DEX.get()) > 0) {
-            p.Encode2(chr.getStat().getDex());
+            data.Encode2(chr.getStat().getDex());
         }
         // INT
         if ((statmask & Flag.INT.get()) > 0) {
-            p.Encode2(chr.getStat().getInt());
+            data.Encode2(chr.getStat().getInt());
         }
         // LUK
         if ((statmask & Flag.LUK.get()) > 0) {
-            p.Encode2(chr.getStat().getLuk());
+            data.Encode2(chr.getStat().getLuk());
         }
         // HP
         if ((statmask & Flag.HP.get()) > 0) {
             if (ServerConfig.IsPreBB()) {
-                p.Encode2(chr.getStat().getHp());
+                data.Encode2(chr.getStat().getHp());
             } else {
-                p.Encode4(chr.getStat().getHp());
+                data.Encode4(chr.getStat().getHp());
             }
         }
         // MAXHP
         if ((statmask & Flag.MAXHP.get()) > 0) {
             if (ServerConfig.IsPreBB()) {
-                p.Encode2(chr.getStat().getMaxHp());
+                data.Encode2(chr.getStat().getMaxHp());
             } else {
-                p.Encode4(chr.getStat().getMaxHp());
+                data.Encode4(chr.getStat().getMaxHp());
             }
         }
         // MP
         if ((statmask & Flag.MP.get()) > 0) {
             if (ServerConfig.IsPreBB()) {
-                p.Encode2(chr.getStat().getMp());
+                data.Encode2(chr.getStat().getMp());
             } else {
-                p.Encode4(chr.getStat().getMp());
+                data.Encode4(chr.getStat().getMp());
             }
         }
         // MAXMP
         if ((statmask & Flag.MAXMP.get()) > 0) {
             if (ServerConfig.IsPreBB()) {
-                p.Encode2(chr.getStat().getMaxMp());
+                data.Encode2(chr.getStat().getMaxMp());
             } else {
-                p.Encode4(chr.getStat().getMaxMp());
+                data.Encode4(chr.getStat().getMaxMp());
             }
         }
         // AP
         if ((statmask & Flag.AP.get()) > 0) {
-            p.Encode2(chr.getRemainingAp());
+            data.Encode2(chr.getRemainingAp());
         }
         // SP
         if ((statmask & Flag.SP.get()) > 0) {
             if (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob())) {
-                p.Encode1(chr.getRemainingSpSize());
+                data.Encode1(chr.getRemainingSpSize());
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
                     if (chr.getRemainingSp(i) > 0) {
-                        p.Encode1(i + 1);
-                        p.Encode1(chr.getRemainingSp(i));
+                        data.Encode1(i + 1);
+                        data.Encode1(chr.getRemainingSp(i));
                     }
                 }
             } else {
-                p.Encode2(chr.getRemainingSp());
+                data.Encode2(chr.getRemainingSp());
             }
         }
         // EXP
         if ((statmask & Flag.EXP.get()) > 0) {
-            p.Encode4(chr.getExp());
+            data.Encode4(chr.getExp());
         }
         // 人気度
         if ((statmask & Flag.FAME.get()) > 0) {
-            p.Encode2(chr.getFame());
+            data.Encode2(chr.getFame());
         }
         // Meso
         if ((statmask & Flag.MESO.get()) > 0) {
-            p.Encode4(chr.getMeso());
+            data.Encode4(chr.getMeso());
         }
         // v188 ここから+1
         // Pet 2
         if ((statmask & Flag.PET2.get()) > 0) {
             MaplePet pet = chr.getPet(1);
-            p.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
+            data.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
         }
         // Pet 3
         if ((statmask & Flag.PET3.get()) > 0) {
             MaplePet pet = chr.getPet(2);
-            p.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
+            data.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
         }
         // 兵法書, GashaExp
         if ((statmask & Flag.GASHAEXP.get()) > 0) {
-            p.Encode4(chr.getGashaEXP());
+            data.Encode4(chr.getGashaEXP());
         }
 
-        return p.Get().getBytes();
+        return data.Get().getBytes();
     }
 }

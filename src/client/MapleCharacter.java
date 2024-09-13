@@ -143,6 +143,7 @@ import server.maps.MapleFoothold;
 import server.movement.LifeMovementFragment;
 import tools.ConcurrentEnumMap;
 import tools.FileoutputUtil;
+import wz.DefaultData;
 import wz.LoadData;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Serializable {
@@ -542,11 +543,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ret.meso = rs.getInt("meso");
             ret.tama = rs.getInt("tama");
             ret.gmLevel = rs.getByte("gm");
-            ret.skinColor = rs.getByte("skincolor");
+            byte skin_id = rs.getByte("skincolor");
             ret.gender = rs.getByte("gender");
-            ret.job = rs.getShort("job");
-            ret.hair = rs.getInt("hair");
-            ret.face = rs.getInt("face");
+            int job_id = rs.getShort("job");
+            int hair_id = rs.getInt("hair");
+            int face_id = rs.getInt("face");
+
+            // check invalid ids
+            ret.setSkinColor(skin_id);
+            ret.setJob(job_id);
+            ret.setHair(hair_id);
+            ret.setFace(face_id);
+
             ret.accountid = rs.getInt("accountid");
             ret.mapid = rs.getInt("map");
             ret.initialSpawnPoint = rs.getByte("spawnpoint");
@@ -661,6 +669,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 rs.close();
 
                 for (Pair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(false, charid).values()) {
+                    if (!LoadData.IsValidItemID(mit.getLeft().getItemId())) {
+                        Debug.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
+                        continue;
+                    }
                     ret.getInventory(mit.getRight()).addFromDB(mit.getLeft());
                     if (mit.getLeft().getPet() != null) {
                         ret.pets.add(mit.getLeft().getPet());
@@ -2241,6 +2253,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void setSkinColor(byte skinColor) {
+        if (!LoadData.IsValidSkinID(skinColor)) {
+            Debug.ErrorLog("Invalid skin id : " + skinColor);
+            this.skinColor = DefaultData.SKIN;
+            return;
+        }
+
         this.skinColor = skinColor;
     }
 
@@ -2273,10 +2291,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void setHair(int hair) {
+        if (!LoadData.IsValidHairID(hair)) {
+            Debug.ErrorLog("Invalid hair id : " + hair);
+            this.hair = DefaultData.HAIR;
+            return;
+        }
         this.hair = hair;
     }
 
     public void setFace(int face) {
+        if (!LoadData.IsValidFaceID(face)) {
+            Debug.ErrorLog("Invalid face id : " + face);
+            this.face = DefaultData.FACE;
+            return;
+        }
         this.face = face;
     }
 
@@ -2326,6 +2354,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void setJob(int job) {
+        if (!LoadData.IsValidJobID(job)) {
+            Debug.ErrorLog("Invalid job id : " + job);
+            this.job = DefaultData.JOB;
+            return;
+        }
         this.job = job;
     }
 
