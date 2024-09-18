@@ -131,6 +131,7 @@ public class Debug {
     };
 
     public static boolean CheckNPCBlock(int npcid, String npcName) {
+        /*
         // 電光板は不要なので消す
         if (npcName.endsWith("電光板")) {
             return true;
@@ -141,6 +142,7 @@ public class Debug {
                 return true;
             }
         }
+         */
         return false;
     }
 }
