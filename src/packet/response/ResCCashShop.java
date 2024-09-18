@@ -36,7 +36,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  *
  * @author Riremito
  */
-public class PointShopResponse {
+public class ResCCashShop {
 
     /*
     @016D : LP_CashShopChargeParamResult

@@ -58,50 +58,21 @@ public class Debug {
         return true;
     }
 
-    // パケット出力 (Client Packet)
-    public static boolean PacketLog(ClientPacket p) {
-        if (!DebugConfig.log_packet) {
-            return false;
-        }
-
-        switch (p.GetOpcode()) {
-            case CP_AliveAck:
-            case CP_UserSkillUseRequest:
-            case CP_UpdateScreenSetting:
-            case CP_SecurityPacket:
-            case CP_SummonedMove:
-            case CP_UserChangeStatRequest:
-            case CP_CheckPassword:
-            case CP_UserMove:
-            case CP_UserMeleeAttack:
-            case CP_UserShootAttack:
-            case CP_UserMagicAttack:
-            case CP_MobMove:
-            case CP_MobApplyCtrl:
-            case CP_NpcSpecialAction: {
-                return false;
-            }
-            default: {
-                break;
-            }
-
-        }
-
-        Log("[CP][" + p.GetOpcodeName() + "]\n" + p.Packet());
-        return true;
+    public static void CPLog(ClientPacket cp) {
+        Log("[CP][" + cp.GetOpcodeName() + "]\n" + cp.Packet());
     }
 
-    public static void PacketDebugLog(ClientPacket p) {
-        Log("[CP][" + p.GetOpcodeName() + "]\n" + p.Packet());
+    public static void CPLogError(ClientPacket cp) {
+        Log("[CP][" + cp.GetOpcodeName() + "]\n" + cp.Packet());
     }
 
     // パケット出力 (Server Packet)
-    public static boolean PacketLog(ServerPacket p) {
+    public static boolean LPLog(ServerPacket sp) {
         if (!DebugConfig.log_packet) {
             return false;
         }
 
-        Log("[SP][" + p.GetOpcodeName() + "]\n" + p.Packet());
+        Log("[SP][" + sp.GetOpcodeName() + "]\n" + sp.Packet());
         return true;
     }
 

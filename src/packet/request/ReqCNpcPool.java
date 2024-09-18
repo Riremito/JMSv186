@@ -24,7 +24,7 @@ import tools.BitTools;
  *
  * @author elfenlied
  */
-public class NPCPacket {
+public class ReqCNpcPool {
 
     public enum CP_ShopFlag {
         // v186
@@ -149,7 +149,7 @@ public class NPCPacket {
     // client
     // CShopDlg::OnPacket
     // NPCShop
-    public static boolean OnShopPacket(ClientPacket p, MapleClient c) {
+    public static boolean OnShopPacket(ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return false;
@@ -162,30 +162,30 @@ public class NPCPacket {
             return false;
         }
 
-        byte flag = p.Decode1();
+        byte flag = cp.Decode1();
 
         switch (CP_ShopFlag.get(flag)) {
             case BUY_ITEM: {
-                p.Decode2();
+                cp.Decode2();
 
                 if (ServerConfig.IsPostBB() && ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
-                    p.Decode1();
+                    cp.Decode1();
                 }
 
-                final int itemId = p.Decode4();
-                final short quantity = p.Decode2();
+                final int itemId = cp.Decode4();
+                final short quantity = cp.Decode2();
                 shop.buy(c, chr, itemId, quantity);
                 break;
             }
             case SELL_ITEM: {
-                final byte slot = (byte) p.Decode2();
-                final int itemId = p.Decode4();
-                final short quantity = p.Decode2();
+                final byte slot = (byte) cp.Decode2();
+                final int itemId = cp.Decode4();
+                final short quantity = cp.Decode2();
                 shop.sell(c, GameConstants.getInventoryType(itemId), slot, quantity);
                 break;
             }
             case CHARGE_ITEM: {
-                final byte slot = (byte) p.Decode2();
+                final byte slot = (byte) cp.Decode2();
                 shop.recharge(c, slot);
                 break;
             }
@@ -196,8 +196,7 @@ public class NPCPacket {
             default: {
                 // not coded
                 chr.setConversation(0);
-                Debug.ErrorLog("NPCPacket");
-                Debug.PacketLog(p);
+                Debug.CPLogError(cp);
                 break;
             }
         }

@@ -54,9 +54,9 @@ import java.util.Comparator;
 import packet.ServerPacket;
 import packet.request.ContextPacket;
 import packet.request.ContextPacket.DropPickUpMessageType;
-import packet.request.ScriptManPacket;
+import packet.response.ResScriptMan;
 import packet.response.ContextResponse;
-import packet.response.StageResponse;
+import packet.response.ResCStage;
 import packet.response.struct.TestHelper;
 import server.maps.MapleNodes.MapleNodeInfo;
 import server.maps.MapleNodes.MaplePlatform;
@@ -85,12 +85,12 @@ public class MaplePacketCreator {
 
     // プレイヤー情報の初期化
     public static final MaplePacket getCharInfo(final MapleCharacter chr) {
-        return StageResponse.SetField(chr, true, null, 0);
+        return ResCStage.SetField(chr, true, null, 0);
     }
 
     // マップ移動
     public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
-        return StageResponse.SetField(chr, false, to, spawnPoint);
+        return ResCStage.SetField(chr, false, to, spawnPoint);
     }
 
     public static final MaplePacket enableActions() {
@@ -869,16 +869,16 @@ public class MaplePacketCreator {
             }
         }
 
-        return ScriptManPacket.ScriptMessage(npc, msgType, type, talk, prev, next);
+        return ResScriptMan.ScriptMessage(npc, msgType, type, talk, prev, next);
     }
 
     public static final MaplePacket getMapSelection(final int npcid, final String sel) {
-        return ScriptManPacket.ScriptMessage(npcid, (byte) 14, (byte) 0, sel, false, false);
+        return ResScriptMan.ScriptMessage(npcid, (byte) 14, (byte) 0, sel, false, false);
     }
 
     public static MaplePacket getNPCTalkStyle(int npc, String talk, int... args) {
         ServerPacket sp = new ServerPacket();
-        sp.EncodeBuffer(ScriptManPacket.ScriptMessage(npc, (byte) 8, (byte) 0, talk, false, false).getBytes());
+        sp.EncodeBuffer(ResScriptMan.ScriptMessage(npc, (byte) 8, (byte) 0, talk, false, false).getBytes());
         sp.Encode1(args.length);
 
         for (int i = 0; i < args.length; i++) {
@@ -889,7 +889,7 @@ public class MaplePacketCreator {
 
     public static MaplePacket getNPCTalkNum(int npc, String talk, int def, int min, int max) {
         ServerPacket sp = new ServerPacket();
-        sp.EncodeBuffer(ScriptManPacket.ScriptMessage(npc, (byte) 5, (byte) 0, talk, false, false).getBytes());
+        sp.EncodeBuffer(ResScriptMan.ScriptMessage(npc, (byte) 5, (byte) 0, talk, false, false).getBytes());
         sp.Encode4(def);
         sp.Encode4(min);
         sp.Encode4(max);
@@ -897,7 +897,7 @@ public class MaplePacketCreator {
     }
 
     public static MaplePacket getNPCTalkText(int npc, String talk) {
-        return ScriptManPacket.ScriptMessage(npc, (byte) 3, (byte) 0, talk, false, false);
+        return ResScriptMan.ScriptMessage(npc, (byte) 3, (byte) 0, talk, false, false);
     }
 
     public static MaplePacket getShowQuestCompletion(int id) {

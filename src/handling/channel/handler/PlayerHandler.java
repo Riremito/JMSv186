@@ -38,7 +38,7 @@ import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import packet.ClientPacket;
 import packet.response.LocalResponse;
-import packet.response.MobResponse;
+import packet.response.ResCMobPool;
 import packet.response.RemoteResponse;
 import packet.response.TestResponse;
 import server.MapleInventoryManipulator;
@@ -237,7 +237,7 @@ public class PlayerHandler {
                     bouncedamage = Math.min(bouncedamage, attacker.getMobMaxHp() / 10);
                     attacker.damage(chr, bouncedamage, true);
                     damage -= bouncedamage;
-                    chr.getMap().broadcastMessage(chr, MobResponse.Damage(attacker, bouncedamage), chr.getPosition());
+                    chr.getMap().broadcastMessage(chr, ResCMobPool.Damage(attacker, bouncedamage), chr.getPosition());
                     is_pg = true;
                 }
             }

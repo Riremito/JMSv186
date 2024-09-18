@@ -84,20 +84,20 @@ import java.util.HashMap;
 import packet.response.PachinkoResponse;
 import packet.request.ContextPacket;
 import packet.request.SocketPacket;
-import packet.request.UserRequest;
+import packet.request.ReqCUserPool;
 import packet.response.ContextResponse;
-import packet.response.EvanDragonResponse;
+import packet.response.ResCUser_Dragon;
 import packet.response.FreeMarketResponse;
 import packet.response.FriendResponse;
 import packet.response.LocalResponse;
-import packet.response.MobResponse;
+import packet.response.ResCMobPool;
 import packet.response.MonsterCarnivalResponse;
-import packet.response.MysticDoorResponse;
+import packet.response.ResCTownPortalPool;
 import packet.response.PartyResponse;
-import packet.response.PetResponse;
-import packet.response.PetResponse.DeActivatedMsg;
+import packet.response.ResCUser_Pet;
+import packet.response.ResCUser_Pet.DeActivatedMsg;
 import packet.response.RemoteResponse;
-import packet.response.SummonResponse;
+import packet.response.ResCSummonedPool;
 import packet.response.TemporaryStatResponse;
 import packet.response.TestResponse;
 import packet.response.UserResponse;
@@ -1737,7 +1737,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     final int summonId = mbsvh.effect.getSourceId();
                     final MapleSummon summon = summons.get(summonId);
                     if (summon != null) {
-                        map.broadcastMessage(SummonResponse.removeSummon(summon, true));
+                        map.broadcastMessage(ResCSummonedPool.removeSummon(summon, true));
                         map.removeMapObject(summon);
                         removeVisibleMapObject(summon);
                         summons.remove(summonId);
@@ -1819,7 +1819,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
                 for (final MaplePet pet : pets) {
                     if (pet.getSummoned()) {
-                        map.broadcastMessage(this, PetResponse.Activated(this, pet), false);
+                        map.broadcastMessage(this, ResCUser_Pet.Activated(this, pet), false);
                     }
                 }
                 for (final WeakReference<MapleCharacter> chr : clones) {
@@ -2397,12 +2397,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void enterTownPortal(MapleDoor door) {
-        SendPacket(MysticDoorResponse.setMysticDoorInfo(door));
-        SendPacket(MysticDoorResponse.removeDoor(door));
+        SendPacket(ResCTownPortalPool.setMysticDoorInfo(door));
+        SendPacket(ResCTownPortalPool.removeDoor(door));
         changeMapInternal(door.getLink().getMap(), door.getLink().getPosition(), MaplePacketCreator.getWarpToMap(door.getLink().getMap(), (byte) door.getTownPortal().getId(), this), null);
-        SendPacket(MysticDoorResponse.removeDoor(door.getLink()));
-        SendPacket(MysticDoorResponse.spawnDoor(door.getLink(), false));
-        SendPacket(MysticDoorResponse.setMysticDoorInfo(door.getLink()));
+        SendPacket(ResCTownPortalPool.removeDoor(door.getLink()));
+        SendPacket(ResCTownPortalPool.spawnDoor(door.getLink(), false));
+        SendPacket(ResCTownPortalPool.setMysticDoorInfo(door.getLink()));
     }
 
     public void changeMap(final MapleMap to, final MaplePortal pto) {
@@ -2565,7 +2565,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             guildUpdate();
             familyUpdate();
             if (dragon != null) {
-                map.broadcastMessage(EvanDragonResponse.removeDragon(this.id));
+                map.broadcastMessage(ResCUser_Dragon.removeDragon(this.id));
                 map.removeMapObject(dragon);
                 dragon = null;
             }
@@ -3166,7 +3166,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
         monster.setController(this);
         controlled.add(monster);
-        client.SendPacket(MobResponse.Control(monster, false, aggro));
+        client.SendPacket(ResCMobPool.Control(monster, false, aggro));
     }
 
     public void stopControllingMonster(MapleMonster monster) {
@@ -3708,7 +3708,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
             for (final MaplePet pet : pets) {
                 if (pet.getSummoned()) {
-                    client.getSession().write(PetResponse.Activated(this, pet));
+                    client.getSession().write(ResCUser_Pet.Activated(this, pet));
                 }
             }
             for (final WeakReference<MapleCharacter> chr : clones) {
@@ -3717,11 +3717,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 }
             }
             if (dragon != null) {
-                client.getSession().write(EvanDragonResponse.spawnDragon(dragon));
+                client.getSession().write(ResCUser_Dragon.spawnDragon(dragon));
             }
             if (summons != null) {
                 for (final MapleSummon summon : summons.values()) {
-                    client.getSession().write(SummonResponse.spawnSummon(summon, false));
+                    client.getSession().write(ResCSummonedPool.spawnSummon(summon, false));
                 }
             }
             if (followid > 0) {
@@ -3852,7 +3852,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void unequipPet(MaplePet pet, boolean shiftLeft, boolean hunger) {
         if (pet.getSummoned()) {
             pet.saveToDb();
-            map.broadcastMessage(this, PetResponse.Deactivated(this, pet, hunger ? DeActivatedMsg.PET_WENT_BACK_HOME : DeActivatedMsg.PET_NO_MSG), true);
+            map.broadcastMessage(this, ResCUser_Pet.Deactivated(this, pet, hunger ? DeActivatedMsg.PET_WENT_BACK_HOME : DeActivatedMsg.PET_NO_MSG), true);
             removePet(pet, shiftLeft);
             UpdateStat(true);
         }
@@ -5080,7 +5080,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
                         addPet(pet);
                         if (broadcast) {
-                            getMap().broadcastMessage(this, PetResponse.Activated(this, pet), true);
+                            getMap().broadcastMessage(this, ResCUser_Pet.Activated(this, pet), true);
                         }
                     }
                 }
@@ -5096,7 +5096,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (movedMobs.get(mobid) > 30) { //trying to move not null monster = broadcast dead
                 for (MapleCharacter chr : getMap().getCharactersThreadsafe()) { //also broadcast to others
                     if (chr.getMoveMobs().containsKey(mobid)) { //they also tried to move this mob
-                        chr.getClient().SendPacket(MobResponse.Kill(mobid, 1));
+                        chr.getClient().SendPacket(ResCMobPool.Kill(mobid, 1));
                         chr.getMoveMobs().remove(mobid);
                     }
                 }
@@ -5871,7 +5871,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void enableActions() {
-        UserRequest.SendCharacterStat(this);
+        ReqCUserPool.SendCharacterStat(this);
     }
 
     public void setPetAutoHPItem(int item_id) {

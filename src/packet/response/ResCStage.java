@@ -35,7 +35,7 @@ import server.maps.MapleMap;
  * @author Riremito
  */
 // CStage::OnPacket
-public class StageResponse {
+public class ResCStage {
 
     // CStage::OnSetField
     public static final MaplePacket SetField(MapleCharacter chr, boolean loggedin, MapleMap to, int spawnPoint) {
@@ -133,13 +133,13 @@ public class StageResponse {
                 if (ServerConfig.IsJMS() && ServerConfig.IsPostBB()) {
                     sp.Encode4(0); // NotSaleCount
                 }
-                sp.EncodeBuffer(PointShopResponse.getModifiedData());
+                sp.EncodeBuffer(ResCCashShop.getModifiedData());
                 if ((ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
                     sp.Encode2(0); // non 0, Decode4, DecodeStr
                 }
-                sp.EncodeBuffer(PointShopResponse.getDiscountRates());
+                sp.EncodeBuffer(ResCCashShop.getDiscountRates());
             }
-            sp.EncodeBuffer(PointShopResponse.getBestItems(), 1080);
+            sp.EncodeBuffer(ResCCashShop.getBestItems(), 1080);
             sp.Encode2(0); // CCashShop::DecodeStock
             sp.Encode2(0); // CCashShop::DecodeLimitGoods
         }

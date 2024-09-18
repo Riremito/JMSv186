@@ -21,34 +21,34 @@ package packet.request;
 import client.MapleCharacter;
 import client.MapleClient;
 import packet.ClientPacket;
-import packet.request.struct.CMovePath;
-import packet.response.EvanDragonResponse;
-import server.maps.MapleDragon;
+import server.maps.MapleDoor;
+import server.maps.MapleMapObject;
 
 /**
  *
  * @author Riremito
  */
-public class EvanDragonRequest {
+public class ReqCTownPortalPool {
 
-    // CDragon::OnMove
-    public static boolean OnMove(ClientPacket cp, MapleClient c) {
+    // UseDoor
+    // CField::TryEnterTownPortal
+    public static boolean TryEnterTownPortal(ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
-        if (chr == null || chr.isHidden()) {
+        if (chr == null) {
             return false;
         }
 
-        MapleDragon dragon = chr.getDragon();
-        if (dragon == null) {
-            return false;
+        int door_character_id = cp.Decode4();
+        byte unk1 = cp.Decode1();
+
+        for (MapleMapObject obj : chr.getMap().getAllDoorsThreadsafe()) {
+            final MapleDoor door = (MapleDoor) obj;
+            if (door.getOwnerId() == door_character_id) {
+                chr.enterTownPortal(door);
+                return true;
+            }
         }
 
-        // CMovePath::Decode
-        CMovePath data = CMovePath.Decode(cp);
-        dragon.setStance(data.getAction());
-        dragon.setPosition(data.getEnd());
-        chr.getMap().broadcastMessage(chr, EvanDragonResponse.moveDragon(dragon, data), chr.getPosition());
-        return true;
+        return false;
     }
-
 }

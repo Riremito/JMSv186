@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import packet.response.MapleTradeSpaceResponse;
+import packet.response.ResCITC;
 import tools.Pair;
 
 public class MTSStorage {
@@ -287,11 +287,11 @@ public class MTSStorage {
         mutex.readLock().lock();
         try {
             if (cart.getTab() == 1) { //buyNow
-                return MapleTradeSpaceResponse.sendMTS(getBuyNow(cart.getType(), cart.getPage()), cart.getTab(), cart.getType(), cart.getPage(), buyNow.size() / 16 + (buyNow.size() % 16 > 0 ? 1 : 0));
+                return ResCITC.sendMTS(getBuyNow(cart.getType(), cart.getPage()), cart.getTab(), cart.getType(), cart.getPage(), buyNow.size() / 16 + (buyNow.size() % 16 > 0 ? 1 : 0));
             } else if (cart.getTab() == 4) {
-                return MapleTradeSpaceResponse.sendMTS(getCartItems(cart), cart.getTab(), cart.getType(), cart.getPage(), 0);
+                return ResCITC.sendMTS(getCartItems(cart), cart.getTab(), cart.getType(), cart.getPage(), 0);
             } else {
-                return MapleTradeSpaceResponse.sendMTS(new ArrayList<MTSItemInfo>(), cart.getTab(), cart.getType(), cart.getPage(), 0);
+                return ResCITC.sendMTS(new ArrayList<MTSItemInfo>(), cart.getTab(), cart.getType(), cart.getPage(), 0);
             }
         } finally {
             mutex.readLock().unlock();
@@ -312,14 +312,14 @@ public class MTSStorage {
                     nys.add(r);
                 }
             }
-            return MapleTradeSpaceResponse.getNotYetSoldInv(nys);
+            return ResCITC.getNotYetSoldInv(nys);
         } finally {
             mutex.readLock().unlock();
         }
     }
 
     public final MaplePacket getCurrentTransfer(final MTSCart cart, final boolean changed) {
-        return MapleTradeSpaceResponse.getTransferInventory(cart.getInventory(), changed);
+        return ResCITC.getTransferInventory(cart.getInventory(), changed);
     }
 
     private final List<MTSItemInfo> getBuyNow(final int type, int page) {

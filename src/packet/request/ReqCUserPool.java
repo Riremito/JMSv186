@@ -24,7 +24,7 @@ import server.maps.MapleMap;
 import tools.AttackPair;
 import tools.Pair;
 
-public class UserRequest {
+public class ReqCUserPool {
 
     public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
         MapleCharacter chr = c.getPlayer();

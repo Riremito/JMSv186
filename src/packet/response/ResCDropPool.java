@@ -18,7 +18,7 @@
  * You should not develop private server for your business.
  * You should not ban anyone who tries hacking in private server.
  */
-package packet.request;
+package packet.response;
 
 import client.MapleCharacter;
 import handling.MaplePacket;
@@ -30,7 +30,7 @@ import server.maps.MapleMapItem;
  *
  * @author Riremito
  */
-public class DropPacket {
+public class ResCDropPool {
 
     public enum EnterType {
         PICK_UP_ENABLED(0),
@@ -92,26 +92,26 @@ public class DropPacket {
     // CDropPool::OnDropEnterField
     // dropItemFromMapObject
     public static MaplePacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto, Point dropfrom, int mobid) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_DropEnterField);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DropEnterField);
 
-        p.Encode1(et.get());
-        p.Encode4(drop.getObjectId());
-        p.Encode1(drop.getMeso() > 0 ? 1 : 0);
-        p.Encode4(drop.getItemId());
-        p.Encode4(drop.getOwner());
-        p.Encode1(drop.getDropType()); // 3 or not
-        p.Encode2(dropto.x);
-        p.Encode2(dropto.y);
-        p.Encode4(mobid); // dwSourceID (MobID)
+        sp.Encode1(et.get());
+        sp.Encode4(drop.getObjectId());
+        sp.Encode1(drop.getMeso() > 0 ? 1 : 0);
+        sp.Encode4(drop.getItemId());
+        sp.Encode4(drop.getOwner());
+        sp.Encode1(drop.getDropType()); // 3 or not
+        sp.Encode2(dropto.x);
+        sp.Encode2(dropto.y);
+        sp.Encode4(mobid); // dwSourceID (MobID)
 
         switch (et) {
             case PICK_UP_ENABLED:
             case ANIMATION:
             case SPAWN:
             case NO_ROTATE: {
-                p.Encode2(dropfrom.x);
-                p.Encode2(dropfrom.y);
-                p.Encode2(0);
+                sp.Encode2(dropfrom.x);
+                sp.Encode2(dropfrom.y);
+                sp.Encode2(0);
                 break;
             }
             case NO_ANIMATION: {
@@ -124,23 +124,23 @@ public class DropPacket {
 
         // meso does not have this data
         if (drop.getMeso() == 0) {
-            p.Encode8(-1);
+            sp.Encode8(-1);
         }
 
-        p.Encode1(drop.isPlayerDrop() ? 0 : 1); // pet pick up?
-        p.Encode1(0);
+        sp.Encode1(drop.isPlayerDrop() ? 0 : 1); // pet pick up?
+        sp.Encode1(0);
 
-        return p.Get();
+        return sp.Get();
     }
 
     // CDropPool::OnDropLeaveField
     // removeItemFromMap
     // explodeDrop
     public static MaplePacket DropLeaveField(MapleMapItem drop, LeaveType lt, MapleCharacter chr, int pet_slot) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_DropLeaveField);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DropLeaveField);
 
-        p.Encode1(lt.get());
-        p.Encode4(drop.getObjectId());
+        sp.Encode1(lt.get());
+        sp.Encode4(drop.getObjectId());
 
         switch (lt) {
             case EXPIRED:
@@ -149,17 +149,17 @@ public class DropPacket {
                 break;
             }
             case MESO_EXPLOSION: {
-                p.Encode2(655); // explosion delay
+                sp.Encode2(655); // explosion delay
                 break;
             }
             case PICK_UP:
             case PICK_UP_NO_SOUND: {
-                p.Encode4(chr.getObjectId()); // dwPickupID
+                sp.Encode4(chr.getObjectId()); // dwPickupID
                 break;
             }
             case PICK_UP_PET: {
-                p.Encode4(chr.getObjectId()); // dwPickupID
-                p.Encode4(pet_slot);
+                sp.Encode4(chr.getObjectId()); // dwPickupID
+                sp.Encode4(pet_slot);
                 break;
             }
             default: {
@@ -167,7 +167,7 @@ public class DropPacket {
             }
         }
 
-        return p.Get();
+        return sp.Get();
     }
 
     public static MaplePacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto) {

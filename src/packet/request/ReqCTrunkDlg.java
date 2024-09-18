@@ -19,7 +19,7 @@ import server.MapleItemInformationProvider;
 import server.MapleStorage;
 import tools.MaplePacketCreator;
 
-public class TrunkPacket {
+public class ReqCTrunkDlg {
 
     // server side
     public enum CP_Flag {
@@ -118,14 +118,14 @@ public class TrunkPacket {
 
     // Storage
     // CP_UserTrunkRequest
-    public static boolean OnPacket(ClientPacket p, MapleClient c) {
+    public static boolean OnPacket(ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
 
         if (chr == null) {
             return false;
         }
 
-        CP_Flag mode = CP_Flag.get(p.Decode1());
+        CP_Flag mode = CP_Flag.get(cp.Decode1());
 
         final MapleStorage storage = chr.getStorage();
 
@@ -139,8 +139,8 @@ public class TrunkPacket {
                 }
                  */
 
-                final byte type = p.Decode1();
-                final byte slot = storage.getSlot(MapleInventoryType.getByType(type), p.Decode1());
+                final byte type = cp.Decode1();
+                final byte slot = storage.getSlot(MapleInventoryType.getByType(type), cp.Decode1());
                 final IItem item = storage.takeOut(slot); // 取り出す?
 
                 if (item == null) {
@@ -149,7 +149,7 @@ public class TrunkPacket {
 
                 if (!MapleInventoryManipulator.checkSpace(c, item.getItemId(), item.getQuantity(), item.getOwner())) {
                     storage.store(item); // 戻す?
-                    c.SendPacket(TrunkPacket.Error(SP_Flag.ITEM_INVENTORY_FULL));
+                    c.SendPacket(ReqCTrunkDlg.Error(SP_Flag.ITEM_INVENTORY_FULL));
                     return false;
                 }
 
@@ -161,24 +161,24 @@ public class TrunkPacket {
             case ITEM_IN: {
                 // 手数料不足
                 if (chr.getMeso() < 100) {
-                    c.SendPacket(TrunkPacket.Error(SP_Flag.NOT_ENOUGH_MESOS_IN));
+                    c.SendPacket(ReqCTrunkDlg.Error(SP_Flag.NOT_ENOUGH_MESOS_IN));
                     return false;
                 }
 
-                final byte slot = (byte) p.Decode2();
-                final int itemId = p.Decode4();
-                short quantity = p.Decode2();
+                final byte slot = (byte) cp.Decode2();
+                final int itemId = cp.Decode4();
+                short quantity = cp.Decode2();
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
                 // packet hack
                 if (quantity < 1) {
-                    c.SendPacket(TrunkPacket.Error(SP_Flag.ERROR));
+                    c.SendPacket(ReqCTrunkDlg.Error(SP_Flag.ERROR));
                     return false;
                 }
 
                 // 空きスロットがない
                 if (storage.isFull()) {
-                    c.SendPacket(TrunkPacket.Error(SP_Flag.TRUNK_INVENTORY_FULL));
+                    c.SendPacket(ReqCTrunkDlg.Error(SP_Flag.TRUNK_INVENTORY_FULL));
                     return false;
                 }
 
@@ -186,7 +186,7 @@ public class TrunkPacket {
                 IItem item = chr.getInventory(type).getItem(slot).copy();
 
                 if (GameConstants.isPet(item.getItemId())) {
-                    c.SendPacket(TrunkPacket.Error(SP_Flag.ERROR));
+                    c.SendPacket(ReqCTrunkDlg.Error(SP_Flag.ERROR));
                     return false;
                 }
 
@@ -223,25 +223,25 @@ public class TrunkPacket {
                 return true;
             }
             case MESO_INOUT: {
-                int meso = p.Decode4();
+                int meso = cp.Decode4();
                 final int storageMesos = storage.getMeso();
                 final int playerMesos = chr.getMeso();
 
                 // packet hack
                 if (meso == 0) {
-                    c.SendPacket(TrunkPacket.Error(SP_Flag.ERROR));
+                    c.SendPacket(ReqCTrunkDlg.Error(SP_Flag.ERROR));
                     return false;
                 }
 
                 // packet hack
                 if (meso <= 0 && (storageMesos - meso < 0)) {
-                    c.SendPacket(TrunkPacket.Error(SP_Flag.ERROR));
+                    c.SendPacket(ReqCTrunkDlg.Error(SP_Flag.ERROR));
                     return false;
                 }
 
                 // packet hack
                 if (meso > 0 && (playerMesos + meso < 0)) {
-                    c.SendPacket(TrunkPacket.Error(SP_Flag.ERROR));
+                    c.SendPacket(ReqCTrunkDlg.Error(SP_Flag.ERROR));
                     return false;
                 }
 
@@ -256,8 +256,7 @@ public class TrunkPacket {
                 return true;
             }
             default: {
-                Debug.ErrorLog("TrunkPacket");
-                Debug.PacketLog(p);
+                Debug.CPLogError(cp);
                 break;
             }
         }

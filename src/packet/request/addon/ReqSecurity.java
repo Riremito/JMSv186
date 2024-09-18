@@ -18,6 +18,7 @@
  */
 package packet.request.addon;
 
+import client.MapleClient;
 import config.ServerConfig;
 import debug.Debug;
 import packet.ClientPacket;
@@ -26,7 +27,39 @@ import packet.ClientPacket;
  *
  * @author Riremito
  */
-public class AddonPacket {
+public class ReqSecurity {
+
+    public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+
+        switch (header) {
+            // 独自実装
+            case CP_CUSTOM_WZ_HASH: {
+                if (ServerConfig.login_server_antihack) {
+                    if (Hash(cp)) {
+                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz OK");
+                    } else {
+                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz NG");
+                    }
+                }
+                return true;
+            }
+            case CP_CUSTOM_MEMORY_SCAN: {
+                if (ServerConfig.login_server_antihack) {
+                    if (Scan(cp)) {
+                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory OK");
+                    } else {
+                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory NG");
+                    }
+                }
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return false;
+    }
 
     public static boolean Scan(ClientPacket p) {
         // v186以外は無視

@@ -7,8 +7,8 @@ import packet.response.struct.GW_CharacterStat;
 public class PacketFlag {
 
     public static void Update() {
-        TrunkPacket.Init();
-        NPCPacket.Init();
+        ReqCTrunkDlg.Init();
+        ReqCNpcPool.Init();
         GW_CharacterStat.Init();
         SecondaryStat.Init();
         ContextPacket.Message_Init();

@@ -36,8 +36,8 @@ import java.util.List;
 import java.util.Map;
 import packet.ClientPacket;
 import packet.request.struct.CMovePath;
-import packet.response.MobResponse;
-import packet.response.SummonResponse;
+import packet.response.ResCMobPool;
+import packet.response.ResCSummonedPool;
 import server.MapleStatEffect;
 import server.life.MapleMonster;
 import server.life.SummonAttackEntry;
@@ -49,7 +49,7 @@ import server.maps.SummonMovementType;
  *
  * @author Riremito
  */
-public class SummonRequest {
+public class ReqCSummonedPool {
 
     // CUser::OnSummonedPacket
     public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
@@ -121,7 +121,7 @@ public class SummonRequest {
         CMovePath data = CMovePath.Decode(cp);
         summon.setStance(data.getAction());
         summon.setPosition(data.getEnd());
-        chr.getMap().broadcastMessage(chr, SummonResponse.moveSummon(summon, data), summon.getPosition());
+        chr.getMap().broadcastMessage(chr, ResCSummonedPool.moveSummon(summon, data), summon.getPosition());
         return true;
     }
 
@@ -197,7 +197,7 @@ public class SummonRequest {
         }
 
         if (!summon.isChangedMap()) {
-            map.broadcastMessage(chr, SummonResponse.summonAttack(summon.getOwnerId(), summon.getObjectId(), animation, allDamage, chr.getLevel()), summon.getPosition());
+            map.broadcastMessage(chr, ResCSummonedPool.summonAttack(summon.getOwnerId(), summon.getObjectId(), animation, allDamage, chr.getLevel()), summon.getPosition());
         }
         final ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());
         final MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
@@ -219,12 +219,12 @@ public class SummonRequest {
             mob.damage(chr, toDamage, true);
             chr.checkMonsterAggro(mob);
             if (!mob.isAlive()) {
-                chr.getClient().SendPacket(MobResponse.Kill(mob, 1));
+                chr.getClient().SendPacket(ResCMobPool.Kill(mob, 1));
             }
         }
 
         if (summon.isGaviota()) {
-            chr.getMap().broadcastMessage(SummonResponse.removeSummon(summon, true));
+            chr.getMap().broadcastMessage(ResCSummonedPool.removeSummon(summon, true));
             chr.getMap().removeMapObject(summon);
             chr.removeVisibleMapObject(summon);
             chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
@@ -247,7 +247,7 @@ public class SummonRequest {
                 if (summon.getHP() <= 0) {
                     chr.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
                 }
-                chr.getMap().broadcastMessage(chr, SummonResponse.damageSummon(chr.getId(), summon.getSkill(), damage, unkByte, monsterIdFrom), summon.getPosition());
+                chr.getMap().broadcastMessage(chr, ResCSummonedPool.damageSummon(chr.getId(), summon.getSkill(), damage, unkByte, monsterIdFrom), summon.getPosition());
                 break;
             }
         }

@@ -25,7 +25,7 @@ import packet.ServerPacket;
  *
  * @author Riremito
  */
-public class DueyResponse {
+public class ResCParcelDlg {
 
     private enum Action {
         // 不明

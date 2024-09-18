@@ -27,7 +27,7 @@ import server.maps.MapleDoor;
  *
  * @author Riremito
  */
-public class MysticDoorResponse {
+public class ResCTownPortalPool {
 
     // spawnPortal
     // CWvsContext::OnTownPortal

@@ -30,7 +30,7 @@ import tools.Pair;
  *
  * @author Riremito
  */
-public class KeyMapResponse {
+public class ResCFuncKeyMappedMan {
 
     /*
         @007D : LP_MacroSysDataInit

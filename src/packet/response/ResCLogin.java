@@ -35,7 +35,7 @@ import packet.response.struct.GW_CharacterStat;
  *
  * @author Riremito
  */
-public class LoginResponse {
+public class ResCLogin {
 
     // v131 - v186 OK
     public enum LoginResult {

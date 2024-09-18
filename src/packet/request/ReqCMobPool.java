@@ -7,7 +7,7 @@ import config.ServerConfig;
 import handling.channel.handler.MobHandler;
 import packet.ClientPacket;
 import packet.request.struct.CMovePath;
-import packet.response.MobResponse;
+import packet.response.ResCMobPool;
 import server.Randomizer;
 import server.life.MapleMonster;
 import server.life.MobSkill;
@@ -15,7 +15,7 @@ import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import tools.Pair;
 
-public class MobRequest {
+public class ReqCMobPool {
 
     public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
@@ -149,7 +149,7 @@ public class MobRequest {
 
         final MapleMap map = chr.getMap();
         map.moveMonster(monster, monster.getPosition());
-        map.broadcastMessage(chr, MobResponse.moveMonster(useSkill, skill, skill1, skill2, skill3, skill4, monster.getObjectId(), data), monster.getPosition());
+        map.broadcastMessage(chr, ResCMobPool.moveMonster(useSkill, skill, skill1, skill2, skill3, skill4, monster.getObjectId(), data), monster.getPosition());
         return true;
     }
 
@@ -189,7 +189,7 @@ public class MobRequest {
             }
         }
 
-        chr.getClient().SendPacket(MobResponse.moveMonsterResponse(monster, moveid, realskill, level));
+        chr.getClient().SendPacket(ResCMobPool.moveMonsterResponse(monster, moveid, realskill, level));
     }
 
 }

@@ -24,13 +24,13 @@ import client.SkillMacro;
 import config.ServerConfig;
 import debug.Debug;
 import packet.ClientPacket;
-import packet.response.KeyMapResponse;
+import packet.response.ResCFuncKeyMappedMan;
 
 /**
  *
  * @author Riremito
  */
-public class KeyMapRequest {
+public class ReqCFuncKeyMappedMan {
 
     /*
         @006C : CP_UserMacroSysDataModified
@@ -124,9 +124,9 @@ public class KeyMapRequest {
                 int item_id = cp.Decode4();
                 chr.setPetAutoHPItem(item_id);
                 if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
-                    chr.SendPacket(KeyMapResponse.getPetAutoHP(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
                 } else {
-                    chr.SendPacket(KeyMapResponse.getPetAutoHPMP_JMS_v131(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
                 }
                 return true;
             }
@@ -134,9 +134,9 @@ public class KeyMapRequest {
                 int item_id = cp.Decode4();
                 chr.setPetAutoMPItem(item_id);
                 if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
-                    chr.SendPacket(KeyMapResponse.getPetAutoMP(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoMP(chr));
                 } else {
-                    chr.SendPacket(KeyMapResponse.getPetAutoHPMP_JMS_v131(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
                 }
                 return true;
             }
@@ -144,7 +144,7 @@ public class KeyMapRequest {
                 int item_id = cp.Decode4();
                 chr.setPetAutoCureItem(item_id);
                 if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
-                    chr.SendPacket(KeyMapResponse.getPetAutoCure(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoCure(chr));
                 }
                 return true;
             }

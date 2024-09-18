@@ -20,13 +20,13 @@ package packet.request;
 
 import client.MapleClient;
 import packet.ClientPacket;
-import packet.response.ViciousHammerResponse;
+import packet.response.ResCUIItemUpgrade;
 
 /**
  *
  * @author Riremito
  */
-public class ViciousHammerPacket {
+public class ReqCUIItemUpgrade {
 
     // @0119 [38 00 00 00] [00 00 00 00]
     // 0x38が成功フラグなのでクライアント側から成功可否を通知している可能性がある
@@ -36,7 +36,7 @@ public class ViciousHammerPacket {
         // 用途不明
         int hammered = p.Decode4();
         // 関数に成功可否を渡しても良いと思われるが、成功確率が100%なので意味がない
-        c.ProcessPacket(ViciousHammerResponse.Success());
+        c.ProcessPacket(ResCUIItemUpgrade.Success());
         return true;
     }
 

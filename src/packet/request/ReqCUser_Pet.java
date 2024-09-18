@@ -33,7 +33,7 @@ import java.util.concurrent.locks.Lock;
 import packet.ClientPacket;
 import packet.request.struct.CMovePath;
 import packet.response.LocalResponse;
-import packet.response.PetResponse;
+import packet.response.ResCUser_Pet;
 import packet.response.RemoteResponse;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -49,7 +49,7 @@ import tools.data.input.SeekableLittleEndianAccessor;
  *
  * @author Riremito
  */
-public class PetRequest {
+public class ReqCUser_Pet {
 
     private static final int EXCEPTION_LIST_MESO = 0x7FFFFFFF;
 
@@ -145,7 +145,7 @@ public class PetRequest {
         chr.enableActions();
 
         // 情報更新
-        chr.SendPacket(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+        chr.SendPacket(ResCUser_Pet.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
         // pet level up
         if (pet_previous_level < pet.getLevel()) {
             chr.SendPacket(LocalResponse.showOwnPetLevelUp(0));
@@ -166,7 +166,7 @@ public class PetRequest {
         CMovePath data = CMovePath.Decode(cp);
         pet.setStance(data.getAction());
         pet.setPosition(data.getEnd());
-        map.broadcastMessage(chr, PetResponse.movePet(chr, pet_index, data), false);
+        map.broadcastMessage(chr, ResCUser_Pet.movePet(chr, pet_index, data), false);
         return true;
     }
 
@@ -183,7 +183,7 @@ public class PetRequest {
             return false;
         }
 
-        map.broadcastMessage(chr, PetResponse.petChat(chr, pet_index, nType, nAction, pet_message), false);
+        map.broadcastMessage(chr, ResCUser_Pet.petChat(chr, pet_index, nType, nAction, pet_message), false);
         return true;
     }
 
@@ -256,10 +256,10 @@ public class PetRequest {
                     c.getSession().write(LocalResponse.showOwnPetLevelUp(petIndex));
                     chr.getMap().broadcastMessage(RemoteResponse.showPetLevelUp(chr, petIndex));
                 }
-                c.getSession().write(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+                c.getSession().write(ResCUser_Pet.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
             }
         }
-        chr.getMap().broadcastMessage(chr, PetResponse.commandResponse(chr.getId(), command, petIndex, success, false), true);
+        chr.getMap().broadcastMessage(chr, ResCUser_Pet.commandResponse(chr.getId(), command, petIndex, success, false), true);
     }
 
     public static final void Pickup_Pet(MapleCharacter chr, MapleMapItem mapitem, int pet_index) {

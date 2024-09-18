@@ -24,7 +24,7 @@ import java.awt.Point;
 
 import client.MapleCharacter;
 import handling.world.World;
-import packet.request.ReactorPacket;
+import packet.request.ReqCReactorPool;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
 import server.Timer.EventTimer;
@@ -120,7 +120,7 @@ public class AramiaFireWorks {
                     if (this.sunshines >= (MAX_SUN / 6) * (2 + reactor.getState())) {
                         reactor.setState((byte) (reactor.getState() + 1));
                         reactor.setTimerActive(false);
-                        map.broadcastMessage(ReactorPacket.Hit(reactor, reactor.getState()));
+                        map.broadcastMessage(ReqCReactorPool.Hit(reactor, reactor.getState()));
                     }
                     break;
                 default:
@@ -189,7 +189,7 @@ public class AramiaFireWorks {
                     if (this.decorations >= (MAX_DEC / 6) * (2 + reactor.getState())) {
                         reactor.setState((byte) (reactor.getState() + 1));
                         reactor.setTimerActive(false);
-                        map.broadcastMessage(ReactorPacket.Hit(reactor, reactor.getState()));
+                        map.broadcastMessage(ReqCReactorPool.Hit(reactor, reactor.getState()));
                     }
                     break;
                 default:

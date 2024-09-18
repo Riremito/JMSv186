@@ -38,13 +38,13 @@ import java.util.Map;
 import java.util.Random;
 import packet.ClientPacket;
 import packet.response.ContextResponse;
-import packet.response.DueyResponse;
+import packet.response.ResCParcelDlg;
 import packet.response.ItemResponse;
 import packet.response.MegaphoneResponse;
 import packet.response.PachinkoResponse;
-import packet.response.PetResponse;
+import packet.response.ResCUser_Pet;
 import packet.response.TemporaryStatResponse;
-import packet.response.VegaSpellResponse;
+import packet.response.ResCUIVega;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
@@ -266,7 +266,7 @@ public class ItemRequest {
             }
             // pet food
             case 524: {
-                PetRequest.OnPetFood(chr, MapleInventoryType.CASH, item_slot, item_id);
+                ReqCUser_Pet.OnPetFood(chr, MapleInventoryType.CASH, item_slot, item_id);
                 return true;
             }
             default: {
@@ -300,8 +300,8 @@ public class ItemRequest {
                 pet.setName(pet_name);
                 // remove item
                 RemoveCashItem(chr, item_slot);
-                chr.SendPacket(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
-                chr.getMap().broadcastMessage(PetResponse.changePetName(chr, pet_index, pet_name));
+                chr.SendPacket(ResCUser_Pet.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
+                chr.getMap().broadcastMessage(ResCUser_Pet.changePetName(chr, pet_index, pet_name));
                 return true;
             }
             // パチンコ玉
@@ -356,7 +356,7 @@ public class ItemRequest {
             }
             // 速達
             case 5330000: {
-                chr.SendPacket(DueyResponse.Open(true, false));
+                chr.SendPacket(ResCParcelDlg.Open(true, false));
                 return true;
             }
             default: {
@@ -808,8 +808,8 @@ public class ItemRequest {
         // ベガの呪文書
         if (vegas != 0) {
             c.getPlayer().forceReAddItem(toScroll, MapleInventoryType.EQUIP);
-            c.ProcessPacket(VegaSpellResponse.Start());
-            c.ProcessPacket(VegaSpellResponse.Result(scrollSuccess == IEquip.ScrollResult.SUCCESS));
+            c.ProcessPacket(ResCUIVega.Start());
+            c.ProcessPacket(ResCUIVega.Result(scrollSuccess == IEquip.ScrollResult.SUCCESS));
         }
         return true;
     }

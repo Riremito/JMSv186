@@ -27,7 +27,7 @@ import server.maps.MapleDragon;
  *
  * @author Riremito
  */
-public class EvanDragonResponse {
+public class ResCUser_Dragon {
 
     public static MaplePacket moveDragon(MapleDragon dragon, CMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DragonMove);

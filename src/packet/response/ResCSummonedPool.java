@@ -32,7 +32,7 @@ import server.maps.MapleSummon;
  *
  * @author Riremito
  */
-public class SummonResponse {
+public class ResCSummonedPool {
 
     // v131 broken
     public static MaplePacket summonAttack(final int cid, final int summonSkillId, final byte animation, final List<SummonAttackEntry> allDamage, final int level) {

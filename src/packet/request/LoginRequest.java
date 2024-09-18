@@ -34,7 +34,7 @@ import handling.login.LoginWorker;
 import java.util.Calendar;
 import java.util.List;
 import packet.ClientPacket;
-import packet.response.LoginResponse;
+import packet.response.ResCLogin;
 import server.MapleItemInformationProvider;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -57,11 +57,11 @@ public class LoginRequest {
         final int numPlayer = LoginServer.getUsersOn();
         final int userLimit = LoginServer.getUserLimit();
         if (numPlayer >= userLimit) {
-            c.getSession().write(LoginResponse.getServerStatus(2));
+            c.getSession().write(ResCLogin.getServerStatus(2));
         } else if (numPlayer * 2 >= userLimit) {
-            c.getSession().write(LoginResponse.getServerStatus(1));
+            c.getSession().write(ResCLogin.getServerStatus(1));
         } else {
-            c.getSession().write(LoginResponse.getServerStatus(0));
+            c.getSession().write(ResCLogin.getServerStatus(0));
         }
     }
 
@@ -109,10 +109,10 @@ public class LoginRequest {
             if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
                 AddStarterSet(newchar);
                 MapleCharacter.saveNewCharToDB(newchar, 1, false);
-                c.getSession().write(LoginResponse.addNewCharEntry(newchar, true));
+                c.getSession().write(ResCLogin.addNewCharEntry(newchar, true));
                 c.createdChar(newchar.getId());
             } else {
-                c.getSession().write(LoginResponse.addNewCharEntry(newchar, false));
+                c.getSession().write(ResCLogin.addNewCharEntry(newchar, false));
             }
             return;
         }
@@ -144,7 +144,7 @@ public class LoginRequest {
         final byte gender = c.getGender();
         if (!LoadData.IsValidFaceID(face) || !LoadData.IsValidHairID(hair) || !LoadData.IsValidItemID(top) || !LoadData.IsValidItemID(bottom) || !LoadData.IsValidItemID(shoes) || !LoadData.IsValidItemID(weapon)) {
             Debug.DebugLog("Character creation error");
-            c.getSession().write(LoginResponse.addNewCharEntry(null, false));
+            c.getSession().write(ResCLogin.addNewCharEntry(null, false));
             return;
         }
         MapleCharacter newchar = MapleCharacter.getDefault(c, JobType);
@@ -181,10 +181,10 @@ public class LoginRequest {
         if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
             AddStarterSet(newchar);
             MapleCharacter.saveNewCharToDB(newchar, JobType, JobType == 1 && db > 0);
-            c.getSession().write(LoginResponse.addNewCharEntry(newchar, true));
+            c.getSession().write(ResCLogin.addNewCharEntry(newchar, true));
             c.createdChar(newchar.getId());
         } else {
-            c.getSession().write(LoginResponse.addNewCharEntry(newchar, false));
+            c.getSession().write(ResCLogin.addNewCharEntry(newchar, false));
         }
     }
 
@@ -204,7 +204,7 @@ public class LoginRequest {
         final int channel = p.Decode1();
         // もみじ block test
         if (server == 1) {
-            c.SendPacket(LoginResponse.getCharList(c, LoginResponse.LoginResult.TOO_MANY_USERS));
+            c.SendPacket(ResCLogin.getCharList(c, ResCLogin.LoginResult.TOO_MANY_USERS));
             return;
         }
         CharlistRequest(c, server, channel + 1);
@@ -218,7 +218,7 @@ public class LoginRequest {
         SelectedChannel = channel - 1;
         c.setWorld(server);
         c.setChannel(channel);
-        c.SendPacket(LoginResponse.getCharList(c, LoginResponse.LoginResult.SUCCESS));
+        c.SendPacket(ResCLogin.getCharList(c, ResCLogin.LoginResult.SUCCESS));
     }
 
     public static final void DeleteChar(ClientPacket cp, final MapleClient c) {
@@ -244,7 +244,7 @@ public class LoginRequest {
         if (state == 0) {
             state = (byte) c.deleteCharacter(Character_ID);
         }
-        c.getSession().write(LoginResponse.deleteCharResponse(Character_ID, state));
+        c.getSession().write(ResCLogin.deleteCharResponse(Character_ID, state));
     }
 
     public static boolean AddStarterSet(MapleCharacter chr) {
@@ -404,13 +404,13 @@ public class LoginRequest {
 
     public static final void ServerListRequest(final MapleClient c) {
         // かえで
-        c.SendPacket(LoginResponse.getServerList(0));
+        c.SendPacket(ResCLogin.getServerList(0));
         // もみじ (サーバーを分離すると接続人数を取得するのが難しくなる)
-        c.SendPacket(LoginResponse.getServerList(1, false, 16));
-        c.SendPacket(LoginResponse.getEndOfServerList());
+        c.SendPacket(ResCLogin.getServerList(1, false, 16));
+        c.SendPacket(ResCLogin.getEndOfServerList());
         if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
-            c.SendPacket(LoginResponse.RecommendWorldMessage());
-            c.SendPacket(LoginResponse.LatestConnectedWorld());
+            c.SendPacket(ResCLogin.RecommendWorldMessage());
+            c.SendPacket(ResCLogin.LatestConnectedWorld());
         }
     }
 
@@ -463,11 +463,11 @@ public class LoginRequest {
         }
         if (loginok != 0) {
             if (!loginFailCount(c)) {
-                c.SendPacket(LoginResponse.CheckPasswordResult(c, loginok));
+                c.SendPacket(ResCLogin.CheckPasswordResult(c, loginok));
             }
         } else if (tempbannedTill.getTimeInMillis() != 0) {
             if (!loginFailCount(c)) {
-                c.SendPacket(LoginResponse.CheckPasswordResult(c, 2)); // ?
+                c.SendPacket(ResCLogin.CheckPasswordResult(c, 2)); // ?
             }
         } else {
             c.loginAttempt = 0;
@@ -479,7 +479,7 @@ public class LoginRequest {
 
     public static final void CheckCharName(ClientPacket p, final MapleClient c) {
         String name = new String(p.DecodeBuffer());
-        c.getSession().write(LoginResponse.charNameResponse(name, !MapleCharacterUtil.canCreateChar(name) || LoginInformationProvider.getInstance().isForbiddenName(name)));
+        c.getSession().write(ResCLogin.charNameResponse(name, !MapleCharacterUtil.canCreateChar(name) || LoginInformationProvider.getInstance().isForbiddenName(name)));
     }
 
 }

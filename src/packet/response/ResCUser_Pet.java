@@ -31,7 +31,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  *
  * @author Riremito
  */
-public class PetResponse {
+public class ResCUser_Pet {
 
     /*
         @00B4 : LP_PetActivated, CUserLocal::OnPetActivated, CUserRemote::OnPetActivated

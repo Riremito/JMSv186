@@ -48,8 +48,8 @@ import java.util.Collections;
 import java.util.concurrent.locks.Lock;
 import packet.ClientPacket;
 import packet.request.ContextPacket;
-import packet.request.DropPacket;
-import packet.request.DropPacket.LeaveType;
+import packet.response.ResCDropPool;
+import packet.response.ResCDropPool.LeaveType;
 import packet.request.ItemRequest;
 import packet.response.ContextResponse;
 import packet.response.FieldResponse;
@@ -57,7 +57,7 @@ import packet.response.FreeMarketResponse;
 import packet.response.ItemResponse;
 import packet.response.LocalResponse;
 import packet.response.RemoteResponse;
-import packet.response.ViciousHammerResponse;
+import packet.response.ResCUIItemUpgrade;
 import server.Randomizer;
 import server.RandomRewards;
 import server.MapleShopFactory;
@@ -993,10 +993,10 @@ public class InventoryHandler {
 
                         c.getPlayer().forceReAddItem(item, MapleInventoryType.EQUIP);
                         // ビシャスのハンマーのアニメーションの終わる通知待ち状態へ
-                        c.ProcessPacket(ViciousHammerResponse.Update(item.getViciousHammer()));
+                        c.ProcessPacket(ResCUIItemUpgrade.Update(item.getViciousHammer()));
                         used = true;
                     } else {
-                        c.ProcessPacket(ViciousHammerResponse.Failure(1));
+                        c.ProcessPacket(ResCUIItemUpgrade.Failure(1));
                     }
                 }
 
@@ -1317,7 +1317,7 @@ public class InventoryHandler {
     public static final void removeItem_Pet(final MapleCharacter chr, final MapleMapItem mapitem, int pet) {
         mapitem.setPickedUp(true);
         Debug.DebugLog("PICKUP REMOVEITEM PET");
-        chr.getMap().broadcastMessage(DropPacket.DropLeaveField(mapitem, LeaveType.PICK_UP_PET, chr, pet), mapitem.getPosition());
+        chr.getMap().broadcastMessage(ResCDropPool.DropLeaveField(mapitem, LeaveType.PICK_UP_PET, chr, pet), mapitem.getPosition());
         chr.getMap().removeMapObject(mapitem);
         if (mapitem.isRandDrop()) {
             chr.getMap().spawnRandDrop();
@@ -1327,7 +1327,7 @@ public class InventoryHandler {
     private static final void removeItem(final MapleCharacter chr, final MapleMapItem mapitem, final MapleMapObject ob) {
         mapitem.setPickedUp(true);
         Debug.DebugLog("PICKUP REMOVEITEM");
-        chr.getMap().broadcastMessage(DropPacket.DropLeaveField(mapitem, LeaveType.PICK_UP, chr, 0), mapitem.getPosition());
+        chr.getMap().broadcastMessage(ResCDropPool.DropLeaveField(mapitem, LeaveType.PICK_UP, chr, 0), mapitem.getPosition());
         chr.getMap().removeMapObject(ob);
         if (mapitem.isRandDrop()) {
             chr.getMap().spawnRandDrop();

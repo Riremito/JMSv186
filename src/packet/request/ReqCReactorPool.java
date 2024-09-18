@@ -8,7 +8,7 @@ import packet.ServerPacket;
 import scripting.ReactorScriptManager;
 import server.maps.MapleReactor;
 
-public class ReactorPacket {
+public class ReqCReactorPool {
 
     public static boolean OnPacket(ClientPacket p, ClientPacket.Header header, MapleClient c) {
         int oid = p.Decode4();

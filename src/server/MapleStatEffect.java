@@ -39,7 +39,7 @@ import server.maps.MapleSummon;
 import server.maps.SummonMovementType;
 import java.util.EnumMap;
 import packet.response.LocalResponse;
-import packet.response.MysticDoorResponse;
+import packet.response.ResCTownPortalPool;
 import packet.response.RemoteResponse;
 import packet.response.TemporaryStatResponse;
 import server.MapleCarnivalFactory.MCSkill;
@@ -931,7 +931,7 @@ public class MapleStatEffect implements Serializable {
                     //applyto.silentPartyUpdate();
                 }
 
-                applyto.SendPacket(MysticDoorResponse.spawnDoor(door, false));
+                applyto.SendPacket(ResCTownPortalPool.spawnDoor(door, false));
 
             } else {
                 applyto.dropMessage(5, "You may not spawn a door because all doors in the town are taken.");

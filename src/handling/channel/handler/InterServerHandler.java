@@ -48,8 +48,8 @@ import packet.request.SocketPacket;
 import packet.response.FamilyResponse;
 import packet.response.FriendResponse;
 import packet.response.GuildResponse;
-import packet.response.KeyMapResponse;
-import packet.response.PetResponse;
+import packet.response.ResCFuncKeyMappedMan;
+import packet.response.ResCUser_Pet;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
 import tools.FileoutputUtil;
@@ -146,7 +146,7 @@ public class InterServerHandler {
         if (player_map != null) {
             for (final MaplePet pet : player.getPets()) {
                 if (pet.getSummoned()) {
-                    player_map.broadcastMessage(player, PetResponse.TransferField(player, pet), true);
+                    player_map.broadcastMessage(player, ResCUser_Pet.TransferField(player, pet), true);
                 }
             }
         }
@@ -212,14 +212,14 @@ public class InterServerHandler {
         player.startFairySchedule(false);
         player.baseSkills(); //fix people who've lost skills.
 
-        c.getSession().write(KeyMapResponse.getKeymap(player, false));
-        c.getSession().write(KeyMapResponse.getMacros(player));
+        c.getSession().write(ResCFuncKeyMappedMan.getKeymap(player, false));
+        c.getSession().write(ResCFuncKeyMappedMan.getMacros(player));
         if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
-            c.getSession().write(KeyMapResponse.getPetAutoHP(player));
-            c.getSession().write(KeyMapResponse.getPetAutoMP(player));
-            c.getSession().write(KeyMapResponse.getPetAutoCure(player));
+            c.getSession().write(ResCFuncKeyMappedMan.getPetAutoHP(player));
+            c.getSession().write(ResCFuncKeyMappedMan.getPetAutoMP(player));
+            c.getSession().write(ResCFuncKeyMappedMan.getPetAutoCure(player));
         } else {
-            c.getSession().write(KeyMapResponse.getPetAutoHPMP_JMS_v131(player));
+            c.getSession().write(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(player));
         }
 
         for (MapleQuestStatus status : player.getStartedQuests()) {

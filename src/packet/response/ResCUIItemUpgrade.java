@@ -25,7 +25,7 @@ import packet.ServerPacket;
  *
  * @author Riremito
  */
-public class ViciousHammerResponse {
+public class ResCUIItemUpgrade {
 
     private enum Action {
         // 成功

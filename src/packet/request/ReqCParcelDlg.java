@@ -20,13 +20,13 @@ package packet.request;
 
 import client.MapleClient;
 import packet.ClientPacket;
-import packet.response.DueyResponse;
+import packet.response.ResCParcelDlg;
 
 /**
  *
  * @author Riremito
  */
-public class DueyPacket {
+public class ReqCParcelDlg {
 
     private enum Action {
         SEND((byte) 0x03),
@@ -66,7 +66,7 @@ public class DueyPacket {
         switch (Action.Find(action)) {
             // 配送
             case SEND: {
-                c.ProcessPacket(DueyResponse.Send());
+                c.ProcessPacket(ResCParcelDlg.Send());
                 return true;
             }
             // 閉じる

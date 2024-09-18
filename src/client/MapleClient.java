@@ -78,8 +78,8 @@ import org.apache.mina.common.TransportType;
 import org.apache.mina.common.WriteFuture;
 import packet.ServerPacket;
 import packet.request.SocketPacket;
-import packet.response.MapleTradeSpaceResponse;
-import packet.response.PointShopResponse;
+import packet.response.ResCITC;
+import packet.response.ResCCashShop;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -1460,12 +1460,12 @@ public class MapleClient implements Serializable {
 
     // Point Shop
     public void enableCSActions() {
-        getSession().write(PointShopResponse.QueryCashResult(player));
+        getSession().write(ResCCashShop.QueryCashResult(player));
     }
 
     // MTS
     public void enableMTSSActions() {
-        getSession().write(MapleTradeSpaceResponse.QueryCashResult(player));
+        getSession().write(ResCITC.QueryCashResult(player));
     }
 
 }

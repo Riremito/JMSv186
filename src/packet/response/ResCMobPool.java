@@ -36,7 +36,7 @@ import server.life.MobSkill;
  *
  * @author Riremito
  */
-public class MobResponse {
+public class ResCMobPool {
 
     // moveMonster
     public static MaplePacket moveMonster(boolean useskill, int skill, int skill1, int skill2, int skill3, int skill4, int oid, CMovePath data) {

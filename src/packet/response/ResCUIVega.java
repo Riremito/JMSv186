@@ -25,7 +25,7 @@ import packet.ServerPacket;
  *
  * @author Riremito
  */
-public class VegaSpellResponse {
+public class ResCUIVega {
 
     private enum Action {
         // 成功

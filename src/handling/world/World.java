@@ -38,11 +38,11 @@ import handling.world.guild.MapleGuildAlliance;
 import handling.world.guild.MapleGuildCharacter;
 import handling.world.guild.MapleGuildSummary;
 import java.util.Collection;
-import packet.request.UserRequest;
+import packet.request.ReqCUserPool;
 import packet.response.FriendResponse;
 import packet.response.GuildResponse;
 import packet.response.PartyResponse;
-import packet.response.PetResponse;
+import packet.response.ResCUser_Pet;
 import packet.response.UserResponse;
 import server.Timer.WorldTimer;
 import server.maps.MapleMap;
@@ -1415,7 +1415,7 @@ public class World {
                         chr.unequipPet(pet, true, true);
                     } else {
                         pet.setFullness(newFullness);
-                        chr.getClient().getSession().write(PetResponse.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
+                        chr.getClient().getSession().write(ResCUser_Pet.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
                     }
                 }
             }

@@ -32,7 +32,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  *
  * @author Riremito
  */
-public class MapleTradeSpaceResponse {
+public class ResCITC {
 
     public static MaplePacket QueryCashResult(final MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCQueryCashResult);
@@ -188,7 +188,7 @@ public class MapleTradeSpaceResponse {
         mplew.write(35);
         mplew.writeInt(items.size());
         for (MTSStorage.MTSItemInfo item : items) {
-            MapleTradeSpaceResponse.addMTSItemInfo(mplew, item);
+            ResCITC.addMTSItemInfo(mplew, item);
         }
         return mplew.getPacket();
     }

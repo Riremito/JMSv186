@@ -18,7 +18,7 @@
  * You should not develop private server for your business.
  * You should not ban anyone who tries hacking in private server.
  */
-package packet.request;
+package packet.response;
 
 import config.ServerConfig;
 import debug.Debug;
@@ -29,7 +29,7 @@ import packet.ServerPacket;
  *
  * @author Riremito
  */
-public class ScriptManPacket {
+public class ResScriptMan {
 
     public enum Flag {
         SM_SAY(0),

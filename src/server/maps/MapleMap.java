@@ -61,21 +61,21 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import packet.request.DropPacket;
-import packet.request.DropPacket.EnterType;
-import packet.request.DropPacket.LeaveType;
-import packet.request.NPCPacket;
-import packet.request.ReactorPacket;
-import packet.response.EvanDragonResponse;
+import packet.response.ResCDropPool;
+import packet.response.ResCDropPool.EnterType;
+import packet.response.ResCDropPool.LeaveType;
+import packet.request.ReqCNpcPool;
+import packet.request.ReqCReactorPool;
+import packet.response.ResCUser_Dragon;
 import packet.response.FieldResponse;
 import packet.response.ItemResponse;
 import packet.response.LocalResponse;
-import packet.response.MobResponse;
-import packet.response.MysticDoorResponse;
+import packet.response.ResCMobPool;
+import packet.response.ResCTownPortalPool;
 import packet.response.PartyResponse;
-import packet.response.PetResponse;
+import packet.response.ResCUser_Pet;
 import packet.response.RemoteResponse;
-import packet.response.SummonResponse;
+import packet.response.ResCSummonedPool;
 import packet.response.UserResponse;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
@@ -505,7 +505,7 @@ public final class MapleMap {
 
     public void removeMonster(final MapleMonster monster) {
         spawnedMonstersOnMap.decrementAndGet();
-        broadcastMessage(MobResponse.Kill(monster, 0));
+        broadcastMessage(ResCMobPool.Kill(monster, 0));
         removeMapObject(monster);
     }
 
@@ -513,7 +513,7 @@ public final class MapleMap {
         spawnedMonstersOnMap.decrementAndGet();
         monster.setHp(0);
         monster.spawnRevives(this);
-        broadcastMessage(MobResponse.Kill(monster, 1));
+        broadcastMessage(ResCMobPool.Kill(monster, 1));
         removeMapObject(monster);
     }
 
@@ -541,7 +541,7 @@ public final class MapleMap {
         spawnedMonstersOnMap.decrementAndGet();
         removeMapObject(monster);
         int dropOwner = monster.killBy(chr, lastSkill);
-        broadcastMessage(MobResponse.Kill(monster, animation));
+        broadcastMessage(ResCMobPool.Kill(monster, animation));
 
         if (monster.getBuffToGive() > -1) {
             final int buffid = monster.getBuffToGive();
@@ -853,7 +853,7 @@ public final class MapleMap {
             final MapleMonster monster = (MapleMonster) monstermo;
             spawnedMonstersOnMap.decrementAndGet();
             monster.setHp(0);
-            broadcastMessage(MobResponse.Kill(monster, animate ? 1 : 0));
+            broadcastMessage(ResCMobPool.Kill(monster, animate ? 1 : 0));
             removeMapObject(monster);
         }
     }
@@ -863,7 +863,7 @@ public final class MapleMap {
             if (((MapleMonster) mmo).getId() == monsId) {
                 spawnedMonstersOnMap.decrementAndGet();
                 removeMapObject(mmo);
-                broadcastMessage(MobResponse.Kill((MapleMonster) mmo, 1));
+                broadcastMessage(ResCMobPool.Kill((MapleMonster) mmo, 1));
                 break;
             }
         }
@@ -932,7 +932,7 @@ public final class MapleMap {
 
     public final void destroyReactor(final int oid) {
         final MapleReactor reactor = getReactorByOid(oid);
-        broadcastMessage(ReactorPacket.Destroy(reactor));
+        broadcastMessage(ReqCReactorPool.Destroy(reactor));
         reactor.setAlive(false);
         removeMapObject(reactor);
         reactor.setTimerActive(false);
@@ -954,7 +954,7 @@ public final class MapleMap {
         try {
             for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
                 final MapleReactor reactor = (MapleReactor) obj;
-                broadcastMessage(ReactorPacket.Destroy(reactor));
+                broadcastMessage(ReqCReactorPool.Destroy(reactor));
                 reactor.setAlive(false);
                 reactor.setTimerActive(false);
                 toSpawn.add(reactor);
@@ -1224,7 +1224,7 @@ public final class MapleMap {
         npc.setFh(getFootholds().findBelow(pos).getId());
         npc.setCustom(true);
         addMapObject(npc);
-        broadcastMessage(NPCPacket.spawnNPC(npc, true));
+        broadcastMessage(ReqCNpcPool.spawnNPC(npc, true));
     }
 
     public final void removeNpc(final int npcid) {
@@ -1234,7 +1234,7 @@ public final class MapleMap {
             while (itr.hasNext()) {
                 MapleNPC npc = (MapleNPC) itr.next();
                 if (npc.isCustom() && npc.getId() == npcid) {
-                    broadcastMessage(NPCPacket.removeNPC(npc.getObjectId()));
+                    broadcastMessage(ReqCNpcPool.removeNPC(npc.getObjectId()));
                     itr.remove();
                 }
             }
@@ -1334,7 +1334,7 @@ public final class MapleMap {
         spawnAndAddRangedMapObject(monster, new DelayedPacketCreation() {
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(MobResponse.Spawn(monster, -3, 0, oid)); // TODO effect
+                c.SendPacket(ResCMobPool.Spawn(monster, -3, 0, oid)); // TODO effect
             }
         }, null);
         updateMonsterController(monster);
@@ -1349,7 +1349,7 @@ public final class MapleMap {
         spawnAndAddRangedMapObject(monster, new DelayedPacketCreation() {
 
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(MobResponse.Spawn(monster, spawnType, 0, 0));
+                c.SendPacket(ResCMobPool.Spawn(monster, spawnType, 0, 0));
             }
         }, null);
         updateMonsterController(monster);
@@ -1366,7 +1366,7 @@ public final class MapleMap {
 
                 @Override
                 public final void sendPackets(MapleClient c) {
-                    c.SendPacket(MobResponse.Spawn(monster, -2, effect, 0));
+                    c.SendPacket(ResCMobPool.Spawn(monster, -2, effect, 0));
                 }
             }, null);
             updateMonsterController(monster);
@@ -1386,7 +1386,7 @@ public final class MapleMap {
 
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(MobResponse.Spawn(monster, -4, 0, 0));
+                c.SendPacket(ResCMobPool.Spawn(monster, -4, 0, 0));
             }
         }, null);
         updateMonsterController(monster);
@@ -1401,7 +1401,7 @@ public final class MapleMap {
 
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(ReactorPacket.Spawn(reactor));
+                c.SendPacket(ReqCReactorPool.Spawn(reactor));
             }
         }, null);
     }
@@ -1448,7 +1448,7 @@ public final class MapleMap {
             @Override
             public void sendPackets(MapleClient c) {
                 if (!summon.isChangedMap() || summon.getOwnerId() == c.getPlayer().getId()) {
-                    c.getSession().write(SummonResponse.spawnSummon(summon, true));
+                    c.getSession().write(ResCSummonedPool.spawnSummon(summon, true));
                 }
             }
         }, null);
@@ -1459,7 +1459,7 @@ public final class MapleMap {
 
             @Override
             public void sendPackets(MapleClient c) {
-                c.getSession().write(EvanDragonResponse.spawnDragon(summon));
+                c.getSession().write(ResCUser_Dragon.spawnDragon(summon));
             }
         }, null);
     }
@@ -1525,7 +1525,7 @@ public final class MapleMap {
     public final void disappearingItemDrop(final MapleMapObject dropper, final MapleCharacter owner, final IItem item, final Point pos) {
         final Point droppos = calcDropPos(pos, pos);
         final MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) 1, false);
-        broadcastMessage(DropPacket.DropEnterField(drop, EnterType.SPAWN, droppos, dropper.getPosition()), drop.getPosition());
+        broadcastMessage(ResCDropPool.DropEnterField(drop, EnterType.SPAWN, droppos, dropper.getPosition()), drop.getPosition());
     }
 
     public final void spawnMesoDrop(final int meso, final Point position, final MapleMapObject dropper, final MapleCharacter owner, final boolean playerDrop, final byte droptype) {
@@ -1536,7 +1536,7 @@ public final class MapleMap {
 
             @Override
             public void sendPackets(MapleClient c) {
-                c.SendPacket(DropPacket.DropEnterField(mdrop, EnterType.ANIMATION, droppos, dropper.getPosition()));
+                c.SendPacket(ResCDropPool.DropEnterField(mdrop, EnterType.ANIMATION, droppos, dropper.getPosition()));
             }
         }, null);
         if (!everlast) {
@@ -1554,7 +1554,7 @@ public final class MapleMap {
 
             @Override
             public void sendPackets(MapleClient c) {
-                c.SendPacket(DropPacket.DropEnterField(mdrop, EnterType.ANIMATION, position, dropper.getPosition()));
+                c.SendPacket(ResCDropPool.DropEnterField(mdrop, EnterType.ANIMATION, position, dropper.getPosition()));
             }
         }, null);
 
@@ -1572,7 +1572,7 @@ public final class MapleMap {
             @Override
             public void sendPackets(MapleClient c) {
                 if (questid <= 0 || c.getPlayer().getQuestStatus(questid) == 1) {
-                    c.SendPacket(DropPacket.DropEnterField(mdrop, EnterType.ANIMATION, dropPos, mob.getPosition(), mob.getObjectId()));
+                    c.SendPacket(ResCDropPool.DropEnterField(mdrop, EnterType.ANIMATION, dropPos, mob.getPosition(), mob.getObjectId()));
                 }
             }
         }, null);
@@ -1630,10 +1630,10 @@ public final class MapleMap {
 
             @Override
             public void sendPackets(MapleClient c) {
-                c.SendPacket(DropPacket.DropEnterField(mdrop, EnterType.ANIMATION, pos, pos));
+                c.SendPacket(ResCDropPool.DropEnterField(mdrop, EnterType.ANIMATION, pos, pos));
             }
         }, null);
-        broadcastMessage(DropPacket.DropEnterField(mdrop, EnterType.PICK_UP_ENABLED, pos, pos));
+        broadcastMessage(ResCDropPool.DropEnterField(mdrop, EnterType.PICK_UP_ENABLED, pos, pos));
         mdrop.registerExpire(120000);
     }
 
@@ -1645,10 +1645,10 @@ public final class MapleMap {
 
             @Override
             public void sendPackets(MapleClient c) {
-                c.SendPacket(DropPacket.DropEnterField(drop, EnterType.ANIMATION, droppos, dropper.getPosition()));
+                c.SendPacket(ResCDropPool.DropEnterField(drop, EnterType.ANIMATION, droppos, dropper.getPosition()));
             }
         }, null);
-        broadcastMessage(DropPacket.DropEnterField(drop, EnterType.PICK_UP_ENABLED, droppos, dropper.getPosition())); // enable pick up for new players
+        broadcastMessage(ResCDropPool.DropEnterField(drop, EnterType.PICK_UP_ENABLED, droppos, dropper.getPosition())); // enable pick up for new players
 
         if (!everlast) {
             drop.registerExpire(120000);
@@ -1709,7 +1709,7 @@ public final class MapleMap {
                 item.setPickedUp(true);
 
                 Debug.DebugLog("PICKUP REVER");
-                broadcastMessage(DropPacket.DropLeaveField(item, LeaveType.PICK_UP, chr, 0), item.getPosition());
+                broadcastMessage(ResCDropPool.DropLeaveField(item, LeaveType.PICK_UP, chr, 0), item.getPosition());
                 if (item.getMeso() > 0) {
                     chr.gainMeso(item.getMeso(), false);
                 } else {
@@ -1725,8 +1725,8 @@ public final class MapleMap {
         if (itemId > 0) {
             startMapEffect(msg, itemId, false);
         }
-        broadcastMessage(MobResponse.talkMonster(objectid, itemId, msg)); //5120035
-        broadcastMessage(MobResponse.removeTalkMonster(objectid));
+        broadcastMessage(ResCMobPool.talkMonster(objectid, itemId, msg)); //5120035
+        broadcastMessage(ResCMobPool.removeTalkMonster(objectid));
     }
 
     public final void startMapEffect(final String msg, final int itemId) {
@@ -1813,7 +1813,7 @@ public final class MapleMap {
         }
         for (final MaplePet pet : chr.getPets()) {
             if (pet.getSummoned()) {
-                broadcastMessage(chr, PetResponse.TransferField(chr, pet), true);
+                broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
             }
         }
         if (chr.getParty() != null && !chr.isClone()) {
@@ -2878,7 +2878,7 @@ public final class MapleMap {
         List<MapleNPC> npcs = getAllNPCsThreadsafe();
         for (MapleNPC npc : npcs) {
             if (npc.isCustom()) {
-                broadcastMessage(NPCPacket.spawnNPC(npc, false));
+                broadcastMessage(ReqCNpcPool.spawnNPC(npc, false));
                 removeMapObject(npc);
             }
         }

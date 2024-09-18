@@ -26,8 +26,8 @@ import client.MapleClient;
 import handling.channel.ChannelServer;
 import server.Timer.PingTimer;
 import packet.request.LoginRequest;
-import packet.response.LoginResponse;
-import packet.response.LoginResponse.LoginResult;
+import packet.response.ResCLogin;
+import packet.response.ResCLogin.LoginResult;
 
 public class LoginWorker {
 
@@ -35,7 +35,7 @@ public class LoginWorker {
 
     public static void registerClient(final MapleClient c) {
         if (LoginServer.isAdminOnly() && !c.isGm()) {
-            c.SendPacket(LoginResponse.CheckPasswordResult(c, LoginResult.INVALID_ADMIN_IP));
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, LoginResult.INVALID_ADMIN_IP));
             return;
         }
 
@@ -45,7 +45,7 @@ public class LoginWorker {
             int usersOn = 0;
             if (load == null || load.size() <= 0) { // In an unfortunate event that client logged in before load
                 lastUpdate = 0;
-                c.SendPacket(LoginResponse.CheckPasswordResult(c, LoginResult.ALREADY_LOGGEDIN));
+                c.SendPacket(ResCLogin.CheckPasswordResult(c, LoginResult.ALREADY_LOGGEDIN));
                 return;
             }
             final double loadFactor = 1200 / ((double) LoginServer.getUserLimit() / load.size());
@@ -58,7 +58,7 @@ public class LoginWorker {
         }
 
         if (c.finishLogin() == 0) {
-            c.SendPacket(LoginResponse.CheckPasswordResult(c, LoginResult.SUCCESS));
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, LoginResult.SUCCESS));
             c.setIdleTask(PingTimer.getInstance().schedule(new Runnable() {
 
                 public void run() {
@@ -66,7 +66,7 @@ public class LoginWorker {
                 }
             }, 10 * 60 * 10000));
         } else {
-            c.SendPacket(LoginResponse.CheckPasswordResult(c, LoginResult.ALREADY_LOGGEDIN));
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, LoginResult.ALREADY_LOGGEDIN));
             return;
         }
 
