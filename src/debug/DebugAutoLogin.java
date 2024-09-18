@@ -22,6 +22,7 @@ package debug;
 
 import client.MapleClient;
 import packet.request.LoginRequest;
+import packet.request.ReqCLogin;
 
 /**
  *
@@ -38,8 +39,8 @@ public class DebugAutoLogin {
             }
         }
 
-        LoginRequest.ServerListRequest(c); // world list
-        LoginRequest.ServerStatusRequest(c); // channel status
+        ReqCLogin.ServerListRequest(c); // world list
+        ReqCLogin.ServerStatusRequest(c); // channel status
         LoginRequest.CharlistRequest(c, 0, 1); // select 1st character
         LoginRequest.Character_WithSecondPassword(c); // no characters = stop
         return true;

@@ -18,6 +18,8 @@
  */
 package packet.response.addon;
 
+import client.MapleClient;
+import config.ServerConfig;
 import handling.MaplePacket;
 import packet.ServerPacket;
 
@@ -25,27 +27,38 @@ import packet.ServerPacket;
  *
  * @author Riremito
  */
-public class AddonResponse {
+public class ResSecurity {
+
+    public static boolean Test(MapleClient c) {
+        // test for JMS v186 anti cheat
+        if (ServerConfig.login_server_antihack) {
+            c.SendPacket(ResSecurity.Hash());
+            c.SendPacket(ResSecurity.Scan(0x008625B5, (short) 3)); // damage hack check
+            byte mem[] = {(byte) 0x90, (byte) 0x90, (byte) 0x90};
+            c.SendPacket(ResSecurity.Patch(0x00BCCA45, mem));
+        }
+        return true;
+    }
 
     public static MaplePacket Scan(int address, short size) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CUSTOM_MEMORY_SCAN);
-        p.Encode4(address);
-        p.Encode2(size);
-        return p.Get();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CUSTOM_MEMORY_SCAN);
+        sp.Encode4(address);
+        sp.Encode2(size);
+        return sp.Get();
     }
 
     public static MaplePacket Hash() {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CUSTOM_WZ_HASH);
-        p.EncodeStr("Skill.wz");
-        return p.Get();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CUSTOM_WZ_HASH);
+        sp.EncodeStr("Skill.wz");
+        return sp.Get();
     }
 
     public static MaplePacket Patch(int address, byte[] memory) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_CUSTOM_CLIENT_PATCH);
-        p.Encode4(address);
-        p.Encode2((short) memory.length);
-        p.EncodeBuffer(memory);
-        return p.Get();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CUSTOM_CLIENT_PATCH);
+        sp.Encode4(address);
+        sp.Encode2((short) memory.length);
+        sp.EncodeBuffer(memory);
+        return sp.Get();
     }
 
 }

@@ -19,24 +19,19 @@
 package packet.request;
 
 import client.MapleCharacter;
-import client.MapleCharacterUtil;
 import client.MapleClient;
-import client.inventory.IItem;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import config.DebugConfig;
 import config.ServerConfig;
 import debug.Debug;
-import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
 import handling.login.LoginWorker;
 import java.util.Calendar;
 import java.util.List;
-import packet.ClientPacket;
 import packet.response.ResCLogin;
 import server.MapleItemInformationProvider;
-import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
 import wz.LoadData;
 
@@ -49,165 +44,12 @@ public class LoginRequest {
     private static int SelectedChannel = 0;
     private static int SelectedWorld = 0;
 
-    // 必要なさそう
-    public static final void ServerStatusRequest(final MapleClient c) {
-        // 0 = Select world normally
-        // 1 = "Since there are many users, you may encounter some..."
-        // 2 = "The concurrent users in this world have reached the max"
-        final int numPlayer = LoginServer.getUsersOn();
-        final int userLimit = LoginServer.getUserLimit();
-        if (numPlayer >= userLimit) {
-            c.getSession().write(ResCLogin.getServerStatus(2));
-        } else if (numPlayer * 2 >= userLimit) {
-            c.getSession().write(ResCLogin.getServerStatus(1));
-        } else {
-            c.getSession().write(ResCLogin.getServerStatus(0));
-        }
-    }
-
-    public static final void CreateChar(ClientPacket p, final MapleClient c) {
-        final String name = new String(p.DecodeBuffer());
-        // very old ver, please merge it
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) {
-            final int face = p.Decode4();
-            final int hair = p.Decode4();
-            final int hairColor = 0;
-            final byte skinColor = (byte) 0;
-            final int top = p.Decode4();
-            final int bottom = p.Decode4();
-            final int shoes = p.Decode4();
-            final int weapon = p.Decode4();
-            final byte gender = c.getGender();
-            MapleCharacter newchar = MapleCharacter.getDefault(c, 1);
-            // サイコロ
-            if (ServerConfig.GetVersion() <= 131) {
-                newchar.getStat().str = p.Decode1();
-                newchar.getStat().dex = p.Decode1();
-                newchar.getStat().int_ = p.Decode1();
-                newchar.getStat().luk = p.Decode1();
-            }
-            newchar.setWorld((byte) c.getWorld());
-            newchar.setFace(face);
-            newchar.setHair(hair + hairColor);
-            newchar.setGender(gender);
-            newchar.setName(name);
-            newchar.setSkinColor(skinColor);
-            MapleInventory equip = newchar.getInventory(MapleInventoryType.EQUIPPED);
-            final MapleItemInformationProvider li = MapleItemInformationProvider.getInstance();
-            IItem item = li.getEquipById(top);
-            item.setPosition((byte) -5);
-            equip.addFromDB(item);
-            item = li.getEquipById(bottom);
-            item.setPosition((byte) -6);
-            equip.addFromDB(item);
-            item = li.getEquipById(shoes);
-            item.setPosition((byte) -7);
-            equip.addFromDB(item);
-            item = li.getEquipById(weapon);
-            item.setPosition((byte) -11);
-            equip.addFromDB(item);
-            if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
-                AddStarterSet(newchar);
-                MapleCharacter.saveNewCharToDB(newchar, 1, false);
-                c.getSession().write(ResCLogin.addNewCharEntry(newchar, true));
-                c.createdChar(newchar.getId());
-            } else {
-                c.getSession().write(ResCLogin.addNewCharEntry(newchar, false));
-            }
-            return;
-        }
-        final int JobType = p.Decode4();
-        short db = 0;
-        if ((ServerConfig.IsJMS() && 176 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
-            db = p.Decode2();
-        }
-
-        if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
-            p.Decode1(); // 01
-            p.Decode1(); // 00
-            p.Decode1(); // 07
-
-            // Kanna
-            if (JobType == 9) {
-                c.setGender((byte) 1);
-            }
-        }
-
-        final int face = p.Decode4();
-        final int hair = p.Decode4();
-        final int hairColor = 0;
-        final byte skinColor = (byte) 0;
-        final int top = p.Decode4();
-        final int bottom = p.Decode4();
-        final int shoes = p.Decode4();
-        final int weapon = p.Decode4();
-        final byte gender = c.getGender();
-        if (!LoadData.IsValidFaceID(face) || !LoadData.IsValidHairID(hair) || !LoadData.IsValidItemID(top) || !LoadData.IsValidItemID(bottom) || !LoadData.IsValidItemID(shoes) || !LoadData.IsValidItemID(weapon)) {
-            Debug.DebugLog("Character creation error");
-            c.getSession().write(ResCLogin.addNewCharEntry(null, false));
-            return;
-        }
-        MapleCharacter newchar = MapleCharacter.getDefault(c, JobType);
-        newchar.setWorld((byte) c.getWorld());
-        newchar.setFace(face);
-        newchar.setHair(hair + hairColor);
-        newchar.setGender(gender);
-        newchar.setName(name);
-        newchar.setSkinColor(skinColor);
-        MapleInventory equip = newchar.getInventory(MapleInventoryType.EQUIPPED);
-        final MapleItemInformationProvider li = MapleItemInformationProvider.getInstance();
-        IItem item = li.getEquipById(top);
-        item.setPosition((byte) -5);
-        equip.addFromDB(item);
-        if (db == 0) {
-            item = li.getEquipById(bottom);
-            item.setPosition((byte) -6);
-            equip.addFromDB(item);
-        }
-        item = li.getEquipById(shoes);
-        item.setPosition((byte) -7);
-        equip.addFromDB(item);
-        item = li.getEquipById(weapon);
-        item.setPosition((byte) -11);
-        equip.addFromDB(item);
-        //blue/red pots
-        if (JobType == 0) {
-            newchar.setQuestAdd(MapleQuest.getInstance(20022), (byte) 1, "1");
-            newchar.setQuestAdd(MapleQuest.getInstance(20010), (byte) 1, null); //>_>_>_> ugh
-            newchar.setQuestAdd(MapleQuest.getInstance(20000), (byte) 1, null); //>_>_>_> ugh
-            newchar.setQuestAdd(MapleQuest.getInstance(20015), (byte) 1, null); //>_>_>_> ugh
-            newchar.setQuestAdd(MapleQuest.getInstance(20020), (byte) 1, null); //>_>_>_> ugh
-        }
-        if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
-            AddStarterSet(newchar);
-            MapleCharacter.saveNewCharToDB(newchar, JobType, JobType == 1 && db > 0);
-            c.getSession().write(ResCLogin.addNewCharEntry(newchar, true));
-            c.createdChar(newchar.getId());
-        } else {
-            c.getSession().write(ResCLogin.addNewCharEntry(newchar, false));
-        }
-    }
-
     private static final boolean loginFailCount(final MapleClient c) {
         c.loginAttempt++;
         if (c.loginAttempt > 5) {
             return true;
         }
         return false;
-    }
-
-    public static final void CharlistRequest(ClientPacket p, final MapleClient c) {
-        if (ServerConfig.IsKMS()) {
-            byte unk = p.Decode1();
-        }
-        int server = p.Decode1();
-        final int channel = p.Decode1();
-        // もみじ block test
-        if (server == 1) {
-            c.SendPacket(ResCLogin.getCharList(c, ResCLogin.LoginResult.TOO_MANY_USERS));
-            return;
-        }
-        CharlistRequest(c, server, channel + 1);
     }
 
     public static final void CharlistRequest(MapleClient c, int server, int channel) {
@@ -219,32 +61,6 @@ public class LoginRequest {
         c.setWorld(server);
         c.setChannel(channel);
         c.SendPacket(ResCLogin.getCharList(c, ResCLogin.LoginResult.SUCCESS));
-    }
-
-    public static final void DeleteChar(ClientPacket cp, final MapleClient c) {
-        byte state = 0;
-        // BB後
-        if (ServerConfig.IsPostBB() && !ServerConfig.IsKMS()) {
-            String MapleID = cp.DecodeStr();
-            if (!MapleID.equals(c.getAccountName())) {
-                // state = 0以外にすると切断されます
-            }
-        }
-
-        if (ServerConfig.IsKMS()) {
-            byte unk1 = cp.Decode1();
-            int unk2 = cp.Decode4();
-        }
-
-        final int Character_ID = cp.Decode4();
-        if (!c.login_Auth(Character_ID)) {
-            c.getSession().close();
-            return;
-        }
-        if (state == 0) {
-            state = (byte) c.deleteCharacter(Character_ID);
-        }
-        c.getSession().write(ResCLogin.deleteCharResponse(Character_ID, state));
     }
 
     public static boolean AddStarterSet(MapleCharacter chr) {
@@ -382,11 +198,6 @@ public class LoginRequest {
         return Character_WithSecondPassword(c, charId);
     }
 
-    public static final boolean Character_WithSecondPassword(ClientPacket p, MapleClient c) {
-        final int charId = p.Decode4();
-        return Character_WithSecondPassword(c, charId);
-    }
-
     public static final boolean Character_WithSecondPassword(MapleClient c, int charId) {
         if (loginFailCount(c) || !c.login_Auth(charId)) {
             // This should not happen unless player is hacking
@@ -400,24 +211,6 @@ public class LoginRequest {
         //c.getSession().write(MaplePacketCreator.getServerIP(Integer.parseInt(ChannelServer.getInstance(c.getChannel()).getIP().split(":")[1]), charId));
         c.getSession().write(MaplePacketCreator.getServerIP(LoginServer.WorldPort[SelectedWorld] + SelectedChannel, charId));
         return true;
-    }
-
-    public static final void ServerListRequest(final MapleClient c) {
-        // かえで
-        c.SendPacket(ResCLogin.getServerList(0));
-        // もみじ (サーバーを分離すると接続人数を取得するのが難しくなる)
-        c.SendPacket(ResCLogin.getServerList(1, false, 16));
-        c.SendPacket(ResCLogin.getEndOfServerList());
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
-            c.SendPacket(ResCLogin.RecommendWorldMessage());
-            c.SendPacket(ResCLogin.LatestConnectedWorld());
-        }
-    }
-
-    public static final boolean login(ClientPacket p, final MapleClient c) {
-        String login = new String(p.DecodeBuffer());
-        final String pwd = new String(p.DecodeBuffer());
-        return login(c, login, pwd);
     }
 
     public static final boolean login(MapleClient c, String login, String pwd) {
@@ -475,11 +268,6 @@ public class LoginRequest {
             return true;
         }
         return false;
-    }
-
-    public static final void CheckCharName(ClientPacket p, final MapleClient c) {
-        String name = new String(p.DecodeBuffer());
-        c.getSession().write(ResCLogin.charNameResponse(name, !MapleCharacterUtil.canCreateChar(name) || LoginInformationProvider.getInstance().isForbiddenName(name)));
     }
 
 }
