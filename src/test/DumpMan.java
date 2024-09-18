@@ -23,8 +23,8 @@ import debug.Debug;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import packet.client.ClientPacket;
-import packet.server.ServerPacket;
+import packet.ClientPacket;
+import packet.ServerPacket;
 
 /**
  *

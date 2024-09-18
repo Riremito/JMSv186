@@ -45,9 +45,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import packet.client.request.ContextPacket;
-import packet.server.response.GuildResponse;
-import packet.server.response.PartyResponse;
+import packet.request.ContextPacket;
+import packet.response.GuildResponse;
+import packet.response.PartyResponse;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
 

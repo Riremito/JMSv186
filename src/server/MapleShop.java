@@ -20,8 +20,8 @@ import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import database.DatabaseConnection;
-import packet.client.request.NPCPacket;
-import packet.client.request.NPCPacket.SP_ShopFlag;
+import packet.request.NPCPacket;
+import packet.request.NPCPacket.SP_ShopFlag;
 import tools.MaplePacketCreator;
 import wz.LoadData;
 

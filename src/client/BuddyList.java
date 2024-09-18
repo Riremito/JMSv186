@@ -32,7 +32,7 @@ import java.util.Map;
 import java.io.Serializable;
 
 import database.DatabaseConnection;
-import packet.server.response.FriendResponse;
+import packet.response.FriendResponse;
 
 public class BuddyList implements Serializable {
 

@@ -39,7 +39,7 @@ import client.inventory.MapleRing;
 import client.inventory.MapleInventoryIdentifier;
 import client.inventory.MapleInventoryType;
 import database.DatabaseConnection;
-import packet.server.response.PointShopResponse;
+import packet.response.PointShopResponse;
 import tools.Pair;
 
 public class CashShop implements Serializable {

@@ -29,7 +29,7 @@ import client.MapleClient;
 import client.MapleCharacter;
 import client.inventory.MapleInventoryType;
 import java.util.List;
-import packet.server.response.FreeMarketResponse;
+import packet.response.FreeMarketResponse;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleTrade;

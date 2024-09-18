@@ -36,7 +36,7 @@ import client.inventory.ItemLoader;
 import database.DatabaseConnection;
 import handling.world.World;
 import java.util.Map;
-import packet.server.response.FreeMarketResponse;
+import packet.response.FreeMarketResponse;
 import server.MapleInventoryManipulator;
 import server.MerchItemPackage;
 import tools.Pair;

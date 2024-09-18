@@ -31,11 +31,11 @@ import java.sql.SQLException;
 import java.io.Serializable;
 
 import database.DatabaseConnection;
-import packet.server.ServerPacket;
-import packet.client.request.ContextPacket;
-import packet.server.response.LocalResponse;
-import packet.server.response.MonsterBookResponse;
-import packet.server.response.RemoteResponse;
+import packet.ServerPacket;
+import packet.request.ContextPacket;
+import packet.response.LocalResponse;
+import packet.response.MonsterBookResponse;
+import packet.response.RemoteResponse;
 import server.MapleItemInformationProvider;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;

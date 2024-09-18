@@ -11,7 +11,7 @@ import client.inventory.MapleInventoryType;
 import client.messages.CommandProcessor;
 import constants.ServerConstants.CommandType;
 import java.lang.ref.WeakReference;
-import packet.server.response.FreeMarketResponse;
+import packet.response.FreeMarketResponse;
 import tools.MaplePacketCreator;
 
 public class MapleTrade {

@@ -51,11 +51,11 @@ import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
 import client.inventory.MapleInventoryIdentifier;
 import handling.world.World;
-import packet.client.request.ContextPacket;
-import packet.server.response.FieldResponse;
-import packet.server.response.LocalResponse;
-import packet.server.response.PetResponse;
-import packet.server.response.TestResponse;
+import packet.request.ContextPacket;
+import packet.response.FieldResponse;
+import packet.response.LocalResponse;
+import packet.response.PetResponse;
+import packet.response.TestResponse;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
 

@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import packet.server.response.FamilyResponse;
+import packet.response.FamilyResponse;
 import tools.MaplePacketCreator;
 
 public class MapleFamily implements java.io.Serializable {

@@ -28,7 +28,7 @@ import java.util.List;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleQuestStatus;
-import packet.server.response.FreeMarketResponse;
+import packet.response.FreeMarketResponse;
 import server.quest.MapleQuest;
 
 public class MapleMiniGame extends AbstractPlayerStore {

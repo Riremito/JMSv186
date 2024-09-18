@@ -21,7 +21,7 @@
 package debug;
 
 import client.MapleClient;
-import packet.client.request.LoginRequest;
+import packet.request.LoginRequest;
 
 /**
  *

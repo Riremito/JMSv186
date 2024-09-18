@@ -5,7 +5,7 @@ import handling.channel.ChannelServer;
 import java.util.LinkedList;
 import java.util.List;
 import java.lang.ref.WeakReference;
-import packet.server.response.FieldResponse;
+import packet.response.FieldResponse;
 import server.maps.MapleMap;
 import tools.MaplePacketCreator;
 

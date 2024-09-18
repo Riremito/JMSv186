@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.life;
 
 import client.MapleClient;
-import packet.client.request.NPCPacket;
+import packet.request.NPCPacket;
 import server.MapleShopFactory;
 import server.maps.MapleMapObjectType;
 

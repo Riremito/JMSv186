@@ -39,7 +39,7 @@ import database.DatabaseConnection;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import java.util.ArrayList;
-import packet.server.response.FreeMarketResponse;
+import packet.response.FreeMarketResponse;
 import server.maps.AbstractMapleMapObject;
 import server.maps.MapleMap;
 import server.maps.MapleMapObjectType;

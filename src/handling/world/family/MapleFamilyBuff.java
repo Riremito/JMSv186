@@ -26,7 +26,7 @@ import client.MapleCharacter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
-import packet.server.response.TemporaryStatResponse;
+import packet.response.TemporaryStatResponse;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.MapleStatEffect.CancelEffectAction;

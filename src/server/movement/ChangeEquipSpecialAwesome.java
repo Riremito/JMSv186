@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.movement;
 
 import java.awt.Point;
-import packet.server.ServerPacket;
+import packet.ServerPacket;
 import tools.data.output.LittleEndianWriter;
 
 public class ChangeEquipSpecialAwesome implements LifeMovementFragment {

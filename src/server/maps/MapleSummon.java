@@ -26,8 +26,8 @@ import client.MapleCharacter;
 import client.MapleClient;
 import constants.GameConstants;
 import client.anticheat.CheatingOffense;
-import packet.client.request.SummonRequest;
-import packet.server.response.SummonResponse;
+import packet.request.SummonRequest;
+import packet.response.SummonResponse;
 import server.MapleStatEffect;
 import tools.MaplePacketCreator;
 

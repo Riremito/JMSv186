@@ -9,7 +9,7 @@ import constants.BeansConstants;
 import constants.GameConstants;
 import java.util.ArrayList;
 import java.util.List;
-import packet.server.response.PachinkoResponse;
+import packet.response.PachinkoResponse;
 import tools.FileoutputUtil;
 import server.Randomizer;
 import tools.data.input.LittleEndianAccessor;

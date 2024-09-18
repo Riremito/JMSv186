@@ -23,7 +23,7 @@ package server.maps;
 import client.MapleClient;
 import tools.MaplePacketCreator;
 import handling.MaplePacket;
-import packet.server.response.TestResponse;
+import packet.response.TestResponse;
 
 public class MapleMapEffect {
 

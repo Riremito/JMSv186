@@ -24,7 +24,7 @@ import client.MapleClient;
 import handling.world.World;
 import handling.world.guild.MapleBBSThread;
 import java.util.List;
-import packet.server.response.GuildResponse;
+import packet.response.GuildResponse;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 

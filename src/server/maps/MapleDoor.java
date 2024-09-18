@@ -27,7 +27,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import debug.Debug;
 import java.lang.ref.WeakReference;
-import packet.server.response.MysticDoorResponse;
+import packet.response.MysticDoorResponse;
 import server.MaplePortal;
 import server.Randomizer;
 

@@ -29,7 +29,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.io.Serializable;
 
 import database.DatabaseConnection;
-import packet.server.response.TemporaryStatResponse;
+import packet.response.TemporaryStatResponse;
 import server.Randomizer;
 import tools.MaplePacketCreator;
 

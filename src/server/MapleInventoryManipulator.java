@@ -18,10 +18,10 @@ import client.inventory.MaplePet;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
-import packet.client.request.ContextPacket;
+import packet.request.ContextPacket;
 import packet.ops.CashItemOps;
-import packet.server.response.ContextResponse;
-import packet.server.response.PointShopResponse;
+import packet.response.ContextResponse;
+import packet.response.PointShopResponse;
 import server.maps.AramiaFireWorks;
 import tools.MaplePacketCreator;
 

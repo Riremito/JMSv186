@@ -29,7 +29,7 @@ import client.MapleClient;
 import handling.channel.ChannelServer;
 import java.util.LinkedList;
 import java.util.List;
-import packet.server.response.FreeMarketResponse;
+import packet.response.FreeMarketResponse;
 import server.MapleInventoryManipulator;
 import server.Timer.EtcTimer;
 import server.maps.MapleMapObjectType;

@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import packet.server.response.GuildResponse;
+import packet.response.GuildResponse;
 import tools.MaplePacketCreator;
 
 public class MapleGuildAlliance implements java.io.Serializable {

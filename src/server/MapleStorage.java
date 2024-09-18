@@ -20,7 +20,7 @@ import client.inventory.MapleInventoryType;
 import database.DatabaseConnection;
 import database.DatabaseException;
 import java.util.EnumMap;
-import packet.client.request.TrunkPacket;
+import packet.request.TrunkPacket;
 import tools.Pair;
 
 public class MapleStorage implements Serializable {

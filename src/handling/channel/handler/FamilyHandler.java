@@ -30,7 +30,7 @@ import handling.world.family.MapleFamilyBuff;
 import handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import handling.world.family.MapleFamilyCharacter;
 import java.util.List;
-import packet.server.response.FamilyResponse;
+import packet.response.FamilyResponse;
 import server.maps.FieldLimitType;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;

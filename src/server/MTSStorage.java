@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import packet.server.response.MapleTradeSpaceResponse;
+import packet.response.MapleTradeSpaceResponse;
 import tools.Pair;
 
 public class MTSStorage {

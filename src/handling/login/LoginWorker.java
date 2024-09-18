@@ -25,9 +25,9 @@ import java.util.Map.Entry;
 import client.MapleClient;
 import handling.channel.ChannelServer;
 import server.Timer.PingTimer;
-import packet.client.request.LoginRequest;
-import packet.server.response.LoginResponse;
-import packet.server.response.LoginResponse.LoginResult;
+import packet.request.LoginRequest;
+import packet.response.LoginResponse;
+import packet.response.LoginResponse.LoginResult;
 
 public class LoginWorker {
 

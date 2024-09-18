@@ -25,7 +25,7 @@ import client.MapleClient;
 //import net.sf.odinms.server.Randomizer;
 import client.MapleDisease;
 import java.util.List;
-import packet.server.response.MonsterCarnivalResponse;
+import packet.response.MonsterCarnivalResponse;
 import server.MapleCarnivalFactory;
 import server.MapleCarnivalFactory.MCSkill;
 import server.Randomizer;

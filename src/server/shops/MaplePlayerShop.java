@@ -26,7 +26,7 @@ import client.inventory.IItem;
 import client.inventory.ItemFlag;
 import client.MapleCharacter;
 import client.MapleClient;
-import packet.server.response.FreeMarketResponse;
+import packet.response.FreeMarketResponse;
 import server.MapleInventoryManipulator;
 
 public class MaplePlayerShop extends AbstractPlayerStore {

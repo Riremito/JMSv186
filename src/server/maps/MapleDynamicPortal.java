@@ -24,8 +24,8 @@ import client.MapleCharacter;
 import client.MapleClient;
 import handling.channel.ChannelServer;
 import java.awt.Point;
-import packet.client.request.ItemRequest;
-import packet.server.response.ItemResponse;
+import packet.request.ItemRequest;
+import packet.response.ItemResponse;
 
 /**
  *
