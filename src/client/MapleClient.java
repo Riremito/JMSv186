@@ -33,7 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 import java.io.Serializable;
 
 import javax.script.ScriptEngine;
@@ -113,7 +112,6 @@ public class MapleClient implements Serializable {
     private transient List<Integer> allowedChar = new LinkedList<Integer>();
     private transient Set<String> macs = new HashSet<String>();
     private transient Map<String, ScriptEngine> engines = new HashMap<String, ScriptEngine>();
-    private transient ScheduledFuture<?> idleTask = null;
     private transient String secondPassword, salt2; // To be used only on login
     private final transient Lock mutex = new ReentrantLock(true);
     private final transient Lock npc_mutex = new ReentrantLock();
@@ -1252,14 +1250,6 @@ public class MapleClient implements Serializable {
 
     public final void removeScriptEngine(final String name) {
         engines.remove(name);
-    }
-
-    public final ScheduledFuture<?> getIdleTask() {
-        return idleTask;
-    }
-
-    public final void setIdleTask(final ScheduledFuture<?> idleTask) {
-        this.idleTask = idleTask;
     }
 
     protected static final class CharNameAndId {

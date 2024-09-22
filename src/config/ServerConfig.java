@@ -68,9 +68,10 @@ public class ServerConfig {
     }
 
     // around Pirate update
-    public static boolean JMSv164orEarlier() {
+    public static boolean JMSv131orEarlier() {
         switch (GetRegion()) {
             case JMS: {
+                // not checked v132 to v163
                 if (GetVersion() < 164) {
                     return true;
                 }

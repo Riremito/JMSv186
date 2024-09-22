@@ -204,9 +204,6 @@ public class LoginRequest {
             c.getSession().close();
             return false;
         }
-        if (c.getIdleTask() != null) {
-            c.getIdleTask().cancel(true);
-        }
         c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
         //c.getSession().write(MaplePacketCreator.getServerIP(Integer.parseInt(ChannelServer.getInstance(c.getChannel()).getIP().split(":")[1]), charId));
         c.getSession().write(MaplePacketCreator.getServerIP(LoginServer.WorldPort[SelectedWorld] + SelectedChannel, charId));

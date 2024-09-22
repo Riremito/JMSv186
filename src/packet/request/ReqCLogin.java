@@ -24,10 +24,8 @@ import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
-import config.DebugConfig;
 import config.ServerConfig;
 import debug.Debug;
-import debug.DebugAutoLogin;
 import handling.channel.handler.InterServerHandler;
 import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
@@ -122,10 +120,6 @@ public class ReqCLogin {
             case REACHED_LOGIN_SCREEN: {
                 // @0018
                 // ログイン画面に到達した場合に送信される
-
-                if (DebugConfig.auto_login) {
-                    DebugAutoLogin.AutoLogin(c);
-                }
                 return true;
             }
             case CP_ViewAllChar: {

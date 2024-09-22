@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import client.MapleClient;
 import handling.channel.ChannelServer;
-import server.Timer.PingTimer;
-import packet.request.LoginRequest;
 import packet.request.ReqCLogin;
 import packet.response.ResCLogin;
 import packet.response.ResCLogin.LoginResult;
@@ -60,12 +58,6 @@ public class LoginWorker {
 
         if (c.finishLogin() == 0) {
             c.SendPacket(ResCLogin.CheckPasswordResult(c, LoginResult.SUCCESS));
-            c.setIdleTask(PingTimer.getInstance().schedule(new Runnable() {
-
-                public void run() {
-                    c.getSession().close();
-                }
-            }, 10 * 60 * 10000));
         } else {
             c.SendPacket(ResCLogin.CheckPasswordResult(c, LoginResult.ALREADY_LOGGEDIN));
             return;
