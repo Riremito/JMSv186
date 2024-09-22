@@ -26,13 +26,19 @@ import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
 import debug.Debug;
+import debug.DebugUser;
+import handling.channel.ChannelServer;
 import handling.channel.handler.InterServerHandler;
 import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import packet.ClientPacket;
 import packet.response.ResCLogin;
 import server.MapleItemInformationProvider;
 import server.quest.MapleQuest;
+import tools.MaplePacketCreator;
 import wz.LoadData;
 
 /**
@@ -43,6 +49,17 @@ public class ReqCLogin {
 
     public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
         switch (header) {
+            // ログイン
+            case CP_CheckPassword: {
+                final String maple_id = new String(cp.DecodeBuffer());
+                final String password = new String(cp.DecodeBuffer());
+                if (login(c, maple_id, password)) {
+                    InterServerHandler.SetLogin(false);
+                    Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
+                    c.SendPacket(SocketPacket.AuthenMessage());
+                }
+                return true;
+            }
             // GameGuard
             case CP_T_UpdateGameGuard: {
                 c.SendPacket(ResCLogin.CheckGameGuardUpdate());
@@ -51,15 +68,6 @@ public class ReqCLogin {
             // ログイン画面
             case CP_CreateSecurityHandle: {
                 c.SendPacket(ResCLogin.LoginAUTH(cp, c));
-                return true;
-            }
-            // ログイン
-            case CP_CheckPassword: {
-                if (login(cp, c)) {
-                    InterServerHandler.SetLogin(false);
-                    Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
-                    c.SendPacket(SocketPacket.AuthenMessage());
-                }
                 return true;
             }
             case CP_Check2ndPassword: {
@@ -135,6 +143,63 @@ public class ReqCLogin {
         return false;
     }
 
+    public static final boolean login(MapleClient c, String login, String pwd) {
+        boolean endwith_ = false;
+        boolean startwith_GM = false;
+        // MapleIDは最低4文字なので、5文字以上の場合に性別変更の特殊判定を行う
+        if (login.length() >= 5 && login.endsWith("_")) {
+            login = login.substring(0, login.length() - 1);
+            endwith_ = true;
+            Debug.InfoLog("[FEMALE MODE] \"" + login + "\"");
+        }
+        if (ServerConfig.IsGMTestMode()) {
+            if (login.startsWith("GM")) {
+                startwith_GM = true;
+                Debug.InfoLog("[GM MODE] \"" + login + "\"");
+            }
+        }
+        c.setAccountName(login);
+        final boolean ipBan = c.hasBannedIP();
+        final boolean macBan = c.hasBannedMac();
+        int loginok = c.login(login, pwd, ipBan || macBan);
+        if (loginok == 5) {
+            if (c.auto_register(login, pwd) == 1) {
+                Debug.InfoLog("[NEW MAPLEID] \"" + login + "\"");
+                loginok = c.login(login, pwd, ipBan || macBan);
+            }
+        }
+        // アカウントの性別変更
+        if (endwith_) {
+            c.setGender((byte) 1);
+        }
+        // GM test
+        if (startwith_GM) {
+            c.setGM();
+        }
+        final Calendar tempbannedTill = c.getTempBanCalendar();
+        if (loginok == 0 && (ipBan || macBan) && !c.isGm()) {
+            loginok = 3;
+            if (macBan) {
+                // this is only an ipban o.O" - maybe we should refactor this a bit so it's more readable
+                MapleCharacter.ban(c.getSession().getRemoteAddress().toString().split(":")[0], "Enforcing account ban, account " + login, false, 4, false);
+            }
+        }
+        if (loginok != 0) {
+            if (!loginFailCount(c)) {
+                c.SendPacket(ResCLogin.CheckPasswordResult(c, loginok));
+            }
+        } else if (tempbannedTill.getTimeInMillis() != 0) {
+            if (!loginFailCount(c)) {
+                c.SendPacket(ResCLogin.CheckPasswordResult(c, 2)); // ?
+            }
+        } else {
+            c.loginAttempt = 0;
+            registerClient(c);
+            return true;
+        }
+        return false;
+    }
+
     public static final void CreateChar(ClientPacket cp, final MapleClient c) {
         final String name = new String(cp.DecodeBuffer());
         // very old ver, please merge it
@@ -177,7 +242,7 @@ public class ReqCLogin {
             item.setPosition((byte) -11);
             equip.addFromDB(item);
             if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
-                LoginRequest.AddStarterSet(newchar);
+                DebugUser.AddStarterSet(newchar);
                 MapleCharacter.saveNewCharToDB(newchar, 1, false);
                 c.getSession().write(ResCLogin.addNewCharEntry(newchar, true));
                 c.createdChar(newchar.getId());
@@ -246,7 +311,7 @@ public class ReqCLogin {
             newchar.setQuestAdd(MapleQuest.getInstance(20020), (byte) 1, null); //>_>_>_> ugh
         }
         if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
-            LoginRequest.AddStarterSet(newchar);
+            DebugUser.AddStarterSet(newchar);
             MapleCharacter.saveNewCharToDB(newchar, JobType, JobType == 1 && db > 0);
             c.getSession().write(ResCLogin.addNewCharEntry(newchar, true));
             c.createdChar(newchar.getId());
@@ -260,12 +325,6 @@ public class ReqCLogin {
         c.getSession().write(ResCLogin.charNameResponse(name, !MapleCharacterUtil.canCreateChar(name) || LoginInformationProvider.getInstance().isForbiddenName(name)));
     }
 
-    public static final boolean login(ClientPacket cp, final MapleClient c) {
-        String login = new String(cp.DecodeBuffer());
-        final String pwd = new String(cp.DecodeBuffer());
-        return LoginRequest.login(c, login, pwd);
-    }
-
     public static final void CharlistRequest(ClientPacket cp, final MapleClient c) {
         if (ServerConfig.IsKMS()) {
             byte unk = cp.Decode1();
@@ -277,7 +336,7 @@ public class ReqCLogin {
             c.SendPacket(ResCLogin.getCharList(c, ResCLogin.LoginResult.TOO_MANY_USERS));
             return;
         }
-        LoginRequest.CharlistRequest(c, server, channel + 1);
+        CharlistRequest(c, server, channel + 1);
     }
 
     public static final void DeleteChar(ClientPacket cp, final MapleClient c) {
@@ -306,7 +365,7 @@ public class ReqCLogin {
 
     public static final boolean Character_WithSecondPassword(ClientPacket cp, MapleClient c) {
         final int charId = cp.Decode4();
-        return LoginRequest.Character_WithSecondPassword(c, charId);
+        return Character_WithSecondPassword(c, charId);
     }
 
     // 必要なさそう
@@ -335,5 +394,82 @@ public class ReqCLogin {
             c.SendPacket(ResCLogin.RecommendWorldMessage());
             c.SendPacket(ResCLogin.LatestConnectedWorld());
         }
+    }
+
+    private static final boolean loginFailCount(final MapleClient c) {
+        c.loginAttempt++;
+        if (c.loginAttempt > 5) {
+            return true;
+        }
+        return false;
+    }
+
+    private static int SelectedChannel = 0;
+    private static int SelectedWorld = 0;
+
+    public static final void CharlistRequest(MapleClient c, int server, int channel) {
+        if (server == 12) {
+            server = 0;
+        }
+        SelectedWorld = server;
+        SelectedChannel = channel - 1;
+        c.setWorld(server);
+        c.setChannel(channel);
+        c.SendPacket(ResCLogin.getCharList(c, ResCLogin.LoginResult.SUCCESS));
+    }
+
+    public static final boolean Character_WithSecondPassword(MapleClient c) {
+        List<MapleCharacter> chars = c.loadCharacters(0);
+        if (chars == null) {
+            return false;
+        }
+        final int charId = chars.get(0).getId();
+        return Character_WithSecondPassword(c, charId);
+    }
+
+    public static final boolean Character_WithSecondPassword(MapleClient c, int charId) {
+        if (loginFailCount(c) || !c.login_Auth(charId)) {
+            c.getSession().close();
+            return false;
+        }
+        c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
+        c.getSession().write(MaplePacketCreator.getServerIP(LoginServer.WorldPort[SelectedWorld] + SelectedChannel, charId));
+        return true;
+    }
+
+    private static long lastUpdate = 0;
+
+    public static void registerClient(final MapleClient c) {
+        if (LoginServer.isAdminOnly() && !c.isGm()) {
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.INVALID_ADMIN_IP));
+            return;
+        }
+        if (System.currentTimeMillis() - lastUpdate > 600000) {
+            // Update once every 10 minutes
+            lastUpdate = System.currentTimeMillis();
+            final Map<Integer, Integer> load = ChannelServer.getChannelLoad();
+            int usersOn = 0;
+            if (load == null || load.size() <= 0) {
+                // In an unfortunate event that client logged in before load
+                lastUpdate = 0;
+                c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
+                return;
+            }
+            final double loadFactor = 1200 / ((double) LoginServer.getUserLimit() / load.size());
+            for (Map.Entry<Integer, Integer> entry : load.entrySet()) {
+                usersOn += entry.getValue();
+                load.put(entry.getKey(), Math.min(1200, (int) (entry.getValue() * loadFactor)));
+            }
+            LoginServer.setLoad(load, usersOn);
+            lastUpdate = System.currentTimeMillis();
+        }
+        if (c.finishLogin() == 0) {
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.SUCCESS));
+        } else {
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
+            return;
+        }
+        // 2次パスワード要求する場合は入力を待つ必要がある, -1で無視すれば不要
+        ReqCLogin.ServerListRequest(c);
     }
 }
