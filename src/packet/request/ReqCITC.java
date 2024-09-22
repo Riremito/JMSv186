@@ -42,6 +42,9 @@ public class ReqCITC {
     public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
 
         switch (header) {
+            case CP_AliveAck: {
+                return true;
+            }
             // 入場リクエスト
             case CP_UserMigrateToITCRequest: {
                 InterServerHandler.EnterCS(c, c.getPlayer(), true);

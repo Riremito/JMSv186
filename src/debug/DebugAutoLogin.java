@@ -32,8 +32,8 @@ public class DebugAutoLogin {
     // need to send packet when client reached to login screen, if client did not reach to login screen, client does not go to in game
     public static boolean AutoLogin(MapleClient c) {
         Debug.InfoLog("Auto Login Test");
-        if (!ReqCLogin.login(c, "test1", "testtest")) {
-            if (!ReqCLogin.login(c, "test2", "testtest")) {
+        if (!ReqCLogin.OnCheckPassword(c, "test1", "testtest")) {
+            if (!ReqCLogin.OnCheckPassword(c, "test2", "testtest")) {
                 return true;
             }
         }

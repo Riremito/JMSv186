@@ -44,11 +44,11 @@ import handling.world.World;
 import handling.world.guild.MapleGuild;
 import packet.ClientPacket;
 import packet.request.ContextPacket;
-import packet.request.SocketPacket;
 import packet.response.FamilyResponse;
 import packet.response.FriendResponse;
 import packet.response.GuildResponse;
 import packet.response.ResCFuncKeyMappedMan;
+import packet.response.ResCLogin;
 import packet.response.ResCUser_Pet;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
@@ -89,7 +89,7 @@ public class InterServerHandler {
         ch.removePlayer(chr);
         c.updateLoginState(MapleClient.CHANGE_CHANNEL, c.getSessionIPAddress());
 
-        c.SendPacket(SocketPacket.MigrateCommand(CashShopServer.getPort()));
+        c.SendPacket(ResCLogin.MigrateCommand(CashShopServer.getPort()));
         chr.saveToDB(false, false);
         ExtraDB.saveData(chr);
         chr.getMap().removePlayer(chr);

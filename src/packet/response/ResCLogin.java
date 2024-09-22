@@ -37,6 +37,41 @@ import packet.response.struct.GW_CharacterStat;
  */
 public class ResCLogin {
 
+    // CClientSocket::OnAuthenMessage
+    public static final MaplePacket AuthenMessage() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AuthenMessage);
+        sp.Encode4(1); // id
+        sp.Encode1(1);
+        return sp.Get();
+    }
+
+    // CClientSocket::OnAliveReq
+    // getPing
+    public static final MaplePacket AliveReq() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AliveReq);
+        return sp.Get();
+    }
+
+    // CClientSocket::OnMigrateCommand
+    // getChannelChange
+    public static final MaplePacket MigrateCommand(final int port) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MigrateCommand);
+        sp.Encode1(1);
+        sp.Encode4(16777343); // IP, 127.0.0.1
+        sp.Encode2(port);
+        return sp.Get();
+    }
+
+    // Internet Cafe
+    // プレミアムクーポン itemid 5420007
+    // CClientSocket::OnAuthenCodeChanged
+    public static final MaplePacket AuthenCodeChanged() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AuthenCodeChanged);
+        sp.Encode1(2); // Open UI
+        sp.Encode4(1);
+        return sp.Get();
+    }
+
     // v131 - v186 OK
     public enum LoginResult {
         SUCCESS(0x00),

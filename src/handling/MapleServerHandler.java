@@ -30,7 +30,6 @@ import packet.request.ReqCMobPool;
 import packet.request.ReqCNpcPool;
 import packet.request.PortalPacket;
 import packet.request.ReqCReactorPool;
-import packet.request.SocketPacket;
 import packet.request.ReqCSummonedPool;
 import packet.request.ReqCTrunkDlg;
 import packet.request.ReqCUserPool;
@@ -242,6 +241,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
         // CUser::OnFieldPacket
         // CUser::OnSummonedPacket
         switch (header) {
+            case CP_AliveAck: {
+                return true;
+            }
             case CP_UserParcelRequest: {
                 return ReqCParcelDlg.Accept(c, cp);
             }
@@ -318,7 +320,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 if (!InterServerHandler.GetLogin()) {
                     InterServerHandler.SetLogin(true);
                     Debug.UserInfoLog(c, "Enter Game");
-                    c.SendPacket(SocketPacket.AuthenCodeChanged()); // internet cafe
+                    c.SendPacket(ResCLogin.AuthenCodeChanged()); // internet cafe
                     //Map<Integer, Integer> connected = World.getConnected();
                     //c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
                 } else {

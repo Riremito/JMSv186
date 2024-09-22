@@ -31,11 +31,11 @@ import handling.channel.ChannelServer;
 import handling.channel.handler.InterServerHandler;
 import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import packet.ClientPacket;
 import packet.response.ResCLogin;
+import packet.response.ResCLogin.LoginResult;
 import server.MapleItemInformationProvider;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -50,20 +50,22 @@ public class ReqCLogin {
     public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
         switch (header) {
             // ログイン
+            // CClientSocket::OnCheckPassword
             case CP_CheckPassword: {
-                final String maple_id = new String(cp.DecodeBuffer());
-                final String password = new String(cp.DecodeBuffer());
-                if (login(c, maple_id, password)) {
+                if (OnCheckPassword(cp, c)) {
                     InterServerHandler.SetLogin(false);
                     Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
-                    c.SendPacket(SocketPacket.AuthenMessage());
+                    c.SendPacket(ResCLogin.AuthenMessage());
                 }
+                return true;
+            }
+            case CP_AliveAck: {
                 return true;
             }
             // GameGuard
             case CP_T_UpdateGameGuard: {
                 c.SendPacket(ResCLogin.CheckGameGuardUpdate());
-                break;
+                return true;
             }
             // ログイン画面
             case CP_CreateSecurityHandle: {
@@ -143,29 +145,40 @@ public class ReqCLogin {
         return false;
     }
 
-    public static final boolean login(MapleClient c, String login, String pwd) {
+    // login
+    public static final boolean OnCheckPassword(ClientPacket cp, MapleClient c) {
+        String maple_id = new String(cp.DecodeBuffer());
+        String password = new String(cp.DecodeBuffer());
+        return OnCheckPassword(c, maple_id, password);
+    }
+
+    public static final boolean OnCheckPassword(MapleClient c, String maple_id, String password) {
+        c.loginAttempt++;
+        if (5 < c.loginAttempt) {
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, LoginResult.SYSTEM_ERROR));
+            //c.getSession().close();
+            return false;
+        }
         boolean endwith_ = false;
         boolean startwith_GM = false;
         // MapleIDは最低4文字なので、5文字以上の場合に性別変更の特殊判定を行う
-        if (login.length() >= 5 && login.endsWith("_")) {
-            login = login.substring(0, login.length() - 1);
+        if (maple_id.length() >= 5 && maple_id.endsWith("_")) {
+            maple_id = maple_id.substring(0, maple_id.length() - 1);
             endwith_ = true;
-            Debug.InfoLog("[FEMALE MODE] \"" + login + "\"");
+            Debug.InfoLog("[FEMALE MODE] \"" + maple_id + "\"");
         }
         if (ServerConfig.IsGMTestMode()) {
-            if (login.startsWith("GM")) {
+            if (maple_id.startsWith("GM")) {
                 startwith_GM = true;
-                Debug.InfoLog("[GM MODE] \"" + login + "\"");
+                Debug.InfoLog("[GM MODE] \"" + maple_id + "\"");
             }
         }
-        c.setAccountName(login);
-        final boolean ipBan = c.hasBannedIP();
-        final boolean macBan = c.hasBannedMac();
-        int loginok = c.login(login, pwd, ipBan || macBan);
+        c.setAccountName(maple_id);
+        int loginok = c.login(maple_id, password);
         if (loginok == 5) {
-            if (c.auto_register(login, pwd) == 1) {
-                Debug.InfoLog("[NEW MAPLEID] \"" + login + "\"");
-                loginok = c.login(login, pwd, ipBan || macBan);
+            if (c.auto_register(maple_id, password) == 1) {
+                Debug.InfoLog("[NEW MAPLEID] \"" + maple_id + "\"");
+                loginok = c.login(maple_id, password);
             }
         }
         // アカウントの性別変更
@@ -176,28 +189,50 @@ public class ReqCLogin {
         if (startwith_GM) {
             c.setGM();
         }
-        final Calendar tempbannedTill = c.getTempBanCalendar();
-        if (loginok == 0 && (ipBan || macBan) && !c.isGm()) {
-            loginok = 3;
-            if (macBan) {
-                // this is only an ipban o.O" - maybe we should refactor this a bit so it's more readable
-                MapleCharacter.ban(c.getSession().getRemoteAddress().toString().split(":")[0], "Enforcing account ban, account " + login, false, 4, false);
-            }
-        }
         if (loginok != 0) {
-            if (!loginFailCount(c)) {
-                c.SendPacket(ResCLogin.CheckPasswordResult(c, loginok));
-            }
-        } else if (tempbannedTill.getTimeInMillis() != 0) {
-            if (!loginFailCount(c)) {
-                c.SendPacket(ResCLogin.CheckPasswordResult(c, 2)); // ?
-            }
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, loginok));
         } else {
             c.loginAttempt = 0;
             registerClient(c);
             return true;
         }
         return false;
+    }
+
+    private static long lastUpdate = 0;
+
+    public static void registerClient(final MapleClient c) {
+        if (LoginServer.isAdminOnly() && !c.isGm()) {
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.INVALID_ADMIN_IP));
+            return;
+        }
+        if (System.currentTimeMillis() - lastUpdate > 600000) {
+            // Update once every 10 minutes
+            lastUpdate = System.currentTimeMillis();
+            final Map<Integer, Integer> load = ChannelServer.getChannelLoad();
+            int usersOn = 0;
+            if (load == null || load.size() <= 0) {
+                // In an unfortunate event that client logged in before load
+                lastUpdate = 0;
+                c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
+                return;
+            }
+            final double loadFactor = 1200 / ((double) LoginServer.getUserLimit() / load.size());
+            for (Map.Entry<Integer, Integer> entry : load.entrySet()) {
+                usersOn += entry.getValue();
+                load.put(entry.getKey(), Math.min(1200, (int) (entry.getValue() * loadFactor)));
+            }
+            LoginServer.setLoad(load, usersOn);
+            lastUpdate = System.currentTimeMillis();
+        }
+        if (c.finishLogin() == 0) {
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.SUCCESS));
+        } else {
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
+            return;
+        }
+        // 2次パスワード要求する場合は入力を待つ必要がある, -1で無視すれば不要
+        ReqCLogin.ServerListRequest(c);
     }
 
     public static final void CreateChar(ClientPacket cp, final MapleClient c) {
@@ -396,14 +431,6 @@ public class ReqCLogin {
         }
     }
 
-    private static final boolean loginFailCount(final MapleClient c) {
-        c.loginAttempt++;
-        if (c.loginAttempt > 5) {
-            return true;
-        }
-        return false;
-    }
-
     private static int SelectedChannel = 0;
     private static int SelectedWorld = 0;
 
@@ -428,48 +455,12 @@ public class ReqCLogin {
     }
 
     public static final boolean Character_WithSecondPassword(MapleClient c, int charId) {
-        if (loginFailCount(c) || !c.login_Auth(charId)) {
+        if (!c.login_Auth(charId)) {
             c.getSession().close();
             return false;
         }
         c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
         c.getSession().write(MaplePacketCreator.getServerIP(LoginServer.WorldPort[SelectedWorld] + SelectedChannel, charId));
         return true;
-    }
-
-    private static long lastUpdate = 0;
-
-    public static void registerClient(final MapleClient c) {
-        if (LoginServer.isAdminOnly() && !c.isGm()) {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.INVALID_ADMIN_IP));
-            return;
-        }
-        if (System.currentTimeMillis() - lastUpdate > 600000) {
-            // Update once every 10 minutes
-            lastUpdate = System.currentTimeMillis();
-            final Map<Integer, Integer> load = ChannelServer.getChannelLoad();
-            int usersOn = 0;
-            if (load == null || load.size() <= 0) {
-                // In an unfortunate event that client logged in before load
-                lastUpdate = 0;
-                c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
-                return;
-            }
-            final double loadFactor = 1200 / ((double) LoginServer.getUserLimit() / load.size());
-            for (Map.Entry<Integer, Integer> entry : load.entrySet()) {
-                usersOn += entry.getValue();
-                load.put(entry.getKey(), Math.min(1200, (int) (entry.getValue() * loadFactor)));
-            }
-            LoginServer.setLoad(load, usersOn);
-            lastUpdate = System.currentTimeMillis();
-        }
-        if (c.finishLogin() == 0) {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.SUCCESS));
-        } else {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
-            return;
-        }
-        // 2次パスワード要求する場合は入力を待つ必要がある, -1で無視すれば不要
-        ReqCLogin.ServerListRequest(c);
     }
 }

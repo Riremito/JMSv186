@@ -83,7 +83,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import packet.response.PachinkoResponse;
 import packet.request.ContextPacket;
-import packet.request.SocketPacket;
 import packet.request.ReqCUserPool;
 import packet.response.ContextResponse;
 import packet.response.ResCUser_Dragon;
@@ -97,6 +96,7 @@ import packet.response.PartyResponse;
 import packet.response.ResCUser_Pet;
 import packet.response.ResCUser_Pet.DeActivatedMsg;
 import packet.response.RemoteResponse;
+import packet.response.ResCLogin;
 import packet.response.ResCSummonedPool;
 import packet.response.TemporaryStatResponse;
 import packet.response.TestResponse;
@@ -5376,7 +5376,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ch.removePlayer(this);
         client.updateLoginState(MapleClient.CHANGE_CHANNEL, client.getSessionIPAddress());
 
-        client.SendPacket(SocketPacket.MigrateCommand(toch.getPort()));
+        client.SendPacket(ResCLogin.MigrateCommand(toch.getPort()));
         saveToDB(false, false);
         getMap().removePlayer(this);
         client.setPlayer(null);

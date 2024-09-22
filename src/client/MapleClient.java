@@ -76,9 +76,9 @@ import org.apache.mina.common.TrafficMask;
 import org.apache.mina.common.TransportType;
 import org.apache.mina.common.WriteFuture;
 import packet.ServerPacket;
-import packet.request.SocketPacket;
 import packet.response.ResCITC;
 import packet.response.ResCCashShop;
+import packet.response.ResCLogin;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
@@ -479,60 +479,6 @@ public class MapleClient implements Serializable {
         return greason;
     }
 
-    public boolean hasBannedIP() {
-        boolean ret = false;
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM ipbans WHERE ? LIKE CONCAT(ip, '%')");
-            ps.setString(1, session.getRemoteAddress().toString());
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            if (rs.getInt(1) > 0) {
-                ret = true;
-            }
-            rs.close();
-            ps.close();
-        } catch (SQLException ex) {
-            System.err.println("Error checking ip bans" + ex);
-        }
-        return ret;
-    }
-
-    public boolean hasBannedMac() {
-        if (macs.isEmpty()) {
-            return false;
-        }
-        boolean ret = false;
-        int i = 0;
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM macbans WHERE mac IN (");
-            for (i = 0; i < macs.size(); i++) {
-                sql.append("?");
-                if (i != macs.size() - 1) {
-                    sql.append(", ");
-                }
-            }
-            sql.append(")");
-            PreparedStatement ps = con.prepareStatement(sql.toString());
-            i = 0;
-            for (String mac : macs) {
-                i++;
-                ps.setString(i, mac);
-            }
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            if (rs.getInt(1) > 0) {
-                ret = true;
-            }
-            rs.close();
-            ps.close();
-        } catch (SQLException ex) {
-            System.err.println("Error checking mac bans" + ex);
-        }
-        return ret;
-    }
-
     private void loadMacsIfNescessary() throws SQLException {
         if (macs.isEmpty()) {
             Connection con = DatabaseConnection.getConnection();
@@ -669,7 +615,7 @@ public class MapleClient implements Serializable {
         return 0;
     }
 
-    public int login(String login, String pwd, boolean ipMacBanned) {
+    public int login(String login, String pwd) {
         int loginok = 5;
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -1151,7 +1097,7 @@ public class MapleClient implements Serializable {
 
     public final void sendPing() {
         lastPing = System.currentTimeMillis();
-        SendPacket(SocketPacket.AliveReq());
+        SendPacket(ResCLogin.AliveReq());
 
         PingTimer.getInstance().schedule(new Runnable() {
 

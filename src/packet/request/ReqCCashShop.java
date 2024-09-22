@@ -34,6 +34,7 @@ import packet.ClientPacket;
 import packet.ops.CashItemOps;
 import packet.response.ResCITC;
 import packet.response.ResCCashShop;
+import packet.response.ResCLogin;
 import packet.response.ResCStage;
 import packet.response.struct.GW_ItemSlotBase;
 import server.CashItemFactory;
@@ -59,6 +60,9 @@ public class ReqCCashShop {
      */
     public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
         switch (header) {
+            case CP_AliveAck: {
+                return true;
+            }
             // 入場リクエスト
             case CP_UserMigrateToCashShopRequest: {
                 InterServerHandler.EnterCS(c, c.getPlayer(), false);
@@ -173,7 +177,7 @@ public class ReqCCashShop {
         c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
         try {
             World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
-            c.SendPacket(SocketPacket.MigrateCommand(ChannelServer.getInstance(c.getChannel()).getPort()));
+            c.SendPacket(ResCLogin.MigrateCommand(ChannelServer.getInstance(c.getChannel()).getPort()));
         } finally {
             chr.saveToDB(false, true);
             c.setPlayer(null);
