@@ -26,7 +26,6 @@ import handling.channel.ChannelServer;
 import handling.login.LoginServer;
 import java.util.List;
 import java.util.Random;
-import packet.ClientPacket;
 import packet.ServerPacket;
 import packet.response.struct.AvatarLook;
 import packet.response.struct.GW_CharacterStat;
@@ -135,7 +134,7 @@ public class ResCLogin {
 
     // サーバーのバージョン情報
     public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.HELLO); // dummy header
+        ServerPacket sp = new ServerPacket((short) 0x0000); // dummy
         if (ServerConfig.GetVersion() < 414) {
 
             switch (ServerConfig.GetRegion()) {
@@ -172,6 +171,16 @@ public class ResCLogin {
         }
         // ヘッダにサイズを書き込む
         sp.SetHello();
+        return sp.Get();
+    }
+
+// v131
+// CLogin::OnCheckGameGuardUpdatedResult
+    public static MaplePacket CheckGameGuardUpdated() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_CheckGameGuardUpdatedResult);
+        // 0 = Update Game Guard
+        // 1 = Enable Login Button
+        sp.Encode1(1);
         return sp.Get();
     }
 
@@ -343,16 +352,6 @@ public class ResCLogin {
             sp.Encode4(0);
         }
 
-        return sp.Get();
-    }
-
-// v131+
-// CLogin::OnCheckGameGuardUpdatedResult
-    public static MaplePacket CheckGameGuardUpdate() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_T_UpdateGameGuard);
-        // 0 = Update Game Guard
-        // 1 = Enable Login Button
-        sp.Encode1(1);
         return sp.Get();
     }
 
@@ -595,27 +594,6 @@ public class ResCLogin {
         return sp.Get();
     }
 
-    // いらない機能
-    public static final MaplePacket LoginAUTH(ClientPacket p, MapleClient c) {
-        // JMS v186.1には3つのログイン画面が存在するのでランダムに割り振ってみる
-        String[] LoginScreen = {"MapLogin", "MapLogin1", "MapLogin2"};
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() == 186)) {
-            return LoginAUTH(LoginScreen[0]);
-        }
-        return LoginAUTH(LoginScreen[(new Random().nextInt(3))]);
-    }
-
-    // ログイン画面へ切り替え
-    public static final MaplePacket LoginAUTH(String LoginScreen) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LOGIN_AUTH);
-        // ログイン画面の名称
-        sp.EncodeStr(LoginScreen);
-        if (ServerConfig.IsPostBB()) {
-            sp.Encode4(0);
-        }
-        return sp.Get();
-    }
-
     // CLogin::OnViewAllCharResult
     public static MaplePacket ViewAllCharResult_v201(MapleClient c) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ViewAllCharResult);
@@ -666,6 +644,27 @@ public class ResCLogin {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CheckDuplicatedIDResult);
         sp.EncodeStr(charname);
         sp.Encode1(nameUsed ? 1 : 0);
+        return sp.Get();
+    }
+
+    // いらない機能
+    public static final MaplePacket SetMapLogin() {
+        // JMS v186.1には3つのログイン画面が存在するのでランダムに割り振ってみる
+        String[] LoginScreen = {"MapLogin", "MapLogin1", "MapLogin2"};
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() == 186)) {
+            return SetMapLogin(LoginScreen[0]);
+        }
+        return SetMapLogin(LoginScreen[(new Random().nextInt(3))]);
+    }
+
+    // ログイン画面へ切り替え
+    public static final MaplePacket SetMapLogin(String LoginScreen) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_SetMapLogin);
+        // ログイン画面の名称
+        sp.EncodeStr(LoginScreen);
+        if (ServerConfig.IsPostBB()) {
+            sp.Encode4(0);
+        }
         return sp.Get();
     }
 

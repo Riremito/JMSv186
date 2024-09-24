@@ -141,8 +141,6 @@ public class ClientPacket {
         // v414.1 test
         //CP_TEST1(0x66),
         //CP_TEST2(0xA3),
-        // JMS v131.0
-        CP_T_UpdateGameGuard,
         // Names from v95 PDB
         // ログインサーバー
         CP_BEGIN_SOCKET,
@@ -175,6 +173,7 @@ public class ClientPacket {
         CP_AliveAck,
         CP_ExceptionLog,
         CP_SecurityPacket,
+        CP_JMS_CheckGameGuardUpdated, // JMS v131 (GG)
         CP_EnableSPWRequest,
         CP_CheckSPWRequest,
         CP_EnableSPWRequestByACV,
@@ -186,6 +185,8 @@ public class ClientPacket {
         CP_ClientDumpLog,
         CP_CheckExtraCharInfo,
         CP_CreateNewCharacter_Ex,
+        CP_JMS_MapLogin,
+        CP_JMS_GetMapLogin, // 名称不明, ログイン画面に到達
         CP_END_SOCKET,
         // ゲームサーバー
         CP_BEGIN_USER,
@@ -474,7 +475,6 @@ public class ClientPacket {
         CP_LogoutGiftSelect,
         CP_NO,
         // JMS headers
-        REACHED_LOGIN_SCREEN, // 名称不明, ログイン画面に到達
         GM_COMMAND_MAPLETV, // Super Megaphone Exploitのパケット
         BEANS_OPERATION, // PACHINKO_GAME, パチンコ
         BEANS_UPDATE, // PACHINKO_UPDATE, パチンコ

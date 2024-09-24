@@ -178,8 +178,6 @@ public class ServerPacket {
         LP_CUSTOM_WZ_HASH,
         LP_CUSTOM_CLIENT_PATCH,
         LP_CUSTOM_MEMORY_SCAN,
-        // JMS v131.0
-        LP_T_UpdateGameGuard,
         // Names from v95 PDB
         // ログインサーバー
         LP_BEGIN_SOCKET,
@@ -204,11 +202,13 @@ public class ServerPacket {
         LP_AuthenCodeChanged,
         LP_AuthenMessage,
         LP_SecurityPacket,
+        LP_JMS_CheckGameGuardUpdatedResult, // JMS v131 (GG)
         //LP_EnableSPWResult,
         //LP_DeleteCharacterOTPRequest,
         //LP_CheckCrcResult,
         LP_LatestConnectedWorld,
         LP_RecommendWorldMessage,
+        LP_JMS_SetMapLogin, // 名称不明
         //LP_CheckExtraCharInfoResult,
         //LP_CheckSPWResult,
         LP_END_SOCKET,
@@ -708,7 +708,6 @@ public class ServerPacket {
         MINIGAME_PACHINKO_UPDATE_TAMA, // UPDATE_PACHINKO_BALL
         UNKNOWN_RELOAD_MINIMAP,
         UNKNOWN_RELOAD_MAP,
-        HELLO(0x000E),
         // unknown
         RELOG_RESPONSE,
         ARIANT_PQ_START,
@@ -716,7 +715,6 @@ public class ServerPacket {
         SERVERSTATUS,
         XMAS_SURPRISE,
         EARN_TITLE_MSG,
-        LOGIN_AUTH, // 名称不明
         FISHING_BOARD_UPDATE,
         ENERGY,
         GHOST_POINT,

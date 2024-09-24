@@ -62,16 +62,6 @@ public class ReqCLogin {
             case CP_AliveAck: {
                 return true;
             }
-            // GameGuard
-            case CP_T_UpdateGameGuard: {
-                c.SendPacket(ResCLogin.CheckGameGuardUpdate());
-                return true;
-            }
-            // ログイン画面
-            case CP_CreateSecurityHandle: {
-                c.SendPacket(ResCLogin.LoginAUTH(cp, c));
-                return true;
-            }
             case CP_Check2ndPassword: {
                 if (ServerConfig.IsJMS() && ServerConfig.IsPostBB()) {
                     ServerListRequest(c);
@@ -118,6 +108,9 @@ public class ReqCLogin {
                 // 文字列で送信されているがnullで終わっていないので注意
                 return true;
             }
+            case CP_SecurityPacket: {
+                return true;
+            }
             // キャラクター選択
             case CP_SelectCharacter:
             case CP_CheckPinCode: {
@@ -126,15 +119,23 @@ public class ReqCLogin {
                 }
                 return true;
             }
-            // ログイン画面に到達
-            case REACHED_LOGIN_SCREEN: {
-                // @0018
-                // ログイン画面に到達した場合に送信される
-                return true;
-            }
             case CP_ViewAllChar: {
                 c.SendPacket(ResCLogin.ViewAllCharResult_Alloc(c));
                 c.SendPacket(ResCLogin.ViewAllCharResult(c));
+                return true;
+            }
+            // GameGuard
+            case CP_JMS_CheckGameGuardUpdated: {
+                c.SendPacket(ResCLogin.CheckGameGuardUpdated());
+                return true;
+            }
+            case CP_JMS_MapLogin: {
+                return true;
+            }
+            case CP_JMS_GetMapLogin: {
+                // @0018
+                // ログイン画面に到達した場合に送信される (初回限定)
+                c.SendPacket(ResCLogin.SetMapLogin("MapLogin"));
                 return true;
             }
             default: {
