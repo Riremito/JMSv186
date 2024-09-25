@@ -107,6 +107,28 @@ public class ServerConfig {
     }
 
     // Knights of Cygnus update
+    public static boolean JMSv165orEarlier() {
+        switch (GetRegion()) {
+            case JMS: {
+                if (GetVersion() <= 165) {
+                    return true;
+                }
+                return false;
+            }
+            case KMS: {
+                if (GetVersion() <= 65) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // Knights of Cygnus update
     public static boolean JMSv165orLater() {
         switch (GetRegion()) {
             case JMS: {
@@ -139,9 +161,6 @@ public class ServerConfig {
                 return false;
             }
             case KMS: {
-                if (95 <= GetVersion()) {
-                    return true;
-                }
                 return false;
             }
             case CMS: {
@@ -192,6 +211,46 @@ public class ServerConfig {
             }
             case KMS: {
                 if (95 == GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // test
+    public static boolean IsKMSv95orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case KMS: {
+                if (95 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // pre bb with potential
+    public static boolean JMSv186orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (186 <= GetVersion()) {
                     return true;
                 }
                 return false;

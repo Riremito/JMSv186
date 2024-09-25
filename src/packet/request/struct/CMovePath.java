@@ -37,11 +37,11 @@ public class CMovePath {
     private static byte JUMP_DOWN_ACTION = 0x0C; // v186
 
     public static boolean setJumpDown() {
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
+        if ((ServerConfig.JMSv186orLater())) {
             JUMP_DOWN_ACTION = 0x0C;
             return true;
         }
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())) {
+        if ((ServerConfig.JMSv164orLater())) {
             JUMP_DOWN_ACTION = 0x0F;
             return true;
         }
@@ -64,7 +64,8 @@ public class CMovePath {
             }
             case CP_MobMove: {
                 ignore_bytes = 1 + 2 * 4;
-                if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
+                // v180+
+                if (!ServerConfig.JMSv165orEarlier()) {
                     ignore_bytes += 1 * 4 + 4;
                 }
 
@@ -84,9 +85,9 @@ public class CMovePath {
         int offset_start_x = 0;
         int offset_start_y = 2;
         // JMS under v165 / JMS v186 or later and post BB, very early version's offset is 13
-        int offset_end_x = (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) ? (data.length - 13 - ignore_bytes) : (data.length - 17 - ignore_bytes);
-        int offset_end_y = (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) ? (data.length - 11 - ignore_bytes) : (data.length - 15 - ignore_bytes);
-        int offset_end_fh = (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) ? (data.length - 5 - ignore_bytes) : (data.length - 9 - ignore_bytes);
+        int offset_end_x = (ServerConfig.JMSv165orEarlier()) ? (data.length - 13 - ignore_bytes) : (data.length - 17 - ignore_bytes);
+        int offset_end_y = (ServerConfig.JMSv165orEarlier()) ? (data.length - 11 - ignore_bytes) : (data.length - 15 - ignore_bytes);
+        int offset_end_fh = (ServerConfig.JMSv165orEarlier()) ? (data.length - 5 - ignore_bytes) : (data.length - 9 - ignore_bytes);
         int offset_action = data.length - 3 - ignore_bytes;
         // data for updating coordinates
         action = data[offset_action];
