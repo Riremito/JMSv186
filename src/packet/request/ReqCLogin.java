@@ -38,7 +38,6 @@ import packet.response.ResCLogin;
 import packet.response.ResCLogin.LoginResult;
 import server.MapleItemInformationProvider;
 import server.quest.MapleQuest;
-import tools.MaplePacketCreator;
 import wz.LoadData;
 
 /**
@@ -70,13 +69,11 @@ public class ReqCLogin {
             }
             // サーバー一覧
             case CP_WorldInfoRequest: {
-                // +p
                 ServerListRequest(c);
                 return true;
             }
             // サーバーの状態
             case CP_CheckUserLimit: {
-                // +p
                 ServerStatusRequest(c);
                 return true;
             }
@@ -114,27 +111,29 @@ public class ReqCLogin {
             // キャラクター選択
             case CP_SelectCharacter:
             case CP_CheckPinCode: {
-                if (Character_WithSecondPassword(cp, c)) {
+                if (OnSelectCharacter(cp, c)) {
                     InterServerHandler.SetLogin(false);
                 }
                 return true;
             }
             case CP_ViewAllChar: {
-                c.SendPacket(ResCLogin.ViewAllCharResult_Alloc(c));
-                c.SendPacket(ResCLogin.ViewAllCharResult(c));
+                c.SendPacket(ResCLogin.ViewAllCharResult(c, true));
+                c.SendPacket(ResCLogin.ViewAllCharResult(c, false));
                 return true;
             }
-            // GameGuard
             case CP_JMS_CheckGameGuardUpdated: {
-                c.SendPacket(ResCLogin.CheckGameGuardUpdated());
+                // ログインボタン有効化 (GG専用)
+                c.SendPacket(ResCLogin.CheckGameGuardUpdated(true));
                 return true;
             }
             case CP_JMS_MapLogin: {
+                // クライアントがログイン画面に移行した場合に送信される
                 return true;
             }
             case CP_JMS_GetMapLogin: {
                 // @0018
-                // ログイン画面に到達した場合に送信される (初回限定)
+                // クライアントがログイン画面に移行した場合に送信される (初回限定)
+                // BIGBANG前後のJMSでMapLoginが複数存在するバージョンで必要となる
                 c.SendPacket(ResCLogin.SetMapLogin("MapLogin"));
                 return true;
             }
@@ -399,11 +398,6 @@ public class ReqCLogin {
         c.getSession().write(ResCLogin.deleteCharResponse(Character_ID, state));
     }
 
-    public static final boolean Character_WithSecondPassword(ClientPacket cp, MapleClient c) {
-        final int charId = cp.Decode4();
-        return Character_WithSecondPassword(c, charId);
-    }
-
     // 必要なさそう
     public static final void ServerStatusRequest(final MapleClient c) {
         // 0 = Select world normally
@@ -446,22 +440,28 @@ public class ReqCLogin {
         c.SendPacket(ResCLogin.getCharList(c, ResCLogin.LoginResult.SUCCESS));
     }
 
-    public static final boolean Character_WithSecondPassword(MapleClient c) {
+    public static final boolean SelectCharacterTest(MapleClient c) {
         List<MapleCharacter> chars = c.loadCharacters(0);
         if (chars == null) {
             return false;
         }
         final int charId = chars.get(0).getId();
-        return Character_WithSecondPassword(c, charId);
+        return SelectCharacter(c, charId);
     }
 
-    public static final boolean Character_WithSecondPassword(MapleClient c, int charId) {
+    public static final boolean SelectCharacter(MapleClient c, int charId) {
         if (!c.login_Auth(charId)) {
             c.getSession().close();
             return false;
         }
         c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
-        c.getSession().write(MaplePacketCreator.getServerIP(LoginServer.WorldPort[SelectedWorld] + SelectedChannel, charId));
+        c.SendPacket(ResCLogin.SelectCharacterResult(LoginServer.WorldPort[SelectedWorld] + SelectedChannel, charId));
         return true;
+    }
+
+    // CClientSocket::OnSelectCharacter
+    public static final boolean OnSelectCharacter(ClientPacket cp, MapleClient c) {
+        final int charId = cp.Decode4();
+        return SelectCharacter(c, charId);
     }
 }

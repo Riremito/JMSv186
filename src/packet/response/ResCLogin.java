@@ -21,9 +21,12 @@ package packet.response;
 import client.MapleCharacter;
 import client.MapleClient;
 import config.ServerConfig;
+import debug.Debug;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.login.LoginServer;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Random;
 import packet.ServerPacket;
@@ -68,6 +71,39 @@ public class ResCLogin {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AuthenCodeChanged);
         sp.Encode1(2); // Open UI
         sp.Encode4(1);
+        return sp.Get();
+    }
+
+    public static long GameServerIP = 0;
+
+    public static long getGameServerIP() {
+        if (GameServerIP != 0) {
+            return GameServerIP;
+        }
+
+        try {
+            byte[] ip_bytes = InetAddress.getByName("127.0.0.1").getAddress();
+            GameServerIP = ip_bytes[0] | (ip_bytes[1] << 8) | (ip_bytes[2] << 16) | (ip_bytes[3] << 24);
+        } catch (UnknownHostException ex) {
+            GameServerIP = 0x0100007F; // 127.0.0.1
+            Debug.ErrorLog("GameServerIP set to 127.0.0.1");
+        }
+
+        return GameServerIP;
+    }
+
+    // ゲームサーバーへ接続
+    // getServerIP
+    // CClientSocket::OnSelectCharacter
+    public static final MaplePacket SelectCharacterResult(final int port, final int clientId) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SelectCharacterResult);
+        sp.Encode1(0);
+        sp.Encode1(0);
+        sp.Encode4((int) getGameServerIP());
+        sp.Encode2(port);
+        sp.Encode4(clientId);
+        sp.Encode1(0);
+        sp.Encode4(0);
         return sp.Get();
     }
 
@@ -176,11 +212,11 @@ public class ResCLogin {
 
 // v131
 // CLogin::OnCheckGameGuardUpdatedResult
-    public static MaplePacket CheckGameGuardUpdated() {
+    public static MaplePacket CheckGameGuardUpdated(boolean isOK) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_CheckGameGuardUpdatedResult);
         // 0 = Update Game Guard
         // 1 = Enable Login Button
-        sp.Encode1(1);
+        sp.Encode1(isOK ? 1 : 0);
         return sp.Get();
     }
 
@@ -194,16 +230,6 @@ public class ResCLogin {
             sp.Encode4(world_id);
             sp.EncodeStr(recommendedReasons[world_id]);
         }
-        return sp.Get();
-    }
-
-    // CLogin::OnViewAllCharResult
-    public static MaplePacket ViewAllCharResult_Alloc(MapleClient c) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ViewAllCharResult);
-        List<MapleCharacter> chars = c.loadCharacters(0);
-        sp.Encode1(1); // error code
-        sp.Encode4(1); // m_nCountRelatedSvrs
-        sp.Encode4(chars.size()); // m_nCountCharacters
         return sp.Get();
     }
 
@@ -232,20 +258,26 @@ public class ResCLogin {
     }
 
     // CLogin::OnViewAllCharResult
-    public static MaplePacket ViewAllCharResult(MapleClient c) {
+    public static MaplePacket ViewAllCharResult(MapleClient c, boolean isAlloc) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ViewAllCharResult);
         List<MapleCharacter> chars = c.loadCharacters(0); // world 0 only (test)
-        sp.Encode1(0); // error code
-        sp.Encode1(0); // nWorldID
-        sp.Encode1(chars.size());
-        for (MapleCharacter chr : chars) {
-            sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
-            sp.EncodeBuffer(AvatarLook.Encode(chr));
-            sp.Encode1(1); // ranking
-            sp.Encode4(chr.getRank()); // all world ranking
-            sp.Encode4(chr.getRankMove());
-            sp.Encode4(chr.getJobRank()); // world ranking
-            sp.Encode4(chr.getJobRankMove());
+        sp.Encode1(isAlloc ? 1 : 0);
+
+        if (isAlloc) {
+            sp.Encode4(1); // m_nCountRelatedSvrs
+            sp.Encode4(chars.size()); // m_nCountCharacters
+        } else {
+            sp.Encode1(0); // nWorldID
+            sp.Encode1(chars.size());
+            for (MapleCharacter chr : chars) {
+                sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
+                sp.EncodeBuffer(AvatarLook.Encode(chr));
+                sp.Encode1(1); // ranking
+                sp.Encode4(chr.getRank()); // all world ranking
+                sp.Encode4(chr.getRankMove());
+                sp.Encode4(chr.getJobRank()); // world ranking
+                sp.Encode4(chr.getJobRankMove());
+            }
         }
         return sp.Get();
     }

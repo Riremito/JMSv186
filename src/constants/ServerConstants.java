@@ -22,12 +22,6 @@ package constants;
 
 public class ServerConstants {
 
-    public static final byte[] Gateway_IP = {(byte) 127, (byte) 0, (byte) 0, (byte) 1};
-    public static final String Gateway_IP_String = "127.0.0.1"; //singapore
-//    public static final byte[] Gateway_IP = {(byte) 0xCB, (byte) 0x74, (byte) 0xC4, (byte) 0x08};
-//    public static final String Gateway_IP_String = "203.116.196.8";
-    //public static final String Gateway_IP_String = "203.188.239.82"; //malaysia
-
     /*
      * Specifics which job gives an additional EXP to party
      * returns the percentage of EXP to increase

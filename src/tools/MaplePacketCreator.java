@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tools;
 
 import java.awt.Point;
-import java.net.InetAddress;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -36,7 +35,6 @@ import client.inventory.IEquip.ScrollResult;
 import client.inventory.MapleRing;
 import handling.MaplePacket;
 import constants.ServerConstants;
-import java.net.UnknownHostException;
 import server.MapleTrade;
 import server.life.MapleNPC;
 import server.life.PlayerNPC;
@@ -62,26 +60,6 @@ import server.maps.MapleNodes.MapleNodeInfo;
 import server.maps.MapleNodes.MaplePlatform;
 
 public class MaplePacketCreator {
-
-    // ゲームサーバーへ接続
-    public static final MaplePacket getServerIP(final int port, final int clientId) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SelectCharacterResult);
-        p.Encode1(0);
-        p.Encode1(0);
-        // ゲームサーバーのIP
-        try {
-            p.EncodeBuffer(InetAddress.getByName(ServerConstants.Gateway_IP_String).getAddress()); // DWORD
-        } catch (UnknownHostException e) {
-            p.EncodeBuffer(ServerConstants.Gateway_IP); // DWORD
-        }
-        // ゲームサーバーのPort
-        p.Encode2(port);
-        // キャラクターID?
-        p.Encode4(clientId);
-        p.Encode1(0);
-        p.Encode4(0);
-        return p.Get();
-    }
 
     // プレイヤー情報の初期化
     public static final MaplePacket getCharInfo(final MapleCharacter chr) {

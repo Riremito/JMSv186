@@ -41,7 +41,7 @@ public class DebugAutoLogin {
         ReqCLogin.ServerListRequest(c); // world list
         ReqCLogin.ServerStatusRequest(c); // channel status
         ReqCLogin.CharlistRequest(c, 0, 1); // select 1st character
-        ReqCLogin.Character_WithSecondPassword(c); // no characters = stop
+        ReqCLogin.SelectCharacterTest(c); // no characters = stop
         return true;
     }
 }
