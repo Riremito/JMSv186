@@ -96,7 +96,7 @@ public class ResCStage {
         if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
             sp.Encode4(0);
             if (!ServerConfig.IsKMS()) {
-                sp.Encode4(0);
+                sp.Encode4(100); // nMobStatAdjustRate
             }
         }
         return sp.Get();

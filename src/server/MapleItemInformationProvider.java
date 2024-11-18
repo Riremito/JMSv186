@@ -84,7 +84,7 @@ public class MapleItemInformationProvider {
         getAllItems();
         // 潜在能力実装がv186のためそれ以前では存在しない
         // v186以外で全然違うので使い物にならない
-        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 185) || (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) || (ServerConfig.IsKMS() && ServerConfig.IsPreBB())) {
+        if (!(ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() < 302) || !ServerConfig.IsJMS()) {
             return;
         }
         final MapleData setsData = etcData.getData("SetItemInfo.img");

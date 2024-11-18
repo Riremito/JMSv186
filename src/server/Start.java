@@ -25,14 +25,16 @@ public class Start {
 
     public final static void main(final String args[]) {
         // バージョン設定
-        if (args.length >= 2) {
-            ServerConfig.SetVersion(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+        String server_region = "JMS";
+        int server_version = 186;
+        int server_version_sub = 1;
+        if (3 <= args.length) {
+            server_region = args[0];
+            server_version = Integer.parseInt(args[1]);
+            server_version_sub = Integer.parseInt(args[2]);
         }
-
-        // 他言語版
-        if (args.length >= 3) {
-            ServerConfig.SetRegionNumber(Integer.parseInt(args[2]));
-        }
+        ServerConfig.SetVersion(server_version, server_version_sub);
+        ServerConfig.SetRegion(server_region);
 
         // バージョンによるコンテンツの有無を設定
         ServerConfig.SetContentFlag();

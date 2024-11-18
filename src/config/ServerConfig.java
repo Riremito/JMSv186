@@ -28,6 +28,8 @@ public class ServerConfig {
         THMS,
         GMS,
         EMS,
+        BMS,
+        MSEA,
         unk,
     }
 
@@ -49,6 +51,18 @@ public class ServerConfig {
 
     public static boolean IsTHMS() {
         return GetRegion() == Region.THMS;
+    }
+
+    public static boolean IsEMS() {
+        return GetRegion() == Region.EMS;
+    }
+
+    public static boolean IsBMS() {
+        return GetRegion() == Region.BMS;
+    }
+
+    public static boolean IsMSEA() {
+        return GetRegion() == Region.MSEA;
     }
 
     private static boolean job_pirate = true;
@@ -352,6 +366,16 @@ public class ServerConfig {
                 }
                 return true;
             }
+            case MSEA: {
+                if (105 <= GetVersion()) {
+                    is_postBB = true;
+                }
+                return true;
+            }
+            case BMS: {
+                is_postBB = false;
+                return true;
+            }
             default: {
                 break;
             }
@@ -365,7 +389,7 @@ public class ServerConfig {
     public static Charset codepage_utf8;
 
     // Version
-    private static Region region_name = Region.JMS;
+    private static Region region_type = Region.JMS;
     private static byte region_number = 3; // JMS
     public static int version = 186;
     private static byte version_sub = 1;
@@ -375,7 +399,7 @@ public class ServerConfig {
     }
 
     public static Region GetRegion() {
-        return region_name;
+        return region_type;
     }
 
     public static int GetVersion() {
@@ -387,39 +411,54 @@ public class ServerConfig {
     }
 
     public static String GetRegionName() {
-        return "" + region_name;
+        return "" + region_type;
     }
 
-    public static boolean SetRegionNumber(int region_num) {
-        region_number = (byte) region_num;
-
-        switch (region_number) {
-            case 1: {
-                region_name = Region.KMS;
+    public static boolean SetRegion(String region_name) {
+        switch (region_name) {
+            case "KMS": {
+                region_type = Region.KMS;
+                region_number = 1;
                 return true;
             }
-            case 3: {
-                region_name = Region.JMS;
+            case "JMS": {
+                region_type = Region.JMS;
+                region_number = 3;
                 return true;
             }
-            case 4: {
-                region_name = Region.CMS;
+            case "CMS": {
+                region_type = Region.CMS;
+                region_number = 4;
                 return true;
             }
-            case 6: {
-                region_name = Region.TWMS;
+            case "TWMS": {
+                region_type = Region.TWMS;
+                region_number = 6;
                 return true;
             }
-            case 7: {
-                region_name = Region.THMS;
+            case "MSEA": {
+                region_type = Region.MSEA;
+                region_number = 7;
                 return true;
             }
-            case 8: {
-                region_name = Region.GMS;
+            case "GMS": {
+                region_type = Region.GMS;
+                region_number = 8;
                 return true;
             }
-            case 9: {
-                region_name = Region.EMS;
+            case "EMS": {
+                region_type = Region.EMS;
+                region_number = 9;
+                return true;
+            }
+            case "BMS": {
+                region_type = Region.BMS;
+                region_number = 9;
+                return true;
+            }
+            case "THMS": {
+                region_type = Region.THMS;
+                region_number = 7;
                 return true;
             }
             default: {
@@ -427,7 +466,7 @@ public class ServerConfig {
             }
         }
 
-        region_name = Region.unk;
+        region_type = Region.unk;
         return false;
     }
 
