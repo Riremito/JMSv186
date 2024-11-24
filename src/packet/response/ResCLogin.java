@@ -291,7 +291,7 @@ public class ResCLogin {
     // getAuthSuccessRequest, getLoginFailed
     public static final MaplePacket CheckPasswordResult(MapleClient client, LoginResult result) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CheckPasswordResult);
-        sp.Encode1(result.Get());
+        sp.Encode1(result.Get()); // result
         /*
         v186 Message Flag
         00 : OK
@@ -308,26 +308,35 @@ public class ResCLogin {
                     sp.EncodeBuffer(Success_Login_CMS(client));
                     break;
                 }
-                if (!ServerConfig.IsKMS()) {
+                if (ServerConfig.IsJMS()) {
                     sp.Encode1(0); // OK
                 }
-                sp.Encode4(client.getAccID());
-                sp.Encode1(client.getGender()); // 性別
-                sp.Encode1(client.isGm() ? 1 : 0);
+                if (ServerConfig.IsBMS()) {
+                    sp.Encode1(0); // m_nRegStatID
+                    sp.Encode4(0); // m_nUseDay
+                }
+                sp.Encode4(client.getAccID()); // m_dwAccountId
+                sp.Encode1(client.getGender()); // m_nGender
+                sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
                 if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
                     sp.Encode1(client.isGm() ? 1 : 0);
                 }
-                sp.EncodeStr(client.getAccountName());
+                if (ServerConfig.IsBMS()) {
+                    sp.Encode1(0); // m_nCountryID
+                }
+                sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
                 if (ServerConfig.IsKMS()) {
                     sp.Encode4(3); // should be 3 for KMS v2.114 to ignore personal number
-                } else {
+                }
+                if (ServerConfig.IsJMS()) {
                     sp.EncodeStr(client.getAccountName());
                 }
-
-                sp.Encode1(ServerConfig.IsKMS() ? 1 : 0); // should be 1 for KMS v2.114 to ignore personal number
-                sp.Encode1(0);
-                sp.Encode1(0);
-                if (!ServerConfig.IsKMS()) {
+                if (ServerConfig.IsJMS() || ServerConfig.IsKMS()) {
+                    sp.Encode1(ServerConfig.IsKMS() ? 1 : 0); // should be 1 for KMS v2.114 to ignore personal number
+                }
+                sp.Encode1(0); // m_nPurchaseExp
+                sp.Encode1(0); // m_nChatBlockReason
+                if (ServerConfig.IsJMS()) {
                     sp.Encode1(0);
                 }
                 if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
@@ -349,8 +358,15 @@ public class ResCLogin {
                     // 1, 通常
                     sp.Encode1(1);
                 }
-                sp.Encode8(0); // buf
-                sp.EncodeStr(""); // v131: available name for new character, later version does not use this string
+                sp.Encode8(0); // m_dtChatUnblockDate
+                if (ServerConfig.IsBMS()) {
+                    sp.Encode8(0); // m_dtRegisterDate
+                    sp.Encode1(0);
+                    sp.Encode1(0);
+                }
+                if (ServerConfig.IsJMS() || ServerConfig.IsKMS()) {
+                    sp.EncodeStr(""); // v131: available name for new character, later version does not use this string
+                }
                 break;
             }
             case BLOCKED_MAPLEID_WITH_MESSAGE: {
@@ -359,6 +375,9 @@ public class ResCLogin {
             }
             default: {
                 sp.Encode1(0); // no blue message
+                if (ServerConfig.IsBMS()) {
+                    sp.Encode4(0);
+                }
                 break;
             }
         }
@@ -459,6 +478,11 @@ public class ResCLogin {
         sp.Encode2(100);
         // ドロップ倍率?
         sp.Encode2(100);
+
+        if (ServerConfig.IsBMS()) {
+            sp.Encode1(0);
+        }
+
         // チャンネル数
         sp.Encode1(internalserver ? ChannelServer.getChannels() : externalch);
         if (ServerConfig.IsCMS()) {

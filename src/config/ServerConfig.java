@@ -11,6 +11,7 @@ import packet.ServerPacket;
 public class ServerConfig {
 
     private static boolean packet_encryption = true;
+    private static boolean packet_custom_encryption = false;
 
     public static void SetPacketEncryption(boolean encryption_flag) {
         packet_encryption = encryption_flag;
@@ -18,6 +19,10 @@ public class ServerConfig {
 
     public static boolean PacketEncryptionEnabled() {
         return packet_encryption;
+    }
+
+    public static boolean CustomEncryptionEnabled() {
+        return packet_custom_encryption;
     }
 
     public enum Region {
@@ -429,6 +434,7 @@ public class ServerConfig {
             case "CMS": {
                 region_type = Region.CMS;
                 region_number = 4;
+                packet_custom_encryption = true;
                 return true;
             }
             case "TWMS": {
@@ -449,16 +455,19 @@ public class ServerConfig {
             case "EMS": {
                 region_type = Region.EMS;
                 region_number = 9;
+                packet_custom_encryption = true;
                 return true;
             }
             case "BMS": {
                 region_type = Region.BMS;
                 region_number = 9;
+                packet_custom_encryption = true;
                 return true;
             }
             case "THMS": {
                 region_type = Region.THMS;
                 region_number = 7;
+                packet_custom_encryption = true;
                 return true;
             }
             default: {

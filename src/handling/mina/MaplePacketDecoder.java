@@ -74,7 +74,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
                 } else {
                     client.getReceiveCrypto().crypt(decryptedPacket);
                 }
-                if (ServerConfig.IsCMS() || ServerConfig.IsTHMS() || ServerConfig.IsEMS() || ServerConfig.IsBMS()) {
+                if (ServerConfig.CustomEncryptionEnabled()) {
                     MapleCustomEncryption.decryptData(decryptedPacket);
                 }
             }
