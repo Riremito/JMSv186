@@ -318,7 +318,7 @@ public class ResCLogin {
                 sp.Encode4(client.getAccID()); // m_dwAccountId
                 sp.Encode1(client.getGender()); // m_nGender
                 sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
-                if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
+                if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
                     sp.Encode1(client.isGm() ? 1 : 0);
                 }
                 if (ServerConfig.IsBMS()) {
@@ -361,11 +361,14 @@ public class ResCLogin {
                 sp.Encode8(0); // m_dtChatUnblockDate
                 if (ServerConfig.IsBMS()) {
                     sp.Encode8(0); // m_dtRegisterDate
-                    sp.Encode1(0);
+                    sp.Encode1(1);
                     sp.Encode1(0);
                 }
-                if (ServerConfig.IsJMS() || ServerConfig.IsKMS()) {
+                if (ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
                     sp.EncodeStr(""); // v131: available name for new character, later version does not use this string
+                }
+                if (ServerConfig.IsEMS()) {
+                    sp.Encode4(0);
                 }
                 break;
             }
@@ -580,12 +583,15 @@ public class ResCLogin {
             sp.Encode4(chr.getJobRankMove());
         }
 
-        if (ServerConfig.IsKMS()) {
+        if (ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
             sp.Encode1(2);
             sp.Encode1(0);
             sp.Encode4(charslots);
             if (ServerConfig.IsPostBB()) {
                 sp.Encode4(0);
+            }
+            if (ServerConfig.IsEMS()) {
+                sp.Encode8(0);
             }
             return sp.Get();
         }
