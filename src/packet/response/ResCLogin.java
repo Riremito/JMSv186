@@ -573,8 +573,8 @@ public class ResCLogin {
             //Structure.CharEntry(p, chr, true, false);
             sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(AvatarLook.Encode(chr));
-            if ((ServerConfig.IsJMS() && 165 < ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
-                sp.Encode1(0);
+            if ((ServerConfig.IsJMS() && 165 < ServerConfig.GetVersion()) || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
+                sp.Encode1(0); // family
             }
             sp.Encode1(1); // ranking
             sp.Encode4(chr.getRank()); // all world ranking
@@ -586,9 +586,9 @@ public class ResCLogin {
         if (ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
             sp.Encode1(2);
             sp.Encode1(0);
-            sp.Encode4(charslots);
+            sp.Encode4(charslots); // m_nSlotCount
             if (ServerConfig.IsPostBB()) {
-                sp.Encode4(0);
+                sp.Encode4(0); // m_nBuyCharCount
             }
             if (ServerConfig.IsEMS()) {
                 sp.Encode8(0);

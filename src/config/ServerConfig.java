@@ -70,6 +70,7 @@ public class ServerConfig {
         return GetRegion() == Region.MSEA;
     }
 
+    private static int character_name_size = 13;
     private static boolean job_pirate = true;
     private static boolean job_KOC = true;
     private static boolean job_Aran = true;
@@ -77,6 +78,10 @@ public class ServerConfig {
     private static boolean job_DB = true;
     private static boolean job_Resistance = true;
     private static boolean is_postBB = false;
+
+    public static int GetCharacterNameSize() {
+        return character_name_size;
+    }
 
     public static boolean IsPostBB() {
         return is_postBB;
@@ -424,22 +429,26 @@ public class ServerConfig {
             case "KMS": {
                 region_type = Region.KMS;
                 region_number = 1;
+                character_name_size = 13;
                 return true;
             }
             case "JMS": {
                 region_type = Region.JMS;
                 region_number = 3;
+                character_name_size = 13;
                 return true;
             }
             case "CMS": {
                 region_type = Region.CMS;
                 region_number = 4;
                 packet_custom_encryption = true;
+                character_name_size = 13;
                 return true;
             }
             case "TWMS": {
                 region_type = Region.TWMS;
                 region_number = 6;
+                character_name_size = 15;
                 return true;
             }
             case "MSEA": {
@@ -450,12 +459,14 @@ public class ServerConfig {
             case "GMS": {
                 region_type = Region.GMS;
                 region_number = 8;
+                character_name_size = 15;
                 return true;
             }
             case "EMS": {
                 region_type = Region.EMS;
                 region_number = 9;
                 packet_custom_encryption = true;
+                character_name_size = 13;
                 return true;
             }
             case "BMS": {

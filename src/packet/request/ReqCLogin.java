@@ -236,7 +236,7 @@ public class ReqCLogin {
     }
 
     public static final void CreateChar(ClientPacket cp, final MapleClient c) {
-        final String name = new String(cp.DecodeBuffer());
+        final String name = cp.DecodeStr();
         // very old ver, please merge it
         if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) {
             final int face = cp.Decode4();
@@ -288,7 +288,7 @@ public class ReqCLogin {
         }
         final int JobType = cp.Decode4();
         short db = 0;
-        if ((ServerConfig.IsJMS() && 176 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
+        if ((ServerConfig.IsJMS() && 176 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
             db = cp.Decode2();
         }
         if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
@@ -302,8 +302,14 @@ public class ReqCLogin {
         }
         final int face = cp.Decode4();
         final int hair = cp.Decode4();
-        final int hairColor = 0;
-        final byte skinColor = (byte) 0;
+        int hairColor = 0;
+        int skinColor = 0;
+
+        if (ServerConfig.IsEMS()) {
+            hairColor = cp.Decode4();
+            skinColor = cp.Decode4();
+        }
+
         final int top = cp.Decode4();
         final int bottom = cp.Decode4();
         final int shoes = cp.Decode4();
@@ -320,7 +326,7 @@ public class ReqCLogin {
         newchar.setHair(hair + hairColor);
         newchar.setGender(gender);
         newchar.setName(name);
-        newchar.setSkinColor(skinColor);
+        newchar.setSkinColor((byte) skinColor);
         MapleInventory equip = newchar.getInventory(MapleInventoryType.EQUIPPED);
         final MapleItemInformationProvider li = MapleItemInformationProvider.getInstance();
         IItem item = li.getEquipById(top);

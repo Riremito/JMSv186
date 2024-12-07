@@ -116,7 +116,7 @@ public class GW_CharacterStat {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(chr.getId());
-        data.EncodeBuffer(chr.getName(), (ServerConfig.IsKMS() || ServerConfig.IsJMS() || ServerConfig.IsCMS()) ? 13 : 15);
+        data.EncodeBuffer(chr.getName(), ServerConfig.GetCharacterNameSize());
         data.Encode1(chr.getGender());
         data.Encode1(chr.getSkinColor());
         data.Encode4(chr.getFace());
@@ -126,6 +126,8 @@ public class GW_CharacterStat {
             data.EncodeZeroBytes(8);
         } else if ((ServerConfig.IsPostBB() && ServerConfig.IsKMS())) {
             // no data
+        } else if (ServerConfig.IsEMS()) {
+
         } else {
             data.EncodeZeroBytes(24);
         }
@@ -157,7 +159,7 @@ public class GW_CharacterStat {
         data.Encode2(chr.getRemainingAp());
 
         // SP
-        if (((ServerConfig.IsJMS() && 180 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) && (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob()))) {
+        if (((ServerConfig.IsJMS() && 180 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS()) && (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob()))) {
             final int size = chr.getRemainingSpSize();
             data.Encode1(size);
             for (int i = 0; i < chr.getRemainingSps().length; i++) {
@@ -217,19 +219,19 @@ public class GW_CharacterStat {
 
         if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()
                 || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
+                || ServerConfig.IsCMS()
+                || ServerConfig.IsEMS()) {
             data.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 
-        if (ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
+        if (ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS()) {
             data.Encode8(0);
         }
 
         data.Encode4(chr.getMapId()); // current map id
         data.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
 
-        if (ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
+        if (ServerConfig.IsCMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
             data.Encode2(chr.getSubcategory());
         } else if (ServerConfig.IsTWMS()) {
             data.Encode2(chr.getSubcategory());
