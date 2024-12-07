@@ -58,7 +58,8 @@ public class CharacterData {
         if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
                 || ServerConfig.IsTWMS()
                 || ServerConfig.IsCMS()
-                || ServerConfig.IsKMS()) {
+                || ServerConfig.IsKMS()
+                || ServerConfig.IsEMS()) {
             data.Encode1(0); // nCombatOrders
         }
 
@@ -77,7 +78,8 @@ public class CharacterData {
             if ((ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion())
                     || ServerConfig.IsTWMS()
                     || ServerConfig.IsCMS()
-                    || ServerConfig.IsKMS()) {
+                    || ServerConfig.IsKMS()
+                    || ServerConfig.IsEMS()) {
                 if (chr.getBlessOfFairyOrigin() != null) {
                     data.Encode1(1);
                     data.EncodeStr(chr.getBlessOfFairyOrigin());
@@ -87,7 +89,8 @@ public class CharacterData {
             }
 
             // 祝福系統
-            if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
+            if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())
+                    || ServerConfig.IsEMS()) {
                 // 女王の祝福 max 24
                 data.Encode1(0); // not 0, EncodeStr
                 // ???
@@ -212,6 +215,24 @@ public class CharacterData {
                 }
                 break;
             }
+            case EMS: {
+                if ((datamask & 0x40000) > 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                }
+                if ((datamask & 0x1000000) > 0) {
+                    data.Encode2(0); // unknown
+                }
+                if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
+                    data.EncodeBuffer(GW_WildHunterInfo.Encode());
+                }
+                if ((datamask & 0x400000) > 0) {
+                    data.Encode2(0);
+                }
+                if ((datamask & 0x800000) > 0) {
+                    data.Encode2(0);
+                }
+                break;
+            }
             case JMS:
             default: {
                 // 0x7C JMS, Present v165-v194
@@ -295,7 +316,8 @@ public class CharacterData {
         if (ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion()
                 || ServerConfig.IsTWMS()
                 || ServerConfig.IsCMS()
-                || ServerConfig.IsKMS()) {
+                || ServerConfig.IsKMS()
+                || ServerConfig.IsEMS()) {
             // 0x100000
             if ((datamask & 0x100000) > 0) {
                 data.Encode4(0);
@@ -340,7 +362,8 @@ public class CharacterData {
             if (ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()
                     || ServerConfig.IsTWMS()
                     || ServerConfig.IsCMS()
-                    || ServerConfig.IsKMS()) {
+                    || ServerConfig.IsKMS()
+                    || ServerConfig.IsEMS()) {
                 for (Item item : equipped) {
                     if (item.getPosition() <= -1000 && item.getPosition() > -1100) {
                         data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
@@ -394,7 +417,8 @@ public class CharacterData {
             data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Cash));
         }
         // 不明
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
+        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())
+                || ServerConfig.IsEMS()) {
             // func 004FB8B0
             data.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
         }

@@ -51,19 +51,19 @@ public class ResCStage {
         if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
             sp.Encode4(0);
         }
-        if ((ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
+        if ((ServerConfig.IsKMS() && ServerConfig.IsPostBB()) || ServerConfig.IsEMS()) {
             sp.Encode4(0);
         }
 
         sp.Encode1(chr.getPortalCount());
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
+        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB()) || ServerConfig.IsEMS()) {
             sp.Encode4(0);
         }
         if (ServerConfig.IsCMS()) {
             sp.Encode1(0);
         }
         sp.Encode1(loggedin ? 1 : 0); // 1 = all data, 0 = map change
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
+        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
             sp.Encode2(0);
         }
         if (loggedin) {
@@ -93,9 +93,11 @@ public class ResCStage {
         }
         // サーバーの時間?
         sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
+        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())
+                || ServerConfig.IsEMS()) {
             sp.Encode4(0);
-            if (!ServerConfig.IsKMS()) {
+            if (!ServerConfig.IsKMS()
+                    && !ServerConfig.IsEMS()) {
                 sp.Encode4(100); // nMobStatAdjustRate
             }
         }

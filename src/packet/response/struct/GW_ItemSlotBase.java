@@ -157,7 +157,8 @@ public class GW_ItemSlotBase {
                 if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
                         || ServerConfig.IsTWMS()
                         || ServerConfig.IsCMS()
-                        || ServerConfig.IsKMS()) {
+                        || ServerConfig.IsKMS()
+                        || ServerConfig.IsEMS()) {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
 
@@ -168,7 +169,8 @@ public class GW_ItemSlotBase {
                     if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
                             || ServerConfig.IsTWMS()
                             || ServerConfig.IsCMS()
-                            || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
+                            || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())
+                            || ServerConfig.IsEMS()) {
                         if (ServerConfig.game_server_enable_hammer) {
                             data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
                         } else {
@@ -179,7 +181,8 @@ public class GW_ItemSlotBase {
                     if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
                             || ServerConfig.IsTWMS()
                             || ServerConfig.IsCMS()
-                            || ServerConfig.IsKMS()) {
+                            || ServerConfig.IsKMS()
+                            || ServerConfig.IsEMS()) {
                         if (!(ServerConfig.IsKMS() && ServerConfig.GetVersion() == 95)) {
                             data.Encode1(equip.getState()); // option._ZtlSecureTear_nGrade
                         }

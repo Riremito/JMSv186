@@ -50,7 +50,8 @@ public class Structure {
             if (ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()
                     || ServerConfig.IsTWMS()
                     || ServerConfig.IsCMS()
-                    || ServerConfig.IsKMS()) {
+                    || ServerConfig.IsKMS()
+                    || ServerConfig.IsEMS()) {
                 data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
             }
 
@@ -155,7 +156,14 @@ public class Structure {
             data.Encode4(map[i]);
         }
 
-        if ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
+        if ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())
+                || ServerConfig.IsEMS()) {
+            for (int i = 0; i < 13; i++) {
+                data.Encode4(999999999);
+            }
+        }
+
+        if (ServerConfig.IsEMS()) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }
