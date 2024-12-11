@@ -88,19 +88,14 @@ public class ResScriptMan {
         sp.Encode4(npcid); // nSpeakerTemplateID, npcid
         sp.Encode1(flag.get()); // nMsgType
 
-        if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()
-                || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS180orLater()) {
             sp.Encode1(param); // v186+, not used
         }
 
         switch (flag) {
             case SM_SAY: {
-                if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
-                        || ServerConfig.IsTWMS()
-                        || ServerConfig.IsCMS()
-                        || ServerConfig.IsKMS()) {
+                if (ServerConfig.JMS186orLater()
+                        || ServerConfig.KMS95orLater()) {
                     if ((param & 4) > 0) {
                         sp.Encode4(0); // nSpeakerTemplateID
                     }

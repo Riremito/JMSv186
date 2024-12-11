@@ -40,30 +40,36 @@ public class ResCStage {
     // CStage::OnSetField
     public static final MaplePacket SetField(MapleCharacter chr, boolean loggedin, MapleMap to, int spawnPoint) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetField);
-        if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion()) || ServerConfig.IsCMS()) {
+        // JMS184orLater
+        if ((ServerConfig.IsJMS() || ServerConfig.IsCMS())
+                && ServerConfig.JMS186orLater()) {
             sp.EncodeBuffer(CClientOptMan.EncodeOpt()); // 2 bytes
         }
         // チャンネル
         sp.Encode4(chr.getClient().getChannel() - 1);
-        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.IsJMS() && ServerConfig.JMS164orLater()) {
             sp.Encode1(0);
         }
-        if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
+
+        if ((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS())
+                && ServerConfig.JMS180orLater()) {
             sp.Encode4(0);
         }
-        if ((ServerConfig.IsKMS() && ServerConfig.IsPostBB()) || ServerConfig.IsEMS()) {
+
+        if (ServerConfig.IsKMS() && ServerConfig.IsPostBB()) {
             sp.Encode4(0);
         }
 
         sp.Encode1(chr.getPortalCount());
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB()) || ServerConfig.IsEMS()) {
+        if (ServerConfig.JMS194orLater()
+                || ServerConfig.IsEMS()) {
             sp.Encode4(0);
         }
         if (ServerConfig.IsCMS()) {
             sp.Encode1(0);
         }
         sp.Encode1(loggedin ? 1 : 0); // 1 = all data, 0 = map change
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
+        if (ServerConfig.JMS164orLater()) {
             sp.Encode2(0);
         }
         if (loggedin) {
@@ -75,29 +81,39 @@ public class ResCStage {
             }
             // キャラクター情報
             sp.EncodeBuffer(CharacterData.Encode(chr));
-            if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS()) {
+            // JMS184orLater
+            if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTWMS())
+                    && ServerConfig.JMS186orLater()) {
                 // ログアウトギフト
                 sp.EncodeBuffer(CWvsContext.LogoutGiftConfig());
             }
         } else {
-            if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
+            if (ServerConfig.JMS180orLater()) {
                 sp.Encode1(0);
             }
-            sp.Encode4(to.getId());
-            sp.Encode1(spawnPoint);
+            sp.Encode4(to.getId()); // characterStat._ZtlSecureTear_dwPosMap_CS
+            sp.Encode1(spawnPoint); // characterStat.nPortal
             if (ServerConfig.IsPreBB()) {
                 sp.Encode2(chr.getStat().getHp());
             } else {
                 sp.Encode4(chr.getStat().getHp());
             }
+
+            if (ServerConfig.IsEMS()) {
+                boolean m_bChaseEnable = false;
+                sp.Encode1(m_bChaseEnable ? 1 : 0); // m_bChaseEnable
+                if (m_bChaseEnable) {
+                    sp.Encode4(0); // m_nTargetPosition_X
+                    sp.Encode4(0); // m_nTargetPosition_Y
+                }
+            }
         }
         // サーバーの時間?
         sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())
+        if (ServerConfig.JMS194orLater()
                 || ServerConfig.IsEMS()) {
             sp.Encode4(0);
-            if (!ServerConfig.IsKMS()
-                    && !ServerConfig.IsEMS()) {
+            if (ServerConfig.IsJMS()) {
                 sp.Encode4(100); // nMobStatAdjustRate
             }
         }

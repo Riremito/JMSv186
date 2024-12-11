@@ -318,7 +318,7 @@ public class ResCLogin {
                 sp.Encode4(client.getAccID()); // m_dwAccountId
                 sp.Encode1(client.getGender()); // m_nGender
                 sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
-                if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
+                if (ServerConfig.JMS164orLater()) {
                     sp.Encode1(client.isGm() ? 1 : 0);
                 }
                 if (ServerConfig.IsBMS()) {
@@ -339,21 +339,23 @@ public class ResCLogin {
                 if (ServerConfig.IsJMS()) {
                     sp.Encode1(0);
                 }
-                if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
+                if (ServerConfig.IsJMS() && ServerConfig.JMS164orLater()) {
                     sp.Encode1(0);
                 }
-                if (ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()) {
+                if (ServerConfig.IsJMS() && ServerConfig.JMS180orLater()) {
                     sp.Encode1(0);
                 }
                 // 2次パスワード
-                if (ServerConfig.IsPostBB() && ServerConfig.IsJMS()) {
+                if (ServerConfig.IsJMS()
+                        && ServerConfig.IsPostBB()) {
                     // -1, 無視
                     // 0, 初期化
                     // 1, 登録済み
                     sp.Encode1(-1);
                 }
                 // 旧かんたん会員
-                if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
+                if (ServerConfig.IsJMS()
+                        && ServerConfig.JMS302orLater()) {
                     // 0, 旧かんたん会員
                     // 1, 通常
                     sp.Encode1(1);
@@ -573,7 +575,8 @@ public class ResCLogin {
             //Structure.CharEntry(p, chr, true, false);
             sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(AvatarLook.Encode(chr));
-            if ((ServerConfig.IsJMS() && 165 < ServerConfig.GetVersion()) || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
+            if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS())
+                    && ServerConfig.JMS180orLater()) {
                 sp.Encode1(0); // family
             }
             sp.Encode1(1); // ranking
@@ -596,7 +599,7 @@ public class ResCLogin {
             return sp.Get();
         }
 
-        if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS302orLater()) {
             sp.Encode1(2); // 2次パス無視
             sp.Encode4(charslots);
             sp.Encode4(0);
@@ -605,35 +608,35 @@ public class ResCLogin {
             return sp.Get();
         }
         // BIGBANG
-        if (ServerConfig.GetVersion() == 187) {
+        if (ServerConfig.IsJMS()
+                && ServerConfig.GetVersion() == 187) {
             sp.Encode1(2); // 2次パス無視
             sp.Encode1(0);
             sp.Encode4(charslots);
             sp.Encode4(0); // Character Cards
             return sp.Get();
         }
-        if (ServerConfig.GetVersion() <= 131) {
+        if (ServerConfig.JMS131orEarlier()) {
             sp.Encode1(3); // charslots
             sp.Encode1(0);
             return sp.Get();
         }
         // 2次パスワードの利用状態
-        if (ServerConfig.GetVersion() <= 186) {
-            sp.Encode2(2);
-        } else {
+        if (ServerConfig.IsPostBB()) {
             sp.Encode1(0);
+        } else {
+            sp.Encode2(2);
         }
-        if (194 <= ServerConfig.GetVersion()) {
+
+        if (ServerConfig.JMS194orLater()) {
             sp.Encode4(charslots);
             sp.Encode4(0); // Character Card
             sp.Encode4(0); // idk
             return sp.Get();
         }
-        if (ServerConfig.GetVersion() >= 190) {
-            sp.Encode4(0);
-            sp.Encode4(0);
-            sp.Encode4(charslots);
-        } else if (ServerConfig.GetVersion() <= 176) {
+
+        if (ServerConfig.IsJMS()
+                && ServerConfig.GetVersion() <= 176) {
             sp.Encode4(charslots);
         } else {
             sp.Encode8(charslots);

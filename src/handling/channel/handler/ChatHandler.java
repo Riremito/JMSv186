@@ -39,18 +39,13 @@ public class ChatHandler {
         MapleCharacter chr = c.getPlayer();
         byte unk = 0;
 
-        if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()
-                || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS180orLater()) {
             cp.Decode4();
         }
 
         String text = cp.DecodeStr();
 
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
+        if (ServerConfig.JMS164orLater()) {
             unk = cp.Decode1();
         }
 

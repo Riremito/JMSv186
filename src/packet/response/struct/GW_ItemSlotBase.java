@@ -53,7 +53,7 @@ public class GW_ItemSlotBase {
             }
         }
 
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
+        if (ServerConfig.JMS165orEarlier()) {
             data.Encode1(pos);
         } else {
             // v186+
@@ -69,7 +69,7 @@ public class GW_ItemSlotBase {
     public static final byte[] EncodeSlotEnd(ItemType it) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
+        if (ServerConfig.JMS165orEarlier()) {
             data.Encode1(0);
         } else {
             // v186+
@@ -154,11 +154,7 @@ public class GW_ItemSlotBase {
                 data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
 
                 // 耐久度
-                if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
-                        || ServerConfig.IsTWMS()
-                        || ServerConfig.IsCMS()
-                        || ServerConfig.IsKMS()
-                        || ServerConfig.IsEMS()) {
+                if (ServerConfig.JMS180orLater()) {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
 
@@ -278,7 +274,8 @@ public class GW_ItemSlotBase {
 
         data.Encode8(-1); // time?
 
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 188) && ServerConfig.IsPostBB()) {
+        if (ServerConfig.JMS194orLater()
+                || ServerConfig.IsEMS()) {
             data.Encode4(0);
         }
 

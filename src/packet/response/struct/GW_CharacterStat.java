@@ -122,13 +122,9 @@ public class GW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) || (ServerConfig.IsPreBB() && ServerConfig.IsKMS())) {
+        if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier()) {
             data.EncodeZeroBytes(8);
-        } else if ((ServerConfig.IsPostBB() && ServerConfig.IsKMS())) {
-            // no data
-        } else if (ServerConfig.IsEMS()) {
-
-        } else {
+        } else if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTWMS())) {
             data.EncodeZeroBytes(24);
         }
 
@@ -159,7 +155,7 @@ public class GW_CharacterStat {
         data.Encode2(chr.getRemainingAp());
 
         // SP
-        if (((ServerConfig.IsJMS() && 180 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS()) && (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob()))) {
+        if (ServerConfig.JMS186orLater() && (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob()))) {
             final int size = chr.getRemainingSpSize();
             data.Encode1(size);
             for (int i = 0; i < chr.getRemainingSps().length; i++) {
@@ -217,10 +213,8 @@ public class GW_CharacterStat {
         data.Encode4(chr.getExp());
         data.Encode2(chr.getFame());
 
-        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()
-                || ServerConfig.IsEMS()) {
+        if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTWMS() || ServerConfig.IsEMS())
+                && ServerConfig.JMS164orLater()) {
             data.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 

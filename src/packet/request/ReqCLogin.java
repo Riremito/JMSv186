@@ -288,10 +288,10 @@ public class ReqCLogin {
         }
         final int JobType = cp.Decode4();
         short db = 0;
-        if ((ServerConfig.IsJMS() && 176 < ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
+        if (ServerConfig.JMS180orLater()) {
             db = cp.Decode2();
         }
-        if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS302orLater()) {
             cp.Decode1(); // 01
             cp.Decode1(); // 00
             cp.Decode1(); // 07

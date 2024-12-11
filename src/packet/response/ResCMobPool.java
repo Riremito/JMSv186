@@ -42,7 +42,8 @@ public class ResCMobPool {
     public static MaplePacket moveMonster(boolean useskill, int skill, int skill1, int skill2, int skill3, int skill4, int oid, CMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobMove);
         sp.Encode4(oid);
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS186orLater()
+                || ServerConfig.KMS95orLater()) {
             sp.Encode1(0); // bNotForceLandingWhenDiscard
             sp.Encode1(0); // bNotChangeAction
         }
@@ -55,7 +56,8 @@ public class ResCMobPool {
             sp.Encode1(skill3); // effectDelay
             sp.Encode1(skill4); // effectDelay
         }
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS186orLater()
+                || ServerConfig.KMS95orLater()) {
             sp.Encode4(0); //  if this is not 0, Encode4 x2 x loop count
             sp.Encode4(0); //  if this is not 0, Encode4 x loop count
         }
@@ -167,7 +169,8 @@ public class ResCMobPool {
         sp.Encode2(m.getMp());
         sp.Encode1(skillId);
         sp.Encode1(skillLevel);
-        if (ServerConfig.IsPostBB() && ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()))) {
+        if (ServerConfig.JMS194orLater()
+                || ServerConfig.KMS95orLater()) {
             sp.Encode4(0);
         }
         return sp.Get();
@@ -226,10 +229,10 @@ public class ResCMobPool {
             sp.Encode4(link); // dwOption
         }
         sp.Encode1(life.getCarnivalTeam()); // m_nTeamForMCarnival
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS164orLater()) {
             sp.Encode4(0); // nEffectItemID
         }
-        if ((ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS165orLater()) {
             sp.Encode4(0); // m_nPhase
         }
         return sp.Get();
@@ -289,7 +292,7 @@ public class ResCMobPool {
         sp.Encode2(life.getOriginFh()); // Origin FH
         sp.Encode1(life.isFake() ? -4 : newSpawn ? -2 : -1);
         sp.Encode1(life.getCarnivalTeam());
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS164orLater()) {
             sp.Encode4(0);
             sp.Encode4(0);
         }

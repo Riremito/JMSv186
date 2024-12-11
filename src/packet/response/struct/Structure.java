@@ -47,11 +47,7 @@ public class Structure {
             data.Encode4(skill.getValue().skillevel);
 
             // not in v165
-            if (ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()
-                    || ServerConfig.IsTWMS()
-                    || ServerConfig.IsCMS()
-                    || ServerConfig.IsKMS()
-                    || ServerConfig.IsEMS()) {
+            if (ServerConfig.JMS180orLater()) {
                 data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
             }
 
@@ -156,7 +152,7 @@ public class Structure {
             data.Encode4(map[i]);
         }
 
-        if ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())
+        if (ServerConfig.JMS194orLater()
                 || ServerConfig.IsEMS()) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);

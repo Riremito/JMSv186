@@ -91,25 +91,12 @@ public class ServerConfig {
         return !IsPostBB();
     }
 
-    // around Pirate update
-    public static boolean JMSv131orEarlier() {
-        switch (GetRegion()) {
-            case JMS: {
-                // not checked v132 to v163
-                if (GetVersion() < 164) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
     // only 5 jobs
-    public static boolean JMSv164orLater() {
+    public static boolean JMS164orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
         switch (GetRegion()) {
             case JMS: {
                 if (164 <= GetVersion()) {
@@ -118,73 +105,9 @@ public class ServerConfig {
                 return false;
             }
             case KMS: {
-                if (65 <= GetVersion()) {
+                if (95 <= GetVersion()) {
                     return true;
                 }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return true;
-    }
-
-    // Knights of Cygnus update
-    public static boolean JMSv165orEarlier() {
-        switch (GetRegion()) {
-            case JMS: {
-                if (GetVersion() <= 165) {
-                    return true;
-                }
-                return false;
-            }
-            case KMS: {
-                if (GetVersion() <= 65) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    // Knights of Cygnus update
-    public static boolean JMSv165orLater() {
-        switch (GetRegion()) {
-            case JMS: {
-                if (164 <= GetVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            case KMS: {
-                if (65 <= GetVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return true;
-    }
-
-    // stable pre bb
-    public static boolean JMSv180orLater() {
-
-        switch (GetRegion()) {
-            case JMS: {
-                if (180 <= GetVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            case KMS: {
                 return false;
             }
             case CMS: {
@@ -217,6 +140,130 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case MSEA: {
+                if (102 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Knights of Cygnus update
+    public static boolean JMS165orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (165 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case KMS: {
+                if (95 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case CMS: {
+                if (85 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case TWMS: {
+                if (122 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case THMS: {
+                if (87 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case GMS: {
+                if (92 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case EMS: {
+                if (72 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case MSEA: {
+                if (102 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // stable pre bb
+    public static boolean JMS180orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (180 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case KMS: {
+                if (95 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case CMS: {
+                if (85 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case TWMS: {
+                if (122 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case THMS: {
+                if (87 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case GMS: {
+                if (92 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case EMS: {
+                if (72 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case MSEA: {
+                if (102 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
             default: {
                 break;
             }
@@ -224,50 +271,8 @@ public class ServerConfig {
         return true;
     }
 
-    // test version of potential system
-    public static boolean PrePotentialSystem() {
-        switch (GetRegion()) {
-            case JMS: {
-                if (184 <= GetVersion() && GetVersion() <= 185) {
-                    return true;
-                }
-                return false;
-            }
-            case KMS: {
-                if (95 == GetVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    // test
-    public static boolean IsKMSv95orLater() {
-        if (IsPostBB()) {
-            return true;
-        }
-
-        switch (GetRegion()) {
-            case KMS: {
-                if (95 <= GetVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
     // pre bb with potential
-    public static boolean JMSv186orLater() {
+    public static boolean JMS186orLater() {
         if (IsPostBB()) {
             return true;
         }
@@ -275,6 +280,48 @@ public class ServerConfig {
         switch (GetRegion()) {
             case JMS: {
                 if (186 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case KMS: {
+                if (100 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case CMS: {
+                if (85 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case TWMS: {
+                if (122 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case THMS: {
+                if (87 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case GMS: {
+                if (92 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case EMS: {
+                if (72 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case MSEA: {
+                if (102 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -287,7 +334,7 @@ public class ServerConfig {
     }
 
     // near Chaos update
-    public static boolean JMSv194orLater() {
+    public static boolean JMS194orLater() {
         if (!IsPostBB()) {
             return false;
         }
@@ -313,7 +360,7 @@ public class ServerConfig {
     }
 
     // Sengoku update
-    public static boolean JMSv302orLater() {
+    public static boolean JMS302orLater() {
         if (!IsPostBB()) {
             return false;
         }
@@ -321,6 +368,108 @@ public class ServerConfig {
         switch (GetRegion()) {
             case JMS: {
                 if (302 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // test version of potential system
+    public static boolean IsPrePotentialVersion() {
+        switch (GetRegion()) {
+            case JMS: {
+                if (184 <= GetVersion() && GetVersion() <= 185) {
+                    return true;
+                }
+                return false;
+            }
+            case KMS: {
+                if (95 == GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // test
+    public static boolean KMS95orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case KMS: {
+                if (95 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS95orEarlier() {
+        if (IsPostBB()) {
+            return false;
+        }
+
+        switch (GetRegion()) {
+            case KMS: {
+                if (GetVersion() <= 95) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // around Pirate update
+    public static boolean JMS131orEarlier() {
+        if (IsPostBB()) {
+            return false;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                // not checked v132 to v163
+                if (GetVersion() < 164) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // Knights of Cygnus update
+    public static boolean JMS165orEarlier() {
+        if (IsPostBB()) {
+            return false;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (GetVersion() <= 165) {
                     return true;
                 }
                 return false;

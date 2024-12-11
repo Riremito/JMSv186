@@ -163,7 +163,8 @@ public class ReqCUserPool {
         attack.FieldKey = cp.Decode1();
 
         // DR_Check
-        if (ServerConfig.JMSv180orLater()) {
+        if (ServerConfig.JMS180orLater()
+                && !ServerConfig.IsKMS()) {
             cp.Decode4(); // pDrInfo.dr0
             cp.Decode4(); // pDrInfo.dr1
         }
@@ -171,7 +172,8 @@ public class ReqCUserPool {
         attack.HitKey = cp.Decode1(); // nDamagePerMob | (16 * nCount)
 
         // DR_Check
-        if (ServerConfig.JMSv180orLater()) {
+        if (ServerConfig.JMS180orLater()
+                && !ServerConfig.IsKMS()) {
             cp.Decode4(); // pDrInfo.dr2
             cp.Decode4(); // pDrInfo.dr3
         }
@@ -185,7 +187,8 @@ public class ReqCUserPool {
         }
 
         // v95 1 byte cd->nCombatOrders
-        if (ServerConfig.JMSv180orLater()) {
+        if (ServerConfig.JMS180orLater()
+                && !ServerConfig.IsKMS()) {
             cp.Decode4(); // get_rand of DR_Check
             cp.Decode4(); // Crc32 of DR_Check
             // v95 4 bytes SKILLLEVELDATA::GetCrc
@@ -195,7 +198,7 @@ public class ReqCUserPool {
             cp.Decode1();
         }
 
-        if (ServerConfig.JMSv164orLater()) {
+        if (ServerConfig.JMS164orLater()) {
             cp.Decode4(); // Crc
         }
 
@@ -204,7 +207,7 @@ public class ReqCUserPool {
             attack.tKeyDown = cp.Decode4();
         }
 
-        if (ServerConfig.JMSv194orLater()) {
+        if (ServerConfig.JMS194orLater()) {
             if (attack.AttackHeader == ClientPacket.Header.CP_UserShootAttack) {
                 cp.Decode1();
             }
@@ -212,7 +215,7 @@ public class ReqCUserPool {
 
         attack.BuffKey = cp.Decode1();
 
-        if (ServerConfig.JMSv165orEarlier()) {
+        if (ServerConfig.JMS165orEarlier()) {
             attack.AttackActionKey = cp.Decode1();
         } else {
             attack.AttackActionKey = cp.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15)
@@ -227,7 +230,8 @@ public class ReqCUserPool {
         attack.nAttackSpeed = cp.Decode1();
         attack.tAttackTime = cp.Decode4();
 
-        if (ServerConfig.JMSv186orLater() || ServerConfig.IsKMSv95orLater()) {
+        if (ServerConfig.JMS186orLater()
+                || ServerConfig.KMS95orLater()) {
             cp.Decode4(); // dwID
         }
 
@@ -279,14 +283,14 @@ public class ReqCUserPool {
                 allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
             }
 
-            if (ServerConfig.JMSv164orLater()) {
+            if (ServerConfig.JMS164orLater()) {
                 cp.Decode4(); // CMob::GetCrc(v366->pMob)
             }
 
             attack.allDamage.add(new AttackPair(Integer.valueOf(nTargetID), allDamageNumbers));
         }
 
-        if (!ServerConfig.JMSv165orEarlier()) {
+        if (!ServerConfig.JMS165orEarlier()) {
             if (attack.AttackHeader == ClientPacket.Header.CP_UserShootAttack) {
                 cp.Decode4(); // v292->CUser::CLife::IVecCtrlOwner::vfptr->GetPos?
             }
