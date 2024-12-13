@@ -124,7 +124,7 @@ public class GW_CharacterStat {
 
         if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier()) {
             data.EncodeZeroBytes(8);
-        } else if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTWMS())) {
+        } else if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || (ServerConfig.IsTWMS() && ServerConfig.IsPreBB()))) {
             data.EncodeZeroBytes(24);
         }
 

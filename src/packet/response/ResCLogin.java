@@ -321,9 +321,6 @@ public class ResCLogin {
                 if (ServerConfig.JMS164orLater()) {
                     sp.Encode1(client.isGm() ? 1 : 0);
                 }
-                if (ServerConfig.IsBMS()) {
-                    sp.Encode1(0); // m_nCountryID
-                }
                 sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
                 if (ServerConfig.IsKMS()) {
                     sp.Encode4(3); // should be 3 for KMS v2.114 to ignore personal number

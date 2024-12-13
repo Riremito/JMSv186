@@ -165,26 +165,45 @@ public class CharacterData {
                 break;
             }
             case TWMS: {
-                if ((datamask & 0x20000) > 0) {
-                    data.Encode4(chr.getMonsterBookCover());
-                }
-                if ((datamask & 0x10000) > 0) {
-                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
-                }
-                if ((datamask & 0x40000) > 0) {
-                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                }
-                if ((datamask & 0x80000) > 0) {
-                    data.Encode2(0);
-                }
-                if ((datamask & 0x200000) > 0) {
-                    data.Encode2(0);
-                }
-                if ((datamask & 0x400000) > 0) {
-                    data.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                if (ServerConfig.IsPreBB()) {
+                    if ((datamask & 0x20000) > 0) {
+                        data.Encode4(chr.getMonsterBookCover());
+                    }
+                    if ((datamask & 0x10000) > 0) {
+                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    }
+                    if ((datamask & 0x40000) > 0) {
+                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    }
+                    if ((datamask & 0x80000) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x200000) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x400000) > 0) {
+                        data.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                    }
+                } else {
+                    if ((datamask & 0x40000) > 0) {
+                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    }
+                    if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
+                        data.EncodeBuffer(GW_WildHunterInfo.Encode());
+                    }
+                    if ((datamask & 0x400000) > 0) {
+                        data.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                    }
+                    if ((datamask & 0x800000) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x1000000) > 0) {
+                        data.Encode2(0);
+                    }
                 }
                 break;
             }
+
             case CMS: {
                 if ((datamask & 0x20000) > 0) {
                     data.Encode4(chr.getMonsterBookCover());
