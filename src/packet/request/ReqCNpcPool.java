@@ -168,7 +168,7 @@ public class ReqCNpcPool {
             case BUY_ITEM: {
                 cp.Decode2();
 
-                if (ServerConfig.IsPostBB() && ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+                if (ServerConfig.JMS194orLater()) {
                     cp.Decode1();
                 }
 
@@ -240,13 +240,13 @@ public class ReqCNpcPool {
 
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_OpenShopDlg);
 
-        if (ServerConfig.IsPostBB() && ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS194orLater()) {
             sp.Encode1(0);
         }
 
         sp.Encode4(sid);
 
-        if (ServerConfig.IsPostBB() && ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS194orLater()) {
             // 0 = normal shop, 1 is probably coin shop
             sp.Encode1(0); // if 1, Encode1(size), Encode4, EncodeStr
         }
@@ -256,10 +256,10 @@ public class ReqCNpcPool {
             sp.Encode4(item.getItemId());
             sp.Encode4(item.getPrice());
 
-            if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
+            if (ServerConfig.JMS180orLater() || ServerConfig.KMS95orLater()) {
                 sp.Encode4(item.getReqItem()); // nTokenItemID
                 sp.Encode4(item.getReqItemQ()); // nTokenPrice
-                if (ServerConfig.IsPostBB() || (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
+                if (ServerConfig.JMS186orLater()) {
                     sp.Encode4(0); // nItemPeriod
                 }
                 sp.Encode4(0); // nLevelLimited

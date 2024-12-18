@@ -157,7 +157,7 @@ public class PlayerHandler {
         //System.out.println(slea.toString());
         chr.updateTick(cp.Decode4());
         final byte type = cp.Decode1(); //-4 is mist, -3 and -2 are map damage.
-        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS164orLater()) {
             cp.Decode1(); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
         }
         int damage = cp.Decode4();

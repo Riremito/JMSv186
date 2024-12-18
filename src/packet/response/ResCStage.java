@@ -47,16 +47,13 @@ public class ResCStage {
         }
         // チャンネル
         sp.Encode4(chr.getClient().getChannel() - 1);
-        if (ServerConfig.IsJMS() && ServerConfig.JMS164orLater()) {
+        if (ServerConfig.IsJMS()
+                && ServerConfig.JMS164orLater()) {
             sp.Encode1(0);
         }
 
-        if ((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS())
-                && ServerConfig.JMS180orLater()) {
-            sp.Encode4(0);
-        }
-
-        if (ServerConfig.IsKMS() && ServerConfig.IsPostBB()) {
+        if (((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS()) && ServerConfig.JMS180orLater())
+                || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
             sp.Encode4(0);
         }
 
@@ -99,7 +96,7 @@ public class ResCStage {
                 sp.Encode4(chr.getStat().getHp());
             }
 
-            if (ServerConfig.IsEMS()) {
+            if (ServerConfig.IsEMS() || ServerConfig.IsTWMS()) {
                 boolean m_bChaseEnable = false;
                 sp.Encode1(m_bChaseEnable ? 1 : 0); // m_bChaseEnable
                 if (m_bChaseEnable) {
@@ -132,7 +129,7 @@ public class ResCStage {
             sp.Encode4(ServerConstants.MTS_BASE); // m_nCommissionBase
             sp.Encode4(24); // m_nAuctionDurationMin
             sp.Encode4(168); // m_nAuctionDurationMax
-            if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
+            if (ServerConfig.JMS164orLater()) {
                 sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
             }
         }
@@ -148,11 +145,12 @@ public class ResCStage {
             sp.EncodeStr(c.getAccountName());
             // CWvsContext::SetSaleInfo
             {
-                if (ServerConfig.IsJMS() && ServerConfig.IsPostBB()) {
+                if ((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsEMS())
+                        && ServerConfig.IsPostBB()) {
                     sp.Encode4(0); // NotSaleCount
                 }
                 sp.EncodeBuffer(ResCCashShop.getModifiedData());
-                if ((ServerConfig.IsJMS() && 165 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
+                if (ServerConfig.JMS165orLater()) {
                     sp.Encode2(0); // non 0, Decode4, DecodeStr
                 }
                 sp.EncodeBuffer(ResCCashShop.getDiscountRates());
