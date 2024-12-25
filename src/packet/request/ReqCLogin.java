@@ -34,6 +34,7 @@ import handling.login.LoginServer;
 import java.util.List;
 import java.util.Map;
 import packet.ClientPacket;
+import packet.ops.NewCharacterOps;
 import packet.response.ResCClientSocket;
 import packet.response.ResCLogin;
 import packet.response.ResCLogin.LoginResult;
@@ -239,6 +240,7 @@ public class ReqCLogin {
         String character_name;
         byte character_gender = c.getGender();
         int job_type = 0;
+        int job_id = 0;
         short job_dualblade = 0;
         int face_id = 0;
         int hair_id = 0;
@@ -258,22 +260,32 @@ public class ReqCLogin {
             job_type = cp.Decode4();
 
             // バージョンによって異なる (左から順番)
-            switch (job_type) {
-                case 0:
+            switch (NewCharacterOps.find(job_type)) {
+                case KnightsOfCygnus:
                     // シグナス
                     skin_color = 10;
+                    job_id = 1000;
                     break;
-                case 1:
+                case Adventurers:
+                case DualBlade:
                     // 冒険家 or デュアルブレイド
+                    job_id = 0;
                     break;
-                case 2:
+                case Aran:
                     // アラン
                     skin_color = 11;
+                    job_id = 2000;
                     break;
-                case 3:
+                case Evan:
                     // エヴァン
+                    job_id = 2001;
+                    break;
+                case Resistance:
+                    // レジスタンス
+                    job_id = 3000;
                     break;
                 default:
+                    job_id = 0;
                     break;
             }
         }
@@ -325,13 +337,15 @@ public class ReqCLogin {
             return false;
         }
 
-        MapleCharacter newchar = MapleCharacter.getDefault(c, job_type);
+        MapleCharacter newchar = MapleCharacter.getDefault(c);
         newchar.setWorld((byte) c.getWorld());
         newchar.setFace(face_id);
         newchar.setHair(hair_id + hair_color);
         newchar.setGender(character_gender);
         newchar.setName(character_name);
         newchar.setSkinColor((byte) skin_color);
+        newchar.setJob(job_id);
+        newchar.setSubcategory(job_dualblade);
 
         // dice
         if (ServerConfig.JMS131orEarlier()) {
@@ -362,7 +376,7 @@ public class ReqCLogin {
         item.setPosition((byte) -11);
         equip.addFromDB(item);
         DebugUser.AddStarterSet(newchar);
-        MapleCharacter.saveNewCharToDB(newchar, job_type, job_type == 1 && job_dualblade > 0);
+        MapleCharacter.saveNewCharToDB(newchar);
         c.SendPacket(ResCLogin.addNewCharEntry(newchar, true));
         c.createdChar(newchar.getId());
         return true;

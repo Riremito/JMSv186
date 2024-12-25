@@ -151,7 +151,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private static final long serialVersionUID = 845748950829L;
     private String name, chalktext, BlessOfFairy_Origin;
     private long lastCombo, lastfametime, keydown_skill;
-    private byte dojoRecord, gmLevel, gender, initialSpawnPoint, skinColor, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones, subcategory; // Make this a quest record, TODO : Transfer it somehow with the current data
+    private byte dojoRecord, gmLevel, gender, initialSpawnPoint, skinColor, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
+    private int subcategory;
     private int level, mulung_energy, combo, availableCP, totalCP, fame, hpApUsed, job, remainingAp;
     private int accountid, id, meso, exp, hair, face, mapid, bookCover, dojo,
             guildid = 0, fallcounter = 0, maplepoints, acash, chair, itemEffect, points, vpoints,
@@ -309,13 +310,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
     }
 
-    public static MapleCharacter getDefault(final MapleClient client, final int type) {
+    public static MapleCharacter getDefault(final MapleClient client) {
         MapleCharacter ret = new MapleCharacter(false);
         ret.client = client;
         ret.map = null;
         ret.exp = 0;
         ret.gmLevel = 0;
-        ret.job = (short) (type == 1 ? 0 : (type == 0 ? 1000 : (type == 3 ? 2001 : (type == 4 ? 3000 : 2000))));
+        ret.job = 0;
         ret.meso = 0;
         ret.level = 1;
         ret.remainingAp = 0;
@@ -569,7 +570,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 ret.mgc = new MapleGuildCharacter(ret);
             }
             ret.buddylist = new BuddyList(rs.getByte("buddyCapacity"));
-            ret.subcategory = rs.getByte("subcategory");
+            ret.subcategory = rs.getInt("subcategory");
             ret.mount = new MapleMount(ret, 0, ret.job > 1000 && ret.job < 2000 ? 10001004 : (ret.job >= 2000 ? (ret.job == 2001 || (ret.job >= 2200 && ret.job <= 2218) ? 20011004 : (ret.job >= 3000 ? 30001004 : 20001004)) : 1004), (byte) 0, (byte) 1, 0);
             ret.rank = rs.getInt("rank");
             ret.rankMove = rs.getInt("rankMove");
@@ -897,7 +898,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return ret;
     }
 
-    public static void saveNewCharToDB(final MapleCharacter chr, final int type, final boolean db) {
+    public static void saveNewCharToDB(final MapleCharacter chr) {
         Connection con = DatabaseConnection.getConnection();
 
         PreparedStatement ps = null;
@@ -945,7 +946,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.setInt(27, 0); // Dojo
             ps.setInt(28, 0); // Dojo record
             ps.setString(29, "-1,-1,-1");
-            ps.setInt(30, db ? 1 : 0); //for now
+            ps.setInt(30, chr.subcategory); // dual blade
             ps.setInt(31, 0); //marriage ID
             ps.setInt(32, 0); //current reps
             ps.setInt(33, 0); //total reps
@@ -1142,7 +1143,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             final String petstring = petz.toString();
             ps.setString(29, petstring.substring(0, petstring.length() - 1));
-            ps.setByte(30, subcategory);
+            ps.setInt(30, subcategory);
             ps.setInt(31, marriageId);
             ps.setInt(32, currentrep);
             ps.setInt(33, totalrep);
@@ -5305,11 +5306,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         this.pyramidSubway = ps;
     }
 
-    public byte getSubcategory() {
+    public int getSubcategory() {
         if (job >= 430 && job <= 434) {
             return 1; //dont set it
         }
         return subcategory;
+    }
+
+    public void setSubcategory(int subcat) {
+        subcategory = subcat;
     }
 
     public int itemQuantity(final int itemid) {
