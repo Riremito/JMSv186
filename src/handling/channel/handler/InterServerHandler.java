@@ -47,6 +47,7 @@ import packet.request.ContextPacket;
 import packet.response.FamilyResponse;
 import packet.response.FriendResponse;
 import packet.response.GuildResponse;
+import packet.response.ResCClientSocket;
 import packet.response.ResCFuncKeyMappedMan;
 import packet.response.ResCLogin;
 import packet.response.ResCUser_Pet;
@@ -89,7 +90,7 @@ public class InterServerHandler {
         ch.removePlayer(chr);
         c.updateLoginState(MapleClient.CHANGE_CHANNEL, c.getSessionIPAddress());
 
-        c.SendPacket(ResCLogin.MigrateCommand(CashShopServer.getPort()));
+        c.SendPacket(ResCClientSocket.MigrateCommand(CashShopServer.getPort()));
         chr.saveToDB(false, false);
         ExtraDB.saveData(chr);
         chr.getMap().removePlayer(chr);

@@ -13,6 +13,14 @@ public class ServerConfig {
     private static boolean packet_encryption = true;
     private static boolean packet_custom_encryption = false;
 
+    // 初期スロット数
+    public static final byte DEFAULT_INV_SLOT_EQUIP = 24;
+    public static final byte DEFAULT_INV_SLOT_USE = 24;
+    public static final byte DEFAULT_INV_SLOT_ETC = 24;
+    public static final byte DEFAULT_INV_SLOT_SETUP = 24;
+    public static final byte DEFAULT_INV_SLOT_CASH = 96;
+    private static final byte DEFAULT_INV_SLOT_STORAGE = 4;
+
     public static void SetPacketEncryption(boolean encryption_flag) {
         packet_encryption = encryption_flag;
     }

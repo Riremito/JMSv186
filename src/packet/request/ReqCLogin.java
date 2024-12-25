@@ -34,10 +34,10 @@ import handling.login.LoginServer;
 import java.util.List;
 import java.util.Map;
 import packet.ClientPacket;
+import packet.response.ResCClientSocket;
 import packet.response.ResCLogin;
 import packet.response.ResCLogin.LoginResult;
 import server.MapleItemInformationProvider;
-import server.quest.MapleQuest;
 import wz.LoadData;
 
 /**
@@ -54,7 +54,7 @@ public class ReqCLogin {
                 if (OnCheckPassword(cp, c)) {
                     InterServerHandler.SetLogin(false);
                     Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
-                    c.SendPacket(ResCLogin.AuthenMessage());
+                    c.SendPacket(ResCClientSocket.AuthenMessage());
                 }
                 return true;
             }
@@ -235,130 +235,137 @@ public class ReqCLogin {
         ReqCLogin.ServerListRequest(c);
     }
 
-    public static final void CreateChar(ClientPacket cp, final MapleClient c) {
-        final String name = cp.DecodeStr();
-        // very old ver, please merge it
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) {
-            final int face = cp.Decode4();
-            final int hair = cp.Decode4();
-            final int hairColor = 0;
-            final byte skinColor = (byte) 0;
-            final int top = cp.Decode4();
-            final int bottom = cp.Decode4();
-            final int shoes = cp.Decode4();
-            final int weapon = cp.Decode4();
-            final byte gender = c.getGender();
-            MapleCharacter newchar = MapleCharacter.getDefault(c, 1);
-            // サイコロ
-            if (ServerConfig.GetVersion() <= 131) {
-                newchar.getStat().str = cp.Decode1();
-                newchar.getStat().dex = cp.Decode1();
-                newchar.getStat().int_ = cp.Decode1();
-                newchar.getStat().luk = cp.Decode1();
+    public static boolean CreateChar(ClientPacket cp, final MapleClient c) {
+        String character_name;
+        byte character_gender = c.getGender();
+        int job_type = 0;
+        short job_dualblade = 0;
+        int face_id = 0;
+        int hair_id = 0;
+        int hair_color = 0;
+        int skin_color = 0;
+        int equip_top = 0;
+        int equip_bottom = 0;
+        int equip_shoes = 0;
+        int equip_weapon = 0;
+        int dice_str = 0;
+        int dice_dex = 0;
+        int dice_int = 0;
+        int dice_luk = 0;
+
+        character_name = cp.DecodeStr();
+        if (ServerConfig.JMS165orLater()) {
+            job_type = cp.Decode4();
+
+            // バージョンによって異なる (左から順番)
+            switch (job_type) {
+                case 0:
+                    // シグナス
+                    skin_color = 10;
+                    break;
+                case 1:
+                    // 冒険家 or デュアルブレイド
+                    break;
+                case 2:
+                    // アラン
+                    skin_color = 11;
+                    break;
+                case 3:
+                    // エヴァン
+                    break;
+                default:
+                    break;
             }
-            newchar.setWorld((byte) c.getWorld());
-            newchar.setFace(face);
-            newchar.setHair(hair + hairColor);
-            newchar.setGender(gender);
-            newchar.setName(name);
-            newchar.setSkinColor(skinColor);
-            MapleInventory equip = newchar.getInventory(MapleInventoryType.EQUIPPED);
-            final MapleItemInformationProvider li = MapleItemInformationProvider.getInstance();
-            IItem item = li.getEquipById(top);
-            item.setPosition((byte) -5);
-            equip.addFromDB(item);
-            item = li.getEquipById(bottom);
-            item.setPosition((byte) -6);
-            equip.addFromDB(item);
-            item = li.getEquipById(shoes);
-            item.setPosition((byte) -7);
-            equip.addFromDB(item);
-            item = li.getEquipById(weapon);
-            item.setPosition((byte) -11);
-            equip.addFromDB(item);
-            if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
-                DebugUser.AddStarterSet(newchar);
-                MapleCharacter.saveNewCharToDB(newchar, 1, false);
-                c.getSession().write(ResCLogin.addNewCharEntry(newchar, true));
-                c.createdChar(newchar.getId());
-            } else {
-                c.getSession().write(ResCLogin.addNewCharEntry(newchar, false));
-            }
-            return;
         }
-        final int JobType = cp.Decode4();
-        short db = 0;
         if (ServerConfig.JMS180orLater()) {
-            db = cp.Decode2();
+            job_dualblade = cp.Decode2();
         }
         if (ServerConfig.JMS302orLater()) {
             cp.Decode1(); // 01
             cp.Decode1(); // 00
             cp.Decode1(); // 07
             // Kanna
-            if (JobType == 9) {
-                c.setGender((byte) 1);
+            if (job_type == 9) {
+                character_gender = 1;
             }
         }
-        final int face = cp.Decode4();
-        final int hair = cp.Decode4();
-        int hairColor = 0;
-        int skinColor = 0;
-
+        face_id = cp.Decode4();
+        hair_id = cp.Decode4();
         if (ServerConfig.IsEMS()) {
-            hairColor = cp.Decode4();
-            skinColor = cp.Decode4();
+            hair_color = cp.Decode4();
+            skin_color = cp.Decode4();
+        }
+        equip_top = cp.Decode4();
+        equip_bottom = cp.Decode4();
+        equip_shoes = cp.Decode4();
+        equip_weapon = cp.Decode4();
+        if (ServerConfig.JMS131orEarlier()) {
+            dice_str = cp.Decode1();
+            dice_dex = cp.Decode1();
+            dice_int = cp.Decode1();
+            dice_luk = cp.Decode1();
+            // dice check, 12-5-4-4
+            if ((dice_str + dice_dex + dice_int + dice_luk) != 25
+                    || dice_str < 4 || dice_str < 4 || dice_dex < 4 || dice_int < 4 || dice_luk < 4
+                    || 12 < dice_str || 12 < dice_dex || 12 < dice_int || 12 < dice_luk) {
+                Debug.DebugLog("dice error");
+                c.SendPacket(ResCLogin.addNewCharEntry(null, false));
+                return false;
+            }
+        }
+        // data check
+        if (!LoadData.IsValidFaceID(face_id) || !LoadData.IsValidHairID(hair_id) || !LoadData.IsValidItemID(equip_top) || (equip_bottom != 0 && !LoadData.IsValidItemID(equip_bottom)) || !LoadData.IsValidItemID(equip_shoes) || !LoadData.IsValidItemID(equip_weapon)) {
+            Debug.DebugLog("Character creation error");
+            c.SendPacket(ResCLogin.addNewCharEntry(null, false));
+            return false;
+        }
+        // name check
+        if (!MapleCharacterUtil.canCreateChar(character_name) || LoginInformationProvider.getInstance().isForbiddenName(character_name)) {
+            c.SendPacket(ResCLogin.addNewCharEntry(null, false));
+            return false;
         }
 
-        final int top = cp.Decode4();
-        final int bottom = cp.Decode4();
-        final int shoes = cp.Decode4();
-        final int weapon = cp.Decode4();
-        final byte gender = c.getGender();
-        if (!LoadData.IsValidFaceID(face) || !LoadData.IsValidHairID(hair) || !LoadData.IsValidItemID(top) || !LoadData.IsValidItemID(bottom) || !LoadData.IsValidItemID(shoes) || !LoadData.IsValidItemID(weapon)) {
-            Debug.DebugLog("Character creation error");
-            c.getSession().write(ResCLogin.addNewCharEntry(null, false));
-            return;
-        }
-        MapleCharacter newchar = MapleCharacter.getDefault(c, JobType);
+        MapleCharacter newchar = MapleCharacter.getDefault(c, job_type);
         newchar.setWorld((byte) c.getWorld());
-        newchar.setFace(face);
-        newchar.setHair(hair + hairColor);
-        newchar.setGender(gender);
-        newchar.setName(name);
-        newchar.setSkinColor((byte) skinColor);
+        newchar.setFace(face_id);
+        newchar.setHair(hair_id + hair_color);
+        newchar.setGender(character_gender);
+        newchar.setName(character_name);
+        newchar.setSkinColor((byte) skin_color);
+
+        // dice
+        if (ServerConfig.JMS131orEarlier()) {
+            newchar.getStat().str = dice_str;
+            newchar.getStat().dex = dice_dex;
+            newchar.getStat().int_ = dice_int;
+            newchar.getStat().luk = dice_luk;
+        }
+
         MapleInventory equip = newchar.getInventory(MapleInventoryType.EQUIPPED);
         final MapleItemInformationProvider li = MapleItemInformationProvider.getInstance();
-        IItem item = li.getEquipById(top);
+        // 鎧上 or 全身鎧
+        IItem item = li.getEquipById(equip_top);
         item.setPosition((byte) -5);
         equip.addFromDB(item);
-        if (db == 0) {
-            item = li.getEquipById(bottom);
+        // 鎧下
+        if (equip_bottom != 0) {
+            item = li.getEquipById(equip_bottom);
             item.setPosition((byte) -6);
             equip.addFromDB(item);
         }
-        item = li.getEquipById(shoes);
+        // 靴
+        item = li.getEquipById(equip_shoes);
         item.setPosition((byte) -7);
         equip.addFromDB(item);
-        item = li.getEquipById(weapon);
+        // 武器
+        item = li.getEquipById(equip_weapon);
         item.setPosition((byte) -11);
         equip.addFromDB(item);
-        //blue/red pots
-        if (JobType == 0) {
-            newchar.setQuestAdd(MapleQuest.getInstance(20022), (byte) 1, "1");
-            newchar.setQuestAdd(MapleQuest.getInstance(20010), (byte) 1, null); //>_>_>_> ugh
-            newchar.setQuestAdd(MapleQuest.getInstance(20000), (byte) 1, null); //>_>_>_> ugh
-            newchar.setQuestAdd(MapleQuest.getInstance(20015), (byte) 1, null); //>_>_>_> ugh
-            newchar.setQuestAdd(MapleQuest.getInstance(20020), (byte) 1, null); //>_>_>_> ugh
-        }
-        if (MapleCharacterUtil.canCreateChar(name) && !LoginInformationProvider.getInstance().isForbiddenName(name)) {
-            DebugUser.AddStarterSet(newchar);
-            MapleCharacter.saveNewCharToDB(newchar, JobType, JobType == 1 && db > 0);
-            c.getSession().write(ResCLogin.addNewCharEntry(newchar, true));
-            c.createdChar(newchar.getId());
-        } else {
-            c.getSession().write(ResCLogin.addNewCharEntry(newchar, false));
-        }
+        DebugUser.AddStarterSet(newchar);
+        MapleCharacter.saveNewCharToDB(newchar, job_type, job_type == 1 && job_dualblade > 0);
+        c.SendPacket(ResCLogin.addNewCharEntry(newchar, true));
+        c.createdChar(newchar.getId());
+        return true;
     }
 
     public static final void CheckCharName(ClientPacket cp, final MapleClient c) {

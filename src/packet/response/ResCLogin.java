@@ -21,12 +21,9 @@ package packet.response;
 import client.MapleCharacter;
 import client.MapleClient;
 import config.ServerConfig;
-import debug.Debug;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.login.LoginServer;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Random;
 import packet.ServerPacket;
@@ -39,59 +36,6 @@ import packet.response.struct.GW_CharacterStat;
  */
 public class ResCLogin {
 
-    // CClientSocket::OnAuthenMessage
-    public static final MaplePacket AuthenMessage() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AuthenMessage);
-        sp.Encode4(1); // id
-        sp.Encode1(1);
-        return sp.Get();
-    }
-
-    // CClientSocket::OnAliveReq
-    // getPing
-    public static final MaplePacket AliveReq() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AliveReq);
-        return sp.Get();
-    }
-
-    // CClientSocket::OnMigrateCommand
-    // getChannelChange
-    public static final MaplePacket MigrateCommand(final int port) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MigrateCommand);
-        sp.Encode1(1);
-        sp.Encode4(16777343); // IP, 127.0.0.1
-        sp.Encode2(port);
-        return sp.Get();
-    }
-
-    // Internet Cafe
-    // プレミアムクーポン itemid 5420007
-    // CClientSocket::OnAuthenCodeChanged
-    public static final MaplePacket AuthenCodeChanged() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AuthenCodeChanged);
-        sp.Encode1(2); // Open UI
-        sp.Encode4(1);
-        return sp.Get();
-    }
-
-    public static long GameServerIP = 0;
-
-    public static long getGameServerIP() {
-        if (GameServerIP != 0) {
-            return GameServerIP;
-        }
-
-        try {
-            byte[] ip_bytes = InetAddress.getByName("127.0.0.1").getAddress();
-            GameServerIP = ip_bytes[0] | (ip_bytes[1] << 8) | (ip_bytes[2] << 16) | (ip_bytes[3] << 24);
-        } catch (UnknownHostException ex) {
-            GameServerIP = 0x0100007F; // 127.0.0.1
-            Debug.ErrorLog("GameServerIP set to 127.0.0.1");
-        }
-
-        return GameServerIP;
-    }
-
     // ゲームサーバーへ接続
     // getServerIP
     // CClientSocket::OnSelectCharacter
@@ -99,7 +43,7 @@ public class ResCLogin {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SelectCharacterResult);
         sp.Encode1(0);
         sp.Encode1(0);
-        sp.Encode4((int) getGameServerIP());
+        sp.Encode4((int) ResCClientSocket.getGameServerIP());
         sp.Encode2(port);
         sp.Encode4(clientId);
         sp.Encode1(0);
@@ -166,48 +110,6 @@ public class ResCLogin {
             }
             return UNKNOWN;
         }
-    }
-
-    // サーバーのバージョン情報
-    public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
-        ServerPacket sp = new ServerPacket((short) 0x0000); // dummy
-        if (ServerConfig.GetVersion() < 414) {
-
-            switch (ServerConfig.GetRegion()) {
-                case KMS: {
-                    long xor_version = 0;
-                    xor_version ^= ServerConfig.GetVersion();
-                    xor_version ^= 1 << 15;
-                    xor_version ^= ServerConfig.GetSubVersion() << 16;
-
-                    sp.Encode2(291); // magic number
-                    sp.EncodeStr(String.valueOf(xor_version));
-                    break;
-                }
-                default: {
-                    sp.Encode2(ServerConfig.GetVersion());
-                    sp.EncodeStr(String.valueOf(ServerConfig.GetSubVersion()));
-                    break;
-                }
-            }
-
-            sp.EncodeBuffer(recvIv);
-            sp.EncodeBuffer(sendIv);
-            sp.Encode1(ServerConfig.GetRegionNumber()); // JMS = 3
-        } else {
-            // x64
-            sp.Encode2(ServerConfig.GetVersion());
-            sp.EncodeStr("1:" + ServerConfig.GetSubVersion()); // 1:1
-            sp.EncodeBuffer(recvIv);
-            sp.EncodeBuffer(sendIv);
-            sp.Encode1(ServerConfig.GetRegionNumber());
-            sp.Encode1(0);
-            sp.Encode1(5);
-            sp.Encode1(1);
-        }
-        // ヘッダにサイズを書き込む
-        sp.SetHello();
-        return sp.Get();
     }
 
 // v131

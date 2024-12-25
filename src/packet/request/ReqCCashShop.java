@@ -34,6 +34,7 @@ import packet.ClientPacket;
 import packet.ops.CashItemOps;
 import packet.response.ResCITC;
 import packet.response.ResCCashShop;
+import packet.response.ResCClientSocket;
 import packet.response.ResCLogin;
 import packet.response.ResCStage;
 import packet.response.struct.GW_ItemSlotBase;
@@ -177,7 +178,7 @@ public class ReqCCashShop {
         c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
         try {
             World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
-            c.SendPacket(ResCLogin.MigrateCommand(ChannelServer.getInstance(c.getChannel()).getPort()));
+            c.SendPacket(ResCClientSocket.MigrateCommand(ChannelServer.getInstance(c.getChannel()).getPort()));
         } finally {
             chr.saveToDB(false, true);
             c.setPlayer(null);

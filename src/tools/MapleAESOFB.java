@@ -72,14 +72,11 @@ public class MapleAESOFB {
         if (ServerConfig.PacketEncryptionEnabled()) {
             try {
                 cipher = Cipher.getInstance("AES");
-                if (!(ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion())) {
-                    if (!ServerConfig.IsKMS()) {
-                        cipher.init(Cipher.ENCRYPT_MODE, skey);
-                    }
-                } else {
-                    // Thank you for reading code!
-                    //cipher.init(Cipher.ENCRYPT_MODE, skey_x64);
+                if (!ServerConfig.IsKMS()) {
+                    cipher.init(Cipher.ENCRYPT_MODE, skey);
                 }
+                // Thank you for reading code!
+                //cipher.init(Cipher.ENCRYPT_MODE, skey_x64);
             } catch (NoSuchAlgorithmException e) {
                 System.err.println("ERROR" + e);
             } catch (NoSuchPaddingException e) {
@@ -102,10 +99,11 @@ public class MapleAESOFB {
     }
 
     public byte[] crypt(byte[] data) {
-        // v414
+        /*
         if (ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion()) {
-            //return crypt_v414(data);
+            return crypt_v414(data);
         }
+         */
 
         int remaining = data.length;
         int llength = 0x5B0;
@@ -205,49 +203,6 @@ public class MapleAESOFB {
             }
         }
         return delta;
-        /*
-        if (!this.login && this.isCP) {
-            byte[] arrayOfByte = new byte[data.length];
-            System.arraycopy(data, 0, arrayOfByte, 0, data.length);
-            for (int i = 0; i < arrayOfByte.length; i++) {
-                arrayOfByte[i] = (byte) (arrayOfByte[i] + this.iv[0]);
-            }
-            updateIv();
-            return arrayOfByte;
-        }
-        int remaining = data.length;
-        byte[] datac = new byte[remaining];
-        System.arraycopy(data, 0, datac, 0, data.length);
-        int llength = 1456;
-        int start = 0;
-        while (remaining > 0) {
-            byte[] myIv = BitTools.multiplyBytes(this.iv, 4, 4);
-            if (remaining < llength) {
-                llength = remaining;
-            }
-            for (int x = start; x < start + llength; x++) {
-                if ((x - start) % myIv.length == 0) {
-                    byte[] newIv = null;
-                    try {
-                        newIv = this.cipher.doFinal(myIv);
-                    } catch (IllegalBlockSizeException ex) {
-                        Logger.getLogger(MapleAESOFB.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (BadPaddingException ex) {
-                        Logger.getLogger(MapleAESOFB.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    for (int j = 0; j < myIv.length; j++) {
-                        myIv[j] = newIv[j];
-                    }
-                }
-                datac[x] = (byte) (datac[x] ^ myIv[(x - start) % myIv.length]);
-            }
-            start += llength;
-            remaining -= llength;
-            llength = 1460;
-        }
-        updateIv();
-        return datac;
-         */
     }
 
     public void updateIv() {
@@ -255,10 +210,11 @@ public class MapleAESOFB {
     }
 
     public byte[] getPacketHeader(int length) {
-        // x64
+        /*
         if (ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion()) {
             return getPacketHeader_v414(length);
         }
+         */
 
         int iiv = (((iv[3]) & 0xFF) | ((iv[2] << 8) & 0xFF00)) ^ mapleVersion;
         int mlength = (((length << 8) & 0xFF00) | (length >>> 8)) ^ iiv;

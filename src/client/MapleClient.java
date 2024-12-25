@@ -78,6 +78,7 @@ import org.apache.mina.common.WriteFuture;
 import packet.ServerPacket;
 import packet.response.ResCITC;
 import packet.response.ResCCashShop;
+import packet.response.ResCClientSocket;
 import packet.response.ResCLogin;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
@@ -1097,7 +1098,7 @@ public class MapleClient implements Serializable {
 
     public final void sendPing() {
         lastPing = System.currentTimeMillis();
-        SendPacket(ResCLogin.AliveReq());
+        SendPacket(ResCClientSocket.AliveReq());
 
         PingTimer.getInstance().schedule(new Runnable() {
 

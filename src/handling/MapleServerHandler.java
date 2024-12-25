@@ -39,6 +39,7 @@ import packet.request.ReqCTownPortalPool;
 import packet.request.ReqCUser_Pet;
 import packet.request.ReqCCashShop;
 import packet.request.ReqCLogin;
+import packet.response.ResCClientSocket;
 import packet.response.ResCLogin;
 
 public class MapleServerHandler extends IoHandlerAdapter {
@@ -123,7 +124,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         MaplePacketDecoder.DecoderState decoderState = new MaplePacketDecoder.DecoderState();
         session.setAttribute(MaplePacketDecoder.DECODER_STATE_KEY, decoderState);
 
-        session.write(ResCLogin.getHello(ServerConstants.Use_Fixed_IV ? serverSend : ivSend, ServerConstants.Use_Fixed_IV ? serverRecv : ivRecv));
+        session.write(ResCClientSocket.getHello(ServerConstants.Use_Fixed_IV ? serverSend : ivSend, ServerConstants.Use_Fixed_IV ? serverRecv : ivRecv));
         session.setAttribute(MapleClient.CLIENT_KEY, client);
         session.setIdleTime(IdleStatus.READER_IDLE, 60);
         session.setIdleTime(IdleStatus.WRITER_IDLE, 60);
@@ -320,7 +321,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 if (!InterServerHandler.GetLogin()) {
                     InterServerHandler.SetLogin(true);
                     Debug.UserInfoLog(c, "Enter Game");
-                    c.SendPacket(ResCLogin.AuthenCodeChanged()); // internet cafe
+                    c.SendPacket(ResCClientSocket.AuthenCodeChanged()); // internet cafe
                     //Map<Integer, Integer> connected = World.getConnected();
                     //c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
                 } else {
