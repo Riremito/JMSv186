@@ -105,19 +105,19 @@ public class ServerConfig {
                 return false;
             }
             case KMS: {
-                if (95 <= GetVersion()) {
+                if (66 <= GetVersion()) {
                     return true;
                 }
                 return false;
             }
             case CMS: {
-                if (85 <= GetVersion()) {
+                if (73 <= GetVersion()) {
                     return true;
                 }
                 return false;
             }
             case TWMS: {
-                if (122 <= GetVersion()) {
+                if (95 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -129,7 +129,7 @@ public class ServerConfig {
                 return false;
             }
             case GMS: {
-                if (92 <= GetVersion()) {
+                if (72 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -164,19 +164,19 @@ public class ServerConfig {
                 return false;
             }
             case KMS: {
-                if (95 <= GetVersion()) {
+                if (67 <= GetVersion()) {
                     return true;
                 }
                 return false;
             }
             case CMS: {
-                if (85 <= GetVersion()) {
+                if (74 <= GetVersion()) {
                     return true;
                 }
                 return false;
             }
             case TWMS: {
-                if (122 <= GetVersion()) {
+                if (96 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -188,7 +188,7 @@ public class ServerConfig {
                 return false;
             }
             case GMS: {
-                if (92 <= GetVersion()) {
+                if (73 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -462,6 +462,7 @@ public class ServerConfig {
     }
 
     // Knights of Cygnus update
+    // todo : replace to orlater func
     public static boolean JMS165orEarlier() {
         if (IsPostBB()) {
             return false;
