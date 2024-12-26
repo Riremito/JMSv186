@@ -155,14 +155,20 @@ public class GW_CharacterStat {
         data.Encode2(chr.getRemainingAp());
 
         // SP
-        if (ServerConfig.JMS186orLater() && (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob()))) {
-            final int size = chr.getRemainingSpSize();
-            data.Encode1(size);
-            for (int i = 0; i < chr.getRemainingSps().length; i++) {
-                if (chr.getRemainingSp(i) > 0) {
-                    data.Encode1(i + 1);
-                    data.Encode1(chr.getRemainingSp(i));
+        if (ServerConfig.JMS186orLater()) {
+            // is_extendsp_job
+            if (GameConstants.is_extendsp_job(chr.getJob())) {
+                final int size = chr.getRemainingSpSize();
+                // ExtendSP::Decode
+                data.Encode1(size);
+                for (int i = 0; i < chr.getRemainingSps().length; i++) {
+                    if (chr.getRemainingSp(i) > 0) {
+                        data.Encode1(i + 1);
+                        data.Encode1(chr.getRemainingSp(i));
+                    }
                 }
+            } else {
+                data.Encode2(chr.getRemainingSp());
             }
         } else {
             data.Encode2(chr.getRemainingSp());
@@ -176,6 +182,9 @@ public class GW_CharacterStat {
             data.Encode1(chr.getInitialSpawnpoint());
             data.Encode2(chr.getSubcategory());
             // job 3100 -> Encode4, Demon Slayer
+            if (GameConstants.is_demonslayer(chr.getJob())) {
+                data.Encode4(0);
+            }
             data.Encode1(0);
             data.Encode4(0);
             data.Encode4(0);
@@ -282,7 +291,11 @@ public class GW_CharacterStat {
     public static byte[] EncodeChangeStat(MapleCharacter chr, int statmask) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode4(statmask);
+        if (ServerConfig.JMS302orLater()) {
+            data.Encode8(statmask);
+        } else {
+            data.Encode4(statmask);
+        }
 
         // Skin
         if ((statmask & Flag.SKIN.get()) > 0) {

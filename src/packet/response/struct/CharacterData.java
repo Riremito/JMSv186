@@ -385,6 +385,17 @@ public class CharacterData {
                 }
                 data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             }
+            // カンナ?
+            if (ServerConfig.JMS302orLater()) {
+                for (Item item : equipped) {
+                    if (item.getPosition() <= -1500 && item.getPosition() > -1600) {
+                        data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                        data.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                    }
+                }
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+            }
         }
 
         // 消費
@@ -426,6 +437,144 @@ public class CharacterData {
             data.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
         }
 
+        return data.Get().getBytes();
+    }
+
+    public static byte[] Encode_302_1(MapleCharacter chr, long datamask) {
+        ServerPacket data = new ServerPacket();
+        // 008ABA10
+        data.Encode8(datamask);
+        data.Encode1(0); // nCombatOrders
+        data.Encode1(0); // not 0, Encode4
+        data.Encode4(0); // not 0, Encode4, Encode8
+        data.Encode1(0); // not 0, Encode1, Encode4, Encode8...
+
+        if ((datamask & 0x01) > 0) {
+            // キャラクター情報
+            data.EncodeBuffer(GW_CharacterStat.Encode(chr));
+            // 友達リストの上限
+            data.Encode1(chr.getBuddylist().getCapacity());
+            // 精霊の祝福
+            if (chr.getBlessOfFairyOrigin() != null) {
+                data.Encode1(1);
+                data.EncodeStr(chr.getBlessOfFairyOrigin());
+            } else {
+                data.Encode1(0);
+            }
+            // 女王の祝福
+            data.Encode1(0); // not 0, EncodeStr
+            data.Encode1(0); // not 0, EncodeStr
+        }
+        if ((datamask & 0x02) > 0) {
+            data.EncodeBuffer(GW_CharacterStat.EncodeMoney(chr));
+            data.EncodeBuffer(GW_CharacterStat.EncodePachinko(chr));
+            data.EncodeZeroBytes(12); // unknown
+        }
+        if ((datamask & 0x08) > 0 || (datamask & 0x2000000) > 0) {
+            data.Encode4(0);
+        }
+        if ((datamask & 0x04) > 0) {
+            data.EncodeBuffer(InventoryInfo(chr, datamask));
+        }
+        if ((datamask & 0x1000000) > 0) {
+            data.Encode4(0);
+        }
+        if ((datamask & 0x40000000) > 0) {
+            data.Encode4(0);
+        }
+        if ((datamask & 0x800000) > 0) {
+            data.Encode1(0);
+        }
+        if ((datamask & 0x100) > 0) {
+            data.EncodeBuffer(Structure.addSkillInfo(chr));
+        }
+        if ((datamask & 0x8000) > 0) {
+            data.EncodeBuffer(Structure.addCoolDownInfo(chr));
+        }
+        if ((datamask & 0x400) > 0) {
+            data.Encode2(0); // not 0 -> Encode4 x5
+        }
+        if ((datamask & 0x800) > 0) {
+            data.EncodeBuffer(Structure.addRingInfo(chr));
+        }
+        if ((datamask & 0x1000) > 0) {
+            data.EncodeBuffer(Structure.addRocksInfo(chr));
+        }
+        if ((datamask & 0x7C) > 0) {
+            data.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
+        }
+        if ((datamask & 0x20000) > 0) {
+            data.Encode4(chr.getMonsterBookCover());
+        }
+        if ((datamask & 0x10000) > 0) {
+            data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+        }
+        if ((datamask & 0x8000000000L) > 0) {
+            data.Encode4(0);
+        }
+        if ((datamask & 0x10000000000L) > 0) {
+            data.Encode2(0); // 00546810
+        }
+        if ((datamask & 0x80000000000L) > 0) {
+            data.Encode2(0); // 0054B730
+            data.Encode2(0);
+        }
+        if ((datamask & 0x100000000000L) > 0) {
+            for (int i = 0; i < 10; i++) {
+                data.Encode1(0);
+            }
+        }
+        if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
+            data.EncodeBuffer(GW_WildHunterInfo.Encode());
+        }
+        if ((datamask & 0x4000000) > 0) {
+            data.Encode2(0);
+        }
+        if ((datamask & 0x20000000) > 0) {
+            for (int i = 0; i < 13; i++) {
+                // 4-4-3-2
+                data.Encode4(0);
+            }
+        }
+        if ((datamask & 0x10000000) > 0) {
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+        }
+        if ((datamask & 0xFFFFFFFFL) > 0) {
+            data.Encode2(0);
+        }
+        if ((datamask & 0x100000000L) > 0) {
+            data.Encode4(0);
+            data.Encode4(0);
+        }
+        if ((datamask & 0x400000000L) > 0) {
+            data.Encode2(0);
+        }
+
+        data.Encode4(0);
+        data.Encode8(TestHelper.getTime(System.currentTimeMillis()));
+        return data.Get().getBytes();
+    }
+
+    public static byte[] Encode_302_2(MapleCharacter chr, long datamask) {
+        ServerPacket data = new ServerPacket();
+        // 00552C00
+        data.Encode8(datamask);
+        if ((datamask & 0x200) > 0) {
+            data.EncodeBuffer(Structure.addQuestInfo(chr));
+        }
+        if ((datamask & 0x4000) > 0) {
+            data.EncodeBuffer(Structure.addQuestComplete(chr));
+        }
+        if ((datamask & 0x40000) > 0) {
+            data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+        }
+        // 0x400000 QuestCompleteOld
+        if ((datamask & 0x400000) > 0) {
+            data.Encode2(0);
+        }
         return data.Get().getBytes();
     }
 }

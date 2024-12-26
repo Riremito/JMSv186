@@ -92,7 +92,6 @@ public class GameConstants {
         return true;
     }
 
-
     public static int getMountExpNeededForLevel(final int level) {
         return mountexp[level - 1];
     }
@@ -131,6 +130,44 @@ public class GameConstants {
 
     public static boolean isResist(final int job) {
         return job >= 3000 && job <= 3512;
+    }
+
+    public static boolean is_demonslayer(int job_id) {
+        if (job_id == 3001) {
+            return true;
+        }
+        if (3100 <= job_id && job_id <= 3199) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean is_extendsp_job(int job_id) {
+        // 英雄
+        if (job_id == 2001 || job_id == 2002 || job_id == 2003) {
+            return true;
+        }
+        // エヴァン
+        if (2200 <= job_id && job_id <= 2299) {
+            return true;
+        }
+        // メルセデス
+        if (2300 <= job_id && job_id <= 2399) {
+            return true;
+        }
+        // ファントム
+        if (2400 <= job_id && job_id <= 2499) {
+            return true;
+        }
+        // レジスタンス
+        if (3000 <= job_id && job_id <= 3999) {
+            return true;
+        }
+        // ハヤト, カンナ
+        if (4000 <= job_id && job_id <= 4999) {
+            return true;
+        }
+        return false;
     }
 
     public static boolean isAdventurer(final int job) {

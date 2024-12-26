@@ -50,6 +50,7 @@ import packet.response.GuildResponse;
 import packet.response.ResCClientSocket;
 import packet.response.ResCFuncKeyMappedMan;
 import packet.response.ResCLogin;
+import packet.response.ResCStage;
 import packet.response.ResCUser_Pet;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
@@ -137,7 +138,14 @@ public class InterServerHandler {
         c.updateLoginState(MapleClient.LOGIN_LOGGEDIN, c.getSessionIPAddress());
         channelServer.addPlayer(player);
 
-        c.getSession().write(MaplePacketCreator.getCharInfo(player));
+        if (ServerConfig.JMS302orLater()) {
+            // 分割 SetField
+            c.SendPacket(ResCStage.SetField_302(player, 1, true, null, 0));
+            c.SendPacket(ResCStage.SetField_302(player, 2, true, null, 0));
+        } else {
+            c.SendPacket(MaplePacketCreator.getCharInfo(player));
+        }
+
         c.getSession().write(MaplePacketCreator.temporaryStats_Reset());
         player.getMap().addPlayer(player);
 

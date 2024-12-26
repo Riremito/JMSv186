@@ -21,6 +21,7 @@ package packet.response;
 import client.MapleCharacter;
 import client.MapleClient;
 import config.ServerConfig;
+import constants.GameConstants;
 import constants.ServerConstants;
 import handling.MaplePacket;
 import packet.ServerPacket;
@@ -114,6 +115,56 @@ public class ResCStage {
                 sp.Encode4(100); // nMobStatAdjustRate
             }
         }
+        return sp.Get();
+    }
+
+    // 分割版
+    public static final MaplePacket SetField_302(MapleCharacter chr, int part, boolean loggedin, MapleMap to, int spawnPoint) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetField);
+        // 分割, 1 -> 2の順で送信
+        sp.Encode4(part);
+        // main
+        if (part == 1) {
+            // 008ABA10
+            sp.EncodeBuffer(CClientOptMan.EncodeOpt());
+            sp.Encode4(chr.getClient().getChannel() - 1);
+            sp.Encode1(0);
+            sp.Encode1(0);
+            sp.Encode4(0);
+            sp.Encode1(chr.getPortalCount());
+            sp.Encode4(0);
+            sp.Encode1(loggedin ? 1 : 0); // 1 = all data, 0 = map change
+            sp.Encode2(0); // not 0, EncodeStr, EncodeStr x count
+            // logged in
+            if (loggedin) {
+                sp.Encode4(0); // seed x3
+                sp.Encode4(0);
+                sp.Encode4(0);
+                sp.EncodeBuffer(CharacterData.Encode_302_1(chr, -1 & ~(0x00444200L | 0x20000000000L))); // Quest除外
+                sp.EncodeBuffer(CWvsContext.LogoutGiftConfig());
+            } else {
+                sp.Encode1(0);
+                sp.Encode4(to.getId());
+                sp.Encode1(spawnPoint);
+                sp.Encode4(chr.getStat().getHp());
+                sp.Encode1(0); // not 0, 0059E9C0
+            }
+                sp.Encode1(0);
+            return sp.Get();
+        }
+
+        // sub
+        if (part == 2) {
+            // 008AAA80
+            sp.EncodeBuffer(CharacterData.Encode_302_2(chr, -1));
+            sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
+            sp.Encode4(100); // nMobStatAdjustRate
+            sp.Encode1(0);
+            sp.Encode1(GameConstants.is_extendsp_job(chr.getJob()) ? 1 : 0);
+            return sp.Get();
+        }
+
+        // Err
         return sp.Get();
     }
 

@@ -20,6 +20,7 @@
  */
 package packet.response.struct;
 
+import config.ServerConfig;
 import packet.ServerPacket;
 
 /**
@@ -33,6 +34,9 @@ public class CWvsContext {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(0); // something
+        if (ServerConfig.JMS302orLater()) {
+            data.Encode4(0);
+        }
         data.Encode4(0); // item1?
         data.Encode4(0); // item2?
         data.Encode4(0); // item3?

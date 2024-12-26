@@ -246,6 +246,7 @@ public class ReqCLogin {
         int hair_id = 0;
         int hair_color = 0;
         int skin_color = 0;
+        int equip_cap = 0;
         int equip_top = 0;
         int equip_bottom = 0;
         int equip_shoes = 0;
@@ -254,6 +255,7 @@ public class ReqCLogin {
         int dice_dex = 0;
         int dice_int = 0;
         int dice_luk = 0;
+        int default_set_count = 0;
 
         character_name = cp.DecodeStr();
         if (ServerConfig.JMS165orLater()) {
@@ -262,27 +264,35 @@ public class ReqCLogin {
             // バージョンによって異なる (左から順番)
             switch (NewCharacterOps.find(job_type)) {
                 case KnightsOfCygnus:
-                    // シグナス
                     skin_color = 10;
                     job_id = 1000;
                     break;
                 case Adventurers:
                 case DualBlade:
-                    // 冒険家 or デュアルブレイド
+                case CannonShooter:
                     job_id = 0;
                     break;
                 case Aran:
-                    // アラン
                     skin_color = 11;
                     job_id = 2000;
                     break;
                 case Evan:
-                    // エヴァン
                     job_id = 2001;
                     break;
                 case Resistance:
-                    // レジスタンス
                     job_id = 3000;
+                    break;
+                case Mercedes:
+                    job_id = 2003;
+                    break;
+                case DemonSlayer:
+                    job_id = 3001;
+                    break;
+                case Hayato:
+                    job_id = 4001;
+                    break;
+                case Kanna:
+                    job_id = 4002;
                     break;
                 default:
                     job_id = 0;
@@ -290,22 +300,26 @@ public class ReqCLogin {
             }
         }
         if (ServerConfig.JMS180orLater()) {
-            job_dualblade = cp.Decode2();
+            job_dualblade = cp.Decode2(); // 2 = キャノンシューター
         }
         if (ServerConfig.JMS302orLater()) {
-            cp.Decode1(); // 01
-            cp.Decode1(); // 00
-            cp.Decode1(); // 07
-            // Kanna
-            if (job_type == 9) {
-                character_gender = 1;
-            }
+            character_gender = cp.Decode1(); // 01, 性別
+            cp.Decode1(); // 00, 0C = メルセデス, 0D = デーモンスレイヤー
+            default_set_count = cp.Decode1(); // 07, 初期設定個数
         }
+        // BB後の初期までは6個で固定 (EMSは8個)
+        // JMS v302付近は個数が変動する
         face_id = cp.Decode4();
         hair_id = cp.Decode4();
         if (ServerConfig.IsEMS()) {
             hair_color = cp.Decode4();
             skin_color = cp.Decode4();
+        }
+
+        if (ServerConfig.JMS302orLater()) {
+            if (default_set_count == 7) {
+                equip_cap = cp.Decode4();
+            }
         }
         equip_top = cp.Decode4();
         equip_bottom = cp.Decode4();
@@ -375,6 +389,12 @@ public class ReqCLogin {
         item = li.getEquipById(equip_weapon);
         item.setPosition((byte) -11);
         equip.addFromDB(item);
+        // 頭
+        if (equip_cap != 0 && LoadData.IsValidItemID(equip_cap)) {
+            item = li.getEquipById(equip_cap);
+            item.setPosition((byte) -1);
+            equip.addFromDB(item);
+        }
         DebugUser.AddStarterSet(newchar);
         MapleCharacter.saveNewCharToDB(newchar);
         c.SendPacket(ResCLogin.addNewCharEntry(newchar, true));

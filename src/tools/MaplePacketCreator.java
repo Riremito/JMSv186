@@ -68,6 +68,9 @@ public class MaplePacketCreator {
 
     // マップ移動
     public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
+        if (ServerConfig.JMS302orLater()) {
+            return ResCStage.SetField_302(chr, 1, false, to, spawnPoint);
+        }
         return ResCStage.SetField(chr, false, to, spawnPoint);
     }
 
@@ -319,6 +322,9 @@ public class MaplePacketCreator {
         p.EncodeStr(text);
         if (ServerConfig.JMS164orLater()) {
             p.Encode1((byte) show);
+        }
+        if (ServerConfig.JMS302orLater()) {
+            p.Encode1(0);
         }
         // if LP_UserChatNLCPQ, add more str
         // p.EncodeStr("");

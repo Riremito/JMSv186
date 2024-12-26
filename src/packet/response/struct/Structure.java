@@ -40,6 +40,9 @@ public class Structure {
     public static final byte[] addSkillInfo(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
+        if (ServerConfig.JMS302orLater()) {
+            data.Encode1(1);
+        }
         final Map<ISkill, SkillEntry> skills = chr.getSkills();
         data.Encode2(skills.size());
         for (final Map.Entry<ISkill, SkillEntry> skill : skills.entrySet()) {
@@ -53,6 +56,11 @@ public class Structure {
 
             if (skill.getKey().isFourthJob()) {
                 data.Encode4(skill.getValue().masterlevel);
+            }
+            if (ServerConfig.JMS302orLater()) {
+                if (skill.getKey().getId() == 40020002 || skill.getKey().getId() == 80000004) {
+                    data.Encode4(0);
+                }
             }
         }
         return data.Get().getBytes();
@@ -74,6 +82,10 @@ public class Structure {
         ServerPacket data = new ServerPacket();
         final List<MapleQuestStatus> started = chr.getStartedQuests();
 
+        if (ServerConfig.JMS302orLater()) {
+            data.Encode1(0);
+        }
+
         data.Encode2(started.size());
         for (final MapleQuestStatus q : started) {
             data.Encode2(q.getQuest().getId());
@@ -85,8 +97,12 @@ public class Structure {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS194orLater()) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
+        }
+
+        if (ServerConfig.JMS302orLater()) {
+            data.Encode2(0);
         }
 
         return data.Get().getBytes();
@@ -94,6 +110,10 @@ public class Structure {
 
     public static byte[] addQuestComplete(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
+
+        if (ServerConfig.JMS302orLater()) {
+            data.Encode1(0);
+        }
 
         final List<MapleQuestStatus> completed = chr.getCompletedQuests();
         int time;
@@ -105,6 +125,9 @@ public class Structure {
             data.Encode4(time); // completion time
         }
 
+        if (ServerConfig.JMS302orLater()) {
+            data.Encode2(0);
+        }
         return data.Get().getBytes();
     }
 

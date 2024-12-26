@@ -173,6 +173,9 @@ public class GW_ItemSlotBase {
                             data.Encode4(0);
                         }
                     }
+                    if (ServerConfig.JMS302orLater()) {
+                        data.Encode2(0);
+                    }
                     // 潜在能力
                     if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
                             || ServerConfig.IsTWMS()
@@ -195,6 +198,10 @@ public class GW_ItemSlotBase {
                         data.Encode2(equip.getHpR()); // option._ZtlSecureTear_nSocket1
                         data.Encode2(equip.getMpR()); // option._ZtlSecureTear_nSocket2
                     }
+
+                    if (ServerConfig.JMS302orLater()) {
+                        data.Encode2(0);
+                    }
                 } // 特殊パターン
                 else {
                     data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
@@ -206,12 +213,25 @@ public class GW_ItemSlotBase {
                     data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
                 }
 
+                if (ServerConfig.JMS302orLater()) {
+                    data.Encode4(0);
+                    data.Encode4(0);
+                    data.Encode4(0);
+                }
+
                 if (!hasUniqueId) {
                     data.Encode8(0);
                 }
 
                 data.Encode8(0);
                 data.Encode4(-1);
+
+                if (ServerConfig.JMS302orLater()) {
+                    data.Encode4(0);
+                    data.Encode1(0);
+                    data.Encode1(0);
+                    data.Encode2(0);
+                }
                 break;
             }
             // Pet
@@ -244,12 +264,26 @@ public class GW_ItemSlotBase {
                 int item_img_num = item.getItemId() / 10000;
 
                 // 手裏剣 or 弾丸
-                if (item_img_num == 207 || item_img_num == 233) {
+                if (item_img_num == 207 || item_img_num == 233 || item_img_num == 287 || item_img_num == 288 || item_img_num == 289) {
                     // 8 bytes
                     data.Encode4(2);
                     data.Encode2(0x54);
                     data.Encode1(0);
                     data.Encode1(0x34);
+                }
+                
+                if(ServerConfig.JMS302orLater()){
+                    data.Encode4(0);
+                    data.Encode2(0);
+                    data.Encode2(0);
+                    data.Encode2(0);
+                    data.Encode2(0);
+                    data.Encode8(0);
+                    data.Encode8(0);
+                    data.Encode8(0);
+                    data.Encode8(0);
+                    data.Encode4(0);
+                    data.Encode2(0);
                 }
                 break;
             }

@@ -31,7 +31,14 @@ public enum NewCharacterOps {
     DualBlade(1), // デュアルブレイド (冒険家と同じ値)
     Aran(2), // アラン
     Evan(3), // エヴァン
-    Resistance(-1),
+    // BB後, 順番入れ替わる
+    Resistance(-1), // レジスタンス
+    CannonShooter(-1), // キャノンシューター
+    Hayato(-1), // ハヤト
+    Mercedes(-1), // メルセデス
+    DemonSlayer(-1), // デーモンスレイヤー
+    Phantom(-1), // ファントム
+    Kanna(-1), // カンナ
     UNKNOWN(-1);
 
     private int value;
@@ -70,6 +77,15 @@ public enum NewCharacterOps {
             DualBlade.set(1); // 冒険家と必ず同じ値になる
             Aran.set(3);
             Evan.set(4);
+        }
+        if (ServerConfig.JMS302orLater()) {
+            CannonShooter.set(1); // v204
+            Mercedes.set(5); // v204
+            DemonSlayer.set(6); // v205
+            Phantom.set(7); // v213限定, v302は作成不可
+            Hayato.set(8); // v301
+            Kanna.set(9); // v302
+            // v314以降全部作成可能
         }
     }
 }
