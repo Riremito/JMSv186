@@ -97,6 +97,7 @@ import packet.response.ResCUser_Pet;
 import packet.response.ResCUser_Pet.DeActivatedMsg;
 import packet.response.RemoteResponse;
 import packet.response.ResCClientSocket;
+import packet.response.ResCStage;
 import packet.response.ResCSummonedPool;
 import packet.response.TemporaryStatResponse;
 import packet.response.TestResponse;
@@ -2416,7 +2417,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
         final boolean pyramid = pyramidSubway != null;
         if (map.getId() == nowmapid) {
-            client.getSession().write(warpPacket);
+            client.SendPacket(warpPacket);
+            if (ServerConfig.JMS302orLater()) {
+                client.SendPacket(ResCStage.SetField_302(this, 2, false, null, 0, 0));
+            }
+
             Debug.DebugLog(getName() + " Enter Map = " + to.getId());
             to.spawnMerchant(this); // show merchant
             to.spawnDynamicPortal(this); // show dynamic portal;

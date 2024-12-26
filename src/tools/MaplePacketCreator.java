@@ -69,7 +69,7 @@ public class MaplePacketCreator {
     // マップ移動
     public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
         if (ServerConfig.JMS302orLater()) {
-            return ResCStage.SetField_302(chr, 1, false, to, spawnPoint);
+            return ResCStage.SetField_302(chr, 1, false, to, spawnPoint, 0);
         }
         return ResCStage.SetField(chr, false, to, spawnPoint);
     }

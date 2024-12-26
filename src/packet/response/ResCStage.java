@@ -119,7 +119,7 @@ public class ResCStage {
     }
 
     // 分割版
-    public static final MaplePacket SetField_302(MapleCharacter chr, int part, boolean loggedin, MapleMap to, int spawnPoint) {
+    public static final MaplePacket SetField_302(MapleCharacter chr, int part, boolean loggedin, MapleMap to, int spawnPoint, long datamask_2) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetField);
         // 分割, 1 -> 2の順で送信
         sp.Encode4(part);
@@ -156,7 +156,7 @@ public class ResCStage {
         // sub
         if (part == 2) {
             // 008AAA80
-            sp.EncodeBuffer(CharacterData.Encode_302_2(chr, -1));
+            sp.EncodeBuffer(CharacterData.Encode_302_2(chr, datamask_2));
             sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
             sp.Encode4(100); // nMobStatAdjustRate
             sp.Encode1(0);
