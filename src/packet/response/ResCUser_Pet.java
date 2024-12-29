@@ -19,12 +19,10 @@
 package packet.response;
 
 import client.MapleCharacter;
-import client.inventory.IItem;
 import client.inventory.MaplePet;
 import handling.MaplePacket;
 import packet.request.struct.CMovePath;
 import packet.ServerPacket;
-import packet.response.struct.GW_ItemSlotBase;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -153,21 +151,6 @@ public class ResCUser_Pet {
             mplew.writeShort(success ? 1 : 0);
         }
         return mplew.getPacket();
-    }
-
-    public static final MaplePacket updatePet(final MaplePet pet, final IItem item) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_InventoryOperation);
-
-        sp.Encode1(0);
-        sp.Encode1(2);
-        sp.Encode1(3);
-        sp.Encode1(5);
-        sp.Encode2(pet.getInventoryPosition());
-        sp.Encode1(0);
-        sp.Encode1(5);
-        sp.Encode2(pet.getInventoryPosition());
-        sp.EncodeBuffer(GW_ItemSlotBase.Encode(item));
-        return sp.Get();
     }
 
 }

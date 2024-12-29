@@ -41,6 +41,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import packet.ServerPacket;
 import packet.response.LocalResponse;
 import packet.response.RemoteResponse;
+import packet.response.ResCWvsContext;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
@@ -881,14 +882,14 @@ public class PlayerStats implements Serializable {
         for (Equip eqq : all) {
             if (eqq.getDurability() == 0) { //> 0 went to negative
                 if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
-                    chr.getClient().getSession().write(MaplePacketCreator.getInventoryFull());
-                    chr.getClient().getSession().write(MaplePacketCreator.getShowInventoryFull());
+                    chr.getClient().getSession().write(ResCWvsContext.getInventoryFull());
+                    chr.getClient().getSession().write(ResCWvsContext.getShowInventoryFull());
                     return false;
                 }
                 durabilityHandling.remove(eqq);
                 final short pos = chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot();
                 MapleInventoryManipulator.unequip(chr.getClient(), eqq.getPosition(), pos);
-                chr.getClient().getSession().write(MaplePacketCreator.updateSpecialItemUse(eqq, (byte) 1, pos));
+                chr.getClient().getSession().write(ResCWvsContext.updateSpecialItemUse(eqq, (byte) 1, pos));
             } else {
                 chr.forceReAddItem(eqq.copy(), MapleInventoryType.EQUIPPED);
             }

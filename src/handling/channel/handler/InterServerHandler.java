@@ -49,7 +49,6 @@ import packet.response.FriendResponse;
 import packet.response.GuildResponse;
 import packet.response.ResCClientSocket;
 import packet.response.ResCFuncKeyMappedMan;
-import packet.response.ResCLogin;
 import packet.response.ResCStage;
 import packet.response.ResCUser_Pet;
 import server.maps.FieldLimitType;
@@ -140,8 +139,9 @@ public class InterServerHandler {
 
         if (ServerConfig.JMS302orLater()) {
             // 分割 SetField
-            c.SendPacket(ResCStage.SetField_302(player, 1, true, null, 0, 0));
-            c.SendPacket(ResCStage.SetField_302(player, 2, true, null, 0, -1));
+            c.SendPacket(ResCStage.SetField_JMS_302(player, 1, true, null, 0, 0));
+            c.SendPacket(ResCStage.SetField_JMS_302(player, 2, true, null, 0, -1));
+            //c.getPlayer().UpdateStat(true);
         } else {
             c.SendPacket(MaplePacketCreator.getCharInfo(player));
         }

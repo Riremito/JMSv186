@@ -51,7 +51,7 @@ import packet.request.ContextPacket;
 import packet.response.ResCDropPool;
 import packet.response.ResCDropPool.LeaveType;
 import packet.request.ItemRequest;
-import packet.response.ContextResponse;
+import packet.response.ResCWvsContext;
 import packet.response.FieldResponse;
 import packet.response.FreeMarketResponse;
 import packet.response.ItemResponse;
@@ -947,7 +947,7 @@ public class InventoryHandler {
                     final Equip eq = (Equip) item;
                     if (eq.getState() >= 5) {
                         eq.renewPotential();
-                        c.SendPacket(ContextResponse.scrolledItem(toUse, item, false, true));
+                        c.SendPacket(ResCWvsContext.scrolledItem(toUse, item, false, true));
                         c.getSession().write(MaplePacketCreator.getPotentialEffect(c.getPlayer().getId(), eq.getItemId()));
                         c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), ScrollResult.SUCCESS, false), false);
                         c.getPlayer().forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);
@@ -1277,8 +1277,8 @@ public class InventoryHandler {
                         removeItem(chr, mapitem, ob);
                     }
                 } else {
-                    c.getSession().write(MaplePacketCreator.getInventoryFull());
-                    c.getSession().write(MaplePacketCreator.getShowInventoryFull());
+                    c.getSession().write(ResCWvsContext.getInventoryFull());
+                    c.getSession().write(ResCWvsContext.getShowInventoryFull());
                     c.getSession().write(MaplePacketCreator.enableActions());
                 }
             }

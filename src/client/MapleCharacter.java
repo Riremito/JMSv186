@@ -84,7 +84,7 @@ import java.util.HashMap;
 import packet.response.PachinkoResponse;
 import packet.request.ContextPacket;
 import packet.request.ReqCUserPool;
-import packet.response.ContextResponse;
+import packet.response.ResCWvsContext;
 import packet.response.ResCUser_Dragon;
 import packet.response.FreeMarketResponse;
 import packet.response.FriendResponse;
@@ -2419,7 +2419,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (map.getId() == nowmapid) {
             client.SendPacket(warpPacket);
             if (ServerConfig.JMS302orLater()) {
-                client.SendPacket(ResCStage.SetField_302(this, 2, false, null, 0, 0));
+                client.SendPacket(ResCStage.SetField_JMS_302(this, 2, false, null, 0, 0));
+                //client.getPlayer().UpdateStat(true);
             }
 
             Debug.DebugLog(getName() + " Enter Map = " + to.getId());
@@ -2642,7 +2643,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (skill == null || (!GameConstants.isApplicableSkill(skill.getId()) && !GameConstants.isApplicableSkill_(skill.getId()))) {
             return;
         }
-        client.getSession().write(ContextResponse.updateSkill(skill.getId(), newLevel, newMasterlevel, expiration));
+        client.getSession().write(ResCWvsContext.updateSkill(skill.getId(), newLevel, newMasterlevel, expiration));
         if (newLevel == 0 && newMasterlevel == 0) {
             if (skills.containsKey(skill)) {
                 skills.remove(skill);
@@ -2664,7 +2665,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (skill == null) {
             return;
         }
-        client.getSession().write(ContextResponse.updateSkill(skill.getId(), newLevel, newMasterlevel, -1L));
+        client.getSession().write(ResCWvsContext.updateSkill(skill.getId(), newLevel, newMasterlevel, -1L));
         if (newLevel == 0 && newMasterlevel == 0) {
             if (skills.containsKey(skill)) {
                 skills.remove(skill);
@@ -2679,7 +2680,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void ResetSkill() {
         for (Entry<ISkill, SkillEntry> skil : skills.entrySet()) {
-            SendPacket(ContextResponse.updateSkill(skil.getKey().getId(), 0, 0, -1));
+            SendPacket(ResCWvsContext.updateSkill(skil.getKey().getId(), 0, 0, -1));
         }
         skills.clear();
     }
@@ -2971,14 +2972,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void forceReAddItem(IItem item, MapleInventoryType type) { //used for stuff like durability, item exp/level, probably owner?
         forceReAddItem_NoUpdate(item, type);
         if (type != MapleInventoryType.UNDEFINED) {
-            client.getSession().write(MaplePacketCreator.updateSpecialItemUse(item, type == MapleInventoryType.EQUIPPED ? (byte) 1 : type.getType()));
+            client.getSession().write(ResCWvsContext.updateSpecialItemUse(item, type == MapleInventoryType.EQUIPPED ? (byte) 1 : type.getType()));
         }
     }
 
     public void forceReAddItem_Flag(IItem item, MapleInventoryType type) { //used for flags
         forceReAddItem_NoUpdate(item, type);
         if (type != MapleInventoryType.UNDEFINED) {
-            client.getSession().write(MaplePacketCreator.updateSpecialItemUse_(item, type == MapleInventoryType.EQUIPPED ? (byte) 1 : type.getType()));
+            client.getSession().write(ResCWvsContext.updateSpecialItemUse_(item, type == MapleInventoryType.EQUIPPED ? (byte) 1 : type.getType()));
         }
     }
 
@@ -3026,7 +3027,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             pendingExpiration = null;
             if (pendingSkills != null) {
                 for (Integer z : pendingSkills) {
-                    client.getSession().write(ContextResponse.updateSkill(z, 0, 0, -1));
+                    client.getSession().write(ResCWvsContext.updateSkill(z, 0, 0, -1));
                     client.getSession().write(MaplePacketCreator.serverNotice(5, "[" + SkillFactory.getSkillName(z) + "] skill has expired and will not be available for use."));
                 }
             } //not real msg
@@ -6091,7 +6092,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
         laststat.Update(this);
 
-        SendPacket(ContextResponse.StatChanged(this, unlock ? 1 : 0, GetStatMask()));
+        SendPacket(ResCWvsContext.StatChanged(this, unlock ? 1 : 0, GetStatMask()));
         ClearStatMask();
     }
 

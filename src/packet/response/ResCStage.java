@@ -119,7 +119,7 @@ public class ResCStage {
     }
 
     // 分割版
-    public static final MaplePacket SetField_302(MapleCharacter chr, int part, boolean loggedin, MapleMap to, int spawnPoint, long datamask_2) {
+    public static final MaplePacket SetField_JMS_302(MapleCharacter chr, int part, boolean loggedin, MapleMap to, int spawnPoint, long datamask_2) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetField);
         // 分割, 1 -> 2の順で送信
         sp.Encode4(part);
@@ -149,7 +149,7 @@ public class ResCStage {
                 sp.Encode4(chr.getStat().getHp());
                 sp.Encode1(0); // not 0, 0059E9C0
             }
-                sp.Encode1(0);
+            sp.Encode1(0);
             return sp.Get();
         }
 

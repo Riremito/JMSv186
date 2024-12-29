@@ -55,6 +55,7 @@ import packet.request.ContextPacket;
 import packet.response.FieldResponse;
 import packet.response.LocalResponse;
 import packet.response.ResCUser_Pet;
+import packet.response.ResCWvsContext;
 import packet.response.TestResponse;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
@@ -757,7 +758,7 @@ public abstract class AbstractPlayerInteraction {
         final MaplePet pet = getPlayer().getPet(index);
         if (pet != null) {
             pet.setCloseness(pet.getCloseness() + closeness);
-            getClient().getSession().write(ResCUser_Pet.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+            getClient().getSession().write(ResCWvsContext.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
         }
     }
 
@@ -765,7 +766,7 @@ public abstract class AbstractPlayerInteraction {
         for (final MaplePet pet : getPlayer().getPets()) {
             if (pet != null) {
                 pet.setCloseness(pet.getCloseness() + closeness);
-                getClient().getSession().write(ResCUser_Pet.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+                getClient().getSession().write(ResCWvsContext.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
             }
         }
     }

@@ -29,7 +29,6 @@ import java.util.Map.Entry;
 import client.inventory.IItem;
 import client.MapleCharacter;
 import client.MapleClient;
-import client.inventory.MapleInventoryType;
 import client.MapleStat;
 import client.inventory.IEquip.ScrollResult;
 import client.inventory.MapleRing;
@@ -53,7 +52,7 @@ import packet.ServerPacket;
 import packet.request.ContextPacket;
 import packet.request.ContextPacket.DropPickUpMessageType;
 import packet.response.ResScriptMan;
-import packet.response.ContextResponse;
+import packet.response.ResCWvsContext;
 import packet.response.ResCStage;
 import packet.response.struct.TestHelper;
 import server.maps.MapleNodes.MapleNodeInfo;
@@ -69,13 +68,13 @@ public class MaplePacketCreator {
     // マップ移動
     public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
         if (ServerConfig.JMS302orLater()) {
-            return ResCStage.SetField_302(chr, 1, false, to, spawnPoint, 0);
+            return ResCStage.SetField_JMS_302(chr, 1, false, to, spawnPoint, 0);
         }
         return ResCStage.SetField(chr, false, to, spawnPoint);
     }
 
     public static final MaplePacket enableActions() {
-        return ContextResponse.StatChanged(null, 1, 0);
+        return ResCWvsContext.StatChanged(null, 1, 0);
     }
 
     public static final MaplePacket instantMapWarp(final byte portal) {
@@ -426,140 +425,6 @@ public class MaplePacketCreator {
         return p.Get();
     }
 
-    public static MaplePacket updateInventorySlot(MapleInventoryType type, IItem item, boolean fromDrop) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(fromDrop ? 1 : 0);
-//	mplew.write((slot2 > 0 ? 1 : 0) + 1);
-        mplew.write(1);
-        mplew.write(1);
-        mplew.write(type.getType()); // iv type
-        mplew.writeShort(item.getPosition()); // slot id
-        mplew.writeShort(item.getQuantity());
-        /*	if (slot2 > 0) {
-        mplew.write(1);
-        mplew.write(type.getType());
-        mplew.writeShort(slot2);
-        mplew.writeShort(amt2);
-        }*/
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket moveInventoryItem(MapleInventoryType type, short src, short dst) {
-        return moveInventoryItem(type, src, dst, (byte) -1);
-    }
-
-    public static MaplePacket moveInventoryItem(MapleInventoryType type, short src, short dst, short equipIndicator) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(HexTool.getByteArrayFromHexString("01 01 02"));
-        mplew.write(type.getType());
-        mplew.writeShort(src);
-        mplew.writeShort(dst);
-        if (equipIndicator != -1) {
-            mplew.write(equipIndicator);
-        }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket moveAndMergeInventoryItem(MapleInventoryType type, short src, short dst, short total) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(HexTool.getByteArrayFromHexString("01 02 03"));
-        mplew.write(type.getType());
-        mplew.writeShort(src);
-        mplew.write(1); // merge mode?
-        mplew.write(type.getType());
-        mplew.writeShort(dst);
-        mplew.writeShort(total);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket moveAndMergeWithRestInventoryItem(MapleInventoryType type, short src, short dst, short srcQ, short dstQ) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(HexTool.getByteArrayFromHexString("01 02 01"));
-        mplew.write(type.getType());
-        mplew.writeShort(src);
-        mplew.writeShort(srcQ);
-        mplew.write(HexTool.getByteArrayFromHexString("01"));
-        mplew.write(type.getType());
-        mplew.writeShort(dst);
-        mplew.writeShort(dstQ);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket clearInventoryItem(MapleInventoryType type, short slot, boolean fromDrop) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(fromDrop ? 1 : 0);
-        mplew.write(HexTool.getByteArrayFromHexString("01 03"));
-        mplew.write(type.getType());
-        mplew.writeShort(slot);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket updateSpecialItemUse(IItem item, byte invType) {
-        return updateSpecialItemUse(item, invType, item.getPosition());
-    }
-
-    public static MaplePacket updateSpecialItemUse(IItem item, byte invType, short pos) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(0); // could be from drop
-        mplew.write(2); // always 2
-        mplew.write(3); // quantity > 0 (?)
-        mplew.write(invType); // Inventory type
-        mplew.writeShort(pos); // item slot
-        mplew.write(0);
-        mplew.write(invType);
-        if (item.getType() == 1) {
-            mplew.writeShort(pos);
-        } else {
-            mplew.write(pos);
-        }
-        TestHelper.addItemInfo(mplew, item, true, true);
-        if (item.getPosition() < 0) {
-            mplew.write(2); //?
-        }
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket updateSpecialItemUse_(IItem item, byte invType) {
-        return updateSpecialItemUse_(item, invType, item.getPosition());
-    }
-
-    public static MaplePacket updateSpecialItemUse_(IItem item, byte invType, short pos) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(0); // could be from drop
-        mplew.write(1); // always 2
-        mplew.write(0); // quantity > 0 (?)
-        mplew.write(invType); // Inventory type
-        if (item.getType() == 1) {
-            mplew.writeShort(pos);
-        } else {
-            mplew.write(pos);
-        }
-        TestHelper.addItemInfo(mplew, item, true, true);
-        if (item.getPosition() < 0) {
-            mplew.write(1); //?
-        }
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket getScrollEffect(int chr, ScrollResult scrollSuccess, boolean legendarySpirit) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -630,31 +495,6 @@ public class MaplePacketCreator {
             mplew.writeLong(ring.getPartnerRingId());
             mplew.writeInt(ring.getItemId());
         }
-    }
-
-    public static MaplePacket dropInventoryItem(MapleInventoryType type, short src) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(HexTool.getByteArrayFromHexString("01 01 03"));
-        mplew.write(type.getType());
-        mplew.writeShort(src);
-        if (src < 0) {
-            mplew.write(1);
-        }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket dropInventoryItemUpdate(MapleInventoryType type, IItem item) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(HexTool.getByteArrayFromHexString("01 01 01"));
-        mplew.write(type.getType());
-        mplew.writeShort(item.getPosition());
-        mplew.writeShort(item.getQuantity());
-
-        return mplew.getPacket();
     }
 
     public static MaplePacket damagePlayer(int skill, int monsteridfrom, int cid, int damage, int fake, byte direction, int reflect, boolean is_pg, int oid, int pos_x, int pos_y) {
@@ -934,16 +774,6 @@ public class MaplePacketCreator {
         mplew.writeMapleAsciiString(target);
         mplew.write(3);
         mplew.writeInt(channel - 1);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getInventoryFull() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
-        mplew.write(1);
-        mplew.write(0);
 
         return mplew.getPacket();
     }
@@ -1978,11 +1808,6 @@ public class MaplePacketCreator {
             }
         }
         return mplew.getPacket();
-    }
-
-    // context packet
-    public static MaplePacket getShowInventoryFull() {
-        return ContextPacket.getShowInventoryStatus(DropPickUpMessageType.PICKUP_INVENTORY_FULL);
     }
 
     public static MaplePacket showItemUnavailable() {

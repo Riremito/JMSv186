@@ -22,9 +22,8 @@ package packet.request;
 
 import client.MapleQuestStatus;
 import config.ServerConfig;
-import debug.Debug;
 import handling.MaplePacket;
-import packet.ServerPacket;
+import packet.response.ResCWvsContext;
 import tools.StringUtil;
 
 /**
@@ -197,174 +196,6 @@ public class ContextPacket {
 
     }
 
-    public static final MaplePacket Message(MessageArg ma) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_Message);
-
-        p.Encode1(ma.mt.get());
-
-        switch (ma.mt) {
-            case MS_DropPickUpMessage: {
-                p.Encode1(ma.dt.get());
-                switch (ma.dt) {
-                    case PICKUP_ITEM: {
-                        p.Encode4(ma.ItemID);
-                        p.Encode4(ma.Inc_ItemCount);
-                        break;
-                    }
-                    case PICKUP_MESO: {
-                        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
-                            p.Encode1(0);
-                        }
-
-                        p.Encode4(ma.Inc_Meso);
-
-                        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
-                            p.Encode2(0); // Internet cafe bonus
-                        } else {
-                            p.Encode4(0);
-                        }
-
-                        break;
-                    }
-                    case PICKUP_MONSTER_CARD: {
-                        p.Encode4(ma.ItemID);
-                        break;
-                    }
-                    case PICKUP_INVENTORY_FULL:
-                    case PICKUP_UNAVAILABLE:
-                    case PICKUP_BROKEN: {
-                        p.Encode4(0);
-                        p.Encode4(0);
-                        break;
-                    }
-                    default: {
-                        Debug.ErrorLog("Unknown DropPickUp Type" + ma.dt.get());
-                        break;
-                    }
-                }
-                break;
-            }
-            // updateQuest, updateQuestMobKills
-            case MS_QuestRecordMessage: {
-                p.Encode2(ma.QuestID);
-                p.Encode1(ma.qt.get());
-                switch (ma.qt) {
-                    case QUEST_START: {
-                        p.Encode1(0); // 0 or not
-                        break;
-                    }
-                    case QUEST_UPDATE: {
-                        p.EncodeStr(ma.str);
-                        break;
-                    }
-                    case QUEST_COMPLETE: {
-                        p.Encode8(System.currentTimeMillis());
-                        break;
-                    }
-                    default: {
-                        Debug.ErrorLog("Unknown QuestRecord Type" + ma.dt.get());
-                        break;
-                    }
-                }
-                break;
-            }
-            // itemExpired
-            case MS_CashItemExpireMessage: {
-                p.Encode4(ma.ItemID);
-                break;
-            }
-            case MS_IncEXPMessage: {
-                p.Encode1(ma.Inc_EXP_TextColor);
-                p.Encode4(ma.Inc_EXP);
-                p.Encode1(ma.InChat); // bOnQuest
-                p.Encode4(0);
-                p.Encode1(ma.Inc_EXP_MobEventBonusPercentage); // nMobEventBonusPercentage
-                p.Encode1(0);
-                p.Encode4(ma.Inc_EXP_WeddingBonus); // 結婚ボーナス経験値
-                p.Encode4(0); // グループリングボーナスEXP (?)
-
-                if (0 < ma.Inc_EXP_MobEventBonusPercentage) {
-                    p.Encode1(ma.Inc_EXP_PlayTimeHour);
-                }
-
-                if (ma.InChat != 0) {
-                    p.Encode1(0);
-                }
-
-                p.Encode1(0); // nPartyBonusEventRate
-                p.Encode4(ma.Inc_EXP_PartyBonus); // グループボーナス経験値
-                p.Encode4(ma.Inc_EXP_EquipmentBonus); // アイテム装着ボーナス経験値
-                p.Encode4(0); // not used
-                p.Encode4(ma.Inc_EXP_RainbowWeekBonus); // レインボーウィークボーナス経験値
-
-                if (194 <= ServerConfig.GetVersion()) {
-                    p.Encode1(0); // 0 or not
-                }
-
-                break;
-            }
-            // getSPMsg
-            case MS_IncSPMessage: {
-                p.Encode2(ma.JobID);
-                p.Encode1(ma.Inc_SP);
-                break;
-            }
-            // getShowFameGain
-            case MS_IncPOPMessage: {
-                p.Encode4(ma.Inc_Fame);
-                break;
-            }
-            // showMesoGain
-            case MS_IncMoneyMessage: {
-                p.Encode4(ma.Inc_Meso);
-                break;
-            }
-            // getGPMsg
-            case MS_IncGPMessage: {
-                p.Encode4(ma.Inc_GP);
-                break;
-            }
-            // getStatusMsg
-            case MS_GiveBuffMessage: {
-                p.Encode4(ma.ItemID);
-                break;
-            }
-            case MS_GeneralItemExpireMessage: {
-                break;
-            }
-            // showQuestMsg
-            case MS_SystemMessage: {
-                p.EncodeStr(ma.str);
-                break;
-            }
-            // updateInfoQuest
-            case MS_QuestRecordExMessage: {
-                p.Encode2(ma.QuestID);
-                p.EncodeStr(ma.str);
-                break;
-            }
-            case MS_ItemProtectExpireMessage: {
-                break;
-            }
-            case MS_ItemExpireReplaceMessage: {
-                break;
-            }
-            case MS_SkillExpireMessage: {
-                break;
-            }
-            // updateBeansMSG, GainTamaMessage
-            case MS_JMS_PACHINKO: {
-                p.Encode4(ma.Inc_Tama);
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-
-        return p.Get();
-    }
-
     public static MaplePacket DropPickUpMessage(int itemId, short quantity) {
 
         MessageArg ma = new MessageArg();
@@ -373,7 +204,7 @@ public class ContextPacket {
         ma.ItemID = itemId;
         ma.Inc_ItemCount = quantity;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static MaplePacket getShowInventoryStatus(DropPickUpMessageType dm) {
@@ -381,7 +212,7 @@ public class ContextPacket {
         ma.mt = MessageType.MS_DropPickUpMessage;
         ma.dt = dm;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static MaplePacket showGainCard(int itemid) {
@@ -390,7 +221,7 @@ public class ContextPacket {
         ma.dt = DropPickUpMessageType.PICKUP_MONSTER_CARD;
         ma.ItemID = itemid;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static final MaplePacket updateQuest(final MapleQuestStatus quest) {
@@ -401,7 +232,7 @@ public class ContextPacket {
         ma.qt = QuestRecordMessageType.get(quest.getStatus());
         ma.str = quest.getCustomData() != null ? quest.getCustomData() : "";
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static final MaplePacket updateQuestMobKills(final MapleQuestStatus status) {
@@ -417,7 +248,7 @@ public class ContextPacket {
         ma.qt = QuestRecordMessageType.QUEST_UPDATE;
         ma.str = sb.toString();
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static MaplePacket itemExpired(int itemid) {
@@ -425,7 +256,7 @@ public class ContextPacket {
         ma.mt = MessageType.MS_CashItemExpireMessage;
         ma.ItemID = itemid;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static final MaplePacket GainEXP_Monster(final int gain, final boolean white, final int partyinc, final int Class_Bonus_EXP, final int Equipment_Bonus_EXP, final int Premium_Bonus_EXP) {
@@ -442,7 +273,7 @@ public class ContextPacket {
         ma.Inc_EXP_RainbowWeekBonus = 0;
         ma.Inc_EXP_ClassBonus = Class_Bonus_EXP;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static final MaplePacket GainEXP_Others(final int gain, final boolean inChat, final boolean white) {
@@ -452,7 +283,7 @@ public class ContextPacket {
         ma.Inc_EXP = gain;
         ma.InChat = inChat ? 1 : 0;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static MaplePacket getSPMsg(byte inc_sp, short jobid) {
@@ -461,7 +292,7 @@ public class ContextPacket {
         ma.JobID = jobid;
         ma.Inc_SP = inc_sp;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static final MaplePacket showMesoGain(int gain, boolean inChat) {
@@ -471,14 +302,14 @@ public class ContextPacket {
             ma.dt = DropPickUpMessageType.PICKUP_MESO;
             ma.Inc_Meso = gain;
 
-            return ContextPacket.Message(ma);
+            return ResCWvsContext.Message(ma);
         }
 
         MessageArg ma = new MessageArg();
         ma.mt = MessageType.MS_IncMoneyMessage;
         ma.Inc_Meso = gain;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
 
     }
 
@@ -487,7 +318,7 @@ public class ContextPacket {
         ma.mt = MessageType.MS_IncPOPMessage;
         ma.Inc_Fame = inc_fame;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static MaplePacket getGPMsg(int inc_gp) {
@@ -495,7 +326,7 @@ public class ContextPacket {
         ma.mt = MessageType.MS_IncGPMessage;
         ma.Inc_GP = inc_gp;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static MaplePacket getStatusMsg(int itemid) {
@@ -503,7 +334,7 @@ public class ContextPacket {
         ma.mt = MessageType.MS_GiveBuffMessage;
         ma.ItemID = itemid;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static MaplePacket showQuestMsg(String msg) {
@@ -511,7 +342,7 @@ public class ContextPacket {
         ma.mt = MessageType.MS_SystemMessage;
         ma.str = msg;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static final MaplePacket updateInfoQuest(final int quest, final String data) {
@@ -520,7 +351,7 @@ public class ContextPacket {
         ma.QuestID = (short) quest;
         ma.str = data;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     public static final MaplePacket GainTamaMessage(int inc_tama) {
@@ -528,7 +359,7 @@ public class ContextPacket {
         ma.mt = MessageType.MS_JMS_PACHINKO;
         ma.Inc_Tama = inc_tama;
 
-        return ContextPacket.Message(ma);
+        return ResCWvsContext.Message(ma);
     }
 
     // CWvsContext::OnOpenFullClientDownloadLink
