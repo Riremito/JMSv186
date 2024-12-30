@@ -36,6 +36,7 @@ import packet.response.LocalResponse;
 import packet.response.ResCUser_Pet;
 import packet.response.RemoteResponse;
 import packet.response.ResCWvsContext;
+import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
@@ -146,7 +147,7 @@ public class ReqCUser_Pet {
         chr.enableActions();
 
         // 情報更新
-        chr.SendPacket(ResCWvsContext.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+        chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
         // pet level up
         if (pet_previous_level < pet.getLevel()) {
             chr.SendPacket(LocalResponse.showOwnPetLevelUp(0));
@@ -257,7 +258,7 @@ public class ReqCUser_Pet {
                     c.getSession().write(LocalResponse.showOwnPetLevelUp(petIndex));
                     chr.getMap().broadcastMessage(RemoteResponse.showPetLevelUp(chr, petIndex));
                 }
-                c.getSession().write(ResCWvsContext.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+                c.getSession().write(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
             }
         }
         chr.getMap().broadcastMessage(chr, ResCUser_Pet.commandResponse(chr.getId(), command, petIndex, success, false), true);
@@ -270,7 +271,7 @@ public class ReqCUser_Pet {
         lock.lock();
         try {
             if (mapitem.isPickedUp()) {
-                chr.SendPacket(ResCWvsContext.getInventoryFull());
+                chr.SendPacket(ResWrapper.getInventoryFull());
                 return;
             }
             if (mapitem.getOwner() != chr.getId() && mapitem.isPlayerDrop()) {

@@ -43,6 +43,7 @@ import packet.response.GuildResponse;
 import packet.response.PartyResponse;
 import packet.response.ResCWvsContext;
 import packet.response.UserResponse;
+import packet.response.wrapper.ResWrapper;
 import server.Timer.WorldTimer;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
@@ -1414,7 +1415,7 @@ public class World {
                         chr.unequipPet(pet, true, true);
                     } else {
                         pet.setFullness(newFullness);
-                        chr.getClient().getSession().write(ResCWvsContext.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
+                        chr.getClient().getSession().write(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
                     }
                 }
             }

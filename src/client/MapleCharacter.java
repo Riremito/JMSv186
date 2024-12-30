@@ -103,6 +103,7 @@ import packet.response.TemporaryStatResponse;
 import packet.response.TestResponse;
 import packet.response.UserResponse;
 import packet.response.struct.GW_CharacterStat;
+import packet.response.wrapper.ResWrapper;
 import tools.MockIOSession;
 import scripting.EventInstanceManager;
 import scripting.NPCScriptManager;
@@ -2972,14 +2973,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void forceReAddItem(IItem item, MapleInventoryType type) { //used for stuff like durability, item exp/level, probably owner?
         forceReAddItem_NoUpdate(item, type);
         if (type != MapleInventoryType.UNDEFINED) {
-            client.getSession().write(ResCWvsContext.updateSpecialItemUse(item, type == MapleInventoryType.EQUIPPED ? (byte) 1 : type.getType()));
+            client.getSession().write(ResWrapper.updateSpecialItemUse(item, type == MapleInventoryType.EQUIPPED ? (byte) 1 : type.getType()));
         }
     }
 
     public void forceReAddItem_Flag(IItem item, MapleInventoryType type) { //used for flags
         forceReAddItem_NoUpdate(item, type);
         if (type != MapleInventoryType.UNDEFINED) {
-            client.getSession().write(ResCWvsContext.updateSpecialItemUse_(item, type == MapleInventoryType.EQUIPPED ? (byte) 1 : type.getType()));
+            client.getSession().write(ResWrapper.updateSpecialItemUse_(item, type == MapleInventoryType.EQUIPPED ? (byte) 1 : type.getType()));
         }
     }
 

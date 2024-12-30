@@ -23,6 +23,7 @@ import database.DatabaseConnection;
 import packet.request.ReqCNpcPool;
 import packet.request.ReqCNpcPool.SP_ShopFlag;
 import packet.response.ResCWvsContext;
+import packet.response.wrapper.ResWrapper;
 import tools.MaplePacketCreator;
 import wz.LoadData;
 
@@ -192,7 +193,7 @@ public class MapleShop {
             final int price = (int) Math.round(ii.getPrice(item.getItemId()) * (slotMax - item.getQuantity()));
             if (c.getPlayer().getMeso() >= price) {
                 item.setQuantity(slotMax);
-                c.getSession().write(ResCWvsContext.updateInventorySlot(MapleInventoryType.USE, (Item) item, false));
+                c.getSession().write(ResWrapper.updateInventorySlot(MapleInventoryType.USE, (Item) item, false));
                 c.getPlayer().gainMeso(-price, false, true, false);
                 c.SendPacket(ReqCNpcPool.confirmShopTransaction(SP_ShopFlag.SUCCESS_SELL));
                 return true;

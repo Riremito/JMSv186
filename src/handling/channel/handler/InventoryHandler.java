@@ -58,6 +58,7 @@ import packet.response.ItemResponse;
 import packet.response.LocalResponse;
 import packet.response.RemoteResponse;
 import packet.response.ResCUIItemUpgrade;
+import packet.response.wrapper.ResWrapper;
 import server.Randomizer;
 import server.RandomRewards;
 import server.MapleShopFactory;
@@ -947,7 +948,7 @@ public class InventoryHandler {
                     final Equip eq = (Equip) item;
                     if (eq.getState() >= 5) {
                         eq.renewPotential();
-                        c.SendPacket(ResCWvsContext.scrolledItem(toUse, item, false, true));
+                        c.SendPacket(ResWrapper.scrolledItem(toUse, item, false, true));
                         c.getSession().write(MaplePacketCreator.getPotentialEffect(c.getPlayer().getId(), eq.getItemId()));
                         c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), ScrollResult.SUCCESS, false), false);
                         c.getPlayer().forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);
@@ -1277,8 +1278,8 @@ public class InventoryHandler {
                         removeItem(chr, mapitem, ob);
                     }
                 } else {
-                    c.getSession().write(ResCWvsContext.getInventoryFull());
-                    c.getSession().write(ResCWvsContext.getShowInventoryFull());
+                    c.getSession().write(ResWrapper.getInventoryFull());
+                    c.getSession().write(ResWrapper.getShowInventoryFull());
                     c.getSession().write(MaplePacketCreator.enableActions());
                 }
             }

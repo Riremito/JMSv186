@@ -45,6 +45,7 @@ import packet.response.PachinkoResponse;
 import packet.response.ResCUser_Pet;
 import packet.response.TemporaryStatResponse;
 import packet.response.ResCUIVega;
+import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
@@ -300,7 +301,7 @@ public class ItemRequest {
                 pet.setName(pet_name);
                 // remove item
                 RemoveCashItem(chr, item_slot);
-                chr.SendPacket(ResCWvsContext.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
+                chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
                 chr.getMap().broadcastMessage(ResCUser_Pet.changePetName(chr, pet_index, pet_name));
                 return true;
             }
@@ -545,7 +546,7 @@ public class ItemRequest {
             toReveal = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slot_equip_item);
         }
         if (magnify == null || toReveal == null) {
-            c.getSession().write(ResCWvsContext.getInventoryFull());
+            c.getSession().write(ResWrapper.getInventoryFull());
             return;
         }
         final Equip eqq = (Equip) toReveal;
@@ -581,11 +582,11 @@ public class ItemRequest {
                     }
                 }
             }
-            c.SendPacket(ResCWvsContext.scrolledItem(magnify, toReveal, false, true));
+            c.SendPacket(ResWrapper.scrolledItem(magnify, toReveal, false, true));
             c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.getPotentialReset(c.getPlayer().getId(), eqq.getPosition()));
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
         } else {
-            c.getSession().write(ResCWvsContext.getInventoryFull());
+            c.getSession().write(ResWrapper.getInventoryFull());
             return;
         }
     }
@@ -664,60 +665,60 @@ public class ItemRequest {
         final byte oldSlots = toScroll.getUpgradeSlots();
         IItem scroll = chr.getInventory(MapleInventoryType.USE).getItem(slot);
         if (scroll == null) {
-            c.getSession().write(ResCWvsContext.getInventoryFull());
+            c.getSession().write(ResWrapper.getInventoryFull());
             return false;
         }
         // 黄金つち (ビシャスのハンマー)
         if (scroll.getItemId() == 2470000) {
             final Equip toHammer = (Equip) toScroll;
             if (toHammer.getViciousHammer() >= 2 || toHammer.getUpgradeSlots() > 120) {
-                c.getSession().write(ResCWvsContext.getInventoryFull());
+                c.getSession().write(ResWrapper.getInventoryFull());
                 return false;
             }
             toHammer.setViciousHammer((byte) (toHammer.getViciousHammer() + 1));
             toHammer.setUpgradeSlots((byte) (toHammer.getUpgradeSlots() + 1));
-            c.SendPacket(ResCWvsContext.scrolledItem(scroll, toHammer, false, false));
+            c.SendPacket(ResWrapper.scrolledItem(scroll, toHammer, false, false));
             chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
             chr.getMap().broadcastMessage(chr, MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), IEquip.ScrollResult.SUCCESS, legendarySpirit), vegas == 0);
             return true;
         }
         if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
             if (toScroll.getUpgradeSlots() < 1) {
-                c.getSession().write(ResCWvsContext.getInventoryFull());
+                c.getSession().write(ResWrapper.getInventoryFull());
                 return false;
             }
         } else if (GameConstants.isEquipScroll(scroll.getItemId())) {
             if (toScroll.getUpgradeSlots() >= 1 || toScroll.getEnhance() >= 100 || vegas > 0 || ii.isCash(toScroll.getItemId())) {
-                c.getSession().write(ResCWvsContext.getInventoryFull());
+                c.getSession().write(ResWrapper.getInventoryFull());
                 return false;
             }
         } else if (GameConstants.isPotentialScroll(scroll.getItemId())) {
             if (toScroll.getState() >= 1 || (toScroll.getLevel() == 0 && toScroll.getUpgradeSlots() == 0) || vegas > 0 || ii.isCash(toScroll.getItemId())) {
-                c.getSession().write(ResCWvsContext.getInventoryFull());
+                c.getSession().write(ResWrapper.getInventoryFull());
                 return false;
             }
         }
         if (!GameConstants.canScroll(toScroll.getItemId()) && !GameConstants.isChaosScroll(toScroll.getItemId())) {
-            c.getSession().write(ResCWvsContext.getInventoryFull());
+            c.getSession().write(ResWrapper.getInventoryFull());
             return false;
         }
         if ((GameConstants.isCleanSlate(scroll.getItemId()) || GameConstants.isTablet(scroll.getItemId()) || GameConstants.isChaosScroll(scroll.getItemId())) && (vegas > 0 || ii.isCash(toScroll.getItemId()))) {
-            c.getSession().write(ResCWvsContext.getInventoryFull());
+            c.getSession().write(ResWrapper.getInventoryFull());
             return false;
         }
         if (GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() < 0) {
             //not a durability item
-            c.getSession().write(ResCWvsContext.getInventoryFull());
+            c.getSession().write(ResWrapper.getInventoryFull());
             return false;
         } else if (!GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() >= 0) {
-            c.getSession().write(ResCWvsContext.getInventoryFull());
+            c.getSession().write(ResWrapper.getInventoryFull());
             return false;
         }
         IItem wscroll = null;
         // Anti cheat and validation
         List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
         if (scrollReqs.size() > 0 && !scrollReqs.contains(toScroll.getItemId())) {
-            c.getSession().write(ResCWvsContext.getInventoryFull());
+            c.getSession().write(ResWrapper.getInventoryFull());
             return false;
         }
         if (whiteScroll) {
@@ -791,14 +792,14 @@ public class ItemRequest {
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false, false);
         }
         if (scrollSuccess == IEquip.ScrollResult.CURSE) {
-            c.SendPacket(ResCWvsContext.scrolledItem(scroll, toScroll, true, false));
+            c.SendPacket(ResWrapper.scrolledItem(scroll, toScroll, true, false));
             if (dst < 0) {
                 chr.getInventory(MapleInventoryType.EQUIPPED).removeItem(toScroll.getPosition());
             } else {
                 chr.getInventory(MapleInventoryType.EQUIP).removeItem(toScroll.getPosition());
             }
         } else if (vegas == 0) {
-            c.SendPacket(ResCWvsContext.scrolledItem(scroll, scrolled, false, false));
+            c.SendPacket(ResWrapper.scrolledItem(scroll, scrolled, false, false));
         }
         chr.getMap().broadcastMessage(chr, MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), scrollSuccess, legendarySpirit), vegas == 0);
         // equipped item was scrolled and changed
