@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tools.data.output;
 
+import debug.Debug;
 import java.io.ByteArrayOutputStream;
 
 import handling.ByteArrayMaplePacket;
@@ -42,6 +43,13 @@ public class MaplePacketLittleEndianWriter extends GenericLittleEndianWriter {
      */
     public MaplePacketLittleEndianWriter() {
         this(32);
+
+        Debug.DebugLog("OLD_PACKET");
+        StackTraceElement[] ste = new Throwable().getStackTrace();
+        if (1 < ste.length) {
+            Debug.DebugLog(ste[1].getFileName() + ":" + ste[1].getLineNumber());
+            Debug.DebugLog(ste[1].getClassName() + "." + ste[1].getMethodName());
+        }
     }
 
     /**
