@@ -47,52 +47,54 @@ public class ResCWvsContext {
         }
 
         boolean equip_changed = false;
-        for (InvOp.InvData v : io.get()) {
-            sp.Encode1(v.mode);
-            switch (v.mode) {
-                // add
-                case 0: {
-                    sp.Encode1(v.type.getType());
-                    sp.Encode2(v.item.getPosition());
-                    sp.EncodeBuffer(GW_ItemSlotBase.Encode(v.item));
-                    break;
-                }
-                // update
-                case 1: {
-                    sp.Encode1(v.type.getType());
-                    sp.Encode2(v.item.getPosition());
-                    sp.Encode2(v.item.getQuantity());
-                    break;
-                }
-                // move
-                case 2: {
-                    sp.Encode1(v.type.getType());
-                    sp.Encode2(v.src);
-                    sp.Encode2(v.dst);
-                    // 装備変更
-                    if (v.type.getType() == 1 && (v.src < 0 || v.dst < 0)) {
-                        equip_changed = true;
+        if (io != null) {
+            for (InvOp.InvData v : io.get()) {
+                sp.Encode1(v.mode);
+                switch (v.mode) {
+                    // add
+                    case 0: {
+                        sp.Encode1(v.type.getType());
+                        sp.Encode2(v.item.getPosition());
+                        sp.EncodeBuffer(GW_ItemSlotBase.Encode(v.item));
+                        break;
                     }
-                    break;
-                }
-                // remove
-                case 3: {
-                    sp.Encode1(v.type.getType());
-                    sp.Encode2(v.src);
-                    // 装備変更
-                    if (v.type.getType() == 1 && (v.src < 0)) {
-                        equip_changed = true;
+                    // update
+                    case 1: {
+                        sp.Encode1(v.type.getType());
+                        sp.Encode2(v.item.getPosition());
+                        sp.Encode2(v.item.getQuantity());
+                        break;
                     }
-                    break;
-                }
-                default: {
-                    break;
+                    // move
+                    case 2: {
+                        sp.Encode1(v.type.getType());
+                        sp.Encode2(v.src);
+                        sp.Encode2(v.dst);
+                        // 装備変更
+                        if (v.type.getType() == 1 && (v.src < 0 || v.dst < 0)) {
+                            equip_changed = true;
+                        }
+                        break;
+                    }
+                    // remove
+                    case 3: {
+                        sp.Encode1(v.type.getType());
+                        sp.Encode2(v.src);
+                        // 装備変更
+                        if (v.type.getType() == 1 && (v.src < 0)) {
+                            equip_changed = true;
+                        }
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
                 }
             }
-        }
 
-        if (equip_changed) {
-            sp.Encode1(0); // for CUserLocal::SetSecondaryStatChangedPoint
+            if (equip_changed) {
+                sp.Encode1(0); // for CUserLocal::SetSecondaryStatChangedPoint
+            }
         }
         return sp.Get();
     }
