@@ -65,7 +65,8 @@ public class ResWrapper {
 
     public static final MaplePacket updatePet(final MaplePet pet, final IItem item) {
         InvOp io = new InvOp();
-        io.remove(MapleInventoryType.CASH, item.getPosition());
+        // ペットと装備の更新時はアイテムを削除する必要はなく、同一スロットにアイテムを追加するだけで良い
+        // アイテム削除を行うとペットと装備固有のクエストが再発生する
         io.add(MapleInventoryType.CASH, item);
         return ResCWvsContext.InventoryOperation(false, io);
     }
