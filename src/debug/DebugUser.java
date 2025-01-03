@@ -48,40 +48,34 @@ public class DebugUser {
             return false;
         }
         switch (itemid / 1000000) {
-            case 1:
-                {
-                    MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIP);
-                    equip.addItem(ii.getEquipById(itemid));
-                    break;
-                }
-            case 2:
-                {
-                    MapleInventory use = chr.getInventory(MapleInventoryType.USE);
-                    use.addItem(new Item(itemid, (byte) 0, (short) count, (byte) 0));
-                    break;
-                }
-            case 3:
-                {
-                    MapleInventory setup = chr.getInventory(MapleInventoryType.SETUP);
-                    setup.addItem(new Item(itemid, (byte) 0, (short) 1, (byte) 0));
-                    break;
-                }
-            case 4:
-                {
-                    MapleInventory etc = chr.getInventory(MapleInventoryType.ETC);
-                    etc.addItem(new Item(itemid, (byte) 0, (short) count, (byte) 0));
-                    break;
-                }
-            case 5:
-                {
-                    MapleInventory cash = chr.getInventory(MapleInventoryType.CASH);
-                    cash.addItem(new Item(itemid, (byte) 0, (short) count, (byte) 0));
-                    break;
-                }
-            default:
-                {
-                    return false;
-                }
+            case 1: {
+                MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIP);
+                equip.addItem(ii.getEquipById(itemid));
+                break;
+            }
+            case 2: {
+                MapleInventory use = chr.getInventory(MapleInventoryType.USE);
+                use.addItem(new Item(itemid, (byte) 0, (short) count, (byte) 0));
+                break;
+            }
+            case 3: {
+                MapleInventory setup = chr.getInventory(MapleInventoryType.SETUP);
+                setup.addItem(new Item(itemid, (byte) 0, (short) 1, (byte) 0));
+                break;
+            }
+            case 4: {
+                MapleInventory etc = chr.getInventory(MapleInventoryType.ETC);
+                etc.addItem(new Item(itemid, (byte) 0, (short) count, (byte) 0));
+                break;
+            }
+            case 5: {
+                MapleInventory cash = chr.getInventory(MapleInventoryType.CASH);
+                cash.addItem(new Item(itemid, (byte) 0, (short) count, (byte) 0));
+                break;
+            }
+            default: {
+                return false;
+            }
         }
         return true;
     }
@@ -94,74 +88,142 @@ public class DebugUser {
         chr.setMeso(777000000);
         // パチンコ玉
         chr.setTama(500000);
-        // エリクサー
-        AddItem(chr, 2000004, 100);
-        // 万病治療薬
-        AddItem(chr, 2050004, 100);
-        // コーヒー牛乳
-        AddItem(chr, 2030008, 100);
-        // いちご牛乳
-        AddItem(chr, 2030009, 100);
-        // フルーツ牛乳
-        AddItem(chr, 2030010, 100);
-        // 帰還の書(ヘネシス)
-        AddItem(chr, 2030004, 100);
-        // 強化書
-        AddItem(chr, 2040303, 100);
-        AddItem(chr, 2040506, 100);
-        AddItem(chr, 2040710, 100);
-        AddItem(chr, 2040807, 100);
-        AddItem(chr, 2044703, 100);
-        AddItem(chr, 2044503, 100);
-        AddItem(chr, 2043803, 100);
-        AddItem(chr, 2043003, 100);
-        AddItem(chr, 2049100, 100);
-        AddItem(chr, 2049003, 100);
-        AddItem(chr, 2049300, 100);
-        AddItem(chr, 2049400, 100);
-        AddItem(chr, 2470000, 100);
-        // 魔法の石
-        AddItem(chr, 4006000, 100);
-        // 召喚の石
-        AddItem(chr, 4006001, 100);
-        // 軍手(茶)
-        AddItem(chr, 1082149);
-        // ドロシー(銀)
-        AddItem(chr, 1072264);
-        // 冒険家のマント(黄)
-        AddItem(chr, 1102040);
-        // 緑ずきん
-        AddItem(chr, 1002391);
-        // オウルアイ
-        AddItem(chr, 1022047);
-        // 犬鼻
-        AddItem(chr, 1012056);
-        // メイプルシールド
-        AddItem(chr, 1092030);
-        // タオル(黒)
-        AddItem(chr, 1050127);
-        // バスタオル(黄)
-        AddItem(chr, 1051140);
-        // エレメントピアス
-        AddItem(chr, 1032062);
-        // 錬金術師の指輪
-        AddItem(chr, 1112400);
-        // ドラゴン(アビス)
-        AddItem(chr, 3010047);
+        // 装備
+        {
+            AddItem(chr, 1082149); // 軍手(茶)
+            AddItem(chr, 1072264); // ドロシー(銀)
+            AddItem(chr, 1102040); // 冒険家のマント(黄)
+            AddItem(chr, 1002391); // 緑ずきん
+            AddItem(chr, 1022047); // オウルアイ
+            AddItem(chr, 1012056); // 犬鼻
+            AddItem(chr, 1092030); // メイプルシールド
+            AddItem(chr, 1050127); // タオル(黒)
+            AddItem(chr, 1051140); // バスタオル(黄)
+            AddItem(chr, 1032062); // エレメントピアス
+            AddItem(chr, 1112400); // 錬金術師の指輪
+        }
+        // 消費
+        {
+            AddItem(chr, 2000004, 100); // エリクサー
+            AddItem(chr, 2050004, 100); // 万病治療薬
+            AddItem(chr, 2030008, 100); // コーヒー牛乳
+            AddItem(chr, 2030009, 100); // いちご牛乳
+            AddItem(chr, 2030010, 100); // フルーツ牛乳
+            AddItem(chr, 2030004, 100); // 帰還の書(ヘネシス)
+            AddItem(chr, 2040303, 100); // 強化書
+            AddItem(chr, 2040506, 100);
+            AddItem(chr, 2040710, 100);
+            AddItem(chr, 2040807, 100);
+            AddItem(chr, 2044703, 100);
+            AddItem(chr, 2044503, 100);
+            AddItem(chr, 2043803, 100);
+            AddItem(chr, 2043003, 100);
+            AddItem(chr, 2049100, 100);
+            AddItem(chr, 2049003, 100);
+            AddItem(chr, 2049300, 100);
+            AddItem(chr, 2049400, 100);
+            AddItem(chr, 2060003, 100); // 弓専用の矢
+            AddItem(chr, 2061003, 100); // 弩専用の矢
+            AddItem(chr, 2070000, 100); // 手裏剣
+            AddItem(chr, 2100000, 100); // 包み
+            AddItem(chr, 2120000, 100); // ペットのエサ
+            AddItem(chr, 2120008);      // 
+            AddItem(chr, 2141003);      // パチンコ玉?
+            AddItem(chr, 2150001);      // オルゴール
+            AddItem(chr, 2190000);      // マクロ探知機
+            AddItem(chr, 2210000);      // 変身薬
+            AddItem(chr, 2230000);      // 
+            AddItem(chr, 2240000);      // 指輪
+            AddItem(chr, 2241000);      // 
+            AddItem(chr, 2242004);      // 
+            AddItem(chr, 2260000);      // 
+            AddItem(chr, 2270000);      // 
+            AddItem(chr, 2280000);      // スキルブック系統
+            AddItem(chr, 2290000);      // マスタリーブック
+            AddItem(chr, 2310000);      // ふくろう
+            AddItem(chr, 2320000);      // テレポストーン
+            AddItem(chr, 2330000, 100); // 弾丸   
+            AddItem(chr, 2340000, 1);   // White Scroll (海外)
+            AddItem(chr, 2350000);      // キャラクタースロット
+            AddItem(chr, 2370000, 100); // 兵法書
+            AddItem(chr, 2390001);      // 
+            AddItem(chr, 2420004);      // ゲート
+            AddItem(chr, 2430003);      // 
+            AddItem(chr, 2440000);      // 
+            AddItem(chr, 2450000);      // EXP2倍バフ
+            AddItem(chr, 2460003);      // 鑑定の虫眼鏡
+            AddItem(chr, 2461000);      // 
+            AddItem(chr, 2470000, 100); // 黄金つち
+            AddItem(chr, 2500000);      // 
+            AddItem(chr, 2520000);      // 
+            AddItem(chr, 2530000);      // 
+            AddItem(chr, 2531000);      // 
+            AddItem(chr, 2540000);      // 
+            AddItem(chr, 2550000);      // 
+            AddItem(chr, 2560000);      // 
+            AddItem(chr, 2570000);      // 
+            AddItem(chr, 2580000);      // 
+            AddItem(chr, 2590000);      // 魂の書
+            AddItem(chr, 2591000);      // 魂の玉
+            AddItem(chr, 2592000);      // 魂の玉
+            AddItem(chr, 2600000);      // 
+            AddItem(chr, 2701000);      // 究極のサーキュレーター
+            AddItem(chr, 2850000);      // 
+            AddItem(chr, 2870000);      // デンデンファミリアカード
+            AddItem(chr, 2920000);      // 
+        }
+        // 設置
+        {
+            AddItem(chr, 3010047); // ドラゴン(アビス)
+            AddItem(chr, 3011000); // 釣り用の椅子
+            AddItem(chr, 3012000); // ハートラブチェア
+            AddItem(chr, 3013001); // 封絶
+            AddItem(chr, 3049002); // 上級分解機
+            AddItem(chr, 3050000);
+            AddItem(chr, 3051000);
+            AddItem(chr, 3052000);
+            AddItem(chr, 3700000); // 妖精リシの友達
+            AddItem(chr, 3990000);
+            AddItem(chr, 3991000);
+            AddItem(chr, 3992000);
+            AddItem(chr, 3993000);
+            AddItem(chr, 3994000);
+        }
+        // ETC
+        {
+            AddItem(chr, 4006000, 100); // 魔法の石
+            AddItem(chr, 4006001, 100); // 召喚の石
+        }
         // ポイントアイテム
-        AddItem(chr, 5071000, 100); // 拡声器
-        AddItem(chr, 5076000, 100); // アイテム拡声器
-        AddItem(chr, 5370000, 100); // 黒板
-        AddItem(chr, 5140000); // 営業許可証
-        AddItem(chr, 5041000, 100); // 高性能テレポストーン
-        AddItem(chr, 5220000, 100); // ガシャポンチケット
-        AddItem(chr, 5570000, 100); // ビシャスのハンマー
-        AddItem(chr, 5062000, 100); // ミラクルキューブ
-        AddItem(chr, 5610000, 100); // ベガの呪文書(10%)
-        AddItem(chr, 5610001, 100); // ベガの呪文書(60%)
-        AddItem(chr, 5050000, 100); // AP再分配の書
-        // プレミアムさすらいの商人ミョミョ
+        {
+            AddItem(chr, 5000023);      // ペンギン
+            AddItem(chr, 5010000);      // ニコニコ太陽
+            AddItem(chr, 5021001);      // 音速紙飛行機
+            AddItem(chr, 5030000);      // エルフ商人
+            AddItem(chr, 5040000);      // テレポストーン
+            AddItem(chr, 5041000);      // 高性能テレポストーン
+            //AddItem(chr, 5042000);      // 赤色のテレポストーン? v302 crash
+            AddItem(chr, 5043000);      // NPC瞬間移動石
+            AddItem(chr, 5044000);      // テレポートワールドマップ
+            AddItem(chr, 5050000, 100); // AP再分配の書
+            AddItem(chr, 5050001);      // 1次スキルSP再分配の書
+            AddItem(chr, 5050100);      // AP初期化の書
+            //AddItem(chr, 5051000);      // 
+            AddItem(chr, 5051001);      // SP初期化の書
+
+            AddItem(chr, 5071000, 100); // 拡声器
+            AddItem(chr, 5076000, 100); // アイテム拡声器
+            AddItem(chr, 5370000, 100); // 黒板
+            AddItem(chr, 5140000);      // 営業許可証
+            AddItem(chr, 5041000, 100); // 高性能テレポストーン
+            AddItem(chr, 5220000, 100); // ガシャポンチケット
+            AddItem(chr, 5570000, 100); // ビシャスのハンマー
+            AddItem(chr, 5062000, 100); // ミラクルキューブ
+            AddItem(chr, 5610000, 100); // ベガの呪文書(10%)
+            AddItem(chr, 5610001, 100); // ベガの呪文書(60%)
+            // プレミアムさすらいの商人ミョミョ
+        }
         return true;
     }
-    
+
 }

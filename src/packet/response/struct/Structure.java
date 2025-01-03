@@ -97,7 +97,7 @@ public class Structure {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if (ServerConfig.JMS194orLater()) {
+        if (ServerConfig.JMS194orLater() && !ServerConfig.IsKMS()) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 

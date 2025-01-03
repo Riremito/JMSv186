@@ -246,11 +246,17 @@ public class GW_ItemSlotBase {
                 data.Encode8((Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000); // dateDead
                 data.Encode2(0); // nPetAttribute_CS
                 data.Encode2(item.getPet().getFlags()); // usPetSkill_CS
-                // 魔法の時間, デンデン専用 (残り時間)
-                data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
-                data.Encode2(0); // nAttribute_CS
-                data.Encode1(item.getPet().getSummoned() ? 1 : 0);
-                data.Encode4(0);
+                if (ServerConfig.JMS164orLater()) {
+                    // 魔法の時間, デンデン専用 (残り時間)
+                    data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
+                }
+                if (ServerConfig.JMS180orLater()) {
+                    data.Encode2(0); // nAttribute_CS
+                }
+                if (ServerConfig.JMS186orLater()) {
+                    data.Encode1(item.getPet().getSummoned() ? 1 : 0);
+                    data.Encode4(0);
+                }
                 break;
             }
             // Consume, Install, Etc, Cash
@@ -271,8 +277,8 @@ public class GW_ItemSlotBase {
                     data.Encode1(0);
                     data.Encode1(0x34);
                 }
-                
-                if(ServerConfig.JMS302orLater()){
+
+                if (ServerConfig.JMS302orLater()) {
                     data.Encode4(0);
                     data.Encode2(0);
                     data.Encode2(0);

@@ -14,8 +14,8 @@ public class ServerConfig {
     private static boolean packet_custom_encryption = false;
 
     // 初期スロット数
-    public static final byte DEFAULT_INV_SLOT_EQUIP = 24;
-    public static final byte DEFAULT_INV_SLOT_USE = 24;
+    public static final byte DEFAULT_INV_SLOT_EQUIP = 72;
+    public static final byte DEFAULT_INV_SLOT_USE = 72;
     public static final byte DEFAULT_INV_SLOT_ETC = 24;
     public static final byte DEFAULT_INV_SLOT_SETUP = 24;
     public static final byte DEFAULT_INV_SLOT_CASH = 96;
