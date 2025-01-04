@@ -111,7 +111,7 @@ public class ResCWvsContext {
         sp.Encode4(level);
         sp.Encode4(masterlevel);
         if (ServerConfig.JMS164orLater()) {
-            sp.Encode8((Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000);
+            sp.Encode8(ServerConfig.expiration_date);
         }
         sp.Encode1(4);
         return sp.Get();

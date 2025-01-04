@@ -23,7 +23,6 @@ package packet.response.struct;
 import client.inventory.IEquip;
 import client.inventory.IItem;
 import config.ServerConfig;
-import java.sql.Timestamp;
 import packet.ServerPacket;
 
 /**
@@ -243,7 +242,7 @@ public class GW_ItemSlotBase {
                 data.Encode2(item.getPet().getCloseness()); // nTameness_CS
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
                 // 魔法の効力期限, Windows時間
-                data.Encode8((Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000); // dateDead
+                data.Encode8(ServerConfig.expiration_date); // dateDead
                 data.Encode2(0); // nPetAttribute_CS
                 data.Encode2(item.getPet().getFlags()); // usPetSkill_CS
                 if (ServerConfig.JMS164orLater()) {
@@ -320,9 +319,5 @@ public class GW_ItemSlotBase {
         }
 
         return data.Get().getBytes();
-    }
-
-    public static long getTestExpiration() {
-        return (Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000;
     }
 }

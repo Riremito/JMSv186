@@ -20,7 +20,7 @@ package packet.response.struct;
 
 import client.MapleClient;
 import client.inventory.IItem;
-import java.sql.Timestamp;
+import config.ServerConfig;
 import packet.ServerPacket;
 import server.CashItemFactory;
 
@@ -39,7 +39,7 @@ public class GW_CashItemInfo {
         sp.Encode4(0); // first?
         sp.Encode2(item.getQuantity());
         sp.EncodeBuffer(item.getOwner(), 13);
-        sp.Encode8((Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000);
+        sp.Encode8(ServerConfig.expiration_date);
         sp.Encode8(CashItemFactory.getInstance().getItemSN(item.getItemId()));
         return sp.Get().getBytes();
 

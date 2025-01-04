@@ -23,6 +23,7 @@ import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import config.ServerConfig;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -32,12 +33,9 @@ import handling.world.World;
 import java.util.ArrayList;
 import packet.ClientPacket;
 import packet.ops.CashItemOps;
-import packet.response.ResCITC;
 import packet.response.ResCCashShop;
 import packet.response.ResCClientSocket;
-import packet.response.ResCLogin;
 import packet.response.ResCStage;
-import packet.response.struct.GW_ItemSlotBase;
 import server.CashItemFactory;
 import server.CashItemInfo;
 import server.MTSStorage;
@@ -191,7 +189,7 @@ public class ReqCCashShop {
     private static void updateFreeCouponDate(MapleCharacter chr) {
         IItem item = chr.getCashInventory().findItem(FREE_COUPON_ITEM_ID);
         if (item != null) {
-            chr.SendPacket(ResCCashShop.FreeCouponDialog(true, GW_ItemSlotBase.getTestExpiration()));
+            chr.SendPacket(ResCCashShop.FreeCouponDialog(true, ServerConfig.expiration_date));
         } else {
             chr.SendPacket(ResCCashShop.FreeCouponDialog(false, 0));
         }
