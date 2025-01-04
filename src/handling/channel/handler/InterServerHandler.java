@@ -43,7 +43,6 @@ import handling.world.PlayerBuffStorage;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
 import packet.ClientPacket;
-import packet.request.ContextPacket;
 import packet.response.FamilyResponse;
 import packet.response.FriendResponse;
 import packet.response.GuildResponse;
@@ -51,6 +50,7 @@ import packet.response.ResCClientSocket;
 import packet.response.ResCFuncKeyMappedMan;
 import packet.response.ResCStage;
 import packet.response.ResCUser_Pet;
+import packet.response.wrapper.ResWrapper;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
 import tools.FileoutputUtil;
@@ -232,7 +232,7 @@ public class InterServerHandler {
 
         for (MapleQuestStatus status : player.getStartedQuests()) {
             if (status.hasMobKills()) {
-                c.SendPacket(ContextPacket.updateQuestMobKills(status));
+                c.SendPacket(ResWrapper.updateQuestMobKills(status));
             }
         }
         final CharacterNameAndId pendingBuddyRequest = player.getBuddylist().pollPendingRequest();

@@ -82,7 +82,6 @@ import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
 import packet.response.PachinkoResponse;
-import packet.request.ContextPacket;
 import packet.request.ReqCUser;
 import packet.response.ResCWvsContext;
 import packet.response.ResCUser_Dragon;
@@ -1413,7 +1412,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public final void updateInfoQuest(final int questid, final String data) {
         questinfo.put(questid, data);
-        client.SendPacket(ContextPacket.updateInfoQuest(questid, data));
+        client.SendPacket(ResWrapper.updateInfoQuest(questid, data));
     }
 
     public final String getInfoQuest(final int questid) {
@@ -1472,7 +1471,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public final void updateQuest(final MapleQuestStatus quest, final boolean update) {
         quests.put(quest.getQuest(), quest);
         if (!(quest.isCustom())) {
-            client.SendPacket(ContextPacket.updateQuest(quest));
+            client.SendPacket(ResWrapper.updateQuest(quest));
             if (quest.getStatus() == 1 && !update) {
                 client.getSession().write(MaplePacketCreator.updateQuestInfo(this, quest.getQuest().getId(), quest.getNpc(), (byte) 8));
             }
@@ -2460,7 +2459,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (newJob != 0 && newJob != 1000 && newJob != 2000 && newJob != 2001 && newJob != 3000) {
                 if (isEv) {
                     remainingSp[GameConstants.getSkillBook(newJob)] += 5;
-                    client.getSession().write(ContextPacket.getSPMsg((byte) 5, (short) newJob));
+                    client.getSession().write(ResWrapper.getSPMsg((byte) 5, (short) newJob));
                 } else {
                     remainingSp[GameConstants.getSkillBook(newJob)]++;
                     if (newJob % 10 >= 2) {
@@ -2616,13 +2615,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void gainSP(int sp) {
         this.remainingSp[GameConstants.getSkillBook(job)] += sp; //default
         client.getPlayer().UpdateStat(false);
-        client.getSession().write(ContextPacket.getSPMsg((byte) sp, (short) job));
+        client.getSession().write(ResWrapper.getSPMsg((byte) sp, (short) job));
     }
 
     public void gainSP(int sp, final int skillbook) {
         this.remainingSp[skillbook] += sp; //default
         client.getPlayer().UpdateStat(false);
-        client.getSession().write(ContextPacket.getSPMsg((byte) sp, (short) job));
+        client.getSession().write(ResWrapper.getSPMsg((byte) sp, (short) job));
     }
 
     public void resetAPSP() {
@@ -2886,7 +2885,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 }
                 updateSingleStat(MapleStat.EXP, getExp());
                 if (show) { // still show the expgain even if it's not there
-                    client.SendPacket(ContextPacket.GainEXP_Others(total, inChat, white));
+                    client.SendPacket(ResWrapper.GainEXP_Others(total, inChat, white));
                 }
                 if (total > 0) {
                     stats.checkEquipLevels(this, total); //gms like
@@ -2959,7 +2958,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             updateSingleStat(MapleStat.EXP, getExp());
             if (show) { // still show the expgain even if it's not there
-                client.SendPacket(ContextPacket.GainEXP_Monster(gain, white, partyinc, Class_Bonus_EXP, Equipment_Bonus_EXP, Premium_Bonus_EXP));
+                client.SendPacket(ResWrapper.GainEXP_Monster(gain, white, partyinc, Class_Bonus_EXP, Equipment_Bonus_EXP, Premium_Bonus_EXP));
             }
             stats.checkEquipLevels(this, total);
         }
@@ -3022,7 +3021,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (pending) {
             if (pendingExpiration != null) {
                 for (Integer z : pendingExpiration) {
-                    client.getSession().write(ContextPacket.itemExpired(z.intValue()));
+                    client.getSession().write(ResWrapper.itemExpired(z.intValue()));
                 }
             }
             pendingExpiration = null;
@@ -3143,7 +3142,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         meso += gain;
         UpdateStat(enableActions);
         if (show) {
-            client.SendPacket(ContextPacket.showMesoGain(gain, inChat));
+            client.SendPacket(ResWrapper.showMesoGain(gain, inChat));
         }
         return true;
     }
@@ -3155,7 +3154,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
         gainTama(gain);
         if (show) {
-            client.ProcessPacket(ContextPacket.GainTamaMessage(gain));
+            client.ProcessPacket(ResWrapper.GainTamaMessage(gain));
         }
         return true;
     }
@@ -3205,7 +3204,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 continue;
             }
             if (q.mobKilled(id, skillID)) {
-                client.SendPacket(ContextPacket.updateQuestMobKills(q));
+                client.SendPacket(ResWrapper.updateQuestMobKills(q));
                 if (q.getQuest().canComplete(this, null)) {
                     client.getSession().write(MaplePacketCreator.getShowQuestCompletion(q.getQuest().getId()));
                 }
@@ -4416,7 +4415,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 if (rs.getInt("gift") == fame && fame > 0) { //not exploited! hurray
                     addFame(fame);
                     updateSingleStat(MapleStat.FAME, getFame());
-                    client.SendPacket(ContextPacket.getShowFameGain(fame));
+                    client.SendPacket(ResWrapper.getShowFameGain(fame));
                 }
             }
             rs.close();

@@ -45,9 +45,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import packet.request.ContextPacket;
 import packet.response.GuildResponse;
 import packet.response.PartyResponse;
+import packet.response.wrapper.ResWrapper;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -757,7 +757,7 @@ public class MapleGuild implements java.io.Serializable {
         gp += amount;
         broadcast(GuildResponse.updateGP(id, gp));
         if (broadcast) {
-            broadcast(ContextPacket.getGPMsg(amount));
+            broadcast(ResWrapper.getGPMsg(amount));
         }
     }
 

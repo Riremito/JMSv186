@@ -51,11 +51,8 @@ import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
 import client.inventory.MapleInventoryIdentifier;
 import handling.world.World;
-import packet.request.ContextPacket;
 import packet.response.FieldResponse;
 import packet.response.LocalResponse;
-import packet.response.ResCUser_Pet;
-import packet.response.ResCWvsContext;
 import packet.response.TestResponse;
 import packet.response.wrapper.ResWrapper;
 import server.events.MapleEvent;
@@ -319,7 +316,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void showQuestMsg(final String msg) {
-        c.SendPacket(ContextPacket.showQuestMsg(msg));
+        c.SendPacket(ResWrapper.showQuestMsg(msg));
     }
 
     public final void forceStartQuest(final int id, final String data) {
@@ -740,7 +737,7 @@ public abstract class AbstractPlayerInteraction {
 
     public final void useItem(final int id) {
         MapleItemInformationProvider.getInstance().getItemEffect(id).applyTo(c.getPlayer());
-        c.getSession().write(ContextPacket.getStatusMsg(id));
+        c.getSession().write(ResWrapper.getStatusMsg(id));
     }
 
     public final void cancelItem(final int id) {
@@ -823,7 +820,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void dojo_getUp() {
-        c.SendPacket(ContextPacket.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
+        c.SendPacket(ResWrapper.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
         c.getSession().write(LocalResponse.Mulung_DojoUp2());
         c.getSession().write(MaplePacketCreator.instantMapWarp((byte) 6));
     }

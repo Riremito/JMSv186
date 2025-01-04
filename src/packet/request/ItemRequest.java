@@ -37,10 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import packet.ClientPacket;
-import packet.response.ResCWvsContext;
 import packet.response.ResCParcelDlg;
 import packet.response.ItemResponse;
-import packet.response.MegaphoneResponse;
 import packet.response.PachinkoResponse;
 import packet.response.ResCUser_Pet;
 import packet.response.TemporaryStatResponse;
@@ -390,14 +388,14 @@ public class ItemRequest {
             // メガホン
             case 5070000: {
                 String message = new String(cp.DecodeBuffer());
-                chr.getMap().broadcastMessage(MegaphoneResponse.MegaphoneBlue(MegaphoneGetSenderName(chr) + " : " + message));
+                chr.getMap().broadcastMessage(ResWrapper.MegaphoneBlue(MegaphoneGetSenderName(chr) + " : " + message));
                 return true;
             }
             // 拡声器
             case 5071000: {
                 String message = new String(cp.DecodeBuffer());
                 byte ear = cp.Decode1();
-                World.Broadcast.broadcastSmega(MegaphoneResponse.Megaphone(MegaphoneGetSenderName(chr) + " : " + message, channel, ear).getBytes());
+                World.Broadcast.broadcastSmega(ResWrapper.Megaphone(MegaphoneGetSenderName(chr) + " : " + message, channel, ear).getBytes());
                 return true;
             }
             // 高機能拡声器 (使えない)
@@ -408,14 +406,14 @@ public class ItemRequest {
             case 5073000: {
                 String message = new String(cp.DecodeBuffer());
                 byte ear = cp.Decode1();
-                World.Broadcast.broadcastSmega(MegaphoneResponse.MegaphoneHeart(MegaphoneGetSenderName(chr) + " : " + message, channel, ear).getBytes());
+                World.Broadcast.broadcastSmega(ResWrapper.MegaphoneHeart(MegaphoneGetSenderName(chr) + " : " + message, channel, ear).getBytes());
                 return true;
             }
             // ドクロ拡声器
             case 5074000: {
                 String message = new String(cp.DecodeBuffer());
                 byte ear = cp.Decode1();
-                World.Broadcast.broadcastSmega(MegaphoneResponse.MegaphoneSkull(MegaphoneGetSenderName(chr) + " : " + message, channel, ear).getBytes());
+                World.Broadcast.broadcastSmega(ResWrapper.MegaphoneSkull(MegaphoneGetSenderName(chr) + " : " + message, channel, ear).getBytes());
                 return true;
             }
             // MapleTV
@@ -439,7 +437,7 @@ public class ItemRequest {
                     int slot = cp.Decode4();
                     item = chr.getInventory(MapleInventoryType.getByType((byte) type)).getItem((short) slot);
                 }
-                World.Broadcast.broadcastSmega(MegaphoneResponse.MegaphoneItem(MegaphoneGetSenderName(chr) + " : " + message, channel, ear, showitem, item).getBytes());
+                World.Broadcast.broadcastSmega(ResWrapper.MegaphoneItem(MegaphoneGetSenderName(chr) + " : " + message, channel, ear, showitem, item).getBytes());
                 return true;
             }
             // 三連拡声器
@@ -456,7 +454,7 @@ public class ItemRequest {
                     messages.add(sender + " : " + message);
                 }
                 byte ear = cp.Decode1();
-                World.Broadcast.broadcastSmega(MegaphoneResponse.MegaphoneTriple(messages, (byte) channel, ear).getBytes());
+                World.Broadcast.broadcastSmega(ResWrapper.MegaphoneTriple(messages, (byte) channel, ear).getBytes());
                 return true;
             }
             default: {

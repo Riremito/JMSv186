@@ -47,11 +47,9 @@ import java.awt.Rectangle;
 import java.util.Collections;
 import java.util.concurrent.locks.Lock;
 import packet.ClientPacket;
-import packet.request.ContextPacket;
 import packet.response.ResCDropPool;
 import packet.response.ResCDropPool.LeaveType;
 import packet.request.ItemRequest;
-import packet.response.ResCWvsContext;
 import packet.response.FieldResponse;
 import packet.response.FreeMarketResponse;
 import packet.response.ItemResponse;
@@ -1308,7 +1306,7 @@ public class InventoryHandler {
                 } else {
                     ii.getItemEffect(id).applyTo(c.getPlayer());
                 }
-                c.SendPacket(ContextPacket.DropPickUpMessage(id, (byte) 1));
+                c.SendPacket(ResWrapper.DropPickUpMessage(id, (byte) 1));
                 return true;
             }
         }

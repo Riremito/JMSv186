@@ -26,7 +26,7 @@ import client.MapleCharacter;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.MaplePartyCharacter;
-import packet.request.ContextPacket;
+import packet.response.wrapper.ResWrapper;
 import server.Randomizer;
 import server.Timer.MapTimer;
 import server.life.MapleLifeFactory;
@@ -131,7 +131,7 @@ public class Event_DojoAgent {
 
     public static MaplePacket Mulung_Pts(int recv, int total) {
         // どうやらバージョンごとにメッセージが切り替わっていて統一されていない?
-        return ContextPacket.showQuestMsg("修練点数を" + recv + "点獲得しました。総修練点数が" + total + "になりました。");
+        return ResWrapper.showQuestMsg("修練点数を" + recv + "点獲得しました。総修練点数が" + total + "になりました。");
     }
 
     // Resting rooms :

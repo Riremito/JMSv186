@@ -18,7 +18,6 @@ import client.inventory.MaplePet;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
-import packet.request.ContextPacket;
 import packet.ops.CashItemOps;
 import packet.response.ResCCashShop;
 import packet.response.wrapper.ResWrapper;
@@ -407,7 +406,7 @@ public class MapleInventoryManipulator {
         }
         c.getPlayer().havePartyQuest(item.getItemId());
         if (show) {
-            c.SendPacket(ContextPacket.DropPickUpMessage(item.getItemId(), item.getQuantity()));
+            c.SendPacket(ResWrapper.DropPickUpMessage(item.getItemId(), item.getQuantity()));
         }
         return true;
     }

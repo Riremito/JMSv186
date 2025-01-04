@@ -34,8 +34,8 @@ import client.MapleStat;
 import client.SkillFactory;
 import java.util.ArrayList;
 import java.util.List;
-import packet.request.ContextPacket;
 import packet.response.LocalResponse;
+import packet.response.wrapper.ResWrapper;
 import provider.MapleData;
 import provider.MapleDataTool;
 import server.MapleInventoryManipulator;
@@ -218,7 +218,7 @@ public class MapleQuestAction implements Serializable {
                 final int fameGain = MapleDataTool.getInt(data, 0);
                 c.addFame(fameGain);
                 c.updateSingleStat(MapleStat.FAME, c.getFame());
-                c.SendPacket(ContextPacket.getShowFameGain(fameGain));
+                c.SendPacket(ResWrapper.getShowFameGain(fameGain));
                 break;
             case buffItemID:
                 status = c.getQuest(quest);
@@ -458,7 +458,7 @@ public class MapleQuestAction implements Serializable {
                 final int fameGain = MapleDataTool.getInt(data, 0);
                 c.addFame(fameGain);
                 c.updateSingleStat(MapleStat.FAME, c.getFame());
-                c.SendPacket(ContextPacket.getShowFameGain(fameGain));
+                c.SendPacket(ResWrapper.getShowFameGain(fameGain));
                 break;
             }
             case buffItemID: {

@@ -49,12 +49,12 @@ import handling.channel.handler.AttackInfo;
 import java.util.ArrayList;
 import java.util.Comparator;
 import packet.ServerPacket;
-import packet.request.ContextPacket;
-import packet.request.ContextPacket.DropPickUpMessageType;
+import packet.ops.OpsDropPickUpMessage;
 import packet.response.ResScriptMan;
 import packet.response.ResCWvsContext;
 import packet.response.ResCStage;
 import packet.response.struct.TestHelper;
+import packet.response.wrapper.ResWrapper;
 import server.maps.MapleNodes.MapleNodeInfo;
 import server.maps.MapleNodes.MaplePlatform;
 
@@ -1788,6 +1788,6 @@ public class MaplePacketCreator {
     }
 
     public static MaplePacket showItemUnavailable() {
-        return ContextPacket.getShowInventoryStatus(DropPickUpMessageType.PICKUP_UNAVAILABLE);
+        return ResWrapper.getShowInventoryStatus(OpsDropPickUpMessage.PICKUP_UNAVAILABLE);
     }
 }

@@ -22,9 +22,8 @@ import client.MapleCharacter;
 import config.ServerConfig;
 import debug.Debug;
 import handling.MaplePacket;
-import java.sql.Timestamp;
 import packet.ServerPacket;
-import packet.request.ContextPacket;
+import packet.ops.OpsMessageArg;
 import packet.response.struct.GW_CharacterStat;
 import packet.response.struct.GW_ItemSlotBase;
 import packet.response.struct.InvOp;
@@ -149,7 +148,7 @@ public class ResCWvsContext {
         return sp.Get();
     }
 
-    public static final MaplePacket Message(ContextPacket.MessageArg ma) {
+    public static final MaplePacket Message(OpsMessageArg ma) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Message);
         sp.Encode1(ma.mt.get());
         switch (ma.mt) {

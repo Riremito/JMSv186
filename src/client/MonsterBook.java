@@ -32,12 +32,11 @@ import java.io.Serializable;
 
 import database.DatabaseConnection;
 import packet.ServerPacket;
-import packet.request.ContextPacket;
 import packet.response.LocalResponse;
 import packet.response.MonsterBookResponse;
 import packet.response.RemoteResponse;
+import packet.response.wrapper.ResWrapper;
 import server.MapleItemInformationProvider;
-import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 public class MonsterBook implements Serializable {
@@ -178,7 +177,7 @@ public class MonsterBook implements Serializable {
                     NormalCard += 1;
                 }
                 c.getSession().write(MonsterBookResponse.addCard(false, cardid, 5));
-                c.SendPacket(ContextPacket.showGainCard(cardid));
+                c.SendPacket(ResWrapper.showGainCard(cardid));
                 c.getSession().write(LocalResponse.showSpecialEffect(14));
                 cards.put(cardid, 5);
                 calculateLevel();
@@ -193,7 +192,7 @@ public class MonsterBook implements Serializable {
         // New card
         cards.put(cardid, 5);
         c.getSession().write(MonsterBookResponse.addCard(false, cardid, 5));
-        c.SendPacket(ContextPacket.showGainCard(cardid));
+        c.SendPacket(ResWrapper.showGainCard(cardid));
         c.getSession().write(LocalResponse.showSpecialEffect(14));
         calculateLevel();
     }
