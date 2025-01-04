@@ -24,7 +24,7 @@ import config.ServerConfig;
  *
  * @author Riremito
  */
-public enum NewCharacterOps {
+public enum OpsNewCharacter {
     // JMS v186, BB前は多分順番固定
     KnightsOfCygnus(0),
     Adventurers(1), // 冒険家
@@ -43,11 +43,11 @@ public enum NewCharacterOps {
 
     private int value;
 
-    NewCharacterOps(int flag) {
+    OpsNewCharacter(int flag) {
         value = flag;
     }
 
-    NewCharacterOps() {
+    OpsNewCharacter() {
         value = -1;
     }
 
@@ -59,8 +59,8 @@ public enum NewCharacterOps {
         value = val;
     }
 
-    public static NewCharacterOps find(int val) {
-        for (final NewCharacterOps o : NewCharacterOps.values()) {
+    public static OpsNewCharacter find(int val) {
+        for (final OpsNewCharacter o : OpsNewCharacter.values()) {
             if (o.get() == val) {
                 return o;
             }

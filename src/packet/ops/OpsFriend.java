@@ -22,7 +22,7 @@ package packet.ops;
  *
  * @author Riremito
  */
-public enum FriendOps {
+public enum OpsFriend {
     // GMS v95
     FriendReq_LoadFriend(0x0),
     FriendReq_SetFriend(0x1),
@@ -52,11 +52,11 @@ public enum FriendOps {
 
     private int value;
 
-    FriendOps(int flag) {
+    OpsFriend(int flag) {
         value = flag;
     }
 
-    FriendOps() {
+    OpsFriend() {
         value = -1;
     }
 
@@ -64,8 +64,8 @@ public enum FriendOps {
         return value;
     }
 
-    public static FriendOps find(int val) {
-        for (final FriendOps o : FriendOps.values()) {
+    public static OpsFriend find(int val) {
+        for (final OpsFriend o : OpsFriend.values()) {
             if (o.get() == val) {
                 return o;
             }

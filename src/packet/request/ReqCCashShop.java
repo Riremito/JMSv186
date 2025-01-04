@@ -32,7 +32,7 @@ import handling.world.CharacterTransfer;
 import handling.world.World;
 import java.util.ArrayList;
 import packet.ClientPacket;
-import packet.ops.CashItemOps;
+import packet.ops.OpsCashItem;
 import packet.response.ResCCashShop;
 import packet.response.ResCClientSocket;
 import packet.response.ResCStage;
@@ -165,7 +165,7 @@ public class ReqCCashShop {
             CashShopServer.getPlayerStorage().registerPlayer(chr);
             c.SendPacket(ResCStage.SetCashShop(c));
             c.SendPacket(ResCCashShop.QueryCashResult(c.getPlayer()));
-            c.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_LoadLocker_Done, c));
+            c.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_LoadLocker_Done, c));
             updateFreeCouponDate(c.getPlayer());
         }
     }
@@ -213,7 +213,7 @@ public class ReqCCashShop {
         }
 
         byte type = cp.Decode1();
-        CashItemOps flag = CashItemOps.find(type);
+        OpsCashItem flag = OpsCashItem.find(type);
 
         switch (flag) {
             // 0x03
@@ -235,7 +235,7 @@ public class ReqCCashShop {
                 // 4 slot
                 byte inv_type = cp.Decode1();
                 if (IncSlotCount4(use_maple_point, inv_type, chr)) {
-                    c.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_IncSlotCount_Done, c, new ResCCashShop.CashItemStruct(MapleInventoryType.getByType(inv_type))));
+                    c.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_IncSlotCount_Done, c, new ResCCashShop.CashItemStruct(MapleInventoryType.getByType(inv_type))));
                 } else {
                     // faield   
                 }
@@ -246,7 +246,7 @@ public class ReqCCashShop {
                 byte use_maple_point = cp.Decode1();
                 byte unk2 = cp.Decode1();
                 if (IncTrunkCount4(use_maple_point, chr)) {
-                    c.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_IncTrunkCount_Done, c));
+                    c.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_IncTrunkCount_Done, c));
                 } else {
                     // failed
                 }
@@ -276,7 +276,7 @@ public class ReqCCashShop {
             // 0x1F
             case CashItemReq_BuyPackage: {
                 // not coded
-                c.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_SetWish_Failed, c));
+                c.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_SetWish_Failed, c));
                 return true;
             }
             // 0x21
@@ -349,7 +349,7 @@ public class ReqCCashShop {
         IItem item = chr.getCashInventory().toItem(cashitem);
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount()) {
             chr.getCashInventory().addToInventory(item);
-            c.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_Buy_Done, c, new ResCCashShop.CashItemStruct(item)));
+            c.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Buy_Done, c, new ResCCashShop.CashItemStruct(item)));
             usePoint(chr, use_maple_point, cashitem.getPrice());
             checkBuyDestroy(chr, item.getItemId());
         } else {
@@ -386,7 +386,7 @@ public class ReqCCashShop {
         IItem item = chr.getCashInventory().toItem(cashitem);
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount()) {
             chr.getCashInventory().addToInventory(item);
-            c.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_FreeCashItem_Done, c, new ResCCashShop.CashItemStruct(item)));
+            c.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_FreeCashItem_Done, c, new ResCCashShop.CashItemStruct(item)));
         } else {
             Debug.ErrorLog("BuyFreeItem : ERR");
         }
@@ -445,7 +445,7 @@ public class ReqCCashShop {
         MapleCharacter chr = c.getPlayer();
         IItem item_src = chr.getCashInventory().findByCashId(cash_item_SN);
         if (item_src == null || item_src.getQuantity() < 1) {
-            chr.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_MoveLtoS_Failed, c));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveLtoS_Failed, c));
             return false;
         }
         IItem item_dst = item_src.copy();
@@ -454,7 +454,7 @@ public class ReqCCashShop {
         short dst_slot = MapleInventoryManipulator.addbyItem(chr.getClient(), item_dst, true);
         // ポイントショップ上から削除
         chr.getCashInventory().removeFromInventory(item_src);
-        chr.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_MoveLtoS_Done, c, new ResCCashShop.CashItemStruct(item_dst)));
+        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveLtoS_Done, c, new ResCCashShop.CashItemStruct(item_dst)));
         return true;
     }
 
@@ -464,7 +464,7 @@ public class ReqCCashShop {
         MapleInventoryType inv_item_type = MapleInventoryType.getByType(inv_type);
 
         if (inv_item_type == null) {
-            chr.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_MoveStoL_Failed, c));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveStoL_Failed, c));
             return false;
         }
 
@@ -472,7 +472,7 @@ public class ReqCCashShop {
         IItem item_src = inv.findByUniqueId(inv_item_SN);
 
         if (item_src == null || item_src.getQuantity() < 1) {
-            chr.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_MoveStoL_Failed, c));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveStoL_Failed, c));
             return false;
         }
         IItem item_dst = item_src.copy();
@@ -481,7 +481,7 @@ public class ReqCCashShop {
         chr.getCashInventory().addToInventory(item_dst);
         // アイテム欄から削除
         inv.removeSlot(item_src.getPosition());
-        chr.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_MoveStoL_Done, c, new ResCCashShop.CashItemStruct(item_dst)));
+        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveStoL_Done, c, new ResCCashShop.CashItemStruct(item_dst)));
         return true;
     }
 
@@ -489,12 +489,12 @@ public class ReqCCashShop {
         IItem item = chr.getCashInventory().findByCashId(item_unique_id);
 
         if (item == null || item.getQuantity() < 1 || !chr.getClient().getAccountName().equals(nexon_id)) {
-            chr.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_Destroy_Failed, chr.getClient()));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Destroy_Failed, chr.getClient()));
             return false;
         }
 
         chr.getCashInventory().removeFromInventory(item);
-        chr.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_Destroy_Done, chr.getClient(), new ResCCashShop.CashItemStruct(item)));
+        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Destroy_Done, chr.getClient(), new ResCCashShop.CashItemStruct(item)));
         checkBuyDestroy(chr, item.getItemId());
         return true;
     }
@@ -516,7 +516,7 @@ public class ReqCCashShop {
             }
             // coupon code 15 test
             if (!coupon_code.equals(COUPON_CODE_15_TEST_CODE)) {
-                chr.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_UseCoupon_Failed, chr.getClient()));
+                chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_UseCoupon_Failed, chr.getClient()));
                 return true;
             }
         } else {
@@ -525,7 +525,7 @@ public class ReqCCashShop {
             }
             // coupon code 30 test
             if (!coupon_code.equals(COUPON_CODE_30_TEST_CODE)) {
-                chr.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_UseCoupon_Failed, chr.getClient()));
+                chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_UseCoupon_Failed, chr.getClient()));
                 return true;
             }
         }
@@ -545,7 +545,7 @@ public class ReqCCashShop {
                     items_cash.add(item); // リストへ追加
                 } else {
                     // error
-                    chr.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_UseCoupon_Failed, chr.getClient()));
+                    chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_UseCoupon_Failed, chr.getClient()));
                     return true;
                 }
             }
@@ -555,7 +555,7 @@ public class ReqCCashShop {
             chr.addMaplePoint(maple_point);
             chr.addMeso(meso);
             ResCCashShop.CashItemStruct test_coupon_result = new ResCCashShop.CashItemStruct(items_cash, maple_point, items_normal, meso);
-            chr.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_UseCoupon_Done, chr.getClient(), test_coupon_result));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_UseCoupon_Done, chr.getClient(), test_coupon_result));
         } else {
             if (COUPON_GIFT_NAME_LIMIT < character_name.length()) {
                 return false;
@@ -564,7 +564,7 @@ public class ReqCCashShop {
                 return false;
             }
             // not coded
-            chr.SendPacket(ResCCashShop.CashItemResult(CashItemOps.CashItemRes_UseCoupon_Failed, chr.getClient()));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_UseCoupon_Failed, chr.getClient()));
         }
 
         return true;

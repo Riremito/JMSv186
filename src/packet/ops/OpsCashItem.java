@@ -22,7 +22,7 @@ package packet.ops;
  *
  * @author Riremito
  */
-public enum CashItemOps {
+public enum OpsCashItem {
     // JMS v186
     CashItemReq_Buy(0x03),
     CashItemReq_Gift(0x04),
@@ -264,11 +264,11 @@ public enum CashItemOps {
 
     private int value;
 
-    CashItemOps(int flag) {
+    OpsCashItem(int flag) {
         value = flag;
     }
 
-    CashItemOps() {
+    OpsCashItem() {
         value = -1;
     }
 
@@ -276,8 +276,8 @@ public enum CashItemOps {
         return value;
     }
 
-    public static CashItemOps find(int val) {
-        for (final CashItemOps o : CashItemOps.values()) {
+    public static OpsCashItem find(int val) {
+        for (final OpsCashItem o : OpsCashItem.values()) {
             if (o.get() == val) {
                 return o;
             }

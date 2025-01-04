@@ -1,6 +1,6 @@
 package packet.request;
 
-import packet.ops.NewCharacterOps;
+import packet.ops.OpsNewCharacter;
 import packet.ops.OpsMessage;
 import packet.request.struct.CMovePath;
 import packet.response.struct.SecondaryStat;
@@ -15,6 +15,6 @@ public class PacketFlag {
         SecondaryStat.Init();
         OpsMessage.Message_Init();
         CMovePath.setJumpDown();
-        NewCharacterOps.Init();
+        OpsNewCharacter.Init();
     }
 }

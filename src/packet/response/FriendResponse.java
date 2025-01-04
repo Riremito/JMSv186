@@ -23,7 +23,7 @@ import client.MapleCharacter;
 import debug.Debug;
 import handling.MaplePacket;
 import java.util.Collection;
-import packet.ops.FriendOps;
+import packet.ops.OpsFriend;
 import packet.ServerPacket;
 
 /**
@@ -34,7 +34,7 @@ public class FriendResponse {
 
     public static class FriendResultStruct {
 
-        FriendOps flag;
+        OpsFriend flag;
         int nFriendMax;
         MapleCharacter chr;
         int friend_id;
@@ -155,14 +155,14 @@ public class FriendResponse {
 
     public static MaplePacket updateBuddyCapacity(int capacity) {
         FriendResultStruct frs = new FriendResultStruct();
-        frs.flag = FriendOps.FriendRes_IncMaxCount_Done;
+        frs.flag = OpsFriend.FriendRes_IncMaxCount_Done;
         frs.nFriendMax = capacity;
 
         return FriendResult(frs);
     }
 
     // test
-    public static MaplePacket buddylistMessage(FriendOps flag) {
+    public static MaplePacket buddylistMessage(OpsFriend flag) {
         FriendResultStruct frs = new FriendResultStruct();
         frs.flag = flag;
         return FriendResult(frs);
@@ -170,7 +170,7 @@ public class FriendResponse {
 
     public static MaplePacket updateBuddylist(MapleCharacter chr) {
         FriendResultStruct frs = new FriendResultStruct();
-        frs.flag = FriendOps.FriendRes_LoadFriend_Done;
+        frs.flag = OpsFriend.FriendRes_LoadFriend_Done;
         frs.chr = chr;
 
         return FriendResult(frs);
@@ -178,7 +178,7 @@ public class FriendResponse {
 
     public static MaplePacket updateBuddyChannel(int friend_id, int friend_channel) {
         FriendResultStruct frs = new FriendResultStruct();
-        frs.flag = FriendOps.FriendRes_Notify;
+        frs.flag = OpsFriend.FriendRes_Notify;
         frs.friend_id = friend_id;
         frs.friend_channel = friend_channel;
 
@@ -187,7 +187,7 @@ public class FriendResponse {
 
     public static MaplePacket requestBuddylistAdd(int friend_id, String name, int level, int job) {
         FriendResultStruct frs = new FriendResultStruct();
-        frs.flag = FriendOps.FriendRes_Invite;
+        frs.flag = OpsFriend.FriendRes_Invite;
         frs.friend_id = friend_id;
         frs.friend_channel = 0; // todo
         frs.friend_name = name;

@@ -24,8 +24,8 @@ import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import handling.MaplePacket;
 import java.util.ArrayList;
-import packet.ops.CashItemFailReasonOps;
-import packet.ops.CashItemOps;
+import packet.ops.OpsCashItemFailReason;
+import packet.ops.OpsCashItem;
 import packet.ServerPacket;
 import packet.response.struct.GW_CashItemInfo;
 import packet.response.struct.GW_ItemSlotBase;
@@ -211,12 +211,12 @@ public class ResCCashShop {
 
     }
 
-    public static MaplePacket CashItemResult(CashItemOps ops, MapleClient c) {
+    public static MaplePacket CashItemResult(OpsCashItem ops, MapleClient c) {
         return CashItemResult(ops, c, null);
     }
 
     // CCashShop::OnCashItemResult
-    public static MaplePacket CashItemResult(CashItemOps ops, MapleClient c, CashItemStruct cis) {
+    public static MaplePacket CashItemResult(OpsCashItem ops, MapleClient c, CashItemStruct cis) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopCashItemResult);
 
         sp.Encode1(ops.get());
@@ -238,7 +238,7 @@ public class ResCCashShop {
             // test
             // CCashShop::OnCashItemResSetWishFailed
             case CashItemRes_SetWish_Failed: {
-                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_NoStock.get());
+                sp.Encode1(OpsCashItemFailReason.CashItemFailReason_NoStock.get());
                 break;
             }
             // showBoughtCSItem
@@ -250,7 +250,7 @@ public class ResCCashShop {
             }
             // CCashShop::OnCashItemResBuyFailed
             case CashItemRes_Buy_Failed: {
-                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_NoRemainCash.get());
+                sp.Encode1(OpsCashItemFailReason.CashItemFailReason_NoRemainCash.get());
                 break;
             }
             case CashItemRes_UseCoupon_Done: {
@@ -280,7 +280,7 @@ public class ResCCashShop {
                 break;
             }
             case CashItemRes_UseCoupon_Failed: {
-                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_InvalidCoupon.get());
+                sp.Encode1(OpsCashItemFailReason.CashItemFailReason_InvalidCoupon.get());
                 break;
             }
             // CCashShop::OnCashItemResIncSlotCountDone
@@ -310,7 +310,7 @@ public class ResCCashShop {
             }
             // CCashShop::OnCashItemResMoveLtoSFailed
             case CashItemRes_MoveLtoS_Failed: {
-                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_NoEmptyPos.get());
+                sp.Encode1(OpsCashItemFailReason.CashItemFailReason_NoEmptyPos.get());
                 break;
             }
             // CCashShop::OnCashItemResMoveStoLDone
@@ -320,7 +320,7 @@ public class ResCCashShop {
             }
             // CCashShop::OnCashItemResMoveStoLFailed
             case CashItemRes_MoveStoL_Failed: {
-                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_NoEmptyPos.get());
+                sp.Encode1(OpsCashItemFailReason.CashItemFailReason_NoEmptyPos.get());
                 break;
             }
             // CCashShop::OnCashItemResDestroyDone
@@ -330,7 +330,7 @@ public class ResCCashShop {
             }
             // CCashShop::OnCashItemResDestroyFailed
             case CashItemRes_Destroy_Failed: {
-                sp.Encode1(CashItemFailReasonOps.CashItemFailReason_InvalidPassportID.get()); // msg
+                sp.Encode1(OpsCashItemFailReason.CashItemFailReason_InvalidPassportID.get()); // msg
                 break;
             }
             // CCashShop::OnCashItemResBuyNormalDone
@@ -431,7 +431,7 @@ public class ResCCashShop {
     public static MaplePacket OnCashItemGachaponResult(IItem box_item, IItem item, MapleClient c) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopCashItemGachaponResult);
 
-        sp.Encode1(CashItemOps.CashItemRes_CashItemGachapon_Done.get());
+        sp.Encode1(OpsCashItem.CashItemRes_CashItemGachapon_Done.get());
         sp.Encode8(box_item.getUniqueId());
         sp.Encode4(0); // nNumber
         sp.EncodeBuffer(GW_CashItemInfo.Encode(item, c));

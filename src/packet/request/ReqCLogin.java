@@ -34,7 +34,7 @@ import handling.login.LoginServer;
 import java.util.List;
 import java.util.Map;
 import packet.ClientPacket;
-import packet.ops.NewCharacterOps;
+import packet.ops.OpsNewCharacter;
 import packet.response.ResCClientSocket;
 import packet.response.ResCLogin;
 import packet.response.ResCLogin.LoginResult;
@@ -262,7 +262,7 @@ public class ReqCLogin {
             job_type = cp.Decode4();
 
             // バージョンによって異なる (左から順番)
-            switch (NewCharacterOps.find(job_type)) {
+            switch (OpsNewCharacter.find(job_type)) {
                 case KnightsOfCygnus:
                     skin_color = 10;
                     job_id = 1000;

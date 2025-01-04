@@ -22,7 +22,7 @@ package packet.ops;
  *
  * @author Riremito
  */
-public enum CashItemFailReasonOps {
+public enum OpsCashItemFailReason {
     // JMS v186
     CashItemFailReason_Timeout(0xB2),
     CashItemFailReason_NoRemainCash(0xB4),
@@ -146,11 +146,11 @@ public enum CashItemFailReasonOps {
 
     private int value;
 
-    CashItemFailReasonOps(int flag) {
+    OpsCashItemFailReason(int flag) {
         value = flag;
     }
 
-    CashItemFailReasonOps() {
+    OpsCashItemFailReason() {
         value = -1;
     }
 
@@ -158,8 +158,8 @@ public enum CashItemFailReasonOps {
         return value;
     }
 
-    public static CashItemFailReasonOps find(int val) {
-        for (final CashItemFailReasonOps o : CashItemFailReasonOps.values()) {
+    public static OpsCashItemFailReason find(int val) {
+        for (final OpsCashItemFailReason o : OpsCashItemFailReason.values()) {
             if (o.get() == val) {
                 return o;
             }
