@@ -32,7 +32,7 @@ import packet.request.PortalPacket;
 import packet.request.ReqCReactorPool;
 import packet.request.ReqCSummonedPool;
 import packet.request.ReqCTrunkDlg;
-import packet.request.ReqCUserPool;
+import packet.request.ReqCUser;
 import packet.request.ReqCUIItemUpgrade;
 import packet.request.ReqCITC;
 import packet.request.ReqCTownPortalPool;
@@ -40,7 +40,6 @@ import packet.request.ReqCUser_Pet;
 import packet.request.ReqCCashShop;
 import packet.request.ReqCLogin;
 import packet.response.ResCClientSocket;
-import packet.response.ResCLogin;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
@@ -329,17 +328,20 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 return true;
             }
+            // CUser
+            case CP_UserMove:
+            case CP_UserSitRequest:
+            case CP_UserPortableChairSitRequest:
             case CP_UserCharacterInfoRequest:
             case CP_UserSkillPrepareRequest:
             case CP_UserChangeStatRequest:
-            case CP_UserMove:
             case CP_UserMeleeAttack:
             case CP_UserShootAttack:
             case CP_UserMagicAttack:
             case CP_UserBodyAttack:
             case CP_UserHit:
             case CP_UserSkillCancelRequest: {
-                ReqCUserPool.OnPacket(cp, header, c);
+                ReqCUser.OnPacket(cp, header, c);
                 return true;
             }
             case CP_UserSkillUseRequest: {
@@ -355,16 +357,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserStatChangeItemCancelRequest: {
                 // pc
                 PlayerHandler.CancelItemEffect(p.readInt(), c.getPlayer());
-                return true;
-            }
-            case CP_UserPortableChairSitRequest: {
-                // pc
-                PlayerHandler.UseChair(p.readInt(), c, c.getPlayer());
-                return true;
-            }
-            case CP_UserSitRequest: {
-                // pc
-                PlayerHandler.CancelChair(p.readShort(), c, c.getPlayer());
                 return true;
             }
             case CP_UserActivateEffectItem:

@@ -18,13 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
 import packet.request.struct.CMovePath;
+import packet.response.ResCUserLocal;
+import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import packet.response.UserResponse;
 import server.maps.MapleMap;
 import tools.AttackPair;
 import tools.Pair;
 
-public class ReqCUserPool {
+public class ReqCUser {
 
     public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
@@ -49,11 +51,11 @@ public class ReqCUserPool {
                 return true;
             }
             case CP_UserSitRequest: {
-                //PlayerHandler.CancelChair(p.readShort(), c, c.getPlayer());
+                OnSitRequest(cp, chr);
                 return true;
             }
             case CP_UserPortableChairSitRequest: {
-                //PlayerHandler.UseChair(p.readInt(), c, c.getPlayer());
+                OnPortableChairSitRequest(cp, chr);
                 return true;
             }
             case CP_UserMeleeAttack: {
@@ -408,6 +410,55 @@ public class ReqCUserPool {
         chr.setStance(data.getAction());
         map.movePlayer(chr, chr.getPosition());
         map.broadcastMessage(chr, UserResponse.movePlayer(chr, data), false);
+        return true;
+    }
+
+    public static boolean OnSitRequest(ClientPacket cp, MapleCharacter chr) {
+        short map_chair_id = cp.Decode2();
+
+        boolean is_cancel = (map_chair_id == -1);
+
+        if (is_cancel) {
+            // 釣り
+            if (chr.getChair() == 3011000) {
+                chr.cancelFishingTask();
+            }
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.SetActivePortableChair(chr.getId(), 0), false);
+        }
+
+        chr.setChair(is_cancel ? 0 : map_chair_id);
+        chr.SendPacket(ResCUserLocal.SitResult(map_chair_id));
+        return true;
+    }
+
+    public static boolean OnPortableChairSitRequest(ClientPacket cp, MapleCharacter chr) {
+        int item_id = cp.Decode4();
+
+        IItem toUse = chr.getInventory(MapleInventoryType.SETUP).findById(item_id);
+        if (toUse == null) {
+            return false;
+        }
+
+        // 釣り
+        if (item_id == 3011000) {
+            int fishing_level = 0;
+            for (IItem item : chr.getInventory(MapleInventoryType.CASH).list()) {
+                if (fishing_level <= 1 && item.getItemId() == 5340000) {
+                    fishing_level = 1;
+                }
+                if (item.getItemId() == 5340001) {
+                    fishing_level = 2;
+                    break;
+                }
+            }
+            if (fishing_level > 0) {
+                chr.startFishingTask(fishing_level == 2);
+            }
+        }
+
+        chr.setChair(item_id);
+        chr.getMap().broadcastMessage(chr, ResCUserRemote.SetActivePortableChair(chr.getId(), item_id), false);
+        SendCharacterStat(chr); // ?_?
         return true;
     }
 

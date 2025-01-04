@@ -80,51 +80,6 @@ public class PlayerHandler {
         }
     }
 
-    public static final void UseChair(final int itemId, final MapleClient c, final MapleCharacter chr) {
-        if (chr == null) {
-            return;
-        }
-        final IItem toUse = chr.getInventory(MapleInventoryType.SETUP).findById(itemId);
-
-        if (toUse == null) {
-            //chr.getCheatTracker().registerOffense(CheatingOffense.USING_UNAVAILABLE_ITEM, Integer.toString(itemId));
-            return;
-        }
-        // 釣りの椅子
-        if (itemId == 3011000) {
-            int fishing_level = 0;
-            for (IItem item : c.getPlayer().getInventory(MapleInventoryType.CASH).list()) {
-                if (fishing_level <= 1 && item.getItemId() == 5340000) {
-                    fishing_level = 1;
-                }
-                if (item.getItemId() == 5340001) {
-                    fishing_level = 2;
-                    break;
-                }
-            }
-            if (fishing_level > 0) {
-                chr.startFishingTask(fishing_level == 2);
-            }
-        }
-        chr.setChair(itemId);
-        chr.getMap().broadcastMessage(chr, MaplePacketCreator.showChair(chr.getId(), itemId), false);
-        c.getSession().write(MaplePacketCreator.enableActions());
-    }
-
-    public static final void CancelChair(final short id, final MapleClient c, final MapleCharacter chr) {
-        if (id == -1) { // Cancel Chair
-            if (chr.getChair() == 3011000) {
-                chr.cancelFishingTask();
-            }
-            chr.setChair(0);
-            c.getSession().write(MaplePacketCreator.cancelChair(-1));
-            chr.getMap().broadcastMessage(chr, MaplePacketCreator.showChair(chr.getId(), 0), false);
-        } else { // Use In-Map Chair
-            chr.setChair(id);
-            c.getSession().write(MaplePacketCreator.cancelChair(id));
-        }
-    }
-
     public static final void TrockAddMap(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
         final byte addrem = slea.readByte();
         final byte vip = slea.readByte();

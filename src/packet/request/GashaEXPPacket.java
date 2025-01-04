@@ -73,7 +73,7 @@ public class GashaEXPPacket {
         IItem item = chr.getInventory(MapleInventoryType.USE).getItem(nPOS);
         if (item == null || chr.getGashaEXP() > 0 || item.getItemId() != nItemID || (nItemID / 10000) != 237) {
             // LoadData.IsValidItem
-            ReqCUserPool.SendCharacterStat(chr);
+            ReqCUser.SendCharacterStat(chr);
             return false;
         }
 
@@ -98,7 +98,7 @@ public class GashaEXPPacket {
         int exp_temp = chr.getGashaEXP();
 
         if (exp_temp <= 0) {
-            ReqCUserPool.SendCharacterStat(chr);
+            ReqCUser.SendCharacterStat(chr);
             return false;
         }
 

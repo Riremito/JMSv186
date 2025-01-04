@@ -33,6 +33,8 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 import packet.request.ReqCNpcPool;
 import packet.response.FieldResponse;
+import packet.response.ResCUserLocal;
+import packet.response.ResCUserRemote;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -1281,14 +1283,14 @@ public class AdminCommand {
                     return 0;
                 }
                 victim.setChair(0);
-                victim.getClient().getSession().write(MaplePacketCreator.cancelChair(-1));
-                victim.getMap().broadcastMessage(victim, MaplePacketCreator.showChair(c.getPlayer().getId(), 0), false);
+                victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
+                victim.getMap().broadcastMessage(victim, ResCUserRemote.SetActivePortableChair(c.getPlayer().getId(), 0), false);
                 victim.giveDebuff(dis, MobSkillFactory.getMobSkill(type, CommandProcessorUtil.getOptionalIntArg(splitted, 3, 1)));
             } else {
                 for (MapleCharacter victim : c.getPlayer().getMap().getCharactersThreadsafe()) {
                     victim.setChair(0);
-                    victim.getClient().getSession().write(MaplePacketCreator.cancelChair(-1));
-                    victim.getMap().broadcastMessage(victim, MaplePacketCreator.showChair(c.getPlayer().getId(), 0), false);
+                    victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
+                    victim.getMap().broadcastMessage(victim, ResCUserRemote.SetActivePortableChair(c.getPlayer().getId(), 0), false);
                     victim.giveDebuff(dis, MobSkillFactory.getMobSkill(type, CommandProcessorUtil.getOptionalIntArg(splitted, 2, 1)));
                 }
             }

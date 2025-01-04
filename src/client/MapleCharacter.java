@@ -83,7 +83,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import packet.response.PachinkoResponse;
 import packet.request.ContextPacket;
-import packet.request.ReqCUserPool;
+import packet.request.ReqCUser;
 import packet.response.ResCWvsContext;
 import packet.response.ResCUser_Dragon;
 import packet.response.FreeMarketResponse;
@@ -5875,7 +5875,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void enableActions() {
-        ReqCUserPool.SendCharacterStat(this);
+        ReqCUser.SendCharacterStat(this);
     }
 
     public void setPetAutoHPItem(int item_id) {

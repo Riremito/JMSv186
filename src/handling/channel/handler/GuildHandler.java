@@ -27,7 +27,7 @@ import client.MapleClient;
 import handling.MaplePacket;
 import handling.world.World;
 import handling.world.guild.*;
-import packet.request.ReqCUserPool;
+import packet.request.ReqCUser;
 import packet.response.GuildResponse;
 import packet.response.UserResponse;
 import tools.MaplePacketCreator;

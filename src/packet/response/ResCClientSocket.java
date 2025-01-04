@@ -112,6 +112,10 @@ public class ResCClientSocket {
         sp.Encode1(1);
         sp.Encode4((int) GameServerIP); // IP, 127.0.0.1
         sp.Encode2(port);
+
+        if (ServerConfig.JMS302orLater()) {
+            sp.Encode1(0);
+        }
         return sp.Get();
     }
 

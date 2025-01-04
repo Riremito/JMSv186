@@ -141,7 +141,6 @@ public class InterServerHandler {
             // 分割 SetField
             c.SendPacket(ResCStage.SetField_JMS_302(player, 1, true, null, 0, 0));
             c.SendPacket(ResCStage.SetField_JMS_302(player, 2, true, null, 0, -1));
-            //c.getPlayer().UpdateStat(true);
         } else {
             c.SendPacket(MaplePacketCreator.getCharInfo(player));
         }

@@ -886,29 +886,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket showChair(int characterid, int itemid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserSetActivePortableChair.Get());
-        mplew.writeInt(characterid);
-        mplew.writeInt(itemid);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket cancelChair(int id) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserSitResult.Get());
-        if (id == -1) {
-            mplew.write(0);
-        } else {
-            mplew.write(1);
-            mplew.writeShort(id);
-        }
-        return mplew.getPacket();
-    }
-
     public static MaplePacket destroyReactor(MapleReactor reactor) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 

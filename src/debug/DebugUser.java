@@ -98,7 +98,7 @@ public class DebugUser {
             AddItem(chr, 1012056); // 犬鼻
             AddItem(chr, 1092030); // メイプルシールド
             AddItem(chr, 1050127); // タオル(黒)
-            AddItem(chr, 1051140); // バスタオル(黄)
+            //AddItem(chr, 1051140); // バスタオル(黄)
             AddItem(chr, 1032062); // エレメントピアス
             AddItem(chr, 1112400); // 錬金術師の指輪
         }
@@ -109,29 +109,23 @@ public class DebugUser {
             AddItem(chr, 2030008, 100); // コーヒー牛乳
             AddItem(chr, 2030009, 100); // いちご牛乳
             AddItem(chr, 2030010, 100); // フルーツ牛乳
-            AddItem(chr, 2030004, 100); // 帰還の書(ヘネシス)
-            AddItem(chr, 2040303, 100); // 強化書
-            AddItem(chr, 2040506, 100);
-            AddItem(chr, 2040710, 100);
-            AddItem(chr, 2040807, 100);
-            AddItem(chr, 2044703, 100);
-            AddItem(chr, 2044503, 100);
-            AddItem(chr, 2043803, 100);
-            AddItem(chr, 2043003, 100);
-            AddItem(chr, 2049100, 100);
-            AddItem(chr, 2049003, 100);
-            AddItem(chr, 2049300, 100);
-            AddItem(chr, 2049400, 100);
+            //AddItem(chr, 2030004, 100); // 帰還の書(ヘネシス)
+            AddItem(chr, 2043005, 100); // 呪われた攻撃の書(片手剣) 30%
+            AddItem(chr, 2043003, 100); // 奇跡の攻撃の書(片手剣)
+            AddItem(chr, 2049100, 100); // 混沌の書 60%
+            AddItem(chr, 2049003, 100); // 白の書 20%
+            AddItem(chr, 2049300, 100); // 高級装備強化の書
+            AddItem(chr, 2049400, 100); // 高級潜在能力覚醒の書
             AddItem(chr, 2060003, 100); // 弓専用の矢
             AddItem(chr, 2061003, 100); // 弩専用の矢
-            AddItem(chr, 2070000, 100); // 手裏剣
-            AddItem(chr, 2100000, 100); // 包み
+            AddItem(chr, 2070000, 100); // 水の手裏剣
+            AddItem(chr, 2100000, 100); // 黒い包み
             AddItem(chr, 2120000, 100); // ペットのエサ
             AddItem(chr, 2120008);      // 
-            AddItem(chr, 2141003);      // パチンコ玉?
-            AddItem(chr, 2150001);      // オルゴール
+            //AddItem(chr, 2141003);      // パチンコ玉?
+            AddItem(chr, 2150001);      // ファンキーモンキーベイビーズのテーマ
             AddItem(chr, 2190000);      // マクロ探知機
-            AddItem(chr, 2210000);      // 変身薬
+            AddItem(chr, 2210000);      // メイプルキノコの像
             AddItem(chr, 2230000);      // 
             AddItem(chr, 2240000);      // 指輪
             AddItem(chr, 2241000);      // 
@@ -140,18 +134,18 @@ public class DebugUser {
             AddItem(chr, 2270000);      // 
             AddItem(chr, 2280000);      // スキルブック系統
             AddItem(chr, 2290000);      // マスタリーブック
-            AddItem(chr, 2310000);      // ふくろう
+            AddItem(chr, 2310000);      // 不思議なフクロウ
             AddItem(chr, 2320000);      // テレポストーン
-            AddItem(chr, 2330000, 100); // 弾丸   
-            AddItem(chr, 2340000, 1);   // White Scroll (海外)
-            AddItem(chr, 2350000);      // キャラクタースロット
-            AddItem(chr, 2370000, 100); // 兵法書
+            AddItem(chr, 2330000, 100); // ブレット
+            //AddItem(chr, 2340000, 1);   // White Scroll (海外)
+            //AddItem(chr, 2350000);      // キャラクタースロット
+            AddItem(chr, 2370000, 100); // 兵法書(孫子)
             AddItem(chr, 2390001);      // 
             AddItem(chr, 2420004);      // ゲート
             AddItem(chr, 2430003);      // 
             AddItem(chr, 2440000);      // 
-            AddItem(chr, 2450000);      // EXP2倍バフ
-            AddItem(chr, 2460003);      // 鑑定の虫眼鏡
+            //AddItem(chr, 2450000);      // EXP2倍バフ
+            AddItem(chr, 2460003, 100);      // 鑑定の虫眼鏡
             AddItem(chr, 2461000);      // 
             AddItem(chr, 2470000, 100); // 黄金つち
             AddItem(chr, 2500000);      // 
@@ -198,7 +192,7 @@ public class DebugUser {
         {
             AddItem(chr, 5000023);      // ペンギン
             AddItem(chr, 5010000);      // ニコニコ太陽
-            AddItem(chr, 5021001);      // 音速紙飛行機
+            //AddItem(chr, 5021001);      // 音速紙飛行機
             AddItem(chr, 5030000);      // エルフ商人
             AddItem(chr, 5040000);      // テレポストーン
             AddItem(chr, 5041000);      // 高性能テレポストーン
@@ -210,15 +204,13 @@ public class DebugUser {
             AddItem(chr, 5050100);      // AP初期化の書
             //AddItem(chr, 5051000);      // 
             AddItem(chr, 5051001);      // SP初期化の書
-
+            AddItem(chr, 5062000, 100); // ミラクルキューブ
             AddItem(chr, 5071000, 100); // 拡声器
             AddItem(chr, 5076000, 100); // アイテム拡声器
-            AddItem(chr, 5370000, 100); // 黒板
             AddItem(chr, 5140000);      // 営業許可証
-            AddItem(chr, 5041000, 100); // 高性能テレポストーン
             AddItem(chr, 5220000, 100); // ガシャポンチケット
+            AddItem(chr, 5370000);      // 黒板
             AddItem(chr, 5570000, 100); // ビシャスのハンマー
-            AddItem(chr, 5062000, 100); // ミラクルキューブ
             AddItem(chr, 5610000, 100); // ベガの呪文書(10%)
             AddItem(chr, 5610001, 100); // ベガの呪文書(60%)
             // プレミアムさすらいの商人ミョミョ
