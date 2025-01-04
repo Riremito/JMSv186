@@ -5,11 +5,13 @@ import client.ISkill;
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleClient;
+import client.PlayerStats;
 import client.SkillFactory;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import config.DebugConfig;
 import config.ServerConfig;
+import constants.GameConstants;
 import debug.Debug;
 import handling.channel.handler.AttackInfo;
 import handling.channel.handler.PlayerHandler;
@@ -22,6 +24,7 @@ import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import packet.response.UserResponse;
+import server.Randomizer;
 import server.maps.MapleMap;
 import tools.AttackPair;
 import tools.Pair;
@@ -120,6 +123,20 @@ public class ReqCUser {
             case CP_UserCharacterInfoRequest: {
                 //PlayerHandler.CharInfoRequest(character_id, c, c.getPlayer());
                 OnCharacterInfoRequest(cp, chr, map);
+                return true;
+            }
+            // AP使用
+            case CP_UserAbilityUpRequest: {
+                OnAbilityUpRequest(cp, chr);
+                return true;
+            }
+            case CP_UserAbilityMassUpRequest: {
+                OnAbilityMassUpRequest(cp, chr);
+                return true;
+            }
+            // SP使用
+            case CP_UserSkillUpRequest: {
+                OnSkillUpRequest(cp, chr);
                 return true;
             }
             // buff
@@ -478,6 +495,391 @@ public class ReqCUser {
 
         chr.SendPacket(UserResponse.CharacterInfo(player, chr.getId() == m_dwCharacterId));
         return true;
+    }
+
+    public static boolean OnAbilityUpRequest(ClientPacket cp, MapleCharacter chr) {
+
+        int time_stamp = cp.Decode4();
+        long flag = 0;
+
+        if (ServerConfig.JMS302orLater()) {
+            flag = cp.Decode8();
+        } else {
+            flag = cp.Decode4();
+        }
+
+        chr.updateTick(time_stamp);
+        return OnAbilityUpRequestInternal(chr, flag);
+    }
+
+    public static boolean OnAbilityUpRequestInternal(MapleCharacter chr, long flag) {
+        final PlayerStats stat = chr.getStat();
+        final int job = chr.getJob();
+        if (chr.getRemainingAp() > 0) {
+            switch ((int) flag) { // need to fix
+                case 64:
+                    // Str
+                    if (stat.getStr() >= 999) {
+                        return false;
+                    }
+                    stat.setStr((short) (stat.getStr() + 1));
+                    break;
+                case 128:
+                    // Dex
+                    if (stat.getDex() >= 999) {
+                        return false;
+                    }
+                    stat.setDex((short) (stat.getDex() + 1));
+                    break;
+                case 256:
+                    // Int
+                    if (stat.getInt() >= 999) {
+                        return false;
+                    }
+                    stat.setInt((short) (stat.getInt() + 1));
+                    break;
+                case 512:
+                    // Luk
+                    if (stat.getLuk() >= 999) {
+                        return false;
+                    }
+                    stat.setLuk((short) (stat.getLuk() + 1));
+                    break;
+                case 2048:
+                    // HP
+                    int maxhp = stat.getMaxHp();
+                    if (chr.getHpApUsed() >= 10000 || maxhp >= 30000) {
+                        return false;
+                    }
+                    if (job == 0) {
+                        // Beginner
+                        maxhp += Randomizer.rand(8, 12);
+                    } else if ((job >= 100 && job <= 132) || (job >= 3200 && job <= 3212)) {
+                        // Warrior
+                        ISkill improvingMaxHP = SkillFactory.getSkill(1000001);
+                        int improvingMaxHPLevel = chr.getSkillLevel(improvingMaxHP);
+                        maxhp += Randomizer.rand(20, 25);
+                        if (improvingMaxHPLevel >= 1) {
+                            maxhp += improvingMaxHP.getEffect(improvingMaxHPLevel).getX();
+                        }
+                    } else if ((job >= 200 && job <= 232) || (GameConstants.isEvan(job))) {
+                        // Magician
+                        maxhp += Randomizer.rand(10, 20);
+                    } else if ((job >= 300 && job <= 322) || (job >= 400 && job <= 434) || (job >= 1300 && job <= 1312) || (job >= 1400 && job <= 1412) || (job >= 3300 && job <= 3312)) {
+                        // Bowman
+                        maxhp += Randomizer.rand(16, 20);
+                    } else if ((job >= 500 && job <= 522) || (job >= 3500 && job <= 3512)) {
+                        // Pirate
+                        ISkill improvingMaxHP = SkillFactory.getSkill(5100000);
+                        int improvingMaxHPLevel = chr.getSkillLevel(improvingMaxHP);
+                        maxhp += Randomizer.rand(18, 22);
+                        if (improvingMaxHPLevel >= 1) {
+                            maxhp += improvingMaxHP.getEffect(improvingMaxHPLevel).getY();
+                        }
+                    } else if (job >= 1500 && job <= 1512) {
+                        // Pirate
+                        ISkill improvingMaxHP = SkillFactory.getSkill(15100000);
+                        int improvingMaxHPLevel = chr.getSkillLevel(improvingMaxHP);
+                        maxhp += Randomizer.rand(18, 22);
+                        if (improvingMaxHPLevel >= 1) {
+                            maxhp += improvingMaxHP.getEffect(improvingMaxHPLevel).getY();
+                        }
+                    } else if (job >= 1100 && job <= 1112) {
+                        // Soul Master
+                        ISkill improvingMaxHP = SkillFactory.getSkill(11000000);
+                        int improvingMaxHPLevel = chr.getSkillLevel(improvingMaxHP);
+                        maxhp += Randomizer.rand(36, 42);
+                        if (improvingMaxHPLevel >= 1) {
+                            maxhp += improvingMaxHP.getEffect(improvingMaxHPLevel).getY();
+                        }
+                    } else if (job >= 1200 && job <= 1212) {
+                        // Flame Wizard
+                        maxhp += Randomizer.rand(15, 21);
+                    } else if (job >= 2000 && job <= 2112) {
+                        // Aran
+                        maxhp += Randomizer.rand(40, 50);
+                    } else {
+                        // GameMaster
+                        maxhp += Randomizer.rand(50, 100);
+                    }
+                    maxhp = (short) Math.min(30000, Math.abs(maxhp));
+                    chr.setHpApUsed((short) (chr.getHpApUsed() + 1));
+                    stat.setMaxHp(maxhp);
+                    break;
+                case 8192:
+                    // MP
+                    int maxmp = stat.getMaxMp();
+                    if (chr.getHpApUsed() >= 10000 || stat.getMaxMp() >= 30000) {
+                        return false;
+                    }
+                    if (job == 0) {
+                        // Beginner
+                        maxmp += Randomizer.rand(6, 8);
+                    } else if (job >= 100 && job <= 132) {
+                        // Warrior
+                        maxmp += Randomizer.rand(2, 4);
+                    } else if ((job >= 200 && job <= 232) || (GameConstants.isEvan(job)) || (job >= 3200 && job <= 3212)) {
+                        // Magician
+                        ISkill improvingMaxMP = SkillFactory.getSkill(2000001);
+                        int improvingMaxMPLevel = chr.getSkillLevel(improvingMaxMP);
+                        maxmp += Randomizer.rand(18, 20);
+                        if (improvingMaxMPLevel >= 1) {
+                            maxmp += improvingMaxMP.getEffect(improvingMaxMPLevel).getY() * 2;
+                        }
+                    } else if ((job >= 300 && job <= 322) || (job >= 400 && job <= 434) || (job >= 500 && job <= 522) || (job >= 3200 && job <= 3212) || (job >= 3500 && job <= 3512) || (job >= 1300 && job <= 1312) || (job >= 1400 && job <= 1412) || (job >= 1500 && job <= 1512)) {
+                        // Bowman
+                        maxmp += Randomizer.rand(10, 12);
+                    } else if (job >= 1100 && job <= 1112) {
+                        // Soul Master
+                        maxmp += Randomizer.rand(6, 9);
+                    } else if (job >= 1200 && job <= 1212) {
+                        // Flame Wizard
+                        ISkill improvingMaxMP = SkillFactory.getSkill(12000000);
+                        int improvingMaxMPLevel = chr.getSkillLevel(improvingMaxMP);
+                        maxmp += Randomizer.rand(18, 20);
+                        if (improvingMaxMPLevel >= 1) {
+                            maxmp += improvingMaxMP.getEffect(improvingMaxMPLevel).getY() * 2;
+                        }
+                    } else if (job >= 2000 && job <= 2112) {
+                        // Aran
+                        maxmp += Randomizer.rand(6, 9);
+                    } else {
+                        // GameMaster
+                        maxmp += Randomizer.rand(50, 100);
+                    }
+                    maxmp = (short) Math.min(30000, Math.abs(maxmp));
+                    chr.setHpApUsed((short) (chr.getHpApUsed() + 1));
+                    stat.setMaxMp(maxmp);
+                    break;
+                default: {
+                    chr.UpdateStat(true);
+                    return false;
+                }
+            }
+            chr.setRemainingAp((short) (chr.getRemainingAp() - 1));
+        }
+        chr.UpdateStat(true);
+
+        return true;
+    }
+
+    public static boolean OnAbilityMassUpRequest(ClientPacket cp, MapleCharacter chr) {
+        int time_stamp = cp.Decode4();
+        int count = cp.Decode4(); // ループ数
+
+        int PrimaryStat = 0;
+        int amount = 0;
+        int SecondaryStat = 0;
+        int amount2 = 0;
+
+        for (int i = 0; i < count; i++) {
+            long stat = 0;
+
+            if (ServerConfig.JMS302orLater()) {
+                stat = cp.Decode8();
+            } else {
+                stat = cp.Decode4();
+            }
+
+            int point = cp.Decode4();
+
+            // test
+            if (i == 0) {
+                PrimaryStat = (int) stat;
+                amount = point;
+            } else if (i == 1) {
+                SecondaryStat = (int) stat;
+                amount2 = point;
+            }
+        }
+
+        if (amount < 0 || amount2 < 0) {
+            return false;
+        }
+
+        chr.updateTick(time_stamp);
+
+        final PlayerStats playerst = chr.getStat();
+        if (chr.getRemainingAp() == amount + amount2) {
+            switch (PrimaryStat) {
+                case 64:
+                    // Str
+                    if (playerst.getStr() + amount > 999) {
+                        return false;
+                    }
+                    playerst.setStr((short) (playerst.getStr() + amount));
+                    break;
+                case 128:
+                    // Dex
+                    if (playerst.getDex() + amount > 999) {
+                        return false;
+                    }
+                    playerst.setDex((short) (playerst.getDex() + amount));
+                    break;
+                case 256:
+                    // Int
+                    if (playerst.getInt() + amount > 999) {
+                        return false;
+                    }
+                    playerst.setInt((short) (playerst.getInt() + amount));
+                    break;
+                case 512:
+                    // Luk
+                    if (playerst.getLuk() + amount > 999) {
+                        return false;
+                    }
+                    playerst.setLuk((short) (playerst.getLuk() + amount));
+                    break;
+                default:
+                    chr.UpdateStat(true);
+                    return false;
+            }
+            switch (SecondaryStat) {
+                case 64:
+                    // Str
+                    if (playerst.getStr() + amount2 > 999) {
+                        return false;
+                    }
+                    playerst.setStr((short) (playerst.getStr() + amount2));
+                    break;
+                case 128:
+                    // Dex
+                    if (playerst.getDex() + amount2 > 999) {
+                        return false;
+                    }
+                    playerst.setDex((short) (playerst.getDex() + amount2));
+                    break;
+                case 256:
+                    // Int
+                    if (playerst.getInt() + amount2 > 999) {
+                        return false;
+                    }
+                    playerst.setInt((short) (playerst.getInt() + amount2));
+                    break;
+                case 512:
+                    // Luk
+                    if (playerst.getLuk() + amount2 > 999) {
+                        return false;
+                    }
+                    playerst.setLuk((short) (playerst.getLuk() + amount2));
+                    break;
+                default:
+                    chr.UpdateStat(true);
+                    return false;
+            }
+            chr.setRemainingAp((short) (chr.getRemainingAp() - (amount + amount2)));
+            chr.UpdateStat(true);
+        }
+
+        return true;
+    }
+
+    public static boolean OnSkillUpRequest(ClientPacket cp, MapleCharacter chr) {
+        int time_stamp = cp.Decode4();
+        int skill_id = cp.Decode4();
+
+        chr.updateTick(time_stamp);
+        return OnSkillUpRequestInternal(chr, skill_id);
+    }
+
+    public static boolean OnSkillUpRequestInternal(MapleCharacter chr, int skill_id) {
+        boolean isBeginnerSkill = false;
+        final int remainingSp;
+        chr.setLastSkillUp(skill_id);
+        switch (skill_id) {
+            case 1000:
+            case 1001:
+            case 1002: {
+                final int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(1000));
+                final int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(1001));
+                final int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(1002));
+                remainingSp = Math.min(chr.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
+                isBeginnerSkill = true;
+                break;
+            }
+            case 10001000:
+            case 10001001:
+            case 10001002: {
+                final int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(10001000));
+                final int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(10001001));
+                final int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(10001002));
+                remainingSp = Math.min(chr.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
+                isBeginnerSkill = true;
+                break;
+            }
+            case 20001000:
+            case 20001001:
+            case 20001002: {
+                final int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(20001000));
+                final int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(20001001));
+                final int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(20001002));
+                remainingSp = Math.min(chr.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
+                isBeginnerSkill = true;
+                break;
+            }
+            case 20011000:
+            case 20011001:
+            case 20011002: {
+                final int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(20011000));
+                final int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(20011001));
+                final int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(20011002));
+                remainingSp = Math.min(chr.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
+                isBeginnerSkill = true;
+                break;
+            }
+            case 30001000:
+            case 30001001:
+            case 30000002: {
+                final int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(30001000));
+                final int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(30001001));
+                final int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(30000002));
+                remainingSp = Math.min(chr.getLevel() - 1, 9) - snailsLevel - recoveryLevel - nimbleFeetLevel;
+                isBeginnerSkill = true; //resist can max ALL THREE
+                break;
+            }
+            default: {
+                remainingSp = chr.getRemainingSp(GameConstants.getSkillBookForSkill(skill_id));
+                break;
+            }
+        }
+        final ISkill skill = SkillFactory.getSkill(skill_id);
+        if (skill.hasRequiredSkill()) {
+            if (chr.getSkillLevel(SkillFactory.getSkill(skill.getRequiredSkillId())) < skill.getRequiredSkillLevel()) {
+                Debug.ErrorLog("Use SP 1 = " + skill_id);
+                return false;
+            }
+        }
+        final int maxlevel = skill.isFourthJob() ? chr.getMasterLevel(skill) : skill.getMaxLevel();
+        final int curLevel = chr.getSkillLevel(skill);
+        if (skill.isInvisible() && chr.getSkillLevel(skill) == 0) {
+            if ((skill.isFourthJob() && chr.getMasterLevel(skill) == 0) || (!skill.isFourthJob() && maxlevel < 10 && !isBeginnerSkill)) {
+                Debug.ErrorLog("Use SP 2 = " + skill_id);
+                return false;
+            }
+        }
+        for (int i : GameConstants.blockedSkills) {
+            if (skill.getId() == i) {
+                chr.dropMessage(1, "You may not add this skill.");
+                Debug.ErrorLog("Use SP 3 = " + skill_id);
+                return false;
+            }
+        }
+        if ((remainingSp > 0 && curLevel + 1 <= maxlevel) && skill.canBeLearnedBy(chr.getJob())) {
+            if (!isBeginnerSkill) {
+                final int skillbook = GameConstants.getSkillBookForSkill(skill_id);
+                chr.setRemainingSp(chr.getRemainingSp(skillbook) - 1, skillbook);
+            }
+            chr.UpdateStat(false);
+            chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
+            return true;
+        }
+        if ((remainingSp > 0 && curLevel + 1 <= maxlevel) && isBeginnerSkill) {
+            chr.UpdateStat(false);
+            chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
+            return true;
+        }
+        Debug.ErrorLog("Use SP 4 = " + skill_id);
+        return false;
     }
 
     // CancelBuffHandler

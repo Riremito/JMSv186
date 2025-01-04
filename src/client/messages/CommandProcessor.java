@@ -39,13 +39,13 @@ import database.DatabaseConnection;
 import debug.Debug;
 import debug.DebugJob;
 import handling.channel.ChannelServer;
-import handling.channel.handler.StatsHandling;
 import java.awt.Point;
 import java.lang.reflect.Modifier;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
+import packet.request.ReqCUser;
 import packet.response.FieldResponse;
 import packet.response.ItemResponse;
 import scripting.NPCScriptManager;
@@ -194,7 +194,7 @@ public class CommandProcessor {
                 MapleCharacter chr = c.getPlayer();
                 int skillid = chr.getLastSkillUp();
                 if (skillid != 0) {
-                    while (StatsHandling.DistributeSP(skillid, c, chr));
+                    while (ReqCUser.OnSkillUpRequestInternal(chr, skillid));
                 }
                 return true;
             }

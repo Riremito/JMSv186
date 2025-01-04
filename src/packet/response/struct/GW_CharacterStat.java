@@ -376,7 +376,7 @@ public class GW_CharacterStat {
         }
         // SP
         if ((statmask & Flag.SP.get()) > 0) {
-            if (GameConstants.isEvan(chr.getJob()) || GameConstants.isResist(chr.getJob())) {
+            if (GameConstants.is_extendsp_job(chr.getJob())) {
                 data.Encode1(chr.getRemainingSpSize());
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
                     if (chr.getRemainingSp(i) > 0) {

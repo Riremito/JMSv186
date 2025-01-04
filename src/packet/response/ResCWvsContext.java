@@ -103,6 +103,9 @@ public class ResCWvsContext {
     public static final MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ChangeSkillRecordResult);
         sp.Encode1(1);
+        if (ServerConfig.JMS302orLater()) {
+            sp.Encode1(0);
+        }
         sp.Encode2(1);
         sp.Encode4(skillid);
         sp.Encode4(level);

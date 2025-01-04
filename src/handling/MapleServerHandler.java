@@ -340,6 +340,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserMagicAttack:
             case CP_UserBodyAttack:
             case CP_UserHit:
+            case CP_UserAbilityUpRequest:
+            case CP_UserAbilityMassUpRequest:
+            case CP_UserSkillUpRequest:
             case CP_UserSkillCancelRequest: {
                 ReqCUser.OnPacket(cp, header, c);
                 return true;
@@ -597,22 +600,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_Messenger: {
                 ChatHandler.Messenger(p, c);
-                return true;
-            }
-            case CP_UserAbilityMassUpRequest: {
-                // c
-                StatsHandling.AutoAssignAP(p, c, c.getPlayer());
-                return true;
-            }
-            case CP_UserAbilityUpRequest: {
-                // c
-                StatsHandling.DistributeAP(p, c, c.getPlayer());
-                return true;
-            }
-            case CP_UserSkillUpRequest: {
-                // 実装が悪い
-                p.readInt();
-                StatsHandling.DistributeSP(p.readInt(), c, c.getPlayer());
                 return true;
             }
             case CP_MiniRoom: {
