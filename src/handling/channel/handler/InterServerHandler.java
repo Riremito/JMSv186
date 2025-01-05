@@ -43,7 +43,6 @@ import handling.world.PlayerBuffStorage;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
 import packet.ClientPacket;
-import packet.response.FriendResponse;
 import packet.response.ResCClientSocket;
 import packet.response.ResCFuncKeyMappedMan;
 import packet.response.ResCStage;

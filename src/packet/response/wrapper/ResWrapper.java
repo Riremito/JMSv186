@@ -29,12 +29,13 @@ import java.util.List;
 import packet.ServerPacket;
 import packet.ops.OpsBroadcastMsg;
 import packet.ops.OpsDropPickUpMessage;
+import packet.ops.OpsFieldEffect;
+import packet.ops.OpsFieldEffectArg;
 import packet.ops.OpsFriend;
+import packet.ops.OpsFriendArg;
 import packet.ops.OpsMessage;
 import packet.ops.OpsMessageArg;
 import packet.ops.OpsQuestRecordMessage;
-import packet.response.FieldResponse;
-import packet.response.FriendResponse;
 import packet.response.ResCField;
 import packet.response.ResCWvsContext;
 import packet.response.struct.GW_ItemSlotBase;
@@ -514,23 +515,23 @@ public class ResWrapper {
     }
 
     public static final MaplePacket MapNameDisplay(final int mapid) {
-        return ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Screen, "maplemap/enter/" + mapid));
+        return ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Screen, "maplemap/enter/" + mapid));
     }
 
     public static MaplePacket playSound(String sound) {
-        return ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Sound, sound));
+        return ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Sound, sound));
     }
 
     public static MaplePacket showEffect(String effect) {
-        return ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Screen, effect));
+        return ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Screen, effect));
     }
 
     public static MaplePacket musicChange(String song) {
-        return ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_ChangeBGM, song));
+        return ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_ChangeBGM, song));
     }
 
     public static MaplePacket environmentChange(String env, int mode) {
-        return ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.find(mode), env));
+        return ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.find(mode), env));
     }
 
     // test
@@ -543,14 +544,14 @@ public class ResWrapper {
     }
 
     public static MaplePacket updateBuddylist(MapleCharacter chr) {
-        FriendResponse.FriendResultStruct frs = new FriendResponse.FriendResultStruct();
+        OpsFriendArg frs = new OpsFriendArg();
         frs.flag = OpsFriend.FriendRes_LoadFriend_Done;
         frs.chr = chr;
         return ResCWvsContext.FriendResult(frs);
     }
 
     public static MaplePacket requestBuddylistAdd(int friend_id, String name, int level, int job) {
-        FriendResponse.FriendResultStruct frs = new FriendResponse.FriendResultStruct();
+        OpsFriendArg frs = new OpsFriendArg();
         frs.flag = OpsFriend.FriendRes_Invite;
         frs.friend_id = friend_id;
         frs.friend_channel = 0; // todo
@@ -562,7 +563,7 @@ public class ResWrapper {
     }
 
     public static MaplePacket updateBuddyChannel(int friend_id, int friend_channel) {
-        FriendResponse.FriendResultStruct frs = new FriendResponse.FriendResultStruct();
+        OpsFriendArg frs = new OpsFriendArg();
         frs.flag = OpsFriend.FriendRes_Notify;
         frs.friend_id = friend_id;
         frs.friend_channel = friend_channel;
@@ -570,7 +571,7 @@ public class ResWrapper {
     }
 
     public static MaplePacket updateBuddyCapacity(int capacity) {
-        FriendResponse.FriendResultStruct frs = new FriendResponse.FriendResultStruct();
+        OpsFriendArg frs = new OpsFriendArg();
         frs.flag = OpsFriend.FriendRes_IncMaxCount_Done;
         frs.nFriendMax = capacity;
         return ResCWvsContext.FriendResult(frs);
@@ -578,7 +579,7 @@ public class ResWrapper {
 
     // test
     public static MaplePacket buddylistMessage(OpsFriend flag) {
-        FriendResponse.FriendResultStruct frs = new FriendResponse.FriendResultStruct();
+        OpsFriendArg frs = new OpsFriendArg();
         frs.flag = flag;
         return ResCWvsContext.FriendResult(frs);
     }

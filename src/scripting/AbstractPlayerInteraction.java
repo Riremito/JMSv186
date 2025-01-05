@@ -51,7 +51,8 @@ import server.quest.MapleQuest;
 import tools.MaplePacketCreator;
 import client.inventory.MapleInventoryIdentifier;
 import handling.world.World;
-import packet.response.FieldResponse;
+import packet.ops.OpsFieldEffect;
+import packet.ops.OpsFieldEffectArg;
 import packet.response.ResCField;
 import packet.response.ResCUserLocal;
 import packet.response.ResCWvsContext;
@@ -901,7 +902,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void Aran_Start() {
-        c.getSession().write(ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Sound, "Aran/balloon")));
+        c.getSession().write(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Sound, "Aran/balloon")));
     }
 
     public final void evanTutorial(final String data, final int v1) {
@@ -976,7 +977,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public void showMapEffect(String path) {
-        getClient().getSession().write(ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Screen, path)));
+        getClient().getSession().write(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Screen, path)));
     }
 
     public int itemQuantity(int itemid) {

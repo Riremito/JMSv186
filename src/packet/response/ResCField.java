@@ -24,6 +24,7 @@ import debug.Debug;
 import handling.MaplePacket;
 import java.util.List;
 import packet.ServerPacket;
+import packet.ops.OpsFieldEffectArg;
 import packet.response.struct.TestHelper;
 import server.shops.AbstractPlayerStore;
 import server.shops.HiredMerchant;
@@ -59,73 +60,64 @@ public class ResCField {
 
     // environmentChange, musicChange, showEffect, playSound
     // ShowBossHP, trembleEffect
-    public static MaplePacket FieldEffect(FieldResponse.FieldEffectStruct st) {
+    public static MaplePacket FieldEffect(OpsFieldEffectArg st) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FieldEffect);
         sp.Encode1(st.flag.get());
         switch (st.flag) {
-            case FieldEffect_Summon:
-                {
-                    sp.Encode1(0);
-                    sp.Encode4(0);
-                    sp.Encode4(0);
-                    break;
+            case FieldEffect_Summon: {
+                sp.Encode1(0);
+                sp.Encode4(0);
+                sp.Encode4(0);
+                break;
+            }
+            // 道場
+            case FieldEffect_Tremble: {
+                sp.Encode1((byte) st.type);
+                sp.Encode4(st.delay);
+                break;
+            }
+            case FieldEffect_Object: {
+                sp.EncodeStr(st.wz_path);
+                break;
+            }
+            case FieldEffect_Screen: {
+                sp.EncodeStr(st.wz_path);
+                break;
+            }
+            case FieldEffect_Sound: {
+                sp.EncodeStr(st.wz_path);
+                break;
+            }
+            case FieldEffect_MobHPTag: {
+                sp.Encode4(st.monster.getId());
+                if (st.monster.getHp() > Integer.MAX_VALUE) {
+                    sp.Encode4((int) (((double) st.monster.getHp() / st.monster.getMobMaxHp()) * Integer.MAX_VALUE));
+                } else {
+                    sp.Encode4((int) st.monster.getHp());
                 }
-        // 道場
-            case FieldEffect_Tremble:
-                {
-                    sp.Encode1((byte) st.type);
-                    sp.Encode4(st.delay);
-                    break;
+                if (st.monster.getMobMaxHp() > Integer.MAX_VALUE) {
+                    sp.Encode4(Integer.MAX_VALUE);
+                } else {
+                    sp.Encode4((int) st.monster.getMobMaxHp());
                 }
-            case FieldEffect_Object:
-                {
-                    sp.EncodeStr(st.wz_path);
-                    break;
-                }
-            case FieldEffect_Screen:
-                {
-                    sp.EncodeStr(st.wz_path);
-                    break;
-                }
-            case FieldEffect_Sound:
-                {
-                    sp.EncodeStr(st.wz_path);
-                    break;
-                }
-            case FieldEffect_MobHPTag:
-                {
-                    sp.Encode4(st.monster.getId());
-                    if (st.monster.getHp() > Integer.MAX_VALUE) {
-                        sp.Encode4((int) (((double) st.monster.getHp() / st.monster.getMobMaxHp()) * Integer.MAX_VALUE));
-                    } else {
-                        sp.Encode4((int) st.monster.getHp());
-                    }
-                    if (st.monster.getMobMaxHp() > Integer.MAX_VALUE) {
-                        sp.Encode4(Integer.MAX_VALUE);
-                    } else {
-                        sp.Encode4((int) st.monster.getMobMaxHp());
-                    }
-                    sp.Encode1(st.monster.getStats().getTagColor());
-                    sp.Encode1(st.monster.getStats().getTagBgColor());
-                    break;
-                }
-            case FieldEffect_ChangeBGM:
-                {
-                    sp.EncodeStr(st.wz_path);
-                    break;
-                }
-            case FieldEffect_RewordRullet:
-                {
-                    sp.Encode4(0);
-                    sp.Encode4(0);
-                    sp.Encode4(0);
-                    break;
-                }
-            default:
-                {
-                    Debug.ErrorLog("FieldEffect not coded : " + st.flag);
-                    break;
-                }
+                sp.Encode1(st.monster.getStats().getTagColor());
+                sp.Encode1(st.monster.getStats().getTagBgColor());
+                break;
+            }
+            case FieldEffect_ChangeBGM: {
+                sp.EncodeStr(st.wz_path);
+                break;
+            }
+            case FieldEffect_RewordRullet: {
+                sp.Encode4(0);
+                sp.Encode4(0);
+                sp.Encode4(0);
+                break;
+            }
+            default: {
+                Debug.ErrorLog("FieldEffect not coded : " + st.flag);
+                break;
+            }
         }
         return sp.Get();
     }
@@ -549,5 +541,5 @@ public class ResCField {
         }
         return mplew.getPacket();
     }
-    
+
 }

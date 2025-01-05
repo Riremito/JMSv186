@@ -24,7 +24,6 @@ package server.events;
 import client.MapleCharacter;
 import java.util.LinkedList;
 import java.util.List;
-import packet.response.FieldResponse;
 import packet.response.wrapper.ResWrapper;
 import server.Timer.EventTimer;
 import tools.MaplePacketCreator;

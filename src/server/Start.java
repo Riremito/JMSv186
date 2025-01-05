@@ -14,7 +14,6 @@ import database.DatabaseConnection;
 import debug.Debug;
 import handling.world.family.MapleFamilyBuff;
 import java.sql.PreparedStatement;
-import packet.request.PacketFlag;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.PlayerNPC;
@@ -53,7 +52,7 @@ public class Start {
         }
 
         ExpTable.Init();
-        PacketFlag.Update();
+        packet.PacketFlag.Update();
 
         try {
             final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0");

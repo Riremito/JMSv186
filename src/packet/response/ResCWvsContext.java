@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import packet.ServerPacket;
+import packet.ops.OpsFriendArg;
 import packet.ops.OpsMessageArg;
 import packet.response.struct.GW_CharacterStat;
 import packet.response.struct.GW_ItemSlotBase;
@@ -725,7 +726,7 @@ public class ResCWvsContext {
                 mplew.writeInt(target.getId());
                 mplew.write(op == PartyOperation.CHANGE_LEADER_DC ? 1 : 0);
                 break;
-                //1D = expel function not available in this map.
+            //1D = expel function not available in this map.
         }
         return mplew.getPacket();
     }
@@ -1530,98 +1531,82 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnFriendResult
-    public static MaplePacket FriendResult(FriendResponse.FriendResultStruct frs) {
+    public static MaplePacket FriendResult(OpsFriendArg frs) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FriendResult);
         sp.Encode1(frs.flag.get());
         switch (frs.flag) {
             case FriendRes_LoadFriend_Done:
             case FriendRes_SetFriend_Done:
-            case FriendRes_DeleteFriend_Done:
-                {
-                    sp.EncodeBuffer(Reset_Encode(frs.chr));
-                    break;
-                }
-            case FriendRes_NotifyChange_FriendInfo:
-                {
-                    break;
-                }
-            case FriendRes_Invite:
-                {
-                    // 9
-                    sp.Encode4(frs.friend_id);
-                    sp.EncodeStr(frs.friend_name);
-                    sp.Encode4(frs.friend_level);
-                    sp.Encode4(frs.friend_job);
-                    // CWvsContext::CFriend::Insert, 39 bytes
-                    sp.Encode4(frs.friend_id);
-                    sp.EncodeBuffer(frs.friend_name, 13);
-                    sp.Encode1(0);
-                    sp.Encode4(frs.friend_channel == -1 ? -1 : frs.friend_channel - 1); // please add channel
-                    sp.EncodeBuffer(frs.friend_tag, 17);
-                    // 1 byte
-                    sp.Encode1(1);
-                    break;
-                }
-            case FriendRes_SetFriend_FullMe:
-                {
-                    // none
-                    break;
-                }
-            case FriendRes_SetFriend_FullOther:
-                {
-                    // none
-                    break;
-                }
-            case FriendRes_SetFriend_AlreadySet:
-                {
-                    break;
-                }
-            case FriendRes_SetFriend_Master:
-                {
-                    break;
-                }
-            case FriendRes_SetFriend_UnknownUser:
-                {
-                    // none
-                    break;
-                }
-            case FriendRes_SetFriend_Unknown:
-                {
-                    break;
-                }
-            case FriendRes_AcceptFriend_Unknown:
-                {
-                    break;
-                }
-            case FriendRes_DeleteFriend_Unknown:
-                {
-                    break;
-                }
-            case FriendRes_Notify:
-                {
-                    sp.Encode4(frs.friend_id);
-                    sp.Encode1(0);
-                    sp.Encode4(frs.friend_channel);
-                    break;
-                }
-            case FriendRes_IncMaxCount_Done:
-                {
-                    sp.Encode1(frs.nFriendMax);
-                    break;
-                }
-            case FriendRes_IncMaxCount_Unknown:
-                {
-                    break;
-                }
-            case FriendRes_PleaseWait:
-                {
-                    break;
-                }
-            default:
-                {
-                    Debug.ErrorLog("FriendResult not coded : " + frs.flag);
-                    break;
-                }
+            case FriendRes_DeleteFriend_Done: {
+                sp.EncodeBuffer(Reset_Encode(frs.chr));
+                break;
+            }
+            case FriendRes_NotifyChange_FriendInfo: {
+                break;
+            }
+            case FriendRes_Invite: {
+                // 9
+                sp.Encode4(frs.friend_id);
+                sp.EncodeStr(frs.friend_name);
+                sp.Encode4(frs.friend_level);
+                sp.Encode4(frs.friend_job);
+                // CWvsContext::CFriend::Insert, 39 bytes
+                sp.Encode4(frs.friend_id);
+                sp.EncodeBuffer(frs.friend_name, 13);
+                sp.Encode1(0);
+                sp.Encode4(frs.friend_channel == -1 ? -1 : frs.friend_channel - 1); // please add channel
+                sp.EncodeBuffer(frs.friend_tag, 17);
+                // 1 byte
+                sp.Encode1(1);
+                break;
+            }
+            case FriendRes_SetFriend_FullMe: {
+                // none
+                break;
+            }
+            case FriendRes_SetFriend_FullOther: {
+                // none
+                break;
+            }
+            case FriendRes_SetFriend_AlreadySet: {
+                break;
+            }
+            case FriendRes_SetFriend_Master: {
+                break;
+            }
+            case FriendRes_SetFriend_UnknownUser: {
+                // none
+                break;
+            }
+            case FriendRes_SetFriend_Unknown: {
+                break;
+            }
+            case FriendRes_AcceptFriend_Unknown: {
+                break;
+            }
+            case FriendRes_DeleteFriend_Unknown: {
+                break;
+            }
+            case FriendRes_Notify: {
+                sp.Encode4(frs.friend_id);
+                sp.Encode1(0);
+                sp.Encode4(frs.friend_channel);
+                break;
+            }
+            case FriendRes_IncMaxCount_Done: {
+                sp.Encode1(frs.nFriendMax);
+                break;
+            }
+            case FriendRes_IncMaxCount_Unknown: {
+                break;
+            }
+            case FriendRes_PleaseWait: {
+                break;
+            }
+            default: {
+                Debug.ErrorLog("FriendResult not coded : " + frs.flag);
+                break;
+            }
         }
         return sp.Get();
     }

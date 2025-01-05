@@ -33,7 +33,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import packet.ClientPacket;
 import packet.ops.OpsFriend;
-import packet.response.FriendResponse;
 import packet.response.wrapper.ResWrapper;
 
 /**

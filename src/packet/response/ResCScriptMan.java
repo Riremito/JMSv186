@@ -29,7 +29,7 @@ import packet.ServerPacket;
  *
  * @author Riremito
  */
-public class ResScriptMan {
+public class ResCScriptMan {
 
     public enum Flag {
         SM_SAY(0),

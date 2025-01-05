@@ -67,8 +67,9 @@ import server.MapleCarnivalChallenge;
 import java.util.HashMap;
 import handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
+import packet.ops.OpsFieldEffect;
+import packet.ops.OpsFieldEffectArg;
 import packet.response.ResCParcelDlg;
-import packet.response.FieldResponse;
 import packet.response.ResCField;
 import packet.response.ResCStoreBankDlg;
 import packet.response.ResCWvsContext;
@@ -644,9 +645,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void environmentChange(boolean broadcast, String env) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Object, env)));
+            c.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Object, env)));
         } else {
-            c.getSession().write(ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Object, env)));
+            c.getSession().write(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Object, env)));
         }
     }
 

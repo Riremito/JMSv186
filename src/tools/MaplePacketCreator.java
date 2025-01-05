@@ -50,7 +50,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import packet.ServerPacket;
 import packet.ops.OpsDropPickUpMessage;
-import packet.response.ResScriptMan;
+import packet.response.ResCScriptMan;
 import packet.response.ResCWvsContext;
 import packet.response.ResCStage;
 import packet.response.struct.TestHelper;
@@ -690,16 +690,16 @@ public class MaplePacketCreator {
             }
         }
 
-        return ResScriptMan.ScriptMessage(npc, msgType, type, talk, prev, next);
+        return ResCScriptMan.ScriptMessage(npc, msgType, type, talk, prev, next);
     }
 
     public static final MaplePacket getMapSelection(final int npcid, final String sel) {
-        return ResScriptMan.ScriptMessage(npcid, (byte) 14, (byte) 0, sel, false, false);
+        return ResCScriptMan.ScriptMessage(npcid, (byte) 14, (byte) 0, sel, false, false);
     }
 
     public static MaplePacket getNPCTalkStyle(int npc, String talk, int... args) {
         ServerPacket sp = new ServerPacket();
-        sp.EncodeBuffer(ResScriptMan.ScriptMessage(npc, (byte) 8, (byte) 0, talk, false, false).getBytes());
+        sp.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, (byte) 8, (byte) 0, talk, false, false).getBytes());
         sp.Encode1(args.length);
 
         for (int i = 0; i < args.length; i++) {
@@ -710,7 +710,7 @@ public class MaplePacketCreator {
 
     public static MaplePacket getNPCTalkNum(int npc, String talk, int def, int min, int max) {
         ServerPacket sp = new ServerPacket();
-        sp.EncodeBuffer(ResScriptMan.ScriptMessage(npc, (byte) 5, (byte) 0, talk, false, false).getBytes());
+        sp.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, (byte) 5, (byte) 0, talk, false, false).getBytes());
         sp.Encode4(def);
         sp.Encode4(min);
         sp.Encode4(max);
@@ -718,7 +718,7 @@ public class MaplePacketCreator {
     }
 
     public static MaplePacket getNPCTalkText(int npc, String talk) {
-        return ResScriptMan.ScriptMessage(npc, (byte) 3, (byte) 0, talk, false, false);
+        return ResCScriptMan.ScriptMessage(npc, (byte) 3, (byte) 0, talk, false, false);
     }
 
     public static MaplePacket getShowQuestCompletion(int id) {

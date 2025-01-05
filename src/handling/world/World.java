@@ -38,7 +38,6 @@ import handling.world.guild.MapleGuildAlliance;
 import handling.world.guild.MapleGuildCharacter;
 import handling.world.guild.MapleGuildSummary;
 import java.util.Collection;
-import packet.response.FriendResponse;
 import packet.response.ResCField;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;

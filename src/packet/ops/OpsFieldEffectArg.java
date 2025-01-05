@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,28 +16,34 @@
  *
  *
  */
-package packet.response;
+package packet.ops;
 
-import client.MapleCharacter;
-import packet.ops.OpsFriend;
+import server.life.MapleMonster;
 
 /**
  *
  * @author Riremito
  */
-public class FriendResponse {
+public class OpsFieldEffectArg {
 
-    public static class FriendResultStruct {
+    public OpsFieldEffect flag;
+    public String wz_path;
+    public MapleMonster monster;
+    public int type, delay;
 
-        public OpsFriend flag;
-        public int nFriendMax;
-        public MapleCharacter chr;
-        public int friend_id;
-        public int friend_channel;
-        public int friend_level;
-        public int friend_job;
-        public String friend_name;
-        public String friend_tag;
+    public OpsFieldEffectArg(OpsFieldEffect flag, String wz_path) {
+        this.flag = flag;
+        this.wz_path = wz_path;
     }
 
+    public OpsFieldEffectArg(OpsFieldEffect flag, MapleMonster monster) {
+        this.flag = flag;
+        this.monster = monster;
+    }
+
+    public OpsFieldEffectArg(OpsFieldEffect flag, int type, int delay) {
+        this.flag = flag;
+        this.type = type;
+        this.delay = delay;
+    }
 }

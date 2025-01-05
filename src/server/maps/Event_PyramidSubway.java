@@ -26,7 +26,6 @@ import handling.channel.ChannelServer;
 import handling.world.MaplePartyCharacter;
 import java.awt.Point;
 import java.util.concurrent.ScheduledFuture;
-import packet.response.FieldResponse;
 import packet.response.wrapper.ResWrapper;
 import server.Randomizer;
 import server.Timer.MapTimer;
