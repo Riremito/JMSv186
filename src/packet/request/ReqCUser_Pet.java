@@ -32,10 +32,9 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import packet.ClientPacket;
 import packet.request.struct.CMovePath;
-import packet.response.LocalResponse;
 import packet.response.ResCUser_Pet;
-import packet.response.RemoteResponse;
-import packet.response.ResCWvsContext;
+import packet.response.ResCUserLocal;
+import packet.response.ResCUserRemote;
 import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -150,8 +149,8 @@ public class ReqCUser_Pet {
         chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
         // pet level up
         if (pet_previous_level < pet.getLevel()) {
-            chr.SendPacket(LocalResponse.showOwnPetLevelUp(0));
-            map.broadcastMessage(RemoteResponse.showPetLevelUp(chr, 0));
+            chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(0));
+            map.broadcastMessage(ResCUserRemote.showPetLevelUp(chr, 0));
         }
         return true;
     }
@@ -255,8 +254,8 @@ public class ReqCUser_Pet {
                 pet.setCloseness(newCloseness);
                 if (newCloseness >= MaplePet.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
-                    c.getSession().write(LocalResponse.showOwnPetLevelUp(petIndex));
-                    chr.getMap().broadcastMessage(RemoteResponse.showPetLevelUp(chr, petIndex));
+                    c.getSession().write(ResCUserLocal.showOwnPetLevelUp(petIndex));
+                    chr.getMap().broadcastMessage(ResCUserRemote.showPetLevelUp(chr, petIndex));
                 }
                 c.getSession().write(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
             }

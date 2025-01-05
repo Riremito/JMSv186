@@ -11,7 +11,7 @@ import client.inventory.MapleInventoryType;
 import client.messages.CommandProcessor;
 import constants.ServerConstants.CommandType;
 import java.lang.ref.WeakReference;
-import packet.response.FreeMarketResponse;
+import packet.response.ResCField;
 import tools.MaplePacketCreator;
 
 public class MapleTrade {
@@ -114,7 +114,7 @@ public class MapleTrade {
         if (!CommandProcessor.processCommand(chr.get().getClient(), message, CommandType.TRADE)) {
             chr.get().dropMessage(-2, chr.get().getName() + " : " + message);
             if (partner != null) {
-                partner.getChr().getClient().getSession().write(FreeMarketResponse.shopChat(chr.get().getName() + " : " + message, 1));
+                partner.getChr().getClient().getSession().write(ResCField.shopChat(chr.get().getName() + " : " + message, 1));
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,26 +18,26 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
-import packet.ops.OpsFriend;
+import handling.MaplePacket;
+import packet.ServerPacket;
 
 /**
  *
  * @author Riremito
  */
-public class FriendResponse {
+public class ResCMapLoadable {
 
-    public static class FriendResultStruct {
-
-        public OpsFriend flag;
-        public int nFriendMax;
-        public MapleCharacter chr;
-        public int friend_id;
-        public int friend_channel;
-        public int friend_level;
-        public int friend_job;
-        public String friend_name;
-        public String friend_tag;
+    // 0x005E @005E 00, ミニマップ点滅, 再読み込みかも?
+    public static MaplePacket ReloadMiniMap() {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.UNKNOWN_RELOAD_MINIMAP);
+        p.Encode1((byte) 0);
+        return p.Get();
     }
 
+    // 0x0083 @0083, 画面の位置をキャラクターを中心とした場所に変更, 背景リロードしてるかも?
+    public static MaplePacket ReloadMap() {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ClearBackgroundEffect);
+        return p.Get();
+    }
+    
 }

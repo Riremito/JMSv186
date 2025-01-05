@@ -31,7 +31,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import packet.response.GuildResponse;
+import packet.response.ResCWvsContext;
 import tools.MaplePacketCreator;
 
 public class MapleGuildAlliance implements java.io.Serializable {
@@ -220,7 +220,7 @@ public class MapleGuildAlliance implements java.io.Serializable {
 
     public void setRank(String[] ranks) {
         this.ranks = ranks;
-        broadcast(GuildResponse.getAllianceUpdate(this));
+        broadcast(ResCWvsContext.getAllianceUpdate(this));
         saveToDb();
     }
 
@@ -238,7 +238,7 @@ public class MapleGuildAlliance implements java.io.Serializable {
 
     public void setNotice(String newNotice) {
         this.notice = newNotice;
-        broadcast(GuildResponse.getAllianceUpdate(this));
+        broadcast(ResCWvsContext.getAllianceUpdate(this));
         broadcast(MaplePacketCreator.serverNotice(5, "Alliance Notice : " + newNotice));
         saveToDb();
     }
@@ -264,7 +264,7 @@ public class MapleGuildAlliance implements java.io.Serializable {
             return false;
         }
         this.capacity += 1;
-        broadcast(GuildResponse.getAllianceUpdate(this));
+        broadcast(ResCWvsContext.getAllianceUpdate(this));
         saveToDb();
         return true;
     }
@@ -298,8 +298,8 @@ public class MapleGuildAlliance implements java.io.Serializable {
                 if (i == 0) { //leader guild.. FUCK THIS ALLIANCE! xD
                     return disband();
                 } else {
-                    broadcast(GuildResponse.getAllianceUpdate(this));
-                    broadcast(GuildResponse.getGuildAlliance(this));
+                    broadcast(ResCWvsContext.getAllianceUpdate(this));
+                    broadcast(ResCWvsContext.getGuildAlliance(this));
                     saveToDb();
                     return true;
                 }
@@ -346,10 +346,10 @@ public class MapleGuildAlliance implements java.io.Serializable {
         if (leaderName != null) {
             broadcast(MaplePacketCreator.serverNotice(5, leaderName + " has become the leader of the alliance."));
         }
-        broadcast(GuildResponse.changeAllianceLeader(allianceid, leaderid, c));
-        broadcast(GuildResponse.updateAllianceLeader(allianceid, leaderid, c));
-        broadcast(GuildResponse.getAllianceUpdate(this));
-        broadcast(GuildResponse.getGuildAlliance(this));
+        broadcast(ResCWvsContext.changeAllianceLeader(allianceid, leaderid, c));
+        broadcast(ResCWvsContext.updateAllianceLeader(allianceid, leaderid, c));
+        broadcast(ResCWvsContext.getAllianceUpdate(this));
+        broadcast(ResCWvsContext.getGuildAlliance(this));
         this.leaderid = c;
         saveToDb();
         return true;

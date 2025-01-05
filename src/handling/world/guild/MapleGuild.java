@@ -45,8 +45,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import packet.response.GuildResponse;
-import packet.response.PartyResponse;
+import packet.response.ResCField;
+import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -277,7 +277,7 @@ public class MapleGuild implements java.io.Serializable {
                     }
                 }
 
-                broadcast(GuildResponse.guildDisband(id));
+                broadcast(ResCWvsContext.guildDisband(id));
             }
         } catch (SQLException se) {
             System.err.println("Error saving guild to SQL");
@@ -426,9 +426,9 @@ public class MapleGuild implements java.io.Serializable {
             }
         }
         if (bBroadcast) {
-            broadcast(GuildResponse.guildMemberOnline(id, cid, online), cid);
+            broadcast(ResCWvsContext.guildMemberOnline(id, cid, online), cid);
             if (allianceid > 0) {
-                World.Alliance.sendGuild(GuildResponse.allianceMemberOnline(allianceid, id, cid, online), id, allianceid);
+                World.Alliance.sendGuild(ResCWvsContext.allianceMemberOnline(allianceid, id, cid, online), id, allianceid);
             }
         }
         bDirty = true; // member formation has changed, update notifications
@@ -436,11 +436,11 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public final void guildChat(final String name, final int cid, final String msg) {
-        broadcast(PartyResponse.multiChat(name, msg, 2), cid);
+        broadcast(ResCField.multiChat(name, msg, 2), cid);
     }
 
     public final void allianceChat(final String name, final int cid, final String msg) {
-        broadcast(PartyResponse.multiChat(name, msg, 3), cid);
+        broadcast(ResCField.multiChat(name, msg, 3), cid);
     }
 
     public final String getRankTitle(final int rank) {
@@ -531,7 +531,7 @@ public class MapleGuild implements java.io.Serializable {
             wL.unlock();
         }
         gainGP(50);
-        broadcast(GuildResponse.newGuildMember(mgc));
+        broadcast(ResCWvsContext.newGuildMember(mgc));
         if (allianceid > 0) {
             World.Alliance.sendGuild(allianceid);
         }
@@ -539,7 +539,7 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public final void leaveGuild(final MapleGuildCharacter mgc) {
-        broadcast(GuildResponse.memberLeft(mgc, false));
+        broadcast(ResCWvsContext.memberLeft(mgc, false));
         gainGP(-50);
         wL.lock();
         try {
@@ -566,7 +566,7 @@ public class MapleGuild implements java.io.Serializable {
                 final MapleGuildCharacter mgc = itr.next();
 
                 if (mgc.getId() == cid && initiator.getGuildRank() < mgc.getGuildRank()) {
-                    broadcast(GuildResponse.memberLeft(mgc, true));
+                    broadcast(ResCWvsContext.memberLeft(mgc, true));
 
                     bDirty = true;
 
@@ -640,7 +640,7 @@ public class MapleGuild implements java.io.Serializable {
                     setOfflineGuildStatus((short) this.id, (byte) newRank, (byte) mgc.getAllianceRank(), cid);
                 }
                 mgc.setGuildRank((byte) newRank);
-                broadcast(GuildResponse.changeRank(mgc));
+                broadcast(ResCWvsContext.changeRank(mgc));
                 return;
             }
         }
@@ -650,7 +650,7 @@ public class MapleGuild implements java.io.Serializable {
 
     public final void setGuildNotice(final String notice) {
         this.notice = notice;
-        broadcast(GuildResponse.guildNotice(id, notice));
+        broadcast(ResCWvsContext.guildNotice(id, notice));
     }
 
     public final void memberLevelJobUpdate(final MapleGuildCharacter mgc) {
@@ -669,9 +669,9 @@ public class MapleGuild implements java.io.Serializable {
                 if (old_job != mgc.getJobId()) {
                     this.broadcast(MaplePacketCreator.sendJobup(false, mgc.getJobId(), mgc.getName()), mgc.getId());
                 }
-                broadcast(GuildResponse.guildMemberLevelJobUpdate(mgc));
+                broadcast(ResCWvsContext.guildMemberLevelJobUpdate(mgc));
                 if (allianceid > 0) {
-                    World.Alliance.sendGuild(GuildResponse.updateAlliance(mgc, allianceid), id, allianceid);
+                    World.Alliance.sendGuild(ResCWvsContext.updateAlliance(mgc, allianceid), id, allianceid);
                 }
                 break;
             }
@@ -682,7 +682,7 @@ public class MapleGuild implements java.io.Serializable {
         for (int i = 0; i < 5; i++) {
             rankTitles[i] = ranks[i];
         }
-        broadcast(GuildResponse.rankTitleChange(id, ranks));
+        broadcast(ResCWvsContext.rankTitleChange(id, ranks));
     }
 
     public final void disbandGuild() {
@@ -727,7 +727,7 @@ public class MapleGuild implements java.io.Serializable {
             return false;
         }
         capacity += 5;
-        broadcast(GuildResponse.guildCapacityChange(this.id, this.capacity));
+        broadcast(ResCWvsContext.guildCapacityChange(this.id, this.capacity));
 
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -755,7 +755,7 @@ public class MapleGuild implements java.io.Serializable {
             amount = -gp;
         } //0 lowest
         gp += amount;
-        broadcast(GuildResponse.updateGP(id, gp));
+        broadcast(ResCWvsContext.updateGP(id, gp));
         if (broadcast) {
             broadcast(ResWrapper.getGPMsg(amount));
         }
@@ -793,7 +793,7 @@ public class MapleGuild implements java.io.Serializable {
         if (mc.getGuildId() > 0) {
             return MapleGuildResponse.ALREADY_IN_GUILD;
         }
-        mc.getClient().getSession().write(GuildResponse.guildInvite(c.getPlayer().getGuildId(), c.getPlayer().getName(), c.getPlayer().getLevel(), c.getPlayer().getJob()));
+        mc.getClient().getSession().write(ResCWvsContext.guildInvite(c.getPlayer().getGuildId(), c.getPlayer().getName(), c.getPlayer().getLevel(), c.getPlayer().getJob()));
         return null;
     }
 

@@ -50,12 +50,11 @@ import packet.ClientPacket;
 import packet.response.ResCDropPool;
 import packet.response.ResCDropPool.LeaveType;
 import packet.request.ItemRequest;
-import packet.response.FieldResponse;
-import packet.response.FreeMarketResponse;
-import packet.response.ItemResponse;
-import packet.response.LocalResponse;
-import packet.response.RemoteResponse;
+import packet.response.ResCField;
 import packet.response.ResCUIItemUpgrade;
+import packet.response.ResCUserLocal;
+import packet.response.ResCUserRemote;
+import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.Randomizer;
 import server.RandomRewards;
@@ -213,8 +212,8 @@ public class InventoryHandler {
                                 }
                                 MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(itemId), itemId, 1, false, false);
 
-                                c.getSession().write(LocalResponse.showRewardItemAnimation(reward.itemid, reward.effect));
-                                chr.getMap().broadcastMessage(chr, RemoteResponse.showRewardItemAnimation(reward.itemid, reward.effect, chr.getId()), false);
+                                c.getSession().write(ResCUserLocal.showRewardItemAnimation(reward.itemid, reward.effect));
+                                chr.getMap().broadcastMessage(chr, ResCUserRemote.showRewardItemAnimation(reward.itemid, reward.effect, chr.getId()), false);
                                 rewarded = true;
                                 return true;
                             }
@@ -495,7 +494,7 @@ public class InventoryHandler {
             }
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.ETC, (byte) slot, (short) 1, true);
             MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, keyIDforRemoval, 1, true, false);
-            c.getSession().write(LocalResponse.getShowItemGain(reward, (short) amount, true));
+            c.getSession().write(ResCUserLocal.getShowItemGain(reward, (short) amount, true));
 
             if (GameConstants.gachaponRareItem(item.getItemId()) > 0) {
                 World.Broadcast.broadcastMessage(MaplePacketCreator.getGachaponMega("[" + box + " Chest] " + c.getPlayer().getName(), " : Lucky winner of Gachapon!", item, (byte) 2).getBytes());
@@ -1094,7 +1093,7 @@ public class InventoryHandler {
                 break;
             }
             case 5100000: { // Congratulatory Song
-                c.getPlayer().getMap().broadcastMessage(FieldResponse.musicChange("Jukebox/Congratulation"));
+                c.getPlayer().getMap().broadcastMessage(ResWrapper.musicChange("Jukebox/Congratulation"));
                 used = true;
                 break;
             }
@@ -1102,7 +1101,7 @@ public class InventoryHandler {
                 final int itemSearch = slea.readInt();
                 final List<HiredMerchant> hms = c.getChannelServer().searchMerchant(itemSearch);
                 if (hms.size() > 0) {
-                    c.getSession().write(FreeMarketResponse.getOwlSearched(itemSearch, hms));
+                    c.getSession().write(ResCWvsContext.getOwlSearched(itemSearch, hms));
                     used = true;
                 } else {
                     c.getPlayer().dropMessage(1, "Unable to find the item.");
@@ -1184,9 +1183,9 @@ public class InventoryHandler {
                         if (Math.random() > 0.1) {
                             final int gainmes = Randomizer.nextInt(mesars);
                             c.getPlayer().gainMeso(gainmes, false);
-                            c.getSession().write(ItemResponse.sendMesobagSuccess(gainmes));
+                            c.getSession().write(ResCUserLocal.sendMesobagSuccess(gainmes));
                         } else {
-                            c.getSession().write(ItemResponse.sendMesobagFailed());
+                            c.getSession().write(ResCUserLocal.sendMesobagFailed());
                         }
                     }
                 } else if (itemId / 10000 == 562) {
@@ -1395,7 +1394,7 @@ public class InventoryHandler {
             final int itemSearch = slea.readInt();
             final List<HiredMerchant> hms = c.getChannelServer().searchMerchant(itemSearch);
             if (hms.size() > 0) {
-                c.getSession().write(FreeMarketResponse.getOwlSearched(itemSearch, hms));
+                c.getSession().write(ResCWvsContext.getOwlSearched(itemSearch, hms));
                 MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, itemid, 1, true, false);
             } else {
                 c.getPlayer().dropMessage(1, "Unable to find the item.");
@@ -1407,7 +1406,7 @@ public class InventoryHandler {
     public static final void Owl(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         if (c.getPlayer().haveItem(5230000, 1, true, false) || c.getPlayer().haveItem(2310000, 1, true, false)) {
             if (c.getPlayer().getMapId() >= 910000000 && c.getPlayer().getMapId() <= 910000022) {
-                c.getSession().write(FreeMarketResponse.getOwlOpen());
+                c.getSession().write(ResCWvsContext.getOwlOpen());
             } else {
                 c.getPlayer().dropMessage(5, "This can only be used inside the Free Market.");
                 c.getSession().write(MaplePacketCreator.enableActions());
@@ -1472,7 +1471,7 @@ public class InventoryHandler {
                         merchant.setOpen(false);
                         merchant.removeAllVisitors((byte) 16, (byte) 0);
                         c.getPlayer().setPlayerShop(merchant);
-                        c.getSession().write(FreeMarketResponse.getHiredMerch(c.getPlayer(), merchant, false));
+                        c.getSession().write(ResCField.getHiredMerch(c.getPlayer(), merchant, false));
                     } else {
                         if (!merchant.isOpen() || !merchant.isAvailable()) {
                             c.getPlayer().dropMessage(1, "This shop is in maintenance, please come by later.");
@@ -1484,7 +1483,7 @@ public class InventoryHandler {
                             } else {
                                 c.getPlayer().setPlayerShop(merchant);
                                 merchant.addVisitor(c.getPlayer());
-                                c.getSession().write(FreeMarketResponse.getHiredMerch(c.getPlayer(), merchant, false));
+                                c.getSession().write(ResCField.getHiredMerch(c.getPlayer(), merchant, false));
                             }
                         }
                     }

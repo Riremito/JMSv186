@@ -39,9 +39,8 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 import packet.ServerPacket;
-import packet.response.LocalResponse;
-import packet.response.RemoteResponse;
-import packet.response.ResCWvsContext;
+import packet.response.ResCUserLocal;
+import packet.response.ResCUserRemote;
 import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -49,7 +48,6 @@ import server.MapleStatEffect;
 import server.StructPotentialItem;
 import server.StructSetItem;
 import server.StructSetItem.SetItem;
-import tools.MaplePacketCreator;
 
 public class PlayerStats implements Serializable {
 
@@ -866,8 +864,8 @@ public class PlayerStats implements Serializable {
         }
         if (changed) {
             chr.equipChanged();
-            chr.getClient().getSession().write(LocalResponse.showItemLevelupEffect());
-            chr.getMap().broadcastMessage(chr, RemoteResponse.showForeignItemLevelupEffect(chr.getId()), false);
+            chr.getClient().getSession().write(ResCUserLocal.showItemLevelupEffect());
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.showForeignItemLevelupEffect(chr.getId()), false);
         }
         return changed;
     }

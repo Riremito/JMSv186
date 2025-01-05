@@ -43,13 +43,12 @@ import handling.world.PlayerBuffStorage;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
 import packet.ClientPacket;
-import packet.response.FamilyResponse;
 import packet.response.FriendResponse;
-import packet.response.GuildResponse;
 import packet.response.ResCClientSocket;
 import packet.response.ResCFuncKeyMappedMan;
 import packet.response.ResCStage;
 import packet.response.ResCUser_Pet;
+import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
@@ -176,7 +175,7 @@ public class InterServerHandler {
                 ble.setChannel(onlineBuddy.getChannel());
                 player.getBuddylist().put(ble);
             }
-            c.getSession().write(FriendResponse.updateBuddylist(player));
+            c.getSession().write(ResWrapper.updateBuddylist(player));
 
             // Start of Messenger
             final MapleMessenger messenger = player.getMessenger();
@@ -188,7 +187,7 @@ public class InterServerHandler {
             // Start of Guild and alliance
             if (player.getGuildId() > 0) {
                 World.Guild.setGuildMemberOnline(player.getMGC(), true, c.getChannel());
-                c.getSession().write(GuildResponse.showGuildInfo(player));
+                c.getSession().write(ResCWvsContext.showGuildInfo(player));
                 final MapleGuild gs = World.Guild.getGuild(player.getGuildId());
                 if (gs != null) {
                     final List<MaplePacket> packetList = World.Alliance.getAllianceInfo(gs.getAllianceId(), true);
@@ -210,11 +209,11 @@ public class InterServerHandler {
             if (player.getFamilyId() > 0) {
                 World.Family.setFamilyMemberOnline(player.getMFC(), true, c.getChannel());
             }
-            c.getSession().write(FamilyResponse.getFamilyInfo(player));
+            c.getSession().write(ResCWvsContext.getFamilyInfo(player));
         } catch (Exception e) {
             FileoutputUtil.outputFileError(FileoutputUtil.Login_Error, e);
         }
-        c.getSession().write(FamilyResponse.getFamilyData());
+        c.getSession().write(ResCWvsContext.getFamilyData());
         player.showNote();
         player.updatePartyMemberHP();
         player.startFairySchedule(false);
@@ -238,7 +237,7 @@ public class InterServerHandler {
         final CharacterNameAndId pendingBuddyRequest = player.getBuddylist().pollPendingRequest();
         if (pendingBuddyRequest != null) {
             player.getBuddylist().put(new BuddylistEntry(pendingBuddyRequest.getName(), pendingBuddyRequest.getId(), "マイ友未指定", -1, false, pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
-            c.getSession().write(FriendResponse.requestBuddylistAdd(pendingBuddyRequest.getId(), pendingBuddyRequest.getName(), pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
+            c.getSession().write(ResWrapper.requestBuddylistAdd(pendingBuddyRequest.getId(), pendingBuddyRequest.getName(), pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
         }
         player.expirationTask();
         if (player.getJob() == 132) { // DARKKNIGHT

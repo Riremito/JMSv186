@@ -28,7 +28,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  *
  * @author Riremito
  */
-public class MonsterCarnivalResponse {
+public class ResCField_MonsterCarnival {
 
     public static MaplePacket CPUpdate(boolean party, int curCP, int totalCP, int team) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();

@@ -8,7 +8,7 @@ import java.util.List;
 import packet.ServerPacket;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
-public class PachinkoResponse {
+public class Res_Pachinko {
 
     // パチンコ情報の更新
     public static MaplePacket UpdateTama(MapleCharacter chr) {

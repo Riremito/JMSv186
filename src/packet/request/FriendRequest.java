@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import packet.ClientPacket;
 import packet.ops.OpsFriend;
 import packet.response.FriendResponse;
+import packet.response.wrapper.ResWrapper;
 
 /**
  *
@@ -92,12 +93,12 @@ public class FriendRequest {
             return;
         }
         if (ble != null && (ble.getGroup().equals(friend_tag) || !ble.isVisible())) {
-            c.getSession().write(FriendResponse.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullMe));
+            c.getSession().write(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullMe));
         } else if (ble != null && ble.isVisible()) {
             ble.setGroup(friend_tag);
-            c.getSession().write(FriendResponse.updateBuddylist(c.getPlayer()));
+            c.getSession().write(ResWrapper.updateBuddylist(c.getPlayer()));
         } else if (buddylist.isFull()) {
-            c.getSession().write(FriendResponse.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullMe));
+            c.getSession().write(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullMe));
         } else {
             try {
                 CharacterIdNameBuddyCapacity charWithId = null;
@@ -143,7 +144,7 @@ public class FriendRequest {
                         ps.close();
                     }
                     if (buddyAddResult == BuddyList.BuddyAddResult.BUDDYLIST_FULL) {
-                        c.getSession().write(FriendResponse.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullOther));
+                        c.getSession().write(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullOther));
                     } else {
                         int displayChannel = -1;
                         int otherCid = charWithId.getId();
@@ -160,10 +161,10 @@ public class FriendRequest {
                             ps.close();
                         }
                         buddylist.put(new BuddylistEntry(charWithId.getName(), otherCid, friend_tag, displayChannel, true, charWithId.getLevel(), charWithId.getJob()));
-                        c.getSession().write(FriendResponse.updateBuddylist(c.getPlayer()));
+                        c.getSession().write(ResWrapper.updateBuddylist(c.getPlayer()));
                     }
                 } else {
-                    c.getSession().write(FriendResponse.buddylistMessage(OpsFriend.FriendRes_SetFriend_UnknownUser));
+                    c.getSession().write(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_UnknownUser));
                 }
             } catch (SQLException e) {
                 System.err.println("SQL THROW" + e);
@@ -200,14 +201,14 @@ public class FriendRequest {
                 }
                 if (otherName != null) {
                     buddylist.put(new BuddylistEntry(otherName, friend_id, "マイ友未指定", channel, true, otherLevel, otherJob));
-                    c.getSession().write(FriendResponse.updateBuddylist(c.getPlayer()));
+                    c.getSession().write(ResWrapper.updateBuddylist(c.getPlayer()));
                     notifyRemoteChannel(c, channel, friend_id, "マイ友未指定", BuddyList.BuddyOperation.ADDED);
                 }
             } catch (SQLException e) {
                 System.err.println("SQL THROW" + e);
             }
         } else {
-            c.getSession().write(FriendResponse.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullMe));
+            c.getSession().write(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullMe));
         }
         nextPendingRequest(c);
     }
@@ -219,7 +220,7 @@ public class FriendRequest {
             notifyRemoteChannel(c, World.Find.findChannel(friend_id), friend_id, blz.getGroup(), BuddyList.BuddyOperation.DELETED);
         }
         buddylist.remove(friend_id);
-        c.getSession().write(FriendResponse.updateBuddylist(c.getPlayer()));
+        c.getSession().write(ResWrapper.updateBuddylist(c.getPlayer()));
         nextPendingRequest(c);
     }
 
@@ -240,7 +241,7 @@ public class FriendRequest {
     private static final void nextPendingRequest(final MapleClient c) {
         CharacterNameAndId pendingBuddyRequest = c.getPlayer().getBuddylist().pollPendingRequest();
         if (pendingBuddyRequest != null) {
-            c.getSession().write(FriendResponse.requestBuddylistAdd(pendingBuddyRequest.getId(), pendingBuddyRequest.getName(), pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
+            c.getSession().write(ResWrapper.requestBuddylistAdd(pendingBuddyRequest.getId(), pendingBuddyRequest.getName(), pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
         }
     }
 

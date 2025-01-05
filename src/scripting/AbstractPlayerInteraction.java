@@ -52,8 +52,9 @@ import tools.MaplePacketCreator;
 import client.inventory.MapleInventoryIdentifier;
 import handling.world.World;
 import packet.response.FieldResponse;
-import packet.response.LocalResponse;
-import packet.response.TestResponse;
+import packet.response.ResCField;
+import packet.response.ResCUserLocal;
+import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
@@ -168,7 +169,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void playPortalSE() {
-        c.getSession().write(LocalResponse.showOwnBuffEffect(0, 8));
+        c.getSession().write(ResCUserLocal.showOwnBuffEffect(0, 8));
     }
 
     private final MapleMap getWarpMap(final int map) {
@@ -471,12 +472,12 @@ public abstract class AbstractPlayerInteraction {
         } else {
             MapleInventoryManipulator.removeById(cg, GameConstants.getInventoryType(id), id, -quantity, true, false);
         }
-        cg.getSession().write(LocalResponse.getShowItemGain(id, quantity, true));
+        cg.getSession().write(ResCUserLocal.getShowItemGain(id, quantity, true));
         return item_info;
     }
 
     public final void changeMusic(final String songName) {
-        getPlayer().getMap().broadcastMessage(FieldResponse.musicChange(songName));
+        getPlayer().getMap().broadcastMessage(ResWrapper.musicChange(songName));
     }
 
     public final void worldMessage(final int type, final String message) {
@@ -635,7 +636,7 @@ public abstract class AbstractPlayerInteraction {
             } else {
                 MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, -quantity, true, false);
             }
-            chr.getClient().getSession().write(LocalResponse.getShowItemGain(id, quantity, true));
+            chr.getClient().getSession().write(ResCUserLocal.getShowItemGain(id, quantity, true));
         }
     }
 
@@ -719,7 +720,7 @@ public abstract class AbstractPlayerInteraction {
             final int possesed = chr.getInventory(GameConstants.getInventoryType(id)).countById(id);
             if (possesed > 0) {
                 MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(id), id, possesed, true, false);
-                chr.getClient().getSession().write(LocalResponse.getShowItemGain(id, (short) -possesed, true));
+                chr.getClient().getSession().write(ResCUserLocal.getShowItemGain(id, (short) -possesed, true));
             }
         }
     }
@@ -821,7 +822,7 @@ public abstract class AbstractPlayerInteraction {
 
     public final void dojo_getUp() {
         c.SendPacket(ResWrapper.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
-        c.getSession().write(LocalResponse.Mulung_DojoUp2());
+        c.getSession().write(ResCUserLocal.Mulung_DojoUp2());
         c.getSession().write(MaplePacketCreator.instantMapWarp((byte) 6));
     }
 
@@ -864,14 +865,14 @@ public abstract class AbstractPlayerInteraction {
         if (!c.getPlayer().hasSummon()) {
             playerSummonHint(true);
         }
-        c.getSession().write(TestResponse.summonMessage(msg));
+        c.getSession().write(ResCUserLocal.summonMessage(msg));
     }
 
     public final void summonMsg(final int type) {
         if (!c.getPlayer().hasSummon()) {
             playerSummonHint(true);
         }
-        c.getSession().write(TestResponse.summonMessage(type));
+        c.getSession().write(ResCUserLocal.summonMessage(type));
     }
 
     public final void showInstruction(final String msg, final int width, final int height) {
@@ -880,7 +881,7 @@ public abstract class AbstractPlayerInteraction {
 
     public final void playerSummonHint(final boolean summon) {
         c.getPlayer().setHasSummon(summon);
-        c.getSession().write(TestResponse.summonHelper(summon));
+        c.getSession().write(ResCUserLocal.summonHelper(summon));
     }
 
     public final String getInfoQuest(final int id) {
@@ -900,7 +901,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void Aran_Start() {
-        c.getSession().write(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Sound, "Aran/balloon")));
+        c.getSession().write(ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Sound, "Aran/balloon")));
     }
 
     public final void evanTutorial(final String data, final int v1) {
@@ -908,24 +909,24 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void AranTutInstructionalBubble(final String data) {
-        c.getSession().write(LocalResponse.AranTutInstructionalBalloon(data));
+        c.getSession().write(ResCUserLocal.AranTutInstructionalBalloon(data));
     }
 
     public final void ShowWZEffect(final String data) {
-        c.getSession().write(LocalResponse.AranTutInstructionalBalloon(data));
+        c.getSession().write(ResCUserLocal.AranTutInstructionalBalloon(data));
     }
 
     public final void showWZEffect(final String data) {
-        c.getSession().write(LocalResponse.ShowWZEffect(data));
+        c.getSession().write(ResCUserLocal.ShowWZEffect(data));
     }
 
     public final void EarnTitleMsg(final String data) {
-        c.getSession().write(TestResponse.EarnTitleMsg(data));
+        c.getSession().write(ResCWvsContext.EarnTitleMsg(data));
     }
 
     public final void MovieClipIntroUI(final boolean enabled) {
-        c.getSession().write(TestResponse.IntroDisableUI(enabled));
-        c.getSession().write(TestResponse.IntroLock(enabled));
+        c.getSession().write(ResCUserLocal.IntroDisableUI(enabled));
+        c.getSession().write(ResCUserLocal.IntroLock(enabled));
     }
 
     public MapleInventoryType getInvType(int i) {
@@ -975,7 +976,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public void showMapEffect(String path) {
-        getClient().getSession().write(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Screen, path)));
+        getClient().getSession().write(ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Screen, path)));
     }
 
     public int itemQuantity(int itemid) {

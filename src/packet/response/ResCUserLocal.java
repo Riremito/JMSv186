@@ -20,6 +20,7 @@ package packet.response;
 
 import handling.MaplePacket;
 import packet.ServerPacket;
+import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -34,6 +35,194 @@ public class ResCUserLocal {
         if (!is_cancel) {
             sp.Encode2(id); // sit
         }
+        return sp.Get();
+    }
+
+    public static MaplePacket EffectLocal() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectLocal);
+        // todo
+        return sp.Get();
+    }
+
+    public static MaplePacket showRewardItemAnimation(int itemId, String effect) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(15);
+        mplew.writeInt(itemId);
+        mplew.write(effect != null && effect.length() > 0 ? 1 : 0);
+        if (effect != null && effect.length() > 0) {
+            mplew.writeMapleAsciiString(effect);
+        }
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket showOwnBuffEffect(int skillid, int effectid) {
+        return showOwnBuffEffect(skillid, effectid, (byte) 3);
+    }
+
+    public static MaplePacket showOwnBuffEffect(int skillid, int effectid, byte direction) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(effectid);
+        mplew.writeInt(skillid);
+        mplew.write(1); //skill level = 1 for the lulz
+        mplew.write(1); //0 = doesnt show? or is this even here
+        if (direction != (byte) 3) {
+            mplew.write(direction);
+        }
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket showItemLevelupEffect() {
+        return showSpecialEffect(17);
+    }
+
+    public static final MaplePacket showOwnHpHealed(final int amount) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(10); //Type
+        mplew.writeInt(amount);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket Mulung_DojoUp2() {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(8); // portal sound
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket useWheel(byte charmsleft) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(21);
+        mplew.writeLong(charmsleft);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket useCharm(byte charmsleft, byte daysleft) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(6);
+        mplew.write(1);
+        mplew.write(charmsleft);
+        mplew.write(daysleft);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket ShowWZEffect(final String data) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(19);
+        mplew.writeMapleAsciiString(data);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket showOwnPetLevelUp(final int index) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(4);
+        mplew.write(0);
+        mplew.writeInt(index); // Pet Index
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket ItemMakerResult(boolean is_success) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(17);
+        mplew.writeInt(is_success ? 0 : 1);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket AranTutInstructionalBalloon(final String data) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(24);
+        mplew.writeMapleAsciiString(data);
+        mplew.writeInt(1);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getShowItemGain(int itemId, short quantity, boolean inChat) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(3);
+        mplew.write(1); // item count
+        mplew.writeInt(itemId);
+        mplew.writeInt(quantity);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket showSpecialEffect(int effect) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.write(effect);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket summonMessage(int type) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserTutorMsg.Get());
+        mplew.write(1);
+        mplew.writeInt(type);
+        mplew.writeInt(7000); // probably the delay
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket summonMessage(String message) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserTutorMsg.Get());
+        mplew.write(0);
+        mplew.writeMapleAsciiString(message);
+        mplew.writeInt(200); // IDK
+        mplew.writeShort(0);
+        mplew.writeInt(10000); // Probably delay
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket summonHelper(boolean summon) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserHireTutor.Get());
+        mplew.write(summon ? 1 : 0);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket IntroDisableUI(boolean enable) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SetStandAloneMode.Get());
+        mplew.write(enable ? 1 : 0);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket IntroLock(boolean enable) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SetDirectionMode.Get());
+        mplew.write(enable ? 1 : 0);
+        mplew.writeInt(enable ? 1 : 0);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket RandomMesoBagFailed() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Random_Mesobag_Failed);
+        return sp.Get();
+    }
+
+    public static MaplePacket sendMesobagSuccess(int mesos) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Succeeded);
+        sp.Encode4(mesos);
+        return sp.Get();
+    }
+
+    public static MaplePacket RandomMesoBagSuccess(byte type, int mesos) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Random_Mesobag_Succeed);
+        sp.Encode1(type);
+        sp.Encode4(mesos);
+        return sp.Get();
+    }
+
+    public static MaplePacket sendMesobagFailed() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Failed);
         return sp.Get();
     }
 

@@ -34,7 +34,7 @@ import client.MapleStat;
 import client.SkillFactory;
 import java.util.ArrayList;
 import java.util.List;
-import packet.response.LocalResponse;
+import packet.response.ResCUserLocal;
 import packet.response.wrapper.ResWrapper;
 import provider.MapleData;
 import provider.MapleDataTool;
@@ -157,7 +157,7 @@ public class MapleQuestAction implements Serializable {
                             // it's better to catch this here so we'll atleast try to remove the other items
                             System.err.println("[h4x] Completing a quest without meeting the requirements" + ie);
                         }
-                        c.getClient().getSession().write(LocalResponse.getShowItemGain(id, count, true));
+                        c.getClient().getSession().write(ResCUserLocal.getShowItemGain(id, count, true));
                     } else { // add items
                         final int period = MapleDataTool.getInt(iEntry.getChildByPath("period"), 0) / 1440; //im guessing.
                         final String name = MapleItemInformationProvider.getInstance().getName(id);
@@ -167,7 +167,7 @@ public class MapleQuestAction implements Serializable {
                             c.dropMessage(5, msg);
                         }
                         MapleInventoryManipulator.addById(c.getClient(), id, count, "", null, period);
-                        c.getClient().getSession().write(LocalResponse.getShowItemGain(id, count, true));
+                        c.getClient().getSession().write(ResCUserLocal.getShowItemGain(id, count, true));
                     }
                 }
                 break;
@@ -405,7 +405,7 @@ public class MapleQuestAction implements Serializable {
                     final short count = (short) MapleDataTool.getInt(iEntry.getChildByPath("count"), 1);
                     if (count < 0) { // remove items
                         MapleInventoryManipulator.removeById(c.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
-                        c.getClient().getSession().write(LocalResponse.getShowItemGain(id, count, true));
+                        c.getClient().getSession().write(ResCUserLocal.getShowItemGain(id, count, true));
                     } else { // add items
                         final int period = MapleDataTool.getInt(iEntry.getChildByPath("period"), 0) / 1440;
                         final String name = MapleItemInformationProvider.getInstance().getName(id);
@@ -415,7 +415,7 @@ public class MapleQuestAction implements Serializable {
                             c.dropMessage(5, msg);
                         }
                         MapleInventoryManipulator.addById(c.getClient(), id, count, "", null, period);
-                        c.getClient().getSession().write(LocalResponse.getShowItemGain(id, count, true));
+                        c.getClient().getSession().write(ResCUserLocal.getShowItemGain(id, count, true));
                     }
                 }
                 break;

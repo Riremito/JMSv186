@@ -23,7 +23,6 @@ import packet.request.struct.CMovePath;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
-import packet.response.UserResponse;
 import server.Randomizer;
 import server.maps.MapleMap;
 import tools.AttackPair;
@@ -426,7 +425,7 @@ public class ReqCUser {
         chr.setPosition(data.getEnd());
         chr.setStance(data.getAction());
         map.movePlayer(chr, chr.getPosition());
-        map.broadcastMessage(chr, UserResponse.movePlayer(chr, data), false);
+        map.broadcastMessage(chr, ResCUserRemote.movePlayer(chr, data), false);
         return true;
     }
 
@@ -493,7 +492,7 @@ public class ReqCUser {
             return false;
         }
 
-        chr.SendPacket(UserResponse.CharacterInfo(player, chr.getId() == m_dwCharacterId));
+        chr.SendPacket(ResCWvsContext.CharacterInfo(player, chr.getId() == m_dwCharacterId));
         return true;
     }
 
@@ -889,7 +888,7 @@ public class ReqCUser {
 
         if (skill.isChargeSkill()) {
             chr.setKeyDownSkill_Time(0);
-            chr.getMap().broadcastMessage(chr, UserResponse.skillCancel(chr, skill_id), false);
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.skillCancel(chr, skill_id), false);
         } else {
             chr.cancelEffect(skill.getEffect(1), false, -1);
         }

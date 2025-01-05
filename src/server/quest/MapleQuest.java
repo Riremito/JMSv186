@@ -1,7 +1,6 @@
 package server.quest;
 
 import constants.GameConstants;
-import java.io.File;
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -10,17 +9,14 @@ import java.util.Map;
 
 import client.MapleCharacter;
 import client.MapleQuestStatus;
-import config.ServerConfig;
 import java.util.ArrayList;
-import packet.response.LocalResponse;
-import packet.response.RemoteResponse;
+import packet.response.ResCUserLocal;
+import packet.response.ResCUserRemote;
 import scripting.NPCScriptManager;
 import provider.MapleData;
 import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import tools.FileoutputUtil;
-import tools.MaplePacketCreator;
 import tools.Pair;
 
 public class MapleQuest implements Serializable {
@@ -259,8 +255,8 @@ public class MapleQuest implements Serializable {
             // we save forfeits only for logging purposes, they shouldn't matter anymore
             // completion time is set by the constructor
 
-            c.getClient().getSession().write(LocalResponse.showSpecialEffect(10)); // Quest completion
-            c.getMap().broadcastMessage(c, RemoteResponse.showSpecialEffect(c.getId(), 10), false);
+            c.getClient().getSession().write(ResCUserLocal.showSpecialEffect(10)); // Quest completion
+            c.getMap().broadcastMessage(c, ResCUserRemote.showSpecialEffect(c.getId(), 10), false);
         }
     }
 

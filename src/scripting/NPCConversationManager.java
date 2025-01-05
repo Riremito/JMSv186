@@ -69,8 +69,10 @@ import handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
 import packet.response.ResCParcelDlg;
 import packet.response.FieldResponse;
-import packet.response.FreeMarketResponse;
-import packet.response.GuildResponse;
+import packet.response.ResCField;
+import packet.response.ResCStoreBankDlg;
+import packet.response.ResCWvsContext;
+import packet.response.wrapper.ResWrapper;
 import server.MapleShop;
 import server.MapleShopItem;
 import server.MapleStatEffect;
@@ -626,25 +628,25 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void showEffect(boolean broadcast, String effect) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(FieldResponse.showEffect(effect));
+            c.getPlayer().getMap().broadcastMessage(ResWrapper.showEffect(effect));
         } else {
-            c.getSession().write(FieldResponse.showEffect(effect));
+            c.getSession().write(ResWrapper.showEffect(effect));
         }
     }
 
     public void playSound(boolean broadcast, String sound) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(FieldResponse.playSound(sound));
+            c.getPlayer().getMap().broadcastMessage(ResWrapper.playSound(sound));
         } else {
-            c.getSession().write(FieldResponse.playSound(sound));
+            c.getSession().write(ResWrapper.playSound(sound));
         }
     }
 
     public void environmentChange(boolean broadcast, String env) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Object, env)));
+            c.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Object, env)));
         } else {
-            c.getSession().write(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Object, env)));
+            c.getSession().write(ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Object, env)));
         }
     }
 
@@ -816,7 +818,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void genericGuildMessage(int code) {
-        c.getSession().write(GuildResponse.genericGuildMessage((byte) code));
+        c.getSession().write(ResCWvsContext.genericGuildMessage((byte) code));
     }
 
     public void disbandGuild() {
@@ -841,7 +843,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void displayGuildRanks() {
-        c.getSession().write(GuildResponse.showGuildRanks(npc, MapleGuildRanking.getInstance().getRank()));
+        c.getSession().write(ResCWvsContext.showGuildRanks(npc, MapleGuildRanking.getInstance().getRank()));
     }
 
     public boolean removePlayerFromInstance() {
@@ -992,7 +994,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void openMerchantItemStore() {
         c.getPlayer().setConversation(3);
-        c.getSession().write(FreeMarketResponse.merchItemStore((byte) 0x22));
+        c.getSession().write(ResCStoreBankDlg.merchItemStore((byte) 0x22));
         c.getPlayer().dropMessage(5, "Please enter ANY 13 characters.");
     }
 

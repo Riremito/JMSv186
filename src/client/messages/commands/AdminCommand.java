@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 import packet.request.ReqCNpcPool;
 import packet.response.FieldResponse;
+import packet.response.ResCField;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import provider.MapleData;
@@ -2141,7 +2142,7 @@ public class AdminCommand {
 
                 if (mob.getStats().getHPDisplayType() == 0) {
                     mob.setHp(0);
-                    map.broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_MobHPTag, mob)));
+                    map.broadcastMessage(ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_MobHPTag, mob)));
                 }
                 map.killMonster(mob, c.getPlayer(), false, false, (byte) 1);
             }

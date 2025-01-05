@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,27 +20,26 @@ package packet.response;
 
 import handling.MaplePacket;
 import packet.ServerPacket;
+import server.maps.MapleDynamicPortal;
 
 /**
  *
  * @author Riremito
  */
-public class MonsterBookResponse {
+public class Res_PinkBeanPortal {
 
-    public static MaplePacket addCard(boolean full, int cardid, int level) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MonsterBookSetCard);
-        sp.Encode1(full ? 0 : 1);
-        if (!full) {
-            sp.Encode4(cardid);
-            sp.Encode4(level);
-        }
+    public static MaplePacket CreatePinkBeanEventPortal(MapleDynamicPortal dynamic_portal) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_PINKBEAN_PORTAL_CREATE);
+        sp.Encode1(1);
+        sp.Encode4(dynamic_portal.getItemID()); // item id
+        sp.Encode4(dynamic_portal.getObjectId()); // object id
+        sp.Encode2(dynamic_portal.getPosition().x);
+        sp.Encode2(dynamic_portal.getPosition().y);
+        sp.Encode4(0);
+        sp.Encode4(0);
+        sp.Encode2(dynamic_portal.getPosition().x);
+        sp.Encode2(dynamic_portal.getPosition().y);
         return sp.Get();
     }
-
-    public static MaplePacket changeCover(int cardid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MonsterBookSetCover);
-        sp.Encode4(cardid);
-        return sp.Get();
-    }
-
+    
 }

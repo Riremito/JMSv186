@@ -18,6 +18,7 @@
  */
 package packet.response.wrapper;
 
+import client.MapleCharacter;
 import client.MapleQuestStatus;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
@@ -28,13 +29,18 @@ import java.util.List;
 import packet.ServerPacket;
 import packet.ops.OpsBroadcastMsg;
 import packet.ops.OpsDropPickUpMessage;
+import packet.ops.OpsFriend;
 import packet.ops.OpsMessage;
 import packet.ops.OpsMessageArg;
 import packet.ops.OpsQuestRecordMessage;
+import packet.response.FieldResponse;
+import packet.response.FriendResponse;
+import packet.response.ResCField;
 import packet.response.ResCWvsContext;
 import packet.response.struct.GW_ItemSlotBase;
 import packet.response.struct.InvOp;
 import packet.response.struct.TestHelper;
+import server.Randomizer;
 import tools.HexTool;
 import tools.StringUtil;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -505,6 +511,76 @@ public class ResWrapper {
         ma.mt = OpsMessage.MS_CashItemExpireMessage;
         ma.ItemID = itemid;
         return ResCWvsContext.Message(ma);
+    }
+
+    public static final MaplePacket MapNameDisplay(final int mapid) {
+        return ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Screen, "maplemap/enter/" + mapid));
+    }
+
+    public static MaplePacket playSound(String sound) {
+        return ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Sound, sound));
+    }
+
+    public static MaplePacket showEffect(String effect) {
+        return ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_Screen, effect));
+    }
+
+    public static MaplePacket musicChange(String song) {
+        return ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.FieldEffect_ChangeBGM, song));
+    }
+
+    public static MaplePacket environmentChange(String env, int mode) {
+        return ResCField.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.OpsFieldEffect.find(mode), env));
+    }
+
+    // test
+    public static void MiroSlot(MapleCharacter chr) {
+        chr.SendPacket(showEffect("miro/frame"));
+        chr.SendPacket(showEffect("miro/RR1/" + Randomizer.nextInt(4)));
+        chr.SendPacket(showEffect("miro/RR2/" + Randomizer.nextInt(4)));
+        chr.SendPacket(showEffect("miro/RR3/" + Randomizer.nextInt(5)));
+        chr.SendPacket(playSound("quest2288/" + Randomizer.nextInt(9))); // test bgm
+    }
+
+    public static MaplePacket updateBuddylist(MapleCharacter chr) {
+        FriendResponse.FriendResultStruct frs = new FriendResponse.FriendResultStruct();
+        frs.flag = OpsFriend.FriendRes_LoadFriend_Done;
+        frs.chr = chr;
+        return ResCWvsContext.FriendResult(frs);
+    }
+
+    public static MaplePacket requestBuddylistAdd(int friend_id, String name, int level, int job) {
+        FriendResponse.FriendResultStruct frs = new FriendResponse.FriendResultStruct();
+        frs.flag = OpsFriend.FriendRes_Invite;
+        frs.friend_id = friend_id;
+        frs.friend_channel = 0; // todo
+        frs.friend_name = name;
+        frs.friend_level = level;
+        frs.friend_job = job;
+        frs.friend_tag = "\u30de\u30a4\u53cb\u672a\u6307\u5b9a"; // JMS
+        return ResCWvsContext.FriendResult(frs);
+    }
+
+    public static MaplePacket updateBuddyChannel(int friend_id, int friend_channel) {
+        FriendResponse.FriendResultStruct frs = new FriendResponse.FriendResultStruct();
+        frs.flag = OpsFriend.FriendRes_Notify;
+        frs.friend_id = friend_id;
+        frs.friend_channel = friend_channel;
+        return ResCWvsContext.FriendResult(frs);
+    }
+
+    public static MaplePacket updateBuddyCapacity(int capacity) {
+        FriendResponse.FriendResultStruct frs = new FriendResponse.FriendResultStruct();
+        frs.flag = OpsFriend.FriendRes_IncMaxCount_Done;
+        frs.nFriendMax = capacity;
+        return ResCWvsContext.FriendResult(frs);
+    }
+
+    // test
+    public static MaplePacket buddylistMessage(OpsFriend flag) {
+        FriendResponse.FriendResultStruct frs = new FriendResponse.FriendResultStruct();
+        frs.flag = flag;
+        return ResCWvsContext.FriendResult(frs);
     }
 
 }

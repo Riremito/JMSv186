@@ -29,7 +29,8 @@ import client.MapleClient;
 import client.MapleCharacter;
 import client.inventory.MapleInventoryType;
 import java.util.List;
-import packet.response.FreeMarketResponse;
+import packet.response.ResCEmployeePool;
+import packet.response.ResCField;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleTrade;
@@ -156,13 +157,13 @@ public class PlayerInteractionHandler {
                             MaplePlayerShop mps = new MaplePlayerShop(chr, shop.getItemId(), desc);
                             chr.setPlayerShop(mps);
                             chr.getMap().addMapObject(mps);
-                            c.getSession().write(FreeMarketResponse.getPlayerStore(chr, true));
+                            c.getSession().write(ResCField.getPlayerStore(chr, true));
                         } else {
                             final HiredMerchant merch = new HiredMerchant(chr, shop.getItemId(), desc);
                             chr.setPlayerShop(merch);
                             chr.setRemoteStore(merch);
                             chr.getMap().addMapObject(merch);
-                            c.getSession().write(FreeMarketResponse.getHiredMerch(chr, merch, true));
+                            c.getSession().write(ResCField.getHiredMerch(chr, merch, true));
                         }
                     }
                 }
@@ -197,14 +198,14 @@ public class PlayerInteractionHandler {
                                 //merchant.removeAllVisitors((byte) 17, (byte) 0);
                                 List<Pair<Byte, MapleCharacter>> visitors = ips.getVisitors();
                                 for (int i = 0; i < visitors.size(); i++) {
-                                    visitors.get(i).getRight().getClient().getSession().write(FreeMarketResponse.MaintenanceHiredMerchant((byte) i + 1));
+                                    visitors.get(i).getRight().getClient().getSession().write(ResCField.MaintenanceHiredMerchant((byte) i + 1));
                                     System.out.println("slot = " + i + "char = " + visitors.get(i).getRight().getName());
                                     visitors.get(i).getRight().setPlayerShop(null);
                                     ips.removeVisitor(visitors.get(i).getRight());
                                 }
 
                                 chr.setPlayerShop(ips);
-                                c.getSession().write(FreeMarketResponse.getHiredMerch(chr, merchant, false));
+                                c.getSession().write(ResCField.getHiredMerch(chr, merchant, false));
                             } else {
                                 if (!merchant.isOpen() || !merchant.isAvailable()) {
                                     // パケットでこのメッセージが出せそう
@@ -218,7 +219,7 @@ public class PlayerInteractionHandler {
                                     } else {
                                         chr.setPlayerShop(ips);
                                         merchant.addVisitor(chr);
-                                        c.getSession().write(FreeMarketResponse.getHiredMerch(chr, merchant, false));
+                                        c.getSession().write(ResCField.getHiredMerch(chr, merchant, false));
                                     }
                                 }
                             }
@@ -228,7 +229,7 @@ public class PlayerInteractionHandler {
                                 return;
                             } else {
                                 if (ips.getFreeSlot() < 0 || ips.getVisitorSlot(chr) > -1 || !ips.isOpen() || !ips.isAvailable()) {
-                                    c.getSession().write(FreeMarketResponse.getMiniGameFull());
+                                    c.getSession().write(ResCField.getMiniGameFull());
                                 } else {
                                     if (slea.available() > 0 && slea.readByte() > 0) { //a password has been entered
                                         String pass = slea.readMapleAsciiString();
@@ -245,7 +246,7 @@ public class PlayerInteractionHandler {
                                     if (ips instanceof MapleMiniGame) {
                                         ((MapleMiniGame) ips).send(c);
                                     } else {
-                                        c.getSession().write(FreeMarketResponse.getPlayerStore(chr, false));
+                                        c.getSession().write(ResCField.getPlayerStore(chr, false));
                                     }
                                 }
                             }
@@ -260,7 +261,7 @@ public class PlayerInteractionHandler {
                     chr.getTrade().chat(slea.readMapleAsciiString());
                 } else if (chr.getPlayerShop() != null) {
                     final IMaplePlayerShop ips = chr.getPlayerShop();
-                    ips.broadcastToVisitors(FreeMarketResponse.shopChat(chr.getName() + " : " + slea.readMapleAsciiString(), ips.getVisitorSlot(chr)));
+                    ips.broadcastToVisitors(ResCField.shopChat(chr.getName() + " : " + slea.readMapleAsciiString(), ips.getVisitorSlot(chr)));
                 }
                 break;
             }
@@ -293,7 +294,7 @@ public class PlayerInteractionHandler {
                             merchant.setStoreid(c.getChannelServer().addMerchant(merchant));
                             merchant.setOpen(true);
                             merchant.setAvailable(true);
-                            chr.getMap().broadcastMessage(FreeMarketResponse.spawnHiredMerchant(merchant));
+                            chr.getMap().broadcastMessage(ResCEmployeePool.spawnHiredMerchant(merchant));
                             chr.setPlayerShop(null);
 
                         } else if (shop.getShopType() == 2) {
@@ -393,7 +394,7 @@ public class PlayerInteractionHandler {
                             sellItem.setQuantity(perBundle);
                             shop.addItem(new MaplePlayerShopItem(sellItem, bundles, price));
                         }
-                        c.getSession().write(FreeMarketResponse.shopItemUpdate(shop));
+                        c.getSession().write(ResCField.shopItemUpdate(shop));
                     }
                 }
                 break;
@@ -427,7 +428,7 @@ public class PlayerInteractionHandler {
                     c.setMonitored(true); //hack check
                 }
                 shop.buy(c, item, quantity);
-                shop.broadcastToVisitors(FreeMarketResponse.shopItemUpdate(shop));
+                shop.broadcastToVisitors(ResCField.shopItemUpdate(shop));
                 break;
             }
             case PLAYER_SHOP_REMOVE_ITEM:
@@ -458,7 +459,7 @@ public class PlayerInteractionHandler {
                         }
                     }
                 }
-                c.getSession().write(FreeMarketResponse.shopItemUpdate(shop));
+                c.getSession().write(ResCField.shopItemUpdate(shop));
                 break;
             }
             // 営業許可証 追放
@@ -472,7 +473,7 @@ public class PlayerInteractionHandler {
                 if (ips != null) {
                     for (Pair<Byte, MapleCharacter> visitors : ips.getVisitors()) {
                         if (visitors.getRight().getName().equals(visitor_name)) {
-                            visitors.getRight().getClient().getSession().write(FreeMarketResponse.shopBlockPlayer(visitor_slot));
+                            visitors.getRight().getClient().getSession().write(ResCField.shopBlockPlayer(visitor_slot));
                             visitors.getRight().setPlayerShop(null);
                             ips.removeVisitor(visitors.getRight());
                             break;
@@ -500,11 +501,11 @@ public class PlayerInteractionHandler {
                         }
                     }
                     if (chr.getMeso() + imps.getMeso() < 0) {
-                        c.getSession().write(FreeMarketResponse.shopItemUpdate(imps));
+                        c.getSession().write(ResCField.shopItemUpdate(imps));
                     } else {
                         chr.gainMeso(imps.getMeso(), false);
                         imps.setMeso(0);
-                        c.getSession().write(FreeMarketResponse.shopItemUpdate(imps));
+                        c.getSession().write(ResCField.shopItemUpdate(imps));
                     }
                 }
                 break;
@@ -513,7 +514,7 @@ public class PlayerInteractionHandler {
             case HIREDMERCHANT_ORGANISE_CLOSE: {
                 // "イベントリに空きがないとアイテムはストアーバンクNPCのプレドリックのところで探すべきです。閉店しますか？" と聞かれてOKを押した場合の処理
                 // ダイアログを出さずに閉じる処理が必要となる
-                c.getSession().write(FreeMarketResponse.CloseHiredMerchant());
+                c.getSession().write(ResCField.CloseHiredMerchant());
 
                 final IMaplePlayerShop ips = chr.getPlayerShop();
                 if (!ips.isAvailable() || ips.isOwner(chr)) {
@@ -577,7 +578,7 @@ public class PlayerInteractionHandler {
                     if (game.isOpen()) {
                         break;
                     }
-                    game.broadcastToVisitors(FreeMarketResponse.getMiniGameResult(game, 0, game.getVisitorSlot(chr)));
+                    game.broadcastToVisitors(ResCField.getMiniGameResult(game, 0, game.getVisitorSlot(chr)));
                     game.nextLoser();
                     game.setOpen(true);
                     game.update();
@@ -604,7 +605,7 @@ public class PlayerInteractionHandler {
                     MapleMiniGame game = (MapleMiniGame) ips;
                     if (!game.isOwner(chr) && game.isOpen()) {
                         game.setReady(game.getVisitorSlot(chr));
-                        game.broadcastToVisitors(FreeMarketResponse.getMiniGameReady(game.isReady(game.getVisitorSlot(chr))));
+                        game.broadcastToVisitors(ResCField.getMiniGameReady(game.isReady(game.getVisitorSlot(chr))));
                     }
                 }
                 break;
@@ -622,9 +623,9 @@ public class PlayerInteractionHandler {
                         game.setGameType();
                         game.shuffleList();
                         if (game.getGameType() == 1) {
-                            game.broadcastToVisitors(FreeMarketResponse.getMiniGameStart(game.getLoser()));
+                            game.broadcastToVisitors(ResCField.getMiniGameStart(game.getLoser()));
                         } else {
-                            game.broadcastToVisitors(FreeMarketResponse.getMatchCardStart(game, game.getLoser()));
+                            game.broadcastToVisitors(ResCField.getMatchCardStart(game, game.getLoser()));
                         }
                         game.setOpen(false);
                         game.update();
@@ -640,9 +641,9 @@ public class PlayerInteractionHandler {
                         break;
                     }
                     if (game.isOwner(chr)) {
-                        game.broadcastToVisitors(FreeMarketResponse.getMiniGameRequestTie(), false);
+                        game.broadcastToVisitors(ResCField.getMiniGameRequestTie(), false);
                     } else {
-                        game.getMCOwner().getClient().getSession().write(FreeMarketResponse.getMiniGameRequestTie());
+                        game.getMCOwner().getClient().getSession().write(ResCField.getMiniGameRequestTie());
                     }
                     game.setRequestedTie(game.getVisitorSlot(chr));
                 }
@@ -657,13 +658,13 @@ public class PlayerInteractionHandler {
                     }
                     if (game.getRequestedTie() > -1 && game.getRequestedTie() != game.getVisitorSlot(chr)) {
                         if (slea.readByte() > 0) {
-                            game.broadcastToVisitors(FreeMarketResponse.getMiniGameResult(game, 1, game.getRequestedTie()));
+                            game.broadcastToVisitors(ResCField.getMiniGameResult(game, 1, game.getRequestedTie()));
                             game.nextLoser();
                             game.setOpen(true);
                             game.update();
                             game.checkExitAfterGame();
                         } else {
-                            game.broadcastToVisitors(FreeMarketResponse.getMiniGameDenyTie());
+                            game.broadcastToVisitors(ResCField.getMiniGameDenyTie());
                         }
                         game.setRequestedTie(-1);
                     }
@@ -677,7 +678,7 @@ public class PlayerInteractionHandler {
                     if (game.isOpen()) {
                         break;
                     }
-                    ips.broadcastToVisitors(FreeMarketResponse.getMiniGameSkip(ips.getVisitorSlot(chr)));
+                    ips.broadcastToVisitors(ResCField.getMiniGameSkip(ips.getVisitorSlot(chr)));
                     game.nextLoser();
                 }
                 break;
@@ -706,17 +707,17 @@ public class PlayerInteractionHandler {
                     if (turn == 1) {
                         game.setFirstSlot(slot);
                         if (game.isOwner(chr)) {
-                            game.broadcastToVisitors(FreeMarketResponse.getMatchCardSelect(turn, slot, fs, turn), false);
+                            game.broadcastToVisitors(ResCField.getMatchCardSelect(turn, slot, fs, turn), false);
                         } else {
-                            game.getMCOwner().getClient().getSession().write(FreeMarketResponse.getMatchCardSelect(turn, slot, fs, turn));
+                            game.getMCOwner().getClient().getSession().write(ResCField.getMatchCardSelect(turn, slot, fs, turn));
                         }
                         game.setTurn(0); //2nd turn nao
                         return;
                     } else if (fs > 0 && game.getCardId(fs + 1) == game.getCardId(slot + 1)) {
-                        game.broadcastToVisitors(FreeMarketResponse.getMatchCardSelect(turn, slot, fs, game.isOwner(chr) ? 2 : 3));
+                        game.broadcastToVisitors(ResCField.getMatchCardSelect(turn, slot, fs, game.isOwner(chr) ? 2 : 3));
                         game.setPoints(game.getVisitorSlot(chr)); //correct.. so still same loser. diff turn tho
                     } else {
-                        game.broadcastToVisitors(FreeMarketResponse.getMatchCardSelect(turn, slot, fs, game.isOwner(chr) ? 0 : 1));
+                        game.broadcastToVisitors(ResCField.getMatchCardSelect(turn, slot, fs, game.isOwner(chr) ? 0 : 1));
                         game.nextLoser();//wrong haha
 
                     }
@@ -735,7 +736,7 @@ public class PlayerInteractionHandler {
                         break;
                     }
                     game.setExitAfter(chr);
-                    game.broadcastToVisitors(FreeMarketResponse.getMiniGameExitAfter(game.isExitAfter(chr)));
+                    game.broadcastToVisitors(ResCField.getMiniGameExitAfter(game.isExitAfter(chr)));
                 }
                 break;
             }
@@ -771,13 +772,13 @@ public class PlayerInteractionHandler {
         // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
         List<Pair<Byte, MapleCharacter>> visitors = merchant.getVisitors();
         for (int i = 0; i < visitors.size(); i++) {
-            visitors.get(i).getRight().getClient().getSession().write(FreeMarketResponse.MaintenanceHiredMerchant((byte) i + 1));
+            visitors.get(i).getRight().getClient().getSession().write(ResCField.MaintenanceHiredMerchant((byte) i + 1));
             visitors.get(i).getRight().setPlayerShop(null);
             merchant.removeVisitor(visitors.get(i).getRight());
         }
 
         c.getPlayer().setPlayerShop(merchant);
-        c.getSession().write(FreeMarketResponse.getHiredMerch(c.getPlayer(), merchant, false));
+        c.getSession().write(ResCField.getHiredMerch(c.getPlayer(), merchant, false));
 
         return true;
     }

@@ -67,16 +67,14 @@ import packet.response.ResCDropPool.LeaveType;
 import packet.request.ReqCNpcPool;
 import packet.request.ReqCReactorPool;
 import packet.response.ResCUser_Dragon;
-import packet.response.FieldResponse;
-import packet.response.ItemResponse;
-import packet.response.LocalResponse;
 import packet.response.ResCMobPool;
-import packet.response.ResCTownPortalPool;
-import packet.response.PartyResponse;
 import packet.response.ResCUser_Pet;
-import packet.response.RemoteResponse;
 import packet.response.ResCSummonedPool;
-import packet.response.UserResponse;
+import packet.response.ResCUserLocal;
+import packet.response.ResCUserRemote;
+import packet.response.ResCWvsContext;
+import packet.response.Res_PinkBeanPortal;
+import packet.response.wrapper.ResWrapper;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
@@ -557,8 +555,8 @@ public final class MapleMap {
                             case 8810018:
                             case 8810122:
                             case 8820001:
-                                mc.getClient().getSession().write(LocalResponse.showOwnBuffEffect(buffid, 11)); // HT nine spirit
-                                broadcastMessage(mc, RemoteResponse.showBuffeffect(mc.getId(), buffid, 11), false); // HT nine spirit
+                                mc.getClient().getSession().write(ResCUserLocal.showOwnBuffEffect(buffid, 11)); // HT nine spirit
+                                broadcastMessage(mc, ResCUserRemote.showBuffeffect(mc.getId(), buffid, 11), false); // HT nine spirit
                                 break;
                         }
                     }
@@ -1436,7 +1434,7 @@ public final class MapleMap {
         spawnAndAddRangedMapObject(dynamic_portal, new DelayedPacketCreation() {
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(ItemResponse.CreatePinkBeanEventPortal(dynamic_portal));
+                c.SendPacket(Res_PinkBeanPortal.CreatePinkBeanEventPortal(dynamic_portal));
             }
         }, null);
     }
@@ -1779,7 +1777,7 @@ public final class MapleMap {
             chr.setCoconutTeam(getAndSwitchTeam() ? 0 : 1);
         }
         if (!chr.isHidden()) {
-            broadcastMessage(chr, UserResponse.spawnPlayerMapobject(chr), false);
+            broadcastMessage(chr, ResCUserRemote.spawnPlayerMapobject(chr), false);
             if (chr.isGM() && speedRunStart > 0) {
                 endSpeedRun();
                 broadcastMessage(MaplePacketCreator.serverNotice(5, "The speed run has ended."));
@@ -1818,7 +1816,7 @@ public final class MapleMap {
         }
         if (chr.getParty() != null && !chr.isClone()) {
             chr.silentPartyUpdate();
-            chr.getClient().getSession().write(PartyResponse.updateParty(chr.getClient().getChannel(), chr.getParty(), PartyOperation.SILENT_UPDATE, null));
+            chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannel(), chr.getParty(), PartyOperation.SILENT_UPDATE, null));
             chr.updatePartyMemberHP();
             chr.receivePartyMemberHP();
         }
@@ -1880,7 +1878,7 @@ public final class MapleMap {
                         music = "Bgm06/FinalFight";
                         break;
                 }
-                chr.getClient().getSession().write(FieldResponse.musicChange(music));
+                chr.getClient().getSession().write(ResWrapper.musicChange(music));
                 //maybe timer too for zak/ht
             }
             for (final WeakReference<MapleCharacter> chrz : chr.getClones()) {
@@ -2179,7 +2177,7 @@ public final class MapleMap {
         }
         removeMapObject(chr);
         chr.checkFollow();
-        broadcastMessage(UserResponse.removePlayerFromMap(chr.getId()));
+        broadcastMessage(ResCUserRemote.removePlayerFromMap(chr.getId()));
         if (!chr.isClone()) {
             for (final MapleMonster monster : chr.getControlledMonsters()) {
                 monster.setController(null);
@@ -3122,7 +3120,7 @@ public final class MapleMap {
     }
 
     public final void changeEnvironment(final String ms, final int type) {
-        broadcastMessage(FieldResponse.environmentChange(ms, type));
+        broadcastMessage(ResWrapper.environmentChange(ms, type));
     }
 
     public final void toggleEnvironment(final String ms) {
