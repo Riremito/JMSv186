@@ -306,9 +306,9 @@ public class ReqCLogin {
         }
 
         if (ServerConfig.JMS302orLater()) {
-            character_gender = cp.Decode1(); // 01, 性別
-            cp.Decode1(); // 00, 0C = メルセデス, 0D = デーモンスレイヤー
-            int body_part_count = cp.Decode1(); // 07, 初期設定個数
+            character_gender = cp.Decode1();
+            skin_color = cp.Decode1();
+            int body_part_count = cp.Decode1();
 
             face_id = cp.Decode4();
             body_part_count--;
