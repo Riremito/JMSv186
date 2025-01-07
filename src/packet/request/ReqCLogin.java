@@ -31,9 +31,11 @@ import handling.channel.ChannelServer;
 import handling.channel.handler.InterServerHandler;
 import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import packet.ClientPacket;
+import packet.ops.OpsBodyPart;
 import packet.ops.OpsNewCharacter;
 import packet.response.ResCClientSocket;
 import packet.response.ResCLogin;
@@ -246,16 +248,11 @@ public class ReqCLogin {
         int hair_id = 0;
         int hair_color = 0;
         int skin_color = 0;
-        int equip_cap = 0;
-        int equip_top = 0;
-        int equip_bottom = 0;
-        int equip_shoes = 0;
-        int equip_weapon = 0;
+        ArrayList<Integer> item_ids = new ArrayList<Integer>();
         int dice_str = 0;
         int dice_dex = 0;
         int dice_int = 0;
         int dice_luk = 0;
-        int default_set_count = 0;
 
         character_name = cp.DecodeStr();
         if (ServerConfig.JMS165orLater()) {
@@ -283,9 +280,14 @@ public class ReqCLogin {
                     job_id = 3000;
                     break;
                 case Mercedes:
+                    skin_color = 12;
+                    job_id = 2002;
+                    break;
+                case Phantom:
                     job_id = 2003;
                     break;
                 case DemonSlayer:
+                    skin_color = 13;
                     job_id = 3001;
                     break;
                 case Hayato:
@@ -302,29 +304,52 @@ public class ReqCLogin {
         if (ServerConfig.JMS180orLater()) {
             job_dualblade = cp.Decode2(); // 2 = キャノンシューター
         }
+
         if (ServerConfig.JMS302orLater()) {
             character_gender = cp.Decode1(); // 01, 性別
             cp.Decode1(); // 00, 0C = メルセデス, 0D = デーモンスレイヤー
-            default_set_count = cp.Decode1(); // 07, 初期設定個数
-        }
-        // BB後の初期までは6個で固定 (EMSは8個)
-        // JMS v302付近は個数が変動する
-        face_id = cp.Decode4();
-        hair_id = cp.Decode4();
-        if (ServerConfig.IsEMS()) {
-            hair_color = cp.Decode4();
-            skin_color = cp.Decode4();
+            int body_part_count = cp.Decode1(); // 07, 初期設定個数
+
+            face_id = cp.Decode4();
+            body_part_count--;
+            hair_id = cp.Decode4();
+            body_part_count--;
+            if (ServerConfig.IsEMS()) {
+                hair_color = cp.Decode4();
+                body_part_count--;
+                skin_color = cp.Decode4();
+                body_part_count--;
+            }
+
+            for (int i = 0; i < body_part_count; i++) {
+                item_ids.add(cp.Decode4());
+            }
+
+        } else {
+            int equip_top = 0;
+            int equip_bottom = 0;
+            int equip_shoes = 0;
+            int equip_weapon = 0;
+
+            face_id = cp.Decode4();
+            hair_id = cp.Decode4();
+            if (ServerConfig.IsEMS()) {
+                hair_color = cp.Decode4();
+                skin_color = cp.Decode4();
+            }
+            equip_top = cp.Decode4();
+            equip_bottom = cp.Decode4();
+            equip_shoes = cp.Decode4();
+            equip_weapon = cp.Decode4();
+
+            item_ids.add(equip_top);
+            if (equip_bottom != 0) {
+                item_ids.add(equip_bottom);
+            }
+            item_ids.add(equip_shoes);
+            item_ids.add(equip_weapon);
         }
 
-        if (ServerConfig.JMS302orLater()) {
-            if (default_set_count == 7) {
-                equip_cap = cp.Decode4();
-            }
-        }
-        equip_top = cp.Decode4();
-        equip_bottom = cp.Decode4();
-        equip_shoes = cp.Decode4();
-        equip_weapon = cp.Decode4();
         if (ServerConfig.JMS131orEarlier()) {
             dice_str = cp.Decode1();
             dice_dex = cp.Decode1();
@@ -340,7 +365,7 @@ public class ReqCLogin {
             }
         }
         // data check
-        if (!LoadData.IsValidFaceID(face_id) || !LoadData.IsValidHairID(hair_id) || !LoadData.IsValidItemID(equip_top) || (equip_bottom != 0 && !LoadData.IsValidItemID(equip_bottom)) || !LoadData.IsValidItemID(equip_shoes) || !LoadData.IsValidItemID(equip_weapon)) {
+        if (!LoadData.IsValidFaceID(face_id) || !LoadData.IsValidHairID(hair_id)) {
             Debug.DebugLog("Character creation error");
             c.SendPacket(ResCLogin.addNewCharEntry(null, false));
             return false;
@@ -371,34 +396,31 @@ public class ReqCLogin {
 
         MapleInventory equip = newchar.getInventory(MapleInventoryType.EQUIPPED);
         final MapleItemInformationProvider li = MapleItemInformationProvider.getInstance();
-        // 鎧上 or 全身鎧
-        IItem item = li.getEquipById(equip_top);
-        item.setPosition((byte) -5);
-        equip.addFromDB(item);
-        // 鎧下
-        if (equip_bottom != 0) {
-            item = li.getEquipById(equip_bottom);
-            item.setPosition((byte) -6);
-            equip.addFromDB(item);
+
+        for (int id : item_ids) {
+            SetDefaultEquip(newchar, id);
         }
-        // 靴
-        item = li.getEquipById(equip_shoes);
-        item.setPosition((byte) -7);
-        equip.addFromDB(item);
-        // 武器
-        item = li.getEquipById(equip_weapon);
-        item.setPosition((byte) -11);
-        equip.addFromDB(item);
-        // 頭
-        if (equip_cap != 0 && LoadData.IsValidItemID(equip_cap)) {
-            item = li.getEquipById(equip_cap);
-            item.setPosition((byte) -1);
-            equip.addFromDB(item);
-        }
+
         DebugUser.AddStarterSet(newchar);
         MapleCharacter.saveNewCharToDB(newchar);
         c.SendPacket(ResCLogin.addNewCharEntry(newchar, true));
         c.createdChar(newchar.getId());
+        return true;
+    }
+
+    public static boolean SetDefaultEquip(MapleCharacter newchar, int item_id) {
+        if (!LoadData.IsValidItemID(item_id)) {
+            Debug.ErrorLog("SetDefaultEquip, item_id = " + item_id);
+            return false;
+        }
+
+        MapleInventory mv_equipped = newchar.getInventory(MapleInventoryType.EQUIPPED);
+        MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+        IItem item = miip.getEquipById(item_id);
+        OpsBodyPart bodypart = OpsBodyPart.get_bodypart_from_item(item_id);
+        Debug.DebugLog("SetDefaultEquip, item_id = " + item_id + ", slot = " + -bodypart.get());
+        item.setPosition((short) -bodypart.get());
+        mv_equipped.addFromDB(item);
         return true;
     }
 
