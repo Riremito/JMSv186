@@ -239,9 +239,8 @@ public class ItemRequest {
     }
 
     public static boolean ConsumeCashItemUse(ClientPacket cp, MapleCharacter chr) {
-        // v131 does not have timestamp
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
-            int timestamp = cp.Decode4();
+        if (ServerConfig.JMS180orLater()) {
+            int timestamp = cp.Decode4(); // v164は何故か末尾にあるので注意
             chr.updateTick(timestamp);
         }
 
@@ -814,14 +813,11 @@ public class ItemRequest {
         return true;
     }
 
-    public static final void UseReturnScroll(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void UseReturnScroll(MapleClient c, MapleCharacter chr, short slot, int itemId) {
         if (!chr.isAlive()) {
             c.getSession().write(MaplePacketCreator.enableActions());
             return;
         }
-        c.getPlayer().updateTick(slea.readInt());
-        final byte slot = (byte) slea.readShort();
-        final int itemId = slea.readInt();
         final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
         if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId) {
             c.getSession().write(MaplePacketCreator.enableActions());

@@ -156,7 +156,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserScriptMessageAnswer: {
-                //NPCHandler.NPCMoreTalk(p, c);
+                NPCHandler.NPCMoreTalk(c, cp); // test
                 return true;
             }
             case CP_UserShopRequest: {
@@ -196,6 +196,10 @@ public class ReqCUser {
             case CP_AdminShopRequest: {
                 return true;
             }
+            case CP_UserStatChangeItemUseRequest: {
+                ItemRequest.OnPacket(header, cp, c);
+                return true;
+            }
             case CP_UserStatChangeItemCancelRequest: {
                 int item_id = cp.Decode4();
                 PlayerHandler.CancelItemEffect(item_id, chr);
@@ -203,6 +207,10 @@ public class ReqCUser {
             }
             case CP_UserMobSummonItemUseRequest: {
                 //ItemRequest.UseSummonBag(p, c, c.getPlayer());
+                return true;
+            }
+            case CP_UserPetFoodItemUseRequest: {
+                ReqCUser_Pet.OnPetPacket(header, cp, c);
                 return true;
             }
             case CP_UserTamingMobFoodItemUseRequest: {
@@ -219,6 +227,10 @@ public class ReqCUser {
                 }
                 return true;
             }
+            case CP_UserDestroyPetItemRequest: {
+                ReqCUser_Pet.OnPetPacket(header, cp, c);
+                return true;
+            }
             case CP_UserBridleItemUseRequest: {
                 //ItemRequest.UseCatchItem(p, c, c.getPlayer());
                 return true;
@@ -227,6 +239,7 @@ public class ReqCUser {
                 int time_stamp = cp.Decode4();
                 short slot = cp.Decode2();
                 int item_id = cp.Decode4();
+                chr.updateTick(time_stamp);
                 if (ItemRequest.UseSkillBook(slot, item_id, c, c.getPlayer())) {
                     c.getPlayer().saveToDB(false, false);
                 }
@@ -241,7 +254,11 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserPortalScrollUseRequest: {
-                //ItemRequest.UseReturnScroll(p, c, c.getPlayer());
+                int time_stamp = cp.Decode4();
+                short slot = cp.Decode2();
+                int item_id = cp.Decode4();
+                chr.updateTick(time_stamp);
+                ItemRequest.UseReturnScroll(c, chr, slot, item_id);
                 return true;
             }
             case CP_UserUpgradeItemUseRequest:
@@ -250,6 +267,7 @@ public class ReqCUser {
                 int time_stamp = cp.Decode4();
                 short scroll_slot = cp.Decode2();
                 short equip_slot = cp.Decode2();
+                chr.updateTick(time_stamp);
                 if (ItemRequest.UseUpgradeScroll(scroll_slot, equip_slot, (byte) 0, c, chr)) {
                     c.getPlayer().saveToDB(false, false);
                 }
@@ -302,6 +320,13 @@ public class ReqCUser {
                 OnCharacterInfoRequest(cp, chr, map);
                 return true;
             }
+            case CP_UserActivatePetRequest: {
+                ReqCUser_Pet.OnPetPacket(header, cp, c);
+                return true;
+            }
+            case CP_UserTemporaryStatUpdateRequest: {
+                return true;
+            }
             case CP_UserPortalScriptRequest: {
                 PlayerHandler.ChangeMapSpecial(cp, c);
                 return true;
@@ -319,6 +344,9 @@ public class ReqCUser {
                 // 利用用途が不明だが、アイテム利用時ではなくてこちらが送信されたときにバフを有効にすべきなのかもしれない
                 return true;
             }
+            case CP_UserMacroSysDataModified: {
+                return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
+            }
             case CP_UserUseGachaponBoxRequest: {
                 short slot = cp.Decode2();
                 int item_id = cp.Decode4();
@@ -332,6 +360,9 @@ public class ReqCUser {
             case CP_UserRepairDurability: {
                 //NPCHandler.repair(p, c);
                 return true;
+            }
+            case CP_FuncKeyMappedModified: {
+                return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
             }
             case CP_UserMigrateToITCRequest: {
                 return ReqCITC.OnPacket(header, cp, c);
@@ -349,6 +380,9 @@ public class ReqCUser {
             case CP_RequestIncCombo: {
                 PlayerHandler.AranCombo(c, chr);
                 return true;
+            }
+            case CP_QuickslotKeyMappedModified: {
+                return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
             }
             default: {
                 break;

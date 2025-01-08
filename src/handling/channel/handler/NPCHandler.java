@@ -31,6 +31,7 @@ import client.RockPaperScissors;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import packet.ClientPacket;
 import packet.ServerPacket;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
@@ -151,9 +152,9 @@ public class NPCHandler {
         c.getPlayer().Info("Quest ID = " + quest + ", Action = " + action);
     }
 
-    public static final void NPCMoreTalk(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final byte lastMsg = slea.readByte(); // 00 (last msg type I think)
-        final byte action = slea.readByte(); // 00 = end chat, 01 == follow
+    public static final void NPCMoreTalk(MapleClient c, ClientPacket cp) {
+        final byte lastMsg = cp.Decode1(); // 00 (last msg type I think)
+        final byte action = cp.Decode1(); // 00 = end chat, 01 == follow
 
         final NPCConversationManager cm = NPCScriptManager.getInstance().getCM(c);
 
@@ -163,7 +164,7 @@ public class NPCHandler {
         cm.setLastMsg((byte) -1);
         if (lastMsg == 3) {
             if (action != 0) {
-                cm.setGetText(slea.readMapleAsciiString());
+                cm.setGetText(cp.DecodeStr());
                 if (cm.getType() == 0) {
                     NPCScriptManager.getInstance().startQuest(c, action, lastMsg, -1);
                 } else if (cm.getType() == 1) {
@@ -176,12 +177,16 @@ public class NPCHandler {
             }
         } else {
             int selection = -1;
-            if (slea.available() >= 4) {
-                selection = slea.readInt();
-            } else if (slea.available() > 0) {
-                selection = slea.readByte();
+
+            if (1 <= action) {
+                if (8 <= lastMsg) {
+                    selection = cp.Decode1();
+                } else if (3 <= lastMsg) {
+                    selection = cp.Decode4();
+                }
             }
-            if (lastMsg == 4 && selection == -1) {
+
+            if (selection == -1 && 3 <= lastMsg) {
                 cm.dispose();
                 return;//h4x
             }

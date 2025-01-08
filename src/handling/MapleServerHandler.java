@@ -22,7 +22,6 @@ import packet.request.AdminPacket;
 import packet.request.ReqCUser_Dragon;
 import packet.request.FriendRequest;
 import packet.request.ItemRequest;
-import packet.request.ReqCFuncKeyMappedMan;
 import packet.request.ReqCMobPool;
 import packet.request.ReqCReactorPool;
 import packet.request.ReqCSummonedPool;
@@ -342,11 +341,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_ShopScannerRequest:
             case CP_ShopLinkRequest:
             case CP_AdminShopRequest:
+            case CP_UserStatChangeItemUseRequest:
             case CP_UserStatChangeItemCancelRequest:
             case CP_UserMobSummonItemUseRequest:
+            case CP_UserPetFoodItemUseRequest:
             case CP_UserTamingMobFoodItemUseRequest:
             case CP_UserScriptItemUseRequest:
             case CP_UserConsumeCashItemUseRequest:
+            case CP_UserDestroyPetItemRequest:
             case CP_UserBridleItemUseRequest:
             case CP_UserSkillLearnItemUseRequest:
             case CP_UserShopScannerItemUseRequest:
@@ -365,19 +367,70 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserDropMoneyRequest:
             case CP_UserGivePopularityRequest:
             case CP_UserCharacterInfoRequest:
+            case CP_UserActivatePetRequest:
+            case CP_UserTemporaryStatUpdateRequest:
             case CP_UserPortalScriptRequest:
             case CP_UserPortalTeleportRequest:
             case CP_UserCalcDamageStatSetRequest:
+            case CP_UserMacroSysDataModified:
             case CP_UserUseGachaponBoxRequest:
             case CP_UserRepairDurabilityAll:
             case CP_UserRepairDurability:
+            case CP_FuncKeyMappedModified:
             case CP_UserMigrateToITCRequest:
             case CP_UserExpUpItemUseRequest:
             case CP_UserTempExpUseRequest:
             case CP_TalkToTutor:
-            case CP_RequestIncCombo: {
-                ReqCUser.OnPacket(cp, header, c);
+            case CP_RequestIncCombo:
+            case CP_QuickslotKeyMappedModified: {
+                return ReqCUser.OnPacket(cp, header, c);
+            }
+            case CP_JMS_JUKEBOX:
+            case CP_JMS_PINKBEAN_PORTAL_CREATE:
+            case CP_JMS_PINKBEAN_PORTAL_ENTER: {
+                return ItemRequest.OnPacket(header, cp, c);
+            }
+            // Pet
+            case CP_PetMove:
+            case CP_PetAction:
+            case CP_PetInteractionRequest:
+            case CP_PetDropPickUpRequest:
+            case CP_PetStatChangeItemUseRequest:
+            case CP_PetUpdateExceptionListRequest: {
+                return ReqCUser_Pet.OnPetPacket(header, cp, c);
+            }
+            // CUser::OnSummonedPacket
+            case CP_SummonedMove:
+            case CP_SummonedAttack:
+            case CP_SummonedHit:
+            case CP_SummonedSkill:
+            case CP_Remove: {
+                return ReqCSummonedPool.OnPacket(cp, header, c);
+            }
+            case CP_DragonMove: {
+                return ReqCUser_Dragon.OnMove(cp, c);
+            }
+            case CP_MobAttackMob:
+            case CP_MobEscortCollision:
+            case CP_MobRequestEscortInfo:
+            case CP_MobMove:
+            case CP_MobApplyCtrl:
+            case CP_MobHitByMob:
+            case CP_MobSelfDestruct: {
+                return ReqCMobPool.OnPacket(cp, header, c);
+            }
+            case CP_NpcMove: {
+                NPCHandler.NPCAnimation(p, c);
                 return true;
+            }
+            case CP_DropPickUpRequest: {
+                // c
+                InventoryHandler.Pickup_Player(p, c, c.getPlayer());
+                return true;
+            }
+            case CP_ReactorHit:
+            case CP_ReactorTouch: {
+                return ReqCReactorPool.OnPacket(cp, header, c);
             }
             case CP_UserMapTransferRequest: {
                 // c
@@ -387,11 +440,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_MemoRequest: {
                 // c
                 PlayersHandler.Note(p, c.getPlayer());
-                return true;
-            }
-            case CP_ReactorHit:
-            case CP_ReactorTouch: {
-                ReqCReactorPool.OnPacket(cp, header, c);
                 return true;
             }
             case CP_UserItemMakeRequest: {
@@ -410,28 +458,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 InventoryHandler.ItemMove(p, c);
                 return true;
             }
-            case CP_DropPickUpRequest: {
-                // c
-                InventoryHandler.Pickup_Player(p, c, c.getPlayer());
-                return true;
-            }
             case USE_TREASUER_CHEST: {
                 // c
                 InventoryHandler.UseTreasureChest(p, c, c.getPlayer());
-                return true;
-            }
-            case CP_MobAttackMob:
-            case CP_MobEscortCollision:
-            case CP_MobRequestEscortInfo:
-            case CP_MobMove:
-            case CP_MobApplyCtrl:
-            case CP_MobHitByMob:
-            case CP_MobSelfDestruct: {
-                ReqCMobPool.OnPacket(cp, header, c);
-                return true;
-            }
-            case CP_NpcMove: {
-                NPCHandler.NPCAnimation(p, c);
                 return true;
             }
             case CP_UserQuestRequest: {
@@ -496,24 +525,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 UserInterfaceHandler.ShipObjectRequest(p.readInt(), c);
                 return true;
             }
-            // CUser::OnSummonedPacket
-            case CP_SummonedMove:
-            case CP_SummonedAttack:
-            case CP_SummonedHit:
-            case CP_SummonedSkill:
-            case CP_Remove: {
-                ReqCSummonedPool.OnPacket(cp, header, c);
-                return true;
-            }
-            case CP_DragonMove: {
-                ReqCUser_Dragon.OnMove(cp, c);
-                return true;
-            }
+
             case CP_MCarnivalRequest: {
                 MonsterCarnivalHandler.MonsterCarnival(p, c);
-                return true;
-            }
-            case CP_UserTemporaryStatUpdateRequest: {
                 return true;
             }
             case LEFT_KNOCK_BACK: {
@@ -595,33 +609,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case BEANS_UPDATE: {
                 BeanGame.BeanGame2(p, c);
-                return true;
-            }
-            case CP_UserStatChangeItemUseRequest:
-            case CP_JMS_JUKEBOX:
-            case CP_JMS_PINKBEAN_PORTAL_CREATE:
-            case CP_JMS_PINKBEAN_PORTAL_ENTER: {
-                ItemRequest.OnPacket(header, cp, c);
-                return true;
-            }
-            // Pet
-            case CP_UserDestroyPetItemRequest:
-            case CP_UserActivatePetRequest:
-            case CP_UserPetFoodItemUseRequest:
-            case CP_PetMove:
-            case CP_PetAction:
-            case CP_PetInteractionRequest:
-            case CP_PetDropPickUpRequest:
-            case CP_PetStatChangeItemUseRequest:
-            case CP_PetUpdateExceptionListRequest: {
-                ReqCUser_Pet.OnPetPacket(header, cp, c);
-                return true;
-            }
-            // KeyMap
-            case CP_UserMacroSysDataModified:
-            case CP_FuncKeyMappedModified:
-            case CP_QuickslotKeyMappedModified: {
-                ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
                 return true;
             }
             // ミスティックドア
