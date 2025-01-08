@@ -72,10 +72,7 @@ public class PlayersHandler {
         }
     }
 
-    public static void GiveFame(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        final int who = slea.readInt();
-        final int mode = slea.readByte();
-
+    public static void GiveFame(MapleClient c, MapleCharacter chr, int who, int mode) {
         final int famechange = mode == 0 ? -1 : 1;
         final MapleCharacter target = (MapleCharacter) chr.getMap().getMapObject(who, MapleMapObjectType.PLAYER);
 

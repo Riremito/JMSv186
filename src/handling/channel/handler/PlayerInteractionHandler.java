@@ -750,7 +750,7 @@ public class PlayerInteractionHandler {
     }
 
     // 雇用商店遠隔管理機
-    public static final boolean RemoteStore(final SeekableLittleEndianAccessor p, final MapleClient c) {
+    public static final boolean RemoteStore(MapleClient c) {
         // 雇用商店遠隔管理機 5470000
         // short slot = p.readShort();
         // アイテム欄の癒しの該当するスロットのitemIDが5470000かどうか確認したほうが良い

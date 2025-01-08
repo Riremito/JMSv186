@@ -590,7 +590,7 @@ public class ItemRequest {
         }
     }
 
-    public static final boolean UseSkillBook(final byte slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
+    public static final boolean UseSkillBook(short slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
         final IItem toUse = chr.getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
         if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId) {
             return false;
@@ -633,11 +633,11 @@ public class ItemRequest {
         return canuse;
     }
 
-    public static final boolean UseUpgradeScroll(final byte slot, final byte dst, final byte ws, final MapleClient c, final MapleCharacter chr) {
+    public static final boolean UseUpgradeScroll(short slot, short dst, final byte ws, final MapleClient c, final MapleCharacter chr) {
         return UseUpgradeScroll(slot, dst, ws, c, chr, 0);
     }
 
-    public static final boolean UseUpgradeScroll(final byte slot, final byte dst, final byte ws, final MapleClient c, final MapleCharacter chr, final int vegas) {
+    public static final boolean UseUpgradeScroll(short slot, short dst, final byte ws, final MapleClient c, final MapleCharacter chr, final int vegas) {
         boolean whiteScroll = true;
         boolean legendarySpirit = false; // legendary spirit skill
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();

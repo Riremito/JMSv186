@@ -14,7 +14,15 @@ import config.ServerConfig;
 import constants.GameConstants;
 import debug.Debug;
 import handling.channel.handler.AttackInfo;
+import handling.channel.handler.ChatHandler;
+import handling.channel.handler.HiredMerchantHandler;
+import handling.channel.handler.InterServerHandler;
+import handling.channel.handler.InventoryHandler;
+import handling.channel.handler.NPCHandler;
 import handling.channel.handler.PlayerHandler;
+import handling.channel.handler.PlayerInteractionHandler;
+import handling.channel.handler.PlayersHandler;
+import handling.channel.handler.UserInterfaceHandler;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +50,21 @@ public class ReqCUser {
         }
 
         switch (header) {
-            // Map移動処理
-            case CP_UserTransferFieldRequest:
-            case CP_UserTransferChannelRequest:
-            case CP_UserMigrateToCashShopRequest: {
+            case CP_UserTransferFieldRequest: {
+                if (!PortalPacket.OnPacket(cp, header, c)) {
+                    Debug.ErrorLog("chage map not coded yet");
+                }
+                if (c.getPlayer().GetInformation()) {
+                    c.getPlayer().Info("MapID = " + c.getPlayer().getMapId());
+                }
                 return true;
+            }
+            case CP_UserTransferChannelRequest: {
+                InterServerHandler.ChangeChannel(cp, c, c.getPlayer());
+                return true;
+            }
+            case CP_UserMigrateToCashShopRequest: {
+                return ReqCCashShop.OnPacket(header, cp, c);
             }
             case CP_UserMove: {
                 OnMove(cp, map, chr);
@@ -81,7 +99,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserChangeStatRequest: {
-                if (ServerConfig.IsJMS() && 131 < ServerConfig.GetVersion()) {
+                if (ServerConfig.JMS164orLater()) {
                     cp.Decode4(); // time1
                 }
 
@@ -100,28 +118,145 @@ public class ReqCUser {
                 PlayerHandler.Heal(chr, heal_hp, heal_mp);
                 return true;
             }
-
-            // 被ダメージ
             case CP_UserHit: {
-                PlayerHandler.TakeDamage(cp, c, c.getPlayer());
+                PlayerHandler.TakeDamage(cp, c, chr);
                 return true;
             }
-            // チャット
             case CP_UserChat: {
+                ChatHandler.GeneralChat(cp, c);
                 return true;
             }
-            // 表情
+            case CP_UserADBoardClose: {
+                c.getPlayer().setChalkboard(null);
+                return true;
+            }
             case CP_UserEmotion: {
+                int emotion_id = cp.Decode4();
+                PlayerHandler.ChangeEmotion(emotion_id, chr);
                 return true;
             }
-            case CP_UserSkillPrepareRequest: {
-                PlayerHandler.SkillEffect(cp, c.getPlayer());
+            case CP_UserActivateEffectItem: {
+                int item_id = cp.Decode4();
+                // pc
+                PlayerHandler.UseItemEffect(item_id, c, chr);
                 return true;
             }
-
-            case CP_UserCharacterInfoRequest: {
-                //PlayerHandler.CharInfoRequest(character_id, c, c.getPlayer());
-                OnCharacterInfoRequest(cp, chr, map);
+            case CP_UserMonsterBookSetCover: {
+                int unk = cp.Decode4();
+                PlayerHandler.ChangeMonsterBookCover(unk, c, chr);
+                return true;
+            }
+            case CP_UserSelectNpc: {
+                int npc_oid = cp.Decode4();
+                NPCHandler.NPCTalk(c, chr, npc_oid);
+                return true;
+            }
+            case CP_UserRemoteShopOpenRequest: {
+                PlayerInteractionHandler.RemoteStore(c);
+                return true;
+            }
+            case CP_UserScriptMessageAnswer: {
+                //NPCHandler.NPCMoreTalk(p, c);
+                return true;
+            }
+            case CP_UserShopRequest: {
+                ReqCNpcPool.OnShopPacket(cp, c);
+                return true;
+            }
+            case CP_UserTrunkRequest: {
+                ReqCTrunkDlg.OnPacket(cp, c);
+                return true;
+            }
+            case CP_UserEntrustedShopRequest: {
+                HiredMerchantHandler.UseHiredMerchant(c);
+                return true;
+            }
+            case CP_UserStoreBankRequest: {
+                return true;
+            }
+            case CP_UserEffectLocal: { // merchant?
+                byte unk = cp.Decode1();
+                HiredMerchantHandler.MerchantItemStore(c, unk, null); // not tested
+                return true;
+            }
+            case CP_UserParcelRequest: {
+                return ReqCParcelDlg.Accept(c, cp);
+            }
+            case CP_ShopScannerRequest: {
+                // @003B 05
+                // クライアントが不思議なフクロウのUIを開くときにパケットが送信されているが、UIはクライアント側で開くのでサーバーからは何も出来ない
+                return true;
+            }
+            case CP_ShopLinkRequest: {
+                int shop_id = cp.Decode4();
+                int map_id = cp.Decode4();
+                InventoryHandler.OwlWarp(c, shop_id, map_id);
+                return true;
+            }
+            case CP_AdminShopRequest: {
+                return true;
+            }
+            case CP_UserStatChangeItemCancelRequest: {
+                int item_id = cp.Decode4();
+                PlayerHandler.CancelItemEffect(item_id, chr);
+                return true;
+            }
+            case CP_UserMobSummonItemUseRequest: {
+                //ItemRequest.UseSummonBag(p, c, c.getPlayer());
+                return true;
+            }
+            case CP_UserTamingMobFoodItemUseRequest: {
+                //ItemRequest.UseMountFood(p, c, c.getPlayer());
+                return true;
+            }
+            case CP_UserScriptItemUseRequest: {
+                //InventoryHandler.UseScriptedNPCItem(p, c, c.getPlayer());
+                return true;
+            }
+            case CP_UserConsumeCashItemUseRequest: {
+                if (!ItemRequest.OnPacket(header, cp, c)) {
+                    //InventoryHandler.UseCashItem(p, c, cp); // to do remove
+                }
+                return true;
+            }
+            case CP_UserBridleItemUseRequest: {
+                //ItemRequest.UseCatchItem(p, c, c.getPlayer());
+                return true;
+            }
+            case CP_UserSkillLearnItemUseRequest: {
+                int time_stamp = cp.Decode4();
+                short slot = cp.Decode2();
+                int item_id = cp.Decode4();
+                if (ItemRequest.UseSkillBook(slot, item_id, c, c.getPlayer())) {
+                    c.getPlayer().saveToDB(false, false);
+                }
+                return true;
+            }
+            case CP_UserShopScannerItemUseRequest: {
+                // 消費アイテム版の不思議なフクロウが存在し、専用のパケットが送信される
+                short slot = cp.Decode2();
+                int owl_item_id = cp.Decode4();
+                int target_id = cp.Decode4();
+                InventoryHandler.OwlMinerva(c, slot, owl_item_id, target_id);
+                return true;
+            }
+            case CP_UserPortalScrollUseRequest: {
+                //ItemRequest.UseReturnScroll(p, c, c.getPlayer());
+                return true;
+            }
+            case CP_UserUpgradeItemUseRequest:
+            case CP_UserHyperUpgradeItemUseRequest:
+            case CP_UserItemOptionUpgradeItemUseRequest: {
+                int time_stamp = cp.Decode4();
+                short scroll_slot = cp.Decode2();
+                short equip_slot = cp.Decode2();
+                if (ItemRequest.UseUpgradeScroll(scroll_slot, equip_slot, (byte) 0, c, chr)) {
+                    c.getPlayer().saveToDB(false, false);
+                }
+                return true;
+            }
+            case CP_UserItemReleaseRequest: {
+                ItemRequest.UseMagnify(cp, c);
                 return true;
             }
             // AP使用
@@ -138,9 +273,81 @@ public class ReqCUser {
                 OnSkillUpRequest(cp, chr);
                 return true;
             }
+            case CP_UserSkillUseRequest: {
+                //PlayerHandler.SpecialMove(p, c, chr);
+                return true;
+            }
             // buff
             case CP_UserSkillCancelRequest: {
                 OnSkillCanselRequest(cp, chr);
+                return true;
+            }
+            case CP_UserSkillPrepareRequest: {
+                PlayerHandler.SkillEffect(cp, chr);
+                return true;
+            }
+            case CP_UserDropMoneyRequest: {
+                int time_stamp = cp.Decode4();
+                int mesos = cp.Decode4();
+                PlayerHandler.DropMeso(mesos, chr);
+                return true;
+            }
+            case CP_UserGivePopularityRequest: {
+                int target_id = cp.Decode4();
+                byte mode = cp.Decode1();
+                PlayersHandler.GiveFame(c, chr, target_id, mode);
+                return true;
+            }
+            case CP_UserCharacterInfoRequest: {
+                OnCharacterInfoRequest(cp, chr, map);
+                return true;
+            }
+            case CP_UserPortalScriptRequest: {
+                PlayerHandler.ChangeMapSpecial(cp, c);
+                return true;
+            }
+            case CP_UserPortalTeleportRequest: {
+                // @0063 [13] [04 00 75 70 30 30] [9F 01] [04 00] [C9 01] [F4 FE]
+                // ポータルカウント, ポータル名, 元のX座標, 元のY座標, 移動先のX座標, 移動先のY座標
+                // ポータル利用時のスクリプト実行用だがJMSとEMS以外では利用されておらず意味がない
+                // サーバー側で特にみる必要もないが、マップ内ポータルを利用した時にサーバー側でスクリプトを実行したい場合は必要になる
+                return true;
+            }
+            case CP_UserCalcDamageStatSetRequest: {
+                // @006A
+                // バフを獲得するアイテムを使用した際に送信されている
+                // 利用用途が不明だが、アイテム利用時ではなくてこちらが送信されたときにバフを有効にすべきなのかもしれない
+                return true;
+            }
+            case CP_UserUseGachaponBoxRequest: {
+                short slot = cp.Decode2();
+                int item_id = cp.Decode4();
+                InventoryHandler.UseRewardItem(slot, item_id, c, c.getPlayer());
+                return true;
+            }
+            case CP_UserRepairDurabilityAll: {
+                NPCHandler.repairAll(c);
+                return true;
+            }
+            case CP_UserRepairDurability: {
+                //NPCHandler.repair(p, c);
+                return true;
+            }
+            case CP_UserMigrateToITCRequest: {
+                return ReqCITC.OnPacket(header, cp, c);
+            }
+            // 兵法書
+            case CP_UserExpUpItemUseRequest:
+            case CP_UserTempExpUseRequest: {
+                GashaEXPPacket.OnPacket(cp, header, c);
+                return true;
+            }
+            case CP_TalkToTutor: {
+                UserInterfaceHandler.CygnusSummon_NPCRequest(c);
+                return true;
+            }
+            case CP_RequestIncCombo: {
+                PlayerHandler.AranCombo(c, chr);
                 return true;
             }
             default: {

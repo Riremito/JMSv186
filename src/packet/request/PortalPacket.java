@@ -55,6 +55,16 @@ public class PortalPacket {
                             chr.UpdateStat(true);
                             return true;
                         }
+                    } // 通常移動
+                    else {
+                        String portal_name = cp.DecodeStr();
+                        short x = cp.Decode2();
+                        short y = cp.Decode2();
+                        byte unk1 = cp.Decode1();
+                        byte unk2 = cp.Decode1(); // JMS302 4 bytes
+
+                        PlayerHandler.ChangeMap(c, c.getPlayer(), map_id, portal_name, unk2);
+                        return true;
                     }
                 }
 

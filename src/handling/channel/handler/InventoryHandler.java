@@ -188,7 +188,7 @@ public class InventoryHandler {
         return sortedList;
     }
 
-    public static final boolean UseRewardItem(final byte slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
+    public static final boolean UseRewardItem(short slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
         final IItem toUse = c.getPlayer().getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
         c.getSession().write(MaplePacketCreator.enableActions());
         if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId) {
@@ -509,7 +509,7 @@ public class InventoryHandler {
         if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())) {
             c.getPlayer().updateTick(slea.readInt());
         }
-        final byte slot = (byte) slea.readShort();
+        final short slot = slea.readShort();
         final int itemId = slea.readInt();
 
         final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.CASH).getItem(slot);
@@ -1386,12 +1386,9 @@ public class InventoryHandler {
 
     }
 
-    public static final void OwlMinerva(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final byte slot = (byte) slea.readShort();
-        final int itemid = slea.readInt();
+    public static final void OwlMinerva(MapleClient c, short slot, int itemid, int itemSearch) {
         final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
         if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemid && itemid == 2310000) {
-            final int itemSearch = slea.readInt();
             final List<HiredMerchant> hms = c.getChannelServer().searchMerchant(itemSearch);
             if (hms.size() > 0) {
                 c.getSession().write(ResCWvsContext.getOwlSearched(itemSearch, hms));
@@ -1415,11 +1412,9 @@ public class InventoryHandler {
     }
     public static final int OWL_ID = 2; //don't change. 0 = owner ID, 1 = store ID, 2 = object ID
 
-    public static final void OwlWarp(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static final void OwlWarp(MapleClient c, int id, int map) {
         c.getSession().write(MaplePacketCreator.enableActions());
         if (c.getPlayer().getMapId() >= 910000000 && c.getPlayer().getMapId() <= 910000022 && c.getPlayer().getPlayerShop() == null) {
-            final int id = slea.readInt();
-            final int map = slea.readInt();
             if (map >= 910000001 && map <= 910000022) {
                 final MapleMap mapp = c.getChannelServer().getMapFactory().getMap(map);
                 c.getPlayer().changeMap(mapp, mapp.getPortal(0));

@@ -41,11 +41,10 @@ import packet.response.ResCWvsContext;
 import server.MapleInventoryManipulator;
 import server.MerchItemPackage;
 import tools.Pair;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 public class HiredMerchantHandler {
 
-    public static final void UseHiredMerchant(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static final void UseHiredMerchant(MapleClient c) {
 //	slea.readInt(); // TimeStamp
 
         if (c.getPlayer().getMap().allowPersonalShop()) {
@@ -94,16 +93,13 @@ public class HiredMerchantHandler {
         }
     }
 
-    public static final void MerchantItemStore(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static final void MerchantItemStore(MapleClient c, byte operation, String str) {
         if (c.getPlayer() == null) {
             return;
         }
-        final byte operation = slea.readByte();
 
         switch (operation) {
             case 20: {
-                slea.readMapleAsciiString();
-
                 final int conv = c.getPlayer().getConversation();
                 boolean merch = World.hasMerchant(c.getPlayer().getAccountID());
                 if (merch) {

@@ -64,11 +64,11 @@ public class NPCHandler {
         c.getSession().write(mplew.getPacket());
     }
 
-    public static final void NPCTalk(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void NPCTalk(MapleClient c, final MapleCharacter chr, int npc_oid) {
         if (chr == null || chr.getMap() == null) {
             return;
         }
-        final MapleNPC npc = chr.getMap().getNPCByOid(slea.readInt());
+        final MapleNPC npc = chr.getMap().getNPCByOid(npc_oid);
 
         if (npc == null) {
             return;
