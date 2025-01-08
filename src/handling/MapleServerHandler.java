@@ -385,6 +385,17 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_QuickslotKeyMappedModified: {
                 return ReqCUser.OnPacket(cp, header, c);
             }
+            case CP_FamilyChartRequest:
+            case CP_FamilyInfoRequest:
+            case CP_FamilyRegisterJunior:
+            case CP_FamilyUnregisterJunior:
+            case CP_FamilyUnregisterParent:
+            case CP_FamilyUsePrivilege:
+            case CP_FamilySetPrecept:
+            case CP_FamilySummonResult:
+            case CP_FamilyJoinResult: {
+                return ReqCUser.OnFamilyPacket(cp, header, c);
+            }
             case CP_JMS_JUKEBOX:
             case CP_JMS_PINKBEAN_PORTAL_CREATE:
             case CP_JMS_PINKBEAN_PORTAL_ENTER: {
@@ -431,6 +442,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_ReactorHit:
             case CP_ReactorTouch: {
                 return ReqCReactorPool.OnPacket(cp, header, c);
+            }
+            case CP_MarriageRequest: {
+                PlayersHandler.RingAction(p, c);
+                return true;
+
             }
             case CP_UserMapTransferRequest: {
                 // c
@@ -560,46 +576,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_UserFollowCharacterWithdraw: {
                 PlayersHandler.FollowReply(p, c);
-                return true;
-            }
-            case CP_MarriageRequest: {
-                PlayersHandler.RingAction(p, c);
-                return true;
-            }
-            case CP_FamilyChartRequest: {
-                FamilyHandler.RequestFamily(p, c);
-                return true;
-            }
-            case CP_FamilyInfoRequest: {
-                FamilyHandler.OpenFamily(p, c);
-                return true;
-            }
-            case CP_FamilyRegisterJunior: {
-                FamilyHandler.FamilyOperation(p, c);
-                return true;
-            }
-            case CP_FamilyUnregisterJunior: {
-                FamilyHandler.DeleteJunior(p, c);
-                return true;
-            }
-            case CP_FamilyUnregisterParent: {
-                FamilyHandler.DeleteSenior(p, c);
-                return true;
-            }
-            case CP_FamilyUsePrivilege: {
-                FamilyHandler.UseFamily(p, c);
-                return true;
-            }
-            case CP_FamilySetPrecept: {
-                FamilyHandler.FamilyPrecept(p, c);
-                return true;
-            }
-            case CP_FamilySummonResult: {
-                FamilyHandler.FamilySummon(p, c);
-                return true;
-            }
-            case CP_FamilyJoinResult: {
-                FamilyHandler.AcceptFamily(p, c);
                 return true;
             }
             // パチンコ

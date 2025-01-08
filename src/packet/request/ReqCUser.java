@@ -292,7 +292,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserSkillUseRequest: {
-                //PlayerHandler.SpecialMove(p, c, chr);
+                OnSkillUseRequest(cp, chr);
                 return true;
             }
             // buff
@@ -301,7 +301,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserSkillPrepareRequest: {
-                PlayerHandler.SkillEffect(cp, chr);
+                OnSkillPrepareRequest(cp, chr);
                 return true;
             }
             case CP_UserDropMoneyRequest: {
@@ -389,6 +389,61 @@ public class ReqCUser {
             }
         }
 
+        return false;
+    }
+
+    public static boolean OnFamilyPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
+        MapleCharacter chr = c.getPlayer();
+        if (chr == null) {
+            return false;
+        }
+
+        MapleMap map = chr.getMap();
+        if (map == null) {
+            return false;
+        }
+
+        switch (header) {
+            case CP_FamilyChartRequest: {
+                //FamilyHandler.RequestFamily(p, c);
+                return true;
+            }
+            case CP_FamilyInfoRequest: {
+                //FamilyHandler.OpenFamily(p, c);
+                return true;
+            }
+            case CP_FamilyRegisterJunior: {
+                //FamilyHandler.FamilyOperation(p, c);
+                return true;
+            }
+            case CP_FamilyUnregisterJunior: {
+                //FamilyHandler.DeleteJunior(p, c);
+                return true;
+            }
+            case CP_FamilyUnregisterParent: {
+                //FamilyHandler.DeleteSenior(p, c);
+                return true;
+            }
+            case CP_FamilyJoinResult: {
+                //FamilyHandler.AcceptFamily(p, c);
+                return true;
+            }
+            case CP_FamilyUsePrivilege: {
+                //FamilyHandler.UseFamily(p, c);
+                return true;
+            }
+            case CP_FamilySetPrecept: {
+                //FamilyHandler.FamilyPrecept(p, c);
+                return true;
+            }
+            case CP_FamilySummonResult: {
+                //FamilyHandler.FamilySummon(p, c);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
         return false;
     }
 
@@ -1122,6 +1177,20 @@ public class ReqCUser {
         return false;
     }
 
+    public static boolean OnSkillUseRequest(ClientPacket cp, MapleCharacter chr) {
+        int time_stamp = cp.Decode4();
+        int skill_id = cp.Decode4();
+        byte skill_level = cp.Decode1();
+        short x = cp.Decode2();
+        short y = cp.Decode2();
+        byte unk1 = cp.Decode1();
+        short unk2 = cp.Decode2();
+
+        chr.updateTick(time_stamp);
+        PlayerHandler.SpecialMove(chr, cp, skill_id, skill_level, x, y);
+        return true;
+    }
+
     // CancelBuffHandler
     public static boolean OnSkillCanselRequest(ClientPacket cp, MapleCharacter chr) {
         int skill_id = cp.Decode4();
@@ -1134,6 +1203,11 @@ public class ReqCUser {
             chr.cancelEffect(skill.getEffect(1), false, -1);
         }
 
+        return true;
+    }
+
+    public static boolean OnSkillPrepareRequest(ClientPacket cp, MapleCharacter chr) {
+        PlayerHandler.SkillEffect(cp, chr);
         return true;
     }
 

@@ -51,16 +51,16 @@ public class GashaEXPPacket {
 
         switch (header) {
             case CP_UserExpUpItemUseRequest: {
-                int update_time = p.Decode4();
+                int time_stamp = p.Decode4();
                 short nPOS = p.Decode2();
                 int nItemID = p.Decode4();
-
+                chr.updateTick(time_stamp);
                 UseItem(chr, nPOS, nItemID);
                 return true;
             }
             case CP_UserTempExpUseRequest: {
-                int update_time = p.Decode4();
-
+                int time_stamp = p.Decode4();
+                chr.updateTick(time_stamp);
                 UseTempExp(chr);
                 return true;
             }
@@ -82,7 +82,8 @@ public class GashaEXPPacket {
 
         UseTempExp(chr);
 
-        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+        // 兵法書実装前
+        if ((ServerConfig.JMS131orEarlier())) {
             while (UseTempExp(chr)) {
                 // loop
             }

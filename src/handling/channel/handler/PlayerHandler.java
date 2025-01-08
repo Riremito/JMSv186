@@ -347,15 +347,15 @@ public class PlayerHandler {
                 MapleItemInformationProvider.getInstance().getItemEffect(-id), false, -1);
     }
 
-    public static final void SkillEffect(ClientPacket p, final MapleCharacter chr) {
-        final int skillId = p.Decode4();
-        final byte level = p.Decode1();
-        final byte flags = p.Decode1();
-        final byte speed = p.Decode1();
+    public static final void SkillEffect(ClientPacket cp, final MapleCharacter chr) {
+        final int skillId = cp.Decode4();
+        final byte level = cp.Decode1();
+        final byte flags = cp.Decode1();
+        final byte speed = cp.Decode1();
         byte unk = 0;
 
-        if (186 <= ServerConfig.GetVersion()) {
-            unk = p.Decode1();
+        if (ServerConfig.JMS186orLater()) {
+            unk = cp.Decode1();
         }
 
         final ISkill skill = SkillFactory.getSkill(skillId);
@@ -370,53 +370,27 @@ public class PlayerHandler {
         }
     }
 
-    public static final void SpecialMove(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        if (chr == null || !chr.isAlive() || chr.getMap() == null) {
-            c.getSession().write(MaplePacketCreator.enableActions());
-            return;
-        }
-        slea.skip(4); // Old X and Y
-        final int skillid = slea.readInt();
-        final int skillLevel = slea.readByte();
+    public static final void SpecialMove(MapleCharacter chr, ClientPacket cp, int skillid, int skillLevel, short x, short y) {
         final ISkill skill = SkillFactory.getSkill(skillid);
-
-        if (chr.getSkillLevel(skill) <= 0 || chr.getSkillLevel(skill) != skillLevel) {
-            if (!GameConstants.isMulungSkill(skillid) && !GameConstants.isPyramidSkill(skillid)) {
-                c.getSession().close();
-                return;
-            }
-            if (GameConstants.isMulungSkill(skillid)) {
-                if (chr.getMapId() / 10000 != 92502) {
-                    //AutobanManager.getInstance().autoban(c, "Using Mu Lung dojo skill out of dojo maps.");
-                    return;
-                } else {
-                    chr.mulung_EnergyModify(false);
-                }
-            } else if (GameConstants.isPyramidSkill(skillid)) {
-                if (chr.getMapId() / 10000 != 92602) {
-                    //AutobanManager.getInstance().autoban(c, "Using Pyramid skill out of pyramid maps.");
-                    return;
-                }
-            }
-        }
         final MapleStatEffect effect = skill.getEffect(chr.getSkillLevel(GameConstants.getLinkedAranSkill(skillid)));
 
-        if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
+        if (effect.getCooldown() > 0) {
             if (chr.skillisCooling(skillid)) {
-                c.getSession().write(MaplePacketCreator.enableActions());
+                chr.UpdateStat(true);
                 return;
             }
             if (skillid != 5221006) { // Battleship
-                c.getSession().write(MaplePacketCreator.skillCooldown(skillid, effect.getCooldown()));
+                chr.SendPacket(MaplePacketCreator.skillCooldown(skillid, effect.getCooldown()));
                 chr.addCooldown(skillid, System.currentTimeMillis(), effect.getCooldown() * 1000);
             }
         }
-        //chr.checkFollow(); //not msea-like but ALEX'S WISHES
+
         switch (skillid) {
             case 1121001:
             case 1221001:
             case 1321001:
             case 9001020: // GM magnet
+                /*
                 final byte number_of_mobs = slea.readByte();
                 slea.skip(3);
                 for (int i = 0; i < number_of_mobs; i++) {
@@ -430,27 +404,29 @@ public class PlayerHandler {
                 }
                 chr.getMap().broadcastMessage(chr, ResCUserRemote.showBuffeffect(chr.getId(), skillid, 1, slea.readByte()), chr.getPosition());
                 c.getSession().write(MaplePacketCreator.enableActions());
+                 */
+                chr.UpdateStat(true);
                 break;
             default:
-                Point pos = null;
-                if (slea.available() == 7) {
-                    pos = slea.readPos();
-                }
+                Point pos = new Point();
+                pos.x = x;
+                pos.y = y;
+
                 if (effect.isMagicDoor()) { // Mystic Door
                     if (!FieldLimitType.MysticDoor.check(chr.getMap().getFieldLimit())) {
-                        effect.applyTo(c.getPlayer(), pos);
+                        effect.applyTo(chr, pos);
                     } else {
-                        c.getSession().write(MaplePacketCreator.enableActions());
+                        chr.UpdateStat(true);
                     }
                 } else {
-                    final int mountid = MapleStatEffect.parseMountInfo(c.getPlayer(), skill.getId());
-                    if (mountid != 0 && mountid != GameConstants.getMountItem(skill.getId()) /*&& !c.getPlayer().isGM()*/ && c.getPlayer().getBuffedValue(MapleBuffStat.MONSTER_RIDING) == null && c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/) == null) {
-                        if (!GameConstants.isMountItemAvailable(mountid, c.getPlayer().getJob())) {
-                            c.getSession().write(MaplePacketCreator.enableActions());
+                    final int mountid = MapleStatEffect.parseMountInfo(chr, skill.getId());
+                    if (mountid != 0 && mountid != GameConstants.getMountItem(skill.getId()) && chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) == null && chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/) == null) {
+                        if (!GameConstants.isMountItemAvailable(mountid, chr.getJob())) {
+                            chr.UpdateStat(true);
                             return;
                         }
                     }
-                    effect.applyTo(c.getPlayer(), pos);
+                    effect.applyTo(chr, pos);
                 }
                 break;
         }
