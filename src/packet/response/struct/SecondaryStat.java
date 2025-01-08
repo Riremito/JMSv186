@@ -66,7 +66,7 @@ public class SecondaryStat {
 
     // SecondaryStat::DecodeForLocal
     public static byte[] EncodeForLocal(MapleCharacter chr, int skill_id) {
-        ServerPacket p = new ServerPacket();
+        ServerPacket data = new ServerPacket();
 
         int buff_level = 0;
         int buff_time = 0;
@@ -93,32 +93,32 @@ public class SecondaryStat {
             }
         }
 
-        p.Encode4(0); // mask1
-        p.Encode4(0); // mask2
-        p.Encode4(0); // mask3
-        p.Encode4(0); // mask4
+        data.Encode4(0); // mask1
+        data.Encode4(0); // mask2
+        data.Encode4(0); // mask3
+        data.Encode4(0); // mask4
 
         if ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion())) {
-            p.Encode4(buff_mask1); // mask5
+            data.Encode4(buff_mask1); // mask5
         }
 
         //SPEED(0x8000000000L)
         if ((buff_mask1 & 1) > 0) {
-            p.Encode2(buff_speed);
-            p.Encode4(skill_id);
-            p.Encode4(buff_time);
+            data.Encode2(buff_speed);
+            data.Encode4(skill_id);
+            data.Encode4(buff_time);
         }
 
         //JUMP(0x10000000000L)
         if ((buff_mask1 & 2) > 0) {
-            p.Encode2(buff_jump);
-            p.Encode4(skill_id);
-            p.Encode4(buff_time);
+            data.Encode2(buff_jump);
+            data.Encode4(skill_id);
+            data.Encode4(buff_time);
         }
 
-        p.Encode1(0);
-        p.Encode1(0);
-        return p.Get().getBytes();
+        data.Encode1(0);
+        data.Encode1(0);
+        return data.Get().getBytes();
     }
     // SecondaryStat::DecodeForRemote
 

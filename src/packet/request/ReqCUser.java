@@ -1181,13 +1181,9 @@ public class ReqCUser {
         int time_stamp = cp.Decode4();
         int skill_id = cp.Decode4();
         byte skill_level = cp.Decode1();
-        short x = cp.Decode2();
-        short y = cp.Decode2();
-        byte unk1 = cp.Decode1();
-        short unk2 = cp.Decode2();
 
         chr.updateTick(time_stamp);
-        PlayerHandler.SpecialMove(chr, cp, skill_id, skill_level, x, y);
+        PlayerHandler.SpecialMove(chr, cp, skill_id, skill_level, null);
         return true;
     }
 

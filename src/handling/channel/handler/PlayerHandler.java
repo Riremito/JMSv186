@@ -370,7 +370,7 @@ public class PlayerHandler {
         }
     }
 
-    public static final void SpecialMove(MapleCharacter chr, ClientPacket cp, int skillid, int skillLevel, short x, short y) {
+    public static final void SpecialMove(MapleCharacter chr, ClientPacket cp, int skillid, int skillLevel, Point pos) {
         final ISkill skill = SkillFactory.getSkill(skillid);
         final MapleStatEffect effect = skill.getEffect(chr.getSkillLevel(GameConstants.getLinkedAranSkill(skillid)));
 
@@ -408,9 +408,9 @@ public class PlayerHandler {
                 chr.UpdateStat(true);
                 break;
             default:
-                Point pos = new Point();
-                pos.x = x;
-                pos.y = y;
+                if (pos == null) {
+                    pos = chr.getPosition();
+                }
 
                 if (effect.isMagicDoor()) { // Mystic Door
                     if (!FieldLimitType.MysticDoor.check(chr.getMap().getFieldLimit())) {

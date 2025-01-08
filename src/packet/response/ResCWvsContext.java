@@ -155,12 +155,12 @@ public class ResCWvsContext {
 
     // CWvsContext::OnTemporaryStatSet
     public static final MaplePacket TemporaryStatSet(MapleCharacter chr, int skill_id) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
         // SecondaryStat::DecodeForLocal
-        p.EncodeBuffer(SecondaryStat.EncodeForLocal(chr, skill_id));
-        p.Encode2(0); // delay
-        p.Encode1(0);
-        return p.Get();
+        sp.EncodeBuffer(SecondaryStat.EncodeForLocal(chr, skill_id));
+        sp.Encode2(0); // delay
+        sp.Encode1(0);
+        return sp.Get();
     }
 
     // CWvsContext::OnInventoryGrow
