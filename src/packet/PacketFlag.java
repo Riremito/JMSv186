@@ -20,11 +20,11 @@ package packet;
 
 import packet.ops.OpsMessage;
 import packet.ops.OpsNewCharacter;
+import packet.ops.OpsSecondaryStat;
 import packet.request.ReqCNpcPool;
 import packet.request.ReqCTrunkDlg;
 import packet.request.struct.CMovePath;
 import packet.response.struct.GW_CharacterStat;
-import packet.response.struct.SecondaryStat;
 
 /**
  *
@@ -36,10 +36,10 @@ public class PacketFlag {
         ReqCTrunkDlg.Init();
         ReqCNpcPool.Init();
         GW_CharacterStat.Init();
-        SecondaryStat.Init();
+        OpsSecondaryStat.Init();
         OpsMessage.Message_Init();
         CMovePath.setJumpDown();
         OpsNewCharacter.Init();
     }
-    
+
 }

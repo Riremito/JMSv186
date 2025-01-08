@@ -2053,7 +2053,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             int duration = ceffect.getDuration();
             duration += (int) ((getBuffedStarttime(MapleBuffStat.COMBO) - System.currentTimeMillis()));
 
-            client.getSession().write(ResCUserRemote.giveBuff(combo.getId(), duration, stat, ceffect));
+            client.getSession().write(ResCWvsContext.giveBuff(combo.getId(), duration, stat, ceffect));
             map.broadcastMessage(this, ResCUserRemote.giveForeignBuff(getId(), stat, ceffect), false);
         }
     }
@@ -2082,7 +2082,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         int duration = ceffect.getDuration();
         duration += (int) ((getBuffedStarttime(MapleBuffStat.COMBO) - System.currentTimeMillis()));
 
-        client.getSession().write(ResCUserRemote.giveBuff(combo.getId(), duration, stat, ceffect));
+        client.getSession().write(ResCWvsContext.giveBuff(combo.getId(), duration, stat, ceffect));
         map.broadcastMessage(this, ResCUserRemote.giveForeignBuff(getId(), stat, ceffect), false);
     }
 

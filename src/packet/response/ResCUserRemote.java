@@ -187,8 +187,8 @@ public class ResCUserRemote {
                 sp.Encode2(0); //start of Monster Riding
                 int buffSrc = chr.getBuffSource(MapleBuffStat.MONSTER_RIDING);
                 if (buffSrc > 0) {
-                    final IItem c_mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118 /*-122*/ );
-                    final IItem mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18 /*-22*/ );
+                    final IItem c_mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118 /*-122*/);
+                    final IItem mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18 /*-22*/);
                     if (GameConstants.getMountItem(buffSrc) == 0 && c_mount != null) {
                         sp.Encode4(c_mount.getItemId());
                     } else if (GameConstants.getMountItem(buffSrc) == 0 && mount != null) {
@@ -416,32 +416,6 @@ public class ResCUserRemote {
             mplew.writeLong(firstmask);
         }
         mplew.writeLong(secondmask);
-    }
-
-    public static MaplePacket giveBuff(int buffid, int bufflength, List<Pair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_TemporaryStatSet.Get());
-        // 17 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 07 00 AE E1 3E 00 68 B9 01 00 00 00 00 00
-        //lhc patch adds an extra int here
-        ResCUserRemote.writeLongMask(mplew, statups);
-        for (Pair<MapleBuffStat, Integer> statup : statups) {
-            mplew.writeShort(statup.getRight().shortValue());
-            mplew.writeInt(buffid);
-            if (ServerConfig.version <= 131) {
-                mplew.writeShort(bufflength);
-            } else {
-                mplew.writeInt(bufflength);
-                if (buffid == 4331003) {
-                    mplew.writeZeroBytes(10);
-                }
-            }
-        }
-        mplew.writeShort(0); // delay,  wk charges have 600 here o.o
-        mplew.writeShort(0); // combo 600, too
-        if (effect == null || (!effect.isCombo() && !effect.isFinalAttack())) {
-            mplew.write(0); // Test
-        }
-        return mplew.getPacket();
     }
 
     public static MaplePacket giveForeignPirate(List<Pair<MapleBuffStat, Integer>> statups, int duration, int cid, int skillid) {

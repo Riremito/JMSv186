@@ -58,6 +58,7 @@ import packet.response.struct.InvOp;
 import packet.response.struct.SecondaryStat;
 import packet.response.struct.TestHelper;
 import server.MapleItemInformationProvider;
+import server.MapleStatEffect;
 import server.shops.HiredMerchant;
 import server.shops.MaplePlayerShopItem;
 import tools.MaplePacketCreator;
@@ -154,13 +155,42 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnTemporaryStatSet
-    public static final MaplePacket TemporaryStatSet(MapleCharacter chr, int skill_id) {
+    public static final MaplePacket TemporaryStatSet(MapleStatEffect effect) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
         // SecondaryStat::DecodeForLocal
-        sp.EncodeBuffer(SecondaryStat.EncodeForLocal(chr, skill_id));
+        sp.EncodeBuffer(SecondaryStat.EncodeForLocal(effect));
         sp.Encode2(0); // delay
-        sp.Encode1(0);
+        sp.Encode1(0); // CUserLocal::SetSecondaryStatChangedPoint
         return sp.Get();
+    }
+
+    public static MaplePacket giveBuff(int buffid, int bufflength, List<Pair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
+        /*
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_TemporaryStatSet.Get());
+        // 17 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 07 00 AE E1 3E 00 68 B9 01 00 00 00 00 00
+        //lhc patch adds an extra int here
+        ResCUserRemote.writeLongMask(mplew, statups);
+        for (Pair<MapleBuffStat, Integer> statup : statups) {
+            mplew.writeShort(statup.getRight().shortValue());
+            mplew.writeInt(buffid);
+            if (ServerConfig.version <= 131) {
+                mplew.writeShort(bufflength);
+            } else {
+                mplew.writeInt(bufflength);
+                if (buffid == 4331003) {
+                    mplew.writeZeroBytes(10);
+                }
+            }
+        }
+        mplew.writeShort(0); // delay,  wk charges have 600 here o.o
+        mplew.writeShort(0); // combo 600, too
+        if (effect == null || (!effect.isCombo() && !effect.isFinalAttack())) {
+            mplew.write(0); // Test
+        }
+        return mplew.getPacket();
+         */
+        return TemporaryStatSet(effect);
     }
 
     // CWvsContext::OnInventoryGrow

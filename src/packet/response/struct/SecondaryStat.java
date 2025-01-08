@@ -20,11 +20,10 @@
  */
 package packet.response.struct;
 
-import client.ISkill;
 import client.MapleCharacter;
-import client.SkillFactory;
 import config.ServerConfig;
 import packet.ServerPacket;
+import packet.ops.OpsSecondaryStat;
 import server.MapleStatEffect;
 
 /**
@@ -33,85 +32,54 @@ import server.MapleStatEffect;
  */
 public class SecondaryStat {
 
-    public enum Flag {
-        // v186
-        // 0x00000001
-        UNK(0),
-        UNKNOWN;
-
-        private int value;
-
-        Flag(int flag) {
-            value = flag;
-        }
-
-        Flag() {
-            value = -1;
-        }
-
-        public boolean set(int flag) {
-            value = flag;
-            return true;
-        }
-
-        public int get() {
-            return value;
-        }
-    }
-
-    public static void Init() {
-        if ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion())) {
-        }
-    }
-
     // SecondaryStat::DecodeForLocal
-    public static byte[] EncodeForLocal(MapleCharacter chr, int skill_id) {
+    public static byte[] EncodeForLocal(MapleStatEffect mse) {
         ServerPacket data = new ServerPacket();
 
-        int buff_level = 0;
-        int buff_time = 0;
-        int buff_mask1 = 0;
-        int buff_speed = 0;
-        int buff_jump = 0;
+        int skill_id = mse.getSourceId();
+        int flag_mask_1 = 0;
+        int flag_mask_2 = 0;
+        int flag_mask_3 = 0;
+        int flag_mask_4 = 0;
+        int flag_mask_5 = 0;
+        int buff_time = mse.getDuration();
 
-        final ISkill buff_skill = SkillFactory.getSkill(skill_id);
-
-        if (buff_skill != null) {
-            buff_level = chr.getSkillLevel(buff_skill);
-            if (buff_level > 0) {
-                MapleStatEffect mse = buff_skill.getEffect(buff_level);
-
-                buff_time = mse.getDuration();
-                buff_speed = mse.getSpeed();
-                if (0 < buff_speed) {
-                    buff_mask1 |= 1;
-                }
-                buff_jump = mse.getJump();
-                if (0 < buff_jump) {
-                    buff_mask1 |= 2;
-                }
-            }
+        // test
+        if (mse.getOss() == OpsSecondaryStat.CTS_Booster) {
+            flag_mask_1 |= (1 << OpsSecondaryStat.CTS_Booster.get());
+        }
+        if (mse.getOss() == OpsSecondaryStat.CTS_SoulArrow) {
+            flag_mask_1 |= (1 << OpsSecondaryStat.CTS_SoulArrow.get());
+        }
+        if (mse.getOss() == OpsSecondaryStat.CTS_SharpEyes) {
+            flag_mask_2 |= (1 << OpsSecondaryStat.CTS_SharpEyes.get());
         }
 
-        data.Encode4(0); // mask1
-        data.Encode4(0); // mask2
-        data.Encode4(0); // mask3
-        data.Encode4(0); // mask4
+        // JMS v187+
+        if (ServerConfig.IsPostBB()) {
+            data.Encode4(flag_mask_5);
+        }
+        if (ServerConfig.JMS164orLater()) {
+            data.Encode4(flag_mask_4);
+            data.Encode4(flag_mask_3);
+        }
+        data.Encode4(flag_mask_2); // シャープアイズ等
+        data.Encode4(flag_mask_1); // ブースター等
 
-        if ((ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion())) {
-            data.Encode4(buff_mask1); // mask5
+        if ((flag_mask_1 & (1 << OpsSecondaryStat.CTS_Booster.get())) > 0) {
+            data.Encode2(mse.getX());
+            data.Encode4(skill_id);
+            data.Encode4(buff_time); // JMS v131 2 bytes
         }
 
-        //SPEED(0x8000000000L)
-        if ((buff_mask1 & 1) > 0) {
-            data.Encode2(buff_speed);
+        if ((flag_mask_1 & (1 << OpsSecondaryStat.CTS_SoulArrow.get())) > 0) {
+            data.Encode2(mse.getX());
             data.Encode4(skill_id);
             data.Encode4(buff_time);
         }
 
-        //JUMP(0x10000000000L)
-        if ((buff_mask1 & 2) > 0) {
-            data.Encode2(buff_jump);
+        if ((flag_mask_2 & (1 << OpsSecondaryStat.CTS_SharpEyes.get())) > 0) {
+            data.Encode2((mse.getX() << 8) | mse.getY());
             data.Encode4(skill_id);
             data.Encode4(buff_time);
         }
@@ -120,10 +88,10 @@ public class SecondaryStat {
         data.Encode1(0);
         return data.Get().getBytes();
     }
-    // SecondaryStat::DecodeForRemote
 
+    // SecondaryStat::DecodeForRemote
     public static byte[] EncodeForRemote(MapleCharacter chr, int statmask) {
-        ServerPacket p = new ServerPacket();
-        return p.Get().getBytes();
+        ServerPacket data = new ServerPacket();
+        return data.Get().getBytes();
     }
 }
