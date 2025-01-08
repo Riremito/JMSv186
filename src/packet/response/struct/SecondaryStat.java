@@ -37,52 +37,70 @@ public class SecondaryStat {
         ServerPacket data = new ServerPacket();
 
         int skill_id = mse.getSourceId();
-        int flag_mask_1 = 0;
-        int flag_mask_2 = 0;
-        int flag_mask_3 = 0;
-        int flag_mask_4 = 0;
-        int flag_mask_5 = 0;
         int buff_time = mse.getDuration();
+        int buff_mask[] = {0, 0, 0, 0, 0};
 
         // test
-        if (mse.getOss() == OpsSecondaryStat.CTS_Booster) {
-            flag_mask_1 |= (1 << OpsSecondaryStat.CTS_Booster.get());
-        }
-        if (mse.getOss() == OpsSecondaryStat.CTS_SoulArrow) {
-            flag_mask_1 |= (1 << OpsSecondaryStat.CTS_SoulArrow.get());
-        }
-        if (mse.getOss() == OpsSecondaryStat.CTS_SharpEyes) {
-            flag_mask_2 |= (1 << OpsSecondaryStat.CTS_SharpEyes.get());
+        if (mse.getOss() != OpsSecondaryStat.UNKNOWN) {
+            buff_mask[mse.getOss().getN()] |= (1 << mse.getOss().get());
         }
 
         // JMS v187+
         if (ServerConfig.IsPostBB()) {
-            data.Encode4(flag_mask_5);
+            data.Encode4(buff_mask[4]);
         }
         if (ServerConfig.JMS164orLater()) {
-            data.Encode4(flag_mask_4);
-            data.Encode4(flag_mask_3);
+            data.Encode4(buff_mask[3]);
+            data.Encode4(buff_mask[2]);
         }
-        data.Encode4(flag_mask_2); // シャープアイズ等
-        data.Encode4(flag_mask_1); // ブースター等
+        data.Encode4(buff_mask[1]); // シャープアイズ等
+        data.Encode4(buff_mask[0]); // ブースター等
 
-        if ((flag_mask_1 & (1 << OpsSecondaryStat.CTS_Booster.get())) > 0) {
+        // 1st DWORD
+        if ((buff_mask[OpsSecondaryStat.CTS_MagicGuard.getN()] & (1 << OpsSecondaryStat.CTS_MagicGuard.get())) > 0) {
+            data.Encode2(mse.getX());
+            data.Encode4(skill_id);
+            data.Encode4(buff_time);
+        }
+        if ((buff_mask[OpsSecondaryStat.CTS_DarkSight.getN()] & (1 << OpsSecondaryStat.CTS_DarkSight.get())) > 0) {
+            data.Encode2(mse.getX());
+            data.Encode4(skill_id);
+            data.Encode4(buff_time);
+        }
+        if ((buff_mask[OpsSecondaryStat.CTS_Booster.getN()] & (1 << OpsSecondaryStat.CTS_Booster.get())) > 0) {
             data.Encode2(mse.getX());
             data.Encode4(skill_id);
             data.Encode4(buff_time); // JMS v131 2 bytes
         }
-
-        if ((flag_mask_1 & (1 << OpsSecondaryStat.CTS_SoulArrow.get())) > 0) {
+        if ((buff_mask[OpsSecondaryStat.CTS_PowerGuard.getN()] & (1 << OpsSecondaryStat.CTS_PowerGuard.get())) > 0) {
             data.Encode2(mse.getX());
             data.Encode4(skill_id);
             data.Encode4(buff_time);
         }
-
-        if ((flag_mask_2 & (1 << OpsSecondaryStat.CTS_SharpEyes.get())) > 0) {
+        if ((buff_mask[OpsSecondaryStat.CTS_MaxHP.getN()] & (1 << OpsSecondaryStat.CTS_MaxHP.get())) > 0) {
+            data.Encode2(mse.getX());
+            data.Encode4(skill_id);
+            data.Encode4(buff_time);
+        }
+        if ((buff_mask[OpsSecondaryStat.CTS_SoulArrow.getN()] & (1 << OpsSecondaryStat.CTS_SoulArrow.get())) > 0) {
+            data.Encode2(mse.getX());
+            data.Encode4(skill_id);
+            data.Encode4(buff_time);
+        }
+        if ((buff_mask[OpsSecondaryStat.CTS_ShadowPartner.getN()] & (1 << OpsSecondaryStat.CTS_ShadowPartner.get())) > 0) {
+            data.Encode2(mse.getX());
+            data.Encode4(skill_id);
+            data.Encode4(buff_time);
+        }
+        // 2nd DWORD
+        if ((buff_mask[OpsSecondaryStat.CTS_SharpEyes.getN()] & (1 << OpsSecondaryStat.CTS_SharpEyes.get())) > 0) {
             data.Encode2((mse.getX() << 8) | mse.getY());
             data.Encode4(skill_id);
             data.Encode4(buff_time);
         }
+        // 3rd DWORD
+        // 4th DWORD
+        // 5th DWORD
 
         data.Encode1(0);
         data.Encode1(0);

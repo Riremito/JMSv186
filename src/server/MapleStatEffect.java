@@ -236,6 +236,7 @@ public class MapleStatEffect implements Serializable {
                 case 2001002: // magic guard
                 case 12001001:
                 case 22111001:
+                    ret.oss = OpsSecondaryStat.CTS_MagicGuard;
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.MAGIC_GUARD, ret.x));
                     break;
                 case 2301003: // invincible
@@ -254,6 +255,7 @@ public class MapleStatEffect implements Serializable {
                 case 14001003: // cygnus ds
                 case 4330001:
                 case 30001001: //resist beginner hide
+                    ret.oss = OpsSecondaryStat.CTS_DarkSight;
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.DARKSIGHT, ret.x));
                     break;
                 case 4211003: // pickpocket
@@ -267,6 +269,7 @@ public class MapleStatEffect implements Serializable {
                     break;
                 case 4111002: // shadowpartner
                 case 14111000: // cygnus
+                    ret.oss = OpsSecondaryStat.CTS_ShadowPartner;
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.SHADOWPARTNER, ret.x));
                     break;
                 case 11101002: // All Final attack
@@ -356,6 +359,7 @@ public class MapleStatEffect implements Serializable {
                     break;
                 case 1101007: // pguard
                 case 1201007:
+                    ret.oss = OpsSecondaryStat.CTS_PowerGuard;
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.POWERGUARD, ret.x));
                     break;
                 case 32111004: //conversion
@@ -368,6 +372,7 @@ public class MapleStatEffect implements Serializable {
                 case 20008003:
                 case 20018003:
                 case 30008003:
+                    ret.oss = OpsSecondaryStat.CTS_MaxHP; // test
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.MAXHP, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.MAXMP, ret.y));
                     break;

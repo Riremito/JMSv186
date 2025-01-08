@@ -26,32 +26,103 @@ import config.ServerConfig;
  */
 public enum OpsSecondaryStat {
     // JMS v186
-    UNK(0),
-    // 1, 0x000000800
-    CTS_Booster(11),
-    // 1, 0x000010000
-    CTS_SoulArrow(16),
-    // 2, 0x000000020
-    CTS_SharpEyes(5),
-    UNKNOWN(-1);
+    // 0, 0x00000001
+    CTS_PAD(0, 0),
+    // 0, 0x00000002
+    CTS_PDD(0, 1),
+    // 0, 0x0000004
+    CTS_MAD(0, 2),
+    // 0, 0x00000008
+    CTS_MDD(0, 3),
+    // 0, 0x00000010
+    CTS_ACC(0, 4),
+    // 0, 0x00000020
+    CTS_EVA(0, 5),
+    // 0, 0x00000040
+    CTS_Craft(0, 6),
+    // 0, 0x00000080
+    CTS_Speed(0, 7),
+    // 0, 0x00000100
+    CTS_Jump(0, 8),
+    // 0, 0x00000200
+    CTS_MagicGuard(0, 9),
+    // 0, 0x00000400
+    CTS_DarkSight(0, 10),
+    // 0, 0x00000800
+    CTS_Booster(0, 11),
+    // 0, 0x00001000
+    CTS_PowerGuard(0, 12),
+    // 0, 0x00002000
+    CTS_MaxHP(0, 13),
+    // 0, 0x00004000
+    CTS_MaxMP(0, 14),
+    // 0, 0x00008000
+    CTS_Invincible(0, 15),
+    // 0, 0x00010000
+    CTS_SoulArrow(0, 16),
+    // 0, 0x00200000
+    CTS_ComboCounter(0, 21),
+    // 0, 0x04000000
+    CTS_ShadowPartner(0, 26),
+    // 0, 0x08000000
+    CTS_PickPocket(0, 27), // odin puppet
+    // 0, 0x10000000
+    CTS_MesoGuard(0, 28),
+    // 1, 0x00000001
+    CTS_Thaw(1, 0),
+    // 1, 0x00000002
+    CTS_Curse(1, 1),
+    // 1, 0x00000004
+    CTS_Regen(1, 2),
+    // 1, 0x00000010
+    CTS_Stance(1, 4),
+    // 1, 0x00000020
+    CTS_SharpEyes(1, 5),
+    // 1, 0x00000040
+    CTS_ManaReflection(1, 6),
+    // 1, 0x00000100
+    CTS_SpiritJavelin(1, 8),
+    // 1, 0x00000200
+    CTS_Infinity(1, 9),
+    // 1, 0x00000400
+    CTS_Holyshield(1, 10),
+    //CTS_HamString(1, 10),
+    // 1, 0x00001000
+    CTS_Blind(1, 12),
+    CTS_Concentration(1, 13),
+    //CTS_BanMap(1, 13),
+    //CTS_MaxLevelBuff(1, 14),
+    //CTS_Barrier(1, 15),
+    //CTS_DojangShield(1, 16),
+    //CTS_ReverseInput(1, 17),
+    // 2, 0x00000000
+    // 3, 0x00000000
+    // 4, 0x00000000
+    UNKNOWN(0, -1);
 
-    private int value;
+    private int order;
+    private int mask;
 
-    OpsSecondaryStat(int flag) {
-        value = flag;
+    OpsSecondaryStat(int order, int mask) {
+        this.order = order;
+        this.mask = mask;
     }
 
     OpsSecondaryStat() {
-        value = -1;
+        mask = -1;
     }
 
     public boolean set(int flag) {
-        value = flag;
+        mask = flag;
         return true;
     }
 
     public int get() {
-        return value;
+        return mask;
+    }
+
+    public int getN() {
+        return order;
     }
 
     public static void Init() {
@@ -59,7 +130,7 @@ public enum OpsSecondaryStat {
             // fix
             return;
         }
-        
+
         if ((ServerConfig.JMS131orEarlier())) {
             // fixs
             return;
