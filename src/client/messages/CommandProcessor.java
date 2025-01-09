@@ -435,6 +435,21 @@ public class CommandProcessor {
                 return true;
             }
 
+            if ("/allskill".equals(splitted[0])) {
+                DebugJob.AllSkill(c.getPlayer());
+                return true;
+            }
+
+            if ("/allskill0".equals(splitted[0])) {
+                DebugJob.AllSkill(c.getPlayer(), true);
+                return true;
+            }
+
+            if ("/allstat".equals(splitted[0])) {
+                DebugJob.AllStat(c.getPlayer());
+                return true;
+            }
+
             // テスト
             if ("/test".equals(splitted[0]) || "/テスト".equals(splitted[0])) {
                 return CustomNPCTalk(c, 1012003, 9010021);

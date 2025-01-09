@@ -90,15 +90,42 @@ public class DebugUser {
         chr.setTama(500000);
         // 装備
         {
+            AddItem(chr, 1302064); // メイプルグローリーソード
+            AddItem(chr, 1402039); // メイプルソールロヘン
+            AddItem(chr, 1312032); // メイプルスチールアックス
+            AddItem(chr, 1412027); // メイプルデーモンアックス
+            AddItem(chr, 1322054); // メイプルハバークハンマー
+            AddItem(chr, 1422029); // メイプルベルゼット
+            AddItem(chr, 1432040); // メイプルベリットスピア
+            AddItem(chr, 1442051); // メイプルカルスタン
+            AddItem(chr, 1452045); // メイプルガンディバボウ
+            AddItem(chr, 1462040); // メイプルニシャダ
+            AddItem(chr, 1332056); // メイプルアスラダガー
+            AddItem(chr, 1332055); // メイプルダークメイト
+            AddItem(chr, 1372034); // メイプルシャイニワンド
+            AddItem(chr, 1382039); // メイプルウィズダムスタッフ
+            AddItem(chr, 1472055); // メイプルスカンダ
+            AddItem(chr, 1492022); // メイプルキャノンシューター
+            AddItem(chr, 1482022); // メイプルゴールデンクロー
+            AddItem(chr, 1342027); // メイプルクリート
+            AddItem(chr, 1092030); // メイプルシールド
+            AddItem(chr, 1002511); // メイプル帽子(揺籃)
+            AddItem(chr, 1122000); // ホーンテイルのネックレス
+            AddItem(chr, 1142103); // トウキョウメシア
+            AddItem(chr, 1022067); // エリマキキツネサルアイ
+            AddItem(chr, 1112402); // マジカルピグミーリング
+            AddItem(chr, 1112403); // パワーピグミーリング
+            AddItem(chr, 1132004); // 武陵ベルト(黒)
             AddItem(chr, 1082149); // 軍手(茶)
+            AddItem(chr, 1072238); // アイゼン(紫)
+            AddItem(chr, 1002668); // ジャクムの兜(昇華繚乱)
             AddItem(chr, 1072264); // ドロシー(銀)
             AddItem(chr, 1102040); // 冒険家のマント(黄)
             AddItem(chr, 1002391); // 緑ずきん
             AddItem(chr, 1022047); // オウルアイ
             AddItem(chr, 1012056); // 犬鼻
-            AddItem(chr, 1092030); // メイプルシールド
             AddItem(chr, 1050127); // タオル(黒)
-            //AddItem(chr, 1051140); // バスタオル(黄)
+            AddItem(chr, 1051140); // バスタオル(黄)
             AddItem(chr, 1032062); // エレメントピアス
             AddItem(chr, 1112400); // 錬金術師の指輪
         }
@@ -112,6 +139,7 @@ public class DebugUser {
             //AddItem(chr, 2030004, 100); // 帰還の書(ヘネシス)
             AddItem(chr, 2043005, 100); // 呪われた攻撃の書(片手剣) 30%
             AddItem(chr, 2043003, 100); // 奇跡の攻撃の書(片手剣)
+            AddItem(chr, 2041200, 100); // ホーンテイルの心臓
             AddItem(chr, 2049100, 100); // 混沌の書 60%
             AddItem(chr, 2049003, 100); // 白の書 20%
             AddItem(chr, 2049300, 100); // 高級装備強化の書

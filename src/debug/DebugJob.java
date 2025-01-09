@@ -25,6 +25,7 @@ import client.MapleCharacter;
 import client.PlayerStats;
 import client.SkillFactory;
 import config.ServerConfig;
+import java.util.ArrayList;
 import server.Randomizer;
 import wz.LoadData;
 
@@ -33,7 +34,7 @@ import wz.LoadData;
  * @author Riremito
  */
 public class DebugJob {
-
+    
     public enum Stat {
         STR,
         DEX,
@@ -44,6 +45,7 @@ public class DebugJob {
     // ステータス初期化
     public static void ResetStat(MapleCharacter chr) {
         //int ability_point = 25;
+        DebugJob.AllSkill(chr, true);
         PlayerStats stat = chr.getStat();
         chr.setRemainingAp(0);
         chr.setRemainingSp(0);
@@ -59,9 +61,8 @@ public class DebugJob {
         stat.setInt(4);
         stat.setLuk(4);
         chr.UpdateStat(true);
-        chr.ResetSkill();
     }
-
+    
     public static boolean IsBeginnerJob(int job_id) {
         switch (job_id) {
             case 0:
@@ -75,10 +76,10 @@ public class DebugJob {
                 break;
             }
         }
-
+        
         return false;
     }
-
+    
     public static int GetSkillEffect(MapleCharacter chr, int skill_id) {
         ISkill skill = SkillFactory.getSkill(skill_id);
         if (skill == null) {
@@ -86,7 +87,7 @@ public class DebugJob {
         }
         return skill.getEffect(chr.getSkillLevel(skill)).getX();
     }
-
+    
     public static void LevelUpStat(MapleCharacter chr) {
         int job_id = chr.getJob();
         int level = chr.getLevel() + 1;
@@ -111,7 +112,7 @@ public class DebugJob {
             // set SP
             chr.setRemainingSp(skill_point);
         }
-
+        
         if ((job_id / 1000) == 2 && ((job_id % 1000) / 100) == 1) {
             // Aran
             maxhp += Randomizer.rand(50, 52);
@@ -127,7 +128,7 @@ public class DebugJob {
                 case 1: {
                     maxhp += Randomizer.rand(24, 28);
                     maxmp += Randomizer.rand(4, 6);
-
+                    
                     int additional_hp = GetSkillEffect(chr, 1000001);
                     if (additional_hp == 0) {
                         additional_hp = GetSkillEffect(chr, 11000000);
@@ -139,7 +140,7 @@ public class DebugJob {
                 case 2: {
                     maxhp += Randomizer.rand(10, 14);
                     maxmp += Randomizer.rand(22, 24);
-
+                    
                     int additional_mp = GetSkillEffect(chr, 2000001);
                     if (additional_mp == 0) {
                         additional_mp = GetSkillEffect(chr, 12000000);
@@ -164,7 +165,7 @@ public class DebugJob {
                 case 5: {
                     maxhp += Randomizer.rand(22, 26);
                     maxmp += Randomizer.rand(18, 22);
-
+                    
                     int additional_hp = GetSkillEffect(chr, 5100000);
                     if (additional_hp == 0) {
                         additional_hp = GetSkillEffect(chr, 15100000);
@@ -182,7 +183,7 @@ public class DebugJob {
         //maxmp += player_stat.getTotalInt() / 10;
         maxhp = Math.min((ServerConfig.GetVersion() <= 186) ? 30000 : 500000, Math.abs(maxhp));
         maxmp = Math.min((ServerConfig.GetVersion() <= 186) ? 30000 : 500000, Math.abs(maxmp));
-
+        
         player_stat.setMaxHp(maxhp);
         player_stat.setMaxMp(maxmp);
         player_stat.setHp(maxhp);
@@ -190,7 +191,7 @@ public class DebugJob {
         chr.setLevel(level);
         chr.setExp(0);
     }
-
+    
     public static int getNextLevel(int job_id) {
         switch (job_id) {
             // 冒険家 1次
@@ -224,12 +225,12 @@ public class DebugJob {
         }
         return 0;
     }
-
+    
     public static boolean addStat(MapleCharacter chr, PlayerStats player_stat, Stat stat_main) {
         int ability_point = chr.getRemainingAp();
         int def_stat_sub_point = 0;
         int level = chr.getLevel();
-
+        
         switch (stat_main) {
             case STR: {
                 def_stat_sub_point = level + 30 - player_stat.getDex();
@@ -242,7 +243,7 @@ public class DebugJob {
                     player_stat.setDex(player_stat.getDex() + def_stat_sub_point);
                     ability_point -= def_stat_sub_point;
                 }
-
+                
                 chr.setRemainingAp(0);
                 player_stat.setStr(player_stat.getStr() + ability_point);
                 return true;
@@ -258,7 +259,7 @@ public class DebugJob {
                     player_stat.setStr(player_stat.getStr() + def_stat_sub_point);
                     ability_point -= def_stat_sub_point;
                 }
-
+                
                 chr.setRemainingAp(0);
                 player_stat.setDex(player_stat.getDex() + ability_point);
                 return true;
@@ -274,7 +275,7 @@ public class DebugJob {
                     player_stat.setLuk(player_stat.getLuk() + def_stat_sub_point);
                     ability_point -= def_stat_sub_point;
                 }
-
+                
                 chr.setRemainingAp(0);
                 player_stat.setInt(player_stat.getInt() + ability_point);
                 return true;
@@ -290,7 +291,7 @@ public class DebugJob {
                     player_stat.setDex(player_stat.getDex() + def_stat_sub_point);
                     ability_point -= def_stat_sub_point;
                 }
-
+                
                 chr.setRemainingAp(0);
                 player_stat.setLuk(player_stat.getLuk() + ability_point);
                 return true;
@@ -301,16 +302,16 @@ public class DebugJob {
         }
         return false;
     }
-
+    
     public static boolean DefStat(MapleCharacter chr, int job_id, int level) {
         ResetStat(chr);
-
+        
         if (!LoadData.IsValidJobID(job_id)) {
             return false;
         }
         int next_level = 1;
         Stat stat_main = Stat.STR;
-
+        
         if ((job_id % 10) == 2) {
             // 4th
             next_level = 120;
@@ -327,15 +328,15 @@ public class DebugJob {
             // beginner
             next_level = 1;
         }
-
+        
         if (next_level < level) {
             next_level = level;
         }
-
+        
         if (200 < next_level) {
             next_level = 200;
         }
-
+        
         switch (((job_id % 1000) / 100)) {
             // 戦士
             case 1: {
@@ -371,7 +372,7 @@ public class DebugJob {
                 break;
             }
         }
-
+        
         chr.setJob(job_id);
         PlayerStats player_stat = chr.getStat();
         for (int i = chr.getLevel(); i < next_level; i++) {
@@ -380,5 +381,112 @@ public class DebugJob {
         }
         chr.UpdateStat(true);
         return true;
+    }
+    
+    public static boolean AllSkill(MapleCharacter chr) {
+        return AllSkill(chr, false);
+    }
+    
+    public static boolean AllSkill(MapleCharacter chr, boolean reset) {
+        int job_id = chr.getJob();
+        
+        if (!LoadData.IsValidJobID(job_id)) {
+            return false;
+        }
+
+        // 初心者系統
+        if ((job_id / 100) == 0) {
+            return false;
+        }
+        // エヴァン
+        if (2200 <= job_id && job_id <= 2218) {
+            return false;
+        }
+        // デュアルブレイド
+        if (430 <= job_id && job_id <= 434) {
+            return false;
+        }
+        ArrayList<Integer> job_list = new ArrayList<>();
+        job_list.add(job_id);
+
+        // 4次転職済み
+        switch ((job_id % 10)) {
+            // 4次転職
+            case 2: {
+                job_id -= 1;
+                if (!LoadData.IsValidJobID(job_id)) {
+                    return false;
+                }
+                job_list.add(job_id);
+            }
+            // 3次転職
+            case 1: {
+                job_id -= 1;
+                if (!LoadData.IsValidJobID(job_id)) {
+                    return false;
+                }
+                job_list.add(job_id);
+            }
+            case 0: {
+                // 2次転職
+                if ((job_id % 100) != 0) {
+                    job_id -= job_id % 100;
+                    if (!LoadData.IsValidJobID(job_id)) {
+                        return false;
+                    }
+                    job_list.add(job_id);
+                }
+                break;
+            }
+            default: {
+                return false;
+            }
+        }
+        
+        for (Integer v : job_list) {
+            for (Integer skill_id : SkillFactory.getSkillsByJob(v)) {
+                ISkill skill = SkillFactory.getSkill(skill_id);
+                chr.changeSkillLevel(skill, reset ? 0 : skill.getMaxLevel(), (v % 10 == 2) ? (byte) skill.getMaxLevel() : (byte) 0);
+            }
+        }
+        
+        int level = 180;
+        switch (job_list.size()) {
+            case 3:
+                level = 120;
+                break;
+            case 2:
+                level = 70;
+                break;
+            case 1:
+                level = 30;
+                break;
+            default:
+                break;
+        }
+        AllStat(chr, level);
+        return true;
+    }
+    
+    public static void AllStat(MapleCharacter chr) {
+        AllStat(chr, 180);
+    }
+    
+    public static void AllStat(MapleCharacter chr, int level) {
+        PlayerStats stat = chr.getStat();
+        chr.setRemainingAp(150);
+        chr.setRemainingSp(550);
+        chr.setFame((short) 300);
+        chr.setExp(0);
+        chr.setLevel(level);
+        stat.setMaxHp(level * 100);
+        stat.setHp((int) (level * 100 * 0.8));
+        stat.setMaxMp(level * 50);
+        stat.setMp((int) (level * 50 * 0.8));
+        stat.setStr(level * 5);
+        stat.setDex(level * 5);
+        stat.setInt(level * 5);
+        stat.setLuk(level * 5);
+        chr.UpdateStat(true);
     }
 }

@@ -20,12 +20,12 @@ public class ReqCMobPool {
     public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
-            return false;
+            return true;
         }
 
         MapleMap map = chr.getMap();
         if (map == null) {
-            return false;
+            return true;
         }
 
         int oid = cp.Decode4();
@@ -33,7 +33,7 @@ public class ReqCMobPool {
         MapleMonster monster = map.getMonsterByOid(oid);
 
         if (monster == null) {
-            return false;
+            return true;
         }
 
         switch (header) {
@@ -132,11 +132,11 @@ public class ReqCMobPool {
 
         cp.Decode1();
 
-        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()|| ServerConfig.IsKMS()) {
+        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
             cp.Decode4();
         }
 
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())|| ServerConfig.IsKMS()) {
+        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
             cp.Decode4();
             cp.Decode4();
             cp.Decode4();
