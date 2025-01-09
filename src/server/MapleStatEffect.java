@@ -62,9 +62,8 @@ public class MapleStatEffect implements Serializable {
     private int expBuff, itemup, mesoup, cashup, berserk, illusion, booster, berserk2, cp, nuffSkill;
     private byte level;
     private int exp; // gashaEXP, consume 237
-//    private List<Pair<Integer, Integer>> randomMorph;
     private List<MapleDisease> cureDebuffs;
-    private OpsSecondaryStat oss = OpsSecondaryStat.UNKNOWN;
+    private ArrayList<Pair<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
 
     public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level) {
         return loadFromData(source, skillid, true, overtime, level, 0);
@@ -128,14 +127,6 @@ public class MapleStatEffect implements Serializable {
             }
         }
 
-        /*	final MapleData randMorph = source.getChildByPath("morphRandom");
-        if (randMorph != null) {
-        for (MapleData data : randMorph.getChildren()) {
-        ret.randomMorph.add(new Pair(
-        MapleDataTool.getInt("morph", data, 0),
-        MapleDataTool.getIntConvert("prop", data, 0)));
-        }
-        }*/
         if (!ret.skill && ret.duration > -1) {
             ret.overTime = true;
         } else {
@@ -166,6 +157,13 @@ public class MapleStatEffect implements Serializable {
         ret.berserk2 = MapleDataTool.getInt("berserk2", source, 0, common_level);
         ret.booster = 0;
         ret.illusion = MapleDataTool.getInt("illusion", source, 0, common_level);
+
+        if (ret.jump != 0) {
+            ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_Jump, (int) ret.jump));
+        }
+        if (ret.speed != 0) {
+            ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_Speed, (int) ret.speed));
+        }
 
         List<MapleDisease> cure = new ArrayList<MapleDisease>(5);
         if (MapleDataTool.getInt("poison", source, 0) > 0) {
@@ -236,7 +234,7 @@ public class MapleStatEffect implements Serializable {
                 case 2001002: // magic guard
                 case 12001001:
                 case 22111001:
-                    ret.oss = OpsSecondaryStat.CTS_MagicGuard;
+                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_MagicGuard, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.MAGIC_GUARD, ret.x));
                     break;
                 case 2301003: // invincible
@@ -255,7 +253,7 @@ public class MapleStatEffect implements Serializable {
                 case 14001003: // cygnus ds
                 case 4330001:
                 case 30001001: //resist beginner hide
-                    ret.oss = OpsSecondaryStat.CTS_DarkSight;
+                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_DarkSight, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.DARKSIGHT, ret.x));
                     break;
                 case 4211003: // pickpocket
@@ -269,7 +267,7 @@ public class MapleStatEffect implements Serializable {
                     break;
                 case 4111002: // shadowpartner
                 case 14111000: // cygnus
-                    ret.oss = OpsSecondaryStat.CTS_ShadowPartner;
+                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_ShadowPartner, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.SHADOWPARTNER, ret.x));
                     break;
                 case 11101002: // All Final attack
@@ -286,7 +284,7 @@ public class MapleStatEffect implements Serializable {
                 case 20008001:
                 case 20018001:
                 case 30008001:
-                    ret.oss = OpsSecondaryStat.CTS_SoulArrow;
+                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_SoulArrow, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.SOULARROW, ret.x));
                     break;
                 case 1211006: // wk charges
@@ -340,7 +338,7 @@ public class MapleStatEffect implements Serializable {
                 case 35101006:
                 case 35001003: //TEMP.BOOSTER
                     ret.booster = ret.x; // ?_?
-                    ret.oss = OpsSecondaryStat.CTS_Booster;
+                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_Booster, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.BOOSTER, ret.x));
                     break;
                 case 5121009:
@@ -359,7 +357,7 @@ public class MapleStatEffect implements Serializable {
                     break;
                 case 1101007: // pguard
                 case 1201007:
-                    ret.oss = OpsSecondaryStat.CTS_PowerGuard;
+                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_PowerGuard, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.POWERGUARD, ret.x));
                     break;
                 case 32111004: //conversion
@@ -372,7 +370,8 @@ public class MapleStatEffect implements Serializable {
                 case 20008003:
                 case 20018003:
                 case 30008003:
-                    ret.oss = OpsSecondaryStat.CTS_MaxHP; // test
+                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_MaxHP, ret.x));
+                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_MaxMP, ret.y));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.MAXHP, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.MAXMP, ret.y));
                     break;
@@ -456,7 +455,7 @@ public class MapleStatEffect implements Serializable {
                 case 20008002:
                 case 20018002:
                 case 30008002:
-                    ret.oss = OpsSecondaryStat.CTS_SharpEyes;
+                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_SharpEyes, (ret.x << 8) | ret.y));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.SHARP_EYES, ret.x << 8 | ret.y));
                     break;
                 case 22151003: //magic resistance
@@ -1645,7 +1644,7 @@ public class MapleStatEffect implements Serializable {
         return booster;
     }
 
-    public OpsSecondaryStat getOss() {
+    public ArrayList<Pair<OpsSecondaryStat, Integer>> getOss() {
         return oss;
     }
 

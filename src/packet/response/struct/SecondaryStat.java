@@ -22,9 +22,11 @@ package packet.response.struct;
 
 import client.MapleCharacter;
 import config.ServerConfig;
+import java.util.ArrayList;
 import packet.ServerPacket;
 import packet.ops.OpsSecondaryStat;
 import server.MapleStatEffect;
+import tools.Pair;
 
 /**
  *
@@ -41,8 +43,9 @@ public class SecondaryStat {
         int buff_mask[] = {0, 0, 0, 0, 0};
 
         // test
-        if (mse.getOss() != OpsSecondaryStat.UNKNOWN) {
-            buff_mask[mse.getOss().getN()] |= (1 << mse.getOss().get());
+        ArrayList<Pair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
+        for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
+            buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
         }
 
         // JMS v187+
@@ -56,51 +59,21 @@ public class SecondaryStat {
         data.Encode4(buff_mask[1]); // シャープアイズ等
         data.Encode4(buff_mask[0]); // ブースター等
 
-        // 1st DWORD
-        if ((buff_mask[OpsSecondaryStat.CTS_MagicGuard.getN()] & (1 << OpsSecondaryStat.CTS_MagicGuard.get())) > 0) {
-            data.Encode2(mse.getX());
-            data.Encode4(skill_id);
-            data.Encode4(buff_time);
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 32; j++) {
+                if ((buff_mask[i] & (1 << j)) > 0) {
+                    int effect = 0;
+                    for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
+                        if (pss.getLeft().getN() == i && pss.getLeft().get() == j) {
+                            effect = pss.getRight();
+                        }
+                    }
+                    data.Encode2(effect);
+                    data.Encode4(skill_id);
+                    data.Encode4(buff_time);
+                }
+            }
         }
-        if ((buff_mask[OpsSecondaryStat.CTS_DarkSight.getN()] & (1 << OpsSecondaryStat.CTS_DarkSight.get())) > 0) {
-            data.Encode2(mse.getX());
-            data.Encode4(skill_id);
-            data.Encode4(buff_time);
-        }
-        if ((buff_mask[OpsSecondaryStat.CTS_Booster.getN()] & (1 << OpsSecondaryStat.CTS_Booster.get())) > 0) {
-            data.Encode2(mse.getX());
-            data.Encode4(skill_id);
-            data.Encode4(buff_time); // JMS v131 2 bytes
-        }
-        if ((buff_mask[OpsSecondaryStat.CTS_PowerGuard.getN()] & (1 << OpsSecondaryStat.CTS_PowerGuard.get())) > 0) {
-            data.Encode2(mse.getX());
-            data.Encode4(skill_id);
-            data.Encode4(buff_time);
-        }
-        if ((buff_mask[OpsSecondaryStat.CTS_MaxHP.getN()] & (1 << OpsSecondaryStat.CTS_MaxHP.get())) > 0) {
-            data.Encode2(mse.getX());
-            data.Encode4(skill_id);
-            data.Encode4(buff_time);
-        }
-        if ((buff_mask[OpsSecondaryStat.CTS_SoulArrow.getN()] & (1 << OpsSecondaryStat.CTS_SoulArrow.get())) > 0) {
-            data.Encode2(mse.getX());
-            data.Encode4(skill_id);
-            data.Encode4(buff_time);
-        }
-        if ((buff_mask[OpsSecondaryStat.CTS_ShadowPartner.getN()] & (1 << OpsSecondaryStat.CTS_ShadowPartner.get())) > 0) {
-            data.Encode2(mse.getX());
-            data.Encode4(skill_id);
-            data.Encode4(buff_time);
-        }
-        // 2nd DWORD
-        if ((buff_mask[OpsSecondaryStat.CTS_SharpEyes.getN()] & (1 << OpsSecondaryStat.CTS_SharpEyes.get())) > 0) {
-            data.Encode2((mse.getX() << 8) | mse.getY());
-            data.Encode4(skill_id);
-            data.Encode4(buff_time);
-        }
-        // 3rd DWORD
-        // 4th DWORD
-        // 5th DWORD
 
         data.Encode1(0);
         data.Encode1(0);
