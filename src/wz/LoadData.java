@@ -406,27 +406,29 @@ public class LoadData {
         MapleItemInformationProvider.equipData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Character.wz"));
         MapleItemInformationProvider.stringData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/String.wz"));
 
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164) {
+        if (ServerConfig.JMS131orEarlier()) {
             MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Cash");
             MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Con");
             MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Eqp");
             MapleItemInformationProvider.etcStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Etc");
             MapleItemInformationProvider.insStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Ins");
             MapleItemInformationProvider.petStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Pet");
-        } else {
-            MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Cash.img");
-
-            if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 180) {
-                MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img").getChildByPath("Con");
-            } else {
-                MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img");
-            }
-
-            MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Eqp.img").getChildByPath("Eqp");
-            MapleItemInformationProvider.etcStringData = MapleItemInformationProvider.stringData.getData("Etc.img").getChildByPath("Etc");
-            MapleItemInformationProvider.insStringData = MapleItemInformationProvider.stringData.getData("Ins.img");
-            MapleItemInformationProvider.petStringData = MapleItemInformationProvider.stringData.getData("Pet.img");
+            return;
         }
+
+        MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Cash.img");
+
+        if (ServerConfig.JMS180orLater()) {
+            MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img");
+        } else {
+            MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img").getChildByPath("Con");
+        }
+
+        MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Eqp.img").getChildByPath("Eqp");
+        MapleItemInformationProvider.etcStringData = MapleItemInformationProvider.stringData.getData("Etc.img").getChildByPath("Etc");
+        MapleItemInformationProvider.insStringData = MapleItemInformationProvider.stringData.getData("Ins.img");
+        MapleItemInformationProvider.petStringData = MapleItemInformationProvider.stringData.getData("Pet.img");
+
     }
 
     // login server

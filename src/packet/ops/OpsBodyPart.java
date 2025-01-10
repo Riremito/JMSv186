@@ -45,7 +45,8 @@ public enum OpsBodyPart {
     BP_TAMINGMOB(0x12),
     BP_SADDLE(0x13),
     BP_MOBEQUIP(0x14),
-    BP_PETRING_LABEL(0x15),
+    BP_MEDAL(21),
+    //BP_PETRING_LABEL(0x15),
     BP_PETABIL_ITEM(0x16),
     BP_PETABIL_MESO(0x17),
     BP_PETABIL_HPCONSUME(0x18),
@@ -73,7 +74,6 @@ public enum OpsBodyPart {
     BP_PETABIL_IGNOREITEMS1(0x2E),
     BP_PETABIL_IGNOREITEMS2(0x2F),
     BP_PETABIL_IGNOREITEMS3(0x30),
-    BP_MEDAL(0x31),
     BP_BELT(0x32),
     BP_SHOULDER(0x33),
     BP_NOTHING3(0x36),
@@ -122,6 +122,10 @@ public enum OpsBodyPart {
 
     public short get() {
         return (short) value;
+    }
+
+    public short getSlot() {
+        return (short) -value;
     }
 
     public static OpsBodyPart find(int val) {

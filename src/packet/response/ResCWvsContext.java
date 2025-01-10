@@ -50,8 +50,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import packet.ServerPacket;
+import packet.ops.OpsBodyPart;
 import packet.ops.OpsFriendArg;
 import packet.ops.OpsMessageArg;
+import packet.ops.OpsSecondaryStat;
 import packet.response.struct.GW_CharacterStat;
 import packet.response.struct.GW_ItemSlotBase;
 import packet.response.struct.InvOp;
@@ -359,8 +361,15 @@ public class ResCWvsContext {
         sp.Encode4(player.getId());
         sp.Encode1(player.getLevel());
         sp.Encode2(player.getJob());
-        sp.Encode2(player.getFame());
-        if (131 < ServerConfig.GetVersion()) {
+
+        if (ServerConfig.JMS302orLater()) {
+            sp.Encode1(0);
+            sp.Encode4(player.getFame());
+        } else {
+            sp.Encode2(player.getFame());
+        }
+
+        if (ServerConfig.JMS164orLater()) {
             sp.Encode1(player.getMarriageId() > 0 ? 1 : 0); // heart red or gray
         }
         String sCommunity = "-";
@@ -379,21 +388,30 @@ public class ResCWvsContext {
                 }
             }
         }
-        sp.EncodeStr(sCommunity);
-        if (131 < ServerConfig.GetVersion()) {
-            sp.EncodeStr(sAlliance);
-            if (ServerConfig.GetVersion() <= 186) {
-                sp.Encode4(0);
-                sp.Encode4(0);
-                sp.Encode1(isSelf ? 1 : 0);
-                sp.Encode1(pet_summoned ? 1 : 0);
-            } else {
-                sp.Encode1(pet_summoned ? 1 : 0); // v188+ not used
-                sp.Encode1(isSelf ? 1 : 0);
-            }
+
+        if (ServerConfig.JMS302orLater()) {
+            sp.Encode1(0);
         }
+
+        sp.EncodeStr(sCommunity);
+        if (ServerConfig.JMS164orLater()) {
+            sp.EncodeStr(sAlliance);
+        }
+
+        if (ServerConfig.IsPostBB()) {
+            sp.Encode1(pet_summoned ? 1 : 0); // v188+ not used
+            sp.Encode1(isSelf ? 1 : 0);
+        } else {
+            if (ServerConfig.JMS180orLater()) {
+                sp.Encode4(0);
+                sp.Encode4(0);
+            }
+            sp.Encode1(isSelf ? 1 : 0);
+            sp.Encode1(pet_summoned ? 1 : 0);
+        }
+
         // CUIUserInfo::SetMultiPetInfo
-        if (188 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.IsPostBB()) {
             sp.Encode1(pet_summoned ? 1 : 0); // pet info on
         }
         IItem inv_pet = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -114);
@@ -405,7 +423,7 @@ public class ResCWvsContext {
                     sp.Encode1(1); // Next Pet
                 }
                 sp.Encode4(pet.getPetItemId()); // petid
-                if (194 <= ServerConfig.GetVersion()) {
+                if (ServerConfig.JMS194orLater()) {
                     sp.Encode4(0);
                 }
                 sp.EncodeStr(pet.getName());
@@ -417,7 +435,7 @@ public class ResCWvsContext {
                 pet_count++;
             }
         }
-        if (0 < pet_count || ServerConfig.GetVersion() <= 131) {
+        if (0 < pet_count || ServerConfig.JMS131orEarlier()) {
             sp.Encode1(0); // End of pet
         }
         // CUIUserInfo::SetTamingMobInfo
@@ -433,6 +451,11 @@ public class ResCWvsContext {
             sp.Encode4(tm.getExp());
             sp.Encode4(tm.getFatigue());
         }
+
+        if (ServerConfig.JMS302orLater()) {
+            sp.Encode1(0);
+        }
+
         // CUIUserInfo::SetWishItemInfo
         final int wishlistSize = player.getWishlistSize();
         sp.Encode1(wishlistSize);
@@ -443,11 +466,13 @@ public class ResCWvsContext {
                 sp.Encode4(wishlist[x]);
             }
         }
-        if (131 < ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS164orLater()) {
             // Monster Book (JMS)
             sp.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
+        }
+        if (ServerConfig.JMS180orLater()) {
             // MedalAchievementInfo::Decode
-            IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -46);
+            IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
             sp.Encode4(inv_medal == null ? 0 : inv_medal.getItemId());
             List<Integer> medalQuests = new ArrayList<Integer>();
             List<MapleQuestStatus> completed = player.getCompletedQuests();
@@ -460,8 +485,12 @@ public class ResCWvsContext {
             sp.Encode2(medalQuests.size());
             for (int x : medalQuests) {
                 sp.Encode2(x);
+                if (ServerConfig.JMS302orLater()) {
+                    sp.Encode8(0);
+                }
             }
-            if (ServerConfig.GetVersion() <= 186) {
+            // JMS v180-v186, v187以降消滅
+            if (ServerConfig.IsPreBB()) {
                 // Chair List
                 sp.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
                 // CInPacket::DecodeBuffer(v4, iPacket, 4 * chairs);
@@ -469,6 +498,21 @@ public class ResCWvsContext {
                     sp.Encode4(chair.getItemId());
                 }
             }
+
+            if (ServerConfig.JMS302orLater()) {
+                sp.Encode1(0);
+                sp.Encode1(0);
+                sp.Encode1(0);
+                sp.Encode1(0);
+                sp.Encode1(0);
+                sp.Encode1(0);
+                for (int i = 0; i < 3; i++) {
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                }
+            }
+
         }
         return sp.Get();
     }
@@ -554,19 +598,25 @@ public class ResCWvsContext {
         return mplew.getPacket();
     }
 
-    public static MaplePacket cancelBuff(List<MapleBuffStat> statups) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_TemporaryStatReset.Get());
-        if (statups != null) {
-            ResCUserRemote.writeLongMaskFromList(mplew, statups);
-            // 上のフラグの有無で以下のバイトが必要になる
-            mplew.write(3);
-        } else {
-            mplew.writeLong(0);
-            mplew.writeInt(64);
-            mplew.writeInt(4096);
+    public static MaplePacket cancelBuff(List<MapleBuffStat> statups, MapleStatEffect mse) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatReset);
+        int buff_mask[] = {0, 0, 0, 0, 0};
+        ArrayList<Pair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
+        for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
+            buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
         }
-        return mplew.getPacket();
+        // JMS v187+
+        if (ServerConfig.IsPostBB()) {
+            sp.Encode4(buff_mask[4]);
+        }
+        if (ServerConfig.JMS164orLater()) {
+            sp.Encode4(buff_mask[3]);
+            sp.Encode4(buff_mask[2]);
+        }
+        sp.Encode4(buff_mask[1]);
+        sp.Encode4(buff_mask[0]);
+        sp.Encode1(0);
+        return sp.Get();
     }
 
     public static MaplePacket updateMount(MapleCharacter chr, boolean levelup) {

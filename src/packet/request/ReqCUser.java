@@ -1182,6 +1182,7 @@ public class ReqCUser {
         int skill_id = cp.Decode4();
         byte skill_level = cp.Decode1();
 
+        Debug.DebugLog("OnSkillUseRequest :  " + skill_id);
         chr.updateTick(time_stamp);
         PlayerHandler.SpecialMove(chr, cp, skill_id, skill_level, null);
         return true;
@@ -1192,6 +1193,7 @@ public class ReqCUser {
         int skill_id = cp.Decode4();
         ISkill skill = SkillFactory.getSkill(skill_id);
 
+        Debug.DebugLog("OnSkillCanselRequest :  " + skill_id);
         if (skill.isChargeSkill()) {
             chr.setKeyDownSkill_Time(0);
             chr.getMap().broadcastMessage(chr, ResCUserRemote.skillCancel(chr, skill_id), false);

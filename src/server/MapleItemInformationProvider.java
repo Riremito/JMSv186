@@ -15,6 +15,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
+import debug.Debug;
 import java.util.LinkedList;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
@@ -309,7 +310,7 @@ public class MapleItemInformationProvider {
         if (cat == null) {
             return data.getChildByPath(String.valueOf(itemId));
         } else {
-            return data.getChildByPath("Eqp/" + cat + "/" + itemId);
+            return data.getChildByPath(cat + "/" + itemId);
         }
     }
 

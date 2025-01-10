@@ -436,6 +436,9 @@ public class CommandProcessor {
             }
 
             if ("/allskill".equals(splitted[0])) {
+                if (2 <= splitted.length) {
+                    c.getPlayer().setJob(Integer.parseInt(splitted[1]));
+                }
                 DebugJob.AllSkill(c.getPlayer());
                 return true;
             }

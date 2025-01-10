@@ -174,7 +174,7 @@ public class GW_CharacterStat {
             data.Encode2(chr.getRemainingSp());
         }
 
-        if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS302orLater()) {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode4(0);
@@ -244,14 +244,21 @@ public class GW_CharacterStat {
             data.Encode1(0);
             data.Encode1(0);
             data.Encode1(0);
-        } else if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())) {
+        } else if ((ServerConfig.JMS180orLater())) {
             // デュアルブレイドフラグ
             data.Encode2(chr.getSubcategory());
-            if (ServerConfig.IsJMS() && 188 <= ServerConfig.GetVersion()) {
-                // v194 OK
-                data.Encode8(0);
-                data.Encode4(0);
-                data.Encode4(0);
+            if (ServerConfig.IsPostBB()) {
+                if (ServerConfig.IsJMS() && ServerConfig.GetVersion() == 187) {
+                    data.Encode4(0);
+                    data.Encode8(0);
+                    data.Encode4(0);
+                    data.Encode4(0);
+                } else {
+                    // v194 OK
+                    data.Encode8(0);
+                    data.Encode4(0);
+                    data.Encode4(0);
+                }
             } else {
                 data.Encode8(0);
                 data.Encode4(0);

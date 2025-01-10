@@ -47,6 +47,7 @@ import java.awt.Rectangle;
 import java.util.Collections;
 import java.util.concurrent.locks.Lock;
 import packet.ClientPacket;
+import packet.ops.OpsBodyPart;
 import packet.response.ResCDropPool;
 import packet.response.ResCDropPool.LeaveType;
 import packet.request.ItemRequest;
@@ -1333,7 +1334,7 @@ public class InventoryHandler {
     }
 
     private static final void addMedalString(final MapleCharacter c, final StringBuilder sb) {
-        final IItem medal = c.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -21);
+        final IItem medal = c.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
         if (medal != null) { // Medal
             sb.append("<");
             sb.append(MapleItemInformationProvider.getInstance().getName(medal.getItemId()));

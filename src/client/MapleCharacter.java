@@ -81,6 +81,7 @@ import handling.world.guild.MapleGuildCharacter;
 import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
+import packet.ops.OpsBodyPart;
 import packet.response.Res_Pachinko;
 import packet.request.ReqCUser;
 import packet.response.ResCWvsContext;
@@ -1232,6 +1233,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     ps.setByte(4, skill.getValue().masterlevel);
                     ps.setLong(5, skill.getValue().expiration);
                     ps.execute();
+                } else {
+                    Debug.ErrorLog("ApplicableSkill : error = " + skill.getKey().getId());
                 }
             }
             ps.close();
@@ -1801,7 +1804,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
         // check if we are still logged in o.o
         if (!overwrite) {
-            cancelPlayerBuffs(buffstats);
+            cancelPlayerBuffs(buffstats, effect);
             if (effect.isHide() && client.getChannelServer().getPlayerStorage().getCharacterById(this.getId()) != null) { //Wow this is so fking hacky...
                 this.hidden = false;
                 map.broadcastMessage(this, ResCUserRemote.spawnPlayerMapobject(this), false);
@@ -1831,7 +1834,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void cancelBuffStats(MapleBuffStat... stat) {
         List<MapleBuffStat> buffStatList = Arrays.asList(stat);
         deregisterBuffStats(buffStatList);
-        cancelPlayerBuffs(buffStatList);
+        cancelPlayerBuffs(buffStatList, null);
     }
 
     public void cancelEffectFromBuffStat(MapleBuffStat stat) {
@@ -1840,7 +1843,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
     }
 
-    private void cancelPlayerBuffs(List<MapleBuffStat> buffstats) {
+    private void cancelPlayerBuffs(List<MapleBuffStat> buffstats, MapleStatEffect effect) {
         boolean write = client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null;
         if (buffstats.contains(MapleBuffStat.HOMING_BEACON)) {
             if (write) {
@@ -1850,7 +1853,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (write) {
                 stats.recalcLocalStats();
             }
-            client.getSession().write(ResCWvsContext.cancelBuff(buffstats));
+            client.getSession().write(ResCWvsContext.cancelBuff(buffstats, effect));
             map.broadcastMessage(this, ResCUserRemote.cancelForeignBuff(getId(), buffstats), false);
         }
     }
@@ -2636,6 +2639,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void changeSkillLevel(final ISkill skill, byte newLevel, byte newMasterlevel, long expiration) {
         if (skill == null || (!GameConstants.isApplicableSkill(skill.getId()) && !GameConstants.isApplicableSkill_(skill.getId()))) {
+            Debug.ErrorLog("changeSkillLevel : error = " + skill.getId());
             return;
         }
         client.getSession().write(ResCWvsContext.updateSkill(skill.getId(), newLevel, newMasterlevel, expiration));
@@ -2643,7 +2647,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (skills.containsKey(skill)) {
                 skills.remove(skill);
             } else {
-                return; //nothing happen
+                return;
             }
         } else {
             skills.put(skill, new SkillEntry(newLevel, newMasterlevel, expiration));
@@ -3352,7 +3356,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
         if (level == 200/* && !isGM()*/) {
             final StringBuilder sb = new StringBuilder("[お祝い] ");
-            final IItem medal = getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -46);
+            final IItem medal = getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
             if (medal != null) { // Medal
                 sb.append("<");
                 sb.append(MapleItemInformationProvider.getInstance().getName(medal.getItemId()));

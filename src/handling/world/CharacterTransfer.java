@@ -35,6 +35,7 @@ import client.SkillEntry;
 import client.BuddylistEntry;
 import client.CharacterNameAndId;
 import client.inventory.MaplePet;
+import debug.Debug;
 import server.quest.MapleQuest;
 import tools.Pair;
 import java.util.ArrayList;
@@ -163,6 +164,7 @@ public class CharacterTransfer implements Externalizable {
         this.inventorys = chr.getInventorys();
 
         for (final Map.Entry<ISkill, SkillEntry> qs : chr.getSkills().entrySet()) {
+            Debug.DebugLog("Transfer : " + qs.getKey().getId());
             this.Skills.put(qs.getKey().getId(), qs.getValue());
         }
 

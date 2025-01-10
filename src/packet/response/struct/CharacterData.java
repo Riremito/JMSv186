@@ -128,7 +128,7 @@ public class CharacterData {
         }
         // 0x800 [addRingInfo] v165-v194
         if ((datamask & 0x0800) > 0) {
-            data.EncodeBuffer(Structure.addRingInfo(chr));
+            data.EncodeBuffer(Structure.addRingInfo(chr)); // 2x3
         }
         // 0x1000 [addRocksInfo] v165-v188 changed v194
         if ((datamask & 0x1000) > 0) {
