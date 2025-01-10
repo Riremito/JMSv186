@@ -212,6 +212,14 @@ public class MapleStatEffect implements Serializable {
                 oss.add(new Pair<>(OpsSecondaryStat.CTS_Concentration, x));
                 return true;
             }
+            case HERMIT_MESO_UP: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_MesoUp, x));
+                return true;
+            }
+            case NIGHTLORD_SPIRIT_JAVELIN: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_SpiritJavelin, 0));
+                return true;
+            }
             default: {
                 break;
             }

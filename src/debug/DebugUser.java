@@ -146,7 +146,7 @@ public class DebugUser {
             AddItem(chr, 2049400, 100); // 高級潜在能力覚醒の書
             AddItem(chr, 2060003, 100); // 弓専用の矢
             AddItem(chr, 2061003, 100); // 弩専用の矢
-            AddItem(chr, 2070000, 100); // 水の手裏剣
+            AddItem(chr, 2070000, 600); // 水の手裏剣
             AddItem(chr, 2100000, 100); // 黒い包み
             AddItem(chr, 2120000, 100); // ペットのエサ
             AddItem(chr, 2120008);      // 

@@ -62,6 +62,8 @@ public enum OpsSecondaryStat {
     CTS_SoulArrow(0, 16),
     // 0, 0x00200000
     CTS_ComboCounter(0, 21),
+    // 0, 0x02000000
+    CTS_MesoUp(0, 25),
     // 0, 0x04000000
     CTS_ShadowPartner(0, 26),
     // 0, 0x08000000
