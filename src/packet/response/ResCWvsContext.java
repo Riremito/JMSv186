@@ -165,6 +165,32 @@ public class ResCWvsContext {
         return sp.Get();
     }
 
+    public static MaplePacket cancelBuff(List<MapleBuffStat> statups, MapleStatEffect mse) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatReset);
+        int buff_mask[] = {0, 0, 0, 0, 0, 0, 0, 0};
+        ArrayList<Pair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
+        for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
+            buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
+        }
+        if (ServerConfig.JMS302orLater()) {
+            sp.Encode4(buff_mask[7]);
+            sp.Encode4(buff_mask[6]);
+            sp.Encode4(buff_mask[5]);
+        }
+        // JMS v187+
+        if (ServerConfig.IsPostBB()) {
+            sp.Encode4(buff_mask[4]);
+        }
+        if (ServerConfig.JMS164orLater()) {
+            sp.Encode4(buff_mask[3]);
+            sp.Encode4(buff_mask[2]);
+        }
+        sp.Encode4(buff_mask[1]);
+        sp.Encode4(buff_mask[0]);
+        sp.Encode1(0);
+        return sp.Get();
+    }
+
     // warpper
     public static MaplePacket giveBuff(int buffid, int bufflength, List<Pair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
         return TemporaryStatSet(effect);
@@ -596,27 +622,6 @@ public class ResCWvsContext {
         mplew.writeLong(MapleBuffStat.HOMING_BEACON.getValue());
         mplew.writeLong(0);
         return mplew.getPacket();
-    }
-
-    public static MaplePacket cancelBuff(List<MapleBuffStat> statups, MapleStatEffect mse) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatReset);
-        int buff_mask[] = {0, 0, 0, 0, 0};
-        ArrayList<Pair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
-        for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
-            buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
-        }
-        // JMS v187+
-        if (ServerConfig.IsPostBB()) {
-            sp.Encode4(buff_mask[4]);
-        }
-        if (ServerConfig.JMS164orLater()) {
-            sp.Encode4(buff_mask[3]);
-            sp.Encode4(buff_mask[2]);
-        }
-        sp.Encode4(buff_mask[1]);
-        sp.Encode4(buff_mask[0]);
-        sp.Encode1(0);
-        return sp.Get();
     }
 
     public static MaplePacket updateMount(MapleCharacter chr, boolean levelup) {
