@@ -74,6 +74,8 @@ public enum OpsSecondaryStat {
     CTS_Curse(1, 1),
     // 1, 0x00000004
     CTS_Regen(1, 2),
+    // 1, 0x00000008
+    CTS_BasicStatUp(1, 3),
     // 1, 0x00000010
     CTS_Stance(1, 4),
     // 1, 0x00000020
@@ -86,9 +88,11 @@ public enum OpsSecondaryStat {
     CTS_Infinity(1, 9),
     // 1, 0x00000400
     CTS_Holyshield(1, 10),
-    //CTS_HamString(1, 10),
+    // 1, 0x00000800
+    CTS_HamString(1, 11),
     // 1, 0x00001000
     CTS_Blind(1, 12),
+    // 1, 0x00002000
     CTS_Concentration(1, 13),
     //CTS_BanMap(1, 13),
     //CTS_MaxLevelBuff(1, 14),

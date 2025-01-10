@@ -1,50 +1,50 @@
 package server;
 
+import client.ISkill;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-
-import client.inventory.IItem;
-import client.ISkill;
-import constants.GameConstants;
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleCoolDownValueHolder;
 import client.MapleDisease;
+import client.MapleStat;
+import client.PlayerStats;
+import client.SkillFactory;
+import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
-import client.MapleStat;
-import client.SkillFactory;
-import client.PlayerStats;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import config.ServerConfig;
+import constants.GameConstants;
 import handling.channel.ChannelServer;
+import java.util.Arrays;
+import java.util.Collections;
 import provider.MapleData;
 import provider.MapleDataTool;
-import server.life.MapleMonster;
-import server.maps.MapleDoor;
-import server.maps.MapleMap;
 import server.maps.MapleMapObject;
-import server.maps.MapleMapObjectType;
-import server.maps.MapleMist;
-import server.maps.MapleSummon;
 import server.maps.SummonMovementType;
 import java.util.EnumMap;
+import java.util.concurrent.ScheduledFuture;
 import packet.ops.OpsSecondaryStat;
+import packet.ops.OpsSkill;
 import packet.response.ResCTownPortalPool;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import server.MapleCarnivalFactory.MCSkill;
 import server.Timer.BuffTimer;
+import server.life.MapleMonster;
+import server.maps.MapleDoor;
+import server.maps.MapleMap;
+import server.maps.MapleMapObjectType;
+import server.maps.MapleMist;
+import server.maps.MapleSummon;
 import tools.MaplePacketCreator;
 import tools.Pair;
 
@@ -82,6 +82,142 @@ public class MapleStatEffect implements Serializable {
         if (val.intValue() != 0) {
             list.add(new Pair<MapleBuffStat, Integer>(buffstat, val));
         }
+    }
+
+    private boolean checkData() {
+        if (watk != 0) {
+            oss.add(new Pair<>(OpsSecondaryStat.CTS_PAD, (int) watk));
+        }
+        if (wdef != 0) {
+            oss.add(new Pair<>(OpsSecondaryStat.CTS_PDD, (int) wdef));
+        }
+        if (matk != 0) {
+            oss.add(new Pair<>(OpsSecondaryStat.CTS_MAD, (int) matk));
+        }
+        if (mdef != 0) {
+            oss.add(new Pair<>(OpsSecondaryStat.CTS_MDD, (int) mdef));
+        }
+        if (acc != 0) {
+            oss.add(new Pair<>(OpsSecondaryStat.CTS_ACC, (int) acc));
+        }
+        if (avoid != 0) {
+            oss.add(new Pair<>(OpsSecondaryStat.CTS_EVA, (int) avoid));
+        }
+        if (hands != 0) {
+            oss.add(new Pair<>(OpsSecondaryStat.CTS_Craft, (int) hands)); // not coded
+        }
+        if (speed != 0) {
+            oss.add(new Pair<>(OpsSecondaryStat.CTS_Speed, (int) speed));
+        }
+        if (jump != 0) {
+            oss.add(new Pair<>(OpsSecondaryStat.CTS_Jump, (int) jump));
+        }
+
+        switch (OpsSkill.find(sourceid)) {
+            case MAGICIAN_MAGIC_GUARD:
+            case FLAMEWIZARD_MAGIC_GUARD:
+            case EVAN_MAGIC_GUARD: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_MagicGuard, (int) x));
+                return true;
+            }
+            case ROGUE_DARK_SIGHT:
+            case DUAL4_ADVANCED_DARK_SIGHT:
+            case NIGHTWALKER_DARK_SIGHT: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_DarkSight, (int) x));
+                return true;
+            }
+            case FIGHTER_WEAPON_BOOSTER:
+            case PAGE_WEAPON_BOOSTER:
+            case SPEARMAN_WEAPON_BOOSTER:
+            case MAGE1_MAGIC_BOOSTER:
+            case MAGE2_MAGIC_BOOSTER:
+            case HUNTER_BOW_BOOSTER:
+            case CROSSBOWMAN_CROSSBOW_BOOSTER:
+            case ASSASSIN_JAVELIN_BOOSTER:
+            case THIEF_DAGGER_BOOSTER:
+            case DUAL1_DUAL_BOOSTER:
+            case INFIGHTER_KNUCKLE_BOOSTER:
+            case GUNSLINGER_GUN_BOOSTER:
+            case STRIKER_KNUCKLE_BOOSTER:
+            case SOULMASTER_SWORD_BOOSTER:
+            case FLAMEWIZARD_MAGIC_BOOSTER:
+            case WINDBREAKER_BOW_BOOSTER:
+            case NIGHTWALKER_JAVELIN_BOOSTER:
+            case ARAN_POLEARM_BOOSTER:
+            case EVAN_MAGIC_BOOSTER:
+            case BMAGE_STAFF_BOOSTER:
+            case WILDHUNTER_CROSSBOW_BOOSTER:
+            case MECHANIC_BOOSTER: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_Booster, (int) x));
+                return true;
+            }
+            case FIGHTER_POWER_GUARD:
+            case PAGE_POWER_GUARD: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_PowerGuard, x));
+                return true;
+            }
+            case SPEARMAN_HYPER_BODY: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_MaxHP, x));
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_MaxMP, y));
+                return true;
+            }
+            case HUNTER_SOUL_ARROW_BOW:
+            case CROSSBOWMAN_SOUL_ARROW_CROSSBOW:
+            case WINDBREAKER_SOUL_ARROW_BOW: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_SoulArrow, x));
+                return true;
+            }
+            case HERMIT_SHADOW_PARTNER:
+            case THIEFMASTER_SHADOW_PARTNER:
+            case NIGHTWALKER_SHADOW_PARTNER: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_ShadowPartner, x));
+                return true;
+            }
+            case BOWMASTER_SHARP_EYES:
+            case CROSSBOWMASTER_SHARP_EYES:
+            case WILDHUNTER_SHARP_EYES:
+            case NOVICE_SHARP_EYES:
+            case NOBLESSE_SHARP_EYES:
+            case EVANJR_SHARP_EYES:
+            case CITIZEN_SHARP_EYES: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_SharpEyes, (x << 8) | y));
+                return true;
+            }
+            case HERO_MAPLE_HERO:
+            case PALADIN_MAPLE_HERO:
+            case DARKKNIGHT_MAPLE_HERO:
+            case ARCHMAGE1_MAPLE_HERO:
+            case ARCHMAGE2_MAPLE_HERO:
+            case BISHOP_MAPLE_HERO:
+            case BOWMASTER_MAPLE_HERO:
+            case CROSSBOWMASTER_MAPLE_HERO:
+            case NIGHTLORD_MAPLE_HERO:
+            case SHADOWER_MAPLE_HERO:
+            case DUAL5_MAPLE_HERO:
+            case VIPER_MAPLE_HERO:
+            case CAPTAIN_MAPLE_HERO:
+            case ARAN_MAPLE_HERO:
+            case EVAN_MAPLE_HERO:
+            case BMAGE_MAPLE_HERO:
+            case WILDHUNTER_MAPLE_HERO:
+            case MECHANIC_MAPLE_HERO: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_BasicStatUp, x));
+                return true;
+            }
+            case BOWMASTER_HAMSTRING: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_HamString, x));
+                return true;
+            }
+            case BOWMASTER_CONCENTRATION: {
+                oss.add(new Pair<>(OpsSecondaryStat.CTS_Concentration, x));
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return true;
     }
 
     private static MapleStatEffect loadFromData(final MapleData source, final int sourceid, final boolean skill, final boolean overTime, final byte level, int common_level) {
@@ -158,13 +294,6 @@ public class MapleStatEffect implements Serializable {
         ret.booster = 0;
         ret.illusion = MapleDataTool.getInt("illusion", source, 0, common_level);
 
-        if (ret.jump != 0) {
-            ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_Jump, (int) ret.jump));
-        }
-        if (ret.speed != 0) {
-            ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_Speed, (int) ret.speed));
-        }
-
         List<MapleDisease> cure = new ArrayList<MapleDisease>(5);
         if (MapleDataTool.getInt("poison", source, 0) > 0) {
             cure.add(MapleDisease.POISON);
@@ -229,12 +358,14 @@ public class MapleStatEffect implements Serializable {
             addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ENHANCED_MAXHP, Integer.valueOf(ret.ehp));
             addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ENHANCED_MAXMP, Integer.valueOf(ret.ehp));
         }
+
+        ret.checkData();
+
         if (skill) { // hack because we can't get from the datafile...
             switch (sourceid) {
                 case 2001002: // magic guard
                 case 12001001:
                 case 22111001:
-                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_MagicGuard, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.MAGIC_GUARD, ret.x));
                     break;
                 case 2301003: // invincible
@@ -253,7 +384,6 @@ public class MapleStatEffect implements Serializable {
                 case 14001003: // cygnus ds
                 case 4330001:
                 case 30001001: //resist beginner hide
-                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_DarkSight, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.DARKSIGHT, ret.x));
                     break;
                 case 4211003: // pickpocket
@@ -267,7 +397,6 @@ public class MapleStatEffect implements Serializable {
                     break;
                 case 4111002: // shadowpartner
                 case 14111000: // cygnus
-                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_ShadowPartner, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.SHADOWPARTNER, ret.x));
                     break;
                 case 11101002: // All Final attack
@@ -284,7 +413,6 @@ public class MapleStatEffect implements Serializable {
                 case 20008001:
                 case 20018001:
                 case 30008001:
-                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_SoulArrow, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.SOULARROW, ret.x));
                     break;
                 case 1211006: // wk charges
@@ -337,8 +465,6 @@ public class MapleStatEffect implements Serializable {
                 case 33001003:
                 case 35101006:
                 case 35001003: //TEMP.BOOSTER
-                    ret.booster = ret.x; // ?_?
-                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_Booster, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.BOOSTER, ret.x));
                     break;
                 case 5121009:
@@ -357,7 +483,6 @@ public class MapleStatEffect implements Serializable {
                     break;
                 case 1101007: // pguard
                 case 1201007:
-                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_PowerGuard, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.POWERGUARD, ret.x));
                     break;
                 case 32111004: //conversion
@@ -370,8 +495,6 @@ public class MapleStatEffect implements Serializable {
                 case 20008003:
                 case 20018003:
                 case 30008003:
-                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_MaxHP, ret.x));
-                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_MaxMP, ret.y));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.MAXHP, ret.x));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.MAXMP, ret.y));
                     break;
@@ -455,7 +578,6 @@ public class MapleStatEffect implements Serializable {
                 case 20008002:
                 case 20018002:
                 case 30008002:
-                    ret.oss.add(new Pair<>(OpsSecondaryStat.CTS_SharpEyes, (ret.x << 8) | ret.y));
                     statups.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.SHARP_EYES, ret.x << 8 | ret.y));
                     break;
                 case 22151003: //magic resistance
