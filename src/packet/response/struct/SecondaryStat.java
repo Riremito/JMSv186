@@ -75,13 +75,19 @@ public class SecondaryStat {
                     }
                     data.Encode2(effect);
                     data.Encode4(skill_id);
-                    data.Encode4(buff_time);
+                    if (ServerConfig.JMS164orLater()) {
+                        data.Encode4(buff_time);
+                    } else {
+                        data.Encode2(buff_time);
+                    }
                 }
             }
         }
 
-        data.Encode1(0);
-        data.Encode1(0);
+        if (ServerConfig.JMS164orLater()) {
+            data.Encode1(0);
+            data.Encode1(0);
+        }
         if (ServerConfig.JMS302orLater()) {
             data.Encode1(0);
         }
