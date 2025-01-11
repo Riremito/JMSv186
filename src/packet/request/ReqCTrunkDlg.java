@@ -267,100 +267,100 @@ public class ReqCTrunkDlg {
     // 倉庫を開く
     // getStorage
     public static MaplePacket Open(int npcId, byte slots, Collection<IItem> items, int meso) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
 
-        p.Encode1(SP_Flag.OPEN.get());
-        p.Encode4(npcId);
-        p.Encode1(slots);
-        p.Encode2(0x7E);
+        sp.Encode1(SP_Flag.OPEN.get());
+        sp.Encode4(npcId);
+        sp.Encode1(slots);
 
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
-            p.Encode2(0);
-            p.Encode4(0);
+        if (ServerConfig.JMS131orEarlier()) {
+            sp.Encode2(0x7E);
+        } else {
+            sp.Encode8(0x7E);
         }
 
-        p.Encode4(meso);
-        p.Encode2(0);
+        sp.Encode4(meso);
+        sp.Encode1(0);
+        sp.Encode1(0);
 
-        p.Encode1((byte) items.size());
+        sp.Encode1((byte) items.size());
         for (IItem item : items) {
-            p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+            sp.EncodeBuffer(GW_ItemSlotBase.Encode(item));
         }
 
-        p.Encode2(0);
-        p.Encode1(0); // v131 no
-        p.Encode1(0); // v131 no
+        sp.Encode1(0);
+        sp.Encode1(0);
 
-        return p.Get();
+        return sp.Get();
     }
 
     public static MaplePacket Error(SP_Flag error) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
 
-        p.Encode1(error.get());
-        return p.Get();
+        sp.Encode1(error.get());
+        return sp.Get();
     }
 
     // メルの出し入れ
     public static MaplePacket MesoInOut(byte slots, int meso) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
 
-        p.Encode1(SP_Flag.MESO_INOUT.get());
-        p.Encode1(slots);
-        p.Encode2(2);
+        sp.Encode1(SP_Flag.MESO_INOUT.get());
+        sp.Encode1(slots);
+        sp.Encode2(2);
 
         if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
-            p.Encode2(0);
-            p.Encode4(0);
+            sp.Encode2(0);
+            sp.Encode4(0);
         }
 
-        p.Encode4(meso);
+        sp.Encode4(meso);
 
-        return p.Get();
+        return sp.Get();
     }
 
     // アイテムを入れる
     // storeStorage
     public static MaplePacket ItemIn(byte slots, MapleInventoryType type, Collection<IItem> items) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
 
-        p.Encode1(SP_Flag.ITEM_IN.get());
-        p.Encode1(slots);
-        p.Encode2(type.getBitfieldEncoding());
+        sp.Encode1(SP_Flag.ITEM_IN.get());
+        sp.Encode1(slots);
+        sp.Encode2(type.getBitfieldEncoding());
 
         if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
-            p.Encode2(0);
-            p.Encode4(0);
+            sp.Encode2(0);
+            sp.Encode4(0);
         }
 
-        p.Encode1((byte) items.size());
+        sp.Encode1((byte) items.size());
         for (IItem item : items) {
-            p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+            sp.EncodeBuffer(GW_ItemSlotBase.Encode(item));
         }
 
-        return p.Get();
+        return sp.Get();
     }
 
     // アイテムを取り出す
     // takeOutStorage
     public static MaplePacket ItemOut(byte slots, MapleInventoryType type, Collection<IItem> items) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
 
-        p.Encode1(SP_Flag.ITEM_OUT.get());
-        p.Encode1(slots);
-        p.Encode2(type.getBitfieldEncoding());
+        sp.Encode1(SP_Flag.ITEM_OUT.get());
+        sp.Encode1(slots);
+        sp.Encode2(type.getBitfieldEncoding());
 
         if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
-            p.Encode2(0);
-            p.Encode4(0);
+            sp.Encode2(0);
+            sp.Encode4(0);
         }
 
-        p.Encode1((byte) items.size());
+        sp.Encode1((byte) items.size());
         for (IItem item : items) {
-            p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+            sp.EncodeBuffer(GW_ItemSlotBase.Encode(item));
         }
 
-        return p.Get();
+        return sp.Get();
     }
 
 }

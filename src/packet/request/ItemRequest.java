@@ -31,6 +31,7 @@ import client.inventory.MaplePet;
 import config.ServerConfig;
 import constants.GameConstants;
 import debug.Debug;
+import handling.channel.handler.PlayerHandler;
 import handling.world.World;
 import java.util.LinkedList;
 import java.util.List;
@@ -258,6 +259,15 @@ public class ItemRequest {
         int item_type = item_id / 10000;
 
         switch (item_type) {
+            // テレポストーン
+            case 504: {
+                byte action = cp.Decode1();
+                if (action == 0) {
+                    int map_id = cp.Decode4();
+                    PlayerHandler.ChangeMap(chr.getClient(), map_id);
+                }
+                return true;
+            }
             case 507: {
                 if (UseMegaphone(cp, chr, item_id)) {
                     RemoveCashItem(chr, item_slot);

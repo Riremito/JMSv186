@@ -162,6 +162,9 @@ public class ResCWvsContext {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
         sp.EncodeBuffer(SecondaryStat.EncodeForLocal(effect));
         sp.Encode2(0); // delay
+        if (ServerConfig.JMS302orLater()) {
+            sp.Encode1(0);
+        }
         sp.Encode1(0); // CUserLocal::SetSecondaryStatChangedPoint
         return sp.Get();
     }

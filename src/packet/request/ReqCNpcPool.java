@@ -244,6 +244,10 @@ public class ReqCNpcPool {
             sp.Encode1(0);
         }
 
+        if (ServerConfig.JMS302orLater()) {
+            sp.Encode4(0);
+        }
+
         sp.Encode4(sid);
 
         if (ServerConfig.JMS194orLater()) {
@@ -264,6 +268,11 @@ public class ReqCNpcPool {
                 }
                 sp.Encode4(0); // nLevelLimited
             }
+            if (ServerConfig.JMS302orLater()) {
+                sp.Encode4(0);
+                sp.Encode1(0);
+                sp.Encode4(0);
+            }
 
             if (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId())) {
                 sp.Encode2(1); // stacksize o.o
@@ -273,6 +282,11 @@ public class ReqCNpcPool {
                 sp.Encode2(BitTools.doubleToShortBits(ii.getPrice(item.getItemId())));
                 sp.Encode2(ii.getSlotMax(c, item.getItemId()));
             }
+
+            if (ServerConfig.JMS302orLater()) {
+                sp.Encode1(0);
+                sp.Encode4(0);
+            }
         }
 
         return sp.Get();
@@ -281,22 +295,25 @@ public class ReqCNpcPool {
     // CShopDlg::OnPacket
     // confirmShopTransaction
     public static MaplePacket confirmShopTransaction(SP_ShopFlag flag, int level) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ShopResult);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ShopResult);
 
-        p.Encode1(flag.get()); // 8 = sell, 0 = buy, 0x20 = due to an error
+        sp.Encode1(flag.get()); // 8 = sell, 0 = buy, 0x20 = due to an error
 
         switch (flag) {
             case ERROR_LEVEL_UNDER:
             case ERROR_LEVEL_HIGH: {
-                p.Encode4(level);
+                sp.Encode4(level);
                 break;
             }
             default: {
+                if (ServerConfig.JMS302orLater()) {
+                    sp.Encode1(0);
+                }
                 break;
             }
         }
 
-        return p.Get();
+        return sp.Get();
     }
 
     public static MaplePacket confirmShopTransaction(SP_ShopFlag flag) {

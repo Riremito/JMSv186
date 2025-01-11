@@ -1062,14 +1062,20 @@ public class ReqCUser {
             time_stamp_1 = cp.Decode4();
         }
 
-        int update_mask = cp.Decode4();
+        int update_mask[] = {0, 0};
         int heal_hp = 0;
         int heal_mp = 0;
 
-        if ((update_mask & OpsChangeStat.CS_HP.get()) > 0) {
+        update_mask[0] = cp.Decode4();
+
+        if (ServerConfig.JMS302orLater()) {
+            update_mask[1] = cp.Decode4();
+        }
+
+        if ((update_mask[0] & OpsChangeStat.CS_HP.get()) > 0) {
             heal_hp = cp.Decode2();
         }
-        if ((update_mask & OpsChangeStat.CS_MP.get()) > 0) {
+        if ((update_mask[0] & OpsChangeStat.CS_MP.get()) > 0) {
             heal_mp = cp.Decode2();
         }
 
