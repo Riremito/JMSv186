@@ -724,22 +724,6 @@ public class PlayerHandler {
         }
     }
 
-    public static final void Heal(MapleCharacter chr, int healHP, int healMP) {
-        final PlayerStats stats = chr.getStat();
-
-        if (stats.getHp() <= 0) {
-            return;
-        }
-
-        if (healHP != 0) {
-            chr.addHP(healHP);
-        }
-
-        if (healMP != 0) {
-            chr.addMP(healMP);
-        }
-    }
-
     public static final void ChangeMapSpecial(ClientPacket cp, final MapleClient c) {
         cp.Decode1();
         String portal_name = cp.DecodeStr();

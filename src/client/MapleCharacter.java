@@ -82,6 +82,7 @@ import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
 import packet.ops.OpsBodyPart;
+import packet.ops.OpsChangeStat;
 import packet.response.Res_Pachinko;
 import packet.request.ReqCUser;
 import packet.response.ResCWvsContext;
@@ -97,7 +98,6 @@ import packet.response.ResCStage;
 import packet.response.ResCSummonedPool;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
-import packet.response.struct.GW_CharacterStat;
 import packet.response.wrapper.ResWrapper;
 import tools.MockIOSession;
 import scripting.EventInstanceManager;
@@ -5968,82 +5968,82 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         void Update(MapleCharacter chr) {
             if (this.skin != getSkinColor()) {
                 this.skin = getSkinColor();
-                this.statmask |= GW_CharacterStat.Flag.SKIN.get();
+                this.statmask |= OpsChangeStat.CS_SKIN.get();
             }
             if (this.face != getFace()) {
                 this.face = getFace();
-                this.statmask |= GW_CharacterStat.Flag.FACE.get();
+                this.statmask |= OpsChangeStat.CS_FACE.get();
             }
             if (this.hair != getHair()) {
                 this.hair = getHair();
-                this.statmask |= GW_CharacterStat.Flag.HAIR.get();
+                this.statmask |= OpsChangeStat.CS_HAIR.get();
             }
             if (this.level != getLevel()) {
                 this.level = getLevel();
-                this.statmask |= GW_CharacterStat.Flag.LEVEL.get();
+                this.statmask |= OpsChangeStat.CS_LEV.get();
             }
             if (this.job != getJob()) {
                 this.job = getJob();
-                this.statmask |= GW_CharacterStat.Flag.JOB.get();
+                this.statmask |= OpsChangeStat.CS_JOB.get();
             }
             if (this.stat_str != getStat().getStr()) {
                 this.stat_str = getStat().getStr();
-                this.statmask |= GW_CharacterStat.Flag.STR.get();
+                this.statmask |= OpsChangeStat.CS_STR.get();
             }
             if (this.stat_dex != getStat().getDex()) {
                 this.stat_dex = getStat().getDex();
-                this.statmask |= GW_CharacterStat.Flag.DEX.get();
+                this.statmask |= OpsChangeStat.CS_DEX.get();
             }
             if (this.stat_int != getStat().getInt()) {
                 this.stat_int = getStat().getInt();
-                this.statmask |= GW_CharacterStat.Flag.INT.get();
+                this.statmask |= OpsChangeStat.CS_INT.get();
             }
             if (this.stat_luk != getStat().getLuk()) {
                 this.stat_luk = getStat().getLuk();
-                this.statmask |= GW_CharacterStat.Flag.LUK.get();
+                this.statmask |= OpsChangeStat.CS_LUK.get();
             }
             if (this.stat_hp != getStat().getHp()) {
                 this.stat_hp = getStat().getHp();
-                this.statmask |= GW_CharacterStat.Flag.HP.get();
+                this.statmask |= OpsChangeStat.CS_HP.get();
             }
             if (this.stat_maxhp != getStat().getMaxHp()) {
                 this.stat_maxhp = getStat().getMaxHp();
-                this.statmask |= GW_CharacterStat.Flag.MAXHP.get();
+                this.statmask |= OpsChangeStat.CS_MHP.get();
             }
             if (this.stat_mp != getStat().getMp()) {
                 this.stat_mp = getStat().getMp();
-                this.statmask |= GW_CharacterStat.Flag.MP.get();
+                this.statmask |= OpsChangeStat.CS_MP.get();
             }
             if (this.stat_maxmp != getStat().getMaxMp()) {
                 this.stat_maxmp = getStat().getMaxMp();
-                this.statmask |= GW_CharacterStat.Flag.MAXMP.get();
+                this.statmask |= OpsChangeStat.CS_MMP.get();
             }
             if (this.ap != getRemainingAp()) {
                 this.ap = getRemainingAp();
-                this.statmask |= GW_CharacterStat.Flag.AP.get();
+                this.statmask |= OpsChangeStat.CS_AP.get();
             }
             if (this.sp != getRemainingSp()) {
                 this.sp = getRemainingSp();
-                this.statmask |= GW_CharacterStat.Flag.SP.get();
+                this.statmask |= OpsChangeStat.CS_SP.get();
             }
             if (this.exp != getExp()) {
                 this.exp = getExp();
-                this.statmask |= GW_CharacterStat.Flag.EXP.get();
+                this.statmask |= OpsChangeStat.CS_EXP.get();
             }
             if (this.fame != getFame()) {
                 this.fame = getFame();
-                this.statmask |= GW_CharacterStat.Flag.FAME.get();
+                this.statmask |= OpsChangeStat.CS_POP.get();
             }
             if (this.meso != getMeso()) {
                 this.meso = getMeso();
-                this.statmask |= GW_CharacterStat.Flag.MESO.get();
+                this.statmask |= OpsChangeStat.CS_MONEY.get();
             }
             // v188 ここから+1
             //this.pet2;
             //this.pet3;
             if (this.gasha_exp != getGashaEXP()) {
                 this.gasha_exp = getGashaEXP();
-                this.statmask |= GW_CharacterStat.Flag.GASHAEXP.get();
+                this.statmask |= OpsChangeStat.CS_TEMPEXP.get();
             }
             // pet
             MaplePet new_pet1 = chr.getPet(0);
@@ -6055,15 +6055,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
             if (this.pet1 != new_pet1_val) {
                 this.pet1 = new_pet1_val;
-                this.statmask |= GW_CharacterStat.Flag.PET1.get();
+                this.statmask |= OpsChangeStat.CS_PETSN.get();
             }
             if (this.pet2 != new_pet2_val) {
                 this.pet2 = new_pet2_val;
-                this.statmask |= GW_CharacterStat.Flag.PET2.get();
+                this.statmask |= OpsChangeStat.CS_PETSN2.get();
             }
             if (this.pet3 != new_pet3_val) {
                 this.pet3 = new_pet3_val;
-                this.statmask |= GW_CharacterStat.Flag.PET3.get();
+                this.statmask |= OpsChangeStat.CS_PETSN3.get();
             }
         }
 

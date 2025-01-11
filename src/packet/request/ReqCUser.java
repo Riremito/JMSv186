@@ -27,6 +27,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
+import packet.ops.OpsChangeStat;
 import packet.request.struct.CMovePath;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
@@ -96,26 +97,6 @@ public class ReqCUser {
             case CP_UserBodyAttack: {
                 AttackInfo attack = OnAttack(cp, header, chr);
                 PlayerHandler.closeRangeAttack(c, attack, true);
-                return true;
-            }
-            case CP_UserChangeStatRequest: {
-                if (ServerConfig.JMS164orLater()) {
-                    cp.Decode4(); // time1
-                }
-
-                int update_mask = cp.Decode4();
-
-                if (update_mask != 0x1400) {
-                    Debug.ErrorLog("Heal Flag includes other flag" + update_mask);
-                    return false;
-                }
-
-                int heal_hp = cp.Decode2();
-                int heal_mp = cp.Decode2();
-
-                cp.Decode4(); // time2
-
-                PlayerHandler.Heal(chr, heal_hp, heal_mp);
                 return true;
             }
             case CP_UserHit: {
@@ -284,6 +265,11 @@ public class ReqCUser {
             }
             case CP_UserAbilityMassUpRequest: {
                 OnAbilityMassUpRequest(cp, chr);
+                return true;
+            }
+            // 自動回復類
+            case CP_UserChangeStatRequest: {
+                OnChangeStatRequest(cp, chr);
                 return true;
             }
             // SP使用
@@ -1066,6 +1052,42 @@ public class ReqCUser {
             chr.UpdateStat(true);
         }
 
+        return true;
+    }
+
+    public static boolean OnChangeStatRequest(ClientPacket cp, MapleCharacter chr) {
+        int time_stamp_1 = 0;
+
+        if (ServerConfig.JMS180orLater()) {
+            time_stamp_1 = cp.Decode4();
+        }
+
+        int update_mask = cp.Decode4();
+        int heal_hp = 0;
+        int heal_mp = 0;
+
+        if ((update_mask & OpsChangeStat.CS_HP.get()) > 0) {
+            heal_hp = cp.Decode2();
+        }
+        if ((update_mask & OpsChangeStat.CS_MP.get()) > 0) {
+            heal_mp = cp.Decode2();
+        }
+
+        byte unk = cp.Decode1();
+        int time_stamp_2 = cp.Decode4();
+
+        chr.updateTick(time_stamp_2);
+
+        if (chr.getStat().getHp() <= 0) {
+            return false;
+        }
+
+        if (0 < heal_hp) {
+            chr.addHP(heal_hp);
+        }
+        if (0 < heal_mp) {
+            chr.addMP(heal_mp);
+        }
         return true;
     }
 

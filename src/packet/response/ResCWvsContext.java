@@ -51,6 +51,7 @@ import java.util.Collection;
 import java.util.List;
 import packet.ServerPacket;
 import packet.ops.OpsBodyPart;
+import packet.ops.OpsChangeStat;
 import packet.ops.OpsFriendArg;
 import packet.ops.OpsMessageArg;
 import packet.ops.OpsSecondaryStat;
@@ -206,7 +207,7 @@ public class ResCWvsContext {
         sp.EncodeBuffer(GW_CharacterStat.EncodeChangeStat(chr, statmask));
         if (ServerConfig.IsPreBB()) {
             // Pet
-            if ((statmask & GW_CharacterStat.Flag.PET1.get()) > 0) {
+            if ((statmask & OpsChangeStat.CS_PETSN.get()) > 0) {
                 int v5 = 0; // CVecCtrlUser::AddMovementInfo
                 sp.Encode1(v5);
             }

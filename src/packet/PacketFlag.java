@@ -18,13 +18,13 @@
  */
 package packet;
 
+import packet.ops.OpsChangeStat;
 import packet.ops.OpsMessage;
 import packet.ops.OpsNewCharacter;
 import packet.ops.OpsSecondaryStat;
 import packet.request.ReqCNpcPool;
 import packet.request.ReqCTrunkDlg;
 import packet.request.struct.CMovePath;
-import packet.response.struct.GW_CharacterStat;
 
 /**
  *
@@ -35,7 +35,7 @@ public class PacketFlag {
     public static void Update() {
         ReqCTrunkDlg.Init();
         ReqCNpcPool.Init();
-        GW_CharacterStat.Init();
+        OpsChangeStat.Init();
         OpsSecondaryStat.Init();
         OpsMessage.Message_Init();
         CMovePath.setJumpDown();
