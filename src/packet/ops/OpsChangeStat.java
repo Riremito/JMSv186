@@ -78,7 +78,7 @@ public enum OpsChangeStat {
     }
 
     public static void Init() {
-        if (ServerConfig.JMS194orLater()) {
+        if (ServerConfig.IsPostBB()) {
             CS_PETSN2.set(0x00100000);
             CS_PETSN3.set(0x00200000);
             CS_TEMPEXP.set(0x00400000);

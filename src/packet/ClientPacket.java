@@ -482,6 +482,8 @@ public class ClientPacket {
         CP_JMS_PINKBEAN_PORTAL_ENTER,
         CP_JMS_PINKBEAN_PORTAL_CREATE,
         CP_JMS_JUKEBOX, // ItemID 2150001
+        CP_JMS_FarmEnter,
+        CP_JMS_FarmLeave,
         // old header names
         WHEEL_OF_FORTUNE, // 不明
         SOLOMON, // 名称不明

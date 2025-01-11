@@ -32,6 +32,7 @@ import packet.request.ReqCTownPortalPool;
 import packet.request.ReqCUser_Pet;
 import packet.request.ReqCCashShop;
 import packet.request.ReqCLogin;
+import packet.request.Req_Farm;
 import packet.response.ResCClientSocket;
 
 public class MapleServerHandler extends IoHandlerAdapter {
@@ -590,6 +591,12 @@ public class MapleServerHandler extends IoHandlerAdapter {
             // ミスティックドア
             case CP_EnterTownPortalRequest: {
                 ReqCTownPortalPool.TryEnterTownPortal(cp, c);
+                return true;
+            }
+            // 農場
+            case CP_JMS_FarmEnter:
+            case CP_JMS_FarmLeave: {
+                Req_Farm.OnPacket(header, cp, c);
                 return true;
             }
             default: {
