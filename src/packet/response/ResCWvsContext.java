@@ -189,8 +189,14 @@ public class ResCWvsContext {
             sp.Encode4(buff_mask[3]);
             sp.Encode4(buff_mask[2]);
         }
-        sp.Encode4(buff_mask[1]);
-        sp.Encode4(buff_mask[0]);
+        if (ServerConfig.JMS164orLater()) {
+            sp.Encode4(buff_mask[1]);
+            sp.Encode4(buff_mask[0]);
+        } else {
+            // JMS v131
+            sp.Encode4(buff_mask[0]);
+            sp.Encode4(buff_mask[1]);
+        }
         sp.Encode1(0);
         return sp.Get();
     }
@@ -436,7 +442,9 @@ public class ResCWvsContext {
                 sp.Encode4(0);
                 sp.Encode4(0);
             }
-            sp.Encode1(isSelf ? 1 : 0);
+            if (ServerConfig.JMS164orLater()) {
+                sp.Encode1(isSelf ? 1 : 0);
+            }
             sp.Encode1(pet_summoned ? 1 : 0);
         }
 
@@ -449,8 +457,10 @@ public class ResCWvsContext {
         int pet_count = 0;
         for (final MaplePet pet : player.getPets()) {
             if (pet.getSummoned()) {
-                if (0 < pet_count) {
-                    sp.Encode1(1); // Next Pet
+                if (ServerConfig.JMS164orLater()) {
+                    if (0 < pet_count) {
+                        sp.Encode1(1); // Next Pet
+                    }
                 }
                 sp.Encode4(pet.getPetItemId()); // petid
                 if (ServerConfig.JMS194orLater()) {
@@ -465,8 +475,10 @@ public class ResCWvsContext {
                 pet_count++;
             }
         }
-        if (0 < pet_count || ServerConfig.JMS131orEarlier()) {
-            sp.Encode1(0); // End of pet
+        if (ServerConfig.JMS164orLater()) {
+            if (0 < pet_count) {
+                sp.Encode1(0); // End of pet
+            }
         }
         // CUIUserInfo::SetTamingMobInfo
         IItem inv_mount = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);

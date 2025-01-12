@@ -118,9 +118,9 @@ public enum OpsSecondaryStat {
         mask = -1;
     }
 
-    public boolean set(int flag) {
-        mask = flag;
-        return true;
+    public void set(int order, int mask) {
+        this.order = order;
+        this.mask = mask;
     }
 
     public int get() {
@@ -132,6 +132,9 @@ public enum OpsSecondaryStat {
     }
 
     public static void Init() {
+        if ((ServerConfig.JMS131orEarlier())) {
+            return;
+        }
         if ((ServerConfig.JMS194orLater())) {
             // fix
             return;

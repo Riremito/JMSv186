@@ -61,8 +61,15 @@ public class SecondaryStat {
             data.Encode4(buff_mask[3]);
             data.Encode4(buff_mask[2]);
         }
-        data.Encode4(buff_mask[1]); // シャープアイズ等
-        data.Encode4(buff_mask[0]); // ブースター等
+
+        if (ServerConfig.JMS164orLater()) {
+            data.Encode4(buff_mask[1]); // シャープアイズ等
+            data.Encode4(buff_mask[0]); // ブースター等
+        } else {
+            // JMS v131
+            data.Encode4(buff_mask[0]);
+            data.Encode4(buff_mask[1]);
+        }
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 32; j++) {
