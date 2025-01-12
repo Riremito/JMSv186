@@ -31,8 +31,8 @@ import client.RockPaperScissors;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import packet.ClientPacket;
 import packet.ServerPacket;
+import packet.ops.OpsScriptMan;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import server.MapleInventoryManipulator;
@@ -152,19 +152,23 @@ public class NPCHandler {
         c.getPlayer().Info("Quest ID = " + quest + ", Action = " + action);
     }
 
-    public static final void NPCMoreTalk(MapleClient c, ClientPacket cp) {
-        final byte lastMsg = cp.Decode1(); // 00 (last msg type I think)
-        final byte action = cp.Decode1(); // 00 = end chat, 01 == follow
-
+    public static final void NPCMoreTalk(MapleClient c, OpsScriptMan smt, byte action, int selection, String text) {
         final NPCConversationManager cm = NPCScriptManager.getInstance().getCM(c);
+        byte lastMsg = (byte) smt.get();
 
         if (cm == null || c.getPlayer().getConversation() == 0 || cm.getLastMsg() != lastMsg) {
             return;
         }
+
+        if (action == 0) {
+            selection = -1;
+        }
+
         cm.setLastMsg(-1);
-        if (lastMsg == 3) {
+
+        if (smt == OpsScriptMan.SM_ASKTEXT) {
             if (action != 0) {
-                cm.setGetText(cp.DecodeStr());
+                cm.setGetText(text);
                 if (cm.getType() == 0) {
                     NPCScriptManager.getInstance().startQuest(c, action, lastMsg, -1);
                 } else if (cm.getType() == 1) {
@@ -175,33 +179,27 @@ public class NPCHandler {
             } else {
                 cm.dispose();
             }
-        } else {
-            int selection = -1;
-
-            if (1 <= action) {
-                if (8 <= lastMsg) {
-                    selection = cp.Decode1();
-                } else if (3 <= lastMsg) {
-                    selection = cp.Decode4();
-                }
-            }
-
-            if (selection == -1 && 3 <= lastMsg) {
-                cm.dispose();
-                return;//h4x
-            }
-            if (selection >= -1 && action != -1) {
-                if (cm.getType() == 0) {
-                    NPCScriptManager.getInstance().startQuest(c, action, lastMsg, selection);
-                } else if (cm.getType() == 1) {
-                    NPCScriptManager.getInstance().endQuest(c, action, lastMsg, selection);
-                } else {
-                    NPCScriptManager.getInstance().action(c, action, lastMsg, selection);
-                }
-            } else {
-                cm.dispose();
-            }
+            return;
         }
+
+        if (selection == -1 && OpsScriptMan.SM_ASKTEXT.get() <= lastMsg && smt != OpsScriptMan.SM_ASKACCEPT) {
+            cm.dispose();
+            return;
+        }
+
+        if (selection >= -1 && action != -1) {
+            if (cm.getType() == 0) {
+                NPCScriptManager.getInstance().startQuest(c, action, lastMsg, selection);
+            } else if (cm.getType() == 1) {
+                NPCScriptManager.getInstance().endQuest(c, action, lastMsg, selection);
+            } else {
+                NPCScriptManager.getInstance().action(c, action, lastMsg, selection);
+            }
+            return;
+        }
+
+        cm.dispose();
+        return;
     }
 
     public static final void repairAll(final MapleClient c) {

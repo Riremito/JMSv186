@@ -299,6 +299,8 @@ public class ReqCNpcPool {
     public static MaplePacket confirmShopTransaction(SP_ShopFlag flag, int level) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ShopResult);
 
+        // JMS v188, 00706BA9
+        // JMS v194も謎DCを発生させる処理が動くとクライアントがクラッシュするのでクライアントの修正が必要
         sp.Encode1(flag.get()); // 8 = sell, 0 = buy, 0x20 = due to an error
 
         switch (flag) {

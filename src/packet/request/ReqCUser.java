@@ -137,7 +137,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserScriptMessageAnswer: {
-                NPCHandler.NPCMoreTalk(c, cp); // test
+                ReqCScriptMan.OnScriptMessageAnswer(cp, c);
                 return true;
             }
             case CP_UserShopRequest: {

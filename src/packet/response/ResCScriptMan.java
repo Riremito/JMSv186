@@ -114,6 +114,7 @@ public class ResCScriptMan {
                 break;
             }
             case SM_ASKACCEPT: {
+                sp.EncodeStr(text);
                 break;
             }
             case SM_ASKBOXTEXT: {

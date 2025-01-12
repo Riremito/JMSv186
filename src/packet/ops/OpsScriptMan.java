@@ -114,7 +114,6 @@ public enum OpsScriptMan {
             // 10, CScriptMan::OnAskYesNo, 0
             SM_ASKACCEPT.set(11);
             SM_ASKBOXTEXT.set(13);
-            // 14, CScriptMan::OnSay, 1
             SM_SAYIMAGE.set(-1);
             SM_ASKSPEEDQUIZ.set(-1);
             SM_ASKSLIDEMENU.set(-1);
