@@ -42,7 +42,6 @@ import client.inventory.MapleInventoryType;
 import client.SkillFactory;
 import client.SkillEntry;
 import client.MapleStat;
-import config.ServerConfig;
 import server.MapleCarnivalParty;
 import server.Randomizer;
 import server.MapleInventoryManipulator;
@@ -69,6 +68,7 @@ import handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
 import packet.ops.OpsFieldEffect;
 import packet.ops.OpsFieldEffectArg;
+import packet.ops.OpsScriptMan;
 import packet.response.ResCParcelDlg;
 import packet.response.ResCField;
 import packet.response.ResCStoreBankDlg;
@@ -90,7 +90,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     private int npc, script_name, questid;
     private String getText;
     private byte type; // -1 = NPC, 0 = start quest, 1 = end quest
-    private byte lastMsg = -1;
+    private int lastMsg = -1;
     public boolean pendingDisposal = false;
     private Invocable iv;
 
@@ -169,7 +169,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
         c.getSession().write(MaplePacketCreator.getMapSelection(npc, sel));
-        lastMsg = 0xE;
+        lastMsg = OpsScriptMan.SM_ASKSLIDEMENU.get();
     }
 
     public void sendNext(String text) {
@@ -180,8 +180,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 01", (byte) 0));
-        lastMsg = 0;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 01", (byte) 0));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendNextS(String text, byte type) {
@@ -192,8 +192,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 01", type));
-        lastMsg = 0;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 01", type));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendPrev(String text) {
@@ -204,8 +204,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "01 00", (byte) 0));
-        lastMsg = 0;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 00", (byte) 0));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendPrevS(String text, byte type) {
@@ -216,8 +216,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "01 00", type));
-        lastMsg = 0;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 00", type));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendNextPrev(String text) {
@@ -228,8 +228,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "01 01", (byte) 0));
-        lastMsg = 0;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 01", (byte) 0));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void PlayerToNpc(String text) {
@@ -248,8 +248,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "01 01", type));
-        lastMsg = 0;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 01", type));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendOk(String text) {
@@ -260,8 +260,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 00", (byte) 0));
-        lastMsg = 0;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 00", (byte) 0));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendOkS(String text, byte type) {
@@ -272,8 +272,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 00", type));
-        lastMsg = 0;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 00", type));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendYesNo(String text) {
@@ -285,12 +285,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        byte nextval = 2;
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
-            nextval = 1;
-        }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
-        lastMsg = nextval;
+        c.SendPacket(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_ASKYESNO, text, "", (byte) 0));
+        lastMsg = OpsScriptMan.SM_ASKYESNO.get();
     }
 
     public void sendYesNoS(String text, byte type) {
@@ -301,12 +297,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        byte nextval = 2;
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
-            nextval = 1;
-        }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", type));
-        lastMsg = nextval;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_ASKYESNO, text, "", type));
+        lastMsg = OpsScriptMan.SM_ASKYESNO.get();
     }
 
     public void sendAcceptDecline(String text) {
@@ -326,12 +318,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        byte nextval = 0x0C;
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
-            nextval = 0x0B;
-        }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
-        lastMsg = nextval;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_ASKACCEPT, text, "", (byte) 0));
+        lastMsg = OpsScriptMan.SM_ASKACCEPT.get();
     }
 
     public void askAcceptDeclineNoESC(String text) {
@@ -342,12 +330,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        byte nextval = 0x0D;
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
-            nextval = 0x0C;
-        }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
-        lastMsg = nextval;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_ASKACCEPT, text, "", (byte) 0));
+        lastMsg = OpsScriptMan.SM_ASKACCEPT.get();
     }
 
     public void askAvatar(String text, int... args) {
@@ -355,7 +339,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalkStyle(npc, text, args));
-        lastMsg = 8;
+        lastMsg = OpsScriptMan.SM_ASKAVATAR.get();
     }
 
     public void sendSimple(String text) {
@@ -367,13 +351,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        byte nextval = 5;
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
-            nextval = 4;
-        }
-
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
-        lastMsg = nextval;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_ASKMENU, text, "", (byte) 0));
+        lastMsg = OpsScriptMan.SM_ASKMENU.get();
     }
 
     public void sendSimpleS(String text, byte type) {
@@ -385,13 +364,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        byte nextval = 5;
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
-            nextval = 4;
-        }
-
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) type));
-        lastMsg = nextval;
+        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_ASKMENU, text, "", (byte) type));
+        lastMsg = OpsScriptMan.SM_ASKMENU.get();
     }
 
     public void sendStyle(String text, int styles[]) {
@@ -399,7 +373,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalkStyle(npc, text, styles));
-        lastMsg = 8;
+        lastMsg = OpsScriptMan.SM_ASKAVATAR.get();
     }
 
     public void sendGetNumber(String text, int def, int min, int max) {
@@ -411,7 +385,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalkNum(npc, text, def, min, max));
-        lastMsg = 4;
+        lastMsg = OpsScriptMan.SM_ASKNUMBER.get();
     }
 
     public void sendGetText(String text) {
@@ -423,7 +397,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
         c.getSession().write(MaplePacketCreator.getNPCTalkText(npc, text));
-        lastMsg = 3;
+        lastMsg = OpsScriptMan.SM_ASKTEXT.get();
     }
 
     public void setGetText(String text) {
@@ -1295,11 +1269,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         return false;
     }
 
-    public byte getLastMsg() {
+    public int getLastMsg() {
         return lastMsg;
     }
 
-    public final void setLastMsg(final byte last) {
+    public final void setLastMsg(int last) {
         this.lastMsg = last;
     }
 

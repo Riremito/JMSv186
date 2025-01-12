@@ -276,7 +276,9 @@ public class ReqCNpcPool {
 
             if (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId())) {
                 sp.Encode2(1); // stacksize o.o
-                sp.Encode2(item.getBuyable());
+                if (ServerConfig.JMS164orLater()) {
+                    sp.Encode2(item.getBuyable());
+                }
             } else {
                 sp.EncodeZeroBytes(6);
                 sp.Encode2(BitTools.doubleToShortBits(ii.getPrice(item.getItemId())));

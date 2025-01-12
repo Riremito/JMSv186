@@ -21,6 +21,7 @@ package packet;
 import packet.ops.OpsChangeStat;
 import packet.ops.OpsMessage;
 import packet.ops.OpsNewCharacter;
+import packet.ops.OpsScriptMan;
 import packet.ops.OpsSecondaryStat;
 import packet.request.ReqCNpcPool;
 import packet.request.ReqCTrunkDlg;
@@ -40,6 +41,7 @@ public class PacketFlag {
         OpsMessage.Message_Init();
         CMovePath.setJumpDown();
         OpsNewCharacter.Init();
+        OpsScriptMan.Init();
     }
 
 }

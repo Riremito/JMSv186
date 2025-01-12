@@ -161,7 +161,7 @@ public class NPCHandler {
         if (cm == null || c.getPlayer().getConversation() == 0 || cm.getLastMsg() != lastMsg) {
             return;
         }
-        cm.setLastMsg((byte) -1);
+        cm.setLastMsg(-1);
         if (lastMsg == 3) {
             if (action != 0) {
                 cm.setGetText(cp.DecodeStr());

@@ -53,6 +53,7 @@ import client.inventory.MapleInventoryIdentifier;
 import handling.world.World;
 import packet.ops.OpsFieldEffect;
 import packet.ops.OpsFieldEffectArg;
+import packet.ops.OpsScriptMan;
 import packet.response.ResCField;
 import packet.response.ResCUserLocal;
 import packet.response.ResCWvsContext;
@@ -1033,7 +1034,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public void sendNPCText(final String text, final int npc) {
-        getMap().broadcastMessage(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 00", (byte) 0));
+        getMap().broadcastMessage(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 00", (byte) 0));
     }
 
     public boolean getTempFlag(final int flag) {
