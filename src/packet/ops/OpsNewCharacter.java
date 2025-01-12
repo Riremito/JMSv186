@@ -68,7 +68,7 @@ public enum OpsNewCharacter {
         return UNKNOWN;
     }
 
-    public static void Init() {
+    public static void init() {
         if (ServerConfig.IsPostBB()) {
             // JMS v188, 左上から右下に向かって連番 (デュアルブレイドは除外)
             Resistance.set(0);

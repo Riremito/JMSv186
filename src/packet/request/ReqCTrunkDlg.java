@@ -97,7 +97,7 @@ public class ReqCTrunkDlg {
         }
     }
 
-    public static void Init() {
+    public static void init() {
         if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
             // SS
             CP_Flag.ITEM_OUT.set(0x03);

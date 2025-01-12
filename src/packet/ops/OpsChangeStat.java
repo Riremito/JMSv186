@@ -77,7 +77,7 @@ public enum OpsChangeStat {
         return UNKNOWN;
     }
 
-    public static void Init() {
+    public static void init() {
         if (ServerConfig.IsPostBB()) {
             CS_PETSN2.set(0x00100000);
             CS_PETSN3.set(0x00200000);

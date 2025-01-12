@@ -34,14 +34,14 @@ import packet.request.struct.CMovePath;
 public class PacketFlag {
 
     public static void Update() {
-        ReqCTrunkDlg.Init();
-        ReqCNpcPool.Init();
-        OpsChangeStat.Init();
-        OpsSecondaryStat.Init();
-        OpsMessage.Message_Init();
+        ReqCTrunkDlg.init();
+        ReqCNpcPool.init();
+        OpsChangeStat.init();
+        OpsSecondaryStat.init();
+        OpsMessage.init();
         CMovePath.setJumpDown();
-        OpsNewCharacter.Init();
-        OpsScriptMan.Init();
+        OpsNewCharacter.init();
+        OpsScriptMan.init();
     }
 
 }

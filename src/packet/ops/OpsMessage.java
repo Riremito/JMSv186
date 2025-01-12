@@ -50,7 +50,7 @@ public enum OpsMessage {
     // CWvsContext::OnChangeSkillRecordResult
     // CWvsContext::OnSkillUseResult
     // CWvsContext::OnGivePopularityResult
-    public static void Message_Init() {
+    public static void init() {
         if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);

@@ -131,7 +131,7 @@ public enum OpsSecondaryStat {
         return order;
     }
 
-    public static void Init() {
+    public static void init() {
         if ((ServerConfig.JMS131orEarlier())) {
             return;
         }
