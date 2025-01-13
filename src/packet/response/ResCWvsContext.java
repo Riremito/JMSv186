@@ -374,7 +374,7 @@ public class ResCWvsContext {
                 break;
             }
             // updateBeansMSG, GainTamaMessage
-            case MS_JMS_PACHINKO: {
+            case MS_JMS_Pachinko: {
                 sp.Encode4(ma.Inc_Tama);
                 break;
             }

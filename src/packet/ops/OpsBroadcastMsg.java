@@ -24,46 +24,46 @@ package packet.ops;
  */
 public enum OpsBroadcastMsg {
     // 青文字, [告知事項]
-    UNKNOWN_00((byte) 0x00),
+    BM_NOTICE((byte) 0x00),
     // ダイアログ
-    UNKNOWN_01((byte) 0x01),
+    BM_ALERT((byte) 0x01),
     // メガホン
-    MEGAPHONE_BLUE((byte) 0x02),
+    BM_SPEAKERCHANNEL((byte) 0x02),
     // 拡声器
-    MEGAPHONE((byte) 0x03),
+    BM_SPEAKERWORLD((byte) 0x03),
     // 画面上部
-    UNKNOWN_04((byte) 0x04),
+    BM_SLIDE((byte) 0x04),
     // ピンク文字
-    UNKNOWN_05((byte) 0x05),
+    BM_EVENT((byte) 0x05),
     // 青文字
-    UNKNOWN_06((byte) 0x06),
+    BM_NOTICEWITHOUTPREFIX((byte) 0x06),
     // 用途不明, 0x00B93F3F[0x07] = 00B93E27
-    UNKNOWN_07((byte) 0x07),
+    BM_UTILDLGEX((byte) 0x07),
     // アイテム拡声器
-    MEGAPHONE_ITEM((byte) 0x08),
+    BM_ITEMSPEAKER((byte) 0x08),
     // ワールド拡声器, 未実装
-    MEGAPHONE_GREEN((byte) 0x09),
+    BM_ARTSPEAKERWORLD((byte) 0x09),
     // 三連拡声器
     MEGAPHONE_TRIPLE((byte) 0x0A),
     // 用途不明, 0x00B93F3F[0x0B] = 00B93ECA
     UNKNOWN_0B((byte) 0x0B),
     // ハート拡声器
-    MEGAPHONE_HEART((byte) 0x0C),// v131 -> 0x08
+    BM_HEARTSPEAKER((byte) 0x0C),// v131 -> 0x08
     // ドクロ拡声器
-    MEGAPHONE_SKULL((byte) 0x0D), // v131 -> 0x09
+    BM_SKULLSPEAKER((byte) 0x0D), // v131 -> 0x09
     // ガシャポン
-    MEGAPHONE_GASHAPON((byte) 0x0E),
+    BM_GACHAPONANNOUNCE((byte) 0x0E),
     // 青文字, 名前:アイテム名(xxxx個))
     UNKNOWN_0F((byte) 0x0F),
     // 体験用アバター獲得
-    MEGAPHONE_AVATAR((byte) 0x10),
+    BM_CASHSHOPAD((byte) 0x10),
     // 青文字, アイテム表示
     UNKNOWN_11((byte) 0x11),
     UNKNOWN((byte) -1);
 
-    public static OpsBroadcastMsg Find(byte b) {
+    public static OpsBroadcastMsg find(byte b) {
         for (final OpsBroadcastMsg o : OpsBroadcastMsg.values()) {
-            if (o.Get() == b) {
+            if (o.get() == b) {
                 return o;
             }
         }
@@ -81,7 +81,7 @@ public enum OpsBroadcastMsg {
         value = -1;
     }
 
-    public byte Get() {
+    public byte get() {
         return value;
     }
 

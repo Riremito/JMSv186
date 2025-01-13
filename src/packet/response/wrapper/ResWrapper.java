@@ -212,7 +212,7 @@ public class ResWrapper {
     // メガホン
     public static MaplePacket MegaphoneBlue(String text) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
-        p.Encode1(OpsBroadcastMsg.MEGAPHONE_BLUE.Get());
+        p.Encode1(OpsBroadcastMsg.BM_SPEAKERCHANNEL.get());
         p.EncodeStr(text);
         return p.Get();
     }
@@ -220,7 +220,7 @@ public class ResWrapper {
     // ドクロ拡声器
     public static MaplePacket MegaphoneSkull(String text, byte channel, byte ear) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
-        p.Encode1(OpsBroadcastMsg.MEGAPHONE_SKULL.Get());
+        p.Encode1(OpsBroadcastMsg.BM_SKULLSPEAKER.get());
         p.EncodeStr(text);
         p.Encode1((byte) (channel - 1));
         p.Encode1(ear);
@@ -230,7 +230,7 @@ public class ResWrapper {
     // ハート拡声器
     public static MaplePacket MegaphoneHeart(String text, byte channel, byte ear) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
-        p.Encode1(OpsBroadcastMsg.MEGAPHONE_HEART.Get());
+        p.Encode1(OpsBroadcastMsg.BM_HEARTSPEAKER.get());
         p.EncodeStr(text);
         p.Encode1((byte) (channel - 1));
         p.Encode1(ear);
@@ -240,7 +240,7 @@ public class ResWrapper {
     // アイテム拡声器
     public static MaplePacket MegaphoneItem(String text, byte channel, byte ear, byte showitem, IItem item) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
-        p.Encode1(OpsBroadcastMsg.MEGAPHONE_ITEM.Get());
+        p.Encode1(OpsBroadcastMsg.BM_ITEMSPEAKER.get());
         p.EncodeStr(text);
         p.Encode1((byte) (channel - 1));
         p.Encode1(ear);
@@ -254,7 +254,7 @@ public class ResWrapper {
     // 三連拡声器
     public static MaplePacket MegaphoneTriple(List<String> text, byte channel, byte ear) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
-        p.Encode1(OpsBroadcastMsg.MEGAPHONE_TRIPLE.Get());
+        p.Encode1(OpsBroadcastMsg.MEGAPHONE_TRIPLE.get());
         // 1行目
         p.EncodeStr(text.get(0));
         p.Encode1((byte) text.size());
@@ -269,7 +269,7 @@ public class ResWrapper {
     // 拡声器
     public static MaplePacket Megaphone(String text, byte channel, byte ear) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
-        p.Encode1(OpsBroadcastMsg.MEGAPHONE.Get());
+        p.Encode1(OpsBroadcastMsg.BM_SPEAKERWORLD.get());
         p.EncodeStr(text);
         p.Encode1((byte) (channel - 1));
         p.Encode1(ear);
@@ -391,7 +391,7 @@ public class ResWrapper {
 
     public static final MaplePacket GainTamaMessage(int inc_tama) {
         OpsMessageArg ma = new OpsMessageArg();
-        ma.mt = OpsMessage.MS_JMS_PACHINKO;
+        ma.mt = OpsMessage.MS_JMS_Pachinko;
         ma.Inc_Tama = inc_tama;
         return ResCWvsContext.Message(ma);
     }

@@ -34,6 +34,7 @@ public enum OpsMessage {
     MS_IncPOPMessage(5),
     MS_IncMoneyMessage(6),
     MS_IncGPMessage(7),
+    MS_IncCommitmentMessage(-1),
     MS_GiveBuffMessage(8),
     MS_GeneralItemExpireMessage(9),
     MS_SystemMessage(10),
@@ -41,17 +42,11 @@ public enum OpsMessage {
     MS_ItemProtectExpireMessage(12),
     MS_ItemExpireReplaceMessage(13),
     MS_SkillExpireMessage(14),
-    MS_JMS_PACHINKO(15),
+    MS_JMS_Pachinko(15),
     UNKNOWN(-1);
 
-    // CWvsContext::OnTemporaryStatReset
-    // CWvsContext::OnForcedStatSet
-    // CWvsContext::OnForcedStatReset
-    // CWvsContext::OnChangeSkillRecordResult
-    // CWvsContext::OnSkillUseResult
-    // CWvsContext::OnGivePopularityResult
     public static void init() {
-        if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS194orLater()) {
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);
             OpsMessage.MS_CashItemExpireMessage.set(2);
@@ -60,7 +55,7 @@ public enum OpsMessage {
             OpsMessage.MS_IncPOPMessage.set(5);
             OpsMessage.MS_IncMoneyMessage.set(6);
             OpsMessage.MS_IncGPMessage.set(7);
-            // 8 貢献度
+            OpsMessage.MS_IncCommitmentMessage.set(8); // post-bb
             OpsMessage.MS_GiveBuffMessage.set(9);
             OpsMessage.MS_GeneralItemExpireMessage.set(10);
             OpsMessage.MS_SystemMessage.set(11);
@@ -68,7 +63,8 @@ public enum OpsMessage {
             OpsMessage.MS_ItemProtectExpireMessage.set(13);
             OpsMessage.MS_ItemExpireReplaceMessage.set(14);
             OpsMessage.MS_SkillExpireMessage.set(15);
-            OpsMessage.MS_JMS_PACHINKO.set(16);
+            OpsMessage.MS_JMS_Pachinko.set(16);
+            return;
         }
     }
 
