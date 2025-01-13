@@ -44,6 +44,7 @@ import packet.response.ResCParcelDlg;
 import packet.response.Res_Pachinko;
 import packet.response.ResCUser_Pet;
 import packet.response.ResCUIVega;
+import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
 import packet.response.ResCWvsContext;
 import packet.response.Res_PinkBeanPortal;
@@ -599,7 +600,7 @@ public class ItemRequest {
                 }
             }
             c.SendPacket(ResWrapper.scrolledItem(magnify, toReveal, false, true));
-            c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.getPotentialReset(c.getPlayer().getId(), eqq.getPosition()));
+            c.getPlayer().getMap().broadcastMessage(ResCUser.getPotentialReset(c.getPlayer().getId(), eqq.getPosition()));
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
         } else {
             c.getSession().write(ResWrapper.getInventoryFull());
@@ -695,7 +696,7 @@ public class ItemRequest {
             toHammer.setUpgradeSlots((byte) (toHammer.getUpgradeSlots() + 1));
             c.SendPacket(ResWrapper.scrolledItem(scroll, toHammer, false, false));
             chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
-            chr.getMap().broadcastMessage(chr, MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), IEquip.ScrollResult.SUCCESS, legendarySpirit), vegas == 0);
+            chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(c.getPlayer().getId(), IEquip.ScrollResult.SUCCESS, legendarySpirit), vegas == 0);
             return true;
         }
         if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
@@ -817,7 +818,7 @@ public class ItemRequest {
         } else if (vegas == 0) {
             c.SendPacket(ResWrapper.scrolledItem(scroll, scrolled, false, false));
         }
-        chr.getMap().broadcastMessage(chr, MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), scrollSuccess, legendarySpirit), vegas == 0);
+        chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(c.getPlayer().getId(), scrollSuccess, legendarySpirit), vegas == 0);
         // equipped item was scrolled and changed
         if (dst < 0 && (scrollSuccess == IEquip.ScrollResult.SUCCESS || scrollSuccess == IEquip.ScrollResult.CURSE) && vegas == 0) {
             chr.equipChanged();

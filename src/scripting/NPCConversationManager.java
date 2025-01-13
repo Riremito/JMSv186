@@ -168,7 +168,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-        c.getSession().write(MaplePacketCreator.getMapSelection(npc, sel));
+        c.getSession().write(ResWrapper.getMapSelection(npc, sel));
         lastMsg = OpsScriptMan.SM_ASKSLIDEMENU.get();
     }
 
@@ -180,7 +180,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 01", (byte) 0));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 01", (byte) 0));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -192,7 +192,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 01", type));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 01", type));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -204,7 +204,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 00", (byte) 0));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 00", (byte) 0));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -216,7 +216,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 00", type));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 00", type));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -228,7 +228,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 01", (byte) 0));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 01", (byte) 0));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -248,7 +248,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 01", type));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 01", type));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -260,7 +260,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 00", (byte) 0));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 00", (byte) 0));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -272,7 +272,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 00", type));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 00", type));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -285,7 +285,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        c.SendPacket(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_ASKYESNO, text, "", (byte) 0));
+        c.SendPacket(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKYESNO, text, "", (byte) 0));
         lastMsg = OpsScriptMan.SM_ASKYESNO.get();
     }
 
@@ -297,7 +297,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_ASKYESNO, text, "", type));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKYESNO, text, "", type));
         lastMsg = OpsScriptMan.SM_ASKYESNO.get();
     }
 
@@ -318,7 +318,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_ASKACCEPT, text, "", (byte) 0));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKACCEPT, text, "", (byte) 0));
         lastMsg = OpsScriptMan.SM_ASKACCEPT.get();
     }
 
@@ -330,7 +330,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_ASKACCEPT, text, "", (byte) 0));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKACCEPT, text, "", (byte) 0));
         lastMsg = OpsScriptMan.SM_ASKACCEPT.get();
     }
 
@@ -338,7 +338,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalkStyle(npc, text, args));
+        c.getSession().write(ResWrapper.getNPCTalkStyle(npc, text, args));
         lastMsg = OpsScriptMan.SM_ASKAVATAR.get();
     }
 
@@ -351,7 +351,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_ASKMENU, text, "", (byte) 0));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKMENU, text, "", (byte) 0));
         lastMsg = OpsScriptMan.SM_ASKMENU.get();
     }
 
@@ -364,7 +364,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, OpsScriptMan.SM_ASKMENU, text, "", (byte) type));
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKMENU, text, "", (byte) type));
         lastMsg = OpsScriptMan.SM_ASKMENU.get();
     }
 
@@ -372,7 +372,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalkStyle(npc, text, styles));
+        c.getSession().write(ResWrapper.getNPCTalkStyle(npc, text, styles));
         lastMsg = OpsScriptMan.SM_ASKAVATAR.get();
     }
 
@@ -384,7 +384,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalkNum(npc, text, def, min, max));
+        c.getSession().write(ResWrapper.getNPCTalkNum(npc, text, def, min, max));
         lastMsg = OpsScriptMan.SM_ASKNUMBER.get();
     }
 
@@ -396,7 +396,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalkText(npc, text));
+        c.getSession().write(ResWrapper.getNPCTalkText(npc, text));
         lastMsg = OpsScriptMan.SM_ASKTEXT.get();
     }
 

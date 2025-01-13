@@ -37,7 +37,9 @@ import packet.ops.OpsFriendArg;
 import packet.ops.OpsMessage;
 import packet.ops.OpsMessageArg;
 import packet.ops.OpsQuestRecordMessage;
+import packet.ops.OpsScriptMan;
 import packet.response.ResCField;
+import packet.response.ResCScriptMan;
 import packet.response.ResCStage;
 import packet.response.ResCWvsContext;
 import packet.response.struct.GW_ItemSlotBase;
@@ -602,6 +604,48 @@ public class ResWrapper {
             return ResCStage.SetField_JMS_302(chr, 1, false, to, spawnPoint, 0);
         }
         return ResCStage.SetField(chr, false, to, spawnPoint);
+    }
+
+    public static MaplePacket getNPCTalkText(int npc, String talk) {
+        return ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKTEXT, (byte) 0, talk, false, false);
+    }
+
+    public static MaplePacket getNPCTalk(int npc, OpsScriptMan smt, String talk, String endBytes, byte type) {
+        byte[] ebb = HexTool.getByteArrayFromHexString(endBytes);
+        boolean prev = false;
+        boolean next = false;
+        if (ebb.length == 2) {
+            if (ebb[0] == 1) {
+                prev = true;
+            }
+            if (ebb[0] == 2) {
+                next = true;
+            }
+        }
+        return ResCScriptMan.ScriptMessage(npc, smt, type, talk, prev, next);
+    }
+
+    public static MaplePacket getNPCTalkNum(int npc, String talk, int def, int min, int max) {
+        ServerPacket sp = new ServerPacket();
+        sp.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKNUMBER, (byte) 0, talk, false, false).getBytes());
+        sp.Encode4(def);
+        sp.Encode4(min);
+        sp.Encode4(max);
+        return sp.Get();
+    }
+
+    public static final MaplePacket getMapSelection(final int npcid, final String sel) {
+        return ResCScriptMan.ScriptMessage(npcid, OpsScriptMan.SM_ASKSLIDEMENU, (byte) 0, sel, false, false);
+    }
+
+    public static MaplePacket getNPCTalkStyle(int npc, String talk, int... args) {
+        ServerPacket sp = new ServerPacket();
+        sp.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKAVATAR, (byte) 0, talk, false, false).getBytes());
+        sp.Encode1(args.length);
+        for (int i = 0; i < args.length; i++) {
+            sp.Encode4(args[i]);
+        }
+        return sp.Get();
     }
 
 }

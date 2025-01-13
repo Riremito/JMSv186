@@ -96,6 +96,7 @@ import packet.response.ResCClientSocket;
 import packet.response.ResCField;
 import packet.response.ResCStage;
 import packet.response.ResCSummonedPool;
+import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.wrapper.ResWrapper;
@@ -1471,7 +1472,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (!(quest.isCustom())) {
             client.SendPacket(ResWrapper.updateQuest(quest));
             if (quest.getStatus() == 1 && !update) {
-                client.getSession().write(MaplePacketCreator.updateQuestInfo(this, quest.getQuest().getId(), quest.getNpc(), (byte) 8));
+                client.getSession().write(ResCUserLocal.updateQuestInfo(this, quest.getQuest().getId(), quest.getNpc(), (byte) 8));
             }
         }
     }
@@ -3716,13 +3717,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 }
             }
             if (followid > 0) {
-                client.getSession().write(MaplePacketCreator.followEffect(followinitiator ? id : followid, followinitiator ? followid : id, null));
+                client.getSession().write(ResCUser.followEffect(followinitiator ? id : followid, followinitiator ? followid : id, null));
             }
         }
     }
 
     public final void equipChanged() {
-        map.broadcastMessage(this, MaplePacketCreator.updateCharLook(this), false);
+        map.broadcastMessage(this, ResCUserRemote.updateCharLook(this), false);
         stats.recalcLocalStats();
         if (getMessenger() != null) {
             World.Messenger.updateMessenger(getMessenger().getId(), getName(), client.getChannel());
@@ -5209,7 +5210,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (clones[i].get() == null) {
                 final MapleCharacter newp = cloneLooks();
                 map.addPlayer(newp);
-                map.broadcastMessage(MaplePacketCreator.updateCharLook(newp));
+                map.broadcastMessage(ResCUserRemote.updateCharLook(newp));
                 map.movePlayer(newp, getPosition());
                 clones[i] = new WeakReference<MapleCharacter>(newp);
                 return;
@@ -5381,7 +5382,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void expandInventory(byte type, int amount) {
         final MapleInventory inv = getInventory(MapleInventoryType.getByType(type));
         inv.addSlot((byte) amount);
-        client.getSession().write(MaplePacketCreator.getSlotUpdate(type, (byte) inv.getSlotLimit()));
+        client.getSession().write(ResCWvsContext.getSlotUpdate(type, (byte) inv.getSlotLimit()));
     }
 
     public boolean allowedToTarget(MapleCharacter other) {
@@ -5418,13 +5419,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void checkFollow() {
         if (followon) {
-            map.broadcastMessage(MaplePacketCreator.followEffect(id, 0, null));
-            map.broadcastMessage(MaplePacketCreator.followEffect(followid, 0, null));
+            map.broadcastMessage(ResCUser.followEffect(id, 0, null));
+            map.broadcastMessage(ResCUser.followEffect(followid, 0, null));
             MapleCharacter tt = map.getCharacterById(followid);
-            client.getSession().write(MaplePacketCreator.getFollowMessage("Follow canceled."));
+            client.getSession().write(ResCUserLocal.getFollowMessage("Follow canceled."));
             if (tt != null) {
                 tt.setFollowId(0);
-                tt.getClient().getSession().write(MaplePacketCreator.getFollowMessage("Follow canceled."));
+                tt.getClient().getSession().write(ResCUserLocal.getFollowMessage("Follow canceled."));
             }
             setFollowId(0);
         }

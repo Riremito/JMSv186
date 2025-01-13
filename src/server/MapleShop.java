@@ -22,6 +22,7 @@ import client.inventory.MaplePet;
 import database.DatabaseConnection;
 import packet.request.ReqCNpcPool;
 import packet.request.ReqCNpcPool.SP_ShopFlag;
+import packet.response.ResCShopDlg;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import tools.MaplePacketCreator;
@@ -86,32 +87,32 @@ public class MapleShop {
 
     public void sendShop(MapleClient c) {
         c.getPlayer().setShop(this);
-        c.SendPacket(ReqCNpcPool.getNPCShop(c, getNpcId(), items));
+        c.SendPacket(ResCShopDlg.getNPCShop(c, getNpcId(), items));
     }
 
     public boolean buy(MapleClient c, MapleCharacter chr, int itemId, short quantity) {
         MapleShopItem item = findById(itemId);
 
         if (quantity <= 0 || item == null) {
-            chr.SendPacket(ReqCNpcPool.confirmShopTransaction(SP_ShopFlag.ERROR));
+            chr.SendPacket(ResCShopDlg.confirmShopTransaction(SP_ShopFlag.ERROR));
             return false;
         }
 
         final int price = GameConstants.isRechargable(itemId) ? item.getPrice() : (item.getPrice() * quantity);
 
         if (item.getPrice() < 0 || c.getPlayer().getMeso() < price) {
-            chr.SendPacket(ReqCNpcPool.confirmShopTransaction(SP_ShopFlag.ERROR_MESO));
+            chr.SendPacket(ResCShopDlg.confirmShopTransaction(SP_ShopFlag.ERROR_MESO));
             return false;
         }
 
         if (!MapleInventoryManipulator.checkSpace(c, itemId, quantity, "")) {
-            chr.SendPacket(ReqCNpcPool.confirmShopTransaction(SP_ShopFlag.ERROR_INVENTORY_FULL));
+            chr.SendPacket(ResCShopDlg.confirmShopTransaction(SP_ShopFlag.ERROR_INVENTORY_FULL));
             return false;
         }
 
         if (0 < item.getReqItem()) {
             if (2 <= quantity) {
-                chr.SendPacket(ReqCNpcPool.confirmShopTransaction(SP_ShopFlag.ERROR));
+                chr.SendPacket(ResCShopDlg.confirmShopTransaction(SP_ShopFlag.ERROR));
                 return false;
             }
 
@@ -132,7 +133,7 @@ public class MapleShop {
             MapleInventoryManipulator.addById(c, itemId, quantity);
         }
 
-        chr.SendPacket(ReqCNpcPool.confirmShopTransaction(SP_ShopFlag.SUCCESS_BUY));
+        chr.SendPacket(ResCShopDlg.confirmShopTransaction(SP_ShopFlag.SUCCESS_BUY));
         return true;
     }
 
@@ -171,7 +172,7 @@ public class MapleShop {
             if (price != -1.0 && recvMesos > 0) {
                 c.getPlayer().gainMeso(recvMesos, false);
             }
-            c.SendPacket(ReqCNpcPool.confirmShopTransaction(SP_ShopFlag.SUCCESS_SELL));
+            c.SendPacket(ResCShopDlg.confirmShopTransaction(SP_ShopFlag.SUCCESS_SELL));
         }
     }
 
@@ -179,7 +180,7 @@ public class MapleShop {
         final IItem item = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (item == null || (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId()))) {
-            c.SendPacket(ReqCNpcPool.confirmShopTransaction(SP_ShopFlag.ERROR));
+            c.SendPacket(ResCShopDlg.confirmShopTransaction(SP_ShopFlag.ERROR));
             return false;
         }
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -195,14 +196,14 @@ public class MapleShop {
                 item.setQuantity(slotMax);
                 c.getSession().write(ResWrapper.updateInventorySlot(MapleInventoryType.USE, (Item) item, false));
                 c.getPlayer().gainMeso(-price, false, true, false);
-                c.SendPacket(ReqCNpcPool.confirmShopTransaction(SP_ShopFlag.SUCCESS_SELL));
+                c.SendPacket(ResCShopDlg.confirmShopTransaction(SP_ShopFlag.SUCCESS_SELL));
                 return true;
             } else {
-                c.SendPacket(ReqCNpcPool.confirmShopTransaction(SP_ShopFlag.ERROR_MESO));
+                c.SendPacket(ResCShopDlg.confirmShopTransaction(SP_ShopFlag.ERROR_MESO));
                 return false;
             }
         }
-        c.SendPacket(ReqCNpcPool.confirmShopTransaction(SP_ShopFlag.ERROR));
+        c.SendPacket(ResCShopDlg.confirmShopTransaction(SP_ShopFlag.ERROR));
         return false;
     }
 

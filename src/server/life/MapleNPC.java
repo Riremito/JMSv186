@@ -22,6 +22,7 @@ package server.life;
 
 import client.MapleClient;
 import packet.request.ReqCNpcPool;
+import packet.response.ResCNpcPool;
 import server.MapleShopFactory;
 import server.maps.MapleMapObjectType;
 
@@ -48,14 +49,14 @@ public class MapleNPC extends AbstractLoadedMapleLife {
         if (getId() >= 9901000) {
             return;
         } else {
-            client.getSession().write(ReqCNpcPool.spawnNPC(this, true));
+            client.getSession().write(ResCNpcPool.spawnNPC(this, true));
             //client.getSession().write(MaplePacketCreator.spawnNPCRequestController(this, true));
         }
     }
 
     @Override
     public final void sendDestroyData(final MapleClient client) {
-        client.getSession().write(ReqCNpcPool.removeNPC(getObjectId()));
+        client.getSession().write(ResCNpcPool.removeNPC(getObjectId()));
     }
 
     @Override

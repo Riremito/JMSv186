@@ -291,7 +291,7 @@ public class PlayerHandler {
             chr.handleBattleshipHP(-damage);
         }
         if (!chr.isHidden()) {
-            chr.getMap().broadcastMessage(chr, MaplePacketCreator.damagePlayer(type, monsteridfrom, chr.getId(), damage, fake, direction, reflect, is_pg, oid, pos_x, pos_y), false);
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.damagePlayer(type, monsteridfrom, chr.getId(), damage, fake, direction, reflect, is_pg, oid, pos_x, pos_y), false);
         }
     }
 
@@ -547,7 +547,7 @@ public class PlayerHandler {
             }
         }
         chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, MaplePacketCreator.UserAttack(attack), chr.getPosition());
+        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttack(attack, skill, c.getPlayer(), attackCount, maxdamage, effect, mirror ? AttackType.NON_RANGED_WITH_MIRROR : AttackType.NON_RANGED);
     }
 
@@ -662,7 +662,7 @@ public class PlayerHandler {
             }
         }
         chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, MaplePacketCreator.UserAttack(attack), chr.getPosition());
+        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttack(attack, skill, chr, bulletCount, basedamage, effect, ShadowPartner != null ? AttackType.RANGED_WITH_SHADOWPARTNER : AttackType.RANGED);
     }
 
@@ -686,7 +686,7 @@ public class PlayerHandler {
             chr.addCooldown(attack.skill, System.currentTimeMillis(), effect.getCooldown() * 1000);
         }
         chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, MaplePacketCreator.UserAttack(attack), chr.getPosition());
+        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttackMagic(attack, skill, c.getPlayer(), effect);
     }
 
@@ -710,7 +710,7 @@ public class PlayerHandler {
             }
         }
         if (emote > 0 && chr != null && chr.getMap() != null) { //O_o
-            chr.getMap().broadcastMessage(chr, MaplePacketCreator.facialExpression(chr, emote), false);
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.facialExpression(chr, emote), false);
             WeakReference<MapleCharacter>[] clones = chr.getClones();
             for (int i = 0; i < clones.length; i++) {
                 if (clones[i].get() != null) {
@@ -718,7 +718,7 @@ public class PlayerHandler {
                     CloneTimer.getInstance().schedule(new Runnable() {
 
                         public void run() {
-                            clone.getMap().broadcastMessage(MaplePacketCreator.facialExpression(clone, emote));
+                            clone.getMap().broadcastMessage(ResCUserRemote.facialExpression(clone, emote));
                         }
                     }, 500 * i + 500);
                 }

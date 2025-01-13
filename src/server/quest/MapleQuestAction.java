@@ -176,7 +176,7 @@ public class MapleQuestAction implements Serializable {
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                c.getClient().getSession().write(MaplePacketCreator.updateQuestFinish(quest.getId(), status.getNpc(), MapleDataTool.getInt(data)));
+                c.getClient().getSession().write(ResCUserLocal.updateQuestFinish(quest.getId(), status.getNpc(), MapleDataTool.getInt(data)));
                 break;
             case money:
                 status = c.getQuest(quest);
@@ -421,7 +421,7 @@ public class MapleQuestAction implements Serializable {
                 break;
             }
             case nextQuest: {
-                c.getClient().getSession().write(MaplePacketCreator.updateQuestFinish(quest.getId(), c.getQuest(quest).getNpc(), MapleDataTool.getInt(data)));
+                c.getClient().getSession().write(ResCUserLocal.updateQuestFinish(quest.getId(), c.getQuest(quest).getNpc(), MapleDataTool.getInt(data)));
                 break;
             }
             case money: {

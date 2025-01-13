@@ -23,9 +23,11 @@ import client.MapleCharacter;
 import client.MapleDisease;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import client.inventory.MapleRing;
 import config.ServerConfig;
 import constants.GameConstants;
 import handling.MaplePacket;
+import handling.channel.handler.AttackInfo;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
 import java.util.ArrayList;
@@ -34,8 +36,10 @@ import packet.ServerPacket;
 import packet.request.struct.CMovePath;
 import packet.response.struct.AvatarLook;
 import packet.response.struct.Structure;
+import packet.response.struct.TestHelper;
 import server.MapleStatEffect;
 import server.Randomizer;
+import tools.AttackPair;
 import tools.Pair;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -546,6 +550,117 @@ public class ResCUserRemote {
         mplew.writeInt(curhp);
         mplew.writeInt(maxhp);
         return mplew.getPacket();
+    }
+
+    public static MaplePacket damagePlayer(int skill, int monsteridfrom, int cid, int damage, int fake, byte direction, int reflect, boolean is_pg, int oid, int pos_x, int pos_y) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserHit.Get());
+        mplew.writeInt(cid);
+        mplew.write(skill);
+        mplew.writeInt(damage);
+        mplew.writeInt(monsteridfrom);
+        mplew.write(direction);
+        if (reflect > 0) {
+            mplew.write(reflect);
+            mplew.write(is_pg ? 1 : 0);
+            mplew.writeInt(oid);
+            mplew.write(6);
+            mplew.writeShort(pos_x);
+            mplew.writeShort(pos_y);
+            mplew.write(0);
+        } else {
+            mplew.writeShort(0);
+        }
+        mplew.writeInt(damage);
+        if (fake > 0) {
+            mplew.writeInt(fake);
+        }
+        return mplew.getPacket();
+    }
+
+    // CLifePool::OnUserAttack
+    public static MaplePacket UserAttack(AttackInfo attack) {
+        ServerPacket p = new ServerPacket(attack.GetHeader());
+        p.Encode4(attack.CharacterId);
+        p.Encode1(attack.HitKey);
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+            p.Encode1(attack.m_nLevel);
+        }
+        p.Encode1(attack.SkillLevel); // nPassiveSLV
+        if (0 < attack.nSkillID) {
+            p.Encode4(attack.nSkillID); // nSkillID
+        }
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+            p.Encode1(attack.BuffKey); // bSerialAttack
+        }
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164) {
+            p.Encode1(attack.AttackActionKey);
+        } else {
+            p.Encode2(attack.AttackActionKey);
+        }
+        p.Encode1(attack.nAttackSpeed); // nActionSpeed
+        p.Encode1(attack.nMastery); // nMastery
+        p.Encode4(attack.nBulletItemID); // nBulletItemID
+        for (AttackPair oned : attack.allDamage) {
+            if (oned.attack != null) {
+                p.Encode4(oned.objectid);
+                p.Encode1(7);
+                if (attack.IsMesoExplosion()) {
+                    p.Encode1(oned.attack.size());
+                }
+                for (Pair<Integer, Boolean> eachd : oned.attack) {
+                    if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164) {
+                        p.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
+                    } else {
+                        p.Encode1(eachd.right ? 1 : 0);
+                        p.Encode4(eachd.left.intValue());
+                    }
+                }
+            }
+        }
+        if (attack.IsQuantumExplosion()) {
+            p.Encode4(attack.tKeyDown);
+        }
+        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+            if (attack.GetHeader() == ServerPacket.Header.LP_UserShootAttack) {
+                p.Encode2(attack.X);
+                p.Encode2(attack.Y);
+            }
+        }
+        return p.Get();
+    }
+
+    public static MaplePacket facialExpression(MapleCharacter from, int expression) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserEmotion.Get());
+        mplew.writeInt(from.getId());
+        mplew.writeInt(expression);
+        mplew.writeInt(-1); //itemid of expression use
+        mplew.write(0);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket updateCharLook(MapleCharacter chr) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserAvatarModified.Get());
+        mplew.writeInt(chr.getId());
+        mplew.write(1);
+        TestHelper.addCharLook(mplew, chr, false);
+        Pair<List<MapleRing>, List<MapleRing>> rings = chr.getRings(false);
+        addRingInfo(mplew, rings.getLeft());
+        addRingInfo(mplew, rings.getRight());
+        mplew.writeZeroBytes(5); //probably marriage ring (1) -> charid to follow (4)
+        return mplew.getPacket();
+    }
+
+    public static void addRingInfo(MaplePacketLittleEndianWriter mplew, List<MapleRing> rings) {
+        mplew.write(rings.size());
+        for (MapleRing ring : rings) {
+            mplew.writeInt(1);
+            mplew.writeLong(ring.getRingId());
+            mplew.writeLong(ring.getPartnerRingId());
+            mplew.writeInt(ring.getItemId());
+        }
     }
 
 }

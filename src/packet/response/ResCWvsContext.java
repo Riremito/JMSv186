@@ -1789,4 +1789,19 @@ public class ResCWvsContext {
         return mplew.getPacket();
     }
 
+    public static final MaplePacket getSlotUpdate(byte invType, byte newSlots) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_InventoryGrow.Get());
+        mplew.write(invType);
+        mplew.write(newSlots);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket followRequest(int chrid) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SetPassenserRequest.Get());
+        mplew.writeInt(chrid);
+        return mplew.getPacket();
+    }
+
 }

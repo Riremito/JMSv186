@@ -35,6 +35,7 @@ import packet.ops.OpsFieldEffect;
 import packet.ops.OpsFieldEffectArg;
 import packet.request.ReqCNpcPool;
 import packet.response.ResCField;
+import packet.response.ResCNpcPool;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.wrapper.ResWrapper;
@@ -2266,7 +2267,7 @@ public class AdminCommand {
                 npc.setFh(c.getPlayer().getMap().getFootholds().findBelow(c.getPlayer().getPosition()).getId());
                 npc.setCustom(true);
                 c.getPlayer().getMap().addMapObject(npc);
-                c.getPlayer().getMap().broadcastMessage(ReqCNpcPool.spawnNPC(npc, true));
+                c.getPlayer().getMap().broadcastMessage(ResCNpcPool.spawnNPC(npc, true));
 
                 // ファイルへ追記
                 try (FileWriter fw = new FileWriter(ServerConfig.script_path + "map/temp/" + c.getPlayer().getMapId() + ".txt", true)) {

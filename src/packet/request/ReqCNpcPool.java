@@ -10,15 +10,8 @@ import client.MapleClient;
 import config.ServerConfig;
 import constants.GameConstants;
 import debug.Debug;
-import handling.MaplePacket;
-import java.util.List;
 import packet.ClientPacket;
-import packet.ServerPacket;
-import server.MapleItemInformationProvider;
 import server.MapleShop;
-import server.MapleShopItem;
-import server.life.MapleNPC;
-import tools.BitTools;
 
 /**
  *
@@ -204,123 +197,4 @@ public class ReqCNpcPool {
         return false;
     }
     // server
-
-    public static MaplePacket spawnNPC(MapleNPC life, boolean show) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_NpcEnterField);
-
-        p.Encode4(life.getObjectId());
-        p.Encode4(life.getId());
-        p.Encode2(life.getPosition().x);
-        p.Encode2(life.getCy());
-        p.Encode1(life.getF() == 1 ? 0 : 1);
-        p.Encode2(life.getFh());
-        p.Encode2(life.getRx0());
-        p.Encode2(life.getRx1());
-        p.Encode1(show ? 1 : 0);
-
-        if (194 <= ServerConfig.GetVersion()) {
-            p.Encode1(0);
-        }
-
-        return p.Get();
-    }
-
-    public static MaplePacket removeNPC(final int objectid) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_NpcLeaveField);
-
-        p.Encode4(objectid);
-        return p.Get();
-    }
-
-    // CShopDlg::OnPacket
-    // CShopDlg::SetShopDlg
-    // getNPCShop
-    public static MaplePacket getNPCShop(MapleClient c, int sid, List<MapleShopItem> items) {
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_OpenShopDlg);
-
-        if (ServerConfig.JMS194orLater()) {
-            sp.Encode1(0);
-        }
-
-        if (ServerConfig.JMS302orLater()) {
-            sp.Encode4(0);
-        }
-
-        sp.Encode4(sid);
-
-        if (ServerConfig.JMS194orLater()) {
-            // 0 = normal shop, 1 is probably coin shop
-            sp.Encode1(0); // if 1, Encode1(size), Encode4, EncodeStr
-        }
-
-        sp.Encode2(items.size()); // item count
-        for (MapleShopItem item : items) {
-            sp.Encode4(item.getItemId());
-            sp.Encode4(item.getPrice());
-
-            if (ServerConfig.JMS180orLater() || ServerConfig.KMS95orLater()) {
-                sp.Encode4(item.getReqItem()); // nTokenItemID
-                sp.Encode4(item.getReqItemQ()); // nTokenPrice
-                if (ServerConfig.JMS186orLater()) {
-                    sp.Encode4(0); // nItemPeriod
-                }
-                sp.Encode4(0); // nLevelLimited
-            }
-            if (ServerConfig.JMS302orLater()) {
-                sp.Encode4(0);
-                sp.Encode1(0);
-                sp.Encode4(0);
-            }
-
-            if (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId())) {
-                sp.Encode2(1); // stacksize o.o
-                if (ServerConfig.JMS164orLater()) {
-                    sp.Encode2(item.getBuyable());
-                }
-            } else {
-                sp.EncodeZeroBytes(6);
-                sp.Encode2(BitTools.doubleToShortBits(ii.getPrice(item.getItemId())));
-                sp.Encode2(ii.getSlotMax(c, item.getItemId()));
-            }
-
-            if (ServerConfig.JMS302orLater()) {
-                sp.Encode1(0);
-                sp.Encode4(0);
-            }
-        }
-
-        return sp.Get();
-    }
-
-    // CShopDlg::OnPacket
-    // confirmShopTransaction
-    public static MaplePacket confirmShopTransaction(SP_ShopFlag flag, int level) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ShopResult);
-
-        // JMS v188, 00706BA9
-        // JMS v194も謎DCを発生させる処理が動くとクライアントがクラッシュするのでクライアントの修正が必要
-        sp.Encode1(flag.get()); // 8 = sell, 0 = buy, 0x20 = due to an error
-
-        switch (flag) {
-            case ERROR_LEVEL_UNDER:
-            case ERROR_LEVEL_HIGH: {
-                sp.Encode4(level);
-                break;
-            }
-            default: {
-                if (ServerConfig.JMS302orLater()) {
-                    sp.Encode1(0);
-                }
-                break;
-            }
-        }
-
-        return sp.Get();
-    }
-
-    public static MaplePacket confirmShopTransaction(SP_ShopFlag flag) {
-        return confirmShopTransaction(flag, 0);
-    }
 }

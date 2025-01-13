@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
+import packet.response.ResCNpcPool;
 import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
 import server.maps.MapleMap;
@@ -311,7 +312,7 @@ public class AdminPacket {
         npc.setFh(map.getFootholds().findBelow(npc_xy).getId());
         npc.setCustom(true);
         map.addMapObject(npc);
-        map.broadcastMessage(ReqCNpcPool.spawnNPC(npc, true));
+        map.broadcastMessage(ResCNpcPool.spawnNPC(npc, true));
         return true;
     }
 }

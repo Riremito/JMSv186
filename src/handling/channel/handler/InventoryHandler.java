@@ -53,6 +53,7 @@ import packet.response.ResCDropPool.LeaveType;
 import packet.request.ItemRequest;
 import packet.response.ResCField;
 import packet.response.ResCUIItemUpgrade;
+import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
@@ -947,8 +948,8 @@ public class InventoryHandler {
                     if (eq.getState() >= 5) {
                         eq.renewPotential();
                         c.SendPacket(ResWrapper.scrolledItem(toUse, item, false, true));
-                        c.getSession().write(MaplePacketCreator.getPotentialEffect(c.getPlayer().getId(), eq.getItemId()));
-                        c.getPlayer().getMap().broadcastMessage(c.getPlayer(), MaplePacketCreator.getScrollEffect(c.getPlayer().getId(), ScrollResult.SUCCESS, false), false);
+                        c.getSession().write(ResCUser.getPotentialEffect(c.getPlayer().getId(), eq.getItemId()));
+                        c.getPlayer().getMap().broadcastMessage(c.getPlayer(), ResCUser.getScrollEffect(c.getPlayer().getId(), ScrollResult.SUCCESS, false), false);
                         c.getPlayer().forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);
                         MapleInventoryManipulator.addById(c, 2430112, (short) 1);
                         used = true;
@@ -1115,7 +1116,7 @@ public class InventoryHandler {
                 Rectangle bounds = new Rectangle((int) c.getPlayer().getPosition().getX(), (int) c.getPlayer().getPosition().getY(), 1, 1);
                 MapleMist mist = new MapleMist(bounds, c.getPlayer());
                 c.getPlayer().getMap().spawnMist(mist, 10000, true);
-                c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.getChatText(c.getPlayer().getId(), "Oh no, I farted!", false, 1));
+                c.getPlayer().getMap().broadcastMessage(ResCUser.getChatText(c.getPlayer().getId(), "Oh no, I farted!", false, 1));
                 c.getSession().write(ResWrapper.enableActions());
                 used = true;
                 break;

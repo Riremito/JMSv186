@@ -68,6 +68,7 @@ import packet.request.ReqCNpcPool;
 import packet.request.ReqCReactorPool;
 import packet.response.ResCUser_Dragon;
 import packet.response.ResCMobPool;
+import packet.response.ResCNpcPool;
 import packet.response.ResCUser_Pet;
 import packet.response.ResCSummonedPool;
 import packet.response.ResCUserLocal;
@@ -1222,7 +1223,7 @@ public final class MapleMap {
         npc.setFh(getFootholds().findBelow(pos).getId());
         npc.setCustom(true);
         addMapObject(npc);
-        broadcastMessage(ReqCNpcPool.spawnNPC(npc, true));
+        broadcastMessage(ResCNpcPool.spawnNPC(npc, true));
     }
 
     public final void removeNpc(final int npcid) {
@@ -1232,7 +1233,7 @@ public final class MapleMap {
             while (itr.hasNext()) {
                 MapleNPC npc = (MapleNPC) itr.next();
                 if (npc.isCustom() && npc.getId() == npcid) {
-                    broadcastMessage(ReqCNpcPool.removeNPC(npc.getObjectId()));
+                    broadcastMessage(ResCNpcPool.removeNPC(npc.getObjectId()));
                     itr.remove();
                 }
             }
@@ -2876,7 +2877,7 @@ public final class MapleMap {
         List<MapleNPC> npcs = getAllNPCsThreadsafe();
         for (MapleNPC npc : npcs) {
             if (npc.isCustom()) {
-                broadcastMessage(ReqCNpcPool.spawnNPC(npc, false));
+                broadcastMessage(ResCNpcPool.spawnNPC(npc, false));
                 removeMapObject(npc);
             }
         }

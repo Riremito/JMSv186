@@ -18,9 +18,14 @@
  */
 package packet.response;
 
+import client.MapleCharacter;
 import config.ServerConfig;
 import handling.MaplePacket;
+import java.awt.Point;
+import java.util.List;
 import packet.ServerPacket;
+import packet.response.struct.TestHelper;
+import server.movement.LifeMovementFragment;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -244,6 +249,99 @@ public class ResCUserLocal {
         mplew.writeShort(ServerPacket.Header.LP_UserTeleport.Get());
         mplew.write(0);
         mplew.write(portal); // 6
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket updateQuestFinish(int quest, int npc, int nextquest) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserQuestResult.Get());
+        mplew.write(8);
+        mplew.writeShort(quest);
+        mplew.writeInt(npc);
+        mplew.writeInt(nextquest);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket updateQuestInfo(MapleCharacter c, int quest, int npc, byte progress) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserQuestResult.Get());
+        mplew.write(progress);
+        mplew.writeShort(quest);
+        mplew.writeInt(npc);
+        mplew.writeInt(0);
+        return mplew.getPacket();
+    }
+
+    // チャット欄へのテキスト表示
+    public static final MaplePacket getFollowMessage(final String msg) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserChatMsg.Get());
+        /*
+        // どのような内容のテキストでも問題なし
+        0x0000  全体チャット
+        0x0001  内緒
+        0x0002  ピンク
+        0x0003  友達
+        0x0004  ギルド
+        0x0005  連合
+        0x0006  灰色
+        0x0007  黄色
+        0x0008  薄い黄色
+        0x0009  水色
+        0x000A  GM
+        0x000B  薄いピンク
+        0x000C  メガホン
+        0x0011  濃い紫
+        0x0017  黄色
+        0x0018  薄い水色
+        0x0019  GM
+        0x001A  体験用アバター
+        // "名前 : メッセージ" 形式のテキストでないとクライアントがクラッシュする
+        0x000D  拡声器
+        0x000E  体験用アバター
+        0x000F  アバターランダムボックス
+        0x0010  アイテム拡声器
+        0x0012  ワールド拡声器
+        0x0013  3連拡声器のプレビューと同等
+        0x0014  ハート拡声器
+        0x0015  ドクロ拡声器
+        0x0016  ハートバルーン拡声器
+         */
+        mplew.writeShort(11);
+        mplew.writeMapleAsciiString(msg);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket moveFollow(Point otherStart, Point myStart, Point otherEnd, List<LifeMovementFragment> moves) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserPassiveMove.Get());
+        mplew.writePos(otherStart);
+        mplew.writePos(myStart);
+        TestHelper.serializeMovementList(mplew, moves);
+        mplew.write(17); //what? could relate to movePlayer
+        for (int i = 0; i < 8; i++) {
+            mplew.write(136); //?? sometimes 44
+        }
+        mplew.write(8); //?
+        mplew.writePos(otherEnd);
+        mplew.writePos(otherStart);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getFollowMsg(int opcode) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserFollowCharacterFailed.Get());
+        /*
+        0x00    原因不明の理由で自動追尾を申請できませんでした。
+        0x01    相手が自動追尾できない位置にいるか距離が遠すぎて自動追尾できません。
+        0x02    相手が自動追尾できない位置にいるか距離が遠すぎて自動追尾できません。
+        0x03    相手は現在自動追尾申請できない状態です。
+        0x04    自動追尾中のキャラクターがいると自動追尾申請できません。
+        0x05    相手が自動追尾を許可しませんでした。
+        0x06    離れているようです。
+        0x07    以降0x00と同じ
+         */
+        mplew.writeLong(opcode); //5 = canceled request.
         return mplew.getPacket();
     }
 

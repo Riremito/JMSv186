@@ -28,6 +28,9 @@ import client.MapleStat;
 import client.anticheat.CheatingOffense;
 import constants.GameConstants;
 import packet.response.ResCField_Coconut;
+import packet.response.ResCUser;
+import packet.response.ResCUserLocal;
+import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.events.MapleCoconut;
 import server.events.MapleCoconut.MapleCoconuts;
@@ -215,7 +218,7 @@ public class PlayersHandler {
             tt.setFollowInitiator(false);
             c.getPlayer().setFollowOn(false);
             c.getPlayer().setFollowInitiator(false);
-            tt.getClient().getSession().write(MaplePacketCreator.followRequest(c.getPlayer().getId()));
+            tt.getClient().getSession().write(ResCWvsContext.followRequest(c.getPlayer().getId()));
         } else {
             c.getSession().write(MaplePacketCreator.serverNotice(1, "You are too far away."));
         }
@@ -232,11 +235,11 @@ public class PlayersHandler {
                     tt.setFollowInitiator(true);
                     c.getPlayer().setFollowOn(true);
                     c.getPlayer().setFollowInitiator(false);
-                    c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.followEffect(tt.getId(), c.getPlayer().getId(), null));
+                    c.getPlayer().getMap().broadcastMessage(ResCUser.followEffect(tt.getId(), c.getPlayer().getId(), null));
                 } else {
                     c.getPlayer().setFollowId(0);
                     tt.setFollowId(0);
-                    tt.getClient().getSession().write(MaplePacketCreator.getFollowMsg(5));
+                    tt.getClient().getSession().write(ResCUserLocal.getFollowMsg(5));
                 }
             } else {
                 if (tt != null) {

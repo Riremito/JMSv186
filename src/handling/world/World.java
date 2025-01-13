@@ -39,6 +39,7 @@ import handling.world.guild.MapleGuildCharacter;
 import handling.world.guild.MapleGuildSummary;
 import java.util.Collection;
 import packet.response.ResCField;
+import packet.response.ResCUIMessenger;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
@@ -369,7 +370,7 @@ public class World {
                 if (chr != null) {
                     MapleMessenger messenger = chr.getMessenger();
                     if (messenger != null) {
-                        chr.getClient().getSession().write(MaplePacketCreator.messengerNote(namefrom, 5, 0));
+                        chr.getClient().getSession().write(ResCUIMessenger.messengerNote(namefrom, 5, 0));
                     }
                 }
             }
@@ -393,7 +394,7 @@ public class World {
                     if (ch > 0) {
                         MapleCharacter chr = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(mmc.getName());
                         if (chr != null) {
-                            chr.getClient().getSession().write(MaplePacketCreator.removeMessengerPlayer(position));
+                            chr.getClient().getSession().write(ResCUIMessenger.removeMessengerPlayer(position));
                         }
                     }
                 }
@@ -427,7 +428,7 @@ public class World {
                         MapleCharacter chr = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(messengerchar.getName());
                         if (chr != null) {
                             MapleCharacter from = ChannelServer.getInstance(fromchannel).getPlayerStorage().getCharacterByName(namefrom);
-                            chr.getClient().getSession().write(MaplePacketCreator.updateMessengerPlayer(namefrom, from, position, fromchannel - 1));
+                            chr.getClient().getSession().write(ResCUIMessenger.updateMessengerPlayer(namefrom, from, position, fromchannel - 1));
                         }
                     }
                 }
@@ -450,10 +451,10 @@ public class World {
                         if (chr != null) {
                             if (!messengerchar.getName().equals(from)) {
                                 MapleCharacter fromCh = ChannelServer.getInstance(fromchannel).getPlayerStorage().getCharacterByName(from);
-                                chr.getClient().getSession().write(MaplePacketCreator.addMessengerPlayer(from, fromCh, position, fromchannel - 1));
-                                fromCh.getClient().getSession().write(MaplePacketCreator.addMessengerPlayer(chr.getName(), chr, mposition, messengerchar.getChannel() - 1));
+                                chr.getClient().getSession().write(ResCUIMessenger.addMessengerPlayer(from, fromCh, position, fromchannel - 1));
+                                fromCh.getClient().getSession().write(ResCUIMessenger.addMessengerPlayer(chr.getName(), chr, mposition, messengerchar.getChannel() - 1));
                             } else {
-                                chr.getClient().getSession().write(MaplePacketCreator.joinMessenger(mposition));
+                                chr.getClient().getSession().write(ResCUIMessenger.joinMessenger(mposition));
                             }
                         }
                     }
@@ -474,7 +475,7 @@ public class World {
                         MapleCharacter chr = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(messengerchar.getName());
                         if (chr != null) {
 
-                            chr.getClient().getSession().write(MaplePacketCreator.messengerChat(chattext));
+                            chr.getClient().getSession().write(ResCUIMessenger.messengerChat(chattext));
                         }
                     }
                 } //Whisp Monitor Code
@@ -498,13 +499,13 @@ public class World {
                     MapleCharacter targeter = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(target);
                     if (targeter != null && targeter.getMessenger() == null) {
                         if (!targeter.isGM() || gm) {
-                            targeter.getClient().getSession().write(MaplePacketCreator.messengerInvite(sender, messengerid));
-                            from.getClient().getSession().write(MaplePacketCreator.messengerNote(target, 4, 1));
+                            targeter.getClient().getSession().write(ResCUIMessenger.messengerInvite(sender, messengerid));
+                            from.getClient().getSession().write(ResCUIMessenger.messengerNote(target, 4, 1));
                         } else {
-                            from.getClient().getSession().write(MaplePacketCreator.messengerNote(target, 4, 0));
+                            from.getClient().getSession().write(ResCUIMessenger.messengerNote(target, 4, 0));
                         }
                     } else {
-                        from.getClient().getSession().write(MaplePacketCreator.messengerChat(sender + " : " + target + " is already using Maple Messenger"));
+                        from.getClient().getSession().write(ResCUIMessenger.messengerChat(sender + " : " + target + " is already using Maple Messenger"));
                     }
                 }
             }
