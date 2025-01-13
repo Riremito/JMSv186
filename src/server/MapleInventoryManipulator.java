@@ -98,7 +98,7 @@ public class MapleInventoryManipulator {
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemId) && c.getPlayer().haveItem(itemId, 1, true, false)) {
             c.getSession().write(ResWrapper.getInventoryFull());
-            c.getSession().write(MaplePacketCreator.showItemUnavailable());
+            c.getSession().write(ResWrapper.showItemUnavailable());
             return -1;
         }
         final MapleInventoryType type = GameConstants.getInventoryType(itemId);
@@ -209,7 +209,7 @@ public class MapleInventoryManipulator {
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemId) && c.getPlayer().haveItem(itemId, 1, true, false)) {
             c.getSession().write(ResWrapper.getInventoryFull());
-            c.getSession().write(MaplePacketCreator.showItemUnavailable());
+            c.getSession().write(ResWrapper.showItemUnavailable());
             return null;
         }
         final MapleInventoryType type = GameConstants.getInventoryType(itemId);
@@ -306,7 +306,7 @@ public class MapleInventoryManipulator {
 
         if (ii.isPickupRestricted(item.getItemId()) && c.getPlayer().haveItem(item.getItemId(), 1, true, false)) {
             c.getSession().write(ResWrapper.getInventoryFull());
-            c.getSession().write(MaplePacketCreator.showItemUnavailable());
+            c.getSession().write(ResWrapper.showItemUnavailable());
             return false;
         }
         final int before = c.getPlayer().itemQuantity(item.getItemId());
@@ -319,7 +319,7 @@ public class MapleInventoryManipulator {
             if (!GameConstants.isRechargable(item.getItemId())) {
                 if (quantity <= 0) { //wth
                     c.getSession().write(ResWrapper.getInventoryFull());
-                    c.getSession().write(MaplePacketCreator.showItemUnavailable());
+                    c.getSession().write(ResWrapper.showItemUnavailable());
                     return false;
                 }
                 if (existing.size() > 0) { // first update all existing slots to slotMax

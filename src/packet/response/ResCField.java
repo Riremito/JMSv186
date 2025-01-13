@@ -23,9 +23,11 @@ import client.MapleClient;
 import debug.Debug;
 import handling.MaplePacket;
 import java.util.List;
+import java.util.Map;
 import packet.ServerPacket;
 import packet.ops.OpsFieldEffectArg;
 import packet.response.struct.TestHelper;
+import server.maps.MapleMap;
 import server.shops.AbstractPlayerStore;
 import server.shops.HiredMerchant;
 import server.shops.IMaplePlayerShop;
@@ -538,6 +540,176 @@ public class ResCField {
         if (turn == 0) {
             mplew.write(firstslot);
             mplew.write(type);
+        }
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket showOXQuiz(int questionSet, int questionId, boolean askQuestion) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_Quiz.Get());
+        mplew.write(askQuestion ? 1 : 0);
+        mplew.write(questionSet);
+        mplew.writeShort(questionId);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket showChaosHorntailShrine(boolean spawned, int time) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_HontaleTimer.Get());
+        mplew.write(spawned ? 1 : 0);
+        mplew.writeInt(time);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket showChaosZakumShrine(boolean spawned, int time) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_ChaosZakumTimer.Get());
+        mplew.write(spawned ? 1 : 0);
+        mplew.writeInt(time);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket stopClock() {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_DestroyClock.Get());
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket showHorntailShrine(boolean spawned, int time) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_HontailTimer.Get());
+        mplew.write(spawned ? 1 : 0);
+        mplew.writeInt(time);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket showZakumShrine(boolean spawned, int time) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_ZakumTimer.Get());
+        mplew.write(spawned ? 1 : 0);
+        mplew.writeInt(time);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getFindReplyWithMTS(String target, final boolean buddy) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_Whisper.Get());
+        mplew.write(buddy ? 72 : 9);
+        mplew.writeMapleAsciiString(target);
+        mplew.write(0);
+        mplew.writeInt(-1);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getFindReplyWithCS(String target, final boolean buddy) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_Whisper.Get());
+        mplew.write(buddy ? 72 : 9);
+        mplew.writeMapleAsciiString(target);
+        mplew.write(2);
+        mplew.writeInt(-1);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket showEquipEffect() {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_FieldSpecificData.Get());
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket showEquipEffect(int team) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_FieldSpecificData.Get());
+        mplew.writeShort(team);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket getUpdateEnvironment(final MapleMap map) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_FieldObstacleOnOffStatus.Get());
+        mplew.writeInt(map.getEnvironment().size());
+        for (Map.Entry<String, Integer> mp : map.getEnvironment().entrySet()) {
+            mplew.writeMapleAsciiString(mp.getKey());
+            mplew.writeInt(mp.getValue());
+        }
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket environmentMove(String env, int mode) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_FieldObstacleOnOff.Get());
+        mplew.writeMapleAsciiString(env);
+        mplew.writeInt(mode);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getClockTime(int hour, int min, int sec) {
+        // Current Time
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_Clock.Get());
+        mplew.write(1); //Clock-Type
+        mplew.write(hour);
+        mplew.write(min);
+        mplew.write(sec);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getClock(int time) {
+        // time in seconds
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_Clock.Get());
+        mplew.write(2); // clock type. if you send 3 here you have to send another byte (which does not matter at all) before the timestamp
+        mplew.writeInt(time);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getFindReplyWithMap(String target, int mapid, final boolean buddy) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_Whisper.Get());
+        mplew.write(buddy ? 72 : 9);
+        mplew.writeMapleAsciiString(target);
+        mplew.write(1);
+        mplew.writeInt(mapid);
+        mplew.writeZeroBytes(8); // ?? official doesn't send zeros here but whatever
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getFindReply(String target, int channel, final boolean buddy) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_Whisper.Get());
+        mplew.write(buddy ? 72 : 9);
+        mplew.writeMapleAsciiString(target);
+        mplew.write(3);
+        mplew.writeInt(channel - 1);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getWhisperReply(String target, byte reply) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_Whisper.Get());
+        mplew.write(10); // whisper?
+        mplew.writeMapleAsciiString(target);
+        mplew.write(reply); //  0x0 = cannot find char, 0x1 = success
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getWhisper(String sender, int channel, String text) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_Whisper.Get());
+        mplew.write(18);
+        mplew.writeMapleAsciiString(sender);
+        mplew.writeShort(channel - 1);
+        mplew.writeMapleAsciiString(text);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket startMapEffect(String msg, int itemid, boolean active) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_BlowWeather.Get());
+        //        mplew.write(active ? 0 : 1);
+        mplew.writeInt(itemid);
+        if (active) {
+            mplew.writeMapleAsciiString(msg);
         }
         return mplew.getPacket();
     }

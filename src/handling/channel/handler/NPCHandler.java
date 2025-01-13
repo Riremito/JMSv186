@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import packet.ServerPacket;
 import packet.ops.OpsScriptMan;
+import packet.response.ResCRPSGameDlg;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import server.MapleInventoryManipulator;
@@ -323,29 +324,29 @@ public class NPCHandler {
                 if (c.getPlayer().getMeso() >= 1000) {
                     c.getPlayer().setRPS(new RockPaperScissors(c, mode));
                 } else {
-                    c.getSession().write(MaplePacketCreator.getRPSMode((byte) 0x08, -1, -1, -1));
+                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x08, -1, -1, -1));
                 }
                 break;
             case 1: //answer
                 if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().answer(c, slea.readByte())) {
-                    c.getSession().write(MaplePacketCreator.getRPSMode((byte) 0x0D, -1, -1, -1));
+                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;
             case 2: //time over
                 if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().timeOut(c)) {
-                    c.getSession().write(MaplePacketCreator.getRPSMode((byte) 0x0D, -1, -1, -1));
+                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;
             case 3: //continue
                 if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().nextRound(c)) {
-                    c.getSession().write(MaplePacketCreator.getRPSMode((byte) 0x0D, -1, -1, -1));
+                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;
             case 4: //leave
                 if (c.getPlayer().getRPS() != null) {
                     c.getPlayer().getRPS().dispose(c);
                 } else {
-                    c.getSession().write(MaplePacketCreator.getRPSMode((byte) 0x0D, -1, -1, -1));
+                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;
         }

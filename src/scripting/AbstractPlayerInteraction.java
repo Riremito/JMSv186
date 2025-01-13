@@ -55,6 +55,7 @@ import packet.ops.OpsFieldEffect;
 import packet.ops.OpsFieldEffectArg;
 import packet.ops.OpsScriptMan;
 import packet.response.ResCField;
+import packet.response.ResCScriptMan;
 import packet.response.ResCUserLocal;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
@@ -907,7 +908,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void evanTutorial(final String data, final int v1) {
-        c.getSession().write(MaplePacketCreator.getEvanTutorial(data));
+        c.getSession().write(ResCScriptMan.getEvanTutorial(data));
     }
 
     public final void AranTutInstructionalBubble(final String data) {

@@ -94,6 +94,7 @@ import packet.response.ResCUser_Pet;
 import packet.response.ResCUser_Pet.DeActivatedMsg;
 import packet.response.ResCClientSocket;
 import packet.response.ResCField;
+import packet.response.ResCScriptMan;
 import packet.response.ResCStage;
 import packet.response.ResCSummonedPool;
 import packet.response.ResCUser;
@@ -1575,7 +1576,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void startMapTimeLimitTask(int time, final MapleMap to) {
-        client.getSession().write(MaplePacketCreator.getClock(time));
+        client.getSession().write(ResCField.getClock(time));
 
         time *= 1000;
         mapTimeLimitTask = MapTimer.getInstance().register(new Runnable() {
@@ -2479,7 +2480,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     expandInventory((byte) 2, 4);
                     expandInventory((byte) 3, 4);
                     expandInventory((byte) 4, 4);
-                    client.getSession().write(MaplePacketCreator.getEvanTutorial("UI/tutorial/evan/14/0"));
+                    client.getSession().write(ResCScriptMan.getEvanTutorial("UI/tutorial/evan/14/0"));
                     dropMessage(5, "The baby Dragon hatched and appears to have something to tell you. Click the baby Dragon to start a conversation.");
                 }
             }
@@ -3406,23 +3407,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (GameConstants.isAran(job)) {
             switch (level) {
                 case 30:
-                    client.getSession().write(MaplePacketCreator.startMapEffect("You have reached level 30! To job advance, go back to Lirin of Rien.", 5120000, true));
+                    client.getSession().write(ResCField.startMapEffect("You have reached level 30! To job advance, go back to Lirin of Rien.", 5120000, true));
                     break;
                 case 70:
-                    client.getSession().write(MaplePacketCreator.startMapEffect("You have reached level 70! To job advance, talk to your job instructor in El Nath.", 5120000, true));
+                    client.getSession().write(ResCField.startMapEffect("You have reached level 70! To job advance, talk to your job instructor in El Nath.", 5120000, true));
                     break;
                 case 120:
-                    client.getSession().write(MaplePacketCreator.startMapEffect("You have reached level 120! To job advance, talk to your job instructor in Leafre.", 5120000, true));
+                    client.getSession().write(ResCField.startMapEffect("You have reached level 120! To job advance, talk to your job instructor in Leafre.", 5120000, true));
                     break;
             }
         }
         if (GameConstants.isKOC(job) && level == 70) {
-            client.getSession().write(MaplePacketCreator.startMapEffect("You have reached level 70! To job advance, talk to your job instructor in Erev.", 5120000, true));
+            client.getSession().write(ResCField.startMapEffect("You have reached level 70! To job advance, talk to your job instructor in Erev.", 5120000, true));
         }
         if (GameConstants.isEvan(job)) {
             switch (level) {
                 case 9:
-                    client.getSession().write(MaplePacketCreator.startMapEffect("Make sure you finish all the Required quests before reaching level 10, or you will not be able to continue.", 5120000, true));
+                    client.getSession().write(ResCField.startMapEffect("Make sure you finish all the Required quests before reaching level 10, or you will not be able to continue.", 5120000, true));
                     break;
                 case 10:
                 case 20:
@@ -3443,28 +3444,28 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (getSubcategory() == 1) { //db level 2
             switch (level) {
                 case 2:
-                    client.getSession().write(MaplePacketCreator.startMapEffect("Click the lightbulb above you and accept the [Required] quest. Remake the character if this quest is not showing.", 5120009, true));
+                    client.getSession().write(ResCField.startMapEffect("Click the lightbulb above you and accept the [Required] quest. Remake the character if this quest is not showing.", 5120009, true));
                     break;
                 case 10:
-                    client.getSession().write(MaplePacketCreator.startMapEffect("Go and advance to a Rogue at Dark Lord in Kerning City. Make sure you do ALL the [Required] quests.", 5120000, true));
+                    client.getSession().write(ResCField.startMapEffect("Go and advance to a Rogue at Dark Lord in Kerning City. Make sure you do ALL the [Required] quests.", 5120000, true));
                     break;
                 case 15:
-                    client.getSession().write(MaplePacketCreator.startMapEffect("Make sure you have been doing all the required quests. Remember that saving SP is possible.", 5120000, true));
+                    client.getSession().write(ResCField.startMapEffect("Make sure you have been doing all the required quests. Remember that saving SP is possible.", 5120000, true));
                     break;
                 case 20:
-                    client.getSession().write(MaplePacketCreator.startMapEffect("You have reached level 20. If you have done all your required quests, you can enter Secret Garden and advance.", 5120000, true));
+                    client.getSession().write(ResCField.startMapEffect("You have reached level 20. If you have done all your required quests, you can enter Secret Garden and advance.", 5120000, true));
                     break;
                 case 30:
-                    client.getSession().write(MaplePacketCreator.startMapEffect("You have reached level 30. Please go to Lady Syl to advance.", 5120000, true));
+                    client.getSession().write(ResCField.startMapEffect("You have reached level 30. Please go to Lady Syl to advance.", 5120000, true));
                     break;
                 case 55:
-                    client.getSession().write(MaplePacketCreator.startMapEffect("You have reached level 55. Please go to Lady Syl and do a few quests to advance.", 5120000, true));
+                    client.getSession().write(ResCField.startMapEffect("You have reached level 55. Please go to Lady Syl and do a few quests to advance.", 5120000, true));
                     break;
                 case 70:
-                    client.getSession().write(MaplePacketCreator.startMapEffect("You have reached level 70. Please go to your job instructor in Elnath to advance.", 5120000, true));
+                    client.getSession().write(ResCField.startMapEffect("You have reached level 70. Please go to your job instructor in Elnath to advance.", 5120000, true));
                     break;
                 case 120:
-                    client.getSession().write(MaplePacketCreator.startMapEffect("You have reached level 120. Please go to your job instructor in Leafre to advance.", 5120000, true));
+                    client.getSession().write(ResCField.startMapEffect("You have reached level 120. Please go to your job instructor in Leafre to advance.", 5120000, true));
                     break;
             }
         }

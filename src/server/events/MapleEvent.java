@@ -25,6 +25,7 @@ import client.MapleCharacter;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.World;
+import packet.response.ResCField;
 import server.MapleInventoryManipulator;
 import server.RandomRewards;
 import server.Randomizer;
@@ -143,7 +144,7 @@ public abstract class MapleEvent {
                     for (int i : e.mapid) {
                         if (cserv.getEvent() == i) {
                             e.broadcast(MaplePacketCreator.serverNotice(0, "The event will start in 30 seconds!"));
-                            e.broadcast(MaplePacketCreator.getClock(30));
+                            e.broadcast(ResCField.getClock(30));
                             EventTimer.getInstance().schedule(new Runnable() {
 
                                 public void run() {

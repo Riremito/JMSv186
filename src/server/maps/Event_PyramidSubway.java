@@ -26,6 +26,7 @@ import handling.channel.ChannelServer;
 import handling.world.MaplePartyCharacter;
 import java.awt.Point;
 import java.util.concurrent.ScheduledFuture;
+import packet.response.ResCField;
 import packet.response.wrapper.ResWrapper;
 import server.Randomizer;
 import server.Timer.MapTimer;
@@ -92,7 +93,7 @@ public class Event_PyramidSubway {
             for (MaplePartyCharacter mpc : c.getParty().getMembers()) {
                 final MapleCharacter chr = ourMap.getCharacterById(mpc.getId());
                 if (chr != null) {
-                    chr.getClient().getSession().write(MaplePacketCreator.getClock(time));
+                    chr.getClient().getSession().write(ResCField.getClock(time));
                     chr.getClient().getSession().write(ResWrapper.showEffect("killing/first/number/" + stage));
                     chr.getClient().getSession().write(ResWrapper.showEffect("killing/first/stage"));
                     chr.getClient().getSession().write(ResWrapper.showEffect("killing/first/start"));
@@ -100,7 +101,7 @@ public class Event_PyramidSubway {
                 }
             }
         } else {
-            c.getClient().getSession().write(MaplePacketCreator.getClock(time));
+            c.getClient().getSession().write(ResCField.getClock(time));
             c.getClient().getSession().write(ResWrapper.showEffect("killing/first/number/" + stage));
             c.getClient().getSession().write(ResWrapper.showEffect("killing/first/stage"));
             c.getClient().getSession().write(ResWrapper.showEffect("killing/first/start"));

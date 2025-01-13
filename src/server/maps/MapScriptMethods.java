@@ -844,7 +844,7 @@ public class MapScriptMethods {
     }
 
     private static void sendDojoClock(MapleClient c, int time) {
-        c.getSession().write(MaplePacketCreator.getClock(time));
+        c.getSession().write(ResCField.getClock(time));
     }
 
     private static void sendDojoStart(MapleClient c, int stage) {

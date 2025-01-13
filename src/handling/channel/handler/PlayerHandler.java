@@ -368,7 +368,7 @@ public class PlayerHandler {
 
         if (skilllevel_serv > 0 && skilllevel_serv == level && skill.isChargeSkill()) {
             chr.setKeyDownSkill_Time(System.currentTimeMillis());
-            chr.getMap().broadcastMessage(chr, MaplePacketCreator.skillEffect(chr, skillId, level, flags, speed, unk), false);
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.skillEffect(chr, skillId, level, flags, speed, unk), false);
         }
     }
 

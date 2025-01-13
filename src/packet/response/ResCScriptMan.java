@@ -25,6 +25,7 @@ import debug.Debug;
 import handling.MaplePacket;
 import packet.ServerPacket;
 import packet.ops.OpsScriptMan;
+import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -133,6 +134,18 @@ public class ResCScriptMan {
         }
 
         return sp.Get();
+    }
+
+    public static MaplePacket getEvanTutorial(String data) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_ScriptMessage.Get());
+        mplew.writeInt(8);
+        mplew.write(0);
+        mplew.write(1);
+        mplew.write(1);
+        mplew.write(1);
+        mplew.writeMapleAsciiString(data);
+        return mplew.getPacket();
     }
 
 }

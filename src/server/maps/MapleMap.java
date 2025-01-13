@@ -66,9 +66,12 @@ import packet.response.ResCDropPool.EnterType;
 import packet.response.ResCDropPool.LeaveType;
 import packet.request.ReqCNpcPool;
 import packet.request.ReqCReactorPool;
+import packet.response.ResCAffectedAreaPool;
+import packet.response.ResCField;
 import packet.response.ResCUser_Dragon;
 import packet.response.ResCMobPool;
 import packet.response.ResCNpcPool;
+import packet.response.ResCReactorPool;
 import packet.response.ResCUser_Pet;
 import packet.response.ResCSummonedPool;
 import packet.response.ResCUserLocal;
@@ -931,7 +934,7 @@ public final class MapleMap {
 
     public final void destroyReactor(final int oid) {
         final MapleReactor reactor = getReactorByOid(oid);
-        broadcastMessage(ReqCReactorPool.Destroy(reactor));
+        broadcastMessage(ResCReactorPool.Destroy(reactor));
         reactor.setAlive(false);
         removeMapObject(reactor);
         reactor.setTimerActive(false);
@@ -953,7 +956,7 @@ public final class MapleMap {
         try {
             for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
                 final MapleReactor reactor = (MapleReactor) obj;
-                broadcastMessage(ReqCReactorPool.Destroy(reactor));
+                broadcastMessage(ResCReactorPool.Destroy(reactor));
                 reactor.setAlive(false);
                 reactor.setTimerActive(false);
                 toSpawn.add(reactor);
@@ -1274,7 +1277,7 @@ public final class MapleMap {
         }
         if (squadSchedule != null) {
             cancelSquadSchedule();
-            broadcastMessage(MaplePacketCreator.stopClock());
+            broadcastMessage(ResCField.stopClock());
         }
     }
 
@@ -1299,7 +1302,7 @@ public final class MapleMap {
         }
         if (squadSchedule != null) {
             cancelSquadSchedule();
-            broadcastMessage(MaplePacketCreator.stopClock());
+            broadcastMessage(ResCField.stopClock());
         }
     }
 
@@ -1400,7 +1403,7 @@ public final class MapleMap {
 
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(ReqCReactorPool.Spawn(reactor));
+                c.SendPacket(ResCReactorPool.Spawn(reactor));
             }
         }, null);
     }
@@ -1512,7 +1515,7 @@ public final class MapleMap {
 
             @Override
             public void run() {
-                broadcastMessage(MaplePacketCreator.removeMist(mist.getObjectId()));
+                broadcastMessage(ResCAffectedAreaPool.removeMist(mist.getObjectId()));
                 removeMapObject(mist);
                 if (poisonSchedule != null) {
                     poisonSchedule.cancel(false);
@@ -1750,13 +1753,13 @@ public final class MapleMap {
     }
 
     public final void startExtendedMapEffect(final String msg, final int itemId) {
-        broadcastMessage(MaplePacketCreator.startMapEffect(msg, itemId, true));
+        broadcastMessage(ResCField.startMapEffect(msg, itemId, true));
         MapTimer.getInstance().schedule(new Runnable() {
 
             @Override
             public void run() {
-                broadcastMessage(MaplePacketCreator.removeMapEffect());
-                broadcastMessage(MaplePacketCreator.startMapEffect(msg, itemId, false));
+                broadcastMessage(ResWrapper.removeMapEffect());
+                broadcastMessage(ResCField.startMapEffect(msg, itemId, false));
                 //dont remove mapeffect.
             }
         }, 60000);
@@ -1802,11 +1805,11 @@ public final class MapleMap {
                 case 109080001:
                 case 109080002:
                 case 109080003:
-                    chr.getClient().getSession().write(MaplePacketCreator.showEquipEffect(chr.getCoconutTeam()));
+                    chr.getClient().getSession().write(ResCField.showEquipEffect(chr.getCoconutTeam()));
                     break;
                 case 809000101:
                 case 809000201:
-                    chr.getClient().getSession().write(MaplePacketCreator.showEquipEffect());
+                    chr.getClient().getSession().write(ResCField.showEquipEffect());
                     break;
             }
         }
@@ -1846,18 +1849,18 @@ public final class MapleMap {
         }
         if (!chr.isClone()) {
             if (chr.getEventInstance() != null && chr.getEventInstance().isTimerStarted() && !chr.isClone()) {
-                chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (chr.getEventInstance().getTimeLeft() / 1000)));
+                chr.getClient().getSession().write(ResCField.getClock((int) (chr.getEventInstance().getTimeLeft() / 1000)));
             }
             if (hasClock()) {
                 final Calendar cal = Calendar.getInstance();
-                chr.getClient().getSession().write((MaplePacketCreator.getClockTime(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND))));
+                chr.getClient().getSession().write((ResCField.getClockTime(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND))));
             }
             if (chr.getCarnivalParty() != null && chr.getEventInstance() != null) {
                 chr.getEventInstance().onMapLoad(chr);
             }
             MapleEvent.mapLoad(chr, channel);
             if (getSquadBegin() != null && getSquadBegin().getTimeLeft() > 0 && getSquadBegin().getStatus() == 1) {
-                chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (getSquadBegin().getTimeLeft() / 1000)));
+                chr.getClient().getSession().write(ResCField.getClock((int) (getSquadBegin().getTimeLeft() / 1000)));
             }
             if (mapid / 1000 != 105100 && mapid / 100 != 8020003 && mapid / 100 != 8020008) { //no boss_balrog/2095/coreblaze/auf. but coreblaze/auf does AFTER
                 final MapleSquad sqd = getSquadByMap(); //for all squads
@@ -1890,11 +1893,11 @@ public final class MapleMap {
                 }
             }
             if (mapid == 914000000) {
-                chr.getClient().getSession().write(MaplePacketCreator.temporaryStats_Aran());
+                chr.getClient().getSession().write(ResCWvsContext.temporaryStats_Aran());
             } else if (mapid == 105100300 && chr.getLevel() >= 91) {
-                chr.getClient().getSession().write(MaplePacketCreator.temporaryStats_Balrog(chr));
+                chr.getClient().getSession().write(ResCWvsContext.temporaryStats_Balrog(chr));
             } else if (mapid == 140090000 || mapid == 105100301 || mapid == 105100401 || mapid == 105100100) {
-                chr.getClient().getSession().write(MaplePacketCreator.temporaryStats_Reset());
+                chr.getClient().getSession().write(ResCWvsContext.temporaryStats_Reset());
             }
         }
         if (GameConstants.isEvan(chr.getJob()) && chr.getJob() >= 2200 && chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) == null) {
@@ -1907,20 +1910,20 @@ public final class MapleMap {
             }
         }
         if ((mapid == 10000 && chr.getJob() == 0) || (mapid == 130030000 && chr.getJob() == 1000) || (mapid == 914000000 && chr.getJob() == 2000) || (mapid == 900010000 && chr.getJob() == 2001)) {
-            chr.getClient().getSession().write(MaplePacketCreator.startMapEffect("Welcome to " + chr.getClient().getChannelServer().getServerName() + "!", 5122000, true));
+            chr.getClient().getSession().write(ResCField.startMapEffect("Welcome to " + chr.getClient().getChannelServer().getServerName() + "!", 5122000, true));
             chr.dropMessage(1, "Welcome to " + chr.getClient().getChannelServer().getServerName() + ", " + chr.getName() + " ! \r\nUse @joyce to collect your Item Of Appreciation once you're level 10! \r\nUse @help for commands. \r\nGood luck and have fun!");
             chr.dropMessage(5, "Your EXP Rate will be set to " + GameConstants.getExpRate_Below10(chr.getJob()) + "x until you reach level 10.");
             chr.dropMessage(5, "Use @joyce to collect your Item Of Appreciation once you're level 10! Use @help for commands. Good luck and have fun!");
 
         }
         if (permanentWeather > 0) {
-            chr.getClient().getSession().write(MaplePacketCreator.startMapEffect("", permanentWeather, false)); //snow, no msg
+            chr.getClient().getSession().write(ResCField.startMapEffect("", permanentWeather, false)); //snow, no msg
         }
         if (getPlatforms().size() > 0) {
             chr.getClient().getSession().write(MaplePacketCreator.getMovingPlatforms(this));
         }
         if (environment.size() > 0) {
-            chr.getClient().getSession().write(MaplePacketCreator.getUpdateEnvironment(this));
+            chr.getClient().getSession().write(ResCField.getUpdateEnvironment(this));
         }
         if (isTown()) {
             chr.cancelEffectFromBuffStat(MapleBuffStat.RAINING_MINES);
@@ -1962,16 +1965,16 @@ public final class MapleMap {
                 returnMapa = getReturnMap();
             }
             if (mode == 1) { //zakum
-                broadcastMessage(MaplePacketCreator.showZakumShrine(spawned, 5));
+                broadcastMessage(ResCField.showZakumShrine(spawned, 5));
             } else if (mode == 2) { //chaoszakum
-                broadcastMessage(MaplePacketCreator.showChaosZakumShrine(spawned, 5));
+                broadcastMessage(ResCField.showChaosZakumShrine(spawned, 5));
             } else if (mode == 3) { //ht/chaosht
-                broadcastMessage(MaplePacketCreator.showChaosHorntailShrine(spawned, 5));
+                broadcastMessage(ResCField.showChaosHorntailShrine(spawned, 5));
             } else {
-                broadcastMessage(MaplePacketCreator.showHorntailShrine(spawned, 5));
+                broadcastMessage(ResCField.showHorntailShrine(spawned, 5));
             }
             if (mode == 1 || spawned) { //both of these together dont go well
-                broadcastMessage(MaplePacketCreator.getClock(300)); //5 min
+                broadcastMessage(ResCField.getClock(300)); //5 min
             }
             final MapleMap returnMapz = returnMapa;
             if (!spawned) { //no monsters yet; inforce timer to spawn it quickly
@@ -2001,11 +2004,11 @@ public final class MapleMap {
                                 //are we still the same squad? are monsters still == 0?
                                 MaplePacket packet;
                                 if (mode == 1) { //zakum
-                                    packet = MaplePacketCreator.showZakumShrine(spawned, 0);
+                                    packet = ResCField.showZakumShrine(spawned, 0);
                                 } else if (mode == 2) { //chaoszakum
-                                    packet = MaplePacketCreator.showChaosZakumShrine(spawned, 0);
+                                    packet = ResCField.showChaosZakumShrine(spawned, 0);
                                 } else {
-                                    packet = MaplePacketCreator.showHorntailShrine(spawned, 0); //chaoshorntail message is weird
+                                    packet = ResCField.showHorntailShrine(spawned, 0); //chaoshorntail message is weird
                                 }
                                 for (MapleCharacter chr : MapleMap.this.getCharactersThreadsafe()) { //warp all in map
                                     chr.getClient().getSession().write(packet);
@@ -2028,11 +2031,11 @@ public final class MapleMap {
                             //are we still the same squad? monsters however don't count
                             MaplePacket packet;
                             if (mode == 1) { //zakum
-                                packet = MaplePacketCreator.showZakumShrine(spawned, 0);
+                                packet = ResCField.showZakumShrine(spawned, 0);
                             } else if (mode == 2) { //chaoszakum
-                                packet = MaplePacketCreator.showChaosZakumShrine(spawned, 0);
+                                packet = ResCField.showChaosZakumShrine(spawned, 0);
                             } else {
-                                packet = MaplePacketCreator.showHorntailShrine(spawned, 0); //chaoshorntail message is weird
+                                packet = ResCField.showHorntailShrine(spawned, 0); //chaoshorntail message is weird
                             }
                             for (MapleCharacter chr : MapleMap.this.getCharactersThreadsafe()) { //warp all in map
                                 chr.getClient().getSession().write(packet);
@@ -3133,7 +3136,7 @@ public final class MapleMap {
     }
 
     public final void moveEnvironment(final String ms, final int type) {
-        broadcastMessage(MaplePacketCreator.environmentMove(ms, type));
+        broadcastMessage(ResCField.environmentMove(ms, type));
         environment.put(ms, type);
     }
 

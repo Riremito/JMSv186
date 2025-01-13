@@ -23,6 +23,7 @@ package server.events;
 
 import java.util.concurrent.ScheduledFuture;
 import client.MapleCharacter;
+import packet.response.ResCField;
 import server.Timer.EventTimer;
 import tools.MaplePacketCreator;
 
@@ -46,7 +47,7 @@ public class MapleFitness extends MapleEvent {
     @Override
     public void onMapLoad(MapleCharacter chr) {
         if (isTimerStarted()) {
-            chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (getTimeLeft() / 1000)));
+            chr.getClient().getSession().write(ResCField.getClock((int) (getTimeLeft() / 1000)));
         }
     }
 
@@ -54,7 +55,7 @@ public class MapleFitness extends MapleEvent {
     public void startEvent() {
         unreset();
         super.reset(); //isRunning = true
-        broadcast(MaplePacketCreator.getClock((int) (time / 1000)));
+        broadcast(ResCField.getClock((int) (time / 1000)));
         this.timeStarted = System.currentTimeMillis();
         checkAndMessage();
 

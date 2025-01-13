@@ -335,10 +335,10 @@ public class MapleFamily implements java.io.Serializable {
             member.setJobId(mgc.getJob());
             member.setLevel((short) mgc.getLevel());
             if (old_level != mgc.getLevel()) {
-                this.broadcast(MaplePacketCreator.sendLevelup(true, mgc.getLevel(), mgc.getName()), mgc.getId(), mgc.getId() == leaderid ? null : member.getPedigree());
+                this.broadcast(ResCWvsContext.sendLevelup(true, mgc.getLevel(), mgc.getName()), mgc.getId(), mgc.getId() == leaderid ? null : member.getPedigree());
             }
             if (old_job != mgc.getJob()) {
-                this.broadcast(MaplePacketCreator.sendJobup(true, mgc.getJob(), mgc.getName()), mgc.getId(), mgc.getId() == leaderid ? null : member.getPedigree());
+                this.broadcast(ResCWvsContext.sendJobup(true, mgc.getJob(), mgc.getName()), mgc.getId(), mgc.getId() == leaderid ? null : member.getPedigree());
             }
         }
     }

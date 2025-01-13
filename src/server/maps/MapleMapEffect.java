@@ -24,6 +24,7 @@ import client.MapleClient;
 import tools.MaplePacketCreator;
 import handling.MaplePacket;
 import packet.response.ResCField;
+import packet.response.wrapper.ResWrapper;
 
 public class MapleMapEffect {
 
@@ -50,11 +51,11 @@ public class MapleMapEffect {
     }
 
     public MaplePacket makeDestroyData() { //jukebox doesn't REALLY have a destroy, but 0 stops all music
-        return jukebox ? ResCField.playCashSong(0, "") : MaplePacketCreator.removeMapEffect();
+        return jukebox ? ResCField.playCashSong(0, "") : ResWrapper.removeMapEffect();
     }
 
     public MaplePacket makeStartData() {
-        return jukebox ? ResCField.playCashSong(itemId, msg) : MaplePacketCreator.startMapEffect(msg, itemId, active);
+        return jukebox ? ResCField.playCashSong(itemId, msg) : ResCField.startMapEffect(msg, itemId, active);
     }
 
     public void sendStartData(MapleClient c) {

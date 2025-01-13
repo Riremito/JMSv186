@@ -138,7 +138,7 @@ public class InventoryHandler {
                 sorted = true;
             }
         }
-        c.getSession().write(MaplePacketCreator.finishedSort(pInvType.getType()));
+        c.getSession().write(ResCWvsContext.finishedSort(pInvType.getType()));
         c.getSession().write(ResWrapper.enableActions());
     }
 
@@ -163,7 +163,7 @@ public class InventoryHandler {
         for (IItem item : sortedItems) {
             MapleInventoryManipulator.addFromDrop(c, item, false);
         }
-        c.getSession().write(MaplePacketCreator.finishedGather(mode));
+        c.getSession().write(ResCWvsContext.finishedGather(mode));
         c.getSession().write(ResWrapper.enableActions());
         itemMap.clear();
         sortedItems.clear();

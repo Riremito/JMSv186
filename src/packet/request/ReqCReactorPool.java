@@ -2,9 +2,7 @@
 package packet.request;
 
 import client.MapleClient;
-import handling.MaplePacket;
 import packet.ClientPacket;
-import packet.ServerPacket;
 import scripting.ReactorScriptManager;
 import server.maps.MapleReactor;
 
@@ -60,45 +58,4 @@ public class ReqCReactorPool {
         return false;
     }
 
-    // spawnReactor
-    public static MaplePacket Spawn(MapleReactor reactor) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ReactorEnterField);
-
-        p.Encode4(reactor.getObjectId());
-        p.Encode4(reactor.getReactorId());
-        p.Encode1(reactor.getState());
-        p.Encode2(reactor.getPosition().x);
-        p.Encode2(reactor.getPosition().y);
-        p.Encode1(reactor.getFacingDirection()); // stance
-        p.EncodeStr(reactor.getName());
-
-        return p.Get();
-    }
-
-    // triggerReactor
-    public static MaplePacket Hit(MapleReactor reactor, int stance) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ReactorChangeState);
-
-        p.Encode4(reactor.getObjectId());
-        p.Encode1(reactor.getState());
-        p.Encode2(reactor.getPosition().x);
-        p.Encode2(reactor.getPosition().y);
-        p.Encode2(stance);
-        p.Encode1(0);
-        p.Encode1(4);
-
-        return p.Get();
-    }
-
-    // destroyReactor
-    public static MaplePacket Destroy(MapleReactor reactor) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ReactorLeaveField);
-
-        p.Encode4(reactor.getObjectId());
-        p.Encode1(reactor.getState());
-        p.Encode2(reactor.getPosition().x);
-        p.Encode2(reactor.getPosition().y);
-
-        return p.Get();
-    }
 }

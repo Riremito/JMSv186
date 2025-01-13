@@ -28,6 +28,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.SkillFactory;
 import handling.MaplePacket;
+import packet.response.ResCAffectedAreaPool;
 import server.MapleStatEffect;
 import server.life.MapleMonster;
 import server.life.MobSkill;
@@ -138,17 +139,17 @@ public class MapleMist extends AbstractMapleMapObject {
     }
 
     public MaplePacket fakeSpawnData(int level) {
-        return MaplePacketCreator.spawnMist(this);
+        return ResCAffectedAreaPool.spawnMist(this);
     }
 
     @Override
     public void sendSpawnData(final MapleClient c) {
-        c.getSession().write(MaplePacketCreator.spawnMist(this));
+        c.getSession().write(ResCAffectedAreaPool.spawnMist(this));
     }
 
     @Override
     public void sendDestroyData(final MapleClient c) {
-        c.getSession().write(MaplePacketCreator.removeMist(getObjectId()));
+        c.getSession().write(ResCAffectedAreaPool.removeMist(getObjectId()));
     }
 
     public boolean makeChanceResult() {

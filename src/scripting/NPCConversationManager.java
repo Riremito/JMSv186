@@ -71,7 +71,9 @@ import packet.ops.OpsFieldEffectArg;
 import packet.ops.OpsScriptMan;
 import packet.response.ResCParcelDlg;
 import packet.response.ResCField;
+import packet.response.ResCRPSGameDlg;
 import packet.response.ResCStoreBankDlg;
+import packet.response.ResCUserLocal;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.MapleShop;
@@ -700,7 +702,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (ret) {
             final MapleMap map = c.getPlayer().getMap();
 
-            map.broadcastMessage(MaplePacketCreator.getClock(minutes * 60));
+            map.broadcastMessage(ResCField.getClock(minutes * 60));
             map.broadcastMessage(MaplePacketCreator.serverNotice(6, c.getPlayer().getName() + startText));
         } else {
             squad.clear();
@@ -974,7 +976,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void sendRepairWindow() {
-        c.getSession().write(MaplePacketCreator.sendRepairWindow(npc));
+        c.getSession().write(ResCUserLocal.sendRepairWindow(npc));
     }
 
     public final int getDojoPoints() {
@@ -1322,7 +1324,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public final void sendRPS() {
-        c.getSession().write(MaplePacketCreator.getRPSMode((byte) 8, -1, -1, -1));
+        c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 8, -1, -1, -1));
     }
 
     public final void setQuestRecord(Object ch, final int questid, final String data) {
@@ -1360,16 +1362,16 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                     sendNPCText(getPlayer().getName() + " and " + chr.getName() + ", I wish you two all the best on your AsteriaSEA journey together!", 9201002);
                     getMap().startExtendedMapEffect("You may now kiss the bride, " + getPlayer().getName() + "!", 5120006);
                     if (chr.getGuildId() > 0) {
-                        World.Guild.guildPacket(chr.getGuildId(), MaplePacketCreator.sendMarriage(false, chr.getName()));
+                        World.Guild.guildPacket(chr.getGuildId(), ResCWvsContext.sendMarriage(false, chr.getName()));
                     }
                     if (chr.getFamilyId() > 0) {
-                        World.Family.familyPacket(chr.getFamilyId(), MaplePacketCreator.sendMarriage(true, chr.getName()), chr.getId());
+                        World.Family.familyPacket(chr.getFamilyId(), ResCWvsContext.sendMarriage(true, chr.getName()), chr.getId());
                     }
                     if (getPlayer().getGuildId() > 0) {
-                        World.Guild.guildPacket(getPlayer().getGuildId(), MaplePacketCreator.sendMarriage(false, getPlayer().getName()));
+                        World.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.sendMarriage(false, getPlayer().getName()));
                     }
                     if (getPlayer().getFamilyId() > 0) {
-                        World.Family.familyPacket(getPlayer().getFamilyId(), MaplePacketCreator.sendMarriage(true, chr.getName()), getPlayer().getId());
+                        World.Family.familyPacket(getPlayer().getFamilyId(), ResCWvsContext.sendMarriage(true, chr.getName()), getPlayer().getId());
                     }
                 }
             }

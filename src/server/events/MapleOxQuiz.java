@@ -25,6 +25,7 @@ import client.MapleCharacter;
 import client.MapleStat;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
+import packet.response.ResCField;
 import server.Timer.EventTimer;
 import server.events.MapleOxQuizFactory.MapleOxQuizEntry;
 import server.maps.MapleMap;
@@ -111,8 +112,8 @@ public class MapleOxQuiz extends MapleEvent {
                     return;
                 }
                 final Entry<Pair<Integer, Integer>, MapleOxQuizEntry> question = MapleOxQuizFactory.getInstance().grabRandomQuestion();
-                toSend.broadcastMessage(MaplePacketCreator.showOXQuiz(question.getKey().left, question.getKey().right, true));
-                toSend.broadcastMessage(MaplePacketCreator.getClock(12)); //quickly change to 12
+                toSend.broadcastMessage(ResCField.showOXQuiz(question.getKey().left, question.getKey().right, true));
+                toSend.broadcastMessage(ResCField.getClock(12)); //quickly change to 12
                 if (oxSchedule != null) {
                     oxSchedule.cancel(false);
                 }
@@ -120,7 +121,7 @@ public class MapleOxQuiz extends MapleEvent {
 
                     @Override
                     public void run() {
-                        toSend.broadcastMessage(MaplePacketCreator.showOXQuiz(question.getKey().left, question.getKey().right, false));
+                        toSend.broadcastMessage(ResCField.showOXQuiz(question.getKey().left, question.getKey().right, false));
                         timesAsked++;
                         for (MapleCharacter chr : toSend.getCharactersThreadsafe()) {
                             if (chr != null && !chr.isGM() && chr.isAlive()) { // make sure they aren't null... maybe something can happen in 12 seconds.

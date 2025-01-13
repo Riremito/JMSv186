@@ -30,6 +30,7 @@ import handling.world.MapleMessenger;
 import handling.world.MapleMessengerCharacter;
 import handling.world.World;
 import packet.ClientPacket;
+import packet.response.ResCField;
 import packet.response.ResCUIMessenger;
 import packet.response.ResCUser;
 import tools.MaplePacketCreator;
@@ -207,9 +208,9 @@ public class ChatHandler {
                 if (player != null) {
                     if (!player.isGM() || c.getPlayer().isGM() && player.isGM()) {
 
-                        c.getSession().write(MaplePacketCreator.getFindReplyWithMap(player.getName(), player.getMap().getId(), mode == 68));
+                        c.getSession().write(ResCField.getFindReplyWithMap(player.getName(), player.getMap().getId(), mode == 68));
                     } else {
-                        c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
+                        c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
                     }
                 } else { // Not found
                     int ch = World.Find.findChannel(recipient);
@@ -220,19 +221,19 @@ public class ChatHandler {
                         }
                         if (player != null) {
                             if (!player.isGM() || (c.getPlayer().isGM() && player.isGM())) {
-                                c.getSession().write(MaplePacketCreator.getFindReply(recipient, (byte) ch, mode == 68));
+                                c.getSession().write(ResCField.getFindReply(recipient, (byte) ch, mode == 68));
                             } else {
-                                c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
+                                c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
                             }
                             return;
                         }
                     }
                     if (ch == -10) {
-                        c.getSession().write(MaplePacketCreator.getFindReplyWithCS(recipient, mode == 68));
+                        c.getSession().write(ResCField.getFindReplyWithCS(recipient, mode == 68));
                     } else if (ch == -20) {
-                        c.getSession().write(MaplePacketCreator.getFindReplyWithMTS(recipient, mode == 68));
+                        c.getSession().write(ResCField.getFindReplyWithMTS(recipient, mode == 68));
                     } else {
-                        c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
+                        c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
                     }
                 }
                 break;
@@ -251,14 +252,14 @@ public class ChatHandler {
                     if (player == null) {
                         break;
                     }
-                    player.getClient().getSession().write(MaplePacketCreator.getWhisper(c.getPlayer().getName(), c.getChannel(), text));
+                    player.getClient().getSession().write(ResCField.getWhisper(c.getPlayer().getName(), c.getChannel(), text));
                     if (!c.getPlayer().isGM() && player.isGM()) {
-                        c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
+                        c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
                     } else {
-                        c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 1));
+                        c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 1));
                     }
                 } else {
-                    c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
+                    c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
                 }
             }
             break;

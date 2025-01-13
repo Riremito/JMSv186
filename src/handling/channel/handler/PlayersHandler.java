@@ -97,14 +97,14 @@ public class PlayersHandler {
                 //if (!chr.isGM()) {
                 chr.hasGivenFame(target);
                 //}
-                c.getSession().write(MaplePacketCreator.giveFameResponse(mode, target.getName(), target.getFame()));
-                target.getClient().getSession().write(MaplePacketCreator.receiveFame(mode, chr.getName()));
+                c.getSession().write(ResCWvsContext.giveFameResponse(mode, target.getName(), target.getFame()));
+                target.getClient().getSession().write(ResCWvsContext.receiveFame(mode, chr.getName()));
                 break;
             case NOT_TODAY:
-                c.getSession().write(MaplePacketCreator.giveFameErrorResponse(3));
+                c.getSession().write(ResCWvsContext.giveFameErrorResponse(3));
                 break;
             case NOT_THIS_MONTH:
-                c.getSession().write(MaplePacketCreator.giveFameErrorResponse(4));
+                c.getSession().write(ResCWvsContext.giveFameErrorResponse(4));
                 break;
         }
     }
@@ -277,12 +277,12 @@ public class PlayersHandler {
                 errcode = 0x15;
             }
             if (errcode > 0) {
-                c.getSession().write(MaplePacketCreator.sendEngagement((byte) errcode, 0, null, null));
+                c.getSession().write(ResCWvsContext.sendEngagement((byte) errcode, 0, null, null));
                 c.getSession().write(ResWrapper.enableActions());
                 return;
             }
             c.getPlayer().setMarriageItemId(itemid);
-            chr.getClient().getSession().write(MaplePacketCreator.sendEngagementRequest(c.getPlayer().getName(), c.getPlayer().getId()));
+            chr.getClient().getSession().write(ResCWvsContext.sendEngagementRequest(c.getPlayer().getName(), c.getPlayer().getId()));
             //1112300 + (itemid - 2240004)
         } else if (mode == 1) {
             c.getPlayer().setMarriageItemId(0);
@@ -292,25 +292,25 @@ public class PlayersHandler {
             final int id = slea.readInt();
             final MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
             if (c.getPlayer().getMarriageId() > 0 || chr == null || chr.getId() != id || chr.getMarriageItemId() <= 0 || !chr.haveItem(chr.getMarriageItemId(), 1) || chr.getMarriageId() > 0) {
-                c.getSession().write(MaplePacketCreator.sendEngagement((byte) 0x1D, 0, null, null));
+                c.getSession().write(ResCWvsContext.sendEngagement((byte) 0x1D, 0, null, null));
                 c.getSession().write(ResWrapper.enableActions());
                 return;
             }
             if (accepted) {
                 final int newItemId = 1112300 + (chr.getMarriageItemId() - 2240004);
                 if (!MapleInventoryManipulator.checkSpace(c, newItemId, 1, "") || !MapleInventoryManipulator.checkSpace(chr.getClient(), newItemId, 1, "")) {
-                    c.getSession().write(MaplePacketCreator.sendEngagement((byte) 0x15, 0, null, null));
+                    c.getSession().write(ResCWvsContext.sendEngagement((byte) 0x15, 0, null, null));
                     c.getSession().write(ResWrapper.enableActions());
                     return;
                 }
                 MapleInventoryManipulator.addById(c, newItemId, (short) 1);
                 MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, chr.getMarriageItemId(), 1, false, false);
                 MapleInventoryManipulator.addById(chr.getClient(), newItemId, (short) 1);
-                chr.getClient().getSession().write(MaplePacketCreator.sendEngagement((byte) 0x10, newItemId, chr, c.getPlayer()));
+                chr.getClient().getSession().write(ResCWvsContext.sendEngagement((byte) 0x10, newItemId, chr, c.getPlayer()));
                 chr.setMarriageId(c.getPlayer().getId());
                 c.getPlayer().setMarriageId(chr.getId());
             } else {
-                chr.getClient().getSession().write(MaplePacketCreator.sendEngagement((byte) 0x1E, 0, null, null));
+                chr.getClient().getSession().write(ResCWvsContext.sendEngagement((byte) 0x1E, 0, null, null));
             }
             c.getSession().write(ResWrapper.enableActions());
             chr.setMarriageItemId(0);

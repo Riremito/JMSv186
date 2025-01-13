@@ -36,6 +36,7 @@ import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import java.util.Collections;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import packet.response.ResCField;
 import packet.response.wrapper.ResWrapper;
 import server.MapleCarnivalParty;
 import server.MapleItemInformationProvider;
@@ -150,7 +151,7 @@ public class EventInstanceManager {
             final int timesend = (int) time / 1000;
 
             for (MapleCharacter chr : getPlayers()) {
-                chr.getClient().getSession().write(MaplePacketCreator.getClock(timesend));
+                chr.getClient().getSession().write(ResCField.getClock(timesend));
             }
             timeOut(time, this);
 
@@ -760,7 +761,7 @@ public class EventInstanceManager {
             }
         }
         squad.setStatus((byte) 2);
-        squad.getBeginMap().broadcastMessage(MaplePacketCreator.stopClock());
+        squad.getBeginMap().broadcastMessage(ResCField.stopClock());
     }
 
     public boolean isDisconnected(final MapleCharacter chr) {

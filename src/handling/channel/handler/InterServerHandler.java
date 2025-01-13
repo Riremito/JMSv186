@@ -143,7 +143,7 @@ public class InterServerHandler {
             c.SendPacket(ResWrapper.getCharInfo(player));
         }
 
-        c.getSession().write(MaplePacketCreator.temporaryStats_Reset());
+        c.getSession().write(ResCWvsContext.temporaryStats_Reset());
         player.getMap().addPlayer(player);
 
         player.spawnSavedPets();

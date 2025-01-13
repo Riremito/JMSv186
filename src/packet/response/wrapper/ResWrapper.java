@@ -648,4 +648,12 @@ public class ResWrapper {
         return sp.Get();
     }
 
+    public static MaplePacket showItemUnavailable() {
+        return ResWrapper.getShowInventoryStatus(OpsDropPickUpMessage.PICKUP_UNAVAILABLE);
+    }
+
+    public static MaplePacket removeMapEffect() {
+        return ResCField.startMapEffect(null, 0, false);
+    }
+
 }

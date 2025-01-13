@@ -663,4 +663,16 @@ public class ResCUserRemote {
         }
     }
 
+    public static MaplePacket skillEffect(MapleCharacter from, int skillId, byte level, byte flags, byte speed, byte unk) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserSkillPrepare.Get());
+        mplew.writeInt(from.getId());
+        mplew.writeInt(skillId);
+        mplew.write(level);
+        mplew.write(flags);
+        mplew.write(speed);
+        mplew.write(unk); // Direction ??
+        return mplew.getPacket();
+    }
+
 }

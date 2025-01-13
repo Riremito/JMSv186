@@ -24,6 +24,7 @@ import client.MapleClient;
 import client.MapleCharacterUtil;
 import constants.ServerConstants;
 import packet.response.ResCField_ContiMove;
+import packet.response.ResCUserLocal;
 import scripting.NPCScriptManager;
 import scripting.EventManager;
 import tools.MaplePacketCreator;
@@ -46,7 +47,7 @@ public class UserInterfaceHandler {
 
             if (selection >= 0 && selection <= ServerConstants.Poll_Answers.length) {
                 if (MapleCharacterUtil.SetPoll(c.getAccID(), selection)) {
-                    c.getSession().write(MaplePacketCreator.getPollReply("Thank you."));
+                    c.getSession().write(ResCUserLocal.getPollReply("Thank you."));
                     //idk what goes here lol
                 }
             }

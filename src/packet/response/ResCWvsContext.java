@@ -23,6 +23,7 @@ import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleDisease;
 import client.MapleQuestStatus;
+import client.MapleStat;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MapleMount;
@@ -48,6 +49,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import packet.ServerPacket;
 import packet.ops.OpsBodyPart;
@@ -1801,6 +1804,205 @@ public class ResCWvsContext {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_SetPassenserRequest.Get());
         mplew.writeInt(chrid);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket finishedSort(int type) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SortItemResult.Get());
+        mplew.write(1);
+        mplew.write(type);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket finishedGather(int type) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_GatherItemResult.Get());
+        mplew.write(1);
+        mplew.write(type);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket temporaryStats_Reset() {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_ForcedStatReset.Get());
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket temporaryStats_Balrog(final MapleCharacter chr) {
+        final List<Pair<MapleStat.Temp, Integer>> stats = new ArrayList<Pair<MapleStat.Temp, Integer>>();
+        int offset = 1 + (chr.getLevel() - 90) / 20;
+        //every 20 levels above 90, +1
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.STR, chr.getStat().getTotalStr() / offset));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.DEX, chr.getStat().getTotalDex() / offset));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.INT, chr.getStat().getTotalInt() / offset));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.LUK, chr.getStat().getTotalLuk() / offset));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.WATK, chr.getStat().getTotalWatk() / offset));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.MATK, chr.getStat().getTotalMagic() / offset));
+        return temporaryStats(stats);
+    }
+
+    public static final MaplePacket temporaryStats(final List<Pair<MapleStat.Temp, Integer>> stats) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_ForcedStatSet.Get());
+        //str 0x1, dex 0x2, int 0x4, luk 0x8
+        //level 0x10 = 255
+        //0x100 = 999
+        //0x200 = 999
+        //0x400 = 120
+        //0x800 = 140
+        int updateMask = 0;
+        for (final Pair<MapleStat.Temp, Integer> statupdate : stats) {
+            updateMask |= statupdate.getLeft().getValue();
+        }
+        List<Pair<MapleStat.Temp, Integer>> mystats = stats;
+        if (mystats.size() > 1) {
+            Collections.sort(mystats, new Comparator<Pair<MapleStat.Temp, Integer>>() {
+                @Override
+                public int compare(final Pair<MapleStat.Temp, Integer> o1, final Pair<MapleStat.Temp, Integer> o2) {
+                    int val1 = o1.getLeft().getValue();
+                    int val2 = o2.getLeft().getValue();
+                    return val1 < val2 ? -1 : (val1 == val2 ? 0 : 1);
+                }
+            });
+        }
+        mplew.writeInt(updateMask);
+        Integer value;
+        for (final Pair<MapleStat.Temp, Integer> statupdate : mystats) {
+            value = statupdate.getLeft().getValue();
+            if (value >= 1) {
+                if (value <= 512) {
+                    //level 0x10 - is this really short or some other? (FF 00)
+                    mplew.writeShort(statupdate.getRight().shortValue());
+                } else {
+                    mplew.write(statupdate.getRight().byteValue());
+                }
+            }
+        }
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket temporaryStats_Aran() {
+        final List<Pair<MapleStat.Temp, Integer>> stats = new ArrayList<Pair<MapleStat.Temp, Integer>>();
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.STR, 999));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.DEX, 999));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.INT, 999));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.LUK, 999));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.WATK, 255));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.ACC, 999));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.AVOID, 999));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.SPEED, 140));
+        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.JUMP, 120));
+        return temporaryStats(stats);
+    }
+
+    public static MaplePacket sendLevelup(boolean family, int level, String name) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_NotifyLevelUp.Get());
+        mplew.write(family ? 1 : 2);
+        mplew.writeInt(level);
+        mplew.writeMapleAsciiString(name);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket sendJobup(boolean family, int jobid, String name) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_NotifyJobChange.Get());
+        mplew.write(family ? 1 : 0);
+        mplew.writeInt(jobid); //or is this a short
+        mplew.writeMapleAsciiString(name);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket sendMarriage(boolean family, String name) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_NotifyWedding.Get());
+        mplew.write(family ? 1 : 0);
+        mplew.writeMapleAsciiString(name);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket giveFameResponse(int mode, String charname, int newfame) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_GivePopularityResult.Get());
+        mplew.write(0);
+        mplew.writeMapleAsciiString(charname);
+        mplew.write(mode);
+        mplew.writeShort(newfame);
+        mplew.writeShort(0);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket giveFameErrorResponse(int status) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        /*	* 0: ok, use giveFameResponse<br>
+         * 1: the username is incorrectly entered<br>
+         * 2: users under level 15 are unable to toggle with fame.<br>
+         * 3: can't raise or drop fame anymore today.<br>
+         * 4: can't raise or drop fame for this character for this month anymore.<br>
+         * 5: received fame, use receiveFame()<br>
+         * 6: level of fame neither has been raised nor dropped due to an unexpected error*/
+        mplew.writeShort(ServerPacket.Header.LP_GivePopularityResult.Get());
+        mplew.write(status);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket receiveFame(int mode, String charnameFrom) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_GivePopularityResult.Get());
+        mplew.write(5);
+        mplew.writeMapleAsciiString(charnameFrom);
+        mplew.write(mode);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket sendEngagement(final byte msg, final int item, final MapleCharacter male, final MapleCharacter female) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        // 0B = Engagement has been concluded.
+        // 0D = The engagement is cancelled.
+        // 0E = The divorce is concluded.
+        // 10 = The marriage reservation has been successsfully made.
+        // 12 = Wrong character name
+        // 13 = The party in not in the same map.
+        // 14 = Your inventory is full. Please empty your E.T.C window.
+        // 15 = The person's inventory is full.
+        // 16 = The person cannot be of the same gender.
+        // 17 = You are already engaged.
+        // 18 = The person is already engaged.
+        // 19 = You are already married.
+        // 1A = The person is already married.
+        // 1B = You are not allowed to propose.
+        // 1C = The person is not allowed to be proposed to.
+        // 1D = Unfortunately, the one who proposed to you has cancelled his proprosal.
+        // 1E = The person had declined the proposal with thanks.
+        // 1F = The reservation has been cancelled. Try again later.
+        // 20 = You cannot cancel the wedding after reservation.
+        // 22 = The invitation card is ineffective.
+        mplew.writeShort(ServerPacket.Header.LP_MarriageResult.Get());
+        mplew.write(msg); // 1103 custom quest
+        switch (msg) {
+            case 11:
+                {
+                    mplew.writeInt(0); // ringid or uniqueid
+                    mplew.writeInt(male.getId());
+                    mplew.writeInt(female.getId());
+                    mplew.writeShort(1); //always
+                    mplew.writeInt(item);
+                    mplew.writeInt(item); // wtf?repeat?
+                    mplew.writeAsciiString(male.getName(), 13);
+                    mplew.writeAsciiString(female.getName(), 13);
+                    break;
+                }
+        }
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket sendEngagementRequest(String name, int cid) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_MarriageRequest.Get());
+        mplew.write(0); //mode, 0 = engage, 1 = cancel, 2 = answer.. etc
+        mplew.writeMapleAsciiString(name); // name
+        mplew.writeInt(cid); // playerid
         return mplew.getPacket();
     }
 

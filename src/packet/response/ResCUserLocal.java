@@ -345,4 +345,19 @@ public class ResCUserLocal {
         return mplew.getPacket();
     }
 
+    public static MaplePacket getPollReply(String message) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserNoticeMsg.Get());
+        mplew.writeMapleAsciiString(message);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket sendRepairWindow(int npc) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserOpenUIWithOption.Get());
+        mplew.writeInt(34); //sending 0x21 here opens evan skill window o.o
+        mplew.writeInt(npc);
+        return mplew.getPacket();
+    }
+
 }
