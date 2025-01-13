@@ -127,7 +127,6 @@ import server.maps.SavedLocationType;
 import server.quest.MapleQuest;
 import server.shops.IMaplePlayerShop;
 import server.CashShop;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import server.MapleCarnivalChallenge;
 import server.MapleInventoryManipulator;

@@ -51,7 +51,6 @@ import server.maps.MapleMap;
 import server.maps.Event_DojoAgent;
 import server.maps.AramiaFireWorks;
 import server.quest.MapleQuest;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import server.MapleItemInformationProvider;
 import handling.channel.ChannelServer;

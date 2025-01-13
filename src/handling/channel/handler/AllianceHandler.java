@@ -28,7 +28,6 @@ import handling.world.World;
 import handling.world.guild.MapleGuild;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
-import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class AllianceHandler {

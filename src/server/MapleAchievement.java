@@ -23,7 +23,6 @@ package server;
 import client.MapleCharacter;
 import handling.world.World;
 import packet.response.wrapper.ResWrapper;
-import tools.MaplePacketCreator;
 
 /**
  *

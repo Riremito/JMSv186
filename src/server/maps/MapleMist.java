@@ -32,7 +32,6 @@ import packet.response.ResCAffectedAreaPool;
 import server.MapleStatEffect;
 import server.life.MapleMonster;
 import server.life.MobSkill;
-import tools.MaplePacketCreator;
 
 public class MapleMist extends AbstractMapleMapObject {
 

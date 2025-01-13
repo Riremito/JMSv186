@@ -22,11 +22,9 @@ package server.maps;
 
 import java.awt.Rectangle;
 import client.MapleClient;
-import packet.request.ReqCReactorPool;
 import packet.response.ResCReactorPool;
 import scripting.ReactorScriptManager;
 import server.Timer.MapTimer;
-import tools.MaplePacketCreator;
 import tools.Pair;
 
 public class MapleReactor extends AbstractMapleMapObject {

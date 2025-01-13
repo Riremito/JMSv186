@@ -26,7 +26,6 @@ import client.MapleCharacter;
 import packet.response.ResCField;
 import packet.response.wrapper.ResWrapper;
 import server.Timer.EventTimer;
-import tools.MaplePacketCreator;
 
 public class MapleFitness extends MapleEvent {
 

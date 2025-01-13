@@ -34,7 +34,6 @@ import packet.response.ResCField;
 import packet.response.ResCUIMessenger;
 import packet.response.ResCUser;
 import packet.response.wrapper.ResWrapper;
-import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class ChatHandler {

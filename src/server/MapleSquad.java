@@ -13,7 +13,6 @@ import java.util.concurrent.ScheduledFuture;
 import packet.response.ResCField;
 import server.Timer.CloneTimer;
 import server.maps.MapleMap;
-import tools.MaplePacketCreator;
 
 public class MapleSquad {
 

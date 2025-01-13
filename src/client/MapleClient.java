@@ -79,7 +79,6 @@ import packet.ServerPacket;
 import packet.response.ResCITC;
 import packet.response.ResCCashShop;
 import packet.response.ResCClientSocket;
-import packet.response.ResCLogin;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 import tools.MaplePacketCreator;

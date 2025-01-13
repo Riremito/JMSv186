@@ -43,7 +43,6 @@ import server.life.MapleMonster;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
 import server.maps.MapleMapObjectType;
-import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 /**

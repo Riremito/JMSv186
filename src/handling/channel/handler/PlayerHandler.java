@@ -57,7 +57,6 @@ import server.life.MobSkill;
 import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import server.maps.FieldLimitType;
-import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class PlayerHandler {

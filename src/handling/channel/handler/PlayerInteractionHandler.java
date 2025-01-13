@@ -43,7 +43,6 @@ import server.shops.MaplePlayerShopItem;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 import server.shops.MapleMiniGame;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
 

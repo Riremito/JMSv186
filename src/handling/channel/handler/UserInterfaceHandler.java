@@ -27,7 +27,6 @@ import packet.response.ResCField_ContiMove;
 import packet.response.ResCUserLocal;
 import scripting.NPCScriptManager;
 import scripting.EventManager;
-import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class UserInterfaceHandler {

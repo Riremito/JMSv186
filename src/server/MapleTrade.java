@@ -14,7 +14,6 @@ import java.lang.ref.WeakReference;
 import packet.response.ResCField;
 import packet.response.ResCMiniRoomBaseDlg;
 import packet.response.wrapper.ResWrapper;
-import tools.MaplePacketCreator;
 
 public class MapleTrade {
 

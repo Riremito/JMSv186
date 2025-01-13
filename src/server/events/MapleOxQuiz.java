@@ -30,7 +30,6 @@ import packet.response.wrapper.ResWrapper;
 import server.Timer.EventTimer;
 import server.events.MapleOxQuizFactory.MapleOxQuizEntry;
 import server.maps.MapleMap;
-import tools.MaplePacketCreator;
 import tools.Pair;
 
 public class MapleOxQuiz extends MapleEvent {

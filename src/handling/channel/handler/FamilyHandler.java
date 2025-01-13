@@ -33,7 +33,6 @@ import java.util.List;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.maps.FieldLimitType;
-import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class FamilyHandler {

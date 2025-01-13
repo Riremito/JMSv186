@@ -50,7 +50,6 @@ import server.maps.MapleMap;
 import server.maps.MapleMapItem;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
-import tools.MaplePacketCreator;
 import tools.AttackPair;
 import tools.Pair;
 

@@ -35,7 +35,6 @@ import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.Timer.EtcTimer;
 import server.maps.MapleMapObjectType;
-import tools.MaplePacketCreator;
 
 public class HiredMerchant extends AbstractPlayerStore {
 

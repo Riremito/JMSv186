@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.maps;
 
 import client.MapleClient;
-import tools.MaplePacketCreator;
 import handling.MaplePacket;
 import packet.response.ResCField;
 import packet.response.wrapper.ResWrapper;

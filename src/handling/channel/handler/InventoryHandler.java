@@ -79,7 +79,6 @@ import server.shops.HiredMerchant;
 import server.shops.IMaplePlayerShop;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
-import tools.MaplePacketCreator;
 
 public class InventoryHandler {
 

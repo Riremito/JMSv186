@@ -38,10 +38,8 @@ import database.DatabaseConnection;
 import handling.channel.ChannelServer;
 import handling.world.World;
 import java.util.ArrayList;
-import packet.request.ReqCNpcPool;
 import packet.response.ResCNpcPool;
 import server.maps.*;
-import tools.MaplePacketCreator;
 
 public class PlayerNPC extends MapleNPC {
 

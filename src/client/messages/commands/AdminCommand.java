@@ -33,7 +33,6 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 import packet.ops.OpsFieldEffect;
 import packet.ops.OpsFieldEffectArg;
-import packet.request.ReqCNpcPool;
 import packet.response.ResCField;
 import packet.response.ResCNpcPool;
 import packet.response.ResCUserLocal;
@@ -65,7 +64,6 @@ import server.maps.MapleMapObjectType;
 import server.maps.MapleReactor;
 import server.quest.MapleQuest;
 import tools.ArrayMap;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.StringUtil;
 

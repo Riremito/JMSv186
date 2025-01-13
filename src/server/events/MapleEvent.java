@@ -33,7 +33,6 @@ import server.Randomizer;
 import server.Timer.EventTimer;
 import server.maps.MapleMap;
 import server.maps.SavedLocationType;
-import tools.MaplePacketCreator;
 
 public abstract class MapleEvent {
 

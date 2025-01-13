@@ -46,7 +46,6 @@ import server.maps.MapleMap;
 import server.maps.MapleMapObjectType;
 import server.maps.MapleMist;
 import server.maps.MapleSummon;
-import tools.MaplePacketCreator;
 import tools.Pair;
 
 public class MapleStatEffect implements Serializable {

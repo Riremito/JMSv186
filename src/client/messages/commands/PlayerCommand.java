@@ -15,7 +15,6 @@ import server.life.MapleMonster;
 import server.life.MapleMonsterInformationProvider;
 import server.life.MonsterDropEntry;
 import server.quest.MapleQuest;
-import tools.MaplePacketCreator;
 
 /**
  *

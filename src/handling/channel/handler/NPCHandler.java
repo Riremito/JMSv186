@@ -43,7 +43,6 @@ import scripting.NPCScriptManager;
 import scripting.NPCConversationManager;
 import server.MapleItemInformationProvider;
 import tools.ArrayMap;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;

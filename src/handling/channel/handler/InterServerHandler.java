@@ -53,7 +53,6 @@ import packet.response.wrapper.ResWrapper;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
 import tools.FileoutputUtil;
-import tools.MaplePacketCreator;
 
 public class InterServerHandler {
 

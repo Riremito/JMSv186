@@ -20,12 +20,9 @@ import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import database.DatabaseConnection;
-import packet.request.ReqCNpcPool;
 import packet.request.ReqCNpcPool.SP_ShopFlag;
 import packet.response.ResCShopDlg;
-import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
-import tools.MaplePacketCreator;
 import wz.LoadData;
 
 public class MapleShop {

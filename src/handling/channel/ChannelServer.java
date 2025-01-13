@@ -45,7 +45,6 @@ import scripting.EventScriptManager;
 import server.MapleSquad;
 import server.maps.MapleMapFactory;
 import server.shops.HiredMerchant;
-import tools.MaplePacketCreator;
 import server.life.PlayerNPC;
 
 import org.apache.mina.common.ByteBuffer;

@@ -18,7 +18,6 @@ import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStorage;
-import tools.MaplePacketCreator;
 
 public class ReqCTrunkDlg {
 

@@ -29,7 +29,6 @@ import packet.response.wrapper.ResWrapper;
 import server.Timer.EventTimer;
 import server.life.MobSkillFactory;
 import server.maps.MapleMap;
-import tools.MaplePacketCreator;
 
 public class MapleSnowball extends MapleEvent {
 

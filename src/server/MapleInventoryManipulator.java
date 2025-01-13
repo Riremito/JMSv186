@@ -22,7 +22,6 @@ import packet.ops.OpsCashItem;
 import packet.response.ResCCashShop;
 import packet.response.wrapper.ResWrapper;
 import server.maps.AramiaFireWorks;
-import tools.MaplePacketCreator;
 
 public class MapleInventoryManipulator {
 

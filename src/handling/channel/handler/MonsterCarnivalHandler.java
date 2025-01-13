@@ -32,7 +32,6 @@ import server.MapleCarnivalFactory.MCSkill;
 import server.Randomizer;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
 

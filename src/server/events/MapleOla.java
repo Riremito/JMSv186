@@ -27,7 +27,6 @@ import packet.response.ResCField;
 import packet.response.wrapper.ResWrapper;
 import server.Randomizer;
 import server.Timer.EventTimer;
-import tools.MaplePacketCreator;
 
 public class MapleOla extends MapleEvent {
 

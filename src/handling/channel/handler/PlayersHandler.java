@@ -38,7 +38,6 @@ import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.events.MapleEventType;
 import server.maps.MapleMapObjectType;
-import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class PlayersHandler {

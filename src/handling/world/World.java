@@ -48,7 +48,6 @@ import server.Timer.WorldTimer;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
 import tools.CollectionUtil;
-import tools.MaplePacketCreator;
 
 public class World {
 

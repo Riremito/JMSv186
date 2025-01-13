@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
-import tools.MaplePacketCreator;
 
 public class MapleGuildAlliance implements java.io.Serializable {
 

@@ -28,7 +28,6 @@ import handling.channel.ChannelServer;
 import packet.response.wrapper.ResWrapper;
 import scripting.PortalScriptManager;
 import server.MaplePortal;
-import tools.MaplePacketCreator;
 
 public class MapleGenericPortal implements MaplePortal {
 

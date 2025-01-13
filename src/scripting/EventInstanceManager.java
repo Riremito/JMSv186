@@ -47,7 +47,6 @@ import server.life.MapleMonster;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import tools.FileoutputUtil;
-import tools.MaplePacketCreator;
 
 public class EventInstanceManager {
 

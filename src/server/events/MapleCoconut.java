@@ -28,7 +28,6 @@ import packet.response.ResCField;
 import packet.response.ResCField_Coconut;
 import packet.response.wrapper.ResWrapper;
 import server.Timer.EventTimer;
-import tools.MaplePacketCreator;
 
 public class MapleCoconut extends MapleEvent {
 

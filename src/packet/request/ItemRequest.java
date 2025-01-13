@@ -58,7 +58,6 @@ import server.life.MapleMonster;
 import server.maps.FieldLimitType;
 import server.maps.MapleDynamicPortal;
 import server.maps.MapleMap;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
 

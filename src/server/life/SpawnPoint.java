@@ -28,7 +28,6 @@ import server.MapleCarnivalFactory;
 import server.MapleCarnivalFactory.MCSkill;
 import server.maps.MapleMap;
 import server.maps.MapleReactor;
-import tools.MaplePacketCreator;
 
 public class SpawnPoint extends Spawns {
 

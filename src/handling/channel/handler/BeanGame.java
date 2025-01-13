@@ -14,7 +14,6 @@ import packet.response.wrapper.ResWrapper;
 import tools.FileoutputUtil;
 import server.Randomizer;
 import tools.data.input.LittleEndianAccessor;
-import tools.MaplePacketCreator;
 
 public class BeanGame {
 

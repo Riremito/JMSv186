@@ -68,7 +68,6 @@ import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.shops.HiredMerchant;
 import server.shops.MaplePlayerShopItem;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.StringUtil;
 import tools.data.output.LittleEndianWriter;

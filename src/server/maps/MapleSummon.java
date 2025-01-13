@@ -26,10 +26,8 @@ import client.MapleCharacter;
 import client.MapleClient;
 import constants.GameConstants;
 import client.anticheat.CheatingOffense;
-import packet.request.ReqCSummonedPool;
 import packet.response.ResCSummonedPool;
 import server.MapleStatEffect;
-import tools.MaplePacketCreator;
 
 public class MapleSummon extends AbstractAnimatedMapleMapObject {
 

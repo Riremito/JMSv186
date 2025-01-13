@@ -23,7 +23,6 @@ package client;
 import packet.response.ResCRPSGameDlg;
 import server.MapleInventoryManipulator;
 import server.Randomizer;
-import tools.MaplePacketCreator;
 
 public class RockPaperScissors {
 

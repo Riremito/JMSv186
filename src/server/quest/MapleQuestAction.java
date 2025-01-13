@@ -41,7 +41,6 @@ import provider.MapleDataTool;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
-import tools.MaplePacketCreator;
 
 public class MapleQuestAction implements Serializable {
 
