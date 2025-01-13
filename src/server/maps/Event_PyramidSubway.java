@@ -373,7 +373,7 @@ public class Event_PyramidSubway {
     }
 
     public final void broadcastEnergy(final MapleCharacter c, final String type, final int amount) {
-        c.getClient().getSession().write(MaplePacketCreator.sendPyramidEnergy(type, String.valueOf(amount)));
+        c.getClient().getSession().write(ResWrapper.sendPyramidEnergy(type, String.valueOf(amount)));
     }
 
     public static boolean warpStartSubway(final MapleCharacter c) {

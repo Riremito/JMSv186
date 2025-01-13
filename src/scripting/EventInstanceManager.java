@@ -518,7 +518,7 @@ public class EventInstanceManager {
             return;
         }
         for (MapleCharacter chr : getPlayers()) {
-            chr.getClient().getSession().write(MaplePacketCreator.serverNotice(type, msg));
+            chr.getClient().getSession().write(ResWrapper.serverNotice(type, msg));
         }
     }
 

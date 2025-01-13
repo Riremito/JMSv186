@@ -28,6 +28,7 @@ import packet.ServerPacket;
 import packet.ops.OpsFieldEffectArg;
 import packet.response.struct.TestHelper;
 import server.maps.MapleMap;
+import server.maps.MapleNodes;
 import server.shops.AbstractPlayerStore;
 import server.shops.HiredMerchant;
 import server.shops.IMaplePlayerShop;
@@ -711,6 +712,51 @@ public class ResCField {
         if (active) {
             mplew.writeMapleAsciiString(msg);
         }
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket getMovingPlatforms(final MapleMap map) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_FootHoldInfo.Get());
+        mplew.writeInt(map.getPlatforms().size());
+        for (MapleNodes.MaplePlatform mp : map.getPlatforms()) {
+            mplew.writeMapleAsciiString(mp.name);
+            mplew.writeInt(mp.start);
+            mplew.writeInt(mp.SN.size());
+            for (int x = 0; x < mp.SN.size(); x++) {
+                mplew.writeInt(mp.SN.get(x));
+            }
+            mplew.writeInt(mp.speed);
+            mplew.writeInt(mp.x1);
+            mplew.writeInt(mp.x2);
+            mplew.writeInt(mp.y1);
+            mplew.writeInt(mp.y2);
+            mplew.writeInt(mp.x1); //?
+            mplew.writeInt(mp.y1);
+            mplew.writeShort(mp.r);
+        }
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket showEventInstructions() {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_Desc.Get());
+        mplew.write(0);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket GameMaster_Func(int value) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_AdminResult.Get());
+        mplew.write(value);
+        mplew.writeZeroBytes(17);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket serverBlocked(int type) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_TransferChannelReqIgnored.Get());
+        mplew.write(type);
         return mplew.getPacket();
     }
 

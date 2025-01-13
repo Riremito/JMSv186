@@ -421,7 +421,7 @@ public abstract class AbstractPlayerInteraction {
     public final void Gashapon(final int id, final short quantity) {
         IItem item_info = gainItem(id, quantity, true, 0, -1, "");
         if (item_info != null) {
-            World.Broadcast.broadcastMessage(MaplePacketCreator.getGachaponMega(c.getPlayer().getName(), "をガシャポンで手に入れました。おめでとうございます！", item_info, (byte) 1).getBytes());
+            World.Broadcast.broadcastMessage(ResCWvsContext.getGachaponMega(c.getPlayer().getName(), "をガシャポンで手に入れました。おめでとうございます！", item_info, (byte) 1).getBytes());
         }
     }
 
@@ -484,7 +484,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void worldMessage(final int type, final String message) {
-        World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(type, message).getBytes());
+        World.Broadcast.broadcastMessage(ResWrapper.serverNotice(type, message).getBytes());
     }
 
     // default playerMessage and mapMessage to use type 5
@@ -501,16 +501,16 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void playerMessage(final int type, final String message) {
-        c.getSession().write(MaplePacketCreator.serverNotice(type, message));
+        c.getSession().write(ResWrapper.serverNotice(type, message));
     }
 
     public final void mapMessage(final int type, final String message) {
-        c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.serverNotice(type, message));
+        c.getPlayer().getMap().broadcastMessage(ResWrapper.serverNotice(type, message));
     }
 
     public final void guildMessage(final int type, final String message) {
         if (getPlayer().getGuildId() > 0) {
-            World.Guild.guildPacket(getPlayer().getGuildId(), MaplePacketCreator.serverNotice(type, message));
+            World.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.serverNotice(type, message));
         }
     }
 

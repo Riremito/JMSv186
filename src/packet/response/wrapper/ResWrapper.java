@@ -48,6 +48,7 @@ import packet.response.struct.TestHelper;
 import server.Randomizer;
 import server.maps.MapleMap;
 import tools.HexTool;
+import tools.MaplePacketCreator;
 import tools.StringUtil;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -654,6 +655,43 @@ public class ResWrapper {
 
     public static MaplePacket removeMapEffect() {
         return ResCField.startMapEffect(null, 0, false);
+    }
+
+    public static final MaplePacket sendGhostStatus(final String type, final String amount) {
+        return MaplePacketCreator.sendString(3, type, amount); //Red_Stage(1-5), Blue_Stage, blueTeamDamage, redTeamDamage
+    }
+
+    public static MaplePacket MulungEnergy(int energy) {
+        return sendPyramidEnergy("energy", String.valueOf(energy));
+    }
+
+    public static final MaplePacket sendGhostPoint(final String type, final String amount) {
+        return MaplePacketCreator.sendString(2, type, amount); //PRaid_Point (0-1500???)
+    }
+
+    //show_status_info - 01 53 1E 01
+    //10/08/14/19/11
+    //update_quest_info - 08 53 1E 00 00 00 00 00 00 00 00
+    //show_status_info - 01 51 1E 01 01 00 30
+    //update_quest_info - 08 51 1E 00 00 00 00 00 00 00 00
+    public static final MaplePacket sendPyramidEnergy(final String type, final String amount) {
+        return MaplePacketCreator.sendString(1, type, amount);
+    }
+
+    public static MaplePacket serverMessage(String message) {
+        return ResCWvsContext.serverMessage(4, 0, message, false);
+    }
+
+    public static MaplePacket serverNotice(int type, String message) {
+        return ResCWvsContext.serverMessage(type, 0, message, false);
+    }
+
+    public static MaplePacket serverNotice(int type, int channel, String message) {
+        return ResCWvsContext.serverMessage(type, channel, message, false);
+    }
+
+    public static MaplePacket serverNotice(int type, int channel, String message, boolean smegaEar) {
+        return ResCWvsContext.serverMessage(type, channel, message, smegaEar);
     }
 
 }

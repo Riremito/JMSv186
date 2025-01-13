@@ -58,6 +58,7 @@ import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
+import packet.response.wrapper.ResWrapper;
 import server.events.MapleCoconut;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
@@ -165,7 +166,7 @@ public class ChannelServer implements Serializable {
         if (finishedShutdown) {
             return;
         }
-        broadcastPacket(MaplePacketCreator.serverNotice(0, "This channel will now shut down."));
+        broadcastPacket(ResWrapper.serverNotice(0, "This channel will now shut down."));
         // dc all clients by hand so we get sessionClosed...
         shutdown = true;
 
@@ -224,7 +225,7 @@ public class ChannelServer implements Serializable {
 
     public final void addPlayer(final MapleCharacter chr) {
         getPlayerStorage().registerPlayer(chr);
-        chr.getClient().getSession().write(MaplePacketCreator.serverMessage(serverMessage));
+        chr.getClient().getSession().write(ResWrapper.serverMessage(serverMessage));
     }
 
     public final PlayerStorage getPlayerStorage() {
@@ -250,7 +251,7 @@ public class ChannelServer implements Serializable {
 
     public final void setServerMessage(final String newMessage) {
         serverMessage = newMessage;
-        broadcastPacket(MaplePacketCreator.serverMessage(serverMessage));
+        broadcastPacket(ResWrapper.serverMessage(serverMessage));
     }
 
     public final void broadcastPacket(final MaplePacket data) {

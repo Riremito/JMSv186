@@ -22,6 +22,7 @@ package server.life;
 
 import java.awt.Point;
 import java.util.concurrent.atomic.AtomicBoolean;
+import packet.response.wrapper.ResWrapper;
 
 import server.Randomizer;
 import server.maps.MapleMap;
@@ -107,7 +108,7 @@ public class SpawnPointAreaBoss extends Spawns {
         map.spawnMonster(mob, -2);
 
         if (msg != null) {
-            map.broadcastMessage(MaplePacketCreator.serverNotice(6, msg));
+            map.broadcastMessage(ResWrapper.serverNotice(6, msg));
         }
         return mob;
     }

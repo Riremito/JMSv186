@@ -499,7 +499,7 @@ public class InventoryHandler {
             c.getSession().write(ResCUserLocal.getShowItemGain(reward, (short) amount, true));
 
             if (GameConstants.gachaponRareItem(item.getItemId()) > 0) {
-                World.Broadcast.broadcastMessage(MaplePacketCreator.getGachaponMega("[" + box + " Chest] " + c.getPlayer().getName(), " : Lucky winner of Gachapon!", item, (byte) 2).getBytes());
+                World.Broadcast.broadcastMessage(ResCWvsContext.getGachaponMega("[" + box + " Chest] " + c.getPlayer().getName(), " : Lucky winner of Gachapon!", item, (byte) 2).getBytes());
             }
         } else {
             chr.dropMessage(5, "Please check your item inventory and see if you have a Master Key, or if the inventory is full.");
@@ -1148,7 +1148,7 @@ public class InventoryHandler {
                         break;
                     }
                     final boolean ear = slea.readByte() != 0;
-                    World.Broadcast.broadcastSmega(MaplePacketCreator.getAvatarMega(c.getPlayer(), c.getChannel(), itemId, text, ear).getBytes());
+                    World.Broadcast.broadcastSmega(ResCWvsContext.getAvatarMega(c.getPlayer(), c.getChannel(), itemId, text, ear).getBytes());
                     used = true;
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
@@ -1383,7 +1383,7 @@ public class InventoryHandler {
         while (z_2 == z || chances[z_2] < Randomizer.nextInt(1000)) {
             z_2 = Randomizer.nextInt(ids.length);
         }
-        c.getSession().write(MaplePacketCreator.getPeanutResult(ids[z], (short) 1, ids[z_2], (short) 1));
+        c.getSession().write(ResCWvsContext.getPeanutResult(ids[z], (short) 1, ids[z_2], (short) 1));
         return MapleInventoryManipulator.addById(c, ids[z], (short) 1) && MapleInventoryManipulator.addById(c, ids[z_2], (short) 1);
 
     }

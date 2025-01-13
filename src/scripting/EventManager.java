@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import packet.response.ResCField_ContiMove;
+import packet.response.ResCWvsContext;
+import packet.response.wrapper.ResWrapper;
 import server.MapleSquad;
 import server.Randomizer;
 import server.Timer.EventTimer;
@@ -327,12 +329,12 @@ public class EventManager {
     }
 
     public void broadcastYellowMsg(final String msg) {
-        getChannelServer().broadcastPacket(MaplePacketCreator.yellowChat(msg));
+        getChannelServer().broadcastPacket(ResCWvsContext.yellowChat(msg));
     }
 
     public void broadcastServerMsg(final int type, final String msg, final boolean weather) {
         if (!weather) {
-            getChannelServer().broadcastPacket(MaplePacketCreator.serverNotice(type, msg));
+            getChannelServer().broadcastPacket(ResWrapper.serverNotice(type, msg));
         } else {
             for (MapleMap load : getMapFactory().getAllMaps()) {
                 if (load.getCharactersSize() > 0) {

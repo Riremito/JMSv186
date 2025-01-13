@@ -269,7 +269,7 @@ public class MapleTrade {
             c.setTrade(new MapleTrade((byte) 0, c, isPointTrade));
             c.getClient().getSession().write(ResCMiniRoomBaseDlg.getTradeStart(c.getClient(), c.getTrade(), (byte) 0, isPointTrade));
         } else {
-            c.getClient().getSession().write(MaplePacketCreator.serverNotice(5, "You are already in a trade"));
+            c.getClient().getSession().write(ResWrapper.serverNotice(5, "You are already in a trade"));
         }
     }
 
@@ -283,7 +283,7 @@ public class MapleTrade {
             c1.getTrade().setPartner(c2.getTrade());
             c2.getClient().getSession().write(ResCMiniRoomBaseDlg.getTradeInvite(c1, c1.getTrade().IsPointTrading()));
         } else {
-            c1.getClient().getSession().write(MaplePacketCreator.serverNotice(5, "The other player is already trading with someone else."));
+            c1.getClient().getSession().write(ResWrapper.serverNotice(5, "The other player is already trading with someone else."));
             cancelTrade(c1.getTrade(), c1.getClient());
         }
     }
@@ -296,7 +296,7 @@ public class MapleTrade {
             //c1.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
             //c2.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
         } else {
-            c1.getClient().getSession().write(MaplePacketCreator.serverNotice(5, "The other player has already closed the trade"));
+            c1.getClient().getSession().write(ResWrapper.serverNotice(5, "The other player has already closed the trade"));
         }
     }
 

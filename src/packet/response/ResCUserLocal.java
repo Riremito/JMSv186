@@ -360,4 +360,11 @@ public class ResCUserLocal {
         return mplew.getPacket();
     }
 
+    public static MaplePacket testCombo(int value) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_IncCombo.Get());
+        mplew.writeInt(value);
+        return mplew.getPacket();
+    }
+
 }

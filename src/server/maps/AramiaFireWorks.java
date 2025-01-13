@@ -26,6 +26,7 @@ import client.MapleCharacter;
 import handling.world.World;
 import packet.request.ReqCReactorPool;
 import packet.response.ResCReactorPool;
+import packet.response.wrapper.ResWrapper;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
 import server.Timer.EventTimer;
@@ -66,7 +67,7 @@ public class AramiaFireWorks {
     }
 
     private final void broadcastServer(final MapleCharacter c, final int itemid) {
-        World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, itemid, "<Channel " + c.getClient().getChannel() + "> " + c.getMap().getMapName() + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!").getBytes());
+        World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, itemid, "<Channel " + c.getClient().getChannel() + "> " + c.getMap().getMapName() + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!").getBytes());
     }
 
     public final short getKegsPercentage() {

@@ -129,7 +129,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void WorldMessage(String text) {
-        World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, text).getBytes());
+        World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, text).getBytes());
     }
 
     public void BroadcastPacket(byte[] packet) {
@@ -147,7 +147,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void Broadcast(String text) {
-        World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, text).getBytes());
+        World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, text).getBytes());
     }
 
     public int getQuest() {
@@ -511,7 +511,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             }
             final byte rareness = GameConstants.gachaponRareItem(item.getItemId());
             if (rareness > 0) {
-                World.Broadcast.broadcastMessage(MaplePacketCreator.getGachaponMega("[" + msg + "] " + c.getPlayer().getName(), " : Lucky winner of Gachapon!", item, rareness).getBytes());
+                World.Broadcast.broadcastMessage(ResCWvsContext.getGachaponMega("[" + msg + "] " + c.getPlayer().getName(), " : Lucky winner of Gachapon!", item, rareness).getBytes());
             }
             return item.getItemId();
         } catch (Exception e) {
@@ -703,7 +703,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             final MapleMap map = c.getPlayer().getMap();
 
             map.broadcastMessage(ResCField.getClock(minutes * 60));
-            map.broadcastMessage(MaplePacketCreator.serverNotice(6, c.getPlayer().getName() + startText));
+            map.broadcastMessage(ResWrapper.serverNotice(6, c.getPlayer().getName() + startText));
         } else {
             squad.clear();
         }
@@ -808,7 +808,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void increaseGuildCapacity() {
         if (c.getPlayer().getMeso() < 5000000) {
-            c.getSession().write(MaplePacketCreator.serverNotice(1, "You do not have enough mesos."));
+            c.getSession().write(ResWrapper.serverNotice(1, "You do not have enough mesos."));
             return;
         }
         final int gid = c.getPlayer().getGuildId();
@@ -1333,14 +1333,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public final void doWeddingEffect(final Object ch) {
         final MapleCharacter chr = (MapleCharacter) ch;
-        getMap().broadcastMessage(MaplePacketCreator.yellowChat(getPlayer().getName() + ", do you take " + chr.getName() + " as your wife and promise to stay beside her through all downtimes, crashes, and lags?"));
+        getMap().broadcastMessage(ResCWvsContext.yellowChat(getPlayer().getName() + ", do you take " + chr.getName() + " as your wife and promise to stay beside her through all downtimes, crashes, and lags?"));
         CloneTimer.getInstance().schedule(new Runnable() {
 
             public void run() {
                 if (chr == null || getPlayer() == null) {
                     warpMap(680000500, 0);
                 } else {
-                    getMap().broadcastMessage(MaplePacketCreator.yellowChat(chr.getName() + ", do you take " + getPlayer().getName() + " as your husband and promise to stay beside him through all downtimes, crashes, and lags?"));
+                    getMap().broadcastMessage(ResCWvsContext.yellowChat(chr.getName() + ", do you take " + getPlayer().getName() + " as your husband and promise to stay beside him through all downtimes, crashes, and lags?"));
                 }
             }
         }, 10000);

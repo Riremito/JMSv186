@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import packet.response.ResCWvsContext;
+import packet.response.wrapper.ResWrapper;
 import tools.MaplePacketCreator;
 
 public class MapleGuildAlliance implements java.io.Serializable {
@@ -239,7 +240,7 @@ public class MapleGuildAlliance implements java.io.Serializable {
     public void setNotice(String newNotice) {
         this.notice = newNotice;
         broadcast(ResCWvsContext.getAllianceUpdate(this));
-        broadcast(MaplePacketCreator.serverNotice(5, "Alliance Notice : " + newNotice));
+        broadcast(ResWrapper.serverNotice(5, "Alliance Notice : " + newNotice));
         saveToDb();
     }
 
@@ -344,7 +345,7 @@ public class MapleGuildAlliance implements java.io.Serializable {
         guilds[g] = guilds[0];
         guilds[0] = oldGuild;
         if (leaderName != null) {
-            broadcast(MaplePacketCreator.serverNotice(5, leaderName + " has become the leader of the alliance."));
+            broadcast(ResWrapper.serverNotice(5, leaderName + " has become the leader of the alliance."));
         }
         broadcast(ResCWvsContext.changeAllianceLeader(allianceid, leaderid, c));
         broadcast(ResCWvsContext.updateAllianceLeader(allianceid, leaderid, c));

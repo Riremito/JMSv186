@@ -38,6 +38,7 @@ import packet.response.ResCField;
 import packet.response.ResCNpcPool;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
+import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import provider.MapleData;
 import provider.MapleDataProvider;
@@ -812,7 +813,7 @@ public class AdminCommand {
                 sb.append(c.getPlayer().getName());
                 sb.append("] ");
                 sb.append(StringUtil.joinStringFrom(splitted, 1));
-                World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, sb.toString()).getBytes());
+                World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, sb.toString()).getBytes());
             } else {
                 c.getPlayer().dropMessage(6, "Syntax: !say <message>");
                 return 0;
@@ -2458,7 +2459,7 @@ public class AdminCommand {
             joinmod += tfrom;
             sb.append(StringUtil.joinStringFrom(splitted, joinmod));
 
-            MaplePacket packet = MaplePacketCreator.serverNotice(type, sb.toString());
+            MaplePacket packet = ResWrapper.serverNotice(type, sb.toString());
             if (range == 0) {
                 c.getPlayer().getMap().broadcastMessage(packet);
             } else if (range == 1) {
@@ -2485,7 +2486,7 @@ public class AdminCommand {
             if (range == -1) {
                 range = 2;
             }
-            MaplePacket packet = MaplePacketCreator.yellowChat((splitted[0].equals("!y") ? ("[" + c.getPlayer().getName() + "] ") : "") + StringUtil.joinStringFrom(splitted, 2));
+            MaplePacket packet = ResCWvsContext.yellowChat((splitted[0].equals("!y") ? ("[" + c.getPlayer().getName() + "] ") : "") + StringUtil.joinStringFrom(splitted, 2));
             if (range == 0) {
                 c.getPlayer().getMap().broadcastMessage(packet);
             } else if (range == 1) {

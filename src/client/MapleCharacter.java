@@ -3022,7 +3022,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (pendingSkills != null) {
                 for (Integer z : pendingSkills) {
                     client.getSession().write(ResCWvsContext.updateSkill(z, 0, 0, -1));
-                    client.getSession().write(MaplePacketCreator.serverNotice(5, "[" + SkillFactory.getSkillName(z) + "] skill has expired and will not be available for use."));
+                    client.getSession().write(ResWrapper.serverNotice(5, "[" + SkillFactory.getSkillName(z) + "] skill has expired and will not be available for use."));
                 }
             } //not real msg
             pendingSkills = null;
@@ -3200,7 +3200,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (q.mobKilled(id, skillID)) {
                 client.SendPacket(ResWrapper.updateQuestMobKills(q));
                 if (q.getQuest().canComplete(this, null)) {
-                    client.getSession().write(MaplePacketCreator.getShowQuestCompletion(q.getQuest().getId()));
+                    client.getSession().write(ResCWvsContext.getShowQuestCompletion(q.getQuest().getId()));
                 }
             }
         }
@@ -3366,7 +3366,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             sb.append(getName());
             sb.append("様がレベル200になりました。おめでとうございます。");
-            World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, sb.toString()).getBytes());
+            World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, sb.toString()).getBytes());
         }
         maxhp = (short) Math.min(30000, Math.abs(maxhp));
         maxmp = (short) Math.min(30000, Math.abs(maxmp));
@@ -4433,23 +4433,23 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         } else {
             mulung_energy = 0;
         }
-        client.getSession().write(MaplePacketCreator.MulungEnergy(mulung_energy));
+        client.getSession().write(ResWrapper.MulungEnergy(mulung_energy));
     }
 
     public void writeMulungEnergy() {
-        client.getSession().write(MaplePacketCreator.MulungEnergy(mulung_energy));
+        client.getSession().write(ResWrapper.MulungEnergy(mulung_energy));
     }
 
     public void writeEnergy(String type, String inc) {
-        client.getSession().write(MaplePacketCreator.sendPyramidEnergy(type, inc));
+        client.getSession().write(ResWrapper.sendPyramidEnergy(type, inc));
     }
 
     public void writeStatus(String type, String inc) {
-        client.getSession().write(MaplePacketCreator.sendGhostStatus(type, inc));
+        client.getSession().write(ResWrapper.sendGhostStatus(type, inc));
     }
 
     public void writePoint(String type, String inc) {
-        client.getSession().write(MaplePacketCreator.sendGhostPoint(type, inc));
+        client.getSession().write(ResWrapper.sendGhostPoint(type, inc));
     }
 
     public final int getCombo() {
@@ -4718,28 +4718,28 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         } else if (type == -2) {
             client.getSession().write(ResCField.shopChat(message, 0)); //0 or what
         } else {
-            client.getSession().write(MaplePacketCreator.serverNotice(type, message));
+            client.getSession().write(ResWrapper.serverNotice(type, message));
         }
     }
 
     public void Debug(String text) {
         if (GetDebugger()) {
-            client.getSession().write(MaplePacketCreator.serverNotice(5, text));
+            client.getSession().write(ResWrapper.serverNotice(5, text));
         }
     }
 
     public void Info(String text) {
         if (GetInformation()) {
-            client.getSession().write(MaplePacketCreator.serverNotice(5, text));
+            client.getSession().write(ResWrapper.serverNotice(5, text));
         }
     }
 
     public void Notice(String text) {
-        client.getSession().write(MaplePacketCreator.serverNotice(5, text));
+        client.getSession().write(ResWrapper.serverNotice(5, text));
     }
 
     public void Notify(String text) {
-        World.Broadcast.broadcastMessage((MaplePacketCreator.serverNotice(6, text)).getBytes());
+        World.Broadcast.broadcastMessage((ResWrapper.serverNotice(6, text)).getBytes());
     }
 
     public IMaplePlayerShop getPlayerShop() {
@@ -5357,7 +5357,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         final ChannelServer toch = ChannelServer.getInstance(channel);
 
         if (channel == client.getChannel() || toch == null || toch.isShutdown()) {
-            client.getSession().write(MaplePacketCreator.serverBlocked(1));
+            client.getSession().write(ResCField.serverBlocked(1));
             return;
         }
         changeRemoval();

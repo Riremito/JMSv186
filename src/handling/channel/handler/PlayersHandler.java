@@ -178,10 +178,10 @@ public class PlayersHandler {
                 map.fallCoconut();
                 if (c.getPlayer().getCoconutTeam() == 0) {
                     map.addMapleScore();
-                    c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.serverNotice(5, c.getPlayer().getName() + " of Team Maple knocks down a coconut."));
+                    c.getPlayer().getMap().broadcastMessage(ResWrapper.serverNotice(5, c.getPlayer().getName() + " of Team Maple knocks down a coconut."));
                 } else {
                     map.addStoryScore();
-                    c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.serverNotice(5, c.getPlayer().getName() + " of Team Story knocks down a coconut."));
+                    c.getPlayer().getMap().broadcastMessage(ResWrapper.serverNotice(5, c.getPlayer().getName() + " of Team Story knocks down a coconut."));
                 }
                 c.getPlayer().getMap().broadcastMessage(ResCField_Coconut.coconutScore(map.getCoconutScore()));
             }
@@ -220,7 +220,7 @@ public class PlayersHandler {
             c.getPlayer().setFollowInitiator(false);
             tt.getClient().getSession().write(ResCWvsContext.followRequest(c.getPlayer().getId()));
         } else {
-            c.getSession().write(MaplePacketCreator.serverNotice(1, "You are too far away."));
+            c.getSession().write(ResWrapper.serverNotice(1, "You are too far away."));
         }
     }
 
@@ -246,7 +246,7 @@ public class PlayersHandler {
                     tt.setFollowId(0);
                     c.getPlayer().setFollowId(0);
                 }
-                c.getSession().write(MaplePacketCreator.serverNotice(1, "You are too far away."));
+                c.getSession().write(ResWrapper.serverNotice(1, "You are too far away."));
             }
         } else {
             c.getPlayer().setFollowId(0);

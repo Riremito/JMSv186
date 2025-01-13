@@ -2006,4 +2006,132 @@ public class ResCWvsContext {
         return mplew.getPacket();
     }
 
+    public static MaplePacket getPeanutResult(int itemId, short quantity, int itemId2, short quantity2) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_IncubatorResult.Get());
+        mplew.writeInt(itemId);
+        mplew.writeShort(quantity);
+        mplew.writeInt(5060003);
+        mplew.writeInt(itemId2);
+        mplew.writeInt(quantity2);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket yellowChat(String msg) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SetWeekEventMessage.Get());
+        mplew.write(-1); //could be something like mob displaying message.
+        mplew.writeMapleAsciiString(msg);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getShowQuestCompletion(int id) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_QuestClear.Get());
+        mplew.writeShort(id);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getAvatarMega(MapleCharacter chr, int channel, int itemId, String message, boolean ear) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_AvatarMegaphoneRes.Get());
+        mplew.writeInt(itemId);
+        mplew.writeMapleAsciiString(chr.getName());
+        mplew.writeMapleAsciiString(message);
+        mplew.writeInt(channel - 1); // channel
+        mplew.write(ear ? 1 : 0);
+        TestHelper.addCharLook(mplew, chr, true);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket serverMessage(int type, int channel, String message, boolean megaEar) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        /*
+        0x00    [告知事項]青文字
+        0x01    ダイアログ
+        0x02    メガホン
+        0x03    拡声器
+        0x04    画面上部のメッセージ
+        0x05    ピンク文字
+        0x06    青文字
+        0x07    ??? 直接関数ポインタへ処理が移る 0x00B93F3F[0x07] = 00B93E27
+        0x08    アイテム拡声器
+        0x09    ワールド拡声器 (テスト)
+        0x0A    三連拡声器
+        0x0B    不明 0x00B93F3F[0x0B] = 00B93ECA
+        0x0C    ハート拡声器
+        0x0D    ドクロ拡声器
+        0x0E    ガシャポン 0x00B93F3F[0x0E] = 00B93779
+        0x0F    青文字 名前:アイテム名(xxxx個))
+        0x10    体験用アバター獲得 0x00B93F3F[0x10] = 00B93950
+        0x11    青文字 アイテム表示 0x00B93F3F[0x11] = 00B93DA1
+         */
+        mplew.writeShort(ServerPacket.Header.LP_BroadcastMsg.Get());
+        mplew.write(type);
+        if (type == 4) {
+            mplew.write(1);
+        }
+        // 0x10 = 名前
+        mplew.writeMapleAsciiString(message);
+        switch (type) {
+            case 10:
+                mplew.write(3);
+                mplew.writeMapleAsciiString(message);
+                mplew.writeMapleAsciiString(message);
+                mplew.write(channel - 1);
+                mplew.write(megaEar ? 1 : 0);
+                break;
+        // 拡声器, ハート拡声器, ドクロ拡声器
+            case 3:
+            case 12:
+            case 13:
+                mplew.write(channel - 1); // channel
+                mplew.write(megaEar ? 1 : 0);
+                break;
+            case 6:
+                mplew.writeInt(channel >= 1000000 && channel < 6000000 ? channel : 0); //cash itemID, displayed in yellow by the {name}
+                break;
+            case 7:
+                mplew.writeInt(0);
+                break;
+        // ワールド拡声器
+            case 9:
+                // ワールド番号
+                mplew.write(0);
+                break;
+        // 不明
+            case 11:
+                mplew.writeInt(0); // 不明
+                break;
+        // アイテム情報 個数付き
+            case 15:
+                mplew.writeInt(0); // 不明
+                mplew.writeInt(1472117); // アイテムID
+                mplew.writeInt(256); // 個数
+                break;
+        // お勧め体験用アバター
+            case 16:
+                // 必要なメッセージはキャラ名のみとなる
+                break;
+        // アイテム情報
+            case 17:
+                mplew.writeInt(1472117); // アイテムID
+                break;
+        }
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getGachaponMega(final String name, final String message, final IItem item, final byte rareness) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_BroadcastMsg.Get());
+        //mplew.write(rareness == 2 ? 15 : 14);
+        mplew.write(14);
+        mplew.writeMapleAsciiString(name + " : " + message);
+        mplew.writeInt(16842752);
+        //mplew.writeMapleAsciiString(name);
+        TestHelper.addItemInfo(mplew, item, true, true);
+        mplew.writeZeroBytes(10);
+        return mplew.getPacket();
+    }
+
 }

@@ -33,6 +33,7 @@ import packet.ClientPacket;
 import packet.response.ResCField;
 import packet.response.ResCUIMessenger;
 import packet.response.ResCUser;
+import packet.response.wrapper.ResWrapper;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -68,7 +69,7 @@ public class ChatHandler {
                     chr.finishAchievement(11);
                 }
             } else {
-                c.getSession().write(MaplePacketCreator.serverNotice(6, "You have been muted and are therefore unable to talk."));
+                c.getSession().write(ResWrapper.serverNotice(6, "You have been muted and are therefore unable to talk."));
             }
         }
     }
@@ -83,7 +84,7 @@ public class ChatHandler {
         }
         final String chattext = slea.readMapleAsciiString();
         if (chr == null || !chr.getCanTalk()) {
-            c.getSession().write(MaplePacketCreator.serverNotice(6, "You have been muted and are therefore unable to talk."));
+            c.getSession().write(ResWrapper.serverNotice(6, "You have been muted and are therefore unable to talk."));
             return;
         }
         if (CommandProcessor.processCommand(c, chattext, CommandType.NORMAL)) {
@@ -240,7 +241,7 @@ public class ChatHandler {
             }
             case 6: { // Whisper
                 if (!c.getPlayer().getCanTalk()) {
-                    c.getSession().write(MaplePacketCreator.serverNotice(6, "You have been muted and are therefore unable to talk."));
+                    c.getSession().write(ResWrapper.serverNotice(6, "You have been muted and are therefore unable to talk."));
                     return;
                 }
                 //c.getPlayer().getCheatTracker().checkMsg();

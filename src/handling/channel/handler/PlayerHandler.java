@@ -311,7 +311,7 @@ public class PlayerHandler {
             chr.setLastCombo(curr);
             chr.setCombo(combo);
 
-            c.getSession().write(MaplePacketCreator.testCombo(combo));
+            c.getSession().write(ResCUserLocal.testCombo(combo));
 
             switch (combo) { // Hackish method xD
                 case 10:

@@ -26,6 +26,7 @@ import client.MapleStat;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import packet.response.ResCField;
+import packet.response.wrapper.ResWrapper;
 import server.Timer.EventTimer;
 import server.events.MapleOxQuizFactory.MapleOxQuizEntry;
 import server.maps.MapleMap;
@@ -98,7 +99,7 @@ public class MapleOxQuiz extends MapleEvent {
                     }
                 }
                 if (toSend.getCharactersSize() - number <= 1 || timesAsked == 10) {
-                    toSend.broadcastMessage(MaplePacketCreator.serverNotice(6, "The event has ended"));
+                    toSend.broadcastMessage(ResWrapper.serverNotice(6, "The event has ended"));
                     unreset();
                     for (MapleCharacter chr : toSend.getCharactersThreadsafe()) {
                         if (chr != null && !chr.isGM() && chr.isAlive()) {

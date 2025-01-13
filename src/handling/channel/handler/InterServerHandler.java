@@ -44,6 +44,7 @@ import handling.world.World;
 import handling.world.guild.MapleGuild;
 import packet.ClientPacket;
 import packet.response.ResCClientSocket;
+import packet.response.ResCField;
 import packet.response.ResCFuncKeyMappedMan;
 import packet.response.ResCStage;
 import packet.response.ResCUser_Pet;
@@ -68,7 +69,7 @@ public class InterServerHandler {
 
     public static final void EnterCS(final MapleClient c, final MapleCharacter chr, final boolean mts) {
         if (!chr.isAlive() || chr.getEventInstance() != null || c.getChannelServer() == null) {
-            c.getSession().write(MaplePacketCreator.serverBlocked(2));
+            c.getSession().write(ResCField.serverBlocked(2));
             c.getSession().write(ResWrapper.enableActions());
             return;
         }

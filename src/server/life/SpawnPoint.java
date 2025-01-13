@@ -22,6 +22,7 @@ package server.life;
 
 import java.awt.Point;
 import java.util.concurrent.atomic.AtomicInteger;
+import packet.response.wrapper.ResWrapper;
 
 import server.MapleCarnivalFactory;
 import server.MapleCarnivalFactory.MCSkill;
@@ -129,11 +130,11 @@ public class SpawnPoint extends Spawns {
             }
         }
         if (msg != null) {
-            map.broadcastMessage(MaplePacketCreator.serverNotice(6, msg));
+            map.broadcastMessage(ResWrapper.serverNotice(6, msg));
             // デバッグ出力
             if (mob.getStats().isBoss()) {
                 String debug_msg = "BossID = " + monster.getId() + ", MapID = " + map.getId();
-                map.broadcastMessage(MaplePacketCreator.serverNotice(5, debug_msg));
+                map.broadcastMessage(ResWrapper.serverNotice(5, debug_msg));
             }
         }
         return mob;

@@ -1184,7 +1184,7 @@ public class World {
                         guild.setAllianceId(0);
                         guild.broadcast(ResCWvsContext.disbandAlliance(allianceid));
                     } else if (g_ != null) {
-                        guild.broadcast(MaplePacketCreator.serverNotice(5, "[" + g_.getName() + "] Guild has left the alliance."));
+                        guild.broadcast(ResWrapper.serverNotice(5, "[" + g_.getName() + "] Guild has left the alliance."));
                         guild.broadcast(ResCWvsContext.changeGuildInAlliance(alliance, g_, false));
                         guild.broadcast(ResCWvsContext.removeGuildFromAlliance(alliance, g_, expelled));
                     }

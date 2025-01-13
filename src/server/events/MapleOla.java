@@ -24,6 +24,7 @@ package server.events;
 import java.util.concurrent.ScheduledFuture;
 import client.MapleCharacter;
 import packet.response.ResCField;
+import packet.response.wrapper.ResWrapper;
 import server.Randomizer;
 import server.Timer.EventTimer;
 import tools.MaplePacketCreator;
@@ -76,7 +77,7 @@ public class MapleOla extends MapleEvent {
             }
         }, this.time);
 
-        broadcast(MaplePacketCreator.serverNotice(0, "The portal has now opened. Press the up arrow key at the portal to enter."));
+        broadcast(ResWrapper.serverNotice(0, "The portal has now opened. Press the up arrow key at the portal to enter."));
     }
 
     public boolean isTimerStarted() {

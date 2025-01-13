@@ -346,7 +346,7 @@ public class MapScriptMethods {
                 break;
             }
             case boss_Ravana: { //event handles this so nothing for now until i find out something to do with it
-                c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.serverNotice(5, "Ravana has appeared!"));
+                c.getPlayer().getMap().broadcastMessage(ResWrapper.serverNotice(5, "Ravana has appeared!"));
                 break;
             }
             case killing_BonusSetting: { //spawns monsters according to mapid
@@ -478,7 +478,7 @@ public class MapScriptMethods {
                 break;
             }
             case shammos_Enter: { //nothing to go on inside the map
-                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("shammos_LastStage", String.valueOf((c.getPlayer().getMapId() % 1000) / 100)));
+                c.getSession().write(ResWrapper.sendPyramidEnergy("shammos_LastStage", String.valueOf((c.getPlayer().getMapId() % 1000) / 100)));
                 if (c.getPlayer().getEventInstance() != null && c.getPlayer().getMapId() == 921120500) {
                     NPCScriptManager.getInstance().dispose(c); //only boss map.
                     NPCScriptManager.getInstance().start(c, 2022006);
@@ -494,13 +494,13 @@ public class MapScriptMethods {
                 break;
             }
             case PRaid_W_Enter: {
-                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_expPenalty", "0"));
-                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_ElapssedTimeAtField", "0"));
-                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_Point", "-1"));
-                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_Bonus", "-1"));
-                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_Total", "-1"));
-                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_Team", ""));
-                c.getSession().write(MaplePacketCreator.sendPyramidEnergy("PRaid_IsRevive", "0"));
+                c.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_expPenalty", "0"));
+                c.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_ElapssedTimeAtField", "0"));
+                c.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_Point", "-1"));
+                c.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_Bonus", "-1"));
+                c.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_Total", "-1"));
+                c.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_Team", ""));
+                c.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_IsRevive", "0"));
                 c.getPlayer().writePoint("PRaid_Point", "-1");
                 c.getPlayer().writeStatus("Red_Stage", "1");
                 c.getPlayer().writeStatus("Blue_Stage", "1");
