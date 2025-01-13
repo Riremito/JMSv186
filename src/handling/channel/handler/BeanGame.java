@@ -10,6 +10,7 @@ import constants.GameConstants;
 import java.util.ArrayList;
 import java.util.List;
 import packet.response.Res_Pachinko;
+import packet.response.wrapper.ResWrapper;
 import tools.FileoutputUtil;
 import server.Randomizer;
 import tools.data.input.LittleEndianAccessor;
@@ -70,13 +71,13 @@ public class BeanGame {
                 力度 = slea.readShort();
                 slea.readInt();
                 chr.setBeansRange(力度 + 力度搞假A);
-                c.getSession().write(MaplePacketCreator.enableActions());
+                c.getSession().write(ResWrapper.enableActions());
                 break;
             case 1://点开始的时候 确认打豆豆的力度
                 //01 E8 03
                 力度 = slea.readShort();
                 chr.setBeansRange(力度 + 力度搞假A);
-                c.getSession().write(MaplePacketCreator.enableActions());
+                c.getSession().write(ResWrapper.enableActions());
                 break;
             case 2://暂时没去注意这个 而且IDA里面也没有对应内容
                 //没存在的必要
@@ -511,6 +512,6 @@ public class BeanGame {
     }
 
     public static final void BeanGame2(LittleEndianAccessor slea, MapleClient c) {
-        c.getSession().write(MaplePacketCreator.enableActions());
+        c.getSession().write(ResWrapper.enableActions());
     }
 }

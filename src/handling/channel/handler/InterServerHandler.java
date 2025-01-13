@@ -69,7 +69,7 @@ public class InterServerHandler {
     public static final void EnterCS(final MapleClient c, final MapleCharacter chr, final boolean mts) {
         if (!chr.isAlive() || chr.getEventInstance() != null || c.getChannelServer() == null) {
             c.getSession().write(MaplePacketCreator.serverBlocked(2));
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
             return;
         }
 
@@ -140,7 +140,7 @@ public class InterServerHandler {
             c.SendPacket(ResCStage.SetField_JMS_302(player, 1, true, null, 0, 0));
             c.SendPacket(ResCStage.SetField_JMS_302(player, 2, true, null, 0, -1));
         } else {
-            c.SendPacket(MaplePacketCreator.getCharInfo(player));
+            c.SendPacket(ResWrapper.getCharInfo(player));
         }
 
         c.getSession().write(MaplePacketCreator.temporaryStats_Reset());
@@ -246,7 +246,7 @@ public class InterServerHandler {
 
     public static final void ChangeChannel(ClientPacket p, final MapleClient c, final MapleCharacter chr) {
         if (!chr.isAlive() || chr.getEventInstance() != null || chr.getMap() == null || FieldLimitType.ChannelSwitch.check(chr.getMap().getFieldLimit())) {
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
             return;
         }
 

@@ -27,6 +27,7 @@ import handling.MaplePacket;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
 import packet.response.ResCWvsContext;
+import packet.response.wrapper.ResWrapper;
 import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -34,12 +35,12 @@ public class AllianceHandler {
 
     public static final void HandleAlliance(final SeekableLittleEndianAccessor slea, final MapleClient c, boolean denied) {
         if (c.getPlayer().getGuildId() <= 0) {
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
             return;
         }
         final MapleGuild gs = World.Guild.getGuild(c.getPlayer().getGuildId());
         if (gs == null) {
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
             return;
         }
         //System.out.println("Unhandled GuildAlliance \n" + slea.toString());

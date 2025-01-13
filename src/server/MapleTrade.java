@@ -12,6 +12,7 @@ import client.messages.CommandProcessor;
 import constants.ServerConstants.CommandType;
 import java.lang.ref.WeakReference;
 import packet.response.ResCField;
+import packet.response.wrapper.ResWrapper;
 import tools.MaplePacketCreator;
 
 public class MapleTrade {
@@ -155,12 +156,12 @@ public class MapleTrade {
         }
         final byte flag = item.getFlag();
         if (ItemFlag.UNTRADEABLE.check(flag) || ItemFlag.LOCK.check(flag)) {
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
             return false;
         }
         if (ii.isDropRestricted(item.getItemId()) || ii.isAccountShared(item.getItemId())) {
             if (!(ItemFlag.KARMA_EQ.check(flag) || ItemFlag.KARMA_USE.check(flag))) {
-                c.getSession().write(MaplePacketCreator.enableActions());
+                c.getSession().write(ResWrapper.enableActions());
                 return false;
             }
         }

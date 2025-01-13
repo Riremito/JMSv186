@@ -39,6 +39,7 @@ import client.status.MonsterStatusEffect;
 import java.util.Map;
 import packet.response.ResCDropPool;
 import packet.response.ResCDropPool.LeaveType;
+import packet.response.wrapper.ResWrapper;
 import server.MapleStatEffect;
 import server.Randomizer;
 import server.Timer.MapTimer;
@@ -64,7 +65,7 @@ public class DamageParse {
         }
         if (attack.skill != 0) {
             if (effect == null) {
-                player.getClient().getSession().write(MaplePacketCreator.enableActions());
+                player.getClient().getSession().write(ResWrapper.enableActions());
                 return;
             }
             if (GameConstants.isMulungSkill(attack.skill)) {

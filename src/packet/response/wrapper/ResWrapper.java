@@ -23,6 +23,7 @@ import client.MapleQuestStatus;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
+import config.ServerConfig;
 import constants.GameConstants;
 import handling.MaplePacket;
 import java.util.List;
@@ -37,11 +38,13 @@ import packet.ops.OpsMessage;
 import packet.ops.OpsMessageArg;
 import packet.ops.OpsQuestRecordMessage;
 import packet.response.ResCField;
+import packet.response.ResCStage;
 import packet.response.ResCWvsContext;
 import packet.response.struct.GW_ItemSlotBase;
 import packet.response.struct.InvOp;
 import packet.response.struct.TestHelper;
 import server.Randomizer;
+import server.maps.MapleMap;
 import tools.HexTool;
 import tools.StringUtil;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -582,6 +585,23 @@ public class ResWrapper {
         OpsFriendArg frs = new OpsFriendArg();
         frs.flag = flag;
         return ResCWvsContext.FriendResult(frs);
+    }
+
+    // プレイヤー情報の初期化
+    public static final MaplePacket getCharInfo(final MapleCharacter chr) {
+        return ResCStage.SetField(chr, true, null, 0);
+    }
+
+    public static final MaplePacket enableActions() {
+        return ResCWvsContext.StatChanged(null, 1, 0);
+    }
+
+    // マップ移動
+    public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
+        if (ServerConfig.JMS302orLater()) {
+            return ResCStage.SetField_JMS_302(chr, 1, false, to, spawnPoint, 0);
+        }
+        return ResCStage.SetField(chr, false, to, spawnPoint);
     }
 
 }

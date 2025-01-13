@@ -6,6 +6,7 @@ import client.MapleClient;
 import client.MapleStat;
 import constants.GameConstants;
 import java.util.List;
+import packet.response.wrapper.ResWrapper;
 import scripting.NPCScriptManager;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
@@ -175,7 +176,7 @@ public class PlayerCommand {
 
         public int execute(MapleClient c, String[] splitted) {
             NPCScriptManager.getInstance().dispose(c);
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
             return 1;
         }
     }

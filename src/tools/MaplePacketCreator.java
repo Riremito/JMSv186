@@ -40,7 +40,6 @@ import server.life.PlayerNPC;
 import server.maps.MapleMap;
 import server.maps.MapleReactor;
 import server.maps.MapleMist;
-import server.events.MapleSnowball.MapleSnowballs;
 import server.life.MapleMonster;
 import server.movement.LifeMovementFragment;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -52,41 +51,12 @@ import packet.ServerPacket;
 import packet.ops.OpsDropPickUpMessage;
 import packet.ops.OpsScriptMan;
 import packet.response.ResCScriptMan;
-import packet.response.ResCWvsContext;
-import packet.response.ResCStage;
 import packet.response.struct.TestHelper;
 import packet.response.wrapper.ResWrapper;
 import server.maps.MapleNodes.MapleNodeInfo;
 import server.maps.MapleNodes.MaplePlatform;
 
 public class MaplePacketCreator {
-
-    // プレイヤー情報の初期化
-    public static final MaplePacket getCharInfo(final MapleCharacter chr) {
-        return ResCStage.SetField(chr, true, null, 0);
-    }
-
-    // マップ移動
-    public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
-        if (ServerConfig.JMS302orLater()) {
-            return ResCStage.SetField_JMS_302(chr, 1, false, to, spawnPoint, 0);
-        }
-        return ResCStage.SetField(chr, false, to, spawnPoint);
-    }
-
-    public static final MaplePacket enableActions() {
-        return ResCWvsContext.StatChanged(null, 1, 0);
-    }
-
-    public static final MaplePacket instantMapWarp(final byte portal) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_UserTeleport.Get());
-        mplew.write(0);
-        mplew.write(portal); // 6
-
-        return mplew.getPacket();
-    }
 
     public static MaplePacket getRelogResponse() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter(3);
@@ -1089,47 +1059,6 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket summonSkill(int cid, int summonSkillId, int newStance) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_SummonedSkill.Get());
-        mplew.writeInt(cid);
-        mplew.writeInt(summonSkillId);
-        mplew.write(newStance);
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket skillCooldown(int sid, int time) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_SkillCooltimeSet.Get());
-        mplew.writeInt(sid);
-
-        if (ServerConfig.version <= 186) {
-            mplew.writeShort(time);
-        } else {
-            mplew.writeInt(time);
-        }
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket useSkillBook(MapleCharacter chr, int skillid, int maxlevel, boolean canuse, boolean success) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_SkillLearnItemResult.Get());
-        mplew.write(0); //?
-        mplew.writeInt(chr.getId());
-        mplew.write(1);
-        mplew.writeInt(skillid);
-        mplew.writeInt(maxlevel);
-        mplew.write(canuse ? 1 : 0);
-        mplew.write(success ? 1 : 0);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket updateAriantPQRanking(String name, int score, boolean empty) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
@@ -1142,43 +1071,10 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket catchMonster(int mobid, int itemid, byte success) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        mplew.writeShort(ServerPacket.Header.LP_MobCatchEffect.Get());
-        mplew.writeInt(mobid);
-        mplew.writeInt(itemid);
-        mplew.write(success);
-
-        return mplew.getPacket();
-    }
-
     public static MaplePacket showAriantScoreBoard() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
 
         mplew.writeShort(ServerPacket.Header.ARIANT_SCOREBOARD.Get());
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket boatPacket(int effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        // 1034: balrog boat comes, 1548: boat comes, 3: boat leaves
-        mplew.writeShort(ServerPacket.Header.LP_CONTISTATE.Get());
-        mplew.writeShort(effect); // 0A 04 balrog
-        //this packet had 3: boat leaves
-
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket boatEffect(int effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-
-        // 1034: balrog boat comes, 1548: boat comes, 3: boat leaves
-        mplew.writeShort(ServerPacket.Header.LP_CONTIMOVE.Get());
-        mplew.writeShort(effect); // 0A 04 balrog
-        //this packet had the other ones o.o
 
         return mplew.getPacket();
     }
@@ -1192,75 +1088,11 @@ public class MaplePacketCreator {
         return mplew.getPacket();
     }
 
-    public static MaplePacket leftKnockBack() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SnowBallTouch.Get());
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket rollSnowball(int type, MapleSnowballs ball1, MapleSnowballs ball2) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SnowBallState.Get());
-        mplew.write(type); // 0 = normal, 1 = rolls from start to end, 2 = down disappear, 3 = up disappear, 4 = move
-        mplew.writeInt(ball1 == null ? 0 : (ball1.getSnowmanHP() / 75));
-        mplew.writeInt(ball2 == null ? 0 : (ball2.getSnowmanHP() / 75));
-        mplew.writeShort(ball1 == null ? 0 : ball1.getPosition());
-        mplew.write(0);
-        mplew.writeShort(ball2 == null ? 0 : ball2.getPosition());
-        mplew.writeZeroBytes(11);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket enterSnowBall() {
-        return rollSnowball(0, null, null);
-    }
-
-    public static MaplePacket hitSnowBall(int team, int damage, int distance, int delay) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SnowBallHit.Get());
-        mplew.write(team);// 0 is down, 1 is up
-        mplew.writeShort(damage);
-        mplew.write(distance);
-        mplew.write(delay);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket snowballMessage(int team, int message) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SnowBallMsg.Get());
-        mplew.write(team);// 0 is down, 1 is up
-        mplew.writeInt(message);
-        return mplew.getPacket();
-    }
-
     public static MaplePacket finishedSort(int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_SortItemResult.Get());
         mplew.write(1);
         mplew.write(type);
-        return mplew.getPacket();
-    }
-
-    // 00 01 00 00 00 00
-    public static MaplePacket coconutScore(int[] coconutscore) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CoconutScore.Get());
-        mplew.writeShort(coconutscore[0]);
-        mplew.writeShort(coconutscore[1]);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket hitCoconut(boolean spawn, int id, int type) {
-        // FF 00 00 00 00 00 00
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CoconutHit.Get());
-        if (spawn) {
-            mplew.write(0);
-            mplew.writeInt(0x80);
-        } else {
-            mplew.writeInt(id);
-            mplew.write(type); // What action to do for the coconut.
-        }
         return mplew.getPacket();
     }
 

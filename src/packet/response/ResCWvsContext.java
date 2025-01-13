@@ -60,6 +60,7 @@ import packet.response.struct.GW_ItemSlotBase;
 import packet.response.struct.InvOp;
 import packet.response.struct.SecondaryStat;
 import packet.response.struct.TestHelper;
+import packet.response.wrapper.ResWrapper;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.shops.HiredMerchant;
@@ -941,7 +942,7 @@ public class ResCWvsContext {
         for (int i = 0; i < noGuilds; i++) {
             g[i] = World.Guild.getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
-                return MaplePacketCreator.enableActions();
+                return ResWrapper.enableActions();
             }
         }
         mplew.write(noGuilds);
@@ -1042,7 +1043,7 @@ public class ResCWvsContext {
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
             g[i] = World.Guild.getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
-                return MaplePacketCreator.enableActions();
+                return ResWrapper.enableActions();
             }
         }
         mplew.writeInt(noGuilds);
@@ -1286,7 +1287,7 @@ public class ResCWvsContext {
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
             g[i] = World.Guild.getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
-                return MaplePacketCreator.enableActions();
+                return ResWrapper.enableActions();
             }
         }
         for (MapleGuild gg : g) {
@@ -1772,6 +1773,19 @@ public class ResCWvsContext {
         0x0B    今は開店できません
          */
         mplew.write(7);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket useSkillBook(MapleCharacter chr, int skillid, int maxlevel, boolean canuse, boolean success) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SkillLearnItemResult.Get());
+        mplew.write(0); //?
+        mplew.writeInt(chr.getId());
+        mplew.write(1);
+        mplew.writeInt(skillid);
+        mplew.writeInt(maxlevel);
+        mplew.write(canuse ? 1 : 0);
+        mplew.write(success ? 1 : 0);
         return mplew.getPacket();
     }
 

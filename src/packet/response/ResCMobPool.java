@@ -31,6 +31,7 @@ import packet.ServerPacket;
 import packet.response.struct.Structure;
 import server.life.MapleMonster;
 import server.life.MobSkill;
+import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -327,6 +328,15 @@ public class ResCMobPool {
         }
         sp.Encode4(1); //?
         return sp.Get();
+    }
+
+    public static MaplePacket catchMonster(int mobid, int itemid, byte success) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_MobCatchEffect.Get());
+        mplew.writeInt(mobid);
+        mplew.writeInt(itemid);
+        mplew.write(success);
+        return mplew.getPacket();
     }
 
 }

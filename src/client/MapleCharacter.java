@@ -2009,7 +2009,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (battleshipHP <= 0) {
                 battleshipHP = 0;
                 final MapleStatEffect effect = getStatForBuff(MapleBuffStat.MONSTER_RIDING);
-                client.getSession().write(MaplePacketCreator.skillCooldown(5221006, effect.getCooldown()));
+                client.getSession().write(ResCUserLocal.skillCooldown(5221006, effect.getCooldown()));
                 addCooldown(5221006, System.currentTimeMillis(), effect.getCooldown() * 1000);
                 dispelSkill(5221006);
             }
@@ -2385,24 +2385,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     // old
     public void changeMap(final MapleMap to, final Point pos) {
-        changeMapInternal(to, pos, MaplePacketCreator.getWarpToMap(to, 0x81, this), null);
+        changeMapInternal(to, pos, ResWrapper.getWarpToMap(to, 0x81, this), null);
     }
 
     public void enterTownPortal(MapleDoor door) {
         SendPacket(ResCTownPortalPool.setMysticDoorInfo(door));
         SendPacket(ResCTownPortalPool.removeDoor(door));
-        changeMapInternal(door.getLink().getMap(), door.getLink().getPosition(), MaplePacketCreator.getWarpToMap(door.getLink().getMap(), (byte) door.getTownPortal().getId(), this), null);
+        changeMapInternal(door.getLink().getMap(), door.getLink().getPosition(), ResWrapper.getWarpToMap(door.getLink().getMap(), (byte) door.getTownPortal().getId(), this), null);
         SendPacket(ResCTownPortalPool.removeDoor(door.getLink()));
         SendPacket(ResCTownPortalPool.spawnDoor(door.getLink(), false));
         SendPacket(ResCTownPortalPool.setMysticDoorInfo(door.getLink()));
     }
 
     public void changeMap(final MapleMap to, final MaplePortal pto) {
-        changeMapInternal(to, pto.getPosition(), MaplePacketCreator.getWarpToMap(to, pto.getId(), this), null);
+        changeMapInternal(to, pto.getPosition(), ResWrapper.getWarpToMap(to, pto.getId(), this), null);
     }
 
     public void changeMapPortal(final MapleMap to, final MaplePortal pto) {
-        changeMapInternal(to, pto.getPosition(), MaplePacketCreator.getWarpToMap(to, pto.getId(), this), pto);
+        changeMapInternal(to, pto.getPosition(), ResWrapper.getWarpToMap(to, pto.getId(), this), pto);
     }
 
     private void changeMapInternal(final MapleMap to, final Point pos, MaplePacket warpPacket, final MaplePortal pto) {
@@ -3128,7 +3128,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public boolean gainMeso(int gain, boolean show, boolean enableActions, boolean inChat) {
         if (meso + gain < 0) {
-            client.getSession().write(MaplePacketCreator.enableActions());
+            client.getSession().write(ResWrapper.enableActions());
             return false;
         }
         meso += gain;
@@ -3141,7 +3141,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public boolean gainTama(int gain, boolean show) {
         if (tama + gain < 0) {
-            client.ProcessPacket(MaplePacketCreator.enableActions());
+            client.ProcessPacket(ResWrapper.enableActions());
             return false;
         }
         gainTama(gain);
@@ -4552,7 +4552,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                         addHP(healEffect.getHp());
                     }
                     client.getSession().write(ResCUserLocal.showOwnBuffEffect(1321007, 2));
-                    map.broadcastMessage(MaplePacketCreator.summonSkill(getId(), 1321007, 5));
+                    map.broadcastMessage(ResCSummonedPool.summonSkill(getId(), 1321007, 5));
                     map.broadcastMessage(MapleCharacter.this, ResCUserRemote.showBuffeffect(getId(), 1321007, 2), false);
                 }
             }, healInterval, healInterval);
@@ -4568,7 +4568,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 public void run() {
                     buffEffect.applyTo(MapleCharacter.this);
                     client.getSession().write(ResCUserLocal.showOwnBuffEffect(1321007, 2));
-                    map.broadcastMessage(MaplePacketCreator.summonSkill(getId(), 1321007, Randomizer.nextInt(3) + 6));
+                    map.broadcastMessage(ResCSummonedPool.summonSkill(getId(), 1321007, Randomizer.nextInt(3) + 6));
                     map.broadcastMessage(MapleCharacter.this, ResCUserRemote.showBuffeffect(getId(), 1321007, 2), false);
                 }
             }, buffInterval, buffInterval);

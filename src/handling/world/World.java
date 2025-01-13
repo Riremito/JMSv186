@@ -39,6 +39,7 @@ import handling.world.guild.MapleGuildCharacter;
 import handling.world.guild.MapleGuildSummary;
 import java.util.Collection;
 import packet.response.ResCField;
+import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
@@ -1389,7 +1390,7 @@ public class World {
             if (m.startTime + m.length < now) {
                 final int skil = m.skillId;
                 chr.removeCooldown(skil);
-                chr.getClient().getSession().write(MaplePacketCreator.skillCooldown(skil, 0));
+                chr.getClient().getSession().write(ResCUserLocal.skillCooldown(skil, 0));
             }
         }
         for (MapleDiseaseValueHolder m : chr.getAllDiseases()) {

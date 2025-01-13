@@ -18,5 +18,7 @@ public class DebugConfig {
     public static boolean GM = false;
     // damage debugging
     public static boolean log_damage = true;
+    // skill cool time off
+    public static boolean disable_skill_cooltime = true;
 
 }

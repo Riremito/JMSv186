@@ -112,7 +112,7 @@ public class InventoryHandler {
 
         final MapleInventoryType pInvType = MapleInventoryType.getByType(slea.readByte());
         if (pInvType == MapleInventoryType.UNDEFINED) {
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
             return;
         }
         final MapleInventory pInv = c.getPlayer().getInventory(pInvType); //Mode should correspond with MapleInventoryType
@@ -138,7 +138,7 @@ public class InventoryHandler {
             }
         }
         c.getSession().write(MaplePacketCreator.finishedSort(pInvType.getType()));
-        c.getSession().write(MaplePacketCreator.enableActions());
+        c.getSession().write(ResWrapper.enableActions());
     }
 
     public static final void ItemGather(final SeekableLittleEndianAccessor slea, final MapleClient c) {
@@ -163,7 +163,7 @@ public class InventoryHandler {
             MapleInventoryManipulator.addFromDrop(c, item, false);
         }
         c.getSession().write(MaplePacketCreator.finishedGather(mode));
-        c.getSession().write(MaplePacketCreator.enableActions());
+        c.getSession().write(ResWrapper.enableActions());
         itemMap.clear();
         sortedItems.clear();
     }
@@ -191,7 +191,7 @@ public class InventoryHandler {
 
     public static final boolean UseRewardItem(short slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
         final IItem toUse = c.getPlayer().getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
-        c.getSession().write(MaplePacketCreator.enableActions());
+        c.getSession().write(ResWrapper.enableActions());
         if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId) {
             if (chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.USE).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.SETUP).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.ETC).getNextFreeSlot() > -1) {
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -444,7 +444,7 @@ public class InventoryHandler {
                 c.getPlayer().dropMessage(5, "The skill has been attained.");
             }
         }
-        c.getSession().write(MaplePacketCreator.enableActions());
+        c.getSession().write(ResWrapper.enableActions());
     }
 
     public static final void UseTreasureChest(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
@@ -453,7 +453,7 @@ public class InventoryHandler {
 
         final IItem toUse = chr.getInventory(MapleInventoryType.ETC).getItem((byte) slot);
         if (toUse == null || toUse.getQuantity() <= 0 || toUse.getItemId() != itemid) {
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
             return;
         }
         int reward;
@@ -490,7 +490,7 @@ public class InventoryHandler {
 
             if (item == null) {
                 chr.dropMessage(5, "Please check your item inventory and see if you have a Master Key, or if the inventory is full.");
-                c.getSession().write(MaplePacketCreator.enableActions());
+                c.getSession().write(ResWrapper.enableActions());
                 return;
             }
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.ETC, (byte) slot, (short) 1, true);
@@ -502,7 +502,7 @@ public class InventoryHandler {
             }
         } else {
             chr.dropMessage(5, "Please check your item inventory and see if you have a Master Key, or if the inventory is full.");
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
         }
     }
 
@@ -515,7 +515,7 @@ public class InventoryHandler {
 
         final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.CASH).getItem(slot);
         if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1) {
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
             return;
         }
 
@@ -1116,7 +1116,7 @@ public class InventoryHandler {
                 MapleMist mist = new MapleMist(bounds, c.getPlayer());
                 c.getPlayer().getMap().spawnMist(mist, 10000, true);
                 c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.getChatText(c.getPlayer().getId(), "Oh no, I farted!", false, 1));
-                c.getSession().write(MaplePacketCreator.enableActions());
+                c.getSession().write(ResWrapper.enableActions());
                 used = true;
                 break;
             }
@@ -1204,7 +1204,7 @@ public class InventoryHandler {
         if (used) {
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false, true);
         }
-        c.getSession().write(MaplePacketCreator.enableActions());
+        c.getSession().write(ResWrapper.enableActions());
     }
 
     public static final void Pickup_Player(final SeekableLittleEndianAccessor slea, MapleClient c, final MapleCharacter chr) {
@@ -1220,7 +1220,7 @@ public class InventoryHandler {
         final MapleMapObject ob = chr.getMap().getMapObject(slea.readInt(), MapleMapObjectType.ITEM);
 
         if (ob == null) {
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
             return;
         }
         final MapleMapItem mapitem = (MapleMapItem) ob;
@@ -1228,15 +1228,15 @@ public class InventoryHandler {
         lock.lock();
         try {
             if (mapitem.isPickedUp()) {
-                c.getSession().write(MaplePacketCreator.enableActions());
+                c.getSession().write(ResWrapper.enableActions());
                 return;
             }
             if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
-                c.getSession().write(MaplePacketCreator.enableActions());
+                c.getSession().write(ResWrapper.enableActions());
                 return;
             }
             if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwner() != chr.getId() && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwner()) == null)) {
-                c.getSession().write(MaplePacketCreator.enableActions());
+                c.getSession().write(ResWrapper.enableActions());
                 return;
             }
             final double Distance = Client_Reportedpos.distanceSq(mapitem.getPosition());
@@ -1264,7 +1264,7 @@ public class InventoryHandler {
                 removeItem(chr, mapitem, ob);
             } else {
                 if (MapleItemInformationProvider.getInstance().isPickupBlocked(mapitem.getItem().getItemId())) {
-                    c.getSession().write(MaplePacketCreator.enableActions());
+                    c.getSession().write(ResWrapper.enableActions());
                     c.getPlayer().dropMessage(5, "This item cannot be picked up.");
                 } else if (useItem(c, mapitem.getItemId())) {
                     removeItem(c.getPlayer(), mapitem, ob);
@@ -1278,7 +1278,7 @@ public class InventoryHandler {
                 } else {
                     c.getSession().write(ResWrapper.getInventoryFull());
                     c.getSession().write(ResWrapper.getShowInventoryFull());
-                    c.getSession().write(MaplePacketCreator.enableActions());
+                    c.getSession().write(ResWrapper.enableActions());
                 }
             }
         } finally {
@@ -1398,7 +1398,7 @@ public class InventoryHandler {
                 c.getPlayer().dropMessage(1, "Unable to find the item.");
             }
         }
-        c.getSession().write(MaplePacketCreator.enableActions());
+        c.getSession().write(ResWrapper.enableActions());
     }
 
     public static final void Owl(final SeekableLittleEndianAccessor slea, final MapleClient c) {
@@ -1407,14 +1407,14 @@ public class InventoryHandler {
                 c.getSession().write(ResCWvsContext.getOwlOpen());
             } else {
                 c.getPlayer().dropMessage(5, "This can only be used inside the Free Market.");
-                c.getSession().write(MaplePacketCreator.enableActions());
+                c.getSession().write(ResWrapper.enableActions());
             }
         }
     }
     public static final int OWL_ID = 2; //don't change. 0 = owner ID, 1 = store ID, 2 = object ID
 
     public static final void OwlWarp(MapleClient c, int id, int map) {
-        c.getSession().write(MaplePacketCreator.enableActions());
+        c.getSession().write(ResWrapper.enableActions());
         if (c.getPlayer().getMapId() >= 910000000 && c.getPlayer().getMapId() <= 910000022 && c.getPlayer().getPlayerShop() == null) {
             if (map >= 910000001 && map <= 910000022) {
                 final MapleMap mapp = c.getChannelServer().getMapFactory().getMap(map);

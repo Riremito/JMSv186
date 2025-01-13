@@ -37,6 +37,7 @@ import packet.response.ResCTownPortalPool;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
+import packet.response.wrapper.ResWrapper;
 import server.MapleCarnivalFactory.MCSkill;
 import server.Timer.BuffTimer;
 import server.life.MapleMonster;
@@ -914,11 +915,11 @@ public class MapleStatEffect implements Serializable {
             //} else if (isSoaring() && !applyfrom.getMap().canSoar()) {
             //	return false;
         } else if (sourceid == 4341006 && applyfrom.getBuffedValue(MapleBuffStat.MIRROR_IMAGE) == null) {
-            applyfrom.getClient().getSession().write(MaplePacketCreator.enableActions());
+            applyfrom.getClient().getSession().write(ResWrapper.enableActions());
             return false; //not working
         } else if (sourceid == 33101004 && applyfrom.getMap().isTown()) {
             applyfrom.dropMessage(5, "You may not use this skill in towns.");
-            applyfrom.getClient().getSession().write(MaplePacketCreator.enableActions());
+            applyfrom.getClient().getSession().write(ResWrapper.enableActions());
             return false; //not supposed to
         }
         int hpchange = calcHPChange(applyfrom, primary);
@@ -1086,7 +1087,7 @@ public class MapleStatEffect implements Serializable {
             for (MapleCoolDownValueHolder i : applyto.getCooldowns()) {
                 if (i.skillId != 5121010) {
                     applyto.removeCooldown(i.skillId);
-                    applyto.getClient().getSession().write(MaplePacketCreator.skillCooldown(i.skillId, 0));
+                    applyto.getClient().getSession().write(ResCUserLocal.skillCooldown(i.skillId, 0));
                 }
             }
         } else {
@@ -1157,7 +1158,7 @@ public class MapleStatEffect implements Serializable {
                         for (MapleCoolDownValueHolder i : affected.getCooldowns()) {
                             if (i.skillId != 5121010) {
                                 affected.removeCooldown(i.skillId);
-                                affected.getClient().getSession().write(MaplePacketCreator.skillCooldown(i.skillId, 0));
+                                affected.getClient().getSession().write(ResCUserLocal.skillCooldown(i.skillId, 0));
                             }
                         }
                     }

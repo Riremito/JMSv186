@@ -37,6 +37,7 @@ import packet.request.ReqCNpcPool;
 import packet.response.ResCField;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
+import packet.response.wrapper.ResWrapper;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -1701,7 +1702,7 @@ public class AdminCommand {
         @Override
         public int execute(MapleClient c, String[] splitted) {
             MapleCharacter player = c.getPlayer();
-            c.getSession().write(MaplePacketCreator.getCharInfo(player));
+            c.getSession().write(ResWrapper.getCharInfo(player));
             player.getMap().removePlayer(player);
             player.getMap().addPlayer(player);
             return 1;

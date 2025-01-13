@@ -18,6 +18,7 @@
  */
 package packet.response;
 
+import config.ServerConfig;
 import handling.MaplePacket;
 import packet.ServerPacket;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -224,6 +225,26 @@ public class ResCUserLocal {
     public static MaplePacket sendMesobagFailed() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Failed);
         return sp.Get();
+    }
+
+    public static MaplePacket skillCooldown(int sid, int time) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SkillCooltimeSet.Get());
+        mplew.writeInt(sid);
+        if (ServerConfig.version <= 186) {
+            mplew.writeShort(time);
+        } else {
+            mplew.writeInt(time);
+        }
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket instantMapWarp(final byte portal) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserTeleport.Get());
+        mplew.write(0);
+        mplew.write(portal); // 6
+        return mplew.getPacket();
     }
 
 }

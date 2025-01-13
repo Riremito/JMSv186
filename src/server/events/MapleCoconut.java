@@ -24,6 +24,7 @@ package server.events;
 import client.MapleCharacter;
 import java.util.LinkedList;
 import java.util.List;
+import packet.response.ResCField_Coconut;
 import packet.response.wrapper.ResWrapper;
 import server.Timer.EventTimer;
 import tools.MaplePacketCreator;
@@ -55,7 +56,7 @@ public class MapleCoconut extends MapleEvent {
 
     @Override
     public void onMapLoad(MapleCharacter chr) {
-        chr.getClient().getSession().write(MaplePacketCreator.coconutScore(getCoconutScore()));
+        chr.getClient().getSession().write(ResCField_Coconut.coconutScore(getCoconutScore()));
     }
 
     public MapleCoconuts getCoconut(int id) {
@@ -133,7 +134,7 @@ public class MapleCoconut extends MapleEvent {
         reset();
         setHittable(true);
         getMap(0).broadcastMessage(MaplePacketCreator.serverNotice(5, "The Coconut Event has started!!"));
-        getMap(0).broadcastMessage(MaplePacketCreator.hitCoconut(true, 0, 0));
+        getMap(0).broadcastMessage(ResCField_Coconut.hitCoconut(true, 0, 0));
         getMap(0).broadcastMessage(MaplePacketCreator.getClock(360));
 
         EventTimer.getInstance().schedule(new Runnable() {

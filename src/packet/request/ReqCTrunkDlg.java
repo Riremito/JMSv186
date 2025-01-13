@@ -14,6 +14,7 @@ import java.util.Collection;
 import packet.ClientPacket;
 import packet.ServerPacket;
 import packet.response.struct.GW_ItemSlotBase;
+import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStorage;
@@ -192,7 +193,7 @@ public class ReqCTrunkDlg {
 
                 final byte flag = item.getFlag();
                 if (ii.isPickupRestricted(item.getItemId()) && storage.findById(item.getItemId()) != null) {
-                    c.getSession().write(MaplePacketCreator.enableActions());
+                    c.getSession().write(ResWrapper.enableActions());
                     return false;
                 }
 
@@ -203,7 +204,7 @@ public class ReqCTrunkDlg {
                         } else if (ItemFlag.KARMA_USE.check(flag)) {
                             item.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
                         } else {
-                            c.getSession().write(MaplePacketCreator.enableActions());
+                            c.getSession().write(ResWrapper.enableActions());
                             return false;
                         }
                     }

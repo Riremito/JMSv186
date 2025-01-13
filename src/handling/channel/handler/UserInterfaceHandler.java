@@ -23,6 +23,7 @@ package handling.channel.handler;
 import client.MapleClient;
 import client.MapleCharacterUtil;
 import constants.ServerConstants;
+import packet.response.ResCField_ContiMove;
 import scripting.NPCScriptManager;
 import scripting.EventManager;
 import tools.MaplePacketCreator;
@@ -101,6 +102,6 @@ public class UserInterfaceHandler {
                 System.out.println("Unhandled ship object, MapID : " + mapid);
                 break;
         }
-        c.getSession().write(MaplePacketCreator.boatPacket(effect));
+        c.getSession().write(ResCField_ContiMove.boatPacket(effect));
     }
 }

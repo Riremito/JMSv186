@@ -27,6 +27,7 @@ import packet.ServerPacket;
 import packet.response.struct.AvatarLook;
 import server.life.SummonAttackEntry;
 import server.maps.MapleSummon;
+import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -119,6 +120,15 @@ public class ResCSummonedPool {
         }
         p.Encode1(animated ? 4 : 1);
         return p.Get();
+    }
+
+    public static MaplePacket summonSkill(int cid, int summonSkillId, int newStance) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SummonedSkill.Get());
+        mplew.writeInt(cid);
+        mplew.writeInt(summonSkillId);
+        mplew.write(newStance);
+        return mplew.getPacket();
     }
 
 }

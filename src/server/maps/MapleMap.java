@@ -1420,7 +1420,7 @@ public final class MapleMap {
                     //c.getSession().write(PartyResponse.partyPortal(door.getTown().getId(), door.getTarget().getId(), door.getSkill(), door.getTargetPosition()));
                 }
                 //c.getSession().write(MysticDoorResponse.setMysticDoorInfo(door));
-                c.getSession().write(MaplePacketCreator.enableActions());
+                c.getSession().write(ResWrapper.enableActions());
             }
         }, new SpawnCondition() {
 

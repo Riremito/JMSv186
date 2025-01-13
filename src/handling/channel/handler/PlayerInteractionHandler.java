@@ -31,6 +31,7 @@ import client.inventory.MapleInventoryType;
 import java.util.List;
 import packet.response.ResCEmployeePool;
 import packet.response.ResCField;
+import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleTrade;
@@ -117,12 +118,12 @@ public class PlayerInteractionHandler {
                      */
                     if (chr.getMap().getMapObjectsInRange(chr.getPosition(), 20000, Arrays.asList(MapleMapObjectType.SHOP, MapleMapObjectType.HIRED_MERCHANT)).size() != 0) {
                         chr.dropMessage(1, "You may not establish a store here.");
-                        c.getSession().write(MaplePacketCreator.enableActions());
+                        c.getSession().write(ResWrapper.enableActions());
                         return;
                     } else if (createType == 1 || createType == 2) {
                         if (FieldLimitType.Minigames.check(chr.getMap().getFieldLimit())) {
                             chr.dropMessage(1, "You may not use minigames here.");
-                            c.getSession().write(MaplePacketCreator.enableActions());
+                            c.getSession().write(ResWrapper.enableActions());
                             return;
                         }
                     }
@@ -369,12 +370,12 @@ public class PlayerInteractionHandler {
                     if (ivItem.getQuantity() >= bundles_perbundle) {
                         final byte flag = ivItem.getFlag();
                         if (ItemFlag.UNTRADEABLE.check(flag) || ItemFlag.LOCK.check(flag)) {
-                            c.getSession().write(MaplePacketCreator.enableActions());
+                            c.getSession().write(ResWrapper.enableActions());
                             return;
                         }
                         if (ii.isDropRestricted(ivItem.getItemId()) || ii.isAccountShared(ivItem.getItemId())) {
                             if (!(ItemFlag.KARMA_EQ.check(flag) || ItemFlag.KARMA_USE.check(flag))) {
-                                c.getSession().write(MaplePacketCreator.enableActions());
+                                c.getSession().write(ResWrapper.enableActions());
                                 return;
                             }
                         }
