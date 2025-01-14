@@ -580,7 +580,7 @@ public class ResCWvsContext {
 
     public static MaplePacket fishingUpdate(byte type, int id) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.FISHING_BOARD_UPDATE.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Fishing_BoardUpdate.Get());
         mplew.write(type);
         mplew.writeInt(id);
         return mplew.getPacket();

@@ -16,7 +16,6 @@
  *
  *
  */
-// サーバー側から送信されるパケットのヘッダの定義
 package packet;
 
 import config.ServerConfig;
@@ -173,24 +172,18 @@ public class ServerPacket {
     }
 
     public enum Header {
-        // 独自仕様
-        LP_CUSTOM_,
-        LP_CUSTOM_WZ_HASH,
-        LP_CUSTOM_CLIENT_PATCH,
-        LP_CUSTOM_MEMORY_SCAN,
-        // Names from v95 PDB
-        // ログインサーバー
+        // CClientSocket::ProcessPacket, CLogin::OnPacket
         LP_BEGIN_SOCKET,
         LP_CheckPasswordResult,
         LP_GuestIDLoginResult,
-        //LP_AccountInfoResult,
+        LP_AccountInfoResult,
         LP_CheckUserLimitResult,
-        //LP_SetAccountResult,
-        //LP_ConfirmEULAResult,
+        LP_SetAccountResult,
+        LP_ConfirmEULAResult,
         LP_CheckPinCodeResult,
         LP_UpdatePinCodeResult,
         LP_ViewAllCharResult,
-        //LP_SelectCharacterByVACResult,
+        LP_SelectCharacterByVACResult,
         LP_WorldInformation,
         LP_SelectWorldResult,
         LP_SelectCharacterResult,
@@ -202,41 +195,41 @@ public class ServerPacket {
         LP_AuthenCodeChanged,
         LP_AuthenMessage,
         LP_SecurityPacket,
-        LP_JMS_CheckGameGuardUpdatedResult, // JMS v131 (GG)
-        //LP_EnableSPWResult,
-        //LP_DeleteCharacterOTPRequest,
-        //LP_CheckCrcResult,
+        LP_JMS_CheckGameGuardUpdatedResult, // JMS131, KMST330
+        LP_EnableSPWResult,
+        LP_DeleteCharacterOTPRequest,
+        LP_CheckCrcResult,
         LP_LatestConnectedWorld,
         LP_RecommendWorldMessage,
-        LP_JMS_SetMapLogin, // 名称不明
-        //LP_CheckExtraCharInfoResult,
-        //LP_CheckSPWResult,
+        LP_JMS_SetMapLogin,
+        LP_CheckExtraCharInfoResult,
+        LP_CheckSPWResult,
         LP_END_SOCKET,
-        // ゲームサーバー
+        // CWvsContext::OnPacket
         LP_BEGIN_CHARACTERDATA,
-        LP_InventoryOperation, // MODIFY_INVENTORY_ITEM
-        LP_InventoryGrow, // UPDATE_INVENTORY_SLOT
-        LP_StatChanged, // UPDATE_STATS
-        LP_TemporaryStatSet, // GIVE_BUFF
-        LP_TemporaryStatReset, // CANCEL_BUFF
+        LP_InventoryOperation,
+        LP_InventoryGrow,
+        LP_StatChanged,
+        LP_TemporaryStatSet,
+        LP_TemporaryStatReset,
         LP_ForcedStatSet,
         LP_ForcedStatReset,
-        LP_ChangeSkillRecordResult, // UPDATE_SKILLS
+        LP_ChangeSkillRecordResult,
         LP_SkillUseResult,
-        LP_GivePopularityResult, // FAME_RESPONSE
-        LP_Message, // SHOW_STATUS_INFO
+        LP_GivePopularityResult,
+        LP_Message,
         LP_SendOpenFullClientLink,
-        LP_MemoResult, // SHOW_NOTES
-        LP_MapTransferResult, // TROCK_LOCATIONS
+        LP_MemoResult,
+        LP_MapTransferResult,
         LP_AntiMacroResult,
-        LP_InitialQuizStart, // LIE_DETECTOR
+        LP_InitialQuizStart,
         LP_ClaimResult,
         LP_SetClaimSvrAvailableTime,
         LP_ClaimSvrStatusChanged,
         LP_SetTamingMobInfo,
-        LP_QuestClear, // SHOW_QUEST_COMPLETION
+        LP_QuestClear,
         LP_EntrustedShopCheckResult,
-        LP_SkillLearnItemResult, // USE_SKILL_BOOK
+        LP_SkillLearnItemResult,
         LP_SkillResetItemResult,
         LP_GatherItemResult,
         LP_SortItemResult,
@@ -247,17 +240,17 @@ public class ServerPacket {
         LP_SetGender,
         LP_GuildBBS,
         LP_PetDeadMessage,
-        LP_CharacterInfo, // CHAR_INFO
-        LP_PartyResult, // PARTY_OPERATION
+        LP_CharacterInfo,
+        LP_PartyResult,
         LP_ExpeditionRequest,
         LP_ExpeditionNoti,
-        LP_FriendResult, // BUDDYLIST
+        LP_FriendResult,
         LP_GuildRequest,
-        LP_GuildResult, // GUILD_OPERATION
+        LP_GuildResult,
         LP_AllianceResult,
-        LP_TownPortal, // SPAWN_PORTAL
+        LP_TownPortal,
         LP_OpenGate,
-        LP_BroadcastMsg, // SERVERMESSAGE
+        LP_BroadcastMsg,
         LP_IncubatorResult,
         LP_ShopScannerResult,
         LP_ShopLinkResult,
@@ -270,8 +263,8 @@ public class ServerPacket {
         LP_SetPotionDiscountRate,
         LP_BridleMobCatchFail,
         LP_ImitatedNPCResult,
-        LP_ImitatedNPCData,
-        LP_LimitedNPCDisableInfo,
+        LP_ImitatedNPCData, // -> CNpcPool::OnPacket
+        LP_LimitedNPCDisableInfo, // -> CNpcPool::OnPacket
         LP_MonsterBookSetCard,
         LP_MonsterBookSetCover,
         LP_HourChanged,
@@ -326,44 +319,47 @@ public class ServerPacket {
         LP_AskUserWhetherUsePamsSong,
         LP_TransferChannel,
         LP_DisallowedDeliveryQuestList,
-        LP_END_CHARACTERDATA,
         LP_MacroSysDataInit,
+        LP_END_CHARACTERDATA,
+        // CStage::OnPacket
         LP_BEGIN_STAGE,
         LP_SetField,
         LP_SetITC,
-        LP_END_STAGE,
         LP_SetCashShop,
+        LP_END_STAGE,
+        // CMapLoadable::OnPacket
         LP_BEGIN_MAP,
         LP_SetBackgroundEffect,
         LP_SetMapObjectVisible,
         LP_ClearBackgroundEffect,
         LP_END_MAP,
+        // CField::OnPacket
         LP_BEGIN_FIELD,
         LP_TransferFieldReqIgnored,
-        LP_TransferChannelReqIgnored, // SERVER_BLOCKED
-        LP_FieldSpecificData, // SHOW_EQUIP_EFFECT
-        LP_GroupMessage, // MULTICHAT
-        LP_Whisper, // WHISPER
+        LP_TransferChannelReqIgnored,
+        LP_FieldSpecificData,
+        LP_GroupMessage,
+        LP_Whisper,
         LP_CoupleMessage,
         LP_MobSummonItemUseResult,
-        LP_FieldEffect, // BOSS_ENV
+        LP_FieldEffect,
         LP_FieldObstacleOnOff,
         LP_FieldObstacleOnOffStatus,
         LP_FieldObstacleAllReset,
-        LP_BlowWeather, // MAP_EFFECT
-        LP_PlayJukeBox, // CASH_SONG
-        LP_AdminResult, // GM_EFFECT
-        LP_Quiz, // OX_QUIZ
-        LP_Desc, // GMEVENT_INSTRUCTIONS
-        LP_Clock, // CLOCK
-        LP_CONTIMOVE, // BOAT_EFF
-        LP_CONTISTATE, // BOAT_EFFECT
+        LP_BlowWeather,
+        LP_PlayJukeBox,
+        LP_AdminResult,
+        LP_Quiz,
+        LP_Desc,
+        LP_Clock,
+        LP_CONTIMOVE,
+        LP_CONTISTATE,
         LP_SetQuestClear,
         LP_SetQuestTime,
         LP_Warn,
         LP_SetObjectState,
-        LP_DestroyClock, // STOP_CLOCK
-        LP_ShowArenaResult,
+        LP_DestroyClock,
+        LP_ShowArenaResult, // -> CField_AriantArena::OnPacket
         LP_StalkResult,
         LP_MassacreIncGauge,
         LP_MassacreResult,
@@ -371,16 +367,18 @@ public class ServerPacket {
         LP_FootHoldInfo,
         LP_RequestFootHoldInfo,
         LP_FieldKillCount,
+        // CUserPool::OnPacket
         LP_BEGIN_USERPOOL,
-        LP_UserEnterField, // SPAWN_PLAYER
-        LP_UserLeaveField, // REMOVE_PLAYER_FROM_MAP
+        LP_UserEnterField,
+        LP_UserLeaveField,
+        // CUserPool::OnUserCommonPacket
         LP_BEGIN_USERCOMMON,
-        LP_UserChat, // CHATTEXT
+        LP_UserChat,
         LP_UserChatNLCPQ,
         LP_UserADBoard,
         LP_UserMiniRoomBalloon,
         LP_UserConsumeItemEffect,
-        LP_UserItemUpgradeEffect, // SHOW_SCROLL_EFFECT
+        LP_UserItemUpgradeEffect,
         LP_UserItemHyperUpgradeEffect,
         LP_UserItemOptionUpgradeEffect,
         LP_UserItemReleaseEffect,
@@ -392,60 +390,64 @@ public class ServerPacket {
         LP_UserSetPhase,
         LP_SetPortalUsable,
         LP_ShowPamsSongResult,
+        // CUser::OnPetPacket
         LP_BEGIN_PET,
-        LP_PetActivated, // SPAWN_PET
+        LP_PetActivated,
         LP_PetEvol,
         LP_PetTransferField,
-        LP_PetMove, // MOVE_PET
-        LP_PetAction, // PET_CHAT
-        LP_PetNameChanged, // PET_NAMECHANGE
-        LP_PetLoadExceptionList, // PET_COMMAND
-        LP_END_PET,
+        LP_PetMove,
+        LP_PetAction,
+        LP_PetNameChanged,
+        LP_PetLoadExceptionList,
         LP_PetActionCommand,
+        LP_END_PET,
+        // CUser::OnDragonPacket
         LP_BEGIN_DRAGON,
         LP_DragonEnterField,
         LP_DragonMove,
         LP_DragonLeaveField,
         LP_END_DRAGON,
         LP_END_USERCOMMON,
+        // CUserPool::OnUserRemotePacket
         LP_BEGIN_USERREMOTE,
-        LP_UserMove, // MOVE_PLAYER
-        LP_UserMeleeAttack, // CLOSE_RANGE_ATTACK
-        LP_UserShootAttack, // RANGED_ATTACK 
-        LP_UserMagicAttack, // MAGIC_ATTACK
+        LP_UserMove,
+        LP_UserMeleeAttack,
+        LP_UserShootAttack,
+        LP_UserMagicAttack,
         LP_UserBodyAttack,
-        LP_UserSkillPrepare, // SKILL_EFFECT
+        LP_UserSkillPrepare,
         LP_UserMovingShootAttackPrepare,
-        LP_UserSkillCancel, // CANCEL_SKILL_EFFECT
-        LP_UserHit, // DAMAGE_PLAYER
-        LP_UserEmotion, // FACIAL_EXPRESSION
-        LP_UserSetActiveEffectItem, // SHOW_ITEM_EFFECT
+        LP_UserSkillCancel,
+        LP_UserHit,
+        LP_UserEmotion,
+        LP_UserSetActiveEffectItem,
         LP_UserShowUpgradeTombEffect,
-        LP_UserSetActivePortableChair, // SHOW_CHAIR
-        LP_UserAvatarModified, // UPDATE_CHAR_LOOK
-        LP_UserEffectRemote, // SHOW_FOREIGN_EFFECT
-        LP_UserTemporaryStatSet, // GIVE_FOREIGN_BUFF
-        LP_UserTemporaryStatReset, // CANCEL_FOREIGN_BUFF
-        LP_UserHP, // UPDATE_PARTYMEMBER_HP
-        LP_UserGuildNameChanged, // LOAD_GUILD_NAME
-        LP_UserGuildMarkChanged, // LOAD_GUILD_ICON
-        LP_END_USERREMOTE,
+        LP_UserSetActivePortableChair,
+        LP_UserAvatarModified,
+        LP_UserEffectRemote,
+        LP_UserTemporaryStatSet,
+        LP_UserTemporaryStatReset,
+        LP_UserHP,
+        LP_UserGuildNameChanged,
+        LP_UserGuildMarkChanged,
         LP_UserThrowGrenade,
+        LP_END_USERREMOTE,
+        // CUserPool::OnUserLocalPacket
         LP_BEGIN_USERLOCAL,
-        LP_UserSitResult, // CANCEL_CHAIR 
+        LP_UserSitResult,
         LP_UserEmotionLocal,
-        LP_UserEffectLocal, // SHOW_ITEM_GAIN_INCHAT?
-        LP_UserTeleport, // CURRENT_MAP_WARP
+        LP_UserEffectLocal,
+        LP_UserTeleport,
         LP_Premium,
-        LP_MesoGive_Succeeded, // MESOBAG_SUCCESS
-        LP_MesoGive_Failed, // MESOBAG_FAILURE
+        LP_MesoGive_Succeeded,
+        LP_MesoGive_Failed,
         LP_Random_Mesobag_Succeed,
         LP_Random_Mesobag_Failed,
         LP_FieldFadeInOut,
         LP_FieldFadeOutForce,
-        LP_UserQuestResult, // UPDATE_QUEST_INFO
+        LP_UserQuestResult,
         LP_NotifyHPDecByField,
-        LP_UserPetSkillChanged, // PET_FLAG_CHANGE
+        LP_UserPetSkillChanged,
         LP_UserBalloonMsg,
         LP_PlayEventSound,
         LP_PlayMinigameSound,
@@ -477,35 +479,38 @@ public class ServerPacket {
         LP_UserAskAPSPEvent,
         LP_QuestGuideResult,
         LP_UserDeliveryQuest,
-        LP_END_USERLOCAL,
         LP_SkillCooltimeSet,
+        LP_END_USERLOCAL,
         LP_END_USERPOOL,
+        // CSummonedPool::OnPacket
         LP_BEGIN_SUMMONED,
-        LP_SummonedEnterField, // SPAWN_SUMMON
-        LP_SummonedLeaveField, // REMOVE_SUMMON
-        LP_SummonedMove, // MOVE_SUMMON
-        LP_SummonedAttack, // SUMMON_ATTACK
-        LP_SummonedSkill, // SUMMON_SKILL
+        LP_SummonedEnterField,
+        LP_SummonedLeaveField,
+        LP_SummonedMove,
+        LP_SummonedAttack,
+        LP_SummonedSkill,
+        LP_SummonedHit,
         LP_END_SUMMONED,
-        LP_SummonedHit, // DAMAGE_SUMMON
+        // CMobPool::OnPacket
         LP_BEGIN_MOBPOOL,
-        LP_MobEnterField, // SPAWN_MONSTER
-        LP_MobLeaveField, // KILL_MONSTER
-        LP_MobChangeController, // SPAWN_MONSTER_CONTROL
+        LP_MobEnterField,
+        LP_MobLeaveField,
+        LP_MobChangeController,
+        // CMobPool::OnMobPacket
         LP_BEGIN_MOB,
-        LP_MobMove, // MOVE_MONSTER
-        LP_MobCtrlAck, // MOVE_MONSTER_RESPONSE 
+        LP_MobMove,
+        LP_MobCtrlAck,
         LP_MobCtrlHint,
-        LP_MobStatSet, // APPLY_MONSTER_STATUS
-        LP_MobStatReset, // CANCEL_MONSTER_STATUS
+        LP_MobStatSet,
+        LP_MobStatReset,
         LP_MobSuspendReset,
-        LP_MobAffected, // MOB_TO_MOB_DAMAGE
-        LP_MobDamaged, // DAMAGE_MONSTER
+        LP_MobAffected,
+        LP_MobDamaged,
         LP_MobSpecialEffectBySkill,
         LP_MobHPChange,
-        LP_MobCrcKeyChanged,
+        LP_MobCrcKeyChanged, // -> CMobPool::OnPacket
         LP_MobHPIndicator,
-        LP_MobCatchEffect, // CATCH_MONSTER
+        LP_MobCatchEffect,
         LP_MobEffectByItem,
         LP_MobSpeaking,
         LP_MobChargeCount,
@@ -516,120 +521,149 @@ public class ServerPacket {
         LP_MobEscortReturnBefore,
         LP_MobNextAttack,
         LP_MobTeleport,
-        LP_END_MOB,
         LP_MobAttackedByMob,
+        LP_END_MOB,
         LP_END_MOBPOOL,
+        // CNpcPool::OnPacket
         LP_BEGIN_NPCPOOL,
-        LP_NpcEnterField, // SPAWN_NPC
-        LP_NpcLeaveField, // REMOVE_NPC
-        LP_NpcChangeController, // SPAWN_NPC_REQUEST_CONTROLLER
+        LP_NpcEnterField,
+        LP_NpcLeaveField,
+        LP_NpcChangeController,
+        // CNpcPool::OnNpcPacket
         LP_BEGIN_NPC,
         LP_NpcMove,
         LP_NpcUpdateLimitedInfo,
-        LP_END_NPC,
         LP_NpcSpecialAction,
+        LP_END_NPC,
+        // CNpcPool::OnNpcTemplatePacket
         LP_BEGIN_NPCTEMPLATE,
-        LP_END_NPCTEMPLATE,
         LP_NpcSetScript,
+        LP_END_NPCTEMPLATE,
         LP_END_NPCPOOL,
+        // CEmployeePool::OnPacket
         LP_BEGIN_EMPLOYEEPOOL,
-        LP_EmployeeEnterField, // SPAWN_HIRED_MERCHANT
-        LP_EmployeeLeaveField, // DESTROY_HIRED_MERCHANT
+        LP_EmployeeEnterField,
+        LP_EmployeeLeaveField,
+        LP_EmployeeMiniRoomBalloon,
         LP_END_EMPLOYEEPOOL,
-        LP_EmployeeMiniRoomBalloon, // UPDATE_HIRED_MERCHANT
+        // CDropPool::OnPacket
         LP_BEGIN_DROPPOOL,
-        LP_DropEnterField, // DROP_ITEM_FROM_MAPOBJECT
+        LP_DropEnterField,
         LP_DropReleaseAllFreeze,
-        LP_DropLeaveField, // REMOVE_ITEM_FROM_MAP
+        LP_DropLeaveField,
         LP_END_DROPPOOL,
+        // CMessageBoxPool::OnPacket
         LP_BEGIN_MESSAGEBOXPOOL,
-        LP_CreateMessgaeBoxFailed, // SPAWN_KITE_ERROR
-        LP_MessageBoxEnterField, // SPAWN_KITE
+        LP_CreateMessgaeBoxFailed,
+        LP_MessageBoxEnterField,
+        LP_MessageBoxLeaveField,
         LP_END_MESSAGEBOXPOOL,
-        LP_MessageBoxLeaveField, // REMOVE_KITE
-        LP_AffectedAreaCreated, // SPAWN_MIST
+        // CAffectedAreaPool::OnPacket
         LP_BEGIN_AFFECTEDAREAPOOL,
-        LP_AffectedAreaRemoved, // REMOVE_MIST
+        LP_AffectedAreaCreated,
+        LP_AffectedAreaRemoved,
         LP_END_AFFECTEDAREAPOOL,
+        // CTownPortalPool::OnPacket
         LP_BEGIN_TOWNPORTALPOOL,
-        LP_TownPortalCreated, // SPAWN_DOOR
+        LP_TownPortalCreated,
+        LP_TownPortalRemoved,
         LP_END_TOWNPORTALPOOL,
-        LP_TownPortalRemoved, // REMOVE_DOOR
+        // COpenGatePool::OnPacket
         LP_BEGIN_OPENGATEPOOL,
         LP_OpenGateCreated,
-        LP_END_OPENGATEPOOL,
         LP_OpenGateRemoved,
-        LP_BEGIN_REACTORPOOL,
+        LP_END_OPENGATEPOOL,
         LP_JMS_PINKBEAN_PORTAL_CREATE, // ItemID 2420004
-        LP_ReactorChangeState, // REACTOR_HIT
+        // CReactorPool::OnPacket
+        LP_BEGIN_REACTORPOOL,
+        LP_ReactorChangeState,
         LP_ReactorMove,
-        LP_ReactorEnterField, // REACTOR_SPAWN
+        LP_ReactorEnterField,
+        LP_ReactorLeaveField,
         LP_END_REACTORPOOL,
-        LP_ReactorLeaveField, // REACTOR_DESTROY
+        // CField_
         LP_BEGIN_ETCFIELDOBJ,
-        LP_SnowBallState, // ROLL_SNOWBALL
-        LP_SnowBallHit, // HIT_SNOWBALL
-        LP_SnowBallMsg, // SNOWBALL_MESSAGE
-        LP_SnowBallTouch, // LEFT_KNOCK_BACK
-        LP_CoconutHit, // HIT_COCONUT
-        LP_CoconutScore, // COCONUT_SCORE
+        // CField_SnowBall::OnPacket
+        LP_SnowBallState,
+        LP_SnowBallHit,
+        LP_SnowBallMsg,
+        LP_SnowBallTouch,
+        // CField_Coconut::OnPacket
+        LP_CoconutHit,
+        LP_CoconutScore,
+        // CField_GuildBoss::OnPacket
         LP_HealerMove,
         LP_PulleyStateChange,
-        LP_MCarnivalEnter, // MONSTER_CARNIVAL_START
-        LP_MCarnivalPersonalCP, // MONSTER_CARNIVAL_OBTAINED_CP
-        LP_MCarnivalTeamCP, // MONSTER_CARNIVAL_PARTY_CP
-        LP_MCarnivalResultSuccess, // MONSTER_CARNIVAL_SUMMON?
-        LP_MCarnivalResultFail, // MONSTER_CARNIVAL_OPERATION?
-        LP_MCarnivalDeath, // MONSTER_CARNIVAL_DIED
-        LP_MCarnivalMemberOut, // MONSTER_CARNIVAL_DISBAND
+        // CField_MonsterCarnival::OnPacket
+        LP_MCarnivalEnter,
+        LP_MCarnivalPersonalCP,
+        LP_MCarnivalTeamCP,
+        LP_MCarnivalResultSuccess,
+        LP_MCarnivalResultFail,
+        LP_MCarnivalDeath,
+        LP_MCarnivalMemberOut,
         LP_MCarnivalGameResult,
+        // CField_AriantArena::OnPacket
         LP_ArenaScore,
-        LP_BattlefieldEnter,
+        // CField_Battlefield::OnPacket
+        LP_BattlefieldEnter, // ?
         LP_BattlefieldScore,
         LP_BattlefieldTeamChanged,
+        // CField_Witchtower::OnPacket
         LP_WitchtowerScore,
+        // CField::OnPacket
         LP_HontaleTimer,
         LP_ChaosZakumTimer,
         LP_HontailTimer,
-        LP_END_ETCFIELDOBJ,
         LP_ZakumTimer,
+        LP_END_ETCFIELDOBJ,
+        // CScriptMan::OnPacket
         LP_BEGIN_SCRIPT,
+        LP_ScriptMessage,
         LP_END_SCRIPT,
-        LP_ScriptMessage, // NPC_TALK
+        // CShopDlg::OnPacket
         LP_BEGIN_SHOP,
-        LP_OpenShopDlg, // OPEN_NPC_SHOP
-        LP_END_SHOP, // CONFIRM_SHOP_TRANSACTION
+        LP_OpenShopDlg,
         LP_ShopResult,
-        LP_AdminShopResult,
+        LP_END_SHOP,
+        // CAdminShopDlg::OnPacket
         LP_BEGIN_ADMINSHOP,
+        LP_AdminShopResult,
         LP_AdminShopCommodity,
         LP_END_ADMINSHOP,
-        LP_TrunkResult, // OPEN_STORAGE
+        // CTrunkDlg::OnPacket
+        LP_TrunkResult,
+        // CStoreBankDlg::OnPacket
         LP_BEGIN_STOREBANK,
-        LP_StoreBankGetAllResult, // MERCH_ITEM_MSG
+        LP_StoreBankGetAllResult,
+        LP_StoreBankResult,
         LP_END_STOREBANK,
-        LP_StoreBankResult, // MERCH_ITEM_STORE
-        LP_RPSGame, // RPS_GAME
-        LP_Messenger, // MESSENGER
-        LP_MiniRoom, // PLAYER_INTERACTION
+        // CField::OnPacket
+        LP_RPSGame,
+        LP_Messenger,
+        LP_MiniRoom,
+        // CField_Tournament
         LP_BEGIN_TOURNAMENT,
         LP_Tournament,
         LP_TournamentMatchTable,
         LP_TournamentSetPrize,
         LP_TournamentNoticeUEW,
-        LP_END_TOURNAMENT,
         LP_TournamentAvatarInfo,
+        LP_END_TOURNAMENT,
+        // CField_Wedding::OnPacket
         LP_BEGIN_WEDDING,
         LP_WeddingProgress,
-        LP_END_WEDDING,
         LP_WeddingCremonyEnd,
-        LP_END_FIELD,
+        LP_END_WEDDING,
+        // CParcelDlg::OnPacket
         LP_Parcel,
+        LP_END_FIELD,
+        // CCashShop::OnPacket
         LP_BEGIN_CASHSHOP,
         LP_CashShopChargeParamResult,
         LP_JMS_POINTSHOP_PRESENT_DIALOG,
-        LP_CashShopQueryCashResult, // CS_UPDATE
-        LP_CashShopCashItemResult, // CS_OPERATION
+        LP_CashShopQueryCashResult,
+        LP_CashShopCashItemResult,
         LP_CashShopPurchaseExpChanged,
         LP_CashShopGiftMateInfoResult,
         LP_JMS_POINTSHOP_FORCE_REQUEST,
@@ -648,95 +682,90 @@ public class ServerPacket {
         LP_CashShopNoticeFreeCashItem,
         LP_CashShopMemberShopResult,
         LP_END_CASHSHOP,
+        // CFuncKeyMappedMan::OnPacket
         LP_BEGIN_FUNCKEYMAPPED,
-        LP_FuncKeyMappedInit, // KEYMAP
-        LP_END_FUNCKEYMAPPED,
-        LP_PetConsumeItemInit, // PET_AUTO_HEAL
+        LP_FuncKeyMappedInit,
+        LP_PetConsumeItemInit,
         LP_PetConsumeMPItemInit,
         LP_JMS_PetConsumeCureItemInit,
+        LP_END_FUNCKEYMAPPED,
         LP_CheckSSN2OnCreateNewCharacterResult,
         LP_CheckSPWOnCreateNewCharacterResult,
         LP_FirstSSNOnCreateNewCharacterResult,
+        // CMapleTVMan::OnPacket
         LP_BEGIN_MAPLETV,
         LP_MapleTVUpdateMessage,
         LP_MapleTVClearMessage,
         LP_MapleTVSendMessageResult,
         LP_BroadSetFlashChangeEvent,
         LP_END_MAPLETV,
+        // CITC::OnPacket
         LP_BEGIN_ITC,
         LP_ITCChargeParamResult,
         LP_ITCQueryCashResult,
-        LP_END_ITC,
         LP_ITCNormalItemResult,
+        LP_END_ITC,
+        // CUICharacterSaleDlg::OnPacket
         LP_BEGIN_CHARACTERSALE,
         LP_CheckDuplicatedIDResultInCS,
         LP_CreateNewCharacterResultInCS,
         LP_CreateNewCharacterFailInCS,
         LP_CharacterSale,
         LP_END_CHARACTERSALE,
+        // ?
         LP_BEGIN_GOLDHAMMER,
         LP_GoldHammere_s,
         LP_GoldHammerResult,
-        LP_END_GOLDHAMMER,
         LP_GoldHammere_e,
+        LP_END_GOLDHAMMER,
+        // CBattleRecordMan::OnPacket
         LP_BEGIN_BATTLERECORD,
         LP_BattleRecord_s,
         LP_BattleRecordDotDamageInfo,
         LP_BattleRecordRequestResult,
         LP_BattleRecord_e,
         LP_END_BATTLERECORD,
+        // CUIItemUpgrade::OnPacket
         LP_BEGIN_ITEMUPGRADE,
         LP_ItemUpgrade_s,
         LP_ItemUpgradeResult,
         LP_ItemUpgradeFail,
-        LP_END_ITEMUPGRADE,
         LP_ItemUpgrade_e,
+        LP_END_ITEMUPGRADE,
+        // CUIVega::OnPacket
         LP_BEGIN_VEGA,
         LP_Vega_s,
         LP_VegaResult,
         LP_VegaFail,
-        LP_END_VEGA,
         LP_Vega_e,
-        LP_LogoutGift,
+        LP_END_VEGA,
+        // CField::OnPacket
+        LP_LogoutGift, // CWvsContext::OnLogoutGift
         LP_NO,
-        // ヘッダに対応する処理の名前を定義
-        UNKNOWN_BEGIN,
-        UNKNOWN,
         // added
-        UNK_BEGIN_PACHINKO,
-        UNK_END_PACHINKO,
         MINIGAME_PACHINKO_UPDATE_TAMA, // UPDATE_PACHINKO_BALL
         UNKNOWN_RELOAD_MINIMAP,
         UNKNOWN_RELOAD_MAP,
         // unknown
-        RELOG_RESPONSE,
-        ARIANT_PQ_START,
-        ARIANT_SCOREBOARD,
-        SERVERSTATUS,
-        XMAS_SURPRISE,
         EARN_TITLE_MSG,
-        FISHING_BOARD_UPDATE,
-        ENERGY,
-        GHOST_POINT,
-        GHOST_STATUS,
-        FAIRY_PEND_MSG,
-        PYRAMID_UPDATE,
-        PYRAMID_RESULT,
-        FISHING_CAUGHT,
-        PLAYER_HINT,
-        TAMA_BOX_SUCCESS, // PACHINKO_PAY_SUCCESS
-        TAMA_BOX_FAILURE, // PACHINKO_PAY_FAILURE
+        LP_JMS_Fishing_BoardUpdate,
+        LP_JMS_Fishing_Caught,
+        LP_JMS_Pachinko_BoxSuccess,
+        LP_JMS_Pachinko_BoxFailure,
         GAME_POLL_REPLY,
-        TALK_MONSTER,
         GAME_POLL_QUESTION,
-        MONSTER_PROPERTIES,
         REMOVE_TALK_MONSTER,
         SHOW_MAGNET,
         UPDATE_BEANS,
         TIP_BEANS, // PACHINKO_TIPS
         OPEN_BEANS, // PACHINKO_OPEN
         SHOOT_BEANS, // PACHINKO_GAME
-        UNKNOWN_END;
+        // 独自仕様
+        LP_CUSTOM_,
+        LP_CUSTOM_WZ_HASH,
+        LP_CUSTOM_CLIENT_PATCH,
+        LP_CUSTOM_MEMORY_SCAN,
+        UNKNOWN;
 
         private int value;
 

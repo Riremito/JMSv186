@@ -25,7 +25,7 @@ public class Res_Pachinko {
 
     // ポイントアイテムのパチンコ玉の充填 (玉ボックス)
     public static MaplePacket TamaBoxSuccess(int gain) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.TAMA_BOX_SUCCESS);
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_JMS_Pachinko_BoxSuccess);
         // パチンコ玉の数
         p.Encode4(gain);
         return p.Get();
@@ -33,7 +33,7 @@ public class Res_Pachinko {
 
     // パチンコ玉の充填に失敗した場合のダイアログ (実質不要)
     public static MaplePacket TamaBoxFailure() {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.TAMA_BOX_FAILURE);
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_JMS_Pachinko_BoxFailure);
         return p.Get();
     }
 

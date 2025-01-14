@@ -296,7 +296,7 @@ public class ResCUserRemote {
 
     public static MaplePacket fishingCaught(int chrid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.FISHING_CAUGHT.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Fishing_Caught.Get());
         mplew.writeInt(chrid);
         return mplew.getPacket();
     }

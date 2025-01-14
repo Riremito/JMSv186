@@ -319,7 +319,7 @@ public class ResCMobPool {
     }
 
     public static MaplePacket talkMonster(int oid, int itemId, String msg) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.TALK_MONSTER);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobEscortStopSay);
         sp.Encode4(oid);
         sp.Encode4(500); //?
         sp.Encode4(itemId);
@@ -347,7 +347,7 @@ public class ResCMobPool {
             return objectid.getNodePacket();
         }
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.MONSTER_PROPERTIES.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MobRequestResultEscortInfo.Get());
         mplew.writeInt(objectid.getObjectId()); //?
         mplew.writeInt(map.getNodes().size());
         mplew.writeInt(objectid.getPosition().x);
