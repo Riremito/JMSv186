@@ -48,7 +48,6 @@ import server.maps.Event_DojoAgent;
 import server.life.MapleMonster;
 import server.life.MapleLifeFactory;
 import server.quest.MapleQuest;
-import tools.MaplePacketCreator;
 import client.inventory.MapleInventoryIdentifier;
 import handling.world.World;
 import packet.ops.OpsFieldEffect;

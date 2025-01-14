@@ -65,7 +65,6 @@ import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 import tools.ConcurrentEnumMap;
 import tools.Pair;
-import tools.MaplePacketCreator;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
 

@@ -34,7 +34,6 @@ import server.Randomizer;
 import server.Timer.MapTimer;
 import server.quest.MapleQuest;
 import server.life.MapleLifeFactory;
-import tools.MaplePacketCreator;
 
 public class Event_PyramidSubway {
 

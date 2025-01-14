@@ -12,7 +12,7 @@ public class Res_Pachinko {
 
     // パチンコ情報の更新
     public static MaplePacket UpdateTama(MapleCharacter chr) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.MINIGAME_PACHINKO_UPDATE_TAMA);
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_JMS_Pachinko_Update);
         // クライアント上ではDecodeBufferで12バイト分Decodeされる
         // キャラクターID (実質不要)
         p.Encode4(chr.getId());
@@ -40,7 +40,7 @@ public class Res_Pachinko {
     public static MaplePacket BeansZJgeiddB(int a) {
         //豆豆进洞后奖励的
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.SHOOT_BEANS.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Play.Get());
         mplew.write(BeanGame.BeansType.奖励豆豆效果B.getType()); //类型 05   08  都是加豆豆···
         mplew.writeInt(a); //奖励豆豆的数量
         mplew.write(0); //未知效果
@@ -50,7 +50,7 @@ public class Res_Pachinko {
     public static MaplePacket BeansHJG(byte type) {
         //黄金狗
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.SHOOT_BEANS.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Play.Get());
         mplew.write(BeanGame.BeansType.黄金狗.getType()); //类型
         mplew.write(type); //改变模式
         return mplew.getPacket();
@@ -59,7 +59,7 @@ public class Res_Pachinko {
     public static MaplePacket BeansJDCS(int a, int 加速旋转, int 蓝, int 绿, int 红) {
         //进洞次数 最多有7个
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.SHOOT_BEANS.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Play.Get());
         mplew.write(BeanGame.BeansType.颜色求进洞.getType());
         mplew.write(a); //
         mplew.write(加速旋转); //快速转动
@@ -72,7 +72,7 @@ public class Res_Pachinko {
     public static MaplePacket BeansJDXZ(int a, int 第一排, int 第三排, int 第二排, int 启动打怪效果, int 中奖率, int 加速旋转, boolean 关闭打击效果A, boolean 关闭打击效果B) {
         //进洞后开始旋转图片
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.SHOOT_BEANS.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Play.Get());
         mplew.write(BeanGame.BeansType.进洞旋转.getType()); //类型
         mplew.write(a);
         mplew.write(第一排); //第一排
@@ -92,7 +92,7 @@ public class Res_Pachinko {
     public static MaplePacket BeansZJgeidd(boolean type, int a) {
         //豆豆进洞后奖励的
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.SHOOT_BEANS.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Play.Get());
         mplew.write(type ? BeanGame.BeansType.奖励豆豆效果.getType() : BeanGame.BeansType.奖励豆豆效果B.getType()); //类型 05   08  都是加豆豆···
         mplew.writeInt(a); //奖励豆豆的数量
         mplew.write(5);
@@ -101,7 +101,7 @@ public class Res_Pachinko {
 
     public static MaplePacket Beans_why() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.SHOOT_BEANS.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Play.Get());
         mplew.write(BeanGame.BeansType.未知效果.getType()); //类型
         return mplew.getPacket();
     }
@@ -109,7 +109,7 @@ public class Res_Pachinko {
     public static MaplePacket BeansUP(int ITEM) {
         //%s。请拿到凯瑟琳处确认。
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.SHOOT_BEANS.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Play.Get());
         mplew.write(BeanGame.BeansType.领奖NPC.getType()); //类型
         mplew.writeInt(ITEM);
         return mplew.getPacket();
@@ -119,7 +119,7 @@ public class Res_Pachinko {
     // CMS v72から流用
     public static MaplePacket BeansGameMessage(int cid, int x, String laba) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.TIP_BEANS.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Message.Get());
         mplew.writeInt(cid);
         // JMS v186.1 fix
         mplew.write(x);
@@ -129,7 +129,7 @@ public class Res_Pachinko {
 
     public static MaplePacket openBeans(MapleCharacter c, int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.OPEN_BEANS.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Open.Get());
         mplew.writeInt(c.getTama());
         mplew.write(type);
         return mplew.getPacket();
@@ -141,21 +141,21 @@ public class Res_Pachinko {
 
     public static MaplePacket updateBeans(int cid, int beansCount) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.UPDATE_BEANS.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Update.Get());
         mplew.writeInt(beansCount);
         return mplew.getPacket();
     }
 
     public static MaplePacket 能量储存器(int beansCount) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.UPDATE_BEANS.Get()); //0x253
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Update.Get()); //0x253
         mplew.writeInt(beansCount);
         return mplew.getPacket();
     }
 
     public static MaplePacket showBeans(List<MapleBeans> beansInfo) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.SHOOT_BEANS.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Play.Get());
         mplew.write(BeanGame.BeansType.开始打豆豆.getType());
         mplew.write(beansInfo.size());
         for (MapleBeans bean : beansInfo) {

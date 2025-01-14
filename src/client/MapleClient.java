@@ -81,7 +81,6 @@ import packet.response.ResCCashShop;
 import packet.response.ResCClientSocket;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
-import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 public class MapleClient implements Serializable {

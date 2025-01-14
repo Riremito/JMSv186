@@ -242,7 +242,7 @@ public class ResCMobPool {
     }
 
     public static MaplePacket removeTalkMonster(int oid) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.REMOVE_TALK_MONSTER);
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_MobEscortReturnBefore);
         p.Encode4(oid);
         return p.Get();
     }
@@ -369,7 +369,7 @@ public class ResCMobPool {
     public static MaplePacket showMagnet(int mobid, byte success) {
         // Monster Magnet
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.SHOW_MAGNET.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Mob_Magnet.Get());
         mplew.writeInt(mobid);
         mplew.write(success);
         return mplew.getPacket();

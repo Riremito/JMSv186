@@ -2161,4 +2161,11 @@ public class ResCWvsContext {
         return mplew.getPacket();
     }
 
+    // 0x005E @005E 00, ミニマップ点滅, 再読み込みかも?
+    public static MaplePacket ReloadMiniMap() {
+        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_MiniMapOnOff);
+        p.Encode1((byte) 0);
+        return p.Get();
+    }
+
 }

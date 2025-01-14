@@ -27,17 +27,10 @@ import packet.ServerPacket;
  */
 public class ResCMapLoadable {
 
-    // 0x005E @005E 00, ミニマップ点滅, 再読み込みかも?
-    public static MaplePacket ReloadMiniMap() {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.UNKNOWN_RELOAD_MINIMAP);
-        p.Encode1((byte) 0);
-        return p.Get();
-    }
-
     // 0x0083 @0083, 画面の位置をキャラクターを中心とした場所に変更, 背景リロードしてるかも?
     public static MaplePacket ReloadMap() {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ClearBackgroundEffect);
         return p.Get();
     }
-    
+
 }

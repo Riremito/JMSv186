@@ -48,7 +48,6 @@ import packet.response.struct.TestHelper;
 import server.Randomizer;
 import server.maps.MapleMap;
 import tools.HexTool;
-import tools.MaplePacketCreator;
 import tools.StringUtil;
 import tools.data.output.MaplePacketLittleEndianWriter;
 

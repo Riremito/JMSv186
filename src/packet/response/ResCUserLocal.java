@@ -20,6 +20,7 @@ package packet.response;
 
 import client.MapleCharacter;
 import config.ServerConfig;
+import constants.ServerConstants;
 import handling.MaplePacket;
 import java.awt.Point;
 import java.util.List;
@@ -383,6 +384,19 @@ public class ResCUserLocal {
         mplew.writeShort(width);
         mplew.writeShort(height);
         mplew.write(1);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket getPollQuestion() {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Poll_Question.Get());
+        mplew.writeInt(1);
+        mplew.writeInt(14);
+        mplew.writeMapleAsciiString(ServerConstants.Poll_Question);
+        mplew.writeInt(ServerConstants.Poll_Answers.length); // pollcount
+        for (byte i = 0; i < ServerConstants.Poll_Answers.length; i++) {
+            mplew.writeMapleAsciiString(ServerConstants.Poll_Answers[i]);
+        }
         return mplew.getPacket();
     }
 

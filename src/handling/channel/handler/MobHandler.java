@@ -29,7 +29,6 @@ import server.Randomizer;
 import server.maps.MapleMap;
 import server.life.MapleMonster;
 import server.maps.MapleNodes.MapleNodeInfo;
-import tools.MaplePacketCreator;
 
 public class MobHandler {
 

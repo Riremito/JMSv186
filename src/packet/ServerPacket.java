@@ -262,6 +262,8 @@ public class ServerPacket {
         LP_SetWeekEventMessage,
         LP_SetPotionDiscountRate,
         LP_BridleMobCatchFail,
+        LP_JMS_Pachinko_Update,
+        LP_JMS_Fishing_BoardUpdate,
         LP_ImitatedNPCResult,
         LP_ImitatedNPCData, // -> CNpcPool::OnPacket
         LP_LimitedNPCDisableInfo, // -> CNpcPool::OnPacket
@@ -389,6 +391,7 @@ public class ServerPacket {
         LP_UserShowPQReward,
         LP_UserSetPhase,
         LP_SetPortalUsable,
+        LP_JMS_Fishing_Caught,
         LP_ShowPamsSongResult,
         // CUser::OnPetPacket
         LP_BEGIN_PET,
@@ -461,6 +464,8 @@ public class ServerPacket {
         LP_UserHireTutor,
         LP_UserTutorMsg,
         LP_IncCombo,
+        LP_JMS_Pachinko_BoxSuccess,
+        LP_JMS_Pachinko_BoxFailure,
         LP_UserRandomEmotion,
         LP_ResignQuestReturn,
         LP_PassMateName,
@@ -479,6 +484,7 @@ public class ServerPacket {
         LP_UserAskAPSPEvent,
         LP_QuestGuideResult,
         LP_UserDeliveryQuest,
+        LP_JMS_Poll_Question,
         LP_SkillCooltimeSet,
         LP_END_USERLOCAL,
         LP_END_USERPOOL,
@@ -507,9 +513,10 @@ public class ServerPacket {
         LP_MobAffected,
         LP_MobDamaged,
         LP_MobSpecialEffectBySkill,
-        LP_MobHPChange,
+        LP_MobHPChange, // reserved
         LP_MobCrcKeyChanged, // -> CMobPool::OnPacket
         LP_MobHPIndicator,
+        LP_JMS_Mob_Magnet,
         LP_MobCatchEffect,
         LP_MobEffectByItem,
         LP_MobSpeaking,
@@ -642,7 +649,7 @@ public class ServerPacket {
         LP_RPSGame,
         LP_Messenger,
         LP_MiniRoom,
-        // CField_Tournament
+        // CField_Tournament::OnPacket
         LP_BEGIN_TOURNAMENT,
         LP_Tournament,
         LP_TournamentMatchTable,
@@ -655,6 +662,11 @@ public class ServerPacket {
         LP_WeddingProgress,
         LP_WeddingCremonyEnd,
         LP_END_WEDDING,
+        // Field Pachinko
+        LP_JMS_Field_Pachinko_Message,
+        LP_JMS_Field_Pachinko_Open,
+        LP_JMS_Field_Pachinko_Play,
+        LP_JMS_Field_Pachinko_Update,
         // CParcelDlg::OnPacket
         LP_Parcel,
         LP_END_FIELD,
@@ -712,7 +724,7 @@ public class ServerPacket {
         LP_CreateNewCharacterFailInCS,
         LP_CharacterSale,
         LP_END_CHARACTERSALE,
-        // ?
+        // CUIGoldHammer::OnPacket
         LP_BEGIN_GOLDHAMMER,
         LP_GoldHammere_s,
         LP_GoldHammerResult,
@@ -742,24 +754,8 @@ public class ServerPacket {
         // CField::OnPacket
         LP_LogoutGift, // CWvsContext::OnLogoutGift
         LP_NO,
-        // added
-        MINIGAME_PACHINKO_UPDATE_TAMA, // UPDATE_PACHINKO_BALL
-        UNKNOWN_RELOAD_MINIMAP,
-        UNKNOWN_RELOAD_MAP,
         // unknown
         EARN_TITLE_MSG,
-        LP_JMS_Fishing_BoardUpdate,
-        LP_JMS_Fishing_Caught,
-        LP_JMS_Pachinko_BoxSuccess,
-        LP_JMS_Pachinko_BoxFailure,
-        GAME_POLL_REPLY,
-        GAME_POLL_QUESTION,
-        REMOVE_TALK_MONSTER,
-        SHOW_MAGNET,
-        UPDATE_BEANS,
-        TIP_BEANS, // PACHINKO_TIPS
-        OPEN_BEANS, // PACHINKO_OPEN
-        SHOOT_BEANS, // PACHINKO_GAME
         // 独自仕様
         LP_CUSTOM_,
         LP_CUSTOM_WZ_HASH,
