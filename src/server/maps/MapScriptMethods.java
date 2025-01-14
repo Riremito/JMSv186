@@ -28,6 +28,7 @@ import client.SkillFactory;
 import packet.ops.OpsFieldEffect;
 import packet.ops.OpsFieldEffectArg;
 import packet.response.ResCField;
+import packet.response.ResCMobPool;
 import packet.response.ResCUserLocal;
 import packet.response.wrapper.ResWrapper;
 import scripting.EventManager;
@@ -418,7 +419,7 @@ public class MapScriptMethods {
                     }
                     c.getPlayer().getMap().spawnMonsterWithEffectBelow(shammos, new Point(c.getPlayer().getMap().getPortal(0).getPosition()), 12);
                     shammos.switchController(c.getPlayer(), false);
-                    c.getSession().write(MaplePacketCreator.getNodeProperties(shammos, c.getPlayer().getMap()));
+                    c.getSession().write(ResCMobPool.getNodeProperties(shammos, c.getPlayer().getMap()));
 
                 }
                 break;

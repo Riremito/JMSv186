@@ -22,6 +22,7 @@ package handling.channel.handler;
 
 import client.MapleCharacter;
 import client.inventory.MapleInventoryType;
+import packet.response.ResCMobPool;
 import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.Randomizer;
@@ -111,7 +112,7 @@ public class MobHandler {
     }
 
     public static final void DisplayNode(MapleCharacter chr, MapleMonster mob_from) {
-        chr.getClient().SendPacket(MaplePacketCreator.getNodeProperties(mob_from, chr.getMap()));
+        chr.getClient().SendPacket(ResCMobPool.getNodeProperties(mob_from, chr.getMap()));
     }
 
     public static final void MobNode(MapleCharacter chr, MapleMonster mob_from, int newNode) {

@@ -31,6 +31,8 @@ import packet.ServerPacket;
 import packet.response.struct.Structure;
 import server.life.MapleMonster;
 import server.life.MobSkill;
+import server.maps.MapleMap;
+import server.maps.MapleNodes;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -335,6 +337,40 @@ public class ResCMobPool {
         mplew.writeShort(ServerPacket.Header.LP_MobCatchEffect.Get());
         mplew.writeInt(mobid);
         mplew.writeInt(itemid);
+        mplew.write(success);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket getNodeProperties(final MapleMonster objectid, final MapleMap map) {
+        //idk.
+        if (objectid.getNodePacket() != null) {
+            return objectid.getNodePacket();
+        }
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.MONSTER_PROPERTIES.Get());
+        mplew.writeInt(objectid.getObjectId()); //?
+        mplew.writeInt(map.getNodes().size());
+        mplew.writeInt(objectid.getPosition().x);
+        mplew.writeInt(objectid.getPosition().y);
+        for (MapleNodes.MapleNodeInfo mni : map.getNodes()) {
+            mplew.writeInt(mni.x);
+            mplew.writeInt(mni.y);
+            mplew.writeInt(mni.attr);
+            if (mni.attr == 2) {
+                //msg
+                mplew.writeInt(500); //? talkMonster
+            }
+        }
+        mplew.writeZeroBytes(6);
+        objectid.setNodePacket(mplew.getPacket());
+        return objectid.getNodePacket();
+    }
+
+    public static MaplePacket showMagnet(int mobid, byte success) {
+        // Monster Magnet
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.SHOW_MAGNET.Get());
+        mplew.writeInt(mobid);
         mplew.write(success);
         return mplew.getPacket();
     }

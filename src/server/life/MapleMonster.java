@@ -690,7 +690,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             client.getSession().write(reflectpack);
         }
         if (lastNode >= 0) {
-            client.getSession().write(MaplePacketCreator.getNodeProperties(this, map));
+            client.getSession().write(ResCMobPool.getNodeProperties(this, map));
             if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
                 if (lastNodeController != -1) { //new controller, please re update. sendSpawn only comes when you get too far then come back anyway
                     resetShammos(client);

@@ -658,7 +658,7 @@ public class ResWrapper {
     }
 
     public static final MaplePacket sendGhostStatus(final String type, final String amount) {
-        return MaplePacketCreator.sendString(3, type, amount); //Red_Stage(1-5), Blue_Stage, blueTeamDamage, redTeamDamage
+        return ResCWvsContext.sendString(3, type, amount); //Red_Stage(1-5), Blue_Stage, blueTeamDamage, redTeamDamage
     }
 
     public static MaplePacket MulungEnergy(int energy) {
@@ -666,7 +666,7 @@ public class ResWrapper {
     }
 
     public static final MaplePacket sendGhostPoint(final String type, final String amount) {
-        return MaplePacketCreator.sendString(2, type, amount); //PRaid_Point (0-1500???)
+        return ResCWvsContext.sendString(2, type, amount); //PRaid_Point (0-1500???)
     }
 
     //show_status_info - 01 53 1E 01
@@ -675,7 +675,7 @@ public class ResWrapper {
     //show_status_info - 01 51 1E 01 01 00 30
     //update_quest_info - 08 51 1E 00 00 00 00 00 00 00 00
     public static final MaplePacket sendPyramidEnergy(final String type, final String amount) {
-        return MaplePacketCreator.sendString(1, type, amount);
+        return ResCWvsContext.sendString(1, type, amount);
     }
 
     public static MaplePacket serverMessage(String message) {

@@ -879,7 +879,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void showInstruction(final String msg, final int width, final int height) {
-        c.getSession().write(MaplePacketCreator.sendHint(msg, width, height));
+        c.getSession().write(ResCUserLocal.sendHint(msg, width, height));
     }
 
     public final void playerSummonHint(final boolean summon) {

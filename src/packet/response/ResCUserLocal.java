@@ -367,4 +367,23 @@ public class ResCUserLocal {
         return mplew.getPacket();
     }
 
+    public static MaplePacket sendHint(String hint, int width, int height) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        if (width < 1) {
+            width = hint.length() * 10;
+            if (width < 40) {
+                width = 40;
+            }
+        }
+        if (height < 5) {
+            height = 5;
+        }
+        mplew.writeShort(ServerPacket.Header.LP_UserBalloonMsg.Get());
+        mplew.writeMapleAsciiString(hint);
+        mplew.writeShort(width);
+        mplew.writeShort(height);
+        mplew.write(1);
+        return mplew.getPacket();
+    }
+
 }

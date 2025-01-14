@@ -1980,18 +1980,17 @@ public class ResCWvsContext {
         mplew.writeShort(ServerPacket.Header.LP_MarriageResult.Get());
         mplew.write(msg); // 1103 custom quest
         switch (msg) {
-            case 11:
-                {
-                    mplew.writeInt(0); // ringid or uniqueid
-                    mplew.writeInt(male.getId());
-                    mplew.writeInt(female.getId());
-                    mplew.writeShort(1); //always
-                    mplew.writeInt(item);
-                    mplew.writeInt(item); // wtf?repeat?
-                    mplew.writeAsciiString(male.getName(), 13);
-                    mplew.writeAsciiString(female.getName(), 13);
-                    break;
-                }
+            case 11: {
+                mplew.writeInt(0); // ringid or uniqueid
+                mplew.writeInt(male.getId());
+                mplew.writeInt(female.getId());
+                mplew.writeShort(1); //always
+                mplew.writeInt(item);
+                mplew.writeInt(item); // wtf?repeat?
+                mplew.writeAsciiString(male.getName(), 13);
+                mplew.writeAsciiString(female.getName(), 13);
+                break;
+            }
         }
         return mplew.getPacket();
     }
@@ -2080,7 +2079,7 @@ public class ResCWvsContext {
                 mplew.write(channel - 1);
                 mplew.write(megaEar ? 1 : 0);
                 break;
-        // 拡声器, ハート拡声器, ドクロ拡声器
+            // 拡声器, ハート拡声器, ドクロ拡声器
             case 3:
             case 12:
             case 13:
@@ -2093,26 +2092,26 @@ public class ResCWvsContext {
             case 7:
                 mplew.writeInt(0);
                 break;
-        // ワールド拡声器
+            // ワールド拡声器
             case 9:
                 // ワールド番号
                 mplew.write(0);
                 break;
-        // 不明
+            // 不明
             case 11:
                 mplew.writeInt(0); // 不明
                 break;
-        // アイテム情報 個数付き
+            // アイテム情報 個数付き
             case 15:
                 mplew.writeInt(0); // 不明
                 mplew.writeInt(1472117); // アイテムID
                 mplew.writeInt(256); // 個数
                 break;
-        // お勧め体験用アバター
+            // お勧め体験用アバター
             case 16:
                 // 必要なメッセージはキャラ名のみとなる
                 break;
-        // アイテム情報
+            // アイテム情報
             case 17:
                 mplew.writeInt(1472117); // アイテムID
                 break;
@@ -2130,6 +2129,35 @@ public class ResCWvsContext {
         //mplew.writeMapleAsciiString(name);
         TestHelper.addItemInfo(mplew, item, true, true);
         mplew.writeZeroBytes(10);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket fairyPendantMessage(int type, int percent) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_BonusExpRateChanged.Get());
+        mplew.writeShort(21); // 0x15
+        mplew.writeInt(0); // idk
+        mplew.writeShort(0); // idk
+        mplew.writeShort(percent); // percent
+        mplew.writeShort(0); // idk
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket sendString(final int type, final String object, final String amount) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        switch (type) {
+            case 1:
+                mplew.writeShort(ServerPacket.Header.LP_SessionValue.Get());
+                break;
+            case 2:
+                mplew.writeShort(ServerPacket.Header.LP_PartyValue.Get());
+                break;
+            case 3:
+                mplew.writeShort(ServerPacket.Header.LP_FieldSetVariable.Get());
+                break;
+        }
+        mplew.writeMapleAsciiString(object); //massacre_hit, massacre_cool, massacre_miss, massacre_party, massacre_laststage, massacre_skill
+        mplew.writeMapleAsciiString(amount);
         return mplew.getPacket();
     }
 

@@ -31,7 +31,6 @@ import client.RockPaperScissors;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import packet.ServerPacket;
 import packet.ops.OpsScriptMan;
 import packet.response.ResCRPSGameDlg;
 import packet.response.ResCUserLocal;
@@ -45,25 +44,8 @@ import server.MapleItemInformationProvider;
 import tools.ArrayMap;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 public class NPCHandler {
-
-    public static final void NPCAnimation(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_NpcMove.Get());
-        final int length = (int) slea.available();
-
-        if (length == 6) { // NPC Talk
-            mplew.writeInt(slea.readInt());
-            mplew.writeShort(slea.readShort());
-        } else if (length > 6) { // NPC Move
-            mplew.write(slea.read(length - 9));
-        } else {
-            return;
-        }
-        c.getSession().write(mplew.getPacket());
-    }
 
     public static final void NPCTalk(MapleClient c, final MapleCharacter chr, int npc_oid) {
         if (chr == null || chr.getMap() == null) {

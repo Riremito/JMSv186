@@ -34,6 +34,7 @@ import packet.request.ReqCCashShop;
 import packet.request.ReqCLogin;
 import packet.request.Req_Farm;
 import packet.response.ResCClientSocket;
+import packet.response.ResCNpcPool;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
@@ -432,7 +433,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return ReqCMobPool.OnPacket(cp, header, c);
             }
             case CP_NpcMove: {
-                NPCHandler.NPCAnimation(p, c);
+                ResCNpcPool.NPCAnimation(p, c);
                 return true;
             }
             case CP_DropPickUpRequest: {

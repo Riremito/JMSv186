@@ -18,6 +18,7 @@
  */
 package packet.response;
 
+import client.MapleClient;
 import config.ServerConfig;
 import handling.MaplePacket;
 import java.util.LinkedHashMap;
@@ -25,6 +26,7 @@ import java.util.Map;
 import packet.ServerPacket;
 import server.life.MapleNPC;
 import server.life.PlayerNPC;
+import tools.data.input.SeekableLittleEndianAccessor;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -122,6 +124,23 @@ public class ResCNpcPool {
             mplew.writeInt(npc.getPet(i));
         }
         return mplew.getPacket();
+    }
+
+    public static final void NPCAnimation(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_NpcMove.Get());
+        final int length = (int) slea.available();
+        if (length == 6) {
+            // NPC Talk
+            mplew.writeInt(slea.readInt());
+            mplew.writeShort(slea.readShort());
+        } else if (length > 6) {
+            // NPC Move
+            mplew.write(slea.read(length - 9));
+        } else {
+            return;
+        }
+        c.getSession().write(mplew.getPacket());
     }
     
 }

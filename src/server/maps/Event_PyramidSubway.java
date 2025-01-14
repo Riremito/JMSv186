@@ -27,6 +27,8 @@ import handling.world.MaplePartyCharacter;
 import java.awt.Point;
 import java.util.concurrent.ScheduledFuture;
 import packet.response.ResCField;
+import packet.response.ResCField_Massacre;
+import packet.response.ResCField_MassacreResult;
 import packet.response.wrapper.ResWrapper;
 import server.Randomizer;
 import server.Timer.MapTimer;
@@ -318,7 +320,7 @@ public class Event_PyramidSubway {
             c.gainExp(exp, true, false, false);
         }
         c.getClient().getSession().write(ResWrapper.showEffect("killing/clear"));
-        c.getClient().getSession().write(MaplePacketCreator.sendPyramidResult(rank, exp));
+        c.getClient().getSession().write(ResCField_MassacreResult.sendPyramidResult(rank, exp));
         dispose(c);
     }
 
@@ -360,11 +362,11 @@ public class Event_PyramidSubway {
             for (MaplePartyCharacter mpc : c.getParty().getMembers()) {
                 final MapleCharacter chr = map.getCharacterById(mpc.getId());
                 if (chr != null) {
-                    chr.getClient().getSession().write(MaplePacketCreator.sendPyramidUpdate(energybar));
+                    chr.getClient().getSession().write(ResCField_Massacre.sendPyramidUpdate(energybar));
                 }
             }
         } else {
-            c.getClient().getSession().write(MaplePacketCreator.sendPyramidUpdate(energybar));
+            c.getClient().getSession().write(ResCField_Massacre.sendPyramidUpdate(energybar));
         }
     }
 
