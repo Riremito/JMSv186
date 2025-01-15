@@ -41,13 +41,13 @@ import packet.ClientPacket;
 import packet.ops.OpsBodyPart;
 import packet.response.ResCMobPool;
 import packet.response.ResCParcelDlg;
-import packet.response.Res_Pachinko;
+import packet.response.Res_JMS_CField_Pachinko;
 import packet.response.ResCUser_Pet;
 import packet.response.ResCUIVega;
 import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
 import packet.response.ResCWvsContext;
-import packet.response.Res_PinkBeanPortal;
+import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -174,7 +174,7 @@ public class ItemRequest {
                 short y = cp.Decode2(); // 213, 00A661DD
                 MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(item_id, 749050200, x, y);
                 c.getPlayer().getMap().addMapObject(dynamic_portal);
-                c.getPlayer().getMap().broadcastMessage(Res_PinkBeanPortal.CreatePinkBeanEventPortal(dynamic_portal));
+                c.getPlayer().getMap().broadcastMessage(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
                 c.getPlayer().UpdateStat(true);
                 return true;
             }

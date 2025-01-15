@@ -83,7 +83,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import packet.ops.OpsBodyPart;
 import packet.ops.OpsChangeStat;
-import packet.response.Res_Pachinko;
+import packet.response.Res_JMS_CField_Pachinko;
 import packet.request.ReqCUser;
 import packet.response.ResCWvsContext;
 import packet.response.ResCUser_Dragon;
@@ -5807,7 +5807,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     // パチンコ
     // CMS v72から流用
     public boolean StartPachinko(int type) {
-        client.getSession().write(Res_Pachinko.openBeans(this, type));
+        client.getSession().write(Res_JMS_CField_Pachinko.openBeans(this, type));
         return true;
     }
 
@@ -5826,7 +5826,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void gainTama(int s) {
         this.tama += s;
-        client.ProcessPacket(ResCWvsContext.PachinkoUpdate(this));
+        client.ProcessPacket(ResCWvsContext.PachinkoResult(this));
     }
 
     public int getBeansRange() {

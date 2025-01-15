@@ -262,7 +262,7 @@ public class ServerPacket {
         LP_SetWeekEventMessage,
         LP_SetPotionDiscountRate,
         LP_BridleMobCatchFail,
-        LP_JMS_Pachinko_Update,
+        LP_JMS_PachinkoResult,
         LP_JMS_Fishing_BoardUpdate,
         LP_ImitatedNPCResult,
         LP_ImitatedNPCData, // -> CNpcPool::OnPacket
@@ -580,7 +580,11 @@ public class ServerPacket {
         LP_OpenGateCreated,
         LP_OpenGateRemoved,
         LP_END_OPENGATEPOOL,
-        LP_JMS_PINKBEAN_PORTAL_CREATE, // ItemID 2420004
+        // CInstancePortalPool
+        LP_BEGIN_JMS_INSTANCEPOTALPOOL,
+        LP_JMS_InstancePortalCreated, // ItemID 2420004
+        LP_JMS_InstancePortalRemoved,
+        LP_END_JMS_INSTANCEPOTALPOOL,
         // CReactorPool::OnPacket
         LP_BEGIN_REACTORPOOL,
         LP_ReactorChangeState,
@@ -662,11 +666,13 @@ public class ServerPacket {
         LP_WeddingProgress,
         LP_WeddingCremonyEnd,
         LP_END_WEDDING,
-        // Field Pachinko
-        LP_JMS_Field_Pachinko_Message,
-        LP_JMS_Field_Pachinko_Open,
-        LP_JMS_Field_Pachinko_Play,
-        LP_JMS_Field_Pachinko_Update,
+        // CField_Pachinko
+        LP_BEGIN_JMS_PACHINKO,
+        LP_JMS_PachinkoMessage,
+        LP_JMS_PachinkoOpen,
+        LP_JMS_PachinkoPlay,
+        LP_JMS_PachinkoUpdate,
+        LP_END_JMS_PACHINKO,
         // CParcelDlg::OnPacket
         LP_Parcel,
         LP_END_FIELD,
@@ -754,8 +760,6 @@ public class ServerPacket {
         // CField::OnPacket
         LP_LogoutGift, // CWvsContext::OnLogoutGift
         LP_NO,
-        // unknown
-        EARN_TITLE_MSG,
         // 独自仕様
         LP_CUSTOM_,
         LP_CUSTOM_WZ_HASH,

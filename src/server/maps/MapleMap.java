@@ -75,7 +75,7 @@ import packet.response.ResCSummonedPool;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
-import packet.response.Res_PinkBeanPortal;
+import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
@@ -1435,7 +1435,7 @@ public final class MapleMap {
         spawnAndAddRangedMapObject(dynamic_portal, new DelayedPacketCreation() {
             @Override
             public final void sendPackets(MapleClient c) {
-                c.SendPacket(Res_PinkBeanPortal.CreatePinkBeanEventPortal(dynamic_portal));
+                c.SendPacket(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
             }
         }, null);
     }

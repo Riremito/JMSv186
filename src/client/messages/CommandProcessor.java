@@ -46,7 +46,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import packet.request.ReqCUser;
-import packet.response.Res_PinkBeanPortal;
+import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
 import scripting.NPCScriptManager;
 import server.MapleItemInformationProvider;
@@ -402,7 +402,7 @@ public class CommandProcessor {
                 c.getPlayer().getMap().addMapObject(dynamic_portal);
                 //ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(chr.getMapId()).addMapObject(dynamic_portal);
 
-                c.getPlayer().getMap().broadcastMessage(Res_PinkBeanPortal.CreatePinkBeanEventPortal(dynamic_portal));
+                c.getPlayer().getMap().broadcastMessage(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
 
                 c.getPlayer().Notice("AddPortal: from " + c.getPlayer().getMapId() + " to " + map_id_to);
                 return true;

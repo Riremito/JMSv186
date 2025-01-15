@@ -923,7 +923,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void EarnTitleMsg(final String data) {
-        c.getSession().write(ResCWvsContext.EarnTitleMsg(data));
+        c.getSession().write(ResCWvsContext.getTopMsg(data));
     }
 
     public final void MovieClipIntroUI(final boolean enabled) {

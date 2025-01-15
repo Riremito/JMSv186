@@ -295,10 +295,9 @@ public class ResCUserRemote {
     }
 
     public static MaplePacket fishingCaught(int chrid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_JMS_Fishing_Caught.get());
-        mplew.writeInt(chrid);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Fishing_Caught);
+        sp.Encode4(chrid);
+        return sp.get();
     }
 
     public static MaplePacket cancelForeignDebuff(int cid, long mask, boolean first) {

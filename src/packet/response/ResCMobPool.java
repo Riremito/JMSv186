@@ -334,7 +334,7 @@ public class ResCMobPool {
 
     public static MaplePacket catchMonster(int mobid, int itemid, byte success) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MobCatchEffect.get());
+        mplew.writeShort(ServerPacket.Header.LP_MobEffectByItem.get());
         mplew.writeInt(mobid);
         mplew.writeInt(itemid);
         mplew.write(success);
@@ -369,7 +369,7 @@ public class ResCMobPool {
     public static MaplePacket showMagnet(int mobid, byte success) {
         // Monster Magnet
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_JMS_Mob_Magnet.get());
+        mplew.writeShort(ServerPacket.Header.LP_MobCatchEffect.get());
         mplew.writeInt(mobid);
         mplew.write(success);
         return mplew.getPacket();

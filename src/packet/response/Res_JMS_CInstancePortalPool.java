@@ -26,10 +26,10 @@ import server.maps.MapleDynamicPortal;
  *
  * @author Riremito
  */
-public class Res_PinkBeanPortal {
+public class Res_JMS_CInstancePortalPool {
 
     public static MaplePacket CreatePinkBeanEventPortal(MapleDynamicPortal dynamic_portal) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_PINKBEAN_PORTAL_CREATE);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_InstancePortalCreated);
         sp.Encode1(1);
         sp.Encode4(dynamic_portal.getItemID()); // item id
         sp.Encode4(dynamic_portal.getObjectId()); // object id
@@ -41,5 +41,5 @@ public class Res_PinkBeanPortal {
         sp.Encode2(dynamic_portal.getPosition().y);
         return sp.get();
     }
-    
+
 }

@@ -579,26 +579,16 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket fishingUpdate(byte type, int id) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_JMS_Fishing_BoardUpdate.get());
-        mplew.write(type);
-        mplew.writeInt(id);
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket EarnTitleMsg(final String msg) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        // "You have acquired the Pig's Weakness skill."
-        mplew.writeShort(ServerPacket.Header.EARN_TITLE_MSG.get());
-        mplew.writeMapleAsciiString(msg);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Fishing_BoardUpdate);
+        sp.Encode1(type);
+        sp.Encode4(id);
+        return sp.get();
     }
 
     public static MaplePacket getTopMsg(String msg) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ScriptProgressMessage.get());
-        mplew.writeMapleAsciiString(msg);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ScriptProgressMessage);
+        sp.EncodeStr(msg);
+        return sp.get();
     }
 
     public static MaplePacket getTrockRefresh(MapleCharacter chr, boolean vip, boolean delete) {
@@ -2163,14 +2153,14 @@ public class ResCWvsContext {
 
     // 0x005E @005E 00, ミニマップ点滅, 再読み込みかも?
     public static MaplePacket ReloadMiniMap() {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_MiniMapOnOff);
-        p.Encode1((byte) 0);
-        return p.get();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniMapOnOff);
+        sp.Encode1((byte) 0);
+        return sp.get();
     }
 
     // パチンコ情報の更新
-    public static MaplePacket PachinkoUpdate(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Pachinko_Update);
+    public static MaplePacket PachinkoResult(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_PachinkoResult);
         // 12 bytes
         {
             sp.Encode4(chr.getId()); // キャラクターID (実質不要)
