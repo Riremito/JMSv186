@@ -11,6 +11,25 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 // CField_Pachinko
 public class Res_Pachinko {
 
+    // CMS v72から流用
+    public static MaplePacket BeansGameMessage(int cid, int x, String laba) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Message.Get());
+        mplew.writeInt(cid);
+        // JMS v186.1 fix
+        mplew.write(x);
+        mplew.writeMapleAsciiString(laba);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket openBeans(MapleCharacter c, int type) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Open.Get());
+        mplew.writeInt(c.getTama());
+        mplew.write(type);
+        return mplew.getPacket();
+    }
+
     public static MaplePacket BeansZJgeiddB(int a) {
         //豆豆进洞后奖励的
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
@@ -89,44 +108,6 @@ public class Res_Pachinko {
         return mplew.getPacket();
     }
 
-    // パチンコ関連
-    // CMS v72から流用
-    public static MaplePacket BeansGameMessage(int cid, int x, String laba) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Message.Get());
-        mplew.writeInt(cid);
-        // JMS v186.1 fix
-        mplew.write(x);
-        mplew.writeMapleAsciiString(laba);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket openBeans(MapleCharacter c, int type) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Open.Get());
-        mplew.writeInt(c.getTama());
-        mplew.write(type);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket updateBeans(int beansCount) {
-        return updateBeans(0, beansCount);
-    }
-
-    public static MaplePacket updateBeans(int cid, int beansCount) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Update.Get());
-        mplew.writeInt(beansCount);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket 能量储存器(int beansCount) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Update.Get()); //0x253
-        mplew.writeInt(beansCount);
-        return mplew.getPacket();
-    }
-
     public static MaplePacket showBeans(List<MapleBeans> beansInfo) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Play.Get());
@@ -137,6 +118,20 @@ public class Res_Pachinko {
             mplew.write(bean.getType());
             mplew.writeInt(bean.getNumber());
         }
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket updateBeans(int beansCount) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Update.Get());
+        mplew.writeInt(beansCount);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket 能量储存器(int beansCount) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Field_Pachinko_Update.Get());
+        mplew.writeInt(beansCount);
         return mplew.getPacket();
     }
 
