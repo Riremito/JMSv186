@@ -40,6 +40,6 @@ public class CWvsContext {
         data.Encode4(0); // item1?
         data.Encode4(0); // item2?
         data.Encode4(0); // item3?
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 }

@@ -38,7 +38,7 @@ public class ResCReactorPool {
         p.Encode2(stance);
         p.Encode1(0);
         p.Encode1(4);
-        return p.Get();
+        return p.get();
     }
 
     // destroyReactor
@@ -48,7 +48,7 @@ public class ResCReactorPool {
         p.Encode1(reactor.getState());
         p.Encode2(reactor.getPosition().x);
         p.Encode2(reactor.getPosition().y);
-        return p.Get();
+        return p.get();
     }
 
     // spawnReactor
@@ -61,7 +61,7 @@ public class ResCReactorPool {
         p.Encode2(reactor.getPosition().y);
         p.Encode1(reactor.getFacingDirection()); // stance
         p.EncodeStr(reactor.getName());
-        return p.Get();
+        return p.get();
     }
     
 }

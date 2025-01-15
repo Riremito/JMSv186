@@ -41,7 +41,7 @@ public class GW_CashItemInfo {
         sp.EncodeBuffer(item.getOwner(), 13);
         sp.Encode8(ServerConfig.expiration_date);
         sp.Encode8(CashItemFactory.getInstance().getItemSN(item.getItemId()));
-        return sp.Get().getBytes();
+        return sp.get().getBytes();
 
     }
 }

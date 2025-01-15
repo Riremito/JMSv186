@@ -45,7 +45,7 @@ public class ResCTownPortalPool {
             sp.Encode2((short) door.getLink().getPosition().y);
         }
 
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket resetMysticDoorInfo() {
@@ -59,7 +59,7 @@ public class ResCTownPortalPool {
         sp.Encode4(door.getOwnerId());
         sp.Encode2((short) door.getPosition().x);
         sp.Encode2((short) door.getPosition().y);
-        return sp.Get();
+        return sp.get();
     }
 
     // removeDoor
@@ -67,7 +67,7 @@ public class ResCTownPortalPool {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TownPortalRemoved);
         sp.Encode1(1);
         sp.Encode4(door.getOwnerId());
-        return sp.Get();
+        return sp.get();
     }
 
     // partyPortal
@@ -80,7 +80,7 @@ public class ResCTownPortalPool {
         sp.Encode4(door.getSkillId());
         sp.Encode2((short) door.getLink().getPosition().x);
         sp.Encode2((short) door.getLink().getPosition().y);
-        return sp.Get();
+        return sp.get();
     }
 
 }

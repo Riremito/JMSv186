@@ -31,7 +31,7 @@ public class ServerPacket {
     private int encoded = 0;
 
     public ServerPacket(Header header) {
-        short w = (short) header.Get();
+        short w = (short) header.get();
 
         packet.add((byte) (w & 0xFF));
         packet.add((byte) ((w >> 8) & 0xFF));
@@ -44,7 +44,7 @@ public class ServerPacket {
         encoded += 2;
     }
 
-    public boolean SetHello() {
+    public boolean setHello() {
         if (encoded < 2) {
             return false;
         }
@@ -114,7 +114,7 @@ public class ServerPacket {
 
     public static Header ToHeader(short w) {
         for (final Header h : Header.values()) {
-            if (h.Get() == w) {
+            if (h.get() == w) {
                 return h;
             }
         }
@@ -138,7 +138,7 @@ public class ServerPacket {
         return text;
     }
 
-    public String GetOpcodeName() {
+    public String getOpcodeName() {
         if (encoded < 2) {
             return Header.UNKNOWN.toString();
         }
@@ -147,7 +147,7 @@ public class ServerPacket {
         return ToHeader(header).toString();
     }
 
-    public MaplePacket Get() {
+    public MaplePacket get() {
         byte[] b = new byte[encoded];
         for (int i = 0; i < encoded; i++) {
             b[i] = packet.get(i);
@@ -773,23 +773,23 @@ public class ServerPacket {
             value = 0xFFFF;
         }
 
-        public boolean Set(int header) {
+        public boolean set(int header) {
             value = header;
             return true;
         }
 
-        public int Get() {
+        public int get() {
             return value;
         }
     }
 
-    public static void Reset() {
+    public static void reset() {
         for (Header header : Header.values()) {
-            header.Set(0xFFFF);
+            header.set(0xFFFF);
         }
     }
 
-    public static boolean Load(Properties props) {
+    public static boolean init(Properties props) {
 
         for (Header header : Header.values()) {
             String[] vars = props.getProperty(header.name(), "@FFFF").trim().split(" ");
@@ -819,7 +819,7 @@ public class ServerPacket {
                     } else {
                         for (Header base_header : Header.values()) {
                             if (base_header.name().equals(vars[0])) {
-                                base = base_header.Get();
+                                base = base_header.get();
                                 break;
                             }
                         }
@@ -835,7 +835,7 @@ public class ServerPacket {
                 continue;
             }
 
-            header.Set((short) (base + offset));
+            header.set((short) (base + offset));
         }
 
         return true;

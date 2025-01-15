@@ -140,7 +140,7 @@ public class ResWrapper {
 
     public static MaplePacket updateSpecialItemUse(IItem item, byte invType, short pos) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
+        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.get());
         mplew.write(0); // could be from drop
         mplew.write(2); // always 2
         mplew.write(3); // quantity > 0 (?)
@@ -162,7 +162,7 @@ public class ResWrapper {
 
     public static MaplePacket moveAndMergeWithRestInventoryItem(MapleInventoryType type, short src, short dst, short srcQ, short dstQ) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
+        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.get());
         mplew.write(HexTool.getByteArrayFromHexString("01 02 01"));
         mplew.write(type.getType());
         mplew.writeShort(src);
@@ -176,7 +176,7 @@ public class ResWrapper {
 
     public static MaplePacket moveAndMergeInventoryItem(MapleInventoryType type, short src, short dst, short total) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
+        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.get());
         mplew.write(HexTool.getByteArrayFromHexString("01 02 03"));
         mplew.write(type.getType());
         mplew.writeShort(src);
@@ -193,7 +193,7 @@ public class ResWrapper {
 
     public static MaplePacket updateSpecialItemUse_(IItem item, byte invType, short pos) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.Get());
+        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.get());
         mplew.write(0); // could be from drop
         mplew.write(1); // always 2
         mplew.write(0); // quantity > 0 (?)
@@ -219,7 +219,7 @@ public class ResWrapper {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
         p.Encode1(OpsBroadcastMsg.BM_SPEAKERCHANNEL.get());
         p.EncodeStr(text);
-        return p.Get();
+        return p.get();
     }
 
     // ドクロ拡声器
@@ -229,7 +229,7 @@ public class ResWrapper {
         p.EncodeStr(text);
         p.Encode1((byte) (channel - 1));
         p.Encode1(ear);
-        return p.Get();
+        return p.get();
     }
 
     // ハート拡声器
@@ -239,7 +239,7 @@ public class ResWrapper {
         p.EncodeStr(text);
         p.Encode1((byte) (channel - 1));
         p.Encode1(ear);
-        return p.Get();
+        return p.get();
     }
 
     // アイテム拡声器
@@ -253,7 +253,7 @@ public class ResWrapper {
         if (showitem != 0) {
             p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
         }
-        return p.Get();
+        return p.get();
     }
 
     // 三連拡声器
@@ -268,7 +268,7 @@ public class ResWrapper {
         }
         p.Encode1((byte) (channel - 1));
         p.Encode1(ear);
-        return p.Get();
+        return p.get();
     }
 
     // 拡声器
@@ -278,7 +278,7 @@ public class ResWrapper {
         p.EncodeStr(text);
         p.Encode1((byte) (channel - 1));
         p.Encode1(ear);
-        return p.Get();
+        return p.get();
     }
 
     public static final MaplePacket GainEXP_Monster(final int gain, final boolean white, final int partyinc, final int Class_Bonus_EXP, final int Equipment_Bonus_EXP, final int Premium_Bonus_EXP) {
@@ -631,7 +631,7 @@ public class ResWrapper {
         sp.Encode4(def);
         sp.Encode4(min);
         sp.Encode4(max);
-        return sp.Get();
+        return sp.get();
     }
 
     public static final MaplePacket getMapSelection(final int npcid, final String sel) {
@@ -645,7 +645,7 @@ public class ResWrapper {
         for (int i = 0; i < args.length; i++) {
             sp.Encode4(args[i]);
         }
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket showItemUnavailable() {

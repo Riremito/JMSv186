@@ -35,7 +35,7 @@ public class ResCUser {
 
     public static final MaplePacket sendPlayerShopBox(final MapleCharacter c) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserMiniRoomBalloon.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserMiniRoomBalloon.get());
         mplew.writeInt(c.getId());
         TestHelper.addAnnounceBox(mplew, c);
         return mplew.getPacket();
@@ -43,7 +43,7 @@ public class ResCUser {
 
     public static final MaplePacket addCharBox(final MapleCharacter c, final int type) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserMiniRoomBalloon.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserMiniRoomBalloon.get());
         mplew.writeInt(c.getId());
         TestHelper.addAnnounceBox(mplew, c);
         return mplew.getPacket();
@@ -51,7 +51,7 @@ public class ResCUser {
 
     public static final MaplePacket removeCharBox(final MapleCharacter c) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserMiniRoomBalloon.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserMiniRoomBalloon.get());
         mplew.writeInt(c.getId());
         mplew.write(0);
         return mplew.getPacket();
@@ -60,7 +60,7 @@ public class ResCUser {
     //miracle cube?
     public static MaplePacket getPotentialEffect(final int chr, final int itemid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserItemUnreleaseEffect.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserItemUnreleaseEffect.get());
         mplew.writeInt(chr);
         mplew.writeInt(itemid);
         return mplew.getPacket();
@@ -69,7 +69,7 @@ public class ResCUser {
     //magnify glass
     public static MaplePacket getPotentialReset(final int chr, final short pos) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserItemReleaseEffect.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserItemReleaseEffect.get());
         mplew.writeInt(chr);
         mplew.writeShort(pos);
         return mplew.getPacket();
@@ -77,7 +77,7 @@ public class ResCUser {
 
     public static MaplePacket getScrollEffect(int chr, IEquip.ScrollResult scrollSuccess, boolean legendarySpirit) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserItemUpgradeEffect.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserItemUpgradeEffect.get());
         mplew.writeInt(chr);
         switch (scrollSuccess) {
             case SUCCESS:
@@ -113,12 +113,12 @@ public class ResCUser {
         }
         // if LP_UserChatNLCPQ, add more str
         // p.EncodeStr("");
-        return p.Get();
+        return p.get();
     }
 
     public static MaplePacket followEffect(int initiator, int replier, Point toMap) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserFollowCharacter.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserFollowCharacter.get());
         mplew.writeInt(initiator);
         mplew.writeInt(replier);
         if (replier == 0) {

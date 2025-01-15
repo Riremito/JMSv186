@@ -98,12 +98,12 @@ public class SecondaryStat {
         if (ServerConfig.JMS302orLater()) {
             data.Encode1(0);
         }
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     // SecondaryStat::DecodeForRemote
     public static byte[] EncodeForRemote(MapleCharacter chr, int statmask) {
         ServerPacket data = new ServerPacket();
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 }

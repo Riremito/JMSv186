@@ -72,7 +72,7 @@ public class Debug {
             return false;
         }
 
-        Log("[SP][" + sp.GetOpcodeName() + "]\n" + sp.Packet());
+        Log("[SP][" + sp.getOpcodeName() + "]\n" + sp.Packet());
         return true;
     }
 

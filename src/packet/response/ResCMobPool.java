@@ -65,7 +65,7 @@ public class ResCMobPool {
             sp.Encode4(0); //  if this is not 0, Encode4 x loop count
         }
         sp.EncodeBuffer(data.get());
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket cancelMonsterStatus(int oid, MonsterStatus stat) {
@@ -75,7 +75,7 @@ public class ResCMobPool {
         sp.Encode8(Structure.getLongMask(Collections.singletonList(stat)));
         sp.Encode1(1); // reflector is 3~!??
         sp.Encode1(2); // ? v97
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket applyMonsterStatus(final int oid, final MonsterStatus mse, int x, MobSkill skil) {
@@ -90,7 +90,7 @@ public class ResCMobPool {
         sp.Encode2(0); // delay in ms
         sp.Encode1(1); // size
         sp.Encode1(1); // ? v97
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket applyMonsterStatus(final int oid, final MonsterStatusEffect mse) {
@@ -110,7 +110,7 @@ public class ResCMobPool {
         sp.Encode2(0); // delay in ms
         sp.Encode1(1); // size
         sp.Encode1(1); // ? v97
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket applyMonsterStatus(final int oid, final Map<MonsterStatus, Integer> stati, final List<Integer> reflection, MobSkill skil) {
@@ -135,7 +135,7 @@ public class ResCMobPool {
         }
         sp.Encode1(size); // size
         sp.Encode1(1); // ? v97
-        return sp.Get();
+        return sp.get();
     }
 
     // healMonster
@@ -144,7 +144,7 @@ public class ResCMobPool {
         sp.Encode4(m.getObjectId());
         sp.Encode1(0);
         sp.Encode4(-heal);
-        return sp.Get();
+        return sp.get();
     }
 
     // killMonster
@@ -152,7 +152,7 @@ public class ResCMobPool {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobLeaveField);
         sp.Encode4(m.getObjectId());
         sp.Encode1(animation); // 0 = dissapear, 1 = fade out, 2+ = special
-        return sp.Get();
+        return sp.get();
     }
 
     // ???
@@ -160,7 +160,7 @@ public class ResCMobPool {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobLeaveField);
         sp.Encode4(oid);
         sp.Encode1(animation);
-        return sp.Get();
+        return sp.get();
     }
 
     // moveMonsterResponse
@@ -176,7 +176,7 @@ public class ResCMobPool {
                 || ServerConfig.KMS95orLater()) {
             sp.Encode4(0);
         }
-        return sp.Get();
+        return sp.get();
     }
 
     // damageMonster
@@ -189,7 +189,7 @@ public class ResCMobPool {
         } else {
             sp.Encode4((int) damage);
         }
-        return sp.Get();
+        return sp.get();
     }
 
     // ???
@@ -202,7 +202,7 @@ public class ResCMobPool {
         } else {
             sp.Encode4((int) damage);
         }
-        return sp.Get();
+        return sp.get();
     }
 
     // spawnMonster
@@ -238,13 +238,13 @@ public class ResCMobPool {
         if (ServerConfig.JMS165orLater()) {
             sp.Encode4(0); // m_nPhase
         }
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket removeTalkMonster(int oid) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_MobEscortReturnBefore);
         p.Encode4(oid);
-        return p.Get();
+        return p.get();
     }
 
     // damageFriendlyMob
@@ -267,7 +267,7 @@ public class ResCMobPool {
         } else {
             sp.Encode4((int) mob.getMobMaxHp());
         }
-        return sp.Get();
+        return sp.get();
     }
 
     // controlMonster
@@ -299,7 +299,7 @@ public class ResCMobPool {
             sp.Encode4(0);
             sp.Encode4(0);
         }
-        return sp.Get();
+        return sp.get();
     }
 
     // stopControllingMonster
@@ -307,7 +307,7 @@ public class ResCMobPool {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobChangeController);
         sp.Encode1(0);
         sp.Encode4(m.getObjectId());
-        return sp.Get();
+        return sp.get();
     }
 
     // showMonsterHP
@@ -315,7 +315,7 @@ public class ResCMobPool {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobHPIndicator);
         sp.Encode4(m.getObjectId());
         sp.Encode1(remhppercentage);
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket talkMonster(int oid, int itemId, String msg) {
@@ -329,12 +329,12 @@ public class ResCMobPool {
             sp.EncodeStr(msg);
         }
         sp.Encode4(1); //?
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket catchMonster(int mobid, int itemid, byte success) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MobCatchEffect.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MobCatchEffect.get());
         mplew.writeInt(mobid);
         mplew.writeInt(itemid);
         mplew.write(success);
@@ -347,7 +347,7 @@ public class ResCMobPool {
             return objectid.getNodePacket();
         }
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MobRequestResultEscortInfo.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MobRequestResultEscortInfo.get());
         mplew.writeInt(objectid.getObjectId()); //?
         mplew.writeInt(map.getNodes().size());
         mplew.writeInt(objectid.getPosition().x);
@@ -369,7 +369,7 @@ public class ResCMobPool {
     public static MaplePacket showMagnet(int mobid, byte success) {
         // Monster Magnet
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_JMS_Mob_Magnet.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Mob_Magnet.get());
         mplew.writeInt(mobid);
         mplew.write(success);
         return mplew.getPacket();

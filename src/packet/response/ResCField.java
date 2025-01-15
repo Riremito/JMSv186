@@ -46,7 +46,7 @@ public class ResCField {
 
     public static MaplePacket playCashSong(int itemid, String name) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_PlayJukeBox.Get());
+        mplew.writeShort(ServerPacket.Header.LP_PlayJukeBox.get());
         mplew.writeInt(itemid);
         mplew.writeMapleAsciiString(name);
         return mplew.getPacket();
@@ -54,7 +54,7 @@ public class ResCField {
 
     public static MaplePacket multiChat(String name, String chattext, int mode) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_GroupMessage.Get());
+        mplew.writeShort(ServerPacket.Header.LP_GroupMessage.get());
         mplew.write(mode); //  0 buddychat; 1 partychat; 2 guildchat
         mplew.writeMapleAsciiString(name);
         mplew.writeMapleAsciiString(chattext);
@@ -122,12 +122,12 @@ public class ResCField {
                 break;
             }
         }
-        return sp.Get();
+        return sp.get();
     }
 
     public static final MaplePacket shopItemUpdate(final IMaplePlayerShop shop) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(22); // 0x17
         if (shop.getShopType() == 1) {
             mplew.writeInt(0);
@@ -144,7 +144,7 @@ public class ResCField {
 
     public static MaplePacket getMiniGameNewVisitor(MapleCharacter c, int slot, MapleMiniGame game) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(4);
         mplew.write(slot);
         TestHelper.addCharLook(mplew, c, false);
@@ -158,7 +158,7 @@ public class ResCField {
         // show when closed the shop
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         // 0x28 = All of your belongings are moved successfully.
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(type);
         mplew.write(0);
         return mplew.getPacket();
@@ -174,7 +174,7 @@ public class ResCField {
 
     public static MaplePacket getMiniGameMoveOmok(int move1, int move2, int move3) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(61);
         mplew.writeInt(move1);
         mplew.writeInt(move2);
@@ -184,7 +184,7 @@ public class ResCField {
 
     public static final MaplePacket MerchantBlackListView(final List<String> blackList) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(44); // 45
         mplew.writeShort(blackList.size());
         for (int i = 0; i < blackList.size(); i++) {
@@ -197,14 +197,14 @@ public class ResCField {
 
     public static MaplePacket getMiniGameExitAfter(boolean ready) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(ready ? 53 : 54);
         return mplew.getPacket();
     }
 
     public static MaplePacket getMiniGameResult(MapleMiniGame game, int type, int x) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(59);
         mplew.write(type); //lose = 0, tie = 1, win = 2
         game.setPoints(x, type);
@@ -227,7 +227,7 @@ public class ResCField {
 
     public static final MaplePacket getPlayerStore(final MapleCharacter chr, final boolean firstTime) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         IMaplePlayerShop ips = chr.getPlayerShop();
         switch (ips.getShopType()) {
             case 2:
@@ -271,7 +271,7 @@ public class ResCField {
 
     public static final MaplePacket updateHiredMerchant(final HiredMerchant shop) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_EmployeeMiniRoomBalloon.Get());
+        mplew.writeShort(ServerPacket.Header.LP_EmployeeMiniRoomBalloon.get());
         mplew.writeInt(shop.getOwnerId());
         TestHelper.addInteraction(mplew, shop);
         return mplew.getPacket();
@@ -279,14 +279,14 @@ public class ResCField {
 
     public static MaplePacket getMiniGameReady(boolean ready) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(ready ? 55 : 56);
         return mplew.getPacket();
     }
 
     public static MaplePacket getMiniGameStart(int loser) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(58);
         mplew.write(loser == 1 ? 0 : 1);
         return mplew.getPacket();
@@ -294,7 +294,7 @@ public class ResCField {
 
     public static final MaplePacket shopBlockPlayer(final byte slot) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(10);
         // キャラクターの場所を正しく指定しないとD/C
         mplew.write(slot);
@@ -305,7 +305,7 @@ public class ResCField {
 
     public static final MaplePacket MerchantVisitorView(List<String> visitor) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(43); // 44
         mplew.writeShort(visitor.size());
         for (String visit : visitor) {
@@ -317,7 +317,7 @@ public class ResCField {
 
     public static final MaplePacket shopVisitorAdd(final MapleCharacter chr, final int slot) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(4);
         mplew.write(slot);
         TestHelper.addCharLook(mplew, chr, false);
@@ -328,7 +328,7 @@ public class ResCField {
 
     public static final MaplePacket shopChat(final String message, final int slot) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(6);
         mplew.write(8);
         mplew.write(slot);
@@ -338,7 +338,7 @@ public class ResCField {
 
     public static MaplePacket getMiniGameFull() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.writeShort(5);
         mplew.write(2);
         return mplew.getPacket();
@@ -347,7 +347,7 @@ public class ResCField {
     // 雇用商人 整理中 (他人用)
     public static MaplePacket MaintenanceHiredMerchant(int slot) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         // UIを閉じる
         mplew.write(10);
         // キャラクターを指定
@@ -359,7 +359,7 @@ public class ResCField {
 
     public static MaplePacket getMiniGameClose(byte number) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(10);
         mplew.write(1);
         mplew.write(number);
@@ -368,7 +368,7 @@ public class ResCField {
 
     public static MaplePacket getMiniGameRequestTie() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(48);
         return mplew.getPacket();
     }
@@ -376,7 +376,7 @@ public class ResCField {
     // 雇用商人 閉店
     public static MaplePacket CloseHiredMerchant() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         // UIを閉じる
         mplew.write(10);
         // 自分のキャラクターを指定
@@ -389,7 +389,7 @@ public class ResCField {
     public static final MaplePacket Merchant_Buy_Error(final byte message) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         // 2 = You have not enough meso
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(24);
         mplew.write(message);
         return mplew.getPacket();
@@ -397,14 +397,14 @@ public class ResCField {
 
     public static MaplePacket getMiniGameDenyTie() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(49);
         return mplew.getPacket();
     }
 
     public static final MaplePacket shopVisitorLeave(final byte slot) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(10);
         mplew.write(slot);
         return mplew.getPacket();
@@ -412,7 +412,7 @@ public class ResCField {
 
     public static final MaplePacket shopErrorMessage(final int error, final int type) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(10);
         // 退場する人の番号 0 = 開いている人
         mplew.write(type);
@@ -440,7 +440,7 @@ public class ResCField {
 
     public static MaplePacket getMiniGame(MapleClient c, MapleMiniGame minigame) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(5);
         mplew.write(minigame.getGameType());
         mplew.write(minigame.getMaxSize());
@@ -469,7 +469,7 @@ public class ResCField {
 
     public static MaplePacket getMiniGameSkip(int slot) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(60);
         //owner = 1 visitor = 0?
         mplew.write(slot);
@@ -478,7 +478,7 @@ public class ResCField {
 
     public static final MaplePacket getHiredMerch(final MapleCharacter chr, final HiredMerchant merch, final boolean firstTime) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(5);
         mplew.write(5);
         mplew.write(4);
@@ -521,7 +521,7 @@ public class ResCField {
 
     public static MaplePacket getMatchCardStart(MapleMiniGame game, int loser) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(58);
         mplew.write(loser == 1 ? 0 : 1);
         int times = game.getPieceType() == 1 ? 20 : (game.getPieceType() == 2 ? 30 : 12);
@@ -534,7 +534,7 @@ public class ResCField {
 
     public static MaplePacket getMatchCardSelect(int turn, int slot, int firstslot, int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(65);
         mplew.write(turn);
         mplew.write(slot);
@@ -547,7 +547,7 @@ public class ResCField {
 
     public static MaplePacket showOXQuiz(int questionSet, int questionId, boolean askQuestion) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Quiz.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Quiz.get());
         mplew.write(askQuestion ? 1 : 0);
         mplew.write(questionSet);
         mplew.writeShort(questionId);
@@ -556,7 +556,7 @@ public class ResCField {
 
     public static MaplePacket showChaosHorntailShrine(boolean spawned, int time) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_HontaleTimer.Get());
+        mplew.writeShort(ServerPacket.Header.LP_HontaleTimer.get());
         mplew.write(spawned ? 1 : 0);
         mplew.writeInt(time);
         return mplew.getPacket();
@@ -564,7 +564,7 @@ public class ResCField {
 
     public static MaplePacket showChaosZakumShrine(boolean spawned, int time) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ChaosZakumTimer.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ChaosZakumTimer.get());
         mplew.write(spawned ? 1 : 0);
         mplew.writeInt(time);
         return mplew.getPacket();
@@ -572,13 +572,13 @@ public class ResCField {
 
     public static MaplePacket stopClock() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_DestroyClock.Get());
+        mplew.writeShort(ServerPacket.Header.LP_DestroyClock.get());
         return mplew.getPacket();
     }
 
     public static MaplePacket showHorntailShrine(boolean spawned, int time) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_HontailTimer.Get());
+        mplew.writeShort(ServerPacket.Header.LP_HontailTimer.get());
         mplew.write(spawned ? 1 : 0);
         mplew.writeInt(time);
         return mplew.getPacket();
@@ -586,7 +586,7 @@ public class ResCField {
 
     public static MaplePacket showZakumShrine(boolean spawned, int time) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ZakumTimer.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ZakumTimer.get());
         mplew.write(spawned ? 1 : 0);
         mplew.writeInt(time);
         return mplew.getPacket();
@@ -594,7 +594,7 @@ public class ResCField {
 
     public static MaplePacket getFindReplyWithMTS(String target, final boolean buddy) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Whisper.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Whisper.get());
         mplew.write(buddy ? 72 : 9);
         mplew.writeMapleAsciiString(target);
         mplew.write(0);
@@ -604,7 +604,7 @@ public class ResCField {
 
     public static MaplePacket getFindReplyWithCS(String target, final boolean buddy) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Whisper.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Whisper.get());
         mplew.write(buddy ? 72 : 9);
         mplew.writeMapleAsciiString(target);
         mplew.write(2);
@@ -614,20 +614,20 @@ public class ResCField {
 
     public static MaplePacket showEquipEffect() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FieldSpecificData.Get());
+        mplew.writeShort(ServerPacket.Header.LP_FieldSpecificData.get());
         return mplew.getPacket();
     }
 
     public static MaplePacket showEquipEffect(int team) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FieldSpecificData.Get());
+        mplew.writeShort(ServerPacket.Header.LP_FieldSpecificData.get());
         mplew.writeShort(team);
         return mplew.getPacket();
     }
 
     public static final MaplePacket getUpdateEnvironment(final MapleMap map) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FieldObstacleOnOffStatus.Get());
+        mplew.writeShort(ServerPacket.Header.LP_FieldObstacleOnOffStatus.get());
         mplew.writeInt(map.getEnvironment().size());
         for (Map.Entry<String, Integer> mp : map.getEnvironment().entrySet()) {
             mplew.writeMapleAsciiString(mp.getKey());
@@ -638,7 +638,7 @@ public class ResCField {
 
     public static MaplePacket environmentMove(String env, int mode) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FieldObstacleOnOff.Get());
+        mplew.writeShort(ServerPacket.Header.LP_FieldObstacleOnOff.get());
         mplew.writeMapleAsciiString(env);
         mplew.writeInt(mode);
         return mplew.getPacket();
@@ -647,7 +647,7 @@ public class ResCField {
     public static MaplePacket getClockTime(int hour, int min, int sec) {
         // Current Time
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Clock.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Clock.get());
         mplew.write(1); //Clock-Type
         mplew.write(hour);
         mplew.write(min);
@@ -658,7 +658,7 @@ public class ResCField {
     public static MaplePacket getClock(int time) {
         // time in seconds
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Clock.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Clock.get());
         mplew.write(2); // clock type. if you send 3 here you have to send another byte (which does not matter at all) before the timestamp
         mplew.writeInt(time);
         return mplew.getPacket();
@@ -666,7 +666,7 @@ public class ResCField {
 
     public static MaplePacket getFindReplyWithMap(String target, int mapid, final boolean buddy) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Whisper.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Whisper.get());
         mplew.write(buddy ? 72 : 9);
         mplew.writeMapleAsciiString(target);
         mplew.write(1);
@@ -677,7 +677,7 @@ public class ResCField {
 
     public static MaplePacket getFindReply(String target, int channel, final boolean buddy) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Whisper.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Whisper.get());
         mplew.write(buddy ? 72 : 9);
         mplew.writeMapleAsciiString(target);
         mplew.write(3);
@@ -687,7 +687,7 @@ public class ResCField {
 
     public static MaplePacket getWhisperReply(String target, byte reply) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Whisper.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Whisper.get());
         mplew.write(10); // whisper?
         mplew.writeMapleAsciiString(target);
         mplew.write(reply); //  0x0 = cannot find char, 0x1 = success
@@ -696,7 +696,7 @@ public class ResCField {
 
     public static MaplePacket getWhisper(String sender, int channel, String text) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Whisper.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Whisper.get());
         mplew.write(18);
         mplew.writeMapleAsciiString(sender);
         mplew.writeShort(channel - 1);
@@ -706,7 +706,7 @@ public class ResCField {
 
     public static MaplePacket startMapEffect(String msg, int itemid, boolean active) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_BlowWeather.Get());
+        mplew.writeShort(ServerPacket.Header.LP_BlowWeather.get());
         //        mplew.write(active ? 0 : 1);
         mplew.writeInt(itemid);
         if (active) {
@@ -717,7 +717,7 @@ public class ResCField {
 
     public static final MaplePacket getMovingPlatforms(final MapleMap map) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FootHoldInfo.Get());
+        mplew.writeShort(ServerPacket.Header.LP_FootHoldInfo.get());
         mplew.writeInt(map.getPlatforms().size());
         for (MapleNodes.MaplePlatform mp : map.getPlatforms()) {
             mplew.writeMapleAsciiString(mp.name);
@@ -740,14 +740,14 @@ public class ResCField {
 
     public static MaplePacket showEventInstructions() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Desc.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Desc.get());
         mplew.write(0);
         return mplew.getPacket();
     }
 
     public static MaplePacket GameMaster_Func(int value) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_AdminResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_AdminResult.get());
         mplew.write(value);
         mplew.writeZeroBytes(17);
         return mplew.getPacket();
@@ -755,7 +755,7 @@ public class ResCField {
 
     public static MaplePacket serverBlocked(int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_TransferChannelReqIgnored.Get());
+        mplew.writeShort(ServerPacket.Header.LP_TransferChannelReqIgnored.get());
         mplew.write(type);
         return mplew.getPacket();
     }

@@ -83,8 +83,8 @@ public class ResCClientSocket {
             sp.Encode1(1);
          */
         // ヘッダにサイズを書き込む
-        sp.SetHello();
-        return sp.Get();
+        sp.setHello();
+        return sp.get();
     }
 
     // CClientSocket::OnAuthenMessage
@@ -92,7 +92,7 @@ public class ResCClientSocket {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AuthenMessage);
         sp.Encode4(1); // id
         sp.Encode1(1);
-        return sp.Get();
+        return sp.get();
     }
 
     // Internet Cafe
@@ -102,7 +102,7 @@ public class ResCClientSocket {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AuthenCodeChanged);
         sp.Encode1(2); // Open UI
         sp.Encode4(1);
-        return sp.Get();
+        return sp.get();
     }
 
     // CClientSocket::OnMigrateCommand
@@ -116,13 +116,13 @@ public class ResCClientSocket {
         if (ServerConfig.JMS302orLater()) {
             sp.Encode1(0);
         }
-        return sp.Get();
+        return sp.get();
     }
 
     // CClientSocket::OnAliveReq
     // getPing
     public static final MaplePacket AliveReq() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AliveReq);
-        return sp.Get();
+        return sp.get();
     }
 }

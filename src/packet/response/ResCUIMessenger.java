@@ -32,7 +32,7 @@ public class ResCUIMessenger {
 
     public static MaplePacket removeMessengerPlayer(int position) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
         mplew.write(2);
         mplew.write(position);
         return mplew.getPacket();
@@ -40,7 +40,7 @@ public class ResCUIMessenger {
 
     public static MaplePacket messengerInvite(String from, int messengerid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
         mplew.write(3);
         mplew.writeMapleAsciiString(from);
         mplew.write(0);
@@ -51,7 +51,7 @@ public class ResCUIMessenger {
 
     public static MaplePacket updateMessengerPlayer(String from, MapleCharacter chr, int position, int channel) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
         mplew.write(7);
         mplew.write(position);
         TestHelper.addCharLook(mplew, chr, true);
@@ -62,7 +62,7 @@ public class ResCUIMessenger {
 
     public static MaplePacket addMessengerPlayer(String from, MapleCharacter chr, int position, int channel) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
         mplew.write(0);
         mplew.write(position);
         TestHelper.addCharLook(mplew, chr, true);
@@ -73,7 +73,7 @@ public class ResCUIMessenger {
 
     public static MaplePacket messengerNote(String text, int mode, int mode2) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
         mplew.write(mode);
         mplew.writeMapleAsciiString(text);
         mplew.write(mode2);
@@ -82,7 +82,7 @@ public class ResCUIMessenger {
 
     public static MaplePacket messengerChat(String text) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
         mplew.write(6);
         mplew.writeMapleAsciiString(text);
         return mplew.getPacket();
@@ -90,7 +90,7 @@ public class ResCUIMessenger {
 
     public static MaplePacket joinMessenger(int position) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.Get());
+        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
         mplew.write(1);
         mplew.write(position);
         return mplew.getPacket();

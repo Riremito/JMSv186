@@ -35,7 +35,7 @@ public class ResCStoreBankDlg {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         // [28 01] [22 01] - Invalid Asiasoft Passport
         // [28 01] [22 00] - Open Asiasoft pin typing
-        mplew.writeShort(ServerPacket.Header.LP_StoreBankResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_StoreBankResult.get());
         mplew.write(op);
         switch (op) {
             case 36:
@@ -50,7 +50,7 @@ public class ResCStoreBankDlg {
 
     public static final MaplePacket merchItem_Message(final byte op) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_StoreBankGetAllResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_StoreBankGetAllResult.get());
         mplew.write(op);
         return mplew.getPacket();
     }
@@ -63,14 +63,14 @@ public class ResCStoreBankDlg {
         // 0A = Your another character is using the item now. Please close the shop with that character or empty your store bank.
         // 0B = You cannot open it now.
         // 0F = Please retrieve your items from Fredrick.
-        mplew.writeShort(ServerPacket.Header.LP_StoreBankGetAllResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_StoreBankGetAllResult.get());
         mplew.write(type);
         return mplew.getPacket();
     }
 
     public static final MaplePacket merchItemStore_ItemData(final MerchItemPackage pack) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_StoreBankResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_StoreBankResult.get());
         mplew.write(35);
         mplew.writeInt(9030000); // Fredrick
         mplew.writeInt(32272); // pack.getPackageid()

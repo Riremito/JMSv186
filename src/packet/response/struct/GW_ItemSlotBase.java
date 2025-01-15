@@ -62,7 +62,7 @@ public class GW_ItemSlotBase {
                 data.Encode1(pos);
             }
         }
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static final byte[] EncodeSlotEnd(ItemType it) {
@@ -79,7 +79,7 @@ public class GW_ItemSlotBase {
             }
         }
 
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     // GW_ItemSlotBase::Decode
@@ -294,7 +294,7 @@ public class GW_ItemSlotBase {
             }
         }
 
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     // E8 ?? ?? ?? ?? 84 C0 74 ?? 6A 08
@@ -318,6 +318,6 @@ public class GW_ItemSlotBase {
             data.Encode4(0);
         }
 
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 }

@@ -115,7 +115,7 @@ public class ResCStage {
                 sp.Encode4(100); // nMobStatAdjustRate
             }
         }
-        return sp.Get();
+        return sp.get();
     }
 
     // 分割版
@@ -150,7 +150,7 @@ public class ResCStage {
                 sp.Encode1(0); // not 0, 0059E9C0
             }
             sp.Encode1(0);
-            return sp.Get();
+            return sp.get();
         }
 
         // sub
@@ -161,11 +161,11 @@ public class ResCStage {
             sp.Encode4(100); // nMobStatAdjustRate
             sp.Encode1(0);
             sp.Encode1(GameConstants.is_extendsp_job(chr.getJob()) ? 1 : 0);
-            return sp.Get();
+            return sp.get();
         }
 
         // Err
-        return sp.Get();
+        return sp.get();
     }
 
     // CStage::OnSetITC
@@ -184,7 +184,7 @@ public class ResCStage {
                 sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
             }
         }
-        return sp.Get();
+        return sp.get();
     }
 
     // CStage::OnSetCashShop
@@ -212,7 +212,7 @@ public class ResCStage {
         }
         sp.Encode1(0); // m_bEventOn
         // m_nHighestCharacterLevelInThisAccount
-        return sp.Get();
+        return sp.get();
     }
 
 }

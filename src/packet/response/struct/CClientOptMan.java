@@ -33,6 +33,6 @@ public class CClientOptMan {
         ServerPacket p = new ServerPacket();
 
         p.Encode2(0); // not 0, Encode4, Encode4
-        return p.Get().getBytes();
+        return p.get().getBytes();
     }
 }

@@ -42,18 +42,18 @@ public class ResCUserLocal {
         if (!is_cancel) {
             sp.Encode2(id); // sit
         }
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket EffectLocal() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectLocal);
         // todo
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket showRewardItemAnimation(int itemId, String effect) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(15);
         mplew.writeInt(itemId);
         mplew.write(effect != null && effect.length() > 0 ? 1 : 0);
@@ -69,7 +69,7 @@ public class ResCUserLocal {
 
     public static MaplePacket showOwnBuffEffect(int skillid, int effectid, byte direction) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(effectid);
         mplew.writeInt(skillid);
         mplew.write(1); //skill level = 1 for the lulz
@@ -86,7 +86,7 @@ public class ResCUserLocal {
 
     public static final MaplePacket showOwnHpHealed(final int amount) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(10); //Type
         mplew.writeInt(amount);
         return mplew.getPacket();
@@ -94,14 +94,14 @@ public class ResCUserLocal {
 
     public static MaplePacket Mulung_DojoUp2() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(8); // portal sound
         return mplew.getPacket();
     }
 
     public static MaplePacket useWheel(byte charmsleft) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(21);
         mplew.writeLong(charmsleft);
         return mplew.getPacket();
@@ -109,7 +109,7 @@ public class ResCUserLocal {
 
     public static MaplePacket useCharm(byte charmsleft, byte daysleft) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(6);
         mplew.write(1);
         mplew.write(charmsleft);
@@ -119,7 +119,7 @@ public class ResCUserLocal {
 
     public static final MaplePacket ShowWZEffect(final String data) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(19);
         mplew.writeMapleAsciiString(data);
         return mplew.getPacket();
@@ -127,7 +127,7 @@ public class ResCUserLocal {
 
     public static final MaplePacket showOwnPetLevelUp(final int index) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(4);
         mplew.write(0);
         mplew.writeInt(index); // Pet Index
@@ -136,7 +136,7 @@ public class ResCUserLocal {
 
     public static final MaplePacket ItemMakerResult(boolean is_success) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(17);
         mplew.writeInt(is_success ? 0 : 1);
         return mplew.getPacket();
@@ -144,7 +144,7 @@ public class ResCUserLocal {
 
     public static final MaplePacket AranTutInstructionalBalloon(final String data) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(24);
         mplew.writeMapleAsciiString(data);
         mplew.writeInt(1);
@@ -153,7 +153,7 @@ public class ResCUserLocal {
 
     public static MaplePacket getShowItemGain(int itemId, short quantity, boolean inChat) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(3);
         mplew.write(1); // item count
         mplew.writeInt(itemId);
@@ -163,14 +163,14 @@ public class ResCUserLocal {
 
     public static MaplePacket showSpecialEffect(int effect) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(effect);
         return mplew.getPacket();
     }
 
     public static final MaplePacket instantMapWarp(final byte portal) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserTeleport.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserTeleport.get());
         mplew.write(0);
         mplew.write(portal); // 6
         return mplew.getPacket();
@@ -179,29 +179,29 @@ public class ResCUserLocal {
     public static MaplePacket sendMesobagSuccess(int mesos) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Succeeded);
         sp.Encode4(mesos);
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket sendMesobagFailed() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Failed);
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket RandomMesoBagSuccess(byte type, int mesos) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Random_Mesobag_Succeed);
         sp.Encode1(type);
         sp.Encode4(mesos);
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket RandomMesoBagFailed() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Random_Mesobag_Failed);
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket updateQuestFinish(int quest, int npc, int nextquest) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserQuestResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserQuestResult.get());
         mplew.write(8);
         mplew.writeShort(quest);
         mplew.writeInt(npc);
@@ -211,7 +211,7 @@ public class ResCUserLocal {
 
     public static MaplePacket updateQuestInfo(MapleCharacter c, int quest, int npc, byte progress) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserQuestResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserQuestResult.get());
         mplew.write(progress);
         mplew.writeShort(quest);
         mplew.writeInt(npc);
@@ -230,7 +230,7 @@ public class ResCUserLocal {
         if (height < 5) {
             height = 5;
         }
-        mplew.writeShort(ServerPacket.Header.LP_UserBalloonMsg.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserBalloonMsg.get());
         mplew.writeMapleAsciiString(hint);
         mplew.writeShort(width);
         mplew.writeShort(height);
@@ -240,7 +240,7 @@ public class ResCUserLocal {
 
     public static final MaplePacket sendRepairWindow(int npc) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserOpenUIWithOption.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserOpenUIWithOption.get());
         mplew.writeInt(34); //sending 0x21 here opens evan skill window o.o
         mplew.writeInt(npc);
         return mplew.getPacket();
@@ -248,7 +248,7 @@ public class ResCUserLocal {
 
     public static MaplePacket IntroLock(boolean enable) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SetDirectionMode.Get());
+        mplew.writeShort(ServerPacket.Header.LP_SetDirectionMode.get());
         mplew.write(enable ? 1 : 0);
         mplew.writeInt(enable ? 1 : 0);
         return mplew.getPacket();
@@ -256,21 +256,21 @@ public class ResCUserLocal {
 
     public static MaplePacket IntroDisableUI(boolean enable) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SetStandAloneMode.Get());
+        mplew.writeShort(ServerPacket.Header.LP_SetStandAloneMode.get());
         mplew.write(enable ? 1 : 0);
         return mplew.getPacket();
     }
 
     public static MaplePacket summonHelper(boolean summon) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserHireTutor.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserHireTutor.get());
         mplew.write(summon ? 1 : 0);
         return mplew.getPacket();
     }
 
     public static MaplePacket summonMessage(int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserTutorMsg.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserTutorMsg.get());
         mplew.write(1);
         mplew.writeInt(type);
         mplew.writeInt(7000); // probably the delay
@@ -279,7 +279,7 @@ public class ResCUserLocal {
 
     public static MaplePacket summonMessage(String message) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserTutorMsg.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserTutorMsg.get());
         mplew.write(0);
         mplew.writeMapleAsciiString(message);
         mplew.writeInt(200); // IDK
@@ -290,7 +290,7 @@ public class ResCUserLocal {
 
     public static MaplePacket testCombo(int value) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_IncCombo.Get());
+        mplew.writeShort(ServerPacket.Header.LP_IncCombo.get());
         mplew.writeInt(value);
         return mplew.getPacket();
     }
@@ -299,18 +299,18 @@ public class ResCUserLocal {
     public static MaplePacket PachinkoBoxSuccess(int gain) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Pachinko_BoxSuccess);
         sp.Encode4(gain); // パチンコ玉の数
-        return sp.Get();
+        return sp.get();
     }
 
     // パチンコ玉の充填に失敗した場合のダイアログ (実質不要)
     public static MaplePacket PachinkoBoxFailure() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Pachinko_BoxFailure);
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket getPollReply(String message) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserNoticeMsg.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserNoticeMsg.get());
         mplew.writeMapleAsciiString(message);
         return mplew.getPacket();
     }
@@ -318,7 +318,7 @@ public class ResCUserLocal {
     // チャット欄へのテキスト表示
     public static final MaplePacket getFollowMessage(final String msg) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserChatMsg.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserChatMsg.get());
         /*
         // どのような内容のテキストでも問題なし
         0x0000  全体チャット
@@ -357,7 +357,7 @@ public class ResCUserLocal {
 
     public static MaplePacket moveFollow(Point otherStart, Point myStart, Point otherEnd, List<LifeMovementFragment> moves) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserPassiveMove.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserPassiveMove.get());
         mplew.writePos(otherStart);
         mplew.writePos(myStart);
         TestHelper.serializeMovementList(mplew, moves);
@@ -373,7 +373,7 @@ public class ResCUserLocal {
 
     public static MaplePacket getFollowMsg(int opcode) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserFollowCharacterFailed.Get());
+        mplew.writeShort(ServerPacket.Header.LP_UserFollowCharacterFailed.get());
         /*
         0x00    原因不明の理由で自動追尾を申請できませんでした。
         0x01    相手が自動追尾できない位置にいるか距離が遠すぎて自動追尾できません。
@@ -390,7 +390,7 @@ public class ResCUserLocal {
 
     public static MaplePacket getPollQuestion() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_JMS_Poll_Question.Get());
+        mplew.writeShort(ServerPacket.Header.LP_JMS_Poll_Question.get());
         mplew.writeInt(1);
         mplew.writeInt(14);
         mplew.writeMapleAsciiString(ServerConstants.Poll_Question);
@@ -403,7 +403,7 @@ public class ResCUserLocal {
 
     public static MaplePacket skillCooldown(int sid, int time) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SkillCooltimeSet.Get());
+        mplew.writeShort(ServerPacket.Header.LP_SkillCooltimeSet.get());
         mplew.writeInt(sid);
         if (ServerConfig.version <= 186) {
             mplew.writeShort(time);

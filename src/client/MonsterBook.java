@@ -148,7 +148,7 @@ public class MonsterBook implements Serializable {
         p.Encode4(SpecialCard);
         p.Encode4(NormalCard + SpecialCard);
         p.Encode4(MapleItemInformationProvider.getInstance().getCardMobId(bookcover));
-        return p.Get().getBytes();
+        return p.get().getBytes();
     }
 
     public final void updateCard(final MapleClient c, final int cardid) {

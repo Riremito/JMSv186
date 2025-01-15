@@ -39,19 +39,19 @@ public class ResCITC {
 
         sp.Encode4(chr.getCSPoints(1)); // Nexon Point
         sp.Encode4(chr.getCSPoints(2)); // Maple Point
-        return sp.Get();
+        return sp.get();
     }
 
     public static final MaplePacket getMTSConfirmCancel() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
         mplew.write(37);
         return mplew.getPacket();
     }
 
     public static final MaplePacket getMTSWantedListingOver(final int nx, final int items) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
         mplew.write(61);
         mplew.writeInt(nx);
         mplew.writeInt(items);
@@ -60,14 +60,14 @@ public class ResCITC {
 
     public static final MaplePacket getMTSConfirmSell() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
         mplew.write(29);
         return mplew.getPacket();
     }
 
     public static final MaplePacket getMTSFailCancel() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
         mplew.write(38);
         mplew.write(66);
         return mplew.getPacket();
@@ -88,7 +88,7 @@ public class ResCITC {
 
     public static final MaplePacket getMTSConfirmTransfer(final int quantity, final int pos) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
         mplew.write(39);
         mplew.writeInt(quantity);
         mplew.writeInt(pos);
@@ -97,7 +97,7 @@ public class ResCITC {
 
     public static final MaplePacket sendMTS(final List<MTSStorage.MTSItemInfo> items, final int tab, final int type, final int page, final int pages) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
         mplew.write(21); //operation
         mplew.writeInt(pages * 10); //total items
         mplew.writeInt(items.size()); //number of items on this page
@@ -115,7 +115,7 @@ public class ResCITC {
 
     public static final MaplePacket getMTSFailBuy() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
         mplew.write(52);
         mplew.write(66);
         return mplew.getPacket();
@@ -123,7 +123,7 @@ public class ResCITC {
 
     public static final MaplePacket getMTSFailSell() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
         mplew.write(30);
         mplew.write(66);
         return mplew.getPacket();
@@ -131,14 +131,14 @@ public class ResCITC {
 
     public static final MaplePacket getMTSConfirmBuy() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
         mplew.write(51);
         return mplew.getPacket();
     }
 
     public static final MaplePacket addToCartMessage(boolean fail, boolean remove) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
         if (remove) {
             if (fail) {
                 mplew.write(44);
@@ -159,13 +159,13 @@ public class ResCITC {
 
     public static final MaplePacket openWebSite() {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCChargeParamResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCChargeParamResult.get());
         return mplew.getPacket();
     }
 
     public static final MaplePacket getTransferInventory(final List<IItem> items, final boolean changed) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
         mplew.write(33);
         mplew.writeInt(items.size());
         int i = 0;
@@ -184,7 +184,7 @@ public class ResCITC {
 
     public static final MaplePacket getNotYetSoldInv(final List<MTSStorage.MTSItemInfo> items) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
         mplew.write(35);
         mplew.writeInt(items.size());
         for (MTSStorage.MTSItemInfo item : items) {

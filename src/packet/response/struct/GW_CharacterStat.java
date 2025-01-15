@@ -140,7 +140,7 @@ public class GW_CharacterStat {
             data.EncodeZeroBytes(8);
             data.Encode4(0);
             data.Encode4(0);
-            return data.Get().getBytes();
+            return data.get().getBytes();
         }
 
         data.Encode4(chr.getExp());
@@ -196,7 +196,7 @@ public class GW_CharacterStat {
             data.Encode4(0);
         }
 
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     // GW_CharacterStat::DecodeMoney
@@ -204,7 +204,7 @@ public class GW_CharacterStat {
         ServerPacket p = new ServerPacket();
 
         p.Encode4(chr.getMeso());
-        return p.Get().getBytes();
+        return p.get().getBytes();
     }
 
     // DecodeBuffer size 0x0C
@@ -214,7 +214,7 @@ public class GW_CharacterStat {
         p.Encode4(chr.getId());
         p.Encode4(chr.getTama());
         p.Encode4(0);
-        return p.Get().getBytes();
+        return p.get().getBytes();
     }
 
     // GW_CharacterStat::DecodeChangeStat
@@ -347,6 +347,6 @@ public class GW_CharacterStat {
             data.Encode4(chr.getGashaEXP());
         }
 
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 }

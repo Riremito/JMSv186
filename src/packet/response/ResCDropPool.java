@@ -130,7 +130,7 @@ public class ResCDropPool {
         sp.Encode1(drop.isPlayerDrop() ? 0 : 1); // pet pick up?
         sp.Encode1(0);
 
-        return sp.Get();
+        return sp.get();
     }
 
     // CDropPool::OnDropLeaveField
@@ -167,7 +167,7 @@ public class ResCDropPool {
             }
         }
 
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto) {

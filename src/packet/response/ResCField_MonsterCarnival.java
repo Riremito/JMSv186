@@ -33,9 +33,9 @@ public class ResCField_MonsterCarnival {
     public static MaplePacket CPUpdate(boolean party, int curCP, int totalCP, int team) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         if (!party) {
-            mplew.writeShort(ServerPacket.Header.LP_MCarnivalPersonalCP.Get());
+            mplew.writeShort(ServerPacket.Header.LP_MCarnivalPersonalCP.get());
         } else {
-            mplew.writeShort(ServerPacket.Header.LP_MCarnivalTeamCP.Get());
+            mplew.writeShort(ServerPacket.Header.LP_MCarnivalTeamCP.get());
             mplew.write(team);
         }
         mplew.writeShort(curCP);
@@ -45,7 +45,7 @@ public class ResCField_MonsterCarnival {
 
     public static MaplePacket playerSummoned(String name, int tab, int number) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MCarnivalResultSuccess.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MCarnivalResultSuccess.get());
         mplew.write(tab);
         mplew.write(number);
         mplew.writeMapleAsciiString(name);
@@ -54,7 +54,7 @@ public class ResCField_MonsterCarnival {
 
     public static MaplePacket startMonsterCarnival(final MapleCharacter chr, final int enemyavailable, final int enemytotal) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MCarnivalEnter.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MCarnivalEnter.get());
         final MapleCarnivalParty friendly = chr.getCarnivalParty();
         mplew.write(friendly.getTeam());
         mplew.writeShort(chr.getAvailableCP());
@@ -71,7 +71,7 @@ public class ResCField_MonsterCarnival {
     public static MaplePacket playerDiedMessage(String name, int lostCP, int team) {
         //CPQ
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MCarnivalDeath.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MCarnivalDeath.get());
         mplew.write(team); //team
         mplew.writeMapleAsciiString(name);
         mplew.write(lostCP);

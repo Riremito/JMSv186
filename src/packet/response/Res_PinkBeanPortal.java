@@ -39,7 +39,7 @@ public class Res_PinkBeanPortal {
         sp.Encode4(0);
         sp.Encode2(dynamic_portal.getPosition().x);
         sp.Encode2(dynamic_portal.getPosition().y);
-        return sp.Get();
+        return sp.get();
     }
     
 }

@@ -38,7 +38,7 @@ public class ResCNpcPool {
     public static MaplePacket removeNPC(final int objectid) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_NpcLeaveField);
         p.Encode4(objectid);
-        return p.Get();
+        return p.get();
     }
 
     public static MaplePacket spawnNPC(MapleNPC life, boolean show) {
@@ -55,12 +55,12 @@ public class ResCNpcPool {
         if (194 <= ServerConfig.GetVersion()) {
             p.Encode1(0);
         }
-        return p.Get();
+        return p.get();
     }
 
     public static MaplePacket spawnNPCRequestController(MapleNPC life, boolean MiniMap) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_NpcChangeController.Get());
+        mplew.writeShort(ServerPacket.Header.LP_NpcChangeController.get());
         mplew.write(1);
         mplew.writeInt(life.getObjectId());
         // フォーマット不明
@@ -77,7 +77,7 @@ public class ResCNpcPool {
 
     public static MaplePacket spawnPlayerNPC(PlayerNPC npc) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ImitatedNPCData.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ImitatedNPCData.get());
         mplew.write(npc.getF() == 1 ? 0 : 1);
         mplew.writeInt(npc.getId());
         mplew.writeMapleAsciiString(npc.getName());
@@ -128,7 +128,7 @@ public class ResCNpcPool {
 
     public static final void NPCAnimation(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_NpcMove.Get());
+        mplew.writeShort(ServerPacket.Header.LP_NpcMove.get());
         final int length = (int) slea.available();
         if (length == 6) {
             // NPC Talk

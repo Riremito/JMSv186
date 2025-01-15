@@ -30,7 +30,7 @@ public class ResCRPSGameDlg {
 
     public static MaplePacket getRPSMode(byte mode, int mesos, int selection, int answer) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_RPSGame.Get());
+        mplew.writeShort(ServerPacket.Header.LP_RPSGame.get());
         mplew.write(mode);
         switch (mode) {
             case 6:

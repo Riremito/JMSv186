@@ -34,7 +34,7 @@ public class Structure {
             data.Encode4(400967355);
             data.Encode1(2);
         }
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static boolean is_ignore_master_level_for_common(int skill_id) {
@@ -300,7 +300,7 @@ public class Structure {
                 }
             }
         }
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static final byte[] addCoolDownInfo(final MapleCharacter chr) {
@@ -312,7 +312,7 @@ public class Structure {
             data.Encode4(cooling.skillId);
             data.Encode2((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);
         }
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static byte[] addQuestInfo(final MapleCharacter chr) {
@@ -342,7 +342,7 @@ public class Structure {
             data.Encode2(0);
         }
 
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static byte[] addQuestComplete(final MapleCharacter chr) {
@@ -365,7 +365,7 @@ public class Structure {
         if (ServerConfig.JMS302orLater()) {
             data.Encode2(0);
         }
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     // v165, v186
@@ -397,7 +397,7 @@ public class Structure {
         data.Encode2(0);
         // if not 0, 48 bytes
 
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static final byte[] addRocksInfo(final MapleCharacter chr) {
@@ -425,7 +425,7 @@ public class Structure {
             }
         }
 
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static final byte[] addMonsterBookInfo(final MapleCharacter chr) {
@@ -442,7 +442,7 @@ public class Structure {
                 data.Encode1(all.getValue());
             }
         }
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static final byte[] QuestInfoPacket(final MapleCharacter chr) {
@@ -454,7 +454,7 @@ public class Structure {
             data.Encode2(q.getKey());
             data.EncodeStr(q.getValue() == null ? "" : q.getValue());
         }
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     // addMonsterStatus
@@ -511,7 +511,7 @@ public class Structure {
         }
 
         //wh spawn - 15 zeroes instead of 16, then 98 F4 56 A6 C7 C9 01 28, then 7 zeroes
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static long getSpecialLongMask(Collection<MonsterStatus> statups) {
@@ -568,7 +568,7 @@ public class Structure {
             p.Encode1(0);
         }
 
-        return p.Get().getBytes();
+        return p.get().getBytes();
     }
 
     // addInteraction
@@ -587,6 +587,6 @@ public class Structure {
             p.Encode1(shop.isOpen() ? 0 : 1);
         }
 
-        return p.Get().getBytes();
+        return p.get().getBytes();
     }
 }

@@ -73,7 +73,7 @@ public class ResCCashShop {
             data.Encode4(7777); // 0x04: price
             data.Encode1(1); //0x0400 : OnSale
         }
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static byte[] getDiscountRates() {
@@ -89,7 +89,7 @@ public class ResCCashShop {
             }
         }
          */
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static enum BestItemCategory {
@@ -159,21 +159,21 @@ public class ResCCashShop {
             data.Encode4(best_item_item_SN[i]);
         }
 
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     // CCashShop::OnChargeParamResult, 充填ボタン
     public static MaplePacket ChargeParamResult() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopChargeParamResult);
         sp.EncodeStr("nexon_id"); // nexon id
-        return sp.Get();
+        return sp.get();
     }
 
     // おめでとうございます！ポイントショップのインベントリにのプレゼントをお送りしました。
     public static MaplePacket presentDialog() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_POINTSHOP_PRESENT_DIALOG);
         // 多分未実装
-        return sp.Get();
+        return sp.get();
     }
 
     // CCashShop::OnQueryCashResult
@@ -181,7 +181,7 @@ public class ResCCashShop {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopQueryCashResult);
         sp.Encode4(chr.getCSPoints(1)); // NEXON POINT
         sp.Encode4(chr.getCSPoints(2)); // MAPLE POINT
-        return sp.Get();
+        return sp.get();
     }
 
     public static class CashItemStruct {
@@ -354,21 +354,21 @@ public class ResCCashShop {
             }
         }
 
-        return sp.Get();
+        return sp.get();
     }
 
     // CCashShop::OnPurchaseExpChanged
     public static MaplePacket PurchaseExpChanged() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopPurchaseExpChanged);
         sp.Encode1(0); // m_nPurchaseExp
-        return sp.Get();
+        return sp.get();
     }
 
     // CCashShop::OnGiftMateInfoResult
     public static MaplePacket GiftMateInfoResult() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopGiftMateInfoResult);
         // not coded
-        return sp.Get();
+        return sp.get();
     }
 
     // 謎処理
@@ -378,14 +378,14 @@ public class ResCCashShop {
         sp.Encode4(1); // item list size
         sp.Encode4(item_id); // buffer4
         sp.Encode1(1); // force request or not
-        return sp.Get();
+        return sp.get();
     }
 
     // 騎士団ショッピングのおまけアイテム"アイテム名"をプレゼントしました。インベントリをご確認ください。
     public static MaplePacket PresentForKOC(int item_id) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_POINTSHOP_KOC_PRESENT_DIALOG);
         sp.Encode4(item_id);
-        return sp.Get();
+        return sp.get();
     }
 
     // フリークーポンの期限の告知
@@ -395,7 +395,7 @@ public class ResCCashShop {
         if (has_free_coupon) {
             sp.Encode8(free_coupon_date);
         }
-        return sp.Get();
+        return sp.get();
     }
 
     // ガシャポンスタンプとお年玉の累積ポイント告知
@@ -407,7 +407,7 @@ public class ResCCashShop {
         sp.Encode4(2); // 累積Xポイント
         sp.Encode4(1); // 入手した個数は計X個
         sp.Encode4(4000426); // item id 4031351 or 4000426
-        return sp.Get();
+        return sp.get();
     }
 
     // CCashShop::OnCheckTransferWorldPossibleResult
@@ -424,7 +424,7 @@ public class ResCCashShop {
         for (String world : world_list) {
             sp.EncodeStr(world);
         }
-        return sp.Get();
+        return sp.get();
     }
 
     // アバターランダムボックス
@@ -441,12 +441,12 @@ public class ResCCashShop {
             sp.Encode1(1); // m_nSelectedItemCount
             sp.Encode1(1); // m_bJackpot, 0 (CashGachaponNormal) or 1 (CashGachaponJackpot)
         }
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket cashItemExpired(int uniqueid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.get());
         mplew.write(113); //use to be 5d
         mplew.writeLong(uniqueid);
         return mplew.getPacket();

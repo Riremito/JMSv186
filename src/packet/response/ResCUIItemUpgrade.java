@@ -71,7 +71,7 @@ public class ResCUIItemUpgrade {
         p.Encode4(0);
         // 2 - 使用回数 = 残り回数
         p.Encode4(hammered);
-        return p.Get();
+        return p.get();
     }
 
     // ビシャスのハンマーの成功ダイアログを表示
@@ -84,7 +84,7 @@ public class ResCUIItemUpgrade {
         0x00以外    原因不明の不具合
          */
         p.Encode4(0);
-        return p.Get();
+        return p.get();
     }
 
     // ビシャスのハンマーの失敗ダイアログを表示, クライアント側で弾かれるのでチート以外では表示されることがないメッセージ
@@ -99,7 +99,7 @@ public class ResCUIItemUpgrade {
         上記以外        原因不明の不具合
          */
         p.Encode4(error);
-        return p.Get();
+        return p.get();
     }
 
 }

@@ -31,7 +31,7 @@ public class ResCField_Coconut {
     // 00 01 00 00 00 00
     public static MaplePacket coconutScore(int[] coconutscore) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CoconutScore.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CoconutScore.get());
         mplew.writeShort(coconutscore[0]);
         mplew.writeShort(coconutscore[1]);
         return mplew.getPacket();
@@ -40,7 +40,7 @@ public class ResCField_Coconut {
     public static MaplePacket hitCoconut(boolean spawn, int id, int type) {
         // FF 00 00 00 00 00 00
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CoconutHit.Get());
+        mplew.writeShort(ServerPacket.Header.LP_CoconutHit.get());
         if (spawn) {
             mplew.write(0);
             mplew.writeInt(128);

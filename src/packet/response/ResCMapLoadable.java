@@ -30,7 +30,7 @@ public class ResCMapLoadable {
     // 0x0083 @0083, 画面の位置をキャラクターを中心とした場所に変更, 背景リロードしてるかも?
     public static MaplePacket ReloadMap() {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ClearBackgroundEffect);
-        return p.Get();
+        return p.get();
     }
 
 }

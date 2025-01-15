@@ -36,6 +36,6 @@ public class GW_WildHunterInfo {
         for (int i = 0; i < 5; i++) {
             p.Encode4(0);
         }
-        return p.Get().getBytes();
+        return p.get().getBytes();
     }
 }

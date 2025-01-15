@@ -33,7 +33,7 @@ public class ResCUser_Dragon {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DragonMove);
         sp.Encode4(dragon.getOwner());
         sp.EncodeBuffer(data.get());
-        return sp.Get();
+        return sp.get();
     }
 
     // not coded in GMS v95, but KMST v2.1029 removes dragon when you change other job.
@@ -41,7 +41,7 @@ public class ResCUser_Dragon {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DragonLeaveField);
 
         sp.Encode4(chrid);
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket spawnDragon(MapleDragon d) {
@@ -53,7 +53,7 @@ public class ResCUser_Dragon {
         sp.Encode1(d.getStance()); // move action (left, right)
         sp.Encode2(0); // not used
         sp.Encode2(d.getJobId());
-        return sp.Get();
+        return sp.get();
     }
 
 }

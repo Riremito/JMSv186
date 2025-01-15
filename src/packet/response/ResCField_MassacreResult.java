@@ -30,7 +30,7 @@ public class ResCField_MassacreResult {
 
     public static final MaplePacket sendPyramidResult(final byte rank, final int amount) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MassacreResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MassacreResult.get());
         mplew.write(rank);
         mplew.writeInt(amount); //1-132 ?
         return mplew.getPacket();

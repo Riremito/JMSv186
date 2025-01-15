@@ -810,11 +810,11 @@ public class ServerConfig {
 
         Properties ServerPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ServerPacket.properties");
         if (ServerPacketHeader != null) {
-            ServerPacket.Load(ServerPacketHeader);
+            ServerPacket.init(ServerPacketHeader);
 
             Debug.DebugLog("[SP]");
             for (ServerPacket.Header header : ServerPacket.Header.values()) {
-                int val = header.Get();
+                int val = header.get();
                 if (val != -1) {
                     Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
                 }
@@ -838,8 +838,8 @@ public class ServerConfig {
     public static void ReloadHeader() {
         Properties ServerPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ServerPacket.properties");
         if (ServerPacketHeader != null) {
-            ServerPacket.Reset();
-            ServerPacket.Load(ServerPacketHeader);
+            ServerPacket.reset();
+            ServerPacket.init(ServerPacketHeader);
             Debug.InfoLog("ServerPacket is reloaded!");
         }
         Properties ClientPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ClientPacket.properties");

@@ -133,12 +133,12 @@ public class ResCScriptMan {
             }
         }
 
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket getEvanTutorial(String data) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ScriptMessage.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ScriptMessage.get());
         mplew.writeInt(8);
         mplew.write(0);
         mplew.write(1);

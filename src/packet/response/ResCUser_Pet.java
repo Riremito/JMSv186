@@ -96,7 +96,7 @@ public class ResCUser_Pet {
             sp.Encode1(msg.get());
         }
 
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket Activated(MapleCharacter chr, MaplePet pet) {
@@ -116,7 +116,7 @@ public class ResCUser_Pet {
         sp.Encode4(chr.getId());
         sp.Encode4(pet_index);
         sp.EncodeBuffer(data.get());
-        return sp.Get();
+        return sp.get();
     }
 
     public static final MaplePacket petChat(MapleCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
@@ -127,7 +127,7 @@ public class ResCUser_Pet {
         sp.Encode1(nAction);
         sp.EncodeStr(pet_message);
         // post BB may have extra 1 bytes
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket changePetName(MapleCharacter chr, int pet_index, String pet_name) {
@@ -135,12 +135,12 @@ public class ResCUser_Pet {
         sp.Encode4(chr.getId());
         sp.Encode4(pet_index);
         sp.EncodeStr(pet_name);
-        return sp.Get();
+        return sp.get();
     }
 
     public static final MaplePacket commandResponse(final int cid, final byte command, final int slot, final boolean success, final boolean food) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_PetActionCommand.Get());
+        mplew.writeShort(ServerPacket.Header.LP_PetActionCommand.get());
         mplew.writeInt(cid);
         mplew.writeInt(slot);
         mplew.write(command == 1 ? 1 : 0);

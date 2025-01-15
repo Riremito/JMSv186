@@ -54,7 +54,7 @@ public class ResCSummonedPool {
             }
             p.Encode4(attackEntry.getDamage()); // damage
         }
-        return p.Get();
+        return p.get();
     }
 
     public static MaplePacket moveSummon(MapleSummon summon, CMovePath data) {
@@ -68,7 +68,7 @@ public class ResCSummonedPool {
         }
 
         sp.EncodeBuffer(data.get());
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket damageSummon(int cid, int summonSkillId, int damage, int unkByte, int monsterIdFrom) {
@@ -79,7 +79,7 @@ public class ResCSummonedPool {
         p.Encode4(damage);
         p.Encode4(monsterIdFrom);
         p.Encode1(0);
-        return p.Get();
+        return p.get();
     }
 
     public static MaplePacket spawnSummon(MapleSummon summon, boolean animated) {
@@ -107,7 +107,7 @@ public class ResCSummonedPool {
                 p.EncodeBuffer(AvatarLook.Encode(chr));
             }
         }
-        return p.Get();
+        return p.get();
     }
 
     public static MaplePacket removeSummon(MapleSummon summon, boolean animated) {
@@ -119,12 +119,12 @@ public class ResCSummonedPool {
             p.Encode4(summon.getObjectId());
         }
         p.Encode1(animated ? 4 : 1);
-        return p.Get();
+        return p.get();
     }
 
     public static MaplePacket summonSkill(int cid, int summonSkillId, int newStance) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SummonedSkill.Get());
+        mplew.writeShort(ServerPacket.Header.LP_SummonedSkill.get());
         mplew.writeInt(cid);
         mplew.writeInt(summonSkillId);
         mplew.write(newStance);

@@ -44,13 +44,13 @@ public class ResSecurity {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CUSTOM_MEMORY_SCAN);
         sp.Encode4(address);
         sp.Encode2(size);
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket Hash() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CUSTOM_WZ_HASH);
         sp.EncodeStr("Skill.wz");
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket Patch(int address, byte[] memory) {
@@ -58,7 +58,7 @@ public class ResSecurity {
         sp.Encode4(address);
         sp.Encode2((short) memory.length);
         sp.EncodeBuffer(memory);
-        return sp.Get();
+        return sp.get();
     }
 
 }

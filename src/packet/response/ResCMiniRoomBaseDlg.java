@@ -36,7 +36,7 @@ public class ResCMiniRoomBaseDlg {
 
     public static MaplePacket getTradeInvite(MapleCharacter c, boolean isPointTrade) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(2);
         mplew.write(isPointTrade ? 6 : 3);
         mplew.writeMapleAsciiString(c.getName());
@@ -46,7 +46,7 @@ public class ResCMiniRoomBaseDlg {
 
     public static MaplePacket getTradePartnerAdd(MapleCharacter c) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(4);
         mplew.write(1);
         TestHelper.addCharLook(mplew, c, false);
@@ -57,7 +57,7 @@ public class ResCMiniRoomBaseDlg {
 
     public static MaplePacket getPlayerShopNewVisitor(MapleCharacter c, int slot) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(HexTool.getByteArrayFromHexString("04 0" + slot));
         TestHelper.addCharLook(mplew, c, false);
         mplew.writeMapleAsciiString(c.getName());
@@ -67,7 +67,7 @@ public class ResCMiniRoomBaseDlg {
 
     public static MaplePacket getTradeItemAdd(byte number, IItem item) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         //mplew.write(0xE);
         mplew.write(13);
         mplew.write(number);
@@ -77,7 +77,7 @@ public class ResCMiniRoomBaseDlg {
 
     public static MaplePacket getTradeConfirmation() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         //mplew.write(0x10); //or 7? what
         mplew.write(15);
         return mplew.getPacket();
@@ -85,7 +85,7 @@ public class ResCMiniRoomBaseDlg {
 
     public static MaplePacket TradeMessage(final byte UserSlot, final byte message) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(10);
         mplew.write(UserSlot);
         mplew.write(message);
@@ -99,14 +99,14 @@ public class ResCMiniRoomBaseDlg {
 
     public static MaplePacket getPlayerShopRemoveVisitor(int slot) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(HexTool.getByteArrayFromHexString("0A 0" + slot));
         return mplew.getPacket();
     }
 
     public static MaplePacket getTradeStart(MapleClient c, MapleTrade trade, byte number, boolean isPointTrade) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(5);
         mplew.write(isPointTrade ? 6 : 3);
         mplew.write(2);
@@ -128,7 +128,7 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getTradeCancel(final byte UserSlot, final int unsuccessful) {
         //0 = canceled 1 = invent space 2 = pickuprestricted
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         mplew.write(10);
         mplew.write(UserSlot);
         mplew.write(unsuccessful == 0 ? 2 : (unsuccessful == 1 ? 8 : 9));
@@ -137,7 +137,7 @@ public class ResCMiniRoomBaseDlg {
 
     public static MaplePacket getTradeMesoSet(byte number, int meso) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.Get());
+        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
         //mplew.write(0xF);
         mplew.write(14);
         mplew.write(number);

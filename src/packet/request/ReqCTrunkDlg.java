@@ -291,14 +291,14 @@ public class ReqCTrunkDlg {
         sp.Encode1(0);
         sp.Encode1(0);
 
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket Error(SP_Flag error) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
 
         sp.Encode1(error.get());
-        return sp.Get();
+        return sp.get();
     }
 
     // メルの出し入れ
@@ -316,7 +316,7 @@ public class ReqCTrunkDlg {
 
         sp.Encode4(meso);
 
-        return sp.Get();
+        return sp.get();
     }
 
     // アイテムを入れる
@@ -338,7 +338,7 @@ public class ReqCTrunkDlg {
             sp.EncodeBuffer(GW_ItemSlotBase.Encode(item));
         }
 
-        return sp.Get();
+        return sp.get();
     }
 
     // アイテムを取り出す
@@ -360,7 +360,7 @@ public class ReqCTrunkDlg {
             sp.EncodeBuffer(GW_ItemSlotBase.Encode(item));
         }
 
-        return sp.Get();
+        return sp.get();
     }
 
 }

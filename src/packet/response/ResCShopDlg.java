@@ -57,7 +57,7 @@ public class ResCShopDlg {
                     break;
                 }
         }
-        return sp.Get();
+        return sp.get();
     }
 
     public static MaplePacket confirmShopTransaction(ReqCNpcPool.SP_ShopFlag flag) {
@@ -113,7 +113,7 @@ public class ResCShopDlg {
                 sp.Encode4(0);
             }
         }
-        return sp.Get();
+        return sp.get();
     }
     
 }

@@ -101,7 +101,7 @@ public class ResCParcelDlg {
         if (isQuick) {
             // 速達のUI
             p.Encode1(Action.OPEN_EXPRESS.Get());
-            return p.Get();
+            return p.get();
         }
         // 通常のUI
         p.Encode1((byte) Action.OPEN.Get());
@@ -109,13 +109,13 @@ public class ResCParcelDlg {
         p.Encode1((byte) (isNPC ? 0 : 1));
         p.Encode1((byte) 0);
         p.Encode1((byte) 0);
-        return p.Get();
+        return p.get();
     }
 
     public static MaplePacket Send() {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_Parcel);
         p.Encode1((byte) Action.SEND.Get());
-        return p.Get();
+        return p.get();
     }
 
 }

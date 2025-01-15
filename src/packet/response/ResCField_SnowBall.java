@@ -31,7 +31,7 @@ public class ResCField_SnowBall {
 
     public static MaplePacket leftKnockBack() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SnowBallTouch.Get());
+        mplew.writeShort(ServerPacket.Header.LP_SnowBallTouch.get());
         return mplew.getPacket();
     }
 
@@ -41,7 +41,7 @@ public class ResCField_SnowBall {
 
     public static MaplePacket snowballMessage(int team, int message) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SnowBallMsg.Get());
+        mplew.writeShort(ServerPacket.Header.LP_SnowBallMsg.get());
         mplew.write(team); // 0 is down, 1 is up
         mplew.writeInt(message);
         return mplew.getPacket();
@@ -49,7 +49,7 @@ public class ResCField_SnowBall {
 
     public static MaplePacket hitSnowBall(int team, int damage, int distance, int delay) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SnowBallHit.Get());
+        mplew.writeShort(ServerPacket.Header.LP_SnowBallHit.get());
         mplew.write(team); // 0 is down, 1 is up
         mplew.writeShort(damage);
         mplew.write(distance);
@@ -59,7 +59,7 @@ public class ResCField_SnowBall {
 
     public static MaplePacket rollSnowball(int type, MapleSnowball.MapleSnowballs ball1, MapleSnowball.MapleSnowballs ball2) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SnowBallState.Get());
+        mplew.writeShort(ServerPacket.Header.LP_SnowBallState.get());
         mplew.write(type); // 0 = normal, 1 = rolls from start to end, 2 = down disappear, 3 = up disappear, 4 = move
         mplew.writeInt(ball1 == null ? 0 : (ball1.getSnowmanHP() / 75));
         mplew.writeInt(ball2 == null ? 0 : (ball2.getSnowmanHP() / 75));

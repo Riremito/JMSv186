@@ -308,7 +308,7 @@ public class CharacterData {
                 break;
             }
         }
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static final byte[] InventoryInfo(MapleCharacter chr, long datamask) {
@@ -437,7 +437,7 @@ public class CharacterData {
             data.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
         }
 
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static byte[] Encode_302_1(MapleCharacter chr, long datamask) {
@@ -555,7 +555,7 @@ public class CharacterData {
 
         data.Encode4(0);
         data.Encode8(TestHelper.getTime(System.currentTimeMillis()));
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 
     public static byte[] Encode_302_2(MapleCharacter chr, long datamask) {
@@ -575,6 +575,6 @@ public class CharacterData {
         if ((datamask & 0x400000) > 0) {
             data.Encode2(0);
         }
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 }

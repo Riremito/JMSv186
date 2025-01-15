@@ -31,14 +31,14 @@ public class ResCAffectedAreaPool {
 
     public static MaplePacket removeMist(final int oid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_AffectedAreaRemoved.Get());
+        mplew.writeShort(ServerPacket.Header.LP_AffectedAreaRemoved.get());
         mplew.writeInt(oid);
         return mplew.getPacket();
     }
 
     public static MaplePacket spawnMist(final MapleMist mist) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_AffectedAreaCreated.Get());
+        mplew.writeShort(ServerPacket.Header.LP_AffectedAreaCreated.get());
         mplew.writeInt(mist.getObjectId());
         mplew.writeInt(mist.isMobMist() ? 0 : (mist.isPoisonMist() != 0 ? 1 : 2)); //2 = invincible, so put 1 for recovery aura
         mplew.writeInt(mist.getOwnerId());

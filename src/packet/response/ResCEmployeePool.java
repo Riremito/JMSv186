@@ -32,7 +32,7 @@ public class ResCEmployeePool {
 
     public static final MaplePacket spawnHiredMerchant(final HiredMerchant hm) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_EmployeeEnterField.Get());
+        mplew.writeShort(ServerPacket.Header.LP_EmployeeEnterField.get());
         mplew.writeInt(hm.getOwnerId());
         mplew.writeInt(hm.getItemId());
         mplew.writePos(hm.getPosition());
@@ -44,7 +44,7 @@ public class ResCEmployeePool {
 
     public static final MaplePacket destroyHiredMerchant(final int id) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_EmployeeLeaveField.Get());
+        mplew.writeShort(ServerPacket.Header.LP_EmployeeLeaveField.get());
         mplew.writeInt(id);
         return mplew.getPacket();
     }

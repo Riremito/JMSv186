@@ -30,13 +30,13 @@ public class ResCField_AriantArena {
 
     public static MaplePacket showAriantScoreBoard() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ShowArenaResult.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ShowArenaResult.get());
         return mplew.getPacket();
     }
 
     public static MaplePacket updateAriantPQRanking(String name, int score, boolean empty) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ArenaScore.Get());
+        mplew.writeShort(ServerPacket.Header.LP_ArenaScore.get());
         mplew.write(empty ? 0 : 1);
         if (!empty) {
             mplew.writeMapleAsciiString(name);

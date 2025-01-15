@@ -69,7 +69,7 @@ public class ResCUIVega {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_VegaResult);
         // 成功可否
         p.Encode1((byte) (isSuccess ? Action.SUCCESS.Get() : Action.FAILURE.Get()));
-        return p.Get();
+        return p.get();
     }
 
     // ベガの呪文書開始
@@ -77,7 +77,7 @@ public class ResCUIVega {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_VegaResult);
         // 0x3E or 0x40
         p.Encode1(Action.START.Get());
-        return p.Get();
+        return p.get();
     }
 
 }

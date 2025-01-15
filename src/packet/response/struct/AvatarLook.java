@@ -94,7 +94,7 @@ public class AvatarLook {
 
                 data.Encode4(0);
             }
-            return data.Get().getBytes();
+            return data.get().getBytes();
         }
 
         if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
@@ -103,7 +103,7 @@ public class AvatarLook {
             data.Encode1(0);
             data.EncodeZeroBytes(12);
             // DemonSlayer -> Encode4
-            return data.Get().getBytes();
+            return data.get().getBytes();
         }
 
         if (ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS()) {
@@ -116,6 +116,6 @@ public class AvatarLook {
             }
         }
 
-        return data.Get().getBytes();
+        return data.get().getBytes();
     }
 }
