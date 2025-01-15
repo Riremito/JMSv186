@@ -2168,4 +2168,16 @@ public class ResCWvsContext {
         return p.Get();
     }
 
+    // パチンコ情報の更新
+    public static MaplePacket PachinkoUpdate(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Pachinko_Update);
+        // 12 bytes
+        {
+            sp.Encode4(chr.getId()); // キャラクターID (実質不要)
+            sp.Encode4(chr.getTama()); // アイテム欄の玉の数に反映される値
+            sp.Encode4(0); // 用途不明
+        }
+        return sp.Get();
+    }
+
 }

@@ -321,10 +321,10 @@ public class ItemRequest {
             case 5201002: {
                 final int tama = MapleItemInformationProvider.getInstance().getInt(item_id, "info/dama");
                 if (chr.gainTama(tama, true)) {
-                    chr.SendPacket(Res_Pachinko.TamaBoxSuccess(tama));
+                    chr.SendPacket(ResCUserLocal.PachinkoBoxSuccess(tama));
                     RemoveCashItem(chr, item_slot);
                 } else {
-                    chr.SendPacket(Res_Pachinko.TamaBoxFailure());
+                    chr.SendPacket(ResCUserLocal.PachinkoBoxFailure());
                 }
                 return true;
             }

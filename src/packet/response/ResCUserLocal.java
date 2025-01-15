@@ -168,6 +168,106 @@ public class ResCUserLocal {
         return mplew.getPacket();
     }
 
+    public static final MaplePacket instantMapWarp(final byte portal) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserTeleport.Get());
+        mplew.write(0);
+        mplew.write(portal); // 6
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket sendMesobagSuccess(int mesos) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Succeeded);
+        sp.Encode4(mesos);
+        return sp.Get();
+    }
+
+    public static MaplePacket sendMesobagFailed() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Failed);
+        return sp.Get();
+    }
+
+    public static MaplePacket RandomMesoBagSuccess(byte type, int mesos) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Random_Mesobag_Succeed);
+        sp.Encode1(type);
+        sp.Encode4(mesos);
+        return sp.Get();
+    }
+
+    public static MaplePacket RandomMesoBagFailed() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Random_Mesobag_Failed);
+        return sp.Get();
+    }
+
+    public static MaplePacket updateQuestFinish(int quest, int npc, int nextquest) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserQuestResult.Get());
+        mplew.write(8);
+        mplew.writeShort(quest);
+        mplew.writeInt(npc);
+        mplew.writeInt(nextquest);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket updateQuestInfo(MapleCharacter c, int quest, int npc, byte progress) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserQuestResult.Get());
+        mplew.write(progress);
+        mplew.writeShort(quest);
+        mplew.writeInt(npc);
+        mplew.writeInt(0);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket sendHint(String hint, int width, int height) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        if (width < 1) {
+            width = hint.length() * 10;
+            if (width < 40) {
+                width = 40;
+            }
+        }
+        if (height < 5) {
+            height = 5;
+        }
+        mplew.writeShort(ServerPacket.Header.LP_UserBalloonMsg.Get());
+        mplew.writeMapleAsciiString(hint);
+        mplew.writeShort(width);
+        mplew.writeShort(height);
+        mplew.write(1);
+        return mplew.getPacket();
+    }
+
+    public static final MaplePacket sendRepairWindow(int npc) {
+        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserOpenUIWithOption.Get());
+        mplew.writeInt(34); //sending 0x21 here opens evan skill window o.o
+        mplew.writeInt(npc);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket IntroLock(boolean enable) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SetDirectionMode.Get());
+        mplew.write(enable ? 1 : 0);
+        mplew.writeInt(enable ? 1 : 0);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket IntroDisableUI(boolean enable) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SetStandAloneMode.Get());
+        mplew.write(enable ? 1 : 0);
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket summonHelper(boolean summon) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserHireTutor.Get());
+        mplew.write(summon ? 1 : 0);
+        return mplew.getPacket();
+    }
+
     public static MaplePacket summonMessage(int type) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserTutorMsg.Get());
@@ -188,88 +288,30 @@ public class ResCUserLocal {
         return mplew.getPacket();
     }
 
-    public static MaplePacket summonHelper(boolean summon) {
+    public static MaplePacket testCombo(int value) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserHireTutor.Get());
-        mplew.write(summon ? 1 : 0);
+        mplew.writeShort(ServerPacket.Header.LP_IncCombo.Get());
+        mplew.writeInt(value);
         return mplew.getPacket();
     }
 
-    public static MaplePacket IntroDisableUI(boolean enable) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SetStandAloneMode.Get());
-        mplew.write(enable ? 1 : 0);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket IntroLock(boolean enable) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SetDirectionMode.Get());
-        mplew.write(enable ? 1 : 0);
-        mplew.writeInt(enable ? 1 : 0);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket RandomMesoBagFailed() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Random_Mesobag_Failed);
+    // ポイントアイテムのパチンコ玉の充填 (玉ボックス)
+    public static MaplePacket PachinkoBoxSuccess(int gain) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Pachinko_BoxSuccess);
+        sp.Encode4(gain); // パチンコ玉の数
         return sp.Get();
     }
 
-    public static MaplePacket sendMesobagSuccess(int mesos) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Succeeded);
-        sp.Encode4(mesos);
+    // パチンコ玉の充填に失敗した場合のダイアログ (実質不要)
+    public static MaplePacket PachinkoBoxFailure() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Pachinko_BoxFailure);
         return sp.Get();
     }
 
-    public static MaplePacket RandomMesoBagSuccess(byte type, int mesos) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Random_Mesobag_Succeed);
-        sp.Encode1(type);
-        sp.Encode4(mesos);
-        return sp.Get();
-    }
-
-    public static MaplePacket sendMesobagFailed() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Failed);
-        return sp.Get();
-    }
-
-    public static MaplePacket skillCooldown(int sid, int time) {
+    public static MaplePacket getPollReply(String message) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SkillCooltimeSet.Get());
-        mplew.writeInt(sid);
-        if (ServerConfig.version <= 186) {
-            mplew.writeShort(time);
-        } else {
-            mplew.writeInt(time);
-        }
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket instantMapWarp(final byte portal) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserTeleport.Get());
-        mplew.write(0);
-        mplew.write(portal); // 6
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket updateQuestFinish(int quest, int npc, int nextquest) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserQuestResult.Get());
-        mplew.write(8);
-        mplew.writeShort(quest);
-        mplew.writeInt(npc);
-        mplew.writeInt(nextquest);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket updateQuestInfo(MapleCharacter c, int quest, int npc, byte progress) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserQuestResult.Get());
-        mplew.write(progress);
-        mplew.writeShort(quest);
-        mplew.writeInt(npc);
-        mplew.writeInt(0);
+        mplew.writeShort(ServerPacket.Header.LP_UserNoticeMsg.Get());
+        mplew.writeMapleAsciiString(message);
         return mplew.getPacket();
     }
 
@@ -346,47 +388,6 @@ public class ResCUserLocal {
         return mplew.getPacket();
     }
 
-    public static MaplePacket getPollReply(String message) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserNoticeMsg.Get());
-        mplew.writeMapleAsciiString(message);
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket sendRepairWindow(int npc) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserOpenUIWithOption.Get());
-        mplew.writeInt(34); //sending 0x21 here opens evan skill window o.o
-        mplew.writeInt(npc);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket testCombo(int value) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_IncCombo.Get());
-        mplew.writeInt(value);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket sendHint(String hint, int width, int height) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        if (width < 1) {
-            width = hint.length() * 10;
-            if (width < 40) {
-                width = 40;
-            }
-        }
-        if (height < 5) {
-            height = 5;
-        }
-        mplew.writeShort(ServerPacket.Header.LP_UserBalloonMsg.Get());
-        mplew.writeMapleAsciiString(hint);
-        mplew.writeShort(width);
-        mplew.writeShort(height);
-        mplew.write(1);
-        return mplew.getPacket();
-    }
-
     public static MaplePacket getPollQuestion() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_JMS_Poll_Question.Get());
@@ -396,6 +397,18 @@ public class ResCUserLocal {
         mplew.writeInt(ServerConstants.Poll_Answers.length); // pollcount
         for (byte i = 0; i < ServerConstants.Poll_Answers.length; i++) {
             mplew.writeMapleAsciiString(ServerConstants.Poll_Answers[i]);
+        }
+        return mplew.getPacket();
+    }
+
+    public static MaplePacket skillCooldown(int sid, int time) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_SkillCooltimeSet.Get());
+        mplew.writeInt(sid);
+        if (ServerConfig.version <= 186) {
+            mplew.writeShort(time);
+        } else {
+            mplew.writeInt(time);
         }
         return mplew.getPacket();
     }

@@ -5826,7 +5826,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void gainTama(int s) {
         this.tama += s;
-        client.ProcessPacket(Res_Pachinko.UpdateTama(this));
+        client.ProcessPacket(ResCWvsContext.PachinkoUpdate(this));
     }
 
     public int getBeansRange() {
