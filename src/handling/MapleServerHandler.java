@@ -399,8 +399,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return ReqCUser.OnFamilyPacket(cp, header, c);
             }
             case CP_JMS_JUKEBOX:
-            case CP_JMS_PINKBEAN_PORTAL_CREATE:
-            case CP_JMS_PINKBEAN_PORTAL_ENTER: {
+            case CP_JMS_InstancePortalCreate:
+            case CP_JMS_InstancePortalEnter: {
                 return ItemRequest.OnPacket(header, cp, c);
             }
             // Pet

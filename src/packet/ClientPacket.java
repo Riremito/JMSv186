@@ -186,6 +186,7 @@ public class ClientPacket {
         CP_CheckExtraCharInfo,
         CP_CreateNewCharacter_Ex,
         CP_JMS_MapLogin,
+        CP_JMS_SafetyPassword,
         CP_JMS_GetMapLogin, // 名称不明, ログイン画面に到達
         CP_END_SOCKET,
         // ゲームサーバー
@@ -329,6 +330,9 @@ public class ClientPacket {
         CP_FamilySummonResult,
         CP_ChatBlockUserReq,
         CP_GuildBBS,
+        CP_JMS_InstancePortalEnter,
+        CP_JMS_InstancePortalCreate,
+        CP_JMS_MapleGift,
         CP_UserMigrateToITCRequest,
         CP_UserExpUpItemUseRequest,
         CP_UserTempExpUseRequest,
@@ -420,6 +424,7 @@ public class ClientPacket {
         CP_END_PARTY_MATCH,
         CP_RequestFootHoldInfo,
         CP_FootHoldInfo,
+        CP_JMS_PachinkoPrizes,
         CP_END_FIELD,
         // ポイントショップ
         CP_BEGIN_CASHSHOP,
@@ -479,8 +484,6 @@ public class ClientPacket {
         BEANS_OPERATION, // PACHINKO_GAME, パチンコ
         BEANS_UPDATE, // PACHINKO_UPDATE, パチンコ
         CP_JMS_MONSTERBOOK_SET,
-        CP_JMS_PINKBEAN_PORTAL_ENTER,
-        CP_JMS_PINKBEAN_PORTAL_CREATE,
         CP_JMS_JUKEBOX, // ItemID 2150001
         CP_JMS_FarmEnter,
         CP_JMS_FarmLeave,

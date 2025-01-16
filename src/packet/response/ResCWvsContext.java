@@ -2022,7 +2022,7 @@ public class ResCWvsContext {
 
     public static MaplePacket getAvatarMega(MapleCharacter chr, int channel, int itemId, String message, boolean ear) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_AvatarMegaphoneRes.get());
+        mplew.writeShort(ServerPacket.Header.LP_AvatarMegaphoneUpdateMessage.get());
         mplew.writeInt(itemId);
         mplew.writeMapleAsciiString(chr.getName());
         mplew.writeMapleAsciiString(message);

@@ -152,7 +152,7 @@ public class ItemRequest {
                 c.getPlayer().UpdateStat(true);
                 return true;
             }
-            case CP_JMS_PINKBEAN_PORTAL_ENTER: {
+            case CP_JMS_InstancePortalEnter: {
                 int portal_id = cp.Decode4();
                 byte flag = cp.Decode1();
                 //MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(749050200);
@@ -165,7 +165,7 @@ public class ItemRequest {
                 dynamic_portal.warp(chr);
                 return true;
             }
-            case CP_JMS_PINKBEAN_PORTAL_CREATE: {
+            case CP_JMS_InstancePortalCreate: {
                 // v194
                 cp.Decode4(); // -2145728229, 00A6618A
                 short item_slot = cp.Decode2(); // 50, 00A66198

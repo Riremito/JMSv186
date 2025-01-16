@@ -195,7 +195,9 @@ public class ServerPacket {
         LP_AuthenCodeChanged,
         LP_AuthenMessage,
         LP_SecurityPacket,
+        LP_JMS_GuardInspectProcess,
         LP_JMS_CheckGameGuardUpdatedResult, // JMS131, KMST330
+        LP_JMS_SafetyPasswordResult,
         LP_EnableSPWResult,
         LP_DeleteCharacterOTPRequest,
         LP_CheckCrcResult,
@@ -263,7 +265,13 @@ public class ServerPacket {
         LP_SetPotionDiscountRate,
         LP_BridleMobCatchFail,
         LP_JMS_PachinkoResult,
+        LP_JMS_PachinkoPrizes,
+        LP_JMS_PachinkoGift,
+        LP_JMS_MapleGift,
+        LP_JMS_PredictHarmonyResult,
         LP_JMS_Fishing_BoardUpdate,
+        LP_JMS_WorldTransferResult,
+        LP_JMS_PlayTimeCountDown,
         LP_ImitatedNPCResult,
         LP_ImitatedNPCData, // -> CNpcPool::OnPacket
         LP_LimitedNPCDisableInfo, // -> CNpcPool::OnPacket
