@@ -24,6 +24,7 @@ import client.MapleClient;
 import client.SkillFactory;
 import client.inventory.Equip;
 import client.inventory.IEquip;
+import client.inventory.IEquip.ScrollResult;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MapleMount;
@@ -41,7 +42,6 @@ import packet.ClientPacket;
 import packet.ops.OpsBodyPart;
 import packet.response.ResCMobPool;
 import packet.response.ResCParcelDlg;
-import packet.response.Res_JMS_CField_Pachinko;
 import packet.response.ResCUser_Pet;
 import packet.response.ResCUIVega;
 import packet.response.ResCUser;
@@ -52,7 +52,6 @@ import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
-import server.StructPotentialItem;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.maps.FieldLimitType;
@@ -370,6 +369,27 @@ public class ItemRequest {
                 chr.SendPacket(ResCParcelDlg.Open(true, false));
                 return true;
             }
+            // ミラクルキューブ
+            case 5062000:
+            case 5062001:
+            case 5062002:
+            case 5062003: {
+                int equip_slot = cp.Decode4();
+                IItem item = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) equip_slot);
+                if (item != null) {
+                    final Equip equip = (Equip) item;
+                    equip.resetPotential(item_id == 5062001 || item_id == 5062003, item_id == 5062002 || item_id == 5062003);
+
+                    chr.SendPacket(ResCUser.getPotentialEffect(chr.getId(), equip.getItemId()));
+                    chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(chr.getId(), ScrollResult.SUCCESS, false), false);
+                    chr.SendPacket(ResWrapper.scrolledItem(toUse, item, false, true));
+                    RemoveCashItem(chr, item_slot);
+                    chr.forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);
+                    chr.saveToDB(false, false);
+                    //MapleInventoryManipulator.addById(chr.getClient(), 2430112, (short) 1);
+                }
+                return true;
+            }
             default: {
                 break;
             }
@@ -553,56 +573,34 @@ public class ItemRequest {
     }
 
     public static final void UseMagnify(ClientPacket cp, final MapleClient c) {
-        cp.Decode4(); // time
+        MapleCharacter chr = c.getPlayer();
+        int time_stamp = cp.Decode4(); // time
         short slot_use_item = cp.Decode2();
         short slot_equip_item = cp.Decode2();
-        final IItem magnify = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot_use_item);
-        IItem toReveal = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(slot_equip_item);
-        if (toReveal == null) {
-            toReveal = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slot_equip_item);
-        }
+        final IItem magnify = chr.getInventory(MapleInventoryType.USE).getItem(slot_use_item);
+        IItem toReveal = (slot_equip_item < 0) ? chr.getInventory(MapleInventoryType.EQUIPPED).getItem(slot_equip_item) : chr.getInventory(MapleInventoryType.EQUIP).getItem(slot_equip_item);
+
         if (magnify == null || toReveal == null) {
-            c.getSession().write(ResWrapper.getInventoryFull());
+            chr.SendPacket(ResWrapper.getInventoryFull());
+            Debug.ErrorLog("potential err 1");
             return;
         }
+
         final Equip eqq = (Equip) toReveal;
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         final int reqLevel = ii.getReqLevel(eqq.getItemId()) / 10;
-        if (eqq.getState() == 1 && (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3))) {
-            final List<List<StructPotentialItem>> pots = new LinkedList<List<StructPotentialItem>>(ii.getAllPotentialInfo().values());
-            int new_state = Math.abs(eqq.getPotential1());
-            if (new_state > 7 || new_state < 5) {
-                //luls
-                new_state = 5;
-            }
-            final int lines = eqq.getPotential2() != 0 ? 3 : 2;
-            while (eqq.getState() != new_state) {
-                //31001 = haste, 31002 = door, 31003 = se, 31004 = hb
-                for (int i = 0; i < lines; i++) {
-                    //2 or 3 line
-                    boolean rewarded = false;
-                    while (!rewarded) {
-                        StructPotentialItem pot = pots.get(Randomizer.nextInt(pots.size())).get(reqLevel);
-                        if (pot != null && pot.reqLevel / 10 <= reqLevel && GameConstants.optionTypeFits(pot.optionType, eqq.getItemId()) && GameConstants.potentialIDFits(pot.potentialID, new_state, i)) {
-                            //optionType
-                            //have to research optionType before making this truely sea-like
-                            if (i == 0) {
-                                eqq.setPotential1(pot.potentialID);
-                            } else if (i == 1) {
-                                eqq.setPotential2(pot.potentialID);
-                            } else if (i == 2) {
-                                eqq.setPotential3(pot.potentialID);
-                            }
-                            rewarded = true;
-                        }
-                    }
-                }
-            }
-            c.SendPacket(ResWrapper.scrolledItem(magnify, toReveal, false, true));
-            c.getPlayer().getMap().broadcastMessage(ResCUser.getPotentialReset(c.getPlayer().getId(), eqq.getPosition()));
+
+        Debug.ErrorLog("eqq.getState =  " + eqq.getHidden() + ", magnify.getItemId = " + magnify.getItemId() + ", reqLevel = " + reqLevel);
+        Debug.ErrorLog("" + eqq.getPotential1() + ", " + eqq.getPotential2() + ", " + eqq.getPotential3());
+        if (eqq.getHidden() == 1
+                && (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3))) {
+            eqq.setHidden(0); // 未確認状態へ変更
+            chr.SendPacket(ResWrapper.scrolledItem(magnify, toReveal, false, true));
+            chr.getMap().broadcastMessage(ResCUser.getPotentialReset(chr.getId(), eqq.getPosition()));
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
         } else {
-            c.getSession().write(ResWrapper.getInventoryFull());
+            chr.SendPacket(ResWrapper.getInventoryFull());
+            Debug.ErrorLog("potential err 2");
             return;
         }
     }
@@ -674,11 +672,11 @@ public class ItemRequest {
         if (toScroll == null) {
             return false;
         }
-        final byte oldLevel = toScroll.getLevel();
-        final byte oldEnhance = toScroll.getEnhance();
-        final byte oldState = toScroll.getState();
-        final byte oldFlag = toScroll.getFlag();
-        final byte oldSlots = toScroll.getUpgradeSlots();
+        final byte oldLevel = (byte) toScroll.getLevel();
+        final byte oldEnhance = (byte) toScroll.getEnhance();
+        final byte oldState = (byte) toScroll.getHidden();
+        final byte oldFlag = (byte) toScroll.getFlag();
+        final byte oldSlots = (byte) toScroll.getUpgradeSlots();
         IItem scroll = chr.getInventory(MapleInventoryType.USE).getItem(slot);
         if (scroll == null) {
             c.getSession().write(ResWrapper.getInventoryFull());
@@ -709,7 +707,7 @@ public class ItemRequest {
                 return false;
             }
         } else if (GameConstants.isPotentialScroll(scroll.getItemId())) {
-            if (toScroll.getState() >= 1 || (toScroll.getLevel() == 0 && toScroll.getUpgradeSlots() == 0) || vegas > 0 || ii.isCash(toScroll.getItemId())) {
+            if (toScroll.getHidden() >= 1 || (toScroll.getLevel() == 0 && toScroll.getUpgradeSlots() == 0) || vegas > 0 || ii.isCash(toScroll.getItemId())) {
                 c.getSession().write(ResWrapper.getInventoryFull());
                 return false;
             }
@@ -795,7 +793,7 @@ public class ItemRequest {
         IEquip.ScrollResult scrollSuccess;
         if (scrolled == null) {
             scrollSuccess = IEquip.ScrollResult.CURSE;
-        } else if (scrolled.getLevel() > oldLevel || scrolled.getEnhance() > oldEnhance || scrolled.getState() > oldState || scrolled.getFlag() > oldFlag) {
+        } else if (scrolled.getLevel() > oldLevel || scrolled.getEnhance() > oldEnhance || scrolled.getHidden() > oldState || scrolled.getFlag() > oldFlag) {
             scrollSuccess = IEquip.ScrollResult.SUCCESS;
         } else if (GameConstants.isCleanSlate(scroll.getItemId()) && scrolled.getUpgradeSlots() > oldSlots) {
             scrollSuccess = IEquip.ScrollResult.SUCCESS;

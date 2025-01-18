@@ -128,6 +128,7 @@ public class DebugUser {
             AddItem(chr, 1051140); // バスタオル(黄)
             AddItem(chr, 1032062); // エレメントピアス
             AddItem(chr, 1112400); // 錬金術師の指輪
+            AddItem(chr, 1352003); // 無限の魔法の矢
         }
         // 消費
         {
@@ -150,7 +151,6 @@ public class DebugUser {
             AddItem(chr, 2100000, 100); // 黒い包み
             AddItem(chr, 2120000, 100); // ペットのエサ
             AddItem(chr, 2120008);      // 
-            //AddItem(chr, 2141003);      // パチンコ玉?
             AddItem(chr, 2150001);      // ファンキーモンキーベイビーズのテーマ
             AddItem(chr, 2190000);      // マクロ探知機
             AddItem(chr, 2210000);      // メイプルキノコの像
@@ -177,7 +177,6 @@ public class DebugUser {
             AddItem(chr, 2461000);      // 
             AddItem(chr, 2470000, 100); // 黄金つち
             AddItem(chr, 2500000);      // 
-            AddItem(chr, 2520000);      // 
             AddItem(chr, 2530000);      // 
             AddItem(chr, 2531000);      // 
             AddItem(chr, 2540000);      // 
@@ -233,6 +232,9 @@ public class DebugUser {
             //AddItem(chr, 5051000);      // 
             AddItem(chr, 5051001);      // SP初期化の書
             AddItem(chr, 5062000, 100); // ミラクルキューブ
+            AddItem(chr, 5062001, 100); // ハイパーミラクルキューブ
+            AddItem(chr, 5062002, 100); // マスターミラクルキューブ
+            AddItem(chr, 5062003, 100); // ハイパーマスターミラクルキューブ
             AddItem(chr, 5071000, 100); // 拡声器
             AddItem(chr, 5076000, 100); // アイテム拡声器
             AddItem(chr, 5140000);      // 営業許可証

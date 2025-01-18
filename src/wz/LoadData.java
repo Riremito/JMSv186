@@ -99,6 +99,10 @@ public class LoadData {
     final private static ArrayList<Integer> skillids = new ArrayList<Integer>();
     final private static ArrayList<Integer> morphids = new ArrayList<Integer>();
     final private static ArrayList<Integer> taimingmobids = new ArrayList<Integer>();
+    final public static ArrayList<Integer> potential_rare = new ArrayList<Integer>();
+    final public static ArrayList<Integer> potential_epic = new ArrayList<Integer>();
+    final public static ArrayList<Integer> potential_unique = new ArrayList<Integer>();
+    final public static ArrayList<Integer> potential_legendary = new ArrayList<Integer>();
 
     public static boolean IsValidJobID(int id) {
         return jobids.contains(id);
@@ -198,6 +202,23 @@ public class LoadData {
         }
 
         return -1;
+    }
+
+    public static int getRandomPotential(int rank) {
+        Random rand = new Random();
+        if (rank == 1) {
+            return potential_rare.get(rand.nextInt(potential_rare.size()));
+        }
+        if (rank == 2) {
+            return potential_epic.get(rand.nextInt(potential_epic.size()));
+        }
+        if (rank == 3) {
+            return potential_unique.get(rand.nextInt(potential_unique.size()));
+        }
+        if (rank == 4) {
+            return potential_legendary.get(rand.nextInt(potential_legendary.size()));
+        }
+        return 0;
     }
 
     private static void initDataIDs() {

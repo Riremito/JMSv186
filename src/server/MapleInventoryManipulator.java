@@ -413,9 +413,9 @@ public class MapleInventoryManipulator {
     private static final IItem checkEnhanced(final IItem before, final MapleCharacter chr) {
         if (before instanceof Equip) {
             final Equip eq = (Equip) before;
-            if (eq.getState() == 0 && (eq.getUpgradeSlots() >= 1 || eq.getLevel() >= 1) && Randomizer.nextInt(100) > 80) { //20% chance of pot?
-                eq.resetPotential();
-                //chr.dropMessage(5, "You have obtained an item with hidden Potential.");
+            if (eq.getHidden() == 0 && (eq.getUpgradeSlots() >= 1 || eq.getLevel() >= 1) && Randomizer.nextInt(100) > 80) { //20% chance of pot?
+                eq.resetPotential(false, false);
+                // 未確認アイテム獲得 (?)
             }
         }
         return before;

@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.awt.Point;
 
 import client.inventory.Equip;
-import client.inventory.IEquip.ScrollResult;
 import client.inventory.IItem;
 import client.ISkill;
 import client.inventory.ItemFlag;
@@ -937,26 +936,6 @@ public class InventoryHandler {
                         c.getPlayer().forceReAddItem(item, MapleInventoryType.EQUIPPED);
                         used = true;
                     }
-                }
-                break;
-            }
-            case 5062000: { //miracle cube
-                final IItem item = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readInt());
-                if (item != null && c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
-                    final Equip eq = (Equip) item;
-                    if (eq.getState() >= 5) {
-                        eq.renewPotential();
-                        c.SendPacket(ResWrapper.scrolledItem(toUse, item, false, true));
-                        c.getSession().write(ResCUser.getPotentialEffect(c.getPlayer().getId(), eq.getItemId()));
-                        c.getPlayer().getMap().broadcastMessage(c.getPlayer(), ResCUser.getScrollEffect(c.getPlayer().getId(), ScrollResult.SUCCESS, false), false);
-                        c.getPlayer().forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);
-                        MapleInventoryManipulator.addById(c, 2430112, (short) 1);
-                        used = true;
-                    } else {
-                        c.getPlayer().dropMessage(5, "Make sure your equipment has a potential.");
-                    }
-                } else {
-                    c.getPlayer().dropMessage(5, "Make sure you have room for a Fragment.");
                 }
                 break;
             }

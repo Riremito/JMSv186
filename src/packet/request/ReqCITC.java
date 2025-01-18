@@ -142,7 +142,7 @@ public class ReqCITC {
             }
             if (type == MapleInventoryType.EQUIP) {
                 final Equip eq = (Equip) item;
-                if (eq.getState() > 0 || eq.getEnhance() > 0 || eq.getDurability() > -1) {
+                if (eq.getHidden() > 0 || eq.getEnhance() > 0 || eq.getDurability() > -1) {
                     c.getSession().write(ResCITC.getMTSFailSell());
                     doMTSPackets(cart, c);
                     return;

@@ -20,14 +20,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package client.inventory;
 
+import config.ServerConfig;
 import constants.GameConstants;
 import java.io.Serializable;
 import server.Randomizer;
+import wz.LoadData;
 
 public class Equip extends Item implements IEquip, Serializable {
 
-    private byte upgradeSlots = 0, level = 0, vicioushammer = 0, enhance = 0;
-    private short str = 0, dex = 0, _int = 0, luk = 0, hp = 0, mp = 0, watk = 0, matk = 0, wdef = 0, mdef = 0, acc = 0, avoid = 0, hands = 0, speed = 0, jump = 0, potential1 = 0, potential2 = 0, potential3 = 0, hpR = 0, mpR = 0;
+    private int upgradeSlots = 0, level = 0, vicioushammer = 0, enhance = 0;
+    private int str = 0, dex = 0, _int = 0, luk = 0, hp = 0, mp = 0, watk = 0, matk = 0, wdef = 0, mdef = 0, acc = 0, avoid = 0, hands = 0, speed = 0, jump = 0, hpR = 0, mpR = 0;
+    private int rank = 0, hidden = 0, potential1 = 0, potential2 = 0, potential3 = 0;
     private int itemEXP = 0, durability = -1;
     private int incattackSpeed = 0; // 攻撃速度の書
 
@@ -63,11 +66,14 @@ public class Equip extends Item implements IEquip, Serializable {
         ret.itemEXP = itemEXP;
         ret.durability = durability;
         ret.vicioushammer = vicioushammer;
+        ret.rank = rank;
+        ret.hidden = hidden;
         ret.potential1 = potential1;
         ret.potential2 = potential2;
         ret.potential3 = potential3;
         ret.hpR = hpR;
         ret.mpR = mpR;
+        ret.incattackSpeed = incattackSpeed;
         ret.setGiftFrom(getGiftFrom());
         ret.setOwner(getOwner());
         ret.setQuantity(getQuantity());
@@ -81,209 +87,209 @@ public class Equip extends Item implements IEquip, Serializable {
     }
 
     @Override
-    public byte getUpgradeSlots() {
+    public int getUpgradeSlots() {
         return upgradeSlots;
     }
 
     @Override
-    public short getStr() {
+    public int getStr() {
         return str;
     }
 
     @Override
-    public short getDex() {
+    public int getDex() {
         return dex;
     }
 
     @Override
-    public short getInt() {
+    public int getInt() {
         return _int;
     }
 
     @Override
-    public short getLuk() {
+    public int getLuk() {
         return luk;
     }
 
     @Override
-    public short getHp() {
+    public int getHp() {
         return hp;
     }
 
     @Override
-    public short getMp() {
+    public int getMp() {
         return mp;
     }
 
     @Override
-    public short getWatk() {
+    public int getWatk() {
         return watk;
     }
 
     @Override
-    public short getMatk() {
+    public int getMatk() {
         return matk;
     }
 
     @Override
-    public short getWdef() {
+    public int getWdef() {
         return wdef;
     }
 
     @Override
-    public short getMdef() {
+    public int getMdef() {
         return mdef;
     }
 
     @Override
-    public short getAcc() {
+    public int getAcc() {
         return acc;
     }
 
     @Override
-    public short getAvoid() {
+    public int getAvoid() {
         return avoid;
     }
 
     @Override
-    public short getHands() {
+    public int getHands() {
         return hands;
     }
 
     @Override
-    public short getSpeed() {
+    public int getSpeed() {
         return speed;
     }
 
     @Override
-    public short getJump() {
+    public int getJump() {
         return jump;
     }
 
-    public void setStr(short str) {
+    public void setStr(int str) {
         if (str < 0) {
             str = 0;
         }
         this.str = str;
     }
 
-    public void setDex(short dex) {
+    public void setDex(int dex) {
         if (dex < 0) {
             dex = 0;
         }
         this.dex = dex;
     }
 
-    public void setInt(short _int) {
+    public void setInt(int _int) {
         if (_int < 0) {
             _int = 0;
         }
         this._int = _int;
     }
 
-    public void setLuk(short luk) {
+    public void setLuk(int luk) {
         if (luk < 0) {
             luk = 0;
         }
         this.luk = luk;
     }
 
-    public void setHp(short hp) {
+    public void setHp(int hp) {
         if (hp < 0) {
             hp = 0;
         }
         this.hp = hp;
     }
 
-    public void setMp(short mp) {
+    public void setMp(int mp) {
         if (mp < 0) {
             mp = 0;
         }
         this.mp = mp;
     }
 
-    public void setWatk(short watk) {
+    public void setWatk(int watk) {
         if (watk < 0) {
             watk = 0;
         }
         this.watk = watk;
     }
 
-    public void setMatk(short matk) {
+    public void setMatk(int matk) {
         if (matk < 0) {
             matk = 0;
         }
         this.matk = matk;
     }
 
-    public void setWdef(short wdef) {
+    public void setWdef(int wdef) {
         if (wdef < 0) {
             wdef = 0;
         }
         this.wdef = wdef;
     }
 
-    public void setMdef(short mdef) {
+    public void setMdef(int mdef) {
         if (mdef < 0) {
             mdef = 0;
         }
         this.mdef = mdef;
     }
 
-    public void setAcc(short acc) {
+    public void setAcc(int acc) {
         if (acc < 0) {
             acc = 0;
         }
         this.acc = acc;
     }
 
-    public void setAvoid(short avoid) {
+    public void setAvoid(int avoid) {
         if (avoid < 0) {
             avoid = 0;
         }
         this.avoid = avoid;
     }
 
-    public void setHands(short hands) {
+    public void setHands(int hands) {
         if (hands < 0) {
             hands = 0;
         }
         this.hands = hands;
     }
 
-    public void setSpeed(short speed) {
+    public void setSpeed(int speed) {
         if (speed < 0) {
             speed = 0;
         }
         this.speed = speed;
     }
 
-    public void setJump(short jump) {
+    public void setJump(int jump) {
         if (jump < 0) {
             jump = 0;
         }
         this.jump = jump;
     }
 
-    public void setUpgradeSlots(byte upgradeSlots) {
+    public void setUpgradeSlots(int upgradeSlots) {
         this.upgradeSlots = upgradeSlots;
     }
 
     @Override
-    public byte getLevel() {
+    public int getLevel() {
         return level;
     }
 
-    public void setLevel(byte level) {
+    public void setLevel(int level) {
         this.level = level;
     }
 
     @Override
-    public byte getViciousHammer() {
+    public int getViciousHammer() {
         return vicioushammer;
     }
 
-    public void setViciousHammer(byte ham) {
+    public void setViciousHammer(int ham) {
         vicioushammer = ham;
     }
 
@@ -379,94 +385,131 @@ public class Equip extends Item implements IEquip, Serializable {
     }
 
     @Override
-    public byte getEnhance() {
+    public int getEnhance() {
         return enhance;
     }
 
-    public void setEnhance(final byte en) {
+    public void setEnhance(int en) {
         this.enhance = en;
     }
 
     @Override
-    public short getPotential1() {
+    public int getPotential1() {
         return potential1;
     }
 
-    public void setPotential1(final short en) {
+    public void setPotential1(int en) {
         this.potential1 = en;
     }
 
     @Override
-    public short getPotential2() {
+    public int getPotential2() {
         return potential2;
     }
 
-    public void setPotential2(final short en) {
+    public void setPotential2(int en) {
         this.potential2 = en;
     }
 
     @Override
-    public short getPotential3() {
+    public int getPotential3() {
         return potential3;
     }
 
-    public void setPotential3(final short en) {
+    public void setPotential3(int en) {
         this.potential3 = en;
     }
 
     @Override
-    public byte getState() {
-        final int pots = potential1 + potential2 + potential3;
-        if (potential1 >= 30000 || potential2 >= 30000 || potential3 >= 30000) {
-            return 7;
-        } else if (potential1 >= 20000 || potential2 >= 20000 || potential3 >= 20000) {
-            return 6;
-        } else if (pots >= 1) {
-            return 5;
-        } else if (pots < 0) {
-            return 1;
-        }
-        return 0;
+    public int getRank() {
+        return rank;
     }
 
-    public void resetPotential() { //equip first receive
-        /*
-        //0.04% chance unique, 4% chance epic, else rare
-        final int rank = Randomizer.nextInt(100) < 4 ? (Randomizer.nextInt(100) < 4 ? -7 : -6) : -5;
-        setPotential1((short) rank);
-        setPotential2((short) (Randomizer.nextInt(10) == 1 ? rank : 0)); //1/10 chance of 3 line
-        setPotential3((short) 0); //just set it theoretically
-         */
-        //0.04% chance unique, 4% chance epic, else rare
-        final int rank = -7;
-        setPotential1((short) rank);
-        setPotential2((short) rank); //1/10 chance of 3 line
-        setPotential3((short) 0); //just set it theoretically
-    }
-
-    public void renewPotential() {
-        //4% chance upgrade
-        final int rank = Randomizer.nextInt(100) < 4 && getState() != 7 ? -(getState() + 1) : -(getState());
-        setPotential1((short) rank);
-        setPotential2((short) (getPotential3() > 0 ? rank : 0)); //1/10 chance of 3 line
-        setPotential3((short) 0); //just set it theoretically
+    public void setRank(int rank) {
+        this.rank = rank;
     }
 
     @Override
-    public short getHpR() {
+    public int getHidden() {
+        return hidden;
+    }
+
+    public void setHidden(int hidden) {
+        this.hidden = hidden;
+    }
+
+    public int getNewLines() {
+        // 3行
+        if (getPotential3() != 0) {
+            return 3;
+        }
+        // 初回抽選
+        if (getPotential1() == 0) {
+            // 初回は50%で3行 (テスト)
+            if (50 <= Randomizer.nextInt(100)) {
+                return 3;
+            }
+        }
+        // 2行
+        return 2;
+    }
+
+    public int getNewRank(boolean master) {
+        // エピック抽選
+        if (2 <= getRank() || 50 <= Randomizer.nextInt(100)) {
+            // ユニーク抽選
+            if (3 <= getRank() || 50 <= Randomizer.nextInt(100)) {
+                // レジェンダリー抽選
+                if (ServerConfig.JMS302orLater() && master) {
+                    if (4 <= getRank() || 50 <= Randomizer.nextInt(100)) {
+                        return 4;
+                    }
+                }
+                return 3;
+            }
+            return 2;
+        }
+        return 1;
+    }
+
+    public boolean resetPotential(boolean hyper, boolean master) {
+        int lines = getNewLines();
+        int newrank = getNewRank(master);
+        if (getHidden() != 0) {
+            return false;
+        }
+        setHidden(1); // 未確認状態
+        setRank(newrank); // 等級
+
+        if (hyper) {
+            if (50 <= Randomizer.nextInt(100)) {
+                lines = 3;
+            }
+        }
+
+        setPotential1(LoadData.getRandomPotential(newrank));
+        setPotential2(LoadData.getRandomPotential((2 <= newrank) ? ((50 <= Randomizer.nextInt(100)) ? newrank : newrank - 1) : 1));
+        if (lines == 3) {
+            setPotential3(LoadData.getRandomPotential((2 <= newrank) ? ((50 <= Randomizer.nextInt(100)) ? newrank : newrank - 1) : 1));
+        }
+        return true;
+    }
+
+    @Override
+    public int getHpR() {
         return hpR;
     }
 
-    public void setHpR(final short hp) {
+    public void setHpR(int hp) {
         this.hpR = hp;
     }
 
     @Override
-    public short getMpR() {
+    public int getMpR() {
         return mpR;
     }
 
-    public void setMpR(final short mp) {
+    public void setMpR(int mp) {
         this.mpR = mp;
     }
 

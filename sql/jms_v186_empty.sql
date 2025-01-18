@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: localhost
--- 生成日時: 2024 年 9 月 04 日 13:09
+-- 生成日時: 2025 年 1 月 18 日 14:01
 -- サーバのバージョン: 5.6.12-log
 -- PHP のバージョン: 5.4.12
 
@@ -22,7 +22,7 @@ SET time_zone = "+00:00";
 -- テーブルの構造 `accounts`
 --
 
-CREATE TABLE IF NOT EXISTS `accounts` (
+CREATE TABLE `accounts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(13) NOT NULL DEFAULT '',
   `password` varchar(128) NOT NULL DEFAULT '',
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `ranking1` (`id`,`banned`,`gm`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=18 ;
 
 -- --------------------------------------------------------
 
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
 -- テーブルの構造 `achievements`
 --
 
-CREATE TABLE IF NOT EXISTS `achievements` (
+CREATE TABLE `achievements` (
   `achievementid` int(9) NOT NULL DEFAULT '0',
   `charid` int(9) NOT NULL DEFAULT '0',
   `accountid` int(11) NOT NULL DEFAULT '0',
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `achievements` (
 -- テーブルの構造 `alliances`
 --
 
-CREATE TABLE IF NOT EXISTS `alliances` (
+CREATE TABLE `alliances` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(13) NOT NULL,
   `leaderid` int(11) NOT NULL,
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `alliances` (
 -- テーブルの構造 `auth_server_channel`
 --
 
-CREATE TABLE IF NOT EXISTS `auth_server_channel` (
+CREATE TABLE `auth_server_channel` (
   `channelid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `world` int(11) NOT NULL DEFAULT '0',
   `number` int(11) DEFAULT NULL,
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `auth_server_channel` (
 -- テーブルの構造 `auth_server_channel_ip`
 --
 
-CREATE TABLE IF NOT EXISTS `auth_server_channel_ip` (
+CREATE TABLE `auth_server_channel_ip` (
   `channelconfigid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `channelid` int(10) unsigned NOT NULL DEFAULT '0',
   `name` tinytext NOT NULL,
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `auth_server_channel_ip` (
 -- テーブルの構造 `auth_server_cs`
 --
 
-CREATE TABLE IF NOT EXISTS `auth_server_cs` (
+CREATE TABLE `auth_server_cs` (
   `CashShopServerId` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `key` varchar(40) NOT NULL,
   `world` int(11) unsigned NOT NULL DEFAULT '0',
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `auth_server_cs` (
 -- テーブルの構造 `auth_server_login`
 --
 
-CREATE TABLE IF NOT EXISTS `auth_server_login` (
+CREATE TABLE `auth_server_login` (
   `loginserverid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `key` varchar(40) NOT NULL DEFAULT '',
   `world` int(11) NOT NULL DEFAULT '0',
@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS `auth_server_login` (
 -- テーブルの構造 `auth_server_mts`
 --
 
-CREATE TABLE IF NOT EXISTS `auth_server_mts` (
+CREATE TABLE `auth_server_mts` (
   `MTSServerId` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `key` varchar(40) NOT NULL,
   `world` int(11) unsigned NOT NULL DEFAULT '0',
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS `auth_server_mts` (
 -- テーブルの構造 `bbs_replies`
 --
 
-CREATE TABLE IF NOT EXISTS `bbs_replies` (
+CREATE TABLE `bbs_replies` (
   `replyid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `threadid` int(10) unsigned NOT NULL,
   `postercid` int(10) unsigned NOT NULL,
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `bbs_replies` (
 -- テーブルの構造 `bbs_threads`
 --
 
-CREATE TABLE IF NOT EXISTS `bbs_threads` (
+CREATE TABLE `bbs_threads` (
   `threadid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `postercid` int(10) unsigned NOT NULL,
   `name` varchar(26) NOT NULL DEFAULT '',
@@ -202,7 +202,7 @@ CREATE TABLE IF NOT EXISTS `bbs_threads` (
 -- テーブルの構造 `bosslog`
 --
 
-CREATE TABLE IF NOT EXISTS `bosslog` (
+CREATE TABLE `bosslog` (
   `bosslogid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(10) unsigned NOT NULL,
   `bossid` varchar(20) NOT NULL,
@@ -216,7 +216,7 @@ CREATE TABLE IF NOT EXISTS `bosslog` (
 -- テーブルの構造 `buddies`
 --
 
-CREATE TABLE IF NOT EXISTS `buddies` (
+CREATE TABLE `buddies` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `characterid` int(11) NOT NULL,
   `buddyid` int(11) NOT NULL,
@@ -232,7 +232,7 @@ CREATE TABLE IF NOT EXISTS `buddies` (
 -- テーブルの構造 `cashshop_limit_sell`
 --
 
-CREATE TABLE IF NOT EXISTS `cashshop_limit_sell` (
+CREATE TABLE `cashshop_limit_sell` (
   `serial` int(11) NOT NULL,
   `amount` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`serial`)
@@ -244,7 +244,7 @@ CREATE TABLE IF NOT EXISTS `cashshop_limit_sell` (
 -- テーブルの構造 `cashshop_modified_items`
 --
 
-CREATE TABLE IF NOT EXISTS `cashshop_modified_items` (
+CREATE TABLE `cashshop_modified_items` (
   `serial` int(11) NOT NULL,
   `discount_price` int(11) NOT NULL DEFAULT '-1',
   `mark` tinyint(1) NOT NULL DEFAULT '-1',
@@ -269,7 +269,7 @@ CREATE TABLE IF NOT EXISTS `cashshop_modified_items` (
 -- テーブルの構造 `characters`
 --
 
-CREATE TABLE IF NOT EXISTS `characters` (
+CREATE TABLE `characters` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `accountid` int(11) NOT NULL DEFAULT '0',
   `world` tinyint(1) NOT NULL DEFAULT '0',
@@ -326,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `characters` (
   KEY `party` (`party`),
   KEY `ranking1` (`level`,`exp`),
   KEY `ranking2` (`gm`,`job`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=24 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=75 ;
 
 -- --------------------------------------------------------
 
@@ -334,13 +334,13 @@ CREATE TABLE IF NOT EXISTS `characters` (
 -- テーブルの構造 `character_slots`
 --
 
-CREATE TABLE IF NOT EXISTS `character_slots` (
+CREATE TABLE `character_slots` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `accid` int(11) NOT NULL DEFAULT '0',
   `worldid` int(11) NOT NULL DEFAULT '0',
   `charslots` int(11) NOT NULL DEFAULT '6',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=18 ;
 
 -- --------------------------------------------------------
 
@@ -348,7 +348,7 @@ CREATE TABLE IF NOT EXISTS `character_slots` (
 -- テーブルの構造 `cheatlog`
 --
 
-CREATE TABLE IF NOT EXISTS `cheatlog` (
+CREATE TABLE `cheatlog` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `characterid` int(11) NOT NULL DEFAULT '0',
   `offense` tinytext NOT NULL,
@@ -365,7 +365,7 @@ CREATE TABLE IF NOT EXISTS `cheatlog` (
 -- テーブルの構造 `csequipment`
 --
 
-CREATE TABLE IF NOT EXISTS `csequipment` (
+CREATE TABLE `csequipment` (
   `inventoryequipmentid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `inventoryitemid` int(10) unsigned NOT NULL DEFAULT '0',
   `upgradeslots` int(11) NOT NULL DEFAULT '0',
@@ -396,7 +396,7 @@ CREATE TABLE IF NOT EXISTS `csequipment` (
   `mpR` smallint(5) NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=42634 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -404,7 +404,7 @@ CREATE TABLE IF NOT EXISTS `csequipment` (
 -- テーブルの構造 `csitems`
 --
 
-CREATE TABLE IF NOT EXISTS `csitems` (
+CREATE TABLE `csitems` (
   `inventoryitemid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(11) DEFAULT NULL,
   `accountid` int(10) DEFAULT NULL,
@@ -427,7 +427,7 @@ CREATE TABLE IF NOT EXISTS `csitems` (
   KEY `accountid` (`accountid`),
   KEY `packageid` (`packageid`),
   KEY `characterid_2` (`characterid`,`inventorytype`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=55365 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -435,7 +435,7 @@ CREATE TABLE IF NOT EXISTS `csitems` (
 -- テーブルの構造 `drop_data`
 --
 
-CREATE TABLE IF NOT EXISTS `drop_data` (
+CREATE TABLE `drop_data` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `dropperid` int(11) NOT NULL,
   `itemid` int(11) NOT NULL DEFAULT '0',
@@ -453,7 +453,7 @@ CREATE TABLE IF NOT EXISTS `drop_data` (
 -- テーブルの構造 `drop_data_global`
 --
 
-CREATE TABLE IF NOT EXISTS `drop_data_global` (
+CREATE TABLE `drop_data_global` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `continent` int(11) NOT NULL,
   `dropType` tinyint(1) NOT NULL DEFAULT '0',
@@ -473,7 +473,7 @@ CREATE TABLE IF NOT EXISTS `drop_data_global` (
 -- テーブルの構造 `drop_data_vana`
 --
 
-CREATE TABLE IF NOT EXISTS `drop_data_vana` (
+CREATE TABLE `drop_data_vana` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `dropperid` int(11) NOT NULL,
   `flags` set('is_mesos') NOT NULL DEFAULT '',
@@ -492,7 +492,7 @@ CREATE TABLE IF NOT EXISTS `drop_data_vana` (
 -- テーブルの構造 `dueyequipment`
 --
 
-CREATE TABLE IF NOT EXISTS `dueyequipment` (
+CREATE TABLE `dueyequipment` (
   `inventoryequipmentid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `inventoryitemid` int(10) unsigned NOT NULL DEFAULT '0',
   `upgradeslots` int(11) NOT NULL DEFAULT '0',
@@ -531,7 +531,7 @@ CREATE TABLE IF NOT EXISTS `dueyequipment` (
 -- テーブルの構造 `dueyitems`
 --
 
-CREATE TABLE IF NOT EXISTS `dueyitems` (
+CREATE TABLE `dueyitems` (
   `inventoryitemid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(11) DEFAULT NULL,
   `accountid` int(10) DEFAULT NULL,
@@ -562,7 +562,7 @@ CREATE TABLE IF NOT EXISTS `dueyitems` (
 -- テーブルの構造 `dueypackages`
 --
 
-CREATE TABLE IF NOT EXISTS `dueypackages` (
+CREATE TABLE `dueypackages` (
   `PackageId` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `RecieverId` int(10) NOT NULL,
   `SenderName` varchar(13) NOT NULL,
@@ -579,7 +579,7 @@ CREATE TABLE IF NOT EXISTS `dueypackages` (
 -- テーブルの構造 `eventstats`
 --
 
-CREATE TABLE IF NOT EXISTS `eventstats` (
+CREATE TABLE `eventstats` (
   `eventstatid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `event` varchar(30) NOT NULL,
   `instance` varchar(30) NOT NULL,
@@ -595,7 +595,7 @@ CREATE TABLE IF NOT EXISTS `eventstats` (
 -- テーブルの構造 `famelog`
 --
 
-CREATE TABLE IF NOT EXISTS `famelog` (
+CREATE TABLE `famelog` (
   `famelogid` int(11) NOT NULL AUTO_INCREMENT,
   `characterid` int(11) NOT NULL DEFAULT '0',
   `characterid_to` int(11) NOT NULL DEFAULT '0',
@@ -610,7 +610,7 @@ CREATE TABLE IF NOT EXISTS `famelog` (
 -- テーブルの構造 `families`
 --
 
-CREATE TABLE IF NOT EXISTS `families` (
+CREATE TABLE `families` (
   `familyid` int(11) NOT NULL AUTO_INCREMENT,
   `leaderid` int(11) NOT NULL DEFAULT '0',
   `notice` varchar(255) NOT NULL DEFAULT '',
@@ -623,7 +623,7 @@ CREATE TABLE IF NOT EXISTS `families` (
 -- テーブルの構造 `game_poll_reply`
 --
 
-CREATE TABLE IF NOT EXISTS `game_poll_reply` (
+CREATE TABLE `game_poll_reply` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `AccountId` int(10) unsigned NOT NULL,
   `SelectAns` tinyint(5) unsigned NOT NULL DEFAULT '0',
@@ -636,7 +636,7 @@ CREATE TABLE IF NOT EXISTS `game_poll_reply` (
 -- テーブルの構造 `gifts`
 --
 
-CREATE TABLE IF NOT EXISTS `gifts` (
+CREATE TABLE `gifts` (
   `giftid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `recipient` int(11) NOT NULL DEFAULT '0',
   `from` varchar(13) NOT NULL DEFAULT '',
@@ -652,7 +652,7 @@ CREATE TABLE IF NOT EXISTS `gifts` (
 -- テーブルの構造 `gmlog`
 --
 
-CREATE TABLE IF NOT EXISTS `gmlog` (
+CREATE TABLE `gmlog` (
   `gmlogid` int(11) NOT NULL AUTO_INCREMENT,
   `cid` int(11) NOT NULL DEFAULT '0',
   `command` tinytext NOT NULL,
@@ -666,7 +666,7 @@ CREATE TABLE IF NOT EXISTS `gmlog` (
 -- テーブルの構造 `guilds`
 --
 
-CREATE TABLE IF NOT EXISTS `guilds` (
+CREATE TABLE `guilds` (
   `guildid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `leader` int(10) unsigned NOT NULL DEFAULT '0',
   `GP` int(11) NOT NULL DEFAULT '0',
@@ -693,7 +693,7 @@ CREATE TABLE IF NOT EXISTS `guilds` (
 -- テーブルの構造 `hiredmerch`
 --
 
-CREATE TABLE IF NOT EXISTS `hiredmerch` (
+CREATE TABLE `hiredmerch` (
   `PackageId` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(10) unsigned DEFAULT '0',
   `accountid` int(10) unsigned DEFAULT NULL,
@@ -708,7 +708,7 @@ CREATE TABLE IF NOT EXISTS `hiredmerch` (
 -- テーブルの構造 `hiredmerchequipment`
 --
 
-CREATE TABLE IF NOT EXISTS `hiredmerchequipment` (
+CREATE TABLE `hiredmerchequipment` (
   `inventoryequipmentid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `inventoryitemid` int(10) unsigned NOT NULL DEFAULT '0',
   `upgradeslots` int(11) NOT NULL DEFAULT '0',
@@ -747,7 +747,7 @@ CREATE TABLE IF NOT EXISTS `hiredmerchequipment` (
 -- テーブルの構造 `hiredmerchitems`
 --
 
-CREATE TABLE IF NOT EXISTS `hiredmerchitems` (
+CREATE TABLE `hiredmerchitems` (
   `inventoryitemid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(11) DEFAULT NULL,
   `accountid` int(10) DEFAULT NULL,
@@ -778,7 +778,7 @@ CREATE TABLE IF NOT EXISTS `hiredmerchitems` (
 -- テーブルの構造 `htsquads`
 --
 
-CREATE TABLE IF NOT EXISTS `htsquads` (
+CREATE TABLE `htsquads` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `channel` int(10) unsigned NOT NULL,
   `leaderid` int(10) unsigned NOT NULL DEFAULT '0',
@@ -793,38 +793,41 @@ CREATE TABLE IF NOT EXISTS `htsquads` (
 -- テーブルの構造 `inventoryequipment`
 --
 
-CREATE TABLE IF NOT EXISTS `inventoryequipment` (
+CREATE TABLE `inventoryequipment` (
   `inventoryequipmentid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `inventoryitemid` int(10) unsigned NOT NULL DEFAULT '0',
-  `upgradeslots` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `level` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `str` smallint(6) NOT NULL DEFAULT '0',
-  `dex` smallint(6) NOT NULL DEFAULT '0',
-  `int` smallint(6) NOT NULL DEFAULT '0',
-  `luk` smallint(6) NOT NULL DEFAULT '0',
-  `hp` smallint(6) NOT NULL DEFAULT '0',
-  `mp` smallint(6) NOT NULL DEFAULT '0',
-  `watk` smallint(6) NOT NULL DEFAULT '0',
-  `matk` smallint(6) NOT NULL DEFAULT '0',
-  `wdef` smallint(6) NOT NULL DEFAULT '0',
-  `mdef` smallint(6) NOT NULL DEFAULT '0',
-  `acc` smallint(6) NOT NULL DEFAULT '0',
-  `avoid` smallint(6) NOT NULL DEFAULT '0',
-  `hands` smallint(6) NOT NULL DEFAULT '0',
-  `speed` smallint(6) NOT NULL DEFAULT '0',
-  `jump` smallint(6) NOT NULL DEFAULT '0',
-  `ViciousHammer` tinyint(2) NOT NULL DEFAULT '0',
+  `upgradeslots` int(11) NOT NULL DEFAULT '0',
+  `level` int(11) NOT NULL DEFAULT '0',
+  `str` int(11) NOT NULL DEFAULT '0',
+  `dex` int(11) NOT NULL DEFAULT '0',
+  `int` int(11) NOT NULL DEFAULT '0',
+  `luk` int(11) NOT NULL DEFAULT '0',
+  `hp` int(11) NOT NULL DEFAULT '0',
+  `mp` int(11) NOT NULL DEFAULT '0',
+  `watk` int(11) NOT NULL DEFAULT '0',
+  `matk` int(11) NOT NULL DEFAULT '0',
+  `wdef` int(11) NOT NULL DEFAULT '0',
+  `mdef` int(11) NOT NULL DEFAULT '0',
+  `acc` int(11) NOT NULL DEFAULT '0',
+  `avoid` int(11) NOT NULL DEFAULT '0',
+  `hands` int(11) NOT NULL DEFAULT '0',
+  `speed` int(11) NOT NULL DEFAULT '0',
+  `jump` int(11) NOT NULL DEFAULT '0',
+  `ViciousHammer` int(11) NOT NULL DEFAULT '0',
   `itemEXP` int(11) NOT NULL DEFAULT '0',
-  `durability` mediumint(9) NOT NULL DEFAULT '-1',
-  `enhance` tinyint(3) NOT NULL DEFAULT '0',
-  `potential1` smallint(5) NOT NULL DEFAULT '0',
-  `potential2` smallint(5) NOT NULL DEFAULT '0',
-  `potential3` smallint(5) NOT NULL DEFAULT '0',
-  `hpR` smallint(5) NOT NULL DEFAULT '0',
-  `mpR` smallint(5) NOT NULL DEFAULT '0',
+  `durability` int(11) NOT NULL DEFAULT '-1',
+  `enhance` int(11) NOT NULL DEFAULT '0',
+  `rank` int(11) NOT NULL DEFAULT '0',
+  `hidden` int(11) NOT NULL DEFAULT '0',
+  `potential1` int(10) unsigned NOT NULL DEFAULT '0',
+  `potential2` int(11) unsigned NOT NULL DEFAULT '0',
+  `potential3` int(10) unsigned NOT NULL DEFAULT '0',
+  `hpR` int(11) NOT NULL DEFAULT '0',
+  `mpR` int(11) NOT NULL DEFAULT '0',
+  `incattackSpeed` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`inventoryequipmentid`),
   KEY `inventoryitemid` (`inventoryitemid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=50457 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=4900 ;
 
 -- --------------------------------------------------------
 
@@ -832,7 +835,7 @@ CREATE TABLE IF NOT EXISTS `inventoryequipment` (
 -- テーブルの構造 `inventoryitems`
 --
 
-CREATE TABLE IF NOT EXISTS `inventoryitems` (
+CREATE TABLE `inventoryitems` (
   `inventoryitemid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(11) DEFAULT NULL,
   `accountid` int(10) DEFAULT NULL,
@@ -853,7 +856,7 @@ CREATE TABLE IF NOT EXISTS `inventoryitems` (
   KEY `accountid` (`accountid`),
   KEY `packageid` (`packageid`),
   KEY `characterid_2` (`characterid`,`inventorytype`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=160265 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=16023 ;
 
 -- --------------------------------------------------------
 
@@ -861,7 +864,7 @@ CREATE TABLE IF NOT EXISTS `inventoryitems` (
 -- テーブルの構造 `inventorylog`
 --
 
-CREATE TABLE IF NOT EXISTS `inventorylog` (
+CREATE TABLE `inventorylog` (
   `inventorylogid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `inventoryitemid` int(10) unsigned NOT NULL DEFAULT '0',
   `msg` tinytext NOT NULL,
@@ -875,7 +878,7 @@ CREATE TABLE IF NOT EXISTS `inventorylog` (
 -- テーブルの構造 `inventoryslot`
 --
 
-CREATE TABLE IF NOT EXISTS `inventoryslot` (
+CREATE TABLE `inventoryslot` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(10) unsigned DEFAULT NULL,
   `equip` tinyint(3) unsigned DEFAULT NULL,
@@ -884,7 +887,7 @@ CREATE TABLE IF NOT EXISTS `inventoryslot` (
   `etc` tinyint(3) unsigned DEFAULT NULL,
   `cash` tinyint(3) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=2986 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=4369 ;
 
 -- --------------------------------------------------------
 
@@ -892,7 +895,7 @@ CREATE TABLE IF NOT EXISTS `inventoryslot` (
 -- テーブルの構造 `ipbans`
 --
 
-CREATE TABLE IF NOT EXISTS `ipbans` (
+CREATE TABLE `ipbans` (
   `ipbanid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ip` varchar(40) NOT NULL DEFAULT '',
   PRIMARY KEY (`ipbanid`)
@@ -904,7 +907,7 @@ CREATE TABLE IF NOT EXISTS `ipbans` (
 -- テーブルの構造 `ipvotelog`
 --
 
-CREATE TABLE IF NOT EXISTS `ipvotelog` (
+CREATE TABLE `ipvotelog` (
   `vid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `accid` varchar(45) NOT NULL DEFAULT '0',
   `ipaddress` varchar(30) NOT NULL DEFAULT '127.0.0.1',
@@ -919,7 +922,7 @@ CREATE TABLE IF NOT EXISTS `ipvotelog` (
 -- テーブルの構造 `keymap`
 --
 
-CREATE TABLE IF NOT EXISTS `keymap` (
+CREATE TABLE `keymap` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `characterid` int(11) NOT NULL DEFAULT '0',
   `key` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -927,7 +930,7 @@ CREATE TABLE IF NOT EXISTS `keymap` (
   `action` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `keymap_ibfk_1` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=115864 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=167097 ;
 
 -- --------------------------------------------------------
 
@@ -935,7 +938,7 @@ CREATE TABLE IF NOT EXISTS `keymap` (
 -- テーブルの構造 `macbans`
 --
 
-CREATE TABLE IF NOT EXISTS `macbans` (
+CREATE TABLE `macbans` (
   `macbanid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `mac` varchar(30) NOT NULL,
   PRIMARY KEY (`macbanid`),
@@ -948,7 +951,7 @@ CREATE TABLE IF NOT EXISTS `macbans` (
 -- テーブルの構造 `macfilters`
 --
 
-CREATE TABLE IF NOT EXISTS `macfilters` (
+CREATE TABLE `macfilters` (
   `macfilterid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `filter` varchar(30) NOT NULL,
   PRIMARY KEY (`macfilterid`)
@@ -960,7 +963,7 @@ CREATE TABLE IF NOT EXISTS `macfilters` (
 -- テーブルの構造 `monsterbook`
 --
 
-CREATE TABLE IF NOT EXISTS `monsterbook` (
+CREATE TABLE `monsterbook` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `charid` int(10) unsigned NOT NULL DEFAULT '0',
   `cardid` int(10) unsigned NOT NULL DEFAULT '0',
@@ -974,14 +977,14 @@ CREATE TABLE IF NOT EXISTS `monsterbook` (
 -- テーブルの構造 `mountdata`
 --
 
-CREATE TABLE IF NOT EXISTS `mountdata` (
+CREATE TABLE `mountdata` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(10) unsigned DEFAULT NULL,
   `Level` int(3) unsigned NOT NULL DEFAULT '0',
   `Exp` int(10) unsigned NOT NULL DEFAULT '0',
   `Fatigue` int(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=24 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=75 ;
 
 -- --------------------------------------------------------
 
@@ -989,7 +992,7 @@ CREATE TABLE IF NOT EXISTS `mountdata` (
 -- テーブルの構造 `mtsequipment`
 --
 
-CREATE TABLE IF NOT EXISTS `mtsequipment` (
+CREATE TABLE `mtsequipment` (
   `inventoryequipmentid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `inventoryitemid` int(10) unsigned NOT NULL DEFAULT '0',
   `upgradeslots` int(11) NOT NULL DEFAULT '0',
@@ -1028,7 +1031,7 @@ CREATE TABLE IF NOT EXISTS `mtsequipment` (
 -- テーブルの構造 `mtsitems`
 --
 
-CREATE TABLE IF NOT EXISTS `mtsitems` (
+CREATE TABLE `mtsitems` (
   `inventoryitemid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(11) DEFAULT NULL,
   `accountid` int(10) DEFAULT NULL,
@@ -1059,7 +1062,7 @@ CREATE TABLE IF NOT EXISTS `mtsitems` (
 -- テーブルの構造 `mtstransfer`
 --
 
-CREATE TABLE IF NOT EXISTS `mtstransfer` (
+CREATE TABLE `mtstransfer` (
   `inventoryitemid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(11) DEFAULT NULL,
   `accountid` int(10) DEFAULT NULL,
@@ -1090,7 +1093,7 @@ CREATE TABLE IF NOT EXISTS `mtstransfer` (
 -- テーブルの構造 `mtstransferequipment`
 --
 
-CREATE TABLE IF NOT EXISTS `mtstransferequipment` (
+CREATE TABLE `mtstransferequipment` (
   `inventoryequipmentid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `inventoryitemid` int(10) unsigned NOT NULL DEFAULT '0',
   `upgradeslots` int(11) NOT NULL DEFAULT '0',
@@ -1129,7 +1132,7 @@ CREATE TABLE IF NOT EXISTS `mtstransferequipment` (
 -- テーブルの構造 `mts_cart`
 --
 
-CREATE TABLE IF NOT EXISTS `mts_cart` (
+CREATE TABLE `mts_cart` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(11) NOT NULL DEFAULT '0',
   `itemid` int(11) NOT NULL DEFAULT '0',
@@ -1142,7 +1145,7 @@ CREATE TABLE IF NOT EXISTS `mts_cart` (
 -- テーブルの構造 `mts_items`
 --
 
-CREATE TABLE IF NOT EXISTS `mts_items` (
+CREATE TABLE `mts_items` (
   `id` int(11) NOT NULL,
   `tab` tinyint(1) NOT NULL DEFAULT '1',
   `price` int(11) NOT NULL DEFAULT '0',
@@ -1158,7 +1161,7 @@ CREATE TABLE IF NOT EXISTS `mts_items` (
 -- テーブルの構造 `mulungdojo`
 --
 
-CREATE TABLE IF NOT EXISTS `mulungdojo` (
+CREATE TABLE `mulungdojo` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `charid` int(11) NOT NULL DEFAULT '0',
   `stage` tinyint(3) NOT NULL DEFAULT '0',
@@ -1171,7 +1174,7 @@ CREATE TABLE IF NOT EXISTS `mulungdojo` (
 -- テーブルの構造 `notes`
 --
 
-CREATE TABLE IF NOT EXISTS `notes` (
+CREATE TABLE `notes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `to` varchar(13) NOT NULL DEFAULT '',
   `from` varchar(13) NOT NULL DEFAULT '',
@@ -1187,7 +1190,7 @@ CREATE TABLE IF NOT EXISTS `notes` (
 -- テーブルの構造 `nxcode`
 --
 
-CREATE TABLE IF NOT EXISTS `nxcode` (
+CREATE TABLE `nxcode` (
   `code` varchar(15) NOT NULL,
   `valid` int(11) NOT NULL DEFAULT '1',
   `user` varchar(13) DEFAULT NULL,
@@ -1202,7 +1205,7 @@ CREATE TABLE IF NOT EXISTS `nxcode` (
 -- テーブルの構造 `pets`
 --
 
-CREATE TABLE IF NOT EXISTS `pets` (
+CREATE TABLE `pets` (
   `petid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(13) DEFAULT NULL,
   `level` int(3) unsigned NOT NULL,
@@ -1210,7 +1213,7 @@ CREATE TABLE IF NOT EXISTS `pets` (
   `fullness` int(3) unsigned NOT NULL,
   `seconds` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`petid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=87 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=68 ;
 
 -- --------------------------------------------------------
 
@@ -1218,7 +1221,7 @@ CREATE TABLE IF NOT EXISTS `pets` (
 -- テーブルの構造 `playernpcs`
 --
 
-CREATE TABLE IF NOT EXISTS `playernpcs` (
+CREATE TABLE `playernpcs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(13) NOT NULL,
   `hair` int(11) NOT NULL,
@@ -1244,7 +1247,7 @@ CREATE TABLE IF NOT EXISTS `playernpcs` (
 -- テーブルの構造 `playernpcs_equip`
 --
 
-CREATE TABLE IF NOT EXISTS `playernpcs_equip` (
+CREATE TABLE `playernpcs_equip` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `npcid` int(11) NOT NULL,
   `equipid` int(11) NOT NULL,
@@ -1261,7 +1264,7 @@ CREATE TABLE IF NOT EXISTS `playernpcs_equip` (
 -- テーブルの構造 `questactions`
 --
 
-CREATE TABLE IF NOT EXISTS `questactions` (
+CREATE TABLE `questactions` (
   `questactionid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `questid` int(11) NOT NULL DEFAULT '0',
   `status` int(11) NOT NULL DEFAULT '0',
@@ -1275,14 +1278,14 @@ CREATE TABLE IF NOT EXISTS `questactions` (
 -- テーブルの構造 `questinfo`
 --
 
-CREATE TABLE IF NOT EXISTS `questinfo` (
+CREATE TABLE `questinfo` (
   `questinfoid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(11) NOT NULL DEFAULT '0',
   `quest` int(6) NOT NULL DEFAULT '0',
   `customData` varchar(555) DEFAULT NULL,
   PRIMARY KEY (`questinfoid`),
   KEY `characterid` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=3011 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=3841 ;
 
 -- --------------------------------------------------------
 
@@ -1290,7 +1293,7 @@ CREATE TABLE IF NOT EXISTS `questinfo` (
 -- テーブルの構造 `questrequirements`
 --
 
-CREATE TABLE IF NOT EXISTS `questrequirements` (
+CREATE TABLE `questrequirements` (
   `questrequirementid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `questid` int(11) NOT NULL DEFAULT '0',
   `status` int(11) NOT NULL DEFAULT '0',
@@ -1304,7 +1307,7 @@ CREATE TABLE IF NOT EXISTS `questrequirements` (
 -- テーブルの構造 `queststatus`
 --
 
-CREATE TABLE IF NOT EXISTS `queststatus` (
+CREATE TABLE `queststatus` (
   `queststatusid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `characterid` int(11) NOT NULL DEFAULT '0',
   `quest` int(6) NOT NULL DEFAULT '0',
@@ -1314,7 +1317,7 @@ CREATE TABLE IF NOT EXISTS `queststatus` (
   `customData` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`queststatusid`),
   KEY `characterid` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=48174 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=65106 ;
 
 -- --------------------------------------------------------
 
@@ -1322,7 +1325,7 @@ CREATE TABLE IF NOT EXISTS `queststatus` (
 -- テーブルの構造 `queststatusmobs`
 --
 
-CREATE TABLE IF NOT EXISTS `queststatusmobs` (
+CREATE TABLE `queststatusmobs` (
   `queststatusmobid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `queststatusid` int(10) unsigned NOT NULL DEFAULT '0',
   `mob` int(11) NOT NULL DEFAULT '0',
@@ -1337,7 +1340,7 @@ CREATE TABLE IF NOT EXISTS `queststatusmobs` (
 -- テーブルの構造 `reactordrops`
 --
 
-CREATE TABLE IF NOT EXISTS `reactordrops` (
+CREATE TABLE `reactordrops` (
   `reactordropid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `reactorid` int(11) NOT NULL,
   `itemid` int(11) NOT NULL,
@@ -1353,7 +1356,7 @@ CREATE TABLE IF NOT EXISTS `reactordrops` (
 -- テーブルの構造 `readable_cheatlog`
 --
 
-CREATE TABLE IF NOT EXISTS `readable_cheatlog` (
+CREATE TABLE `readable_cheatlog` (
   `accountname` varchar(13) DEFAULT NULL,
   `accountid` int(11) DEFAULT NULL,
   `name` varchar(13) DEFAULT NULL,
@@ -1370,7 +1373,7 @@ CREATE TABLE IF NOT EXISTS `readable_cheatlog` (
 -- テーブルの構造 `readable_last_hour_cheatlog`
 --
 
-CREATE TABLE IF NOT EXISTS `readable_last_hour_cheatlog` (
+CREATE TABLE `readable_last_hour_cheatlog` (
   `accountname` varchar(13) DEFAULT NULL,
   `accountid` int(11) DEFAULT NULL,
   `name` varchar(13) DEFAULT NULL,
@@ -1384,7 +1387,7 @@ CREATE TABLE IF NOT EXISTS `readable_last_hour_cheatlog` (
 -- テーブルの構造 `regrocklocations`
 --
 
-CREATE TABLE IF NOT EXISTS `regrocklocations` (
+CREATE TABLE `regrocklocations` (
   `trockid` int(11) NOT NULL AUTO_INCREMENT,
   `characterid` int(11) DEFAULT NULL,
   `mapid` int(11) DEFAULT NULL,
@@ -1397,7 +1400,7 @@ CREATE TABLE IF NOT EXISTS `regrocklocations` (
 -- テーブルの構造 `reports`
 --
 
-CREATE TABLE IF NOT EXISTS `reports` (
+CREATE TABLE `reports` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `reporttime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `reporterid` int(11) NOT NULL,
@@ -1414,7 +1417,7 @@ CREATE TABLE IF NOT EXISTS `reports` (
 -- テーブルの構造 `rings`
 --
 
-CREATE TABLE IF NOT EXISTS `rings` (
+CREATE TABLE `rings` (
   `ringid` int(11) NOT NULL AUTO_INCREMENT,
   `partnerRingId` int(11) NOT NULL DEFAULT '0',
   `partnerChrId` int(11) NOT NULL DEFAULT '0',
@@ -1429,14 +1432,14 @@ CREATE TABLE IF NOT EXISTS `rings` (
 -- テーブルの構造 `savedlocations`
 --
 
-CREATE TABLE IF NOT EXISTS `savedlocations` (
+CREATE TABLE `savedlocations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `characterid` int(11) NOT NULL,
   `locationtype` int(11) NOT NULL DEFAULT '0',
   `map` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `savedlocations_ibfk_1` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=809 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1243 ;
 
 -- --------------------------------------------------------
 
@@ -1444,7 +1447,7 @@ CREATE TABLE IF NOT EXISTS `savedlocations` (
 -- テーブルの構造 `shopitems`
 --
 
-CREATE TABLE IF NOT EXISTS `shopitems` (
+CREATE TABLE `shopitems` (
   `shopitemid` int(10) NOT NULL AUTO_INCREMENT,
   `shopid` int(10) NOT NULL,
   `itemid` int(11) NOT NULL DEFAULT '0',
@@ -1462,7 +1465,7 @@ CREATE TABLE IF NOT EXISTS `shopitems` (
 -- テーブルの構造 `shops`
 --
 
-CREATE TABLE IF NOT EXISTS `shops` (
+CREATE TABLE `shops` (
   `shopid` int(10) NOT NULL DEFAULT '0',
   `npcid` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`shopid`)
@@ -1474,7 +1477,7 @@ CREATE TABLE IF NOT EXISTS `shops` (
 -- テーブルの構造 `skillmacros`
 --
 
-CREATE TABLE IF NOT EXISTS `skillmacros` (
+CREATE TABLE `skillmacros` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `characterid` int(11) NOT NULL DEFAULT '0',
   `position` tinyint(1) NOT NULL DEFAULT '0',
@@ -1492,7 +1495,7 @@ CREATE TABLE IF NOT EXISTS `skillmacros` (
 -- テーブルの構造 `skills`
 --
 
-CREATE TABLE IF NOT EXISTS `skills` (
+CREATE TABLE `skills` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `skillid` int(11) NOT NULL DEFAULT '0',
   `characterid` int(11) NOT NULL DEFAULT '0',
@@ -1501,7 +1504,7 @@ CREATE TABLE IF NOT EXISTS `skills` (
   `expiration` bigint(20) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`id`),
   KEY `skills_ibfk_1` (`characterid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=35381 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC AUTO_INCREMENT=130251 ;
 
 -- --------------------------------------------------------
 
@@ -1509,14 +1512,14 @@ CREATE TABLE IF NOT EXISTS `skills` (
 -- テーブルの構造 `skills_cooldowns`
 --
 
-CREATE TABLE IF NOT EXISTS `skills_cooldowns` (
+CREATE TABLE `skills_cooldowns` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `charid` int(11) NOT NULL,
   `SkillID` int(11) NOT NULL,
   `length` bigint(20) NOT NULL,
   `StartTime` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -1524,7 +1527,7 @@ CREATE TABLE IF NOT EXISTS `skills_cooldowns` (
 -- テーブルの構造 `speedruns`
 --
 
-CREATE TABLE IF NOT EXISTS `speedruns` (
+CREATE TABLE `speedruns` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(13) NOT NULL,
   `leader` varchar(13) NOT NULL,
@@ -1540,14 +1543,14 @@ CREATE TABLE IF NOT EXISTS `speedruns` (
 -- テーブルの構造 `storages`
 --
 
-CREATE TABLE IF NOT EXISTS `storages` (
+CREATE TABLE `storages` (
   `storageid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `accountid` int(11) NOT NULL DEFAULT '0',
   `slots` int(11) NOT NULL DEFAULT '0',
   `meso` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`storageid`),
   KEY `accountid` (`accountid`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED AUTO_INCREMENT=17 ;
 
 -- --------------------------------------------------------
 
@@ -1555,7 +1558,7 @@ CREATE TABLE IF NOT EXISTS `storages` (
 -- テーブルの構造 `trocklocations`
 --
 
-CREATE TABLE IF NOT EXISTS `trocklocations` (
+CREATE TABLE `trocklocations` (
   `trockid` int(11) NOT NULL AUTO_INCREMENT,
   `characterid` int(11) DEFAULT NULL,
   `mapid` int(11) DEFAULT NULL,
@@ -1568,7 +1571,7 @@ CREATE TABLE IF NOT EXISTS `trocklocations` (
 -- テーブルの構造 `wishlist`
 --
 
-CREATE TABLE IF NOT EXISTS `wishlist` (
+CREATE TABLE `wishlist` (
   `characterid` int(11) NOT NULL,
   `sn` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
@@ -1579,7 +1582,7 @@ CREATE TABLE IF NOT EXISTS `wishlist` (
 -- テーブルの構造 `wz_oxdata`
 --
 
-CREATE TABLE IF NOT EXISTS `wz_oxdata` (
+CREATE TABLE `wz_oxdata` (
   `questionset` smallint(6) NOT NULL DEFAULT '0',
   `questionid` smallint(6) NOT NULL DEFAULT '0',
   `question` varchar(200) NOT NULL DEFAULT '',
@@ -1594,7 +1597,7 @@ CREATE TABLE IF NOT EXISTS `wz_oxdata` (
 -- テーブルの構造 `zaksquads`
 --
 
-CREATE TABLE IF NOT EXISTS `zaksquads` (
+CREATE TABLE `zaksquads` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `channel` int(10) unsigned NOT NULL,
   `leaderid` int(10) unsigned NOT NULL DEFAULT '0',
@@ -1609,7 +1612,7 @@ CREATE TABLE IF NOT EXISTS `zaksquads` (
 -- テーブルの構造 `__root`
 --
 
-CREATE TABLE IF NOT EXISTS `__root` (
+CREATE TABLE `__root` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `maple_id` int(11) DEFAULT NULL,
   `character_id` int(11) DEFAULT NULL,
@@ -1618,7 +1621,7 @@ CREATE TABLE IF NOT EXISTS `__root` (
   `value_str` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=72 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=171 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

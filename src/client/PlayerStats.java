@@ -385,7 +385,7 @@ public class PlayerStats implements Serializable {
                 }
                 setHandling.put(set, value); //id of Set, number of items to go with the set
             }
-            if (equip.getState() > 1) {
+            if (equip.getHidden() > 1) {
                 int[] potentials = {equip.getPotential1(), equip.getPotential2(), equip.getPotential3()};
                 for (int i : potentials) {
                     if (i > 0) {

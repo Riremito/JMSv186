@@ -29,11 +29,11 @@ public interface IEquip extends IItem {
     public static final int ARMOR_RATIO = 350000;
     public static final int WEAPON_RATIO = 700000;
 
-    byte getUpgradeSlots();
+    int getUpgradeSlots();
 
-    byte getLevel();
+    int getLevel();
 
-    public byte getViciousHammer();
+    public int getViciousHammer();
 
     public int getItemEXP();
 
@@ -47,51 +47,53 @@ public interface IEquip extends IItem {
 
     public int getBaseLevel();
 
-    public short getStr();
+    public int getStr();
 
-    public short getDex();
+    public int getDex();
 
-    public short getInt();
+    public int getInt();
 
-    public short getLuk();
+    public int getLuk();
 
-    public short getHp();
+    public int getHp();
 
-    public short getMp();
+    public int getMp();
 
-    public short getWatk();
+    public int getWatk();
 
-    public short getMatk();
+    public int getMatk();
 
-    public short getWdef();
+    public int getWdef();
 
-    public short getMdef();
+    public int getMdef();
 
-    public short getAcc();
+    public int getAcc();
 
-    public short getAvoid();
+    public int getAvoid();
 
-    public short getHands();
+    public int getHands();
 
-    public short getSpeed();
+    public int getSpeed();
 
-    public short getJump();
+    public int getJump();
 
     public int getDurability();
 
-    public byte getEnhance();
+    public int getEnhance();
 
-    public byte getState();
+    public int getRank();
 
-    public short getPotential1();
+    public int getHidden();
 
-    public short getPotential2();
+    public int getPotential1();
 
-    public short getPotential3();
+    public int getPotential2();
 
-    public short getHpR();
+    public int getPotential3();
 
-    public short getMpR();
+    public int getHpR();
+
+    public int getMpR();
 
     public int getIncAttackSpeed();
 }

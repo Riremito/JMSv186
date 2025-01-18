@@ -9,7 +9,8 @@ public class StructPotentialItem {
             ignoreTargetDEF, ignoreDAM, DAMreflect, mpconReduce, mpRestore,
             incMesoProp, incRewardProp, incAllskill, ignoreDAMr, RecoveryUP;
     public boolean boss;
-    public short incMHP, incMMP, attackType, potentialID, skillID;
+    public short incMHP, incMMP, attackType;
+    public int potentialID, skillID;
     public int optionType, reqLevel; //probably the slot
     public String face; //angry, cheers, love, blaze, glitter
 

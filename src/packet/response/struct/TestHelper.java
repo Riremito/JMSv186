@@ -204,7 +204,7 @@ public class TestHelper {
                     mplew.writeInt(0);
                 }
                 if (!hasUniqueId) {
-                    mplew.write(equip.getState()); //7 = unique for the lulz
+                    mplew.write(equip.getHidden()); //7 = unique for the lulz
                     mplew.write(equip.getEnhance());
                     if (ServerConfig.game_server_enable_potential) {
                         mplew.writeShort(equip.getPotential1()); //potential stuff 1. total damage

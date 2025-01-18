@@ -20,7 +20,7 @@
  */
 package packet.response.struct;
 
-import client.inventory.IEquip;
+import client.inventory.Equip;
 import client.inventory.IItem;
 import config.ServerConfig;
 import packet.ServerPacket;
@@ -82,6 +82,25 @@ public class GW_ItemSlotBase {
         return data.get().getBytes();
     }
 
+    public static byte getPotentialRank(Equip equip) {
+        // 未確認アイテム
+        if (equip.getHidden() != 0) {
+            return 1;
+        }
+        int rank = equip.getRank();
+        // JMSv 186 :  5,  6,  7
+        // JMS v302 : 17, 18, 19, 20
+
+        // 潜在能力なし
+        if (rank == 0) {
+            return 0;
+        }
+
+        // 等級
+        return (byte) (ServerConfig.JMS302orLater() ? (rank + 16) : (rank + 4));
+
+    }
+
     // GW_ItemSlotBase::Decode
     // addItemInfo
     public static final byte[] Encode(final IItem item) {
@@ -96,14 +115,14 @@ public class GW_ItemSlotBase {
             case 1: {
                 data.EncodeBuffer(RawEncode(item));
 
-                final IEquip equip = (IEquip) item;
+                final Equip equip = (Equip) item;
                 boolean hasUniqueId = 0 < equip.getUniqueId();
 
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
                 // v184-v185 潜在内部実装時 (動作はしないがデータの位置が違う)
                 if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185) || (ServerConfig.IsKMS() && ServerConfig.GetVersion() == 95)) {
-                    data.Encode1(equip.getState());
+                    data.Encode1(getPotentialRank(equip));
                 }
                 // data.Encode2((short) equip.getIncAttackSpeed());
                 data.Encode2(equip.getStr());
@@ -167,7 +186,7 @@ public class GW_ItemSlotBase {
                             || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())
                             || ServerConfig.IsEMS()) {
                         if (ServerConfig.game_server_enable_hammer) {
-                            data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
+                            data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                         } else {
                             data.Encode4(0);
                         }
@@ -182,7 +201,7 @@ public class GW_ItemSlotBase {
                             || ServerConfig.IsKMS()
                             || ServerConfig.IsEMS()) {
                         if (!(ServerConfig.IsKMS() && ServerConfig.GetVersion() == 95)) {
-                            data.Encode1(equip.getState()); // option._ZtlSecureTear_nGrade
+                            data.Encode1(getPotentialRank(equip)); // option._ZtlSecureTear_nGrade
                         }
                         data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
                         if (ServerConfig.game_server_enable_potential) {
@@ -194,12 +213,12 @@ public class GW_ItemSlotBase {
                             data.Encode2(0);
                             data.Encode2(0);
                         }
-                        data.Encode2(equip.getHpR()); // option._ZtlSecureTear_nSocket1
-                        data.Encode2(equip.getMpR()); // option._ZtlSecureTear_nSocket2
+                        data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目
+                        data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ
                     }
 
                     if (ServerConfig.JMS302orLater()) {
-                        data.Encode2(0);
+                        data.Encode2(0); // v302, Alien Stone
                     }
                 } // 特殊パターン
                 else {
