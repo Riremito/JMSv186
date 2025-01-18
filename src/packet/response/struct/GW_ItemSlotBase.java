@@ -14,9 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
 package packet.response.struct;
 
@@ -113,18 +110,16 @@ public class GW_ItemSlotBase {
         switch (it) {
             // Equip
             case 1: {
-                data.EncodeBuffer(RawEncode(item));
-
                 final Equip equip = (Equip) item;
                 boolean hasUniqueId = 0 < equip.getUniqueId();
-
+                data.EncodeBuffer(RawEncode(item));
+                // JMS v184-185, KMS v95
+                if (ServerConfig.IsPrePotentialVersion()) {
+                    data.EncodeBuffer(EncodeEquip_JMS184(equip, hasUniqueId));
+                    break;
+                }
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
-                // v184-v185 潜在内部実装時 (動作はしないがデータの位置が違う)
-                if ((ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185) || (ServerConfig.IsKMS() && ServerConfig.GetVersion() == 95)) {
-                    data.Encode1(getPotentialRank(equip));
-                }
-                // data.Encode2((short) equip.getIncAttackSpeed());
                 data.Encode2(equip.getStr());
                 data.Encode2(equip.getDex());
                 data.Encode2(equip.getInt());
@@ -141,109 +136,44 @@ public class GW_ItemSlotBase {
                 data.Encode2(equip.getSpeed());
                 data.Encode2(equip.getJump());
                 data.EncodeStr(equip.getOwner());
-
-                // ポイントアイテムを一度も装備していないことを確認するためのフラグ
-                if (hasUniqueId) {
-                    // ポイントアイテム交換可能
-                    data.Encode2(0x10);
-                } else {
-                    /*
-                    0x0001 封印
-                    0x0002 滑り防止効果
-                    0x0004 寒気防止効果
-                    0x0008
-                    0x0010 1回交換可能
-                     */
-                    data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
+                data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
+                // リバース武器
+                if (ServerConfig.JMS164orLater()) {
+                    data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
+                    data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
+                    data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
                 }
-
-                // 確認必須
-                if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) {
-                    if (!hasUniqueId) {
-                        data.Encode8(equip.getPosition() <= 0 ? -1 : item.getUniqueId());
-                    }
-                    break; // test for v131
-                }
-
-                data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
-                data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
-
-                // encode4
-                data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
-
-                // 耐久度
+                // 耐久度, ビシャスのハンマー
                 if (ServerConfig.JMS180orLater()) {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
+                    data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                 }
-
-                // 通常
-                if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || !(ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 185)) {
-
-                    // ビシャスのハンマー
-                    if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
-                            || ServerConfig.IsTWMS()
-                            || ServerConfig.IsCMS()
-                            || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())
-                            || ServerConfig.IsEMS()) {
-                        if (ServerConfig.game_server_enable_hammer) {
-                            data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
-                        } else {
-                            data.Encode4(0);
-                        }
-                    }
-                    if (ServerConfig.JMS302orLater()) {
-                        data.Encode2(0);
-                    }
-                    // 潜在能力
-                    if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
-                            || ServerConfig.IsTWMS()
-                            || ServerConfig.IsCMS()
-                            || ServerConfig.IsKMS()
-                            || ServerConfig.IsEMS()) {
-                        if (!(ServerConfig.IsKMS() && ServerConfig.GetVersion() == 95)) {
-                            data.Encode1(getPotentialRank(equip)); // option._ZtlSecureTear_nGrade
-                        }
-                        data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
-                        if (ServerConfig.game_server_enable_potential) {
-                            data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
-                            data.Encode2(equip.getPotential2()); // option._ZtlSecureTear_nOption2
-                            data.Encode2(equip.getPotential3()); // option._ZtlSecureTear_nOption3
-                        } else {
-                            data.Encode2(0);
-                            data.Encode2(0);
-                            data.Encode2(0);
-                        }
-                        data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目
-                        data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ
-                    }
-
-                    if (ServerConfig.JMS302orLater()) {
-                        data.Encode2(0); // v302, Alien Stone
-                    }
-                } // 特殊パターン
-                else {
+                if (ServerConfig.JMS302orLater()) {
+                    data.Encode2(0);
+                }
+                // 潜在能力, 装備強化 (星)
+                if (ServerConfig.JMS186orLater()) {
+                    data.Encode1(getPotentialRank(equip)); // option._ZtlSecureTear_nGrade
                     data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
                     data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
                     data.Encode2(equip.getPotential2()); // option._ZtlSecureTear_nOption2
                     data.Encode2(equip.getPotential3()); // option._ZtlSecureTear_nOption3
-                    data.Encode2(equip.getHpR()); // option._ZtlSecureTear_nSocket1
-                    data.Encode2(equip.getMpR()); // option._ZtlSecureTear_nSocket2
-                    data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC
+                    data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目?
+                    data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ?
                 }
-
                 if (ServerConfig.JMS302orLater()) {
+                    data.Encode2(0); // v302, Alien Stone
                     data.Encode4(0);
                     data.Encode4(0);
                     data.Encode4(0);
                 }
-
                 if (!hasUniqueId) {
                     data.Encode8(0);
                 }
-
-                data.Encode8(0);
-                data.Encode4(-1);
-
+                if (ServerConfig.JMS164orLater()) {
+                    data.Encode8(0);
+                    data.Encode4(-1);
+                }
                 if (ServerConfig.JMS302orLater()) {
                     data.Encode4(0);
                     data.Encode1(0);
@@ -313,6 +243,48 @@ public class GW_ItemSlotBase {
             }
         }
 
+        return data.get().getBytes();
+    }
+    // JMS v184, v185, KMS 95
+
+    public static final byte[] EncodeEquip_JMS184(Equip equip, boolean hasUniqueId) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode1(equip.getUpgradeSlots());
+        data.Encode1(equip.getLevel());
+        data.Encode1(getPotentialRank(equip));
+        data.Encode2(equip.getStr());
+        data.Encode2(equip.getDex());
+        data.Encode2(equip.getInt());
+        data.Encode2(equip.getLuk());
+        data.Encode2(equip.getHp());
+        data.Encode2(equip.getMp());
+        data.Encode2(equip.getWatk());
+        data.Encode2(equip.getMatk());
+        data.Encode2(equip.getWdef());
+        data.Encode2(equip.getMdef());
+        data.Encode2(equip.getAcc());
+        data.Encode2(equip.getAvoid());
+        data.Encode2(equip.getHands());
+        data.Encode2(equip.getSpeed());
+        data.Encode2(equip.getJump());
+        data.EncodeStr(equip.getOwner());
+        data.Encode2(equip.getFlag());
+        data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
+        data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
+        data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
+        data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
+        data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
+        data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
+        data.Encode2(equip.getPotential2()); // option._ZtlSecureTear_nOption2
+        data.Encode2(equip.getPotential3()); // option._ZtlSecureTear_nOption3
+        data.Encode2(0); // option._ZtlSecureTear_nSocket1
+        data.Encode2(0); // option._ZtlSecureTear_nSocket2
+        if (!hasUniqueId) {
+            data.Encode8(0);
+        }
+        data.Encode8(0);
+        data.Encode4(-1);
         return data.get().getBytes();
     }
 

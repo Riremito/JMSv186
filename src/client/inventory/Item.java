@@ -93,6 +93,13 @@ public class Item implements IItem, Serializable {
         return position;
     }
 
+    /*
+        0x0001 封印
+        0x0002 滑り防止効果
+        0x0004 寒気防止効果
+        0x0008
+        0x0010 1回交換可能
+     */
     @Override
     public final byte getFlag() {
         return flag;
