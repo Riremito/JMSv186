@@ -123,7 +123,7 @@ public class ReqCFuncKeyMappedMan {
             case KEY_PET_HP: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoHPItem(item_id);
-                if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+                if (ServerConfig.JMS164orLater()) {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
                 } else {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
@@ -133,7 +133,7 @@ public class ReqCFuncKeyMappedMan {
             case KEY_PET_MP: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoMPItem(item_id);
-                if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+                if (ServerConfig.JMS164orLater()) {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoMP(chr));
                 } else {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
@@ -143,7 +143,7 @@ public class ReqCFuncKeyMappedMan {
             case KEY_PET_CURE: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoCureItem(item_id);
-                if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+                if (ServerConfig.JMS164orLater()) {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoCure(chr));
                 }
                 return true;

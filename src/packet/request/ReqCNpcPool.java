@@ -103,7 +103,7 @@ public class ReqCNpcPool {
     }
 
     public static void init() {
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 194) {
+        if (ServerConfig.JMS194orLater()) {
             // v194
             // 0, 5 = OK
             // 0 OK?

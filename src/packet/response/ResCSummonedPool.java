@@ -40,14 +40,14 @@ public class ResCSummonedPool {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SummonedAttack);
         p.Encode4(cid);
         p.Encode4(summonSkillId);
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+        if (ServerConfig.JMS164orLater()) {
             p.Encode1(level - 1); //? guess
         }
         p.Encode1(animation);
         p.Encode1(allDamage.size());
         for (final SummonAttackEntry attackEntry : allDamage) {
             p.Encode4(attackEntry.getMonster().getObjectId()); // oid
-            if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+            if (ServerConfig.JMS131orEarlier()) {
                 p.Encode1(6);
             } else {
                 p.Encode1(7); // who knows
@@ -61,7 +61,7 @@ public class ResCSummonedPool {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedMove);
         sp.Encode4(summon.getOwnerId());
         // very old summon type
-        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+        if (ServerConfig.JMS131orEarlier()) {
             sp.Encode4(summon.getSkill());
         } else {
             sp.Encode4(summon.getObjectId());
@@ -85,11 +85,11 @@ public class ResCSummonedPool {
     public static MaplePacket spawnSummon(MapleSummon summon, boolean animated) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SummonedEnterField);
         p.Encode4(summon.getOwnerId());
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+        if (ServerConfig.JMS164orLater()) {
             p.Encode4(summon.getObjectId());
         }
         p.Encode4(summon.getSkill());
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
+        if (ServerConfig.JMS186orLater()) {
             p.Encode1(summon.getOwnerLevel() - 1);
         }
         p.Encode1(summon.getSkillLevel());
@@ -100,7 +100,7 @@ public class ResCSummonedPool {
         p.Encode1(summon.getMovementType().getValue());
         p.Encode1(summon.getSummonType()); // 0 = Summon can't attack - but puppets don't attack with 1 either ^.-
         p.Encode1(animated ? 0 : 1);
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())) {
+        if (ServerConfig.JMS186orLater()) {
             final MapleCharacter chr = summon.getOwner();
             p.Encode1(summon.getSkill() == 4341006 && chr != null ? 1 : 0); //mirror target
             if (summon.getSkill() == 4341006 && chr != null) {
@@ -113,7 +113,7 @@ public class ResCSummonedPool {
     public static MaplePacket removeSummon(MapleSummon summon, boolean animated) {
         ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SummonedLeaveField);
         p.Encode4(summon.getOwnerId());
-        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+        if (ServerConfig.JMS131orEarlier()) {
             p.Encode4(summon.getSkill());
         } else {
             p.Encode4(summon.getObjectId());

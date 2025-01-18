@@ -28,11 +28,6 @@ import server.quest.MapleQuest;
 public class LoadData {
 
     public static void LoadDataFromXML() {
-        // test
-        if (ServerConfig.GetVersion() >= 414) {
-            return;
-        }
-
         DebugLoadTime dlt = new DebugLoadTime("initDataIDs");
         initDataIDs();
         dlt.End();
@@ -395,8 +390,7 @@ public class LoadData {
         MapleQuest.requirements = MapleQuest.questData.getData("Check.img");
         MapleQuest.info = MapleQuest.questData.getData("QuestInfo.img");
 
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()) {
+        if (ServerConfig.JMS164orLater()) {
             MapleQuest.pinfo = MapleQuest.questData.getData("PQuest.img");
         }
     }
@@ -408,15 +402,13 @@ public class LoadData {
         MapleLifeFactory.mobStringData = MapleLifeFactory.stringDataWZ.getData("Mob.img");
         MapleLifeFactory.npcStringData = MapleLifeFactory.stringDataWZ.getData("Npc.img");
 
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()) {
+        if (ServerConfig.JMS164orLater()) {
             MapleLifeFactory.npclocData = MapleLifeFactory.etcDataWZ.getData("NpcLocation.img");
         }
     }
 
     private static void initMaker() {
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()) {
+        if (ServerConfig.JMS164orLater()) {
             ItemMakerFactory.info = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz")).getData("ItemMake.img");
         }
     }

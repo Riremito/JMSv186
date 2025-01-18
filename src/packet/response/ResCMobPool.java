@@ -211,7 +211,7 @@ public class ResCMobPool {
         sp.Encode4(life.getObjectId());
         sp.Encode1(1); // 1 = Control normal, 5 = Control none
         sp.Encode4(life.getId());
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) { // TODO
             sp.Encode4(0); // 後でなおす
         } else {
             sp.EncodeBuffer(Structure.MonsterStatus(life));
@@ -277,7 +277,7 @@ public class ResCMobPool {
         sp.Encode4(life.getObjectId());
         sp.Encode1(1); // 1 = Control normal, 5 = Control none
         sp.Encode4(life.getId());
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) { // TODO
             sp.Encode4(0); // 後でなおす
         } else {
             sp.EncodeBuffer(Structure.MonsterStatus(life));

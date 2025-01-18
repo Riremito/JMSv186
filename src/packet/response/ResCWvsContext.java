@@ -244,11 +244,11 @@ public class ResCWvsContext {
                         break;
                     }
                     case PICKUP_MESO: {
-                        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+                        if (ServerConfig.JMS164orLater()) {
                             sp.Encode1(0);
                         }
                         sp.Encode4(ma.Inc_Meso);
-                        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164) {
+                        if (ServerConfig.JMS131orEarlier()) {
                             sp.Encode2(0); // Internet cafe bonus
                         } else {
                             sp.Encode4(0);
@@ -322,7 +322,7 @@ public class ResCWvsContext {
                 sp.Encode4(ma.Inc_EXP_EquipmentBonus); // アイテム装着ボーナス経験値
                 sp.Encode4(0); // not used
                 sp.Encode4(ma.Inc_EXP_RainbowWeekBonus); // レインボーウィークボーナス経験値
-                if (194 <= ServerConfig.GetVersion()) {
+                if (ServerConfig.JMS194orLater()) {
                     sp.Encode1(0); // 0 or not
                 }
                 break;

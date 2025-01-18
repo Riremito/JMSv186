@@ -125,18 +125,18 @@ public class ReqCMobPool {
         final int skill3 = cp.Decode1();
         final int skill4 = cp.Decode1();
 
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS186orLater() || ServerConfig.IsKMS()) {
             cp.Decode4(); // 0
             cp.Decode4(); // 0
         }
 
         cp.Decode1();
 
-        if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion() || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS164orLater()) {
             cp.Decode4();
         }
 
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS186orLater() || ServerConfig.IsKMS()) {
             cp.Decode4();
             cp.Decode4();
             cp.Decode4();

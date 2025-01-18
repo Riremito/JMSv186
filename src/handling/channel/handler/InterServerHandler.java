@@ -220,7 +220,7 @@ public class InterServerHandler {
 
         c.getSession().write(ResCFuncKeyMappedMan.getKeymap(player, false));
         c.getSession().write(ResCFuncKeyMappedMan.getMacros(player));
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+        if (ServerConfig.JMS164orLater()) {
             c.getSession().write(ResCFuncKeyMappedMan.getPetAutoHP(player));
             c.getSession().write(ResCFuncKeyMappedMan.getPetAutoMP(player));
             c.getSession().write(ResCFuncKeyMappedMan.getPetAutoCure(player));

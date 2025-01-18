@@ -651,7 +651,7 @@ public class ReqCUser {
                 allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false)); //m.e. never crits
             }
 
-            if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 186)) {
+            if (ServerConfig.JMS186orLater()) {
                 cp.Decode4(); // CRC of monster [Wz Editing]
             }
 
@@ -679,27 +679,21 @@ public class ReqCUser {
             return false;
         }
 
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
+        if (ServerConfig.JMS186orLater()) {
             cp.Decode4(); // -1
             cp.Decode4(); // -1
         }
 
         cp.Decode1(); // unk
 
-        if ((ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
+        if (ServerConfig.JMS186orLater()) {
             cp.Decode4(); // -1
             cp.Decode4(); // -1
             cp.Decode4();
             cp.Decode4();
         }
 
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
+        if (ServerConfig.JMS164orLater()) {
             cp.Decode4();
         }
 

@@ -38,14 +38,14 @@ public class ExpTable {
             return true;
         }
         // Pre-BB early
-        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+        if (ServerConfig.JMS131orEarlier()) {
             for (int level = 0; level < v131Table.length; level++) {
                 GameConstants.setExpTable(level, v131Table[level]);
             }
             return true;
         }
         // pre-BB later
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())) {
+        if (ServerConfig.JMS164orLater()) {
             return true;
         }
         return false;

@@ -489,7 +489,7 @@ public class ReqCLogin {
         // もみじ (サーバーを分離すると接続人数を取得するのが難しくなる)
         c.SendPacket(ResCLogin.getServerList(1, false, 16));
         c.SendPacket(ResCLogin.getEndOfServerList());
-        if (ServerConfig.IsJMS() && 186 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS186orLater()) {
             c.SendPacket(ResCLogin.RecommendWorldMessage());
             c.SendPacket(ResCLogin.LatestConnectedWorld());
         }

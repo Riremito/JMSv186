@@ -406,12 +406,12 @@ public class ResCLogin {
             sp.Encode1(serverId);
             sp.Encode1(i); // channel
             sp.Encode1(0);
-            if (ServerConfig.IsJMS() && 201 <= ServerConfig.GetVersion()) {
+            if (ServerConfig.JMS302orLater()) {
                 sp.Encode1(0);
             }
         }
         sp.Encode2(0);
-        if (ServerConfig.IsJMS() && 201 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS302orLater()) {
             sp.Encode4(0);
         }
         return sp.get();

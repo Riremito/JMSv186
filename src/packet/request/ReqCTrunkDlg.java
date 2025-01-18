@@ -98,7 +98,7 @@ public class ReqCTrunkDlg {
     }
 
     public static void init() {
-        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+        if (ServerConfig.JMS131orEarlier()) {
             // SS
             CP_Flag.ITEM_OUT.set(0x03);
             CP_Flag.ITEM_IN.set(0x04);
@@ -309,7 +309,7 @@ public class ReqCTrunkDlg {
         sp.Encode1(slots);
         sp.Encode2(2);
 
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+        if (ServerConfig.JMS164orLater()) {
             sp.Encode2(0);
             sp.Encode4(0);
         }
@@ -328,7 +328,7 @@ public class ReqCTrunkDlg {
         sp.Encode1(slots);
         sp.Encode2(type.getBitfieldEncoding());
 
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+        if (ServerConfig.JMS164orLater()) {
             sp.Encode2(0);
             sp.Encode4(0);
         }
@@ -350,7 +350,7 @@ public class ReqCTrunkDlg {
         sp.Encode1(slots);
         sp.Encode2(type.getBitfieldEncoding());
 
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+        if (ServerConfig.JMS164orLater()) {
             sp.Encode2(0);
             sp.Encode4(0);
         }

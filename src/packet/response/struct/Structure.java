@@ -465,7 +465,7 @@ public class Structure {
             data.Encode4(0);
         }
 
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131) {
+        if (ServerConfig.JMS131orEarlier()) {
             if (life.getStati().size() <= 1) {
                 life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
             }
@@ -474,10 +474,7 @@ public class Structure {
                 life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
             }
         }
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()
-                || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS164orLater()) {
             data.Encode8(getSpecialLongMask(life.getStati().keySet()));
         }
 

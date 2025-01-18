@@ -66,7 +66,7 @@ public class ReqCSummonedPool {
         int oid = cp.Decode4(); // older version = SkillID
 
         MapleSummon summon = null;
-        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+        if (ServerConfig.JMS131orEarlier()) {
             for (MapleSummon sms : chr.getSummons().values()) {
                 if (sms.getSkill() == oid) {
                     summon = sms;
@@ -135,7 +135,7 @@ public class ReqCSummonedPool {
             return;
         }
 
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+        if (ServerConfig.JMS164orLater()) {
             cp.Decode4();
             cp.Decode4();
 
@@ -149,14 +149,14 @@ public class ReqCSummonedPool {
 
         final byte animation = cp.Decode1();
 
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+        if (ServerConfig.JMS164orLater()) {
             cp.Decode4();
             cp.Decode4();
         }
 
         final byte numAttacked = cp.Decode1();
 
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+        if (ServerConfig.JMS164orLater()) {
             cp.Decode2(); // x
             cp.Decode2(); // y
             cp.Decode2(); // x
@@ -173,7 +173,7 @@ public class ReqCSummonedPool {
                 continue;
             }
 
-            if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 186)) {
+            if (ServerConfig.JMS186orLater()) {
                 cp.Decode4(); // MobID
             }
 
@@ -191,7 +191,7 @@ public class ReqCSummonedPool {
             allDamage.add(new SummonAttackEntry(mob, damage));
         }
 
-        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 131)) {
+        if (ServerConfig.JMS131orEarlier()) {
             cp.Decode2(); // X
             cp.Decode2(); // Y
         }

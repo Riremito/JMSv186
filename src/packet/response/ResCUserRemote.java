@@ -83,11 +83,11 @@ public class ResCUserRemote {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEnterField);
         sp.Encode4(chr.getId());
         // 自分のキャラクターの場合はここで終了
-        if (131 < ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS164orLater()) {
             sp.Encode1(chr.getLevel());
         }
         sp.EncodeStr(chr.getName());
-        if (194 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS194orLater()) {
             sp.EncodeStr("");
         }
         // guild
@@ -111,7 +111,7 @@ public class ResCUserRemote {
             sp.Encode1(0);
         }
         List<Pair<Integer, Boolean>> buffvalue = new ArrayList<Pair<Integer, Boolean>>();
-        if (131 < ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS164orLater()) {
             long fbuffmask = 16646144L;
             if (chr.getBuffedValue(MapleBuffStat.SOARING) != null) {
                 fbuffmask |= MapleBuffStat.SOARING.getValue();
@@ -155,9 +155,9 @@ public class ResCUserRemote {
             buffvalue.add(new Pair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.MORPH).intValue()), true));
         }
         sp.Encode8(buffmask);
-        if (131 < ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS164orLater()) {
             // buffmask
-            if (194 <= ServerConfig.GetVersion()) {
+            if (ServerConfig.JMS194orLater()) {
                 sp.Encode4(0);
             }
             for (Pair<Integer, Boolean> i : buffvalue) {
@@ -175,7 +175,7 @@ public class ResCUserRemote {
             //0x80000, 0x100000, 0x200000, 0x400000, 0x800000, 0x1000000, 0x2000000
             sp.Encode1(0); //start of energy charge
             sp.Encode1(0);
-            if (ServerConfig.GetVersion() <= 186) {
+            if (ServerConfig.IsPreBB()) {
                 sp.Encode4(0);
                 sp.Encode4(0);
                 sp.Encode1(1);
@@ -225,10 +225,10 @@ public class ResCUserRemote {
         }
         sp.EncodeBuffer(AvatarLook.Encode(chr));
         sp.Encode4(0); //this is CHARID to follow
-        if (131 < ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS164orLater()) {
             sp.Encode4(0); //probably charid following
             sp.Encode4(0);
-            if (194 <= ServerConfig.GetVersion()) {
+            if (ServerConfig.JMS194orLater()) {
                 sp.Encode4(0);
                 sp.Encode4(0);
                 sp.Encode4(0);
@@ -582,17 +582,17 @@ public class ResCUserRemote {
         ServerPacket p = new ServerPacket(attack.GetHeader());
         p.Encode4(attack.CharacterId);
         p.Encode1(attack.HitKey);
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+        if (ServerConfig.JMS164orLater()) {
             p.Encode1(attack.m_nLevel);
         }
         p.Encode1(attack.SkillLevel); // nPassiveSLV
         if (0 < attack.nSkillID) {
             p.Encode4(attack.nSkillID); // nSkillID
         }
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+        if (ServerConfig.JMS164orLater()) {
             p.Encode1(attack.BuffKey); // bSerialAttack
         }
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164) {
+        if (ServerConfig.JMS131orEarlier()) {
             p.Encode1(attack.AttackActionKey);
         } else {
             p.Encode2(attack.AttackActionKey);
@@ -608,7 +608,7 @@ public class ResCUserRemote {
                     p.Encode1(oned.attack.size());
                 }
                 for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164) {
+                    if (ServerConfig.JMS131orEarlier()) {
                         p.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
                     } else {
                         p.Encode1(eachd.right ? 1 : 0);
@@ -620,7 +620,7 @@ public class ResCUserRemote {
         if (attack.IsQuantumExplosion()) {
             p.Encode4(attack.tKeyDown);
         }
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+        if (ServerConfig.JMS164orLater()) {
             if (attack.GetHeader() == ServerPacket.Header.LP_UserShootAttack) {
                 p.Encode2(attack.X);
                 p.Encode2(attack.Y);

@@ -252,8 +252,7 @@ public class CharacterData {
                         data.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
                     }
                 }
-                if (ServerConfig.IsJMS()
-                        && 164 <= ServerConfig.GetVersion()) {
+                if (ServerConfig.JMS164orLater()) {
                     // 0x20000 JMS v165-v194
                     if ((datamask & 0x020000) > 0) {
                         data.Encode4(chr.getMonsterBookCover());
@@ -263,7 +262,7 @@ public class CharacterData {
                         data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                     }
 
-                    if (ServerConfig.IsJMS() && 194 <= ServerConfig.GetVersion()) {
+                    if (ServerConfig.JMS194orLater()) {
                         // 0x10000000
                         if ((datamask & 0x10000000) > 0) {
                             data.Encode4(0);

@@ -44,7 +44,7 @@ public class AvatarLook {
         data.Encode1(chr.getSkinColor()); // nSkin
         data.Encode4(chr.getFace()); // nFace
 
-        if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS302orLater()) {
             data.Encode4(0);
         }
 
@@ -97,7 +97,7 @@ public class AvatarLook {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.IsJMS() && 302 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS302orLater()) {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode1(0);
@@ -111,7 +111,7 @@ public class AvatarLook {
         } else {
             data.Encode4(0); // pet 1?
 
-            if (ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion()) {
+            if (ServerConfig.JMS164orLater()) {
                 data.Encode8(0); // pet 2 and 3?
             }
         }

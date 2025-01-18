@@ -156,14 +156,14 @@ public class AttackInfo {
     }
 
     public int GetAttackAction() {
-        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+        if (ServerConfig.JMS131orEarlier()) {
             return AttackActionKey & 0x7F;
         }
         return AttackActionKey & 0x7FFF;
     }
 
     public boolean IsLeft() {
-        if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164)) {
+        if (ServerConfig.JMS131orEarlier()) {
             return ((AttackActionKey >> 7) & 0x01) > 0;
         }
         return ((AttackActionKey >> 15) & 0x01) > 0;

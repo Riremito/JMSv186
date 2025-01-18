@@ -52,7 +52,7 @@ public class ResCNpcPool {
         p.Encode2(life.getRx0());
         p.Encode2(life.getRx1());
         p.Encode1(show ? 1 : 0);
-        if (194 <= ServerConfig.GetVersion()) {
+        if (ServerConfig.JMS194orLater()) {
             p.Encode1(0);
         }
         return p.get();
