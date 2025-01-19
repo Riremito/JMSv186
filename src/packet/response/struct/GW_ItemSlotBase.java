@@ -177,8 +177,8 @@ public class GW_ItemSlotBase {
                 if (ServerConfig.JMS302orLater()) {
                     data.Encode4(0);
                     data.Encode1(0);
-                    data.Encode1(0);
-                    data.Encode2(0);
+                    data.Encode1(0); // 1 = 赤色アイテム
+                    data.Encode2(0); // 1-4 = 魂の書
                 }
                 break;
             }
