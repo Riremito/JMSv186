@@ -545,6 +545,10 @@ public class ClientPacket {
             int offset = 0;
             switch (vars.length) {
                 case 1: {
+                    if (vars[0].length() == 0) {
+                        //Debug.ErrorLog("Opcode :  " + header.name());
+                        continue;
+                    }
                     if ("@FFFF".length() <= vars[0].length() && vars[0].charAt(0) == '@') {
                         base = Integer.parseInt(vars[0].substring(1), 16);
                     } else {

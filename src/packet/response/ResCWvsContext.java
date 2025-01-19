@@ -322,6 +322,15 @@ public class ResCWvsContext {
                 sp.Encode4(ma.Inc_EXP_EquipmentBonus); // アイテム装着ボーナス経験値
                 sp.Encode4(0); // not used
                 sp.Encode4(ma.Inc_EXP_RainbowWeekBonus); // レインボーウィークボーナス経験値
+                if (ServerConfig.JMS302orLater()) {
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                }
                 if (ServerConfig.JMS194orLater()) {
                     sp.Encode1(0); // 0 or not
                 }
