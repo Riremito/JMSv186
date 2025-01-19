@@ -57,47 +57,60 @@ public class ResCUser {
         return mplew.getPacket();
     }
 
-    //miracle cube?
-    public static MaplePacket getPotentialEffect(final int chr, final int itemid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserItemUnreleaseEffect.get());
-        mplew.writeInt(chr);
-        mplew.writeInt(itemid);
-        return mplew.getPacket();
+    //magnify glass
+    public static MaplePacket getPotentialReset(int chr, short pos) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemReleaseEffect);
+        sp.Encode4(chr);
+        sp.Encode2(pos);
+        return sp.get();
     }
 
-    //magnify glass
-    public static MaplePacket getPotentialReset(final int chr, final short pos) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserItemReleaseEffect.get());
-        mplew.writeInt(chr);
-        mplew.writeShort(pos);
-        return mplew.getPacket();
+    //miracle cube?
+    public static MaplePacket getPotentialEffect(int chr, short pos) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemUnreleaseEffect);
+        sp.Encode4(chr);
+        sp.Encode1(1);
+        if (ServerConfig.JMS302orLater()) {
+            sp.Encode4(0); // 金印 2049500
+        }
+        return sp.get();
     }
 
     public static MaplePacket getScrollEffect(int chr, IEquip.ScrollResult scrollSuccess, boolean legendarySpirit) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserItemUpgradeEffect.get());
-        mplew.writeInt(chr);
-        switch (scrollSuccess) {
-            case SUCCESS:
-                mplew.writeShort(1);
-                mplew.writeShort(legendarySpirit ? 1 : 0);
-                break;
-            case FAIL:
-                mplew.writeShort(0);
-                mplew.writeShort(legendarySpirit ? 1 : 0);
-                break;
-            case CURSE:
-                mplew.write(0);
-                mplew.write(1);
-                mplew.writeShort(legendarySpirit ? 1 : 0);
-                break;
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemUpgradeEffect);
+        sp.Encode4(chr);
+        if (ServerConfig.JMS302orLater()) {
+            /*
+                0 = 失敗
+                1 = 成功
+                2 = 破壊
+                3 = 使用不可
+             */
+            int result = 0;
+            if (scrollSuccess == IEquip.ScrollResult.SUCCESS) {
+                result = 1;
+            }
+            if (scrollSuccess == IEquip.ScrollResult.CURSE) {
+                result = 2;
+            }
+            sp.Encode1(result);
+            sp.Encode1(legendarySpirit ? 1 : 0); // bEnchantSkill
+            sp.Encode4(0); // item ID
+            sp.Encode4(0); // 1 = 書の名前表示
+            sp.Encode1(0); // White Scroll
+            sp.Encode1(0);
+            sp.Encode4(0); // 2 = 装備のアップグレードに成功しました。
+        } else {
+            sp.Encode1(scrollSuccess == IEquip.ScrollResult.SUCCESS ? 1 : 0); // bSuccess
+            sp.Encode1(scrollSuccess == IEquip.ScrollResult.CURSE ? 1 : 0);
+            sp.Encode1(legendarySpirit ? 1 : 0); // bEnchantSkill
+            sp.Encode1(0); // White Scroll
+            if (ServerConfig.JMS186orLater()) {
+                sp.Encode1(0);
+                sp.Encode4(0); // 2 = 装備のアップグレードに成功しました。
+            }
         }
-        mplew.write(0); //? pam's song?
-        // テスト
-        mplew.writeInt(0);
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static MaplePacket getChatText(int cidfrom, String text, boolean whiteBG, int show) {
@@ -131,5 +144,5 @@ public class ResCUser {
         }
         return mplew.getPacket();
     }
-    
+
 }

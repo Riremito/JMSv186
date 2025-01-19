@@ -380,7 +380,7 @@ public class ItemRequest {
                     final Equip equip = (Equip) item;
                     equip.resetPotential(item_id == 5062001 || item_id == 5062003, item_id == 5062002 || item_id == 5062003);
 
-                    chr.SendPacket(ResCUser.getPotentialEffect(chr.getId(), equip.getItemId()));
+                    chr.SendPacket(ResCUser.getPotentialEffect(chr.getId(), equip.getPosition()));
                     chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(chr.getId(), ScrollResult.SUCCESS, false), false);
                     chr.SendPacket(ResWrapper.scrolledItem(toUse, item, false, true));
                     RemoveCashItem(chr, item_slot);
