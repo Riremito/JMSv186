@@ -414,6 +414,7 @@ public class LoadData {
     }
 
     private static void initItemInformation() {
+        MapleData sub_dir = null;
         MapleItemInformationProvider.etcData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz"));
         MapleItemInformationProvider.itemData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Item.wz"));
         MapleItemInformationProvider.equipData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Character.wz"));
@@ -430,11 +431,10 @@ public class LoadData {
         }
 
         MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Cash.img");
-
-        if (ServerConfig.JMS180orLater()) {
-            MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img");
-        } else {
-            MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img").getChildByPath("Con");
+        MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img");
+        sub_dir = MapleItemInformationProvider.consumeStringData.getChildByPath("Con");
+        if (sub_dir != null) {
+            MapleItemInformationProvider.consumeStringData = sub_dir;
         }
 
         MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Eqp.img").getChildByPath("Eqp");

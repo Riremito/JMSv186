@@ -86,7 +86,7 @@ public class ResCStage {
                 sp.EncodeBuffer(CWvsContext.LogoutGiftConfig());
             }
         } else {
-            if (ServerConfig.JMS180orLater()) {
+            if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
                 sp.Encode1(0);
             }
             sp.Encode4(to.getId()); // characterStat._ZtlSecureTear_dwPosMap_CS

@@ -55,7 +55,7 @@ public class CharacterData {
             data.Encode8(datamask); // statmask
         }
 
-        if (ServerConfig.JMS180orLater()) {
+        if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
             data.Encode1(0); // nCombatOrders
         }
 

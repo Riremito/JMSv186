@@ -158,44 +158,47 @@ public class GW_CharacterStat {
         data.Encode4(chr.getMapId()); // current map id
         data.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
 
-        if (ServerConfig.IsCMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
+        // KMS 84
+        if (ServerConfig.KMS84orEarlier()) {
+            return data.get().getBytes();
+        }
+        // JMS 180, KMS 95
+        if (ServerConfig.JMS180orLater() || ServerConfig.KMS95orLater()) {
             data.Encode2(chr.getSubcategory());
-        } else if (ServerConfig.IsTWMS()) {
-            data.Encode2(chr.getSubcategory());
+        }
+        // KMS, CMS, EMS
+        if (ServerConfig.IsKMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS()) {
+            return data.get().getBytes();
+        }
+        // TWMS
+        if (ServerConfig.IsTWMS()) {
             data.EncodeZeroBytes(25);
             data.Encode1(0);
             data.Encode1(0);
             data.Encode1(0);
             data.Encode1(0);
             data.Encode1(0);
-        } else if ((ServerConfig.JMS180orLater())) {
-            // デュアルブレイドフラグ
-            data.Encode2(chr.getSubcategory());
-            if (ServerConfig.IsPostBB()) {
-                if (ServerConfig.IsJMS() && ServerConfig.GetVersion() == 187) {
-                    data.Encode4(0);
-                    data.Encode8(0);
-                    data.Encode4(0);
-                    data.Encode4(0);
-                } else {
-                    // v194 OK
-                    data.Encode8(0);
-                    data.Encode4(0);
-                    data.Encode4(0);
-                }
-            } else {
-                data.Encode8(0);
-                data.Encode4(0);
-                data.Encode4(0);
-                data.Encode4(0);
-            }
-        } else {
-            // v164, v165
+            return data.get().getBytes();
+        }
+        // JMS
+        if (ServerConfig.IsPreBB()) {
             data.Encode8(0);
             data.Encode4(0);
             data.Encode4(0);
+            // JMS v180-186
+            if (ServerConfig.JMS180orLater()) {
+                data.Encode4(0);
+            }
+            return data.get().getBytes();
         }
-
+        // Post BB
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() == 187) {
+            data.Encode4(0);
+        }
+        // JMS v188+
+        data.Encode8(0);
+        data.Encode4(0);
+        data.Encode4(0);
         return data.get().getBytes();
     }
 

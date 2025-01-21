@@ -219,6 +219,45 @@ public class ServerConfig {
         return true;
     }
 
+    // under JMS v180
+    public static boolean KMS84orEarlier() {
+        if (IsPostBB()) {
+            return false;
+        }
+
+        switch (GetRegion()) {
+            case KMS: {
+                if (GetVersion() <= 84) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS84orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case KMS: {
+                if (84 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     // stable pre bb
     public static boolean JMS180orLater() {
         if (IsPostBB()) {
@@ -281,6 +320,44 @@ public class ServerConfig {
         return true;
     }
 
+    public static boolean KMS95orEarlier() {
+        if (IsPostBB()) {
+            return false;
+        }
+
+        switch (GetRegion()) {
+            case KMS: {
+                if (GetVersion() <= 95) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS95orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case KMS: {
+                if (95 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     // pre bb with potential
     public static boolean JMS186orLater() {
         if (IsPostBB()) {
@@ -332,6 +409,25 @@ public class ServerConfig {
             }
             case MSEA: {
                 if (102 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS114orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case KMS: {
+                if (114 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -400,45 +496,6 @@ public class ServerConfig {
             }
             case KMS: {
                 if (95 == GetVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    // test
-    public static boolean KMS95orLater() {
-        if (IsPostBB()) {
-            return true;
-        }
-
-        switch (GetRegion()) {
-            case KMS: {
-                if (95 <= GetVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    public static boolean KMS95orEarlier() {
-        if (IsPostBB()) {
-            return false;
-        }
-
-        switch (GetRegion()) {
-            case KMS: {
-                if (GetVersion() <= 95) {
                     return true;
                 }
                 return false;

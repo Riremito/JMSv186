@@ -46,6 +46,25 @@ public enum OpsMessage {
     UNKNOWN(-1);
 
     public static void init() {
+        if (ServerConfig.KMS84orEarlier()) {
+            OpsMessage.MS_DropPickUpMessage.set(0);
+            OpsMessage.MS_QuestRecordMessage.set(1);
+            OpsMessage.MS_CashItemExpireMessage.set(2);
+            OpsMessage.MS_IncEXPMessage.set(3);
+            OpsMessage.MS_IncSPMessage.set(4);
+            OpsMessage.MS_IncPOPMessage.set(5);
+            OpsMessage.MS_IncMoneyMessage.set(6);
+            OpsMessage.MS_GiveBuffMessage.set(7);
+            OpsMessage.MS_GeneralItemExpireMessage.set(8);
+            OpsMessage.MS_SystemMessage.set(9);
+            OpsMessage.MS_QuestRecordExMessage.set(10);
+            OpsMessage.MS_ItemProtectExpireMessage.set(11);
+            OpsMessage.MS_ItemExpireReplaceMessage.set(12);
+            OpsMessage.MS_SkillExpireMessage.set(13);
+            OpsMessage.MS_IncGPMessage.set(-1);
+            OpsMessage.MS_JMS_Pachinko.set(-1);
+            return;
+        }
         if (ServerConfig.JMS194orLater()) {
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);

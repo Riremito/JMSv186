@@ -450,7 +450,7 @@ public class ResCWvsContext {
             sp.Encode1(pet_summoned ? 1 : 0); // v188+ not used
             sp.Encode1(isSelf ? 1 : 0);
         } else {
-            if (ServerConfig.JMS180orLater()) {
+            if (ServerConfig.JMS180orLater() && !ServerConfig.IsKMS()) { // not in KMS95
                 sp.Encode4(0);
                 sp.Encode4(0);
             }
@@ -524,7 +524,7 @@ public class ResCWvsContext {
             // Monster Book (JMS)
             sp.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
         }
-        if (ServerConfig.JMS180orLater()) {
+        if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
             // MedalAchievementInfo::Decode
             IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
             sp.Encode4(inv_medal == null ? 0 : inv_medal.getItemId());
@@ -544,7 +544,7 @@ public class ResCWvsContext {
                 }
             }
             // JMS v180-v186, v187以降消滅
-            if (ServerConfig.IsPreBB()) {
+            if (ServerConfig.IsPreBB() && ServerConfig.IsJMS()) {
                 // Chair List
                 sp.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
                 // CInPacket::DecodeBuffer(v4, iPacket, 4 * chairs);

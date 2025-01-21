@@ -79,7 +79,7 @@ public enum OpsScriptMan {
         if (ServerConfig.IsPostBB()) {
             return;
         }
-        if (ServerConfig.JMS180orLater()) {
+        if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
             return;
         }
         if (ServerConfig.JMS164orLater()) {

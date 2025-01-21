@@ -475,7 +475,7 @@ public class ResCLogin {
             sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(AvatarLook.Encode(chr));
             if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS())
-                    && ServerConfig.JMS180orLater()) {
+                    && (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater())) {
                 sp.Encode1(0); // family
             }
             sp.Encode1(1); // ranking

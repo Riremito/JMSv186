@@ -44,18 +44,16 @@ public class ResCShopDlg {
         sp.Encode1(flag.get()); // 8 = sell, 0 = buy, 0x20 = due to an error
         switch (flag) {
             case ERROR_LEVEL_UNDER:
-            case ERROR_LEVEL_HIGH:
-                {
-                    sp.Encode4(level);
-                    break;
+            case ERROR_LEVEL_HIGH: {
+                sp.Encode4(level);
+                break;
+            }
+            default: {
+                if (ServerConfig.JMS302orLater()) {
+                    sp.Encode1(0);
                 }
-            default:
-                {
-                    if (ServerConfig.JMS302orLater()) {
-                        sp.Encode1(0);
-                    }
-                    break;
-                }
+                break;
+            }
         }
         return sp.get();
     }
@@ -85,12 +83,14 @@ public class ResCShopDlg {
         for (MapleShopItem item : items) {
             sp.Encode4(item.getItemId());
             sp.Encode4(item.getPrice());
-            if (ServerConfig.JMS180orLater() || ServerConfig.KMS95orLater()) {
+            if (ServerConfig.JMS180orLater()) {
                 sp.Encode4(item.getReqItem()); // nTokenItemID
                 sp.Encode4(item.getReqItemQ()); // nTokenPrice
-                if (ServerConfig.JMS186orLater()) {
-                    sp.Encode4(0); // nItemPeriod
-                }
+            }
+            if (ServerConfig.JMS186orLater()) {
+                sp.Encode4(0); // nItemPeriod
+            }
+            if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
                 sp.Encode4(0); // nLevelLimited
             }
             if (ServerConfig.JMS302orLater()) {
@@ -115,5 +115,5 @@ public class ResCShopDlg {
         }
         return sp.get();
     }
-    
+
 }

@@ -49,7 +49,7 @@ public class GW_ItemSlotBase {
             }
         }
 
-        if (ServerConfig.JMS165orEarlier()) {
+        if (ServerConfig.JMS165orEarlier() || ServerConfig.KMS84orEarlier()) {
             data.Encode1(pos);
         } else {
             // v186+
@@ -65,7 +65,7 @@ public class GW_ItemSlotBase {
     public static final byte[] EncodeSlotEnd(ItemType it) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.JMS165orEarlier()) {
+        if (ServerConfig.JMS165orEarlier() || ServerConfig.KMS84orEarlier()) {
             data.Encode1(0);
         } else {
             // v186+
@@ -198,7 +198,7 @@ public class GW_ItemSlotBase {
                     // 魔法の時間, デンデン専用 (残り時間)
                     data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
                 }
-                if (ServerConfig.JMS180orLater()) {
+                if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
                     data.Encode2(0); // nAttribute_CS
                 }
                 if (ServerConfig.JMS186orLater()) {
