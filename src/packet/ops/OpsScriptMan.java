@@ -79,7 +79,24 @@ public enum OpsScriptMan {
         if (ServerConfig.IsPostBB()) {
             return;
         }
-        if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
+        if (ServerConfig.KMS84orEarlier()) {
+            SM_SAY.set(0);
+            SM_ASKYESNO.set(1);
+            SM_ASKTEXT.set(2);
+            SM_ASKNUMBER.set(3);
+            SM_ASKMENU.set(4);
+            SM_ASKQUIZ.set(5);
+            SM_ASKSPEEDQUIZ.set(6);
+            SM_ASKAVATAR.set(7);
+            SM_ASKPET.set(8);
+            SM_ASKPETALL.set(9);
+            // reserved
+            SM_ASKACCEPT.set(11);
+            SM_ASKBOXTEXT.set(12);
+            SM_SAYIMAGE.set(-1);
+            SM_ASKSLIDEMENU.set(-1);
+        }
+        if (ServerConfig.JMS180orLater()) {
             return;
         }
         if (ServerConfig.JMS164orLater()) {
