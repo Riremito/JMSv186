@@ -240,10 +240,6 @@ public class ServerConfig {
     }
 
     public static boolean KMS84orLater() {
-        if (IsPostBB()) {
-            return true;
-        }
-
         switch (GetRegion()) {
             case KMS: {
                 if (84 <= GetVersion()) {
@@ -340,10 +336,6 @@ public class ServerConfig {
     }
 
     public static boolean KMS95orLater() {
-        if (IsPostBB()) {
-            return true;
-        }
-
         switch (GetRegion()) {
             case KMS: {
                 if (95 <= GetVersion()) {
