@@ -102,6 +102,7 @@ public class ServerConfig {
     }
 
     // only 5 jobs
+    // シグナス実装前まではほぼ変わらないはずなのでバージョンの誤差は多少あっても問題ない
     public static boolean JMS164orLater() {
         if (IsPostBB()) {
             return true;
@@ -115,7 +116,8 @@ public class ServerConfig {
                 return false;
             }
             case KMS: {
-                if (66 <= GetVersion()) {
+                // v2.66
+                if (65 <= GetVersion()) {
                     return true;
                 }
                 return false;
