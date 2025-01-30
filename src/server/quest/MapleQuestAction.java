@@ -34,14 +34,13 @@ import client.MapleStat;
 import client.SkillFactory;
 import java.util.ArrayList;
 import java.util.List;
-import packet.client.request.ContextPacket;
-import packet.server.response.LocalResponse;
+import packet.response.ResCUserLocal;
+import packet.response.wrapper.ResWrapper;
 import provider.MapleData;
 import provider.MapleDataTool;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
-import tools.MaplePacketCreator;
 
 public class MapleQuestAction implements Serializable {
 
@@ -157,7 +156,7 @@ public class MapleQuestAction implements Serializable {
                             // it's better to catch this here so we'll atleast try to remove the other items
                             System.err.println("[h4x] Completing a quest without meeting the requirements" + ie);
                         }
-                        c.getClient().getSession().write(LocalResponse.getShowItemGain(id, count, true));
+                        c.getClient().getSession().write(ResCUserLocal.getShowItemGain(id, count, true));
                     } else { // add items
                         final int period = MapleDataTool.getInt(iEntry.getChildByPath("period"), 0) / 1440; //im guessing.
                         final String name = MapleItemInformationProvider.getInstance().getName(id);
@@ -167,7 +166,7 @@ public class MapleQuestAction implements Serializable {
                             c.dropMessage(5, msg);
                         }
                         MapleInventoryManipulator.addById(c.getClient(), id, count, "", null, period);
-                        c.getClient().getSession().write(LocalResponse.getShowItemGain(id, count, true));
+                        c.getClient().getSession().write(ResCUserLocal.getShowItemGain(id, count, true));
                     }
                 }
                 break;
@@ -176,7 +175,7 @@ public class MapleQuestAction implements Serializable {
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                c.getClient().getSession().write(MaplePacketCreator.updateQuestFinish(quest.getId(), status.getNpc(), MapleDataTool.getInt(data)));
+                c.getClient().getSession().write(ResCUserLocal.updateQuestFinish(quest.getId(), status.getNpc(), MapleDataTool.getInt(data)));
                 break;
             case money:
                 status = c.getQuest(quest);
@@ -218,7 +217,7 @@ public class MapleQuestAction implements Serializable {
                 final int fameGain = MapleDataTool.getInt(data, 0);
                 c.addFame(fameGain);
                 c.updateSingleStat(MapleStat.FAME, c.getFame());
-                c.SendPacket(ContextPacket.getShowFameGain(fameGain));
+                c.SendPacket(ResWrapper.getShowFameGain(fameGain));
                 break;
             case buffItemID:
                 status = c.getQuest(quest);
@@ -405,7 +404,7 @@ public class MapleQuestAction implements Serializable {
                     final short count = (short) MapleDataTool.getInt(iEntry.getChildByPath("count"), 1);
                     if (count < 0) { // remove items
                         MapleInventoryManipulator.removeById(c.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
-                        c.getClient().getSession().write(LocalResponse.getShowItemGain(id, count, true));
+                        c.getClient().getSession().write(ResCUserLocal.getShowItemGain(id, count, true));
                     } else { // add items
                         final int period = MapleDataTool.getInt(iEntry.getChildByPath("period"), 0) / 1440;
                         final String name = MapleItemInformationProvider.getInstance().getName(id);
@@ -415,13 +414,13 @@ public class MapleQuestAction implements Serializable {
                             c.dropMessage(5, msg);
                         }
                         MapleInventoryManipulator.addById(c.getClient(), id, count, "", null, period);
-                        c.getClient().getSession().write(LocalResponse.getShowItemGain(id, count, true));
+                        c.getClient().getSession().write(ResCUserLocal.getShowItemGain(id, count, true));
                     }
                 }
                 break;
             }
             case nextQuest: {
-                c.getClient().getSession().write(MaplePacketCreator.updateQuestFinish(quest.getId(), c.getQuest(quest).getNpc(), MapleDataTool.getInt(data)));
+                c.getClient().getSession().write(ResCUserLocal.updateQuestFinish(quest.getId(), c.getQuest(quest).getNpc(), MapleDataTool.getInt(data)));
                 break;
             }
             case money: {
@@ -458,7 +457,7 @@ public class MapleQuestAction implements Serializable {
                 final int fameGain = MapleDataTool.getInt(data, 0);
                 c.addFame(fameGain);
                 c.updateSingleStat(MapleStat.FAME, c.getFame());
-                c.SendPacket(ContextPacket.getShowFameGain(fameGain));
+                c.SendPacket(ResWrapper.getShowFameGain(fameGain));
                 break;
             }
             case buffItemID: {

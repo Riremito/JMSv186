@@ -31,6 +31,7 @@ import client.messages.commands.AdminCommand;
 import client.messages.commands.GMCommand;
 import client.messages.commands.InternCommand;
 import client.messages.commands.PlayerCommand;
+import config.ServerConfig;
 import constants.GameConstants;
 import constants.ServerConstants.CommandType;
 import constants.ServerConstants.PlayerGMRank;
@@ -38,16 +39,15 @@ import database.DatabaseConnection;
 import debug.Debug;
 import debug.DebugJob;
 import handling.channel.ChannelServer;
-import handling.channel.handler.StatsHandling;
 import java.awt.Point;
 import java.lang.reflect.Modifier;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
-import packet.client.request.ItemRequest;
-import packet.server.response.FieldResponse;
-import packet.server.response.ItemResponse;
+import packet.request.ReqCUser;
+import packet.response.Res_JMS_CInstancePortalPool;
+import packet.response.wrapper.ResWrapper;
 import scripting.NPCScriptManager;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
@@ -171,6 +171,12 @@ public class CommandProcessor {
             String[] splitted = line.split(" ");
             splitted[0] = splitted[0].toLowerCase();
 
+            if ("/reload".equals(splitted[0])) {
+                ServerConfig.ReloadHeader();
+                c.getPlayer().UpdateStat(true);
+                return true;
+            }
+
             if ("/ea".equals(splitted[0]) || "/stuck".equals(splitted[0]) || "/unlock".equals(splitted[0])) {
                 c.getPlayer().UpdateStat(true);
                 return true;
@@ -188,7 +194,7 @@ public class CommandProcessor {
                 MapleCharacter chr = c.getPlayer();
                 int skillid = chr.getLastSkillUp();
                 if (skillid != 0) {
-                    while (StatsHandling.DistributeSP(skillid, c, chr));
+                    while (ReqCUser.OnSkillUpRequestInternal(chr, skillid));
                 }
                 return true;
             }
@@ -396,7 +402,7 @@ public class CommandProcessor {
                 c.getPlayer().getMap().addMapObject(dynamic_portal);
                 //ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(chr.getMapId()).addMapObject(dynamic_portal);
 
-                c.getPlayer().getMap().broadcastMessage(ItemResponse.CreatePinkBeanEventPortal(dynamic_portal));
+                c.getPlayer().getMap().broadcastMessage(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
 
                 c.getPlayer().Notice("AddPortal: from " + c.getPlayer().getMapId() + " to " + map_id_to);
                 return true;
@@ -425,7 +431,25 @@ public class CommandProcessor {
             }
 
             if ("/slot".equals(splitted[0])) {
-                FieldResponse.MiroSlot(c.getPlayer());
+                ResWrapper.MiroSlot(c.getPlayer());
+                return true;
+            }
+
+            if ("/allskill".equals(splitted[0])) {
+                if (2 <= splitted.length) {
+                    c.getPlayer().setJob(Integer.parseInt(splitted[1]));
+                }
+                DebugJob.AllSkill(c.getPlayer());
+                return true;
+            }
+
+            if ("/allskill0".equals(splitted[0])) {
+                DebugJob.AllSkill(c.getPlayer(), true);
+                return true;
+            }
+
+            if ("/allstat".equals(splitted[0])) {
+                DebugJob.AllStat(c.getPlayer());
                 return true;
             }
 

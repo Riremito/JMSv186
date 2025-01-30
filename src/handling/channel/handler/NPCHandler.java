@@ -31,9 +31,10 @@ import client.RockPaperScissors;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import packet.server.ServerPacket;
-import packet.server.response.LocalResponse;
-import packet.server.response.RemoteResponse;
+import packet.ops.OpsScriptMan;
+import packet.response.ResCRPSGameDlg;
+import packet.response.ResCUserLocal;
+import packet.response.ResCUserRemote;
 import server.MapleInventoryManipulator;
 import server.life.MapleNPC;
 import server.quest.MapleQuest;
@@ -41,34 +42,16 @@ import scripting.NPCScriptManager;
 import scripting.NPCConversationManager;
 import server.MapleItemInformationProvider;
 import tools.ArrayMap;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 public class NPCHandler {
 
-    public static final void NPCAnimation(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_NpcMove.Get());
-        final int length = (int) slea.available();
-
-        if (length == 6) { // NPC Talk
-            mplew.writeInt(slea.readInt());
-            mplew.writeShort(slea.readShort());
-        } else if (length > 6) { // NPC Move
-            mplew.write(slea.read(length - 9));
-        } else {
-            return;
-        }
-        c.getSession().write(mplew.getPacket());
-    }
-
-    public static final void NPCTalk(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static final void NPCTalk(MapleClient c, final MapleCharacter chr, int npc_oid) {
         if (chr == null || chr.getMap() == null) {
             return;
         }
-        final MapleNPC npc = chr.getMap().getNPCByOid(slea.readInt());
+        final MapleNPC npc = chr.getMap().getNPCByOid(npc_oid);
 
         if (npc == null) {
             return;
@@ -143,27 +126,31 @@ public class NPCHandler {
             case 5: { // Scripted End Quest
                 final int npc = slea.readInt();
                 NPCScriptManager.getInstance().endQuest(c, npc, quest, false);
-                c.getSession().write(LocalResponse.showSpecialEffect(10)); // Quest completion
-                chr.getMap().broadcastMessage(chr, RemoteResponse.showSpecialEffect(chr.getId(), 10), false);
+                c.getSession().write(ResCUserLocal.showSpecialEffect(10)); // Quest completion
+                chr.getMap().broadcastMessage(chr, ResCUserRemote.showSpecialEffect(chr.getId(), 10), false);
                 break;
             }
         }
         c.getPlayer().Info("Quest ID = " + quest + ", Action = " + action);
     }
 
-    public static final void NPCMoreTalk(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final byte lastMsg = slea.readByte(); // 00 (last msg type I think)
-        final byte action = slea.readByte(); // 00 = end chat, 01 == follow
-
+    public static final void NPCMoreTalk(MapleClient c, OpsScriptMan smt, byte action, int selection, String text) {
         final NPCConversationManager cm = NPCScriptManager.getInstance().getCM(c);
+        byte lastMsg = (byte) smt.get();
 
         if (cm == null || c.getPlayer().getConversation() == 0 || cm.getLastMsg() != lastMsg) {
             return;
         }
-        cm.setLastMsg((byte) -1);
-        if (lastMsg == 3) {
+
+        if (action == 0) {
+            selection = -1;
+        }
+
+        cm.setLastMsg(-1);
+
+        if (smt == OpsScriptMan.SM_ASKTEXT) {
             if (action != 0) {
-                cm.setGetText(slea.readMapleAsciiString());
+                cm.setGetText(text);
                 if (cm.getType() == 0) {
                     NPCScriptManager.getInstance().startQuest(c, action, lastMsg, -1);
                 } else if (cm.getType() == 1) {
@@ -174,29 +161,27 @@ public class NPCHandler {
             } else {
                 cm.dispose();
             }
-        } else {
-            int selection = -1;
-            if (slea.available() >= 4) {
-                selection = slea.readInt();
-            } else if (slea.available() > 0) {
-                selection = slea.readByte();
-            }
-            if (lastMsg == 4 && selection == -1) {
-                cm.dispose();
-                return;//h4x
-            }
-            if (selection >= -1 && action != -1) {
-                if (cm.getType() == 0) {
-                    NPCScriptManager.getInstance().startQuest(c, action, lastMsg, selection);
-                } else if (cm.getType() == 1) {
-                    NPCScriptManager.getInstance().endQuest(c, action, lastMsg, selection);
-                } else {
-                    NPCScriptManager.getInstance().action(c, action, lastMsg, selection);
-                }
-            } else {
-                cm.dispose();
-            }
+            return;
         }
+
+        if (selection == -1 && OpsScriptMan.SM_ASKTEXT.get() <= lastMsg && smt != OpsScriptMan.SM_ASKACCEPT) {
+            cm.dispose();
+            return;
+        }
+
+        if (selection >= -1 && action != -1) {
+            if (cm.getType() == 0) {
+                NPCScriptManager.getInstance().startQuest(c, action, lastMsg, selection);
+            } else if (cm.getType() == 1) {
+                NPCScriptManager.getInstance().endQuest(c, action, lastMsg, selection);
+            } else {
+                NPCScriptManager.getInstance().action(c, action, lastMsg, selection);
+            }
+            return;
+        }
+
+        cm.dispose();
+        return;
     }
 
     public static final void repairAll(final MapleClient c) {
@@ -320,29 +305,29 @@ public class NPCHandler {
                 if (c.getPlayer().getMeso() >= 1000) {
                     c.getPlayer().setRPS(new RockPaperScissors(c, mode));
                 } else {
-                    c.getSession().write(MaplePacketCreator.getRPSMode((byte) 0x08, -1, -1, -1));
+                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x08, -1, -1, -1));
                 }
                 break;
             case 1: //answer
                 if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().answer(c, slea.readByte())) {
-                    c.getSession().write(MaplePacketCreator.getRPSMode((byte) 0x0D, -1, -1, -1));
+                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;
             case 2: //time over
                 if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().timeOut(c)) {
-                    c.getSession().write(MaplePacketCreator.getRPSMode((byte) 0x0D, -1, -1, -1));
+                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;
             case 3: //continue
                 if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().nextRound(c)) {
-                    c.getSession().write(MaplePacketCreator.getRPSMode((byte) 0x0D, -1, -1, -1));
+                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;
             case 4: //leave
                 if (c.getPlayer().getRPS() != null) {
                     c.getPlayer().getRPS().dispose(c);
                 } else {
-                    c.getSession().write(MaplePacketCreator.getRPSMode((byte) 0x0D, -1, -1, -1));
+                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;
         }

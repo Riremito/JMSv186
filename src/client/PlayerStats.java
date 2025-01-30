@@ -38,17 +38,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
-import packet.server.ServerPacket;
-import packet.server.response.LocalResponse;
-import packet.server.response.RemoteResponse;
+import packet.ServerPacket;
+import packet.response.ResCUserLocal;
+import packet.response.ResCUserRemote;
+import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.StructPotentialItem;
 import server.StructSetItem;
 import server.StructSetItem.SetItem;
-import tools.MaplePacketCreator;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 public class PlayerStats implements Serializable {
 
@@ -386,7 +385,7 @@ public class PlayerStats implements Serializable {
                 }
                 setHandling.put(set, value); //id of Set, number of items to go with the set
             }
-            if (equip.getState() > 1) {
+            if (equip.getHidden() > 1) {
                 int[] potentials = {equip.getPotential1(), equip.getPotential2(), equip.getPotential3()};
                 for (int i : potentials) {
                     if (i > 0) {
@@ -865,8 +864,8 @@ public class PlayerStats implements Serializable {
         }
         if (changed) {
             chr.equipChanged();
-            chr.getClient().getSession().write(LocalResponse.showItemLevelupEffect());
-            chr.getMap().broadcastMessage(chr, RemoteResponse.showForeignItemLevelupEffect(chr.getId()), false);
+            chr.getClient().getSession().write(ResCUserLocal.showItemLevelupEffect());
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.showForeignItemLevelupEffect(chr.getId()), false);
         }
         return changed;
     }
@@ -882,14 +881,14 @@ public class PlayerStats implements Serializable {
         for (Equip eqq : all) {
             if (eqq.getDurability() == 0) { //> 0 went to negative
                 if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
-                    chr.getClient().getSession().write(MaplePacketCreator.getInventoryFull());
-                    chr.getClient().getSession().write(MaplePacketCreator.getShowInventoryFull());
+                    chr.getClient().getSession().write(ResWrapper.getInventoryFull());
+                    chr.getClient().getSession().write(ResWrapper.getShowInventoryFull());
                     return false;
                 }
                 durabilityHandling.remove(eqq);
                 final short pos = chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot();
                 MapleInventoryManipulator.unequip(chr.getClient(), eqq.getPosition(), pos);
-                chr.getClient().getSession().write(MaplePacketCreator.updateSpecialItemUse(eqq, (byte) 1, pos));
+                chr.getClient().getSession().write(ResWrapper.updateSpecialItemUse(eqq, (byte) 1, pos));
             } else {
                 chr.forceReAddItem(eqq.copy(), MapleInventoryType.EQUIPPED);
             }
@@ -1207,24 +1206,6 @@ public class PlayerStats implements Serializable {
         shouldHealMP *= 2; // 1.5
     }
 
-    public final void connectData(final MaplePacketLittleEndianWriter mplew) {
-        mplew.writeShort(str); // str
-        mplew.writeShort(dex); // dex
-        mplew.writeShort(int_); // int
-        mplew.writeShort(luk); // luk
-        if (ServerConfig.version <= 186) {
-            mplew.writeShort(hp); // hp
-            mplew.writeShort(maxhp); // maxhp
-            mplew.writeShort(mp); // mp
-            mplew.writeShort(maxmp); // maxmp
-        } else {
-            mplew.writeInt(hp); // hp
-            mplew.writeInt(maxhp); // maxhp
-            mplew.writeInt(mp); // mp
-            mplew.writeInt(maxmp); // maxmp
-        }
-    }
-
     public final int getSkillByJob(final int skillID, final int job) {
         if (GameConstants.isKOC(job)) {
             return skillID + 10000000;
@@ -1245,7 +1226,7 @@ public class PlayerStats implements Serializable {
         p.Encode2(luk);
 
         // BB前
-        if (ServerConfig.version <= 186) {
+        if (ServerConfig.IsPreBB()) {
             p.Encode2(hp);
             p.Encode2(maxhp);
             p.Encode2(mp);

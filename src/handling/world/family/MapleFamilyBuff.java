@@ -26,12 +26,12 @@ import client.MapleCharacter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
-import packet.server.response.TemporaryStatResponse;
+import packet.response.ResCUserRemote;
+import packet.response.ResCWvsContext;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.MapleStatEffect.CancelEffectAction;
 import server.Timer.BuffTimer;
-import tools.MaplePacketCreator;
 import tools.Pair;
 
 public class MapleFamilyBuff {
@@ -127,7 +127,7 @@ public class MapleFamilyBuff {
         }
 
         public void applyTo(MapleCharacter chr) {
-            chr.getClient().getSession().write(TemporaryStatResponse.giveBuff(-getEffectId(), duration * 60000, effects, null));
+            chr.getClient().getSession().write(ResCWvsContext.giveBuff(-getEffectId(), duration * 60000, effects, null));
             final MapleStatEffect eff = MapleItemInformationProvider.getInstance().getItemEffect(getEffectId());
             chr.cancelEffect(eff, true, -1, effects);
             final long starttime = System.currentTimeMillis();

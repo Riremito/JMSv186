@@ -22,7 +22,7 @@ package server.movement;
 
 import config.ServerConfig;
 import java.awt.Point;
-import packet.server.ServerPacket;
+import packet.ServerPacket;
 
 import tools.data.output.LittleEndianWriter;
 

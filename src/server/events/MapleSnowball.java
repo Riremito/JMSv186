@@ -24,10 +24,11 @@ package server.events;
 import client.MapleCharacter;
 import client.MapleDisease;
 import java.util.concurrent.ScheduledFuture;
+import packet.response.ResCField_SnowBall;
+import packet.response.wrapper.ResWrapper;
 import server.Timer.EventTimer;
 import server.life.MobSkillFactory;
 import server.maps.MapleMap;
-import tools.MaplePacketCreator;
 
 public class MapleSnowball extends MapleEvent {
 
@@ -60,7 +61,7 @@ public class MapleSnowball extends MapleEvent {
             ball.broadcast(getMap(0), 0); //gogogo
             ball.setInvis(false);
             ball.broadcast(getMap(0), 5); //idk xd
-            getMap(0).broadcastMessage(MaplePacketCreator.enterSnowBall());
+            getMap(0).broadcastMessage(ResCField_SnowBall.enterSnowBall());
         }
     }
 
@@ -142,7 +143,7 @@ public class MapleSnowball extends MapleEvent {
         public void broadcast(MapleMap map, int message) {
             for (MapleCharacter chr : map.getCharactersThreadsafe()) {
                 //if ((team == 0 && chr.getPosition().y > -80) || (team == 1 && chr.getPosition().y <= -80)) {
-                chr.getClient().getSession().write(MaplePacketCreator.snowballMessage(team, message));
+                chr.getClient().getSession().write(ResCField_SnowBall.snowballMessage(team, message));
                 //}
             }
         }
@@ -187,25 +188,25 @@ public class MapleSnowball extends MapleEvent {
                 boolean snowman = chr.getPosition().x < -360 && chr.getPosition().x > -560;
                 if (!snowman) {
                     int damage = (Math.random() < 0.01 || (chr.getPosition().x > ball.getLeftX() && chr.getPosition().x < ball.getRightX())) && ball.isHittable() ? 10 : 0;
-                    chr.getMap().broadcastMessage(MaplePacketCreator.hitSnowBall(team, damage, 0, 1));
+                    chr.getMap().broadcastMessage(ResCField_SnowBall.hitSnowBall(team, damage, 0, 1));
                     if (damage == 0) {
                         if (Math.random() < 0.2) {
-                            chr.getClient().getSession().write(MaplePacketCreator.leftKnockBack());
-                            chr.getClient().getSession().write(MaplePacketCreator.enableActions());
+                            chr.getClient().getSession().write(ResCField_SnowBall.leftKnockBack());
+                            chr.getClient().getSession().write(ResWrapper.enableActions());
                         }
                     } else {
                         ball.setPositionX(ball.getPosition() + 1);
                         //System.out.println("pos: " + chr.getPosition().x + ", ballpos: " + ball.getPosition().x + ", hittable: " + ball.isHittable() + ", startPoints: " + startPoints[0] + "," + startPoints[1] + ", damage: " + damage + ", snowmens: " + snowmens[0] + "," + snowmens[1] + ", extraDistances: " + extraDistances[0] + "," + extraDistances[1] + ", HP: " + ball.getHP());
                         if (ball.getPosition() == 255 || ball.getPosition() == 511 || ball.getPosition() == 767) { // Going to stage
                             ball.setStartPoint(chr.getMap());
-                            chr.getMap().broadcastMessage(MaplePacketCreator.rollSnowball(4, sb.getSnowBall(0), sb.getSnowBall(1)));
+                            chr.getMap().broadcastMessage(ResCField_SnowBall.rollSnowball(4, sb.getSnowBall(0), sb.getSnowBall(1)));
                         } else if (ball.getPosition() == 899) { // Crossing the finishing line
                             final MapleMap map = chr.getMap();
                             for (int i = 0; i < 2; i++) {
                                 sb.getSnowBall(i).setInvis(true);
-                                map.broadcastMessage(MaplePacketCreator.rollSnowball(i + 2, sb.getSnowBall(0), sb.getSnowBall(1))); //inviseble
+                                map.broadcastMessage(ResCField_SnowBall.rollSnowball(i + 2, sb.getSnowBall(0), sb.getSnowBall(1))); //inviseble
                             }
-                            chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(6, "Congratulations! Team " + (team == 0 ? "Story" : "Maple") + " has won the Snowball Event!"));
+                            chr.getMap().broadcastMessage(ResWrapper.serverNotice(6, "Congratulations! Team " + (team == 0 ? "Story" : "Maple") + " has won the Snowball Event!"));
 
                             for (MapleCharacter chrz : chr.getMap().getCharactersThreadsafe()) {
                                 if ((team == 0 && chrz.getPosition().y > -80) || (team == 1 && chrz.getPosition().y <= -80)) { //winner
@@ -215,7 +216,7 @@ public class MapleSnowball extends MapleEvent {
                             }
                             sb.unreset();
                         } else if (ball.getPosition() < 899) {
-                            chr.getMap().broadcastMessage(MaplePacketCreator.rollSnowball(4, sb.getSnowBall(0), sb.getSnowBall(1)));
+                            chr.getMap().broadcastMessage(ResCField_SnowBall.rollSnowball(4, sb.getSnowBall(0), sb.getSnowBall(1)));
                             ball.setInvis(false);
                         }
                     }
@@ -227,10 +228,10 @@ public class MapleSnowball extends MapleEvent {
                     if (Math.random() < 0.05) {
                         damage = 45;
                     }
-                    chr.getMap().broadcastMessage(MaplePacketCreator.hitSnowBall(team + 2, damage, 0, 0)); // Hitting the snowman
+                    chr.getMap().broadcastMessage(ResCField_SnowBall.hitSnowBall(team + 2, damage, 0, 0)); // Hitting the snowman
                     ball.setSnowmanHP(ball.getSnowmanHP() - damage);
                     if (damage > 0) {
-                        chr.getMap().broadcastMessage(MaplePacketCreator.rollSnowball(0, sb.getSnowBall(0), sb.getSnowBall(1))); //not sure
+                        chr.getMap().broadcastMessage(ResCField_SnowBall.rollSnowball(0, sb.getSnowBall(0), sb.getSnowBall(1))); //not sure
                         if (ball.getSnowmanHP() <= 0) {
                             ball.setSnowmanHP(7500);
                             final MapleSnowballs oBall = sb.getSnowBall(team == 0 ? 1 : 0);

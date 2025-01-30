@@ -53,7 +53,7 @@ public class MaplePacketEncoder implements ProtocolEncoder {
                 final byte[] header = send_crypto.getPacketHeader(unencrypted.length);
 
                 if (ServerConfig.PacketEncryptionEnabled()) {
-                    if (ServerConfig.IsCMS()) {
+                    if (ServerConfig.CustomEncryptionEnabled()) {
                         MapleCustomEncryption.encryptData(unencrypted);
                     }
                     if (ServerConfig.IsKMS()) {

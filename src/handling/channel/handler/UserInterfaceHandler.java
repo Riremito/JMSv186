@@ -23,9 +23,10 @@ package handling.channel.handler;
 import client.MapleClient;
 import client.MapleCharacterUtil;
 import constants.ServerConstants;
+import packet.response.ResCField_ContiMove;
+import packet.response.ResCUserLocal;
 import scripting.NPCScriptManager;
 import scripting.EventManager;
-import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class UserInterfaceHandler {
@@ -45,7 +46,7 @@ public class UserInterfaceHandler {
 
             if (selection >= 0 && selection <= ServerConstants.Poll_Answers.length) {
                 if (MapleCharacterUtil.SetPoll(c.getAccID(), selection)) {
-                    c.getSession().write(MaplePacketCreator.getPollReply("Thank you."));
+                    c.getSession().write(ResCUserLocal.getPollReply("Thank you."));
                     //idk what goes here lol
                 }
             }
@@ -101,6 +102,6 @@ public class UserInterfaceHandler {
                 System.out.println("Unhandled ship object, MapID : " + mapid);
                 break;
         }
-        c.getSession().write(MaplePacketCreator.boatPacket(effect));
+        c.getSession().write(ResCField_ContiMove.boatPacket(effect));
     }
 }

@@ -27,13 +27,17 @@ import client.inventory.MapleInventoryType;
 import client.MapleStat;
 import client.anticheat.CheatingOffense;
 import constants.GameConstants;
+import packet.response.ResCField_Coconut;
+import packet.response.ResCUser;
+import packet.response.ResCUserLocal;
+import packet.response.ResCWvsContext;
+import packet.response.wrapper.ResWrapper;
 import server.events.MapleCoconut;
 import server.events.MapleCoconut.MapleCoconuts;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.events.MapleEventType;
 import server.maps.MapleMapObjectType;
-import tools.MaplePacketCreator;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class PlayersHandler {
@@ -72,10 +76,7 @@ public class PlayersHandler {
         }
     }
 
-    public static void GiveFame(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        final int who = slea.readInt();
-        final int mode = slea.readByte();
-
+    public static void GiveFame(MapleClient c, MapleCharacter chr, int who, int mode) {
         final int famechange = mode == 0 ? -1 : 1;
         final MapleCharacter target = (MapleCharacter) chr.getMap().getMapObject(who, MapleMapObjectType.PLAYER);
 
@@ -95,14 +96,14 @@ public class PlayersHandler {
                 //if (!chr.isGM()) {
                 chr.hasGivenFame(target);
                 //}
-                c.getSession().write(MaplePacketCreator.giveFameResponse(mode, target.getName(), target.getFame()));
-                target.getClient().getSession().write(MaplePacketCreator.receiveFame(mode, chr.getName()));
+                c.getSession().write(ResCWvsContext.giveFameResponse(mode, target.getName(), target.getFame()));
+                target.getClient().getSession().write(ResCWvsContext.receiveFame(mode, chr.getName()));
                 break;
             case NOT_TODAY:
-                c.getSession().write(MaplePacketCreator.giveFameErrorResponse(3));
+                c.getSession().write(ResCWvsContext.giveFameErrorResponse(3));
                 break;
             case NOT_THIS_MONTH:
-                c.getSession().write(MaplePacketCreator.giveFameErrorResponse(4));
+                c.getSession().write(ResCWvsContext.giveFameErrorResponse(4));
                 break;
         }
     }
@@ -120,7 +121,7 @@ public class PlayersHandler {
         final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId) {
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
             return;
         }
         switch (itemId) {
@@ -161,32 +162,32 @@ public class PlayersHandler {
             if (Math.random() < 0.01 && map.getStopped() > 0) {
                 nut.setStopped(true);
                 map.stopCoconut();
-                c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.hitCoconut(false, id, 1));
+                c.getPlayer().getMap().broadcastMessage(ResCField_Coconut.hitCoconut(false, id, 1));
                 return;
             }
             nut.resetHits(); // For next event (without restarts)
             //System.out.println("Coconut4");
             if (Math.random() < 0.05 && map.getBombings() > 0) {
                 //System.out.println("Coconut5-1");
-                c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.hitCoconut(false, id, 2));
+                c.getPlayer().getMap().broadcastMessage(ResCField_Coconut.hitCoconut(false, id, 2));
                 map.bombCoconut();
             } else if (map.getFalling() > 0) {
                 //System.out.println("Coconut5-2");
-                c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.hitCoconut(false, id, 3));
+                c.getPlayer().getMap().broadcastMessage(ResCField_Coconut.hitCoconut(false, id, 3));
                 map.fallCoconut();
                 if (c.getPlayer().getCoconutTeam() == 0) {
                     map.addMapleScore();
-                    c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.serverNotice(5, c.getPlayer().getName() + " of Team Maple knocks down a coconut."));
+                    c.getPlayer().getMap().broadcastMessage(ResWrapper.serverNotice(5, c.getPlayer().getName() + " of Team Maple knocks down a coconut."));
                 } else {
                     map.addStoryScore();
-                    c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.serverNotice(5, c.getPlayer().getName() + " of Team Story knocks down a coconut."));
+                    c.getPlayer().getMap().broadcastMessage(ResWrapper.serverNotice(5, c.getPlayer().getName() + " of Team Story knocks down a coconut."));
                 }
-                c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.coconutScore(map.getCoconutScore()));
+                c.getPlayer().getMap().broadcastMessage(ResCField_Coconut.coconutScore(map.getCoconutScore()));
             }
         } else {
             //System.out.println("Coconut3-2");
             nut.hit();
-            c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.hitCoconut(false, id, 1));
+            c.getPlayer().getMap().broadcastMessage(ResCField_Coconut.hitCoconut(false, id, 1));
         }
     }
 
@@ -216,9 +217,9 @@ public class PlayersHandler {
             tt.setFollowInitiator(false);
             c.getPlayer().setFollowOn(false);
             c.getPlayer().setFollowInitiator(false);
-            tt.getClient().getSession().write(MaplePacketCreator.followRequest(c.getPlayer().getId()));
+            tt.getClient().getSession().write(ResCWvsContext.followRequest(c.getPlayer().getId()));
         } else {
-            c.getSession().write(MaplePacketCreator.serverNotice(1, "You are too far away."));
+            c.getSession().write(ResWrapper.serverNotice(1, "You are too far away."));
         }
     }
 
@@ -233,18 +234,18 @@ public class PlayersHandler {
                     tt.setFollowInitiator(true);
                     c.getPlayer().setFollowOn(true);
                     c.getPlayer().setFollowInitiator(false);
-                    c.getPlayer().getMap().broadcastMessage(MaplePacketCreator.followEffect(tt.getId(), c.getPlayer().getId(), null));
+                    c.getPlayer().getMap().broadcastMessage(ResCUser.followEffect(tt.getId(), c.getPlayer().getId(), null));
                 } else {
                     c.getPlayer().setFollowId(0);
                     tt.setFollowId(0);
-                    tt.getClient().getSession().write(MaplePacketCreator.getFollowMsg(5));
+                    tt.getClient().getSession().write(ResCUserLocal.getFollowMsg(5));
                 }
             } else {
                 if (tt != null) {
                     tt.setFollowId(0);
                     c.getPlayer().setFollowId(0);
                 }
-                c.getSession().write(MaplePacketCreator.serverNotice(1, "You are too far away."));
+                c.getSession().write(ResWrapper.serverNotice(1, "You are too far away."));
             }
         } else {
             c.getPlayer().setFollowId(0);
@@ -275,12 +276,12 @@ public class PlayersHandler {
                 errcode = 0x15;
             }
             if (errcode > 0) {
-                c.getSession().write(MaplePacketCreator.sendEngagement((byte) errcode, 0, null, null));
-                c.getSession().write(MaplePacketCreator.enableActions());
+                c.getSession().write(ResCWvsContext.sendEngagement((byte) errcode, 0, null, null));
+                c.getSession().write(ResWrapper.enableActions());
                 return;
             }
             c.getPlayer().setMarriageItemId(itemid);
-            chr.getClient().getSession().write(MaplePacketCreator.sendEngagementRequest(c.getPlayer().getName(), c.getPlayer().getId()));
+            chr.getClient().getSession().write(ResCWvsContext.sendEngagementRequest(c.getPlayer().getName(), c.getPlayer().getId()));
             //1112300 + (itemid - 2240004)
         } else if (mode == 1) {
             c.getPlayer().setMarriageItemId(0);
@@ -290,27 +291,27 @@ public class PlayersHandler {
             final int id = slea.readInt();
             final MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
             if (c.getPlayer().getMarriageId() > 0 || chr == null || chr.getId() != id || chr.getMarriageItemId() <= 0 || !chr.haveItem(chr.getMarriageItemId(), 1) || chr.getMarriageId() > 0) {
-                c.getSession().write(MaplePacketCreator.sendEngagement((byte) 0x1D, 0, null, null));
-                c.getSession().write(MaplePacketCreator.enableActions());
+                c.getSession().write(ResCWvsContext.sendEngagement((byte) 0x1D, 0, null, null));
+                c.getSession().write(ResWrapper.enableActions());
                 return;
             }
             if (accepted) {
                 final int newItemId = 1112300 + (chr.getMarriageItemId() - 2240004);
                 if (!MapleInventoryManipulator.checkSpace(c, newItemId, 1, "") || !MapleInventoryManipulator.checkSpace(chr.getClient(), newItemId, 1, "")) {
-                    c.getSession().write(MaplePacketCreator.sendEngagement((byte) 0x15, 0, null, null));
-                    c.getSession().write(MaplePacketCreator.enableActions());
+                    c.getSession().write(ResCWvsContext.sendEngagement((byte) 0x15, 0, null, null));
+                    c.getSession().write(ResWrapper.enableActions());
                     return;
                 }
                 MapleInventoryManipulator.addById(c, newItemId, (short) 1);
                 MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, chr.getMarriageItemId(), 1, false, false);
                 MapleInventoryManipulator.addById(chr.getClient(), newItemId, (short) 1);
-                chr.getClient().getSession().write(MaplePacketCreator.sendEngagement((byte) 0x10, newItemId, chr, c.getPlayer()));
+                chr.getClient().getSession().write(ResCWvsContext.sendEngagement((byte) 0x10, newItemId, chr, c.getPlayer()));
                 chr.setMarriageId(c.getPlayer().getId());
                 c.getPlayer().setMarriageId(chr.getId());
             } else {
-                chr.getClient().getSession().write(MaplePacketCreator.sendEngagement((byte) 0x1E, 0, null, null));
+                chr.getClient().getSession().write(ResCWvsContext.sendEngagement((byte) 0x1E, 0, null, null));
             }
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
             chr.setMarriageItemId(0);
         } else if (mode == 3) { //drop, only works for ETC
             final int itemId = slea.readInt();

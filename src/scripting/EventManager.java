@@ -34,6 +34,9 @@ import handling.world.MapleParty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import packet.response.ResCField_ContiMove;
+import packet.response.ResCWvsContext;
+import packet.response.wrapper.ResWrapper;
 import server.MapleSquad;
 import server.Randomizer;
 import server.Timer.EventTimer;
@@ -46,7 +49,6 @@ import server.maps.MapleMap;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapFactory;
 import tools.FileoutputUtil;
-import tools.MaplePacketCreator;
 
 public class EventManager {
 
@@ -322,16 +324,16 @@ public class EventManager {
     }
 
     public void broadcastShip(final int mapid, final int effect) {
-        getMapFactory().getMap(mapid).broadcastMessage(MaplePacketCreator.boatPacket(effect));
+        getMapFactory().getMap(mapid).broadcastMessage(ResCField_ContiMove.boatPacket(effect));
     }
 
     public void broadcastYellowMsg(final String msg) {
-        getChannelServer().broadcastPacket(MaplePacketCreator.yellowChat(msg));
+        getChannelServer().broadcastPacket(ResCWvsContext.yellowChat(msg));
     }
 
     public void broadcastServerMsg(final int type, final String msg, final boolean weather) {
         if (!weather) {
-            getChannelServer().broadcastPacket(MaplePacketCreator.serverNotice(type, msg));
+            getChannelServer().broadcastPacket(ResWrapper.serverNotice(type, msg));
         } else {
             for (MapleMap load : getMapFactory().getAllMaps()) {
                 if (load.getCharactersSize() > 0) {

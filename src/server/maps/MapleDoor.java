@@ -27,7 +27,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import debug.Debug;
 import java.lang.ref.WeakReference;
-import packet.server.response.MysticDoorResponse;
+import packet.response.ResCTownPortalPool;
 import server.MaplePortal;
 import server.Randomizer;
 
@@ -150,7 +150,7 @@ public class MapleDoor extends AbstractMapleMapObject {
                 //client.SendPacket(MysticDoorResponse.resetPartyMysticDoorInfo());
             }
         }
-        client.SendPacket(MysticDoorResponse.removeDoor(this));
+        client.SendPacket(ResCTownPortalPool.removeDoor(this));
     }
 
     public final MapleCharacter getOwner() {

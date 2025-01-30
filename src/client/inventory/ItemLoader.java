@@ -104,34 +104,37 @@ public enum ItemLoader {
                     equip.setQuantity((short) 1);
                     equip.setOwner(rs.getString("owner"));
                     equip.setExpiration(rs.getLong("expiredate"));
-                    equip.setUpgradeSlots(rs.getByte("upgradeslots"));
+                    equip.setUpgradeSlots(rs.getInt("upgradeslots"));
                     equip.setLevel(rs.getByte("level"));
                     // not coded, incattackSpeed
-                    equip.setStr(rs.getShort("str"));
-                    equip.setDex(rs.getShort("dex"));
-                    equip.setInt(rs.getShort("int"));
-                    equip.setLuk(rs.getShort("luk"));
-                    equip.setHp(rs.getShort("hp"));
-                    equip.setMp(rs.getShort("mp"));
-                    equip.setWatk(rs.getShort("watk"));
-                    equip.setMatk(rs.getShort("matk"));
-                    equip.setWdef(rs.getShort("wdef"));
-                    equip.setMdef(rs.getShort("mdef"));
-                    equip.setAcc(rs.getShort("acc"));
-                    equip.setAvoid(rs.getShort("avoid"));
-                    equip.setHands(rs.getShort("hands"));
-                    equip.setSpeed(rs.getShort("speed"));
-                    equip.setJump(rs.getShort("jump"));
-                    equip.setViciousHammer(rs.getByte("ViciousHammer"));
+                    equip.setStr(rs.getInt("str"));
+                    equip.setDex(rs.getInt("dex"));
+                    equip.setInt(rs.getInt("int"));
+                    equip.setLuk(rs.getInt("luk"));
+                    equip.setHp(rs.getInt("hp"));
+                    equip.setMp(rs.getInt("mp"));
+                    equip.setWatk(rs.getInt("watk"));
+                    equip.setMatk(rs.getInt("matk"));
+                    equip.setWdef(rs.getInt("wdef"));
+                    equip.setMdef(rs.getInt("mdef"));
+                    equip.setAcc(rs.getInt("acc"));
+                    equip.setAvoid(rs.getInt("avoid"));
+                    equip.setHands(rs.getInt("hands"));
+                    equip.setSpeed(rs.getInt("speed"));
+                    equip.setJump(rs.getInt("jump"));
+                    equip.setViciousHammer(rs.getInt("ViciousHammer"));
                     equip.setItemEXP(rs.getInt("itemEXP"));
-                    equip.setGMLog(rs.getString("GM_Log"));
+                    //equip.setGMLog(rs.getString("GM_Log"));
                     equip.setDurability(rs.getInt("durability"));
-                    equip.setEnhance(rs.getByte("enhance"));
-                    equip.setPotential1(rs.getShort("potential1"));
-                    equip.setPotential2(rs.getShort("potential2"));
-                    equip.setPotential3(rs.getShort("potential3"));
-                    equip.setHpR(rs.getShort("hpR"));
-                    equip.setMpR(rs.getShort("mpR"));
+                    equip.setEnhance(rs.getInt("enhance"));
+                    equip.setRank(rs.getInt("rank"));
+                    equip.setHidden(rs.getInt("hidden"));
+                    equip.setPotential1(rs.getInt("potential1"));
+                    equip.setPotential2(rs.getInt("potential2"));
+                    equip.setPotential3(rs.getInt("potential3"));
+                    equip.setHpR(rs.getInt("hpR"));
+                    equip.setMpR(rs.getInt("mpR"));
+                    equip.setIncAttackSpeed(rs.getInt("incattackSpeed"));
                     equip.setGiftFrom(rs.getString("sender"));
                     if (equip.getUniqueId() > -1) {
                         if (GameConstants.isEffectRing(rs.getInt("itemid"))) {
@@ -174,28 +177,7 @@ public enum ItemLoader {
 
     public void saveItems(List<Pair<IItem, MapleInventoryType>> items, Integer... id) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
-        /*try {
-
-        con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-        con.setAutoCommit(false);*/
         saveItems(items, con, id);
-        /*	con.commit();
-        } catch (Exception e) {
-        e.printStackTrace();
-        System.err.println("[charsave] Error saving inventory" + e);
-        try {
-        con.rollback();
-        } catch (SQLException ex) {
-        System.err.println("[charsave] Error Rolling Back inventory" + e);
-        }
-        } finally {
-        try {
-        con.setAutoCommit(true);
-        con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
-        } catch (SQLException e) {
-        System.err.println("[charsave] Error going back to autocommit mode inventory" + e);
-        }
-        }*/
     }
 
     public void saveItems(List<Pair<IItem, MapleInventoryType>> items, final Connection con, Integer... id) throws SQLException {
@@ -241,7 +223,7 @@ public enum ItemLoader {
         }
         query_2.append(")");
         ps = con.prepareStatement(query_2.toString(), Statement.RETURN_GENERATED_KEYS);
-        PreparedStatement pse = con.prepareStatement("INSERT INTO " + table_equip + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement pse = con.prepareStatement("INSERT INTO " + table_equip + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         final Iterator<Pair<IItem, MapleInventoryType>> iter = items.iterator();
         Pair<IItem, MapleInventoryType> pair;
         while (iter.hasNext()) {
@@ -278,7 +260,6 @@ public enum ItemLoader {
                 IEquip equip = (IEquip) item;
                 pse.setInt(2, equip.getUpgradeSlots());
                 pse.setInt(3, equip.getLevel());
-                // not coded, incattackSpeed
                 pse.setInt(4, equip.getStr());
                 pse.setInt(5, equip.getDex());
                 pse.setInt(6, equip.getInt());
@@ -297,12 +278,15 @@ public enum ItemLoader {
                 pse.setInt(19, equip.getViciousHammer());
                 pse.setInt(20, equip.getItemEXP());
                 pse.setInt(21, equip.getDurability());
-                pse.setByte(22, equip.getEnhance());
-                pse.setInt(23, equip.getPotential1());
-                pse.setInt(24, equip.getPotential2());
-                pse.setInt(25, equip.getPotential3());
-                pse.setInt(26, equip.getHpR());
-                pse.setInt(27, equip.getMpR());
+                pse.setInt(22, equip.getEnhance());
+                pse.setInt(23, equip.getRank());
+                pse.setInt(24, equip.getHidden());
+                pse.setInt(25, equip.getPotential1());
+                pse.setInt(26, equip.getPotential2());
+                pse.setInt(27, equip.getPotential3());
+                pse.setInt(28, equip.getHpR());
+                pse.setInt(29, equip.getMpR());
+                pse.setInt(30, equip.getIncAttackSpeed());
                 pse.executeUpdate();
             }
         }

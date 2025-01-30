@@ -25,9 +25,9 @@ import java.awt.Point;
 import client.MapleClient;
 import client.anticheat.CheatingOffense;
 import handling.channel.ChannelServer;
+import packet.response.wrapper.ResWrapper;
 import scripting.PortalScriptManager;
 import server.MaplePortal;
-import tools.MaplePacketCreator;
 
 public class MapleGenericPortal implements MaplePortal {
 
@@ -140,7 +140,7 @@ public class MapleGenericPortal implements MaplePortal {
             }
         }
         if (c != null && c.getPlayer() != null && c.getPlayer().getMap() == currentmap) { // Character is still on the same map.
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
         }
     }
 

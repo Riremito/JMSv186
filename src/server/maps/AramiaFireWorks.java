@@ -24,12 +24,12 @@ import java.awt.Point;
 
 import client.MapleCharacter;
 import handling.world.World;
-import packet.client.request.ReactorPacket;
+import packet.response.ResCReactorPool;
+import packet.response.wrapper.ResWrapper;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
 import server.Timer.EventTimer;
 import server.life.MapleLifeFactory;
-import tools.MaplePacketCreator;
 
 public class AramiaFireWorks {
 
@@ -65,7 +65,7 @@ public class AramiaFireWorks {
     }
 
     private final void broadcastServer(final MapleCharacter c, final int itemid) {
-        World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, itemid, "<Channel " + c.getClient().getChannel() + "> " + c.getMap().getMapName() + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!").getBytes());
+        World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, itemid, "<Channel " + c.getClient().getChannel() + "> " + c.getMap().getMapName() + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!").getBytes());
     }
 
     public final short getKegsPercentage() {
@@ -120,7 +120,7 @@ public class AramiaFireWorks {
                     if (this.sunshines >= (MAX_SUN / 6) * (2 + reactor.getState())) {
                         reactor.setState((byte) (reactor.getState() + 1));
                         reactor.setTimerActive(false);
-                        map.broadcastMessage(ReactorPacket.Hit(reactor, reactor.getState()));
+                        map.broadcastMessage(ResCReactorPool.Hit(reactor, reactor.getState()));
                     }
                     break;
                 default:
@@ -189,7 +189,7 @@ public class AramiaFireWorks {
                     if (this.decorations >= (MAX_DEC / 6) * (2 + reactor.getState())) {
                         reactor.setState((byte) (reactor.getState() + 1));
                         reactor.setTimerActive(false);
-                        map.broadcastMessage(ReactorPacket.Hit(reactor, reactor.getState()));
+                        map.broadcastMessage(ResCReactorPool.Hit(reactor, reactor.getState()));
                     }
                     break;
                 default:

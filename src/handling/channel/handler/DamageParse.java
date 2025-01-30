@@ -37,8 +37,9 @@ import client.anticheat.CheatingOffense;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import java.util.Map;
-import packet.client.request.DropPacket;
-import packet.client.request.DropPacket.LeaveType;
+import packet.response.ResCDropPool;
+import packet.response.ResCDropPool.LeaveType;
+import packet.response.wrapper.ResWrapper;
 import server.MapleStatEffect;
 import server.Randomizer;
 import server.Timer.MapTimer;
@@ -49,7 +50,6 @@ import server.maps.MapleMap;
 import server.maps.MapleMapItem;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
-import tools.MaplePacketCreator;
 import tools.AttackPair;
 import tools.Pair;
 
@@ -64,7 +64,7 @@ public class DamageParse {
         }
         if (attack.skill != 0) {
             if (effect == null) {
-                player.getClient().getSession().write(MaplePacketCreator.enableActions());
+                player.getClient().getSession().write(ResWrapper.enableActions());
                 return;
             }
             if (GameConstants.isMulungSkill(attack.skill)) {
@@ -122,7 +122,7 @@ public class DamageParse {
                                 return;
                             }
                             map.removeMapObject(mapitem);
-                            map.broadcastMessage(DropPacket.DropLeaveField(mapitem, LeaveType.MESO_EXPLOSION));
+                            map.broadcastMessage(ResCDropPool.DropLeaveField(mapitem, LeaveType.MESO_EXPLOSION));
                             mapitem.setPickedUp(true);
                         } else {
                             player.getCheatTracker().registerOffense(CheatingOffense.ETC_EXPLOSION);

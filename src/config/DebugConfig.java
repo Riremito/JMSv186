@@ -1,6 +1,7 @@
 package config;
 
 public class DebugConfig {
+
     // no xml
     public static boolean do_not_load_wz_xml = false;
     // 管理画面
@@ -17,7 +18,7 @@ public class DebugConfig {
     public static boolean GM = false;
     // damage debugging
     public static boolean log_damage = true;
-    // auto login
-    public static boolean auto_login = false;
+    // skill cool time off
+    public static boolean disable_skill_cooltime = true;
 
 }

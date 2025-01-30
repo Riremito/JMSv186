@@ -10,9 +10,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
+import packet.response.ResCField;
 import server.Timer.CloneTimer;
 import server.maps.MapleMap;
-import tools.MaplePacketCreator;
 
 public class MapleSquad {
 
@@ -48,7 +48,7 @@ public class MapleSquad {
 
     public void clear() {
         if (removal != null) {
-            getBeginMap().broadcastMessage(MaplePacketCreator.stopClock());
+            getBeginMap().broadcastMessage(ResCField.stopClock());
             removal.cancel(false);
             removal = null;
         }

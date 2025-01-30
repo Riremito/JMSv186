@@ -36,7 +36,8 @@ import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import java.util.Collections;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import packet.client.request.ContextPacket;
+import packet.response.ResCField;
+import packet.response.wrapper.ResWrapper;
 import server.MapleCarnivalParty;
 import server.MapleItemInformationProvider;
 import server.MapleSquad;
@@ -46,7 +47,6 @@ import server.life.MapleMonster;
 import server.maps.MapleMap;
 import server.maps.MapleMapFactory;
 import tools.FileoutputUtil;
-import tools.MaplePacketCreator;
 
 public class EventInstanceManager {
 
@@ -150,7 +150,7 @@ public class EventInstanceManager {
             final int timesend = (int) time / 1000;
 
             for (MapleCharacter chr : getPlayers()) {
-                chr.getClient().getSession().write(MaplePacketCreator.getClock(timesend));
+                chr.getClient().getSession().write(ResCField.getClock(timesend));
             }
             timeOut(time, this);
 
@@ -517,7 +517,7 @@ public class EventInstanceManager {
             return;
         }
         for (MapleCharacter chr : getPlayers()) {
-            chr.getClient().getSession().write(MaplePacketCreator.serverNotice(type, msg));
+            chr.getClient().getSession().write(ResWrapper.serverNotice(type, msg));
         }
     }
 
@@ -760,7 +760,7 @@ public class EventInstanceManager {
             }
         }
         squad.setStatus((byte) 2);
-        squad.getBeginMap().broadcastMessage(MaplePacketCreator.stopClock());
+        squad.getBeginMap().broadcastMessage(ResCField.stopClock());
     }
 
     public boolean isDisconnected(final MapleCharacter chr) {
@@ -783,6 +783,6 @@ public class EventInstanceManager {
 
     public void applyBuff(final MapleCharacter chr, final int id) {
         MapleItemInformationProvider.getInstance().getItemEffect(id).applyTo(chr);
-        chr.getClient().getSession().write(ContextPacket.getStatusMsg(id));
+        chr.getClient().getSession().write(ResWrapper.getStatusMsg(id));
     }
 }

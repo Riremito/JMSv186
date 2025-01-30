@@ -26,9 +26,9 @@ import client.MapleCharacter;
 import client.MapleClient;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import packet.client.request.DropPacket;
-import packet.client.request.DropPacket.EnterType;
-import packet.client.request.DropPacket.LeaveType;
+import packet.response.ResCDropPool;
+import packet.response.ResCDropPool.EnterType;
+import packet.response.ResCDropPool.LeaveType;
 
 public class MapleMapItem extends AbstractMapleMapObject {
 
@@ -141,13 +141,13 @@ public class MapleMapItem extends AbstractMapleMapObject {
     @Override
     public void sendSpawnData(final MapleClient client) {
         if (questid <= 0 || client.getPlayer().getQuestStatus(questid) == 1) {
-            client.SendPacket(DropPacket.DropEnterField(this, EnterType.NO_ANIMATION, getPosition()));
+            client.SendPacket(ResCDropPool.DropEnterField(this, EnterType.NO_ANIMATION, getPosition()));
         }
     }
 
     @Override
     public void sendDestroyData(final MapleClient client) {
-        client.SendPacket(DropPacket.DropLeaveField(this, LeaveType.NO_ANIMATION));
+        client.SendPacket(ResCDropPool.DropLeaveField(this, LeaveType.NO_ANIMATION));
     }
 
     public Lock getLock() {
@@ -172,7 +172,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
 
     public void expire(final MapleMap map) {
         pickedUp = true;
-        map.broadcastMessage(DropPacket.DropLeaveField(this, LeaveType.EXPIRED));
+        map.broadcastMessage(ResCDropPool.DropLeaveField(this, LeaveType.EXPIRED));
         map.removeMapObject(this);
         if (randDrop) {
             map.spawnRandDrop();

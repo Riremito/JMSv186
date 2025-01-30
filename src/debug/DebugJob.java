@@ -25,6 +25,7 @@ import client.MapleCharacter;
 import client.PlayerStats;
 import client.SkillFactory;
 import config.ServerConfig;
+import java.util.ArrayList;
 import server.Randomizer;
 import wz.LoadData;
 
@@ -44,6 +45,7 @@ public class DebugJob {
     // ステータス初期化
     public static void ResetStat(MapleCharacter chr) {
         //int ability_point = 25;
+        DebugJob.AllSkill(chr, true);
         PlayerStats stat = chr.getStat();
         chr.setRemainingAp(0);
         chr.setRemainingSp(0);
@@ -59,7 +61,6 @@ public class DebugJob {
         stat.setInt(4);
         stat.setLuk(4);
         chr.UpdateStat(true);
-        chr.ResetSkill();
     }
 
     public static boolean IsBeginnerJob(int job_id) {
@@ -180,8 +181,8 @@ public class DebugJob {
             }
         }
         //maxmp += player_stat.getTotalInt() / 10;
-        maxhp = Math.min((ServerConfig.GetVersion() <= 186) ? 30000 : 500000, Math.abs(maxhp));
-        maxmp = Math.min((ServerConfig.GetVersion() <= 186) ? 30000 : 500000, Math.abs(maxmp));
+        maxhp = Math.min(ServerConfig.IsPreBB() ? 30000 : 500000, Math.abs(maxhp));
+        maxmp = Math.min(ServerConfig.IsPreBB() ? 30000 : 500000, Math.abs(maxmp));
 
         player_stat.setMaxHp(maxhp);
         player_stat.setMaxMp(maxmp);
@@ -380,5 +381,112 @@ public class DebugJob {
         }
         chr.UpdateStat(true);
         return true;
+    }
+
+    public static boolean AllSkill(MapleCharacter chr) {
+        return AllSkill(chr, false);
+    }
+
+    public static boolean AllSkill(MapleCharacter chr, boolean reset) {
+        int job_id = chr.getJob();
+
+        if (!LoadData.IsValidJobID(job_id)) {
+            return false;
+        }
+
+        // 初心者系統
+        if ((job_id / 100) == 0) {
+            return false;
+        }
+        // エヴァン
+        if (2200 <= job_id && job_id <= 2218) {
+            return false;
+        }
+        // デュアルブレイド
+        if (430 <= job_id && job_id <= 434) {
+            return false;
+        }
+        ArrayList<Integer> job_list = new ArrayList<>();
+        job_list.add(job_id);
+
+        // 4次転職済み
+        switch ((job_id % 10)) {
+            // 4次転職
+            case 2: {
+                job_id -= 1;
+                if (!LoadData.IsValidJobID(job_id)) {
+                    return false;
+                }
+                job_list.add(job_id);
+            }
+            // 3次転職
+            case 1: {
+                job_id -= 1;
+                if (!LoadData.IsValidJobID(job_id)) {
+                    return false;
+                }
+                job_list.add(job_id);
+            }
+            case 0: {
+                // 2次転職
+                if ((job_id % 100) != 0) {
+                    job_id -= job_id % 100;
+                    if (!LoadData.IsValidJobID(job_id)) {
+                        return false;
+                    }
+                    job_list.add(job_id);
+                }
+                break;
+            }
+            default: {
+                return false;
+            }
+        }
+
+        for (Integer v : job_list) {
+            for (Integer skill_id : SkillFactory.getSkillsByJob(v)) {
+                ISkill skill = SkillFactory.getSkill(skill_id);
+                chr.changeSkillLevel(skill, reset ? 0 : skill.getMaxLevel(), (v % 10 == 2) ? (byte) skill.getMaxLevel() : (byte) 0);
+            }
+        }
+
+        int level = 180;
+        switch (job_list.size()) {
+            case 3:
+                level = 120;
+                break;
+            case 2:
+                level = 70;
+                break;
+            case 1:
+                level = 30;
+                break;
+            default:
+                break;
+        }
+        AllStat(chr, level);
+        return true;
+    }
+
+    public static void AllStat(MapleCharacter chr) {
+        AllStat(chr, 180);
+    }
+
+    public static void AllStat(MapleCharacter chr, int level) {
+        PlayerStats stat = chr.getStat();
+        chr.setRemainingAp(150);
+        chr.setRemainingSp(550);
+        chr.setFame((short) 300);
+        chr.setExp(0);
+        chr.setLevel(level);
+        stat.setMaxHp(level * 100);
+        stat.setHp((int) (level * 100 * 0.8));
+        stat.setMaxMp(level * 50);
+        stat.setMp((int) (level * 50 * 0.8));
+        stat.setStr(level * 5);
+        stat.setDex(level * 5);
+        stat.setInt(level * 5);
+        stat.setLuk(level * 5);
+        chr.UpdateStat(true);
     }
 }

@@ -4,13 +4,24 @@ import debug.Debug;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.sql.Timestamp;
 import java.util.Properties;
-import packet.client.ClientPacket;
-import packet.server.ServerPacket;
+import packet.ClientPacket;
+import packet.ServerPacket;
 
 public class ServerConfig {
 
+    public static long expiration_date = (Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000;
     private static boolean packet_encryption = true;
+    private static boolean packet_custom_encryption = false;
+
+    // 初期スロット数
+    public static final byte DEFAULT_INV_SLOT_EQUIP = 72;
+    public static final byte DEFAULT_INV_SLOT_USE = 72;
+    public static final byte DEFAULT_INV_SLOT_ETC = 24;
+    public static final byte DEFAULT_INV_SLOT_SETUP = 24;
+    public static final byte DEFAULT_INV_SLOT_CASH = 96;
+    private static final byte DEFAULT_INV_SLOT_STORAGE = 4;
 
     public static void SetPacketEncryption(boolean encryption_flag) {
         packet_encryption = encryption_flag;
@@ -20,14 +31,20 @@ public class ServerConfig {
         return packet_encryption;
     }
 
+    public static boolean CustomEncryptionEnabled() {
+        return packet_custom_encryption;
+    }
+
     public enum Region {
         KMS,
         JMS,
         CMS,
         TWMS,
-        MSEA,
+        THMS,
         GMS,
         EMS,
+        BMS,
+        MSEA,
         unk,
     }
 
@@ -47,10 +64,23 @@ public class ServerConfig {
         return GetRegion() == Region.TWMS;
     }
 
+    public static boolean IsTHMS() {
+        return GetRegion() == Region.THMS;
+    }
+
+    public static boolean IsEMS() {
+        return GetRegion() == Region.EMS;
+    }
+
+    public static boolean IsBMS() {
+        return GetRegion() == Region.BMS;
+    }
+
     public static boolean IsMSEA() {
         return GetRegion() == Region.MSEA;
     }
 
+    private static int character_name_size = 13;
     private static boolean job_pirate = true;
     private static boolean job_KOC = true;
     private static boolean job_Aran = true;
@@ -59,12 +89,479 @@ public class ServerConfig {
     private static boolean job_Resistance = true;
     private static boolean is_postBB = false;
 
+    public static int GetCharacterNameSize() {
+        return character_name_size;
+    }
+
     public static boolean IsPostBB() {
         return is_postBB;
     }
 
     public static boolean IsPreBB() {
         return !IsPostBB();
+    }
+
+    // only 5 jobs
+    // シグナス実装前まではほぼ変わらないはずなのでバージョンの誤差は多少あっても問題ない
+    public static boolean JMS164orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (164 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case KMS: {
+                // v2.66
+                if (65 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case CMS: {
+                if (73 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case TWMS: {
+                if (94 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case THMS: {
+                if (87 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case GMS: {
+                if (72 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case EMS: {
+                if (72 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case MSEA: {
+                if (102 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Knights of Cygnus update
+    public static boolean JMS165orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (165 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case KMS: {
+                if (67 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case CMS: {
+                if (74 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case TWMS: {
+                if (96 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case THMS: {
+                if (87 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case GMS: {
+                if (73 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case EMS: {
+                if (72 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case MSEA: {
+                if (102 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // under JMS v180
+    public static boolean KMS84orEarlier() {
+        if (IsPostBB()) {
+            return false;
+        }
+
+        switch (GetRegion()) {
+            case KMS: {
+                if (GetVersion() <= 84) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS84orLater() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (84 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // stable pre bb
+    public static boolean JMS180orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (180 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case KMS: {
+                if (95 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case CMS: {
+                if (85 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case TWMS: {
+                if (122 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case THMS: {
+                if (87 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case GMS: {
+                if (92 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case EMS: {
+                if (72 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case MSEA: {
+                if (102 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return true;
+    }
+
+    public static boolean KMS95orEarlier() {
+        if (IsPostBB()) {
+            return false;
+        }
+
+        switch (GetRegion()) {
+            case KMS: {
+                if (GetVersion() <= 95) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS95orLater() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (95 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // pre bb with potential
+    public static boolean JMS186orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (186 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case KMS: {
+                if (100 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case CMS: {
+                if (85 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case TWMS: {
+                if (122 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case THMS: {
+                if (87 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case GMS: {
+                if (92 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case EMS: {
+                if (72 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case MSEA: {
+                if (102 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS114orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case KMS: {
+                if (114 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean TWMS122orLater() {
+        switch (GetRegion()) {
+            case TWMS: {
+                if (122 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // near Chaos update
+    public static boolean JMS194orLater() {
+        if (!IsPostBB()) {
+            return false;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (194 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case KMS: {
+                if (114 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // Sengoku update
+    public static boolean JMS302orLater() {
+        if (!IsPostBB()) {
+            return false;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (302 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // test version of potential system
+    public static boolean IsPrePotentialVersion() {
+        switch (GetRegion()) {
+            case JMS: {
+                if (184 <= GetVersion() && GetVersion() <= 185) {
+                    return true;
+                }
+                return false;
+            }
+            case KMS: {
+                if (95 == GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // around Pirate update
+    public static boolean JMS131orEarlier() {
+        if (IsPostBB()) {
+            return false;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                // not checked v132 to v163
+                if (GetVersion() < 164) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // Knights of Cygnus update
+    // todo : replace to orlater func
+    public static boolean JMS165orEarlier() {
+        if (IsPostBB()) {
+            return false;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (GetVersion() <= 165) {
+                    return true;
+                }
+                return false;
+            }
+            case TWMS: {
+                if (GetVersion() <= 94) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
     }
 
     public static boolean SetContentFlag() {
@@ -93,8 +590,8 @@ public class ServerConfig {
                 }
                 return true;
             }
-            case MSEA: {
-                if (103 <= GetVersion()) {
+            case THMS: {
+                if (90 <= GetVersion()) {
                     is_postBB = true;
                 }
                 return true;
@@ -111,6 +608,16 @@ public class ServerConfig {
                 }
                 return true;
             }
+            case MSEA: {
+                if (105 <= GetVersion()) {
+                    is_postBB = true;
+                }
+                return true;
+            }
+            case BMS: {
+                is_postBB = false;
+                return true;
+            }
             default: {
                 break;
             }
@@ -124,7 +631,7 @@ public class ServerConfig {
     public static Charset codepage_utf8;
 
     // Version
-    private static Region region_name = Region.JMS;
+    private static Region region_type = Region.JMS;
     private static byte region_number = 3; // JMS
     public static int version = 186;
     private static byte version_sub = 1;
@@ -134,7 +641,7 @@ public class ServerConfig {
     }
 
     public static Region GetRegion() {
-        return region_name;
+        return region_type;
     }
 
     public static int GetVersion() {
@@ -146,39 +653,64 @@ public class ServerConfig {
     }
 
     public static String GetRegionName() {
-        return "" + region_name;
+        return "" + region_type;
     }
 
-    public static boolean SetRegionNumber(int region_num) {
-        region_number = (byte) region_num;
-
-        switch (region_number) {
-            case 1: {
-                region_name = Region.KMS;
+    public static boolean SetRegion(String region_name) {
+        switch (region_name) {
+            case "KMS": {
+                region_type = Region.KMS;
+                region_number = 1;
+                character_name_size = 13;
                 return true;
             }
-            case 3: {
-                region_name = Region.JMS;
+            case "JMS": {
+                region_type = Region.JMS;
+                region_number = 3;
+                character_name_size = 13;
                 return true;
             }
-            case 4: {
-                region_name = Region.CMS;
+            case "CMS": {
+                region_type = Region.CMS;
+                region_number = 4;
+                packet_custom_encryption = true;
+                character_name_size = 13;
                 return true;
             }
-            case 6: {
-                region_name = Region.TWMS;
+            case "TWMS": {
+                region_type = Region.TWMS;
+                region_number = 6;
+                character_name_size = 15;
                 return true;
             }
-            case 7: {
-                region_name = Region.MSEA;
+            case "MSEA": {
+                region_type = Region.MSEA;
+                region_number = 7;
                 return true;
             }
-            case 8: {
-                region_name = Region.GMS;
+            case "GMS": {
+                region_type = Region.GMS;
+                region_number = 8;
+                character_name_size = 15;
                 return true;
             }
-            case 9: {
-                region_name = Region.EMS;
+            case "EMS": {
+                region_type = Region.EMS;
+                region_number = 9;
+                packet_custom_encryption = true;
+                character_name_size = 13;
+                return true;
+            }
+            case "BMS": {
+                region_type = Region.BMS;
+                region_number = 9;
+                packet_custom_encryption = true;
+                return true;
+            }
+            case "THMS": {
+                region_type = Region.THMS;
+                region_number = 7;
+                packet_custom_encryption = true;
                 return true;
             }
             default: {
@@ -186,7 +718,7 @@ public class ServerConfig {
             }
         }
 
-        region_name = Region.unk;
+        region_type = Region.unk;
         return false;
     }
 
@@ -350,11 +882,11 @@ public class ServerConfig {
 
         Properties ServerPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ServerPacket.properties");
         if (ServerPacketHeader != null) {
-            ServerPacket.Load(ServerPacketHeader);
+            ServerPacket.init(ServerPacketHeader);
 
             Debug.DebugLog("[SP]");
             for (ServerPacket.Header header : ServerPacket.Header.values()) {
-                int val = header.Get();
+                int val = header.get();
                 if (val != -1) {
                     Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
                 }
@@ -372,6 +904,21 @@ public class ServerConfig {
                     Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
                 }
             }
+        }
+    }
+
+    public static void ReloadHeader() {
+        Properties ServerPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ServerPacket.properties");
+        if (ServerPacketHeader != null) {
+            ServerPacket.reset();
+            ServerPacket.init(ServerPacketHeader);
+            Debug.InfoLog("ServerPacket is reloaded!");
+        }
+        Properties ClientPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ClientPacket.properties");
+        if (ClientPacketHeader != null) {
+            ClientPacket.Reset();
+            ClientPacket.Load(ClientPacketHeader);
+            Debug.InfoLog("ClientPacket is reloaded!");
         }
     }
 

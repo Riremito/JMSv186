@@ -31,8 +31,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
-import packet.client.request.NPCPacket;
-import packet.server.response.FieldResponse;
+import packet.ops.OpsFieldEffect;
+import packet.ops.OpsFieldEffectArg;
+import packet.response.ResCField;
+import packet.response.ResCNpcPool;
+import packet.response.ResCUserLocal;
+import packet.response.ResCUserRemote;
+import packet.response.ResCWvsContext;
+import packet.response.wrapper.ResWrapper;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataProviderFactory;
@@ -58,7 +64,6 @@ import server.maps.MapleMapObjectType;
 import server.maps.MapleReactor;
 import server.quest.MapleQuest;
 import tools.ArrayMap;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import tools.StringUtil;
 
@@ -806,7 +811,7 @@ public class AdminCommand {
                 sb.append(c.getPlayer().getName());
                 sb.append("] ");
                 sb.append(StringUtil.joinStringFrom(splitted, 1));
-                World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, sb.toString()).getBytes());
+                World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, sb.toString()).getBytes());
             } else {
                 c.getPlayer().dropMessage(6, "Syntax: !say <message>");
                 return 0;
@@ -1281,14 +1286,14 @@ public class AdminCommand {
                     return 0;
                 }
                 victim.setChair(0);
-                victim.getClient().getSession().write(MaplePacketCreator.cancelChair(-1));
-                victim.getMap().broadcastMessage(victim, MaplePacketCreator.showChair(c.getPlayer().getId(), 0), false);
+                victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
+                victim.getMap().broadcastMessage(victim, ResCUserRemote.SetActivePortableChair(c.getPlayer().getId(), 0), false);
                 victim.giveDebuff(dis, MobSkillFactory.getMobSkill(type, CommandProcessorUtil.getOptionalIntArg(splitted, 3, 1)));
             } else {
                 for (MapleCharacter victim : c.getPlayer().getMap().getCharactersThreadsafe()) {
                     victim.setChair(0);
-                    victim.getClient().getSession().write(MaplePacketCreator.cancelChair(-1));
-                    victim.getMap().broadcastMessage(victim, MaplePacketCreator.showChair(c.getPlayer().getId(), 0), false);
+                    victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
+                    victim.getMap().broadcastMessage(victim, ResCUserRemote.SetActivePortableChair(c.getPlayer().getId(), 0), false);
                     victim.giveDebuff(dis, MobSkillFactory.getMobSkill(type, CommandProcessorUtil.getOptionalIntArg(splitted, 2, 1)));
                 }
             }
@@ -1697,7 +1702,7 @@ public class AdminCommand {
         @Override
         public int execute(MapleClient c, String[] splitted) {
             MapleCharacter player = c.getPlayer();
-            c.getSession().write(MaplePacketCreator.getCharInfo(player));
+            c.getSession().write(ResWrapper.getCharInfo(player));
             player.getMap().removePlayer(player);
             player.getMap().addPlayer(player);
             return 1;
@@ -2139,7 +2144,7 @@ public class AdminCommand {
 
                 if (mob.getStats().getHPDisplayType() == 0) {
                     mob.setHp(0);
-                    map.broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_MobHPTag, mob)));
+                    map.broadcastMessage(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_MobHPTag, mob)));
                 }
                 map.killMonster(mob, c.getPlayer(), false, false, (byte) 1);
             }
@@ -2261,7 +2266,7 @@ public class AdminCommand {
                 npc.setFh(c.getPlayer().getMap().getFootholds().findBelow(c.getPlayer().getPosition()).getId());
                 npc.setCustom(true);
                 c.getPlayer().getMap().addMapObject(npc);
-                c.getPlayer().getMap().broadcastMessage(NPCPacket.spawnNPC(npc, true));
+                c.getPlayer().getMap().broadcastMessage(ResCNpcPool.spawnNPC(npc, true));
 
                 // ファイルへ追記
                 try (FileWriter fw = new FileWriter(ServerConfig.script_path + "map/temp/" + c.getPlayer().getMapId() + ".txt", true)) {
@@ -2452,7 +2457,7 @@ public class AdminCommand {
             joinmod += tfrom;
             sb.append(StringUtil.joinStringFrom(splitted, joinmod));
 
-            MaplePacket packet = MaplePacketCreator.serverNotice(type, sb.toString());
+            MaplePacket packet = ResWrapper.serverNotice(type, sb.toString());
             if (range == 0) {
                 c.getPlayer().getMap().broadcastMessage(packet);
             } else if (range == 1) {
@@ -2479,7 +2484,7 @@ public class AdminCommand {
             if (range == -1) {
                 range = 2;
             }
-            MaplePacket packet = MaplePacketCreator.yellowChat((splitted[0].equals("!y") ? ("[" + c.getPlayer().getName() + "] ") : "") + StringUtil.joinStringFrom(splitted, 2));
+            MaplePacket packet = ResCWvsContext.yellowChat((splitted[0].equals("!y") ? ("[" + c.getPlayer().getName() + "] ") : "") + StringUtil.joinStringFrom(splitted, 2));
             if (range == 0) {
                 c.getPlayer().getMap().broadcastMessage(packet);
             } else if (range == 1) {

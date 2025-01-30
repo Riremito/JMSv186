@@ -22,12 +22,13 @@ package handling.channel.handler;
 
 import client.MapleCharacter;
 import client.inventory.MapleInventoryType;
+import packet.response.ResCMobPool;
+import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.Randomizer;
 import server.maps.MapleMap;
 import server.life.MapleMonster;
 import server.maps.MapleNodes.MapleNodeInfo;
-import tools.MaplePacketCreator;
 
 public class MobHandler {
 
@@ -58,7 +59,7 @@ public class MobHandler {
                     break;
                 }
             }
-            map.broadcastMessage(MaplePacketCreator.serverNotice(6, "Your party has failed to protect the monster."));
+            map.broadcastMessage(ResWrapper.serverNotice(6, "Your party has failed to protect the monster."));
             final MapleMap mapp = chr.getClient().getChannelServer().getMapFactory().getMap(921120001);
             for (MapleCharacter chrz : map.getCharactersThreadsafe()) {
                 chrz.changeMap(mapp, mapp.getPortal(0));
@@ -110,7 +111,7 @@ public class MobHandler {
     }
 
     public static final void DisplayNode(MapleCharacter chr, MapleMonster mob_from) {
-        chr.getClient().SendPacket(MaplePacketCreator.getNodeProperties(mob_from, chr.getMap()));
+        chr.getClient().SendPacket(ResCMobPool.getNodeProperties(mob_from, chr.getMap()));
     }
 
     public static final void MobNode(MapleCharacter chr, MapleMonster mob_from, int newNode) {
@@ -148,7 +149,7 @@ public class MobHandler {
 
                 }
                 if (newMap > 0) {
-                    chr.getMap().broadcastMessage(MaplePacketCreator.serverNotice(5, "Proceed to the next stage."));
+                    chr.getMap().broadcastMessage(ResWrapper.serverNotice(5, "Proceed to the next stage."));
                     chr.getMap().removeMonster(mob_from);
                 }
             }

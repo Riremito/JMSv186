@@ -15,14 +15,17 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
+import debug.Debug;
 import java.util.LinkedList;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
 import provider.MapleDataProvider;
 import provider.MapleDataTool;
+import provider.WzXML.MapleDataType;
 import server.StructSetItem.SetItem;
 import tools.Pair;
+import wz.LoadData;
 
 public class MapleItemInformationProvider {
 
@@ -70,7 +73,7 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<Integer, Map<Integer, Map<String, Integer>>>();
     protected final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<Integer, Map<Integer, List<Integer>>>();
     protected final Map<Integer, Pair<Integer, List<StructRewardItem>>> RewardItem = new HashMap<Integer, Pair<Integer, List<StructRewardItem>>>();
-    protected final Map<Byte, StructSetItem> setItems = new HashMap<Byte, StructSetItem>();
+    protected final Map<Integer, StructSetItem> setItems = new HashMap<Integer, StructSetItem>();
     protected final Map<Integer, Pair<Integer, List<Integer>>> questItems = new HashMap<Integer, Pair<Integer, List<Integer>>>();
 
     protected MapleItemInformationProvider() {
@@ -84,7 +87,7 @@ public class MapleItemInformationProvider {
         getAllItems();
         // 潜在能力実装がv186のためそれ以前では存在しない
         // v186以外で全然違うので使い物にならない
-        if (ServerConfig.version < 186 || ServerConfig.version >= 302) {
+        if (!ServerConfig.JMS186orLater()) {
             return;
         }
         final MapleData setsData = etcData.getData("SetItemInfo.img");
@@ -92,9 +95,13 @@ public class MapleItemInformationProvider {
         SetItem itez;
         for (MapleData dat : setsData) {
             itemz = new StructSetItem();
-            itemz.setItemID = Byte.parseByte(dat.getName());
-            itemz.completeCount = (byte) MapleDataTool.getIntConvert("completeCount", dat, 0);
+            itemz.setItemID = Integer.parseInt(dat.getName());
+            itemz.completeCount = MapleDataTool.getIntConvert("completeCount", dat, 0);
             for (MapleData level : dat.getChildByPath("ItemID")) {
+                if (level.getType() != MapleDataType.INT) {
+                    Debug.ErrorLog("SetItemInfo.img, " + dat.getName() + " error");
+                    continue;
+                }
                 itemz.itemIDs.add(MapleDataTool.getIntConvert(level));
             }
             for (MapleData level : dat.getChildByPath("Effect")) {
@@ -126,7 +133,7 @@ public class MapleItemInformationProvider {
                 item.reqLevel = MapleDataTool.getIntConvert("info/reqLevel", dat, 0);
                 item.face = MapleDataTool.getString("face", level, "");
                 item.boss = MapleDataTool.getIntConvert("boss", level, 0) > 0;
-                item.potentialID = Short.parseShort(dat.getName());
+                item.potentialID = Integer.parseInt(dat.getName());
                 item.attackType = (short) MapleDataTool.getIntConvert("attackType", level, 0);
                 item.incMHP = (short) MapleDataTool.getIntConvert("incMHP", level, 0);
                 item.incMMP = (short) MapleDataTool.getIntConvert("incMMP", level, 0);
@@ -179,7 +186,7 @@ public class MapleItemInformationProvider {
                     case 31002:
                     case 31003:
                     case 31004:
-                        item.skillID = (short) (item.potentialID - 23001);
+                        item.skillID = item.potentialID - 23001;
                         break;
                     default:
                         item.skillID = 0;
@@ -188,6 +195,31 @@ public class MapleItemInformationProvider {
                 items.add(item);
             }
             potentialCache.put(Integer.parseInt(dat.getName()), items);
+
+            int potential_id = Integer.parseInt(dat.getName());
+            switch (potential_id / 10000) {
+                case 1: {
+                    LoadData.potential_rare.add(potential_id);
+                    break;
+                }
+                case 2: {
+                    LoadData.potential_epic.add(potential_id);
+                    break;
+                }
+                case 3: {
+                    LoadData.potential_unique.add(potential_id);
+                    break;
+                }
+                case 4: {
+                    LoadData.potential_legendary.add(potential_id);
+                    break;
+                }
+                default: {
+                    Debug.ErrorLog("invalid rank potential : " + potential_id);
+                    break;
+                }
+            }
+
         }
     }
 
@@ -309,7 +341,7 @@ public class MapleItemInformationProvider {
         if (cat == null) {
             return data.getChildByPath(String.valueOf(itemId));
         } else {
-            return data.getChildByPath("Eqp/" + cat + "/" + itemId);
+            return data.getChildByPath(cat + "/" + itemId);
         }
     }
 
@@ -811,12 +843,12 @@ public class MapleItemInformationProvider {
                             nEquip.setEnhance((byte) (nEquip.getEnhance() + 1));
                             break;
                         } else if (GameConstants.isPotentialScroll(scrollId.getItemId())) {
-                            if (nEquip.getState() == 0) {
+                            if (nEquip.getHidden() == 0 && nEquip.getRank() == 0) {
                                 final int chanc = scrollId.getItemId() == 2049400 ? 90 : 70;
-                                if (Randomizer.nextInt(100) > chanc) {
-                                    return null; //destroyed, nib
-                                }
-                                nEquip.resetPotential();
+                                //if (Randomizer.nextInt(100) > chanc) {
+                                //    return null; //destroyed, nib
+                                //}
+                                nEquip.resetPotential(false, false);
                             }
                             break;
                         } else {
@@ -977,21 +1009,21 @@ public class MapleItemInformationProvider {
             range = 10;
         } // Normal
         else {
-            equip.setStr(getRandStat(equip.getStr(), 5));
-            equip.setDex(getRandStat(equip.getDex(), 5));
-            equip.setInt(getRandStat(equip.getInt(), 5));
-            equip.setLuk(getRandStat(equip.getLuk(), 5));
-            equip.setMatk(getRandStat(equip.getMatk(), 5));
-            equip.setWatk(getRandStat(equip.getWatk(), 5));
-            equip.setAcc(getRandStat(equip.getAcc(), 5));
-            equip.setAvoid(getRandStat(equip.getAvoid(), 5));
-            equip.setJump(getRandStat(equip.getJump(), 5));
-            equip.setHands(getRandStat(equip.getHands(), 5));
-            equip.setSpeed(getRandStat(equip.getSpeed(), 5));
-            equip.setWdef(getRandStat(equip.getWdef(), 10));
-            equip.setMdef(getRandStat(equip.getMdef(), 10));
-            equip.setHp(getRandStat(equip.getHp(), 10));
-            equip.setMp(getRandStat(equip.getMp(), 10));
+            equip.setStr(getRandStat((short) equip.getStr(), 5));
+            equip.setDex(getRandStat((short) equip.getDex(), 5));
+            equip.setInt(getRandStat((short) equip.getInt(), 5));
+            equip.setLuk(getRandStat((short) equip.getLuk(), 5));
+            equip.setMatk(getRandStat((short) equip.getMatk(), 5));
+            equip.setWatk(getRandStat((short) equip.getWatk(), 5));
+            equip.setAcc(getRandStat((short) equip.getAcc(), 5));
+            equip.setAvoid(getRandStat((short) equip.getAvoid(), 5));
+            equip.setJump(getRandStat((short) equip.getJump(), 5));
+            equip.setHands(getRandStat((short) equip.getHands(), 5));
+            equip.setSpeed(getRandStat((short) equip.getSpeed(), 5));
+            equip.setWdef(getRandStat((short) equip.getWdef(), 10));
+            equip.setMdef(getRandStat((short) equip.getMdef(), 10));
+            equip.setHp(getRandStat((short) equip.getHp(), 10));
+            equip.setMp(getRandStat((short) equip.getMp(), 10));
             return equip;
         }
 
@@ -1035,12 +1067,12 @@ public class MapleItemInformationProvider {
             equip.setJump((short) (def + 23));
         }
         // その他
-        equip.setAvoid(getRandStat(equip.getAvoid(), 5));
-        equip.setHands(getRandStat(equip.getHands(), 5));
-        equip.setWdef(getRandStat(equip.getWdef(), 10));
-        equip.setMdef(getRandStat(equip.getMdef(), 10));
-        equip.setHp(getRandStat(equip.getHp(), 10));
-        equip.setMp(getRandStat(equip.getMp(), 10));
+        equip.setAvoid(getRandStat((short) equip.getAvoid(), 5));
+        equip.setHands(getRandStat((short) equip.getHands(), 5));
+        equip.setWdef(getRandStat((short) equip.getWdef(), 10));
+        equip.setMdef(getRandStat((short) equip.getMdef(), 10));
+        equip.setHp(getRandStat((short) equip.getHp(), 10));
+        equip.setMp(getRandStat((short) equip.getMp(), 10));
         return equip;
     }
 
@@ -1049,21 +1081,21 @@ public class MapleItemInformationProvider {
             return RireSabaStats(equip);
         }
 
-        equip.setStr(getRandStat(equip.getStr(), 5));
-        equip.setDex(getRandStat(equip.getDex(), 5));
-        equip.setInt(getRandStat(equip.getInt(), 5));
-        equip.setLuk(getRandStat(equip.getLuk(), 5));
-        equip.setMatk(getRandStat(equip.getMatk(), 5));
-        equip.setWatk(getRandStat(equip.getWatk(), 5));
-        equip.setAcc(getRandStat(equip.getAcc(), 5));
-        equip.setAvoid(getRandStat(equip.getAvoid(), 5));
-        equip.setJump(getRandStat(equip.getJump(), 5));
-        equip.setHands(getRandStat(equip.getHands(), 5));
-        equip.setSpeed(getRandStat(equip.getSpeed(), 5));
-        equip.setWdef(getRandStat(equip.getWdef(), 10));
-        equip.setMdef(getRandStat(equip.getMdef(), 10));
-        equip.setHp(getRandStat(equip.getHp(), 10));
-        equip.setMp(getRandStat(equip.getMp(), 10));
+        equip.setStr(getRandStat((short) equip.getStr(), 5));
+        equip.setDex(getRandStat((short) equip.getDex(), 5));
+        equip.setInt(getRandStat((short) equip.getInt(), 5));
+        equip.setLuk(getRandStat((short) equip.getLuk(), 5));
+        equip.setMatk(getRandStat((short) equip.getMatk(), 5));
+        equip.setWatk(getRandStat((short) equip.getWatk(), 5));
+        equip.setAcc(getRandStat((short) equip.getAcc(), 5));
+        equip.setAvoid(getRandStat((short) equip.getAvoid(), 5));
+        equip.setJump(getRandStat((short) equip.getJump(), 5));
+        equip.setHands(getRandStat((short) equip.getHands(), 5));
+        equip.setSpeed(getRandStat((short) equip.getSpeed(), 5));
+        equip.setWdef(getRandStat((short) equip.getWdef(), 10));
+        equip.setMdef(getRandStat((short) equip.getMdef(), 10));
+        equip.setHp(getRandStat((short) equip.getHp(), 10));
+        equip.setMp(getRandStat((short) equip.getMp(), 10));
         return equip;
     }
 

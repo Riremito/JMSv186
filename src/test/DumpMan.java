@@ -23,8 +23,8 @@ import debug.Debug;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import packet.client.ClientPacket;
-import packet.server.ServerPacket;
+import packet.ClientPacket;
+import packet.ServerPacket;
 
 /**
  *
@@ -65,7 +65,7 @@ public class DumpMan {
             fw = new FileWriter("properties/packet/" + ServerConfig.GetRegionName() + "_v" + ServerConfig.GetVersion() + "_ServerPacket.properties");
             PrintWriter pw = new PrintWriter(fw);
             for (ServerPacket.Header header : ServerPacket.Header.values()) {
-                int val = (short) header.Get();
+                int val = (short) header.get();
                 if (val != -1) {
                     Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
                     pw.println(header.name() + " = " + String.format("@%04X", val));

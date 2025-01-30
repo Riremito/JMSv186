@@ -20,9 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.world.guild;
 
-import tools.MaplePacketCreator;
 import handling.MaplePacket;
-import packet.server.response.GuildResponse;
+import packet.response.ResCWvsContext;
 
 public enum MapleGuildResponse {
 
@@ -40,6 +39,6 @@ public enum MapleGuildResponse {
     }
 
     public MaplePacket getPacket() {
-        return GuildResponse.genericGuildMessage((byte) value);
+        return ResCWvsContext.genericGuildMessage((byte) value);
     }
 }

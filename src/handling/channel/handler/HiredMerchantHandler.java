@@ -36,15 +36,15 @@ import client.inventory.ItemLoader;
 import database.DatabaseConnection;
 import handling.world.World;
 import java.util.Map;
-import packet.server.response.FreeMarketResponse;
+import packet.response.ResCStoreBankDlg;
+import packet.response.ResCWvsContext;
 import server.MapleInventoryManipulator;
 import server.MerchItemPackage;
 import tools.Pair;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 public class HiredMerchantHandler {
 
-    public static final void UseHiredMerchant(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static final void UseHiredMerchant(MapleClient c) {
 //	slea.readInt(); // TimeStamp
 
         if (c.getPlayer().getMap().allowPersonalShop()) {
@@ -58,7 +58,7 @@ public class HiredMerchantHandler {
                     boolean merch = World.hasMerchant(c.getPlayer().getAccountID());
                     if (!merch) {
 //		    c.getPlayer().dropMessage(1, "The Hired Merchant is temporary disabled until it's fixed.");
-                        c.getSession().write(FreeMarketResponse.sendTitleBox());
+                        c.getSession().write(ResCWvsContext.sendTitleBox());
                     } else {
                         c.getPlayer().dropMessage(1, "Please close the existing store and try again.");
                     }
@@ -93,16 +93,13 @@ public class HiredMerchantHandler {
         }
     }
 
-    public static final void MerchantItemStore(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static final void MerchantItemStore(MapleClient c, byte operation, String str) {
         if (c.getPlayer() == null) {
             return;
         }
-        final byte operation = slea.readByte();
 
         switch (operation) {
             case 20: {
-                slea.readMapleAsciiString();
-
                 final int conv = c.getPlayer().getConversation();
                 boolean merch = World.hasMerchant(c.getPlayer().getAccountID());
                 if (merch) {
@@ -116,17 +113,17 @@ public class HiredMerchantHandler {
                         c.getPlayer().setConversation(0);
                     } else if (pack.getItems().size() <= 0) { //error fix for complainers.
                         if (!check(c.getPlayer(), pack)) {
-                            c.getSession().write(FreeMarketResponse.merchItem_Message((byte) 0x21));
+                            c.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x21));
                             return;
                         }
                         if (deletePackage(c.getPlayer().getId(), c.getPlayer().getAccountID(), pack.getPackageid())) {
                             c.getPlayer().gainMeso(pack.getMesos(), false);
-                            c.getSession().write(FreeMarketResponse.merchItem_Message((byte) 0x1d));
+                            c.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x1d));
                         } else {
                             c.getPlayer().dropMessage(1, "An unknown error occured.");
                         }
                     } else {
-                        c.getSession().write(FreeMarketResponse.merchItemStore_ItemData(pack));
+                        c.getSession().write(ResCStoreBankDlg.merchItemStore_ItemData(pack));
                     }
                 }
                 break;
@@ -135,7 +132,7 @@ public class HiredMerchantHandler {
                 if (c.getPlayer().getConversation() != 3) {
                     return;
                 }
-                c.getSession().write(FreeMarketResponse.merchItemStore((byte) 0x24));
+                c.getSession().write(ResCStoreBankDlg.merchItemStore((byte) 0x24));
                 break;
             }
             case 26: { // Take out item
@@ -149,7 +146,7 @@ public class HiredMerchantHandler {
                     return;
                 }
                 if (!check(c.getPlayer(), pack)) {
-                    c.getSession().write(FreeMarketResponse.merchItem_Message((byte) 0x21));
+                    c.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x21));
                     return;
                 }
                 if (deletePackage(c.getPlayer().getId(), c.getPlayer().getAccountID(), pack.getPackageid())) {
@@ -157,7 +154,7 @@ public class HiredMerchantHandler {
                     for (IItem item : pack.getItems()) {
                         MapleInventoryManipulator.addFromDrop(c, item, false);
                     }
-                    c.getSession().write(FreeMarketResponse.merchItem_Message((byte) 0x1d));
+                    c.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x1d));
                 } else {
                     c.getPlayer().dropMessage(1, "An unknown error occured.");
                 }

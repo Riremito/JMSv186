@@ -42,7 +42,6 @@ import client.inventory.MapleInventoryType;
 import client.SkillFactory;
 import client.SkillEntry;
 import client.MapleStat;
-import config.ServerConfig;
 import server.MapleCarnivalParty;
 import server.Randomizer;
 import server.MapleInventoryManipulator;
@@ -52,7 +51,6 @@ import server.maps.MapleMap;
 import server.maps.Event_DojoAgent;
 import server.maps.AramiaFireWorks;
 import server.quest.MapleQuest;
-import tools.MaplePacketCreator;
 import tools.Pair;
 import server.MapleItemInformationProvider;
 import handling.channel.ChannelServer;
@@ -67,10 +65,16 @@ import server.MapleCarnivalChallenge;
 import java.util.HashMap;
 import handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
-import packet.server.response.DueyResponse;
-import packet.server.response.FieldResponse;
-import packet.server.response.FreeMarketResponse;
-import packet.server.response.GuildResponse;
+import packet.ops.OpsFieldEffect;
+import packet.ops.OpsFieldEffectArg;
+import packet.ops.OpsScriptMan;
+import packet.response.ResCParcelDlg;
+import packet.response.ResCField;
+import packet.response.ResCRPSGameDlg;
+import packet.response.ResCStoreBankDlg;
+import packet.response.ResCUserLocal;
+import packet.response.ResCWvsContext;
+import packet.response.wrapper.ResWrapper;
 import server.MapleShop;
 import server.MapleShopItem;
 import server.MapleStatEffect;
@@ -87,7 +91,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     private int npc, script_name, questid;
     private String getText;
     private byte type; // -1 = NPC, 0 = start quest, 1 = end quest
-    private byte lastMsg = -1;
+    private int lastMsg = -1;
     public boolean pendingDisposal = false;
     private Invocable iv;
 
@@ -124,7 +128,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void WorldMessage(String text) {
-        World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, text).getBytes());
+        World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, text).getBytes());
     }
 
     public void BroadcastPacket(byte[] packet) {
@@ -142,7 +146,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void Broadcast(String text) {
-        World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(6, text).getBytes());
+        World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, text).getBytes());
     }
 
     public int getQuest() {
@@ -165,8 +169,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-        c.getSession().write(MaplePacketCreator.getMapSelection(npc, sel));
-        lastMsg = 0xE;
+        c.getSession().write(ResWrapper.getMapSelection(npc, sel));
+        lastMsg = OpsScriptMan.SM_ASKSLIDEMENU.get();
     }
 
     public void sendNext(String text) {
@@ -177,8 +181,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 01", (byte) 0));
-        lastMsg = 0;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 01", (byte) 0));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendNextS(String text, byte type) {
@@ -189,8 +193,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 01", type));
-        lastMsg = 0;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 01", type));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendPrev(String text) {
@@ -201,8 +205,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "01 00", (byte) 0));
-        lastMsg = 0;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 00", (byte) 0));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendPrevS(String text, byte type) {
@@ -213,8 +217,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "01 00", type));
-        lastMsg = 0;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 00", type));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendNextPrev(String text) {
@@ -225,8 +229,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "01 01", (byte) 0));
-        lastMsg = 0;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 01", (byte) 0));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void PlayerToNpc(String text) {
@@ -245,8 +249,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "01 01", type));
-        lastMsg = 0;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 01", type));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendOk(String text) {
@@ -257,8 +261,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 00", (byte) 0));
-        lastMsg = 0;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 00", (byte) 0));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendOkS(String text, byte type) {
@@ -269,8 +273,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, (byte) 0, text, "00 00", type));
-        lastMsg = 0;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 00", type));
+        lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
     public void sendYesNo(String text) {
@@ -282,12 +286,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        byte nextval = 2;
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
-            nextval = 1;
-        }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
-        lastMsg = nextval;
+        c.SendPacket(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKYESNO, text, "", (byte) 0));
+        lastMsg = OpsScriptMan.SM_ASKYESNO.get();
     }
 
     public void sendYesNoS(String text, byte type) {
@@ -298,12 +298,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        byte nextval = 2;
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
-            nextval = 1;
-        }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", type));
-        lastMsg = nextval;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKYESNO, text, "", type));
+        lastMsg = OpsScriptMan.SM_ASKYESNO.get();
     }
 
     public void sendAcceptDecline(String text) {
@@ -323,12 +319,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        byte nextval = 0x0C;
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
-            nextval = 0x0B;
-        }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
-        lastMsg = nextval;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKACCEPT, text, "", (byte) 0));
+        lastMsg = OpsScriptMan.SM_ASKACCEPT.get();
     }
 
     public void askAcceptDeclineNoESC(String text) {
@@ -339,20 +331,16 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        byte nextval = 0x0D;
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
-            nextval = 0x0C;
-        }
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
-        lastMsg = nextval;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKACCEPT, text, "", (byte) 0));
+        lastMsg = OpsScriptMan.SM_ASKACCEPT.get();
     }
 
     public void askAvatar(String text, int... args) {
         if (lastMsg > -1) {
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalkStyle(npc, text, args));
-        lastMsg = 8;
+        c.getSession().write(ResWrapper.getNPCTalkStyle(npc, text, args));
+        lastMsg = OpsScriptMan.SM_ASKAVATAR.get();
     }
 
     public void sendSimple(String text) {
@@ -364,13 +352,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        byte nextval = 5;
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
-            nextval = 4;
-        }
-
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) 0));
-        lastMsg = nextval;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKMENU, text, "", (byte) 0));
+        lastMsg = OpsScriptMan.SM_ASKMENU.get();
     }
 
     public void sendSimpleS(String text, byte type) {
@@ -382,21 +365,16 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        byte nextval = 5;
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 165) {
-            nextval = 4;
-        }
-
-        c.getSession().write(MaplePacketCreator.getNPCTalk(npc, nextval, text, "", (byte) type));
-        lastMsg = nextval;
+        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKMENU, text, "", (byte) type));
+        lastMsg = OpsScriptMan.SM_ASKMENU.get();
     }
 
     public void sendStyle(String text, int styles[]) {
         if (lastMsg > -1) {
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalkStyle(npc, text, styles));
-        lastMsg = 8;
+        c.getSession().write(ResWrapper.getNPCTalkStyle(npc, text, styles));
+        lastMsg = OpsScriptMan.SM_ASKAVATAR.get();
     }
 
     public void sendGetNumber(String text, int def, int min, int max) {
@@ -407,8 +385,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalkNum(npc, text, def, min, max));
-        lastMsg = 4;
+        c.getSession().write(ResWrapper.getNPCTalkNum(npc, text, def, min, max));
+        lastMsg = OpsScriptMan.SM_ASKNUMBER.get();
     }
 
     public void sendGetText(String text) {
@@ -419,8 +397,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(MaplePacketCreator.getNPCTalkText(npc, text));
-        lastMsg = 3;
+        c.getSession().write(ResWrapper.getNPCTalkText(npc, text));
+        lastMsg = OpsScriptMan.SM_ASKTEXT.get();
     }
 
     public void setGetText(String text) {
@@ -532,7 +510,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             }
             final byte rareness = GameConstants.gachaponRareItem(item.getItemId());
             if (rareness > 0) {
-                World.Broadcast.broadcastMessage(MaplePacketCreator.getGachaponMega("[" + msg + "] " + c.getPlayer().getName(), " : Lucky winner of Gachapon!", item, rareness).getBytes());
+                World.Broadcast.broadcastMessage(ResCWvsContext.getGachaponMega("[" + msg + "] " + c.getPlayer().getName(), " : Lucky winner of Gachapon!", item, rareness).getBytes());
             }
             return item.getItemId();
         } catch (Exception e) {
@@ -626,25 +604,25 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void showEffect(boolean broadcast, String effect) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(FieldResponse.showEffect(effect));
+            c.getPlayer().getMap().broadcastMessage(ResWrapper.showEffect(effect));
         } else {
-            c.getSession().write(FieldResponse.showEffect(effect));
+            c.getSession().write(ResWrapper.showEffect(effect));
         }
     }
 
     public void playSound(boolean broadcast, String sound) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(FieldResponse.playSound(sound));
+            c.getPlayer().getMap().broadcastMessage(ResWrapper.playSound(sound));
         } else {
-            c.getSession().write(FieldResponse.playSound(sound));
+            c.getSession().write(ResWrapper.playSound(sound));
         }
     }
 
     public void environmentChange(boolean broadcast, String env) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Object, env)));
+            c.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Object, env)));
         } else {
-            c.getSession().write(FieldResponse.FieldEffect(new FieldResponse.FieldEffectStruct(FieldResponse.Flag_FieldEffect.FieldEffect_Object, env)));
+            c.getSession().write(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Object, env)));
         }
     }
 
@@ -723,8 +701,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         if (ret) {
             final MapleMap map = c.getPlayer().getMap();
 
-            map.broadcastMessage(MaplePacketCreator.getClock(minutes * 60));
-            map.broadcastMessage(MaplePacketCreator.serverNotice(6, c.getPlayer().getName() + startText));
+            map.broadcastMessage(ResCField.getClock(minutes * 60));
+            map.broadcastMessage(ResWrapper.serverNotice(6, c.getPlayer().getName() + startText));
         } else {
             squad.clear();
         }
@@ -816,7 +794,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void genericGuildMessage(int code) {
-        c.getSession().write(GuildResponse.genericGuildMessage((byte) code));
+        c.getSession().write(ResCWvsContext.genericGuildMessage((byte) code));
     }
 
     public void disbandGuild() {
@@ -829,7 +807,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void increaseGuildCapacity() {
         if (c.getPlayer().getMeso() < 5000000) {
-            c.getSession().write(MaplePacketCreator.serverNotice(1, "You do not have enough mesos."));
+            c.getSession().write(ResWrapper.serverNotice(1, "You do not have enough mesos."));
             return;
         }
         final int gid = c.getPlayer().getGuildId();
@@ -841,7 +819,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void displayGuildRanks() {
-        c.getSession().write(GuildResponse.showGuildRanks(npc, MapleGuildRanking.getInstance().getRank()));
+        c.getSession().write(ResCWvsContext.showGuildRanks(npc, MapleGuildRanking.getInstance().getRank()));
     }
 
     public boolean removePlayerFromInstance() {
@@ -987,17 +965,17 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void openDuey() {
         c.getPlayer().setConversation(1);
-        c.getSession().write(DueyResponse.Open(false, true));
+        c.getSession().write(ResCParcelDlg.Open(false, true));
     }
 
     public void openMerchantItemStore() {
         c.getPlayer().setConversation(3);
-        c.getSession().write(FreeMarketResponse.merchItemStore((byte) 0x22));
+        c.getSession().write(ResCStoreBankDlg.merchItemStore((byte) 0x22));
         c.getPlayer().dropMessage(5, "Please enter ANY 13 characters.");
     }
 
     public void sendRepairWindow() {
-        c.getSession().write(MaplePacketCreator.sendRepairWindow(npc));
+        c.getSession().write(ResCUserLocal.sendRepairWindow(npc));
     }
 
     public final int getDojoPoints() {
@@ -1292,11 +1270,11 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         return false;
     }
 
-    public byte getLastMsg() {
+    public int getLastMsg() {
         return lastMsg;
     }
 
-    public final void setLastMsg(final byte last) {
+    public final void setLastMsg(int last) {
         this.lastMsg = last;
     }
 
@@ -1345,7 +1323,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public final void sendRPS() {
-        c.getSession().write(MaplePacketCreator.getRPSMode((byte) 8, -1, -1, -1));
+        c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 8, -1, -1, -1));
     }
 
     public final void setQuestRecord(Object ch, final int questid, final String data) {
@@ -1354,14 +1332,14 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public final void doWeddingEffect(final Object ch) {
         final MapleCharacter chr = (MapleCharacter) ch;
-        getMap().broadcastMessage(MaplePacketCreator.yellowChat(getPlayer().getName() + ", do you take " + chr.getName() + " as your wife and promise to stay beside her through all downtimes, crashes, and lags?"));
+        getMap().broadcastMessage(ResCWvsContext.yellowChat(getPlayer().getName() + ", do you take " + chr.getName() + " as your wife and promise to stay beside her through all downtimes, crashes, and lags?"));
         CloneTimer.getInstance().schedule(new Runnable() {
 
             public void run() {
                 if (chr == null || getPlayer() == null) {
                     warpMap(680000500, 0);
                 } else {
-                    getMap().broadcastMessage(MaplePacketCreator.yellowChat(chr.getName() + ", do you take " + getPlayer().getName() + " as your husband and promise to stay beside him through all downtimes, crashes, and lags?"));
+                    getMap().broadcastMessage(ResCWvsContext.yellowChat(chr.getName() + ", do you take " + getPlayer().getName() + " as your husband and promise to stay beside him through all downtimes, crashes, and lags?"));
                 }
             }
         }, 10000);
@@ -1383,16 +1361,16 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
                     sendNPCText(getPlayer().getName() + " and " + chr.getName() + ", I wish you two all the best on your AsteriaSEA journey together!", 9201002);
                     getMap().startExtendedMapEffect("You may now kiss the bride, " + getPlayer().getName() + "!", 5120006);
                     if (chr.getGuildId() > 0) {
-                        World.Guild.guildPacket(chr.getGuildId(), MaplePacketCreator.sendMarriage(false, chr.getName()));
+                        World.Guild.guildPacket(chr.getGuildId(), ResCWvsContext.sendMarriage(false, chr.getName()));
                     }
                     if (chr.getFamilyId() > 0) {
-                        World.Family.familyPacket(chr.getFamilyId(), MaplePacketCreator.sendMarriage(true, chr.getName()), chr.getId());
+                        World.Family.familyPacket(chr.getFamilyId(), ResCWvsContext.sendMarriage(true, chr.getName()), chr.getId());
                     }
                     if (getPlayer().getGuildId() > 0) {
-                        World.Guild.guildPacket(getPlayer().getGuildId(), MaplePacketCreator.sendMarriage(false, getPlayer().getName()));
+                        World.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.sendMarriage(false, getPlayer().getName()));
                     }
                     if (getPlayer().getFamilyId() > 0) {
-                        World.Family.familyPacket(getPlayer().getFamilyId(), MaplePacketCreator.sendMarriage(true, chr.getName()), getPlayer().getId());
+                        World.Family.familyPacket(getPlayer().getFamilyId(), ResCWvsContext.sendMarriage(true, chr.getName()), getPlayer().getId());
                     }
                 }
             }

@@ -33,7 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 import java.io.Serializable;
 
 import javax.script.ScriptEngine;
@@ -76,13 +75,12 @@ import org.apache.mina.common.IoSessionConfig;
 import org.apache.mina.common.TrafficMask;
 import org.apache.mina.common.TransportType;
 import org.apache.mina.common.WriteFuture;
-import packet.server.ServerPacket;
-import packet.client.request.SocketPacket;
-import packet.server.response.MapleTradeSpaceResponse;
-import packet.server.response.PointShopResponse;
+import packet.ServerPacket;
+import packet.response.ResCITC;
+import packet.response.ResCCashShop;
+import packet.response.ResCClientSocket;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
-import tools.MaplePacketCreator;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 public class MapleClient implements Serializable {
@@ -113,7 +111,6 @@ public class MapleClient implements Serializable {
     private transient List<Integer> allowedChar = new LinkedList<Integer>();
     private transient Set<String> macs = new HashSet<String>();
     private transient Map<String, ScriptEngine> engines = new HashMap<String, ScriptEngine>();
-    private transient ScheduledFuture<?> idleTask = null;
     private transient String secondPassword, salt2; // To be used only on login
     private final transient Lock mutex = new ReentrantLock(true);
     private final transient Lock npc_mutex = new ReentrantLock();
@@ -481,60 +478,6 @@ public class MapleClient implements Serializable {
         return greason;
     }
 
-    public boolean hasBannedIP() {
-        boolean ret = false;
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM ipbans WHERE ? LIKE CONCAT(ip, '%')");
-            ps.setString(1, session.getRemoteAddress().toString());
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            if (rs.getInt(1) > 0) {
-                ret = true;
-            }
-            rs.close();
-            ps.close();
-        } catch (SQLException ex) {
-            System.err.println("Error checking ip bans" + ex);
-        }
-        return ret;
-    }
-
-    public boolean hasBannedMac() {
-        if (macs.isEmpty()) {
-            return false;
-        }
-        boolean ret = false;
-        int i = 0;
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM macbans WHERE mac IN (");
-            for (i = 0; i < macs.size(); i++) {
-                sql.append("?");
-                if (i != macs.size() - 1) {
-                    sql.append(", ");
-                }
-            }
-            sql.append(")");
-            PreparedStatement ps = con.prepareStatement(sql.toString());
-            i = 0;
-            for (String mac : macs) {
-                i++;
-                ps.setString(i, mac);
-            }
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            if (rs.getInt(1) > 0) {
-                ret = true;
-            }
-            rs.close();
-            ps.close();
-        } catch (SQLException ex) {
-            System.err.println("Error checking mac bans" + ex);
-        }
-        return ret;
-    }
-
     private void loadMacsIfNescessary() throws SQLException {
         if (macs.isEmpty()) {
             Connection con = DatabaseConnection.getConnection();
@@ -671,7 +614,7 @@ public class MapleClient implements Serializable {
         return 0;
     }
 
-    public int login(String login, String pwd, boolean ipMacBanned) {
+    public int login(String login, String pwd) {
         int loginok = 5;
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -1153,7 +1096,7 @@ public class MapleClient implements Serializable {
 
     public final void sendPing() {
         lastPing = System.currentTimeMillis();
-        SendPacket(SocketPacket.AliveReq());
+        SendPacket(ResCClientSocket.AliveReq());
 
         PingTimer.getInstance().schedule(new Runnable() {
 
@@ -1252,14 +1195,6 @@ public class MapleClient implements Serializable {
 
     public final void removeScriptEngine(final String name) {
         engines.remove(name);
-    }
-
-    public final ScheduledFuture<?> getIdleTask() {
-        return idleTask;
-    }
-
-    public final void setIdleTask(final ScheduledFuture<?> idleTask) {
-        this.idleTask = idleTask;
     }
 
     protected static final class CharNameAndId {
@@ -1460,12 +1395,12 @@ public class MapleClient implements Serializable {
 
     // Point Shop
     public void enableCSActions() {
-        getSession().write(PointShopResponse.QueryCashResult(player));
+        getSession().write(ResCCashShop.QueryCashResult(player));
     }
 
     // MTS
     public void enableMTSSActions() {
-        getSession().write(MapleTradeSpaceResponse.QueryCashResult(player));
+        getSession().write(ResCITC.QueryCashResult(player));
     }
 
 }

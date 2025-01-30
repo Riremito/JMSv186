@@ -23,9 +23,10 @@ package server.events;
 
 import java.util.concurrent.ScheduledFuture;
 import client.MapleCharacter;
+import packet.response.ResCField;
+import packet.response.wrapper.ResWrapper;
 import server.Randomizer;
 import server.Timer.EventTimer;
-import tools.MaplePacketCreator;
 
 public class MapleOla extends MapleEvent {
 
@@ -51,7 +52,7 @@ public class MapleOla extends MapleEvent {
     @Override
     public void onMapLoad(MapleCharacter chr) {
         if (isTimerStarted()) {
-            chr.getClient().getSession().write(MaplePacketCreator.getClock((int) (getTimeLeft() / 1000)));
+            chr.getClient().getSession().write(ResCField.getClock((int) (getTimeLeft() / 1000)));
         }
     }
 
@@ -59,7 +60,7 @@ public class MapleOla extends MapleEvent {
     public void startEvent() { // TODO: Messages
         unreset();
         super.reset(); //isRunning = true
-        broadcast(MaplePacketCreator.getClock((int) (time / 1000)));
+        broadcast(ResCField.getClock((int) (time / 1000)));
         this.timeStarted = System.currentTimeMillis();
 
         olaSchedule = EventTimer.getInstance().schedule(new Runnable() {
@@ -75,7 +76,7 @@ public class MapleOla extends MapleEvent {
             }
         }, this.time);
 
-        broadcast(MaplePacketCreator.serverNotice(0, "The portal has now opened. Press the up arrow key at the portal to enter."));
+        broadcast(ResWrapper.serverNotice(0, "The portal has now opened. Press the up arrow key at the portal to enter."));
     }
 
     public boolean isTimerStarted() {

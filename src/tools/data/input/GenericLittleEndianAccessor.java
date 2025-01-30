@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tools.data.input;
 
 import config.ServerConfig;
+import debug.Debug;
 import java.awt.Point;
 
 /**
@@ -33,6 +34,7 @@ import java.awt.Point;
 public class GenericLittleEndianAccessor implements LittleEndianAccessor {
 
     private final ByteInputStream bs;
+    private boolean already_used = false;
 
     /**
      * Class constructor - Wraps the accessor around a stream of bytes.
@@ -56,6 +58,15 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
      */
     @Override
     public final byte readByte() {
+        if (!already_used) {
+            already_used = true;
+            Debug.DebugLog("OLD_CLIENT_PACKET readByte");
+            StackTraceElement[] ste = new Throwable().getStackTrace();
+            if (1 < ste.length) {
+                Debug.DebugLog(ste[1].getFileName() + ":" + ste[1].getLineNumber());
+                Debug.DebugLog(ste[1].getClassName() + "." + ste[1].getMethodName());
+            }
+        }
         return (byte) bs.readByte();
     }
 
@@ -70,6 +81,17 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
         final int byte2 = bs.readByte();
         final int byte3 = bs.readByte();
         final int byte4 = bs.readByte();
+
+        if (!already_used) {
+            already_used = true;
+            Debug.DebugLog("OLD_CLIENT_PACKET readInt");
+            StackTraceElement[] ste = new Throwable().getStackTrace();
+            if (1 < ste.length) {
+                Debug.DebugLog(ste[1].getFileName() + ":" + ste[1].getLineNumber());
+                Debug.DebugLog(ste[1].getClassName() + "." + ste[1].getMethodName());
+            }
+        }
+
         return (byte4 << 24) + (byte3 << 16) + (byte2 << 8) + byte1;
     }
 
@@ -82,6 +104,20 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
     public final short readShort() {
         final int byte1 = bs.readByte();
         final int byte2 = bs.readByte();
+
+        if (!already_used) {
+            StackTraceElement[] ste = new Throwable().getStackTrace();
+            if (1 < ste.length) {
+                if ("messageReceived".equals(ste[1].getMethodName())) {
+                } else {
+                    already_used = true;
+                    Debug.DebugLog("OLD_CLIENT_PACKET readShort");
+                    Debug.DebugLog(ste[1].getFileName() + ":" + ste[1].getLineNumber());
+                    Debug.DebugLog(ste[1].getClassName() + "." + ste[1].getMethodName());
+                }
+            }
+        }
+
         return (short) ((byte2 << 8) + byte1);
     }
 
@@ -210,6 +246,15 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
         for (int x = 0; x < num; x++) {
             readByte();
         }
+        if (!already_used) {
+            already_used = true;
+            Debug.DebugLog("OLD_CLIENT_PACKET skip");
+            StackTraceElement[] ste = new Throwable().getStackTrace();
+            if (1 < ste.length) {
+                Debug.DebugLog(ste[1].getFileName() + ":" + ste[1].getLineNumber());
+                Debug.DebugLog(ste[1].getClassName() + "." + ste[1].getMethodName());
+            }
+        }
     }
 
     /**
@@ -232,4 +277,5 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
     public final String toString(final boolean b) {
         return bs.toString(b);
     }
+
 }

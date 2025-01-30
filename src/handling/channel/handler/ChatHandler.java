@@ -29,8 +29,11 @@ import handling.channel.ChannelServer;
 import handling.world.MapleMessenger;
 import handling.world.MapleMessengerCharacter;
 import handling.world.World;
-import packet.client.ClientPacket;
-import tools.MaplePacketCreator;
+import packet.ClientPacket;
+import packet.response.ResCField;
+import packet.response.ResCUIMessenger;
+import packet.response.ResCUser;
+import packet.response.wrapper.ResWrapper;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class ChatHandler {
@@ -39,18 +42,13 @@ public class ChatHandler {
         MapleCharacter chr = c.getPlayer();
         byte unk = 0;
 
-        if ((ServerConfig.IsJMS() && 180 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()
-                || ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS180orLater()) {
             cp.Decode4();
         }
 
         String text = cp.DecodeStr();
 
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()
-                || ServerConfig.IsCMS()) {
+        if (ServerConfig.JMS164orLater()) {
             unk = cp.Decode1();
         }
 
@@ -61,16 +59,16 @@ public class ChatHandler {
             if (chr.getCanTalk() || chr.isStaff()) {
                 //Note: This patch is needed to prevent chat packet from being broadcast to people who might be packet sniffing.
                 if (chr.isHidden()) {
-                    chr.getMap().broadcastGMMessage(chr, MaplePacketCreator.getChatText(chr.getId(), text, c.getPlayer().isGM(), unk), true);
+                    chr.getMap().broadcastGMMessage(chr, ResCUser.getChatText(chr.getId(), text, c.getPlayer().isGM(), unk), true);
                 } else {
                     //chr.getCheatTracker().checkMsg();
-                    chr.getMap().broadcastMessage(MaplePacketCreator.getChatText(chr.getId(), text, false/*c.getPlayer().isGM()*/, unk), c.getPlayer().getPosition());
+                    chr.getMap().broadcastMessage(ResCUser.getChatText(chr.getId(), text, false/*c.getPlayer().isGM()*/, unk), c.getPlayer().getPosition());
                 }
                 if (text.equalsIgnoreCase(c.getChannelServer().getServerName() + " rocks")) {
                     chr.finishAchievement(11);
                 }
             } else {
-                c.getSession().write(MaplePacketCreator.serverNotice(6, "You have been muted and are therefore unable to talk."));
+                c.getSession().write(ResWrapper.serverNotice(6, "You have been muted and are therefore unable to talk."));
             }
         }
     }
@@ -85,7 +83,7 @@ public class ChatHandler {
         }
         final String chattext = slea.readMapleAsciiString();
         if (chr == null || !chr.getCanTalk()) {
-            c.getSession().write(MaplePacketCreator.serverNotice(6, "You have been muted and are therefore unable to talk."));
+            c.getSession().write(ResWrapper.serverNotice(6, "You have been muted and are therefore unable to talk."));
             return;
         }
         if (CommandProcessor.processCommand(c, chattext, CommandType.NORMAL)) {
@@ -159,19 +157,19 @@ public class ChatHandler {
                     if (target != null) {
                         if (target.getMessenger() == null) {
                             if (!target.isGM() || c.getPlayer().isGM()) {
-                                c.getSession().write(MaplePacketCreator.messengerNote(input, 4, 1));
-                                target.getClient().getSession().write(MaplePacketCreator.messengerInvite(c.getPlayer().getName(), messenger.getId()));
+                                c.getSession().write(ResCUIMessenger.messengerNote(input, 4, 1));
+                                target.getClient().getSession().write(ResCUIMessenger.messengerInvite(c.getPlayer().getName(), messenger.getId()));
                             } else {
-                                c.getSession().write(MaplePacketCreator.messengerNote(input, 4, 0));
+                                c.getSession().write(ResCUIMessenger.messengerNote(input, 4, 0));
                             }
                         } else {
-                            c.getSession().write(MaplePacketCreator.messengerChat(c.getPlayer().getName() + " : " + target.getName() + " is already using Maple Messenger."));
+                            c.getSession().write(ResCUIMessenger.messengerChat(c.getPlayer().getName() + " : " + target.getName() + " is already using Maple Messenger."));
                         }
                     } else {
                         if (World.isConnected(input)) {
                             World.Messenger.messengerInvite(c.getPlayer().getName(), messenger.getId(), input, c.getChannel(), c.getPlayer().isGM());
                         } else {
-                            c.getSession().write(MaplePacketCreator.messengerNote(input, 4, 0));
+                            c.getSession().write(ResCUIMessenger.messengerNote(input, 4, 0));
                         }
                     }
                 }
@@ -181,7 +179,7 @@ public class ChatHandler {
                 final MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(targeted);
                 if (target != null) { // This channel
                     if (target.getMessenger() != null) {
-                        target.getClient().getSession().write(MaplePacketCreator.messengerNote(c.getPlayer().getName(), 5, 0));
+                        target.getClient().getSession().write(ResCUIMessenger.messengerNote(c.getPlayer().getName(), 5, 0));
                     }
                 } else { // Other channel
                     if (!c.getPlayer().isGM()) {
@@ -210,9 +208,9 @@ public class ChatHandler {
                 if (player != null) {
                     if (!player.isGM() || c.getPlayer().isGM() && player.isGM()) {
 
-                        c.getSession().write(MaplePacketCreator.getFindReplyWithMap(player.getName(), player.getMap().getId(), mode == 68));
+                        c.getSession().write(ResCField.getFindReplyWithMap(player.getName(), player.getMap().getId(), mode == 68));
                     } else {
-                        c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
+                        c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
                     }
                 } else { // Not found
                     int ch = World.Find.findChannel(recipient);
@@ -223,26 +221,26 @@ public class ChatHandler {
                         }
                         if (player != null) {
                             if (!player.isGM() || (c.getPlayer().isGM() && player.isGM())) {
-                                c.getSession().write(MaplePacketCreator.getFindReply(recipient, (byte) ch, mode == 68));
+                                c.getSession().write(ResCField.getFindReply(recipient, (byte) ch, mode == 68));
                             } else {
-                                c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
+                                c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
                             }
                             return;
                         }
                     }
                     if (ch == -10) {
-                        c.getSession().write(MaplePacketCreator.getFindReplyWithCS(recipient, mode == 68));
+                        c.getSession().write(ResCField.getFindReplyWithCS(recipient, mode == 68));
                     } else if (ch == -20) {
-                        c.getSession().write(MaplePacketCreator.getFindReplyWithMTS(recipient, mode == 68));
+                        c.getSession().write(ResCField.getFindReplyWithMTS(recipient, mode == 68));
                     } else {
-                        c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
+                        c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
                     }
                 }
                 break;
             }
             case 6: { // Whisper
                 if (!c.getPlayer().getCanTalk()) {
-                    c.getSession().write(MaplePacketCreator.serverNotice(6, "You have been muted and are therefore unable to talk."));
+                    c.getSession().write(ResWrapper.serverNotice(6, "You have been muted and are therefore unable to talk."));
                     return;
                 }
                 //c.getPlayer().getCheatTracker().checkMsg();
@@ -254,14 +252,14 @@ public class ChatHandler {
                     if (player == null) {
                         break;
                     }
-                    player.getClient().getSession().write(MaplePacketCreator.getWhisper(c.getPlayer().getName(), c.getChannel(), text));
+                    player.getClient().getSession().write(ResCField.getWhisper(c.getPlayer().getName(), c.getChannel(), text));
                     if (!c.getPlayer().isGM() && player.isGM()) {
-                        c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
+                        c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
                     } else {
-                        c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 1));
+                        c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 1));
                     }
                 } else {
-                    c.getSession().write(MaplePacketCreator.getWhisperReply(recipient, (byte) 0));
+                    c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
                 }
             }
             break;

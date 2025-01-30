@@ -14,7 +14,6 @@ import database.DatabaseConnection;
 import debug.Debug;
 import handling.world.family.MapleFamilyBuff;
 import java.sql.PreparedStatement;
-import packet.client.request.PacketFlag;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.PlayerNPC;
@@ -25,14 +24,16 @@ public class Start {
 
     public final static void main(final String args[]) {
         // バージョン設定
-        if (args.length >= 2) {
-            ServerConfig.SetVersion(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+        String server_region = "JMS";
+        int server_version = 186;
+        int server_version_sub = 1;
+        if (3 <= args.length) {
+            server_region = args[0];
+            server_version = Integer.parseInt(args[1]);
+            server_version_sub = Integer.parseInt(args[2]);
         }
-
-        // 他言語版版
-        if (args.length >= 3) {
-            ServerConfig.SetRegionNumber(Integer.parseInt(args[2]));
-        }
+        ServerConfig.SetVersion(server_version, server_version_sub);
+        ServerConfig.SetRegion(server_region);
 
         // バージョンによるコンテンツの有無を設定
         ServerConfig.SetContentFlag();
@@ -46,12 +47,12 @@ public class Start {
         ToolMan.Open();
 
         Debug.InfoLog(ServerConfig.GetRegionName() + " v" + ServerConfig.GetVersion() + "." + ServerConfig.GetSubVersion());
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() == 131) {
+        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() == 131) { // client edit
             ServerConfig.SetPacketEncryption(false);
         }
 
         ExpTable.Init();
-        PacketFlag.Update();
+        packet.PacketFlag.Update();
 
         try {
             final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0");

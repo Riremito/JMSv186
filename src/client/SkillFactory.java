@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package client;
 
 import config.ServerConfig;
+import debug.Debug;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,14 +48,12 @@ public class SkillFactory {
         if (skills.size() != 0) {
             return skills.get(Integer.valueOf(id));
         }
-        //System.out.println("Loading SkillFactory :::");
         final MapleDataProvider datasource = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Skill.wz"));
         final MapleDataDirectoryEntry root = datasource.getRoot();
 
         int skillid;
         MapleData summon_data;
         SummonSkillEntry sse;
-
         for (MapleDataFileEntry topDir : root.getFiles()) { // Loop thru jobs
             if (topDir.getName().length() <= 8) {
                 for (MapleData data : datasource.getData(topDir.getName())) { // Loop thru each jobs
@@ -70,8 +69,15 @@ public class SkillFactory {
                                     skillsByJob.put(skillid / 10000, job);
                                 }
                                 job.add(skillid);
-                                skil.setName(getName(skillid));
 
+                                // THMS meme
+                                String skill_name = "";
+                                try {
+                                    skill_name = getName(skillid);
+                                } catch (RuntimeException e) {
+                                    Debug.ErrorLog("" + skillid);
+                                }
+                                skil.setName(skill_name);
                                 skills.put(skillid, skil);
 
                                 summon_data = data2.getChildByPath("summon/attack1/info");

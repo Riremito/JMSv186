@@ -39,7 +39,8 @@ import database.DatabaseConnection;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import java.util.ArrayList;
-import packet.server.response.FreeMarketResponse;
+import packet.response.ResCField;
+import packet.response.ResCUser;
 import server.maps.AbstractMapleMapObject;
 import server.maps.MapleMap;
 import server.maps.MapleMapObjectType;
@@ -186,9 +187,9 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     public void update() {
         if (isAvailable()) {
             if (getShopType() == IMaplePlayerShop.HIRED_MERCHANT) {
-                getMap().broadcastMessage(FreeMarketResponse.updateHiredMerchant((HiredMerchant) this));
+                getMap().broadcastMessage(ResCField.updateHiredMerchant((HiredMerchant) this));
             } else if (getMCOwner() != null) {
-                getMap().broadcastMessage(FreeMarketResponse.sendPlayerShopBox(getMCOwner()));
+                getMap().broadcastMessage(ResCUser.sendPlayerShopBox(getMCOwner()));
             }
         }
     }
@@ -198,9 +199,9 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         int i = getFreeSlot();
         if (i > 0) {
             if (getShopType() >= 3) {
-                broadcastToVisitors(FreeMarketResponse.getMiniGameNewVisitor(visitor, i, (MapleMiniGame) this));
+                broadcastToVisitors(ResCField.getMiniGameNewVisitor(visitor, i, (MapleMiniGame) this));
             } else {
-                broadcastToVisitors(FreeMarketResponse.shopVisitorAdd(visitor, i));
+                broadcastToVisitors(ResCField.shopVisitorAdd(visitor, i));
             }
             chrs[i - 1] = new WeakReference<MapleCharacter>(visitor);
             if (!isOwner(visitor)) {
@@ -217,7 +218,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         final byte slot = getVisitorSlot(visitor);
         boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > 0) {
-            broadcastToVisitors(FreeMarketResponse.shopVisitorLeave(slot), slot);
+            broadcastToVisitors(ResCField.shopVisitorLeave(slot), slot);
             chrs[slot - 1] = new WeakReference<MapleCharacter>(null);
             if (shouldUpdate) {
                 update();
@@ -244,9 +245,9 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
             MapleCharacter visitor = getVisitor(i);
             if (visitor != null) {
                 if (type != -1) {
-                    visitor.getClient().getSession().write(FreeMarketResponse.shopErrorMessage(error, type));
+                    visitor.getClient().getSession().write(ResCField.shopErrorMessage(error, type));
                 }
-                broadcastToVisitors(FreeMarketResponse.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
+                broadcastToVisitors(ResCField.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
                 visitor.setPlayerShop(null);
                 chrs[i] = new WeakReference<MapleCharacter>(null);
             }

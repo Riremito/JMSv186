@@ -5,9 +5,8 @@ import handling.channel.ChannelServer;
 import java.util.LinkedList;
 import java.util.List;
 import java.lang.ref.WeakReference;
-import packet.server.response.FieldResponse;
+import packet.response.wrapper.ResWrapper;
 import server.maps.MapleMap;
-import tools.MaplePacketCreator;
 
 /**
  * Note for this class : MapleCharacter reference must be removed immediately
@@ -117,8 +116,8 @@ public class MapleCarnivalParty {
         for (int chr : members) {
             final MapleCharacter c = ChannelServer.getInstance(channel).getPlayerStorage().getCharacterById(chr);
             if (c != null) {
-                c.getClient().getSession().write(FieldResponse.showEffect(effect));
-                c.getClient().getSession().write(FieldResponse.playSound(sound));
+                c.getClient().getSession().write(ResWrapper.showEffect(effect));
+                c.getClient().getSession().write(ResWrapper.playSound(sound));
                 if (!done) {
                     done = true;
                     c.getMap().killAllMonsters(true);

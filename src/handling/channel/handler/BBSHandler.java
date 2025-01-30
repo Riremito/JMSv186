@@ -24,8 +24,7 @@ import client.MapleClient;
 import handling.world.World;
 import handling.world.guild.MapleBBSThread;
 import java.util.List;
-import packet.server.response.GuildResponse;
-import tools.MaplePacketCreator;
+import packet.response.ResCWvsContext;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class BBSHandler {
@@ -95,7 +94,7 @@ public class BBSHandler {
         if (c.getPlayer().getGuildId() <= 0) {
             return;
         }
-        c.getSession().write(GuildResponse.BBSThreadList(World.Guild.getBBS(c.getPlayer().getGuildId()), start));
+        c.getSession().write(ResCWvsContext.BBSThreadList(World.Guild.getBBS(c.getPlayer().getGuildId()), start));
     }
 
     private static final void newBBSReply(final MapleClient c, final int localthreadid, final String text) {
@@ -145,7 +144,7 @@ public class BBSHandler {
         if (bbsList != null) {
             for (MapleBBSThread t : bbsList) {
                 if (t != null && t.localthreadID == localthreadid) {
-                    c.getSession().write(GuildResponse.showThread(t));
+                    c.getSession().write(ResCWvsContext.showThread(t));
                 }
             }
         }

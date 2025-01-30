@@ -25,13 +25,14 @@ import client.MapleCharacter;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.World;
+import packet.response.ResCField;
+import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.RandomRewards;
 import server.Randomizer;
 import server.Timer.EventTimer;
 import server.maps.MapleMap;
 import server.maps.SavedLocationType;
-import tools.MaplePacketCreator;
 
 public abstract class MapleEvent {
 
@@ -142,8 +143,8 @@ public abstract class MapleEvent {
                 if (e.isRunning) {
                     for (int i : e.mapid) {
                         if (cserv.getEvent() == i) {
-                            e.broadcast(MaplePacketCreator.serverNotice(0, "The event will start in 30 seconds!"));
-                            e.broadcast(MaplePacketCreator.getClock(30));
+                            e.broadcast(ResWrapper.serverNotice(0, "The event will start in 30 seconds!"));
+                            e.broadcast(ResCField.getClock(30));
                             EventTimer.getInstance().schedule(new Runnable() {
 
                                 public void run() {
@@ -203,7 +204,7 @@ public abstract class MapleEvent {
         }
         cserv.setEvent(cserv.getEvent(event).mapid[0]);
         cserv.getEvent(event).reset();
-        World.Broadcast.broadcastMessage(MaplePacketCreator.serverNotice(0, "Hello AsteriaSEA! Let's play a " + String.valueOf(event) + " event in channel " + cserv.getChannel() + "! Change to channel " + cserv.getChannel() + " and use @event command!").getBytes());
+        World.Broadcast.broadcastMessage(ResWrapper.serverNotice(0, "Hello AsteriaSEA! Let's play a " + String.valueOf(event) + " event in channel " + cserv.getChannel() + "! Change to channel " + cserv.getChannel() + " and use @event command!").getBytes());
         return "";
     }
 }

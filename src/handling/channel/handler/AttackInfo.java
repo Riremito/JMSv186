@@ -28,8 +28,8 @@ import constants.GameConstants;
 import client.MapleCharacter;
 import client.SkillFactory;
 import config.ServerConfig;
-import packet.client.ClientPacket;
-import packet.server.ServerPacket;
+import packet.ClientPacket;
+import packet.ServerPacket;
 import server.MapleStatEffect;
 import tools.AttackPair;
 
@@ -156,14 +156,14 @@ public class AttackInfo {
     }
 
     public int GetAttackAction() {
-        if (ServerConfig.version <= 131) {
+        if (ServerConfig.JMS131orEarlier()) {
             return AttackActionKey & 0x7F;
         }
         return AttackActionKey & 0x7FFF;
     }
 
     public boolean IsLeft() {
-        if (ServerConfig.version <= 131) {
+        if (ServerConfig.JMS131orEarlier()) {
             return ((AttackActionKey >> 7) & 0x01) > 0;
         }
         return ((AttackActionKey >> 15) & 0x01) > 0;

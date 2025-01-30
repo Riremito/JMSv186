@@ -29,11 +29,12 @@ import client.MapleClient;
 import handling.channel.ChannelServer;
 import java.util.LinkedList;
 import java.util.List;
-import packet.server.response.FreeMarketResponse;
+import packet.response.ResCEmployeePool;
+import packet.response.ResCField;
+import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.Timer.EtcTimer;
 import server.maps.MapleMapObjectType;
-import tools.MaplePacketCreator;
 
 public class HiredMerchant extends AbstractPlayerStore {
 
@@ -99,7 +100,7 @@ public class HiredMerchant extends AbstractPlayerStore {
             saveItems();
         } else {
             c.getPlayer().dropMessage(1, "Your inventory is full.");
-            c.getSession().write(MaplePacketCreator.enableActions());
+            c.getSession().write(ResWrapper.enableActions());
         }
     }
 
@@ -113,7 +114,7 @@ public class HiredMerchant extends AbstractPlayerStore {
         }
         if (remove) {
             ChannelServer.getInstance(channel).removeMerchant(this);
-            getMap().broadcastMessage(FreeMarketResponse.destroyHiredMerchant(getOwnerId()));
+            getMap().broadcastMessage(ResCEmployeePool.destroyHiredMerchant(getOwnerId()));
         }
         getMap().removeMapObject(this);
         schedule = null;
@@ -135,14 +136,14 @@ public class HiredMerchant extends AbstractPlayerStore {
     @Override
     public void sendDestroyData(MapleClient client) {
         if (isAvailable()) {
-            client.getSession().write(FreeMarketResponse.destroyHiredMerchant(getOwnerId()));
+            client.getSession().write(ResCEmployeePool.destroyHiredMerchant(getOwnerId()));
         }
     }
 
     @Override
     public void sendSpawnData(MapleClient client) {
         if (isAvailable()) {
-            client.getSession().write(FreeMarketResponse.spawnHiredMerchant(this));
+            client.getSession().write(ResCEmployeePool.spawnHiredMerchant(this));
         }
     }
 
@@ -159,10 +160,10 @@ public class HiredMerchant extends AbstractPlayerStore {
     }
 
     public final void sendBlackList(final MapleClient c) {
-        c.getSession().write(FreeMarketResponse.MerchantBlackListView(blacklist));
+        c.getSession().write(ResCField.MerchantBlackListView(blacklist));
     }
 
     public final void sendVisitor(final MapleClient c) {
-        c.getSession().write(FreeMarketResponse.MerchantVisitorView(visitors));
+        c.getSession().write(ResCField.MerchantVisitorView(visitors));
     }
 }

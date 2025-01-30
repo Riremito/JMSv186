@@ -28,11 +28,6 @@ import server.quest.MapleQuest;
 public class LoadData {
 
     public static void LoadDataFromXML() {
-        // test
-        if (ServerConfig.GetVersion() >= 414) {
-            return;
-        }
-
         DebugLoadTime dlt = new DebugLoadTime("initDataIDs");
         initDataIDs();
         dlt.End();
@@ -99,6 +94,10 @@ public class LoadData {
     final private static ArrayList<Integer> skillids = new ArrayList<Integer>();
     final private static ArrayList<Integer> morphids = new ArrayList<Integer>();
     final private static ArrayList<Integer> taimingmobids = new ArrayList<Integer>();
+    final public static ArrayList<Integer> potential_rare = new ArrayList<Integer>();
+    final public static ArrayList<Integer> potential_epic = new ArrayList<Integer>();
+    final public static ArrayList<Integer> potential_unique = new ArrayList<Integer>();
+    final public static ArrayList<Integer> potential_legendary = new ArrayList<Integer>();
 
     public static boolean IsValidJobID(int id) {
         return jobids.contains(id);
@@ -200,11 +199,28 @@ public class LoadData {
         return -1;
     }
 
+    public static int getRandomPotential(int rank) {
+        Random rand = new Random();
+        if (rank == 1) {
+            return potential_rare.get(rand.nextInt(potential_rare.size()));
+        }
+        if (rank == 2) {
+            return potential_epic.get(rand.nextInt(potential_epic.size()));
+        }
+        if (rank == 3) {
+            return potential_unique.get(rand.nextInt(potential_unique.size()));
+        }
+        if (rank == 4) {
+            return potential_legendary.get(rand.nextInt(potential_legendary.size()));
+        }
+        return 0;
+    }
+
     private static void initDataIDs() {
         // 職業ID
         LoadXMLs("Skill.wz", "(\\d+)\\.img", jobids);
         // 肌色, 顔, 髪型
-        LoadXMLs("Character.wz", "0*(\\d+)\\.img", skinids);
+        LoadSkinXMLs("Character.wz", "0*(\\d+)\\.img", skinids);
         LoadXMLs("Character.wz/Face", "0*(\\d+)\\.img", faceids);
         LoadXMLs("Character.wz/Hair", "0*(\\d+)\\.img", hairids);
         // NPC
@@ -324,6 +340,29 @@ public class LoadData {
         return list.size();
     }
 
+    private static int LoadSkinXMLs(String path, String regex, ArrayList<Integer> list) {
+        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
+
+        if (wz == null) {
+            Debug.ErrorLog("wz path: " + path);
+            return 0;
+        }
+
+        Pattern pattern = Pattern.compile(regex);
+
+        for (MapleDataFileEntry dir : wz.getRoot().getFiles()) {
+            Matcher matcher = pattern.matcher(dir.getName());
+            if (matcher.matches()) {
+                int id = Integer.parseInt(matcher.group(1)) % 100;
+                if (!list.contains(id)) {
+                    list.add(id);
+                }
+            }
+        }
+
+        return list.size();
+    }
+
     private static int LoadXMLs(String path, String regex, ArrayList<Integer> list) {
         MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
 
@@ -351,8 +390,7 @@ public class LoadData {
         MapleQuest.requirements = MapleQuest.questData.getData("Check.img");
         MapleQuest.info = MapleQuest.questData.getData("QuestInfo.img");
 
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()) {
+        if (ServerConfig.JMS164orLater()) {
             MapleQuest.pinfo = MapleQuest.questData.getData("PQuest.img");
         }
     }
@@ -364,46 +402,46 @@ public class LoadData {
         MapleLifeFactory.mobStringData = MapleLifeFactory.stringDataWZ.getData("Mob.img");
         MapleLifeFactory.npcStringData = MapleLifeFactory.stringDataWZ.getData("Npc.img");
 
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()) {
+        if (ServerConfig.JMS164orLater()) {
             MapleLifeFactory.npclocData = MapleLifeFactory.etcDataWZ.getData("NpcLocation.img");
         }
     }
 
     private static void initMaker() {
-        if ((ServerConfig.IsJMS() && 164 <= ServerConfig.GetVersion())
-                || ServerConfig.IsTWMS()) {
+        if (ServerConfig.JMS164orLater()) {
             ItemMakerFactory.info = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz")).getData("ItemMake.img");
         }
     }
 
     private static void initItemInformation() {
+        MapleData sub_dir = null;
         MapleItemInformationProvider.etcData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Etc.wz"));
         MapleItemInformationProvider.itemData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Item.wz"));
         MapleItemInformationProvider.equipData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Character.wz"));
         MapleItemInformationProvider.stringData = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/String.wz"));
 
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 164) {
+        if (ServerConfig.JMS131orEarlier()) {
             MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Cash");
             MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Con");
             MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Eqp");
             MapleItemInformationProvider.etcStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Etc");
             MapleItemInformationProvider.insStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Ins");
             MapleItemInformationProvider.petStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Pet");
-        } else {
-            MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Cash.img");
-
-            if (ServerConfig.IsJMS() && ServerConfig.GetVersion() < 180) {
-                MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img").getChildByPath("Con");
-            } else {
-                MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img");
-            }
-
-            MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Eqp.img").getChildByPath("Eqp");
-            MapleItemInformationProvider.etcStringData = MapleItemInformationProvider.stringData.getData("Etc.img").getChildByPath("Etc");
-            MapleItemInformationProvider.insStringData = MapleItemInformationProvider.stringData.getData("Ins.img");
-            MapleItemInformationProvider.petStringData = MapleItemInformationProvider.stringData.getData("Pet.img");
+            return;
         }
+
+        MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Cash.img");
+        MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img");
+        sub_dir = MapleItemInformationProvider.consumeStringData.getChildByPath("Con");
+        if (sub_dir != null) {
+            MapleItemInformationProvider.consumeStringData = sub_dir;
+        }
+
+        MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Eqp.img").getChildByPath("Eqp");
+        MapleItemInformationProvider.etcStringData = MapleItemInformationProvider.stringData.getData("Etc.img").getChildByPath("Etc");
+        MapleItemInformationProvider.insStringData = MapleItemInformationProvider.stringData.getData("Ins.img");
+        MapleItemInformationProvider.petStringData = MapleItemInformationProvider.stringData.getData("Pet.img");
+
     }
 
     // login server

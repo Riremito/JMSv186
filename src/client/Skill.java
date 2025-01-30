@@ -317,13 +317,27 @@ public class Skill implements ISkill {
 
     @Override
     public boolean isFourthJob() {
-        if (id / 10000 >= 2212 && id / 10000 < 3000) { //evan skill
-            return ((id / 10000) % 10) >= 7;
+        int job_id = id / 10000;
+        // エヴァン
+        if (2200 <= job_id && job_id <= 2218) {
+            if (7 <= (job_id % 10)) {
+                return true;
+            }
+            return false;
         }
-        if (id / 10000 >= 430 && id / 10000 <= 434) { //db skill
-            return ((id / 10000) % 10) == 4 || getMasterLevel() > 0;
+        // デュアルブレイド
+        if (430 <= job_id && job_id <= 434) {
+            if (4 <= (job_id % 10)) {
+                return true;
+            }
+            return false;
         }
-        return ((id / 10000) % 10) == 2;
+        // JMS v164
+        if (2 <= (job_id % 10)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
