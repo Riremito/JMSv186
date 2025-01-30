@@ -327,7 +327,9 @@ public class ResCLogin {
         data.Encode1(client.getGender());
         data.Encode1(client.isGm() ? 1 : 0);
         data.Encode1(client.isGm() ? 1 : 0);
-        data.Encode4(0); // buffer4
+        if (ServerConfig.TWMS122orLater()) {
+            data.Encode4(0); // buffer4
+        }
         data.EncodeStr(client.getAccountName());
         data.Encode4(0);
         data.Encode1(0);
@@ -426,16 +428,26 @@ public class ResCLogin {
         for (MapleCharacter chr : chars) {
             data.EncodeBuffer(GW_CharacterStat.Encode(chr));
             data.EncodeBuffer(AvatarLook.Encode(chr));
-            data.Encode1(0);
+            if (ServerConfig.TWMS122orLater()) {
+                data.Encode1(0);
+            }
             data.Encode1(1);
             data.Encode4(chr.getRank());
             data.Encode4(chr.getRankMove());
             data.Encode4(chr.getJobRank());
             data.Encode4(chr.getJobRankMove());
         }
-        data.Encode2(3); // 2nd password state
-        data.Encode8(charslots);
-        data.Encode8(0);
+
+        if (ServerConfig.TWMS122orLater()) {
+            data.Encode2(3); // 2nd password state
+            data.Encode8(charslots);
+            data.Encode8(0);
+        } else {
+            // TWMS v94
+            data.Encode1(3);
+            data.Encode1(0);
+            data.Encode4(charslots);
+        }
         return data.get().getBytes();
     }
 

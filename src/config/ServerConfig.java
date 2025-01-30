@@ -129,7 +129,7 @@ public class ServerConfig {
                 return false;
             }
             case TWMS: {
-                if (95 <= GetVersion()) {
+                if (94 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -433,6 +433,21 @@ public class ServerConfig {
         return false;
     }
 
+    public static boolean TWMS122orLater() {
+        switch (GetRegion()) {
+            case TWMS: {
+                if (122 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     // near Chaos update
     public static boolean JMS194orLater() {
         if (!IsPostBB()) {
@@ -532,6 +547,12 @@ public class ServerConfig {
         switch (GetRegion()) {
             case JMS: {
                 if (GetVersion() <= 165) {
+                    return true;
+                }
+                return false;
+            }
+            case TWMS: {
+                if (GetVersion() <= 94) {
                     return true;
                 }
                 return false;
