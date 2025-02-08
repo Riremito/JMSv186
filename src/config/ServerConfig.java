@@ -573,6 +573,12 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case EMS: {
+                if (GetVersion() <= 55) {
+                    return true;
+                }
+                return false;
+            }
             default: {
                 break;
             }

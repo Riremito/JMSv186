@@ -357,7 +357,9 @@ public class CharacterData {
         }
 
         // v165-v194 OK
-        if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && ServerConfig.GetVersion() == 73)) {
+        if (ServerConfig.JMS165orLater()
+                && !(ServerConfig.IsGMS() && ServerConfig.GetVersion() == 73)
+                && !(ServerConfig.IsEMS() && ServerConfig.GetVersion() == 55)) {
             // 0x100000
             if ((datamask & 0x100000) > 0) {
                 data.Encode4(0);
