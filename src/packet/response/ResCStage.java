@@ -59,8 +59,7 @@ public class ResCStage {
         }
 
         sp.Encode1(chr.getPortalCount());
-        if (ServerConfig.JMS194orLater()
-                || ServerConfig.IsEMS()) {
+        if (ServerConfig.JMS194orLater()) {
             sp.Encode4(0);
         }
         if (ServerConfig.IsCMS()) {
@@ -108,8 +107,7 @@ public class ResCStage {
         }
         // サーバーの時間?
         sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
-        if (ServerConfig.JMS194orLater()
-                || ServerConfig.IsEMS()) {
+        if (ServerConfig.JMS194orLater()) {
             sp.Encode4(0);
             if (ServerConfig.IsJMS()) {
                 sp.Encode4(100); // nMobStatAdjustRate

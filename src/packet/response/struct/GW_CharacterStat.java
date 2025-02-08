@@ -48,7 +48,7 @@ public class GW_CharacterStat {
 
         if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier()) {
             data.EncodeZeroBytes(8);
-        } else if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || (ServerConfig.IsTWMS() && ServerConfig.IsPreBB()))) {
+        } else if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ((ServerConfig.IsTWMS() || ServerConfig.IsEMS()) && ServerConfig.IsPreBB()))) {
             data.EncodeZeroBytes(24);
         }
 
@@ -146,17 +146,21 @@ public class GW_CharacterStat {
         data.Encode4(chr.getExp());
         data.Encode2(chr.getFame());
 
-        if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTWMS() || ServerConfig.IsEMS())
+        if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTWMS() || (ServerConfig.IsEMS() && ServerConfig.IsPostBB()))
                 && ServerConfig.JMS164orLater()) {
             data.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 
-        if (ServerConfig.TWMS122orLater() || ServerConfig.IsCMS() || ServerConfig.IsEMS()) {
+        if (ServerConfig.TWMS122orLater() || ServerConfig.IsCMS() || (ServerConfig.IsEMS() && ServerConfig.IsPostBB())) {
             data.Encode8(0);
         }
 
         data.Encode4(chr.getMapId()); // current map id
         data.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
+
+        if (ServerConfig.IsEMS() && ServerConfig.IsPreBB()) {
+            data.Encode4(0);
+        }
 
         // KMS 84
         if (ServerConfig.KMS84orEarlier()) {

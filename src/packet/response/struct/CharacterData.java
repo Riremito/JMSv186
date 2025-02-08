@@ -81,8 +81,7 @@ public class CharacterData {
             }
 
             // 祝福系統
-            if (ServerConfig.JMS194orLater()
-                    || ServerConfig.IsEMS()) {
+            if (ServerConfig.JMS194orLater()) {
                 // 女王の祝福 max 24
                 data.Encode1(0); // not 0, EncodeStr
                 // ???
@@ -238,17 +237,26 @@ public class CharacterData {
                 if ((datamask & 0x40000) > 0) {
                     data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                 }
-                if ((datamask & 0x1000000) > 0) {
-                    data.Encode2(0); // unknown
-                }
-                if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
-                    data.EncodeBuffer(GW_WildHunterInfo.Encode());
-                }
-                if ((datamask & 0x400000) > 0) {
-                    data.Encode2(0);
-                }
-                if ((datamask & 0x800000) > 0) {
-                    data.Encode2(0);
+                if (ServerConfig.IsPostBB()) {
+                    if ((datamask & 0x1000000) > 0) {
+                        data.Encode2(0); // unknown
+                    }
+                    if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
+                        data.EncodeBuffer(GW_WildHunterInfo.Encode());
+                    }
+                    if ((datamask & 0x400000) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x800000) > 0) {
+                        data.Encode2(0);
+                    }
+                } else {
+                    if ((datamask & 0x80000) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x800) > 0) {
+                        data.Encode2(0);
+                    }
                 }
                 break;
             }
@@ -438,8 +446,7 @@ public class CharacterData {
             data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Cash));
         }
         // 不明
-        if (ServerConfig.JMS194orLater()
-                || ServerConfig.IsEMS()) {
+        if (ServerConfig.JMS194orLater()) {
             // func 004FB8B0
             data.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
         }

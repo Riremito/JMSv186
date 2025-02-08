@@ -194,6 +194,12 @@ public class ResCLogin {
     public static final MaplePacket CheckPasswordResult(MapleClient client, LoginResult result) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CheckPasswordResult);
         sp.Encode1(result.Get()); // result
+
+        // EMS v55-v70
+        if (ServerConfig.IsEMS()) {
+            sp.Encode1(0);
+            sp.Encode4(0);
+        }
         /*
         v186 Message Flag
         00 : OK
@@ -218,6 +224,10 @@ public class ResCLogin {
                     sp.Encode4(0); // m_nUseDay
                 }
                 sp.Encode4(client.getAccID()); // m_dwAccountId
+                // EMS v55-v70
+                if (ServerConfig.IsEMS()) {
+                    sp.Encode1(0);
+                }
                 sp.Encode1(client.getGender()); // m_nGender
                 sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
                 if (ServerConfig.JMS164orLater()) {
@@ -260,7 +270,7 @@ public class ResCLogin {
                     sp.Encode1(1);
                 }
                 sp.Encode8(0); // m_dtChatUnblockDate
-                if (ServerConfig.IsBMS()) {
+                if (ServerConfig.IsBMS() || ServerConfig.IsEMS()) {
                     sp.Encode8(0); // m_dtRegisterDate
                     sp.Encode1(1);
                     sp.Encode1(0);
@@ -495,6 +505,18 @@ public class ResCLogin {
             sp.Encode4(chr.getRankMove());
             sp.Encode4(chr.getJobRank()); // world ranking
             sp.Encode4(chr.getJobRankMove());
+        }
+
+        // EMS v55
+        if (ServerConfig.IsEMS() && ServerConfig.GetVersion() <= 55) {
+            sp.Encode4(charslots); // m_nSlotCount
+            return sp.get();
+        }
+        if (ServerConfig.IsEMS() && ServerConfig.GetVersion() <= 70) {
+            sp.Encode4(charslots); // m_nSlotCount
+            sp.Encode4(0);
+            sp.Encode8(0);
+            return sp.get();
         }
 
         if (ServerConfig.IsKMS() || ServerConfig.IsEMS()) {

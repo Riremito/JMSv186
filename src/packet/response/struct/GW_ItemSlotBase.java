@@ -201,7 +201,7 @@ public class GW_ItemSlotBase {
                 if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
                     data.Encode2(0); // nAttribute_CS
                 }
-                if (ServerConfig.JMS186orLater()) {
+                if (ServerConfig.JMS186orLater() && !(ServerConfig.IsEMS() && ServerConfig.IsPreBB())) {
                     data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                     data.Encode4(0);
                 }
@@ -304,8 +304,7 @@ public class GW_ItemSlotBase {
 
         data.Encode8(-1); // time?
 
-        if (ServerConfig.JMS194orLater()
-                || ServerConfig.IsEMS()) {
+        if (ServerConfig.JMS194orLater()) {
             data.Encode4(0);
         }
 

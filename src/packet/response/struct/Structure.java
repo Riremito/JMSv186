@@ -412,14 +412,13 @@ public class Structure {
             data.Encode4(map[i]);
         }
 
-        if (ServerConfig.JMS194orLater()
-                || ServerConfig.IsEMS()) {
+        if (ServerConfig.JMS194orLater()) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }
         }
 
-        if (ServerConfig.IsEMS()) {
+        if (ServerConfig.IsEMS() && ServerConfig.IsPostBB()) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }

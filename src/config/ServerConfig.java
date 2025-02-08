@@ -147,7 +147,7 @@ public class ServerConfig {
                 return false;
             }
             case EMS: {
-                if (72 <= GetVersion()) {
+                if (54 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -206,7 +206,7 @@ public class ServerConfig {
                 return false;
             }
             case EMS: {
-                if (72 <= GetVersion()) {
+                if (55 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -300,7 +300,7 @@ public class ServerConfig {
                 return false;
             }
             case EMS: {
-                if (72 <= GetVersion()) {
+                if (70 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -396,7 +396,7 @@ public class ServerConfig {
                 return false;
             }
             case EMS: {
-                if (72 <= GetVersion()) {
+                if (70 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -463,6 +463,12 @@ public class ServerConfig {
             }
             case KMS: {
                 if (114 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case EMS: {
+                if (76 <= GetVersion()) {
                     return true;
                 }
                 return false;

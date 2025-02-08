@@ -456,6 +456,11 @@ public class ReqCLogin {
             byte unk1 = cp.Decode1();
             int unk2 = cp.Decode4();
         }
+
+        if (ServerConfig.IsEMS()) {
+            int unke = cp.Decode4();
+        }
+
         final int Character_ID = cp.Decode4();
         if (!c.login_Auth(Character_ID)) {
             c.getSession().close();

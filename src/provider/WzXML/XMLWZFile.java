@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package provider.WzXML;
 
+import debug.Debug;
 import handling.channel.ChannelServer;
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,6 +60,10 @@ public class XMLWZFile implements MapleDataProvider {
     @Override
     public MapleData getData(String path) {
         File dataFile = new File(root, path + ".xml");
+        if (!dataFile.exists()) {
+            Debug.ErrorLog("Not Found : " + path + ".xml");
+            return null;
+        }
         File imageDataDir = new File(root, path);
         /*		if (!dataFile.exists()) {
         throw new RuntimeException("Datafile " + path + " does not exist in " + root.getAbsolutePath());
