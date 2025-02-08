@@ -255,7 +255,7 @@ public class ReqCLogin {
         int dice_luk = 0;
 
         character_name = cp.DecodeStr();
-        if (ServerConfig.JMS165orLater()) {
+        if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && ServerConfig.GetVersion() == 73)) {
             job_type = cp.Decode4();
 
             // バージョンによって異なる (左から順番)
@@ -333,7 +333,7 @@ public class ReqCLogin {
 
             face_id = cp.Decode4();
             hair_id = cp.Decode4();
-            if (ServerConfig.IsEMS()) {
+            if (ServerConfig.IsGMS() || ServerConfig.IsEMS()) {
                 hair_color = cp.Decode4();
                 skin_color = cp.Decode4();
             }

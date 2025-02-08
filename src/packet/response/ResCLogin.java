@@ -196,7 +196,7 @@ public class ResCLogin {
         sp.Encode1(result.Get()); // result
 
         // EMS v55-v70
-        if (ServerConfig.IsEMS()) {
+        if (ServerConfig.IsGMS() || ServerConfig.IsEMS()) {
             sp.Encode1(0);
             sp.Encode4(0);
         }
@@ -225,7 +225,7 @@ public class ResCLogin {
                 }
                 sp.Encode4(client.getAccID()); // m_dwAccountId
                 // EMS v55-v70
-                if (ServerConfig.IsEMS()) {
+                if (ServerConfig.IsGMS() || ServerConfig.IsEMS()) {
                     sp.Encode1(0);
                 }
                 sp.Encode1(client.getGender()); // m_nGender
@@ -270,15 +270,17 @@ public class ResCLogin {
                     sp.Encode1(1);
                 }
                 sp.Encode8(0); // m_dtChatUnblockDate
-                if (ServerConfig.IsBMS() || ServerConfig.IsEMS()) {
+                if (ServerConfig.IsBMS() || ServerConfig.IsGMS() || ServerConfig.IsEMS()) {
                     sp.Encode8(0); // m_dtRegisterDate
+                }
+                if (ServerConfig.IsBMS() || ServerConfig.IsEMS()) {
                     sp.Encode1(1);
                     sp.Encode1(0);
                 }
                 if (ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
                     sp.EncodeStr(""); // v131: available name for new character, later version does not use this string
                 }
-                if (ServerConfig.IsEMS()) {
+                if (ServerConfig.IsGMS() || ServerConfig.IsEMS()) {
                     sp.Encode4(0);
                 }
                 break;
@@ -395,7 +397,7 @@ public class ResCLogin {
         // ドロップ倍率?
         sp.Encode2(100);
 
-        if (ServerConfig.IsBMS()) {
+        if (ServerConfig.IsBMS() || ServerConfig.IsGMS()) {
             sp.Encode1(0);
         }
 
@@ -508,7 +510,8 @@ public class ResCLogin {
         }
 
         // EMS v55
-        if (ServerConfig.IsEMS() && ServerConfig.GetVersion() <= 55) {
+        if ((ServerConfig.IsEMS() && ServerConfig.GetVersion() <= 55)
+                || (ServerConfig.IsGMS() && ServerConfig.GetVersion() <= 73)) {
             sp.Encode4(charslots); // m_nSlotCount
             return sp.get();
         }

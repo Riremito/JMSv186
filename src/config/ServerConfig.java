@@ -68,6 +68,10 @@ public class ServerConfig {
         return GetRegion() == Region.THMS;
     }
 
+    public static boolean IsGMS() {
+        return GetRegion() == Region.GMS;
+    }
+
     public static boolean IsEMS() {
         return GetRegion() == Region.EMS;
     }
@@ -563,6 +567,12 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case GMS: {
+                if (GetVersion() <= 73) {
+                    return true;
+                }
+                return false;
+            }
             default: {
                 break;
             }
@@ -697,7 +707,8 @@ public class ServerConfig {
             case "GMS": {
                 region_type = Region.GMS;
                 region_number = 8;
-                character_name_size = 15;
+                packet_custom_encryption = true;
+                character_name_size = 13;
                 return true;
             }
             case "EMS": {
