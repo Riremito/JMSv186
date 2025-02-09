@@ -191,7 +191,13 @@ public class ResCStage {
         sp.EncodeBuffer(CharacterData.Encode(c.getPlayer()));
         // CCashShop::LoadData
         {
+            if (ServerConfig.IsEMS()) {
+                sp.Encode1(1); // EMS v55
+            }
             sp.EncodeStr(c.getAccountName());
+            if (ServerConfig.IsEMS()) {
+                sp.Encode1(0); // EMS v55
+            }
             // CWvsContext::SetSaleInfo
             {
                 if ((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsEMS())
@@ -199,7 +205,7 @@ public class ResCStage {
                     sp.Encode4(0); // NotSaleCount
                 }
                 sp.EncodeBuffer(ResCCashShop.getModifiedData());
-                if (ServerConfig.JMS165orLater()) {
+                if (ServerConfig.JMS165orLater() && !ServerConfig.IsEMS()) { // X EMS v55
                     sp.Encode2(0); // non 0, Decode4, DecodeStr
                 }
                 sp.EncodeBuffer(ResCCashShop.getDiscountRates());
