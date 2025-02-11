@@ -23,6 +23,7 @@ package tools;
 import config.ServerConfig;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -98,20 +99,36 @@ public class MapleAESOFB {
         this.iv = iv;
     }
 
+    // JMS v131
+    public static byte[] oops(byte[] iv) {
+        byte[] newIv = new byte[16];
+        // TWMS
+        if (ServerConfig.IsTWMS()) {
+            for (int x = 0; x < 4; x++) {
+                funnyShit(funnyBytes[x], iv);
+                System.arraycopy(iv, 0, newIv, 4 * x, 4);
+            }
+            return newIv;
+        }
+        // JMS
+        Arrays.fill(newIv, iv[0]);
+        return newIv;
+    }
+
     public byte[] crypt(byte[] data) {
         /*
         if (ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion()) {
             return crypt_v414(data);
         }
          */
-
         int remaining = data.length;
         int llength = 0x5B0;
         int start = 0;
 
         try {
             while (remaining > 0) {
-                byte[] myIv = BitTools.multiplyBytes(this.iv, 4, 4);
+                // JMS v131-141 / others
+                byte[] myIv = ServerConfig.IsOldIV() ? oops(this.iv) : BitTools.multiplyBytes(this.iv, 4, 4);
                 if (remaining < llength) {
                     llength = remaining;
                 }

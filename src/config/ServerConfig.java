@@ -14,6 +14,7 @@ public class ServerConfig {
     public static long expiration_date = (Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000;
     private static boolean packet_encryption = true;
     private static boolean packet_custom_encryption = false;
+    private static boolean packet_old_iv = false;
 
     // 初期スロット数
     public static final byte DEFAULT_INV_SLOT_EQUIP = 72;
@@ -23,16 +24,16 @@ public class ServerConfig {
     public static final byte DEFAULT_INV_SLOT_CASH = 96;
     private static final byte DEFAULT_INV_SLOT_STORAGE = 4;
 
-    public static void SetPacketEncryption(boolean encryption_flag) {
-        packet_encryption = encryption_flag;
-    }
-
     public static boolean PacketEncryptionEnabled() {
         return packet_encryption;
     }
 
     public static boolean CustomEncryptionEnabled() {
         return packet_custom_encryption;
+    }
+
+    public static boolean IsOldIV() {
+        return packet_old_iv;
     }
 
     public enum Region {
@@ -595,6 +596,9 @@ public class ServerConfig {
                 return true;
             }
             case JMS: {
+                if (GetVersion() <= 141) {
+                    packet_old_iv = true;
+                }
                 if (187 <= GetVersion()) {
                     is_postBB = true;
                 }

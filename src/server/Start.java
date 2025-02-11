@@ -47,9 +47,6 @@ public class Start {
         ToolMan.Open();
 
         Debug.InfoLog(ServerConfig.GetRegionName() + " v" + ServerConfig.GetVersion() + "." + ServerConfig.GetSubVersion());
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() == 131) { // client edit
-            ServerConfig.SetPacketEncryption(false);
-        }
 
         ExpTable.Init();
         packet.PacketFlag.Update();
