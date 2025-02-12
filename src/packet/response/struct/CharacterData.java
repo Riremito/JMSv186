@@ -286,7 +286,7 @@ public class CharacterData {
                         data.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
                     }
                 }
-                if (ServerConfig.JMS147orLater()) {
+                if (ServerConfig.JMS146orLater()) {
                     // 0x20000 JMS v165-v194
                     if ((datamask & 0x020000) > 0) {
                         data.Encode4(chr.getMonsterBookCover());

@@ -118,7 +118,7 @@ public class ResCUser {
         p.Encode4(cidfrom);
         p.Encode1(whiteBG ? 1 : 0);
         p.EncodeStr(text);
-        if (ServerConfig.JMS147orLater()) {
+        if (ServerConfig.JMS146orLater()) {
             p.Encode1((byte) show);
         }
         if (ServerConfig.JMS302orLater()) {

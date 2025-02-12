@@ -134,6 +134,49 @@ public class ServerConfig {
                 }
                 return false;
             }
+
+            case KMS: {
+                if (47 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case CMS: {
+                if (62 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case TWMS: {
+                if (73 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case THMS: {
+                if (0 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case GMS: {
+                if (61 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case EMS: {
+                if (0 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case MSEA: {
+                if (0 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
             default: {
                 break;
             }
@@ -154,46 +197,44 @@ public class ServerConfig {
                 }
                 return false;
             }
-
             case KMS: {
-                // v2.66
-                if (65 <= GetVersion()) {
+                if (48 <= GetVersion()) {
                     return true;
                 }
                 return false;
             }
             case CMS: {
-                if (73 <= GetVersion()) {
+                if (63 <= GetVersion()) {
                     return true;
                 }
                 return false;
             }
             case TWMS: {
-                if (94 <= GetVersion()) {
+                if (74 <= GetVersion()) {
                     return true;
                 }
                 return false;
             }
             case THMS: {
-                if (87 <= GetVersion()) {
+                if (0 <= GetVersion()) {
                     return true;
                 }
                 return false;
             }
             case GMS: {
-                if (72 <= GetVersion()) {
+                if (62 <= GetVersion()) {
                     return true;
                 }
                 return false;
             }
             case EMS: {
-                if (54 <= GetVersion()) {
+                if (0 <= GetVersion()) {
                     return true;
                 }
                 return false;
             }
             case MSEA: {
-                if (102 <= GetVersion()) {
+                if (0 <= GetVersion()) {
                     return true;
                 }
                 return false;

@@ -82,6 +82,38 @@ public enum OpsChangeStat {
             CS_PETSN2.set(0x00100000);
             CS_PETSN3.set(0x00200000);
             CS_TEMPEXP.set(0x00400000);
+            return;
+        }
+
+        // JMS131 and 147+ is asme as JMS186
+        if (ServerConfig.JMS147orLater()) {
+            return;
+        }
+        // JMS146 only?
+        if (ServerConfig.IsJMS() && ServerConfig.JMS146orLater()) {
+            CS_SKIN.set(1);
+            CS_FACE.set(1 << 1);
+            CS_HAIR.set(1 << 2);
+            CS_PETSN.set(1 << 3);
+            CS_PETSN2.set(1 << 4);
+            CS_PETSN3.set(1 << 5);
+            CS_LEV.set(1 << 6);
+            CS_JOB.set(1 << 7);
+            CS_STR.set(1 << 8);
+            CS_DEX.set(1 << 9);
+            CS_INT.set(1 << 10);
+            CS_LUK.set(1 << 11);
+            CS_HP.set(1 << 12);
+            CS_MHP.set(1 << 13);
+            CS_MP.set(1 << 14);
+            CS_MMP.set(1 << 15);
+            CS_AP.set(1 << 16);
+            CS_SP.set(1 << 17);
+            CS_EXP.set(1 << 18);
+            CS_POP.set(1 << 19);
+            CS_MONEY.set(1 << 20);
+            CS_TEMPEXP.set(1 << 21);
+            return;
         }
     }
 }

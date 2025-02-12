@@ -232,7 +232,7 @@ public class ResCMobPool {
             sp.Encode4(link); // dwOption
         }
         sp.Encode1(life.getCarnivalTeam()); // m_nTeamForMCarnival
-        if (ServerConfig.JMS147orLater()) {
+        if (ServerConfig.JMS146orLater()) {
             sp.Encode4(0); // nEffectItemID
         }
         if (ServerConfig.JMS165orLater()) {
@@ -295,7 +295,7 @@ public class ResCMobPool {
         sp.Encode2(life.getOriginFh()); // Origin FH
         sp.Encode1(life.isFake() ? -4 : newSpawn ? -2 : -1);
         sp.Encode1(life.getCarnivalTeam());
-        if (ServerConfig.JMS147orLater()) {
+        if (ServerConfig.JMS146orLater()) {
             sp.Encode4(0);
             sp.Encode4(0);
         }

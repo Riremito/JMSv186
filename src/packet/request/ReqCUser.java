@@ -791,36 +791,36 @@ public class ReqCUser {
         final PlayerStats stat = chr.getStat();
         final int job = chr.getJob();
         if (chr.getRemainingAp() > 0) {
-            switch ((int) flag) { // need to fix
-                case 64:
+            switch (OpsChangeStat.find((int)flag)) { // need to fix
+                case CS_STR:
                     // Str
                     if (stat.getStr() >= 999) {
                         return false;
                     }
                     stat.setStr((short) (stat.getStr() + 1));
                     break;
-                case 128:
+                case CS_DEX:
                     // Dex
                     if (stat.getDex() >= 999) {
                         return false;
                     }
                     stat.setDex((short) (stat.getDex() + 1));
                     break;
-                case 256:
+                case CS_INT:
                     // Int
                     if (stat.getInt() >= 999) {
                         return false;
                     }
                     stat.setInt((short) (stat.getInt() + 1));
                     break;
-                case 512:
+                case CS_LUK:
                     // Luk
                     if (stat.getLuk() >= 999) {
                         return false;
                     }
                     stat.setLuk((short) (stat.getLuk() + 1));
                     break;
-                case 2048:
+                case CS_MHP:
                     // HP
                     int maxhp = stat.getMaxHp();
                     if (chr.getHpApUsed() >= 10000 || maxhp >= 30000) {
@@ -881,7 +881,7 @@ public class ReqCUser {
                     chr.setHpApUsed((short) (chr.getHpApUsed() + 1));
                     stat.setMaxHp(maxhp);
                     break;
-                case 8192:
+                case CS_MMP:
                     // MP
                     int maxmp = stat.getMaxMp();
                     if (chr.getHpApUsed() >= 10000 || stat.getMaxMp() >= 30000) {

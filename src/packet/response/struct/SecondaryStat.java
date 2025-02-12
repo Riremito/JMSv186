@@ -57,12 +57,12 @@ public class SecondaryStat {
         if (ServerConfig.IsPostBB()) {
             data.Encode4(buff_mask[4]);
         }
-        if (ServerConfig.JMS147orLater()) {
+        if (ServerConfig.JMS146orLater()) {
             data.Encode4(buff_mask[3]);
             data.Encode4(buff_mask[2]);
         }
 
-        if (ServerConfig.JMS147orLater()) {
+        if (ServerConfig.JMS146orLater()) {
             data.Encode4(buff_mask[1]); // シャープアイズ等
             data.Encode4(buff_mask[0]); // ブースター等
         } else {
@@ -82,7 +82,7 @@ public class SecondaryStat {
                     }
                     data.Encode2(effect);
                     data.Encode4(skill_id);
-                    if (ServerConfig.JMS147orLater()) {
+                    if (ServerConfig.JMS146orLater()) {
                         data.Encode4(buff_time);
                     } else {
                         data.Encode2(buff_time);
@@ -91,7 +91,7 @@ public class SecondaryStat {
             }
         }
 
-        if (ServerConfig.JMS147orLater()) {
+        if (ServerConfig.JMS146orLater()) {
             data.Encode1(0);
             data.Encode1(0);
         }

@@ -147,7 +147,7 @@ public class GW_CharacterStat {
         data.Encode2(chr.getFame());
 
         if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS() || (ServerConfig.IsEMS() && ServerConfig.IsPostBB()))
-                && ServerConfig.JMS147orLater()) {
+                && ServerConfig.JMS146orLater()) {
             data.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 

@@ -99,7 +99,7 @@ public enum OpsScriptMan {
         if (ServerConfig.JMS180orLater()) {
             return;
         }
-        if (ServerConfig.JMS147orLater()) {
+        if (ServerConfig.JMS146orLater()) {
             SM_SAY.set(0);
             SM_ASKYESNO.set(1);
             SM_ASKTEXT.set(2);
