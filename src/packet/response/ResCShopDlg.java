@@ -100,7 +100,7 @@ public class ResCShopDlg {
             }
             if (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId())) {
                 sp.Encode2(1); // stacksize o.o
-                if (ServerConfig.JMS164orLater()) {
+                if (ServerConfig.JMS147orLater()) {
                     sp.Encode2(item.getBuyable());
                 }
             } else {

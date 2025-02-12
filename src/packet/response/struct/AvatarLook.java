@@ -111,7 +111,7 @@ public class AvatarLook {
         } else {
             data.Encode4(0); // pet 1?
 
-            if (ServerConfig.JMS164orLater()) {
+            if (ServerConfig.JMS147orLater()) {
                 data.Encode8(0); // pet 2 and 3?
             }
         }

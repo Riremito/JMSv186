@@ -188,11 +188,11 @@ public class ResCWvsContext {
         if (ServerConfig.IsPostBB()) {
             sp.Encode4(buff_mask[4]);
         }
-        if (ServerConfig.JMS164orLater()) {
+        if (ServerConfig.JMS147orLater()) {
             sp.Encode4(buff_mask[3]);
             sp.Encode4(buff_mask[2]);
         }
-        if (ServerConfig.JMS164orLater()) {
+        if (ServerConfig.JMS147orLater()) {
             sp.Encode4(buff_mask[1]);
             sp.Encode4(buff_mask[0]);
         } else {

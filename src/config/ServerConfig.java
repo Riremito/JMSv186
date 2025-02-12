@@ -106,6 +106,106 @@ public class ServerConfig {
         return !IsPostBB();
     }
 
+    public static boolean JMS146or147() {
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (146 <= GetVersion() && GetVersion() <= 147) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean JMS146orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (146 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean JMS147orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case JMS: {
+                if (147 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+
+            case KMS: {
+                // v2.66
+                if (65 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case CMS: {
+                if (73 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case TWMS: {
+                if (94 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case THMS: {
+                if (87 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case GMS: {
+                if (72 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case EMS: {
+                if (54 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case MSEA: {
+                if (102 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return false;
+    }
+
     // only 5 jobs
     // シグナス実装前まではほぼ変わらないはずなのでバージョンの誤差は多少あっても問題ない
     public static boolean JMS164orLater() {
@@ -536,7 +636,7 @@ public class ServerConfig {
         switch (GetRegion()) {
             case JMS: {
                 // not checked v132 to v163
-                if (GetVersion() < 164) {
+                if (GetVersion() <= 131) {
                     return true;
                 }
                 return false;

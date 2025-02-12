@@ -49,7 +49,7 @@ public class ResCStage {
         // チャンネル
         sp.Encode4(chr.getClient().getChannel() - 1);
         if (ServerConfig.IsJMS()
-                && ServerConfig.JMS164orLater()) {
+                && ServerConfig.JMS147orLater()) {
             sp.Encode1(0);
         }
 
@@ -66,7 +66,7 @@ public class ResCStage {
             sp.Encode1(0);
         }
         sp.Encode1(loggedin ? 1 : 0); // 1 = all data, 0 = map change
-        if (ServerConfig.JMS164orLater()) {
+        if (ServerConfig.JMS147orLater()) {
             sp.Encode2(0);
         }
         if (loggedin) {

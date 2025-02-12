@@ -509,6 +509,13 @@ public class ResCLogin {
             sp.Encode4(chr.getJobRankMove());
         }
 
+        if ((ServerConfig.JMS146or147())) {
+            sp.Encode1(2); // 2次パス無視
+            sp.Encode1(0);
+            sp.Encode4(charslots); // m_nSlotCount
+            return sp.get();
+        }
+
         // EMS v55
         if ((ServerConfig.IsEMS() && ServerConfig.GetVersion() <= 55)
                 || (ServerConfig.IsGMS() && ServerConfig.GetVersion() <= 73)) {
