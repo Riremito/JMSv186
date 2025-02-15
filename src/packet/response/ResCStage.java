@@ -96,7 +96,7 @@ public class ResCStage {
                 sp.Encode4(chr.getStat().getHp());
             }
 
-            if (ServerConfig.IsEMS() || ServerConfig.IsTWMS()) {
+            if (ServerConfig.IsEMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS()) {
                 boolean m_bChaseEnable = false;
                 sp.Encode1(m_bChaseEnable ? 1 : 0); // m_bChaseEnable
                 if (m_bChaseEnable) {
@@ -108,10 +108,7 @@ public class ResCStage {
         // サーバーの時間?
         sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
         if (ServerConfig.JMS194orLater()) {
-            sp.Encode4(0);
-            if (ServerConfig.IsJMS()) {
-                sp.Encode4(100); // nMobStatAdjustRate
-            }
+            sp.Encode4(100); // nMobStatAdjustRate
         }
         return sp.get();
     }
@@ -178,7 +175,7 @@ public class ResCStage {
             sp.Encode4(ServerConstants.MTS_BASE); // m_nCommissionBase
             sp.Encode4(24); // m_nAuctionDurationMin
             sp.Encode4(168); // m_nAuctionDurationMax
-            if (ServerConfig.JMS164orLater()) {
+            if (ServerConfig.JMS146orLater()) {
                 sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
             }
         }
@@ -191,7 +188,7 @@ public class ResCStage {
         sp.EncodeBuffer(CharacterData.Encode(c.getPlayer()));
         // CCashShop::LoadData
         {
-            if (ServerConfig.IsEMS()) {
+            if (ServerConfig.IsEMS() || ServerConfig.IsGMS()) {
                 sp.Encode1(1); // EMS v55
             }
             sp.EncodeStr(c.getAccountName());
@@ -200,12 +197,17 @@ public class ResCStage {
             }
             // CWvsContext::SetSaleInfo
             {
-                if ((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsEMS())
-                        && ServerConfig.IsPostBB()) {
-                    sp.Encode4(0); // NotSaleCount
+                if (ServerConfig.IsGMS()) {
+                    sp.Encode4(0);
+                }
+
+                if (ServerConfig.IsPostBB()) {
+                    if (ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsEMS()) {
+                        sp.Encode4(0); // NotSaleCount
+                    }
                 }
                 sp.EncodeBuffer(ResCCashShop.getModifiedData());
-                if (ServerConfig.JMS165orLater() && !ServerConfig.IsEMS()) { // X EMS v55
+                if (ServerConfig.JMS180orLater() && !ServerConfig.IsEMS()) { // X EMS v55
                     sp.Encode2(0); // non 0, Decode4, DecodeStr
                 }
                 sp.EncodeBuffer(ResCCashShop.getDiscountRates());
@@ -216,6 +218,9 @@ public class ResCStage {
         }
         sp.Encode1(0); // m_bEventOn
         // m_nHighestCharacterLevelInThisAccount
+        if (ServerConfig.IsGMS()) {
+            sp.Encode4(0);
+        }
         return sp.get();
     }
 

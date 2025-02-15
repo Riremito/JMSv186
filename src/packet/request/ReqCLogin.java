@@ -457,7 +457,7 @@ public class ReqCLogin {
             int unk2 = cp.Decode4();
         }
 
-        if (ServerConfig.IsEMS()) {
+        if (ServerConfig.IsEMS() || ServerConfig.IsGMS()) {
             int unke = cp.Decode4();
         }
 

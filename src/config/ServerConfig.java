@@ -247,6 +247,19 @@ public class ServerConfig {
         return false;
     }
 
+    // GMS62 (Pirate) + 3
+    public static boolean GMS65orLater() {
+        if (!IsGMS()) {
+            return false;
+        }
+
+        if (65 <= GetVersion()) {
+            return true;
+        }
+
+        return false;
+    }
+
     // only 5 jobs
     // シグナス実装前まではほぼ変わらないはずなのでバージョンの誤差は多少あっても問題ない
     public static boolean JMS164orLater() {
@@ -365,6 +378,16 @@ public class ServerConfig {
             }
         }
         return true;
+    }
+
+    public static boolean GMS73orLater() {
+        if (!IsGMS()) {
+            return false;
+        }
+        if (73 <= GetVersion()) {
+            return true;
+        }
+        return false;
     }
 
     // under JMS v180

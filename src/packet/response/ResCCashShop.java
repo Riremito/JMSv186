@@ -22,6 +22,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import config.ServerConfig;
 import handling.MaplePacket;
 import java.util.ArrayList;
 import packet.ops.OpsCashItemFailReason;
@@ -67,7 +68,12 @@ public class ResCCashShop {
         data.Encode4(50200133); // SN
         // CS_COMMODITY::DecodeModifiedData
         {
-            data.Encode4(0x01 | 0x02 | 0x04 | 0x0400); // flag
+            int flag = 0x01 | 0x02 | 0x04 | 0x0400;
+            if (ServerConfig.JMS147orLater() && !ServerConfig.IsGMS()) {
+                data.Encode4(flag);
+            } else {
+                data.Encode2(flag);
+            }
             data.Encode4(5062000); // 0x01 : itemid
             data.Encode2(77); // 0x02 : count
             data.Encode4(7777); // 0x04: price
