@@ -237,7 +237,7 @@ public class CharacterData {
                 if ((datamask & 0x20000) > 0) {
                     data.Encode4(chr.getMonsterBookCover());
                 }
-                if (ServerConfig.GMS73orLater()) {
+                if (ServerConfig.GMS72orLater()) {
                     if ((datamask & 0x10000) > 0) {
                         data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                     }
@@ -247,7 +247,7 @@ public class CharacterData {
                         data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                     }
                 }
-                if (ServerConfig.GMS73orLater()) {
+                if (ServerConfig.GMS72orLater()) {
                     if ((datamask & 0x80000) > 0) {
                         data.Encode2(0);
                     }

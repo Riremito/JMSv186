@@ -1,38 +1,51 @@
 # JMS エミュ鯖
 ## 概要
 ### 動作確認済み
-|バージョン|時期|動作状況|
-|---|---|---|
-|JMS v131|属性杖|〇|
-|JMS v164|シグナス騎士団実装直前|◎|
-|JMS v165|シグナス騎士団|△|
-|JMS v180|モンスターレイド2|〇|
-|JMS v186|BB直前, 潜在能力|◎|
-|JMS v187|BB|×|
-|JMS v188|BB, メカニック|◎|
-|JMS v194|ルネサンス直前|◎|
-|JMS v201|ルネサンス||
-|JMS v302|戦国, カンナ|△|
-|KMS v2.65|シグナス騎士団実装直前|△|
-|KMS v2.71|JMS 164|△|
-|KMS v2.84|JMS 180, GMS 83|△|
-|KMS v2.92|JMS 183||
-|KMS v2.95|JMS 184|〇|
-|KMS v2.114|BB, メカニック有|〇|
-|TWMS v94|シグナス騎士団実装直前|△|
-|TWMS v122|BB直前|×|
-|TWMS v124|BB|〇|
-|TWMS v125|BB, 内部的にメカニック有|〇|
-|CMS v85|BB直前|△|
-|CMS v88|BB, メカニック||
-|EMS v76|BB, メカニック有|〇|
-|BMS v24|最終バージョン|×|
-|MSEA v102|BB直前||
-|MSEA v105|BB||
-|THMS v87|BB直前|×|
-|GMS v83|JMS 180||
-|GMS v84|JMS 183||
-|GMS v95|BB, メカニック||
+|バージョン|時期|動作状況|その他|
+|---|---|---|---|
+|JMS v131|属性杖|〇|No Magatia|
+|JMS v146|海賊実装直前|△|Before Pirate|
+|JMS v147|海賊|△|Pirate|
+|JMS v164|シグナス騎士団実装直前|◎|Before KOC|
+|JMS v165|シグナス騎士団|△|KOC-2|
+|JMS v180|モンスターレイド2|〇||
+|JMS v186|BB直前, 潜在能力|◎|Pre-BB Final|
+|JMS v187|BB|×|Post-BB, Wild Hunter, Battle Mage|
+|JMS v188|BB, メカニック|◎|Mechanic|
+|JMS v194|ルネサンス直前|◎|Before Chaos|
+|JMS v201|ルネサンス|||
+|JMS v302|戦国, カンナ|△||
+|KMS v2.65|Before KOC|△|JMS164|
+|KMS v2.67|KOC|||
+|KMS v2.71|KOC-2|△|JMS165, Removed Lv limit for KOC|
+|KMS v2.84||△|JMS180, Early Dimensional Mirror|
+|KMS v2.92|Dual Blade||JMS183|
+|KMS v2.95||〇|JMS184|
+|KMS v2.114|Post-BB, Before Chaos|〇|JMS194|
+|TWMS v94|Before KOC|△|JMS164|
+|TWMS v122|Pre-BB Final|×|JMS186|
+|TWMS v124|Post-BB|〇|JMS188|
+|TWMS v125|Post-BB, Mechanic|〇|JMS188|
+|CMS v85|Pre-BB|△|JMS186|
+|CMS v88|Post-BB, Mechanic||JMS188|
+|MSEA v102|Pre-BB Final||JMS186|
+|MSEA v105|Post-BB||JMS188|
+|THMS v87|Pre-BB Final|×|JMS186|
+|GMS v61|Before Pirate||JMS146|
+|GMS v62|Pirate (No Magatia)|△|JMS147, No Magatia|
+|GMS v65|Pirate Bug Fixed, Magatia|△||
+|GMS v66|CrimsonWood Keep|△||
+|GMS v72|Before KOC|△|JMS164|
+|GMS v73|KOC|△|JMS165 (almost KMS2.67)|
+|GMS v77|KOC-2||JMS165|
+|GMS v83|||JMS180|
+|GMS v84|Evan||JMS183|
+|GMS v92|Pre-BB Final||JMS186|
+|GMS v95|Post-BB, Mechanic||JMS188|
+|EMS v55|KOC|△|JMS165, No Pirate, Ariant, Magatia|
+|EMS v70|Dual Blade|△|JMS183|
+|EMS v76|Post-BB, Mechanic|△|JMS188|
+|BMS v24|Final|×|No KOC|
 
 ## 開発環境構築
 ### Java

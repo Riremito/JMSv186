@@ -380,6 +380,16 @@ public class ServerConfig {
         return true;
     }
 
+    public static boolean GMS72orLater() {
+        if (!IsGMS()) {
+            return false;
+        }
+        if (72 <= GetVersion()) {
+            return true;
+        }
+        return false;
+    }
+
     public static boolean GMS73orLater() {
         if (!IsGMS()) {
             return false;
