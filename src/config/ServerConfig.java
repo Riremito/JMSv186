@@ -380,6 +380,26 @@ public class ServerConfig {
         return true;
     }
 
+    public static boolean TWMS74orLater() {
+        if (!IsTWMS()) {
+            return false;
+        }
+        if (74 <= GetVersion()) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean TWMS94orLater() {
+        if (!IsTWMS()) {
+            return false;
+        }
+        if (94 <= GetVersion()) {
+            return true;
+        }
+        return false;
+    }
+
     public static boolean GMS72orLater() {
         if (!IsGMS()) {
             return false;
@@ -785,6 +805,9 @@ public class ServerConfig {
                 return true;
             }
             case TWMS: {
+                if (94 <= GetVersion()) {
+                    character_name_size = 15;
+                }
                 if (123 <= GetVersion()) {
                     is_postBB = true;
                 }
@@ -880,7 +903,7 @@ public class ServerConfig {
             case "TWMS": {
                 region_type = Region.TWMS;
                 region_number = 6;
-                character_name_size = 15;
+                character_name_size = 13;
                 return true;
             }
             case "MSEA": {

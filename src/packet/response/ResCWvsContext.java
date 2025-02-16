@@ -216,7 +216,7 @@ public class ResCWvsContext {
         // 0 = lock   -> do not clear lock flag
         // 1 = unlock -> clear lock flag
         sp.Encode1(unlock); // CWvsContext->bExclRequestSent
-        if (ServerConfig.IsEMS()) {
+        if (ServerConfig.IsEMS() || (ServerConfig.TWMS74orLater() && !ServerConfig.TWMS94orLater())) {
             sp.Encode1(0); // EMS v55
         }
         sp.EncodeBuffer(GW_CharacterStat.EncodeChangeStat(chr, statmask));

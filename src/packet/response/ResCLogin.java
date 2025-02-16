@@ -338,7 +338,9 @@ public class ResCLogin {
         data.Encode4(client.getAccID());
         data.Encode1(client.getGender());
         data.Encode1(client.isGm() ? 1 : 0);
-        data.Encode1(client.isGm() ? 1 : 0);
+        if (ServerConfig.TWMS94orLater()) {
+            data.Encode1(client.isGm() ? 1 : 0);
+        }
         if (ServerConfig.TWMS122orLater()) {
             data.Encode4(0); // buffer4
         }
