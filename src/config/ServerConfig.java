@@ -260,6 +260,19 @@ public class ServerConfig {
         return false;
     }
 
+    // leak version
+    public static boolean GMS95orLater() {
+        if (!IsGMS()) {
+            return false;
+        }
+
+        if (95 <= GetVersion()) {
+            return true;
+        }
+
+        return false;
+    }
+
     // only 5 jobs
     // シグナス実装前まではほぼ変わらないはずなのでバージョンの誤差は多少あっても問題ない
     public static boolean JMS164orLater() {

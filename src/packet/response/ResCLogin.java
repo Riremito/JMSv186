@@ -196,9 +196,9 @@ public class ResCLogin {
         sp.Encode1(result.Get()); // result
 
         // EMS v55-v70
-        if (ServerConfig.IsGMS() || ServerConfig.IsEMS()) {
+        if (ServerConfig.IsGMS() || (ServerConfig.IsEMS() && ServerConfig.IsPreBB())) {
             sp.Encode1(0);
-            sp.Encode4(0);
+            sp.Encode4(0); // unused
         }
         /*
         v186 Message Flag
@@ -208,80 +208,163 @@ public class ResCLogin {
          */
         switch (result) {
             case SUCCESS: {
-                if (ServerConfig.IsTWMS()) {
-                    sp.EncodeBuffer(Success_Login_TWMS(client));
-                    break;
-                }
-                if (ServerConfig.IsCMS()) {
-                    sp.EncodeBuffer(Success_Login_CMS(client));
-                    break;
-                }
-                if (ServerConfig.IsJMS()) {
-                    sp.Encode1(0); // OK
-                }
-                if (ServerConfig.IsBMS()) {
-                    sp.Encode1(0); // m_nRegStatID
-                    sp.Encode4(0); // m_nUseDay
-                }
-                sp.Encode4(client.getAccID()); // m_dwAccountId
-                // EMS v55-v70
-                if (ServerConfig.IsGMS() || ServerConfig.IsEMS()) {
-                    sp.Encode1(0);
-                }
-                sp.Encode1(client.getGender()); // m_nGender
-                sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
-                if (ServerConfig.JMS164orLater()) {
-                    sp.Encode1(client.isGm() ? 1 : 0);
-                }
-                sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
-                if (ServerConfig.IsKMS()) {
-                    sp.Encode4(3); // should be 3 for KMS v2.114 to ignore personal number
-                }
-                if (ServerConfig.IsJMS()) {
-                    sp.EncodeStr(client.getAccountName());
-                }
-                if (ServerConfig.IsJMS() || ServerConfig.IsKMS()) {
-                    sp.Encode1(ServerConfig.IsKMS() ? 1 : 0); // should be 1 for KMS v2.114 to ignore personal number
-                }
-                sp.Encode1(0); // m_nPurchaseExp
-                sp.Encode1(0); // m_nChatBlockReason
-                if (ServerConfig.IsJMS()) {
-                    sp.Encode1(0);
-                }
-                if (ServerConfig.IsJMS() && ServerConfig.JMS164orLater()) {
-                    sp.Encode1(0);
-                }
-                if (ServerConfig.IsJMS() && ServerConfig.JMS180orLater()) {
-                    sp.Encode1(0);
-                }
-                // 2次パスワード
-                if (ServerConfig.IsJMS()
-                        && ServerConfig.IsPostBB()) {
-                    // -1, 無視
-                    // 0, 初期化
-                    // 1, 登録済み
-                    sp.Encode1(-1);
-                }
-                // 旧かんたん会員
-                if (ServerConfig.IsJMS()
-                        && ServerConfig.JMS302orLater()) {
-                    // 0, 旧かんたん会員
-                    // 1, 通常
-                    sp.Encode1(1);
-                }
-                sp.Encode8(0); // m_dtChatUnblockDate
-                if (ServerConfig.IsBMS() || ServerConfig.IsGMS() || ServerConfig.IsEMS()) {
-                    sp.Encode8(0); // m_dtRegisterDate
-                }
-                if (ServerConfig.IsBMS() || ServerConfig.IsEMS()) {
-                    sp.Encode1(1);
-                    sp.Encode1(0);
-                }
-                if (ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
-                    sp.EncodeStr(""); // v131: available name for new character, later version does not use this string
-                }
-                if (ServerConfig.IsGMS() || ServerConfig.IsEMS()) {
-                    sp.Encode4(0);
+                {
+                    switch (ServerConfig.GetRegion()) {
+                        case KMS: {
+                            sp.Encode4(client.getAccID()); // m_dwAccountId
+                            sp.Encode1(client.getGender()); // m_nGender
+                            sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
+                            if (ServerConfig.JMS164orLater()) {
+                                sp.Encode1(client.isGm() ? 1 : 0);
+                            }
+                            sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
+                            sp.Encode4(3); // should be 3 for KMS v2.114 to ignore personal number
+                            sp.Encode1(ServerConfig.IsKMS() ? 1 : 0); // should be 1 for KMS v2.114 to ignore personal number
+                            sp.Encode1(0); // m_nPurchaseExp
+                            sp.Encode1(0); // m_nChatBlockReason
+                            sp.Encode8(0); // m_dtChatUnblockDate
+                            sp.EncodeStr("");
+                            break;
+                        }
+                        case JMS:
+                        default: {
+                            sp.Encode1(0); // OK
+                            sp.Encode4(client.getAccID()); // m_dwAccountId
+                            sp.Encode1(client.getGender()); // m_nGender
+                            sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
+                            if (ServerConfig.JMS164orLater()) {
+                                sp.Encode1(client.isGm() ? 1 : 0);
+                            }
+                            sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
+                            sp.EncodeStr(client.getAccountName());
+                            sp.Encode1(ServerConfig.IsKMS() ? 1 : 0);
+                            sp.Encode1(0); // m_nPurchaseExp
+                            sp.Encode1(0); // m_nChatBlockReason
+                            sp.Encode1(0);
+                            if (ServerConfig.JMS164orLater()) {
+                                sp.Encode1(0);
+                            }
+                            if (ServerConfig.JMS180orLater()) {
+                                sp.Encode1(0);
+                            }
+                            // 2次パスワード
+                            if (ServerConfig.IsPostBB()) {
+                                // -1, 無視
+                                // 0, 初期化
+                                // 1, 登録済み
+                                sp.Encode1(-1);
+                            }
+                            // 旧かんたん会員
+                            if (ServerConfig.JMS302orLater()) {
+                                // 0, 旧かんたん会員
+                                // 1, 通常
+                                sp.Encode1(1);
+                            }
+                            sp.Encode8(0); // m_dtChatUnblockDate
+                            sp.EncodeStr(""); // v131: available name for new character, later version does not use this string
+                            break;
+                        }
+                        case CMS: {
+                            sp.Encode4(client.getAccID());
+                            sp.Encode1(client.getGender());
+                            sp.Encode1(client.isGm() ? 1 : 0);
+                            sp.Encode1(client.isGm() ? 1 : 0);
+                            sp.EncodeStr(client.getAccountName());
+                            sp.Encode4(0);
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.Encode8(0); // buffer
+                            sp.Encode1(0);
+                            sp.Encode8(0); // buffer
+                            sp.Encode8(0); // buffer
+                            sp.EncodeStr("");
+                            sp.Encode1(0);
+                            sp.EncodeStr(String.valueOf(client.getAccID()));
+                            sp.EncodeStr(client.getAccountName());
+                            sp.Encode1(1);
+                            break;
+                        }
+                        case TWMS: {
+                            sp.Encode4(client.getAccID());
+                            sp.Encode1(client.getGender());
+                            sp.Encode1(client.isGm() ? 1 : 0);
+                            if (ServerConfig.TWMS94orLater()) {
+                                sp.Encode1(client.isGm() ? 1 : 0);
+                            }
+                            if (ServerConfig.TWMS122orLater()) {
+                                sp.Encode4(0); // buffer4
+                            }
+                            sp.EncodeStr(client.getAccountName());
+                            sp.Encode4(0);
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.Encode8(0); // buffer
+                            sp.Encode1(0);
+                            sp.Encode8(0); // buffer
+                            break;
+                        }
+                        case GMS: {
+                            sp.Encode4(client.getAccID()); // m_dwAccountId
+                            sp.Encode1(0);
+                            sp.Encode1(client.getGender()); // m_nGender
+                            sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
+                            if (ServerConfig.JMS164orLater()) {
+                                sp.Encode1(client.isGm() ? 1 : 0);
+                            }
+                            sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
+                            sp.Encode1(0); // m_nPurchaseExp
+                            sp.Encode1(0); // m_nChatBlockReason
+                            sp.Encode8(0); // m_dtChatUnblockDate
+                            sp.Encode8(0); // m_dtRegisterDate
+                            sp.Encode4(0);
+                            break;
+                        }
+                        case EMS: {
+                            sp.Encode4(client.getAccID()); // m_dwAccountId
+                            // EMS v55-v70
+                            if (ServerConfig.IsPreBB()) {
+                                sp.Encode1(0);
+                            }
+                            sp.Encode1(client.getGender()); // m_nGender
+                            sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
+                            if (ServerConfig.JMS164orLater()) {
+                                sp.Encode1(client.isGm() ? 1 : 0);
+                            }
+                            sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
+                            sp.Encode1(0); // m_nPurchaseExp
+                            sp.Encode1(0); // m_nChatBlockReason
+                            sp.Encode8(0); // m_dtChatUnblockDate
+                            if (ServerConfig.IsPreBB()) {
+                                sp.Encode8(0); // m_dtRegisterDate
+                                // v70+
+                                sp.Encode1(1);
+                            } else {
+                                sp.EncodeStr("");
+                                sp.Encode4(0);
+                            }
+                            break;
+                        }
+                        case BMS: {
+                            sp.Encode1(0); // m_nRegStatID
+                            sp.Encode4(0); // m_nUseDay
+                            sp.Encode4(client.getAccID()); // m_dwAccountId
+                            sp.Encode1(client.getGender()); // m_nGender
+                            sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
+                            if (ServerConfig.JMS164orLater()) {
+                                sp.Encode1(client.isGm() ? 1 : 0);
+                            }
+                            sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
+                            sp.Encode1(0); // m_nPurchaseExp
+                            sp.Encode1(0); // m_nChatBlockReason
+                            sp.Encode8(0); // m_dtChatUnblockDate
+                            sp.Encode8(0); // m_dtRegisterDate
+                            sp.Encode1(1);
+                            sp.Encode1(0);
+                            break;
+                        }
+                    }
                 }
                 break;
             }
@@ -331,51 +414,6 @@ public class ResCLogin {
          */
         sp.Encode1(mode);
         return sp.get();
-    }
-
-    public static byte[] Success_Login_TWMS(MapleClient client) {
-        ServerPacket data = new ServerPacket();
-        data.Encode4(client.getAccID());
-        data.Encode1(client.getGender());
-        data.Encode1(client.isGm() ? 1 : 0);
-        if (ServerConfig.TWMS94orLater()) {
-            data.Encode1(client.isGm() ? 1 : 0);
-        }
-        if (ServerConfig.TWMS122orLater()) {
-            data.Encode4(0); // buffer4
-        }
-        data.EncodeStr(client.getAccountName());
-        data.Encode4(0);
-        data.Encode1(0);
-        data.Encode1(0);
-        data.Encode1(0);
-        data.Encode8(0); // buffer
-        data.Encode1(0);
-        data.Encode8(0); // buffer
-        return data.get().getBytes();
-    }
-
-    public static byte[] Success_Login_CMS(MapleClient client) {
-        ServerPacket data = new ServerPacket();
-        data.Encode4(client.getAccID());
-        data.Encode1(client.getGender());
-        data.Encode1(client.isGm() ? 1 : 0);
-        data.Encode1(client.isGm() ? 1 : 0);
-        data.EncodeStr(client.getAccountName());
-        data.Encode4(0);
-        data.Encode1(0);
-        data.Encode1(0);
-        data.Encode1(0);
-        data.Encode8(0); // buffer
-        data.Encode1(0);
-        data.Encode8(0); // buffer
-        data.Encode8(0); // buffer
-        data.EncodeStr("");
-        data.Encode1(0);
-        data.EncodeStr(String.valueOf(client.getAccID()));
-        data.EncodeStr(client.getAccountName());
-        data.Encode1(1);
-        return data.get().getBytes();
     }
 
     // ワールドセレクト

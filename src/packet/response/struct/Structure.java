@@ -334,7 +334,7 @@ public class Structure {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if (ServerConfig.JMS194orLater() && !ServerConfig.IsKMS()) {
+        if (ServerConfig.JMS194orLater() && !ServerConfig.IsKMS() && !ServerConfig.IsEMS()) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
