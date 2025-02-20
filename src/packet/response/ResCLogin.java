@@ -306,19 +306,37 @@ public class ResCLogin {
                             break;
                         }
                         case GMS: {
-                            sp.Encode4(client.getAccID()); // m_dwAccountId
-                            sp.Encode1(0);
-                            sp.Encode1(client.getGender()); // m_nGender
-                            sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
-                            if (ServerConfig.JMS164orLater()) {
-                                sp.Encode1(client.isGm() ? 1 : 0);
+                            if (ServerConfig.IsPreBB()) {
+                                sp.Encode4(client.getAccID()); // m_dwAccountId
+                                sp.Encode1(0);
+                                sp.Encode1(client.getGender()); // m_nGender
+                                sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
+                                if (ServerConfig.JMS164orLater()) {
+                                    sp.Encode1(client.isGm() ? 1 : 0);
+                                }
+                                sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
+                                sp.Encode1(0); // m_nPurchaseExp
+                                sp.Encode1(0); // m_nChatBlockReason
+                                sp.Encode8(0); // m_dtChatUnblockDate
+                                sp.Encode8(0); // m_dtRegisterDate
+                                sp.Encode4(0);
+                            } else {
+                                // GMS v95
+                                sp.Encode4(client.getAccID()); // m_dwAccountId
+                                sp.Encode1(0);
+                                sp.Encode1(0);
+                                sp.Encode2(0);
+                                sp.Encode1(0);
+                                sp.EncodeStr(client.getAccountName());
+                                sp.Encode1(0);
+                                sp.Encode1(0);
+                                sp.Encode8(0);
+                                sp.Encode8(0);
+                                sp.Encode4(0);
+                                sp.Encode1(1); // pic
+                                sp.Encode1(0);
+                                sp.Encode8(0);
                             }
-                            sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
-                            sp.Encode1(0); // m_nPurchaseExp
-                            sp.Encode1(0); // m_nChatBlockReason
-                            sp.Encode8(0); // m_dtChatUnblockDate
-                            sp.Encode8(0); // m_dtRegisterDate
-                            sp.Encode4(0);
                             break;
                         }
                         case EMS: {
@@ -538,7 +556,7 @@ public class ResCLogin {
             //Structure.CharEntry(p, chr, true, false);
             sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(AvatarLook.Encode(chr));
-            if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS())
+            if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS() || ServerConfig.GMS95orLater())
                     && (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater())) {
                 sp.Encode1(0); // family
             }
@@ -553,6 +571,13 @@ public class ResCLogin {
             sp.Encode1(2); // 2次パス無視
             sp.Encode1(0);
             sp.Encode4(charslots); // m_nSlotCount
+            return sp.get();
+        }
+
+        if (ServerConfig.GMS95orLater()) {
+            sp.Encode1(2); // m_bLoginOpt
+            sp.Encode4(charslots); // m_nSlotCount
+            sp.Encode4(0); // m_nBuyCharCount
             return sp.get();
         }
 

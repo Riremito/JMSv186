@@ -42,32 +42,32 @@ public class ResCStage {
     public static final MaplePacket SetField(MapleCharacter chr, boolean loggedin, MapleMap to, int spawnPoint) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetField);
         // JMS184orLater
-        if ((ServerConfig.IsJMS() || ServerConfig.IsCMS())
+        if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsGMS())
                 && ServerConfig.JMS186orLater()) {
             sp.EncodeBuffer(CClientOptMan.EncodeOpt()); // 2 bytes
         }
         // チャンネル
-        sp.Encode4(chr.getClient().getChannel() - 1);
+        sp.Encode4(chr.getClient().getChannel() - 1); // m_nChannelID
         if (ServerConfig.IsJMS()
                 && ServerConfig.JMS146orLater()) {
             sp.Encode1(0);
         }
 
-        if (((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS()) && ServerConfig.JMS180orLater())
+        if (((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS() || ServerConfig.IsGMS()) && ServerConfig.JMS180orLater())
                 || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
-            sp.Encode4(0);
+            sp.Encode4(0); // m_dwOldDriverID
         }
 
-        sp.Encode1(chr.getPortalCount());
+        sp.Encode1(chr.getPortalCount()); // sNotifierMessage?
         if (ServerConfig.JMS194orLater()) {
             sp.Encode4(0);
         }
         if (ServerConfig.IsCMS()) {
             sp.Encode1(0);
         }
-        sp.Encode1(loggedin ? 1 : 0); // 1 = all data, 0 = map change
+        sp.Encode1(loggedin ? 1 : 0); // bCharacterData, 1 = all data, 0 = map change
         if (ServerConfig.JMS146orLater()) {
-            sp.Encode2(0);
+            sp.Encode2(0); // nNotifierCheck
         }
         if (loggedin) {
             // [chr.CRand().connectData(mplew);]
@@ -79,7 +79,7 @@ public class ResCStage {
             // キャラクター情報
             sp.EncodeBuffer(CharacterData.Encode(chr));
             // JMS184orLater
-            if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTWMS())
+            if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS())
                     && ServerConfig.JMS186orLater()) {
                 // ログアウトギフト
                 sp.EncodeBuffer(CWvsContext.LogoutGiftConfig());

@@ -236,25 +236,47 @@ public class CharacterData {
                 break;
             }
             case GMS: {
-                if ((datamask & 0x20000) > 0) {
-                    data.Encode4(chr.getMonsterBookCover());
-                }
-                if (ServerConfig.GMS72orLater()) {
-                    if ((datamask & 0x10000) > 0) {
-                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
-                    }
-                }
-                if (ServerConfig.GMS65orLater()) {
+                if (ServerConfig.GMS95orLater()) {
+                    // NewYearCardRecord
                     if ((datamask & 0x40000) > 0) {
-                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                        data.Encode2(0);
                     }
-                }
-                if (ServerConfig.GMS72orLater()) {
+                    // InitQuestExFromRawStr
                     if ((datamask & 0x80000) > 0) {
                         data.Encode2(0);
                     }
-                    if ((datamask & 0x100000) > 0) {
+                    if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
+                        data.EncodeBuffer(GW_WildHunterInfo.Encode());
+                    }
+                    // 0x400000 QuestCompleteOld
+                    if ((datamask & 0x400000) > 0) {
                         data.Encode2(0);
+                    }
+                    if ((datamask & 0x800000) > 0) {
+                        // VisitorQuestLog
+                        data.Encode2(0);
+                    }
+                } else {
+                    if ((datamask & 0x20000) > 0) {
+                        data.Encode4(chr.getMonsterBookCover());
+                    }
+                    if (ServerConfig.GMS72orLater()) {
+                        if ((datamask & 0x10000) > 0) {
+                            data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                        }
+                    }
+                    if (ServerConfig.GMS65orLater()) {
+                        if ((datamask & 0x40000) > 0) {
+                            data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                        }
+                    }
+                    if (ServerConfig.GMS72orLater()) {
+                        if ((datamask & 0x80000) > 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x100000) > 0) {
+                            data.Encode2(0);
+                        }
                     }
                 }
                 break;

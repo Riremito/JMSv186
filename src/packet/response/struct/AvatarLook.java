@@ -85,7 +85,7 @@ public class AvatarLook {
         }
         data.Encode1(0xFF); // ending markers
         final IItem cWeapon = equip.getItem((byte) -111);
-        data.Encode4(cWeapon != null ? cWeapon.getItemId() : 0);
+        data.Encode4(cWeapon != null ? cWeapon.getItemId() : 0); // nWeaponStickerID
 
         if (ServerConfig.IsKMS()) {
             if (ServerConfig.IsPostBB()) {
@@ -106,7 +106,7 @@ public class AvatarLook {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS()) {
+        if (ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS() || (ServerConfig.GMS95orLater())) {
             data.EncodeZeroBytes(12);
         } else {
             data.Encode4(0); // pet 1?

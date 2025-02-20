@@ -190,7 +190,7 @@ public class GW_ItemSlotBase {
                 data.EncodeBuffer(RawEncode(item));
                 // GW_ItemSlotPet::RawDecode
                 data.EncodeBuffer(item.getPet().getName(), 13);
-                data.Encode1(item.getPet().getLevel());
+                data.Encode1(item.getPet().getLevel()); // nLevel_CS
                 data.Encode2(item.getPet().getCloseness()); // nTameness_CS
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
                 // 魔法の効力期限, Windows時間
@@ -204,7 +204,7 @@ public class GW_ItemSlotBase {
                 if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
                     data.Encode2(0); // nAttribute_CS
                 }
-                if (ServerConfig.JMS186orLater() && !(ServerConfig.IsEMS() && ServerConfig.IsPreBB())) {
+                if (ServerConfig.JMS186orLater() && !(ServerConfig.IsEMS() && ServerConfig.IsPreBB()) && !ServerConfig.IsGMS()) {
                     data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                     data.Encode4(0);
                 }

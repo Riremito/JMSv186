@@ -158,7 +158,7 @@ public class GW_CharacterStat {
         data.Encode4(chr.getMapId()); // current map id
         data.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
 
-        if ((ServerConfig.IsGMS() || ServerConfig.IsEMS()) && ServerConfig.IsPreBB()) {
+        if (ServerConfig.IsGMS() || (ServerConfig.IsEMS() && ServerConfig.IsPreBB())) {
             data.Encode4(0);
         }
 
