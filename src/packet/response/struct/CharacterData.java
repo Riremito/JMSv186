@@ -134,7 +134,8 @@ public class CharacterData {
             data.EncodeBuffer(Structure.addRocksInfo(chr));
         }
         switch (ServerConfig.GetRegion()) {
-            case KMS: {
+            case KMS:
+            case KMST: {
                 if (ServerConfig.IsPreBB()) {
                     if ((datamask & 0x20000) > 0) {
                         data.Encode4(chr.getMonsterBookCover());

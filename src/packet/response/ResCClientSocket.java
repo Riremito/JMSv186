@@ -52,7 +52,8 @@ public class ResCClientSocket {
         ServerPacket sp = new ServerPacket((short) 0); // dummy
 
         switch (ServerConfig.GetRegion()) {
-            case KMS: {
+            case KMS:
+            case KMST: {
                 long xor_version = 0;
                 xor_version ^= ServerConfig.GetVersion();
                 xor_version ^= 1 << 15;

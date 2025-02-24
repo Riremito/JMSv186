@@ -210,7 +210,8 @@ public class ResCLogin {
             case SUCCESS: {
                 {
                     switch (ServerConfig.GetRegion()) {
-                        case KMS: {
+                        case KMS:
+                        case KMST: {
                             sp.Encode4(client.getAccID()); // m_dwAccountId
                             sp.Encode1(client.getGender()); // m_nGender
                             sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode

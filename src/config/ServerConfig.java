@@ -38,6 +38,7 @@ public class ServerConfig {
 
     public enum Region {
         KMS,
+        KMST,
         JMS,
         CMS,
         TWMS,
@@ -50,7 +51,11 @@ public class ServerConfig {
     }
 
     public static boolean IsKMS() {
-        return GetRegion() == Region.KMS;
+        return GetRegion() == Region.KMS || GetRegion() == Region.KMST;
+    }
+
+    public static boolean IsKMST() {
+        return GetRegion() == Region.KMST;
     }
 
     public static boolean IsJMS() {
@@ -802,6 +807,12 @@ public class ServerConfig {
                 }
                 return true;
             }
+            case KMST: {
+                if (317 <= GetVersion()) {
+                    is_postBB = true;
+                }
+                return true;
+            }
             case JMS: {
                 if (GetVersion() <= 141) {
                     packet_old_iv = true;
@@ -897,6 +908,12 @@ public class ServerConfig {
             case "KMS": {
                 region_type = Region.KMS;
                 region_number = 1;
+                character_name_size = 13;
+                return true;
+            }
+            case "KMST": {
+                region_type = Region.KMST;
+                region_number = 2;
                 character_name_size = 13;
                 return true;
             }
