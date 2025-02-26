@@ -436,9 +436,16 @@ public class LoadData {
         if (sub_dir != null) {
             MapleItemInformationProvider.consumeStringData = sub_dir;
         }
-
-        MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Eqp.img").getChildByPath("Eqp");
-        MapleItemInformationProvider.etcStringData = MapleItemInformationProvider.stringData.getData("Etc.img").getChildByPath("Etc");
+        MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Eqp.img");
+        sub_dir = MapleItemInformationProvider.eqpStringData.getChildByPath("Eqp");
+        if (sub_dir != null) {
+            MapleItemInformationProvider.eqpStringData = sub_dir;
+        }
+        MapleItemInformationProvider.etcStringData = MapleItemInformationProvider.stringData.getData("Etc.img");
+        sub_dir = MapleItemInformationProvider.etcStringData.getChildByPath("Etc");
+        if (sub_dir != null) {
+            MapleItemInformationProvider.etcStringData = sub_dir;
+        }
         MapleItemInformationProvider.insStringData = MapleItemInformationProvider.stringData.getData("Ins.img");
         MapleItemInformationProvider.petStringData = MapleItemInformationProvider.stringData.getData("Pet.img");
 

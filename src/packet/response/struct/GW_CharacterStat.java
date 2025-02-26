@@ -46,7 +46,7 @@ public class GW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier()) {
+        if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || ServerConfig.IsVMS()) {
             data.EncodeZeroBytes(8);
         } else if ((ServerConfig.IsJMS() || ServerConfig.IsGMS() || ServerConfig.IsCMS() || ((ServerConfig.IsTWMS() || ServerConfig.IsEMS()) && ServerConfig.IsPreBB()))) {
             data.EncodeZeroBytes(24);
@@ -157,6 +157,10 @@ public class GW_CharacterStat {
 
         data.Encode4(chr.getMapId()); // current map id
         data.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
+
+        if (ServerConfig.IsVMS()) {
+            return data.get().getBytes();
+        }
 
         if (ServerConfig.IsGMS() || (ServerConfig.IsEMS() && ServerConfig.IsPreBB())) {
             data.Encode4(0);

@@ -69,7 +69,7 @@ public class ResCCashShop {
         // CS_COMMODITY::DecodeModifiedData
         {
             int flag = 0x01 | 0x02 | 0x04 | 0x0400;
-            if (ServerConfig.JMS147orLater() && !ServerConfig.IsGMS()) {
+            if ((ServerConfig.JMS147orLater() && !ServerConfig.IsGMS()) || ServerConfig.IsVMS()) {
                 data.Encode4(flag);
             } else {
                 data.Encode2(flag);

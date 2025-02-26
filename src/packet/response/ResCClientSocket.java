@@ -62,6 +62,10 @@ public class ResCClientSocket {
                 sp.EncodeStr(String.valueOf(xor_version));
                 break;
             }
+            case VMS: {
+                sp.Encode2(ServerConfig.GetVersion());
+                break;
+            }
             default: {
                 sp.Encode2(ServerConfig.GetVersion());
                 sp.EncodeStr(String.valueOf(ServerConfig.GetSubVersion()));

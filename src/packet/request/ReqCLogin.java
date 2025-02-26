@@ -333,7 +333,7 @@ public class ReqCLogin {
 
             face_id = cp.Decode4();
             hair_id = cp.Decode4();
-            if (ServerConfig.IsGMS() || ServerConfig.IsEMS()) {
+            if (ServerConfig.IsGMS() || ServerConfig.IsEMS() || ServerConfig.IsVMS()) {
                 hair_color = cp.Decode4();
                 skin_color = cp.Decode4();
             }
@@ -476,9 +476,13 @@ public class ReqCLogin {
         if (ServerConfig.IsEMS() || ServerConfig.IsGMS()) {
             int unke = cp.Decode4();
         }
+        if (ServerConfig.IsVMS()) {
+            String key = cp.DecodeStr(); // 32 bytes hex
+        }
 
         final int Character_ID = cp.Decode4();
         if (!c.login_Auth(Character_ID)) {
+            Debug.ErrorLog("Delete Character Error");
             c.getSession().close();
             return;
         }

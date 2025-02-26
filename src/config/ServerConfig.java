@@ -47,6 +47,7 @@ public class ServerConfig {
         EMS,
         BMS,
         MSEA,
+        VMS,
         unk,
     }
 
@@ -88,6 +89,10 @@ public class ServerConfig {
 
     public static boolean IsMSEA() {
         return GetRegion() == Region.MSEA;
+    }
+
+    public static boolean IsVMS() {
+        return GetRegion() == Region.VMS;
     }
 
     private static int character_name_size = 13;
@@ -178,6 +183,12 @@ public class ServerConfig {
             }
             case MSEA: {
                 if (0 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case VMS: {
+                if (35 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -335,8 +346,11 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case VMS: {
+                return false;
+            }
         }
-        return true;
+        return false;
     }
 
     // Knights of Cygnus update
@@ -394,8 +408,11 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case VMS: {
+                return false;
+            }
         }
-        return true;
+        return false;
     }
 
     public static boolean TWMS74orLater() {
@@ -532,7 +549,7 @@ public class ServerConfig {
                 break;
             }
         }
-        return true;
+        return false;
     }
 
     public static boolean KMS95orEarlier() {
@@ -792,6 +809,12 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case VMS: {
+                if (GetVersion() <= 35) {
+                    return true;
+                }
+                return false;
+            }
             default: {
                 break;
             }
@@ -861,7 +884,8 @@ public class ServerConfig {
                 }
                 return true;
             }
-            case BMS: {
+            case BMS:
+            case VMS: {
                 is_postBB = false;
                 return true;
             }
@@ -967,6 +991,13 @@ public class ServerConfig {
                 packet_custom_encryption = true;
                 return true;
             }
+            case "VMS": {
+                region_type = Region.VMS;
+                region_number = 7;
+                packet_custom_encryption = true;
+                character_name_size = 16;
+                return true;
+            }
             default: {
                 break;
             }
@@ -1020,16 +1051,12 @@ public class ServerConfig {
     public static void SetProperty() {
         Properties DataBase = ReadPropertyFile("properties/database.properties");
         {
-            // jdbc:mysql://127.0.0.1:3306/v186?autoReconnect=true&characterEncoding=utf8
+            // jdbc:mysql://127.0.0.1:3306/jms_v186?autoReconnect=true&characterEncoding=utf8
             database_url = DataBase.getProperty("database.url");
             if (database_url.isEmpty()) {
                 String database_host = DataBase.getProperty("database.host");
                 String database_port = DataBase.getProperty("database.port");
-                if (IsJMS()) {
-                    database_url = "jdbc:mysql://" + database_host + ":" + database_port + "/v" + version + "?autoReconnect=true&characterEncoding=utf8";
-                } else {
-                    database_url = "jdbc:mysql://" + database_host + ":" + database_port + "/" + GetRegionName() + "_v" + version + "?autoReconnect=true&characterEncoding=utf8";
-                }
+                database_url = "jdbc:mysql://" + database_host + ":" + database_port + "/" + GetRegionName() + "_v" + version + "?autoReconnect=true&characterEncoding=utf8";
             }
 
             database_user = DataBase.getProperty("database.user");

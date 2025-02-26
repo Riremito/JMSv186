@@ -138,7 +138,7 @@ public class GW_ItemSlotBase {
                 data.EncodeStr(equip.getOwner());
                 data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
                 // リバース武器
-                if (ServerConfig.JMS164orLater()) {
+                if (ServerConfig.JMS164orLater() || ServerConfig.IsVMS()) {
                     data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
                     data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
                     data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
@@ -197,7 +197,7 @@ public class GW_ItemSlotBase {
                 data.Encode8(ServerConfig.expiration_date); // dateDead
                 data.Encode2(0); // nPetAttribute_CS
                 data.Encode2(item.getPet().getFlags()); // usPetSkill_CS
-                if (ServerConfig.JMS164orLater()) {
+                if (ServerConfig.JMS164orLater() || ServerConfig.IsVMS()) {
                     // 魔法の時間, デンデン専用 (残り時間)
                     data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
                 }

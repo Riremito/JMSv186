@@ -383,6 +383,18 @@ public class ResCLogin {
                             sp.Encode1(0);
                             break;
                         }
+                        case VMS: {
+                            sp.Encode4(client.getAccID());
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.EncodeStr(client.getAccountName());
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.Encode8(0);
+                            sp.EncodeStr("");
+                            break;
+                        }
                     }
                 }
                 break;
@@ -568,7 +580,7 @@ public class ResCLogin {
             sp.Encode4(chr.getJobRankMove());
         }
 
-        if ((ServerConfig.JMS146or147())) {
+        if ((ServerConfig.JMS146or147()) || ServerConfig.IsVMS()) {
             sp.Encode1(2); // 2次パス無視
             sp.Encode1(0);
             sp.Encode4(charslots); // m_nSlotCount

@@ -87,11 +87,15 @@ public class AvatarLook {
         final IItem cWeapon = equip.getItem((byte) -111);
         data.Encode4(cWeapon != null ? cWeapon.getItemId() : 0); // nWeaponStickerID
 
+        if (ServerConfig.IsVMS()) {
+            data.Encode4(0);
+            return data.get().getBytes();
+        }
+
         if (ServerConfig.IsKMS()) {
             if (ServerConfig.IsPostBB()) {
                 data.EncodeZeroBytes(12);
             } else {
-
                 data.Encode4(0);
             }
             return data.get().getBytes();

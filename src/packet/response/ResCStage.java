@@ -96,7 +96,7 @@ public class ResCStage {
                 sp.Encode4(chr.getStat().getHp());
             }
 
-            if (ServerConfig.IsEMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS()) {
+            if (ServerConfig.IsEMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS() || ServerConfig.IsVMS()) {
                 boolean m_bChaseEnable = false;
                 sp.Encode1(m_bChaseEnable ? 1 : 0); // m_bChaseEnable
                 if (m_bChaseEnable) {
@@ -191,7 +191,9 @@ public class ResCStage {
             if (ServerConfig.IsEMS() || ServerConfig.IsGMS()) {
                 sp.Encode1(1); // EMS v55
             }
-            sp.EncodeStr(c.getAccountName());
+            if (!ServerConfig.IsVMS()) {
+                sp.EncodeStr(c.getAccountName());
+            }
             if (ServerConfig.IsEMS()) {
                 sp.Encode1(0); // EMS v55
             }
