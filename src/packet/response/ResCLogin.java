@@ -371,16 +371,14 @@ public class ResCLogin {
                             sp.Encode4(client.getAccID()); // m_dwAccountId
                             sp.Encode1(client.getGender()); // m_nGender
                             sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
-                            if (ServerConfig.JMS164orLater()) {
-                                sp.Encode1(client.isGm() ? 1 : 0);
-                            }
+                            sp.Encode1(client.isGm() ? 1 : 0);
                             sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
                             sp.Encode1(0); // m_nPurchaseExp
                             sp.Encode1(0); // m_nChatBlockReason
                             sp.Encode8(0); // m_dtChatUnblockDate
                             sp.Encode8(0); // m_dtRegisterDate
-                            sp.Encode1(1);
                             sp.Encode1(0);
+                            sp.Encode1(2); // pic
                             break;
                         }
                         case VMS: {
@@ -462,7 +460,7 @@ public class ResCLogin {
         // ワールドの旗
         sp.Encode1(LoginServer.WorldFlag[serverId]);
         // 吹き出し
-        sp.EncodeStr(LoginServer.WorldEvent[serverId]);
+        sp.EncodeStr(ServerConfig.IsBMS() ? "" : LoginServer.WorldEvent[serverId]);
         // 経験値倍率?
         sp.Encode2(100);
         // ドロップ倍率?
@@ -578,6 +576,11 @@ public class ResCLogin {
             sp.Encode4(chr.getRankMove());
             sp.Encode4(chr.getJobRank()); // world ranking
             sp.Encode4(chr.getJobRankMove());
+        }
+
+        if (ServerConfig.IsBMS()) {
+            sp.Encode4(charslots);
+            return sp.get();
         }
 
         if ((ServerConfig.JMS146or147()) || ServerConfig.IsVMS()) {

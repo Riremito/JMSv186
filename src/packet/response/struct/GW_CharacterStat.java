@@ -46,7 +46,7 @@ public class GW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || ServerConfig.IsVMS()) {
+        if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || ServerConfig.IsBMS() || ServerConfig.IsVMS()) {
             data.EncodeZeroBytes(8);
         } else if ((ServerConfig.IsJMS() || ServerConfig.IsGMS() || ServerConfig.IsCMS() || ((ServerConfig.IsTWMS() || ServerConfig.IsEMS()) && ServerConfig.IsPreBB()))) {
             data.EncodeZeroBytes(24);
@@ -162,12 +162,12 @@ public class GW_CharacterStat {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.IsGMS() || (ServerConfig.IsEMS() && ServerConfig.IsPreBB())) {
+        if (ServerConfig.IsGMS() || (ServerConfig.IsEMS() && ServerConfig.IsPreBB()) || ServerConfig.IsBMS()) {
             data.Encode4(0);
         }
 
         // KMS 84
-        if (ServerConfig.KMS84orEarlier()) {
+        if (ServerConfig.KMS84orEarlier() || ServerConfig.IsBMS()) {
             return data.get().getBytes();
         }
         // JMS 180, KMS 95

@@ -42,13 +42,13 @@ public class ChatHandler {
         MapleCharacter chr = c.getPlayer();
         byte unk = 0;
 
-        if (ServerConfig.JMS180orLater()) {
+        if (ServerConfig.JMS180orLater() || ServerConfig.IsBMS()) {
             cp.Decode4();
         }
 
         String text = cp.DecodeStr();
 
-        if (ServerConfig.JMS164orLater()) {
+        if (ServerConfig.JMS164orLater() || ServerConfig.IsBMS()) {
             unk = cp.Decode1();
         }
 

@@ -187,6 +187,12 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case BMS: {
+                if (24 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
             case VMS: {
                 if (35 <= GetVersion()) {
                     return true;
@@ -809,6 +815,12 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case BMS: {
+                if (GetVersion() <= 24) {
+                    return true;
+                }
+                return false;
+            }
             case VMS: {
                 if (GetVersion() <= 35) {
                     return true;
@@ -983,6 +995,7 @@ public class ServerConfig {
                 region_type = Region.BMS;
                 region_number = 9;
                 packet_custom_encryption = true;
+                character_name_size = 13;
                 return true;
             }
             case "THMS": {

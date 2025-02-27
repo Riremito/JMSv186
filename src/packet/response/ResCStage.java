@@ -96,7 +96,7 @@ public class ResCStage {
                 sp.Encode4(chr.getStat().getHp());
             }
 
-            if (ServerConfig.IsEMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS() || ServerConfig.IsVMS()) {
+            if (ServerConfig.IsEMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS() || ServerConfig.IsVMS() || ServerConfig.IsBMS()) {
                 boolean m_bChaseEnable = false;
                 sp.Encode1(m_bChaseEnable ? 1 : 0); // m_bChaseEnable
                 if (m_bChaseEnable) {
@@ -188,7 +188,7 @@ public class ResCStage {
         sp.EncodeBuffer(CharacterData.Encode(c.getPlayer()));
         // CCashShop::LoadData
         {
-            if (ServerConfig.IsEMS() || ServerConfig.IsGMS()) {
+            if (ServerConfig.IsEMS() || ServerConfig.IsGMS() || ServerConfig.IsBMS()) {
                 sp.Encode1(1); // EMS v55
             }
             if (!ServerConfig.IsVMS()) {
@@ -199,7 +199,7 @@ public class ResCStage {
             }
             // CWvsContext::SetSaleInfo
             {
-                if (ServerConfig.IsGMS()) {
+                if (ServerConfig.IsGMS() || ServerConfig.IsBMS()) {
                     sp.Encode4(0);
                 }
 

@@ -148,7 +148,7 @@ public class GW_ItemSlotBase {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
                 // ビシャスのハンマー
-                if (ServerConfig.JMS180orLater() || ServerConfig.GMS73orLater()) {
+                if (ServerConfig.JMS180orLater() || ServerConfig.GMS73orLater() || ServerConfig.IsBMS()) {
                     data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                 }
                 if (ServerConfig.JMS302orLater()) {
@@ -189,7 +189,7 @@ public class GW_ItemSlotBase {
             case 3: {
                 data.EncodeBuffer(RawEncode(item));
                 // GW_ItemSlotPet::RawDecode
-                data.EncodeBuffer(item.getPet().getName(), 13);
+                data.EncodeBuffer(item.getPet().getName(), ServerConfig.IsBMS() ? 21 : 13);
                 data.Encode1(item.getPet().getLevel()); // nLevel_CS
                 data.Encode2(item.getPet().getCloseness()); // nTameness_CS
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
