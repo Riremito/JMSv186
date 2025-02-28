@@ -286,6 +286,19 @@ public class ResCLogin {
                             sp.Encode1(1);
                             break;
                         }
+                        case THMS: {
+                            sp.Encode4(client.getAccID());
+                            sp.Encode1(client.getGender());
+                            sp.Encode1(client.isGm() ? 1 : 0);
+                            sp.Encode1(client.isGm() ? 1 : 0);
+                            sp.EncodeStr(client.getAccountName());
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.Encode8(0);
+                            sp.Encode1(0);
+                            sp.EncodeStr("");
+                            break;
+                        }
                         case TWMS: {
                             sp.Encode4(client.getAccID());
                             sp.Encode1(client.getGender());
@@ -567,7 +580,7 @@ public class ResCLogin {
             //Structure.CharEntry(p, chr, true, false);
             sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(AvatarLook.Encode(chr));
-            if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS() || ServerConfig.GMS95orLater())
+            if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsEMS() || ServerConfig.IsTHMS() || ServerConfig.GMS95orLater())
                     && (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater())) {
                 sp.Encode1(0); // family
             }
@@ -580,6 +593,15 @@ public class ResCLogin {
 
         if (ServerConfig.IsBMS()) {
             sp.Encode4(charslots);
+            return sp.get();
+        }
+
+        if (ServerConfig.IsTHMS()) {
+            sp.Encode1(2); // 2nd password ingored
+            sp.Encode1(0);
+            sp.Encode4(charslots);
+            sp.Encode4(0);
+            sp.Encode8(0);
             return sp.get();
         }
 

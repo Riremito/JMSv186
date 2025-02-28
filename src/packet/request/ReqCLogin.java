@@ -333,7 +333,7 @@ public class ReqCLogin {
 
             face_id = cp.Decode4();
             hair_id = cp.Decode4();
-            if (ServerConfig.IsGMS() || ServerConfig.IsEMS() || ServerConfig.IsBMS() || ServerConfig.IsVMS() || ServerConfig.IsBMS()) {
+            if (ServerConfig.IsTHMS() || ServerConfig.IsGMS() || ServerConfig.IsEMS() || ServerConfig.IsBMS() || ServerConfig.IsVMS() || ServerConfig.IsBMS()) {
                 hair_color = cp.Decode4();
                 skin_color = cp.Decode4();
             }
@@ -476,7 +476,7 @@ public class ReqCLogin {
         if (ServerConfig.IsEMS() || ServerConfig.IsGMS()) {
             int unke = cp.Decode4();
         }
-        if (ServerConfig.IsVMS() || ServerConfig.IsBMS()) {
+        if (ServerConfig.IsTHMS() || ServerConfig.IsVMS() || ServerConfig.IsBMS()) {
             String key = cp.DecodeStr(); // 32 bytes hex or PIC
         }
 

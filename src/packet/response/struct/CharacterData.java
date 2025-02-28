@@ -63,7 +63,7 @@ public class CharacterData {
             data.Encode1(0); // not 0, Encode1, Encode4(size), EncodeBuffer8, Encode4(size), EncodeBuffer8
         }
 
-        if (ServerConfig.IsVMS()) {
+        if (ServerConfig.IsTHMS() || ServerConfig.IsVMS()) {
             if ((datamask & 0x02) > 0) {
                 data.Encode4(0);
             }
@@ -103,7 +103,8 @@ public class CharacterData {
             data.EncodeBuffer(GW_CharacterStat.EncodeMoney(chr));
             if (ServerConfig.IsJMS()
                     || ServerConfig.IsTWMS()
-                    || ServerConfig.IsCMS()) {
+                    || ServerConfig.IsCMS()
+                    || ServerConfig.IsTHMS()) {
                 data.EncodeBuffer(GW_CharacterStat.EncodePachinko(chr));
             }
         }
@@ -339,6 +340,24 @@ public class CharacterData {
                 }
                 if ((datamask & 0x10000) > 0) {
                     data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                }
+                break;
+            }
+            case THMS: {
+                if ((datamask & 0x20000) > 0) {
+                    data.Encode4(chr.getMonsterBookCover());
+                }
+                if ((datamask & 0x10000) > 0) {
+                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                }
+                if ((datamask & 0x40000) > 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                }
+                if ((datamask & 0x80000) > 0) {
+                    data.Encode2(0);
+                }
+                if ((datamask & 0x200000) > 0) {
+                    data.Encode2(0);
                 }
                 break;
             }

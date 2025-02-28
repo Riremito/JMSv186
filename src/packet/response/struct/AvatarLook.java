@@ -110,7 +110,7 @@ public class AvatarLook {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS() || (ServerConfig.GMS95orLater())) {
+        if (ServerConfig.IsTHMS() || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS() || (ServerConfig.GMS95orLater())) {
             data.EncodeZeroBytes(12);
         } else {
             data.Encode4(0); // pet 1?

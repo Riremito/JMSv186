@@ -53,7 +53,7 @@ public class ResCStage {
             sp.Encode1(0);
         }
 
-        if (((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS() || ServerConfig.IsGMS()) && ServerConfig.JMS180orLater())
+        if (((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsTHMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS() || ServerConfig.IsGMS()) && ServerConfig.JMS180orLater())
                 || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
             sp.Encode4(0); // m_dwOldDriverID
         }
@@ -96,7 +96,7 @@ public class ResCStage {
                 sp.Encode4(chr.getStat().getHp());
             }
 
-            if (ServerConfig.IsEMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS() || ServerConfig.IsVMS() || ServerConfig.IsBMS()) {
+            if (ServerConfig.IsEMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS() || ServerConfig.IsVMS() || ServerConfig.IsBMS() || ServerConfig.IsTHMS()) {
                 boolean m_bChaseEnable = false;
                 sp.Encode1(m_bChaseEnable ? 1 : 0); // m_bChaseEnable
                 if (m_bChaseEnable) {
@@ -191,7 +191,7 @@ public class ResCStage {
             if (ServerConfig.IsEMS() || ServerConfig.IsGMS() || ServerConfig.IsBMS()) {
                 sp.Encode1(1); // EMS v55
             }
-            if (!ServerConfig.IsVMS()) {
+            if (!(ServerConfig.IsVMS() || ServerConfig.IsTHMS())) {
                 sp.EncodeStr(c.getAccountName());
             }
             if (ServerConfig.IsEMS()) {
