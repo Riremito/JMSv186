@@ -312,8 +312,15 @@ public class ResCWvsContext {
                 sp.Encode4(0);
                 sp.Encode1(ma.Inc_EXP_MobEventBonusPercentage); // nMobEventBonusPercentage
                 sp.Encode1(0);
-                sp.Encode4(ma.Inc_EXP_WeddingBonus); // 結婚ボーナス経験値
-                sp.Encode4(0); // グループリングボーナスEXP (?)
+                if (ServerConfig.IsTHMS() && ServerConfig.GetVersion() == 87) {
+                    sp.Encode4(ma.Inc_EXP_WeddingBonus); // Wedding Bonus EXP(+%d)
+                    sp.Encode4(0); // Party Ring Bonus EXP(+%d)
+                    sp.Encode4(0); // EXP Bonus Internet Cafe(+ %d)
+                    sp.Encode4(0); // Rainbow Week Bonus EXP(+%d)
+                } else {
+                    sp.Encode4(ma.Inc_EXP_WeddingBonus); // 結婚ボーナス経験値
+                    sp.Encode4(0); // グループリングボーナスEXP (?)
+                }
                 if (0 < ma.Inc_EXP_MobEventBonusPercentage) {
                     sp.Encode1(ma.Inc_EXP_PlayTimeHour);
                 }

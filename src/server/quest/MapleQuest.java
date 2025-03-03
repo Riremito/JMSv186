@@ -9,6 +9,7 @@ import java.util.Map;
 
 import client.MapleCharacter;
 import client.MapleQuestStatus;
+import config.ServerConfig;
 import java.util.ArrayList;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
@@ -255,8 +256,9 @@ public class MapleQuest implements Serializable {
             // we save forfeits only for logging purposes, they shouldn't matter anymore
             // completion time is set by the constructor
 
-            c.getClient().getSession().write(ResCUserLocal.showSpecialEffect(10)); // Quest completion
-            c.getMap().broadcastMessage(c, ResCUserRemote.showSpecialEffect(c.getId(), 10), false);
+            int questClearEffect = (ServerConfig.IsTHMS() && ServerConfig.GetVersion() == 87) ? 9 : 10;
+            c.getClient().getSession().write(ResCUserLocal.showSpecialEffect(questClearEffect)); // Quest completion
+            c.getMap().broadcastMessage(c, ResCUserRemote.showSpecialEffect(c.getId(), questClearEffect), false);
         }
     }
 

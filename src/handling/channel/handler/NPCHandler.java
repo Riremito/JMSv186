@@ -28,6 +28,7 @@ import client.MapleCharacter;
 import constants.GameConstants;
 import client.MapleQuestStatus;
 import client.RockPaperScissors;
+import config.ServerConfig;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -126,8 +127,9 @@ public class NPCHandler {
             case 5: { // Scripted End Quest
                 final int npc = slea.readInt();
                 NPCScriptManager.getInstance().endQuest(c, npc, quest, false);
-                c.getSession().write(ResCUserLocal.showSpecialEffect(10)); // Quest completion
-                chr.getMap().broadcastMessage(chr, ResCUserRemote.showSpecialEffect(chr.getId(), 10), false);
+                int questClearEffect = (ServerConfig.IsTHMS() && ServerConfig.GetVersion() == 87) ? 9 : 10;
+                c.getSession().write(ResCUserLocal.showSpecialEffect(questClearEffect)); // Quest completion
+                chr.getMap().broadcastMessage(chr, ResCUserRemote.showSpecialEffect(chr.getId(), questClearEffect), false);
                 break;
             }
         }
