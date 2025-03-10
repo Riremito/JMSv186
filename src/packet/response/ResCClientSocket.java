@@ -66,6 +66,12 @@ public class ResCClientSocket {
                 sp.Encode2(ServerConfig.GetVersion());
                 break;
             }
+            case IMS: {
+                sp.Encode2(ServerConfig.GetVersion());
+                sp.Encode1(0);
+                sp.Encode1(ServerConfig.GetSubVersion());
+                break;
+            }
             default: {
                 sp.Encode2(ServerConfig.GetVersion());
                 sp.EncodeStr(String.valueOf(ServerConfig.GetSubVersion()));

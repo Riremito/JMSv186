@@ -69,7 +69,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
             decoderState.packetlength = -1;
 
             if (ServerConfig.PacketEncryptionEnabled()) {
-                if (ServerConfig.IsKMS()) {
+                if (ServerConfig.IsKMS() || ServerConfig.IsIMS()) {
                     client.getReceiveCrypto().kms_decrypt(decryptedPacket);
                 } else {
                     client.getReceiveCrypto().crypt(decryptedPacket);
@@ -78,7 +78,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
                     MapleCustomEncryption.decryptData(decryptedPacket);
                 }
             }
-            if (!ServerConfig.IsKMS()) {
+            if (!(ServerConfig.IsKMS() || ServerConfig.IsIMS())) {
                 client.getReceiveCrypto().updateIv();
             }
             out.write(decryptedPacket);

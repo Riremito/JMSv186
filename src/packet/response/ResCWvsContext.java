@@ -185,7 +185,7 @@ public class ResCWvsContext {
             sp.Encode4(buff_mask[5]);
         }
         // JMS v187+
-        if (ServerConfig.IsPostBB()) {
+        if (ServerConfig.IsPostBB() && !ServerConfig.IsIMS()) {
             sp.Encode4(buff_mask[4]);
         }
         if (ServerConfig.JMS146orLater()) {

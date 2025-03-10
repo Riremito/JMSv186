@@ -56,13 +56,13 @@ public class MaplePacketEncoder implements ProtocolEncoder {
                     if (ServerConfig.CustomEncryptionEnabled()) {
                         MapleCustomEncryption.encryptData(unencrypted);
                     }
-                    if (ServerConfig.IsKMS()) {
+                    if (ServerConfig.IsKMS() || ServerConfig.IsIMS()) {
                         send_crypto.kms_encrypt(unencrypted);
                     } else {
                         send_crypto.crypt(unencrypted);
                     }
                 }
-                if (!ServerConfig.IsKMS()) {
+                if (!(ServerConfig.IsKMS() || ServerConfig.IsIMS())) {
                     send_crypto.updateIv();
                 }
 

@@ -361,6 +361,18 @@ public class CharacterData {
                 }
                 break;
             }
+            case IMS: {
+                if ((datamask & 0x40000) > 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                }
+                if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
+                    data.EncodeBuffer(GW_WildHunterInfo.Encode());
+                }
+                if ((datamask & 0x400000) > 0) {
+                    data.Encode2(0);
+                }
+                break;
+            }
             case JMS:
             default: {
                 // 0x7C JMS, Present v146-v194

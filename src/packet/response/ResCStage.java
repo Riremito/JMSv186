@@ -53,7 +53,7 @@ public class ResCStage {
             sp.Encode1(0);
         }
 
-        if (((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsTHMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS() || ServerConfig.IsGMS()) && ServerConfig.JMS180orLater())
+        if (((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsTHMS() || ServerConfig.IsCMS() || ServerConfig.IsEMS() || ServerConfig.IsGMS() || ServerConfig.IsIMS()) && ServerConfig.JMS180orLater())
                 || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
             sp.Encode4(0); // m_dwOldDriverID
         }
@@ -219,6 +219,11 @@ public class ResCStage {
             sp.Encode2(0); // CCashShop::DecodeLimitGoods
         }
         sp.Encode1(0); // m_bEventOn
+
+        if (ServerConfig.IsIMS()) {
+            sp.Encode1(0);
+        }
+
         // m_nHighestCharacterLevelInThisAccount
         if (ServerConfig.IsGMS()) {
             sp.Encode4(0);

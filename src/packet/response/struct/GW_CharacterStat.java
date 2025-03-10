@@ -175,7 +175,7 @@ public class GW_CharacterStat {
             data.Encode2(chr.getSubcategory());
         }
         // KMS, CMS, EMS
-        if (ServerConfig.IsKMS() || ServerConfig.IsCMS() || ServerConfig.IsGMS() || ServerConfig.IsEMS()) {
+        if (ServerConfig.IsKMS() || ServerConfig.IsCMS() || ServerConfig.IsGMS() || ServerConfig.IsEMS() || ServerConfig.IsIMS()) {
             return data.get().getBytes();
         }
 

@@ -54,7 +54,7 @@ public class SecondaryStat {
             data.Encode4(buff_mask[5]);
         }
         // JMS v187+
-        if (ServerConfig.IsPostBB()) {
+        if (ServerConfig.IsPostBB() && !ServerConfig.IsIMS()) {
             data.Encode4(buff_mask[4]);
         }
         if (ServerConfig.JMS146orLater()) {

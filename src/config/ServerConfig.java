@@ -48,6 +48,7 @@ public class ServerConfig {
         BMS,
         MSEA,
         VMS,
+        IMS,
         unk,
     }
 
@@ -93,6 +94,10 @@ public class ServerConfig {
 
     public static boolean IsVMS() {
         return GetRegion() == Region.VMS;
+    }
+
+    public static boolean IsIMS() {
+        return GetRegion() == Region.IMS;
     }
 
     private static int character_name_size = 13;
@@ -901,6 +906,10 @@ public class ServerConfig {
                 is_postBB = false;
                 return true;
             }
+            case IMS: {
+                is_postBB = true;
+                return true;
+            }
             default: {
                 break;
             }
@@ -1009,6 +1018,13 @@ public class ServerConfig {
                 region_number = 7;
                 packet_custom_encryption = true;
                 character_name_size = 16;
+                return true;
+            }
+            case "IMS": {
+                region_type = Region.IMS;
+                region_number = 1;
+                //packet_custom_encryption = true;
+                character_name_size = 13;
                 return true;
             }
             default: {

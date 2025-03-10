@@ -430,7 +430,7 @@ public class ReqCLogin {
     }
 
     public static final void CharlistRequest(ClientPacket cp, final MapleClient c) {
-        if (ServerConfig.IsKMS()) {
+        if (ServerConfig.IsKMS() || ServerConfig.IsIMS()) {
             byte unk = cp.Decode1();
         }
 
@@ -447,7 +447,7 @@ public class ReqCLogin {
         int server = cp.Decode1(); // nWorldID
         final int channel = cp.Decode1(); // nChannelID)
 
-        if (ServerConfig.GMS95orLater()) {
+        if (ServerConfig.GMS95orLater() || ServerConfig.IsIMS()) {
             int ip = cp.Decode4(); // S_addr
         }
 
