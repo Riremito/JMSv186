@@ -352,7 +352,7 @@ public class ServerConfig {
                 return false;
             }
             case MSEA: {
-                if (102 <= GetVersion()) {
+                if (100 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -414,7 +414,7 @@ public class ServerConfig {
                 return false;
             }
             case MSEA: {
-                if (102 <= GetVersion()) {
+                if (100 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -551,7 +551,7 @@ public class ServerConfig {
                 return false;
             }
             case MSEA: {
-                if (102 <= GetVersion()) {
+                if (100 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -647,7 +647,7 @@ public class ServerConfig {
                 return false;
             }
             case MSEA: {
-                if (102 <= GetVersion()) {
+                if (100 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -984,6 +984,8 @@ public class ServerConfig {
             case "MSEA": {
                 region_type = Region.MSEA;
                 region_number = 7;
+                packet_custom_encryption = true;
+                character_name_size = 13;
                 return true;
             }
             case "GMS": {

@@ -243,6 +243,24 @@ public class CharacterData {
                 }
                 break;
             }
+            case MSEA: {
+                if ((datamask & 0x20000) > 0) {
+                    data.Encode4(chr.getMonsterBookCover());
+                }
+                if ((datamask & 0x10000) > 0) {
+                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                }
+                if ((datamask & 0x40000) > 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                }
+                if ((datamask & 0x80000) > 0) {
+                    data.Encode2(0);
+                }
+                if ((datamask & 0x200000) > 0) {
+                    data.Encode2(0);
+                }
+                break;
+            }
             case GMS: {
                 if (ServerConfig.GMS95orLater()) {
                     // NewYearCardRecord

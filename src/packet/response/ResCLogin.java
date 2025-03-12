@@ -319,6 +319,19 @@ public class ResCLogin {
                             sp.Encode8(0); // buffer
                             break;
                         }
+                        case MSEA: {
+                            // MSEA100
+                            sp.Encode4(client.getAccID());
+                            sp.Encode1(client.getGender());
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.EncodeStr(client.getAccountName());
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.Encode8(0);
+                            sp.EncodeStr("");
+                            break;
+                        }
                         case GMS: {
                             if (ServerConfig.IsPreBB()) {
                                 sp.Encode4(client.getAccID()); // m_dwAccountId
@@ -600,7 +613,7 @@ public class ResCLogin {
             //Structure.CharEntry(p, chr, true, false);
             sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(AvatarLook.Encode(chr));
-            if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsIMS() || ServerConfig.IsEMS() || ServerConfig.IsTHMS() || ServerConfig.GMS95orLater())
+            if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsIMS() || ServerConfig.IsEMS() || ServerConfig.IsTHMS() || ServerConfig.IsMSEA() || ServerConfig.GMS95orLater())
                     && (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater())) {
                 sp.Encode1(0); // family
             }
@@ -616,7 +629,7 @@ public class ResCLogin {
             return sp.get();
         }
 
-        if (ServerConfig.IsIMS()) {
+        if (ServerConfig.IsMSEA() || ServerConfig.IsIMS()) {
             sp.Encode1(2);
             sp.Encode1(0);
             sp.Encode4(charslots);

@@ -333,7 +333,7 @@ public class ReqCLogin {
 
             face_id = cp.Decode4();
             hair_id = cp.Decode4();
-            if (ServerConfig.IsTHMS() || ServerConfig.IsGMS() || ServerConfig.IsEMS() || ServerConfig.IsBMS() || ServerConfig.IsVMS() || ServerConfig.IsBMS()) {
+            if (ServerConfig.IsMSEA() || ServerConfig.IsTHMS() || ServerConfig.IsGMS() || ServerConfig.IsEMS() || ServerConfig.IsBMS() || ServerConfig.IsVMS() || ServerConfig.IsBMS()) {
                 hair_color = cp.Decode4();
                 skin_color = cp.Decode4();
             }

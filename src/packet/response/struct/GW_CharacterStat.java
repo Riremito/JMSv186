@@ -48,7 +48,7 @@ public class GW_CharacterStat {
 
         if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || ServerConfig.IsBMS() || ServerConfig.IsVMS()) {
             data.EncodeZeroBytes(8);
-        } else if ((ServerConfig.IsJMS() || ServerConfig.IsTHMS() || ServerConfig.IsGMS() || ServerConfig.IsCMS() || ((ServerConfig.IsTWMS() || ServerConfig.IsEMS()) && ServerConfig.IsPreBB()))) {
+        } else if ((ServerConfig.IsJMS() || ServerConfig.IsTHMS() || ServerConfig.IsGMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ((ServerConfig.IsTWMS() || ServerConfig.IsEMS()) && ServerConfig.IsPreBB()))) {
             data.EncodeZeroBytes(24);
         }
 
@@ -146,12 +146,12 @@ public class GW_CharacterStat {
         data.Encode4(chr.getExp());
         data.Encode2(chr.getFame());
 
-        if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTHMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS() || (ServerConfig.IsEMS() && ServerConfig.IsPostBB()))
+        if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTHMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS() || ServerConfig.IsMSEA() || (ServerConfig.IsEMS() && ServerConfig.IsPostBB()))
                 && ServerConfig.JMS146orLater()) {
             data.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 
-        if (ServerConfig.TWMS122orLater() || ServerConfig.IsCMS() || (ServerConfig.IsEMS() && ServerConfig.IsPostBB())) {
+        if (ServerConfig.TWMS122orLater() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || (ServerConfig.IsEMS() && ServerConfig.IsPostBB())) {
             data.Encode8(0);
         }
 
@@ -175,7 +175,7 @@ public class GW_CharacterStat {
             data.Encode2(chr.getSubcategory());
         }
         // KMS, CMS, EMS
-        if (ServerConfig.IsKMS() || ServerConfig.IsCMS() || ServerConfig.IsGMS() || ServerConfig.IsEMS() || ServerConfig.IsIMS()) {
+        if (ServerConfig.IsKMS() || ServerConfig.IsCMS() || ServerConfig.IsGMS() || ServerConfig.IsEMS() || ServerConfig.IsIMS() || ServerConfig.IsMSEA()) {
             return data.get().getBytes();
         }
 
