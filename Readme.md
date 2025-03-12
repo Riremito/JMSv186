@@ -15,6 +15,7 @@
 |JMS v194|ルネサンス直前|◎|Before Chaos|
 |JMS v201|ルネサンス|||
 |JMS v302|戦国, カンナ|△||
+|JMS v308|Before VMProtect||2013/01/22, Tempest|
 |KMS v2.65|Before KOC|△|JMS164|
 |KMS v2.67|KOC|||
 |KMS v2.71|KOC-2|△|JMS165, Removed Lv limit for KOC|
@@ -22,30 +23,47 @@
 |KMS v2.92|Dual Blade||JMS183|
 |KMS v2.95||〇|JMS184|
 |KMS v2.114|Post-BB, Before Chaos|〇|JMS194|
+|KMS v2.160||||
+|KMST v2.330||||
+|KMST v2.391||||
+|TWMS v74|Pirate|△|JMS147, No Magatia|
+|TWMS v77|Magaita|△||
 |TWMS v94|Before KOC|△|JMS164|
-|TWMS v122|Pre-BB Final|×|JMS186|
+|TWMS v121|||JMS186|
+|TWMS v122|Pre-BB Final|×||
 |TWMS v124|Post-BB|〇|JMS188|
 |TWMS v125|Post-BB, Mechanic|〇|JMS188|
+|TWMS v148|||2012/08/13|
 |CMS v85|Pre-BB|△|JMS186|
+|CMS v86|Pre-BB Final|||
 |CMS v88|Post-BB, Mechanic||JMS188|
-|MSEA v102|Pre-BB Final||JMS186|
+|CMS v104|Before VMProtect||2012/08/17|
+|MSEA v100||△|JMS186|
+|MSEA v102|Pre-BB Final|||
 |MSEA v105|Post-BB||JMS188|
-|THMS v87|Pre-BB Final|×|JMS186|
+|THMS v87||×|JMS186|
+|THMS v88|Pre-BB Final|||
+|THMS v96|Final|||
 |GMS v61|Before Pirate||JMS146|
-|GMS v62|Pirate (No Magatia)|△|JMS147, No Magatia|
-|GMS v65|Pirate Bug Fixed, Magatia|△||
+|GMS v62|Pirate|△|JMS147, No Magatia|
+|GMS v65|Magatia|△||
 |GMS v66|CrimsonWood Keep|△||
 |GMS v72|Before KOC|△|JMS164|
 |GMS v73|KOC|△|JMS165 (almost KMS2.67)|
 |GMS v77|KOC-2||JMS165|
 |GMS v83|||JMS180|
 |GMS v84|Evan||JMS183|
-|GMS v92|Pre-BB Final||JMS186|
+|GMS v91|||JMS186|
+|GMS v92|Pre-BB Final|||
 |GMS v95|Post-BB, Mechanic||JMS188|
+|GMS v111|Before VMProtect||2012/06/11|
 |EMS v55|KOC|△|JMS165, No Pirate, Ariant, Magatia|
 |EMS v70|Dual Blade|△|JMS183|
 |EMS v76|Post-BB, Mechanic|△|JMS188|
-|BMS v24|Final|×|No KOC|
+|EMS v89|Before VMProtect||2013/03/19, Tempest|
+|BMS v24|Final|△|No KOC|
+|VMS v35|Final|△|No KOC|
+|IMS v1|Post-BB|△|2014/05/13, KMS v2.101|
 
 ## 開発環境構築
 ### Java
