@@ -151,7 +151,7 @@ public class GW_CharacterStat {
             data.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 
-        if (ServerConfig.TWMS122orLater() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || (ServerConfig.IsEMS() && ServerConfig.IsPostBB())) {
+        if (ServerConfig.TWMS121orLater() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || (ServerConfig.IsEMS() && ServerConfig.IsPostBB())) {
             data.Encode8(0);
         }
 

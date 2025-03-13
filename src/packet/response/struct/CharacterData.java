@@ -187,7 +187,7 @@ public class CharacterData {
                             data.Encode2(0);
                         }
 
-                        if (122 <= ServerConfig.GetVersion()) {
+                        if (ServerConfig.TWMS121orLater()) {
                             if ((datamask & 0x200000) > 0) {
                                 data.Encode2(0);
                             }

@@ -527,7 +527,7 @@ public class ServerConfig {
                 return false;
             }
             case TWMS: {
-                if (122 <= GetVersion()) {
+                if (121 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -623,7 +623,7 @@ public class ServerConfig {
                 return false;
             }
             case TWMS: {
-                if (122 <= GetVersion()) {
+                if (121 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -678,10 +678,10 @@ public class ServerConfig {
         return false;
     }
 
-    public static boolean TWMS122orLater() {
+    public static boolean TWMS121orLater() {
         switch (GetRegion()) {
             case TWMS: {
-                if (122 <= GetVersion()) {
+                if (121 <= GetVersion()) {
                     return true;
                 }
                 return false;

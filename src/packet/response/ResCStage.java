@@ -203,7 +203,7 @@ public class ResCStage {
                     sp.Encode4(0);
                 }
 
-                if (ServerConfig.IsPostBB()) {
+                if (ServerConfig.IsPostBB() || ServerConfig.TWMS121orLater()) {
                     if (ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsEMS()) {
                         sp.Encode4(0); // NotSaleCount
                     }

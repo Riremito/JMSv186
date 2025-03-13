@@ -306,7 +306,7 @@ public class ResCLogin {
                             if (ServerConfig.TWMS94orLater()) {
                                 sp.Encode1(client.isGm() ? 1 : 0);
                             }
-                            if (ServerConfig.TWMS122orLater()) {
+                            if (ServerConfig.TWMS121orLater()) {
                                 sp.Encode4(0); // buffer4
                             }
                             sp.EncodeStr(client.getAccountName());
@@ -555,7 +555,7 @@ public class ResCLogin {
         for (MapleCharacter chr : chars) {
             data.EncodeBuffer(GW_CharacterStat.Encode(chr));
             data.EncodeBuffer(AvatarLook.Encode(chr));
-            if (ServerConfig.TWMS122orLater()) {
+            if (ServerConfig.TWMS121orLater()) {
                 data.Encode1(0);
             }
             data.Encode1(1);
@@ -565,7 +565,7 @@ public class ResCLogin {
             data.Encode4(chr.getJobRankMove());
         }
 
-        if (ServerConfig.TWMS122orLater()) {
+        if (ServerConfig.TWMS121orLater()) {
             data.Encode2(3); // 2nd password state
             data.Encode8(charslots);
             data.Encode8(0);
