@@ -33,6 +33,7 @@ import handling.world.guild.MapleGuild;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ServerPacket;
+import packet.ops.OpsUserEffect;
 import packet.request.struct.CMovePath;
 import packet.response.struct.AvatarLook;
 import packet.response.struct.Structure;
@@ -507,7 +508,7 @@ public class ResCUserRemote {
     }
 
     public static MaplePacket showForeignItemLevelupEffect(int cid) {
-        return showSpecialEffect(cid, 17);
+        return showSpecialEffect(cid, OpsUserEffect.UserEffect_ItemLevelUp.get());
     }
 
     public static MaplePacket showForeginCardEffect(int id) {

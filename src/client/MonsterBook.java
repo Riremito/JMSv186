@@ -32,6 +32,7 @@ import java.io.Serializable;
 
 import database.DatabaseConnection;
 import packet.ServerPacket;
+import packet.ops.OpsUserEffect;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
@@ -178,7 +179,7 @@ public class MonsterBook implements Serializable {
                 }
                 c.getSession().write(ResCWvsContext.addCard(false, cardid, 5));
                 c.SendPacket(ResWrapper.showGainCard(cardid));
-                c.getSession().write(ResCUserLocal.showSpecialEffect(14));
+                c.getSession().write(ResCUserLocal.showSpecialEffect(OpsUserEffect.UserEffect_MonsterBookCardGet.get()));
                 cards.put(cardid, 5);
                 calculateLevel();
             }
@@ -193,7 +194,7 @@ public class MonsterBook implements Serializable {
         cards.put(cardid, 5);
         c.getSession().write(ResCWvsContext.addCard(false, cardid, 5));
         c.SendPacket(ResWrapper.showGainCard(cardid));
-        c.getSession().write(ResCUserLocal.showSpecialEffect(14));
+        c.getSession().write(ResCUserLocal.showSpecialEffect(OpsUserEffect.UserEffect_MonsterBookCardGet.get()));
         calculateLevel();
     }
 }
