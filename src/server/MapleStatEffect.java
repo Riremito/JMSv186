@@ -33,6 +33,7 @@ import java.util.EnumMap;
 import java.util.concurrent.ScheduledFuture;
 import packet.ops.OpsSecondaryStat;
 import packet.ops.OpsSkill;
+import packet.ops.OpsUserEffect;
 import packet.response.ResCTownPortalPool;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
@@ -974,7 +975,7 @@ public class MapleStatEffect implements Serializable {
 
         if (expinc != 0) {
             applyto.gainExp(expinc, true, true, false);
-            applyto.getClient().getSession().write(ResCUserLocal.showSpecialEffect(17));
+            applyto.getClient().getSession().write(ResCUserLocal.showSpecialEffect(OpsUserEffect.UserEffect_ItemLevelUp.get()));
         } else if (GameConstants.isMonsterCard(sourceid)) {
             applyto.getMonsterBook().addCard(applyto.getClient(), sourceid);
         } else if (isSpiritClaw() && !applyto.isClone()) {

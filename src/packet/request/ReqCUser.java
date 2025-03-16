@@ -584,7 +584,11 @@ public class ReqCUser {
             }
 
             if (ServerConfig.JMS164orLater()) {
-                cp.Decode4(); // CMob::GetCrc(v366->pMob)
+                if (ServerConfig.IsTHMS() && ServerConfig.GetVersion() == 87) {
+                    // No CMob::GetCrc(v366->pMob) in Version 87
+                } else {
+                    cp.Decode4(); // CMob::GetCrc(v366->pMob)
+                }
             }
 
             attack.allDamage.add(new AttackPair(Integer.valueOf(nTargetID), allDamageNumbers));

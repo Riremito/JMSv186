@@ -25,6 +25,7 @@ import handling.MaplePacket;
 import java.awt.Point;
 import java.util.List;
 import packet.ServerPacket;
+import packet.ops.OpsUserEffect;
 import packet.response.struct.TestHelper;
 import server.movement.LifeMovementFragment;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -81,7 +82,7 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket showItemLevelupEffect() {
-        return showSpecialEffect(17);
+        return showSpecialEffect(OpsUserEffect.UserEffect_ItemLevelUp.get());
     }
 
     public static final MaplePacket showOwnHpHealed(final int amount) {
@@ -137,7 +138,7 @@ public class ResCUserLocal {
     public static final MaplePacket ItemMakerResult(boolean is_success) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
-        mplew.write(17);
+        mplew.write(OpsUserEffect.UserEffect_ItemMaker.get());
         mplew.writeInt(is_success ? 0 : 1);
         return mplew.getPacket();
     }
@@ -145,7 +146,7 @@ public class ResCUserLocal {
     public static final MaplePacket AranTutInstructionalBalloon(final String data) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
-        mplew.write(24);
+        mplew.write(OpsUserEffect.UserEffect_AvatarOriented.get());
         mplew.writeMapleAsciiString(data);
         mplew.writeInt(1);
         return mplew.getPacket();

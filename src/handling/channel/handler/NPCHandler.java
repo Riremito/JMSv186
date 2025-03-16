@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import packet.ops.OpsScriptMan;
+import packet.ops.OpsUserEffect;
 import packet.response.ResCRPSGameDlg;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
@@ -127,9 +128,8 @@ public class NPCHandler {
             case 5: { // Scripted End Quest
                 final int npc = slea.readInt();
                 NPCScriptManager.getInstance().endQuest(c, npc, quest, false);
-                int questClearEffect = (ServerConfig.IsTHMS() && ServerConfig.GetVersion() == 87) ? 9 : 10;
-                c.getSession().write(ResCUserLocal.showSpecialEffect(questClearEffect)); // Quest completion
-                chr.getMap().broadcastMessage(chr, ResCUserRemote.showSpecialEffect(chr.getId(), questClearEffect), false);
+                c.getSession().write(ResCUserLocal.showSpecialEffect(OpsUserEffect.UserEffect_QuestComplete.get())); // Quest completion
+                chr.getMap().broadcastMessage(chr, ResCUserRemote.showSpecialEffect(chr.getId(), OpsUserEffect.UserEffect_QuestComplete.get()), false);
                 break;
             }
         }

@@ -23,6 +23,7 @@ import packet.ops.OpsMessage;
 import packet.ops.OpsNewCharacter;
 import packet.ops.OpsScriptMan;
 import packet.ops.OpsSecondaryStat;
+import packet.ops.OpsUserEffect;
 import packet.request.ReqCNpcPool;
 import packet.request.ReqCTrunkDlg;
 import packet.request.struct.CMovePath;
@@ -42,6 +43,7 @@ public class PacketFlag {
         CMovePath.setJumpDown();
         OpsNewCharacter.init();
         OpsScriptMan.init();
+        OpsUserEffect.init();
     }
 
 }
