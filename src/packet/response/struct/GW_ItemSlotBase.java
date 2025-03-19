@@ -149,7 +149,9 @@ public class GW_ItemSlotBase {
                 }
                 // ビシャスのハンマー
                 if (ServerConfig.JMS180orLater() || ServerConfig.GMS73orLater() || ServerConfig.IsBMS()) {
-                    data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
+                    if (!ServerConfig.IsKMS() || ServerConfig.KMS95orLater()) {
+                        data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
+                    }
                 }
                 if (ServerConfig.JMS302orLater()) {
                     data.Encode2(0);

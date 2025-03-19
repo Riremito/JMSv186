@@ -464,6 +464,7 @@ public class ResCLogin {
         if (worked) {
             sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(AvatarLook.Encode(chr));
+            // KMS92 no data
             if (ServerConfig.IsKMS()) {
                 sp.Encode1(0);
                 sp.Encode1(0);

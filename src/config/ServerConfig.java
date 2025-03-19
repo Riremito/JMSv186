@@ -515,7 +515,7 @@ public class ServerConfig {
                 return false;
             }
             case KMS: {
-                if (95 <= GetVersion()) {
+                if (92 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -571,6 +571,21 @@ public class ServerConfig {
         switch (GetRegion()) {
             case KMS: {
                 if (GetVersion() <= 95) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS92orLater() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (92 <= GetVersion()) {
                     return true;
                 }
                 return false;

@@ -171,7 +171,7 @@ public class GW_CharacterStat {
             return data.get().getBytes();
         }
         // JMS 180, KMS 95
-        if (ServerConfig.JMS180orLater() || ServerConfig.KMS95orLater()) {
+        if (ServerConfig.JMS180orLater() || ServerConfig.KMS92orLater()) {
             data.Encode2(chr.getSubcategory());
         }
         // KMS, CMS, EMS
