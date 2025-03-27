@@ -228,6 +228,7 @@ public class ResCLogin {
                             break;
                         }
                         case JMS:
+                        case JMST:
                         default: {
                             sp.Encode1(0); // OK
                             sp.Encode4(client.getAccID()); // m_dwAccountId
@@ -541,7 +542,7 @@ public class ResCLogin {
             }
         }
         sp.Encode2(0);
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
             sp.Encode4(0);
         }
         return sp.get();

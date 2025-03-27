@@ -110,6 +110,10 @@ public class ResCStage {
         if (ServerConfig.JMS194orLater()) {
             sp.Encode4(100); // nMobStatAdjustRate
         }
+        if (ServerConfig.JMST110()) {
+            sp.Encode1(0);
+            sp.Encode1(0);
+        }
         return sp.get();
     }
 

@@ -98,7 +98,7 @@ public class GW_CharacterStat {
             data.Encode2(chr.getRemainingSp());
         }
 
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode4(0);
@@ -122,21 +122,22 @@ public class GW_CharacterStat {
             data.Encode1(0);
             data.Encode4(0);
             data.Encode1(0);
-            data.Encode4(0);
-            data.Encode1(0);
-            data.Encode4(0);
-            data.Encode4(0);
-            data.Encode4(0);
-            data.Encode1(0);
-
-            for (int i = 0; i < 6; i++) {
+            if (ServerConfig.JMS302orLater()) {
                 data.Encode4(0);
                 data.Encode1(0);
                 data.Encode4(0);
-            }
+                data.Encode4(0);
+                data.Encode4(0);
+                data.Encode1(0);
 
-            data.Encode4(0);
-            data.Encode4(0);
+                for (int i = 0; i < 6; i++) {
+                    data.Encode4(0);
+                    data.Encode1(0);
+                    data.Encode4(0);
+                }
+                data.Encode4(0);
+                data.Encode4(0);
+            }
             data.EncodeZeroBytes(8);
             data.Encode4(0);
             data.Encode4(0);
@@ -239,7 +240,7 @@ public class GW_CharacterStat {
     public static byte[] EncodeChangeStat(MapleCharacter chr, int statmask) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
             data.Encode8(statmask);
         } else {
             data.Encode4(statmask);

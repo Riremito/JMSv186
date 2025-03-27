@@ -40,6 +40,7 @@ public class ServerConfig {
         KMS,
         KMST,
         JMS,
+        JMST,
         CMS,
         TWMS,
         THMS,
@@ -61,7 +62,11 @@ public class ServerConfig {
     }
 
     public static boolean IsJMS() {
-        return GetRegion() == Region.JMS;
+        return GetRegion() == Region.JMS || GetRegion() == Region.JMST;
+    }
+
+    public static boolean IsJMST() {
+        return GetRegion() == Region.JMST;
     }
 
     public static boolean IsCMS() {
@@ -721,6 +726,12 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case JMST: {
+                if (110 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
             case KMS: {
                 if (114 <= GetVersion()) {
                     return true;
@@ -729,6 +740,26 @@ public class ServerConfig {
             }
             case EMS: {
                 if (76 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // Sengoku update
+    public static boolean JMST110() {
+        if (!IsPostBB()) {
+            return false;
+        }
+
+        switch (GetRegion()) {
+            case JMST: {
+                if (110 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -877,6 +908,11 @@ public class ServerConfig {
                 }
                 return true;
             }
+            case JMST: {
+                // v110
+                is_postBB = true;
+                return true;
+            }
             case CMS: {
                 if (87 <= GetVersion()) {
                     is_postBB = true;
@@ -979,6 +1015,12 @@ public class ServerConfig {
             }
             case "JMS": {
                 region_type = Region.JMS;
+                region_number = 3;
+                character_name_size = 13;
+                return true;
+            }
+            case "JMST": {
+                region_type = Region.JMST;
                 region_number = 3;
                 character_name_size = 13;
                 return true;

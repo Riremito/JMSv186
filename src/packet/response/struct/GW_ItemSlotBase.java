@@ -153,7 +153,7 @@ public class GW_ItemSlotBase {
                         data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                     }
                 }
-                if (ServerConfig.JMS302orLater()) {
+                if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
                     data.Encode2(0);
                 }
                 // 潜在能力, 装備強化 (星)
@@ -179,7 +179,7 @@ public class GW_ItemSlotBase {
                     data.Encode8(0);
                     data.Encode4(-1);
                 }
-                if (ServerConfig.JMS302orLater()) {
+                if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
                     data.Encode4(0);
                     data.Encode1(0);
                     data.Encode1(0); // 1 = 赤色アイテム
@@ -231,7 +231,7 @@ public class GW_ItemSlotBase {
                     data.Encode1(0x34);
                 }
 
-                if (ServerConfig.JMS302orLater()) {
+                if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
                     data.Encode4(0);
                     data.Encode2(0);
                     data.Encode2(0);

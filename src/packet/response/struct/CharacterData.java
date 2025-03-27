@@ -59,6 +59,10 @@ public class CharacterData {
             data.Encode1(0); // nCombatOrders
         }
 
+        if (ServerConfig.JMST110()) {
+            data.Encode4(0);
+        }
+
         if (ServerConfig.IsPostBB()) {
             data.Encode1(0); // not 0, Encode1, Encode4(size), EncodeBuffer8, Encode4(size), EncodeBuffer8
         }
@@ -112,6 +116,16 @@ public class CharacterData {
         if ((datamask & 0x04) > 0) {
             data.EncodeBuffer(InventoryInfo(chr, datamask));
         }
+
+        if (ServerConfig.JMST110()) {
+            if ((datamask & 0x1000000) > 0) {
+                data.Encode4(0);
+            }
+            if ((datamask & 0x800000) > 0) {
+                data.Encode1(0);
+            }
+        }
+
         // 0x100 [addSkillInfo] v165 changed v186-v194
         if ((datamask & 0x0100) > 0) {
             data.EncodeBuffer(Structure.addSkillInfo(chr));
@@ -392,6 +406,7 @@ public class CharacterData {
                 break;
             }
             case JMS:
+            case JMST:
             default: {
                 // 0x7C JMS, Present v146-v194
                 if (ServerConfig.IsJMS()) {
@@ -409,14 +424,21 @@ public class CharacterData {
                         data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                     }
                 }
-                if (ServerConfig.JMS194orLater()) {
-                    // 0x10000000
-                    if ((datamask & 0x10000000) > 0) {
-                        data.Encode4(0);
-                    }
-                    // 0x20000000
-                    if ((datamask & 0x20000000) > 0) {
-                        data.Encode2(0); // not 0, Encode2
+                if (ServerConfig.JMST110()) {
+                    data.Encode4(0);
+                    data.Encode2(0);
+                    data.Encode4(0);
+                    data.Encode4(0);
+                } else {
+                    if (ServerConfig.JMS194orLater()) {
+                        // 0x10000000
+                        if ((datamask & 0x10000000) > 0) {
+                            data.Encode4(0);
+                        }
+                        // 0x20000000
+                        if ((datamask & 0x20000000) > 0) {
+                            data.Encode2(0); // not 0, Encode2
+                        }
                     }
                 }
                 if (ServerConfig.JMS164orLater()) {
@@ -447,9 +469,16 @@ public class CharacterData {
                     if ((datamask & 0x400000) > 0) {
                         data.Encode2(0); // not 0, Encode2, EncodeBuffer8
                     }
-                    // 0x800000
-                    if ((datamask & 0x800000) > 0) {
-                        data.Encode2(0); // not 0, Encode2, Encode2
+
+                    if (ServerConfig.JMST110()) {
+                        if ((datamask & 0x2000000) > 0) {
+                            data.Encode2(0);
+                        }
+                    } else {
+                        // 0x800000
+                        if ((datamask & 0x800000) > 0) {
+                            data.Encode2(0); // not 0, Encode2, Encode2
+                        }
                     }
                 }
                 break;
@@ -536,14 +565,16 @@ public class CharacterData {
                 data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             }
             // カンナ?
-            if (ServerConfig.JMS302orLater()) {
-                for (Item item : equipped) {
-                    if (item.getPosition() <= -1500 && item.getPosition() > -1600) {
-                        data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
-                        data.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+            if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+                if (ServerConfig.JMS302orLater()) {
+                    for (Item item : equipped) {
+                        if (item.getPosition() <= -1500 && item.getPosition() > -1600) {
+                            data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
+                            data.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+                        }
                     }
+                    data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
                 }
-                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
                 data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             }
         }

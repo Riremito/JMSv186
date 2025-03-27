@@ -101,10 +101,12 @@ public class AvatarLook {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.JMS302orLater()) {
-            data.Encode4(0);
-            data.Encode4(0);
-            data.Encode1(0);
+        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+            if (ServerConfig.JMS302orLater()) {
+                data.Encode4(0);
+                data.Encode4(0);
+                data.Encode1(0);
+            }
             data.EncodeZeroBytes(12);
             // DemonSlayer -> Encode4
             return data.get().getBytes();
