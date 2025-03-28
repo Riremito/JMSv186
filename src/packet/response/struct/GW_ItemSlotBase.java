@@ -153,7 +153,7 @@ public class GW_ItemSlotBase {
                         data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                     }
                 }
-                if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+                if (ServerConfig.KMS127orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
                     data.Encode2(0);
                 }
                 // 潜在能力, 装備強化 (星)

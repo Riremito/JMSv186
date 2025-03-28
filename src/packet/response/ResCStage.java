@@ -112,9 +112,9 @@ public class ResCStage {
         }
         if (ServerConfig.KMS119orLater() || ServerConfig.JMST110()) {
             sp.Encode1(0);
-            if (ServerConfig.JMST110()) {
-                sp.Encode1(0);
-            }
+        }
+        if (ServerConfig.KMS127orLater() || ServerConfig.JMST110()) {
+            sp.Encode1(0);
         }
         return sp.get();
     }

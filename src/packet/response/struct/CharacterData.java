@@ -117,7 +117,7 @@ public class CharacterData {
             data.EncodeBuffer(InventoryInfo(chr, datamask));
         }
 
-        if (ServerConfig.JMST110()) {
+        if (ServerConfig.KMS127orLater() || ServerConfig.JMST110()) {
             if ((datamask & 0x1000000) > 0) {
                 data.Encode4(0);
             }
@@ -568,7 +568,7 @@ public class CharacterData {
                 data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             }
             // カンナ?
-            if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+            if (ServerConfig.KMS127orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
                 if (ServerConfig.JMS302orLater()) {
                     for (Item item : equipped) {
                         if (item.getPosition() <= -1500 && item.getPosition() > -1600) {
