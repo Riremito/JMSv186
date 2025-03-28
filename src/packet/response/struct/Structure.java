@@ -319,7 +319,7 @@ public class Structure {
         ServerPacket data = new ServerPacket();
         final List<MapleQuestStatus> started = chr.getStartedQuests();
 
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater()) {
             data.Encode1(0);
         }
 
@@ -338,7 +338,7 @@ public class Structure {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.KMS138orLater() ||ServerConfig.JMS302orLater()) {
             data.Encode2(0);
         }
 

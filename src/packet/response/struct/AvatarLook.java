@@ -44,7 +44,7 @@ public class AvatarLook {
         data.Encode1(chr.getSkinColor()); // nSkin
         data.Encode4(chr.getFace()); // nFace
 
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater()) {
             data.Encode4(0);
         }
 
@@ -94,7 +94,15 @@ public class AvatarLook {
 
         if (ServerConfig.IsKMS()) {
             if (ServerConfig.IsPostBB()) {
+                if (ServerConfig.KMS138orLater()) {
+                    data.Encode1(0);
+                }
                 data.EncodeZeroBytes(12);
+                if (ServerConfig.KMS138orLater()) {
+                    if (chr.getJob() / 100 == 31 || chr.getJob() == 3001) {
+                        data.Encode4(0);
+                    }
+                }
             } else {
                 data.Encode4(0);
             }
@@ -108,7 +116,10 @@ public class AvatarLook {
                 data.Encode1(0);
             }
             data.EncodeZeroBytes(12);
-            // DemonSlayer -> Encode4
+            // DemonSlayer
+            if (chr.getJob() / 100 == 31 || chr.getJob() == 3001) {
+                data.Encode4(0);
+            }
             return data.get().getBytes();
         }
 

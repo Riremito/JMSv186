@@ -59,6 +59,10 @@ public class CharacterData {
             data.Encode1(0); // nCombatOrders
         }
 
+        if (ServerConfig.KMS138orLater()) {
+            data.Encode1(0);
+        }
+
         if (ServerConfig.KMS119orLater() || ServerConfig.JMST110()) {
             data.Encode4(0);
         }
@@ -110,6 +114,12 @@ public class CharacterData {
                     || ServerConfig.IsCMS()
                     || ServerConfig.IsTHMS()) {
                 data.EncodeBuffer(GW_CharacterStat.EncodePachinko(chr));
+            }
+        }
+
+        if ((datamask & 0x2000000) > 0) {
+            if (ServerConfig.KMS138orLater()) {
+                data.Encode4(0);
             }
         }
         // 0x4 (<< 2), 0x100000, 0x4 [addInventoryInfo]
@@ -184,6 +194,12 @@ public class CharacterData {
                     }
                     if ((datamask & 0x400000) > 0) {
                         data.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                    }
+
+                    if ((datamask & 0x4000000) > 0) {
+                        if (ServerConfig.KMS138orLater()) {
+                            data.Encode2(0);
+                        }
                     }
                 }
                 break;

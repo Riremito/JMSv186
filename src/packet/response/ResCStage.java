@@ -48,8 +48,8 @@ public class ResCStage {
         }
         // チャンネル
         sp.Encode4(chr.getClient().getChannel() - 1); // m_nChannelID
-        if (ServerConfig.IsJMS()
-                && ServerConfig.JMS146orLater()) {
+        if (ServerConfig.KMS138orLater()
+                || (ServerConfig.IsJMS() && ServerConfig.JMS146orLater())) {
             sp.Encode1(0);
         }
 
@@ -59,14 +59,14 @@ public class ResCStage {
         }
 
         sp.Encode1(chr.getPortalCount()); // sNotifierMessage?
-        if (ServerConfig.JMS194orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS194orLater()) {
             sp.Encode4(0);
         }
         if (ServerConfig.IsCMS()) {
             sp.Encode1(0);
         }
         sp.Encode1(loggedin ? 1 : 0); // bCharacterData, 1 = all data, 0 = map change
-        if (ServerConfig.JMS146orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS146orLater()) {
             sp.Encode2(0); // nNotifierCheck
         }
         if (loggedin) {

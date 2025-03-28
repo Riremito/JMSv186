@@ -78,7 +78,7 @@ public enum OpsNewCharacter {
             Aran.set(3);
             Evan.set(4);
         }
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater()) {
             CannonShooter.set(1); // v204
             Mercedes.set(5); // v204
             DemonSlayer.set(6); // v205

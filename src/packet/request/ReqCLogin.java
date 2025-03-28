@@ -305,7 +305,7 @@ public class ReqCLogin {
             job_dualblade = cp.Decode2(); // 2 = キャノンシューター
         }
 
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.KMS138orLater() ||ServerConfig.JMS302orLater()) {
             character_gender = cp.Decode1();
             skin_color = cp.Decode1();
             int body_part_count = cp.Decode1();

@@ -46,7 +46,8 @@ public class GW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || ServerConfig.IsBMS() || ServerConfig.IsVMS()) {
+        if (ServerConfig.KMS138orLater()) {
+        } else if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || ServerConfig.IsBMS() || ServerConfig.IsVMS()) {
             data.EncodeZeroBytes(8);
         } else if ((ServerConfig.IsJMS() || ServerConfig.IsTHMS() || ServerConfig.IsGMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ((ServerConfig.IsTWMS() || ServerConfig.IsEMS()) && ServerConfig.IsPreBB()))) {
             data.EncodeZeroBytes(24);
@@ -126,6 +127,9 @@ public class GW_CharacterStat {
                     data.Encode1(0);
                     data.Encode4(0);
                     data.Encode1(0);
+                    if (ServerConfig.KMS138orLater()) {
+                        data.Encode4(0);
+                    }
                     return data.get().getBytes();
                 }
                 if (ServerConfig.KMS118orLater()) {
