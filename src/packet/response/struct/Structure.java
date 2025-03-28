@@ -277,7 +277,7 @@ public class Structure {
     public static final byte[] addSkillInfo(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.KMS148orLater() || ServerConfig.JMS302orLater()) {
             data.Encode1(1);
         }
         final Map<ISkill, SkillEntry> skills = chr.getSkills();
@@ -338,7 +338,7 @@ public class Structure {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if (ServerConfig.KMS138orLater() ||ServerConfig.JMS302orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater()) {
             data.Encode2(0);
         }
 
@@ -348,7 +348,7 @@ public class Structure {
     public static byte[] addQuestComplete(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.KMS148orLater() || ServerConfig.JMS302orLater()) {
             data.Encode1(0);
         }
 
@@ -362,7 +362,7 @@ public class Structure {
             data.Encode4(time); // completion time
         }
 
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.KMS148orLater() || ServerConfig.JMS302orLater()) {
             data.Encode2(0);
         }
         return data.get().getBytes();

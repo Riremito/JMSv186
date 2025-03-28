@@ -48,6 +48,11 @@ public class ResCLogin {
         sp.Encode4(clientId);
         sp.Encode1(0);
         sp.Encode4(0);
+        if(ServerConfig.KMS148orLater()){
+            sp.Encode1(0);
+            sp.Encode2(0);
+            sp.Encode2(0);
+        }
         return sp.get();
     }
 
@@ -761,7 +766,10 @@ public class ResCLogin {
     // ワールドセレクト
     public static final MaplePacket getEndOfServerList() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_WorldInformation);
-        sp.Encode1(255);
+        sp.Encode1(-1);
+        if (ServerConfig.KMS148orLater()) {
+            sp.Encode1(0);
+        }
         return sp.get();
     }
 

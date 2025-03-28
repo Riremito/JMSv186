@@ -130,6 +130,10 @@ public class GW_CharacterStat {
                     if (ServerConfig.KMS138orLater()) {
                         data.Encode4(0);
                     }
+                    if (ServerConfig.KMS148orLater()) {
+                        data.Encode4(0);
+                        data.Encode4(0);
+                    }
                     return data.get().getBytes();
                 }
                 if (ServerConfig.KMS118orLater()) {

@@ -133,6 +133,12 @@ public class CharacterData {
             }
         }
 
+        if (ServerConfig.KMS148orLater()) {
+            if ((datamask & 0x4000000) > 0) {
+                data.Encode4(0);
+            }
+        }
+
         if (ServerConfig.KMS119orLater() || ServerConfig.JMST110()) {
             if ((datamask & 0x800000) > 0) {
                 data.Encode1(0);
@@ -195,9 +201,22 @@ public class CharacterData {
                     if ((datamask & 0x400000) > 0) {
                         data.Encode2(0); // not 0, Encode2, EncodeBuffer8
                     }
-
                     if ((datamask & 0x4000000) > 0) {
                         if (ServerConfig.KMS138orLater()) {
+                            data.Encode2(0);
+                        }
+                    }
+                    if ((datamask & 0x20000000) > 0) {
+                        if (ServerConfig.KMS148orLater()) {
+                            for (int i = 0; i < (4 + 4 + 3 + 2); i++) {
+                                data.Encode4(0);
+                            }
+                        }
+                    }
+                    if ((datamask & 0x10000000) > 0) {
+                        if (ServerConfig.KMS148orLater()) {
+                            data.Encode1(0);
+                            data.Encode2(0);
                             data.Encode2(0);
                         }
                     }
