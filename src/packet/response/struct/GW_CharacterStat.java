@@ -98,10 +98,12 @@ public class GW_CharacterStat {
             data.Encode2(chr.getRemainingSp());
         }
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+        if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
             data.Encode4(0);
             data.Encode4(0);
-            data.Encode4(0);
+            if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+                data.Encode4(0);
+            }
             data.Encode4(chr.getMapId());
             data.Encode1(chr.getInitialSpawnpoint());
             data.Encode2(chr.getSubcategory());
@@ -117,7 +119,29 @@ public class GW_CharacterStat {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode4(0);
-            data.EncodeZeroBytes(12);
+            if (ServerConfig.IsKMS()) {
+                if (ServerConfig.KMS119orLater()) {
+                    data.EncodeZeroBytes(12);
+                    data.Encode4(0);
+                    data.Encode1(0);
+                    data.Encode4(0);
+                    data.Encode1(0);
+                    return data.get().getBytes();
+                }
+                if (ServerConfig.KMS118orLater()) {
+                    data.EncodeZeroBytes(10);
+                    data.Encode4(0);
+                    data.Encode4(0);
+                    data.Encode4(0);
+                    data.Encode4(0);
+                    return data.get().getBytes();
+                }
+                return data.get().getBytes();
+            } else {
+                if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+                    data.EncodeZeroBytes(12);
+                }
+            }
             data.Encode4(0);
             data.Encode1(0);
             data.Encode4(0);

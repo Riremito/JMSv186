@@ -59,7 +59,7 @@ public class CharacterData {
             data.Encode1(0); // nCombatOrders
         }
 
-        if (ServerConfig.JMST110()) {
+        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110()) {
             data.Encode4(0);
         }
 
@@ -121,6 +121,9 @@ public class CharacterData {
             if ((datamask & 0x1000000) > 0) {
                 data.Encode4(0);
             }
+        }
+
+        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110()) {
             if ((datamask & 0x800000) > 0) {
                 data.Encode1(0);
             }

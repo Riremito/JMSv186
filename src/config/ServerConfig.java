@@ -680,6 +680,7 @@ public class ServerConfig {
     }
 
     public static boolean KMS114orLater() {
+        // ?
         if (IsPostBB()) {
             return true;
         }
@@ -751,7 +752,7 @@ public class ServerConfig {
         return false;
     }
 
-    // Sengoku update
+    // JMS194 <= JMST110 <= JMS200
     public static boolean JMST110() {
         if (!IsPostBB()) {
             return false;
@@ -760,6 +761,111 @@ public class ServerConfig {
         switch (GetRegion()) {
             case JMST: {
                 if (110 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS118orLater() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (118 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS119orLater() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (119 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS121orLater() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (121 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS127orLater() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (127 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS138orLater() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (138 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS148orLater() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (148 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMS160orLater() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (160 <= GetVersion()) {
                     return true;
                 }
                 return false;

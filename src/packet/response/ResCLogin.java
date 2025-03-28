@@ -542,7 +542,7 @@ public class ResCLogin {
             }
         }
         sp.Encode2(0);
-        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+        if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
             sp.Encode4(0);
         }
         return sp.get();
