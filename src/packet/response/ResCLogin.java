@@ -48,7 +48,7 @@ public class ResCLogin {
         sp.Encode4(clientId);
         sp.Encode1(0);
         sp.Encode4(0);
-        if(ServerConfig.KMS148orLater()){
+        if (ServerConfig.KMS148orLater()) {
             sp.Encode1(0);
             sp.Encode2(0);
             sp.Encode2(0);
@@ -222,6 +222,19 @@ public class ResCLogin {
                             sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
                             if (ServerConfig.JMS164orLater()) {
                                 sp.Encode1(client.isGm() ? 1 : 0);
+                            }
+                            if (ServerConfig.KMS160orLater()) {
+                                sp.Encode4(3);
+                                sp.Encode1(1);
+                                sp.Encode1(0);
+                                sp.Encode8(0);
+                                sp.Encode1(0);
+                                sp.EncodeStr(client.getAccountName());
+                                sp.EncodeStr("");
+                                sp.Encode1(0);
+                                sp.Encode1(0);
+                                sp.Encode1(0);
+                                break;
                             }
                             sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
                             sp.Encode4(3); // should be 3 for KMS v2.114 to ignore personal number
@@ -610,7 +623,11 @@ public class ResCLogin {
             sp.EncodeStr("");
         }
 
-        if (ServerConfig.IsKMS() || ServerConfig.IsCMS() || ServerConfig.IsIMS()) {
+        if (ServerConfig.KMS160orLater()) {
+            sp.Encode1(0);
+        }
+
+        if ((ServerConfig.IsKMS() && !ServerConfig.KMS160orLater()) || ServerConfig.IsCMS() || ServerConfig.IsIMS()) {
             sp.Encode4(1000000);
         }
 
@@ -629,6 +646,15 @@ public class ResCLogin {
             sp.Encode4(chr.getRankMove());
             sp.Encode4(chr.getJobRank()); // world ranking
             sp.Encode4(chr.getJobRankMove());
+        }
+
+        if (ServerConfig.KMS160orLater() || ServerConfig.JMS302orLater()) {
+            sp.Encode1(2); // 2次パス無視
+            sp.Encode4(charslots);
+            sp.Encode4(0);
+            sp.Encode4(0);
+            sp.Encode4(0);
+            return sp.get();
         }
 
         if (ServerConfig.IsBMS()) {
@@ -690,15 +716,6 @@ public class ResCLogin {
             if (ServerConfig.IsEMS()) {
                 sp.Encode8(0);
             }
-            return sp.get();
-        }
-
-        if (ServerConfig.JMS302orLater()) {
-            sp.Encode1(2); // 2次パス無視
-            sp.Encode4(charslots);
-            sp.Encode4(0);
-            sp.Encode4(0);
-            sp.Encode4(0);
             return sp.get();
         }
         // BIGBANG

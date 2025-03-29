@@ -108,7 +108,6 @@ public class GW_CharacterStat {
             data.Encode4(chr.getMapId());
             data.Encode1(chr.getInitialSpawnpoint());
             data.Encode2(chr.getSubcategory());
-            // job 3100 -> Encode4, Demon Slayer
             if (GameConstants.is_demonslayer(chr.getJob())) {
                 data.Encode4(0);
             }

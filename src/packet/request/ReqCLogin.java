@@ -150,8 +150,14 @@ public class ReqCLogin {
 
     // login
     public static final boolean OnCheckPassword(ClientPacket cp, MapleClient c) {
-        String maple_id = new String(cp.DecodeBuffer());
-        String password = new String(cp.DecodeBuffer());
+        if (ServerConfig.KMS160orLater()) {
+            byte hwid[] = cp.DecodeBuffer(16);
+            int unk1 = cp.Decode4();
+            byte unk2 = cp.Decode1();
+            byte unk3 = cp.Decode1();
+        }
+        String maple_id = cp.DecodeStr();
+        String password = cp.DecodeStr();
         return OnCheckPassword(c, maple_id, password);
     }
 
@@ -305,7 +311,7 @@ public class ReqCLogin {
             job_dualblade = cp.Decode2(); // 2 = キャノンシューター
         }
 
-        if (ServerConfig.KMS138orLater() ||ServerConfig.JMS302orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater()) {
             character_gender = cp.Decode1();
             skin_color = cp.Decode1();
             int body_part_count = cp.Decode1();
@@ -425,7 +431,7 @@ public class ReqCLogin {
     }
 
     public static final void CheckCharName(ClientPacket cp, final MapleClient c) {
-        String name = new String(cp.DecodeBuffer());
+        String name = cp.DecodeStr();
         c.getSession().write(ResCLogin.charNameResponse(name, !MapleCharacterUtil.canCreateChar(name) || LoginInformationProvider.getInstance().isForbiddenName(name)));
     }
 
@@ -438,7 +444,7 @@ public class ReqCLogin {
             byte m_nGameStartMode = cp.Decode1(); // m_nGameStartMode, always 2?
             if (m_nGameStartMode == 1) {
                 String str = cp.DecodeStr();
-                byte hwid[] = cp.DecodeBuffer();
+                byte hwid[] = cp.DecodeBuffer(16);
                 int GameRoomClient = cp.Decode4();
                 int m_nGameStartMode_2 = cp.Decode1();
             }

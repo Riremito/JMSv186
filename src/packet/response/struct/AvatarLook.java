@@ -25,6 +25,7 @@ import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
+import constants.GameConstants;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import packet.ServerPacket;
@@ -45,7 +46,7 @@ public class AvatarLook {
         data.Encode4(chr.getFace()); // nFace
 
         if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater()) {
-            data.Encode4(0);
+            data.Encode4(0); // demon something
         }
 
         data.Encode1(0); // ignored byte
@@ -116,10 +117,8 @@ public class AvatarLook {
                 data.Encode1(0);
             }
             data.EncodeZeroBytes(12);
-            // DemonSlayer
-            if (chr.getJob() / 100 == 31 || chr.getJob() == 3001) {
-                data.Encode4(0);
-            }
+            // demon something, v9 / 100 == 31 || v9 == 3001, JMS302 0053A2B5
+            // data.Encode4(0);
             return data.get().getBytes();
         }
 

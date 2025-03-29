@@ -425,13 +425,13 @@ public class ItemRequest {
         switch (item_id) {
             // メガホン
             case 5070000: {
-                String message = new String(cp.DecodeBuffer());
+                String message = cp.DecodeStr();
                 chr.getMap().broadcastMessage(ResWrapper.MegaphoneBlue(MegaphoneGetSenderName(chr) + " : " + message));
                 return true;
             }
             // 拡声器
             case 5071000: {
-                String message = new String(cp.DecodeBuffer());
+                String message = cp.DecodeStr();
                 byte ear = cp.Decode1();
                 World.Broadcast.broadcastSmega(ResWrapper.Megaphone(MegaphoneGetSenderName(chr) + " : " + message, channel, ear).getBytes());
                 return true;
@@ -442,14 +442,14 @@ public class ItemRequest {
             }
             // ハート拡声器
             case 5073000: {
-                String message = new String(cp.DecodeBuffer());
+                String message = cp.DecodeStr();
                 byte ear = cp.Decode1();
                 World.Broadcast.broadcastSmega(ResWrapper.MegaphoneHeart(MegaphoneGetSenderName(chr) + " : " + message, channel, ear).getBytes());
                 return true;
             }
             // ドクロ拡声器
             case 5074000: {
-                String message = new String(cp.DecodeBuffer());
+                String message = cp.DecodeStr();
                 byte ear = cp.Decode1();
                 World.Broadcast.broadcastSmega(ResWrapper.MegaphoneSkull(MegaphoneGetSenderName(chr) + " : " + message, channel, ear).getBytes());
                 return true;
@@ -465,7 +465,7 @@ public class ItemRequest {
             }
             // アイテム拡声器
             case 5076000: {
-                String message = new String(cp.DecodeBuffer());
+                String message = cp.DecodeStr();
                 byte ear = cp.Decode1();
                 byte showitem = cp.Decode1();
                 IItem item = null;
@@ -485,7 +485,7 @@ public class ItemRequest {
                 // メッセージの行数
                 byte line = cp.Decode1();
                 for (int i = 0; i < line; i++) {
-                    String message = new String(cp.DecodeBuffer());
+                    String message = cp.DecodeStr();
                     if (message.length() > 65) {
                         break;
                     }

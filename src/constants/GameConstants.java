@@ -136,7 +136,7 @@ public class GameConstants {
         if (job_id == 3001) {
             return true;
         }
-        if (3100 <= job_id && job_id <= 3199) {
+        if (3100 <= job_id && job_id <= 3112) {
             return true;
         }
         return false;

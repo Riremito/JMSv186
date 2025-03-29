@@ -16,6 +16,7 @@
 |JMS v201|ルネサンス|||
 |JMS v302|戦国, カンナ|△||
 |JMS v308|Before VMProtect||2013/01/22, Tempest|
+|JMST v110|ルネサンス|△|JMS200, KMS119|
 |KMS v2.65|Before KOC|△|JMS164|
 |KMS v2.67|KOC|||
 |KMS v2.71|KOC-2|△|JMS165, Removed Lv limit for KOC|
@@ -23,6 +24,12 @@
 |KMS v2.92|Dual Blade||JMS183|
 |KMS v2.95||〇|JMS184|
 |KMS v2.114|Post-BB, Before Chaos|〇|JMS194|
+|KMS v2.118|Before Chaos|△|JMS194|
+|KMS v2.119|Chaos|△|JMS200(JMST110)|
+|KMS v2.121||△||
+|KMS v2.127||△||
+|KMS v2.138||△||
+|KMS v2.148||△||
 |KMS v2.160||||
 |KMST v2.330||||
 |KMST v2.391||||

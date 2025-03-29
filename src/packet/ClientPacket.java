@@ -99,6 +99,16 @@ public class ClientPacket {
         return buffer;
     }
 
+    public byte[] DecodeBuffer(int size) {
+        byte[] buffer = new byte[size];
+
+        for (int i = 0; i < size; i++) {
+            buffer[i] = Decode1();
+        }
+
+        return buffer;
+    }
+
     public String DecodeStr() {
         int length = Decode2();
         byte[] buffer = new byte[length];
