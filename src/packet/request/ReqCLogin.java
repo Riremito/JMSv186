@@ -475,8 +475,12 @@ public class ReqCLogin {
             }
         }
         if (ServerConfig.IsKMS()) {
-            byte unk1 = cp.Decode1();
-            int unk2 = cp.Decode4();
+            if (ServerConfig.KMS160orLater()) {
+                String secondpw = cp.DecodeStr();
+            } else {
+                byte unk1 = cp.Decode1();
+                int unk2 = cp.Decode4();
+            }
         }
 
         if (ServerConfig.IsEMS() || ServerConfig.IsGMS()) {
@@ -561,6 +565,9 @@ public class ReqCLogin {
 
     // CClientSocket::OnSelectCharacter
     public static final boolean OnSelectCharacter(ClientPacket cp, MapleClient c) {
+        if (cp.GetOpcode() == ClientPacket.Header.CP_CheckPinCode) {
+            String secondpw = cp.DecodeStr(); // KMS160
+        }
         final int charId = cp.Decode4();
         return SelectCharacter(c, charId);
     }

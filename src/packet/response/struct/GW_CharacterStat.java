@@ -121,15 +121,38 @@ public class GW_CharacterStat {
             data.Encode4(0);
             if (ServerConfig.IsKMS()) {
                 if (ServerConfig.KMS119orLater()) {
-                    data.EncodeZeroBytes(12);
+                    if (ServerConfig.KMS160orLater()) {
+                        data.EncodeZeroBytes(21);
+                    } else {
+                        data.EncodeZeroBytes(12);
+                    }
                     data.Encode4(0);
                     data.Encode1(0);
                     data.Encode4(0);
                     data.Encode1(0);
+                    if (ServerConfig.KMS160orLater()) {
+                        data.Encode1(0);
+                    }
                     if (ServerConfig.KMS138orLater()) {
                         data.Encode4(0);
                     }
+                    if (ServerConfig.KMS160orLater()) {
+                        data.Encode1(0);
+                    }
                     if (ServerConfig.KMS148orLater()) {
+                        data.Encode4(0);
+                        data.Encode4(0);
+                    }
+                    if (ServerConfig.KMS160orLater()) {
+                        data.Encode4(0);
+                        data.Encode1(0);
+                        {
+                            for (int i = 0; i < 6; i++) {
+                                data.Encode4(0);
+                                data.Encode1(0);
+                                data.Encode4(0);
+                            }
+                        }
                         data.Encode4(0);
                         data.Encode4(0);
                     }

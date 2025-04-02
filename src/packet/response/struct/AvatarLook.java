@@ -95,6 +95,10 @@ public class AvatarLook {
 
         if (ServerConfig.IsKMS()) {
             if (ServerConfig.IsPostBB()) {
+                if (ServerConfig.KMS160orLater()) {
+                    data.Encode4(0);
+                    data.Encode4(0);
+                }
                 if (ServerConfig.KMS138orLater()) {
                     data.Encode1(0);
                 }

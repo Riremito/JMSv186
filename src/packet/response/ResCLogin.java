@@ -483,20 +483,7 @@ public class ResCLogin {
         if (worked) {
             sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(AvatarLook.Encode(chr));
-            // KMS92 no data
-            if (ServerConfig.IsKMS()) {
-                sp.Encode1(0);
-                sp.Encode1(0);
-                sp.EncodeZeroBytes(16);
-            }
         }
-
-        if (ServerConfig.IsKMS()) {
-            sp.Encode1(0);
-            sp.Encode1(0);
-            sp.Encode4(0);
-        }
-
         return sp.get();
     }
 
@@ -623,10 +610,6 @@ public class ResCLogin {
             sp.EncodeStr("");
         }
 
-        if (ServerConfig.KMS160orLater()) {
-            sp.Encode1(0);
-        }
-
         if ((ServerConfig.IsKMS() && !ServerConfig.KMS160orLater()) || ServerConfig.IsCMS() || ServerConfig.IsIMS()) {
             sp.Encode4(1000000);
         }
@@ -648,7 +631,17 @@ public class ResCLogin {
             sp.Encode4(chr.getJobRankMove());
         }
 
-        if (ServerConfig.KMS160orLater() || ServerConfig.JMS302orLater()) {
+        if (ServerConfig.KMS160orLater()) {
+            sp.Encode1(1); // 2nd password disabled
+            sp.Encode1(0); // 2nd password disabled
+            sp.Encode4(charslots);
+            sp.Encode4(0);
+            sp.Encode4(0);
+            sp.Encode4(0);
+            return sp.get();
+        }
+
+        if (ServerConfig.JMS302orLater()) {
             sp.Encode1(2); // 2次パス無視
             sp.Encode4(charslots);
             sp.Encode4(0);

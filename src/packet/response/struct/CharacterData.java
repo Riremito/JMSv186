@@ -214,11 +214,25 @@ public class CharacterData {
                         }
                     }
                     if ((datamask & 0x10000000) > 0) {
-                        if (ServerConfig.KMS148orLater()) {
+                        if (ServerConfig.KMS160orLater()) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode4(0);
+                        } else if (ServerConfig.KMS148orLater()) {
                             data.Encode1(0);
                             data.Encode2(0);
                             data.Encode2(0);
                         }
+                    }
+                    if ((datamask & 0x80000000L) > 0) {
+                        if (ServerConfig.KMS160orLater()) {
+                            data.Encode2(0);
+                        }
+                    }
+                    if (ServerConfig.KMS160orLater()) {
+                        data.Encode4(0);
+                        data.Encode4(0);
                     }
                 }
                 break;
