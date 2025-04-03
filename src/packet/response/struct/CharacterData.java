@@ -118,7 +118,7 @@ public class CharacterData {
         }
 
         if ((datamask & 0x2000000) > 0) {
-            if (ServerConfig.KMS138orLater()) {
+            if (ServerConfig.KMS138orLater() && !ServerConfig.KMST391()) {
                 data.Encode4(0);
             }
         }
@@ -129,6 +129,12 @@ public class CharacterData {
 
         if (ServerConfig.KMS127orLater() || ServerConfig.JMST110()) {
             if ((datamask & 0x1000000) > 0) {
+                data.Encode4(0);
+            }
+        }
+
+        if (ServerConfig.KMST391()) {
+            if ((datamask & 0x2000000) > 0) {
                 data.Encode4(0);
             }
         }

@@ -230,6 +230,12 @@ public class GW_ItemSlotBase {
                     data.Encode1(0);
                     data.Encode1(0x34);
                 }
+                if (item_img_num == 223) {
+                    // KMST only
+                    if (ServerConfig.KMST391()) {
+                        data.Encode8(0);
+                    }
+                }
 
                 if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
                     data.Encode4(0);

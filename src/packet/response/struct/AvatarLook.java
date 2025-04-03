@@ -99,7 +99,7 @@ public class AvatarLook {
                     data.Encode4(0);
                     data.Encode4(0);
                 }
-                if (ServerConfig.KMS138orLater()) {
+                if (ServerConfig.KMS138orLater() && !ServerConfig.KMST391()) {
                     data.Encode1(0);
                 }
                 data.EncodeZeroBytes(12);

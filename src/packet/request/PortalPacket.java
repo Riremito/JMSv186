@@ -16,7 +16,7 @@ public class PortalPacket {
         switch (header) {
             // ポータル or /map
             case CP_UserTransferFieldRequest: {
-                if (ServerConfig.KMS95orLater() || ServerConfig.IsIMS() || ServerConfig.IsMSEA()) {
+                if ((ServerConfig.KMS95orLater() || ServerConfig.IsIMS() || ServerConfig.IsMSEA()) && !ServerConfig.KMST391()) {
                     short unk1 = cp.Decode2();
                     int unk2 = cp.Decode4();
                     byte portal_count = cp.Decode1();

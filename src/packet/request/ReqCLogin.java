@@ -313,7 +313,9 @@ public class ReqCLogin {
 
         if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater()) {
             character_gender = cp.Decode1();
-            skin_color = cp.Decode1();
+            if (!ServerConfig.KMST391()) {
+                skin_color = cp.Decode1();
+            }
             int body_part_count = cp.Decode1();
 
             face_id = cp.Decode4();

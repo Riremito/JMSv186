@@ -603,6 +603,10 @@ public class ServerConfig {
     }
 
     public static boolean KMS95orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
         switch (GetRegion()) {
             case KMS: {
                 if (95 <= GetVersion()) {
@@ -739,6 +743,12 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case KMST: {
+                if (391 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
             case EMS: {
                 if (76 <= GetVersion()) {
                     return true;
@@ -780,6 +790,12 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case KMST: {
+                if (391 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
             default: {
                 break;
             }
@@ -791,6 +807,12 @@ public class ServerConfig {
         switch (GetRegion()) {
             case KMS: {
                 if (119 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case KMST: {
+                if (391 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -810,6 +832,12 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case KMST: {
+                if (391 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
             default: {
                 break;
             }
@@ -825,6 +853,27 @@ public class ServerConfig {
                 }
                 return false;
             }
+            case KMST: {
+                if (391 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean KMST391() {
+        switch (GetRegion()) {
+            case KMST: {
+                if (391 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
             default: {
                 break;
             }
@@ -836,6 +885,12 @@ public class ServerConfig {
         switch (GetRegion()) {
             case KMS: {
                 if (138 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            case KMST: {
+                if (391 <= GetVersion()) {
                     return true;
                 }
                 return false;
