@@ -232,7 +232,7 @@ public class CharacterData {
                         }
                     }
                     if ((datamask & 0x80000000L) > 0) {
-                        if (ServerConfig.KMS160orLater()) {
+                        if (ServerConfig.KMS149orLater()) {
                             data.Encode2(0);
                         }
                     }

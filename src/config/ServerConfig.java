@@ -866,6 +866,21 @@ public class ServerConfig {
         return false;
     }
 
+    public static boolean KMS118() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (118 == GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     public static boolean KMST391() {
         switch (GetRegion()) {
             case KMST: {
@@ -906,6 +921,22 @@ public class ServerConfig {
         switch (GetRegion()) {
             case KMS: {
                 if (148 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // Phantom version
+    public static boolean KMS149orLater() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (149 <= GetVersion()) {
                     return true;
                 }
                 return false;

@@ -59,14 +59,14 @@ public class ResCStage {
         }
 
         sp.Encode1(chr.getPortalCount()); // sNotifierMessage?
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS194orLater()) {
+        if (ServerConfig.JMS194orLater()) {
             sp.Encode4(0);
         }
         if (ServerConfig.IsCMS()) {
             sp.Encode1(0);
         }
         sp.Encode1(loggedin ? 1 : 0); // bCharacterData, 1 = all data, 0 = map change
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS146orLater()) {
+        if (ServerConfig.JMS146orLater()) {
             sp.Encode2(0); // nNotifierCheck
         }
         if (loggedin) {
@@ -86,6 +86,10 @@ public class ResCStage {
             }
         } else {
             if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
+                sp.Encode1(0);
+            }
+            // KMS118 only
+            if (ServerConfig.KMS118()) {
                 sp.Encode1(0);
             }
             sp.Encode4(to.getId()); // characterStat._ZtlSecureTear_dwPosMap_CS
