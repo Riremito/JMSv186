@@ -166,6 +166,9 @@ public class GW_ItemSlotBase {
                     data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目?
                     data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ?
                 }
+                if (ServerConfig.JMS308orLater()) {
+                    data.Encode2(0);
+                }
                 if (ServerConfig.JMS302orLater()) {
                     data.Encode2(0); // v302, Alien Stone
                     data.Encode4(0);
@@ -208,6 +211,9 @@ public class GW_ItemSlotBase {
                 }
                 if (ServerConfig.JMS186orLater() && !(ServerConfig.IsEMS() && ServerConfig.IsPreBB()) && !ServerConfig.IsGMS()) {
                     data.Encode1(item.getPet().getSummoned() ? 1 : 0);
+                    data.Encode4(0);
+                }
+                if (ServerConfig.JMS308orLater()) {
                     data.Encode4(0);
                 }
                 break;

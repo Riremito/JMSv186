@@ -168,7 +168,9 @@ public class GW_CharacterStat {
                 }
                 return data.get().getBytes();
             } else {
-                if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+                if (ServerConfig.JMS308orLater()) {
+                    data.EncodeZeroBytes(21);
+                } else if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
                     data.EncodeZeroBytes(12);
                 }
             }
@@ -176,6 +178,9 @@ public class GW_CharacterStat {
             data.Encode1(0);
             data.Encode4(0);
             data.Encode1(0);
+            if (ServerConfig.JMS308orLater()) {
+                data.Encode1(0);
+            }
             if (ServerConfig.JMS302orLater()) {
                 data.Encode4(0);
                 data.Encode1(0);

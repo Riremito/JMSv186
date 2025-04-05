@@ -182,6 +182,7 @@ public enum OpsBodyPart {
         }
         int weapon_type = equip_type / 10;
         switch (weapon_type) {
+            case 12: // JMS308, Angelic Buster
             case 13:
             case 14:
             case 15: // 修正必須

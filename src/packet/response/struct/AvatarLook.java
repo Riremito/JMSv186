@@ -25,7 +25,6 @@ import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
-import constants.GameConstants;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import packet.ServerPacket;
@@ -85,6 +84,9 @@ public class AvatarLook {
             data.Encode4(entry.getValue());
         }
         data.Encode1(0xFF); // ending markers
+        if (ServerConfig.JMS308orLater()) {
+            data.Encode1(0xFF); // ending markers
+        }
         final IItem cWeapon = equip.getItem((byte) -111);
         data.Encode4(cWeapon != null ? cWeapon.getItemId() : 0); // nWeaponStickerID
 

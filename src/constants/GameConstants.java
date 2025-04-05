@@ -143,28 +143,39 @@ public class GameConstants {
     }
 
     public static boolean is_extendsp_job(int job_id) {
-        // 英雄
-        if (job_id == 2001 || job_id == 2002 || job_id == 2003) {
-            return true;
-        }
         // エヴァン
-        if (2200 <= job_id && job_id <= 2299) {
+        if (job_id == 2001 || (2200 <= job_id && job_id <= 2218)) {
             return true;
         }
         // メルセデス
-        if (2300 <= job_id && job_id <= 2399) {
+        if (job_id == 2002 || (2300 <= job_id && job_id <= 2312)) {
             return true;
         }
         // ファントム
-        if (2400 <= job_id && job_id <= 2499) {
+        if (job_id == 2003 || (2400 <= job_id && job_id <= 2412)) {
+            return true;
+        }
+        // ルミナス
+        if (job_id == 2004 || (2700 <= job_id && job_id <= 2712)) {
             return true;
         }
         // レジスタンス
-        if (3000 <= job_id && job_id <= 3999) {
+        if (job_id / 1000 == 3) {
             return true;
         }
         // ハヤト, カンナ
-        if (4000 <= job_id && job_id <= 4999) {
+        if (job_id / 1000 == 4) {
+            return true;
+        }
+        if (job_id == 5000 || (5100 <= job_id && job_id <= 5112)) {
+            return true;
+        }
+        // カイザー
+        if (job_id == 6000 || (6100 <= job_id && job_id <= 6112)) {
+            return true;
+        }
+        // エンジェリックバスター
+        if (job_id == 6001 || (6500 <= job_id && job_id <= 6512)) {
             return true;
         }
         return false;

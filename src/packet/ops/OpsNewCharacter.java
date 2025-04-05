@@ -39,6 +39,9 @@ public enum OpsNewCharacter {
     DemonSlayer(-1), // デーモンスレイヤー
     Phantom(-1), // ファントム
     Kanna(-1), // カンナ
+    Luminous(-1),
+    Kaizer(-1),
+    AngelicBuster(-1),
     UNKNOWN(-1);
 
     private int value;
@@ -86,6 +89,11 @@ public enum OpsNewCharacter {
             Hayato.set(8); // v301
             Kanna.set(9); // v302
             // v314以降全部作成可能
+        }
+        if (ServerConfig.JMS308orLater()) {
+            Luminous.set(10); // v308
+            Kaizer.set(11); // v308
+            AngelicBuster.set(12); // v308
         }
     }
 }

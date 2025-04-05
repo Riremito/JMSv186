@@ -145,7 +145,11 @@ public class ResCStage {
                 sp.Encode4(0); // seed x3
                 sp.Encode4(0);
                 sp.Encode4(0);
-                sp.EncodeBuffer(CharacterData.Encode_302_1(chr, -1 & ~(0x00444200L | 0x20000000000L))); // Quest除外
+                long datamask_1 = 0x00444200L | 0x20000000000L; // JMS302
+                if (ServerConfig.JMS308orLater()) {
+                    datamask_1 = 0x00444200L | 0x80000000000L; // JMS308
+                }
+                sp.EncodeBuffer(CharacterData.Encode_302_1(chr, -1 & ~(datamask_1))); // Quest除外
                 sp.EncodeBuffer(CWvsContext.LogoutGiftConfig());
             } else {
                 sp.Encode1(0);
@@ -164,8 +168,14 @@ public class ResCStage {
             sp.EncodeBuffer(CharacterData.Encode_302_2(chr, datamask_2));
             sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
             sp.Encode4(100); // nMobStatAdjustRate
+            if (ServerConfig.JMS308orLater()) {
+                sp.Encode1(0);
+            }
             sp.Encode1(0);
             sp.Encode1(GameConstants.is_extendsp_job(chr.getJob()) ? 1 : 0);
+            if (ServerConfig.JMS308orLater()) {
+                sp.Encode1(0);
+            }
             return sp.get();
         }
 

@@ -965,13 +965,25 @@ public class ServerConfig {
 
     // Sengoku update
     public static boolean JMS302orLater() {
-        if (!IsPostBB()) {
-            return false;
-        }
-
         switch (GetRegion()) {
             case JMS: {
                 if (302 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // Angelic Buster version
+    public static boolean JMS308orLater() {
+        switch (GetRegion()) {
+            case JMS: {
+                if (308 <= GetVersion()) {
                     return true;
                 }
                 return false;

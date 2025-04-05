@@ -150,7 +150,7 @@ public class ReqCLogin {
 
     // login
     public static final boolean OnCheckPassword(ClientPacket cp, MapleClient c) {
-        if (ServerConfig.KMS160orLater()) {
+        if (ServerConfig.KMS160orLater() || ServerConfig.JMS308orLater()) {
             byte hwid[] = cp.DecodeBuffer(16);
             int unk1 = cp.Decode4();
             byte unk2 = cp.Decode1();
@@ -261,6 +261,9 @@ public class ReqCLogin {
         int dice_luk = 0;
 
         character_name = cp.DecodeStr();
+        if (ServerConfig.JMS308orLater()) {
+            int unk = cp.Decode4();
+        }
         if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && ServerConfig.GetVersion() == 73)) {
             job_type = cp.Decode4();
 
@@ -301,6 +304,15 @@ public class ReqCLogin {
                     break;
                 case Kanna:
                     job_id = 4002;
+                    break;
+                case Luminous:
+                    job_id = 2004;
+                    break;
+                case Kaizer:
+                    job_id = 6000;
+                    break;
+                case AngelicBuster:
+                    job_id = 6001;
                     break;
                 default:
                     job_id = 0;

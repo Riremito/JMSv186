@@ -635,6 +635,10 @@ public class CharacterData {
                 }
                 data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             }
+            if (ServerConfig.JMS308orLater()) {
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+            }
         }
 
         // 消費
@@ -747,21 +751,44 @@ public class CharacterData {
         if ((datamask & 0x10000) > 0) {
             data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
         }
-        if ((datamask & 0x8000000000L) > 0) {
-            data.Encode4(0);
-        }
-        if ((datamask & 0x10000000000L) > 0) {
-            data.Encode2(0); // 00546810
-        }
-        if ((datamask & 0x80000000000L) > 0) {
-            data.Encode2(0); // 0054B730
-            data.Encode2(0);
-        }
-        if ((datamask & 0x100000000000L) > 0) {
-            for (int i = 0; i < 10; i++) {
-                data.Encode1(0);
+
+        if (ServerConfig.JMS308orLater()) {
+            // JMS308
+            if ((datamask & 0x20000000000L) > 0) {
+                data.Encode4(0);
+            }
+            if ((datamask & 0x40000000000L) > 0) {
+                data.Encode2(0);
+            }
+            if ((datamask & 0x200000000000L) > 0) {
+                data.Encode2(0);
+                data.Encode2(0);
+            }
+            if ((datamask & 0x800000000000L) > 0) {
+                for (int i = 0; i < 10; i++) {
+                    data.Encode1(0);
+                }
+            }
+        } else {
+            //JMS302
+            if ((datamask & 0x8000000000L) > 0) {
+                data.Encode4(0);
+            }
+
+            if ((datamask & 0x10000000000L) > 0) {
+                data.Encode2(0); // 00546810
+            }
+            if ((datamask & 0x80000000000L) > 0) {
+                data.Encode2(0); // 0054B730
+                data.Encode2(0);
+            }
+            if ((datamask & 0x100000000000L) > 0) {
+                for (int i = 0; i < 10; i++) {
+                    data.Encode1(0);
+                }
             }
         }
+
         if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
             data.EncodeBuffer(GW_WildHunterInfo.Encode());
         }
@@ -780,19 +807,58 @@ public class CharacterData {
             data.Encode4(0);
             data.Encode4(0);
         }
-        if ((datamask & 0xFFFFFFFFL) > 0) {
+        if ((datamask & 0x80000000L) > 0) {
             data.Encode2(0);
         }
         if ((datamask & 0x100000000L) > 0) {
             data.Encode4(0);
             data.Encode4(0);
+            if (ServerConfig.JMS308orLater()) {
+                data.Encode4(0);
+            }
         }
-        if ((datamask & 0x400000000L) > 0) {
-            data.Encode2(0);
+        if ((datamask & 0x200000000L) > 0) {
+            if (ServerConfig.JMS308orLater()) {
+                data.Encode1(0);
+                data.Encode2(0);
+            }
         }
-
+        if (ServerConfig.JMS308orLater()) {
+            // JMS308
+            if ((datamask & 0x400000000L) > 0) {
+                data.Encode1(0);
+            }
+            if ((datamask & 0x800000000L) > 0) {
+                data.Encode4(0);
+                data.Encode4(0);
+                data.Encode4(0);
+                data.Encode1(0);
+            }
+            if ((datamask & 0x2000000000L) > 0) {
+                data.Encode4(0);
+                data.Encode4(0);
+                data.EncodeZeroBytes(8);
+            }
+            if ((datamask & 0x1000000000L) > 0) {
+                data.Encode2(0);
+            }
+        } else {
+            // JMS302
+            if ((datamask & 0x400000000L) > 0) {
+                data.Encode2(0);
+            }
+        }
         data.Encode4(0);
         data.Encode8(TestHelper.getTime(System.currentTimeMillis()));
+        if ((datamask & 0x400000000000L) > 0) {
+            if (ServerConfig.JMS308orLater()) {
+                data.Encode4(0);
+                data.Encode4(0);
+                data.Encode4(0);
+                data.Encode4(0);
+                data.EncodeZeroBytes(32);
+            }
+        }
         return data.get().getBytes();
     }
 

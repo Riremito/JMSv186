@@ -255,9 +255,26 @@ public class ResCLogin {
                             if (ServerConfig.JMS164orLater()) {
                                 sp.Encode1(client.isGm() ? 1 : 0);
                             }
+                            if (ServerConfig.JMS308orLater()) {
+                                sp.EncodeZeroBytes(4);
+                                sp.Encode4(0);
+                                sp.Encode1(0);
+                                sp.Encode1(0);
+                                sp.EncodeStr(client.getAccountName());
+                                sp.EncodeStr(client.getAccountName());
+                                sp.Encode1(0);
+                                sp.Encode1(0);
+                                sp.Encode1(0);
+                                sp.Encode1(-1);
+                                sp.Encode1(1);
+                                sp.EncodeZeroBytes(8);
+                                sp.Encode1(1);
+                                sp.EncodeStr("");
+                                break;
+                            }
                             sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
                             sp.EncodeStr(client.getAccountName());
-                            sp.Encode1(ServerConfig.IsKMS() ? 1 : 0);
+                            sp.Encode1(0);
                             sp.Encode1(0); // m_nPurchaseExp
                             sp.Encode1(0); // m_nChatBlockReason
                             sp.Encode1(0);
@@ -647,6 +664,10 @@ public class ResCLogin {
             sp.Encode4(0);
             sp.Encode4(0);
             sp.Encode4(0);
+            if (ServerConfig.JMS308orLater()) {
+                sp.Encode4(0);
+                sp.Encode1(0);
+            }
             return sp.get();
         }
 
