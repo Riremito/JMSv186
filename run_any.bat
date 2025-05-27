@@ -1,4 +1,5 @@
 @echo off
+set PATH=C:\Program Files\Java\jdk-17\bin;%PATH%
 set MS_REGION_NAME=%1
 set MS_VERSION=%2
 set MS_SUBVERSION=%3
