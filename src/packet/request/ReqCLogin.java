@@ -454,7 +454,7 @@ public class ReqCLogin {
             byte unk = cp.Decode1();
         }
 
-        if (ServerConfig.GMS95orLater()) {
+        if (ServerConfig.GMS91orLater()) {
             byte m_nGameStartMode = cp.Decode1(); // m_nGameStartMode, always 2?
             if (m_nGameStartMode == 1) {
                 String str = cp.DecodeStr();
@@ -467,7 +467,7 @@ public class ReqCLogin {
         int server = cp.Decode1(); // nWorldID
         final int channel = cp.Decode1(); // nChannelID)
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.GMS95orLater() || ServerConfig.IsIMS()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.GMS91orLater() || ServerConfig.IsIMS()) {
             int ip = cp.Decode4(); // S_addr
         }
 

@@ -221,10 +221,15 @@ public class ResCWvsContext {
         }
         sp.EncodeBuffer(GW_CharacterStat.EncodeChangeStat(chr, statmask));
         if (ServerConfig.IsPreBB()) {
-            // Pet
-            if ((statmask & OpsChangeStat.CS_PETSN.get()) > 0) {
-                int v5 = 0; // CVecCtrlUser::AddMovementInfo
-                sp.Encode1(v5);
+            if (ServerConfig.IsJMS()) {
+                // Pet
+                if ((statmask & OpsChangeStat.CS_PETSN.get()) > 0) {
+                    int v5 = 0; // CVecCtrlUser::AddMovementInfo
+                    sp.Encode1(v5);
+                }
+            }
+            if (ServerConfig.GMS91orLater()) {
+                sp.Encode1(0); // not 0 -> Encode1
             }
         } else {
             // v188+

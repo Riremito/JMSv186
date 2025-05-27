@@ -383,6 +383,11 @@ public class ResCLogin {
                                 sp.Encode8(0); // m_dtChatUnblockDate
                                 sp.Encode8(0); // m_dtRegisterDate
                                 sp.Encode4(0);
+                                if (ServerConfig.GMS91orLater()) {
+                                    sp.Encode1(1);
+                                    sp.Encode1(0);
+                                    sp.Encode8(0);
+                                }
                             } else {
                                 // GMS v95
                                 sp.Encode4(client.getAccID()); // m_dwAccountId
@@ -637,7 +642,7 @@ public class ResCLogin {
             //Structure.CharEntry(p, chr, true, false);
             sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(AvatarLook.Encode(chr));
-            if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsIMS() || ServerConfig.IsEMS() || ServerConfig.IsTHMS() || ServerConfig.IsMSEA() || ServerConfig.GMS95orLater())
+            if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsIMS() || ServerConfig.IsEMS() || ServerConfig.IsTHMS() || ServerConfig.IsMSEA() || ServerConfig.GMS91orLater())
                     && (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater())) {
                 sp.Encode1(0); // family
             }
@@ -700,7 +705,7 @@ public class ResCLogin {
             return sp.get();
         }
 
-        if (ServerConfig.GMS95orLater()) {
+        if (ServerConfig.GMS91orLater()) {
             sp.Encode1(2); // m_bLoginOpt
             sp.Encode4(charslots); // m_nSlotCount
             sp.Encode4(0); // m_nBuyCharCount

@@ -544,7 +544,7 @@ public class ServerConfig {
                 return false;
             }
             case GMS: {
-                if (92 <= GetVersion()) {
+                if (91 <= GetVersion()) {
                     return true;
                 }
                 return false;
@@ -621,6 +621,25 @@ public class ServerConfig {
         return false;
     }
 
+    public static boolean GMS91orLater() {
+        if (IsPostBB()) {
+            return true;
+        }
+
+        switch (GetRegion()) {
+            case GMS: {
+                if (91 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     // pre bb with potential
     public static boolean JMS186orLater() {
         if (IsPostBB()) {
@@ -659,7 +678,7 @@ public class ServerConfig {
                 return false;
             }
             case GMS: {
-                if (92 <= GetVersion()) {
+                if (91 <= GetVersion()) {
                     return true;
                 }
                 return false;
