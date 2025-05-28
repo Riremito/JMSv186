@@ -128,7 +128,7 @@ public class AvatarLook {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.IsTHMS() || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ServerConfig.IsEMS() || (ServerConfig.GMS91orLater())) {
+        if (ServerConfig.IsTHMS() || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ServerConfig.IsEMS() || ServerConfig.GMS83orLater()) {
             data.EncodeZeroBytes(12);
         } else {
             data.Encode4(0); // pet 1?

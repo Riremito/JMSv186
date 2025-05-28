@@ -55,7 +55,7 @@ public class CharacterData {
             data.Encode8(datamask); // statmask
         }
 
-        if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
+        if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater() || ServerConfig.GMS83orLater()) {
             data.Encode1(0); // nCombatOrders
         }
 
@@ -622,7 +622,7 @@ public class CharacterData {
             }
             data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             // 装備済み -1000
-            if (ServerConfig.JMS180orLater()) {
+            if (ServerConfig.JMS180orLater() || ServerConfig.GMS83orLater()) {
                 for (Item item : equipped) {
                     if (item.getPosition() <= -1000 && item.getPosition() > -1100) {
                         data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));

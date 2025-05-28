@@ -206,7 +206,7 @@ public class GW_ItemSlotBase {
                     // 魔法の時間, デンデン専用 (残り時間)
                     data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
                 }
-                if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
+                if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater() || ServerConfig.GMS83orLater()) {
                     data.Encode2(0); // nAttribute_CS
                 }
                 if (ServerConfig.JMS186orLater() && !(ServerConfig.IsEMS() && ServerConfig.IsPreBB()) && !ServerConfig.IsGMS()) {

@@ -621,11 +621,22 @@ public class ServerConfig {
         return false;
     }
 
-    public static boolean GMS91orLater() {
-        if (IsPostBB()) {
-            return true;
+    public static boolean GMS83orLater() {
+        switch (GetRegion()) {
+            case GMS: {
+                if (83 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
         }
+        return false;
+    }
 
+    public static boolean GMS91orLater() {
         switch (GetRegion()) {
             case GMS: {
                 if (91 <= GetVersion()) {

@@ -287,7 +287,7 @@ public class Structure {
             data.Encode4(skill.getValue().skillevel);
 
             // not in v165
-            if (ServerConfig.JMS180orLater()) {
+            if (ServerConfig.JMS180orLater() || ServerConfig.GMS83orLater()) {
                 data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
             }
 

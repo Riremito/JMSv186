@@ -47,6 +47,7 @@ public class GW_CharacterStat {
         data.Encode4(chr.getHair());
 
         if (ServerConfig.KMS138orLater()) {
+            // none
         } else if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || ServerConfig.IsBMS() || ServerConfig.IsVMS()) {
             data.EncodeZeroBytes(8);
         } else if ((ServerConfig.IsJMS() || ServerConfig.IsTHMS() || ServerConfig.IsGMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ((ServerConfig.IsTWMS() || ServerConfig.IsEMS()) && ServerConfig.IsPreBB()))) {
@@ -80,7 +81,7 @@ public class GW_CharacterStat {
         data.Encode2(chr.getRemainingAp());
 
         // SP
-        if (ServerConfig.JMS186orLater()) {
+        if (ServerConfig.JMS186orLater() || ServerConfig.GMS83orLater()) {
             // is_extendsp_job
             if (GameConstants.is_extendsp_job(chr.getJob())) {
                 final int size = chr.getRemainingSpSize();
