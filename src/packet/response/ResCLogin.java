@@ -387,7 +387,7 @@ public class ResCLogin {
                                     sp.Encode1(1);
                                     sp.Encode1(0);
                                 }
-                                if (ServerConfig.GMS91orLater()) {
+                                if (ServerConfig.GMS84orLater()) {
                                     sp.Encode8(0);
                                 }
                             } else {

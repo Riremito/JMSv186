@@ -42,7 +42,7 @@ public class ResCScriptMan {
         sp.Encode4(npcid); // nSpeakerTemplateID, npcid
         sp.Encode1(smt.get()); // nMsgType
 
-        if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
+        if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater() || ServerConfig.GMS84orLater()) {
             sp.Encode1(param); // v186+, not used
         }
 

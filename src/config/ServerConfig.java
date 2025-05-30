@@ -636,6 +636,21 @@ public class ServerConfig {
         return false;
     }
 
+    public static boolean GMS84orLater() {
+        switch (GetRegion()) {
+            case GMS: {
+                if (84 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     public static boolean GMS91orLater() {
         switch (GetRegion()) {
             case GMS: {

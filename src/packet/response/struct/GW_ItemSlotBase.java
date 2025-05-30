@@ -144,7 +144,7 @@ public class GW_ItemSlotBase {
                     data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
                 }
                 // 耐久度
-                if (ServerConfig.JMS180orLater()) {
+                if (ServerConfig.JMS180orLater() || ServerConfig.GMS84orLater()) {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
                 // ビシャスのハンマー

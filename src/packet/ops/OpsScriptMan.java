@@ -96,7 +96,7 @@ public enum OpsScriptMan {
             SM_SAYIMAGE.set(-1);
             SM_ASKSLIDEMENU.set(-1);
         }
-        if (ServerConfig.JMS180orLater()) {
+        if (ServerConfig.JMS180orLater() || ServerConfig.GMS84orLater()) {
             return;
         }
         if (ServerConfig.JMS146orLater()) {
