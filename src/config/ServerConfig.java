@@ -603,9 +603,6 @@ public class ServerConfig {
     }
 
     public static boolean KMS95orLater() {
-        if (IsPostBB()) {
-            return true;
-        }
 
         switch (GetRegion()) {
             case KMS: {
