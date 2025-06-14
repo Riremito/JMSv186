@@ -1037,6 +1037,22 @@ public class ServerConfig {
         return false;
     }
 
+    // KMS197, 200, 211
+    public static boolean KMS197orLater() {
+        switch (GetRegion()) {
+            case KMS: {
+                if (197 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     // test version of potential system
     public static boolean IsPrePotentialVersion() {
         switch (GetRegion()) {
