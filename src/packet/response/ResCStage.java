@@ -109,6 +109,9 @@ public class ResCStage {
                 }
             }
         }
+        if (ServerConfig.KMS197orLater()) {
+            sp.Encode1(0);
+        }
         // サーバーの時間?
         sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
         if (ServerConfig.JMS194orLater()) {
@@ -118,6 +121,10 @@ public class ResCStage {
             sp.Encode1(0);
         }
         if (ServerConfig.KMS127orLater() || ServerConfig.JMST110()) {
+            sp.Encode1(0);
+        }
+        if (ServerConfig.KMS197orLater()) {
+            sp.Encode1(0);
             sp.Encode1(0);
         }
         return sp.get();

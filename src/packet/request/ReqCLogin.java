@@ -261,7 +261,7 @@ public class ReqCLogin {
         int dice_luk = 0;
 
         character_name = cp.DecodeStr();
-        if (ServerConfig.JMS308orLater()) {
+        if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater()) {
             int unk = cp.Decode4();
         }
         if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && ServerConfig.GetVersion() == 73)) {

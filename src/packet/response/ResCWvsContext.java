@@ -85,7 +85,7 @@ public class ResCWvsContext {
         sp.Encode1(unlock ? 1 : 0);// m_bExclRequestSent, unlock
         sp.Encode1((io == null) ? 0 : io.get().size());
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.KMST391()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.KMST391() || ServerConfig.KMS197orLater()) {
             sp.Encode1(0); // unused
         }
 

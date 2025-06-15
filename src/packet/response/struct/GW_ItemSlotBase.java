@@ -118,6 +118,12 @@ public class GW_ItemSlotBase {
                     data.EncodeBuffer(EncodeEquip_JMS184(equip, hasUniqueId));
                     break;
                 }
+
+                if (ServerConfig.KMS197orLater()) {
+                    data.EncodeBuffer(EncodeEquip_KMS197(equip, hasUniqueId));
+                    break;
+                }
+
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
                 data.Encode2(equip.getStr());
@@ -213,8 +219,11 @@ public class GW_ItemSlotBase {
                     data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                     data.Encode4(0);
                 }
-                if (ServerConfig.JMS308orLater()) {
+                if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater()) {
                     data.Encode4(0);
+                }
+                if (ServerConfig.KMS197orLater()) {
+                    data.Encode2(0);
                 }
                 break;
             }
@@ -302,6 +311,159 @@ public class GW_ItemSlotBase {
         }
         data.Encode8(0);
         data.Encode4(-1);
+        return data.get().getBytes();
+    }
+
+    public static final byte[] EncodeEquip_KMS197(Equip equip, boolean hasUniqueId) {
+        ServerPacket data = new ServerPacket();
+
+        {
+            long flag1 = -1;
+            long flag2 = -1;
+            data.Encode4((int) flag1);
+            if ((flag1 & 0x01) > 0) {
+                data.Encode1(equip.getUpgradeSlots());
+            }
+            if ((flag1 & 0x02) > 0) {
+                data.Encode1(equip.getLevel());
+            }
+            // x16
+            if ((flag1 & 0x04) > 0) {
+                data.Encode2(equip.getStr());
+            }
+            if ((flag1 & 0x08) > 0) {
+                data.Encode2(equip.getDex());
+            }
+            if ((flag1 & 0x10) > 0) {
+                data.Encode2(equip.getInt());
+            }
+            if ((flag1 & 0x20) > 0) {
+                data.Encode2(equip.getLuk());
+            }
+            if ((flag1 & 0x40) > 0) {
+                data.Encode2(equip.getHp());
+            }
+            if ((flag1 & 0x80) > 0) {
+                data.Encode2(equip.getMp());
+            }
+            if ((flag1 & 0x100) > 0) {
+                data.Encode2(equip.getWatk());
+            }
+            if ((flag1 & 0x200) > 0) {
+                data.Encode2(equip.getMatk());
+            }
+            if ((flag1 & 0x400) > 0) {
+                data.Encode2(equip.getWdef());
+            }
+            if ((flag1 & 0x800) > 0) {
+                data.Encode2(equip.getMdef());
+            }
+            if ((flag1 & 0x1000) > 0) {
+                data.Encode2(equip.getAcc());
+            }
+            if ((flag1 & 0x2000) > 0) {
+                data.Encode2(equip.getAvoid());
+            }
+            if ((flag1 & 0x4000) > 0) {
+                data.Encode2(equip.getHands());
+            }
+            if ((flag1 & 0x8000) > 0) {
+                data.Encode2(equip.getSpeed());
+            }
+            if ((flag1 & 0x10000) > 0) {
+                data.Encode2(equip.getJump()); // niJump
+            }
+            if ((flag1 & 0x20000) > 0) {
+                data.Encode2(equip.getFlag()); // nAttribute
+            }
+            if ((flag1 & 0x40000) > 0) {
+                data.Encode1(0); // nLevelUpType
+            }
+            if ((flag1 & 0x80000) > 0) {
+                data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // nLevel
+            }
+            if ((flag1 & 0x100000) > 0) {
+                data.Encode8(equip.getExpPercentage() * 4); // nEXP64
+            }
+            if ((flag1 & 0x200000) > 0) {
+                data.Encode4(equip.getDurability()); // nDurability
+            }
+            if ((flag1 & 0x400000) > 0) {
+                data.Encode4(equip.getViciousHammer()); // nIUC
+            }
+            if ((flag1 & 0x800000) > 0) {
+                data.Encode2(0); // niPVPDamage
+            }
+            if ((flag1 & 0x1000000) > 0) {
+                data.Encode1(0); // niReduceReq
+            }
+            if ((flag1 & 0x2000000) > 0) {
+                data.Encode2(0); // nSpecialAttribute
+            }
+            if ((flag1 & 0x4000000) > 0) {
+                data.Encode4(0); // nDurabilityMax
+            }
+            if ((flag1 & 0x8000000) > 0) {
+                data.Encode1(0); // niIncReq
+            }
+            if ((flag1 & 0x10000000L) > 0) {
+                data.Encode1(0); // nGrowthEnchant
+            }
+            if ((flag1 & 0x20000000L) > 0) {
+                data.Encode1(0); // nPSEnchant
+            }
+            if ((flag1 & 0x40000000L) > 0) {
+                data.Encode1(0); // nBDR
+            }
+            if ((flag1 & 0x80000000L) > 0) {
+                data.Encode1(0); // nIMDR
+            }
+            data.Encode4((int) flag2);
+            if ((flag2 & 0x01) > 0) {
+                data.Encode1(0); // nDamR
+            }
+            if ((flag2 & 0x02) > 0) {
+                data.Encode1(0); // nStatR
+            }
+            if ((flag2 & 0x04) > 0) {
+                data.Encode1(0); // nCuttable
+            }
+            if ((flag2 & 0x08) > 0) {
+                data.Encode8(0); // nExGradeOption
+            }
+            if ((flag2 & 0x10) > 0) {
+                data.Encode4(0); // nItemState
+            }
+        }
+
+        data.EncodeStr(equip.getOwner()); // title
+        data.Encode1(getPotentialRank(equip)); // nGrade
+        data.Encode1(equip.getEnhance()); // nCHUC
+        data.Encode2(equip.getPotential1()); // nOption1
+        data.Encode2(equip.getPotential2()); // nOption2
+        data.Encode2(equip.getPotential3()); // nOption3
+        data.Encode2(0); // nOption4
+        data.Encode2(0); // nOption6
+        data.Encode2(0); // nOption7
+        data.Encode2(0); // nOption5
+        if (!hasUniqueId) {
+            data.Encode8(0); // liSN
+        }
+        data.Encode8(0); // ftEquipped
+        data.Encode4(-1); // nPrevBonusExpRate
+        // GW_CashItemOption::Decode
+        {
+            data.Encode8(0); // liCashItemSN
+            data.Encode8(0); // ftExpireDate
+            data.Encode4(0); // anOption
+            for (int i = 0; i < 3; i++) {
+                data.Encode4(0);
+            }
+        }
+        data.Encode2(0); // nSoulOptionID
+        data.Encode2(0); // nSoulSocketID
+        data.Encode2(0); // nSoulOption
+
         return data.get().getBytes();
     }
 

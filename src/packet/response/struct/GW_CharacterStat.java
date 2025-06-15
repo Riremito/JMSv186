@@ -90,7 +90,11 @@ public class GW_CharacterStat {
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
                     if (chr.getRemainingSp(i) > 0) {
                         data.Encode1(i + 1);
-                        data.Encode1(chr.getRemainingSp(i));
+                        if (ServerConfig.KMS197orLater()) {
+                            data.Encode4(chr.getRemainingSp(i));
+                        } else {
+                            data.Encode1(chr.getRemainingSp(i));
+                        }
                     }
                 }
             } else {
@@ -98,6 +102,10 @@ public class GW_CharacterStat {
             }
         } else {
             data.Encode2(chr.getRemainingSp());
+        }
+
+        if (ServerConfig.KMS197orLater()) {
+            data.Encode8(0);
         }
 
         if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
@@ -148,7 +156,11 @@ public class GW_CharacterStat {
                         data.Encode4(0);
                         data.Encode1(0);
                         {
-                            for (int i = 0; i < 6; i++) {
+                            int unkloop_count = 6;
+                            if (ServerConfig.KMS197orLater()) {
+                                unkloop_count = 9;
+                            }
+                            for (int i = 0; i < unkloop_count; i++) {
                                 data.Encode4(0);
                                 data.Encode1(0);
                                 data.Encode4(0);
@@ -279,10 +291,13 @@ public class GW_CharacterStat {
 
     // GW_CharacterStat::DecodeMoney
     public static byte[] EncodeMoney(MapleCharacter chr) {
-        ServerPacket p = new ServerPacket();
-
-        p.Encode4(chr.getMeso());
-        return p.get().getBytes();
+        ServerPacket data = new ServerPacket();
+        if (ServerConfig.KMS197orLater()) {
+            data.Encode8(chr.getMeso());
+        } else {
+            data.Encode4(chr.getMeso());
+        }
+        return data.get().getBytes();
     }
 
     // DecodeBuffer size 0x0C
@@ -390,7 +405,11 @@ public class GW_CharacterStat {
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
                     if (chr.getRemainingSp(i) > 0) {
                         data.Encode1(i + 1);
-                        data.Encode1(chr.getRemainingSp(i));
+                        if (ServerConfig.KMS197orLater()) {
+                            data.Encode4(chr.getRemainingSp(i));
+                        } else {
+                            data.Encode1(chr.getRemainingSp(i));
+                        }
                     }
                 }
             } else {
@@ -399,15 +418,27 @@ public class GW_CharacterStat {
         }
         // EXP
         if ((statmask & OpsChangeStat.CS_EXP.get()) > 0) {
-            data.Encode4(chr.getExp());
+            if (ServerConfig.KMS197orLater()) {
+                data.Encode8(chr.getExp());
+            } else {
+                data.Encode4(chr.getExp());
+            }
         }
         // 人気度
         if ((statmask & OpsChangeStat.CS_POP.get()) > 0) {
-            data.Encode2(chr.getFame());
+            if (ServerConfig.KMS197orLater()) {
+                data.Encode4(chr.getFame());
+            } else {
+                data.Encode2(chr.getFame());
+            }
         }
         // Meso
         if ((statmask & OpsChangeStat.CS_MONEY.get()) > 0) {
-            data.Encode4(chr.getMeso());
+            if (ServerConfig.KMS197orLater()) {
+                data.Encode8(chr.getMeso());
+            } else {
+                data.Encode4(chr.getMeso());
+            }
         }
         // v188 ここから+1
         // Pet 2

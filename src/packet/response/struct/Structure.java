@@ -299,6 +299,9 @@ public class Structure {
                     data.Encode4(0);
                 }
             }
+            if (ServerConfig.KMS197orLater()) {
+                data.Encode2(0);
+            }
         }
         return data.get().getBytes();
     }

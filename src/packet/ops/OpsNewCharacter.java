@@ -90,7 +90,7 @@ public enum OpsNewCharacter {
             Kanna.set(9); // v302
             // v314以降全部作成可能
         }
-        if (ServerConfig.JMS308orLater()) {
+        if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater()) {
             Luminous.set(10); // v308
             Kaizer.set(11); // v308
             AngelicBuster.set(12); // v308

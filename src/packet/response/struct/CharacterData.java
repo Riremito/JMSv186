@@ -59,6 +59,12 @@ public class CharacterData {
             data.Encode1(0); // nCombatOrders
         }
 
+        if (ServerConfig.KMS197orLater()) {
+            for (int i = 0; i < 3; i++) {
+                data.Encode4(0);
+            }
+        }
+
         if (ServerConfig.KMS138orLater()) {
             data.Encode1(0);
         }
@@ -139,7 +145,11 @@ public class CharacterData {
             }
         }
 
-        if (ServerConfig.KMS148orLater()) {
+        if (ServerConfig.KMS197orLater()) {
+            if ((datamask & 0x40000000L) > 0) {
+                data.Encode4(0); // encode8, encode8
+            }
+        } else if (ServerConfig.KMS148orLater()) {
             if ((datamask & 0x4000000) > 0) {
                 data.Encode4(0);
             }
@@ -201,8 +211,36 @@ public class CharacterData {
                 }
 
                 if (ServerConfig.IsPostBB()) {
+                    if (ServerConfig.KMS197orLater()) {
+                        if ((datamask & 0x200000000000L) > 0) {
+                            data.Encode2(0);
+                        }
+                        byte unk_byte = 0;
+                        data.Encode1(unk_byte); // unk
+                        {
+                            if (unk_byte != 0) {
+                                if ((datamask & 0x10000000000L) > 0) {
+                                    int loop_cnt = 0;
+                                    data.Encode4(loop_cnt);
+                                    for (int i = 0; i < loop_cnt; i++) {
+                                        data.Encode4(0);
+                                    }
+                                }
+                            }
+                        }
+
+                        if ((datamask & 0x100000000000L) > 0) {
+                            data.Encode4(0); // loop, Encode4, Encode4
+                        }
+                    }
                     if ((datamask & 0x200000) > 0 && (chr.getJob() / 100 == 33)) {
                         data.EncodeBuffer(GW_WildHunterInfo.Encode());
+                    }
+                    if (ServerConfig.KMS197orLater()) {
+                        if ((datamask & 0x80000000000L) > 0) {
+                            // KMS197 005D7A49, 005C1DA0
+                            // v270 == 10000 || v270 == 10100 || v270 == 10110 || v270 == 10111 || v270 == 10112
+                        }
                     }
                     if ((datamask & 0x400000) > 0) {
                         data.Encode2(0); // not 0, Encode2, EncodeBuffer8
@@ -236,9 +274,63 @@ public class CharacterData {
                             data.Encode2(0);
                         }
                     }
-                    if (ServerConfig.KMS160orLater()) {
+                    if (ServerConfig.KMS197orLater()) {
+                        data.Encode4(0);
+                    } else if (ServerConfig.KMS160orLater()) {
                         data.Encode4(0);
                         data.Encode4(0);
+                    }
+                    if (ServerConfig.KMS197orLater()) {
+                        data.Encode1(0);
+                        if ((datamask & 0x0100000000L) > 0) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                        }
+                        if ((datamask & 0x0200000000L) > 0) {
+                            data.Encode1(0);
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x0400000000L) > 0) {
+                            data.Encode1(0);
+                        }
+                        if ((datamask & 0x0800000000L) > 0) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode1(0);
+                        }
+                        if ((datamask & 0x1000000000L) > 0) {
+                            data.Encode2(0);
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x2000000000L) > 0) {
+                            data.Encode1(0);
+                        }
+                        if ((datamask & 0x4000000000L) > 0) {
+                            // 005CC6C0
+                            {
+                                data.EncodeStr("KMS197TEST");
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode1(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                            }
+                            data.Encode4(0);
+                            data.Encode4(0);
+                        }
+                        if ((datamask & 0x8000000000L) > 0) {
+                            data.Encode1(0);
+                        }
+                        if ((datamask & 0x40000000000L) > 0) {
+                            data.Encode4(0);
+                            data.Encode8(0);
+                            data.Encode4(0);
+                        }
                     }
                 }
                 break;
@@ -656,7 +748,11 @@ public class CharacterData {
                 }
                 data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             }
-            if (ServerConfig.JMS308orLater()) {
+            if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater()) {
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+                data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
+            }
+            if (ServerConfig.KMS197orLater()) {
                 data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
                 data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Equip));
             }
@@ -694,6 +790,14 @@ public class CharacterData {
             }
             data.EncodeBuffer(GW_ItemSlotBase.EncodeSlotEnd(ItemType.Cash));
         }
+
+        if (ServerConfig.KMS197orLater()) {
+            for (int i = 3; i <= 4; i++) { // from 3 to 4
+                data.Encode4(-1);
+            }
+            return data.get().getBytes();
+        }
+
         // 不明
         if (ServerConfig.JMS194orLater()) {
             // func 004FB8B0

@@ -2,6 +2,7 @@ package handling;
 
 import constants.ServerConstants;
 import client.MapleClient;
+import config.ServerConfig;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -300,8 +301,10 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_MigrateIn: {
-                // +p
-                final int playerid = p.readInt();
+                if (ServerConfig.KMS197orLater()) {
+                    int unk0 = cp.Decode4();
+                }
+                final int playerid = cp.Decode4();
                 InterServerHandler.Loggedin(playerid, c);
                 if (!InterServerHandler.GetLogin()) {
                     InterServerHandler.SetLogin(true);

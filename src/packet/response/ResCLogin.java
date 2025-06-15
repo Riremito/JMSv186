@@ -48,6 +48,13 @@ public class ResCLogin {
         sp.Encode4(clientId);
         sp.Encode1(0);
         sp.Encode4(0);
+
+        if (ServerConfig.KMS197orLater()) {
+            sp.Encode1(0);
+            sp.Encode8(0);
+            return sp.get();
+        }
+
         if (ServerConfig.KMS148orLater()) {
             sp.Encode1(0);
             sp.Encode2(0);
@@ -234,11 +241,18 @@ public class ResCLogin {
                                 sp.Encode1(0);
                                 sp.EncodeStr(client.getAccountName());
                                 sp.EncodeStr("");
-                                sp.Encode1(0);
-                                if (!ServerConfig.KMS197orLater()) {
+                                if (ServerConfig.KMS197orLater()) {
+                                    sp.Encode1(1);
                                     sp.Encode1(0);
-                                    sp.Encode1(0);
+                                    for (int i = 0; i < 16; i++) {
+                                        sp.Encode1(1); // 0079D99C (KMS197)
+                                    }
+                                    break;
                                 }
+                                // KMS160
+                                sp.Encode1(0);
+                                sp.Encode1(0);
+                                sp.Encode1(0);
                                 break;
                             }
                             sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
