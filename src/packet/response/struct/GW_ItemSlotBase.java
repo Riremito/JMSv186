@@ -426,7 +426,7 @@ public class GW_ItemSlotBase {
                 data.Encode1(0); // nStatR
             }
             if ((flag2 & 0x04) > 0) {
-                data.Encode1(0); // nCuttable
+                data.Encode1(-1); // nCuttable
             }
             if ((flag2 & 0x08) > 0) {
                 data.Encode8(0); // nExGradeOption

@@ -54,8 +54,10 @@ public class SecondaryStat {
             data.Encode4(buff_mask[5]);
         }
         // JMS v187+
-        if (ServerConfig.IsPostBB() && !ServerConfig.IsIMS()) {
-            data.Encode4(buff_mask[4]);
+        if (ServerConfig.IsPostBB()) {
+            if (!ServerConfig.IsIMS() && !ServerConfig.IsTHMS()) {
+                data.Encode4(buff_mask[4]);
+            }
         }
         if (ServerConfig.JMS146orLater()) {
             data.Encode4(buff_mask[3]);
@@ -80,7 +82,11 @@ public class SecondaryStat {
                             effect = pss.getRight();
                         }
                     }
-                    data.Encode2(effect);
+                    if (ServerConfig.IsTHMS() && ServerConfig.IsPostBB()) {
+                        data.Encode4(effect);
+                    } else {
+                        data.Encode2(effect);
+                    }
                     data.Encode4(skill_id);
                     if (ServerConfig.JMS146orLater()) {
                         data.Encode4(buff_time);

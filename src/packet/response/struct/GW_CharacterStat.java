@@ -46,7 +46,7 @@ public class GW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.KMS138orLater()) {
+        if (ServerConfig.KMS138orLater() || (ServerConfig.IsTHMS() && ServerConfig.IsPostBB())) {
             // none
         } else if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || ServerConfig.IsBMS() || ServerConfig.IsVMS()) {
             data.EncodeZeroBytes(8);
