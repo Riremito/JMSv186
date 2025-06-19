@@ -124,6 +124,11 @@ public class GW_ItemSlotBase {
                     break;
                 }
 
+                if (ServerConfig.EMS89orLater()) {
+                    data.EncodeBuffer(EncodeEquip_EMS89(equip, hasUniqueId));
+                    break;
+                }
+
                 data.Encode1(equip.getUpgradeSlots());
                 data.Encode1(equip.getLevel());
                 data.Encode2(equip.getStr());
@@ -159,7 +164,7 @@ public class GW_ItemSlotBase {
                         data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                     }
                 }
-                if (ServerConfig.KMS127orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+                if (ServerConfig.KMS127orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater()) {
                     data.Encode2(0);
                 }
                 // 潜在能力, 装備強化 (星)
@@ -172,7 +177,10 @@ public class GW_ItemSlotBase {
                     data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目?
                     data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ?
                 }
-                if (ServerConfig.JMS308orLater()) {
+                if (ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater()) {
+                    data.Encode2(0);
+                }
+                if (ServerConfig.EMS89orLater()) {
                     data.Encode2(0);
                 }
                 if (ServerConfig.JMS302orLater()) {
@@ -219,7 +227,7 @@ public class GW_ItemSlotBase {
                     data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                     data.Encode4(0);
                 }
-                if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater()) {
+                if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
                     data.Encode4(0);
                 }
                 if (ServerConfig.KMS197orLater()) {
@@ -311,6 +319,60 @@ public class GW_ItemSlotBase {
         }
         data.Encode8(0);
         data.Encode4(-1);
+        return data.get().getBytes();
+    }
+
+    public static final byte[] EncodeEquip_EMS89(Equip equip, boolean hasUniqueId) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode1(equip.getUpgradeSlots());
+        data.Encode1(equip.getLevel());
+        data.Encode2(equip.getStr());
+        data.Encode2(equip.getDex());
+        data.Encode2(equip.getInt());
+        data.Encode2(equip.getLuk());
+        data.Encode2(equip.getHp());
+        data.Encode2(equip.getMp());
+        data.Encode2(equip.getWatk());
+        data.Encode2(equip.getMatk());
+        data.Encode2(equip.getWdef());
+        data.Encode2(equip.getMdef());
+        data.Encode2(equip.getAcc());
+        data.Encode2(equip.getAvoid());
+        data.Encode2(equip.getHands());
+        data.Encode2(equip.getSpeed());
+        data.Encode2(equip.getJump());
+        data.EncodeStr(equip.getOwner());
+        data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
+        data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
+        data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
+        data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
+        data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
+        data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
+        data.Encode2(0);
+        data.Encode1(getPotentialRank(equip)); // option._ZtlSecureTear_nGrade
+        data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
+        data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
+        data.Encode2(equip.getPotential2()); // option._ZtlSecureTear_nOption2
+        data.Encode2(equip.getPotential3()); // option._ZtlSecureTear_nOption3
+        data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目?
+        data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ
+        data.Encode2(0);
+        data.Encode2(0);
+        if (!hasUniqueId) {
+            data.Encode8(0);
+        }
+        data.Encode8(0);
+        data.Encode4(-1);
+
+        // sub_515F40
+        data.Encode8(0);
+        data.Encode8(0);
+        data.Encode4(0);
+        for (int i = 0; i < 3; i++) {
+            data.Encode4(0);
+        }
+
         return data.get().getBytes();
     }
 

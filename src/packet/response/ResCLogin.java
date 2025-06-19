@@ -49,7 +49,7 @@ public class ResCLogin {
         sp.Encode1(0);
         sp.Encode4(0);
 
-        if (ServerConfig.KMS197orLater()) {
+        if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
             sp.Encode1(0);
             sp.Encode8(0);
             return sp.get();
@@ -448,6 +448,10 @@ public class ResCLogin {
                                 // v70+
                                 sp.Encode1(1);
                             } else {
+                                if (ServerConfig.EMS89orLater()) {
+                                    sp.Encode1(0);
+                                    sp.EncodeStr("");
+                                }
                                 sp.EncodeStr("");
                                 sp.Encode4(0);
                             }
@@ -590,7 +594,10 @@ public class ResCLogin {
             }
         }
         sp.Encode2(0);
-        if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+        if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater()) {
+            sp.Encode4(0);
+        }
+        if (ServerConfig.EMS89orLater()) {
             sp.Encode4(0);
         }
         return sp.get();
@@ -699,6 +706,34 @@ public class ResCLogin {
                 sp.Encode4(0);
                 sp.Encode1(0);
             }
+            return sp.get();
+        }
+
+        if (ServerConfig.EMS89orLater()) {
+            sp.Encode1(1);
+            sp.Encode1(0);
+            sp.Encode4(charslots);
+            sp.Encode4(0);
+            sp.Encode4(0);
+            sp.Encode4(0);
+            sp.Encode4(0);
+            sp.Encode1(0);
+            sp.Encode8(0);
+            // job unlock (clickable, not gray out lol)
+            sp.Encode1(1);
+            sp.Encode1(1);
+            sp.Encode1(1);
+            sp.Encode1(1);
+            sp.Encode1(1);
+            sp.Encode1(1);
+            sp.Encode1(1);
+            sp.Encode1(1);
+            sp.Encode1(1);
+            sp.Encode1(1);
+            sp.Encode1(1);
+            sp.Encode1(1);
+            sp.Encode1(1);
+            sp.Encode1(1);
             return sp.get();
         }
 
@@ -835,7 +870,7 @@ public class ResCLogin {
     public static final MaplePacket getEndOfServerList() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_WorldInformation);
         sp.Encode1(-1);
-        if (ServerConfig.KMS148orLater()) {
+        if (ServerConfig.KMS148orLater() || ServerConfig.EMS89orLater()) {
             sp.Encode1(0);
         }
         return sp.get();

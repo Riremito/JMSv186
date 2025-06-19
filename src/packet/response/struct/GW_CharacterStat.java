@@ -46,7 +46,7 @@ public class GW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.KMS138orLater() || (ServerConfig.IsTHMS() && ServerConfig.IsPostBB())) {
+        if (ServerConfig.KMS138orLater() || (ServerConfig.IsTHMS() && ServerConfig.IsPostBB()) || ServerConfig.EMS89orLater()) {
             // none
         } else if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || ServerConfig.IsBMS() || ServerConfig.IsVMS()) {
             data.EncodeZeroBytes(8);
@@ -106,6 +106,48 @@ public class GW_CharacterStat {
 
         if (ServerConfig.KMS197orLater()) {
             data.Encode8(0);
+        }
+
+        if (ServerConfig.EMS89orLater()) {
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode8(0);
+            data.Encode4(chr.getMapId());
+            data.Encode1(chr.getInitialSpawnpoint());
+            data.Encode2(chr.getSubcategory());
+            if (GameConstants.is_demonslayer(chr.getJob())) {
+                data.Encode4(0);
+            }
+            data.Encode1(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.EncodeZeroBytes(21);
+            data.Encode4(0);
+            data.Encode1(0);
+            data.Encode4(0);
+            data.Encode1(0);
+            data.Encode1(0);
+            data.Encode4(0);
+            data.Encode1(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode1(0);
+            for (int i = 0; i < 6; i++) {
+                data.Encode4(0);
+                data.Encode1(0);
+                data.Encode4(0);
+            }
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            return data.get().getBytes();
         }
 
         if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {

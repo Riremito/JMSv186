@@ -150,12 +150,16 @@ public class ReqCLogin {
 
     // login
     public static final boolean OnCheckPassword(ClientPacket cp, MapleClient c) {
-        if (ServerConfig.KMS160orLater() || ServerConfig.JMS308orLater()) {
+        if (ServerConfig.KMS160orLater() || ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater()) {
             byte hwid[] = cp.DecodeBuffer(16);
             int unk1 = cp.Decode4();
             byte unk2 = cp.Decode1();
             byte unk3 = cp.Decode1();
         }
+        if (ServerConfig.EMS89orLater()) {
+            byte unk4 = cp.Decode1();
+        }
+
         String maple_id = cp.DecodeStr();
         String password = cp.DecodeStr();
         return OnCheckPassword(c, maple_id, password);
@@ -261,7 +265,7 @@ public class ReqCLogin {
         int dice_luk = 0;
 
         character_name = cp.DecodeStr();
-        if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater()) {
+        if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
             int unk = cp.Decode4();
         }
         if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && ServerConfig.GetVersion() == 73)) {
@@ -323,7 +327,7 @@ public class ReqCLogin {
             job_dualblade = cp.Decode2(); // 2 = キャノンシューター
         }
 
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
             character_gender = cp.Decode1();
             if (!ServerConfig.KMST391()) {
                 skin_color = cp.Decode1();
@@ -334,7 +338,7 @@ public class ReqCLogin {
             body_part_count--;
             hair_id = cp.Decode4();
             body_part_count--;
-            if (ServerConfig.IsEMS()) {
+            if (ServerConfig.IsEMS() && !ServerConfig.EMS89orLater()) { // ?_? mercdes OK
                 hair_color = cp.Decode4();
                 body_part_count--;
                 skin_color = cp.Decode4();
@@ -450,7 +454,7 @@ public class ReqCLogin {
     }
 
     public static final void CharlistRequest(ClientPacket cp, final MapleClient c) {
-        if (ServerConfig.JMS308orLater() || ServerConfig.IsKMS() || ServerConfig.IsIMS()) {
+        if (ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater() || ServerConfig.IsKMS() || ServerConfig.IsIMS()) {
             byte unk = cp.Decode1();
         }
 
@@ -467,7 +471,7 @@ public class ReqCLogin {
         int server = cp.Decode1(); // nWorldID
         final int channel = cp.Decode1(); // nChannelID)
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.GMS83orLater() || ServerConfig.IsIMS()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.GMS83orLater() || ServerConfig.IsIMS()) {
             int ip = cp.Decode4(); // S_addr
         }
 

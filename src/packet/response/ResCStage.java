@@ -42,14 +42,19 @@ public class ResCStage {
     public static final MaplePacket SetField(MapleCharacter chr, boolean loggedin, MapleMap to, int spawnPoint) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetField);
         // JMS184orLater
-        if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsGMS())
-                && ServerConfig.JMS186orLater()) {
+        if (((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsGMS()) && ServerConfig.JMS186orLater())
+                || ServerConfig.EMS89orLater()) {
             sp.EncodeBuffer(CClientOptMan.EncodeOpt()); // 2 bytes
         }
         // チャンネル
         sp.Encode4(chr.getClient().getChannel() - 1); // m_nChannelID
         if (ServerConfig.KMS138orLater()
-                || (ServerConfig.IsJMS() && ServerConfig.JMS146orLater())) {
+                || (ServerConfig.IsJMS() && ServerConfig.JMS146orLater())
+                || ServerConfig.EMS89orLater()) {
+            sp.Encode1(0);
+        }
+
+        if (ServerConfig.EMS89orLater()) {
             sp.Encode1(0);
         }
 
@@ -117,14 +122,16 @@ public class ResCStage {
         if (ServerConfig.JMS194orLater()) {
             sp.Encode4(100); // nMobStatAdjustRate
         }
-        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110()) {
+        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater()) {
             sp.Encode1(0);
         }
-        if (ServerConfig.KMS127orLater() || ServerConfig.JMST110()) {
+        if (ServerConfig.KMS127orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater()) {
+            sp.Encode1(0);
+        }
+        if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
             sp.Encode1(0);
         }
         if (ServerConfig.KMS197orLater()) {
-            sp.Encode1(0);
             sp.Encode1(0);
         }
         return sp.get();

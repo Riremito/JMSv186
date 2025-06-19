@@ -44,8 +44,9 @@ public class AvatarLook {
         data.Encode1(chr.getSkinColor()); // nSkin
         data.Encode4(chr.getFace()); // nFace
 
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater()) {
-            data.Encode4(0); // demon something
+        int demon_something = 0;
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
+            data.Encode4(demon_something); // demon something
         }
 
         data.Encode1(0); // ignored byte
@@ -92,6 +93,17 @@ public class AvatarLook {
 
         if (ServerConfig.IsBMS() || ServerConfig.IsVMS()) {
             data.Encode4(0);
+            return data.get().getBytes();
+        }
+
+        if (ServerConfig.EMS89orLater()) {
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode1(0);
+            data.EncodeZeroBytes(12);
+            if (demon_something / 100 == 31 || demon_something == 3001) {
+                data.Encode4(0);
+            }
             return data.get().getBytes();
         }
 

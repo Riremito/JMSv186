@@ -1037,6 +1037,21 @@ public class ServerConfig {
         return false;
     }
 
+    public static boolean EMS89orLater() {
+        switch (GetRegion()) {
+            case EMS: {
+                if (89 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     // KMS197, 200, 211
     public static boolean KMS197orLater() {
         switch (GetRegion()) {
