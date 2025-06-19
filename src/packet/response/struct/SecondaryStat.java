@@ -40,7 +40,7 @@ public class SecondaryStat {
 
         int skill_id = mse.getSourceId();
         int buff_time = mse.getDuration();
-        int buff_mask[] = {0, 0, 0, 0, 0, 0, 0, 0};
+        int buff_mask[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
         // test
         ArrayList<Pair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
@@ -48,7 +48,11 @@ public class SecondaryStat {
             buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
         }
 
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.EMS89orLater()) {
+            data.Encode4(buff_mask[8]);
+        }
+
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
             data.Encode4(buff_mask[7]);
             data.Encode4(buff_mask[6]);
             data.Encode4(buff_mask[5]);

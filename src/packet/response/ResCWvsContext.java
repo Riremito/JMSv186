@@ -85,7 +85,7 @@ public class ResCWvsContext {
         sp.Encode1(unlock ? 1 : 0);// m_bExclRequestSent, unlock
         sp.Encode1((io == null) ? 0 : io.get().size());
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.KMST391() || ServerConfig.KMS197orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.KMST391() || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
             sp.Encode1(0); // unused
         }
 
@@ -146,7 +146,7 @@ public class ResCWvsContext {
     public static final MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ChangeSkillRecordResult);
         sp.Encode1(1);
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
             sp.Encode1(0);
         }
         sp.Encode2(1);
@@ -165,7 +165,7 @@ public class ResCWvsContext {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
         sp.EncodeBuffer(SecondaryStat.EncodeForLocal(effect));
         sp.Encode2(0); // delay
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
             sp.Encode1(0);
         }
         sp.Encode1(0); // CUserLocal::SetSecondaryStatChangedPoint
@@ -174,10 +174,13 @@ public class ResCWvsContext {
 
     public static MaplePacket cancelBuff(List<MapleBuffStat> statups, MapleStatEffect mse) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatReset);
-        int buff_mask[] = {0, 0, 0, 0, 0, 0, 0, 0};
+        int buff_mask[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
         ArrayList<Pair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
         for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
             buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
+        }
+        if (ServerConfig.EMS89orLater()) {
+            sp.Encode4(buff_mask[8]);
         }
         if (ServerConfig.JMS302orLater()) {
             sp.Encode4(buff_mask[7]);
@@ -218,7 +221,7 @@ public class ResCWvsContext {
         // 0 = lock   -> do not clear lock flag
         // 1 = unlock -> clear lock flag
         sp.Encode1(unlock); // CWvsContext->bExclRequestSent
-        if (ServerConfig.IsEMS() || (ServerConfig.TWMS74orLater() && !ServerConfig.TWMS94orLater())) {
+        if ((ServerConfig.IsEMS() && !ServerConfig.EMS89orLater()) || (ServerConfig.TWMS74orLater() && !ServerConfig.TWMS94orLater())) {
             sp.Encode1(0); // EMS v55
         }
         sp.EncodeBuffer(GW_CharacterStat.EncodeChangeStat(chr, statmask));

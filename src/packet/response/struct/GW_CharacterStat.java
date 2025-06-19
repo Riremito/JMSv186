@@ -90,7 +90,7 @@ public class GW_CharacterStat {
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
                     if (chr.getRemainingSp(i) > 0) {
                         data.Encode1(i + 1);
-                        if (ServerConfig.KMS197orLater()) {
+                        if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
                             data.Encode4(chr.getRemainingSp(i));
                         } else {
                             data.Encode1(chr.getRemainingSp(i));
@@ -357,7 +357,7 @@ public class GW_CharacterStat {
     public static byte[] EncodeChangeStat(MapleCharacter chr, int statmask) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater()) {
             data.Encode8(statmask);
         } else {
             data.Encode4(statmask);
@@ -447,7 +447,7 @@ public class GW_CharacterStat {
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
                     if (chr.getRemainingSp(i) > 0) {
                         data.Encode1(i + 1);
-                        if (ServerConfig.KMS197orLater()) {
+                        if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
                             data.Encode4(chr.getRemainingSp(i));
                         } else {
                             data.Encode1(chr.getRemainingSp(i));
