@@ -55,7 +55,7 @@ public class ResCStage {
         }
 
         if (ServerConfig.EMS89orLater()) {
-            sp.Encode1(0);
+            sp.Encode1(1); // Supreme/Ibara World
         }
 
         if (((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsTHMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ServerConfig.IsEMS() || ServerConfig.IsGMS() || ServerConfig.IsIMS()) && ServerConfig.JMS180orLater())

@@ -109,9 +109,9 @@ public class GW_CharacterStat {
         }
 
         if (ServerConfig.EMS89orLater()) {
-            data.Encode4(0);
-            data.Encode4(0);
-            data.Encode4(0);
+            data.Encode4(chr.getExp());
+            data.Encode4(chr.getFame());
+            data.Encode4(chr.getGashaEXP());
             data.Encode8(0);
             data.Encode4(chr.getMapId());
             data.Encode1(chr.getInitialSpawnpoint());
@@ -468,7 +468,7 @@ public class GW_CharacterStat {
         }
         // 人気度
         if ((statmask & OpsChangeStat.CS_POP.get()) > 0) {
-            if (ServerConfig.KMS197orLater()) {
+            if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
                 data.Encode4(chr.getFame());
             } else {
                 data.Encode2(chr.getFame());

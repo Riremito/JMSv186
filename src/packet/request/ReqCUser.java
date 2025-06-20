@@ -795,7 +795,7 @@ public class ReqCUser {
         final PlayerStats stat = chr.getStat();
         final int job = chr.getJob();
         if (chr.getRemainingAp() > 0) {
-            switch (OpsChangeStat.find((int)flag)) { // need to fix
+            switch (OpsChangeStat.find((int) flag)) { // need to fix
                 case CS_STR:
                     // Str
                     if (stat.getStr() >= 999) {
@@ -954,7 +954,7 @@ public class ReqCUser {
         for (int i = 0; i < count; i++) {
             long stat = 0;
 
-            if (ServerConfig.JMS302orLater()) {
+            if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
                 stat = cp.Decode8();
             } else {
                 stat = cp.Decode4();

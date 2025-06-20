@@ -182,7 +182,7 @@ public class ResCWvsContext {
         if (ServerConfig.EMS89orLater()) {
             sp.Encode4(buff_mask[8]);
         }
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
             sp.Encode4(buff_mask[7]);
             sp.Encode4(buff_mask[6]);
             sp.Encode4(buff_mask[5]);
