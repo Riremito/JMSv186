@@ -1021,7 +1021,24 @@ public class ServerConfig {
         return false;
     }
 
+    // 2012/08/17
+    public static boolean CMS104orLater() {
+        switch (GetRegion()) {
+            case CMS: {
+                if (104 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     // Sengoku update
+    // 2012/08/16
     public static boolean JMS302orLater() {
         switch (GetRegion()) {
             case JMS: {
@@ -1321,7 +1338,11 @@ public class ServerConfig {
             case "CMS": {
                 region_type = Region.CMS;
                 region_number = 4;
-                packet_custom_encryption = true;
+                if (ServerConfig.CMS104orLater()) {
+                    // none
+                } else {
+                    packet_custom_encryption = true;
+                }
                 character_name_size = 13;
                 return true;
             }

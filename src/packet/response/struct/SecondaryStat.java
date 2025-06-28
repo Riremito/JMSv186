@@ -52,7 +52,7 @@ public class SecondaryStat {
             data.Encode4(buff_mask[8]);
         }
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode4(buff_mask[7]);
             data.Encode4(buff_mask[6]);
             data.Encode4(buff_mask[5]);

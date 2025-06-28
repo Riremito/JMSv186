@@ -159,7 +159,11 @@ public class ReqCLogin {
         if (ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             byte unk4 = cp.Decode1();
         }
-
+        if (ServerConfig.CMS104orLater()) {
+            byte hwid[] = cp.DecodeBuffer(16);
+            int unk1 = cp.Decode4();
+            byte unk2 = cp.Decode1();
+        }
         String maple_id = cp.DecodeStr();
         String password = cp.DecodeStr();
         return OnCheckPassword(c, maple_id, password);
@@ -330,7 +334,7 @@ public class ReqCLogin {
             job_dualblade = cp.Decode2(); // 1 = DB, 2 = キャノンシューター, 10 = 蒼龍
         }
 
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             character_gender = cp.Decode1();
             if (!ServerConfig.KMST391()) {
                 skin_color = cp.Decode1();
@@ -474,7 +478,7 @@ public class ReqCLogin {
         int server = cp.Decode1(); // nWorldID
         final int channel = cp.Decode1(); // nChannelID)
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.GMS83orLater() || ServerConfig.IsIMS()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.GMS83orLater() || ServerConfig.IsIMS() || ServerConfig.CMS104orLater()) {
             int ip = cp.Decode4(); // S_addr
         }
 

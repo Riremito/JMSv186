@@ -45,7 +45,7 @@ public class AvatarLook {
         data.Encode4(chr.getFace()); // nFace
 
         int demon_something = 0;
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode4(demon_something); // demon something
         }
 
@@ -85,7 +85,7 @@ public class AvatarLook {
             data.Encode4(entry.getValue());
         }
         data.Encode1(0xFF); // ending markers
-        if (ServerConfig.JMS308orLater() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.JMS308orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode1(0xFF); // ending markers
         }
         final IItem cWeapon = equip.getItem((byte) -111);
@@ -140,7 +140,7 @@ public class AvatarLook {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode1(1);
         }
         if (ServerConfig.IsTHMS() || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ServerConfig.IsEMS() || ServerConfig.GMS83orLater()) {

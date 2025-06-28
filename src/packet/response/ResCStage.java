@@ -51,7 +51,8 @@ public class ResCStage {
         if (ServerConfig.KMS138orLater()
                 || (ServerConfig.IsJMS() && ServerConfig.JMS146orLater())
                 || ServerConfig.EMS89orLater()
-                || ServerConfig.TWMS148orLater()) {
+                || ServerConfig.TWMS148orLater()
+                || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);
         }
 
@@ -65,11 +66,11 @@ public class ResCStage {
         }
 
         sp.Encode1(chr.getPortalCount()); // sNotifierMessage?
-        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater()) {
-            sp.Encode4(0);
-        }
         if (ServerConfig.IsCMS()) {
             sp.Encode1(0);
+        }
+        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+            sp.Encode4(0);
         }
         sp.Encode1(loggedin ? 1 : 0); // bCharacterData, 1 = all data, 0 = map change
         if (ServerConfig.JMS146orLater()) {
@@ -120,16 +121,16 @@ public class ResCStage {
         }
         // サーバーの時間?
         sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
-        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode4(100); // nMobStatAdjustRate
         }
-        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);
         }
-        if (ServerConfig.KMS127orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.KMS127orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);
         }
-        if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);
         }
         if (ServerConfig.KMS197orLater()) {

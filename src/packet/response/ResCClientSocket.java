@@ -124,7 +124,7 @@ public class ResCClientSocket {
         sp.Encode4((int) GameServerIP); // IP, 127.0.0.1
         sp.Encode2(port);
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.KMST391() || ServerConfig.KMS118orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.KMST391() || ServerConfig.KMS118orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);
         }
         return sp.get();

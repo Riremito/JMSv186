@@ -46,7 +46,7 @@ public class GW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.KMS138orLater() || (ServerConfig.IsTHMS() && ServerConfig.IsPostBB()) || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.KMS138orLater() || (ServerConfig.IsTHMS() && ServerConfig.IsPostBB()) || ServerConfig.EMS89orLater() || ServerConfig.CMS104orLater()) {
             // none
         } else if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || ServerConfig.IsBMS() || ServerConfig.IsVMS()) {
             data.EncodeZeroBytes(8);
@@ -108,7 +108,7 @@ public class GW_CharacterStat {
             data.Encode8(0);
         }
 
-        if (ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode4(chr.getExp());
             data.Encode4(chr.getFame());
             data.Encode4(chr.getGashaEXP());
@@ -145,6 +145,12 @@ public class GW_CharacterStat {
             }
             data.Encode4(0);
             data.Encode4(0);
+
+            // CMS
+            if (ServerConfig.CMS104orLater()) {
+                return data.get().getBytes();
+            }
+
             data.EncodeZeroBytes(25);
             data.Encode1(0);
             data.Encode1(0);
@@ -403,7 +409,7 @@ public class GW_CharacterStat {
     public static byte[] EncodeChangeStat(MapleCharacter chr, int statmask) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode8(statmask);
         } else {
             data.Encode4(statmask);
@@ -514,7 +520,7 @@ public class GW_CharacterStat {
         }
         // 人気度
         if ((statmask & OpsChangeStat.CS_POP.get()) > 0) {
-            if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+            if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
                 data.Encode4(chr.getFame());
             } else {
                 data.Encode2(chr.getFame());

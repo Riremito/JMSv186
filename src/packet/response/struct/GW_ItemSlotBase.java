@@ -94,7 +94,7 @@ public class GW_ItemSlotBase {
         }
 
         // 等級
-        return (byte) ((ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) ? (rank + 16) : (rank + 4));
+        return (byte) ((ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) ? (rank + 16) : (rank + 4));
 
     }
 
@@ -147,7 +147,7 @@ public class GW_ItemSlotBase {
                 data.Encode2(equip.getSpeed());
                 data.Encode2(equip.getJump());
                 data.EncodeStr(equip.getOwner());
-                if (ServerConfig.TWMS148orLater()) {
+                if (ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
                     data.Encode4(equip.getFlag());
                 } else {
                     data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
@@ -168,7 +168,7 @@ public class GW_ItemSlotBase {
                         data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                     }
                 }
-                if (ServerConfig.KMS127orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+                if (ServerConfig.KMS127orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
                     data.Encode2(0);
                 }
                 // 潜在能力, 装備強化 (星)
@@ -181,13 +181,13 @@ public class GW_ItemSlotBase {
                     data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目?
                     data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ?
                 }
-                if (ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+                if (ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
                     data.Encode2(0);
                 }
-                if (ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+                if (ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
                     data.Encode2(0);
                 }
-                if (ServerConfig.TWMS148orLater()) {
+                if (ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
                     data.Encode2(0);
                     data.Encode2(0);
                 }
@@ -204,6 +204,18 @@ public class GW_ItemSlotBase {
                     data.Encode8(0);
                     data.Encode4(-1);
                 }
+
+                // CMS
+                if (ServerConfig.CMS104orLater()) {
+                    data.Encode8(0);
+                    data.Encode8(0);
+                    data.Encode4(0);
+                    for (int i = 0; i < 3; i++) {
+                        data.Encode4(0);
+                    }
+                    break;
+                }
+
                 if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
                     data.Encode4(0);
                     data.Encode1(0);
@@ -553,7 +565,7 @@ public class GW_ItemSlotBase {
 
         data.Encode8(-1); // time?
 
-        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode4(0);
         }
 
