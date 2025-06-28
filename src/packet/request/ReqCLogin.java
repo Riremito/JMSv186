@@ -150,13 +150,13 @@ public class ReqCLogin {
 
     // login
     public static final boolean OnCheckPassword(ClientPacket cp, MapleClient c) {
-        if (ServerConfig.KMS160orLater() || ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.KMS160orLater() || ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             byte hwid[] = cp.DecodeBuffer(16);
             int unk1 = cp.Decode4();
             byte unk2 = cp.Decode1();
             byte unk3 = cp.Decode1();
         }
-        if (ServerConfig.EMS89orLater()) {
+        if (ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             byte unk4 = cp.Decode1();
         }
 
@@ -309,6 +309,9 @@ public class ReqCLogin {
                 case Kanna:
                     job_id = 4002;
                     break;
+                case Chivalrous:
+                    job_id = 0;
+                    break;
                 case Luminous:
                     job_id = 2004;
                     break;
@@ -324,10 +327,10 @@ public class ReqCLogin {
             }
         }
         if (ServerConfig.JMS180orLater()) {
-            job_dualblade = cp.Decode2(); // 2 = キャノンシューター
+            job_dualblade = cp.Decode2(); // 1 = DB, 2 = キャノンシューター, 10 = 蒼龍
         }
 
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             character_gender = cp.Decode1();
             if (!ServerConfig.KMST391()) {
                 skin_color = cp.Decode1();
@@ -454,7 +457,7 @@ public class ReqCLogin {
     }
 
     public static final void CharlistRequest(ClientPacket cp, final MapleClient c) {
-        if (ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater() || ServerConfig.IsKMS() || ServerConfig.IsIMS()) {
+        if (ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater() || ServerConfig.IsKMS() || ServerConfig.IsIMS() || ServerConfig.TWMS148orLater()) {
             byte unk = cp.Decode1();
         }
 

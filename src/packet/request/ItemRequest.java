@@ -590,14 +590,15 @@ public class ItemRequest {
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         final int reqLevel = ii.getReqLevel(eqq.getItemId()) / 10;
 
-        Debug.ErrorLog("eqq.getState =  " + eqq.getHidden() + ", magnify.getItemId = " + magnify.getItemId() + ", reqLevel = " + reqLevel);
-        Debug.ErrorLog("" + eqq.getPotential1() + ", " + eqq.getPotential2() + ", " + eqq.getPotential3());
+        Debug.DebugLog("eqq.getState =  " + eqq.getHidden() + ", magnify.getItemId = " + magnify.getItemId() + ", reqLevel = " + reqLevel);
+        Debug.DebugLog("" + eqq.getPotential1() + ", " + eqq.getPotential2() + ", " + eqq.getPotential3());
         if (eqq.getHidden() == 1
                 && (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3))) {
             eqq.setHidden(0); // 未確認状態へ変更
             chr.SendPacket(ResWrapper.scrolledItem(magnify, toReveal, false, true));
             chr.getMap().broadcastMessage(ResCUser.getPotentialReset(chr.getId(), eqq.getPosition()));
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
+            Debug.DebugLog("potential updated");
         } else {
             chr.SendPacket(ResWrapper.getInventoryFull());
             Debug.ErrorLog("potential err 2");

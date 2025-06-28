@@ -39,6 +39,7 @@ public enum OpsNewCharacter {
     DemonSlayer(-1), // デーモンスレイヤー
     Phantom(-1), // ファントム
     Kanna(-1), // カンナ
+    Chivalrous(-1), // 蒼龍侠客
     Luminous(-1),
     Kaizer(-1),
     AngelicBuster(-1),
@@ -81,7 +82,7 @@ public enum OpsNewCharacter {
             Aran.set(3);
             Evan.set(4);
         }
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             CannonShooter.set(1); // v204
             Mercedes.set(5); // v204
             DemonSlayer.set(6); // v205
@@ -89,6 +90,9 @@ public enum OpsNewCharacter {
             Hayato.set(8); // v301
             Kanna.set(9); // v302
             // v314以降全部作成可能
+        }
+        if (ServerConfig.TWMS148orLater()) {
+            Chivalrous.set(10);
         }
         if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
             Luminous.set(10); // v308

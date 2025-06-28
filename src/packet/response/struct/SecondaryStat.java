@@ -52,7 +52,7 @@ public class SecondaryStat {
             data.Encode4(buff_mask[8]);
         }
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             data.Encode4(buff_mask[7]);
             data.Encode4(buff_mask[6]);
             data.Encode4(buff_mask[5]);
@@ -105,7 +105,7 @@ public class SecondaryStat {
             data.Encode1(0);
             data.Encode1(0);
         }
-        if (ServerConfig.JMS302orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.TWMS148orLater()) {
             data.Encode1(0);
         }
         return data.get().getBytes();

@@ -108,6 +108,52 @@ public class GW_CharacterStat {
             data.Encode8(0);
         }
 
+        if (ServerConfig.TWMS148orLater()) {
+            data.Encode4(chr.getExp());
+            data.Encode4(chr.getFame());
+            data.Encode4(chr.getGashaEXP());
+            data.Encode8(0);
+            data.Encode4(chr.getMapId());
+            data.Encode1(chr.getInitialSpawnpoint());
+            data.Encode2(chr.getSubcategory());
+            if (GameConstants.is_demonslayer(chr.getJob())) {
+                data.Encode4(0);
+            }
+            data.Encode1(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.EncodeZeroBytes(21);
+            data.Encode4(0);
+            data.Encode1(0);
+            data.Encode4(0);
+            data.Encode1(0);
+            data.Encode4(0);
+            data.Encode1(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode1(0);
+            for (int i = 0; i < 6; i++) {
+                data.Encode4(0);
+                data.Encode1(0);
+                data.Encode4(0);
+            }
+            data.Encode4(0);
+            data.Encode4(0);
+            data.EncodeZeroBytes(25);
+            data.Encode1(0);
+            data.Encode1(0);
+            data.Encode1(0);
+            data.Encode1(0);
+            data.Encode1(0);
+            return data.get().getBytes();
+        }
+
         if (ServerConfig.EMS89orLater()) {
             data.Encode4(chr.getExp());
             data.Encode4(chr.getFame());
@@ -357,7 +403,7 @@ public class GW_CharacterStat {
     public static byte[] EncodeChangeStat(MapleCharacter chr, int statmask) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             data.Encode8(statmask);
         } else {
             data.Encode4(statmask);
@@ -468,7 +514,7 @@ public class GW_CharacterStat {
         }
         // 人気度
         if ((statmask & OpsChangeStat.CS_POP.get()) > 0) {
-            if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
+            if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
                 data.Encode4(chr.getFame());
             } else {
                 data.Encode2(chr.getFame());

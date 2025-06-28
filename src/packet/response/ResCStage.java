@@ -50,7 +50,8 @@ public class ResCStage {
         sp.Encode4(chr.getClient().getChannel() - 1); // m_nChannelID
         if (ServerConfig.KMS138orLater()
                 || (ServerConfig.IsJMS() && ServerConfig.JMS146orLater())
-                || ServerConfig.EMS89orLater()) {
+                || ServerConfig.EMS89orLater()
+                || ServerConfig.TWMS148orLater()) {
             sp.Encode1(0);
         }
 
@@ -64,7 +65,7 @@ public class ResCStage {
         }
 
         sp.Encode1(chr.getPortalCount()); // sNotifierMessage?
-        if (ServerConfig.JMS194orLater()) {
+        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater()) {
             sp.Encode4(0);
         }
         if (ServerConfig.IsCMS()) {
@@ -119,16 +120,16 @@ public class ResCStage {
         }
         // サーバーの時間?
         sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
-        if (ServerConfig.JMS194orLater()) {
+        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater()) {
             sp.Encode4(100); // nMobStatAdjustRate
         }
-        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             sp.Encode1(0);
         }
-        if (ServerConfig.KMS127orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.KMS127orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             sp.Encode1(0);
         }
-        if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             sp.Encode1(0);
         }
         if (ServerConfig.KMS197orLater()) {

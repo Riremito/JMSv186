@@ -65,11 +65,11 @@ public class CharacterData {
             }
         }
 
-        if (ServerConfig.KMS138orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             data.Encode1(0);
         }
 
-        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             data.Encode4(0);
         }
 
@@ -106,7 +106,7 @@ public class CharacterData {
             }
 
             // 祝福系統
-            if (ServerConfig.JMS194orLater()) {
+            if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater()) {
                 // 女王の祝福 max 24
                 data.Encode1(0); // not 0, EncodeStr
                 // ???
@@ -134,7 +134,7 @@ public class CharacterData {
 
         if ((datamask & 0x2000000) > 0) {
             // EMS89 0x8000000 || 0x08
-            if (ServerConfig.KMS138orLater() && !ServerConfig.KMST391() || ServerConfig.EMS89orLater()) {
+            if (ServerConfig.KMS138orLater() && !ServerConfig.KMST391() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
                 data.Encode4(0);
             }
         }
@@ -143,7 +143,7 @@ public class CharacterData {
             data.EncodeBuffer(InventoryInfo(chr, datamask));
         }
 
-        if (ServerConfig.KMS127orLater() || ServerConfig.JMST110()) {
+        if (ServerConfig.KMS127orLater() || ServerConfig.JMST110() || ServerConfig.TWMS148orLater()) {
             if ((datamask & 0x1000000) > 0) {
                 data.Encode4(0);
             }
@@ -155,7 +155,7 @@ public class CharacterData {
             }
         }
 
-        if (ServerConfig.KMS197orLater()) {
+        if (ServerConfig.KMS197orLater() || ServerConfig.TWMS148orLater()) {
             if ((datamask & 0x40000000L) > 0) {
                 data.Encode4(0); // encode8, encode8
             }
@@ -165,7 +165,7 @@ public class CharacterData {
             }
         }
 
-        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110()) {
+        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110() || ServerConfig.TWMS148orLater()) {
             if ((datamask & 0x800000) > 0) {
                 data.Encode1(0);
             }
@@ -396,6 +396,47 @@ public class CharacterData {
                     }
                     if ((datamask & 0x400000) > 0) {
                         data.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                    }
+                    if (ServerConfig.TWMS148orLater()) {
+                        if ((datamask & 0x4000000) > 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x20000000) > 0) {
+                            for (int i = 0; i < (4 + 4 + 3 + 2); i++) {
+                                data.Encode4(0);
+                            }
+                        }
+                        if ((datamask & 0x10000000) > 0) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode4(0);
+                        }
+                        if ((datamask & 0x80000000L) > 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x100000000L) > 0) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                        }
+                        if ((datamask & 0x200000000L) > 0) {
+                            data.EncodeZeroBytes(84);
+                            data.Encode1(0);
+                        }
+                        if ((datamask & 0x80000000L) > 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x100000000L) > 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x400000000L) > 0) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.EncodeZeroBytes(32);
+                        }
+                        break;
                     }
                     if ((datamask & 0x800000) > 0) {
                         data.Encode2(0);
@@ -824,8 +865,8 @@ public class CharacterData {
                 data.Encode2(0);
             }
             // カンナ?
-            if (ServerConfig.KMS127orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
-                if (ServerConfig.JMS302orLater()) {
+            if (ServerConfig.KMS127orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.TWMS148orLater()) {
+                if (ServerConfig.JMS302orLater() || ServerConfig.TWMS148orLater()) {
                     for (Item item : equipped) {
                         if (item.getPosition() <= -1500 && item.getPosition() > -1600) {
                             data.EncodeBuffer(GW_ItemSlotBase.EncodeSlot(item));
@@ -887,7 +928,7 @@ public class CharacterData {
         }
 
         // 不明
-        if (ServerConfig.JMS194orLater()) {
+        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater()) {
             // func 004FB8B0
             data.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
         }

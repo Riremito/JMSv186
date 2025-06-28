@@ -460,9 +460,11 @@ public class Equip extends Item implements IEquip, Serializable {
             // ユニーク抽選
             if (3 <= getRank() || 50 <= Randomizer.nextInt(100)) {
                 // レジェンダリー抽選
-                if (ServerConfig.JMS302orLater() && master) {
-                    if (4 <= getRank() || 50 <= Randomizer.nextInt(100)) {
-                        return 4;
+                if (master) {
+                    if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+                        if (4 <= getRank() || 50 <= Randomizer.nextInt(100)) {
+                            return 4;
+                        }
                     }
                 }
                 return 3;

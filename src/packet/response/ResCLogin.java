@@ -554,7 +554,11 @@ public class ResCLogin {
     public static final MaplePacket getServerList(final int serverId, boolean internalserver, int externalch) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_WorldInformation);
         // ワールドID
-        sp.Encode1(serverId);
+        if (ServerConfig.TWMS148orLater()) {
+            sp.Encode2(serverId);
+        } else {
+            sp.Encode1(serverId);
+        }
         // ワールド名
         sp.EncodeStr(LoginServer.WorldName[serverId]);
         // ワールドの旗
@@ -594,7 +598,7 @@ public class ResCLogin {
             }
         }
         sp.Encode2(0);
-        if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             sp.Encode4(0);
         }
         if (ServerConfig.EMS89orLater()) {
@@ -605,7 +609,9 @@ public class ResCLogin {
 
     public static byte[] CharList_TWMS(MapleClient c) {
         ServerPacket data = new ServerPacket();
-        data.Encode4(1000000);
+        if (!ServerConfig.TWMS148orLater()) {
+            data.Encode4(1000000);
+        }
         List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
         int charslots = c.getCharacterSlots();
         data.Encode1(chars.size());
@@ -622,7 +628,16 @@ public class ResCLogin {
             data.Encode4(chr.getJobRankMove());
         }
 
-        if (ServerConfig.TWMS121orLater()) {
+        if (ServerConfig.TWMS148orLater()) {
+            data.Encode1(3);
+            data.Encode1(0);
+            data.Encode4(charslots);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode8(0);
+        } else if (ServerConfig.TWMS121orLater()) {
             data.Encode2(3); // 2nd password state
             data.Encode8(charslots);
             data.Encode8(0);
@@ -869,8 +884,12 @@ public class ResCLogin {
     // ワールドセレクト
     public static final MaplePacket getEndOfServerList() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_WorldInformation);
-        sp.Encode1(-1);
-        if (ServerConfig.KMS148orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.TWMS148orLater()) {
+            sp.Encode2(-1);
+        } else {
+            sp.Encode1(-1);
+        }
+        if (ServerConfig.KMS148orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             sp.Encode1(0);
         }
         return sp.get();
@@ -929,6 +948,9 @@ public class ResCLogin {
         sp.EncodeStr(LoginScreen);
         if (ServerConfig.IsPostBB()) {
             sp.Encode4(0);
+        }
+        if (ServerConfig.TWMS148orLater()) {
+            sp.Encode1(1);
         }
         return sp.get();
     }

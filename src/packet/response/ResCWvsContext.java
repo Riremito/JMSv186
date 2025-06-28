@@ -85,7 +85,7 @@ public class ResCWvsContext {
         sp.Encode1(unlock ? 1 : 0);// m_bExclRequestSent, unlock
         sp.Encode1((io == null) ? 0 : io.get().size());
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.KMST391() || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.KMST391() || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             sp.Encode1(0); // unused
         }
 
@@ -146,7 +146,7 @@ public class ResCWvsContext {
     public static final MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ChangeSkillRecordResult);
         sp.Encode1(1);
-        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             sp.Encode1(0);
         }
         sp.Encode2(1);
@@ -165,7 +165,7 @@ public class ResCWvsContext {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
         sp.EncodeBuffer(SecondaryStat.EncodeForLocal(effect));
         sp.Encode2(0); // delay
-        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             sp.Encode1(0);
         }
         sp.Encode1(0); // CUserLocal::SetSecondaryStatChangedPoint
@@ -182,7 +182,7 @@ public class ResCWvsContext {
         if (ServerConfig.EMS89orLater()) {
             sp.Encode4(buff_mask[8]);
         }
-        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
             sp.Encode4(buff_mask[7]);
             sp.Encode4(buff_mask[6]);
             sp.Encode4(buff_mask[5]);

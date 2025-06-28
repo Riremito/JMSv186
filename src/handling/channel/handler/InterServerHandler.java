@@ -143,7 +143,9 @@ public class InterServerHandler {
             c.SendPacket(ResWrapper.getCharInfo(player));
         }
 
-        c.getSession().write(ResCWvsContext.temporaryStats_Reset());
+        c.SendPacket(ResWrapper.getInventoryFull()); // TWMS148 gets weird stat without sending this.
+        c.SendPacket(ResCWvsContext.temporaryStats_Reset());
+
         player.getMap().addPlayer(player);
 
         player.spawnSavedPets();

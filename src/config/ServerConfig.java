@@ -1005,6 +1005,22 @@ public class ServerConfig {
         return false;
     }
 
+    // 2012/08/13
+    public static boolean TWMS148orLater() {
+        switch (GetRegion()) {
+            case TWMS: {
+                if (148 <= GetVersion()) {
+                    return true;
+                }
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
     // Sengoku update
     public static boolean JMS302orLater() {
         switch (GetRegion()) {
