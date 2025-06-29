@@ -520,7 +520,7 @@ public class GW_CharacterStat {
         }
         // 人気度
         if ((statmask & OpsChangeStat.CS_POP.get()) > 0) {
-            if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+            if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater() || ServerConfig.JMS302orLater()) {
                 data.Encode4(chr.getFame());
             } else {
                 data.Encode2(chr.getFame());
