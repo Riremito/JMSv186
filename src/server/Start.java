@@ -1,6 +1,7 @@
 package server;
 
 import client.data.ExpTable;
+import config.Content;
 import config.DebugConfig;
 import config.ServerConfig;
 import handling.channel.ChannelServer;
@@ -34,6 +35,9 @@ public class Start {
         }
         ServerConfig.SetVersion(server_version, server_version_sub);
         ServerConfig.SetRegion(server_region);
+        // test
+        Content.init();
+        Content.check();
 
         // バージョンによるコンテンツの有無を設定
         ServerConfig.SetContentFlag();
