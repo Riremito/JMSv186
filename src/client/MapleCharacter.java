@@ -83,6 +83,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import packet.ops.OpsBodyPart;
 import packet.ops.OpsChangeStat;
+import packet.ops.OpsQuest;
 import packet.response.Res_JMS_CField_Pachinko;
 import packet.request.ReqCUser;
 import packet.response.ResCWvsContext;
@@ -1478,7 +1479,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (!(quest.isCustom())) {
             client.SendPacket(ResWrapper.updateQuest(quest));
             if (quest.getStatus() == 1 && !update) {
-                client.getSession().write(ResCUserLocal.updateQuestInfo(this, quest.getQuest().getId(), quest.getNpc(), (byte) 8));
+                client.getSession().write(ResCUserLocal.updateQuestInfo(this, quest.getQuest().getId(), quest.getNpc(), OpsQuest.QuestRes_Act_Success));
             }
         }
     }

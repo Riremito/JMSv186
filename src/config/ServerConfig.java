@@ -36,23 +36,6 @@ public class ServerConfig {
         return packet_old_iv;
     }
 
-    public enum Region {
-        KMS,
-        KMST,
-        JMS,
-        JMST,
-        CMS,
-        TWMS,
-        THMS,
-        GMS,
-        EMS,
-        BMS,
-        MSEA,
-        VMS,
-        IMS,
-        unk,
-    }
-
     public static boolean IsKMS() {
         return GetRegion() == Region.KMS || GetRegion() == Region.KMST;
     }

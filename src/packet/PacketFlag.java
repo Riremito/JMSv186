@@ -21,6 +21,7 @@ package packet;
 import packet.ops.OpsChangeStat;
 import packet.ops.OpsMessage;
 import packet.ops.OpsNewCharacter;
+import packet.ops.OpsQuest;
 import packet.ops.OpsScriptMan;
 import packet.ops.OpsSecondaryStat;
 import packet.ops.OpsUserEffect;
@@ -44,6 +45,7 @@ public class PacketFlag {
         OpsNewCharacter.init();
         OpsScriptMan.init();
         OpsUserEffect.init();
+        OpsQuest.init();
     }
 
 }

@@ -25,6 +25,7 @@ import handling.MaplePacket;
 import java.awt.Point;
 import java.util.List;
 import packet.ServerPacket;
+import packet.ops.OpsQuest;
 import packet.ops.OpsUserEffect;
 import packet.response.struct.TestHelper;
 import server.movement.LifeMovementFragment;
@@ -201,23 +202,21 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket updateQuestFinish(int quest, int npc, int nextquest) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserQuestResult.get());
-        mplew.write(8);
-        mplew.writeShort(quest);
-        mplew.writeInt(npc);
-        mplew.writeInt(nextquest);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserQuestResult);
+        sp.Encode1(OpsQuest.QuestRes_Act_Success.get());
+        sp.Encode2(quest);
+        sp.Encode4(npc);
+        sp.Encode2(nextquest);
+        return sp.get();
     }
 
-    public static MaplePacket updateQuestInfo(MapleCharacter c, int quest, int npc, byte progress) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserQuestResult.get());
-        mplew.write(progress);
-        mplew.writeShort(quest);
-        mplew.writeInt(npc);
-        mplew.writeInt(0);
-        return mplew.getPacket();
+    public static MaplePacket updateQuestInfo(MapleCharacter c, int quest, int npc, OpsQuest oq) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserQuestResult);
+        sp.Encode1(oq.get());
+        sp.Encode2(quest);
+        sp.Encode4(npc);
+        sp.Encode2(0);
+        return sp.get();
     }
 
     public static MaplePacket sendHint(String hint, int width, int height) {
