@@ -26,9 +26,7 @@ import client.inventory.MaplePet;
 import config.ServerConfig;
 import constants.GameConstants;
 import handling.MaplePacket;
-import java.util.List;
 import packet.ServerPacket;
-import packet.ops.OpsBroadcastMsg;
 import packet.ops.OpsDropPickUpMessage;
 import packet.ops.OpsFieldEffect;
 import packet.ops.OpsFieldEffectArg;
@@ -42,7 +40,6 @@ import packet.response.ResCField;
 import packet.response.ResCScriptMan;
 import packet.response.ResCStage;
 import packet.response.ResCWvsContext;
-import packet.response.struct.GW_ItemSlotBase;
 import packet.response.struct.InvOp;
 import packet.response.struct.TestHelper;
 import server.Randomizer;
@@ -212,73 +209,6 @@ public class ResWrapper {
 
     public static MaplePacket getShowInventoryFull() {
         return getShowInventoryStatus(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL);
-    }
-
-    // メガホン
-    public static MaplePacket MegaphoneBlue(String text) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
-        p.Encode1(OpsBroadcastMsg.BM_SPEAKERCHANNEL.get());
-        p.EncodeStr(text);
-        return p.get();
-    }
-
-    // ドクロ拡声器
-    public static MaplePacket MegaphoneSkull(String text, byte channel, byte ear) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
-        p.Encode1(OpsBroadcastMsg.BM_SKULLSPEAKER.get());
-        p.EncodeStr(text);
-        p.Encode1((byte) (channel - 1));
-        p.Encode1(ear);
-        return p.get();
-    }
-
-    // ハート拡声器
-    public static MaplePacket MegaphoneHeart(String text, byte channel, byte ear) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
-        p.Encode1(OpsBroadcastMsg.BM_HEARTSPEAKER.get());
-        p.EncodeStr(text);
-        p.Encode1((byte) (channel - 1));
-        p.Encode1(ear);
-        return p.get();
-    }
-
-    // アイテム拡声器
-    public static MaplePacket MegaphoneItem(String text, byte channel, byte ear, byte showitem, IItem item) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
-        p.Encode1(OpsBroadcastMsg.BM_ITEMSPEAKER.get());
-        p.EncodeStr(text);
-        p.Encode1((byte) (channel - 1));
-        p.Encode1(ear);
-        p.Encode1(showitem);
-        if (showitem != 0) {
-            p.EncodeBuffer(GW_ItemSlotBase.Encode(item));
-        }
-        return p.get();
-    }
-
-    // 三連拡声器
-    public static MaplePacket MegaphoneTriple(List<String> text, byte channel, byte ear) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
-        p.Encode1(OpsBroadcastMsg.MEGAPHONE_TRIPLE.get());
-        // 1行目
-        p.EncodeStr(text.get(0));
-        p.Encode1((byte) text.size());
-        for (int i = 1; i < text.size(); i++) {
-            p.EncodeStr(text.get(i));
-        }
-        p.Encode1((byte) (channel - 1));
-        p.Encode1(ear);
-        return p.get();
-    }
-
-    // 拡声器
-    public static MaplePacket Megaphone(String text, byte channel, byte ear) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
-        p.Encode1(OpsBroadcastMsg.BM_SPEAKERWORLD.get());
-        p.EncodeStr(text);
-        p.Encode1((byte) (channel - 1));
-        p.Encode1(ear);
-        return p.get();
     }
 
     public static final MaplePacket GainEXP_Monster(final int gain, final boolean white, final int partyinc, final int Class_Bonus_EXP, final int Equipment_Bonus_EXP, final int Premium_Bonus_EXP) {

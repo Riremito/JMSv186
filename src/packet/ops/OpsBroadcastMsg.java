@@ -18,48 +18,72 @@
  */
 package packet.ops;
 
+import config.Region;
+import config.Version;
+
 /**
  *
  * @author Riremito
  */
 public enum OpsBroadcastMsg {
+    BM_ALL,
+    BM_CLONE,
+    BM_MAP,
     // 青文字, [告知事項]
-    BM_NOTICE((byte) 0x00),
+    BM_NOTICE(0),
     // ダイアログ
-    BM_ALERT((byte) 0x01),
+    BM_ALERT(1),
     // メガホン
-    BM_SPEAKERCHANNEL((byte) 0x02),
+    BM_SPEAKERCHANNEL(2),
     // 拡声器
-    BM_SPEAKERWORLD((byte) 0x03),
+    BM_SPEAKERWORLD(3),
     // 画面上部
-    BM_SLIDE((byte) 0x04),
+    BM_SLIDE(4),
     // ピンク文字
-    BM_EVENT((byte) 0x05),
+    BM_EVENT(5),
     // 青文字
-    BM_NOTICEWITHOUTPREFIX((byte) 0x06),
+    BM_NOTICEWITHOUTPREFIX(6),
     // 用途不明, 0x00B93F3F[0x07] = 00B93E27
-    BM_UTILDLGEX((byte) 0x07),
+    BM_UTILDLGEX(7),
     // アイテム拡声器
-    BM_ITEMSPEAKER((byte) 0x08),
+    BM_ITEMSPEAKER(8),
     // ワールド拡声器, 未実装
-    BM_ARTSPEAKERWORLD((byte) 0x09),
+    BM_ARTSPEAKERWORLD(9),
     // 三連拡声器
-    MEGAPHONE_TRIPLE((byte) 0x0A),
+    MEGAPHONE_TRIPLE(10),
     // 用途不明, 0x00B93F3F[0x0B] = 00B93ECA
-    UNKNOWN_0B((byte) 0x0B),
+    UNKNOWN_0B(11),
     // ハート拡声器
-    BM_HEARTSPEAKER((byte) 0x0C),// v131 -> 0x08
+    BM_HEARTSPEAKER(12),// v131 -> 0x08
     // ドクロ拡声器
-    BM_SKULLSPEAKER((byte) 0x0D), // v131 -> 0x09
+    BM_SKULLSPEAKER(13), // v131 -> 0x09
     // ガシャポン
-    BM_GACHAPONANNOUNCE((byte) 0x0E),
+    BM_GACHAPONANNOUNCE(14),
     // 青文字, 名前:アイテム名(xxxx個))
-    UNKNOWN_0F((byte) 0x0F),
+    UNKNOWN_0F(15),
     // 体験用アバター獲得
-    BM_CASHSHOPAD((byte) 0x10),
+    BM_CASHSHOPAD(16),
     // 青文字, アイテム表示
-    UNKNOWN_11((byte) 0x11),
-    UNKNOWN((byte) -1);
+    UNKNOWN_11(17),
+    UNKNOWN(-1);
+
+    private int value;
+
+    OpsBroadcastMsg(int v) {
+        value = v;
+    }
+
+    OpsBroadcastMsg() {
+        value = -1;
+    }
+
+    public int get() {
+        return value;
+    }
+
+    public void set(int v) {
+        value = v;
+    }
 
     public static OpsBroadcastMsg find(byte b) {
         for (final OpsBroadcastMsg o : OpsBroadcastMsg.values()) {
@@ -71,18 +95,10 @@ public enum OpsBroadcastMsg {
         return UNKNOWN;
     }
 
-    private byte value;
-
-    OpsBroadcastMsg(byte b) {
-        value = b;
-    }
-
-    OpsBroadcastMsg() {
-        value = -1;
-    }
-
-    public byte get() {
-        return value;
+    public static void init() {
+        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+            // test
+        }
     }
 
 }

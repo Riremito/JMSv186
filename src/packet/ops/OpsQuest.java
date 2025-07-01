@@ -47,16 +47,6 @@ public enum OpsQuest {
     QuestRes_Act_Reset_QuestTimer,
     UNKNOWN(-1);
 
-    public static OpsQuest find(int v) {
-        for (final OpsQuest o : OpsQuest.values()) {
-            if (o.get() == v) {
-                return o;
-            }
-        }
-
-        return UNKNOWN;
-    }
-
     private int value;
 
     OpsQuest(int v) {
@@ -73,6 +63,16 @@ public enum OpsQuest {
 
     public void set(int v) {
         this.value = v;
+    }
+
+    public static OpsQuest find(int v) {
+        for (final OpsQuest o : OpsQuest.values()) {
+            if (o.get() == v) {
+                return o;
+            }
+        }
+
+        return UNKNOWN;
     }
 
     public static void init() {

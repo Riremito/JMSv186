@@ -18,6 +18,7 @@
  */
 package packet;
 
+import packet.ops.OpsBroadcastMsg;
 import packet.ops.OpsChangeStat;
 import packet.ops.OpsMessage;
 import packet.ops.OpsNewCharacter;
@@ -46,6 +47,7 @@ public class PacketFlag {
         OpsScriptMan.init();
         OpsUserEffect.init();
         OpsQuest.init();
+        OpsBroadcastMsg.init();
     }
 
 }
