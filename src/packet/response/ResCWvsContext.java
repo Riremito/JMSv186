@@ -419,6 +419,20 @@ public class ResCWvsContext {
         return sp.get();
     }
 
+    public static MaplePacket finishedGather(byte type) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GatherItemResult);
+        sp.Encode1(0); // unused
+        sp.Encode1(type);
+        return sp.get();
+    }
+
+    public static MaplePacket finishedSort(byte type) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SortItemResult);
+        sp.Encode1(0); // unused
+        sp.Encode1(type);
+        return sp.get();
+    }
+
     public static final MaplePacket CharacterInfo(MapleCharacter player, boolean isSelf) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CharacterInfo);
         boolean pet_summoned = false;
@@ -1913,22 +1927,6 @@ public class ResCWvsContext {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_SetPassenserRequest.get());
         mplew.writeInt(chrid);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket finishedSort(int type) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SortItemResult.get());
-        mplew.write(1);
-        mplew.write(type);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket finishedGather(int type) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_GatherItemResult.get());
-        mplew.write(1);
-        mplew.write(type);
         return mplew.getPacket();
     }
 

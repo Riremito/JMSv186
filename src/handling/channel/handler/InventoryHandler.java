@@ -81,15 +81,13 @@ import tools.data.input.SeekableLittleEndianAccessor;
 
 public class InventoryHandler {
 
-    public static final void ItemMove(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static final void ItemMove(MapleClient c, byte slot_type, short slot_from, short slot_to, short quantity) {
         if (c.getPlayer().getPlayerShop() != null || c.getPlayer().getConversation() > 0 || c.getPlayer().getTrade() != null) { //hack
             return;
         }
-        c.getPlayer().updateTick(slea.readInt());
-        final MapleInventoryType type = MapleInventoryType.getByType(slea.readByte()); //04
-        final short src = slea.readShort();                                            //01 00
-        final short dst = slea.readShort();                                            //00 00
-        final short quantity = slea.readShort();                                       //53 01
+        final MapleInventoryType type = MapleInventoryType.getByType(slot_type);
+        final short src = slot_from;
+        final short dst = slot_to;
 
         if (dst != 0) {
             c.getPlayer().Info("ItemMove = " + src + " -> " + dst + " (" + quantity + ")");
@@ -106,10 +104,8 @@ public class InventoryHandler {
         }
     }
 
-    public static final void ItemSort(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        c.getPlayer().updateTick(slea.readInt());
-
-        final MapleInventoryType pInvType = MapleInventoryType.getByType(slea.readByte());
+    public static final void ItemSort(MapleClient c, byte slot_type) {
+        final MapleInventoryType pInvType = MapleInventoryType.getByType(slot_type);
         if (pInvType == MapleInventoryType.UNDEFINED) {
             c.getSession().write(ResWrapper.enableActions());
             return;
@@ -140,13 +136,8 @@ public class InventoryHandler {
         c.getSession().write(ResWrapper.enableActions());
     }
 
-    public static final void ItemGather(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        // [41 00] [E5 1D 55 00] [01]
-        // [32 00] [01] [01] // Sent after
-
-        c.getPlayer().updateTick(slea.readInt());
-        final byte mode = slea.readByte();
-        final MapleInventoryType invType = MapleInventoryType.getByType(mode);
+    public static final void ItemGather(MapleClient c, byte slot_type) {
+        final MapleInventoryType invType = MapleInventoryType.getByType(slot_type);
         MapleInventory Inv = c.getPlayer().getInventory(invType);
 
         final List<IItem> itemMap = new LinkedList<IItem>();
@@ -161,7 +152,7 @@ public class InventoryHandler {
         for (IItem item : sortedItems) {
             MapleInventoryManipulator.addFromDrop(c, item, false);
         }
-        c.getSession().write(ResCWvsContext.finishedGather(mode));
+        c.getSession().write(ResCWvsContext.finishedGather(slot_type));
         c.getSession().write(ResWrapper.enableActions());
         itemMap.clear();
         sortedItems.clear();

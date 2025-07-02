@@ -346,6 +346,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_ShopScannerRequest:
             case CP_ShopLinkRequest:
             case CP_AdminShopRequest:
+            case CP_UserSortItemRequest:
+            case CP_UserGatherItemRequest:
+            case CP_UserChangeSlotPositionRequest:
             case CP_UserStatChangeItemUseRequest:
             case CP_UserStatChangeItemCancelRequest:
             case CP_UserMobSummonItemUseRequest:
@@ -465,18 +468,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_UserItemMakeRequest: {
                 ItemMakerHandler.ItemMaker(p, c);
-                return true;
-            }
-            case CP_UserSortItemRequest: {
-                InventoryHandler.ItemSort(p, c);
-                return true;
-            }
-            case CP_UserGatherItemRequest: {
-                InventoryHandler.ItemGather(p, c);
-                return true;
-            }
-            case CP_UserChangeSlotPositionRequest: {
-                InventoryHandler.ItemMove(p, c);
                 return true;
             }
             case USE_TREASUER_CHEST: {

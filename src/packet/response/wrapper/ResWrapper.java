@@ -133,6 +133,20 @@ public class ResWrapper {
         return ResCWvsContext.InventoryOperation(true, io);
     }
 
+    public static MaplePacket moveAndMergeInventoryItem(MapleInventoryType type, IItem item, short slot_remove) {
+        InvOp io = new InvOp();
+        io.remove(type, slot_remove);
+        io.update(type, item);
+        return ResCWvsContext.InventoryOperation(true, io);
+    }
+
+    public static MaplePacket moveAndMergeWithRestInventoryItem(MapleInventoryType type, IItem item_max, IItem item_rest) {
+        InvOp io = new InvOp();
+        io.update(type, item_rest);
+        io.update(type, item_max);
+        return ResCWvsContext.InventoryOperation(true, io);
+    }
+
     public static MaplePacket updateSpecialItemUse(IItem item, byte invType) {
         return updateSpecialItemUse(item, invType, item.getPosition());
     }
@@ -156,33 +170,6 @@ public class ResWrapper {
         if (item.getPosition() < 0) {
             mplew.write(2); //?
         }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket moveAndMergeWithRestInventoryItem(MapleInventoryType type, short src, short dst, short srcQ, short dstQ) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.get());
-        mplew.write(HexTool.getByteArrayFromHexString("01 02 01"));
-        mplew.write(type.getType());
-        mplew.writeShort(src);
-        mplew.writeShort(srcQ);
-        mplew.write(HexTool.getByteArrayFromHexString("01"));
-        mplew.write(type.getType());
-        mplew.writeShort(dst);
-        mplew.writeShort(dstQ);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket moveAndMergeInventoryItem(MapleInventoryType type, short src, short dst, short total) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.get());
-        mplew.write(HexTool.getByteArrayFromHexString("01 02 03"));
-        mplew.write(type.getType());
-        mplew.writeShort(src);
-        mplew.write(1); // merge mode?
-        mplew.write(type.getType());
-        mplew.writeShort(dst);
-        mplew.writeShort(total);
         return mplew.getPacket();
     }
 

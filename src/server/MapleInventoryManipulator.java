@@ -529,9 +529,11 @@ public class MapleInventoryManipulator {
                 && !GameConstants.isRechargable(source.getItemId())
                 && !type.equals(MapleInventoryType.CASH)) {
             if ((olddstQ + oldsrcQ) > slotMax) {
-                c.getSession().write(ResWrapper.moveAndMergeWithRestInventoryItem(type, src, dst, (short) ((olddstQ + oldsrcQ) - slotMax), slotMax));
+                // アイテム個数がMAXを超過する場合は古い移動前のスロットも維持
+                c.getSession().write(ResWrapper.moveAndMergeWithRestInventoryItem(type, initialTarget, source));
             } else {
-                c.getSession().write(ResWrapper.moveAndMergeInventoryItem(type, src, dst, ((Item) c.getPlayer().getInventory(type).getItem(dst)).getQuantity()));
+                // アイテム個数がMAXを超過しない場合は古い移動前のスロットを削除
+                c.getSession().write(ResWrapper.moveAndMergeInventoryItem(type, initialTarget, src));
             }
         } else {
             c.getSession().write(ResWrapper.moveInventoryItem(type, src, dst));

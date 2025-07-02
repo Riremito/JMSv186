@@ -177,6 +177,33 @@ public class ReqCUser {
             case CP_AdminShopRequest: {
                 return true;
             }
+            case CP_UserSortItemRequest: {
+                int timestamp = cp.Decode4();
+                byte slot_type = cp.Decode1();
+
+                chr.updateTick(timestamp);
+                InventoryHandler.ItemSort(c, slot_type);
+                return true;
+            }
+            case CP_UserGatherItemRequest: {
+                int timestamp = cp.Decode4();
+                byte slot_type = cp.Decode1();
+
+                chr.updateTick(timestamp);
+                InventoryHandler.ItemGather(c, slot_type);
+                return true;
+            }
+            case CP_UserChangeSlotPositionRequest: {
+                int timestamp = cp.Decode4();
+                byte slot_type = cp.Decode1();
+                short slot_from = cp.Decode2();
+                short slot_to = cp.Decode2();
+                short quantity = cp.Decode2();
+
+                chr.updateTick(timestamp);
+                InventoryHandler.ItemMove(c, slot_type, slot_from, slot_to, quantity);
+                return true;
+            }
             case CP_UserStatChangeItemUseRequest: {
                 ItemRequest.OnPacket(header, cp, c);
                 return true;
