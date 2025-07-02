@@ -351,6 +351,10 @@ public class ReqCUser {
                 // サーバー側で特にみる必要もないが、マップ内ポータルを利用した時にサーバー側でスクリプトを実行したい場合は必要になる
                 return true;
             }
+            case CP_UserQuestRequest: {
+                NPCHandler.QuestAction(cp, c);
+                return true;
+            }
             case CP_UserCalcDamageStatSetRequest: {
                 // @006A
                 // バフを獲得するアイテムを使用した際に送信されている

@@ -28,7 +28,9 @@ import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MapleMount;
 import client.inventory.MaplePet;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import debug.Debug;
 import handling.MaplePacket;
@@ -372,6 +374,9 @@ public class ResCWvsContext {
             // showMesoGain
             case MS_IncMoneyMessage: {
                 sp.Encode4(ma.Inc_Meso);
+                if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+                    sp.Encode4(-1); // 別の数値だとメッセージ非表示
+                }
                 break;
             }
             // getGPMsg

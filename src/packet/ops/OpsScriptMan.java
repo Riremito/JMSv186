@@ -74,6 +74,9 @@ public enum OpsScriptMan {
 
     public static void init() {
         if (ServerConfig.JMS302orLater()) {
+            SM_ASKACCEPT.set(14);
+            SM_ASKBOXTEXT.set(15);
+            SM_ASKSLIDEMENU.set(16);
             return;
         }
         if (ServerConfig.IsPostBB()) {

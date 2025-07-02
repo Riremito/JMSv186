@@ -28,10 +28,10 @@ import client.MapleCharacter;
 import constants.GameConstants;
 import client.MapleQuestStatus;
 import client.RockPaperScissors;
-import config.ServerConfig;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import packet.ClientPacket;
 import packet.ops.OpsScriptMan;
 import packet.ops.OpsUserEffect;
 import packet.response.ResCRPSGameDlg;
@@ -71,34 +71,36 @@ public class NPCHandler {
         }
     }
 
-    public static final void QuestAction(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        final byte action = slea.readByte();
-        int quest = slea.readShort();
+    public static final void QuestAction(ClientPacket cp, MapleClient c) {
+        MapleCharacter chr = c.getPlayer();
+
+        byte action = cp.Decode1();
+        int quest = cp.Decode2();
+
+        // ?_?
         if (quest < 0) { //questid 50000 and above, WILL cast to negative, this was tested.
             quest += 65536; //probably not the best fix, but whatever
         }
-        if (chr == null) {
-            return;
-        }
+
         final MapleQuest q = MapleQuest.getInstance(quest);
         switch (action) {
             case 0: { // Restore lost item
-                chr.updateTick(slea.readInt());
-                final int itemid = slea.readInt();
+                chr.updateTick(cp.Decode4());
+                final int itemid = cp.Decode4();
                 MapleQuest.getInstance(quest).RestoreLostItem(chr, itemid);
                 break;
             }
             case 1: { // Start Quest
-                final int npc = slea.readInt();
+                final int npc = cp.Decode4();
                 q.start(chr, npc);
                 break;
             }
             case 2: { // Complete Quest
-                final int npc = slea.readInt();
-                chr.updateTick(slea.readInt());
-
-                if (slea.available() >= 4) {
-                    q.complete(chr, npc, slea.readInt());
+                final int npc = cp.Decode4();
+                int selection = cp.Decode4();
+                // ?_?
+                if (selection != -1) {
+                    q.complete(chr, npc, selection);
                 } else {
                     q.complete(chr, npc);
                 }
@@ -121,12 +123,14 @@ public class NPCHandler {
                 break;
             }
             case 4: { // Scripted Start Quest
-                final int npc = slea.readInt();
+                final int npc = cp.Decode4();
+                short pos_x = cp.Decode2();
+                short pos_y = cp.Decode2();
                 NPCScriptManager.getInstance().startQuest(c, npc, quest);
                 break;
             }
             case 5: { // Scripted End Quest
-                final int npc = slea.readInt();
+                final int npc = cp.Decode4();
                 NPCScriptManager.getInstance().endQuest(c, npc, quest, false);
                 c.getSession().write(ResCUserLocal.showSpecialEffect(OpsUserEffect.UserEffect_QuestComplete.get())); // Quest completion
                 chr.getMap().broadcastMessage(chr, ResCUserRemote.showSpecialEffect(chr.getId(), OpsUserEffect.UserEffect_QuestComplete.get()), false);

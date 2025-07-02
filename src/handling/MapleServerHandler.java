@@ -379,6 +379,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserTemporaryStatUpdateRequest:
             case CP_UserPortalScriptRequest:
             case CP_UserPortalTeleportRequest:
+            case CP_UserQuestRequest:
             case CP_UserCalcDamageStatSetRequest:
             case CP_UserMacroSysDataModified:
             case CP_UserUseGachaponBoxRequest:
@@ -473,11 +474,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case USE_TREASUER_CHEST: {
                 // c
                 InventoryHandler.UseTreasureChest(p, c, c.getPlayer());
-                return true;
-            }
-            case CP_UserQuestRequest: {
-                // c
-                NPCHandler.QuestAction(p, c, c.getPlayer());
                 return true;
             }
             case CP_GroupMessage: {
