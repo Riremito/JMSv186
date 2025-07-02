@@ -497,7 +497,7 @@ public class InventoryHandler {
             c.getSession().write(ResCUserLocal.getShowItemGain(reward, (short) amount, true));
 
             if (GameConstants.gachaponRareItem(item.getItemId()) > 0) {
-                World.Broadcast.broadcastMessage(ResCWvsContext.getGachaponMega("[" + box + " Chest] " + c.getPlayer().getName(), " : Lucky winner of Gachapon!", item, (byte) 2).getBytes());
+                World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgGachaponAnnounce(c.getPlayer(), item).getBytes());
             }
         } else {
             chr.dropMessage(5, "Please check your item inventory and see if you have a Master Key, or if the inventory is full.");

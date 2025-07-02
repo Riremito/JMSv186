@@ -97,7 +97,13 @@ public enum OpsBroadcastMsg {
 
     public static void init() {
         if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
-            // test
+            // 9 world (test)
+            BM_HEARTSPEAKER.set(15);
+            BM_SKULLSPEAKER.set(16);
+            BM_GACHAPONANNOUNCE.set(17);
+            BM_CASHSHOPAD.set(19);
+            // 21 cake
+            // 22 yello crash
         }
     }
 

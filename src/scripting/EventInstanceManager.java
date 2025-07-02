@@ -512,12 +512,13 @@ public class EventInstanceManager {
         }
     }
 
+    // from script
     public final void broadcastPlayerMsg(final int type, final String msg) {
         if (disposed) {
             return;
         }
         for (MapleCharacter chr : getPlayers()) {
-            chr.getClient().getSession().write(ResWrapper.serverNotice(type, msg));
+            chr.SendPacket(ResWrapper.BroadCastMsg_SN(type, msg));
         }
     }
 

@@ -239,7 +239,7 @@ public class MapleGuildAlliance implements java.io.Serializable {
     public void setNotice(String newNotice) {
         this.notice = newNotice;
         broadcast(ResCWvsContext.getAllianceUpdate(this));
-        broadcast(ResWrapper.serverNotice(5, "Alliance Notice : " + newNotice));
+        broadcast(ResWrapper.BroadCastMsgEvent("Alliance Notice : " + newNotice));
         saveToDb();
     }
 
@@ -344,7 +344,7 @@ public class MapleGuildAlliance implements java.io.Serializable {
         guilds[g] = guilds[0];
         guilds[0] = oldGuild;
         if (leaderName != null) {
-            broadcast(ResWrapper.serverNotice(5, leaderName + " has become the leader of the alliance."));
+            broadcast(ResWrapper.BroadCastMsgEvent(leaderName + " has become the leader of the alliance."));
         }
         broadcast(ResCWvsContext.changeAllianceLeader(allianceid, leaderid, c));
         broadcast(ResCWvsContext.updateAllianceLeader(allianceid, leaderid, c));

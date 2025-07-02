@@ -128,7 +128,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void WorldMessage(String text) {
-        World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, text).getBytes());
+        World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice(text).getBytes());
     }
 
     public void BroadcastPacket(byte[] packet) {
@@ -146,7 +146,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void Broadcast(String text) {
-        World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, text).getBytes());
+        World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice(text).getBytes());
     }
 
     public int getQuest() {
@@ -510,7 +510,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             }
             final byte rareness = GameConstants.gachaponRareItem(item.getItemId());
             if (rareness > 0) {
-                World.Broadcast.broadcastMessage(ResCWvsContext.getGachaponMega("[" + msg + "] " + c.getPlayer().getName(), " : Lucky winner of Gachapon!", item, rareness).getBytes());
+                World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgGachaponAnnounce(c.getPlayer(), item).getBytes());
             }
             return item.getItemId();
         } catch (Exception e) {
@@ -702,7 +702,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             final MapleMap map = c.getPlayer().getMap();
 
             map.broadcastMessage(ResCField.getClock(minutes * 60));
-            map.broadcastMessage(ResWrapper.serverNotice(6, c.getPlayer().getName() + startText));
+            map.broadcastMessage(ResWrapper.BroadCastMsgNotice(c.getPlayer().getName() + startText));
         } else {
             squad.clear();
         }
@@ -807,7 +807,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void increaseGuildCapacity() {
         if (c.getPlayer().getMeso() < 5000000) {
-            c.getSession().write(ResWrapper.serverNotice(1, "You do not have enough mesos."));
+            c.getSession().write(ResWrapper.BroadCastMsgAlert("You do not have enough mesos."));
             return;
         }
         final int gid = c.getPlayer().getGuildId();

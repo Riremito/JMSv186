@@ -49,6 +49,7 @@ import server.life.MapleMonster;
 import server.life.MapleLifeFactory;
 import server.quest.MapleQuest;
 import client.inventory.MapleInventoryIdentifier;
+import debug.Debug;
 import handling.world.World;
 import packet.ops.OpsFieldEffect;
 import packet.ops.OpsFieldEffectArg;
@@ -420,7 +421,7 @@ public abstract class AbstractPlayerInteraction {
     public final void Gashapon(final int id, final short quantity) {
         IItem item_info = gainItem(id, quantity, true, 0, -1, "");
         if (item_info != null) {
-            World.Broadcast.broadcastMessage(ResCWvsContext.getGachaponMega(c.getPlayer().getName(), "をガシャポンで手に入れました。おめでとうございます！", item_info, (byte) 1).getBytes());
+            World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgGachaponAnnounce(c.getPlayer(), item_info).getBytes());
         }
     }
 
@@ -482,34 +483,38 @@ public abstract class AbstractPlayerInteraction {
         getPlayer().getMap().broadcastMessage(ResWrapper.musicChange(songName));
     }
 
+    // npc/9201006.js
     public final void worldMessage(final int type, final String message) {
-        World.Broadcast.broadcastMessage(ResWrapper.serverNotice(type, message).getBytes());
+        World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgEvent(message).getBytes());
     }
 
     // default playerMessage and mapMessage to use type 5
     public final void playerMessage(final String message) {
-        playerMessage(5, message);
+        c.SendPacket(ResWrapper.BroadCastMsgEvent(message));
     }
 
     public final void mapMessage(final String message) {
-        mapMessage(5, message);
+        c.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent(message));
     }
 
     public final void guildMessage(final String message) {
-        guildMessage(5, message);
+        World.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.BroadCastMsgEvent(message));
     }
 
     public final void playerMessage(final int type, final String message) {
-        c.getSession().write(ResWrapper.serverNotice(type, message));
+        Debug.DebugLog("playerMessage is called.");
+        c.SendPacket(ResWrapper.BroadCastMsg_SN(type, message));
     }
 
     public final void mapMessage(final int type, final String message) {
-        c.getPlayer().getMap().broadcastMessage(ResWrapper.serverNotice(type, message));
+        Debug.DebugLog("mapMessage is called.");
+        c.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsg_SN(type, message));
     }
 
     public final void guildMessage(final int type, final String message) {
+        Debug.DebugLog("guildMessage is called.");
         if (getPlayer().getGuildId() > 0) {
-            World.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.serverNotice(type, message));
+            World.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.BroadCastMsg_SN(type, message));
         }
     }
 

@@ -346,7 +346,7 @@ public class MapScriptMethods {
                 break;
             }
             case boss_Ravana: { //event handles this so nothing for now until i find out something to do with it
-                c.getPlayer().getMap().broadcastMessage(ResWrapper.serverNotice(5, "Ravana has appeared!"));
+                c.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent("Ravana has appeared!"));
                 break;
             }
             case killing_BonusSetting: { //spawns monsters according to mapid

@@ -76,7 +76,7 @@ public class MapleOla extends MapleEvent {
             }
         }, this.time);
 
-        broadcast(ResWrapper.serverNotice(0, "The portal has now opened. Press the up arrow key at the portal to enter."));
+        broadcast(ResWrapper.BroadCastMsgNoticeOld("The portal has now opened. Press the up arrow key at the portal to enter."));
     }
 
     public boolean isTimerStarted() {

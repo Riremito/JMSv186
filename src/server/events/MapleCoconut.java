@@ -133,7 +133,7 @@ public class MapleCoconut extends MapleEvent {
     public void startEvent() {
         reset();
         setHittable(true);
-        getMap(0).broadcastMessage(ResWrapper.serverNotice(5, "The Coconut Event has started!!"));
+        getMap(0).broadcastMessage(ResWrapper.BroadCastMsgEvent("The Coconut Event has started!!"));
         getMap(0).broadcastMessage(ResCField_Coconut.hitCoconut(true, 0, 0));
         getMap(0).broadcastMessage(ResCField.getClock(360));
 

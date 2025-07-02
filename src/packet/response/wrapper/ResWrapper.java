@@ -27,6 +27,8 @@ import config.ServerConfig;
 import constants.GameConstants;
 import handling.MaplePacket;
 import packet.ServerPacket;
+import packet.ops.OpsBroadcastMsg;
+import packet.ops.OpsBroadcastMsgArg;
 import packet.ops.OpsDropPickUpMessage;
 import packet.ops.OpsFieldEffect;
 import packet.ops.OpsFieldEffectArg;
@@ -330,6 +332,7 @@ public class ResWrapper {
         ma.Inc_Tama = inc_tama;
         return ResCWvsContext.Message(ma);
     }
+
     // CWvsContext::OnOpenFullClientDownloadLink
     // CWvsContext::OnMemoResult
     // CWvsContext::OnMapTransferResult
@@ -357,6 +360,75 @@ public class ResWrapper {
     // CWvsContext::OnTownPortal
     // CWvsContext::OnOpenGate
     // CWvsContext::OnBroadcastMsg
+    public static MaplePacket BroadCastMsgNoticeOld(String message) {
+        OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+        bma.bm = OpsBroadcastMsg.BM_NOTICE; // 告知事項
+        bma.message = message;
+        return ResCWvsContext.BroadcastMsg(bma);
+    }
+
+    public static MaplePacket BroadCastMsgAlert(String message) {
+        OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+        bma.bm = OpsBroadcastMsg.BM_ALERT; // ダイアログ
+        bma.message = message;
+        return ResCWvsContext.BroadcastMsg(bma);
+    }
+
+    public static MaplePacket BroadCastMsgSlide(String message) {
+        OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+        bma.bm = OpsBroadcastMsg.BM_SLIDE; // 上部メッセージ
+        bma.message = message;
+        return ResCWvsContext.BroadcastMsg(bma);
+    }
+
+    public static MaplePacket BroadCastMsgEvent(String message) {
+        OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+        bma.bm = OpsBroadcastMsg.BM_EVENT; // ピンク文字
+        bma.message = message;
+        return ResCWvsContext.BroadcastMsg(bma);
+    }
+
+    public static MaplePacket BroadCastMsg_SN(int type, String message) {
+        OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+        bma.bm = OpsBroadcastMsg.find((byte) type); // 古いscript (serverNotice)用
+        bma.message = message;
+        return ResCWvsContext.BroadcastMsg(bma);
+    }
+
+    public static MaplePacket BroadCastMsgNotice(String message) {
+        OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+        bma.bm = OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX; // 青文字
+        bma.message = message;
+        return ResCWvsContext.BroadcastMsg(bma);
+    }
+
+    public static MaplePacket BroadCastMsgNoticeItem(String message, int item_id) {
+        OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+        bma.bm = OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX; // 青文字
+        bma.message = message;
+        bma.item_id = item_id; // アイテム表示
+        return ResCWvsContext.BroadcastMsg(bma);
+    }
+
+    public static MaplePacket BroadCastMsgGachaponAnnounce(MapleCharacter chr, IItem item) {
+        OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+        bma.bm = OpsBroadcastMsg.BM_GACHAPONANNOUNCE; // ガシャポン, アバターランダムボックス
+        bma.chr = chr;
+        bma.message = "をガシャポンで手に入れました。おめでとうございます！";
+        bma.item = item; // アイテム表示
+        bma.gashapon_type = 0; // -1 = アバターランダムボックス
+        return ResCWvsContext.BroadcastMsg(bma);
+    }
+
+    public static MaplePacket BroadCastMsgRandomBoxAnnounce(MapleCharacter chr, IItem item) {
+        OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+        bma.bm = OpsBroadcastMsg.BM_GACHAPONANNOUNCE;
+        bma.chr = chr;
+        bma.message = "をランダムボックスで手に入れました。おめでとうございます！";
+        bma.item = item;
+        bma.gashapon_type = -1;
+        return ResCWvsContext.BroadcastMsg(bma);
+    }
     // CWvsContext::OnIncubatorResult
     // CWvsContext::OnShopScannerResult
     // CWvsContext::OnShopLinkResult
@@ -605,22 +677,6 @@ public class ResWrapper {
     //update_quest_info - 08 51 1E 00 00 00 00 00 00 00 00
     public static final MaplePacket sendPyramidEnergy(final String type, final String amount) {
         return ResCWvsContext.sendString(1, type, amount);
-    }
-
-    public static MaplePacket serverMessage(String message) {
-        return ResCWvsContext.serverMessage(4, 0, message, false);
-    }
-
-    public static MaplePacket serverNotice(int type, String message) {
-        return ResCWvsContext.serverMessage(type, 0, message, false);
-    }
-
-    public static MaplePacket serverNotice(int type, int channel, String message) {
-        return ResCWvsContext.serverMessage(type, channel, message, false);
-    }
-
-    public static MaplePacket serverNotice(int type, int channel, String message, boolean smegaEar) {
-        return ResCWvsContext.serverMessage(type, channel, message, smegaEar);
     }
 
 }

@@ -68,7 +68,7 @@ public class ChatHandler {
                     chr.finishAchievement(11);
                 }
             } else {
-                c.getSession().write(ResWrapper.serverNotice(6, "You have been muted and are therefore unable to talk."));
+                c.getSession().write(ResWrapper.BroadCastMsgNotice("You have been muted and are therefore unable to talk."));
             }
         }
     }
@@ -83,7 +83,7 @@ public class ChatHandler {
         }
         final String chattext = slea.readMapleAsciiString();
         if (chr == null || !chr.getCanTalk()) {
-            c.getSession().write(ResWrapper.serverNotice(6, "You have been muted and are therefore unable to talk."));
+            c.getSession().write(ResWrapper.BroadCastMsgNotice("You have been muted and are therefore unable to talk."));
             return;
         }
         if (CommandProcessor.processCommand(c, chattext, CommandType.NORMAL)) {
@@ -240,7 +240,7 @@ public class ChatHandler {
             }
             case 6: { // Whisper
                 if (!c.getPlayer().getCanTalk()) {
-                    c.getSession().write(ResWrapper.serverNotice(6, "You have been muted and are therefore unable to talk."));
+                    c.getSession().write(ResWrapper.BroadCastMsgNotice("You have been muted and are therefore unable to talk."));
                     return;
                 }
                 //c.getPlayer().getCheatTracker().checkMsg();

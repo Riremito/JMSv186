@@ -570,7 +570,7 @@ public final class MapleMap {
         SpeedRunType type = SpeedRunType.NULL;
         final MapleSquad sqd = getSquadByMap();
         if (mobid == 8810018) { // Horntail
-            World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, "大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！").getBytes());
+            World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！").getBytes());
             if (mapid == 240060200) {
                 for (MapleCharacter c : getCharactersThreadsafe()) {
                     c.finishAchievement(16);
@@ -584,7 +584,7 @@ public final class MapleMap {
                 }
             }
         } else if (mobid == 8810122 && mapid == 240060201) { // Horntail
-            World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, "To the crew that have finally conquered Chaos Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!").getBytes());
+            World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice("To the crew that have finally conquered Chaos Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!").getBytes());
             for (MapleCharacter c : getCharactersThreadsafe()) {
                 c.finishAchievement(24);
             }
@@ -660,7 +660,7 @@ public final class MapleMap {
             }
             //INSERT HERE: 2095_tokyo
         } else if (mobid == 8820001) {
-            World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, "不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！").getBytes());
+            World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice("不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！").getBytes());
             if (mapid == 270050100) {
                 for (MapleCharacter c : getCharactersThreadsafe()) {
                     c.finishAchievement(17);
@@ -744,7 +744,7 @@ public final class MapleMap {
             if (speedRunStart > 0 && speedRunLeader.length() > 0) {
                 long endTime = System.currentTimeMillis();
                 String time = StringUtil.getReadableMillis(speedRunStart, endTime);
-                broadcastMessage(ResWrapper.serverNotice(5, speedRunLeader + "'s squad has taken " + time + " to defeat " + type + "!"));
+                broadcastMessage(ResWrapper.BroadCastMsgEvent(speedRunLeader + "'s squad has taken " + time + " to defeat " + type + "!"));
                 getRankAndAdd(speedRunLeader, time, type, (endTime - speedRunStart), (sqd == null ? null : sqd.getMembers()));
                 endSpeedRun();
             }
@@ -1781,7 +1781,7 @@ public final class MapleMap {
             broadcastMessage(chr, ResCUserRemote.spawnPlayerMapobject(chr), false);
             if (chr.isGM() && speedRunStart > 0) {
                 endSpeedRun();
-                broadcastMessage(ResWrapper.serverNotice(5, "The speed run has ended."));
+                broadcastMessage(ResWrapper.BroadCastMsgEvent("The speed run has ended."));
             }
         }
         if (!chr.isClone()) {
@@ -3090,7 +3090,7 @@ public final class MapleMap {
         }
         if (speedRunStart > 0 && speedRunLeader.equalsIgnoreCase(chr)) {
             if (size > 0) {
-                broadcastMessage(ResWrapper.serverNotice(5, "The leader is not in the map! Your speedrun has failed"));
+                broadcastMessage(ResWrapper.BroadCastMsgEvent("The leader is not in the map! Your speedrun has failed"));
             }
             endSpeedRun();
         }

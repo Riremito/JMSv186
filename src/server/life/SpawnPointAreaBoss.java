@@ -107,7 +107,7 @@ public class SpawnPointAreaBoss extends Spawns {
         map.spawnMonster(mob, -2);
 
         if (msg != null) {
-            map.broadcastMessage(ResWrapper.serverNotice(6, msg));
+            map.broadcastMessage(ResWrapper.BroadCastMsgNotice(msg));
         }
         return mob;
     }

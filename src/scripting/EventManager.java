@@ -272,20 +272,20 @@ public class EventManager {
             return; //we dont like cleared squads
         }
         //if (!squad.getLeader().isGM()) {
-            if (squad.getMembers().size() < 3) { //less than 3
-                squad.getLeader().dropMessage(5, "The squad has less than 3 people participating.");
+        if (squad.getMembers().size() < 3) { //less than 3
+            squad.getLeader().dropMessage(5, "The squad has less than 3 people participating.");
+            return;
+        }
+        if (name.equals("CWKPQ")) { //so fkin hacky
+            if (squad.getMembers().size() < 10) {
+                squad.getLeader().dropMessage(5, "The squad has less than 10 people participating.");
                 return;
             }
-            if (name.equals("CWKPQ")) { //so fkin hacky
-                if (squad.getMembers().size() < 10) {
-                    squad.getLeader().dropMessage(5, "The squad has less than 10 people participating.");
-                    return;
-                }
-                if (squad.getJobs().size() < 5) {
-                    squad.getLeader().dropMessage(5, "The squad requires members from every type of job.");
-                    return;
-                }
+            if (squad.getJobs().size() < 5) {
+                squad.getLeader().dropMessage(5, "The squad requires members from every type of job.");
+                return;
             }
+        }
         //}
         try {
             EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", squad.getLeaderName()));
@@ -331,13 +331,14 @@ public class EventManager {
         getChannelServer().broadcastPacket(ResCWvsContext.yellowChat(msg));
     }
 
-    public void broadcastServerMsg(final int type, final String msg, final boolean weather) {
+    // event/2xEvent.js
+    public void broadcastServerMsg(final int item_id, final String msg, final boolean weather) {
         if (!weather) {
-            getChannelServer().broadcastPacket(ResWrapper.serverNotice(type, msg));
+            getChannelServer().broadcastPacket(ResWrapper.BroadCastMsgNoticeItem(msg, item_id));
         } else {
             for (MapleMap load : getMapFactory().getAllMaps()) {
                 if (load.getCharactersSize() > 0) {
-                    load.startMapEffect(msg, type);
+                    load.startMapEffect(msg, item_id);
                 }
             }
         }
@@ -367,7 +368,7 @@ public class EventManager {
 
     public void sealEvent() {
         MapleEvent.setEvent(getChannelServer(), true);
-        broadcastServerMsg(0, "Entries for the event are now closed!", false);
+        getChannelServer().broadcastPacket(ResWrapper.BroadCastMsgNoticeOld("Entries for the event are now closed!"));
     }
 
     public void setWorldEvent() {

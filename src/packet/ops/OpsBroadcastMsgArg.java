@@ -32,7 +32,9 @@ public class OpsBroadcastMsgArg {
     public MapleCharacter chr = null;
     public String message = "";
     public byte ear = 0; // 拡声器系統専用
-    public IItem item = null; // アイテム拡声器専用
+    public IItem item = null; // アイテム拡声器, ガシャポン専用
     public boolean multi_line = false; // 3連拡声器専用
     public List<String> messages = null; // 3連拡声器専用
+    public int item_id = 0; // 青文字クリック時にアイテム情報を表示可能
+    public int gashapon_type = 0;
 }

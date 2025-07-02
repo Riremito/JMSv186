@@ -652,7 +652,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public final void resetShammos(MapleClient c) {
         map.killAllMonsters(true);
-        map.broadcastMessage(ResWrapper.serverNotice(5, "A player has moved too far from Shammos. Shammos is going back to the start."));
+        map.broadcastMessage(ResWrapper.BroadCastMsgEvent("A player has moved too far from Shammos. Shammos is going back to the start."));
         for (MapleCharacter chr : map.getCharactersThreadsafe()) {
             chr.changeMap(chr.getMap(), chr.getMap().getPortal(0));
         }

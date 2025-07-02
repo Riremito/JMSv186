@@ -811,7 +811,7 @@ public class AdminCommand {
                 sb.append(c.getPlayer().getName());
                 sb.append("] ");
                 sb.append(StringUtil.joinStringFrom(splitted, 1));
-                World.Broadcast.broadcastMessage(ResWrapper.serverNotice(6, sb.toString()).getBytes());
+                World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice(sb.toString()).getBytes());
             } else {
                 c.getPlayer().dropMessage(6, "Syntax: !say <message>");
                 return 0;
@@ -2330,145 +2330,6 @@ public class AdminCommand {
         }
     }
 
-    /*
-    public static class MakePNPC extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            try {
-                c.getPlayer().dropMessage(6, "Making playerNPC...");
-                MapleCharacter chhr = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
-                if (chhr == null) {
-                    c.getPlayer().dropMessage(6, splitted[1] + " is not online");
-                    return 0;
-                }
-                PlayerNPC npc = new PlayerNPC(chhr, Integer.parseInt(splitted[2]), c.getPlayer().getMap(), c.getPlayer());
-                npc.addToServer();
-                c.getPlayer().dropMessage(6, "Done");
-            } catch (Exception e) {
-                c.getPlayer().dropMessage(6, "NPC failed... : " + e.getMessage());
-                e.printStackTrace();
-            }
-            return 1;
-        }
-    }
-
-    public static class MakeOfflineP extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            try {
-                c.getPlayer().dropMessage(6, "Making playerNPC...");
-                MapleClient cs = new MapleClient(null, null, new MockIOSession());
-                MapleCharacter chhr = MapleCharacter.loadCharFromDB(MapleCharacterUtil.getIdByName(splitted[1]), cs, false);
-                if (chhr == null) {
-                    c.getPlayer().dropMessage(6, splitted[1] + " does not exist");
-                    return 0;
-                }
-                PlayerNPC npc = new PlayerNPC(chhr, Integer.parseInt(splitted[2]), c.getPlayer().getMap(), c.getPlayer());
-                npc.addToServer();
-                c.getPlayer().dropMessage(6, "Done");
-            } catch (Exception e) {
-                c.getPlayer().dropMessage(6, "NPC failed... : " + e.getMessage());
-                e.printStackTrace();
-            }
-            return 1;
-        }
-    }
-
-    public static class DestroyPNPC extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            try {
-                c.getPlayer().dropMessage(6, "Destroying playerNPC...");
-                final MapleNPC npc = c.getPlayer().getMap().getNPCByOid(Integer.parseInt(splitted[1]));
-                if (npc instanceof PlayerNPC) {
-                    ((PlayerNPC) npc).destroy(true);
-                    c.getPlayer().dropMessage(6, "Done");
-                } else {
-                    c.getPlayer().dropMessage(6, "!destroypnpc [objectid]");
-                }
-            } catch (Exception e) {
-                c.getPlayer().dropMessage(6, "NPC failed... : " + e.getMessage());
-                e.printStackTrace();
-            }
-            return 1;
-        }
-    }
-
-    public static class MyNPCPos extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            Point pos = c.getPlayer().getPosition();
-            c.getPlayer().dropMessage(6, "X: " + pos.x + " | Y: " + pos.y + " | RX0: " + (pos.x + 50) + " | RX1: " + (pos.x - 50) + " | FH: " + c.getPlayer().getFH());
-            return 1;
-        }
-    }
-     */
-    public static class Notice extends CommandExecute {
-
-        private static int getNoticeType(String typestring) {
-            if (typestring.equals("n")) {
-                return 0;
-            } else if (typestring.equals("p")) {
-                return 1;
-            } else if (typestring.equals("l")) {
-                return 2;
-            } else if (typestring.equals("nv")) {
-                return 5;
-            } else if (typestring.equals("v")) {
-                return 5;
-            } else if (typestring.equals("b")) {
-                return 6;
-            }
-            return -1;
-        }
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            int joinmod = 1;
-            int range = -1;
-            if (splitted[1].equals("m")) {
-                range = 0;
-            } else if (splitted[1].equals("c")) {
-                range = 1;
-            } else if (splitted[1].equals("w")) {
-                range = 2;
-            }
-
-            int tfrom = 2;
-            if (range == -1) {
-                range = 2;
-                tfrom = 1;
-            }
-            int type = getNoticeType(splitted[tfrom]);
-            if (type == -1) {
-                type = 0;
-                joinmod = 0;
-            }
-            StringBuilder sb = new StringBuilder();
-            if (splitted[tfrom].equals("nv")) {
-                sb.append("[Notice]");
-            } else {
-                sb.append("");
-            }
-            joinmod += tfrom;
-            sb.append(StringUtil.joinStringFrom(splitted, joinmod));
-
-            MaplePacket packet = ResWrapper.serverNotice(type, sb.toString());
-            if (range == 0) {
-                c.getPlayer().getMap().broadcastMessage(packet);
-            } else if (range == 1) {
-                ChannelServer.getInstance(c.getChannel()).broadcastPacket(packet);
-            } else if (range == 2) {
-                World.Broadcast.broadcastMessage(packet.getBytes());
-            }
-            return 1;
-        }
-    }
-
     public static class Yellow extends CommandExecute {
 
         @Override
@@ -2632,15 +2493,15 @@ public class AdminCommand {
                     }
 
                 } else if (type.equalsIgnoreCase("ITEM")) {
-                    List<String> retItems = new ArrayList<String>();
+                    List<Pair<Integer, String>> retItems = new ArrayList<Pair<Integer, String>>();
                     for (Pair<Integer, String> itemPair : MapleItemInformationProvider.getInstance().getAllItems()) {
                         if (itemPair.getRight().toLowerCase().contains(search.toLowerCase())) {
-                            retItems.add(itemPair.getLeft() + " - " + itemPair.getRight());
+                            retItems.add(new Pair<Integer, String>(itemPair.getLeft(), itemPair.getLeft() + " - " + itemPair.getRight()));
                         }
                     }
                     if (retItems != null && retItems.size() > 0) {
-                        for (String singleRetItem : retItems) {
-                            c.getPlayer().dropMessage(6, singleRetItem);
+                        for (Pair<Integer, String> itemPair : retItems) {
+                            c.SendPacket(ResWrapper.BroadCastMsgNoticeItem(itemPair.getRight(), itemPair.getLeft()));
                         }
                     } else {
                         c.getPlayer().dropMessage(6, "No Item's Found");
