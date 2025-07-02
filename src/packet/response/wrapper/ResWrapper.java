@@ -135,6 +135,7 @@ public class ResWrapper {
 
     public static MaplePacket moveAndMergeInventoryItem(MapleInventoryType type, IItem item, short slot_remove) {
         InvOp io = new InvOp();
+        io.move(type, slot_remove, item.getPosition()); // new item frame movement
         io.remove(type, slot_remove);
         io.update(type, item);
         return ResCWvsContext.InventoryOperation(true, io);
