@@ -20,7 +20,9 @@ package packet.response;
 
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import debug.Debug;
 import handling.MaplePacket;
 import java.util.Collections;
@@ -211,12 +213,19 @@ public class ResCMobPool {
         sp.Encode4(life.getObjectId());
         sp.Encode1(1); // 1 = Control normal, 5 = Control none
         sp.Encode4(life.getId());
+
+        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+            sp.Encode1(0);
+        }
+
+        // CMob::SetTemporaryStat
         if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) { // TODO
             sp.Encode4(0); // 後でなおす
         } else {
             sp.EncodeBuffer(Structure.MonsterStatus(life));
         }
 
+        // CMob::Init
         // credit to 垂垂 for fixing mob fall down issue
         if (life.getFh() == 0) {
             Debug.DebugLog("Spawn FH = 0");
@@ -277,6 +286,11 @@ public class ResCMobPool {
         sp.Encode4(life.getObjectId());
         sp.Encode1(1); // 1 = Control normal, 5 = Control none
         sp.Encode4(life.getId());
+
+        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+            sp.Encode1(0);
+        }
+
         if (ServerConfig.IsJMS() && ServerConfig.GetVersion() <= 164) { // TODO
             sp.Encode4(0); // 後でなおす
         } else {

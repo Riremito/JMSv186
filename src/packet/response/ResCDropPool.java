@@ -21,6 +21,8 @@
 package packet.response;
 
 import client.MapleCharacter;
+import config.Region;
+import config.Version;
 import handling.MaplePacket;
 import java.awt.Point;
 import packet.ServerPacket;
@@ -129,6 +131,10 @@ public class ResCDropPool {
 
         sp.Encode1(drop.isPlayerDrop() ? 0 : 1); // pet pick up?
         sp.Encode1(0);
+
+        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+            sp.Encode2(0);
+        }
 
         return sp.get();
     }

@@ -590,6 +590,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 Req_Farm.OnPacket(header, cp, c);
                 return true;
             }
+            case CP_UpdateScreenSetting: {
+                return true;
+            }
             default: {
                 break;
             }

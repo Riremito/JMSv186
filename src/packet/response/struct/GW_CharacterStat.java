@@ -23,7 +23,9 @@ package packet.response.struct;
 import client.MapleCharacter;
 import client.PlayerStats;
 import client.inventory.MaplePet;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import packet.ServerPacket;
 import packet.ops.OpsChangeStat;
@@ -90,7 +92,7 @@ public class GW_CharacterStat {
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
                     if (chr.getRemainingSp(i) > 0) {
                         data.Encode1(i + 1);
-                        if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
+                        if (Version.GreaterThanOrEqual(Region.JMS, 308) || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
                             data.Encode4(chr.getRemainingSp(i));
                         } else {
                             data.Encode1(chr.getRemainingSp(i));

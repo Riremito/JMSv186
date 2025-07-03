@@ -32,7 +32,9 @@ import client.MapleClient;
 import client.MapleCharacter;
 import client.PlayerStats;
 import client.anticheat.CheatingOffense;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import constants.MapConstants;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
@@ -111,12 +113,22 @@ public class PlayerHandler {
 
     public static final void TakeDamage(ClientPacket cp, final MapleClient c, final MapleCharacter chr) {
         //System.out.println(slea.toString());
+        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+            int unk1 = cp.Decode4();
+        }
+
         chr.updateTick(cp.Decode4());
+
         final byte type = cp.Decode1(); //-4 is mist, -3 and -2 are map damage.
         if (ServerConfig.JMS164orLater()) {
             cp.Decode1(); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
         }
         int damage = cp.Decode4();
+
+        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+            byte unk2 = cp.Decode1();
+            byte unk3 = cp.Decode1();
+        }
 
         int oid = 0;
         int monsteridfrom = 0;

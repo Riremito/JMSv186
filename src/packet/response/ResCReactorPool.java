@@ -30,38 +30,38 @@ public class ResCReactorPool {
 
     // triggerReactor
     public static MaplePacket Hit(MapleReactor reactor, int stance) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ReactorChangeState);
-        p.Encode4(reactor.getObjectId());
-        p.Encode1(reactor.getState());
-        p.Encode2(reactor.getPosition().x);
-        p.Encode2(reactor.getPosition().y);
-        p.Encode2(stance);
-        p.Encode1(0);
-        p.Encode1(4);
-        return p.get();
-    }
-
-    // destroyReactor
-    public static MaplePacket Destroy(MapleReactor reactor) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ReactorLeaveField);
-        p.Encode4(reactor.getObjectId());
-        p.Encode1(reactor.getState());
-        p.Encode2(reactor.getPosition().x);
-        p.Encode2(reactor.getPosition().y);
-        return p.get();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ReactorChangeState);
+        sp.Encode4(reactor.getObjectId());
+        sp.Encode1(reactor.getState());
+        sp.Encode2(reactor.getPosition().x);
+        sp.Encode2(reactor.getPosition().y);
+        sp.Encode2(stance);
+        sp.Encode1(0);
+        sp.Encode1(4);
+        return sp.get();
     }
 
     // spawnReactor
     public static MaplePacket Spawn(MapleReactor reactor) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_ReactorEnterField);
-        p.Encode4(reactor.getObjectId());
-        p.Encode4(reactor.getReactorId());
-        p.Encode1(reactor.getState());
-        p.Encode2(reactor.getPosition().x);
-        p.Encode2(reactor.getPosition().y);
-        p.Encode1(reactor.getFacingDirection()); // stance
-        p.EncodeStr(reactor.getName());
-        return p.get();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ReactorEnterField);
+        sp.Encode4(reactor.getObjectId());
+        sp.Encode4(reactor.getReactorId());
+        sp.Encode1(reactor.getState());
+        sp.Encode2(reactor.getPosition().x);
+        sp.Encode2(reactor.getPosition().y);
+        sp.Encode1(reactor.getFacingDirection()); // stance
+        sp.EncodeStr(reactor.getName());
+        return sp.get();
     }
-    
+
+    // destroyReactor
+    public static MaplePacket Destroy(MapleReactor reactor) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ReactorLeaveField);
+        sp.Encode4(reactor.getObjectId());
+        sp.Encode1(reactor.getState());
+        sp.Encode2(reactor.getPosition().x);
+        sp.Encode2(reactor.getPosition().y);
+        return sp.get();
+    }
+
 }

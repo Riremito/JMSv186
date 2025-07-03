@@ -9,7 +9,9 @@ import client.SkillEntry;
 import client.inventory.MapleRing;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import java.util.Collection;
 import java.util.List;
@@ -419,7 +421,7 @@ public class Structure {
             data.Encode4(map[i]);
         }
 
-        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater()|| ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }
@@ -467,6 +469,11 @@ public class Structure {
     public static final byte[] MonsterStatus(MapleMonster life) {
         ServerPacket data = new ServerPacket();
 
+        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+        }
         if (ServerConfig.IsPostBB()) {
             data.Encode4(0);
         }
@@ -485,6 +492,14 @@ public class Structure {
         }
 
         data.Encode8(getLongMask_NoRef(life.getStati().keySet()));
+
+        // ?_?
+        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+            data.Encode1(0);
+            data.Encode1(0);
+            data.Encode1(0);
+            return data.get().getBytes();
+        }
 
         boolean ignore_imm = false;
         for (MonsterStatusEffect buff : life.getStati().values()) {

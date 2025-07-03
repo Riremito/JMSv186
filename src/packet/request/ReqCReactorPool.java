@@ -2,14 +2,16 @@
 package packet.request;
 
 import client.MapleClient;
+import config.Region;
+import config.Version;
 import packet.ClientPacket;
 import scripting.ReactorScriptManager;
 import server.maps.MapleReactor;
 
 public class ReqCReactorPool {
 
-    public static boolean OnPacket(ClientPacket p, ClientPacket.Header header, MapleClient c) {
-        int oid = p.Decode4();
+    public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
+        int oid = cp.Decode4();
         MapleReactor reactor = c.getPlayer().getMap().getReactorByOid(oid);
 
         // 存在しない設置物
@@ -26,8 +28,11 @@ public class ReqCReactorPool {
             // 攻撃
             case CP_ReactorHit: {
                 // HitReactor
-                int charPos = p.Decode4();
-                short stance = p.Decode2();
+                if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+                    int unk = cp.Decode4();
+                }
+                int charPos = cp.Decode4();
+                short stance = cp.Decode2();
 
                 reactor.hitReactor(charPos, stance, c);
                 return true;
@@ -35,7 +40,7 @@ public class ReqCReactorPool {
             // 触れる
             case CP_ReactorTouch: {
                 // TouchReactor
-                byte touched = p.Decode1();
+                byte touched = cp.Decode1();
 
                 if (touched == 0) {
                     return false;

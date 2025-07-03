@@ -140,6 +140,9 @@ public class ReqCLogin {
                 c.SendPacket(ResCLogin.SetMapLogin("MapLogin"));
                 return true;
             }
+            case CP_UpdateScreenSetting: {
+                return true;
+            }
             default: {
                 break;
             }

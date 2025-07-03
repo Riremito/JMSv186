@@ -124,7 +124,6 @@ public class ResWrapper {
 
         // 装備
         if (!destroyed) {
-            //io.remove(GameConstants.getInventoryType(item.getItemId()), item.getPosition());
             io.add(GameConstants.getInventoryType(item.getItemId()), item);
         } else {
             io.remove(GameConstants.getInventoryType(item.getItemId()), item.getPosition());
@@ -174,27 +173,11 @@ public class ResWrapper {
         return mplew.getPacket();
     }
 
+    // 装着時交換不可など
     public static MaplePacket updateSpecialItemUse_(IItem item, byte invType) {
-        return updateSpecialItemUse_(item, invType, item.getPosition());
-    }
-
-    public static MaplePacket updateSpecialItemUse_(IItem item, byte invType, short pos) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.get());
-        mplew.write(0); // could be from drop
-        mplew.write(1); // always 2
-        mplew.write(0); // quantity > 0 (?)
-        mplew.write(invType); // Inventory type
-        if (item.getType() == 1) {
-            mplew.writeShort(pos);
-        } else {
-            mplew.write(pos);
-        }
-        TestHelper.addItemInfo(mplew, item, true, true);
-        if (item.getPosition() < 0) {
-            mplew.write(1); //?
-        }
-        return mplew.getPacket();
+        InvOp io = new InvOp();
+        io.add(GameConstants.getInventoryType(item.getItemId()), item);
+        return ResCWvsContext.InventoryOperation(true, io);
     }
 
     public static MaplePacket getShowInventoryFull() {

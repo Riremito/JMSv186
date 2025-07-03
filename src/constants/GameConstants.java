@@ -1705,8 +1705,9 @@ public class GameConstants {
         return itemId / 10000 == 133;
     }
 
+    // ?_? kanna OK, skil < 70000000 is something wrong
     public static boolean isApplicableSkill(int skil) {
-        return skil < 40000000 && (skil % 10000 < 8000 || skil % 10000 > 8003); //no additional/decent skills
+        return skil < 70000000 && (skil % 10000 < 8000 || skil % 10000 > 8003); //no additional/decent skills
     }
 
     public static boolean isApplicableSkill_(int skil) { //not applicable to saving but is more of temporary
