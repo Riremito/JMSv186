@@ -559,7 +559,7 @@ public class CharacterData {
                         // VisitorQuestLog
                         data.Encode2(0);
                     }
-                } else if (ServerConfig.GMS84orLater()) {
+                } else if (ServerConfig.GMS83orLater()) {
                     if ((datamask & 0x20000) > 0) {
                         data.Encode4(chr.getMonsterBookCover());
                     }

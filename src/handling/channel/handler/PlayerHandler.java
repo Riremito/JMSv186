@@ -36,6 +36,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import constants.MapConstants;
+import debug.Debug;
 import handling.channel.ChannelServer;
 import java.lang.ref.WeakReference;
 import packet.ClientPacket;
@@ -448,10 +449,12 @@ public class PlayerHandler {
     public static final void closeRangeAttack(MapleClient c, AttackInfo attack, final boolean energy) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null || (energy && chr.getBuffedValue(MapleBuffStat.ENERGY_CHARGE) == null && chr.getBuffedValue(MapleBuffStat.BODY_PRESSURE) == null && !GameConstants.isKOC(chr.getJob()))) {
+            Debug.ErrorLog("closeRangeAttack : 1");
             return;
         }
         if (!chr.isAlive() || chr.getMap() == null) {
             chr.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
+            Debug.ErrorLog("closeRangeAttack : 2");
             return;
         }
         attack = DamageParse.Modify_AttackCrit(attack, chr, 1);
@@ -466,6 +469,7 @@ public class PlayerHandler {
             skillLevel = chr.getSkillLevel(skill);
             effect = attack.getAttackEffect(chr, skillLevel, skill);
             if (effect == null) {
+                Debug.ErrorLog("closeRangeAttack : 3");
                 return;
             }
             maxdamage *= effect.getDamage() / 100.0;
@@ -474,6 +478,7 @@ public class PlayerHandler {
             if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
                 if (chr.skillisCooling(attack.skill)) {
                     c.getSession().write(ResWrapper.enableActions());
+                    Debug.ErrorLog("closeRangeAttack : 4");
                     return;
                 }
                 c.getSession().write(ResCUserLocal.skillCooldown(attack.skill, effect.getCooldown()));
@@ -552,6 +557,7 @@ public class PlayerHandler {
 
             if (isFinisher(attack.skill)) {
                 if (numFinisherOrbs == 0) {
+                    Debug.ErrorLog("closeRangeAttack : 5");
                     return;
                 }
                 maxdamage = 199999; // FIXME reenable damage calculation for finishers
@@ -575,6 +581,7 @@ public class PlayerHandler {
             skillLevel = chr.getSkillLevel(skill);
             effect = attack.getAttackEffect(chr, skillLevel, skill);
             if (effect == null) {
+                Debug.ErrorLog("rangedAttack : 1");
                 return;
             }
 
@@ -590,6 +597,7 @@ public class PlayerHandler {
             if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
                 if (chr.skillisCooling(attack.skill)) {
                     c.getSession().write(ResWrapper.enableActions());
+                    Debug.ErrorLog("rangedAttack : 2");
                     return;
                 }
                 c.getSession().write(ResCUserLocal.skillCooldown(attack.skill, effect.getCooldown()));
@@ -601,14 +609,16 @@ public class PlayerHandler {
             bulletCount *= 2;
         }
         int projectile = 0, visProjectile = 0;
-        if (attack.nShootRange0a != 0 && chr.getBuffedValue(MapleBuffStat.SOULARROW) == null && attack.skill != 4111004) {
+        if (!GameConstants.is_mercedes(attack.skill / 10000) && attack.nShootRange0a != 0 && chr.getBuffedValue(MapleBuffStat.SOULARROW) == null && attack.skill != 4111004) {
             if (chr.getInventory(MapleInventoryType.USE).getItem(attack.ProperBulletPosition) == null) {
+                Debug.ErrorLog("rangedAttack : 3");
                 return;
             }
             projectile = chr.getInventory(MapleInventoryType.USE).getItem(attack.ProperBulletPosition).getItemId();
 
             if (attack.pnCashItemPos > 0) {
                 if (chr.getInventory(MapleInventoryType.CASH).getItem(attack.pnCashItemPos) == null) {
+                    Debug.ErrorLog("rangedAttack : 4");
                     return;
                 }
                 visProjectile = chr.getInventory(MapleInventoryType.CASH).getItem(attack.pnCashItemPos).getItemId();
@@ -625,6 +635,7 @@ public class PlayerHandler {
                 if (!ServerConfig.game_server_disable_star_consuming) {
                     if (!MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, projectile, bulletConsume, false, true)) {
                         chr.dropMessage(5, "You do not have enough arrows/bullets/stars.");
+                        Debug.ErrorLog("rangedAttack : 5");
                         return;
                     }
                 }
@@ -686,11 +697,13 @@ public class PlayerHandler {
         final int skillLevel = chr.getSkillLevel(skill);
         final MapleStatEffect effect = attack.getAttackEffect(chr, skillLevel, skill);
         if (effect == null) {
+            Debug.ErrorLog("MagicDamage : 1");
             return;
         }
         if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
             if (chr.skillisCooling(attack.skill)) {
                 c.getSession().write(ResWrapper.enableActions());
+                Debug.ErrorLog("MagicDamage : 2");
                 return;
             }
             c.getSession().write(ResCUserLocal.skillCooldown(attack.skill, effect.getCooldown()));

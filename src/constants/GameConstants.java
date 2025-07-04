@@ -142,6 +142,13 @@ public class GameConstants {
         return false;
     }
 
+    public static boolean is_mercedes(int job_id) {
+        if (job_id == 2002 || (2300 <= job_id && job_id <= 2312)) {
+            return true;
+        }
+        return false;
+    }
+
     public static boolean is_extendsp_job(int job_id) {
         // エヴァン
         if (job_id == 2001 || (2200 <= job_id && job_id <= 2218)) {

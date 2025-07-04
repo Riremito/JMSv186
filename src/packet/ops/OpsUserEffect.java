@@ -18,7 +18,8 @@
  */
 package packet.ops;
 
-import config.ServerConfig;
+import config.Region;
+import config.Version;
 
 /**
  *
@@ -59,10 +60,8 @@ public enum OpsUserEffect {
     UserEffect_DeliveryQuestItemUse(0x1E),
     UserEffect_RepeatEffectRemove(0x1F),
     UserEffect_EvolRing(0x20),
-    
     // For THMS v87
     UserEffect_UNK_1(-1),
-    
     UNKNOWN(-1);
 
     private int value;
@@ -91,9 +90,9 @@ public enum OpsUserEffect {
         }
         return UNKNOWN;
     }
-    
+
     public static void init() {
-        if (ServerConfig.IsTHMS() && ServerConfig.GetVersion() == 87) {
+        if (Version.Equal(Region.THMS, 87)) {
             UserEffect_LevelUp.set(0x0);
             UserEffect_SkillUse.set(0x1);
             UserEffect_SkillAffected.set(0x2);
@@ -108,9 +107,7 @@ public enum OpsUserEffect {
             UserEffect_QuestComplete.set(0x9);
             UserEffect_IncDecHPEffect.set(0xA);
             UserEffect_BuffItemEffect.set(0xB);
-            
             UserEffect_UNK_1.set(0xC); // UserEffect_UNK_1 is UserEffect (Effect/ItemEff.img/%d/0 and Effect/ItemEff.img/%d/1)
-            
             UserEffect_SquibEffect.set(0xD);
             UserEffect_MonsterBookCardGet.set(0xE);
             UserEffect_LotteryUse.set(0xF);
@@ -118,10 +115,8 @@ public enum OpsUserEffect {
             UserEffect_ItemMaker.set(0x11);
             UserEffect_ExpItemConsumed.set(0x12);
             UserEffect_ReservedEffect.set(0x13);
-            
             UserEffect_Buff.set(-1); // Not Exist in THMS v87
             UserEffect_ConsumeEffect.set(-1); // Not Exist in THMS v87
-            
             UserEffect_UpgradeTombItemUse.set(0x14);
             UserEffect_BattlefieldItemUse.set(0x15);
             UserEffect_AvatarOriented.set(0x16);
@@ -129,10 +124,10 @@ public enum OpsUserEffect {
             UserEffect_PlaySoundWithMuteBGM.set(0x18);
             UserEffect_SoulStoneUse.set(0x19);
             UserEffect_IncDecHPEffect_EX.set(0x1A);
-            
             UserEffect_DeliveryQuestItemUse.set(-1); // Not Exist in THMS v87
             UserEffect_RepeatEffectRemove.set(-1); // Not Exist in THMS v87
             UserEffect_EvolRing.set(-1); // Not Exist in THMS v87
+            return;
         }
     }
 }

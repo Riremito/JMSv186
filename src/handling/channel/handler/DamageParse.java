@@ -36,6 +36,7 @@ import client.anticheat.CheatTracker;
 import client.anticheat.CheatingOffense;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import debug.Debug;
 import java.util.Map;
 import packet.response.ResCDropPool;
 import packet.response.ResCDropPool.LeaveType;
@@ -65,11 +66,12 @@ public class DamageParse {
         if (attack.skill != 0) {
             if (effect == null) {
                 player.getClient().getSession().write(ResWrapper.enableActions());
+                Debug.ErrorLog("applyAttack : 1");
                 return;
             }
             if (GameConstants.isMulungSkill(attack.skill)) {
                 if (player.getMapId() / 10000 != 92502) {
-                    //AutobanManager.getInstance().autoban(player.getClient(), "Using Mu Lung dojo skill out of dojo maps.");
+                    Debug.ErrorLog("applyAttack : 2");
                     return;
                 } else {
                     player.mulung_EnergyModify(false);
@@ -77,22 +79,23 @@ public class DamageParse {
             }
             if (GameConstants.isPyramidSkill(attack.skill)) {
                 if (player.getMapId() / 1000000 != 926) {
-                    //AutobanManager.getInstance().autoban(player.getClient(), "Using Pyramid skill outside of pyramid maps.");
+                    Debug.ErrorLog("applyAttack : 3");
                     return;
                 } else {
                     if (player.getPyramidSubway() == null || !player.getPyramidSubway().onSkillUse(player)) {
+                        Debug.ErrorLog("applyAttack : 4");
                         return;
                     }
                 }
             }
             if (attack.GetMobCount() > effect.getMobCount()) { // Must be done here, since NPE with normal atk
-                player.getCheatTracker().registerOffense(CheatingOffense.MISMATCHING_BULLETCOUNT);
+                Debug.ErrorLog("applyAttack : 5");
                 return;
             }
         }
         if (attack.GetDamagePerMob() > attackCount) {
             if (attack.skill != 4211006) {
-                player.getCheatTracker().registerOffense(CheatingOffense.MISMATCHING_BULLETCOUNT);
+                Debug.ErrorLog("applyAttack : 6");
                 return;
             }
         }
@@ -100,6 +103,7 @@ public class DamageParse {
             // Don't ever do this. it's too expensive.
             if (!player.getStat().checkEquipDurabilitys(player, -1)) { //i guess this is how it works ?
                 player.dropMessage(5, "An item has run out of durability but has no inventory room to go to.");
+                Debug.ErrorLog("applyAttack : 7");
                 return;
             } //lol
         }
@@ -119,20 +123,21 @@ public class DamageParse {
                     try {
                         if (mapitem.getMeso() > 0) {
                             if (mapitem.isPickedUp()) {
+                                Debug.ErrorLog("applyAttack : 8");
                                 return;
                             }
                             map.removeMapObject(mapitem);
                             map.broadcastMessage(ResCDropPool.DropLeaveField(mapitem, LeaveType.MESO_EXPLOSION));
                             mapitem.setPickedUp(true);
                         } else {
-                            player.getCheatTracker().registerOffense(CheatingOffense.ETC_EXPLOSION);
+                            Debug.ErrorLog("applyAttack : 9");
                             return;
                         }
                     } finally {
                         mapitem.getLock().unlock();
                     }
                 } else {
-                    player.getCheatTracker().registerOffense(CheatingOffense.EXPLODING_NONEXISTANT);
+                    Debug.ErrorLog("applyAttack : 10");
                     return; // etc explosion, exploding nonexistant things, etc.
                 }
             }
@@ -224,6 +229,7 @@ public class DamageParse {
                         }
                     }
                     if (player == null) { // o_O
+                        Debug.ErrorLog("applyAttack : 11");
                         return;
                     }
                     if (player.getClient().getChannelServer().isAdminOnly()) {
@@ -451,6 +457,7 @@ public class DamageParse {
             }
         }
         if (attack.skill == 4331003 && totDamageToOneMonster < hpMob) {
+            Debug.ErrorLog("applyAttack : 12");
             return;
         }
         if (attack.skill != 0 && (attack.GetMobCount() > 0 || (attack.skill != 4331003 && attack.skill != 4341002)) && attack.skill != 21101003 && attack.skill != 5110001 && attack.skill != 15100004 && attack.skill != 11101002 && attack.skill != 13101002) {
@@ -471,12 +478,13 @@ public class DamageParse {
         if (attack.GetDamagePerMob() > 0 && attack.GetMobCount() > 0) {
             if (!player.getStat().checkEquipDurabilitys(player, -1)) { //i guess this is how it works ?
                 player.dropMessage(5, "An item has run out of durability but has no inventory room to go to.");
+                Debug.ErrorLog("applyAttackMagic : 1");
                 return;
             } //lol
         }
         if (GameConstants.isMulungSkill(attack.skill)) {
             if (player.getMapId() / 10000 != 92502) {
-                //AutobanManager.getInstance().autoban(player.getClient(), "Using Mu Lung dojo skill out of dojo maps.");
+                Debug.ErrorLog("applyAttackMagic : 2");
                 return;
             } else {
                 player.mulung_EnergyModify(false);
@@ -484,10 +492,11 @@ public class DamageParse {
         }
         if (GameConstants.isPyramidSkill(attack.skill)) {
             if (player.getMapId() / 1000000 != 926) {
-                //AutobanManager.getInstance().autoban(player.getClient(), "Using Pyramid skill outside of pyramid maps.");
+                Debug.ErrorLog("applyAttackMagic : 3");
                 return;
             } else {
                 if (player.getPyramidSubway() == null || !player.getPyramidSubway().onSkillUse(player)) {
+                    Debug.ErrorLog("applyAttackMagic : 4");
                     return;
                 }
             }
@@ -580,7 +589,7 @@ public class DamageParse {
                     player.getCheatTracker().registerOffense(CheatingOffense.ATTACK_FARAWAY_MONSTER);
                 }
                 if (attack.skill == 2301002 && !monsterstats.getUndead()) {
-                    player.getCheatTracker().registerOffense(CheatingOffense.HEAL_ATTACKING_UNDEAD);
+                    Debug.ErrorLog("applyAttackMagic : 5");
                     return;
                 }
 

@@ -92,7 +92,7 @@ public class ResCStage {
                 sp.EncodeBuffer(CWvsContext.LogoutGiftConfig());
             }
         } else {
-            if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater() || ServerConfig.GMS84orLater()) {
+            if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater() || ServerConfig.GMS83orLater()) {
                 sp.Encode1(0);
             }
             // KMS118 only
