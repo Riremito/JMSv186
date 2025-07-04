@@ -199,7 +199,7 @@ public class MapleItemInformationProvider {
             potentialCache.put(Integer.parseInt(dat.getName()), items);
 
             // 潜在能力, 不要なもの削除
-            if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 StructPotentialItem ci = items.get(0);
                 if (ci.incSTRr == 0 && ci.incDEXr == 0 && ci.incINTr == 0 && ci.incLUKr == 0
                         && ci.incMHPr == 0 && ci.incMMPr == 0

@@ -469,7 +469,7 @@ public class Structure {
     public static final byte[] MonsterStatus(MapleMonster life) {
         ServerPacket data = new ServerPacket();
 
-        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode4(0);
@@ -494,7 +494,7 @@ public class Structure {
         data.Encode8(getLongMask_NoRef(life.getStati().keySet()));
 
         // ?_?
-        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             data.Encode1(0);
             data.Encode1(0);
             data.Encode1(0);

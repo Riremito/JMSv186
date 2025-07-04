@@ -28,7 +28,7 @@ import static config.ServerConfig.GetVersion;
 public class Version {
 
     // good versions
-    public static boolean GreaterThanOrEqual(Region region, int version) {
+    public static boolean GreaterOrEqual(Region region, int version) {
         if (GetRegion() == region) {
             if (version <= GetVersion()) {
                 return true;
@@ -74,7 +74,7 @@ public class Version {
     }
 
     // pre-bb older versions
-    public static boolean LessThanOrEqual(Region region, int version) {
+    public static boolean LessOrEqual(Region region, int version) {
         if (GetRegion() == region) {
             if (GetVersion() <= version) {
                 return true;

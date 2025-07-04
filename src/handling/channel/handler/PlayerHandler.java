@@ -114,7 +114,7 @@ public class PlayerHandler {
 
     public static final void TakeDamage(ClientPacket cp, final MapleClient c, final MapleCharacter chr) {
         //System.out.println(slea.toString());
-        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             int unk1 = cp.Decode4();
         }
 
@@ -126,7 +126,7 @@ public class PlayerHandler {
         }
         int damage = cp.Decode4();
 
-        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             byte unk2 = cp.Decode1();
             byte unk3 = cp.Decode1();
         }

@@ -132,7 +132,7 @@ public class ResCDropPool {
         sp.Encode1(drop.isPlayerDrop() ? 0 : 1); // pet pick up?
         sp.Encode1(0);
 
-        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode2(0);
         }
 

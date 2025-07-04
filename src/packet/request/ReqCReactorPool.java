@@ -28,7 +28,7 @@ public class ReqCReactorPool {
             // 攻撃
             case CP_ReactorHit: {
                 // HitReactor
-                if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+                if (Version.GreaterOrEqual(Region.JMS, 302)) {
                     int unk = cp.Decode4();
                 }
                 int charPos = cp.Decode4();

@@ -374,7 +374,7 @@ public class ResCWvsContext {
             // showMesoGain
             case MS_IncMoneyMessage: {
                 sp.Encode4(ma.Inc_Meso);
-                if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+                if (Version.GreaterOrEqual(Region.JMS, 302)) {
                     sp.Encode4(-1); // 別の数値だとメッセージ非表示
                 }
                 break;

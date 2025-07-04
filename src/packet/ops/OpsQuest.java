@@ -78,7 +78,7 @@ public enum OpsQuest {
     public static void init() {
         // JMS186
         QuestRes_Act_Success.set(8);
-        if (Version.GreaterThanOrEqual(Region.JMS, 194)) {
+        if (Version.GreaterOrEqual(Region.JMS, 194)) {
             QuestRes_Act_Success.set(10);
         }
     }

@@ -95,69 +95,69 @@ public enum Content {
         boolean bOK = false;
         // JMS307
         if (bOK
-                || Version.GreaterThanOrEqual(Region.JMS, 308)) {
+                || Version.GreaterOrEqual(Region.JMS, 308)) {
             Update_Tempest.set(true);
             bOK = true;
         }
         // JMS300
         if (bOK
-                || Version.GreaterThanOrEqual(Region.JMS, 302)) {
+                || Version.GreaterOrEqual(Region.JMS, 302)) {
             Update_Sengoku.set(true);
             bOK = true;
         }
         // JMS200
         if (bOK
-                || Version.GreaterThanOrEqual(Region.JMS, 200)
-                || Version.GreaterThanOrEqual(Region.JMST, 110)) {
+                || Version.GreaterOrEqual(Region.JMS, 200)
+                || Version.GreaterOrEqual(Region.JMST, 110)) {
             Update_Renaissance.set(true);
             bOK = true;
         }
         // VMS, BMS are closed before Bigbang, IMS are lanched after Bigbang.
         if (bOK
-                || Version.GreaterThanOrEqual(Region.KMS, 101)
-                || Version.GreaterThanOrEqual(Region.JMS, 187)
-                || Version.GreaterThanOrEqual(Region.CMS, 87)
-                || Version.GreaterThanOrEqual(Region.TWMS, 123)
-                || Version.GreaterThanOrEqual(Region.MSEA, 105)
-                || Version.GreaterThanOrEqual(Region.THMS, 90)
-                || Version.GreaterThanOrEqual(Region.GMS, 93)
-                || Version.GreaterThanOrEqual(Region.EMS, 73)
-                || Version.GreaterThanOrEqual(Region.IMS, 1)) {
+                || Version.GreaterOrEqual(Region.KMS, 101)
+                || Version.GreaterOrEqual(Region.JMS, 187)
+                || Version.GreaterOrEqual(Region.CMS, 87)
+                || Version.GreaterOrEqual(Region.TWMS, 123)
+                || Version.GreaterOrEqual(Region.MSEA, 105)
+                || Version.GreaterOrEqual(Region.THMS, 90)
+                || Version.GreaterOrEqual(Region.GMS, 93)
+                || Version.GreaterOrEqual(Region.EMS, 73)
+                || Version.GreaterOrEqual(Region.IMS, 1)) {
             Update_BigBang.set(true);
             bOK = true;
         }
         // JMS187
         if (bOK
-                || Version.GreaterThanOrEqual(Region.JMS, 187)) {
+                || Version.GreaterOrEqual(Region.JMS, 187)) {
             Job_Resistance.set(true); // Wild Hunter
             bOK = true;
         }
         // Pre-BB
         // JMS183 (JMS180)
         if (bOK
-                || Version.GreaterThanOrEqual(Region.JMS, 183)) {
+                || Version.GreaterOrEqual(Region.JMS, 183)) {
             Job_DualBlade.set(true);
             bOK = true;
         }
         if (bOK
-                || Version.GreaterThanOrEqual(Region.JMS, 183)) {
+                || Version.GreaterOrEqual(Region.JMS, 183)) {
             Job_Evan.set(true);
             bOK = true;
         }
         if (bOK
-                || Version.GreaterThanOrEqual(Region.JMS, 173)) {
+                || Version.GreaterOrEqual(Region.JMS, 173)) {
             Job_Aran.set(true);
             bOK = true;
         }
         // JMS165
         if (bOK
-                || Version.GreaterThanOrEqual(Region.JMS, 165)) {
+                || Version.GreaterOrEqual(Region.JMS, 165)) {
             Job_KnightsOfCygnus.set(true);
             bOK = true;
         }
         // JMS147
         if (bOK
-                || Version.GreaterThanOrEqual(Region.JMS, 147)) {
+                || Version.GreaterOrEqual(Region.JMS, 147)) {
             Job_Pirate.set(true);
             bOK = true;
         }

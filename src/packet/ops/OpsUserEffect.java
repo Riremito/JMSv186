@@ -92,6 +92,9 @@ public enum OpsUserEffect {
     }
 
     public static void init() {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            return;
+        }
         if (Version.Equal(Region.THMS, 87)) {
             UserEffect_LevelUp.set(0x0);
             UserEffect_SkillUse.set(0x1);

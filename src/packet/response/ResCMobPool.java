@@ -214,7 +214,7 @@ public class ResCMobPool {
         sp.Encode1(1); // 1 = Control normal, 5 = Control none
         sp.Encode4(life.getId());
 
-        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
         }
 
@@ -287,7 +287,7 @@ public class ResCMobPool {
         sp.Encode1(1); // 1 = Control normal, 5 = Control none
         sp.Encode4(life.getId());
 
-        if (Version.GreaterThanOrEqual(Region.JMS, 302)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
         }
 
