@@ -59,12 +59,16 @@ public class ResCUserLocal {
         data.Encode1(arg.ops.get());
 
         switch (arg.ops) {
-            case UserEffect_LevelUp:
-            case UserEffect_JobChanged:
-            case UserEffect_QuestComplete:
-            case UserEffect_MonsterBookCardGet:
-            case UserEffect_ItemLevelUp: {
-                // no data
+            case UserEffect_Quest: {
+                int count = 1;
+                data.Encode1(count); // loop count
+                if (0 < count) {
+                    data.Encode4(arg.item_id);
+                    data.Encode4(arg.item_quantity);
+                } else {
+                    data.EncodeStr("");
+                    data.Encode4(0);
+                }
                 break;
             }
             default: {

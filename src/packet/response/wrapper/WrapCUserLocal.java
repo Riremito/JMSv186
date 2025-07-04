@@ -20,6 +20,7 @@ package packet.response.wrapper;
 
 import debug.Debug;
 import handling.MaplePacket;
+import packet.ServerPacket;
 import packet.ops.OpsUserEffect;
 import packet.ops.arg.ArgUserEffect;
 import packet.response.ResCUserLocal;
@@ -39,9 +40,12 @@ public class WrapCUserLocal {
     public static MaplePacket getShowItemGain(int itemId, short quantity, boolean inChat) {
         // ?_?
         if (inChat) {
-            // SHOW_ITEM_GAIN_INCHAT
-            // not in JMS
-            Debug.ErrorLog("getShowItemGain inChat.");
+            // maybe wrong packet header
+            ArgUserEffect arg = new ArgUserEffect();
+            arg.ops = OpsUserEffect.UserEffect_Quest;
+            arg.item_id = itemId;
+            arg.item_quantity = quantity;
+            return ResCUserLocal.EffectLocal(arg);
         }
         // SHOW_STATUS_INFO -> LP_Message
         return ResWrapper.DropPickUpMessage(itemId, quantity);

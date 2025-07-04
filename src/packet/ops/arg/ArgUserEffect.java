@@ -29,4 +29,6 @@ public class ArgUserEffect {
 
     public OpsUserEffect ops = OpsUserEffect.UNKNOWN;
     public MapleCharacter chr = null;
+    public int item_id = 0;
+    public int item_quantity = 0;
 }

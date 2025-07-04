@@ -150,6 +150,14 @@ public enum OpsUserEffect {
             // 50 : 紫の謎エフェクト
             return;
         }
+        if (Version.GreaterOrEqual(Region.JMS, 186)) {
+            UserEffect_LevelUp.set(0);
+            UserEffect_SkillUse.set(1);
+            UserEffect_SkillAffected.set(2);
+            UserEffect_Quest.set(3);
+            UserEffect_PlayPortalSE.set(-1);
+            return;
+        }
         if (Version.Equal(Region.THMS, 87)) {
             UserEffect_LevelUp.set(0x0);
             UserEffect_SkillUse.set(0x1);
