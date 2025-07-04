@@ -394,7 +394,7 @@ public class PlayerHandler {
                 return;
             }
             if (skillid != 5221006) { // Battleship
-                chr.SendPacket(ResCUserLocal.skillCooldown(skillid, effect.getCooldown()));
+                chr.SendPacket(ResCUserLocal.SkillCooltimeSet(skillid, effect.getCooldown()));
                 chr.addCooldown(skillid, System.currentTimeMillis(), effect.getCooldown() * 1000);
             }
         }
@@ -481,7 +481,7 @@ public class PlayerHandler {
                     Debug.ErrorLog("closeRangeAttack : 4");
                     return;
                 }
-                c.getSession().write(ResCUserLocal.skillCooldown(attack.skill, effect.getCooldown()));
+                c.getSession().write(ResCUserLocal.SkillCooltimeSet(attack.skill, effect.getCooldown()));
                 chr.addCooldown(attack.skill, System.currentTimeMillis(), effect.getCooldown() * 1000);
             }
         }
@@ -600,7 +600,7 @@ public class PlayerHandler {
                     Debug.ErrorLog("rangedAttack : 2");
                     return;
                 }
-                c.getSession().write(ResCUserLocal.skillCooldown(attack.skill, effect.getCooldown()));
+                c.getSession().write(ResCUserLocal.SkillCooltimeSet(attack.skill, effect.getCooldown()));
                 chr.addCooldown(attack.skill, System.currentTimeMillis(), effect.getCooldown() * 1000);
             }
         }
@@ -706,7 +706,7 @@ public class PlayerHandler {
                 Debug.ErrorLog("MagicDamage : 2");
                 return;
             }
-            c.getSession().write(ResCUserLocal.skillCooldown(attack.skill, effect.getCooldown()));
+            c.getSession().write(ResCUserLocal.SkillCooltimeSet(attack.skill, effect.getCooldown()));
             chr.addCooldown(attack.skill, System.currentTimeMillis(), effect.getCooldown() * 1000);
         }
         chr.checkFollow();

@@ -1390,7 +1390,7 @@ public class World {
             if (m.startTime + m.length < now) {
                 final int skil = m.skillId;
                 chr.removeCooldown(skil);
-                chr.getClient().getSession().write(ResCUserLocal.skillCooldown(skil, 0));
+                chr.getClient().getSession().write(ResCUserLocal.SkillCooltimeSet(skil, 0));
             }
         }
         for (MapleDiseaseValueHolder m : chr.getAllDiseases()) {

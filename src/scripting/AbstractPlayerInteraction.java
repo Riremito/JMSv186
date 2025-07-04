@@ -477,7 +477,7 @@ public abstract class AbstractPlayerInteraction {
         } else {
             MapleInventoryManipulator.removeById(cg, GameConstants.getInventoryType(id), id, -quantity, true, false);
         }
-        cg.getSession().write(ResCUserLocal.getShowItemGain(id, quantity, true));
+        cg.getSession().write(WrapCUserLocal.getShowItemGain(id, quantity, true));
         return item_info;
     }
 
@@ -645,7 +645,7 @@ public abstract class AbstractPlayerInteraction {
             } else {
                 MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, -quantity, true, false);
             }
-            chr.getClient().getSession().write(ResCUserLocal.getShowItemGain(id, quantity, true));
+            chr.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, quantity, true));
         }
     }
 
@@ -729,7 +729,7 @@ public abstract class AbstractPlayerInteraction {
             final int possesed = chr.getInventory(GameConstants.getInventoryType(id)).countById(id);
             if (possesed > 0) {
                 MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(id), id, possesed, true, false);
-                chr.getClient().getSession().write(ResCUserLocal.getShowItemGain(id, (short) -possesed, true));
+                chr.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, (short) -possesed, true));
             }
         }
     }

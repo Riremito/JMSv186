@@ -18,6 +18,7 @@
  */
 package packet.response.wrapper;
 
+import debug.Debug;
 import handling.MaplePacket;
 import packet.ops.OpsUserEffect;
 import packet.ops.arg.ArgUserEffect;
@@ -35,4 +36,14 @@ public class WrapCUserLocal {
         return ResCUserLocal.EffectLocal(arg);
     }
 
+    public static MaplePacket getShowItemGain(int itemId, short quantity, boolean inChat) {
+        // ?_?
+        if (inChat) {
+            // SHOW_ITEM_GAIN_INCHAT
+            // not in JMS
+            Debug.ErrorLog("getShowItemGain inChat.");
+        }
+        // SHOW_STATUS_INFO -> LP_Message
+        return ResWrapper.DropPickUpMessage(itemId, quantity);
+    }
 }

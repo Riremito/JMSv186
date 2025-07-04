@@ -1088,7 +1088,7 @@ public class MapleStatEffect implements Serializable {
             for (MapleCoolDownValueHolder i : applyto.getCooldowns()) {
                 if (i.skillId != 5121010) {
                     applyto.removeCooldown(i.skillId);
-                    applyto.getClient().getSession().write(ResCUserLocal.skillCooldown(i.skillId, 0));
+                    applyto.getClient().getSession().write(ResCUserLocal.SkillCooltimeSet(i.skillId, 0));
                 }
             }
         } else {
@@ -1159,7 +1159,7 @@ public class MapleStatEffect implements Serializable {
                         for (MapleCoolDownValueHolder i : affected.getCooldowns()) {
                             if (i.skillId != 5121010) {
                                 affected.removeCooldown(i.skillId);
-                                affected.getClient().getSession().write(ResCUserLocal.skillCooldown(i.skillId, 0));
+                                affected.getClient().getSession().write(ResCUserLocal.SkillCooltimeSet(i.skillId, 0));
                             }
                         }
                     }

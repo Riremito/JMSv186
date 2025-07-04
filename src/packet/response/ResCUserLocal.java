@@ -164,16 +164,6 @@ public class ResCUserLocal {
         return mplew.getPacket();
     }
 
-    public static MaplePacket getShowItemGain(int itemId, short quantity, boolean inChat) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
-        mplew.write(3);
-        mplew.write(1); // item count
-        mplew.writeInt(itemId);
-        mplew.writeInt(quantity);
-        return mplew.getPacket();
-    }
-
     public static final MaplePacket Teleport(byte portal) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserTeleport);
         sp.Encode1(0); // set last teleported time by client side
@@ -404,16 +394,17 @@ public class ResCUserLocal {
         return mplew.getPacket();
     }
 
-    public static MaplePacket skillCooldown(int sid, int time) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SkillCooltimeSet.get());
-        mplew.writeInt(sid);
-        if (ServerConfig.version <= 186) {
-            mplew.writeShort(time);
+    public static MaplePacket SkillCooltimeSet(int skill_id, int cool_time) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SkillCooltimeSet);
+
+        sp.Encode4(skill_id);
+
+        if (ServerConfig.IsPostBB()) {
+            sp.Encode4(cool_time);
         } else {
-            mplew.writeInt(time);
+            sp.Encode2(cool_time);
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
 }

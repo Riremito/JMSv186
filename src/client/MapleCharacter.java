@@ -103,6 +103,7 @@ import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCUserLocal;
 import packet.response.wrapper.WrapCUserRemote;
 import tools.MockIOSession;
 import scripting.EventInstanceManager;
@@ -2019,7 +2020,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             if (battleshipHP <= 0) {
                 battleshipHP = 0;
                 final MapleStatEffect effect = getStatForBuff(MapleBuffStat.MONSTER_RIDING);
-                client.getSession().write(ResCUserLocal.skillCooldown(5221006, effect.getCooldown()));
+                client.getSession().write(ResCUserLocal.SkillCooltimeSet(5221006, effect.getCooldown()));
                 addCooldown(5221006, System.currentTimeMillis(), effect.getCooldown() * 1000);
                 dispelSkill(5221006);
             }
@@ -4902,7 +4903,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
         if (possessed > 0) {
             MapleInventoryManipulator.removeById(getClient(), type, id, possessed, true, false);
-            getClient().getSession().write(ResCUserLocal.getShowItemGain(id, (short) -possessed, true));
+            getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, (short) -possessed, true));
         }
         /*if (type == MapleInventoryType.EQUIP) { //check equipped
         type = MapleInventoryType.EQUIPPED;
