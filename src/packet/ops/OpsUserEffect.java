@@ -35,6 +35,7 @@ public enum OpsUserEffect {
     UserEffect_Quest(0x5),
     UserEffect_Pet(0x6),
     UserEffect_SkillSpecial(0x7),
+    UserEffect_Resist(-1),
     UserEffect_ProtectOnDieItemUse(0x8),
     UserEffect_PlayPortalSE(0x9),
     UserEffect_JobChanged(0xA),
@@ -57,9 +58,14 @@ public enum OpsUserEffect {
     UserEffect_PlaySoundWithMuteBGM(0x1B),
     UserEffect_SoulStoneUse(0x1C),
     UserEffect_IncDecHPEffect_EX(0x1D),
+    UserEffect_IncDecHPRegenEffect(-1),
     UserEffect_DeliveryQuestItemUse(0x1E),
     UserEffect_RepeatEffectRemove(0x1F),
     UserEffect_EvolRing(0x20),
+    UserEffect_PvPRage(-1),
+    UserEffect_PvPChampion(-1),
+    UserEffect_PvPGradeUp(-1),
+    UserEffect_PvPRevive(-1),
     // For THMS v87
     UserEffect_UNK_1(-1),
     UNKNOWN(-1);
@@ -93,6 +99,55 @@ public enum OpsUserEffect {
 
     public static void init() {
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            UserEffect_LevelUp.set(0);
+            UserEffect_SkillUse.set(1);
+            UserEffect_SkillAffected.set(2);
+            UserEffect_SkillAffected_Select.set(3);
+            UserEffect_SkillSpecialAffected.set(4);
+            UserEffect_Quest.set(5);
+            UserEffect_Pet.set(6);
+            UserEffect_SkillSpecial.set(7);
+            UserEffect_Resist.set(8);
+            UserEffect_ProtectOnDieItemUse.set(9); // 翡翠のお守り
+            // 10 : 経験値お守り (兵法書系統) JMS
+            UserEffect_PlayPortalSE.set(11);
+            UserEffect_JobChanged.set(12);
+            UserEffect_QuestComplete.set(13);
+            UserEffect_IncDecHPEffect.set(14);
+            UserEffect_BuffItemEffect.set(15);
+            UserEffect_SquibEffect.set(16);
+            UserEffect_MonsterBookCardGet.set(17);
+            UserEffect_LotteryUse.set(18);
+            UserEffect_ItemLevelUp.set(19);
+            UserEffect_ItemMaker.set(20);
+            UserEffect_ExpItemConsumed.set(21);
+            UserEffect_ReservedEffect.set(22);
+            // 23 : 運命の車輪 JMS
+            UserEffect_Buff.set(-1);
+            UserEffect_BattlefieldItemUse.set(24); // ?_?
+            UserEffect_ConsumeEffect.set(25);
+            UserEffect_UpgradeTombItemUse.set(26); // 4-4-1
+            UserEffect_AvatarOriented.set(27);
+            UserEffect_IncubatorUse.set(28);
+            UserEffect_PlaySoundWithMuteBGM.set(29);
+            UserEffect_SoulStoneUse.set(30); // 霊魂石
+            UserEffect_IncDecHPEffect_EX.set(31);
+            // 32 :
+            UserEffect_IncDecHPRegenEffect.set(33);
+            UserEffect_DeliveryQuestItemUse.set(-1);
+            UserEffect_RepeatEffectRemove.set(-1);
+            UserEffect_PvPRage.set(35);
+            UserEffect_PvPChampion.set(36);
+            UserEffect_PvPGradeUp.set(37); // GRADE UP
+            UserEffect_PvPRevive.set(38); // 点滅
+            // 43 : Aswan/DefenceFail
+            // 44 : cards?
+            // 45 :
+            // 46 : ファミリア
+            // 47 : アイテム合成
+            // 48 : かえでのエフェクト
+            // 49 : 48と同じ
+            // 50 : 紫の謎エフェクト
             return;
         }
         if (Version.Equal(Region.THMS, 87)) {

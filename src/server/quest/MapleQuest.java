@@ -9,10 +9,10 @@ import java.util.Map;
 
 import client.MapleCharacter;
 import client.MapleQuestStatus;
-import config.ServerConfig;
 import java.util.ArrayList;
-import packet.response.ResCUserLocal;
-import packet.response.ResCUserRemote;
+import packet.ops.OpsUserEffect;
+import packet.response.wrapper.WrapCUserLocal;
+import packet.response.wrapper.WrapCUserRemote;
 import scripting.NPCScriptManager;
 import provider.MapleData;
 import provider.MapleDataProvider;
@@ -242,23 +242,20 @@ public class MapleQuest implements Serializable {
         complete(c, npc, null);
     }
 
-    public void complete(MapleCharacter c, int npc, Integer selection) {
-        if ((autoPreComplete || checkNPCOnMap(c, npc)) && canComplete(c, npc)) {
+    public void complete(MapleCharacter chr, int npc, Integer selection) {
+        if ((autoPreComplete || checkNPCOnMap(chr, npc)) && canComplete(chr, npc)) {
             for (MapleQuestAction a : completeActs) {
-                if (!a.checkEnd(c, selection)) {
+                if (!a.checkEnd(chr, selection)) {
                     return;
                 }
             }
-            forceComplete(c, npc);
+            forceComplete(chr, npc);
             for (MapleQuestAction a : completeActs) {
-                a.runEnd(c, selection);
+                a.runEnd(chr, selection);
             }
-            // we save forfeits only for logging purposes, they shouldn't matter anymore
-            // completion time is set by the constructor
 
-            int questClearEffect = (ServerConfig.IsTHMS() && ServerConfig.GetVersion() == 87) ? 9 : 10;
-            c.getClient().getSession().write(ResCUserLocal.showSpecialEffect(questClearEffect)); // Quest completion
-            c.getMap().broadcastMessage(c, ResCUserRemote.showSpecialEffect(c.getId(), questClearEffect), false);
+            chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_QuestComplete));
+            chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_QuestComplete, chr), false);
         }
     }
 

@@ -33,7 +33,7 @@ import handling.world.guild.MapleGuild;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ServerPacket;
-import packet.ops.OpsUserEffect;
+import packet.ops.arg.ArgUserEffect;
 import packet.request.struct.CMovePath;
 import packet.response.struct.AvatarLook;
 import packet.response.struct.Structure;
@@ -274,6 +274,13 @@ public class ResCUserRemote {
         return sp.get();
     }
 
+    public static MaplePacket EffectRemote(ArgUserEffect arg) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectRemote);
+        sp.Encode4(arg.chr.getId());
+        sp.EncodeBuffer(ResCUserLocal.EffectData(arg));
+        return sp.get();
+    }
+
     public static MaplePacket useChalkboard(final int charid, final String msg) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserADBoard.get());
@@ -507,10 +514,6 @@ public class ResCUserRemote {
         return mplew.getPacket();
     }
 
-    public static MaplePacket showForeignItemLevelupEffect(int cid) {
-        return showSpecialEffect(cid, OpsUserEffect.UserEffect_ItemLevelUp.get());
-    }
-
     public static MaplePacket showForeginCardEffect(int id) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectRemote);
         sp.Encode4(id);
@@ -524,22 +527,6 @@ public class ResCUserRemote {
         mplew.writeInt(chr.getId());
         mplew.write(17);
         mplew.writeInt(is_success ? 0 : 1);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket showSpecialEffect(int cid, int effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.get());
-        mplew.writeInt(cid);
-        mplew.write(effect);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket showForeignEffect(int cid, int effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.get());
-        mplew.writeInt(cid);
-        mplew.write(effect); // 0 = Level up, 8 = job change
         return mplew.getPacket();
     }
 

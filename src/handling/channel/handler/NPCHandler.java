@@ -35,8 +35,8 @@ import packet.ClientPacket;
 import packet.ops.OpsScriptMan;
 import packet.ops.OpsUserEffect;
 import packet.response.ResCRPSGameDlg;
-import packet.response.ResCUserLocal;
-import packet.response.ResCUserRemote;
+import packet.response.wrapper.WrapCUserLocal;
+import packet.response.wrapper.WrapCUserRemote;
 import server.MapleInventoryManipulator;
 import server.life.MapleNPC;
 import server.quest.MapleQuest;
@@ -132,8 +132,8 @@ public class NPCHandler {
             case 5: { // Scripted End Quest
                 final int npc = cp.Decode4();
                 NPCScriptManager.getInstance().endQuest(c, npc, quest, false);
-                c.getSession().write(ResCUserLocal.showSpecialEffect(OpsUserEffect.UserEffect_QuestComplete.get())); // Quest completion
-                chr.getMap().broadcastMessage(chr, ResCUserRemote.showSpecialEffect(chr.getId(), OpsUserEffect.UserEffect_QuestComplete.get()), false);
+                chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_QuestComplete));
+                chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_QuestComplete, chr), false);
                 break;
             }
         }

@@ -33,10 +33,10 @@ import java.io.Serializable;
 import database.DatabaseConnection;
 import packet.ServerPacket;
 import packet.ops.OpsUserEffect;
-import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCUserLocal;
 import server.MapleItemInformationProvider;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -179,7 +179,7 @@ public class MonsterBook implements Serializable {
                 }
                 c.getSession().write(ResCWvsContext.addCard(false, cardid, 5));
                 c.SendPacket(ResWrapper.showGainCard(cardid));
-                c.getSession().write(ResCUserLocal.showSpecialEffect(OpsUserEffect.UserEffect_MonsterBookCardGet.get()));
+                c.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
                 cards.put(cardid, 5);
                 calculateLevel();
             }
@@ -194,7 +194,7 @@ public class MonsterBook implements Serializable {
         cards.put(cardid, 5);
         c.getSession().write(ResCWvsContext.addCard(false, cardid, 5));
         c.SendPacket(ResWrapper.showGainCard(cardid));
-        c.getSession().write(ResCUserLocal.showSpecialEffect(OpsUserEffect.UserEffect_MonsterBookCardGet.get()));
+        c.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
         calculateLevel();
     }
 }

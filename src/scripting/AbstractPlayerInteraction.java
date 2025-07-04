@@ -54,11 +54,13 @@ import handling.world.World;
 import packet.ops.OpsFieldEffect;
 import packet.ops.OpsFieldEffectArg;
 import packet.ops.OpsScriptMan;
+import packet.ops.OpsUserEffect;
 import packet.response.ResCField;
 import packet.response.ResCScriptMan;
 import packet.response.ResCUserLocal;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCUserLocal;
 import server.events.MapleEvent;
 import server.events.MapleEventType;
 
@@ -121,7 +123,7 @@ public abstract class AbstractPlayerInteraction {
         if (portal != 0 && map == c.getPlayer().getMapId()) { //test
             final Point portalPos = new Point(c.getPlayer().getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
-                c.getSession().write(ResCUserLocal.instantMapWarp((byte) portal)); //until we get packet for far movement, this will do
+                c.getSession().write(ResCUserLocal.Teleport((byte) portal)); //until we get packet for far movement, this will do
                 c.getPlayer().checkFollow();
                 c.getPlayer().getMap().movePlayer(c.getPlayer(), portalPos);
             } else {
@@ -146,7 +148,7 @@ public abstract class AbstractPlayerInteraction {
             final Point portalPos = new Point(c.getPlayer().getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
                 c.getPlayer().checkFollow();
-                c.getSession().write(ResCUserLocal.instantMapWarp((byte) c.getPlayer().getMap().getPortal(portal).getId()));
+                c.getSession().write(ResCUserLocal.Teleport((byte) c.getPlayer().getMap().getPortal(portal).getId()));
                 c.getPlayer().getMap().movePlayer(c.getPlayer(), new Point(c.getPlayer().getMap().getPortal(portal).getPosition()));
             } else {
                 c.getPlayer().changeMap(mapz, mapz.getPortal(portal));
@@ -829,8 +831,8 @@ public abstract class AbstractPlayerInteraction {
 
     public final void dojo_getUp() {
         c.SendPacket(ResWrapper.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
-        c.getSession().write(ResCUserLocal.Mulung_DojoUp2());
-        c.getSession().write(ResCUserLocal.instantMapWarp((byte) 6));
+        c.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
+        c.SendPacket(ResCUserLocal.Teleport((byte) 6));
     }
 
     public final boolean dojoAgent_NextMap(final boolean dojo, final boolean fromresting) {

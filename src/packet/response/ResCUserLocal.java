@@ -25,6 +25,7 @@ import handling.MaplePacket;
 import java.awt.Point;
 import java.util.List;
 import packet.ServerPacket;
+import packet.ops.arg.ArgUserEffect;
 import packet.ops.OpsQuest;
 import packet.ops.OpsUserEffect;
 import packet.response.struct.TestHelper;
@@ -47,10 +48,31 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket EffectLocal() {
+    public static MaplePacket EffectLocal(ArgUserEffect arg) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectLocal);
-        // todo
+        sp.EncodeBuffer(EffectData(arg));
         return sp.get();
+    }
+
+    public static byte[] EffectData(ArgUserEffect arg) {
+        ServerPacket data = new ServerPacket();
+        data.Encode1(arg.ops.get());
+
+        switch (arg.ops) {
+            case UserEffect_LevelUp:
+            case UserEffect_JobChanged:
+            case UserEffect_QuestComplete:
+            case UserEffect_MonsterBookCardGet:
+            case UserEffect_ItemLevelUp: {
+                // no data
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+        // todo
+        return data.get().getBytes();
     }
 
     public static MaplePacket showRewardItemAnimation(int itemId, String effect) {
@@ -82,22 +104,11 @@ public class ResCUserLocal {
         return mplew.getPacket();
     }
 
-    public static MaplePacket showItemLevelupEffect() {
-        return showSpecialEffect(OpsUserEffect.UserEffect_ItemLevelUp.get());
-    }
-
     public static final MaplePacket showOwnHpHealed(final int amount) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
         mplew.write(10); //Type
         mplew.writeInt(amount);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket Mulung_DojoUp2() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
-        mplew.write(8); // portal sound
         return mplew.getPacket();
     }
 
@@ -163,19 +174,11 @@ public class ResCUserLocal {
         return mplew.getPacket();
     }
 
-    public static MaplePacket showSpecialEffect(int effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
-        mplew.write(effect);
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket instantMapWarp(final byte portal) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserTeleport.get());
-        mplew.write(0);
-        mplew.write(portal); // 6
-        return mplew.getPacket();
+    public static final MaplePacket Teleport(byte portal) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserTeleport);
+        sp.Encode1(0); // set last teleported time by client side
+        sp.Encode1(portal);
+        return sp.get();
     }
 
     public static MaplePacket sendMesobagSuccess(int mesos) {
