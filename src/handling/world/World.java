@@ -41,6 +41,7 @@ import java.util.Collection;
 import packet.response.ResCField;
 import packet.response.ResCUIMessenger;
 import packet.response.ResCUserLocal;
+import packet.response.ResCUserPool;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
@@ -809,8 +810,8 @@ public class World {
                 mc.saveGuildStatus();
             }
             if (bDifferentGuild && ch > 0) {
-                mc.getMap().broadcastMessage(mc, ResCUserRemote.removePlayerFromMap(cid), false);
-                mc.getMap().broadcastMessage(mc, ResCUserRemote.spawnPlayerMapobject(mc), false);
+                mc.getMap().broadcastMessage(mc, ResCUserPool.UserLeaveField(cid), false);
+                mc.getMap().broadcastMessage(mc, ResCUserPool.UserEnterField(mc), false);
             }
         }
     }

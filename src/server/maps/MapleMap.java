@@ -73,6 +73,7 @@ import packet.response.ResCReactorPool;
 import packet.response.ResCUser_Pet;
 import packet.response.ResCSummonedPool;
 import packet.response.ResCUserLocal;
+import packet.response.ResCUserPool;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import packet.response.Res_JMS_CInstancePortalPool;
@@ -1778,7 +1779,7 @@ public final class MapleMap {
             chr.setCoconutTeam(getAndSwitchTeam() ? 0 : 1);
         }
         if (!chr.isHidden()) {
-            broadcastMessage(chr, ResCUserRemote.spawnPlayerMapobject(chr), false);
+            broadcastMessage(chr, ResCUserPool.UserEnterField(chr), false);
             if (chr.isGM() && speedRunStart > 0) {
                 endSpeedRun();
                 broadcastMessage(ResWrapper.BroadCastMsgEvent("The speed run has ended."));
@@ -2178,7 +2179,7 @@ public final class MapleMap {
         }
         removeMapObject(chr);
         chr.checkFollow();
-        broadcastMessage(ResCUserRemote.removePlayerFromMap(chr.getId()));
+        broadcastMessage(ResCUserPool.UserLeaveField(chr.getId()));
         if (!chr.isClone()) {
             for (final MapleMonster monster : chr.getControlledMonsters()) {
                 monster.setController(null);
