@@ -10,7 +10,9 @@ import client.SkillFactory;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import config.DebugConfig;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import debug.Debug;
 import handling.channel.handler.AttackInfo;
@@ -729,6 +731,10 @@ public class ReqCUser {
         }
 
         if (ServerConfig.JMS164orLater()) {
+            cp.Decode4();
+        }
+
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             cp.Decode4();
         }
 
