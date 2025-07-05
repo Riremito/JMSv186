@@ -13,7 +13,7 @@ import handling.MaplePacket;
 import java.util.Collection;
 import packet.ClientPacket;
 import packet.ServerPacket;
-import packet.response.struct.GW_ItemSlotBase;
+import packet.response.data.DataGW_ItemSlotBase;
 import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -285,7 +285,7 @@ public class ReqCTrunkDlg {
 
         sp.Encode1((byte) items.size());
         for (IItem item : items) {
-            sp.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
         }
 
         sp.Encode1(0);
@@ -335,7 +335,7 @@ public class ReqCTrunkDlg {
 
         sp.Encode1((byte) items.size());
         for (IItem item : items) {
-            sp.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
         }
 
         return sp.get();
@@ -357,7 +357,7 @@ public class ReqCTrunkDlg {
 
         sp.Encode1((byte) items.size());
         for (IItem item : items) {
-            sp.EncodeBuffer(GW_ItemSlotBase.Encode(item));
+            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
         }
 
         return sp.get();

@@ -56,15 +56,15 @@ import java.util.Comparator;
 import java.util.List;
 import packet.ServerPacket;
 import packet.ops.OpsBodyPart;
-import packet.ops.OpsBroadcastMsgArg;
+import packet.ops.arg.ArgBroadcastMsg;
 import packet.ops.OpsChangeStat;
-import packet.ops.OpsFriendArg;
-import packet.ops.OpsMessageArg;
+import packet.ops.arg.ArgFriend;
+import packet.ops.arg.ArgMessage;
 import packet.ops.OpsSecondaryStat;
 import packet.request.ItemRequest;
 import packet.response.data.DataSecondaryStat;
-import packet.response.struct.GW_CharacterStat;
-import packet.response.struct.GW_ItemSlotBase;
+import packet.response.data.DataGW_CharacterStat;
+import packet.response.data.DataGW_ItemSlotBase;
 import packet.response.struct.InvOp;
 import packet.response.struct.TestHelper;
 import packet.response.wrapper.ResWrapper;
@@ -102,7 +102,7 @@ public class ResCWvsContext {
                     case 0: {
                         sp.Encode1(v.type.getType());
                         sp.Encode2(v.item.getPosition());
-                        sp.EncodeBuffer(GW_ItemSlotBase.Encode(v.item));
+                        sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(v.item));
                         break;
                     }
                     // update
@@ -228,7 +228,7 @@ public class ResCWvsContext {
         if ((ServerConfig.IsEMS() && !ServerConfig.EMS89orLater()) || (ServerConfig.TWMS74orLater() && !ServerConfig.TWMS94orLater())) {
             sp.Encode1(0); // EMS v55
         }
-        sp.EncodeBuffer(GW_CharacterStat.EncodeChangeStat(chr, statmask));
+        sp.EncodeBuffer(DataGW_CharacterStat.EncodeChangeStat(chr, statmask));
         if (ServerConfig.IsPreBB()) {
             if (ServerConfig.IsJMS()) {
                 // Pet
@@ -248,7 +248,7 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static final MaplePacket Message(OpsMessageArg ma) {
+    public static final MaplePacket Message(ArgMessage ma) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Message);
         sp.Encode1(ma.mt.get());
         switch (ma.mt) {
@@ -613,7 +613,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnBroadcastMsg
-    public static MaplePacket BroadcastMsg(OpsBroadcastMsgArg bma) {
+    public static MaplePacket BroadcastMsg(ArgBroadcastMsg bma) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
         sp.Encode1(bma.bm.get());
 
@@ -667,7 +667,7 @@ public class ResCWvsContext {
                 sp.Encode1(bma.ear);
                 sp.Encode1(show_item ? 1 : 0);
                 if (show_item) {
-                    sp.EncodeBuffer(GW_ItemSlotBase.Encode(bma.item));
+                    sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(bma.item));
                 }
                 break;
             }
@@ -690,7 +690,7 @@ public class ResCWvsContext {
                 String text = bma.chr.getName() + " : " + bma.message;
                 sp.EncodeStr(text);
                 sp.Encode4(bma.gashapon_type); // 緑 (0) or 茶色 (-1)
-                sp.EncodeBuffer(GW_ItemSlotBase.Encode(bma.item));
+                sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(bma.item));
                 break;
             }
             default: {
@@ -1739,7 +1739,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnFriendResult
-    public static MaplePacket FriendResult(OpsFriendArg frs) {
+    public static MaplePacket FriendResult(ArgFriend frs) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FriendResult);
         sp.Encode1(frs.flag.get());
         switch (frs.flag) {

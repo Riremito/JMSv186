@@ -25,7 +25,7 @@ import handling.MaplePacket;
 import java.util.List;
 import java.util.Map;
 import packet.ServerPacket;
-import packet.ops.OpsFieldEffectArg;
+import packet.ops.arg.ArgFieldEffect;
 import packet.response.struct.TestHelper;
 import server.maps.MapleMap;
 import server.maps.MapleNodes;
@@ -63,7 +63,7 @@ public class ResCField {
 
     // environmentChange, musicChange, showEffect, playSound
     // ShowBossHP, trembleEffect
-    public static MaplePacket FieldEffect(OpsFieldEffectArg st) {
+    public static MaplePacket FieldEffect(ArgFieldEffect st) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FieldEffect);
         sp.Encode1(st.flag.get());
         switch (st.flag) {

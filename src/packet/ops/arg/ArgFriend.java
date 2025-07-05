@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,27 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
-package packet.response.struct;
+package packet.ops.arg;
 
-import packet.ServerPacket;
+import client.MapleCharacter;
+import packet.ops.OpsFriend;
 
 /**
  *
  * @author Riremito
  */
-public class GW_WildHunterInfo {
+public class ArgFriend {
 
-    // GW_WildHunterInfo::Decode
-    public static byte[] Encode() {
-        ServerPacket p = new ServerPacket();
-
-        p.Encode1(0);
-        for (int i = 0; i < 5; i++) {
-            p.Encode4(0);
-        }
-        return p.get().getBytes();
-    }
+    public OpsFriend flag;
+    public int nFriendMax;
+    public MapleCharacter chr;
+    public int friend_id;
+    public int friend_channel;
+    public int friend_level;
+    public int friend_job;
+    public String friend_name;
+    public String friend_tag;
 }

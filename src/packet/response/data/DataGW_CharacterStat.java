@@ -18,7 +18,7 @@
  * You should not develop private server for your business.
  * You should not ban anyone who tries hacking in private server.
  */
-package packet.response.struct;
+package packet.response.data;
 
 import client.MapleCharacter;
 import client.PlayerStats;
@@ -34,7 +34,7 @@ import packet.ops.OpsChangeStat;
  *
  * @author Riremito
  */
-public class GW_CharacterStat {
+public class DataGW_CharacterStat {
 
     // GW_CharacterStat::Decode
     // CharStats

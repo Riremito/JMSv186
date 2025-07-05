@@ -26,7 +26,7 @@ import client.MapleClient;
 import client.MapleQuestStatus;
 import client.SkillFactory;
 import packet.ops.OpsFieldEffect;
-import packet.ops.OpsFieldEffectArg;
+import packet.ops.arg.ArgFieldEffect;
 import packet.response.ResCField;
 import packet.response.ResCMobPool;
 import packet.response.ResCUserLocal;
@@ -603,7 +603,7 @@ public class MapScriptMethods {
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
                 c.getSession().write(ResWrapper.enableActions());
-                c.getSession().write(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Screen, "temaD/enter/mushCatle")));
+                c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "temaD/enter/mushCatle")));
                 break;
             }
             case explorationPoint: {
@@ -848,10 +848,10 @@ public class MapScriptMethods {
     }
 
     private static void sendDojoStart(MapleClient c, int stage) {
-        c.getSession().write(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Sound, "Dojang/start")));
-        c.getSession().write(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Screen, "dojang/start/stage")));
-        c.getSession().write(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Screen, "dojang/start/number/" + stage)));
-        c.SendPacket(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Tremble, 0, 1)));
+        c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "Dojang/start")));
+        c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "dojang/start/stage")));
+        c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "dojang/start/number/" + stage)));
+        c.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Tremble, 0, 1)));
     }
 
     private static void handlePinkBeanStart(MapleClient c) {

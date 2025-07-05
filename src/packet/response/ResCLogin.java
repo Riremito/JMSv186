@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Random;
 import packet.ServerPacket;
 import packet.response.data.DataAvatarLook;
-import packet.response.struct.GW_CharacterStat;
+import packet.response.data.DataGW_CharacterStat;
 
 /**
  *
@@ -184,7 +184,7 @@ public class ResCLogin {
             sp.Encode1(0); // nWorldID
             sp.Encode1(chars.size());
             for (MapleCharacter chr : chars) {
-                sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
+                sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
                 sp.EncodeBuffer(DataAvatarLook.Encode(chr));
                 sp.Encode1(1); // ranking
                 sp.Encode4(chr.getRank()); // all world ranking
@@ -535,7 +535,7 @@ public class ResCLogin {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CreateNewCharacterResult);
         sp.Encode1(worked ? 0 : 1);
         if (worked) {
-            sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
+            sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(DataAvatarLook.Encode(chr));
         }
         return sp.get();
@@ -623,7 +623,7 @@ public class ResCLogin {
         int charslots = c.getCharacterSlots();
         data.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
-            data.EncodeBuffer(GW_CharacterStat.Encode(chr));
+            data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             data.EncodeBuffer(DataAvatarLook.Encode(chr));
             if (ServerConfig.TWMS121orLater()) {
                 data.Encode1(0);
@@ -690,7 +690,7 @@ public class ResCLogin {
         sp.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
             //Structure.CharEntry(p, chr, true, false);
-            sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
+            sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(DataAvatarLook.Encode(chr));
             if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsIMS() || ServerConfig.IsEMS() || ServerConfig.IsTHMS() || ServerConfig.IsMSEA())
                     && (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater())
@@ -911,7 +911,7 @@ public class ResCLogin {
         int charslots = c.getCharacterSlots();
         data.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
-            data.EncodeBuffer(GW_CharacterStat.Encode(chr));
+            data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             data.EncodeBuffer(DataAvatarLook.Encode(chr));
             data.Encode1(0);
         }

@@ -41,7 +41,7 @@ import java.util.Random;
 import packet.ClientPacket;
 import packet.ops.OpsBodyPart;
 import packet.ops.OpsBroadcastMsg;
-import packet.ops.OpsBroadcastMsgArg;
+import packet.ops.arg.ArgBroadcastMsg;
 import packet.response.ResCMobPool;
 import packet.response.ResCParcelDlg;
 import packet.response.ResCUser_Pet;
@@ -429,7 +429,7 @@ public class ItemRequest {
             case 5070000: {
                 String message = cp.DecodeStr();
 
-                OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+                ArgBroadcastMsg bma = new ArgBroadcastMsg();
                 bma.bm = OpsBroadcastMsg.BM_SPEAKERCHANNEL;
                 bma.chr = chr;
                 bma.message = message;
@@ -441,7 +441,7 @@ public class ItemRequest {
                 String message = cp.DecodeStr();
                 byte ear = cp.Decode1();
 
-                OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+                ArgBroadcastMsg bma = new ArgBroadcastMsg();
                 bma.bm = OpsBroadcastMsg.BM_SPEAKERWORLD;
                 bma.chr = chr;
                 bma.message = message;
@@ -458,7 +458,7 @@ public class ItemRequest {
                 String message = cp.DecodeStr();
                 byte ear = cp.Decode1();
 
-                OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+                ArgBroadcastMsg bma = new ArgBroadcastMsg();
                 bma.bm = OpsBroadcastMsg.BM_HEARTSPEAKER;
                 bma.chr = chr;
                 bma.message = message;
@@ -471,7 +471,7 @@ public class ItemRequest {
                 String message = cp.DecodeStr();
                 byte ear = cp.Decode1();
 
-                OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+                ArgBroadcastMsg bma = new ArgBroadcastMsg();
                 bma.bm = OpsBroadcastMsg.BM_SKULLSPEAKER;
                 bma.chr = chr;
                 bma.message = message;
@@ -501,7 +501,7 @@ public class ItemRequest {
                     item = chr.getInventory(MapleInventoryType.getByType((byte) type)).getItem((short) slot);
                 }
 
-                OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+                ArgBroadcastMsg bma = new ArgBroadcastMsg();
                 bma.bm = OpsBroadcastMsg.BM_ITEMSPEAKER;
                 bma.chr = chr;
                 bma.message = message;
@@ -529,7 +529,7 @@ public class ItemRequest {
                 }
                 byte ear = cp.Decode1();
 
-                OpsBroadcastMsgArg bma = new OpsBroadcastMsgArg();
+                ArgBroadcastMsg bma = new ArgBroadcastMsg();
                 bma.bm = OpsBroadcastMsg.MEGAPHONE_TRIPLE;
                 bma.chr = chr;
                 bma.ear = ear;

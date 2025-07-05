@@ -18,6 +18,7 @@
  */
 package packet.response.struct;
 
+import packet.response.data.DataGW_ItemSlotBase;
 import client.MapleCharacter;
 import client.inventory.IEquip;
 import client.inventory.IItem;
@@ -122,7 +123,7 @@ public class TestHelper {
 
     public static final void addItemInfo(final MaplePacketLittleEndianWriter mplew, final IItem item, final boolean zeroPosition, final boolean leaveOut) {
         if (zeroPosition && leaveOut) {
-            mplew.write(GW_ItemSlotBase.Encode(item));
+            mplew.write(DataGW_ItemSlotBase.Encode(item));
             return;
         }
         Debug.ErrorLog("!!! addItemInfo, old");

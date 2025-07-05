@@ -16,32 +16,33 @@
  *
  *
  */
-package packet.ops;
+package packet.ops.arg;
 
+import packet.ops.OpsFieldEffect;
 import server.life.MapleMonster;
 
 /**
  *
  * @author Riremito
  */
-public class OpsFieldEffectArg {
+public class ArgFieldEffect {
 
     public OpsFieldEffect flag;
     public String wz_path;
     public MapleMonster monster;
     public int type, delay;
 
-    public OpsFieldEffectArg(OpsFieldEffect flag, String wz_path) {
+    public ArgFieldEffect(OpsFieldEffect flag, String wz_path) {
         this.flag = flag;
         this.wz_path = wz_path;
     }
 
-    public OpsFieldEffectArg(OpsFieldEffect flag, MapleMonster monster) {
+    public ArgFieldEffect(OpsFieldEffect flag, MapleMonster monster) {
         this.flag = flag;
         this.monster = monster;
     }
 
-    public OpsFieldEffectArg(OpsFieldEffect flag, int type, int delay) {
+    public ArgFieldEffect(OpsFieldEffect flag, int type, int delay) {
         this.flag = flag;
         this.type = type;
         this.delay = delay;

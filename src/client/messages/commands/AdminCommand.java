@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 import packet.ops.OpsFieldEffect;
-import packet.ops.OpsFieldEffectArg;
+import packet.ops.arg.ArgFieldEffect;
 import packet.response.ResCField;
 import packet.response.ResCNpcPool;
 import packet.response.ResCUserLocal;
@@ -2147,7 +2147,7 @@ public class AdminCommand {
 
                 if (mob.getStats().getHPDisplayType() == 0) {
                     mob.setHp(0);
-                    map.broadcastMessage(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_MobHPTag, mob)));
+                    map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, mob)));
                 }
                 map.killMonster(mob, c.getPlayer(), false, false, (byte) 1);
             }

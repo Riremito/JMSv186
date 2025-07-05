@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-package packet.response.struct;
+package packet.response.data;
 
 import client.inventory.Equip;
 import client.inventory.IItem;
@@ -26,7 +26,7 @@ import packet.ServerPacket;
  *
  * @author Riremito
  */
-public class GW_ItemSlotBase {
+public class DataGW_ItemSlotBase {
 
     public enum ItemType {
         Equip,

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2023 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,26 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
+ * You should not develop private server for your business.
+ * You should not ban anyone who tries hacking in private server.
  */
-package packet.ops;
+package packet.response.data;
 
-import client.MapleCharacter;
-import client.inventory.IItem;
-import java.util.List;
+import packet.ServerPacket;
 
 /**
  *
  * @author Riremito
  */
-public class OpsBroadcastMsgArg {
+public class DataGW_WildHunterInfo {
 
-    public OpsBroadcastMsg bm = OpsBroadcastMsg.UNKNOWN;
-    public MapleCharacter chr = null;
-    public String message = "";
-    public byte ear = 0; // 拡声器系統専用
-    public IItem item = null; // アイテム拡声器, ガシャポン専用
-    public boolean multi_line = false; // 3連拡声器専用
-    public List<String> messages = null; // 3連拡声器専用
-    public int item_id = 0; // 青文字クリック時にアイテム情報を表示可能
-    public int gashapon_type = 0;
+    // GW_WildHunterInfo::Decode
+    public static byte[] Encode() {
+        ServerPacket p = new ServerPacket();
+
+        p.Encode1(0);
+        for (int i = 0; i < 5; i++) {
+            p.Encode4(0);
+        }
+        return p.get().getBytes();
+    }
 }

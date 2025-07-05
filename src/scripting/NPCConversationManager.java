@@ -66,7 +66,7 @@ import java.util.HashMap;
 import handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
 import packet.ops.OpsFieldEffect;
-import packet.ops.OpsFieldEffectArg;
+import packet.ops.arg.ArgFieldEffect;
 import packet.ops.OpsScriptMan;
 import packet.response.ResCParcelDlg;
 import packet.response.ResCField;
@@ -620,9 +620,9 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void environmentChange(boolean broadcast, String env) {
         if (broadcast) {
-            c.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Object, env)));
+            c.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Object, env)));
         } else {
-            c.getSession().write(ResCField.FieldEffect(new OpsFieldEffectArg(OpsFieldEffect.FieldEffect_Object, env)));
+            c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Object, env)));
         }
     }
 

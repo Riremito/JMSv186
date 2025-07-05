@@ -16,13 +16,17 @@
  *
  *
  */
-package packet.ops;
+package packet.ops.arg;
+
+import packet.ops.OpsDropPickUpMessage;
+import packet.ops.OpsMessage;
+import packet.ops.OpsQuestRecordMessage;
 
 /**
  *
  * @author Riremito
  */
-public class OpsMessageArg {
+public class ArgMessage {
 
     public OpsMessage mt = OpsMessage.UNKNOWN;
     public OpsDropPickUpMessage dt;

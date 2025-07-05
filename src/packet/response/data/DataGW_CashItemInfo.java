@@ -16,7 +16,7 @@
  *
  *
  */
-package packet.response.struct;
+package packet.response.data;
 
 import client.MapleClient;
 import client.inventory.IItem;
@@ -28,7 +28,7 @@ import server.CashItemFactory;
  *
  * @author Riremito
  */
-public class GW_CashItemInfo {
+public class DataGW_CashItemInfo {
 
     // addCashItemInfo
     public static byte[] Encode(IItem item, MapleClient c) {

@@ -18,9 +18,7 @@
  */
 package packet.response.wrapper;
 
-import debug.Debug;
 import handling.MaplePacket;
-import packet.ServerPacket;
 import packet.ops.OpsUserEffect;
 import packet.ops.arg.ArgUserEffect;
 import packet.response.ResCUserLocal;
