@@ -742,7 +742,7 @@ public class ReqCUser {
         chr.setPosition(data.getEnd());
         chr.setStance(data.getAction());
         map.movePlayer(chr, chr.getPosition());
-        map.broadcastMessage(chr, ResCUserRemote.movePlayer(chr, data), false);
+        map.broadcastMessage(chr, ResCUserRemote.Move(chr, data), false);
 
         // クローン : 移動
         if (chr.isCloning()) {
@@ -750,7 +750,7 @@ public class ReqCUser {
             chr_clone.setPosition(data.getEnd());
             chr_clone.setStance(data.getAction());
             map.movePlayer(chr_clone, chr_clone.getPosition());
-            map.broadcastMessageClone(chr_clone, ResCUserRemote.movePlayer(chr_clone, data), false);
+            map.broadcastMessageClone(chr_clone, ResCUserRemote.Move(chr_clone, data));
         }
         return true;
     }

@@ -31,8 +31,41 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  *
  * @author Riremito
  */
+// CUserPool::OnUserCommonPacket & CUser
 public class ResCUser {
 
+    // CUser::OnChat
+    public static MaplePacket getChatText(int cidfrom, String text, boolean whiteBG, int show) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserChat);
+        sp.Encode4(cidfrom);
+        sp.Encode1(whiteBG ? 1 : 0);
+        sp.EncodeStr(text);
+        if (ServerConfig.JMS146orLater()) {
+            sp.Encode1((byte) show);
+        }
+        if (ServerConfig.JMS302orLater()) {
+            sp.Encode1(0);
+        }
+        // if LP_UserChatNLCPQ, add more str
+        // p.EncodeStr("");
+        return sp.get();
+    }
+
+    // CUser::OnADBoard
+    public static MaplePacket useChalkboard(final int charid, final String msg) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserADBoard.get());
+        mplew.writeInt(charid);
+        if (msg == null || msg.length() <= 0) {
+            mplew.write(0);
+        } else {
+            mplew.write(1);
+            mplew.writeMapleAsciiString(msg);
+        }
+        return mplew.getPacket();
+    }
+
+    // CUser::OnMiniRoomBalloon
     public static final MaplePacket sendPlayerShopBox(final MapleCharacter c) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserMiniRoomBalloon.get());
@@ -57,25 +90,8 @@ public class ResCUser {
         return mplew.getPacket();
     }
 
-    //magnify glass
-    public static MaplePacket getPotentialReset(int chr, short pos) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemReleaseEffect);
-        sp.Encode4(chr);
-        sp.Encode2(pos);
-        return sp.get();
-    }
-
-    //miracle cube?
-    public static MaplePacket getPotentialEffect(int chr, short pos) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemUnreleaseEffect);
-        sp.Encode4(chr);
-        sp.Encode1(1);
-        if (ServerConfig.JMS302orLater()) {
-            sp.Encode4(0); // 金印 2049500
-        }
-        return sp.get();
-    }
-
+    // CUser::SetConsumeItemEffect
+    // CUser::ShowItemUpgradeEffect
     public static MaplePacket getScrollEffect(int chr, IEquip.ScrollResult scrollSuccess, boolean legendarySpirit) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemUpgradeEffect);
         sp.Encode4(chr);
@@ -113,22 +129,30 @@ public class ResCUser {
         return sp.get();
     }
 
-    public static MaplePacket getChatText(int cidfrom, String text, boolean whiteBG, int show) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_UserChat);
-        p.Encode4(cidfrom);
-        p.Encode1(whiteBG ? 1 : 0);
-        p.EncodeStr(text);
-        if (ServerConfig.JMS146orLater()) {
-            p.Encode1((byte) show);
-        }
-        if (ServerConfig.JMS302orLater()) {
-            p.Encode1(0);
-        }
-        // if LP_UserChatNLCPQ, add more str
-        // p.EncodeStr("");
-        return p.get();
+    // CUser::ShowItemHyperUpgradeEffect
+    // CUser::ShowItemOptionUpgradeEffect
+    // CUser::ShowItemReleaseEffect
+    public static MaplePacket getPotentialReset(int chr, short pos) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemReleaseEffect);
+        sp.Encode4(chr);
+        sp.Encode2(pos);
+        return sp.get();
     }
 
+    // CUser::ShowItemUnreleaseEffect
+    public static MaplePacket getPotentialEffect(int chr, short pos) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemUnreleaseEffect);
+        sp.Encode4(chr);
+        sp.Encode1(1);
+        if (ServerConfig.JMS302orLater()) {
+            sp.Encode4(0); // 金印 2049500
+        }
+        return sp.get();
+    }
+
+    // CUser::OnHitByUser
+    // CUser::OnTeslaTriangle
+    // CUser::OnFollowCharacter
     public static MaplePacket followEffect(int initiator, int replier, Point toMap) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserFollowCharacter.get());
@@ -143,6 +167,14 @@ public class ResCUser {
             }
         }
         return mplew.getPacket();
+    }
+
+    // CUser::OnShowPQReward
+    // JMS
+    public static MaplePacket fishingCaught(int chrid) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Fishing_Caught);
+        sp.Encode4(chrid);
+        return sp.get();
     }
 
 }

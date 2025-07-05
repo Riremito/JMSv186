@@ -303,6 +303,12 @@ public class PlayerHandler {
         if (!chr.isHidden()) {
             chr.getMap().broadcastMessage(chr, ResCUserRemote.damagePlayer(type, monsteridfrom, chr.getId(), damage, fake, direction, reflect, is_pg, oid, pos_x, pos_y), false);
         }
+
+        // クローン : 被ダメージ
+        if (chr.isCloning()) {
+            MapleCharacter chr_clone = chr.getClone();
+            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.damagePlayer(type, monsteridfrom, chr_clone.getId(), damage, fake, direction, reflect, is_pg, oid, pos_x, pos_y));
+        }
     }
 
     public static final void AranCombo(final MapleClient c, final MapleCharacter chr) {
@@ -564,6 +570,14 @@ public class PlayerHandler {
         chr.checkFollow();
         chr.getMap().broadcastMessage(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttack(attack, skill, c.getPlayer(), attackCount, maxdamage, effect, mirror ? AttackType.NON_RANGED_WITH_MIRROR : AttackType.NON_RANGED);
+
+        // クローン : 攻撃
+        if (chr.isCloning()) {
+            MapleCharacter chr_clone = chr.getClone();
+            AttackInfo attack_clone = attack;
+            attack_clone.CharacterId = chr_clone.getId();
+            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.UserAttack(attack_clone));
+        }
     }
 
     public static final void rangedAttack(MapleClient c, AttackInfo attack) {
@@ -684,6 +698,14 @@ public class PlayerHandler {
         chr.checkFollow();
         chr.getMap().broadcastMessage(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttack(attack, skill, chr, bulletCount, basedamage, effect, ShadowPartner != null ? AttackType.RANGED_WITH_SHADOWPARTNER : AttackType.RANGED);
+
+        // クローン : 攻撃
+        if (chr.isCloning()) {
+            MapleCharacter chr_clone = chr.getClone();
+            AttackInfo attack_clone = attack;
+            attack_clone.CharacterId = chr_clone.getId();
+            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.UserAttack(attack_clone));
+        }
     }
 
     public static final void MagicDamage(MapleClient c, AttackInfo attack) {
@@ -710,6 +732,14 @@ public class PlayerHandler {
         chr.checkFollow();
         chr.getMap().broadcastMessage(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttackMagic(attack, skill, c.getPlayer(), effect);
+
+        // クローン : 攻撃
+        if (chr.isCloning()) {
+            MapleCharacter chr_clone = chr.getClone();
+            AttackInfo attack_clone = attack;
+            attack_clone.CharacterId = chr_clone.getId();
+            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.UserAttack(attack_clone));
+        }
     }
 
     public static final void DropMeso(final int meso, final MapleCharacter chr) {
@@ -737,7 +767,7 @@ public class PlayerHandler {
             // クローン : 表情
             if (chr.isCloning()) {
                 MapleCharacter chr_clone = chr.getClone();
-                chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.Emotion(chr_clone, emote), false);
+                chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.Emotion(chr_clone, emote));
             }
         }
     }

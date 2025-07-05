@@ -2213,12 +2213,12 @@ public final class MapleMap {
         broadcastMessage(repeatToSource ? null : source, packet, Double.POSITIVE_INFINITY, source.getPosition());
     }
 
-    public final void broadcastMessageClone(final MapleCharacter source, final MaplePacket packet, final boolean repeatToSource) {
+    public final void broadcastMessageClone(final MapleCharacter source, final MaplePacket packet) {
         int clone_delay = 1000;
         MapTimer.getInstance().schedule(new Runnable() {
             @Override
             public void run() {
-                broadcastMessage(source, packet, repeatToSource);
+                broadcastMessage(source, packet, false);
             }
         }, clone_delay);
     }

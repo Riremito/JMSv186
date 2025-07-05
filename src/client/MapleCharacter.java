@@ -1655,7 +1655,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                         break;
                     }
                 }
-                map.broadcastMessage(ResCUserRemote.fishingCaught(id));
+                map.broadcastMessage(ResCUser.fishingCaught(id));
             }
         }, time, time);
     }
@@ -3708,7 +3708,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
         if (isCloning()) {
             cloneUpdate();
-            map.broadcastMessageClone(getClone(), ResCUserRemote.AvatarModified(getClone(), 1), false);
+            map.broadcastMessageClone(getClone(), ResCUserRemote.AvatarModified(getClone(), 1));
         }
     }
 
@@ -4560,7 +4560,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void setChalkboard(String text) {
         this.chalktext = text;
-        map.broadcastMessage(ResCUserRemote.useChalkboard(getId(), text));
+        map.broadcastMessage(ResCUser.useChalkboard(getId(), text));
     }
 
     public String getChalkboard() {

@@ -42,20 +42,80 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class ResCUserRemote {
 
-    public static MaplePacket SetActivePortableChair(int characterid, int itemid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserSetActivePortableChair);
-        sp.Encode4(characterid);
-        sp.Encode4(itemid);
-        return sp.get();
-    }
-
-    public static MaplePacket movePlayer(MapleCharacter chr, CMovePath data) {
+    // CUserRemote::OnMove
+    public static MaplePacket Move(MapleCharacter chr, CMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserMove);
         sp.Encode4(chr.getId());
         sp.EncodeBuffer(data.get());
         return sp.get();
     }
 
+    // CUserRemote::OnAttack
+    public static MaplePacket UserAttack(AttackInfo attack) {
+        ServerPacket sp = new ServerPacket(attack.GetHeader());
+        sp.Encode4(attack.CharacterId);
+        sp.Encode1(attack.HitKey);
+        if (ServerConfig.JMS164orLater()) {
+            sp.Encode1(attack.m_nLevel);
+        }
+        sp.Encode1(attack.SkillLevel); // nPassiveSLV
+        if (0 < attack.nSkillID) {
+            sp.Encode4(attack.nSkillID); // nSkillID
+        }
+        if (ServerConfig.JMS164orLater()) {
+            sp.Encode1(attack.BuffKey); // bSerialAttack
+        }
+        if (ServerConfig.JMS131orEarlier()) {
+            sp.Encode1(attack.AttackActionKey);
+        } else {
+            sp.Encode2(attack.AttackActionKey);
+        }
+        sp.Encode1(attack.nAttackSpeed); // nActionSpeed
+        sp.Encode1(attack.nMastery); // nMastery
+        sp.Encode4(attack.nBulletItemID); // nBulletItemID
+        for (AttackPair oned : attack.allDamage) {
+            if (oned.attack != null) {
+                sp.Encode4(oned.objectid);
+                sp.Encode1(7);
+                if (attack.IsMesoExplosion()) {
+                    sp.Encode1(oned.attack.size());
+                }
+                for (Pair<Integer, Boolean> eachd : oned.attack) {
+                    if (ServerConfig.JMS131orEarlier()) {
+                        sp.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
+                    } else {
+                        sp.Encode1(eachd.right ? 1 : 0);
+                        sp.Encode4(eachd.left.intValue());
+                    }
+                }
+            }
+        }
+        if (attack.IsQuantumExplosion()) {
+            sp.Encode4(attack.tKeyDown);
+        }
+        if (ServerConfig.JMS164orLater()) {
+            if (attack.GetHeader() == ServerPacket.Header.LP_UserShootAttack) {
+                sp.Encode2(attack.X);
+                sp.Encode2(attack.Y);
+            }
+        }
+        return sp.get();
+    }
+
+    // CUserRemote::OnSkillPrepare
+    public static MaplePacket skillEffect(MapleCharacter from, int skillId, byte level, byte flags, byte speed, byte unk) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserSkillPrepare.get());
+        mplew.writeInt(from.getId());
+        mplew.writeInt(skillId);
+        mplew.write(level);
+        mplew.write(flags);
+        mplew.write(speed);
+        mplew.write(unk); // Direction ??
+        return mplew.getPacket();
+    }
+
+    // CUserRemote::OnSkillCancel
     public static MaplePacket skillCancel(MapleCharacter chr, int skillId) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserSkillCancel);
         sp.Encode4(chr.getId());
@@ -63,26 +123,43 @@ public class ResCUserRemote {
         return sp.get();
     }
 
-    public static MaplePacket EffectRemote(ArgUserEffect arg) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectRemote);
-        sp.Encode4(arg.chr.getId());
-        sp.EncodeBuffer(ResCUserLocal.EffectData(arg));
-        return sp.get();
-    }
-
-    public static MaplePacket useChalkboard(final int charid, final String msg) {
+    // CUserRemote::OnHit
+    public static MaplePacket damagePlayer(int skill, int monsteridfrom, int cid, int damage, int fake, byte direction, int reflect, boolean is_pg, int oid, int pos_x, int pos_y) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserADBoard.get());
-        mplew.writeInt(charid);
-        if (msg == null || msg.length() <= 0) {
+        mplew.writeShort(ServerPacket.Header.LP_UserHit.get());
+        mplew.writeInt(cid);
+        mplew.write(skill);
+        mplew.writeInt(damage);
+        mplew.writeInt(monsteridfrom);
+        mplew.write(direction);
+        if (reflect > 0) {
+            mplew.write(reflect);
+            mplew.write(is_pg ? 1 : 0);
+            mplew.writeInt(oid);
+            mplew.write(6);
+            mplew.writeShort(pos_x);
+            mplew.writeShort(pos_y);
             mplew.write(0);
         } else {
-            mplew.write(1);
-            mplew.writeMapleAsciiString(msg);
+            mplew.writeShort(0);
+        }
+        mplew.writeInt(damage);
+        if (fake > 0) {
+            mplew.writeInt(fake);
         }
         return mplew.getPacket();
     }
 
+    // CUser::OnEmotion
+    public static MaplePacket Emotion(MapleCharacter chr, int expression) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEmotion);
+
+        sp.Encode4(chr.getId()); // remote
+        sp.EncodeBuffer(DataCUser.Emotion(expression));
+        return sp.get();
+    }
+
+    // CUser::SetActiveEffectItem
     public static MaplePacket itemEffect(int characterid, int itemid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserSetActiveEffectItem.get());
@@ -91,10 +168,55 @@ public class ResCUserRemote {
         return mplew.getPacket();
     }
 
-    public static MaplePacket fishingCaught(int chrid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Fishing_Caught);
-        sp.Encode4(chrid);
+    // CUserRemote::OnSetActivePortableChair
+    public static MaplePacket SetActivePortableChair(int characterid, int itemid) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserSetActivePortableChair);
+        sp.Encode4(characterid);
+        sp.Encode4(itemid);
         return sp.get();
+    }
+
+    // CUserRemote::OnAvatarModified
+    public static MaplePacket AvatarModified(MapleCharacter chr, int flag) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserAvatarModified);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(flag);
+
+        if ((flag & 0x01) != 0) {
+            sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+        }
+        if ((flag & 0x02) != 0) {
+            sp.Encode1(0); // nSpeed_CS
+        }
+        if ((flag & 0x04) != 0) {
+            sp.Encode1(0); // CarryItemEffect
+        }
+        sp.Encode1(0); // Couple -> data
+        sp.Encode1(0); // Friendship -> data
+        sp.Encode1(0); // Marriage -> data
+        sp.Encode4(0); // m_nCompletedSetItemID
+        return sp.get();
+    }
+
+    // CUser::OnEffect
+    public static MaplePacket EffectRemote(ArgUserEffect arg) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectRemote);
+        sp.Encode4(arg.chr.getId());
+        sp.EncodeBuffer(ResCUserLocal.EffectData(arg));
+        return sp.get();
+    }
+
+    // CUserRemote::OnSetTemporaryStat
+    // CUserRemote::OnResetTemporaryStat
+    // CUserRemote::OnReceiveHP
+    public static MaplePacket updatePartyMemberHP(int cid, int curhp, int maxhp) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_UserHP.get());
+        mplew.writeInt(cid);
+        mplew.writeInt(curhp);
+        mplew.writeInt(maxhp);
+        return mplew.getPacket();
     }
 
     public static MaplePacket cancelForeignDebuff(int cid, long mask, boolean first) {
@@ -319,123 +441,6 @@ public class ResCUserRemote {
         return mplew.getPacket();
     }
 
-    public static MaplePacket updatePartyMemberHP(int cid, int curhp, int maxhp) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserHP.get());
-        mplew.writeInt(cid);
-        mplew.writeInt(curhp);
-        mplew.writeInt(maxhp);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket damagePlayer(int skill, int monsteridfrom, int cid, int damage, int fake, byte direction, int reflect, boolean is_pg, int oid, int pos_x, int pos_y) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserHit.get());
-        mplew.writeInt(cid);
-        mplew.write(skill);
-        mplew.writeInt(damage);
-        mplew.writeInt(monsteridfrom);
-        mplew.write(direction);
-        if (reflect > 0) {
-            mplew.write(reflect);
-            mplew.write(is_pg ? 1 : 0);
-            mplew.writeInt(oid);
-            mplew.write(6);
-            mplew.writeShort(pos_x);
-            mplew.writeShort(pos_y);
-            mplew.write(0);
-        } else {
-            mplew.writeShort(0);
-        }
-        mplew.writeInt(damage);
-        if (fake > 0) {
-            mplew.writeInt(fake);
-        }
-        return mplew.getPacket();
-    }
-
-    // CLifePool::OnUserAttack
-    public static MaplePacket UserAttack(AttackInfo attack) {
-        ServerPacket sp = new ServerPacket(attack.GetHeader());
-        sp.Encode4(attack.CharacterId);
-        sp.Encode1(attack.HitKey);
-        if (ServerConfig.JMS164orLater()) {
-            sp.Encode1(attack.m_nLevel);
-        }
-        sp.Encode1(attack.SkillLevel); // nPassiveSLV
-        if (0 < attack.nSkillID) {
-            sp.Encode4(attack.nSkillID); // nSkillID
-        }
-        if (ServerConfig.JMS164orLater()) {
-            sp.Encode1(attack.BuffKey); // bSerialAttack
-        }
-        if (ServerConfig.JMS131orEarlier()) {
-            sp.Encode1(attack.AttackActionKey);
-        } else {
-            sp.Encode2(attack.AttackActionKey);
-        }
-        sp.Encode1(attack.nAttackSpeed); // nActionSpeed
-        sp.Encode1(attack.nMastery); // nMastery
-        sp.Encode4(attack.nBulletItemID); // nBulletItemID
-        for (AttackPair oned : attack.allDamage) {
-            if (oned.attack != null) {
-                sp.Encode4(oned.objectid);
-                sp.Encode1(7);
-                if (attack.IsMesoExplosion()) {
-                    sp.Encode1(oned.attack.size());
-                }
-                for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    if (ServerConfig.JMS131orEarlier()) {
-                        sp.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
-                    } else {
-                        sp.Encode1(eachd.right ? 1 : 0);
-                        sp.Encode4(eachd.left.intValue());
-                    }
-                }
-            }
-        }
-        if (attack.IsQuantumExplosion()) {
-            sp.Encode4(attack.tKeyDown);
-        }
-        if (ServerConfig.JMS164orLater()) {
-            if (attack.GetHeader() == ServerPacket.Header.LP_UserShootAttack) {
-                sp.Encode2(attack.X);
-                sp.Encode2(attack.Y);
-            }
-        }
-        return sp.get();
-    }
-
-    public static MaplePacket Emotion(MapleCharacter chr, int expression) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEmotion);
-
-        sp.Encode4(chr.getId()); // remote
-        sp.EncodeBuffer(DataCUser.Emotion(expression));
-        return sp.get();
-    }
-
-    public static MaplePacket AvatarModified(MapleCharacter chr, int flag) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserAvatarModified);
-
-        sp.Encode4(chr.getId());
-        sp.Encode1(flag);
-
-        if ((flag & 0x01) != 0) {
-            sp.EncodeBuffer(DataAvatarLook.Encode(chr));
-        }
-        if ((flag & 0x02) != 0) {
-            sp.Encode1(0); // nSpeed_CS
-        }
-        if ((flag & 0x04) != 0) {
-            sp.Encode1(0); // CarryItemEffect
-        }
-        sp.Encode1(0); // Couple -> data
-        sp.Encode1(0); // Friendship -> data
-        sp.Encode1(0); // Marriage -> data
-        sp.Encode4(0); // m_nCompletedSetItemID
-        return sp.get();
-    }
-
     public static void addRingInfo(MaplePacketLittleEndianWriter mplew, List<MapleRing> rings) {
         mplew.write(rings.size());
         for (MapleRing ring : rings) {
@@ -444,18 +449,6 @@ public class ResCUserRemote {
             mplew.writeLong(ring.getPartnerRingId());
             mplew.writeInt(ring.getItemId());
         }
-    }
-
-    public static MaplePacket skillEffect(MapleCharacter from, int skillId, byte level, byte flags, byte speed, byte unk) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserSkillPrepare.get());
-        mplew.writeInt(from.getId());
-        mplew.writeInt(skillId);
-        mplew.write(level);
-        mplew.write(flags);
-        mplew.write(speed);
-        mplew.write(unk); // Direction ??
-        return mplew.getPacket();
     }
 
 }
