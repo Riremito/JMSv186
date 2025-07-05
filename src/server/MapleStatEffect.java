@@ -1091,12 +1091,6 @@ public class MapleStatEffect implements Serializable {
                     applyto.getClient().getSession().write(ResCUserLocal.SkillCooltimeSet(i.skillId, 0));
                 }
             }
-        } else {
-            for (WeakReference<MapleCharacter> chrz : applyto.getClones()) {
-                if (chrz.get() != null) {
-                    applyTo(chrz.get(), chrz.get(), primary, pos, newDuration);
-                }
-            }
         }
         return true;
     }

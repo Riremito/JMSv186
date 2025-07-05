@@ -29,6 +29,7 @@ import java.util.List;
 import packet.ServerPacket;
 import packet.ops.arg.ArgUserEffect;
 import packet.request.struct.CMovePath;
+import packet.response.struct.AvatarLook;
 import packet.response.struct.TestHelper;
 import server.MapleStatEffect;
 import tools.AttackPair;
@@ -415,17 +416,26 @@ public class ResCUserRemote {
         return mplew.getPacket();
     }
 
-    public static MaplePacket updateCharLook(MapleCharacter chr) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserAvatarModified.get());
-        mplew.writeInt(chr.getId());
-        mplew.write(1);
-        TestHelper.addCharLook(mplew, chr, false);
-        Pair<List<MapleRing>, List<MapleRing>> rings = chr.getRings(false);
-        addRingInfo(mplew, rings.getLeft());
-        addRingInfo(mplew, rings.getRight());
-        mplew.writeZeroBytes(5); //probably marriage ring (1) -> charid to follow (4)
-        return mplew.getPacket();
+    public static MaplePacket AvatarModified(MapleCharacter chr, int flag) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserAvatarModified);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(flag);
+
+        if ((flag & 0x01) != 0) {
+            sp.EncodeBuffer(AvatarLook.Encode(chr));
+        }
+        if ((flag & 0x02) != 0) {
+            sp.Encode1(0); // nSpeed_CS
+        }
+        if ((flag & 0x04) != 0) {
+            sp.Encode1(0); // CarryItemEffect
+        }
+        sp.Encode1(0); // Couple -> data
+        sp.Encode1(0); // Friendship -> data
+        sp.Encode1(0); // Marriage -> data
+        sp.Encode4(0); // m_nCompletedSetItemID
+        return sp.get();
     }
 
     public static void addRingInfo(MaplePacketLittleEndianWriter mplew, List<MapleRing> rings) {

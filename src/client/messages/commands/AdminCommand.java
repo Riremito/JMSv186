@@ -1371,26 +1371,29 @@ public class AdminCommand {
         }
     }
 
+    // クローン
+    public static class Clone extends CommandExecute {
+
+        @Override
+        public int execute(MapleClient c, String[] splitted) {
+            if (!c.getPlayer().cloneSpawn()) {
+                c.getPlayer().cloneRemove();
+                c.getPlayer().cloneSpawn();
+            }
+            return 1;
+        }
+    }
+
+    public static class RemoveClone extends CommandExecute {
+
+        @Override
+        public int execute(MapleClient c, String[] splitted) {
+            c.getPlayer().cloneRemove();
+            return 1;
+        }
+    }
+
     /*
-    public static class CloneMe extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            c.getPlayer().cloneLook();
-            return 1;
-        }
-    }
-
-    public static class DisposeClones extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            c.getPlayer().dropMessage(6, c.getPlayer().getCloneSize() + " clones disposed.");
-            c.getPlayer().disposeClones();
-            return 1;
-        }
-    }
-
     public static class Monitor extends CommandExecute {
 
         @Override

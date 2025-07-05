@@ -106,7 +106,6 @@ import packet.response.ResCUserRemote;
 import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCUserLocal;
 import packet.response.wrapper.WrapCUserRemote;
-import tools.MockIOSession;
 import scripting.EventInstanceManager;
 import scripting.NPCScriptManager;
 import server.MapleAchievements;
@@ -146,6 +145,7 @@ import server.maps.MapleFoothold;
 import server.movement.LifeMovementFragment;
 import tools.ConcurrentEnumMap;
 import tools.FileoutputUtil;
+import tools.MockIOSession;
 import wz.DefaultData;
 import wz.LoadData;
 
@@ -169,7 +169,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private List<Integer> lastmonthfameids;
     private List<MapleDoor> doors;
     private List<MaplePet> pets;
-    private transient WeakReference<MapleCharacter>[] clones;
     private transient Set<MapleMonster> controlled;
     private transient Set<MapleMapObject> visibleMapObjects;
 //    private transient ReentrantReadWriteLock visibleMapObjectsLock;
@@ -201,7 +200,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private byte[] petStore;
     private transient IMaplePlayerShop playerShop;
     private MapleParty party;
-    private boolean invincible = false, canTalk = true, clone = false, followinitiator = false, followon = false;
+    private boolean invincible = false, canTalk = true, followinitiator = false, followon = false;
     private MapleGuildCharacter mgc;
     private MapleFamilyCharacter mfc;
     private transient EventInstanceManager eventInstance;
@@ -234,6 +233,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private int pet_auto_hp_item_id = 0;
     private int pet_auto_mp_item_id = 0;
     private int pet_auto_cure_item_id = 0;
+    // クローン
+    private boolean clone = false;
+    private boolean cloning = false;
+    private transient WeakReference<MapleCharacter>[] clones;
+    private MapleCharacter clone_parent = null;
 
     public int getLastSkillUp() {
         return last_skill_up_id;
@@ -290,10 +294,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             wishlist = new int[10];
             rocks = new int[10];
             regrocks = new int[5];
-            clones = new WeakReference[25];
-            for (int i = 0; i < clones.length; i++) {
-                clones[i] = new WeakReference<MapleCharacter>(null);
-            }
+            clones = new WeakReference[1];
+            clones[0] = new WeakReference<MapleCharacter>(null);
             inst = new AtomicInteger();
             inst.set(0); // 1 = NPC/ Quest, 2 = Duey, 3 = Hired Merch store, 4 = Storage
             keylayout = new MapleKeyLayout();
@@ -499,7 +501,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         client.setAccountName(ct.accountname);
         ret.acash = ct.ACash;
         ret.maplepoints = ct.MaplePoints;
-        ret.numClones = ct.clonez;
+        ret.numClones = 0;
         ret.mount = new MapleMount(ret, ct.mount_itemid, GameConstants.isKOC(ret.job) ? 10001004 : (GameConstants.isAran(ret.job) ? 20001004 : (GameConstants.isEvan(ret.job) ? 20011004 : 1004)), ct.mount_Fatigue, ct.mount_level, ct.mount_exp);
 
         ret.stats.recalcLocalStats(true);
@@ -1073,7 +1075,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void saveToDB(boolean dc, boolean fromcs) {
-        if (isClone()) {
+        if (clone) {
             return;
         }
 
@@ -1698,16 +1700,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             effects.put(statup.getLeft(), new MapleBuffStatValueHolder(effect, starttime, schedule, value));
         }
-        if (clonez > 0) {
-            int cloneSize = Math.max(getNumClones(), getCloneSize());
-            if (clonez > cloneSize) { //how many clones to summon
-                for (int i = 0; i < clonez - cloneSize; i++) { //1-1=0
-                    cloneLook();
-                }
-            }
-        }
+
         stats.recalcLocalStats();
-        //System.out.println("Effect registered. Effect: " + effect.getSourceId());
     }
 
     public List<MapleBuffStat> getBuffStats(final MapleStatEffect effect, final long startTime) {
@@ -1722,8 +1716,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return bstats;
     }
 
-    private boolean deregisterBuffStats(List<MapleBuffStat> stats) {
-        boolean clonez = false;
+    private void deregisterBuffStats(List<MapleBuffStat> stats) {
         List<MapleBuffStatValueHolder> effectsToCancel = new ArrayList<MapleBuffStatValueHolder>(stats.size());
         for (MapleBuffStat stat : stats) {
             final MapleBuffStatValueHolder mbsvh = effects.remove(stat);
@@ -1761,9 +1754,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                         dragonBloodSchedule.cancel(false);
                         dragonBloodSchedule = null;
                     }
-                } else if (stat == MapleBuffStat.ILLUSION) {
-                    disposeClones();
-                    clonez = true;
                 }
             }
         }
@@ -1774,7 +1764,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 }
             }
         }
-        return clonez;
     }
 
     /**
@@ -1800,7 +1789,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (buffstats.size() <= 0) {
             return;
         }
-        final boolean clonez = deregisterBuffStats(buffstats);
+        deregisterBuffStats(buffstats);
         if (effect.isMagicDoor()) {
             // remove for all on maps
             if (!getDoors().isEmpty()) {
@@ -1826,21 +1815,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                         map.broadcastMessage(this, ResCUser_Pet.Activated(this, pet), false);
                     }
                 }
-                for (final WeakReference<MapleCharacter> chr : clones) {
-                    if (chr.get() != null) {
-                        map.broadcastMessage(chr.get(), ResCUserPool.UserEnterField(chr.get()), false);
-                    }
-                }
             }
         }
-        if (!clonez) {
-            for (WeakReference<MapleCharacter> chr : clones) {
-                if (chr.get() != null) {
-                    chr.get().cancelEffect(effect, overwrite, startTime);
-                }
-            }
-        }
-        //System.out.println("Effect deregistered. Effect: " + effect.getSourceId());
     }
 
     public void cancelBuffStats(MapleBuffStat... stat) {
@@ -2438,7 +2414,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             to.spawnDynamicPortal(this); // show dynamic portal;
 
             map.removePlayer(this);
-            if (!isClone() && client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {
+            if (!clone && client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {
                 map = to;
                 setPosition(pos);
                 to.addPlayer(this);
@@ -3697,11 +3673,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     @Override
     public void sendDestroyData(MapleClient client) {
         client.getSession().write(ResCUserPool.UserLeaveField(this.getObjectId()));
-        for (final WeakReference<MapleCharacter> chr : clones) {
-            if (chr.get() != null) {
-                chr.get().sendDestroyData(client);
-            }
-        }
     }
 
     @Override
@@ -3712,11 +3683,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             for (final MaplePet pet : pets) {
                 if (pet.getSummoned()) {
                     client.getSession().write(ResCUser_Pet.Activated(this, pet));
-                }
-            }
-            for (final WeakReference<MapleCharacter> chr : clones) {
-                if (chr.get() != null) {
-                    chr.get().sendSpawnData(client);
                 }
             }
             if (dragon != null) {
@@ -3734,10 +3700,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public final void equipChanged() {
-        map.broadcastMessage(this, ResCUserRemote.updateCharLook(this), false);
+        map.broadcastMessage(this, ResCUserRemote.AvatarModified(this, 1), false);
         stats.recalcLocalStats();
         if (getMessenger() != null) {
             World.Messenger.updateMessenger(getMessenger().getId(), getName(), client.getChannel());
+        }
+
+        if (isCloning()) {
+            cloneUpdate();
+            map.broadcastMessageClone(getClone(), ResCUserRemote.AvatarModified(getClone(), 1), false);
         }
     }
 
@@ -4833,8 +4804,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void finishAchievement(int id) {
+        if (clone) {
+            return;
+        }
         if (!achievementFinished(id)) {
-            if (isAlive() && !isClone()) {
+            if (isAlive()) {
                 MapleAchievements.getInstance().getById(id).finishAchievement(this);
             }
         }
@@ -5119,150 +5093,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void setLinkMid(int lm) {
         this.linkMid = lm;
-    }
-
-    public boolean isClone() {
-        return clone;
-    }
-
-    public void setClone(boolean c) {
-        this.clone = c;
-    }
-
-    public WeakReference<MapleCharacter>[] getClones() {
-        return clones;
-    }
-
-    public MapleCharacter cloneLooks() {
-        MapleClient cs = new MapleClient(null, null, new MockIOSession());
-
-        final int minus = (getId() + Randomizer.nextInt(getId())); // really randomize it, dont want it to fail
-
-        MapleCharacter ret = new MapleCharacter(true);
-        ret.id = minus;
-        ret.client = cs;
-        ret.exp = 0;
-        ret.meso = 0;
-        ret.remainingAp = 0;
-        ret.fame = 0;
-        ret.accountid = client.getAccID();
-        ret.name = name;
-        ret.level = level;
-        ret.fame = fame;
-        ret.job = job;
-        ret.hair = hair;
-        ret.face = face;
-        ret.skinColor = skinColor;
-        ret.bookCover = bookCover;
-        ret.monsterbook = monsterbook;
-        ret.mount = mount;
-        ret.CRand = new PlayerRandomStream();
-        ret.gmLevel = gmLevel;
-        ret.gender = gender;
-        ret.mapid = map.getId();
-        ret.map = map;
-        ret.setStance(getStance());
-        ret.chair = chair;
-        ret.itemEffect = itemEffect;
-        ret.guildid = guildid;
-        ret.currentrep = currentrep;
-        ret.totalrep = totalrep;
-        ret.stats = stats;
-        ret.effects.putAll(effects);
-        if (ret.effects.get(MapleBuffStat.ILLUSION) != null) {
-            ret.effects.remove(MapleBuffStat.ILLUSION);
-        }
-        if (ret.effects.get(MapleBuffStat.SUMMON) != null) {
-            ret.effects.remove(MapleBuffStat.SUMMON);
-        }
-        if (ret.effects.get(MapleBuffStat.REAPER) != null) {
-            ret.effects.remove(MapleBuffStat.REAPER);
-        }
-        if (ret.effects.get(MapleBuffStat.PUPPET) != null) {
-            ret.effects.remove(MapleBuffStat.PUPPET);
-        }
-        ret.guildrank = guildrank;
-        ret.allianceRank = allianceRank;
-        ret.hidden = hidden;
-        ret.setPosition(new Point(getPosition()));
-        for (IItem equip : getInventory(MapleInventoryType.EQUIPPED)) {
-            ret.getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
-        }
-        ret.skillMacros = skillMacros;
-        ret.keylayout = keylayout;
-        ret.questinfo = questinfo;
-        ret.savedLocations = savedLocations;
-        ret.wishlist = wishlist;
-        ret.rocks = rocks;
-        ret.regrocks = regrocks;
-        ret.buddylist = buddylist;
-        ret.keydown_skill = 0;
-        ret.lastmonthfameids = lastmonthfameids;
-        ret.lastfametime = lastfametime;
-        ret.storage = storage;
-        ret.cs = this.cs;
-        ret.client.setAccountName(client.getAccountName());
-        ret.acash = acash;
-        ret.maplepoints = maplepoints;
-        ret.clone = true;
-        ret.client.setChannel(this.client.getChannel());
-        while (map.getCharacterById(ret.id) != null || client.getChannelServer().getPlayerStorage().getCharacterById(ret.id) != null) {
-            ret.id++;
-        }
-        ret.client.setPlayer(ret);
-        return ret;
-    }
-
-    public final void cloneLook() {
-        if (clone) {
-            return;
-        }
-        for (int i = 0; i < clones.length; i++) {
-            if (clones[i].get() == null) {
-                final MapleCharacter newp = cloneLooks();
-                map.addPlayer(newp);
-                map.broadcastMessage(ResCUserRemote.updateCharLook(newp));
-                map.movePlayer(newp, getPosition());
-                clones[i] = new WeakReference<MapleCharacter>(newp);
-                return;
-            }
-        }
-    }
-
-    public final void disposeClones() {
-        numClones = 0;
-        for (int i = 0; i < clones.length; i++) {
-            if (clones[i].get() != null) {
-                map.removePlayer(clones[i].get());
-                clones[i].get().getClient().disconnect(false, false);
-                clones[i] = new WeakReference<MapleCharacter>(null);
-                numClones++;
-            }
-        }
-    }
-
-    public final int getCloneSize() {
-        int z = 0;
-        for (int i = 0; i < clones.length; i++) {
-            if (clones[i].get() != null) {
-                z++;
-            }
-        }
-        return z;
-    }
-
-    public void spawnClones() {
-        if (numClones == 0 && stats.hasClone) {
-            cloneLook(); //once and never again
-        }
-        for (int i = 0; i < numClones; i++) {
-            cloneLook();
-        }
-        numClones = 0;
-    }
-
-    public byte getNumClones() {
-        return numClones;
     }
 
     public void setDragon(MapleDragon d) {
@@ -5725,7 +5555,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (!getDoors().isEmpty()) {
             removeDoor();
         }
-        disposeClones();
         NPCScriptManager.getInstance().dispose(client);
     }
 
@@ -6097,6 +5926,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         laststat.Update(this);
 
         SendPacket(ResCWvsContext.StatChanged(this, unlock ? 1 : 0, GetStatMask()));
+        if (GetStatMask() != 0) {
+            equipChanged();
+        }
         ClearStatMask();
     }
 
@@ -6111,5 +5943,149 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (laststat != null) {
             laststat.ClearStatMask();
         }
+    }
+
+    // クローン
+    public boolean isClone() {
+        return clone;
+    }
+
+    public void setClone(boolean c) {
+        this.clone = c;
+    }
+
+    public WeakReference<MapleCharacter>[] getClones() {
+        return clones;
+    }
+
+    public MapleCharacter cloneCopy() {
+        MapleClient cs = new MapleClient(null, null, new MockIOSession());
+
+        final int minus = (getId() + Randomizer.nextInt(getId())); // really randomize it, dont want it to fail
+
+        MapleCharacter ret = new MapleCharacter(true);
+        ret.id = minus;
+        ret.client = cs;
+        ret.exp = 0;
+        ret.meso = 0;
+        ret.remainingAp = 0;
+        ret.fame = 0;
+        ret.accountid = client.getAccID();
+        ret.name = name;
+        ret.level = level;
+        ret.fame = fame;
+        ret.job = job;
+        ret.hair = hair;
+        ret.face = face;
+        ret.skinColor = skinColor;
+        ret.bookCover = bookCover;
+        ret.monsterbook = monsterbook;
+        ret.mount = mount;
+        ret.CRand = new PlayerRandomStream();
+        ret.gmLevel = gmLevel;
+        ret.gender = gender;
+        ret.mapid = map.getId();
+        ret.map = map;
+        ret.setStance(getStance());
+        ret.chair = chair;
+        ret.itemEffect = itemEffect;
+        ret.guildid = guildid;
+        ret.currentrep = currentrep;
+        ret.totalrep = totalrep;
+        ret.stats = stats;
+        //ret.effects.putAll(effects);
+        ret.guildrank = guildrank;
+        ret.allianceRank = allianceRank;
+        ret.hidden = hidden;
+        ret.setPosition(new Point(getPosition()));
+        for (IItem equip : getInventory(MapleInventoryType.EQUIPPED)) {
+            ret.getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
+        }
+        ret.skillMacros = skillMacros;
+        ret.keylayout = keylayout;
+        ret.questinfo = questinfo;
+        ret.savedLocations = savedLocations;
+        ret.wishlist = wishlist;
+        ret.rocks = rocks;
+        ret.regrocks = regrocks;
+        ret.buddylist = buddylist;
+        ret.keydown_skill = 0;
+        ret.lastmonthfameids = lastmonthfameids;
+        ret.lastfametime = lastfametime;
+        ret.storage = storage;
+        ret.cs = this.cs;
+        ret.client.setAccountName(client.getAccountName());
+        ret.acash = acash;
+        ret.maplepoints = maplepoints;
+        ret.clone = true;
+        ret.client.setChannel(this.client.getChannel());
+        while (map.getCharacterById(ret.id) != null || client.getChannelServer().getPlayerStorage().getCharacterById(ret.id) != null) {
+            ret.id++;
+        }
+        ret.client.setPlayer(ret);
+        return ret;
+    }
+
+    public boolean cloneSpawn() {
+        if (clone) {
+            cloning = false;
+            clone_parent = null;
+            return false;
+        }
+
+        if (clones[0].get() != null) {
+            SendPacket(ResWrapper.BroadCastMsgNotice("Clone is already spawned."));
+            cloning = false;
+            return false;
+        }
+
+        final MapleCharacter chr_clone = cloneCopy();
+        chr_clone.setName(String.format("%08X", Randomizer.nextInt(0x77777777)));
+        map.addPlayer(chr_clone);
+        map.movePlayer(chr_clone, getPosition());
+        clones[0] = new WeakReference<MapleCharacter>(chr_clone);
+
+        SendPacket(ResWrapper.BroadCastMsgNotice("Clone is spawned."));
+
+        cloning = true;
+        clone_parent = this;
+        return true;
+    }
+
+    public boolean cloneRemove() {
+        if (clones[0].get() == null) {
+            SendPacket(ResWrapper.BroadCastMsgNotice("Clone is not removed, because there is no clone."));
+            cloning = false;
+            clone_parent = null;
+            return false;
+        }
+        map.removePlayer(clones[0].get());
+        clones[0].get().getClient().disconnect(false, false);
+        clones[0] = new WeakReference<MapleCharacter>(null);
+
+        SendPacket(ResWrapper.BroadCastMsgNotice("Clone is removed."));
+        cloning = false;
+        clone_parent = null;
+        return true;
+    }
+
+    public boolean isCloning() {
+        return cloning;
+    }
+
+    public MapleCharacter getClone() {
+        return clones[0].get();
+    }
+
+    public boolean cloneUpdate() {
+        if (clone) {
+            return false;
+        }
+
+        clones[0].get().getInventory(MapleInventoryType.EQUIPPED).resetForClone();
+        for (IItem equip : getInventory(MapleInventoryType.EQUIPPED)) {
+            clones[0].get().getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
+        }
+        return true;
     }
 }

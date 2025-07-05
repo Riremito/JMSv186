@@ -44,6 +44,10 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         this.type = type;
     }
 
+    public void resetForClone() {
+        this.inventory = new LinkedHashMap<Short, IItem>();
+    }
+
     public void addSlot(byte slot) {
         this.slotLimit += slot;
 

@@ -38,7 +38,6 @@ import config.Version;
 import constants.MapConstants;
 import debug.Debug;
 import handling.channel.ChannelServer;
-import java.lang.ref.WeakReference;
 import packet.ClientPacket;
 import packet.response.ResCField_SnowBall;
 import packet.response.ResCMobPool;
@@ -51,7 +50,6 @@ import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import server.MaplePortal;
 import server.Randomizer;
-import server.Timer.CloneTimer;
 import server.events.MapleSnowball.MapleSnowballs;
 import server.life.MapleMonster;
 import server.life.MobAttackInfo;
@@ -735,18 +733,6 @@ public class PlayerHandler {
         }
         if (emote > 0 && chr != null && chr.getMap() != null) { //O_o
             chr.getMap().broadcastMessage(chr, ResCUserRemote.facialExpression(chr, emote), false);
-            WeakReference<MapleCharacter>[] clones = chr.getClones();
-            for (int i = 0; i < clones.length; i++) {
-                if (clones[i].get() != null) {
-                    final MapleCharacter clone = clones[i].get();
-                    CloneTimer.getInstance().schedule(new Runnable() {
-
-                        public void run() {
-                            clone.getMap().broadcastMessage(ResCUserRemote.facialExpression(clone, emote));
-                        }
-                    }, 500 * i + 500);
-                }
-            }
         }
     }
 

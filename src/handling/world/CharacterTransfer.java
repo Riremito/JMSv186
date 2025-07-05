@@ -107,7 +107,7 @@ public class CharacterTransfer implements Externalizable {
         this.gmLevel = (byte) chr.getGMLevel();
         this.points = chr.getPoints();
         this.fairyExp = chr.getFairyExp();
-        this.clonez = chr.getNumClones();
+        this.clonez = 0;
         this.petStore = chr.getPetStores();
         this.subcategory = chr.getSubcategory();
         this.currentrep = chr.getCurrentRep();
@@ -241,7 +241,7 @@ public class CharacterTransfer implements Externalizable {
         } else {
             this.chalkboard = null;
         }
-        this.clonez = in.readByte();
+        this.clonez = in.readByte(); // ?_?
         this.skillmacro = in.readObject();
         this.lastfametime = in.readLong();
         this.storage = in.readObject();
@@ -388,8 +388,7 @@ public class CharacterTransfer implements Externalizable {
         if (this.chalkboard != null) {
             out.writeUTF(this.chalkboard);
         }
-        out.writeByte(this.clonez);
-
+        out.writeByte(this.clonez); // ?_?
         out.writeObject(this.skillmacro);
         out.writeLong(this.lastfametime);
         out.writeObject(this.storage);

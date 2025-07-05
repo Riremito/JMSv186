@@ -54,7 +54,6 @@ import handling.channel.ChannelServer;
 import handling.world.PartyOperation;
 import handling.world.MaplePartyCharacter;
 import handling.world.World;
-import java.lang.ref.WeakReference;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.EnumMap;
@@ -1883,13 +1882,6 @@ public final class MapleMap {
                 chr.getClient().getSession().write(ResWrapper.musicChange(music));
                 //maybe timer too for zak/ht
             }
-            for (final WeakReference<MapleCharacter> chrz : chr.getClones()) {
-                if (chrz.get() != null) {
-                    chrz.get().setPosition(new Point(chr.getPosition()));
-                    chrz.get().setMap(this);
-                    addPlayer(chrz.get());
-                }
-            }
             if (mapid == 914000000) {
                 chr.getClient().getSession().write(ResCWvsContext.temporaryStats_Aran());
             } else if (mapid == 105100300 && chr.getLevel() >= 91) {
@@ -2192,11 +2184,6 @@ public final class MapleMap {
             if (mapid == 109020001) {
                 chr.canTalk(true);
             }
-            for (final WeakReference<MapleCharacter> chrz : chr.getClones()) {
-                if (chrz.get() != null) {
-                    removePlayer(chrz.get());
-                }
-            }
         }
         chr.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
         chr.cancelEffectFromBuffStat(MapleBuffStat.REAPER);
@@ -2225,6 +2212,17 @@ public final class MapleMap {
     public final void broadcastMessage(final MapleCharacter source, final MaplePacket packet, final boolean repeatToSource) {
         broadcastMessage(repeatToSource ? null : source, packet, Double.POSITIVE_INFINITY, source.getPosition());
     }
+
+    public final void broadcastMessageClone(final MapleCharacter source, final MaplePacket packet, final boolean repeatToSource) {
+        int clone_delay = 1000;
+        MapTimer.getInstance().schedule(new Runnable() {
+            @Override
+            public void run() {
+                broadcastMessage(source, packet, repeatToSource);
+            }
+        }, clone_delay);
+    }
+
 
     /*	public void broadcastMessage(MapleCharacter source, MaplePacket packet, boolean repeatToSource, boolean ranged) {
     broadcastMessage(repeatToSource ? null : source, packet, ranged ? MapleCharacter.MAX_VIEW_RANGE_SQ : Double.POSITIVE_INFINITY, source.getPosition());

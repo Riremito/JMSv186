@@ -743,6 +743,15 @@ public class ReqCUser {
         chr.setStance(data.getAction());
         map.movePlayer(chr, chr.getPosition());
         map.broadcastMessage(chr, ResCUserRemote.movePlayer(chr, data), false);
+
+        // クローン : 移動
+        if (chr.isCloning()) {
+            MapleCharacter chr_clone = chr.getClone();
+            chr_clone.setPosition(data.getEnd());
+            chr_clone.setStance(data.getAction());
+            map.movePlayer(chr_clone, chr_clone.getPosition());
+            map.broadcastMessageClone(chr_clone, ResCUserRemote.movePlayer(chr_clone, data), false);
+        }
         return true;
     }
 
@@ -803,7 +812,7 @@ public class ReqCUser {
         final int m_dwCharacterId = cp.Decode4();
         final MapleCharacter player = map.getCharacterById(m_dwCharacterId); // CUser::FindUser
 
-        if (player == null || player.isClone()) {
+        if (player == null) {
             // CUser::SendCharacterStat
             SendCharacterStat(chr); // ea
             return false;
