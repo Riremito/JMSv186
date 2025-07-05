@@ -30,6 +30,7 @@ import packet.ServerPacket;
 import packet.ops.arg.ArgUserEffect;
 import packet.request.struct.CMovePath;
 import packet.response.data.DataAvatarLook;
+import packet.response.data.DataCUser;
 import server.MapleStatEffect;
 import tools.AttackPair;
 import tools.Pair;
@@ -355,64 +356,62 @@ public class ResCUserRemote {
 
     // CLifePool::OnUserAttack
     public static MaplePacket UserAttack(AttackInfo attack) {
-        ServerPacket p = new ServerPacket(attack.GetHeader());
-        p.Encode4(attack.CharacterId);
-        p.Encode1(attack.HitKey);
+        ServerPacket sp = new ServerPacket(attack.GetHeader());
+        sp.Encode4(attack.CharacterId);
+        sp.Encode1(attack.HitKey);
         if (ServerConfig.JMS164orLater()) {
-            p.Encode1(attack.m_nLevel);
+            sp.Encode1(attack.m_nLevel);
         }
-        p.Encode1(attack.SkillLevel); // nPassiveSLV
+        sp.Encode1(attack.SkillLevel); // nPassiveSLV
         if (0 < attack.nSkillID) {
-            p.Encode4(attack.nSkillID); // nSkillID
+            sp.Encode4(attack.nSkillID); // nSkillID
         }
         if (ServerConfig.JMS164orLater()) {
-            p.Encode1(attack.BuffKey); // bSerialAttack
+            sp.Encode1(attack.BuffKey); // bSerialAttack
         }
         if (ServerConfig.JMS131orEarlier()) {
-            p.Encode1(attack.AttackActionKey);
+            sp.Encode1(attack.AttackActionKey);
         } else {
-            p.Encode2(attack.AttackActionKey);
+            sp.Encode2(attack.AttackActionKey);
         }
-        p.Encode1(attack.nAttackSpeed); // nActionSpeed
-        p.Encode1(attack.nMastery); // nMastery
-        p.Encode4(attack.nBulletItemID); // nBulletItemID
+        sp.Encode1(attack.nAttackSpeed); // nActionSpeed
+        sp.Encode1(attack.nMastery); // nMastery
+        sp.Encode4(attack.nBulletItemID); // nBulletItemID
         for (AttackPair oned : attack.allDamage) {
             if (oned.attack != null) {
-                p.Encode4(oned.objectid);
-                p.Encode1(7);
+                sp.Encode4(oned.objectid);
+                sp.Encode1(7);
                 if (attack.IsMesoExplosion()) {
-                    p.Encode1(oned.attack.size());
+                    sp.Encode1(oned.attack.size());
                 }
                 for (Pair<Integer, Boolean> eachd : oned.attack) {
                     if (ServerConfig.JMS131orEarlier()) {
-                        p.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
+                        sp.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
                     } else {
-                        p.Encode1(eachd.right ? 1 : 0);
-                        p.Encode4(eachd.left.intValue());
+                        sp.Encode1(eachd.right ? 1 : 0);
+                        sp.Encode4(eachd.left.intValue());
                     }
                 }
             }
         }
         if (attack.IsQuantumExplosion()) {
-            p.Encode4(attack.tKeyDown);
+            sp.Encode4(attack.tKeyDown);
         }
         if (ServerConfig.JMS164orLater()) {
             if (attack.GetHeader() == ServerPacket.Header.LP_UserShootAttack) {
-                p.Encode2(attack.X);
-                p.Encode2(attack.Y);
+                sp.Encode2(attack.X);
+                sp.Encode2(attack.Y);
             }
         }
-        return p.get();
+        return sp.get();
     }
 
-    public static MaplePacket facialExpression(MapleCharacter from, int expression) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEmotion.get());
-        mplew.writeInt(from.getId());
-        mplew.writeInt(expression);
-        mplew.writeInt(-1); //itemid of expression use
-        mplew.write(0);
-        return mplew.getPacket();
+    public static MaplePacket Emotion(MapleCharacter chr, int expression) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEmotion);
+
+        sp.Encode4(chr.getId()); // remote
+        sp.EncodeBuffer(DataCUser.Emotion(expression));
+        return sp.get();
     }
 
     public static MaplePacket AvatarModified(MapleCharacter chr, int flag) {

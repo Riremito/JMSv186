@@ -732,7 +732,13 @@ public class PlayerHandler {
             }
         }
         if (emote > 0 && chr != null && chr.getMap() != null) { //O_o
-            chr.getMap().broadcastMessage(chr, ResCUserRemote.facialExpression(chr, emote), false);
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.Emotion(chr, emote), false);
+
+            // クローン : 表情
+            if (chr.isCloning()) {
+                MapleCharacter chr_clone = chr.getClone();
+                chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.Emotion(chr_clone, emote), false);
+            }
         }
     }
 

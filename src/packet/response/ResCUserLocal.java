@@ -28,6 +28,7 @@ import packet.ServerPacket;
 import packet.ops.arg.ArgUserEffect;
 import packet.ops.OpsQuest;
 import packet.ops.OpsUserEffect;
+import packet.response.data.DataCUser;
 import packet.response.struct.TestHelper;
 import server.movement.LifeMovementFragment;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -45,6 +46,13 @@ public class ResCUserLocal {
         if (!is_cancel) {
             sp.Encode2(id); // sit
         }
+        return sp.get();
+    }
+
+    public static MaplePacket Emotion(MapleCharacter chr, int expression) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEmotionLocal);
+
+        sp.EncodeBuffer(DataCUser.Emotion(expression));
         return sp.get();
     }
 
