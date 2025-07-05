@@ -365,26 +365,23 @@ public class PlayerHandler {
                 MapleItemInformationProvider.getInstance().getItemEffect(-id), false, -1);
     }
 
-    public static final void SkillEffect(ClientPacket cp, final MapleCharacter chr) {
-        final int skillId = cp.Decode4();
-        final byte level = cp.Decode1();
-        final byte flags = cp.Decode1();
-        final byte speed = cp.Decode1();
-        byte unk = 0;
+    public static final void SkillEffect(MapleCharacter chr, int skill_id, byte skill_level, short action, byte m_nPrepareSkillActionSpeed) {
 
-        if (ServerConfig.JMS186orLater()) {
-            unk = cp.Decode1();
-        }
-
-        final ISkill skill = SkillFactory.getSkill(skillId);
+        final ISkill skill = SkillFactory.getSkill(skill_id);
         if (chr == null) {
             return;
         }
         final int skilllevel_serv = chr.getSkillLevel(skill);
 
-        if (skilllevel_serv > 0 && skilllevel_serv == level && skill.isChargeSkill()) {
+        if (skilllevel_serv > 0 && skilllevel_serv == skill_level && skill.isChargeSkill()) {
             chr.setKeyDownSkill_Time(System.currentTimeMillis());
-            chr.getMap().broadcastMessage(chr, ResCUserRemote.skillEffect(chr, skillId, level, flags, speed, unk), false);
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.SkillPrepare(chr, skill_id, skill_level, action, m_nPrepareSkillActionSpeed), false);
+        }
+
+        // クローン : 暴風とか
+        if (chr.isCloning()) {
+            MapleCharacter chr_clone = chr.getClone();
+            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.SkillPrepare(chr_clone, skill_id, skill_level, action, m_nPrepareSkillActionSpeed));
         }
     }
 

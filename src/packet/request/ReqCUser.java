@@ -312,7 +312,7 @@ public class ReqCUser {
             }
             // buff
             case CP_UserSkillCancelRequest: {
-                OnSkillCanselRequest(cp, chr);
+                OnSkillCancelRequest(cp, chr);
                 return true;
             }
             case CP_UserSkillPrepareRequest: {
@@ -1261,23 +1261,37 @@ public class ReqCUser {
     }
 
     // CancelBuffHandler
-    public static boolean OnSkillCanselRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnSkillCancelRequest(ClientPacket cp, MapleCharacter chr) {
         int skill_id = cp.Decode4();
         ISkill skill = SkillFactory.getSkill(skill_id);
 
-        Debug.DebugLog("OnSkillCanselRequest :  " + skill_id);
         if (skill.isChargeSkill()) {
             chr.setKeyDownSkill_Time(0);
-            chr.getMap().broadcastMessage(chr, ResCUserRemote.skillCancel(chr, skill_id), false);
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.SkillCancel(chr, skill_id), false);
         } else {
             chr.cancelEffect(skill.getEffect(1), false, -1);
+        }
+
+        // クローン : 暴風停止
+        if (chr.isCloning()) {
+            MapleCharacter chr_clone = chr.getClone();
+            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.SkillCancel(chr_clone, skill_id));
         }
 
         return true;
     }
 
     public static boolean OnSkillPrepareRequest(ClientPacket cp, MapleCharacter chr) {
-        PlayerHandler.SkillEffect(cp, chr);
+        int skill_id = cp.Decode4();
+        byte skill_level = cp.Decode1();
+        short action = 0;
+        if (Version.GreaterOrEqual(Region.JMS, 186)) {
+            action = cp.Decode2();
+        } else {
+            action = cp.Decode1();
+        }
+        byte m_nPrepareSkillActionSpeed = cp.Decode1();
+        PlayerHandler.SkillEffect(chr, skill_id, skill_level, action, m_nPrepareSkillActionSpeed);
         return true;
     }
 

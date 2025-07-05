@@ -105,20 +105,25 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnSkillPrepare
-    public static MaplePacket skillEffect(MapleCharacter from, int skillId, byte level, byte flags, byte speed, byte unk) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserSkillPrepare.get());
-        mplew.writeInt(from.getId());
-        mplew.writeInt(skillId);
-        mplew.write(level);
-        mplew.write(flags);
-        mplew.write(speed);
-        mplew.write(unk); // Direction ??
-        return mplew.getPacket();
+    public static MaplePacket SkillPrepare(MapleCharacter chr, int skill_id, byte skill_level, short action, byte m_nPrepareSkillActionSpeed) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserSkillPrepare);
+
+        sp.Encode4(chr.getId());
+        sp.Encode4(skill_id); // nSkillID
+        sp.Encode1(skill_level); // skill level
+
+        if (Version.GreaterOrEqual(Region.JMS, 186)) {
+            sp.Encode2(action); // action (2 bytes)
+        } else {
+            sp.Encode1(action);
+        }
+
+        sp.Encode1(m_nPrepareSkillActionSpeed); // m_nPrepareSkillActionSpeed
+        return sp.get();
     }
 
     // CUserRemote::OnSkillCancel
-    public static MaplePacket skillCancel(MapleCharacter chr, int skillId) {
+    public static MaplePacket SkillCancel(MapleCharacter chr, int skillId) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserSkillCancel);
         sp.Encode4(chr.getId());
         sp.Encode4(skillId);
