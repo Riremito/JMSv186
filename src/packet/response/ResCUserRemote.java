@@ -22,7 +22,9 @@ import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleDisease;
 import client.inventory.MapleRing;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import handling.MaplePacket;
 import handling.channel.handler.AttackInfo;
 import java.util.List;
@@ -124,30 +126,44 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnHit
-    public static MaplePacket damagePlayer(int skill, int monsteridfrom, int cid, int damage, int fake, byte direction, int reflect, boolean is_pg, int oid, int pos_x, int pos_y) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserHit.get());
-        mplew.writeInt(cid);
-        mplew.write(skill);
-        mplew.writeInt(damage);
-        mplew.writeInt(monsteridfrom);
-        mplew.write(direction);
-        if (reflect > 0) {
-            mplew.write(reflect);
-            mplew.write(is_pg ? 1 : 0);
-            mplew.writeInt(oid);
-            mplew.write(6);
-            mplew.writeShort(pos_x);
-            mplew.writeShort(pos_y);
-            mplew.write(0);
-        } else {
-            mplew.writeShort(0);
+    public static MaplePacket Hit(MapleCharacter chr, int attack_index, int mob_id, int damage, byte left, int reflect, boolean is_pg, int mob_object_id, int fake_skill_id) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserHit);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(attack_index); // nAttackIdx
+        sp.Encode4(damage); // nDamage
+
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            sp.Encode1(0); // critical
         }
-        mplew.writeInt(damage);
-        if (fake > 0) {
-            mplew.writeInt(fake);
+
+        // -1
+        if (-1 <= attack_index) {
+            sp.Encode4(mob_id);
+            sp.Encode1(left); // bLeft
+
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                sp.Encode4(0);
+                sp.Encode4(0);
+            }
+
+            sp.Encode1(reflect);
+            if (reflect != 0) {
+                sp.Encode1(is_pg ? 1 : 0);
+                sp.Encode4(mob_object_id);
+                sp.Encode1(6); // データ無視の可能性あり
+                sp.Encode2(0); // データ無視の可能性あり, X
+                sp.Encode2(0); // データ無視の可能性あり, Y
+            }
+
+            sp.Encode1(0); // stance flag, skill id = 33110000
         }
-        return mplew.getPacket();
+        // -2
+        sp.Encode4(damage); // for 4120002
+        if (damage == -1) {
+            sp.Encode4(fake_skill_id); // skill_id == 4120002
+        }
+        return sp.get();
     }
 
     // CUser::OnEmotion

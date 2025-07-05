@@ -301,13 +301,13 @@ public class PlayerHandler {
             chr.handleBattleshipHP(-damage);
         }
         if (!chr.isHidden()) {
-            chr.getMap().broadcastMessage(chr, ResCUserRemote.damagePlayer(type, monsteridfrom, chr.getId(), damage, fake, direction, reflect, is_pg, oid, pos_x, pos_y), false);
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.Hit(chr, type, monsteridfrom, damage, direction, reflect, is_pg, oid, fake), false);
         }
 
         // クローン : 被ダメージ
         if (chr.isCloning()) {
             MapleCharacter chr_clone = chr.getClone();
-            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.damagePlayer(type, monsteridfrom, chr_clone.getId(), damage, fake, direction, reflect, is_pg, oid, pos_x, pos_y));
+            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.Hit(chr_clone, type, monsteridfrom, damage, direction, reflect, is_pg, oid, fake));
         }
     }
 
