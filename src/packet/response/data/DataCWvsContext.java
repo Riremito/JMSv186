@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,10 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
-package packet.response.struct;
+package packet.response.data;
 
 import config.ServerConfig;
 import packet.ServerPacket;
@@ -27,12 +25,11 @@ import packet.ServerPacket;
  *
  * @author Riremito
  */
-public class CWvsContext {
+public class DataCWvsContext {
 
     // CWvsContext::OnSetLogoutGiftConfig
     public static byte[] LogoutGiftConfig() {
         ServerPacket data = new ServerPacket();
-
         data.Encode4(0); // something
         if (ServerConfig.JMS194orLater()) {
             data.Encode4(0);
@@ -42,4 +39,5 @@ public class CWvsContext {
         data.Encode4(0); // item3?
         return data.get().getBytes();
     }
+    
 }

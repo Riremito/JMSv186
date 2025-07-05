@@ -19,7 +19,12 @@
 package packet.response.data;
 
 import client.MapleCharacter;
+import config.ServerConfig;
+import java.util.ArrayList;
 import packet.ServerPacket;
+import packet.ops.OpsSecondaryStat;
+import server.MapleStatEffect;
+import tools.Pair;
 
 /**
  *
@@ -34,6 +39,76 @@ public class DataSecondaryStat {
         data.Encode1(0);
         data.Encode1(0);
         data.Encode1(0);
+        return data.get().getBytes();
+    }
+
+    // SecondaryStat::DecodeForLocal
+    public static byte[] EncodeForLocal(MapleStatEffect mse) {
+        ServerPacket data = new ServerPacket();
+        int skill_id = mse.getSourceId();
+        int buff_time = mse.getDuration();
+        int[] buff_mask = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+        // test
+        ArrayList<Pair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
+        for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
+            buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
+        }
+        if (ServerConfig.EMS89orLater()) {
+            data.Encode4(buff_mask[8]);
+        }
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+            data.Encode4(buff_mask[7]);
+            data.Encode4(buff_mask[6]);
+            data.Encode4(buff_mask[5]);
+        }
+        // JMS v187+
+        if (ServerConfig.IsPostBB()) {
+            if (!ServerConfig.IsIMS() && !ServerConfig.IsTHMS()) {
+                data.Encode4(buff_mask[4]);
+            }
+        }
+        if (ServerConfig.JMS146orLater()) {
+            data.Encode4(buff_mask[3]);
+            data.Encode4(buff_mask[2]);
+        }
+        if (ServerConfig.JMS146orLater()) {
+            data.Encode4(buff_mask[1]); // シャープアイズ等
+            data.Encode4(buff_mask[0]); // ブースター等
+        } else {
+            // JMS v131
+            data.Encode4(buff_mask[0]);
+            data.Encode4(buff_mask[1]);
+        }
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 32; j++) {
+                if ((buff_mask[i] & (1 << j)) > 0) {
+                    int effect = 0;
+                    for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
+                        if (pss.getLeft().getN() == i && pss.getLeft().get() == j) {
+                            effect = pss.getRight();
+                        }
+                    }
+                    if (ServerConfig.IsTHMS() && ServerConfig.IsPostBB()) {
+                        data.Encode4(effect);
+                    } else {
+                        data.Encode2(effect);
+                    }
+                    data.Encode4(skill_id);
+                    if (ServerConfig.JMS146orLater()) {
+                        data.Encode4(buff_time);
+                    } else {
+                        data.Encode2(buff_time);
+                    }
+                }
+            }
+        }
+        if (ServerConfig.JMS146orLater()) {
+            data.Encode1(0);
+            data.Encode1(0);
+        }
+        if (ServerConfig.JMS302orLater() || ServerConfig.TWMS148orLater()) {
+            data.Encode1(0);
+        }
         return data.get().getBytes();
     }
 }

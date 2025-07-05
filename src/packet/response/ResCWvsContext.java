@@ -62,10 +62,10 @@ import packet.ops.OpsFriendArg;
 import packet.ops.OpsMessageArg;
 import packet.ops.OpsSecondaryStat;
 import packet.request.ItemRequest;
+import packet.response.data.DataSecondaryStat;
 import packet.response.struct.GW_CharacterStat;
 import packet.response.struct.GW_ItemSlotBase;
 import packet.response.struct.InvOp;
-import packet.response.struct.SecondaryStat;
 import packet.response.struct.TestHelper;
 import packet.response.wrapper.ResWrapper;
 import server.MapleItemInformationProvider;
@@ -167,7 +167,7 @@ public class ResCWvsContext {
     // CWvsContext::OnTemporaryStatSet
     public static final MaplePacket TemporaryStatSet(MapleStatEffect effect) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
-        sp.EncodeBuffer(SecondaryStat.EncodeForLocal(effect));
+        sp.EncodeBuffer(DataSecondaryStat.EncodeForLocal(effect));
         sp.Encode2(0); // delay
         if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);

@@ -29,7 +29,6 @@ import handling.world.guild.MapleGuild;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ServerPacket;
-import packet.response.struct.AvatarLook;
 import packet.response.struct.Structure;
 import server.Randomizer;
 import server.shops.AbstractPlayerStore;
@@ -186,7 +185,7 @@ public class DataCUserRemote {
             }
             data.Encode2(chr.getJob());
         }
-        data.EncodeBuffer(AvatarLook.Encode(chr));
+        data.EncodeBuffer(DataAvatarLook.Encode(chr));
         data.Encode4(0); //this is CHARID to follow
         if (ServerConfig.JMS164orLater()) {
             data.Encode4(0); //probably charid following
@@ -260,7 +259,7 @@ public class DataCUserRemote {
         data.EncodeBuffer(DataSecondaryStat.EncodeForRemote_JMS302(chr));
         data.Encode2(0);
         data.Encode2(0);
-        data.EncodeBuffer(AvatarLook.Encode(chr));
+        data.EncodeBuffer(DataAvatarLook.Encode(chr));
         data.Encode4(0); // m_dwDriverID
         data.Encode4(0); // m_dwPassenserID
         // sub_D0E280

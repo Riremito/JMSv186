@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,10 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
-package packet.response.struct;
+package packet.response.data;
 
 import packet.ServerPacket;
 
@@ -26,13 +24,13 @@ import packet.ServerPacket;
  *
  * @author Riremito
  */
-public class CClientOptMan {
+public class DataCClientOptMan {
 
     // CClientOptMan::DecodeOpt
     public static byte[] EncodeOpt() {
         ServerPacket p = new ServerPacket();
-
         p.Encode2(0); // not 0, Encode4, Encode4
         return p.get().getBytes();
     }
+    
 }

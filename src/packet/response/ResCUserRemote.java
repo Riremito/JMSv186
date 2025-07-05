@@ -29,8 +29,7 @@ import java.util.List;
 import packet.ServerPacket;
 import packet.ops.arg.ArgUserEffect;
 import packet.request.struct.CMovePath;
-import packet.response.struct.AvatarLook;
-import packet.response.struct.TestHelper;
+import packet.response.data.DataAvatarLook;
 import server.MapleStatEffect;
 import tools.AttackPair;
 import tools.Pair;
@@ -423,7 +422,7 @@ public class ResCUserRemote {
         sp.Encode1(flag);
 
         if ((flag & 0x01) != 0) {
-            sp.EncodeBuffer(AvatarLook.Encode(chr));
+            sp.EncodeBuffer(DataAvatarLook.Encode(chr));
         }
         if ((flag & 0x02) != 0) {
             sp.Encode1(0); // nSpeed_CS

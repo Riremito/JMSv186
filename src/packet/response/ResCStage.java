@@ -25,9 +25,9 @@ import constants.GameConstants;
 import constants.ServerConstants;
 import handling.MaplePacket;
 import packet.ServerPacket;
-import packet.response.struct.CClientOptMan;
-import packet.response.struct.CWvsContext;
-import packet.response.struct.CharacterData;
+import packet.response.data.DataCClientOptMan;
+import packet.response.data.DataCWvsContext;
+import packet.response.data.DataCharacterData;
 import packet.response.struct.TestHelper;
 import server.maps.MapleMap;
 
@@ -44,7 +44,7 @@ public class ResCStage {
         // JMS184orLater
         if (((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsGMS()) && ServerConfig.JMS186orLater())
                 || ServerConfig.EMS89orLater()) {
-            sp.EncodeBuffer(CClientOptMan.EncodeOpt()); // 2 bytes
+            sp.EncodeBuffer(DataCClientOptMan.EncodeOpt()); // 2 bytes
         }
         // チャンネル
         sp.Encode4(chr.getClient().getChannel() - 1); // m_nChannelID
@@ -84,12 +84,12 @@ public class ResCStage {
                 sp.Encode4(0);
             }
             // キャラクター情報
-            sp.EncodeBuffer(CharacterData.Encode(chr));
+            sp.EncodeBuffer(DataCharacterData.Encode(chr));
             // JMS184orLater
             if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS())
                     && ServerConfig.JMS186orLater()) {
                 // ログアウトギフト
-                sp.EncodeBuffer(CWvsContext.LogoutGiftConfig());
+                sp.EncodeBuffer(DataCWvsContext.LogoutGiftConfig());
             }
         } else {
             if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater() || ServerConfig.GMS83orLater()) {
@@ -147,7 +147,7 @@ public class ResCStage {
         // main
         if (part == 1) {
             // 008ABA10
-            sp.EncodeBuffer(CClientOptMan.EncodeOpt());
+            sp.EncodeBuffer(DataCClientOptMan.EncodeOpt());
             sp.Encode4(chr.getClient().getChannel() - 1);
             sp.Encode1(0);
             sp.Encode1(0);
@@ -165,8 +165,8 @@ public class ResCStage {
                 if (ServerConfig.JMS308orLater()) {
                     datamask_1 = 0x00444200L | 0x80000000000L; // JMS308
                 }
-                sp.EncodeBuffer(CharacterData.Encode_302_1(chr, -1 & ~(datamask_1))); // Quest除外
-                sp.EncodeBuffer(CWvsContext.LogoutGiftConfig());
+                sp.EncodeBuffer(DataCharacterData.Encode_302_1(chr, -1 & ~(datamask_1))); // Quest除外
+                sp.EncodeBuffer(DataCWvsContext.LogoutGiftConfig());
             } else {
                 sp.Encode1(0);
                 sp.Encode4(to.getId());
@@ -181,7 +181,7 @@ public class ResCStage {
         // sub
         if (part == 2) {
             // 008AAA80
-            sp.EncodeBuffer(CharacterData.Encode_302_2(chr, datamask_2));
+            sp.EncodeBuffer(DataCharacterData.Encode_302_2(chr, datamask_2));
             sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
             sp.Encode4(100); // nMobStatAdjustRate
             if (ServerConfig.JMS308orLater()) {
@@ -202,7 +202,7 @@ public class ResCStage {
     // CStage::OnSetITC
     public static final MaplePacket SetITC(final MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetITC);
-        sp.EncodeBuffer(CharacterData.Encode(chr));
+        sp.EncodeBuffer(DataCharacterData.Encode(chr));
         // CITC::LoadData
         {
             sp.EncodeStr(chr.getClient().getAccountName());
@@ -221,7 +221,7 @@ public class ResCStage {
     // CStage::OnSetCashShop
     public static MaplePacket SetCashShop(MapleClient c) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetCashShop);
-        sp.EncodeBuffer(CharacterData.Encode(c.getPlayer()));
+        sp.EncodeBuffer(DataCharacterData.Encode(c.getPlayer()));
         // CCashShop::LoadData
         {
             if (ServerConfig.IsEMS() || ServerConfig.IsGMS() || ServerConfig.IsBMS()) {

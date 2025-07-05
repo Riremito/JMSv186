@@ -24,7 +24,7 @@ import handling.MaplePacket;
 import java.util.List;
 import packet.request.struct.CMovePath;
 import packet.ServerPacket;
-import packet.response.struct.AvatarLook;
+import packet.response.data.DataAvatarLook;
 import server.life.SummonAttackEntry;
 import server.maps.MapleSummon;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -104,7 +104,7 @@ public class ResCSummonedPool {
             final MapleCharacter chr = summon.getOwner();
             p.Encode1(summon.getSkill() == 4341006 && chr != null ? 1 : 0); //mirror target
             if (summon.getSkill() == 4341006 && chr != null) {
-                p.EncodeBuffer(AvatarLook.Encode(chr));
+                p.EncodeBuffer(DataAvatarLook.Encode(chr));
             }
         }
         return p.get();

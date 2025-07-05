@@ -27,7 +27,7 @@ import handling.login.LoginServer;
 import java.util.List;
 import java.util.Random;
 import packet.ServerPacket;
-import packet.response.struct.AvatarLook;
+import packet.response.data.DataAvatarLook;
 import packet.response.struct.GW_CharacterStat;
 
 /**
@@ -185,7 +185,7 @@ public class ResCLogin {
             sp.Encode1(chars.size());
             for (MapleCharacter chr : chars) {
                 sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
-                sp.EncodeBuffer(AvatarLook.Encode(chr));
+                sp.EncodeBuffer(DataAvatarLook.Encode(chr));
                 sp.Encode1(1); // ranking
                 sp.Encode4(chr.getRank()); // all world ranking
                 sp.Encode4(chr.getRankMove());
@@ -536,7 +536,7 @@ public class ResCLogin {
         sp.Encode1(worked ? 0 : 1);
         if (worked) {
             sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
-            sp.EncodeBuffer(AvatarLook.Encode(chr));
+            sp.EncodeBuffer(DataAvatarLook.Encode(chr));
         }
         return sp.get();
     }
@@ -624,7 +624,7 @@ public class ResCLogin {
         data.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
             data.EncodeBuffer(GW_CharacterStat.Encode(chr));
-            data.EncodeBuffer(AvatarLook.Encode(chr));
+            data.EncodeBuffer(DataAvatarLook.Encode(chr));
             if (ServerConfig.TWMS121orLater()) {
                 data.Encode1(0);
             }
@@ -691,7 +691,7 @@ public class ResCLogin {
         for (MapleCharacter chr : chars) {
             //Structure.CharEntry(p, chr, true, false);
             sp.EncodeBuffer(GW_CharacterStat.Encode(chr));
-            sp.EncodeBuffer(AvatarLook.Encode(chr));
+            sp.EncodeBuffer(DataAvatarLook.Encode(chr));
             if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsIMS() || ServerConfig.IsEMS() || ServerConfig.IsTHMS() || ServerConfig.IsMSEA())
                     && (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater())
                     || ServerConfig.GMS83orLater()) {
@@ -912,7 +912,7 @@ public class ResCLogin {
         data.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
             data.EncodeBuffer(GW_CharacterStat.Encode(chr));
-            data.EncodeBuffer(AvatarLook.Encode(chr));
+            data.EncodeBuffer(DataAvatarLook.Encode(chr));
             data.Encode1(0);
         }
         data.Encode1(3);
