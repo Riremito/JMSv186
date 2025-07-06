@@ -13,6 +13,7 @@ import handling.world.World;
 import java.sql.SQLException;
 import database.DatabaseConnection;
 import debug.Debug;
+import debug.DebugLogger;
 import handling.world.family.MapleFamilyBuff;
 import java.sql.PreparedStatement;
 import server.Timer.*;
@@ -36,6 +37,7 @@ public class Start {
         ServerConfig.SetVersion(server_version, server_version_sub);
         ServerConfig.SetRegion(server_region);
         // test
+        DebugLogger.init();
         Content.init();
         Content.check();
 

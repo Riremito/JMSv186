@@ -36,6 +36,10 @@ public class Debug {
         Log("[ERROR] " + text);
     }
 
+    public static void ExceptionLog(String text) {
+        Log("[EXCEPTION] " + text);
+    }
+
     public static boolean UserDebugLog(MapleClient c, String text) {
         return DebugLog("[" + text + "] [Character = \"" + c.getPlayer().getName() + "\"]");
     }

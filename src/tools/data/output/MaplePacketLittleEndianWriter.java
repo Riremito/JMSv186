@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tools.data.output;
 
 import debug.Debug;
+import debug.DebugLogger;
 import java.io.ByteArrayOutputStream;
 
 import handling.ByteArrayMaplePacket;
@@ -49,6 +50,9 @@ public class MaplePacketLittleEndianWriter extends GenericLittleEndianWriter {
         if (1 < ste.length) {
             Debug.DebugLog(ste[1].getFileName() + ":" + ste[1].getLineNumber());
             Debug.DebugLog(ste[1].getClassName() + "." + ste[1].getMethodName());
+
+            DebugLogger.DevLog("[OLD_SERVER_PACKET] " + ste[1].getFileName() + ":" + ste[1].getLineNumber());
+            DebugLogger.DevLog("[OLD_SERVER_PACKET] " + ste[1].getClassName() + "." + ste[1].getMethodName());
         }
     }
 
