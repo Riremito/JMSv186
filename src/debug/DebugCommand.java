@@ -66,6 +66,16 @@ public class DebugCommand {
         return false;
     }
 
+    public static int parseInt(String str) {
+        int ret = 0;
+        try {
+            ret = Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            // do nothing
+        }
+        return ret;
+    }
+
     public static boolean checkCommand(MapleClient c, String message) {
         MapleCharacter chr = c.getPlayer();
 
@@ -113,33 +123,34 @@ public class DebugCommand {
             }
             case "/test":
             case "/help": {
-                CustomNPCTalk(c, 1012003, 9010021);
+                remoteNPCTalk(c, 1012003, 9010021);
                 return true;
             }
             case "/npctalk": {
                 if (splitted.length < 2) {
                     return false;
                 }
-                int npc_id = Integer.parseInt(splitted[1]);
-                if (npc_id <= 0) {
+                int npc_id = parseInt(splitted[1]);
+
+                if (!LoadData.IsValidNPCID(npc_id) || !remoteNPCTalk(c, npc_id)) {
+                    chr.DebugMsg("[RemoteNPCTalk] Invalid NPCID.");
                     return false;
                 }
-                if (!NPCTalk(c, npc_id)) {
-                    chr.DebugMsg("[NPCTalk] Invalid NPCID.");
-                }
+
+                chr.DebugMsg("[RemoteNPCTalk] " + npc_id);
                 return true;
             }
             case "/npctalk2": {
                 if (splitted.length < 2) {
                     return false;
                 }
-                int npc_id = Integer.parseInt(splitted[1]);
-                if (npc_id <= 0) {
+                int npc_id = parseInt(splitted[1]);
+                // set Chief Stan
+                if (!LoadData.IsValidNPCID(npc_id) || !remoteNPCTalk(c, npc_id, 1012003)) {
+                    chr.DebugMsg("[RemoteNPCTalk2] Invalid NPCID.");
                     return false;
                 }
-                if (!CustomNPCTalk(c, 1012003, npc_id)) {
-                    chr.DebugMsg("[NPCTalk2] Invalid NPCID.");
-                }
+                chr.DebugMsg("[RemoteNPCTalk2] " + npc_id);
                 return true;
             }
             // ステータス関連
@@ -148,8 +159,8 @@ public class DebugCommand {
                 int new_mp = chr.getStat().getMaxMp();
 
                 if (3 <= splitted.length) {
-                    int ratio_hp = Integer.parseInt(splitted[1]);
-                    int ratio_mp = Integer.parseInt(splitted[2]);
+                    int ratio_hp = parseInt(splitted[1]);
+                    int ratio_mp = parseInt(splitted[2]);
                     if (ratio_hp <= 0 || ratio_mp <= 0) {
                         ratio_hp = 100;
                         ratio_mp = 100;
@@ -158,7 +169,7 @@ public class DebugCommand {
                     new_hp = (int) (new_hp * (ratio_hp / 100.0));
                     new_mp = (int) (new_mp * (ratio_mp / 100.0));
                 } else if (2 <= splitted.length) {
-                    int ratio = Integer.parseInt(splitted[1]);
+                    int ratio = parseInt(splitted[1]);
                     if (ratio <= 0) {
                         ratio = 100;
                         chr.DebugMsg("Please, enter values between 1 - 100.");
@@ -185,7 +196,7 @@ public class DebugCommand {
             }
             case "/allskill": {
                 if (2 <= splitted.length) {
-                    chr.setJob(Integer.parseInt(splitted[1]));
+                    chr.setJob(parseInt(splitted[1]));
                 }
                 DebugJob.AllSkill(chr);
                 return true;
@@ -208,10 +219,10 @@ public class DebugCommand {
                 }
                 int level = 0;
                 if (splitted.length >= 3) {
-                    level = Integer.parseInt(splitted[2]);
+                    level = parseInt(splitted[2]);
                 }
 
-                int job_id = Integer.parseInt(splitted[1]);
+                int job_id = parseInt(splitted[1]);
                 DebugJob.DefStat(chr, job_id, level);
                 return true;
             }
@@ -222,11 +233,13 @@ public class DebugCommand {
                 if (splitted.length < 2) {
                     return false;
                 }
-                int map_id = Integer.parseInt(splitted[1]);
-                if (map_id <= 0 || 999999999 <= map_id) {
+                int map_id = parseInt(splitted[1]);
+
+                if (map_id <= 0) {
                     return false;
                 }
-                warp(c, map_id);
+
+                changeMap(chr, map_id);
                 return true;
             }
             case "/prevmap": {
@@ -237,42 +250,44 @@ public class DebugCommand {
                     return false;
                 }
 
-                warp(c, map_id);
+                changeMap(chr, map_id);
                 return true;
             }
             case "/nextmap": {
                 int index = LoadData.GetMapIDIndex(c.getPlayer().getMapId());
                 int map_id = LoadData.GetMapIDByIndex(index + 1);
+
                 if (map_id <= 0) {
                     return false;
                 }
-                warp(c, map_id);
+
+                changeMap(chr, map_id);
                 return true;
             }
             case "/fm":
             case "/フリマ": {
                 chr.saveLocation(SavedLocationType.FREE_MARKET, chr.getMap().getReturnMap().getId());
-                warp(c, 910000000);
+                changeMap(chr, 910000000);
                 return true;
             }
             case "/henesys":
             case "/ヘネシス": {
-                warp(c, 100000000);
+                changeMap(chr, 100000000);
                 return true;
             }
             case "/leafre":
             case "/リプレ": {
-                warp(c, 240000000);
+                changeMap(chr, 240000000);
                 return true;
             }
             case "/magatia":
             case "/マガティア": {
-                warp(c, 261000000);
+                changeMap(chr, 261000000);
                 return true;
             }
             case "/jc":
             case "/転職": {
-                CustomNPCTalk(c, 1012003, 9330104);
+                remoteNPCTalk(c, 1012003, 9330104);
                 return true;
             }
             // ランダム関連
@@ -303,7 +318,7 @@ public class DebugCommand {
             case "/randomspawn": {
                 int mob_count = 1;
                 if (splitted.length >= 2) {
-                    mob_count = Integer.parseInt(splitted[1]);
+                    mob_count = parseInt(splitted[1]);
                 }
 
                 if (10 < mob_count) {
@@ -340,9 +355,9 @@ public class DebugCommand {
                 if (splitted.length < 2) {
                     return false;
                 }
-                int map_id_to = Integer.parseInt(splitted[1]);
+                int map_id_to = parseInt(splitted[1]);
 
-                if (!LoadData.IsValidMapID(map_id_to)) {
+                if (map_id_to == 0 || !LoadData.IsValidMapID(map_id_to)) {
                     chr.DebugMsg("[AddPortal] Invalid MapID.");
                     return false;
                 }
@@ -369,41 +384,27 @@ public class DebugCommand {
         return false;
     }
 
-    public static boolean NPCTalk(MapleClient c, int npcid) {
-        MapleNPC npc = MapleLifeFactory.getNPC(npcid);
-        if (npc == null || npc.getName().equals("MISSINGNO")) {
+    public static boolean changeMap(MapleCharacter chr, int map_id) {
+        if (!LoadData.IsValidMapID(map_id)) {
             return false;
         }
-        NPCScriptManager.getInstance().start(c, npcid);
+
+        MapleMap map = chr.getClient().getChannelServer().getMapFactory().getMap(map_id);
+        chr.changeMap(map, map.getPortal(0));
         return true;
     }
 
-    public static boolean warp(MapleClient c, int mapid) {
-        try {
-            if (!(0 < mapid && mapid < 999999999)) {
-                c.getPlayer().Notice("存在しないMapIDです");
-                return false;
-            }
-            MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
-            if (map == null) {
-                c.getPlayer().Notice("存在しないMapIDです");
-                return false;
-            }
-            c.getPlayer().changeMap(map, map.getPortal(0));
-            return true;
-        } catch (Exception e) {
-        }
-        c.getPlayer().Notice("例外発生");
-        return false;
+    // bypass npc data checks
+    public static boolean remoteNPCTalk(MapleClient c, int npc_id) {
+        return remoteNPCTalk(c, npc_id, npc_id);
     }
 
-    // テスト用
-    public static boolean CustomNPCTalk(MapleClient c, final int npcid, final int npc_script) {
-        MapleNPC npc = MapleLifeFactory.getNPC(npcid);
+    public static boolean remoteNPCTalk(MapleClient c, int npc_script_id, int npc_id) {
+        MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
         if (npc == null || npc.getName().equals("MISSINGNO")) {
             return false;
         }
-        NPCScriptManager.getInstance().start(c, npcid, npc_script);
+        NPCScriptManager.getInstance().start(c, npc_id, npc_script_id);
         return true;
     }
 }
