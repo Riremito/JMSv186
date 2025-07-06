@@ -3,7 +3,10 @@ package packet.request;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
+import debug.Debug;
 import handling.channel.handler.MobHandler;
 import packet.ClientPacket;
 import packet.request.struct.CMovePath;
@@ -113,43 +116,58 @@ public class ReqCMobPool {
 
     // MoveMonster
     public static boolean OnMove(ClientPacket cp, MapleCharacter chr, MapleMonster monster) {
-        final short moveid = cp.Decode2();
-        final boolean useSkill = cp.Decode1() > 0;
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            byte unk = cp.Decode1();
+        }
+        short moveid = cp.Decode2();
+        boolean bNextAttackPossible = cp.Decode1() > 0;
 
-        MobUsesSkill(chr, monster, moveid, useSkill);
+        MobUsesSkill(chr, monster, moveid, bNextAttackPossible);
+        byte bLeft = cp.Decode1();
+        int mob_skill = cp.Decode4();
 
-        final byte skill = cp.Decode1();
-        // 1st decode4
-        final int skill1 = cp.Decode1() & 0xFF;
-        final int skill2 = cp.Decode1();
-        final int skill3 = cp.Decode1();
-        final int skill4 = cp.Decode1();
-
-        if (ServerConfig.JMS186orLater() || ServerConfig.IsKMS()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            // none
+            cp.Decode1();
+            cp.Decode1();
+        } else if (ServerConfig.JMS186orLater() || ServerConfig.IsKMS()) {
             cp.Decode4(); // 0
             cp.Decode4(); // 0
         }
 
-        cp.Decode1();
+        cp.Decode1(); // 0
 
         if (ServerConfig.JMS164orLater()) {
-            cp.Decode4();
+            cp.Decode4(); // 1
         }
 
         if (ServerConfig.JMS186orLater() || ServerConfig.IsKMS()) {
+            int ffddcc_1 = cp.Decode4(); // 0x00FFDDCC
+            int ffddcc_2 = cp.Decode4(); // 0x00FFDDCC
             cp.Decode4();
-            cp.Decode4();
-            cp.Decode4();
+
+            if (ffddcc_1 != 0x00FFDDCC || ffddcc_2 != 0x00FFDDCC) {
+                Debug.DebugLog("0x00FFDDCC... " + String.format("08X", ffddcc_1) + " | " + String.format("08X", ffddcc_2));
+            }
+        }
+
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            byte unk = cp.Decode1();
         }
 
         CMovePath data = CMovePath.Decode(cp);
-        monster.setStance(data.getAction());
-        monster.setPosition(data.getEnd());
-        monster.setFh(data.getFootHoldId());
+        // v302...ugh
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            // broken
+        } else {
+            monster.setStance(data.getAction());
+            monster.setPosition(data.getEnd());
+            monster.setFh(data.getFootHoldId());
+        }
 
         final MapleMap map = chr.getMap();
         map.moveMonster(monster, monster.getPosition());
-        map.broadcastMessage(chr, ResCMobPool.moveMonster(useSkill, skill, skill1, skill2, skill3, skill4, monster.getObjectId(), data), monster.getPosition());
+        map.broadcastMessage(chr, ResCMobPool.moveMonster(bNextAttackPossible, bLeft, mob_skill, monster.getObjectId(), data), monster.getPosition());
         return true;
     }
 

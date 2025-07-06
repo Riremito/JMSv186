@@ -44,24 +44,25 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 public class ResCMobPool {
 
     // moveMonster
-    public static MaplePacket moveMonster(boolean useskill, int skill, int skill1, int skill2, int skill3, int skill4, int oid, CMovePath data) {
+    public static MaplePacket moveMonster(boolean bNextAttackPossible, int bLeft, int mob_skill, int oid, CMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobMove);
-        sp.Encode4(oid);
-        if (ServerConfig.JMS186orLater()
+
+        sp.Encode4(oid); // mob object id
+
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            // none
+        } else if (ServerConfig.JMS186orLater()
                 || ServerConfig.KMS95orLater()) {
             sp.Encode1(0); // bNotForceLandingWhenDiscard
             sp.Encode1(0); // bNotChangeAction
         }
-        sp.Encode1(useskill ? 1 : 0); // bNextAttackPossible
-        sp.Encode1(skill); // bLeft
-        // sEffect.m_Data Encode4
-        {
-            sp.Encode1(skill1); // skillId
-            sp.Encode1(skill2); // skillLevel
-            sp.Encode1(skill3); // effectDelay
-            sp.Encode1(skill4); // effectDelay
-        }
-        if (ServerConfig.JMS186orLater()
+
+        sp.Encode1(bNextAttackPossible ? 1 : 0); // bNextAttackPossible
+        sp.Encode1(bLeft); // bLeft
+        sp.Encode4(mob_skill);
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            // no data?
+        } else if (ServerConfig.JMS186orLater()
                 || ServerConfig.KMS95orLater()) {
             sp.Encode4(0); //  if this is not 0, Encode4 x2 x loop count
             sp.Encode4(0); //  if this is not 0, Encode4 x loop count
