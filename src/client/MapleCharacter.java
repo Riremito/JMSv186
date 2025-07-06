@@ -252,22 +252,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return portal_count;
     }
 
-    public void SetDebugger() {
-        Debugger = !Debugger;
-    }
-
-    public boolean GetDebugger() {
-        return Debugger;
-    }
-
-    public void SetInformation() {
-        Information = !Information;
-    }
-
-    public boolean GetInformation() {
-        return Information;
-    }
-
     private MapleCharacter(final boolean ChannelServer) {
         setStance(0);
         setPosition(new Point(0, 0));
@@ -4703,10 +4687,35 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
     }
 
-    public void Debug(String text) {
-        if (GetDebugger()) {
-            client.getSession().write(ResWrapper.BroadCastMsgEvent(text));
-        }
+    public void SetDebugger() {
+        Debugger = !Debugger;
+    }
+
+    public boolean GetDebugger() {
+        return Debugger;
+    }
+
+    public void SetInformation() {
+        Information = !Information;
+    }
+
+    public boolean GetInformation() {
+        return Information;
+    }
+
+    // 青文字
+    public void DebugMsg(String text) {
+        SendPacket(ResWrapper.BroadCastMsgNotice(text));
+    }
+
+    // 青文字 & アイテム表示
+    public void DebugMsgItem(String text, int item_id) {
+        SendPacket(ResWrapper.BroadCastMsgNoticeItem(text, item_id));
+    }
+
+    // ピンク
+    public void DebugMsg2(String text) {
+        SendPacket(ResWrapper.BroadCastMsgEvent(text));
     }
 
     public void Info(String text) {
@@ -4717,10 +4726,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void Notice(String text) {
         client.getSession().write(ResWrapper.BroadCastMsgEvent(text));
-    }
-
-    public void Notify(String text) {
-        World.Broadcast.broadcastMessage((ResWrapper.BroadCastMsgNotice(text)).getBytes());
     }
 
     public IMaplePlayerShop getPlayerShop() {
