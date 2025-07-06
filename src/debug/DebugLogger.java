@@ -18,12 +18,15 @@
  */
 package debug;
 
+import config.ServerConfig;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -44,12 +47,24 @@ public class DebugLogger {
             }
 
             fw = new FileWriter(LOG_DIR + LOG_FILE_NAME);
-            fw.write((getDate() + " Server Reboot\r\n"));
+            fw.write((getDate() + " Server Reboot - " + ServerConfig.GetRegion() + " " + ServerConfig.GetVersion() + "." + ServerConfig.GetSubVersion() + "\r\n"));
+            fw.flush();
         } catch (FileNotFoundException ex) {
             Debug.ExceptionLog("DebugLogger - open");
         } catch (IOException ex) {
             Debug.ExceptionLog("DebugLogger - first write");
         }
+    }
+
+    public static void close() {
+        if (fw != null) {
+            try {
+                fw.close();
+            } catch (IOException ex) {
+                Debug.ExceptionLog("DebugLogger - close");
+            }
+        }
+        fw = null;
     }
 
     private static String getDate() {
