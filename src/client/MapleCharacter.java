@@ -142,7 +142,6 @@ import server.life.PlayerNPC;
 import server.maps.Event_PyramidSubway;
 import server.maps.MapleDragon;
 import server.maps.MapleFoothold;
-import server.movement.LifeMovementFragment;
 import tools.ConcurrentEnumMap;
 import tools.FileoutputUtil;
 import tools.MockIOSession;
@@ -165,7 +164,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private boolean smega, hidden, hasSummon = false;
     private int[] wishlist, rocks, savedLocations, regrocks, remainingSp = new int[10];
     private transient AtomicInteger inst;
-    private transient List<LifeMovementFragment> lastres;
     private List<Integer> lastmonthfameids;
     private List<MapleDoor> doors;
     private List<MaplePet> pets;
@@ -4659,14 +4657,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
         }
         return false;
-    }
-
-    public List<LifeMovementFragment> getLastRes() {
-        return lastres;
-    }
-
-    public void setLastRes(List<LifeMovementFragment> lastres) {
-        this.lastres = lastres;
     }
 
     public void setMonsterBookCover(int bookCover) {

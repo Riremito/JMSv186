@@ -28,13 +28,10 @@ import config.ServerConfig;
 import constants.GameConstants;
 import debug.Debug;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import server.movement.LifeMovementFragment;
 import server.shops.AbstractPlayerStore;
 import server.shops.IMaplePlayerShop;
 import tools.KoreanDateUtil;
-import tools.data.output.LittleEndianWriter;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -111,13 +108,6 @@ public class TestHelper {
         } else {
             mplew.writeInt(400967355);
             mplew.write(2);
-        }
-    }
-
-    public static final void serializeMovementList(final LittleEndianWriter lew, final List<LifeMovementFragment> moves) {
-        lew.write(moves.size());
-        for (LifeMovementFragment move : moves) {
-            move.serialize(lew);
         }
     }
 

@@ -27,14 +27,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.Serializable;
 
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import database.DatabaseConnection;
 import server.MapleItemInformationProvider;
-import server.movement.AbsoluteLifeMovement;
-import server.movement.LifeMovement;
-import server.movement.LifeMovementFragment;
 
 public class MaplePet implements Serializable {
 
@@ -239,17 +235,6 @@ public class MaplePet implements Serializable {
             }
         }
         return false;
-    }
-
-    public final void updatePosition(final List<LifeMovementFragment> movement) {
-        for (final LifeMovementFragment move : movement) {
-            if (move instanceof LifeMovement) {
-                if (move instanceof AbsoluteLifeMovement) {
-                    setPosition(((LifeMovement) move).getPosition());
-                }
-                setStance(((LifeMovement) move).getNewstate());
-            }
-        }
     }
 
     public final int getSecondsLeft() {

@@ -23,14 +23,11 @@ import config.ServerConfig;
 import constants.ServerConstants;
 import handling.MaplePacket;
 import java.awt.Point;
-import java.util.List;
 import packet.ServerPacket;
 import packet.ops.arg.ArgUserEffect;
 import packet.ops.OpsQuest;
 import packet.ops.OpsUserEffect;
 import packet.response.data.DataCUser;
-import packet.response.struct.TestHelper;
-import server.movement.LifeMovementFragment;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -360,12 +357,12 @@ public class ResCUserLocal {
         return mplew.getPacket();
     }
 
-    public static MaplePacket moveFollow(Point otherStart, Point myStart, Point otherEnd, List<LifeMovementFragment> moves) {
+    public static MaplePacket moveFollow(Point otherStart, Point myStart, Point otherEnd/*, List<LifeMovementFragment> moves*/) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserPassiveMove.get());
         mplew.writePos(otherStart);
         mplew.writePos(myStart);
-        TestHelper.serializeMovementList(mplew, moves);
+        //TestHelper.serializeMovementList(mplew, moves);
         mplew.write(17); //what? could relate to movePlayer
         for (int i = 0; i < 8; i++) {
             mplew.write(136); //?? sometimes 44
