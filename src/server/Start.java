@@ -1,9 +1,9 @@
 package server;
 
-import client.data.ExpTable;
 import config.Content;
 import config.DebugConfig;
 import config.ServerConfig;
+import data.client.DC_Exp;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
 import handling.login.LoginServer;
@@ -54,7 +54,8 @@ public class Start {
 
         Debug.InfoLog(ServerConfig.GetRegionName() + " v" + ServerConfig.GetVersion() + "." + ServerConfig.GetSubVersion());
 
-        ExpTable.Init();
+        // 設定更新
+        DC_Exp.init();
         packet.PacketFlag.Update();
 
         try {

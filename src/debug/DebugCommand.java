@@ -25,6 +25,7 @@ import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
 import constants.GameConstants;
+import data.client.DC_Exp;
 import handling.channel.ChannelServer;
 import java.awt.Point;
 import packet.request.ReqCUser;
@@ -217,13 +218,50 @@ public class DebugCommand {
                 if (splitted.length < 2) {
                     return false;
                 }
+                int job_id = parseInt(splitted[1]);
                 int level = 0;
                 if (splitted.length >= 3) {
                     level = parseInt(splitted[2]);
                 }
-
-                int job_id = parseInt(splitted[1]);
                 DebugJob.DefStat(chr, job_id, level);
+                return true;
+            }
+            case "/levelup": {
+                int next_level = chr.getLevel() + 1;
+                if (next_level <= 0 || 200 < next_level) {
+                    return false;
+                }
+                if (GameConstants.isKOC(chr.getJob())) {
+                    if (120 < next_level) {
+                        return false;
+                    }
+                }
+                chr.gainExp(DC_Exp.getExpNeededForLevel(chr.getLevel()), true, true, true);
+                return true;
+            }
+            case "/level":
+            case "/levelset": {
+                if (splitted.length < 2) {
+                    return false;
+                }
+                int new_level = parseInt(splitted[1]);
+                if (new_level <= 0 || 200 < new_level) {
+                    return false;
+                }
+                if (GameConstants.isKOC(chr.getJob())) {
+                    if (120 < new_level) {
+                        return false;
+                    }
+                }
+
+                if (new_level < chr.getLevel()) {
+                    DebugJob.DefStat(chr, chr.getJob(), new_level);
+                    return true;
+                }
+
+                for (int i = chr.getLevel(); i < new_level; i++) {
+                    chr.gainExp(DC_Exp.getExpNeededForLevel(i), true, true, true);
+                }
                 return true;
             }
             // Map移動関連

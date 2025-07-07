@@ -6,7 +6,7 @@ import client.MapleBeans;
 import client.MapleCharacter;
 import client.MapleClient;
 import constants.BeansConstants;
-import constants.GameConstants;
+import data.client.DC_Exp;
 import java.util.ArrayList;
 import java.util.List;
 import packet.response.Res_JMS_CField_Pachinko;
@@ -289,7 +289,7 @@ public class BeanGame {
                         || (第一排 == 6 && 第三排 == 3 && 第二排 == 8)
                         || (第一排 == 3 && 第三排 == 6 && 第二排 == 9)) {
                     int itemId = 0;
-                    int exp = GameConstants.getExpNeededForLevel(c.getPlayer().getLevel() + 1) / 200;
+                    int exp = DC_Exp.getExpNeededForLevel(c.getPlayer().getLevel() + 1) / 200;
                     int x = Randomizer.nextInt(100) + 1;
                     int count = 1;
                     switch (第二排) {

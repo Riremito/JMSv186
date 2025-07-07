@@ -518,17 +518,6 @@ public class AdminCommand {
         }
     }
 
-    public static class LevelUp extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            if (c.getPlayer().getLevel() < 200) {
-                c.getPlayer().gainExp(500000000, true, false, true);
-            }
-            return 1;
-        }
-    }
-
     public static class ClearInv extends CommandExecute {
 
         @Override
@@ -773,19 +762,6 @@ public class AdminCommand {
                 toDrop.setGMLog(c.getPlayer().getName());
 
                 c.getPlayer().getMap().spawnItemDrop(c.getPlayer(), c.getPlayer(), toDrop, c.getPlayer().getPosition(), true, true);
-            }
-            return 1;
-        }
-    }
-
-    public static class Level extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            c.getPlayer().setLevel(Short.parseShort(splitted[1]));
-            c.getPlayer().levelUp();
-            if (c.getPlayer().getExp() < 0) {
-                c.getPlayer().gainExp(-c.getPlayer().getExp(), false, false, true);
             }
             return 1;
         }

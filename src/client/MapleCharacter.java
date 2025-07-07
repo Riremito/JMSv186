@@ -57,6 +57,7 @@ import java.io.Serializable;
 import client.anticheat.CheatTracker;
 import config.ServerConfig;
 import constants.ServerConstants;
+import data.client.DC_Exp;
 import database.DatabaseConnection;
 import database.DatabaseException;
 import debug.Debug;
@@ -1622,7 +1623,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     }
                     case 1: // EXP
                     {
-                        final int required_exp = GameConstants.getExpNeededForLevel(level);
+                        final int required_exp = DC_Exp.getExpNeededForLevel(level);
                         int caught_exp = Randomizer.rand(required_exp / ((3 - bait_level) * 100), required_exp / ((3 - bait_level) * 10));
                         if (caught_exp == 0) {
                             caught_exp += 1;
@@ -2678,7 +2679,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 client.getSession().write(ResCUserLocal.useCharm((byte) charms, (byte) 0));
             } else {
                 float diepercentage = 0.0f;
-                int expforlevel = GameConstants.getExpNeededForLevel(level);
+                int expforlevel = DC_Exp.getExpNeededForLevel(level);
                 if (map.isTown() || FieldLimitType.RegularExpLoss.check(map.getFieldLimit())) {
                     diepercentage = 0.01f;
                 } else {
@@ -2813,7 +2814,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void gainExp(final int total, final boolean show, final boolean inChat, final boolean white) {
         try {
             int prevexp = getExp();
-            int needed = GameConstants.getExpNeededForLevel(level);
+            int needed = DC_Exp.getExpNeededForLevel(level);
             if (level >= 200 || (GameConstants.isKOC(job) && level >= 120)) {
                 if (exp + total > needed) {
                     setExp(needed);
@@ -2826,7 +2827,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     exp += total;
                     levelUp();
                     leveled = true;
-                    needed = GameConstants.getExpNeededForLevel(level);
+                    needed = DC_Exp.getExpNeededForLevel(level);
                     if (exp > needed) {
                         setExp(needed);
                     }
@@ -2886,7 +2887,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (gain > 0 && total < gain) { //just in case
             total = Integer.MAX_VALUE;
         }
-        int needed = GameConstants.getExpNeededForLevel(level);
+        int needed = DC_Exp.getExpNeededForLevel(level);
         if (level >= 200 || (GameConstants.isKOC(job) && level >= 120)) {
             if (exp + total > needed) {
                 setExp(needed);
@@ -2899,7 +2900,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 exp += total;
                 levelUp();
                 leveled = true;
-                needed = GameConstants.getExpNeededForLevel(level);
+                needed = DC_Exp.getExpNeededForLevel(level);
                 if (exp > needed) {
                     setExp(needed);
                 }
@@ -2913,7 +2914,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (gain != 0) {
             if (exp < 0) { // After adding, and negative
                 if (gain > 0) {
-                    setExp(GameConstants.getExpNeededForLevel(level));
+                    setExp(DC_Exp.getExpNeededForLevel(level));
                 } else if (gain < 0) {
                     setExp(0);
                 }
@@ -3308,8 +3309,15 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             maxmp += Randomizer.rand(50, 100);
         }
         maxmp += stats.getTotalInt() / 10;
-        exp -= GameConstants.getExpNeededForLevel(level);
+        exp -= DC_Exp.getExpNeededForLevel(level);
+        if (DC_Exp.getExpNeededForLevel(level + 1) < exp) {
+            exp = DC_Exp.getExpNeededForLevel(level + 1) - 1;
+        }
+        if (exp < 0) {
+            exp = 0;
+        }
         level += 1;
+
         int level = getLevel();
 
         if (level == 30) {

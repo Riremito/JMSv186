@@ -25,7 +25,7 @@ import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
-import constants.GameConstants;
+import data.client.DC_Exp;
 import packet.ClientPacket;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -94,7 +94,7 @@ public class GashaEXPPacket {
     }
 
     private static boolean UseTempExp(MapleCharacter chr) {
-        int exp_table = GameConstants.getExpNeededForLevel(chr.getLevel());
+        int exp_table = DC_Exp.getExpNeededForLevel(chr.getLevel());
         int exp_current = chr.getExp();
         int exp_temp = chr.getGashaEXP();
 
