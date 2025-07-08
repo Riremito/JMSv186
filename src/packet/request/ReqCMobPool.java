@@ -156,14 +156,9 @@ public class ReqCMobPool {
         }
 
         CMovePath data = CMovePath.Decode(cp);
-        // v302...ugh
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            // broken
-        } else {
-            monster.setStance(data.getAction());
-            monster.setPosition(data.getEnd());
-            monster.setFh(data.getFootHoldId());
-        }
+        monster.setStance(data.getAction());
+        monster.setPosition(data.getEnd());
+        monster.setFh(data.getFootHoldId());
 
         final MapleMap map = chr.getMap();
         map.moveMonster(monster, monster.getPosition());

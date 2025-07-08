@@ -18,7 +18,9 @@
  */
 package packet.request.struct;
 
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import java.awt.Point;
 import packet.ClientPacket;
 
@@ -37,6 +39,10 @@ public class CMovePath {
     private static byte JUMP_DOWN_ACTION = 0x0C; // v186
 
     public static boolean setJumpDown() {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            JUMP_DOWN_ACTION = 14;
+            return true;
+        }
         if ((ServerConfig.JMS186orLater())) {
             JUMP_DOWN_ACTION = 0x0C;
             return true;
@@ -51,27 +57,32 @@ public class CMovePath {
     public CMovePath(ClientPacket cp) {
         int ignore_bytes = 0; // 末尾検索
 
+        // ignore bytes : last Encode1 + unknown bytes (Post-BB)
         switch (cp.GetOpcode()) {
             case CP_UserMove: {
-                ignore_bytes = 1 + 1 * 9 + 2 * 4; // v164-v186 OK
+                ignore_bytes = 1 + 17; // JMS164-302
                 break;
             }
             case CP_DragonMove:
             case CP_SummonedMove:
             case CP_PetMove: {
-                ignore_bytes = 1 + 2 * 4; // v186
+                ignore_bytes = 1 + 2 * 4; // JMS186-194
                 break;
             }
             case CP_MobMove: {
-                ignore_bytes = 1 + 2 * 4;
-                // v180+
-                if (!ServerConfig.JMS165orEarlier()) {
-                    ignore_bytes += 1 * 4 + 4;
+                if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                    ignore_bytes = 1 + 54; // 1 + 54
+                    break;
                 }
-
                 if (ServerConfig.IsPostBB()) {
-                    ignore_bytes += 8; // 25 bytes
+                    ignore_bytes = 1 + 24;
+                    break;
                 }
+                if (Version.GreaterOrEqual(Region.JMS, 180)) {
+                    ignore_bytes = 1 + 2 * 4 + 1 * 4 + 4;
+                    break;
+                }
+                ignore_bytes = 1 + 2 * 4;
                 break;
             }
             default: {

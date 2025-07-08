@@ -20,6 +20,7 @@ package packet;
 
 import packet.ops.OpsBroadcastMsg;
 import packet.ops.OpsChangeStat;
+import packet.ops.OpsDBCHAR;
 import packet.ops.OpsMessage;
 import packet.ops.OpsNewCharacter;
 import packet.ops.OpsQuest;
@@ -37,6 +38,7 @@ import packet.request.struct.CMovePath;
 public class PacketFlag {
 
     public static void Update() {
+        OpsDBCHAR.init();
         ReqCTrunkDlg.init();
         ReqCNpcPool.init();
         OpsChangeStat.init();

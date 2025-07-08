@@ -61,7 +61,8 @@ public class ResCMobPool {
         sp.Encode1(bLeft); // bLeft
         sp.Encode4(mob_skill);
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            // no data?
+            sp.Encode1(0);
+            sp.Encode1(0);
         } else if (ServerConfig.JMS186orLater()
                 || ServerConfig.KMS95orLater()) {
             sp.Encode4(0); //  if this is not 0, Encode4 x2 x loop count
