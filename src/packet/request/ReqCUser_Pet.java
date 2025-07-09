@@ -26,6 +26,7 @@ import client.inventory.MaplePet;
 import client.inventory.PetCommand;
 import client.inventory.PetDataFactory;
 import config.Region;
+import config.ServerConfig;
 import config.Version;
 import handling.channel.handler.InventoryHandler;
 import handling.world.MaplePartyCharacter;
@@ -82,7 +83,7 @@ public class ReqCUser_Pet {
                 int timestamp = cp.Decode4();
                 short item_slot = cp.Decode2();
                 byte flag = 0;
-                if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                if (ServerConfig.IsPostBB() || Version.LessOrEqual(Region.JMS, 131)) {
                     flag = 1;
                 } else {
                     flag = cp.Decode1();

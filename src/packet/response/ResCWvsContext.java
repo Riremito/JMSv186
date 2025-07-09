@@ -62,6 +62,7 @@ import packet.ops.arg.ArgFriend;
 import packet.ops.arg.ArgMessage;
 import packet.ops.OpsSecondaryStat;
 import packet.request.ItemRequest;
+import packet.response.data.DataCUIUserInfo;
 import packet.response.data.DataSecondaryStat;
 import packet.response.data.DataGW_CharacterStat;
 import packet.response.data.DataGW_ItemSlotBase;
@@ -458,7 +459,7 @@ public class ResCWvsContext {
             sp.Encode2(player.getFame());
         }
 
-        if (ServerConfig.JMS164orLater()) {
+        if (ServerConfig.JMS147orLater()) {
             sp.Encode1(player.getMarriageId() > 0 ? 1 : 0); // heart red or gray
         }
         String sCommunity = "-";
@@ -483,56 +484,23 @@ public class ResCWvsContext {
         }
 
         sp.EncodeStr(sCommunity);
-        if (ServerConfig.JMS164orLater()) {
+        if (ServerConfig.JMS147orLater()) {
             sp.EncodeStr(sAlliance);
         }
-
-        if (ServerConfig.IsPostBB()) {
-            sp.Encode1(pet_summoned ? 1 : 0); // v188+ not used
-            sp.Encode1(isSelf ? 1 : 0);
-        } else {
-            if (ServerConfig.JMS180orLater() && !ServerConfig.IsKMS()) { // not in KMS95
-                sp.Encode4(0);
-                sp.Encode4(0);
-            }
-            if (ServerConfig.JMS164orLater()) {
-                sp.Encode1(isSelf ? 1 : 0);
-            }
-            sp.Encode1(pet_summoned ? 1 : 0);
+        // Pre-BB
+        if (Version.Between(Region.JMS, 180, 186)) {
+            sp.Encode4(0);
+            sp.Encode4(0);
         }
-
+        if (ServerConfig.IsPostBB()) {
+            sp.Encode1(0);
+        }
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            sp.Encode1(0);
+        }
+        sp.Encode1((player.getPet(0) != null) ? 1 : 0); // pet button clickable
         // CUIUserInfo::SetMultiPetInfo
-        if (ServerConfig.IsPostBB()) {
-            sp.Encode1(pet_summoned ? 1 : 0); // pet info on
-        }
-        IItem inv_pet = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -114);
-        final int peteqid = inv_pet != null ? inv_pet.getItemId() : 0;
-        int pet_count = 0;
-        for (final MaplePet pet : player.getPets()) {
-            if (pet.getSummoned()) {
-                if (ServerConfig.JMS164orLater()) {
-                    if (0 < pet_count) {
-                        sp.Encode1(1); // Next Pet
-                    }
-                }
-                sp.Encode4(pet.getPetItemId()); // petid
-                if (ServerConfig.JMS194orLater()) {
-                    sp.Encode4(0);
-                }
-                sp.EncodeStr(pet.getName());
-                sp.Encode1(pet.getLevel()); // nLevel
-                sp.Encode2(pet.getCloseness()); // pet closeness
-                sp.Encode1(pet.getFullness()); // pet fullness
-                sp.Encode2(pet.getFlags());
-                sp.Encode4(peteqid);
-                pet_count++;
-            }
-        }
-        if (ServerConfig.JMS164orLater()) {
-            if (0 < pet_count) {
-                sp.Encode1(0); // End of pet
-            }
-        }
+        sp.EncodeBuffer(DataCUIUserInfo.SetMultiPetInfo(player));
         // CUIUserInfo::SetTamingMobInfo
         IItem inv_mount = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
         boolean TamingMobEnabled = false;
@@ -547,10 +515,6 @@ public class ResCWvsContext {
             sp.Encode4(tm.getFatigue());
         }
 
-        if (ServerConfig.JMS302orLater()) {
-            sp.Encode1(0);
-        }
-
         // CUIUserInfo::SetWishItemInfo
         final int wishlistSize = player.getWishlistSize();
         sp.Encode1(wishlistSize);
@@ -561,7 +525,7 @@ public class ResCWvsContext {
                 sp.Encode4(wishlist[x]);
             }
         }
-        if (ServerConfig.JMS164orLater()) {
+        if (ServerConfig.JMS147orLater()) {
             // Monster Book (JMS)
             sp.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
         }

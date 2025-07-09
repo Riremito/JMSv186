@@ -16,27 +16,40 @@
  *
  *
  */
-package packet.response.data;
-
-import client.inventory.MaplePet;
-import packet.ServerPacket;
+package packet.ops;
 
 /**
  *
  * @author Riremito
  */
-public class DataCPet {
+public enum OpsMoveAbility {
+    MOVEABILITY_STOP(0),
+    MOVEABILITY_WALK(1),
+    MOVEABILITY_WALK_RANDOM(2),
+    MOVEABILITY_JUMP(3),
+    MOVEABILITY_FLY(4),
+    MOVEABILITY_FLY_RANDOM(5),
+    MOVEABILITY_ESCORT(6);
 
-    // CPet::Init
-    public static byte[] Init(MaplePet pet) {
-        ServerPacket data = new ServerPacket();
-        data.Encode4(pet.getPetItemId());
-        data.EncodeStr(pet.getName());
-        data.Encode8(pet.getUniqueId());
-        data.Encode2(pet.getPosition().x);
-        data.Encode2(pet.getPosition().y);
-        data.Encode1(pet.getStance());
-        data.Encode2(pet.getFh());
-        return data.get().getBytes();
+    int value;
+
+    OpsMoveAbility(int val) {
+        value = val;
+    }
+
+    OpsMoveAbility() {
+        value = -1;
+    }
+
+    public int get() {
+        return value;
+    }
+
+    public void set(int val) {
+        value = val;
+    }
+
+    public static void init() {
+        // SummonMovementType
     }
 }

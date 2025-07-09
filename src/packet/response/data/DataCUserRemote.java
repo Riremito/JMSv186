@@ -22,6 +22,7 @@ import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import client.inventory.MaplePet;
 import config.ServerConfig;
 import constants.GameConstants;
 import handling.world.World;
@@ -287,14 +288,17 @@ public class DataCUserRemote {
         data.Encode1(chr.getStance()); // m_nMoveAction
         data.Encode2(chr.getFH());
 
-        int pet_count = 0;
-        int unk_count = 0;
-
-        data.Encode1(pet_count);
-        for (int i = 0; i < pet_count; i++) {
+        for (int i = 0; i < 4; i++) {
+            MaplePet pet = chr.getPet(i);
+            data.Encode1(pet != null ? 1 : 0); // 3 -> null
+            if (pet == null) {
+                break;
+            }
             data.Encode4(0);
-            data.EncodeBuffer(DataCPet.Init_JMS302());
+            data.EncodeBuffer(DataCPet.Init(pet));
         }
+
+        int unk_count = 0;
         data.Encode1(unk_count);
         for (int i = 0; i < unk_count; i++) {
             // unk

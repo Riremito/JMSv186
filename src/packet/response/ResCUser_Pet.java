@@ -20,9 +20,12 @@ package packet.response;
 
 import client.MapleCharacter;
 import client.inventory.MaplePet;
+import config.Region;
+import config.Version;
 import handling.MaplePacket;
 import packet.request.parse.ParseCMovePath;
 import packet.ServerPacket;
+import packet.response.data.DataCPet;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -80,18 +83,16 @@ public class ResCUser_Pet {
     public static MaplePacket Activated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
         ServerPacket sp = new ServerPacket(transfer_field ? ServerPacket.Header.LP_PetTransferField : ServerPacket.Header.LP_PetActivated);
         sp.Encode4(chr.getId());
-        sp.Encode4(chr.getPetIndex(pet));
+        if (Version.LessOrEqual(Region.JMS, 131)) {
+            // ?_? fix plz
+        } else {
+            sp.Encode4(chr.getPetIndex(pet));
+        }
         sp.Encode1(spawn ? 1 : 0);
 
         if (spawn) {
             sp.Encode1(0);
-            sp.Encode4(pet.getPetItemId());
-            sp.EncodeStr(pet.getName());
-            sp.Encode8(pet.getUniqueId()); // buffer
-            sp.Encode2(pet.getPosition().x);
-            sp.Encode2(pet.getPosition().y);
-            sp.Encode1(pet.getStance());
-            sp.Encode2(pet.getFh());
+            sp.EncodeBuffer(DataCPet.Init(pet));
         } else {
             sp.Encode1(msg.get());
         }

@@ -35,26 +35,66 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class ResCSummonedPool {
 
+    public static MaplePacket spawnSummon(MapleSummon summon, boolean animated) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedEnterField);
+        sp.Encode4(summon.getOwnerId());
+        if (ServerConfig.JMS164orLater()) {
+            sp.Encode4(summon.getObjectId());
+        }
+        sp.Encode4(summon.getSkill());
+        if (ServerConfig.JMS186orLater()) {
+            sp.Encode1(summon.getOwnerLevel() - 1);
+        }
+        sp.Encode1(summon.getSkillLevel());
+        sp.Encode2((short) summon.getPosition().x);
+        sp.Encode2((short) summon.getPosition().y);
+        sp.Encode1(summon.getSkill() == 32111006 ? 5 : 4); // summon.getStance();
+        sp.Encode2(summon.getFh());
+        sp.Encode1(summon.getMovementType().getValue());
+        sp.Encode1(summon.getSummonType()); // 0 = Summon can't attack - but puppets don't attack with 1 either ^.-
+        sp.Encode1(animated ? 0 : 1);
+        if (ServerConfig.JMS186orLater()) {
+            final MapleCharacter chr = summon.getOwner();
+            sp.Encode1(summon.getSkill() == 4341006 && chr != null ? 1 : 0); //mirror target
+            if (summon.getSkill() == 4341006 && chr != null) {
+                sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+            }
+        }
+        return sp.get();
+    }
+
+    public static MaplePacket removeSummon(MapleSummon summon, boolean animated) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedLeaveField);
+        sp.Encode4(summon.getOwnerId());
+        if (ServerConfig.JMS131orEarlier()) {
+            sp.Encode4(summon.getSkill());
+        } else {
+            sp.Encode4(summon.getObjectId());
+        }
+        sp.Encode1(animated ? 4 : 1);
+        return sp.get();
+    }
+
     // v131 broken
     public static MaplePacket summonAttack(final int cid, final int summonSkillId, final byte animation, final List<SummonAttackEntry> allDamage, final int level) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SummonedAttack);
-        p.Encode4(cid);
-        p.Encode4(summonSkillId);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedAttack);
+        sp.Encode4(cid);
+        sp.Encode4(summonSkillId);
         if (ServerConfig.JMS164orLater()) {
-            p.Encode1(level - 1); //? guess
+            sp.Encode1(level - 1); //? guess
         }
-        p.Encode1(animation);
-        p.Encode1(allDamage.size());
+        sp.Encode1(animation);
+        sp.Encode1(allDamage.size());
         for (final SummonAttackEntry attackEntry : allDamage) {
-            p.Encode4(attackEntry.getMonster().getObjectId()); // oid
+            sp.Encode4(attackEntry.getMonster().getObjectId()); // oid
             if (ServerConfig.JMS131orEarlier()) {
-                p.Encode1(6);
+                sp.Encode1(6);
             } else {
-                p.Encode1(7); // who knows
+                sp.Encode1(7); // who knows
             }
-            p.Encode4(attackEntry.getDamage()); // damage
+            sp.Encode4(attackEntry.getDamage()); // damage
         }
-        return p.get();
+        return sp.get();
     }
 
     public static MaplePacket moveSummon(MapleSummon summon, ParseCMovePath data) {
@@ -72,54 +112,14 @@ public class ResCSummonedPool {
     }
 
     public static MaplePacket damageSummon(int cid, int summonSkillId, int damage, int unkByte, int monsterIdFrom) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SummonedHit);
-        p.Encode4(cid);
-        p.Encode4(summonSkillId);
-        p.Encode1(unkByte);
-        p.Encode4(damage);
-        p.Encode4(monsterIdFrom);
-        p.Encode1(0);
-        return p.get();
-    }
-
-    public static MaplePacket spawnSummon(MapleSummon summon, boolean animated) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SummonedEnterField);
-        p.Encode4(summon.getOwnerId());
-        if (ServerConfig.JMS164orLater()) {
-            p.Encode4(summon.getObjectId());
-        }
-        p.Encode4(summon.getSkill());
-        if (ServerConfig.JMS186orLater()) {
-            p.Encode1(summon.getOwnerLevel() - 1);
-        }
-        p.Encode1(summon.getSkillLevel());
-        p.Encode2((short) summon.getPosition().x);
-        p.Encode2((short) summon.getPosition().y);
-        p.Encode1(summon.getSkill() == 32111006 ? 5 : 4); // summon.getStance();
-        p.Encode2(summon.getFh());
-        p.Encode1(summon.getMovementType().getValue());
-        p.Encode1(summon.getSummonType()); // 0 = Summon can't attack - but puppets don't attack with 1 either ^.-
-        p.Encode1(animated ? 0 : 1);
-        if (ServerConfig.JMS186orLater()) {
-            final MapleCharacter chr = summon.getOwner();
-            p.Encode1(summon.getSkill() == 4341006 && chr != null ? 1 : 0); //mirror target
-            if (summon.getSkill() == 4341006 && chr != null) {
-                p.EncodeBuffer(DataAvatarLook.Encode(chr));
-            }
-        }
-        return p.get();
-    }
-
-    public static MaplePacket removeSummon(MapleSummon summon, boolean animated) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_SummonedLeaveField);
-        p.Encode4(summon.getOwnerId());
-        if (ServerConfig.JMS131orEarlier()) {
-            p.Encode4(summon.getSkill());
-        } else {
-            p.Encode4(summon.getObjectId());
-        }
-        p.Encode1(animated ? 4 : 1);
-        return p.get();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedHit);
+        sp.Encode4(cid);
+        sp.Encode4(summonSkillId);
+        sp.Encode1(unkByte);
+        sp.Encode4(damage);
+        sp.Encode4(monsterIdFrom);
+        sp.Encode1(0);
+        return sp.get();
     }
 
     public static MaplePacket summonSkill(int cid, int summonSkillId, int newStance) {

@@ -3703,6 +3703,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public final MaplePet getPet(final int index) {
+        if (3 <= index) {
+            return null;
+        }
         byte count = 0;
         for (final MaplePet pet : pets) {
             if (pet.getSummoned()) {
