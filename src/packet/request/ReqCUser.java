@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
 import packet.ops.OpsChangeStat;
-import packet.request.struct.CMovePath;
+import packet.request.parse.ParseCMovePath;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
@@ -716,41 +716,45 @@ public class ReqCUser {
             return false;
         }
 
-        if (ServerConfig.JMS186orLater()) {
+        // not in TWMS148, CMS104, but in TWMS125
+        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88)) {
             cp.Decode4(); // -1
             cp.Decode4(); // -1
         }
 
         cp.Decode1(); // unk
 
-        if (ServerConfig.JMS186orLater()) {
+        // not in TWMS148, CMS104, but in TWMS125
+        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88)) {
             cp.Decode4(); // -1
             cp.Decode4(); // -1
             cp.Decode4();
             cp.Decode4();
         }
 
+        // not in JMS147
         if (ServerConfig.JMS164orLater()) {
             cp.Decode4();
         }
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             cp.Decode4();
         }
 
-        CMovePath data = CMovePath.Decode(cp);
-        chr.setPosition(data.getEnd());
-        chr.setStance(data.getAction());
+        ParseCMovePath move_path = new ParseCMovePath();
+        if (move_path.Decode(cp)) {
+            move_path.update(chr);
+        }
+
         map.movePlayer(chr, chr.getPosition());
-        map.broadcastMessage(chr, ResCUserRemote.Move(chr, data), false);
+        map.broadcastMessage(chr, ResCUserRemote.Move(chr, move_path), false);
 
         // クローン : 移動
         if (chr.isCloning()) {
             MapleCharacter chr_clone = chr.getClone();
-            chr_clone.setPosition(data.getEnd());
-            chr_clone.setStance(data.getAction());
+            move_path.update(chr_clone);
             map.movePlayer(chr_clone, chr_clone.getPosition());
-            map.broadcastMessageClone(chr_clone, ResCUserRemote.Move(chr_clone, data));
+            map.broadcastMessageClone(chr_clone, ResCUserRemote.Move(chr_clone, move_path));
         }
         return true;
     }

@@ -21,7 +21,7 @@ package packet.response;
 import client.MapleCharacter;
 import client.inventory.MaplePet;
 import handling.MaplePacket;
-import packet.request.struct.CMovePath;
+import packet.request.parse.ParseCMovePath;
 import packet.ServerPacket;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -100,7 +100,7 @@ public class ResCUser_Pet {
     }
 
     public static MaplePacket Activated(MapleCharacter chr, MaplePet pet) {
-        return Activated(chr, pet, true, DeActivatedMsg.UNKNOWN, false);
+        return Activated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, false);
     }
 
     public static MaplePacket Deactivated(MapleCharacter chr, MaplePet pet, DeActivatedMsg msg) {
@@ -108,10 +108,10 @@ public class ResCUser_Pet {
     }
 
     public static MaplePacket TransferField(MapleCharacter chr, MaplePet pet) {
-        return Activated(chr, pet, true, DeActivatedMsg.UNKNOWN, true);
+        return Activated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, true);
     }
 
-    public static final MaplePacket movePet(MapleCharacter chr, int pet_index, CMovePath data) {
+    public static final MaplePacket movePet(MapleCharacter chr, int pet_index, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetMove);
         sp.Encode4(chr.getId());
         sp.Encode4(pet_index);

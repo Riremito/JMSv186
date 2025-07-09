@@ -35,7 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import packet.ClientPacket;
-import packet.request.struct.CMovePath;
+import packet.request.parse.ParseCMovePath;
 import packet.response.ResCMobPool;
 import packet.response.ResCSummonedPool;
 import server.MapleStatEffect;
@@ -118,10 +118,12 @@ public class ReqCSummonedPool {
             return false;
         }
 
-        CMovePath data = CMovePath.Decode(cp);
-        summon.setStance(data.getAction());
-        summon.setPosition(data.getEnd());
-        chr.getMap().broadcastMessage(chr, ResCSummonedPool.moveSummon(summon, data), summon.getPosition());
+        ParseCMovePath move_path = new ParseCMovePath();
+        if (move_path.Decode(cp)) {
+            move_path.update(summon);
+        }
+
+        chr.getMap().broadcastMessage(chr, ResCSummonedPool.moveSummon(summon, move_path), summon.getPosition());
         return true;
     }
 

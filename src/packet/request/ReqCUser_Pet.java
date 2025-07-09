@@ -25,13 +25,15 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import client.inventory.PetCommand;
 import client.inventory.PetDataFactory;
+import config.Region;
+import config.Version;
 import handling.channel.handler.InventoryHandler;
 import handling.world.MaplePartyCharacter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import packet.ClientPacket;
-import packet.request.struct.CMovePath;
+import packet.request.parse.ParseCMovePath;
 import packet.response.ResCUser_Pet;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
@@ -79,7 +81,12 @@ public class ReqCUser_Pet {
             case CP_UserActivatePetRequest: {
                 int timestamp = cp.Decode4();
                 short item_slot = cp.Decode2();
-                byte flag = cp.Decode1();
+                byte flag = 0;
+                if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                    flag = 1;
+                } else {
+                    flag = cp.Decode1();
+                }
                 chr.spawnPet(item_slot, flag > 0 ? true : false);
                 chr.updateTick(timestamp); // unused
                 return true;
@@ -163,10 +170,16 @@ public class ReqCUser_Pet {
             return false;
         }
 
-        CMovePath data = CMovePath.Decode(cp);
-        pet.setStance(data.getAction());
-        pet.setPosition(data.getEnd());
-        map.broadcastMessage(chr, ResCUser_Pet.movePet(chr, pet_index, data), false);
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            byte unk = cp.Decode1();
+        }
+
+        ParseCMovePath move_path = new ParseCMovePath();
+        if (move_path.Decode(cp)) {
+            move_path.update(pet);
+        }
+
+        map.broadcastMessage(chr, ResCUser_Pet.movePet(chr, pet_index, move_path), false);
         return true;
     }
 

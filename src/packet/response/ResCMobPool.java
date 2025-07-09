@@ -28,7 +28,7 @@ import handling.MaplePacket;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import packet.request.struct.CMovePath;
+import packet.request.parse.ParseCMovePath;
 import packet.ServerPacket;
 import packet.response.struct.Structure;
 import server.life.MapleMonster;
@@ -44,7 +44,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 public class ResCMobPool {
 
     // moveMonster
-    public static MaplePacket moveMonster(boolean bNextAttackPossible, int bLeft, int mob_skill, int oid, CMovePath data) {
+    public static MaplePacket moveMonster(boolean bNextAttackPossible, int bLeft, int mob_skill, int oid, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobMove);
 
         sp.Encode4(oid); // mob object id

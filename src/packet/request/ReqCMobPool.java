@@ -9,7 +9,7 @@ import config.Version;
 import debug.Debug;
 import handling.channel.handler.MobHandler;
 import packet.ClientPacket;
-import packet.request.struct.CMovePath;
+import packet.request.parse.ParseCMovePath;
 import packet.response.ResCMobPool;
 import server.Randomizer;
 import server.life.MapleMonster;
@@ -155,14 +155,14 @@ public class ReqCMobPool {
             byte unk = cp.Decode1();
         }
 
-        CMovePath data = CMovePath.Decode(cp);
-        monster.setStance(data.getAction());
-        monster.setPosition(data.getEnd());
-        monster.setFh(data.getFootHoldId());
+        ParseCMovePath move_path = new ParseCMovePath();
+        if (move_path.Decode(cp)) {
+            move_path.update(monster);
+        }
 
         final MapleMap map = chr.getMap();
         map.moveMonster(monster, monster.getPosition());
-        map.broadcastMessage(chr, ResCMobPool.moveMonster(bNextAttackPossible, bLeft, mob_skill, monster.getObjectId(), data), monster.getPosition());
+        map.broadcastMessage(chr, ResCMobPool.moveMonster(bNextAttackPossible, bLeft, mob_skill, monster.getObjectId(), move_path), monster.getPosition());
         return true;
     }
 

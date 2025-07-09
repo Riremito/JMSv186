@@ -131,18 +131,6 @@ public class ClientPacket {
         return buffer;
     }
 
-    public byte[] DecodeMovePath() {
-        int length = packet.length - decoded;
-
-        byte[] buffer = new byte[length];
-
-        for (int i = 0; i < length; i++) {
-            buffer[i] = Decode1();
-        }
-
-        return buffer;
-    }
-
     public enum Header {
         // 独自仕様
         CP_CUSTOM_,

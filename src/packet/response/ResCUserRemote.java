@@ -30,7 +30,7 @@ import handling.channel.handler.AttackInfo;
 import java.util.List;
 import packet.ServerPacket;
 import packet.ops.arg.ArgUserEffect;
-import packet.request.struct.CMovePath;
+import packet.request.parse.ParseCMovePath;
 import packet.response.data.DataAvatarLook;
 import packet.response.data.DataCUser;
 import server.MapleStatEffect;
@@ -45,7 +45,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 public class ResCUserRemote {
 
     // CUserRemote::OnMove
-    public static MaplePacket Move(MapleCharacter chr, CMovePath data) {
+    public static MaplePacket Move(MapleCharacter chr, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserMove);
         sp.Encode4(chr.getId());
         sp.EncodeBuffer(data.get());

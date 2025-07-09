@@ -19,7 +19,7 @@
 package packet.response;
 
 import handling.MaplePacket;
-import packet.request.struct.CMovePath;
+import packet.request.parse.ParseCMovePath;
 import packet.ServerPacket;
 import server.maps.MapleDragon;
 
@@ -29,7 +29,7 @@ import server.maps.MapleDragon;
  */
 public class ResCUser_Dragon {
 
-    public static MaplePacket moveDragon(MapleDragon dragon, CMovePath data) {
+    public static MaplePacket moveDragon(MapleDragon dragon, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DragonMove);
         sp.Encode4(dragon.getOwner());
         sp.EncodeBuffer(data.get());

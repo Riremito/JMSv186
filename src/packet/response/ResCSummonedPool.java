@@ -22,7 +22,7 @@ import client.MapleCharacter;
 import config.ServerConfig;
 import handling.MaplePacket;
 import java.util.List;
-import packet.request.struct.CMovePath;
+import packet.request.parse.ParseCMovePath;
 import packet.ServerPacket;
 import packet.response.data.DataAvatarLook;
 import server.life.SummonAttackEntry;
@@ -57,7 +57,7 @@ public class ResCSummonedPool {
         return p.get();
     }
 
-    public static MaplePacket moveSummon(MapleSummon summon, CMovePath data) {
+    public static MaplePacket moveSummon(MapleSummon summon, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedMove);
         sp.Encode4(summon.getOwnerId());
         // very old summon type

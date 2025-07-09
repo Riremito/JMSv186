@@ -21,7 +21,7 @@ package packet.request;
 import client.MapleCharacter;
 import client.MapleClient;
 import packet.ClientPacket;
-import packet.request.struct.CMovePath;
+import packet.request.parse.ParseCMovePath;
 import packet.response.ResCUser_Dragon;
 import server.maps.MapleDragon;
 
@@ -44,10 +44,12 @@ public class ReqCUser_Dragon {
         }
 
         // CMovePath::Decode
-        CMovePath data = CMovePath.Decode(cp);
-        dragon.setStance(data.getAction());
-        dragon.setPosition(data.getEnd());
-        chr.getMap().broadcastMessage(chr, ResCUser_Dragon.moveDragon(dragon, data), chr.getPosition());
+        ParseCMovePath move_path = new ParseCMovePath();
+        if (move_path.Decode(cp)) {
+            move_path.update(dragon);
+        }
+
+        chr.getMap().broadcastMessage(chr, ResCUser_Dragon.moveDragon(dragon, move_path), chr.getPosition());
         return true;
     }
 
