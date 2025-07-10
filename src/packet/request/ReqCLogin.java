@@ -54,7 +54,6 @@ public class ReqCLogin {
             // CClientSocket::OnCheckPassword
             case CP_CheckPassword: {
                 if (OnCheckPassword(cp, c)) {
-                    ReqCClientSocket.SetLogin(false);
                     Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
                     c.SendPacket(ResCClientSocket.AuthenMessage());
                 }
@@ -113,9 +112,7 @@ public class ReqCLogin {
             // キャラクター選択
             case CP_SelectCharacter:
             case CP_CheckPinCode: {
-                if (OnSelectCharacter(cp, c)) {
-                    ReqCClientSocket.SetLogin(false);
-                }
+                OnSelectCharacter(cp, c);
                 return true;
             }
             case CP_ViewAllChar: {

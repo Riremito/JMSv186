@@ -88,16 +88,6 @@ public class ReqCClientSocket {
         }
         int character_id = cp.Decode4();
         EnterGameServer(c, character_id);
-
-        if (GetLogin()) {
-            SetLogin(true);
-            Debug.UserInfoLog(c, "Enter Game");
-            //Map<Integer, Integer> connected = World.getConnected();
-            //c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
-        } else {
-            Debug.UserInfoLog(c, "Change Channel");
-        }
-
         return true;
     }
 
@@ -138,6 +128,11 @@ public class ReqCClientSocket {
                     return false;
                 }
                 // OK
+                if (transfer != null) {
+                    Debug.DebugLog(chr, "CC");
+                } else {
+                    Debug.DebugLog(chr, "Login");
+                }
                 break;
             }
             default: {
@@ -271,7 +266,13 @@ public class ReqCClientSocket {
                 map.broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
             }
         }
+        // notice
+        if (transfer != null) {
+            // Change Channel OK
+            return true;
+        }
 
+        Debug.DebugLog("users = " + World.getConnected().get(0));
         return true;
     }
 
@@ -300,14 +301,7 @@ public class ReqCClientSocket {
         c.setPlayer(null);
         c.setReceiving(false);
     }
+
     // CClientSocket::OnMigrateOut
     // CClientSocket::OnCenterMigrateOutResult
-
-    public static boolean GetLogin() {
-        return login_test;
-    }
-
-    public static void SetLogin(boolean login_state) {
-        login_test = login_state;
-    }
 }

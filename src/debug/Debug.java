@@ -3,6 +3,7 @@
  */
 package debug;
 
+import client.MapleCharacter;
 import client.MapleClient;
 import config.DebugConfig;
 import java.text.SimpleDateFormat;
@@ -40,16 +41,8 @@ public class Debug {
         Log("[EXCEPTION] " + text);
     }
 
-    public static boolean UserDebugLog(MapleClient c, String text) {
-        return DebugLog("[" + text + "] [Character = \"" + c.getPlayer().getName() + "\"]");
-    }
-
-    public static void UserInfoLog(MapleClient c, String text) {
-        InfoLog("[" + text + "] [Character = \"" + c.getPlayer().getName() + "\"]");
-    }
-
-    public static void UserErrorLog(MapleClient c, String text) {
-        ErrorLog("[" + text + "] [Character = \"" + c.getPlayer().getName() + "\"]");
+    public static void DebugLog(MapleCharacter chr, String text) {
+        Log("[DEBUG_CHR][\"" + chr.getName() + "\"] " + text);
     }
 
     // 管理用
