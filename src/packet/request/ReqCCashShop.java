@@ -27,7 +27,6 @@ import config.ServerConfig;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
-import handling.channel.handler.InterServerHandler;
 import handling.world.CharacterTransfer;
 import handling.world.World;
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ public class ReqCCashShop {
             }
             // 入場リクエスト
             case CP_UserMigrateToCashShopRequest: {
-                InterServerHandler.EnterCS(c, c.getPlayer(), false);
+                ReqCClientSocket.EnterCS(c, c.getPlayer(), false);
                 return true;
             }
             // 退出

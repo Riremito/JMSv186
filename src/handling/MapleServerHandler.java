@@ -32,6 +32,7 @@ import packet.request.ReqCITC;
 import packet.request.ReqCTownPortalPool;
 import packet.request.ReqCUser_Pet;
 import packet.request.ReqCCashShop;
+import packet.request.ReqCClientSocket;
 import packet.request.ReqCLogin;
 import packet.request.Req_Farm;
 import packet.response.ResCClientSocket;
@@ -305,9 +306,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     int unk0 = cp.Decode4();
                 }
                 final int playerid = cp.Decode4();
-                InterServerHandler.Loggedin(playerid, c);
-                if (!InterServerHandler.GetLogin()) {
-                    InterServerHandler.SetLogin(true);
+                ReqCClientSocket.Loggedin(playerid, c);
+                if (!ReqCClientSocket.GetLogin()) {
+                    ReqCClientSocket.SetLogin(true);
                     Debug.UserInfoLog(c, "Enter Game");
                     c.SendPacket(ResCClientSocket.AuthenCodeChanged()); // internet cafe
                     //Map<Integer, Integer> connected = World.getConnected();

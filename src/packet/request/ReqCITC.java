@@ -24,7 +24,6 @@ import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import constants.GameConstants;
 import constants.ServerConstants;
-import handling.channel.handler.InterServerHandler;
 import packet.ClientPacket;
 import packet.response.ResCITC;
 import server.MTSCart;
@@ -47,7 +46,7 @@ public class ReqCITC {
             }
             // 入場リクエスト
             case CP_UserMigrateToITCRequest: {
-                InterServerHandler.EnterCS(c, c.getPlayer(), true);
+                ReqCClientSocket.EnterCS(c, c.getPlayer(), true);
                 return true;
             }
             // 退出

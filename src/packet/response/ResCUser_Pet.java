@@ -81,17 +81,21 @@ public class ResCUser_Pet {
 
     // showPet
     public static MaplePacket Activated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
-        ServerPacket sp = new ServerPacket(transfer_field ? ServerPacket.Header.LP_PetTransferField : ServerPacket.Header.LP_PetActivated);
+        ServerPacket sp = new ServerPacket((transfer_field || Version.LessOrEqual(Region.JMS, 131)) ? ServerPacket.Header.LP_PetTransferField : ServerPacket.Header.LP_PetActivated);
         sp.Encode4(chr.getId());
         if (Version.LessOrEqual(Region.JMS, 131)) {
-            // ?_? fix plz
+            // no data
         } else {
             sp.Encode4(chr.getPetIndex(pet));
         }
         sp.Encode1(spawn ? 1 : 0);
 
         if (spawn) {
-            sp.Encode1(0);
+            if (Version.LessOrEqual(Region.JMS, 131)) {
+                // no data
+            } else {
+                sp.Encode1(0);
+            }
             sp.EncodeBuffer(DataCPet.Init(pet));
         } else {
             sp.Encode1(msg.get());

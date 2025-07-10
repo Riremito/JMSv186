@@ -35,7 +35,7 @@ public class DataCUIUserInfo {
 
     // CUIUserInfo::SetMultiPetInfo (GMS)
     // CUIUserInfo::SetPetInfo (KMS)
-    public static byte[] SetMultiPetInfo(MapleCharacter chr) {
+    public static byte[] SetPetInfo(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         //IItem inv_pet = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -114);
@@ -57,6 +57,19 @@ public class DataCUIUserInfo {
             data.Encode4(/*inv_pet != null ? inv_pet.getItemId() : 0*/0); // nItemID
         }
 
+        return data.get().getBytes();
+    }
+
+    public static byte[] SetPetInfo_JMS131(MapleCharacter chr, MaplePet pet) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode4(pet.getPetItemId()); // dwTemplateID
+        data.EncodeStr(pet.getName());
+        data.Encode1(pet.getLevel()); // nLevel
+        data.Encode2(pet.getCloseness()); // pet closeness
+        data.Encode1(pet.getFullness()); // pet fullness
+        data.Encode2(0);
+        data.Encode4(/*inv_pet != null ? inv_pet.getItemId() : 0*/0); // nItemID
         return data.get().getBytes();
     }
 }

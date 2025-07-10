@@ -18,7 +18,6 @@ import debug.Debug;
 import handling.channel.handler.AttackInfo;
 import handling.channel.handler.ChatHandler;
 import handling.channel.handler.HiredMerchantHandler;
-import handling.channel.handler.InterServerHandler;
 import handling.channel.handler.InventoryHandler;
 import handling.channel.handler.NPCHandler;
 import handling.channel.handler.PlayerHandler;
@@ -63,7 +62,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserTransferChannelRequest: {
-                InterServerHandler.ChangeChannel(cp, c, c.getPlayer());
+                ReqCClientSocket.ChangeChannel(cp, c, c.getPlayer());
                 return true;
             }
             case CP_UserMigrateToCashShopRequest: {

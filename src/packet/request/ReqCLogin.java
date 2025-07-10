@@ -28,7 +28,6 @@ import config.ServerConfig;
 import debug.Debug;
 import debug.DebugUser;
 import handling.channel.ChannelServer;
-import handling.channel.handler.InterServerHandler;
 import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class ReqCLogin {
             // CClientSocket::OnCheckPassword
             case CP_CheckPassword: {
                 if (OnCheckPassword(cp, c)) {
-                    InterServerHandler.SetLogin(false);
+                    ReqCClientSocket.SetLogin(false);
                     Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
                     c.SendPacket(ResCClientSocket.AuthenMessage());
                 }
@@ -115,7 +114,7 @@ public class ReqCLogin {
             case CP_SelectCharacter:
             case CP_CheckPinCode: {
                 if (OnSelectCharacter(cp, c)) {
-                    InterServerHandler.SetLogin(false);
+                    ReqCClientSocket.SetLogin(false);
                 }
                 return true;
             }

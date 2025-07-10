@@ -499,8 +499,16 @@ public class ResCWvsContext {
             sp.Encode1(0);
         }
         sp.Encode1((player.getPet(0) != null) ? 1 : 0); // pet button clickable
-        // CUIUserInfo::SetMultiPetInfo
-        sp.EncodeBuffer(DataCUIUserInfo.SetMultiPetInfo(player));
+        if (Version.LessOrEqual(Region.JMS, 131)) {
+            // inlined?
+            if (player.getPet(0) != null) {
+                sp.EncodeBuffer(DataCUIUserInfo.SetPetInfo_JMS131(player, player.getPet(0)));
+            }
+        } else {
+            // CUIUserInfo::SetPetInfo
+            sp.EncodeBuffer(DataCUIUserInfo.SetPetInfo(player));
+        }
+
         // CUIUserInfo::SetTamingMobInfo
         IItem inv_mount = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
         boolean TamingMobEnabled = false;

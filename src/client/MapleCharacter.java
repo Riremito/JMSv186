@@ -63,7 +63,6 @@ import database.DatabaseException;
 import debug.Debug;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
-import handling.channel.handler.InterServerHandler;
 import handling.world.CharacterTransfer;
 import handling.world.MapleMessenger;
 import handling.world.MapleMessengerCharacter;
@@ -86,6 +85,7 @@ import packet.ops.OpsBodyPart;
 import packet.ops.OpsChangeStat;
 import packet.ops.OpsQuest;
 import packet.ops.OpsUserEffect;
+import packet.request.ReqCClientSocket;
 import packet.response.Res_JMS_CField_Pachinko;
 import packet.request.ReqCUser;
 import packet.response.ResCWvsContext;
@@ -5658,7 +5658,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public boolean EnterPointShop() {
-        InterServerHandler.EnterCS(client, this, false);
+        ReqCClientSocket.EnterCS(client, this, false);
         return true;
     }
 
