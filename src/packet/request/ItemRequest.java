@@ -195,7 +195,7 @@ public class ItemRequest {
         IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
 
         if (toUse == null || toUse.getItemId() != item_id || toUse.getQuantity() < 1) {
-            chr.enableActions();
+            chr.SendPacket(ResWrapper.StatChanged(chr));
             return false;
         }
 
@@ -203,19 +203,19 @@ public class ItemRequest {
         final long time = System.currentTimeMillis();
         if (chr.getNextConsume() > time) {
             chr.dropMessage(5, "You may not use this item yet.");
-            chr.enableActions();
+            chr.SendPacket(ResWrapper.StatChanged(chr));
             return false;
         }
 
         MapleMap map = chr.getMap();
 
         if (FieldLimitType.PotionUse.check(map.getFieldLimit())) {
-            chr.enableActions();
+            chr.SendPacket(ResWrapper.StatChanged(chr));
             return false;
         }
 
         if (!MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyTo(chr)) {
-            chr.enableActions();
+            chr.SendPacket(ResWrapper.StatChanged(chr));
             return false;
         }
 
@@ -239,7 +239,7 @@ public class ItemRequest {
 
     public static void RemoveCashItem(MapleCharacter chr, short item_slot) {
         MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.CASH, item_slot, (short) 1, false, true);
-        chr.enableActions(); // 多分 remove時にどうにかできる
+        chr.SendPacket(ResWrapper.StatChanged(chr)); // 多分 remove時にどうにかできる
     }
 
     public static boolean ConsumeCashItemUse(ClientPacket cp, MapleCharacter chr) {
@@ -304,7 +304,7 @@ public class ItemRequest {
                 }
 
                 if (pet == null) {
-                    chr.enableActions();
+                    chr.SendPacket(ResWrapper.StatChanged(chr));
                     return true;
                 }
 

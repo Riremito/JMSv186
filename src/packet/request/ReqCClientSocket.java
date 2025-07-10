@@ -91,14 +91,13 @@ public class ReqCClientSocket {
         return true;
     }
 
-    public static final void ChangeChannel(ClientPacket p, final MapleClient c, final MapleCharacter chr) {
-        if (!chr.isAlive() || chr.getEventInstance() != null || chr.getMap() == null || FieldLimitType.ChannelSwitch.check(chr.getMap().getFieldLimit())) {
-            c.getSession().write(ResWrapper.enableActions());
-            return;
+    public static final boolean ChangeChannel(MapleCharacter chr, int channel) {
+        if (!chr.isAlive() || chr.getEventInstance() != null || FieldLimitType.ChannelSwitch.check(chr.getMap().getFieldLimit())) {
+            return false;
         }
         ExtraDB.saveData(chr);
-        int channel = p.Decode1() + 1;
-        chr.changeChannel(channel);
+        chr.changeChannel(channel + 1);
+        return true;
     }
 
     // CClientSocket::OnCenterMigrateInResult

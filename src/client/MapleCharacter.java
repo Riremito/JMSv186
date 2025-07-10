@@ -87,7 +87,6 @@ import packet.ops.OpsQuest;
 import packet.ops.OpsUserEffect;
 import packet.request.ReqCClientSocket;
 import packet.response.Res_JMS_CField_Pachinko;
-import packet.request.ReqCUser;
 import packet.response.ResCWvsContext;
 import packet.response.ResCUser_Dragon;
 import packet.response.ResCMobPool;
@@ -5710,10 +5709,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void SendPacket(MaplePacket packet) {
         getClient().getSession().write(packet);
-    }
-
-    public void enableActions() {
-        ReqCUser.SendCharacterStat(this);
     }
 
     public void setPetAutoHPItem(int item_id) {

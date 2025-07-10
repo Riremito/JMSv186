@@ -650,4 +650,15 @@ public class ResWrapper {
         return ResCWvsContext.sendString(1, type, amount);
     }
 
+    // enableActions
+    public static MaplePacket StatChanged(MapleCharacter chr) {
+        return ResCWvsContext.StatChanged(chr, 1, 0);
+    }
+
+    // CUser::SendCharacterStat(1,0)
+    // CWvsContext::OnStatChanged
+    public static MaplePacket StatChanged(MapleCharacter chr, int unlock, int statmask) {
+        return ResCWvsContext.StatChanged(chr, unlock, statmask);
+    }
+
 }

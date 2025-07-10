@@ -33,6 +33,7 @@ import packet.request.parse.ParseCMovePath;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
+import packet.response.wrapper.ResWrapper;
 import server.Randomizer;
 import server.maps.MapleMap;
 import tools.AttackPair;
@@ -62,7 +63,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserTransferChannelRequest: {
-                ReqCClientSocket.ChangeChannel(cp, c, c.getPlayer());
+                OnTransferChannelRequest(cp, chr);
                 return true;
             }
             case CP_UserMigrateToCashShopRequest: {
@@ -465,15 +466,11 @@ public class ReqCUser {
         return false;
     }
 
-    // enableActions
-    public static void SendCharacterStat(MapleCharacter chr) {
-        SendCharacterStat(chr, 1, 0);
-    }
-
-    // CUser::SendCharacterStat(1,0)
-    // CWvsContext::OnStatChanged
-    public static void SendCharacterStat(MapleCharacter chr, int unlock, int statmask) {
-        chr.SendPacket(ResCWvsContext.StatChanged(chr, unlock, statmask));
+    public static void OnTransferChannelRequest(ClientPacket cp, MapleCharacter chr) {
+        int channel = cp.Decode1();
+        if (!ReqCClientSocket.ChangeChannel(chr, channel)) {
+            chr.UpdateStat(true);
+        }
     }
 
     // BMS CUser::OnAttack
@@ -803,7 +800,7 @@ public class ReqCUser {
 
         chr.setChair(item_id);
         chr.getMap().broadcastMessage(chr, ResCUserRemote.SetActivePortableChair(chr.getId(), item_id), false);
-        SendCharacterStat(chr); // ?_?
+        chr.SendPacket(ResWrapper.StatChanged(chr)); // ?_?
         return true;
     }
 
@@ -816,8 +813,7 @@ public class ReqCUser {
         final MapleCharacter player = map.getCharacterById(m_dwCharacterId); // CUser::FindUser
 
         if (player == null) {
-            // CUser::SendCharacterStat
-            SendCharacterStat(chr); // ea
+            chr.SendPacket(ResWrapper.StatChanged(chr));
             return false;
         }
 
