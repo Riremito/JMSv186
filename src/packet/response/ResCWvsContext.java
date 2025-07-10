@@ -249,6 +249,12 @@ public class ResCWvsContext {
         return sp.get();
     }
 
+    // CWvsContext::OnForcedStatReset
+    public static final MaplePacket ForcedStatReset() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ForcedStatReset);
+        return sp.get();
+    }
+
     public static final MaplePacket Message(ArgMessage ma) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Message);
         sp.Encode1(ma.mt.get());
@@ -1904,12 +1910,6 @@ public class ResCWvsContext {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_SetPassenserRequest.get());
         mplew.writeInt(chrid);
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket temporaryStats_Reset() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ForcedStatReset.get());
         return mplew.getPacket();
     }
 

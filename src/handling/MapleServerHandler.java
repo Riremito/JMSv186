@@ -2,7 +2,6 @@ package handling;
 
 import constants.ServerConstants;
 import client.MapleClient;
-import config.ServerConfig;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -238,8 +237,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
         // CUser::OnFieldPacket
         // CUser::OnSummonedPacket
         switch (header) {
+            case CP_MigrateIn:
             case CP_AliveAck: {
-                return true;
+                return ReqCClientSocket.OnPacket(header, cp, c);
             }
             case CP_GoldHammerRequest: {
                 return ReqCUIItemUpgrade.Accept(c, cp);
@@ -299,23 +299,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // グループクエスト or 遠征隊検索
             case CP_PartyAdverRequest: {
-                return true;
-            }
-            case CP_MigrateIn: {
-                if (ServerConfig.KMS197orLater()) {
-                    int unk0 = cp.Decode4();
-                }
-                final int playerid = cp.Decode4();
-                ReqCClientSocket.Loggedin(playerid, c);
-                if (!ReqCClientSocket.GetLogin()) {
-                    ReqCClientSocket.SetLogin(true);
-                    Debug.UserInfoLog(c, "Enter Game");
-                    c.SendPacket(ResCClientSocket.AuthenCodeChanged()); // internet cafe
-                    //Map<Integer, Integer> connected = World.getConnected();
-                    //c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
-                } else {
-                    Debug.UserInfoLog(c, "Change Channel");
-                }
                 return true;
             }
             // CUser

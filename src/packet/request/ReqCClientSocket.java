@@ -24,14 +24,15 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleQuestStatus;
 import client.inventory.MaplePet;
-import config.ServerConfig;
+import config.Region;
+import config.Version;
 import database.ExtraDB;
+import debug.Debug;
 import handling.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.world.CharacterIdChannelPair;
 import handling.world.CharacterTransfer;
-import handling.world.MapleMessenger;
 import handling.world.MapleMessengerCharacter;
 import handling.world.MaplePartyCharacter;
 import handling.world.PartyOperation;
@@ -49,7 +50,6 @@ import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
-import tools.FileoutputUtil;
 
 /**
  *
@@ -58,6 +58,48 @@ import tools.FileoutputUtil;
 public class ReqCClientSocket {
 
     public static boolean login_test = false;
+
+    public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+        switch (header) {
+            case CP_MigrateIn: // Enter Game Server (Login)
+            {
+                OnMigrateIn(cp, c);
+                return true;
+            }
+            case CP_AliveAck: {
+                return true;
+            }
+            case CP_ExceptionLog: {
+                return true;
+            }
+            case CP_SecurityPacket: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean OnMigrateIn(ClientPacket cp, MapleClient c) {
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            int unk1 = cp.Decode4();
+        }
+        int character_id = cp.Decode4();
+        EnterGameServer(c, character_id);
+
+        if (GetLogin()) {
+            SetLogin(true);
+            Debug.UserInfoLog(c, "Enter Game");
+            //Map<Integer, Integer> connected = World.getConnected();
+            //c.getPlayer().Notify(c.getPlayer().getName() + " がログインしました（CH " + (c.getChannel()) + "） 現在の接続人数は" + connected.get(0) + "人です");
+        } else {
+            Debug.UserInfoLog(c, "Change Channel");
+        }
+
+        return true;
+    }
 
     public static final void ChangeChannel(ClientPacket p, final MapleClient c, final MapleCharacter chr) {
         if (!chr.isAlive() || chr.getEventInstance() != null || chr.getMap() == null || FieldLimitType.ChannelSwitch.check(chr.getMap().getFieldLimit())) {
@@ -69,141 +111,168 @@ public class ReqCClientSocket {
         chr.changeChannel(channel);
     }
 
-    public static final void Loggedin(final int playerid, final MapleClient c) {
-        final ChannelServer channelServer = c.getChannelServer();
-        MapleCharacter player;
-        final CharacterTransfer transfer = channelServer.getPlayerStorage().getPendingCharacter(playerid);
-        if (transfer == null) {
-            // Player isn't in storage, probably isn't CC
-            player = MapleCharacter.loadCharFromDB(playerid, c, true);
-        } else {
-            player = MapleCharacter.ReconstructChr(transfer, c, true);
-        }
-        ExtraDB.loadData(player);
-        player.UpdateStat(true);
-        c.setPlayer(player);
-        c.setAccID(player.getAccountID());
+    // CClientSocket::OnCenterMigrateInResult
+    public static boolean EnterGameServer(MapleClient c, int character_id) {
+        // ログイン or CH変更
+        ChannelServer channel = c.getChannelServer();
+        CharacterTransfer transfer = channel.getPlayerStorage().getPendingCharacter(character_id);
+        MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, c, true) : MapleCharacter.ReconstructChr(transfer, c, true);
+        ExtraDB.loadData(chr);
+        c.setPlayer(chr);
+        c.setAccID(chr.getAccountID());
+
         if (!c.CheckIPAddress()) {
-            // Remote hack
-            c.getSession().close();
-            return;
-        }
-        final int state = c.getLoginState();
-        boolean allowLogin = false;
-        if (state == MapleClient.LOGIN_SERVER_TRANSITION || state == MapleClient.CHANGE_CHANNEL) {
-            if (!World.isCharacterListConnected(c.loadCharacterNames(c.getWorld()))) {
-                allowLogin = true;
-            }
-        }
-        if (!allowLogin) {
             c.setPlayer(null);
             c.getSession().close();
-            return;
+            Debug.ErrorLog("remoted hack detected.");
+            return false;
         }
+
+        switch (c.getLoginState()) {
+            case MapleClient.LOGIN_SERVER_TRANSITION:
+            case MapleClient.CHANGE_CHANNEL: {
+                if (World.isCharacterListConnected(c.loadCharacterNames(c.getWorld()))) {
+                    c.setPlayer(null);
+                    c.getSession().close();
+                    Debug.ErrorLog("already loggedin.");
+                    return false;
+                }
+                // OK
+                break;
+            }
+            default: {
+                Debug.ErrorLog("invalid client state.");
+                return false;
+            }
+        }
+
+        // entering game server
         c.updateLoginState(MapleClient.LOGIN_LOGGEDIN, c.getSessionIPAddress());
-        channelServer.addPlayer(player);
-        if (ServerConfig.JMS302orLater()) {
-            // 分割 SetField
-            c.SendPacket(ResCStage.SetField_JMS_302(player, 1, true, null, 0, 0));
-            c.SendPacket(ResCStage.SetField_JMS_302(player, 2, true, null, 0, -1));
-        } else {
-            c.SendPacket(ResWrapper.getCharInfo(player));
+        channel.addPlayer(chr);
+        // [update character data in server]
+        // character
+        chr.silentGiveBuffs(PlayerBuffStorage.getBuffsFromStorage(chr.getId()));
+        chr.giveCoolDowns(PlayerBuffStorage.getCooldownsFromStorage(chr.getId()));
+        chr.giveSilentDebuff(PlayerBuffStorage.getDiseaseFromStorage(chr.getId()));
+        // pet
+        chr.spawnSavedPets();
+        // group            
+        if (chr.getParty() != null) {
+            World.Party.updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
         }
-        c.SendPacket(ResWrapper.getInventoryFull()); // TWMS148 gets weird stat without sending this.
-        c.SendPacket(ResCWvsContext.temporaryStats_Reset());
-        player.getMap().addPlayer(player);
-        player.spawnSavedPets();
-        MapleMap player_map = player.getMap();
-        if (player_map != null) {
-            for (final MaplePet pet : player.getPets()) {
-                if (pet.getSummoned()) {
-                    //player.SendPacket(ResCUser_Pet.Activated(player, pet));
-                    player_map.broadcastMessage(player, ResCUser_Pet.TransferField(player, pet), true);
-                }
-            }
+        // friend
+        World.Buddy.loggedOn(chr.getName(), chr.getId(), c.getChannel(), chr.getBuddylist().getBuddyIds(), chr.getGMLevel(), chr.isHidden());
+        for (CharacterIdChannelPair onlineBuddy : World.Find.multiBuddyFind(chr.getId(), chr.getBuddylist().getBuddyIds())) {
+            final BuddylistEntry ble = chr.getBuddylist().get(onlineBuddy.getCharacterId());
+            ble.setChannel(onlineBuddy.getChannel());
+            chr.getBuddylist().put(ble);
         }
-        player.UpdateStat(true); // this gives you crash, if you did not send pet spawn packet in JMS131.
-        try {
-            player.silentGiveBuffs(PlayerBuffStorage.getBuffsFromStorage(player.getId()));
-            player.giveCoolDowns(PlayerBuffStorage.getCooldownsFromStorage(player.getId()));
-            player.giveSilentDebuff(PlayerBuffStorage.getDiseaseFromStorage(player.getId()));
-            // Start of buddylist
-            final int[] buddyIds = player.getBuddylist().getBuddyIds();
-            World.Buddy.loggedOn(player.getName(), player.getId(), c.getChannel(), buddyIds, player.getGMLevel(), player.isHidden());
-            if (player.getParty() != null) {
-                World.Party.updateParty(player.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(player));
-            }
-            final CharacterIdChannelPair[] onlineBuddies = World.Find.multiBuddyFind(player.getId(), buddyIds);
-            for (CharacterIdChannelPair onlineBuddy : onlineBuddies) {
-                final BuddylistEntry ble = player.getBuddylist().get(onlineBuddy.getCharacterId());
-                ble.setChannel(onlineBuddy.getChannel());
-                player.getBuddylist().put(ble);
-            }
-            c.getSession().write(ResWrapper.updateBuddylist(player));
-            // Start of Messenger
-            final MapleMessenger messenger = player.getMessenger();
-            if (messenger != null) {
-                World.Messenger.silentJoinMessenger(messenger.getId(), new MapleMessengerCharacter(c.getPlayer()));
-                World.Messenger.updateMessenger(messenger.getId(), c.getPlayer().getName(), c.getChannel());
-            }
-            // Start of Guild and alliance
-            if (player.getGuildId() > 0) {
-                World.Guild.setGuildMemberOnline(player.getMGC(), true, c.getChannel());
-                c.getSession().write(ResCWvsContext.showGuildInfo(player));
-                final MapleGuild gs = World.Guild.getGuild(player.getGuildId());
-                if (gs != null) {
-                    final List<MaplePacket> packetList = World.Alliance.getAllianceInfo(gs.getAllianceId(), true);
-                    if (packetList != null) {
-                        for (MaplePacket pack : packetList) {
-                            if (pack != null) {
-                                c.getSession().write(pack);
-                            }
-                        }
-                    }
-                } else {
-                    //guild not found, change guild id
-                    player.setGuildId(0);
-                    player.setGuildRank((byte) 5);
-                    player.setAllianceRank((byte) 5);
-                    player.saveGuildStatus();
-                }
-            }
-            if (player.getFamilyId() > 0) {
-                World.Family.setFamilyMemberOnline(player.getMFC(), true, c.getChannel());
-            }
-            c.getSession().write(ResCWvsContext.getFamilyInfo(player));
-        } catch (Exception e) {
-            FileoutputUtil.outputFileError(FileoutputUtil.Login_Error, e);
-        }
-        c.getSession().write(ResCWvsContext.getFamilyData());
-        player.showNote();
-        player.updatePartyMemberHP();
-        player.startFairySchedule(false);
-        player.baseSkills(); //fix people who've lost skills.
-        c.getSession().write(ResCFuncKeyMappedMan.getKeymap(player, false));
-        c.getSession().write(ResCFuncKeyMappedMan.getMacros(player));
-        if (ServerConfig.JMS164orLater()) {
-            c.getSession().write(ResCFuncKeyMappedMan.getPetAutoHP(player));
-            c.getSession().write(ResCFuncKeyMappedMan.getPetAutoMP(player));
-            c.getSession().write(ResCFuncKeyMappedMan.getPetAutoCure(player));
-        } else {
-            c.getSession().write(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(player));
-        }
-        for (MapleQuestStatus status : player.getStartedQuests()) {
-            if (status.hasMobKills()) {
-                c.SendPacket(ResWrapper.updateQuestMobKills(status));
+        // guild
+        MapleGuild gs = null;
+        if (0 < chr.getGuildId()) {
+            World.Guild.setGuildMemberOnline(chr.getMGC(), true, c.getChannel());
+            gs = World.Guild.getGuild(chr.getGuildId());
+            if (gs == null) {
+                chr.setGuildId(0);
+                chr.setGuildRank((byte) 5);
+                chr.setAllianceRank((byte) 5);
+                chr.saveGuildStatus();
             }
         }
-        final CharacterNameAndId pendingBuddyRequest = player.getBuddylist().pollPendingRequest();
+        // family
+        if (0 < chr.getFamilyId()) {
+            World.Family.setFamilyMemberOnline(chr.getMFC(), true, c.getChannel());
+        }
+        // idk - 1
+        if (chr.getMessenger() != null) {
+            World.Messenger.silentJoinMessenger(chr.getMessenger().getId(), new MapleMessengerCharacter(c.getPlayer()));
+            World.Messenger.updateMessenger(chr.getMessenger().getId(), c.getPlayer().getName(), c.getChannel());
+        }
+        // idk - 2
+        CharacterNameAndId pendingBuddyRequest = chr.getBuddylist().pollPendingRequest();
         if (pendingBuddyRequest != null) {
-            player.getBuddylist().put(new BuddylistEntry(pendingBuddyRequest.getName(), pendingBuddyRequest.getId(), "\u30de\u30a4\u53cb\u672a\u6307\u5b9a", -1, false, pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
-            c.getSession().write(ResWrapper.requestBuddylistAdd(pendingBuddyRequest.getId(), pendingBuddyRequest.getName(), pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
+            chr.getBuddylist().put(new BuddylistEntry(pendingBuddyRequest.getName(), pendingBuddyRequest.getId(), "マイ友未指定", -1, false, pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
         }
-        player.expirationTask();
-        if (player.getJob() == 132) {
-            // DARKKNIGHT
-            player.checkBerserk();
+        // [update character data in client by packet]
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            // 分割 SetField
+            chr.SendPacket(ResCStage.SetField_JMS_302(chr, 1, true, null, 0, 0));
+            chr.SendPacket(ResCStage.SetField_JMS_302(chr, 2, true, null, 0, -1));
+        } else {
+            chr.SendPacket(ResWrapper.getCharInfo(chr));
         }
+        // initialize
+        chr.SendPacket(ResWrapper.getInventoryFull()); // TWMS148 gets weird stat without sending this.
+        chr.SendPacket(ResCWvsContext.ForcedStatReset());
+        // pet
+        for (final MaplePet pet : chr.getPets()) {
+            if (pet.getSummoned()) {
+                chr.SendPacket(ResCUser_Pet.Activated(chr, pet));
+            }
+        }
+        if (Version.LessOrEqual(Region.JMS, 131)) {
+            chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
+        } else {
+            chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
+            chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoMP(chr));
+            chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoCure(chr));
+        }
+        // keyboard
+        chr.SendPacket(ResCFuncKeyMappedMan.getKeymap(chr, false));
+        chr.SendPacket(ResCFuncKeyMappedMan.getMacros(chr));
+        // quest
+        for (MapleQuestStatus status : chr.getStartedQuests()) {
+            if (status.hasMobKills()) {
+                chr.SendPacket(ResWrapper.updateQuestMobKills(status));
+            }
+        }
+        // group
+        chr.updatePartyMemberHP();
+        // friend
+        chr.SendPacket(ResWrapper.updateBuddylist(chr));
+        // guild
+        if (0 < chr.getGuildId()) {
+            chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
+            List<MaplePacket> packetList = World.Alliance.getAllianceInfo(gs.getAllianceId(), true);
+            if (packetList != null) {
+                for (MaplePacket pack : packetList) {
+                    if (pack != null) {
+                        chr.SendPacket(pack);
+                    }
+                }
+            }
+        }
+        // family
+        chr.SendPacket(ResCWvsContext.getFamilyData());
+        chr.SendPacket(ResCWvsContext.getFamilyInfo(chr));
+        // idk - 2
+        if (pendingBuddyRequest != null) {
+            chr.SendPacket(ResWrapper.requestBuddylistAdd(pendingBuddyRequest.getId(), pendingBuddyRequest.getName(), pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
+        }
+        chr.UpdateStat(true); // this gives you crash, if you did not send pet spawn packet in JMS131.
+        //chr.showNote();
+        chr.baseSkills(); // ?_?
+        // 精霊のペンダント
+        //chr.startFairySchedule(false);
+        // 期限切れ
+        //chr.expirationTask();
+        //if (chr.getJob() == 132) {
+        //chr.checkBerserk();
+        //}
+        // internet cafe
+        chr.SendPacket(ResCClientSocket.AuthenCodeChanged());
+        // [other players]
+        // your pet
+        // [entering map]
+        MapleMap map = chr.getMap();
+        map.addPlayer(chr);
+        for (final MaplePet pet : chr.getPets()) {
+            if (pet.getSummoned()) {
+                map.broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
+            }
+        }
+
+        return true;
     }
 
     public static final void EnterCS(final MapleClient c, final MapleCharacter chr, final boolean mts) {
@@ -232,7 +301,6 @@ public class ReqCClientSocket {
         c.setReceiving(false);
     }
     // CClientSocket::OnMigrateOut
-    // CClientSocket::OnCenterMigrateInResult
     // CClientSocket::OnCenterMigrateOutResult
 
     public static boolean GetLogin() {
