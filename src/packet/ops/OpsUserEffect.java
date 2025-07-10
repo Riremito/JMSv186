@@ -155,7 +155,13 @@ public enum OpsUserEffect {
             UserEffect_SkillUse.set(1);
             UserEffect_SkillAffected.set(2);
             UserEffect_Quest.set(3);
-            UserEffect_PlayPortalSE.set(-1);
+            UserEffect_Pet.set(4);
+            UserEffect_SkillSpecial.set(5);
+            UserEffect_PlayPortalSE.set(8);
+            UserEffect_JobChanged.set(9);
+            UserEffect_QuestComplete.set(10);
+            UserEffect_BuffItemEffect.set(12);
+            UserEffect_MonsterBookCardGet.set(14);
             return;
         }
         if (Version.Equal(Region.THMS, 87)) {

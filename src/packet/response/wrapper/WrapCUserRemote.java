@@ -36,4 +36,21 @@ public class WrapCUserRemote {
         arg.chr = chr;
         return ResCUserRemote.EffectRemote(arg);
     }
+
+    public static MaplePacket EffectRemote(OpsUserEffect ops, MapleCharacter chr, int skill_id) {
+        ArgUserEffect arg = new ArgUserEffect();
+        arg.ops = ops;
+        arg.chr = chr;
+        arg.skill_id = skill_id;
+        return ResCUserRemote.EffectRemote(arg);
+    }
+
+    public static MaplePacket EffectRemote(OpsUserEffect ops, MapleCharacter chr, int skill_id, boolean skill_on) {
+        ArgUserEffect arg = new ArgUserEffect();
+        arg.ops = ops;
+        arg.chr = chr;
+        arg.skill_id = skill_id;
+        arg.skill_on = skill_on;
+        return ResCUserRemote.EffectRemote(arg);
+    }
 }

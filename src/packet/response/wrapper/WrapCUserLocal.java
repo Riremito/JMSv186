@@ -35,6 +35,21 @@ public class WrapCUserLocal {
         return ResCUserLocal.EffectLocal(arg);
     }
 
+    public static MaplePacket EffectLocal(OpsUserEffect ops, int skill_id) {
+        ArgUserEffect arg = new ArgUserEffect();
+        arg.ops = ops;
+        arg.skill_id = skill_id;
+        return ResCUserLocal.EffectLocal(arg);
+    }
+
+    public static MaplePacket EffectLocal(OpsUserEffect ops, int skill_id, boolean skill_on) {
+        ArgUserEffect arg = new ArgUserEffect();
+        arg.ops = ops;
+        arg.skill_id = skill_id;
+        arg.skill_on = skill_on;
+        return ResCUserLocal.EffectLocal(arg);
+    }
+
     public static MaplePacket getShowItemGain(int itemId, short quantity, boolean inChat) {
         // ?_?
         if (inChat) {

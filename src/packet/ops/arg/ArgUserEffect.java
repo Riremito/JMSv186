@@ -31,4 +31,6 @@ public class ArgUserEffect {
     public MapleCharacter chr = null;
     public int item_id = 0;
     public int item_quantity = 0;
+    public int skill_id = 0;
+    public boolean skill_on = true;
 }

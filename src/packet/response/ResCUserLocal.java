@@ -64,6 +64,17 @@ public class ResCUserLocal {
         data.Encode1(arg.ops.get());
 
         switch (arg.ops) {
+            case UserEffect_SkillUse: {
+                data.Encode4(arg.skill_id);
+                data.Encode1(1);
+                data.Encode1(arg.skill_on ? 0 : 1);
+                break;
+            }
+            case UserEffect_SkillAffected: {
+                data.Encode4(arg.skill_id);
+                data.Encode1(1);
+                break;
+            }
             case UserEffect_Quest: {
                 int count = 1;
                 data.Encode1(count); // loop count
@@ -74,6 +85,14 @@ public class ResCUserLocal {
                     data.EncodeStr("");
                     data.Encode4(0);
                 }
+                break;
+            }
+            case UserEffect_SkillSpecial: {
+                data.Encode4(arg.skill_id);
+                break;
+            }
+            case UserEffect_BuffItemEffect: {
+                data.Encode4(arg.skill_id);
                 break;
             }
             default: {
@@ -92,23 +111,6 @@ public class ResCUserLocal {
         mplew.write(effect != null && effect.length() > 0 ? 1 : 0);
         if (effect != null && effect.length() > 0) {
             mplew.writeMapleAsciiString(effect);
-        }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket showOwnBuffEffect(int skillid, int effectid) {
-        return showOwnBuffEffect(skillid, effectid, (byte) 3);
-    }
-
-    public static MaplePacket showOwnBuffEffect(int skillid, int effectid, byte direction) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
-        mplew.write(effectid);
-        mplew.writeInt(skillid);
-        mplew.write(1); //skill level = 1 for the lulz
-        mplew.write(1); //0 = doesnt show? or is this even here
-        if (direction != (byte) 3) {
-            mplew.write(direction);
         }
         return mplew.getPacket();
     }

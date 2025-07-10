@@ -60,6 +60,7 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import packet.ops.OpsUserEffect;
 import packet.response.ResCDropPool;
 import packet.response.ResCDropPool.EnterType;
 import packet.response.ResCDropPool.LeaveType;
@@ -71,12 +72,12 @@ import packet.response.ResCNpcPool;
 import packet.response.ResCReactorPool;
 import packet.response.ResCUser_Pet;
 import packet.response.ResCSummonedPool;
-import packet.response.ResCUserLocal;
 import packet.response.ResCUserPool;
-import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCUserLocal;
+import packet.response.wrapper.WrapCUserRemote;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
@@ -556,8 +557,8 @@ public final class MapleMap {
                             case 8810018:
                             case 8810122:
                             case 8820001:
-                                mc.getClient().getSession().write(ResCUserLocal.showOwnBuffEffect(buffid, 11)); // HT nine spirit
-                                broadcastMessage(mc, ResCUserRemote.showBuffeffect(mc.getId(), buffid, 11), false); // HT nine spirit
+                                mc.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_BuffItemEffect, buffid)); // HT nine spirit
+                                broadcastMessage(mc, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_BuffItemEffect, mc, buffid), false); // HT nine spirit
                                 break;
                         }
                     }

@@ -428,31 +428,6 @@ public class ResCUserRemote {
         return mplew.getPacket();
     }
 
-    public static MaplePacket showBuffeffect(int cid, int skillid, int effectid) {
-        return showBuffeffect(cid, skillid, effectid, (byte) 3);
-    }
-
-    public static MaplePacket showBuffeffect(int cid, int skillid, int effectid, byte direction) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.get());
-        mplew.writeInt(cid);
-        mplew.write(effectid); //ehh?
-        mplew.writeInt(skillid);
-        mplew.write(1); //skill level = 1 for the lulz
-        mplew.write(1); //actually skill level ? 0 = dosnt show
-        if (direction != (byte) 3) {
-            mplew.write(direction);
-        }
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket showForeginCardEffect(int id) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectRemote);
-        sp.Encode4(id);
-        sp.Encode1(14); //14
-        return sp.get();
-    }
-
     public static final MaplePacket ItemMakerResultTo(MapleCharacter chr, boolean is_success) {
         final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.get());

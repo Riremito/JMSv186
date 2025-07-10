@@ -174,7 +174,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void playPortalSE() {
-        c.getSession().write(ResCUserLocal.showOwnBuffEffect(0, 8));
+        c.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
     }
 
     private final MapleMap getWarpMap(final int map) {

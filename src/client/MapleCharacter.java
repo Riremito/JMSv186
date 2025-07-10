@@ -1562,8 +1562,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     cancelBuffStats(MapleBuffStat.DRAGONBLOOD);
                 } else {
                     addHP(-bloodEffect.getX());
-                    client.getSession().write(ResCUserLocal.showOwnBuffEffect(bloodEffect.getSourceId(), 5));
-                    map.broadcastMessage(MapleCharacter.this, ResCUserRemote.showBuffeffect(getId(), bloodEffect.getSourceId(), 5), false);
+                    client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillSpecial, bloodEffect.getSourceId()));
+                    map.broadcastMessage(MapleCharacter.this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillSpecial, MapleCharacter.this, bloodEffect.getSourceId()), false);
                 }
             }
         }, 4000, 4000);
@@ -1955,9 +1955,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     //TODO: bar going down
                     if (energyLevel < 10000) {
                         energyLevel += (echeff.getX() * targets);
-
-                        client.getSession().write(ResCUserLocal.showOwnBuffEffect(skillid, 2));
-                        map.broadcastMessage(this, ResCUserRemote.showBuffeffect(id, skillid, 2), false);
+                        client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, skillid));
+                        map.broadcastMessage(this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, this, skillid), false);
 
                         if (energyLevel >= 10000) {
                             energyLevel = 10000;
@@ -4460,8 +4459,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (skilllevel >= 1) {
             final MapleStatEffect ampStat = BerserkX.getEffect(skilllevel);
             stats.Berserk = stats.getHp() * 100 / stats.getMaxHp() <= ampStat.getX();
-            client.getSession().write(ResCUserLocal.showOwnBuffEffect(1320006, 1, (byte) (stats.Berserk ? 1 : 0)));
-            map.broadcastMessage(this, ResCUserRemote.showBuffeffect(getId(), 1320006, 1, (byte) (stats.Berserk ? 1 : 0)), false);
+            client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillUse, 1320006, stats.Berserk));
+            map.broadcastMessage(this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillUse, this, 1320006, stats.Berserk), false);
 
             BerserkSchedule = BuffTimer.getInstance().schedule(new Runnable() {
 
@@ -4526,9 +4525,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     if (berserkLvl == 0 || remhppercentage >= berserkLvl + 10) {
                         addHP(healEffect.getHp());
                     }
-                    client.getSession().write(ResCUserLocal.showOwnBuffEffect(1321007, 2));
+                    client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, 1321007));
                     map.broadcastMessage(ResCSummonedPool.summonSkill(getId(), 1321007, 5));
-                    map.broadcastMessage(MapleCharacter.this, ResCUserRemote.showBuffeffect(getId(), 1321007, 2), false);
+                    map.broadcastMessage(MapleCharacter.this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, MapleCharacter.this, 1321007), false);
                 }
             }, healInterval, healInterval);
         }
@@ -4542,9 +4541,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 @Override
                 public void run() {
                     buffEffect.applyTo(MapleCharacter.this);
-                    client.getSession().write(ResCUserLocal.showOwnBuffEffect(1321007, 2));
+                    client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, 1321007));
                     map.broadcastMessage(ResCSummonedPool.summonSkill(getId(), 1321007, Randomizer.nextInt(3) + 6));
-                    map.broadcastMessage(MapleCharacter.this, ResCUserRemote.showBuffeffect(getId(), 1321007, 2), false);
+                    map.broadcastMessage(MapleCharacter.this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, MapleCharacter.this, 1321007), false);
                 }
             }, buffInterval, buffInterval);
         }
