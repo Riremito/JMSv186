@@ -4306,8 +4306,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
 
             diseases.put(disease, new MapleDiseaseValueHolder(disease, System.currentTimeMillis(), duration));
-            client.getSession().write(ResCWvsContext.giveDebuff(debuff, skillid, level, (int) duration));
-            map.broadcastMessage(this, ResCUserRemote.giveForeignDebuff(id, debuff, skillid, level), false);
+            Debug.ErrorLog("debuff");
+            //client.getSession().write(ResCWvsContext.giveDebuff(debuff, skillid, level, (int) duration));
+            //map.broadcastMessage(this, ResCUserRemote.giveForeignDebuff(id, debuff, skillid, level), false);
         }
     }
 
@@ -4323,8 +4324,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (hasDisease(debuff)) {
             long mask = debuff.getValue();
             boolean first = debuff.isFirst();
-            client.getSession().write(ResCWvsContext.cancelDebuff(mask, first));
-            map.broadcastMessage(this, ResCUserRemote.cancelForeignDebuff(id, mask, first), false);
+            Debug.ErrorLog("dispelDebuff");
+            //client.getSession().write(ResCWvsContext.cancelDebuff(mask, first));
+            //map.broadcastMessage(this, ResCUserRemote.cancelForeignDebuff(id, mask, first), false);
 
             diseases.remove(debuff);
         }
