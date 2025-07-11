@@ -154,6 +154,19 @@ public class DebugCommand {
                 chr.DebugMsg("[RemoteNPCTalk2] " + npc_id);
                 return true;
             }
+            // ボス関連
+            case "/bosstest": {
+                if (splitted.length < 2) {
+                    return false;
+                }
+                String boss_name = splitted[1];
+                if (!bossTest(c, boss_name)) {
+                    chr.DebugMsg("[BossTest] Invalid Boss name.");
+                    return true;
+                }
+                chr.DebugMsg("[BossTest] " + boss_name);
+                return true;
+            }
             // ステータス関連
             case "/heal": {
                 int new_hp = chr.getStat().getMaxHp();
@@ -445,4 +458,111 @@ public class DebugCommand {
         NPCScriptManager.getInstance().start(c, npc_id, npc_script_id);
         return true;
     }
+
+    public static boolean bossTest(MapleClient c, String boss_name) {
+        int def_npc_id = 1012003; // Chief Stan
+        int npc_id = 1012003;
+
+        switch (boss_name) {
+            // 遠征隊
+            case "zakum": {
+                npc_id = 2030008;
+                break;
+            }
+            case "horntail":
+            case "ht": {
+                npc_id = 2083004;
+                break;
+            }
+            case "pinkbean":
+            case "pb": {
+                npc_id = 2141001;
+                break;
+            }
+            // JMS - 未来東京
+            case "bergamot":
+            case "odaiba": {
+                npc_id = 9120040;
+                break;
+            }
+            case "nibelung":
+            case "sky": {
+                npc_id = 9120039;
+                break;
+            }
+            case "dunas1":
+            case "akihabara": {
+                npc_id = 0;
+                break;
+            }
+            case "dunas2":
+            case "shibuya": {
+                npc_id = 9120052;
+                break;
+            }
+            case "royalguard":
+            case "roppongi1": {
+                npc_id = 9120053;
+                break;
+            }
+            case "coreblaze":
+            case "roppongi2": {
+                npc_id = 9120050;
+                break;
+            }
+            case "aufhaven":
+            case "roppongi3": // アウフヘーベン
+            {
+                npc_id = 0;
+                break;
+            }
+            // エリアボス
+            case "vicious": // ビシャスプラント
+            {
+                npc_id = 2041024; // test
+                break;
+            }
+            // JMS - ジパング
+            case "showa": // ボディーガード & 大親分
+            {
+                npc_id = 9120201;
+                break;
+            }
+            // JMS - クリムゾンウッド
+            case "cw": // クリムゾンウッド
+            {
+                npc_id = 9201112;
+                break;
+            }
+            // JMS - 中国
+            case "china1": // 大王ムカデ
+            {
+                npc_id = 9310004;
+                break;
+            }
+            case "china2": // 武林妖僧
+            {
+                npc_id = 9310039;
+                break;
+            }
+            // JMS - 台湾
+            case "taiwan": // 屋台
+            {
+                npc_id = 9330028;
+                break;
+            }
+            default: {
+                return false;
+            }
+        }
+
+        if (LoadData.IsValidNPCID(npc_id)) {
+            remoteNPCTalk(c, npc_id);
+        } else {
+            remoteNPCTalk(c, npc_id, def_npc_id);
+        }
+
+        return true;
+    }
+
 }
