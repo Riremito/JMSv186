@@ -16,20 +16,8 @@
  *
  *
  */
-package packet;
+package packet.ops;
 
-import packet.ops.OpsBroadcastMsg;
-import packet.ops.OpsChangeStat;
-import packet.ops.OpsDBCHAR;
-import packet.ops.OpsMessage;
-import packet.ops.OpsMovePathAttr;
-import packet.ops.OpsNewCharacter;
-import packet.ops.OpsQuest;
-import packet.ops.OpsScriptMan;
-import packet.ops.OpsSecondaryStat;
-import packet.ops.OpsTransferChannel;
-import packet.ops.OpsTransferField;
-import packet.ops.OpsUserEffect;
 import packet.request.ReqCNpcPool;
 import packet.request.ReqCTrunkDlg;
 
@@ -37,9 +25,9 @@ import packet.request.ReqCTrunkDlg;
  *
  * @author Riremito
  */
-public class PacketFlag {
+public class PacketOps {
 
-    public static void Update() {
+    public static void initAll() {
         OpsDBCHAR.init();
         ReqCTrunkDlg.init();
         ReqCNpcPool.init();

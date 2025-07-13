@@ -56,7 +56,7 @@ public class Start {
 
         // 設定更新
         DC_Exp.init();
-        packet.PacketFlag.Update();
+        packet.ops.PacketOps.initAll();
 
         try {
             final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0");
