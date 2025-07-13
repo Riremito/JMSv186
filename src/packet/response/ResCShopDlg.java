@@ -19,12 +19,14 @@
 package packet.response;
 
 import client.MapleClient;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import handling.MaplePacket;
 import java.util.List;
 import packet.ServerPacket;
-import packet.request.ReqCNpcPool;
+import packet.ops.OpsShop;
 import server.MapleItemInformationProvider;
 import server.MapleShopItem;
 import tools.BitTools;
@@ -36,35 +38,48 @@ import tools.BitTools;
 public class ResCShopDlg {
 
     // CShopDlg::OnPacket
-    // confirmShopTransaction
-    public static MaplePacket confirmShopTransaction(ReqCNpcPool.SP_ShopFlag flag, int level) {
+    public static MaplePacket confirmShopTransaction(OpsShop ops, int level) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ShopResult);
-        // JMS v188, 00706BA9
-        // JMS v194も謎DCを発生させる処理が動くとクライアントがクラッシュするのでクライアントの修正が必要
-        sp.Encode1(flag.get()); // 8 = sell, 0 = buy, 0x20 = due to an error
-        switch (flag) {
-            case ERROR_LEVEL_UNDER:
-            case ERROR_LEVEL_HIGH: {
+
+        sp.Encode1(ops.get());
+        switch (ops) {
+            case ShopRes_SellSuccess: {
+                /*
+                if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                    sp.Encode1(0);
+                    // CShopDlg::SetShopDlg
+                    sp.Encode4(0);
+                    sp.Encode4(9030000); // m_dwNpcTemplateID
+                    sp.Encode1(0); // 1 = 十字旅団
+                    //sp.Encode1(0);
+                    sp.Encode2(0);
+                }
+                 */
+                break;
+            }
+            case ShopRes_LimitLevel_Less:
+            case ShopRes_LimitLevel_More: {
                 sp.Encode4(level);
                 break;
             }
             default: {
-                if (ServerConfig.JMS302orLater()) {
-                    sp.Encode1(0);
-                }
                 break;
             }
         }
+
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            sp.Encode1(0);
+        }
+
         return sp.get();
     }
 
-    public static MaplePacket confirmShopTransaction(ReqCNpcPool.SP_ShopFlag flag) {
-        return confirmShopTransaction(flag, 0);
+    public static MaplePacket confirmShopTransaction(OpsShop ops) {
+        return confirmShopTransaction(ops, 0);
     }
 
     // CShopDlg::OnPacket
     // CShopDlg::SetShopDlg
-    // getNPCShop
     public static MaplePacket getNPCShop(MapleClient c, int sid, List<MapleShopItem> items) {
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_OpenShopDlg);

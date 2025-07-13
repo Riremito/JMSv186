@@ -18,8 +18,6 @@
  */
 package packet.ops;
 
-import packet.request.ReqCNpcPool;
-
 /**
  *
  * @author Riremito
@@ -27,20 +25,20 @@ import packet.request.ReqCNpcPool;
 public class PacketOps {
 
     public static void initAll() {
+        OpsNewCharacter.init();
         OpsDBCHAR.init();
-        ReqCNpcPool.init();
         OpsChangeStat.init();
         OpsSecondaryStat.init();
+        OpsTransferField.init();
+        OpsTransferChannel.init();
+        OpsBroadcastMsg.init();
         OpsMessage.init();
-        OpsNewCharacter.init();
         OpsScriptMan.init();
+        OpsShop.init();
         OpsTrunk.init();
         OpsUserEffect.init();
         OpsQuest.init();
-        OpsBroadcastMsg.init();
         OpsMovePathAttr.init();
-        OpsTransferField.init();
-        OpsTransferChannel.init();
     }
 
 }
