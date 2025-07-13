@@ -255,6 +255,8 @@ public class ReqCClientSocket {
         //}
         // internet cafe
         chr.SendPacket(ResCClientSocket.AuthenCodeChanged());
+        // 上部スライドメッセージ
+        chr.SendPacket(ResWrapper.BroadCastMsgSlide(channel.getServerMessage()));
         // [other players]
         // your pet
         // [entering map]

@@ -224,7 +224,6 @@ public class ChannelServer implements Serializable {
 
     public final void addPlayer(final MapleCharacter chr) {
         getPlayerStorage().registerPlayer(chr);
-        chr.getClient().getSession().write(ResWrapper.BroadCastMsgSlide(serverMessage));
     }
 
     public final PlayerStorage getPlayerStorage() {

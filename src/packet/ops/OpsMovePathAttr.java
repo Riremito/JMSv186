@@ -26,7 +26,7 @@ import config.Version;
  * @author Riremito
  */
 public enum OpsMovePathAttr {
-    MPA_NORMAL,
+    MPA_NORMAL(0),
     MPA_JUMP,
     MPA_IMPACT,
     MPA_IMMEDIATE,
@@ -38,7 +38,7 @@ public enum OpsMovePathAttr {
     MPA_STATCHANGE,
     MPA_SITDOWN,
     MPA_STARTFALLDOWN,
-    MPA_FALLDOWN, // required
+    MPA_FALLDOWN(12), // required
     MPA_STARTWINGS,
     MPA_WINGS,
     MPA_ARAN_ADJUST,

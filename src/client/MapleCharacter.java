@@ -83,6 +83,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import packet.ops.OpsBodyPart;
 import packet.ops.OpsChangeStat;
+import packet.ops.OpsMovePathAttr;
 import packet.ops.OpsQuest;
 import packet.ops.OpsUserEffect;
 import packet.request.ReqCClientSocket;
@@ -231,6 +232,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private int pet_auto_hp_item_id = 0;
     private int pet_auto_mp_item_id = 0;
     private int pet_auto_cure_item_id = 0;
+    // foothold
+    private int foothold_id = 0;
     // クローン
     private boolean clone = false;
     private boolean cloning = false;
@@ -415,9 +418,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
             if (portal == null) {
-                portal = ret.map.getPortal(0); // char is on a spawnpoint that doesn't exist - select the first spawnpoint instead
-                ret.initialSpawnPoint = 0;
+                portal = ret.map.getPortal(0);
             }
+            ret.initialSpawnPoint = (byte) portal.getId();
+            ret.setFH(0);
             ret.setPosition(portal.getPosition());
 
             final int messengerid = ct.messengerid;
@@ -572,9 +576,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 }
                 MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
                 if (portal == null) {
-                    portal = ret.map.getPortal(0); // char is on a spawnpoint that doesn't exist - select the first spawnpoint instead
-                    ret.initialSpawnPoint = 0;
+                    portal = ret.map.getPortal(0);
                 }
+                ret.initialSpawnPoint = (byte) portal.getId();
+                ret.setFH(0);
                 ret.setPosition(portal.getPosition());
 
                 int partyid = rs.getInt("party");
@@ -2397,6 +2402,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             map.removePlayer(this);
             if (!clone && client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {
                 map = to;
+                Debug.DebugLog("stance : " + getStance() + " -> " + OpsMovePathAttr.MPA_NORMAL.get());
+                setStance(OpsMovePathAttr.MPA_NORMAL.get());
                 setPosition(pos);
                 to.addPlayer(this);
                 stats.relocHeal();
@@ -4950,12 +4957,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return new Pair<List<MapleRing>, List<MapleRing>>(crings, frings);
     }
 
-    public int getFH() {
+    public int findFH() {
         MapleFoothold fh = getMap().getFootholds().findBelow(getPosition());
         if (fh != null) {
             return fh.getId();
         }
         return 0;
+    }
+
+    public int getFH() {
+        return this.foothold_id;
+    }
+
+    public void setFH(int id) {
+        this.foothold_id = id;
     }
 
     public void startFairySchedule(boolean exp) {

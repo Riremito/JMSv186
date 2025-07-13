@@ -81,7 +81,7 @@ public class PlayerNPC extends MapleNPC {
         super(npc, cid.getName());
         this.charId = cid.getId();
         this.mapid = map.getId();
-        setCoords(base.getPosition().x, base.getPosition().y, 0, base.getFH()); //0 = facing dir? no idea, but 1 dosnt work
+        setCoords(base.getPosition().x, base.getPosition().y, 0, base.findFH()); //0 = facing dir? no idea, but 1 dosnt work
         update(cid);
     }
 
