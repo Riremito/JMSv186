@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package scripting;
 
+import client.MapleCharacter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -35,6 +36,7 @@ import javax.script.ScriptEngineManager;
 
 import client.MapleClient;
 import config.ServerConfig;
+import debug.Debug;
 import server.MaplePortal;
 import tools.FileoutputUtil;
 
@@ -86,21 +88,26 @@ public class PortalScriptManager {
         return script;
     }
 
-    public final void executePortalScript(final MaplePortal portal, final MapleClient c) {
-        final PortalScript script = getPortalScript(portal.getScriptName());
+    public boolean executePortalScript(MaplePortal portal, MapleClient c) {
+        MapleCharacter chr = c.getPlayer();
+        PortalScript script = getPortalScript(portal.getScriptName());
+        String text = "Portal Script = " + portal.getScriptName() + ", MapID = " + chr.getMapId();
 
-        c.getPlayer().Info("Portal Script = " + portal.getScriptName() + ", MapID = " + c.getPlayer().getMapId());
+        chr.DebugMsg(text);
 
-        if (script != null) {
-            try {
-                script.enter(new PortalPlayerInteraction(c, portal));
-            } catch (Exception e) {
-                System.err.println("Error entering Portalscript: " + portal.getScriptName() + ":" + e);
-            }
-        } else {
-            System.out.println("Unhandled portal script " + portal.getScriptName() + " on map " + c.getPlayer().getMapId());
-            FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Unhandled portal script " + portal.getScriptName() + " on map " + c.getPlayer().getMapId());
+        if (script == null) {
+            Debug.ErrorLog(text);
+            return false;
         }
+
+        try {
+            script.enter(new PortalPlayerInteraction(c, portal));
+        } catch (Exception e) {
+            Debug.ExceptionLog(text);
+            return false;
+        }
+
+        return true;
     }
 
     public final void clearScripts() {

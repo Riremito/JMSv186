@@ -23,8 +23,9 @@ package server.maps;
 import java.awt.Point;
 
 import client.MapleClient;
-import client.anticheat.CheatingOffense;
 import handling.channel.ChannelServer;
+import packet.ops.OpsTransferField;
+import packet.response.ResCField;
 import packet.response.wrapper.ResWrapper;
 import scripting.PortalScriptManager;
 import server.MaplePortal;
@@ -108,34 +109,17 @@ public class MapleGenericPortal implements MaplePortal {
 
     @Override
     public final void enterPortal(final MapleClient c) {
-        if (getPosition().distanceSq(c.getPlayer().getPosition()) > 22500) {
-            c.getPlayer().getCheatTracker().registerOffense(CheatingOffense.USING_FARAWAY_PORTAL);
-        }
         final MapleMap currentmap = c.getPlayer().getMap();
         if (portalState || c.getPlayer().isGM()) {
             if (getScriptName() != null) {
                 c.getPlayer().checkFollow();
-                try {
-                    PortalScriptManager.getInstance().executePortalScript(this, c);
-                } catch (final Exception e) {
-                    e.printStackTrace();
+                // Portal Script
+                if (!PortalScriptManager.getInstance().executePortalScript(this, c)) {
+                    c.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
+                    return;
                 }
             } else if (getTargetMapId() != 999999999) {
                 final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(getTargetMapId());
-                /*
-                if (!c.getPlayer().isGM()) {
-                    if (to.getLevelLimit() > 0 && to.getLevelLimit() > c.getPlayer().getLevel()) {
-                        c.getPlayer().dropMessage(-1, "You are too low of a level to enter this place.");
-                        c.getSession().write(MaplePacketCreator.enableActions());
-                        return;
-                    }
-                    //if (to.getForceMove() > 0 && to.getForceMove() < c.getPlayer().getLevel()) {
-                    //    c.getPlayer().dropMessage(-1, "You are too high of a level to enter this place.");
-                    //    c.getSession().write(MaplePacketCreator.enableActions());
-                    //    return;
-                    //}
-                }
-                 */
                 c.getPlayer().changeMapPortal(to, to.getPortal(getTarget()) == null ? to.getPortal(0) : to.getPortal(getTarget())); //late resolving makes this harder but prevents us from loading the whole world at once
             }
         }

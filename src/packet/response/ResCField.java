@@ -25,6 +25,7 @@ import handling.MaplePacket;
 import java.util.List;
 import java.util.Map;
 import packet.ServerPacket;
+import packet.ops.OpsTransferField;
 import packet.ops.arg.ArgFieldEffect;
 import packet.response.struct.TestHelper;
 import server.maps.MapleMap;
@@ -43,6 +44,20 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  * @author Riremito
  */
 public class ResCField {
+
+    public static MaplePacket TransferFieldReqIgnored(OpsTransferField ops) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TransferFieldReqIgnored);
+
+        sp.Encode1(ops.get());
+        return sp.get();
+    }
+
+    public static MaplePacket serverBlocked(int type) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_TransferChannelReqIgnored.get());
+        mplew.write(type);
+        return mplew.getPacket();
+    }
 
     public static MaplePacket playCashSong(int itemid, String name) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
@@ -750,13 +765,6 @@ public class ResCField {
         mplew.writeShort(ServerPacket.Header.LP_AdminResult.get());
         mplew.write(value);
         mplew.writeZeroBytes(17);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket serverBlocked(int type) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_TransferChannelReqIgnored.get());
-        mplew.write(type);
         return mplew.getPacket();
     }
 
