@@ -4,7 +4,7 @@ set MS_REGION_NAME=%1
 set MS_VERSION=%2
 set MS_SUBVERSION=%3
 set WZ_XML_PATH=wz_xml\xml_%MS_REGION_NAME%_v%MS_VERSION%\
-set SCRIPT_PATH=jms_scripts\
+set SCRIPT_PATH=scripts\scripts_%MS_REGION_NAME%\
 @title Kaede Server %MS_REGION_NAME%_v%MS_VERSION%.%MS_SUBVERSION%
 set CLASSPATH=.;dist\*
 echo Version = %MS_REGION_NAME% %MS_VERSION%.%MS_SUBVERSION%

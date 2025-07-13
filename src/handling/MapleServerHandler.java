@@ -375,7 +375,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserTempExpUseRequest:
             case CP_TalkToTutor:
             case CP_RequestIncCombo:
-            case CP_QuickslotKeyMappedModified: {
+            case CP_QuickslotKeyMappedModified:
+            case CP_UpdateScreenSetting: {
                 return ReqCUser.OnPacket(cp, header, c);
             }
             case CP_FamilyChartRequest:
@@ -572,9 +573,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_JMS_FarmEnter:
             case CP_JMS_FarmLeave: {
                 Req_Farm.OnPacket(header, cp, c);
-                return true;
-            }
-            case CP_UpdateScreenSetting: {
                 return true;
             }
             default: {

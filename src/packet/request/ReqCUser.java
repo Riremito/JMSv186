@@ -403,6 +403,14 @@ public class ReqCUser {
             case CP_QuickslotKeyMappedModified: {
                 return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
             }
+            case CP_UpdateScreenSetting: // 解像度変更
+            {
+                byte screen = cp.Decode1(); // 00 = 800x600, 01 = 1024x768
+                byte unk2 = cp.Decode1();
+                byte unk3 = cp.Decode1();
+                byte unk4 = cp.Decode1();
+                return true;
+            }
             default: {
                 break;
             }
