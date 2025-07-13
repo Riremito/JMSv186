@@ -143,7 +143,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserShopRequest: {
-                ReqCNpcPool.OnShopPacket(cp, c);
+                ReqCShopDlg.OnPacket(cp, c);
                 return true;
             }
             case CP_UserTrunkRequest: {

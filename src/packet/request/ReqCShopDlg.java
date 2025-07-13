@@ -31,10 +31,10 @@ import server.MapleShop;
  *
  * @author Riremito
  */
-public class ReqCNpcPool {
+public class ReqCShopDlg {
 
     // CShopDlg::OnPacket
-    public static boolean OnShopPacket(ClientPacket cp, MapleClient c) {
+    public static boolean OnPacket(ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return false;

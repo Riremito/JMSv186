@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.life;
 
 import client.MapleClient;
-import packet.request.ReqCNpcPool;
+import packet.request.ReqCShopDlg;
 import packet.response.ResCNpcPool;
 import server.MapleShopFactory;
 import server.maps.MapleMapObjectType;
