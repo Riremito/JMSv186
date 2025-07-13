@@ -39,6 +39,7 @@ public class PacketOps {
         OpsUserEffect.init();
         OpsQuest.init();
         OpsMovePathAttr.init();
+        OpsFuncKeyMapped.init();
     }
 
 }

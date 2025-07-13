@@ -21,9 +21,12 @@ package packet.request;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.SkillMacro;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import debug.Debug;
 import packet.ClientPacket;
+import packet.ops.OpsFuncKeyMapped;
 import packet.response.ResCFuncKeyMappedMan;
 
 /**
@@ -75,42 +78,11 @@ public class ReqCFuncKeyMappedMan {
         return false;
     }
 
-    public enum FuncKeyMappedType {
-        KEY_NORMAL(0),
-        KEY_PET_HP(1),
-        KEY_PET_MP(2),
-        KEY_PET_CURE(3),
-        UNKNOWN(-1);
-
-        private int value;
-
-        FuncKeyMappedType(int flag) {
-            value = flag;
-        }
-
-        FuncKeyMappedType() {
-            value = -1;
-        }
-
-        public int get() {
-            return value;
-        }
-
-        public static FuncKeyMappedType find(int val) {
-            for (final FuncKeyMappedType o : FuncKeyMappedType.values()) {
-                if (o.get() == val) {
-                    return o;
-                }
-            }
-            return UNKNOWN;
-        }
-    }
-
     public static boolean OnFuncKeyMappedModified(ClientPacket cp, MapleCharacter chr) {
         int funckey_type = cp.Decode4();
 
-        switch (FuncKeyMappedType.find(funckey_type)) {
-            case KEY_NORMAL: {
+        switch (OpsFuncKeyMapped.find(funckey_type)) {
+            case FuncKeyMapped_KeyModified: {
                 int count = cp.Decode4();
                 for (int i = 0; i < count; i++) {
                     int vk_code = cp.Decode4();
@@ -120,30 +92,32 @@ public class ReqCFuncKeyMappedMan {
                 }
                 return true;
             }
-            case KEY_PET_HP: {
+            case FuncKeyMapped_PetConsumeHPItemModified: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoHPItem(item_id);
-                if (ServerConfig.JMS164orLater()) {
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
-                } else {
+                if (Version.LessOrEqual(Region.JMS, 131)) {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
+                } else {
+                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
                 }
                 return true;
             }
-            case KEY_PET_MP: {
+            case FuncKeyMapped_PetConsumeMPItemModified: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoMPItem(item_id);
-                if (ServerConfig.JMS164orLater()) {
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoMP(chr));
-                } else {
+                if (Version.LessOrEqual(Region.JMS, 131)) {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
+                } else {
+                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoMP(chr));
                 }
                 return true;
             }
-            case KEY_PET_CURE: {
+            case FuncKeyMapped_JMS_PetConsumeCureItemModified: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoCureItem(item_id);
-                if (ServerConfig.JMS164orLater()) {
+                if (Version.LessOrEqual(Region.JMS, 131)) {
+                    // nothing
+                } else {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoCure(chr));
                 }
                 return true;
