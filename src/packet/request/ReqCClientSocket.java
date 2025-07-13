@@ -41,6 +41,7 @@ import handling.world.World;
 import handling.world.guild.MapleGuild;
 import java.util.List;
 import packet.ClientPacket;
+import packet.ops.OpsTransferChannel;
 import packet.response.ResCClientSocket;
 import packet.response.ResCField;
 import packet.response.ResCFuncKeyMappedMan;
@@ -278,9 +279,15 @@ public class ReqCClientSocket {
     }
 
     public static final void EnterCS(final MapleClient c, final MapleCharacter chr, final boolean mts) {
+        // temporary off
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            //chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
+            chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
+            return;
+        }
+
         if (!chr.isAlive() || chr.getEventInstance() != null || c.getChannelServer() == null) {
-            c.getSession().write(ResCField.serverBlocked(2));
-            c.getSession().write(ResWrapper.enableActions());
+            chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
             return;
         }
         final ChannelServer ch = ChannelServer.getInstance(c.getChannel());

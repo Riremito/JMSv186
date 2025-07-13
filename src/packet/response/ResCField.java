@@ -25,6 +25,7 @@ import handling.MaplePacket;
 import java.util.List;
 import java.util.Map;
 import packet.ServerPacket;
+import packet.ops.OpsTransferChannel;
 import packet.ops.OpsTransferField;
 import packet.ops.arg.ArgFieldEffect;
 import packet.response.struct.TestHelper;
@@ -52,11 +53,11 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket serverBlocked(int type) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_TransferChannelReqIgnored.get());
-        mplew.write(type);
-        return mplew.getPacket();
+    public static MaplePacket TransferChannelReqIgnored(OpsTransferChannel ops) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TransferChannelReqIgnored);
+
+        sp.Encode1(ops.get());
+        return sp.get();
     }
 
     public static MaplePacket playCashSong(int itemid, String name) {

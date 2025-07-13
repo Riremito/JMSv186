@@ -85,6 +85,7 @@ import packet.ops.OpsBodyPart;
 import packet.ops.OpsChangeStat;
 import packet.ops.OpsMovePathAttr;
 import packet.ops.OpsQuest;
+import packet.ops.OpsTransferChannel;
 import packet.ops.OpsUserEffect;
 import packet.request.ReqCClientSocket;
 import packet.response.Res_JMS_CField_Pachinko;
@@ -5218,7 +5219,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         final ChannelServer toch = ChannelServer.getInstance(channel);
 
         if (channel == client.getChannel() || toch == null || toch.isShutdown()) {
-            client.getSession().write(ResCField.serverBlocked(1));
+            client.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_GAMESVR_DISCONNECTED));
             return;
         }
         changeRemoval();

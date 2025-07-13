@@ -25,30 +25,25 @@ import config.Version;
  *
  * @author Riremito
  */
-public enum OpsTransferField implements IPacketOps {
-    TF_DONE(0),
-    TF_DISABLED_PORTAL(1),
-    TF_NOT_CONNECTED_AREA(2),
-    TF_NOT_ALLOWED_LEVEL(3),
-    TF_NOT_ALLOWED_LEVEL_ITEM(4),
-    TF_NOT_ALLOWED_LEVEL_MD,
-    TF_NOT_ALLOWED_LEVEL_FOR_ASWAN,
-    TF_PARTY_ONLY,
-    TF_PARTYBOSS_ONLY,
-    TF_PARTYMEMBER_MIA,
-    TF_EXPEDITION_ONLY,
-    TF_DISABLE_INDUN,
-    TF_DISABLE_INDUN_ENTERTIME,
-    TF_NOT_AVAILABLE_SHOP,
+public enum OpsTransferChannel implements IPacketOps {
+    TC_DONE(0),
+    TC_GAMESVR_DISCONNECTED(1),
+    TC_SHOPSVR_DISCONNECTED(2),
+    TC_PVESVR_DISCONNECTED,
+    TC_USER_NOTACTIVEACCOUNT,
+    TC_ITCSVR_DISCONNECTED,
+    TC_ITCSVR_OVERLIMITUSER,
+    TC_CHANNEL_RESTRICTION,
+    TC_ITCSVR_LOWLEVELUSER,
     UNKNOWN(-1);
 
     private int value;
 
-    OpsTransferField(int val) {
+    OpsTransferChannel(int val) {
         this.value = val;
     }
 
-    OpsTransferField() {
+    OpsTransferChannel() {
         this.value = -1;
     }
 
@@ -62,8 +57,9 @@ public enum OpsTransferField implements IPacketOps {
         this.value = val;
     }
 
-    public static OpsTransferField find(int val) {
-        for (final OpsTransferField ops : OpsTransferField.values()) {
+    // not used
+    public static IPacketOps find(int val) {
+        for (final IPacketOps ops : values()) {
             if (ops.get() == val) {
                 return ops;
             }
@@ -73,22 +69,16 @@ public enum OpsTransferField implements IPacketOps {
 
     public static void init() {
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            TF_DONE.set(0);
-            TF_DISABLED_PORTAL.set(1);
-            TF_NOT_CONNECTED_AREA.set(2);
-            TF_NOT_ALLOWED_LEVEL.set(3);
-            TF_NOT_ALLOWED_LEVEL_ITEM.set(4);
-            TF_NOT_ALLOWED_LEVEL_MD.set(5);
-            // party level
-            TF_NOT_ALLOWED_LEVEL_FOR_ASWAN.set(7);
-            TF_PARTY_ONLY.set(8);
-            TF_PARTYBOSS_ONLY.set(9);
-            TF_PARTYMEMBER_MIA.set(10);
-            TF_EXPEDITION_ONLY.set(11);
-            TF_DISABLE_INDUN.set(12);
-            TF_DISABLE_INDUN_ENTERTIME.set(13);
-            TF_NOT_AVAILABLE_SHOP.set(19);
-            // 20 : expedition
+            TC_DONE.set(0);
+            TC_GAMESVR_DISCONNECTED.set(1);
+            TC_SHOPSVR_DISCONNECTED.set(2);
+            TC_PVESVR_DISCONNECTED.set(3);
+            TC_USER_NOTACTIVEACCOUNT.set(4);
+            TC_ITCSVR_DISCONNECTED.set(5);
+            TC_ITCSVR_OVERLIMITUSER.set(6);
+            TC_CHANNEL_RESTRICTION.set(7);
+            TC_ITCSVR_LOWLEVELUSER.set(8);
+            // 9 : change settings
             return;
         }
     }

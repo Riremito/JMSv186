@@ -27,6 +27,7 @@ import packet.ops.OpsNewCharacter;
 import packet.ops.OpsQuest;
 import packet.ops.OpsScriptMan;
 import packet.ops.OpsSecondaryStat;
+import packet.ops.OpsTransferChannel;
 import packet.ops.OpsTransferField;
 import packet.ops.OpsUserEffect;
 import packet.request.ReqCNpcPool;
@@ -52,6 +53,7 @@ public class PacketFlag {
         OpsBroadcastMsg.init();
         OpsMovePathAttr.init();
         OpsTransferField.init();
+        OpsTransferChannel.init();
     }
 
 }
