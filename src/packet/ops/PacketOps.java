@@ -19,7 +19,6 @@
 package packet.ops;
 
 import packet.request.ReqCNpcPool;
-import packet.request.ReqCTrunkDlg;
 
 /**
  *
@@ -29,13 +28,13 @@ public class PacketOps {
 
     public static void initAll() {
         OpsDBCHAR.init();
-        ReqCTrunkDlg.init();
         ReqCNpcPool.init();
         OpsChangeStat.init();
         OpsSecondaryStat.init();
         OpsMessage.init();
         OpsNewCharacter.init();
         OpsScriptMan.init();
+        OpsTrunk.init();
         OpsUserEffect.init();
         OpsQuest.init();
         OpsBroadcastMsg.init();
