@@ -6,17 +6,11 @@ import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.ItemFlag;
 import client.inventory.MapleInventoryType;
-import config.Region;
-import config.ServerConfig;
-import config.Version;
 import constants.GameConstants;
 import debug.Debug;
-import handling.MaplePacket;
-import java.util.Collection;
 import packet.ClientPacket;
-import packet.ServerPacket;
 import packet.ops.OpsTrunk;
-import packet.response.data.DataGW_ItemSlotBase;
+import packet.response.ResCTrunkDlg;
 import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -24,8 +18,6 @@ import server.MapleStorage;
 
 public class ReqCTrunkDlg {
 
-    // Storage
-    // CP_UserTrunkRequest
     public static boolean OnPacket(ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
@@ -55,7 +47,7 @@ public class ReqCTrunkDlg {
 
                 if (!MapleInventoryManipulator.checkSpace(c, item.getItemId(), item.getQuantity(), item.getOwner())) {
                     storage.store(item); // 戻す?
-                    c.SendPacket(ReqCTrunkDlg.Error(OpsTrunk.TrunkRes_GetUnknown));
+                    c.SendPacket(ResCTrunkDlg.Error(OpsTrunk.TrunkRes_GetUnknown));
                     return false;
                 }
 
@@ -67,7 +59,7 @@ public class ReqCTrunkDlg {
             case TrunkReq_PutItem: {
                 // 手数料不足
                 if (chr.getMeso() < 100) {
-                    c.SendPacket(ReqCTrunkDlg.Error(OpsTrunk.TrunkRes_PutNoMoney));
+                    c.SendPacket(ResCTrunkDlg.Error(OpsTrunk.TrunkRes_PutNoMoney));
                     return false;
                 }
 
@@ -78,13 +70,13 @@ public class ReqCTrunkDlg {
 
                 // packet hack
                 if (quantity < 1) {
-                    c.SendPacket(ReqCTrunkDlg.Error(OpsTrunk.TrunkRes_PutIncorrectRequest));
+                    c.SendPacket(ResCTrunkDlg.Error(OpsTrunk.TrunkRes_PutIncorrectRequest));
                     return false;
                 }
 
                 // 空きスロットがない
                 if (storage.isFull()) {
-                    c.SendPacket(ReqCTrunkDlg.Error(OpsTrunk.TrunkRes_PutNoSpace));
+                    c.SendPacket(ResCTrunkDlg.Error(OpsTrunk.TrunkRes_PutNoSpace));
                     return false;
                 }
 
@@ -92,7 +84,7 @@ public class ReqCTrunkDlg {
                 IItem item = chr.getInventory(type).getItem(slot).copy();
 
                 if (GameConstants.isPet(item.getItemId())) {
-                    c.SendPacket(ReqCTrunkDlg.Error(OpsTrunk.TrunkRes_PutIncorrectRequest));
+                    c.SendPacket(ResCTrunkDlg.Error(OpsTrunk.TrunkRes_PutIncorrectRequest));
                     return false;
                 }
 
@@ -135,19 +127,19 @@ public class ReqCTrunkDlg {
 
                 // packet hack
                 if (meso == 0) {
-                    c.SendPacket(ReqCTrunkDlg.Error(OpsTrunk.TrunkRes_PutIncorrectRequest));
+                    c.SendPacket(ResCTrunkDlg.Error(OpsTrunk.TrunkRes_PutIncorrectRequest));
                     return false;
                 }
 
                 // packet hack
                 if (meso <= 0 && (storageMesos - meso < 0)) {
-                    c.SendPacket(ReqCTrunkDlg.Error(OpsTrunk.TrunkRes_PutIncorrectRequest));
+                    c.SendPacket(ResCTrunkDlg.Error(OpsTrunk.TrunkRes_PutIncorrectRequest));
                     return false;
                 }
 
                 // packet hack
                 if (meso > 0 && (playerMesos + meso < 0)) {
-                    c.SendPacket(ReqCTrunkDlg.Error(OpsTrunk.TrunkRes_PutIncorrectRequest));
+                    c.SendPacket(ResCTrunkDlg.Error(OpsTrunk.TrunkRes_PutIncorrectRequest));
                     return false;
                 }
 
@@ -168,105 +160,6 @@ public class ReqCTrunkDlg {
         }
 
         return false;
-    }
-
-    // 倉庫を開く
-    // getStorage
-    public static MaplePacket Open(int npcId, byte slots, Collection<IItem> items, int meso) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
-
-        sp.Encode1(OpsTrunk.TrunkRes_OpenTrunkDlg.get());
-        sp.Encode4(npcId);
-        sp.Encode1(slots);
-
-        if (Version.LessOrEqual(Region.JMS, 131)) {
-            sp.Encode2(0x7E);
-        } else {
-            sp.Encode8(0x7E);
-        }
-
-        sp.Encode4(meso);
-        sp.Encode1(0);
-        sp.Encode1(0);
-
-        sp.Encode1((byte) items.size());
-        for (IItem item : items) {
-            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
-        }
-
-        sp.Encode1(0);
-        sp.Encode1(0);
-
-        return sp.get();
-    }
-
-    public static MaplePacket Error(OpsTrunk ops) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
-
-        sp.Encode1(ops.get());
-        return sp.get();
-    }
-
-    // メルの出し入れ
-    public static MaplePacket MesoInOut(byte slots, int meso) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
-
-        sp.Encode1(OpsTrunk. TrunkRes_PutSuccess.get());
-        sp.Encode1(slots);
-        sp.Encode2(2);
-
-        if (ServerConfig.JMS164orLater()) {
-            sp.Encode2(0);
-            sp.Encode4(0);
-        }
-
-        sp.Encode4(meso);
-
-        return sp.get();
-    }
-
-    // アイテムを入れる
-    // storeStorage
-    public static MaplePacket ItemIn(byte slots, MapleInventoryType type, Collection<IItem> items) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
-
-        sp.Encode1(OpsTrunk.TrunkRes_PutSuccess.get());
-        sp.Encode1(slots);
-        sp.Encode2(type.getBitfieldEncoding());
-
-        if (ServerConfig.JMS164orLater()) {
-            sp.Encode2(0);
-            sp.Encode4(0);
-        }
-
-        sp.Encode1((byte) items.size());
-        for (IItem item : items) {
-            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
-        }
-
-        return sp.get();
-    }
-
-    // アイテムを取り出す
-    // takeOutStorage
-    public static MaplePacket ItemOut(byte slots, MapleInventoryType type, Collection<IItem> items) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
-
-        sp.Encode1(OpsTrunk.TrunkRes_GetSuccess.get());
-        sp.Encode1(slots);
-        sp.Encode2(type.getBitfieldEncoding());
-
-        if (ServerConfig.JMS164orLater()) {
-            sp.Encode2(0);
-            sp.Encode4(0);
-        }
-
-        sp.Encode1((byte) items.size());
-        for (IItem item : items) {
-            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
-        }
-
-        return sp.get();
     }
 
 }

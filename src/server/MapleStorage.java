@@ -21,6 +21,7 @@ import database.DatabaseConnection;
 import database.DatabaseException;
 import java.util.EnumMap;
 import packet.request.ReqCTrunkDlg;
+import packet.response.ResCTrunkDlg;
 import tools.Pair;
 
 public class MapleStorage implements Serializable {
@@ -183,15 +184,15 @@ public class MapleStorage implements Serializable {
         for (MapleInventoryType type : MapleInventoryType.values()) {
             typeItems.put(type, new ArrayList<IItem>(items));
         }
-        c.getSession().write(ReqCTrunkDlg.Open(npcId, slots, items, meso));
+        c.getSession().write(ResCTrunkDlg.Open(npcId, slots, items, meso));
     }
 
     public void sendStored(MapleClient c, MapleInventoryType type) {
-        c.getSession().write(ReqCTrunkDlg.ItemIn(slots, type, typeItems.get(type)));
+        c.getSession().write(ResCTrunkDlg.ItemIn(slots, type, typeItems.get(type)));
     }
 
     public void sendTakenOut(MapleClient c, MapleInventoryType type) {
-        c.getSession().write(ReqCTrunkDlg.ItemOut(slots, type, typeItems.get(type)));
+        c.getSession().write(ResCTrunkDlg.ItemOut(slots, type, typeItems.get(type)));
     }
 
     public int getMeso() {
@@ -216,7 +217,7 @@ public class MapleStorage implements Serializable {
     }
 
     public void sendMeso(MapleClient c) {
-        c.getSession().write(ReqCTrunkDlg.MesoInOut(slots, meso));
+        c.getSession().write(ResCTrunkDlg.MesoInOut(slots, meso));
     }
 
     public boolean isFull() {
