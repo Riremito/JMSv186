@@ -18,10 +18,10 @@
  */
 package packet.response;
 
+import config.ServerConfig;
 import handling.MaplePacket;
 import packet.ServerPacket;
 import server.maps.MapleMist;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -29,33 +29,42 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class ResCAffectedAreaPool {
 
-    public static MaplePacket removeMist(final int oid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_AffectedAreaRemoved.get());
-        mplew.writeInt(oid);
-        return mplew.getPacket();
+    // CAffectedAreaPool::OnAffectedAreaCreated
+    // CAffectedArea::MakeEnterFieldPacket
+    public static MaplePacket spawnMist(MapleMist mist) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AffectedAreaCreated);
+
+        sp.Encode4(mist.getObjectId()); // m_dwID
+        sp.Encode4(mist.isMobMist() ? 0 : (mist.isPoisonMist() != 0 ? 1 : 2)); // m_bMobSkill
+        sp.Encode4(mist.getOwnerId()); // m_dwOwnerID
+        sp.Encode4((mist.getMobSkill() == null) ? mist.getSourceSkill().getId() : mist.getMobSkill().getSkillId()); // m_nSkillID
+        sp.Encode1(mist.getSkillLevel()); // m_nSLV
+        sp.Encode2(mist.getSkillDelay()); // time / 100
+        // buffer 0x10
+        {
+            sp.Encode4(mist.getBox().x); // rcArea.left
+            sp.Encode4(mist.getBox().y); // rcArea.top
+            sp.Encode4(mist.getBox().x + mist.getBox().width); // rcArea.righ
+            sp.Encode4(mist.getBox().y + mist.getBox().height); // rcArea.bottom
+        }
+        // old ver = 1 byte m_bSmoke
+        sp.Encode4(0); // nElemAttr
+
+        // not in JMS147-164
+        if (ServerConfig.JMS186orLater()) {
+            sp.Encode4(0); // nPhase
+        }
+
+        return sp.get();
     }
 
-    public static MaplePacket spawnMist(final MapleMist mist) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_AffectedAreaCreated.get());
-        mplew.writeInt(mist.getObjectId());
-        mplew.writeInt(mist.isMobMist() ? 0 : (mist.isPoisonMist() != 0 ? 1 : 2)); //2 = invincible, so put 1 for recovery aura
-        mplew.writeInt(mist.getOwnerId());
-        if (mist.getMobSkill() == null) {
-            mplew.writeInt(mist.getSourceSkill().getId());
-        } else {
-            mplew.writeInt(mist.getMobSkill().getSkillId());
-        }
-        mplew.write(mist.getSkillLevel());
-        mplew.writeShort(mist.getSkillDelay());
-        mplew.writeInt(mist.getBox().x);
-        mplew.writeInt(mist.getBox().y);
-        mplew.writeInt(mist.getBox().x + mist.getBox().width);
-        mplew.writeInt(mist.getBox().y + mist.getBox().height);
-        mplew.writeInt(0);
-        mplew.writeInt(0);
-        return mplew.getPacket();
+    // CAffectedAreaPool::OnAffectedAreaRemoved
+    // CAffectedArea::MakeLeaveFieldPacket
+    public static MaplePacket removeMist(MapleMist mist) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AffectedAreaRemoved);
+
+        sp.Encode4(mist.getObjectId()); // m_dwID
+        return sp.get();
     }
-    
+
 }

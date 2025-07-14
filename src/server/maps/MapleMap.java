@@ -1513,7 +1513,7 @@ public final class MapleMap {
 
             @Override
             public void run() {
-                broadcastMessage(ResCAffectedAreaPool.removeMist(mist.getObjectId()));
+                broadcastMessage(ResCAffectedAreaPool.removeMist(mist));
                 removeMapObject(mist);
                 if (poisonSchedule != null) {
                     poisonSchedule.cancel(false);

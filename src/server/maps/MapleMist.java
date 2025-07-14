@@ -143,12 +143,12 @@ public class MapleMist extends AbstractMapleMapObject {
 
     @Override
     public void sendSpawnData(final MapleClient c) {
-        c.getSession().write(ResCAffectedAreaPool.spawnMist(this));
+        c.SendPacket(ResCAffectedAreaPool.spawnMist(this));
     }
 
     @Override
     public void sendDestroyData(final MapleClient c) {
-        c.getSession().write(ResCAffectedAreaPool.removeMist(getObjectId()));
+        c.SendPacket(ResCAffectedAreaPool.removeMist(this));
     }
 
     public boolean makeChanceResult() {
