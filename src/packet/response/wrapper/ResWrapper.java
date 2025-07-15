@@ -23,7 +23,9 @@ import client.MapleQuestStatus;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import handling.MaplePacket;
 import packet.ServerPacket;
@@ -573,7 +575,7 @@ public class ResWrapper {
 
     // マップ移動
     public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
-        if (ServerConfig.JMS302orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             return ResCStage.SetField_JMS_302(chr, 1, false, to, spawnPoint, 0);
         }
         return ResCStage.SetField(chr, false, to, spawnPoint);

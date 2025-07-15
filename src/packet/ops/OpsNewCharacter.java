@@ -84,7 +84,7 @@ public enum OpsNewCharacter {
             Aran.set(3);
             Evan.set(4);
         }
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148)) {
             CannonShooter.set(1); // v204
             Mercedes.set(5); // v204
             DemonSlayer.set(6); // v205
@@ -93,10 +93,10 @@ public enum OpsNewCharacter {
             Kanna.set(9); // v302
             // v314以降全部作成可能
         }
-        if (ServerConfig.TWMS148orLater()) {
+        if (Version.GreaterOrEqual(Region.TWMS, 148)) {
             Chivalrous.set(10);
         }
-        if (ServerConfig.JMS308orLater() || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
             Luminous.set(10); // v308
             Kaizer.set(11); // v308
             AngelicBuster.set(12); // v308

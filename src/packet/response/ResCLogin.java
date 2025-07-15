@@ -276,7 +276,7 @@ public class ResCLogin {
                             if (ServerConfig.JMS164orLater()) {
                                 sp.Encode1(client.isGm() ? 1 : 0);
                             }
-                            if (ServerConfig.JMS308orLater()) {
+                            if (Version.GreaterOrEqual(Region.JMS, 308)) {
                                 sp.EncodeZeroBytes(4);
                                 sp.Encode4(0);
                                 sp.Encode1(0);
@@ -313,7 +313,7 @@ public class ResCLogin {
                                 sp.Encode1(-1);
                             }
                             // 旧かんたん会員
-                            if (ServerConfig.JMS302orLater()) {
+                            if (Version.GreaterOrEqual(Region.JMS, 302)) {
                                 // 0, 旧かんたん会員
                                 // 1, 通常
                                 sp.Encode1(1);
@@ -343,7 +343,7 @@ public class ResCLogin {
                             sp.EncodeStr(String.valueOf(client.getAccID()));
                             sp.EncodeStr(client.getAccountName());
                             sp.Encode1(1);
-                            if (ServerConfig.CMS104orLater()) {
+                            if (Version.GreaterOrEqual(Region.CMS, 104)) {
                                 sp.Encode1(0);
                                 sp.Encode1(0);
                                 sp.Encode1(0);
@@ -563,7 +563,7 @@ public class ResCLogin {
     public static final MaplePacket getServerList(final int serverId, boolean internalserver, int externalch) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_WorldInformation);
         // ワールドID
-        if (ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode2(serverId);
         } else {
             sp.Encode1(serverId);
@@ -602,12 +602,12 @@ public class ResCLogin {
             sp.Encode1(serverId);
             sp.Encode1(i); // channel
             sp.Encode1(0);
-            if (ServerConfig.JMS302orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode1(0);
             }
         }
         sp.Encode2(0);
-        if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode4(0);
         }
         if (Version.GreaterOrEqual(Region.EMS, 89)) {
@@ -618,7 +618,7 @@ public class ResCLogin {
 
     public static byte[] CharList_TWMS(MapleClient c) {
         ServerPacket data = new ServerPacket();
-        if (!ServerConfig.TWMS148orLater()) {
+        if (!Version.GreaterOrEqual(Region.TWMS, 148)) {
             data.Encode4(1000000);
         }
         List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
@@ -637,7 +637,7 @@ public class ResCLogin {
             data.Encode4(chr.getJobRankMove());
         }
 
-        if (ServerConfig.TWMS148orLater()) {
+        if (Version.GreaterOrEqual(Region.TWMS, 148)) {
             data.Encode1(3);
             data.Encode1(0);
             data.Encode4(charslots);
@@ -720,13 +720,13 @@ public class ResCLogin {
             return sp.get();
         }
 
-        if (ServerConfig.JMS302orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(2); // 2次パス無視
             sp.Encode4(charslots);
             sp.Encode4(0);
             sp.Encode4(0);
             sp.Encode4(0);
-            if (ServerConfig.JMS308orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 308)) {
                 sp.Encode4(0);
                 sp.Encode1(0);
             }
@@ -893,12 +893,12 @@ public class ResCLogin {
     // ワールドセレクト
     public static final MaplePacket getEndOfServerList() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_WorldInformation);
-        if (ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode2(-1);
         } else {
             sp.Encode1(-1);
         }
-        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode1(0);
         }
         return sp.get();
@@ -921,7 +921,7 @@ public class ResCLogin {
         data.Encode1(0);
         data.Encode4(charslots);
         data.Encode4(0); // card
-        if (ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode4(0);
@@ -965,7 +965,7 @@ public class ResCLogin {
         if (Version.PostBB()) {
             sp.Encode4(0);
         }
-        if (ServerConfig.TWMS148orLater()) {
+        if (Version.GreaterOrEqual(Region.TWMS, 148)) {
             sp.Encode1(1);
         }
         return sp.get();

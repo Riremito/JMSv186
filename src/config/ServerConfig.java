@@ -405,26 +405,6 @@ public class ServerConfig {
         return false;
     }
 
-    public static boolean KMS114orLater() {
-        // ?
-        if (Version.PostBB()) {
-            return true;
-        }
-
-        switch (Region.getRegion()) {
-            case KMS: {
-                if (114 <= Version.getVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
     // near Chaos update
     public static boolean JMS194orLater() {
         if (!Version.PostBB()) {
@@ -563,71 +543,6 @@ public class ServerConfig {
             }
             case KMST: {
                 if (391 <= Version.getVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    // 2012/08/13
-    public static boolean TWMS148orLater() {
-        switch (Region.getRegion()) {
-            case TWMS: {
-                if (148 <= Version.getVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    // 2012/08/17
-    public static boolean CMS104orLater() {
-        switch (Region.getRegion()) {
-            case CMS: {
-                if (104 <= Version.getVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    // Sengoku update
-    // 2012/08/16
-    public static boolean JMS302orLater() {
-        switch (Region.getRegion()) {
-            case JMS: {
-                if (302 <= Version.getVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    // Angelic Buster version
-    public static boolean JMS308orLater() {
-        switch (Region.getRegion()) {
-            case JMS: {
-                if (308 <= Version.getVersion()) {
                     return true;
                 }
                 return false;

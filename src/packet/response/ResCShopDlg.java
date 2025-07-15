@@ -86,7 +86,7 @@ public class ResCShopDlg {
         if (ServerConfig.JMS194orLater()) {
             sp.Encode1(0);
         }
-        if (ServerConfig.JMS302orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode4(0);
         }
         sp.Encode4(sid);
@@ -108,7 +108,7 @@ public class ResCShopDlg {
             if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84)) {
                 sp.Encode4(0); // nLevelLimited
             }
-            if (ServerConfig.JMS302orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode4(0);
                 sp.Encode1(0);
                 sp.Encode4(0);
@@ -123,7 +123,7 @@ public class ResCShopDlg {
                 sp.Encode2(BitTools.doubleToShortBits(ii.getPrice(item.getItemId())));
                 sp.Encode2(ii.getSlotMax(c, item.getItemId()));
             }
-            if (ServerConfig.JMS302orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode1(0);
                 sp.Encode4(0);
             }

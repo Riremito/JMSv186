@@ -463,7 +463,7 @@ public class Equip extends Item implements IEquip, Serializable {
             if (3 <= getRank() || 50 <= Randomizer.nextInt(100)) {
                 // レジェンダリー抽選
                 if (master) {
-                    if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+                    if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                         if (4 <= getRank() || 50 <= Randomizer.nextInt(100)) {
                             return 4;
                         }

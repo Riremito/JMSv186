@@ -126,7 +126,7 @@ public class ResCClientSocket {
         sp.Encode4((int) GameServerIP); // IP, 127.0.0.1
         sp.Encode2(port);
 
-        if (ServerConfig.JMS302orLater() || Version.Equal(Region.KMST, 391) || ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.KMST, 391) || ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode1(0);
         }
         return sp.get();

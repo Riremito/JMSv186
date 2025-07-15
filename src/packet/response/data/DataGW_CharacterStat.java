@@ -49,7 +49,7 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.KMS138orLater() || (Region.IsTHMS() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS138orLater() || (Region.IsTHMS() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 104)) {
             // none
         } else if (ServerConfig.JMS131orEarlier() || Version.LessOrEqual(Region.KMS, 95) || Region.IsBMS() || Region.IsVMS()) {
             data.EncodeZeroBytes(8);
@@ -111,7 +111,7 @@ public class DataGW_CharacterStat {
             data.Encode8(0);
         }
 
-        if (ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode4(chr.getExp());
             data.Encode4(chr.getFame());
             data.Encode4(chr.getGashaEXP());
@@ -150,7 +150,7 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
 
             // CMS
-            if (ServerConfig.CMS104orLater()) {
+            if (Version.GreaterOrEqual(Region.CMS, 104)) {
                 return data.get().getBytes();
             }
 
@@ -205,10 +205,10 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110)) {
+        if (ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110)) {
             data.Encode4(0);
             data.Encode4(0);
-            if (ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110)) {
+            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110)) {
                 data.Encode4(0);
             }
             data.Encode4(chr.getMapId());
@@ -278,9 +278,9 @@ public class DataGW_CharacterStat {
                 }
                 return data.get().getBytes();
             } else {
-                if (ServerConfig.JMS308orLater()) {
+                if (Version.GreaterOrEqual(Region.JMS, 308)) {
                     data.EncodeZeroBytes(21);
-                } else if (ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110)) {
+                } else if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110)) {
                     data.EncodeZeroBytes(12);
                 }
             }
@@ -288,10 +288,10 @@ public class DataGW_CharacterStat {
             data.Encode1(0);
             data.Encode4(0);
             data.Encode1(0);
-            if (ServerConfig.JMS308orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 308)) {
                 data.Encode1(0);
             }
-            if (ServerConfig.JMS302orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 data.Encode4(0);
                 data.Encode1(0);
                 data.Encode4(0);
@@ -412,7 +412,7 @@ public class DataGW_CharacterStat {
     public static byte[] EncodeChangeStat(MapleCharacter chr, int statmask) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode8(statmask);
         } else {
             data.Encode4(statmask);
@@ -523,7 +523,7 @@ public class DataGW_CharacterStat {
         }
         // 人気度
         if ((statmask & OpsChangeStat.CS_POP.get()) > 0) {
-            if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater() || ServerConfig.JMS302orLater()) {
+            if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.JMS, 302)) {
                 data.Encode4(chr.getFame());
             } else {
                 data.Encode2(chr.getFame());

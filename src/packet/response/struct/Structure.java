@@ -82,7 +82,7 @@ public class Structure {
 
     public static boolean is_skill_need_master_level(int skill_id) {
         // JMS v302
-        if (ServerConfig.JMS302orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             return is_skill_need_master_level_302(skill_id);
         }
         // JMS v188-v194
@@ -279,7 +279,7 @@ public class Structure {
     public static final byte[] addSkillInfo(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (Version.GreaterOrEqual(Region.KMS, 148) || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode1(1);
         }
         final Map<ISkill, SkillEntry> skills = chr.getSkills();
@@ -296,7 +296,7 @@ public class Structure {
             if (is_skill_need_master_level(skill.getKey().getId())) {
                 data.Encode4(skill.getValue().masterlevel);
             }
-            if (ServerConfig.JMS302orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 if (skill.getKey().getId() == 40020002 || skill.getKey().getId() == 80000004) {
                     data.Encode4(0);
                 }
@@ -315,7 +315,7 @@ public class Structure {
         data.Encode2(cd.size());
         for (final MapleCoolDownValueHolder cooling : cd) {
             data.Encode4(cooling.skillId);
-            if (Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+            if (Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                 data.Encode4((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);
             } else {
                 data.Encode2((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);
@@ -328,7 +328,7 @@ public class Structure {
         ServerPacket data = new ServerPacket();
         final List<MapleQuestStatus> started = chr.getStartedQuests();
 
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode1(0);
         }
 
@@ -343,11 +343,11 @@ public class Structure {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if ((ServerConfig.JMS194orLater() && !Region.IsKMS() && !Region.IsEMS()) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if ((ServerConfig.JMS194orLater() && !Region.IsKMS() && !Region.IsEMS()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89)) {
             data.Encode2(0);
         }
 
@@ -357,7 +357,7 @@ public class Structure {
     public static byte[] addQuestComplete(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (Version.GreaterOrEqual(Region.KMS, 148) || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode1(0);
         }
 
@@ -371,7 +371,7 @@ public class Structure {
             data.Encode4(time); // completion time
         }
 
-        if (Version.GreaterOrEqual(Region.KMS, 148) || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode2(0);
         }
         return data.get().getBytes();
@@ -421,7 +421,7 @@ public class Structure {
             data.Encode4(map[i]);
         }
 
-        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }

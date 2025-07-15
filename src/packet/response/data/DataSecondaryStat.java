@@ -58,7 +58,7 @@ public class DataSecondaryStat {
         if (Version.GreaterOrEqual(Region.EMS, 89)) {
             data.Encode4(buff_mask[8]);
         }
-        if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode4(buff_mask[7]);
             data.Encode4(buff_mask[6]);
             data.Encode4(buff_mask[5]);
@@ -108,7 +108,7 @@ public class DataSecondaryStat {
             data.Encode1(0);
             data.Encode1(0);
         }
-        if (ServerConfig.JMS302orLater() || ServerConfig.TWMS148orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148)) {
             data.Encode1(0);
         }
         return data.get().getBytes();

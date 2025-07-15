@@ -20,7 +20,9 @@ package packet.response;
 
 import client.MapleCharacter;
 import client.inventory.IEquip;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import handling.MaplePacket;
 import java.awt.Point;
 import packet.ServerPacket;
@@ -43,7 +45,7 @@ public class ResCUser {
         if (ServerConfig.JMS146orLater()) {
             sp.Encode1((byte) show);
         }
-        if (ServerConfig.JMS302orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
         }
         // if LP_UserChatNLCPQ, add more str
@@ -95,7 +97,7 @@ public class ResCUser {
     public static MaplePacket getScrollEffect(int chr, IEquip.ScrollResult scrollSuccess, boolean legendarySpirit) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemUpgradeEffect);
         sp.Encode4(chr);
-        if (ServerConfig.JMS302orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             /*
                 0 = 失敗
                 1 = 成功
@@ -144,7 +146,7 @@ public class ResCUser {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemUnreleaseEffect);
         sp.Encode4(chr);
         sp.Encode1(1);
-        if (ServerConfig.JMS302orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode4(0); // 金印 2049500
         }
         return sp.get();

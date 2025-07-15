@@ -91,7 +91,7 @@ public class ResCWvsContext {
         sp.Encode1(unlock ? 1 : 0);// m_bExclRequestSent, unlock
         sp.Encode1((io == null) ? 0 : io.get().size());
 
-        if (ServerConfig.JMS302orLater() || Version.Equal(Region.KMST, 391) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.KMST, 391) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode1(0); // unused
         }
 
@@ -152,7 +152,7 @@ public class ResCWvsContext {
     public static final MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ChangeSkillRecordResult);
         sp.Encode1(1);
-        if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode1(0);
         }
         sp.Encode2(1);
@@ -171,7 +171,7 @@ public class ResCWvsContext {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
         sp.EncodeBuffer(DataSecondaryStat.EncodeForLocal(effect));
         sp.Encode2(0); // delay
-        if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode1(0);
         }
         sp.Encode1(0); // CUserLocal::SetSecondaryStatChangedPoint
@@ -188,7 +188,7 @@ public class ResCWvsContext {
         if (Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode4(buff_mask[8]);
         }
-        if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode4(buff_mask[7]);
             sp.Encode4(buff_mask[6]);
             sp.Encode4(buff_mask[5]);
@@ -354,7 +354,7 @@ public class ResCWvsContext {
                 sp.Encode4(ma.Inc_EXP_EquipmentBonus); // アイテム装着ボーナス経験値
                 sp.Encode4(0); // not used
                 sp.Encode4(ma.Inc_EXP_RainbowWeekBonus); // レインボーウィークボーナス経験値
-                if (ServerConfig.JMS302orLater()) {
+                if (Version.GreaterOrEqual(Region.JMS, 302)) {
                     sp.Encode4(0);
                     sp.Encode4(0);
                     sp.Encode4(0);
@@ -459,7 +459,7 @@ public class ResCWvsContext {
         sp.Encode1(player.getLevel());
         sp.Encode2(player.getJob());
 
-        if (ServerConfig.JMS302orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
             sp.Encode4(player.getFame());
         } else {
@@ -486,7 +486,7 @@ public class ResCWvsContext {
             }
         }
 
-        if (ServerConfig.JMS302orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
         }
 
@@ -559,7 +559,7 @@ public class ResCWvsContext {
             sp.Encode2(medalQuests.size());
             for (int x : medalQuests) {
                 sp.Encode2(x);
-                if (ServerConfig.JMS302orLater()) {
+                if (Version.GreaterOrEqual(Region.JMS, 302)) {
                     sp.Encode8(0);
                 }
             }
@@ -573,7 +573,7 @@ public class ResCWvsContext {
                 }
             }
 
-            if (ServerConfig.JMS302orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode1(0);
                 sp.Encode1(0);
                 sp.Encode1(0);

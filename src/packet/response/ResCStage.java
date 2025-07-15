@@ -53,8 +53,8 @@ public class ResCStage {
         if (ServerConfig.KMS138orLater()
                 || (Region.IsJMS() && ServerConfig.JMS146orLater())
                 || Version.GreaterOrEqual(Region.EMS, 89)
-                || ServerConfig.TWMS148orLater()
-                || ServerConfig.CMS104orLater()) {
+                || Version.GreaterOrEqual(Region.TWMS, 148)
+                || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode1(0);
         }
 
@@ -71,7 +71,7 @@ public class ResCStage {
         if (Region.IsCMS()) {
             sp.Encode1(0);
         }
-        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode4(0);
         }
         sp.Encode1(loggedin ? 1 : 0); // bCharacterData, 1 = all data, 0 = map change
@@ -123,16 +123,16 @@ public class ResCStage {
         }
         // サーバーの時間?
         sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
-        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode4(100); // nMobStatAdjustRate
         }
-        if (ServerConfig.KMS119orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS119orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode1(0);
         }
-        if (ServerConfig.KMS127orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS127orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode1(0);
         }
-        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode1(0);
         }
         if (Version.GreaterOrEqual(Region.KMS, 197)) {
@@ -164,7 +164,7 @@ public class ResCStage {
                 sp.Encode4(0);
                 sp.Encode4(0);
                 long datamask_1 = 0x00444200L | 0x20000000000L; // JMS302
-                if (ServerConfig.JMS308orLater()) {
+                if (Version.GreaterOrEqual(Region.JMS, 308)) {
                     datamask_1 = 0x00444200L | 0x80000000000L; // JMS308
                 }
                 sp.EncodeBuffer(DataCharacterData.Encode_302_1(chr, -1 & ~(datamask_1))); // Quest除外
@@ -186,12 +186,12 @@ public class ResCStage {
             sp.EncodeBuffer(DataCharacterData.Encode_302_2(chr, datamask_2));
             sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
             sp.Encode4(100); // nMobStatAdjustRate
-            if (ServerConfig.JMS308orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 308)) {
                 sp.Encode1(0);
             }
             sp.Encode1(0);
             sp.Encode1(GameConstants.is_extendsp_job(chr.getJob()) ? 1 : 0);
-            if (ServerConfig.JMS308orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 308)) {
                 sp.Encode1(0);
             }
             return sp.get();

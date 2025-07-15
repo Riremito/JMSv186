@@ -75,7 +75,7 @@ public enum OpsScriptMan {
     }
 
     public static void init() {
-        if (ServerConfig.JMS302orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             SM_ASKACCEPT.set(14);
             SM_ASKBOXTEXT.set(15);
             SM_ASKSLIDEMENU.set(16);

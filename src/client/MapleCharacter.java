@@ -2393,7 +2393,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         final boolean pyramid = pyramidSubway != null;
         if (map.getId() == nowmapid) {
             client.SendPacket(warpPacket);
-            if (ServerConfig.JMS302orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 client.SendPacket(ResCStage.SetField_JMS_302(this, 2, false, null, 0, 0));
                 //client.getPlayer().UpdateStat(true);
             }

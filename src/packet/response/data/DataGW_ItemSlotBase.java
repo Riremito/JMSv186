@@ -97,7 +97,7 @@ public class DataGW_ItemSlotBase {
         }
 
         // 等級
-        return (byte) ((ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) ? (rank + 16) : (rank + 4));
+        return (byte) ((Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) ? (rank + 16) : (rank + 4));
 
     }
 
@@ -150,7 +150,7 @@ public class DataGW_ItemSlotBase {
                 data.Encode2(equip.getSpeed());
                 data.Encode2(equip.getJump());
                 data.EncodeStr(equip.getOwner());
-                if (ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+                if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                     data.Encode4(equip.getFlag());
                 } else {
                     data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
@@ -171,7 +171,7 @@ public class DataGW_ItemSlotBase {
                         data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                     }
                 }
-                if (ServerConfig.KMS127orLater() || ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+                if (ServerConfig.KMS127orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                     data.Encode2(0);
                 }
                 // 潜在能力, 装備強化 (星)
@@ -184,17 +184,17 @@ public class DataGW_ItemSlotBase {
                     data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目?
                     data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ?
                 }
-                if (ServerConfig.JMS308orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+                if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                     data.Encode2(0);
                 }
-                if (Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+                if (Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                     data.Encode2(0);
                 }
-                if (ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+                if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                     data.Encode2(0);
                     data.Encode2(0);
                 }
-                if (ServerConfig.JMS302orLater()) {
+                if (Version.GreaterOrEqual(Region.JMS, 302)) {
                     data.Encode2(0); // v302, Alien Stone
                     data.Encode4(0);
                     data.Encode4(0);
@@ -209,7 +209,7 @@ public class DataGW_ItemSlotBase {
                 }
 
                 // CMS
-                if (ServerConfig.CMS104orLater()) {
+                if (Version.GreaterOrEqual(Region.CMS, 104)) {
                     data.Encode8(0);
                     data.Encode8(0);
                     data.Encode4(0);
@@ -219,7 +219,7 @@ public class DataGW_ItemSlotBase {
                     break;
                 }
 
-                if (ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110)) {
+                if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110)) {
                     data.Encode4(0);
                     data.Encode1(0);
                     data.Encode1(0); // 1 = 赤色アイテム
@@ -250,7 +250,7 @@ public class DataGW_ItemSlotBase {
                     data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                     data.Encode4(0);
                 }
-                if (ServerConfig.JMS308orLater() || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
+                if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
                     data.Encode4(0);
                 }
                 if (Version.GreaterOrEqual(Region.KMS, 197)) {
@@ -283,7 +283,7 @@ public class DataGW_ItemSlotBase {
                     }
                 }
 
-                if (ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110)) {
+                if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110)) {
                     data.Encode4(0);
                     data.Encode2(0);
                     data.Encode2(0);
@@ -568,7 +568,7 @@ public class DataGW_ItemSlotBase {
 
         data.Encode8(-1); // time?
 
-        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode4(0);
         }
 

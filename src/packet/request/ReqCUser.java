@@ -834,7 +834,7 @@ public class ReqCUser {
         int time_stamp = cp.Decode4();
         long flag = 0;
 
-        if (ServerConfig.JMS302orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             flag = cp.Decode8();
         } else {
             flag = cp.Decode4();
@@ -1007,7 +1007,7 @@ public class ReqCUser {
         for (int i = 0; i < count; i++) {
             long stat = 0;
 
-            if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                 stat = cp.Decode8();
             } else {
                 stat = cp.Decode4();
@@ -1119,7 +1119,7 @@ public class ReqCUser {
 
         update_mask[0] = cp.Decode4();
 
-        if (ServerConfig.JMS302orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
             update_mask[1] = cp.Decode4();
         }
 

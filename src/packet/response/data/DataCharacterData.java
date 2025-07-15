@@ -108,7 +108,7 @@ public class DataCharacterData {
         if ((datamask & 65536) > 0) {
             data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
         }
-        if (ServerConfig.JMS308orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 308)) {
             // JMS308
             if ((datamask & 2199023255552L) > 0) {
                 data.Encode4(0);
@@ -167,17 +167,17 @@ public class DataCharacterData {
         if ((datamask & 4294967296L) > 0) {
             data.Encode4(0);
             data.Encode4(0);
-            if (ServerConfig.JMS308orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 308)) {
                 data.Encode4(0);
             }
         }
         if ((datamask & 8589934592L) > 0) {
-            if (ServerConfig.JMS308orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 308)) {
                 data.Encode1(0);
                 data.Encode2(0);
             }
         }
-        if (ServerConfig.JMS308orLater()) {
+        if (Version.GreaterOrEqual(Region.JMS, 308)) {
             // JMS308
             if ((datamask & 17179869184L) > 0) {
                 data.Encode1(0);
@@ -205,7 +205,7 @@ public class DataCharacterData {
         data.Encode4(0);
         data.Encode8(TestHelper.getTime(System.currentTimeMillis()));
         if ((datamask & 70368744177664L) > 0) {
-            if (ServerConfig.JMS308orLater()) {
+            if (Version.GreaterOrEqual(Region.JMS, 308)) {
                 data.Encode4(0);
                 data.Encode4(0);
                 data.Encode4(0);
@@ -292,8 +292,8 @@ public class DataCharacterData {
                 data.Encode2(0);
             }
             // カンナ?
-            if (ServerConfig.KMS127orLater() || ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
-                if (ServerConfig.JMS302orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+            if (ServerConfig.KMS127orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+                if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                     for (Item item : equipped) {
                         if (item.getPosition() <= -1500 && item.getPosition() > -1600) {
                             data.EncodeBuffer(DataGW_ItemSlotBase.EncodeSlot(item));
@@ -304,7 +304,7 @@ public class DataCharacterData {
                 }
                 data.EncodeBuffer(DataGW_ItemSlotBase.EncodeSlotEnd(DataGW_ItemSlotBase.ItemType.Equip));
             }
-            if (ServerConfig.JMS308orLater() || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
+            if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
                 data.EncodeBuffer(DataGW_ItemSlotBase.EncodeSlotEnd(DataGW_ItemSlotBase.ItemType.Equip));
                 data.EncodeBuffer(DataGW_ItemSlotBase.EncodeSlotEnd(DataGW_ItemSlotBase.ItemType.Equip));
             }
@@ -353,7 +353,7 @@ public class DataCharacterData {
             return data.get().getBytes();
         }
         // 不明
-        if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             // func 004FB8B0
             data.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
         }
@@ -382,10 +382,10 @@ public class DataCharacterData {
                 data.Encode4(0);
             }
         }
-        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode1(0);
         }
-        if (ServerConfig.KMS119orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS119orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode4(0);
         }
         if (Version.PostBB()) {
@@ -415,7 +415,7 @@ public class DataCharacterData {
                 }
             }
             // 祝福系統
-            if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+            if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                 // 女王の祝福 max 24
                 data.Encode1(0); // not 0, EncodeStr
                 // ???
@@ -438,7 +438,7 @@ public class DataCharacterData {
         }
         if ((datamask & 33554432) > 0) {
             // EMS89 0x8000000 || 0x08
-            if (ServerConfig.KMS138orLater() && !Version.Equal(Region.KMST, 391) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+            if (ServerConfig.KMS138orLater() && !Version.Equal(Region.KMST, 391) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                 data.Encode4(0);
             }
         }
@@ -446,7 +446,7 @@ public class DataCharacterData {
         if ((datamask & 4) > 0) {
             data.EncodeBuffer(InventoryInfo(chr, datamask));
         }
-        if (ServerConfig.KMS127orLater() || Version.Equal(Region.JMST, 110) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS127orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             if ((datamask & 16777216) > 0) {
                 data.Encode4(0);
             }
@@ -456,7 +456,7 @@ public class DataCharacterData {
                 data.Encode4(0);
             }
         }
-        if (Version.GreaterOrEqual(Region.KMS, 197) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             if ((datamask & 1073741824L) > 0) {
                 data.Encode4(0); // encode8, encode8
             }
@@ -465,7 +465,7 @@ public class DataCharacterData {
                 data.Encode4(0);
             }
         }
-        if (ServerConfig.KMS119orLater() || Version.Equal(Region.JMST, 110) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS119orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             if ((datamask & 8388608) > 0) {
                 data.Encode1(0);
             }
@@ -691,7 +691,7 @@ public class DataCharacterData {
                     if ((datamask & 4194304) > 0) {
                         data.Encode2(0); // not 0, Encode2, EncodeBuffer8
                     }
-                    if (ServerConfig.TWMS148orLater()) {
+                    if (Version.GreaterOrEqual(Region.TWMS, 148)) {
                         if ((datamask & 67108864) > 0) {
                             data.Encode2(0);
                         }
