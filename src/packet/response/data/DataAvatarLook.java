@@ -23,6 +23,7 @@ import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
+import config.Version;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import packet.ServerPacket;
@@ -97,7 +98,7 @@ public class DataAvatarLook {
             return data.get().getBytes();
         }
         if (ServerConfig.IsKMS()) {
-            if (ServerConfig.IsPostBB()) {
+            if (Version.PostBB()) {
                 if (ServerConfig.KMS160orLater()) {
                     data.Encode4(0);
                     data.Encode4(0);

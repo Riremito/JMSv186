@@ -21,6 +21,8 @@
 package handling.mina;
 
 import client.MapleClient;
+import config.DisabledConfig;
+import config.Content;
 import config.ServerConfig;
 import handling.MaplePacket;
 import tools.MapleAESOFB;
@@ -52,8 +54,8 @@ public class MaplePacketEncoder implements ProtocolEncoder {
             try {
                 final byte[] header = send_crypto.getPacketHeader(unencrypted.length);
 
-                if (ServerConfig.PacketEncryptionEnabled()) {
-                    if (ServerConfig.CustomEncryptionEnabled()) {
+                if (!DisabledConfig.PacketEncryption.get()) {
+                    if (Content.CustomEncryption.get()) {
                         MapleCustomEncryption.encryptData(unencrypted);
                     }
                     if (ServerConfig.IsKMS() || ServerConfig.IsIMS()) {

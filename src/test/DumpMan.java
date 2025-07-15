@@ -18,7 +18,9 @@
  */
 package test;
 
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import debug.Debug;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -62,7 +64,7 @@ public class DumpMan {
     private static void DumpOpcodes() {
         FileWriter fw;
         try {
-            fw = new FileWriter("properties/packet/" + ServerConfig.GetRegionName() + "_v" + ServerConfig.GetVersion() + "_ServerPacket.properties");
+            fw = new FileWriter("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ServerPacket.properties");
             PrintWriter pw = new PrintWriter(fw);
             for (ServerPacket.Header header : ServerPacket.Header.values()) {
                 int val = (short) header.get();
@@ -74,7 +76,7 @@ public class DumpMan {
             pw.close();
             fw.close();
 
-            fw = new FileWriter("properties/packet/" + ServerConfig.GetRegionName() + "_v" + ServerConfig.GetVersion() + "_ClientPacket.properties");
+            fw = new FileWriter("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ClientPacket.properties");
             pw = new PrintWriter(fw);
             for (ClientPacket.Header header : ClientPacket.Header.values()) {
                 int val = (short) header.Get();

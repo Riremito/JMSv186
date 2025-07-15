@@ -23,7 +23,9 @@ import client.inventory.IItem;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -226,7 +228,7 @@ public class DataCharacterData {
             data.Encode1(chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // 0x40
         }
         // v165-v194 OK
-        if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && ServerConfig.GetVersion() == 73) && !(ServerConfig.IsEMS() && ServerConfig.GetVersion() == 55)) {
+        if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && Version.getVersion() == 73) && !(ServerConfig.IsEMS() && Version.getVersion() == 55)) {
             // 0x100000
             if ((datamask & 1048576) > 0) {
                 data.Encode4(0);
@@ -276,7 +278,7 @@ public class DataCharacterData {
                 data.EncodeBuffer(DataGW_ItemSlotBase.EncodeSlotEnd(DataGW_ItemSlotBase.ItemType.Equip));
             }
             // 装備済み -1100
-            if (ServerConfig.IsPostBB()) {
+            if (Version.PostBB()) {
                 for (Item item : equipped) {
                     if (item.getPosition() <= -1100 && item.getPosition() > -1200) {
                         data.EncodeBuffer(DataGW_ItemSlotBase.EncodeSlot(item));
@@ -386,7 +388,7 @@ public class DataCharacterData {
         if (ServerConfig.KMS119orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode4(0);
         }
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             data.Encode1(0); // not 0, Encode1, Encode4(size), EncodeBuffer8, Encode4(size), EncodeBuffer8
         }
         if (ServerConfig.IsTHMS() || ServerConfig.IsVMS()) {
@@ -404,7 +406,7 @@ public class DataCharacterData {
                 data.Encode1(0);
             }
             // 精霊の祝福 v165, v186
-            if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && ServerConfig.GetVersion() == 73)) {
+            if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && Version.getVersion() == 73)) {
                 if (chr.getBlessOfFairyOrigin() != null) {
                     data.Encode1(1);
                     data.EncodeStr(chr.getBlessOfFairyOrigin());
@@ -507,11 +509,11 @@ public class DataCharacterData {
         if ((datamask & 4096) > 0) {
             data.EncodeBuffer(Structure.addRocksInfo(chr));
         }
-        switch (ServerConfig.GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS:
             case KMST:
                 {
-                    if (ServerConfig.IsPreBB()) {
+                    if (Version.PreBB()) {
                         if ((datamask & 131072) > 0) {
                             data.Encode4(chr.getMonsterBookCover());
                         }
@@ -522,12 +524,12 @@ public class DataCharacterData {
                     if ((datamask & 262144) > 0) {
                         data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                     }
-                    if (ServerConfig.IsPreBB()) {
+                    if (Version.PreBB()) {
                         if ((datamask & 524288) > 0) {
                             data.Encode2(0);
                         }
                     }
-                    if (ServerConfig.IsPostBB()) {
+                    if (Version.PostBB()) {
                         if (ServerConfig.KMS197orLater()) {
                             if ((datamask & 35184372088832L) > 0) {
                                 data.Encode2(0);
@@ -653,7 +655,7 @@ public class DataCharacterData {
                 }
             case TWMS:
                 {
-                    if (ServerConfig.IsPreBB()) {
+                    if (Version.PreBB()) {
                         if (ServerConfig.TWMS94orLater()) {
                             if ((datamask & 131072) > 0) {
                                 data.Encode4(chr.getMonsterBookCover());
@@ -743,7 +745,7 @@ public class DataCharacterData {
                 }
             case CMS:
                 {
-                    if (ServerConfig.IsPreBB()) {
+                    if (Version.PreBB()) {
                         if ((datamask & 131072) > 0) {
                             data.Encode4(chr.getMonsterBookCover());
                         }
@@ -907,7 +909,7 @@ public class DataCharacterData {
                     if ((datamask & 262144) > 0) {
                         data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                     }
-                    if (ServerConfig.IsPostBB()) {
+                    if (Version.PostBB()) {
                         if ((datamask & 16777216) > 0) {
                             data.Encode2(0); // unknown
                         }
@@ -1005,7 +1007,7 @@ public class DataCharacterData {
             case THMS:
                 {
                     // THMS96
-                    if (ServerConfig.IsPostBB()) {
+                    if (Version.PostBB()) {
                         if ((datamask & 262144) > 0) {
                             data.Encode2(0);
                         }
@@ -1095,7 +1097,7 @@ public class DataCharacterData {
                         if ((datamask & 262144) > 0) {
                             data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                         }
-                        if (ServerConfig.IsPreBB()) {
+                        if (Version.PreBB()) {
                             if ((datamask & 524288) > 0) {
                                 // 0x80000 JMS v165, v186, not in v188
                                 data.Encode2(0); // not 0 -> Encode4, Encode2
@@ -1109,7 +1111,7 @@ public class DataCharacterData {
                         }
                     }
                     // v188-v194
-                    if (ServerConfig.IsPostBB()) {
+                    if (Version.PostBB()) {
                         // 0x200000
                         if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
                             data.EncodeBuffer(DataGW_WildHunterInfo.Encode());

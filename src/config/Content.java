@@ -25,17 +25,14 @@ import debug.Debug;
  * @author Riremito
  */
 public enum Content {
-    Packet_Encryption_Custom(false),
     Packet_HeaderSize(2),
-    Packet_Character_NameSize(13),
-    Packet_Pet_NameSize(13),
     Job_Pirate, // JMS147
     Job_KnightsOfCygnus, // JMS165
     Job_Aran, // JMS173
     Job_Evan, // JMS183
     Job_DualBlade, // JMS183
     Job_Resistance, // JMS187
-    Update_BigBang, // JMS187
+    BIGBANG(false), // JMS187
     Update_Renaissance, // JMS200
     Update_Sengoku, // JMS302 (JMS300)
     Update_Tempest, // JMS308 (JMS307)
@@ -51,6 +48,11 @@ public enum Content {
     PacketData_Equip_Anvil,
     // bad version
     PacketData_Pre_Potential(false), // JMS184-185, KMS95
+    // settings for specific versions
+    CharacterNameLength(13),
+    OldIV(false),
+    CustomEncryption(false),
+    PetNameLength(13),
     UNKNOWN;
 
     int value;
@@ -83,7 +85,7 @@ public enum Content {
         this.value = val;
     }
 
-    public static void check() {
+    public static void showContentList() {
         Debug.InfoLog("----- Content List -----");
         for (final Content content : Content.values()) {
             Debug.InfoLog(content.toString() + " : " + content.get());
@@ -112,26 +114,12 @@ public enum Content {
             Update_Renaissance.set(true);
             bOK = true;
         }
-        // VMS, BMS are closed before Bigbang, IMS are lanched after Bigbang.
-        if (bOK
-                || Version.GreaterOrEqual(Region.KMS, 101)
-                || Version.GreaterOrEqual(Region.JMS, 187)
-                || Version.GreaterOrEqual(Region.CMS, 87)
-                || Version.GreaterOrEqual(Region.TWMS, 123)
-                || Version.GreaterOrEqual(Region.MSEA, 105)
-                || Version.GreaterOrEqual(Region.THMS, 90)
-                || Version.GreaterOrEqual(Region.GMS, 93)
-                || Version.GreaterOrEqual(Region.EMS, 73)
-                || Version.GreaterOrEqual(Region.IMS, 1)) {
-            Update_BigBang.set(true);
-            bOK = true;
-        }
         // JMS187
-        if (bOK
-                || Version.GreaterOrEqual(Region.JMS, 187)) {
-            Job_Resistance.set(true); // Wild Hunter
-            bOK = true;
-        }
+        bOK = checkBigBang();
+        BIGBANG.set(bOK);
+        OldIV.set(checkOldIV());
+        CustomEncryption.set(checkCustomEncryption());
+        CharacterNameLength.setInt(checkCharacterNameLength());
         // Pre-BB
         // JMS183 (JMS180)
         if (bOK
@@ -163,4 +151,93 @@ public enum Content {
         }
 
     }
+
+    // BIGBANG
+    private static boolean checkBigBang() {
+        if (Version.GreaterOrEqual(Region.KMS, 101)) {
+            return true;
+        }
+        if (Version.GreaterOrEqual(Region.JMS, 187)) {
+            return true;
+        }
+        if (Version.GreaterOrEqual(Region.CMS, 87)) {
+            return true;
+        }
+        if (Version.GreaterOrEqual(Region.TWMS, 123)) {
+            return true;
+        }
+        if (Version.GreaterOrEqual(Region.THMS, 90)) {
+            return true;
+        }
+        if (Version.GreaterOrEqual(Region.MSEA, 105)) {
+            return true;
+        }
+        if (Version.GreaterOrEqual(Region.GMS, 93)) {
+            return true;
+        }
+        if (Version.GreaterOrEqual(Region.EMS, 73)) {
+            return true;
+        }
+        if (Version.RegionCheck(Region.IMS)) {
+            return true;
+        }
+        // Test Server
+        if (Version.GreaterOrEqual(Region.KMST, 317)) {
+            return true;
+        }
+        if (Version.GreaterOrEqual(Region.JMST, 110)) {
+            return true;
+        }
+        // no BB
+        if (Version.RegionCheck(Region.BMS)) {
+            return false;
+        }
+        if (Version.RegionCheck(Region.VMS)) {
+            return false;
+        }
+        return false;
+    }
+
+    private static int checkCharacterNameLength() {
+        if (Version.LessOrEqual(Region.TWMS, 94)) {
+            return 15;
+        }
+        if (Version.RegionCheck(Region.VMS)) {
+            return 16;
+        }
+        return 13;
+    }
+
+    private static boolean checkOldIV() {
+        if (Version.LessOrEqual(Region.JMS, 141)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean checkCustomEncryption() {
+        if (Version.LessOrEqual(Region.CMS, 85)) { // not checked
+            return true;
+        }
+        if (Version.RegionCheck(Region.THMS)) {
+            return true;
+        }
+        if (Version.RegionCheck(Region.MSEA)) {
+            return true;
+        }
+        if (Version.RegionCheck(Region.VMS)) {
+            return true;
+        }
+        if (Version.RegionCheck(Region.GMS)) {
+            return true;
+        }
+        if (Version.RegionCheck(Region.EMS)) {
+            return true;
+        }
+        if (Version.RegionCheck(Region.BMS)) {
+            return true;
+        }
+        return false;
+    }
+
 }

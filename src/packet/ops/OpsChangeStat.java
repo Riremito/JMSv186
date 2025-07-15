@@ -19,6 +19,7 @@
 package packet.ops;
 
 import config.ServerConfig;
+import config.Version;
 
 /**
  *
@@ -78,7 +79,7 @@ public enum OpsChangeStat {
     }
 
     public static void init() {
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             CS_PETSN2.set(0x00100000);
             CS_PETSN3.set(0x00200000);
             CS_TEMPEXP.set(0x00400000);

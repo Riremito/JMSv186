@@ -21,6 +21,7 @@ package packet.response;
 import client.MapleCharacter;
 import client.MapleClient;
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import constants.ServerConstants;
 import handling.MaplePacket;
@@ -61,7 +62,7 @@ public class ResCStage {
         }
 
         if (((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsTHMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ServerConfig.IsEMS() || ServerConfig.IsGMS() || ServerConfig.IsIMS()) && ServerConfig.JMS180orLater())
-                || (ServerConfig.IsKMS() && ServerConfig.IsPostBB())) {
+                || (ServerConfig.IsKMS() && Version.PostBB())) {
             sp.Encode4(0); // m_dwOldDriverID
         }
 
@@ -101,7 +102,7 @@ public class ResCStage {
             }
             sp.Encode4(to.getId()); // characterStat._ZtlSecureTear_dwPosMap_CS
             sp.Encode1(spawnPoint); // characterStat.nPortal
-            if (ServerConfig.IsPreBB()) {
+            if (Version.PreBB()) {
                 sp.Encode2(chr.getStat().getHp());
             } else {
                 sp.Encode4(chr.getStat().getHp());
@@ -239,7 +240,7 @@ public class ResCStage {
                     sp.Encode4(0);
                 }
 
-                if (ServerConfig.IsPostBB() || ServerConfig.TWMS121orLater()) {
+                if (Version.PostBB() || ServerConfig.TWMS121orLater()) {
                     if (ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsEMS()) {
                         sp.Encode4(0); // NotSaleCount
                     }

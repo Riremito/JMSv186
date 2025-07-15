@@ -21,6 +21,7 @@ package packet.response;
 import client.MapleCharacter;
 import client.SkillMacro;
 import config.ServerConfig;
+import config.Version;
 import handling.MaplePacket;
 import java.util.Map;
 import packet.ServerPacket;
@@ -78,7 +79,7 @@ public class ResCFuncKeyMappedMan {
                 KEY_MAP_SIZE = 89; // 445
             }
 
-            if (ServerConfig.IsPostBB()) {
+            if (Version.PostBB()) {
                 KEY_MAP_SIZE = 126; // 630
             }
 

@@ -19,6 +19,7 @@
 package packet.ops;
 
 import config.ServerConfig;
+import config.Version;
 
 /**
  *
@@ -73,7 +74,7 @@ public enum OpsNewCharacter {
     }
 
     public static void init() {
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             // JMS v188, 左上から右下に向かって連番 (デュアルブレイドは除外)
             Resistance.set(0);
             Adventurers.set(1);

@@ -24,7 +24,9 @@ import client.inventory.IEquip;
 import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import debug.Debug;
 import java.util.LinkedHashMap;
@@ -94,7 +96,7 @@ public class TestHelper {
         final IItem cWeapon = equip.getItem((byte) -111);
         mplew.writeInt(cWeapon != null ? cWeapon.getItemId() : 0);
         mplew.writeInt(0);
-        if (ServerConfig.version >= 164) {
+        if (Version.GreaterOrEqual(Region.JMS, 164)) {
             mplew.writeLong(0);
         }
     }

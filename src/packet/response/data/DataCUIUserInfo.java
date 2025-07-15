@@ -45,7 +45,7 @@ public class DataCUIUserInfo {
             if (pet == null) {
                 break;
             }
-            if (ServerConfig.IsPostBB()) {
+            if (Version.PostBB()) {
                 data.Encode4(i);
             }
             data.Encode4(pet.getPetItemId()); // dwTemplateID

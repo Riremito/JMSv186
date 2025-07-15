@@ -282,10 +282,10 @@ public class ResCUserRemote {
                 secondmask |= statup.getValue();
             }
         }
-        if (194 <= ServerConfig.version) {
+        if (Version.GreaterOrEqual(Region.JMS, 194)) {
             mplew.writeZeroBytes(4);
         }
-        if (ServerConfig.version > 131) {
+        if (Version.GreaterOrEqual(Region.JMS, 164)) {
             mplew.writeLong(firstmask);
         }
         mplew.writeLong(secondmask);
@@ -301,10 +301,10 @@ public class ResCUserRemote {
                 secondmask |= statup.getLeft().getValue();
             }
         }
-        if (194 <= ServerConfig.version) {
+        if (Version.GreaterOrEqual(Region.JMS, 194)) {
             mplew.writeZeroBytes(4);
         }
-        if (ServerConfig.version > 131) {
+        if (Version.GreaterOrEqual(Region.JMS, 164)) {
             mplew.writeLong(firstmask);
         }
         mplew.writeLong(secondmask);
@@ -352,10 +352,10 @@ public class ResCUserRemote {
                 secondmask |= statup.getLeft().getValue();
             }
         }
-        if (194 <= ServerConfig.version) {
+        if (Version.GreaterOrEqual(Region.JMS, 194)) {
             mplew.writeZeroBytes(4);
         }
-        if (ServerConfig.version > 131) {
+        if (Version.GreaterOrEqual(Region.JMS, 164)) {
             mplew.writeLong(firstmask);
         }
         mplew.writeLong(secondmask);

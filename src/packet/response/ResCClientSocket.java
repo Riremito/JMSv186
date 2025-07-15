@@ -18,7 +18,9 @@
  */
 package packet.response;
 
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import debug.Debug;
 import handling.MaplePacket;
 import java.net.InetAddress;
@@ -51,36 +53,36 @@ public class ResCClientSocket {
     public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
         ServerPacket sp = new ServerPacket((short) 0); // dummy
 
-        switch (ServerConfig.GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS:
             case KMST: {
                 long xor_version = 0;
-                xor_version ^= ServerConfig.GetVersion();
+                xor_version ^= Version.getVersion();
                 xor_version ^= 1 << 15;
-                xor_version ^= ServerConfig.GetSubVersion() << 16;
+                xor_version ^= Version.getSubVersion() << 16;
                 sp.Encode2(291); // magic number
                 sp.EncodeStr(String.valueOf(xor_version));
                 break;
             }
             case VMS: {
-                sp.Encode2(ServerConfig.GetVersion());
+                sp.Encode2(Version.getVersion());
                 break;
             }
             case IMS: {
-                sp.Encode2(ServerConfig.GetVersion());
+                sp.Encode2(Version.getVersion());
                 sp.Encode1(0);
-                sp.Encode1(ServerConfig.GetSubVersion());
+                sp.Encode1(Version.getSubVersion());
                 break;
             }
             default: {
-                sp.Encode2(ServerConfig.GetVersion());
-                sp.EncodeStr(String.valueOf(ServerConfig.GetSubVersion()));
+                sp.Encode2(Version.getVersion());
+                sp.EncodeStr(String.valueOf(Version.getSubVersion()));
                 break;
             }
         }
         sp.EncodeBuffer(recvIv);
         sp.EncodeBuffer(sendIv);
-        sp.Encode1(ServerConfig.GetRegionNumber()); // JMS = 3
+        sp.Encode1(Region.getRegionNumber()); // JMS = 3
 
         /*
             // x64

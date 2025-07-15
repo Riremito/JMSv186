@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package client;
 
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import java.util.ArrayList;
 import java.util.List;
@@ -197,7 +198,7 @@ public class Skill implements ISkill {
         }
         ret.chargeskill = data.getChildByPath("keydown") != null;
 
-        if (ServerConfig.IsPreBB()) {
+        if (Version.PreBB()) {
             for (final MapleData level : data.getChildByPath("level")) {
                 ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
             }

@@ -531,7 +531,7 @@ public class ReqCUser {
             // v95 4 bytes SKILLLEVELDATA::GetCrc
         }
 
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             cp.Decode1();
         }
 
@@ -558,7 +558,7 @@ public class ReqCUser {
             attack.AttackActionKey = cp.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15)
         }
 
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             cp.Decode4();
         }
 
@@ -621,7 +621,7 @@ public class ReqCUser {
             }
 
             if (ServerConfig.JMS164orLater()) {
-                if (ServerConfig.IsTHMS() && ServerConfig.GetVersion() == 87) {
+                if (ServerConfig.IsTHMS() && Version.getVersion() == 87) {
                     // No CMob::GetCrc(v366->pMob) in Version 87
                 } else {
                     cp.Decode4(); // CMob::GetCrc(v366->pMob)

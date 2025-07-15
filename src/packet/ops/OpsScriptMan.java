@@ -19,6 +19,7 @@
 package packet.ops;
 
 import config.ServerConfig;
+import config.Version;
 
 /**
  *
@@ -79,7 +80,7 @@ public enum OpsScriptMan {
             SM_ASKSLIDEMENU.set(16);
             return;
         }
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             return;
         }
         if (ServerConfig.KMS84orEarlier()) {

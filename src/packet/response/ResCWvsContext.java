@@ -193,7 +193,7 @@ public class ResCWvsContext {
             sp.Encode4(buff_mask[5]);
         }
         // JMS v187+
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             if (!ServerConfig.IsIMS() && !ServerConfig.IsTHMS()) {
                 sp.Encode4(buff_mask[4]);
             }
@@ -230,7 +230,7 @@ public class ResCWvsContext {
             sp.Encode1(0); // EMS v55
         }
         sp.EncodeBuffer(DataGW_CharacterStat.EncodeChangeStat(chr, statmask));
-        if (ServerConfig.IsPreBB()) {
+        if (Version.PreBB()) {
             if (ServerConfig.IsJMS()) {
                 // Pet
                 if ((statmask & OpsChangeStat.CS_PETSN.get()) > 0) {
@@ -333,7 +333,7 @@ public class ResCWvsContext {
                 sp.Encode4(0);
                 sp.Encode1(ma.Inc_EXP_MobEventBonusPercentage); // nMobEventBonusPercentage
                 sp.Encode1(0);
-                if (ServerConfig.IsTHMS() && ServerConfig.GetVersion() == 87) {
+                if (ServerConfig.IsTHMS() && Version.getVersion() == 87) {
                     sp.Encode4(ma.Inc_EXP_WeddingBonus); // Wedding Bonus EXP(+%d)
                     sp.Encode4(0); // Party Ring Bonus EXP(+%d)
                     sp.Encode4(0); // EXP Bonus Internet Cafe(+ %d)
@@ -498,7 +498,7 @@ public class ResCWvsContext {
             sp.Encode4(0);
             sp.Encode4(0);
         }
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             sp.Encode1(0);
         }
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
@@ -563,7 +563,7 @@ public class ResCWvsContext {
                 }
             }
             // JMS v180-v186, v187以降消滅
-            if (ServerConfig.IsPreBB() && ServerConfig.IsJMS()) {
+            if (Version.PreBB() && ServerConfig.IsJMS()) {
                 // Chair List
                 sp.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
                 // CInPacket::DecodeBuffer(v4, iPacket, 4 * chairs);
@@ -730,7 +730,7 @@ public class ResCWvsContext {
     public static MaplePacket cancelDebuff(long mask, boolean first) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_TemporaryStatReset.get());
-        if (194 <= ServerConfig.version) {
+        if (Version.GreaterOrEqual(Region.JMS, 194)) {
             mplew.writeZeroBytes(4);
         }
         mplew.writeLong(first ? mask : 0);
@@ -742,7 +742,7 @@ public class ResCWvsContext {
     public static MaplePacket cancelHoming() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_TemporaryStatReset.get());
-        if (194 <= ServerConfig.version) {
+        if (Version.GreaterOrEqual(Region.JMS, 194)) {
             mplew.writeZeroBytes(4);
         }
         mplew.writeLong(MapleBuffStat.HOMING_BEACON.getValue());
@@ -840,7 +840,7 @@ public class ResCWvsContext {
     public static MaplePacket giveHoming(int skillid, int mobid) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_TemporaryStatSet.get());
-        if (194 <= ServerConfig.version) {
+        if (Version.GreaterOrEqual(Region.JMS, 194)) {
             mplew.writeZeroBytes(4);
         }
         mplew.writeLong(MapleBuffStat.HOMING_BEACON.getValue());

@@ -56,6 +56,7 @@ import java.io.Serializable;
 
 import client.anticheat.CheatTracker;
 import config.ServerConfig;
+import config.Version;
 import constants.ServerConstants;
 import data.client.DC_Exp;
 import database.DatabaseConnection;
@@ -1016,7 +1017,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             int[] array2 = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 4, 6, 6, 6, 6, 6, 6, 6, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4};
             int[] array3 = {10, 12, 13, 18, 23, 28, 8, 5, 0, 4, 1, 9, 2, 17, 3, 20, 50, 52, 53, 7, 100, 101, 102, 103, 104, 105, 106, 19, 14, 24, 51, 15, 16, 22, 27, 25, 11, 26, 16, 54, 21, 6};
 
-            if (ServerConfig.IsTHMS() && ServerConfig.GetVersion() == 87) {
+            if (ServerConfig.IsTHMS() && Version.getVersion() == 87) {
                 array1 = new int[]{2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 23, 24, 25, 26, 27, 29, 31, 33, 34, 35, 37, 38, 39, 40, 41, 43, 44, 45, 46, 50, 56, 57, 59, 60, 61, 62, 63, 64, 65};
                 array2 = new int[]{4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 4, 4, 5, 5, 6, 6, 6, 6, 6, 6, 6};
                 array3 = new int[]{10, 12, 13, 18, 22, 27, 8, 5, 0, 4, 26, 1, 23, 19, 14, 15, 52, 2, 24, 17, 11, 3, 20, 25, 16, 21, 9, 50, 51, 6, 7, 53, 54, 100, 101, 102, 103, 104, 105, 106};

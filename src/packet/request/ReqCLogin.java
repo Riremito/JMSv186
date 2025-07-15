@@ -25,6 +25,7 @@ import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
+import config.Version;
 import debug.Debug;
 import debug.DebugUser;
 import handling.channel.ChannelServer;
@@ -63,7 +64,7 @@ public class ReqCLogin {
                 return true;
             }
             case CP_Check2ndPassword: {
-                if (ServerConfig.IsJMS() && ServerConfig.IsPostBB()) {
+                if (ServerConfig.IsJMS() && Version.PostBB()) {
                     ServerListRequest(c);
                 }
                 return true;
@@ -271,7 +272,7 @@ public class ReqCLogin {
         if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
             int unk = cp.Decode4();
         }
-        if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && ServerConfig.GetVersion() == 73)) {
+        if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && Version.getVersion() == 73)) {
             job_type = cp.Decode4();
 
             // バージョンによって異なる (左から順番)
@@ -492,7 +493,7 @@ public class ReqCLogin {
     public static final void DeleteChar(ClientPacket cp, final MapleClient c) {
         byte state = 0;
         // BB後
-        if (ServerConfig.IsPostBB() && !ServerConfig.IsKMS()) {
+        if (Version.PostBB() && !ServerConfig.IsKMS()) {
             String MapleID = cp.DecodeStr();
             if (!MapleID.equals(c.getAccountName())) {
                 // state = 0以外にすると切断されます

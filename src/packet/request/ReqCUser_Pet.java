@@ -83,7 +83,7 @@ public class ReqCUser_Pet {
                 int timestamp = cp.Decode4();
                 short item_slot = cp.Decode2();
                 byte flag = 0;
-                if (ServerConfig.IsPostBB() || Version.LessOrEqual(Region.JMS, 131)) {
+                if (Version.PostBB() || Version.LessOrEqual(Region.JMS, 131)) {
                     flag = 1;
                 } else {
                     flag = cp.Decode1();

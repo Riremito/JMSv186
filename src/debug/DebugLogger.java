@@ -18,7 +18,9 @@
  */
 package debug;
 
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -45,7 +47,7 @@ public class DebugLogger {
             }
 
             fw = new FileWriter(LOG_DIR + LOG_FILE_NAME);
-            fw.write((getDate() + " Server Reboot - " + ServerConfig.GetRegion() + " " + ServerConfig.GetVersion() + "." + ServerConfig.GetSubVersion() + "\r\n"));
+            fw.write((getDate() + " Server Reboot - " + Region.getRegion() + " " + Version.getVersion() + "." + Version.getSubVersion() + "\r\n"));
             fw.flush();
         } catch (FileNotFoundException ex) {
             Debug.ExceptionLog("DebugLogger - open");

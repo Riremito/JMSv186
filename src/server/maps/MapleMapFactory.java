@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.maps;
 
 import config.ServerConfig;
+import config.Version;
 import debug.Debug;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -180,7 +181,7 @@ public class MapleMapFactory {
                 }
 
                 // 設定ファイルに定義されたNPCを設置
-                if ((ServerConfig.IsJMS() && ServerConfig.GetVersion() == 186)) {
+                if ((ServerConfig.IsJMS() && Version.getVersion() == 186)) {
                     Path file = Paths.get(ServerConfig.script_path + "map/" + mapid + ".txt");
                     try {
                         if (!Files.notExists(file)) {

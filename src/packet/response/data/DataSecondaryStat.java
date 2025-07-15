@@ -20,6 +20,7 @@ package packet.response.data;
 
 import client.MapleCharacter;
 import config.ServerConfig;
+import config.Version;
 import java.util.ArrayList;
 import packet.ServerPacket;
 import packet.ops.OpsSecondaryStat;
@@ -62,7 +63,7 @@ public class DataSecondaryStat {
             data.Encode4(buff_mask[5]);
         }
         // JMS v187+
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             if (!ServerConfig.IsIMS() && !ServerConfig.IsTHMS()) {
                 data.Encode4(buff_mask[4]);
             }
@@ -88,7 +89,7 @@ public class DataSecondaryStat {
                             effect = pss.getRight();
                         }
                     }
-                    if (ServerConfig.IsTHMS() && ServerConfig.IsPostBB()) {
+                    if (ServerConfig.IsTHMS() && Version.PostBB()) {
                         data.Encode4(effect);
                     } else {
                         data.Encode2(effect);

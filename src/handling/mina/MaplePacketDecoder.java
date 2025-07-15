@@ -21,6 +21,8 @@
 package handling.mina;
 
 import client.MapleClient;
+import config.DisabledConfig;
+import config.Content;
 import config.ServerConfig;
 import debug.Debug;
 import tools.MapleAESOFB;
@@ -68,13 +70,13 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
             in.get(decryptedPacket, 0, decoderState.packetlength);
             decoderState.packetlength = -1;
 
-            if (ServerConfig.PacketEncryptionEnabled()) {
+            if (!DisabledConfig.PacketEncryption.get()) {
                 if (ServerConfig.IsKMS() || ServerConfig.IsIMS()) {
                     client.getReceiveCrypto().kms_decrypt(decryptedPacket);
                 } else {
                     client.getReceiveCrypto().crypt(decryptedPacket);
                 }
-                if (ServerConfig.CustomEncryptionEnabled()) {
+                if (Content.CustomEncryption.get()) {
                     MapleCustomEncryption.decryptData(decryptedPacket);
                 }
             }

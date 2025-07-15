@@ -80,7 +80,7 @@ public class ParseCMovePath {
                 if (Version.GreaterOrEqual(Region.JMS, 302)) {
                     return (1 + 54);
                 }
-                if (ServerConfig.IsPostBB()) {
+                if (Version.PostBB()) {
                     return (1 + 24); // JMS187+
                 }
                 if (Version.GreaterOrEqual(Region.JMS, 180)) {

@@ -2,7 +2,9 @@ package server;
 
 import config.Content;
 import config.DebugConfig;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import data.client.DC_Exp;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
@@ -34,15 +36,13 @@ public class Start {
             server_version = Integer.parseInt(args[1]);
             server_version_sub = Integer.parseInt(args[2]);
         }
-        ServerConfig.SetVersion(server_version, server_version_sub);
-        ServerConfig.SetRegion(server_region);
+
+        Region.setRegion(server_region);
+        Version.setVersion(server_version, server_version_sub);
         // test
         DebugLogger.init();
         Content.init();
-        Content.check();
-
-        // バージョンによるコンテンツの有無を設定
-        ServerConfig.SetContentFlag();
+        Content.showContentList();
 
         // 設定の読み込み
         ServerConfig.SetDataPath();
@@ -52,7 +52,7 @@ public class Start {
         // 管理画面
         ToolMan.Open();
 
-        Debug.InfoLog(ServerConfig.GetRegionName() + " v" + ServerConfig.GetVersion() + "." + ServerConfig.GetSubVersion());
+        Debug.InfoLog(Region.GetRegionName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
 
         // 設定更新
         DC_Exp.init();

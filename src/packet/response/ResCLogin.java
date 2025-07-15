@@ -20,7 +20,9 @@ package packet.response;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import handling.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.login.LoginServer;
@@ -208,7 +210,7 @@ public class ResCLogin {
         sp.Encode1(result.Get()); // result
 
         // EMS v55-v70
-        if (ServerConfig.IsGMS() || (ServerConfig.IsEMS() && ServerConfig.IsPreBB())) {
+        if (ServerConfig.IsGMS() || (ServerConfig.IsEMS() && Version.PreBB())) {
             sp.Encode1(0);
             sp.Encode4(0); // unused
         }
@@ -221,7 +223,7 @@ public class ResCLogin {
         switch (result) {
             case SUCCESS: {
                 {
-                    switch (ServerConfig.GetRegion()) {
+                    switch (Region.getRegion()) {
                         case KMS:
                         case KMST: {
                             sp.Encode4(client.getAccID()); // m_dwAccountId
@@ -304,7 +306,7 @@ public class ResCLogin {
                                 sp.Encode1(0);
                             }
                             // 2次パスワード
-                            if (ServerConfig.IsPostBB()) {
+                            if (Version.PostBB()) {
                                 // -1, 無視
                                 // 0, 初期化
                                 // 1, 登録済み
@@ -329,7 +331,7 @@ public class ResCLogin {
                             sp.Encode4(0);
                             sp.Encode1(0);
                             sp.Encode1(0);
-                            if (ServerConfig.IsPreBB()) {
+                            if (Version.PreBB()) {
                                 sp.Encode1(0);
                             }
                             sp.Encode8(0); // buffer
@@ -395,7 +397,7 @@ public class ResCLogin {
                             break;
                         }
                         case GMS: {
-                            if (ServerConfig.IsPreBB()) {
+                            if (Version.PreBB()) {
                                 sp.Encode4(client.getAccID()); // m_dwAccountId
                                 sp.Encode1(0);
                                 sp.Encode1(client.getGender()); // m_nGender
@@ -438,7 +440,7 @@ public class ResCLogin {
                         case EMS: {
                             sp.Encode4(client.getAccID()); // m_dwAccountId
                             // EMS v55-v70
-                            if (ServerConfig.IsPreBB()) {
+                            if (Version.PreBB()) {
                                 sp.Encode1(0);
                             }
                             sp.Encode1(client.getGender()); // m_nGender
@@ -450,7 +452,7 @@ public class ResCLogin {
                             sp.Encode1(0); // m_nPurchaseExp
                             sp.Encode1(0); // m_nChatBlockReason
                             sp.Encode8(0); // m_dtChatUnblockDate
-                            if (ServerConfig.IsPreBB()) {
+                            if (Version.PreBB()) {
                                 sp.Encode8(0); // m_dtRegisterDate
                                 // v70+
                                 sp.Encode1(1);
@@ -802,12 +804,12 @@ public class ResCLogin {
         }
 
         // EMS v55
-        if ((ServerConfig.IsEMS() && ServerConfig.GetVersion() <= 55)
-                || (ServerConfig.IsGMS() && ServerConfig.GetVersion() <= 73)) {
+        if ((ServerConfig.IsEMS() && Version.getVersion() <= 55)
+                || (ServerConfig.IsGMS() && Version.getVersion() <= 73)) {
             sp.Encode4(charslots); // m_nSlotCount
             return sp.get();
         }
-        if (ServerConfig.IsEMS() && ServerConfig.GetVersion() <= 70) {
+        if (ServerConfig.IsEMS() && Version.getVersion() <= 70) {
             sp.Encode4(charslots); // m_nSlotCount
             sp.Encode4(0);
             sp.Encode8(0);
@@ -818,7 +820,7 @@ public class ResCLogin {
             sp.Encode1(2);
             sp.Encode1(0);
             sp.Encode4(charslots); // m_nSlotCount
-            if (ServerConfig.IsPostBB()) {
+            if (Version.PostBB()) {
                 sp.Encode4(0); // m_nBuyCharCount
             }
             if (ServerConfig.IsEMS()) {
@@ -828,7 +830,7 @@ public class ResCLogin {
         }
         // BIGBANG
         if (ServerConfig.IsJMS()
-                && ServerConfig.GetVersion() == 187) {
+                && Version.getVersion() == 187) {
             sp.Encode1(2); // 2次パス無視
             sp.Encode1(0);
             sp.Encode4(charslots);
@@ -841,7 +843,7 @@ public class ResCLogin {
             return sp.get();
         }
         // 2次パスワードの利用状態
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             sp.Encode1(0);
         } else {
             sp.Encode2(2);
@@ -855,7 +857,7 @@ public class ResCLogin {
         }
 
         if (ServerConfig.IsJMS()
-                && ServerConfig.GetVersion() <= 176) {
+                && Version.getVersion() <= 176) {
             sp.Encode4(charslots);
         } else {
             sp.Encode8(charslots);
@@ -904,7 +906,7 @@ public class ResCLogin {
 
     public static byte[] CharList_CMS(MapleClient c) {
         ServerPacket data = new ServerPacket();
-        if (ServerConfig.IsPreBB()) {
+        if (Version.PreBB()) {
             data.Encode4(1000000);
         }
         List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
@@ -949,7 +951,7 @@ public class ResCLogin {
     public static final MaplePacket SetMapLogin() {
         // JMS v186.1には3つのログイン画面が存在するのでランダムに割り振ってみる
         String[] LoginScreen = {"MapLogin", "MapLogin1", "MapLogin2"};
-        if (!(ServerConfig.IsJMS() && ServerConfig.GetVersion() == 186)) {
+        if (!(ServerConfig.IsJMS() && Version.getVersion() == 186)) {
             return SetMapLogin(LoginScreen[0]);
         }
         return SetMapLogin(LoginScreen[(new Random().nextInt(3))]);
@@ -960,7 +962,7 @@ public class ResCLogin {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_SetMapLogin);
         // ログイン画面の名称
         sp.EncodeStr(LoginScreen);
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             sp.Encode4(0);
         }
         if (ServerConfig.TWMS148orLater()) {

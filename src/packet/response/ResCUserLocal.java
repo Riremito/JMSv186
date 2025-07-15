@@ -20,6 +20,7 @@ package packet.response;
 
 import client.MapleCharacter;
 import config.ServerConfig;
+import config.Version;
 import constants.ServerConstants;
 import handling.MaplePacket;
 import java.awt.Point;
@@ -410,7 +411,7 @@ public class ResCUserLocal {
 
         sp.Encode4(skill_id);
 
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             sp.Encode4(cool_time);
         } else {
             sp.Encode2(cool_time);

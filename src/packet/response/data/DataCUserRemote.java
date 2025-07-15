@@ -24,6 +24,7 @@ import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import handling.world.World;
 import handling.world.guild.MapleGuild;
@@ -138,7 +139,7 @@ public class DataCUserRemote {
             //0x80000, 0x100000, 0x200000, 0x400000, 0x800000, 0x1000000, 0x2000000
             data.Encode1(0); //start of energy charge
             data.Encode1(0);
-            if (ServerConfig.IsPreBB()) {
+            if (Version.PreBB()) {
                 data.Encode4(0);
                 data.Encode4(0);
                 data.Encode1(1);

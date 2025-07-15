@@ -86,7 +86,7 @@ public class Structure {
             return is_skill_need_master_level_302(skill_id);
         }
         // JMS v188-v194
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             return is_skill_need_master_level_188(skill_id);
         }
         // JMS under 186
@@ -339,7 +339,7 @@ public class Structure {
         }
 
         // not in v165, not in v188, but in v194 ???
-        if (ServerConfig.IsJMS() && 184 <= ServerConfig.GetVersion() && ServerConfig.GetVersion() <= 186) {
+        if (ServerConfig.IsJMS() && 184 <= Version.getVersion() && Version.getVersion() <= 186) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
@@ -427,7 +427,7 @@ public class Structure {
             }
         }
 
-        if (ServerConfig.IsEMS() && ServerConfig.IsPostBB()) {
+        if (ServerConfig.IsEMS() && Version.PostBB()) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }
@@ -474,7 +474,7 @@ public class Structure {
             data.Encode4(0);
             data.Encode4(0);
         }
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             data.Encode4(0);
         }
 

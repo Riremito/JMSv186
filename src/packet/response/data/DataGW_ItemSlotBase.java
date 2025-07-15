@@ -20,6 +20,7 @@ package packet.response.data;
 import client.inventory.Equip;
 import client.inventory.IItem;
 import config.ServerConfig;
+import config.Version;
 import packet.ServerPacket;
 
 /**
@@ -243,7 +244,7 @@ public class DataGW_ItemSlotBase {
                 if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater() || ServerConfig.GMS83orLater()) {
                     data.Encode2(0); // nAttribute_CS
                 }
-                if (ServerConfig.JMS186orLater() && !(ServerConfig.IsEMS() && ServerConfig.IsPreBB()) && !ServerConfig.IsGMS()) {
+                if (ServerConfig.JMS186orLater() && !(ServerConfig.IsEMS() && Version.PreBB()) && !ServerConfig.IsGMS()) {
                     data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                     data.Encode4(0);
                 }

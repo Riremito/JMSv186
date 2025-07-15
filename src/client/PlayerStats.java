@@ -27,6 +27,7 @@ import client.inventory.Equip;
 import client.inventory.IEquip;
 import client.inventory.MapleWeaponType;
 import config.ServerConfig;
+import config.Version;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.List;
@@ -1227,7 +1228,7 @@ public class PlayerStats implements Serializable {
         p.Encode2(luk);
 
         // BB前
-        if (ServerConfig.IsPreBB()) {
+        if (Version.PreBB()) {
             p.Encode2(hp);
             p.Encode2(maxhp);
             p.Encode2(mp);

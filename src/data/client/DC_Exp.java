@@ -41,7 +41,7 @@ public class DC_Exp {
         }
         // JMS308  : 199 = 1103513235
         // JMS187-302+, TWMS148
-        if (ServerConfig.IsPostBB()) {
+        if (Version.PostBB()) {
             exp_table = post_bb_1;
             return true;
         }

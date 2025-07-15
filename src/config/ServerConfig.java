@@ -12,9 +12,6 @@ import packet.ServerPacket;
 public class ServerConfig {
 
     public static long expiration_date = (Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000;
-    private static boolean packet_encryption = true;
-    private static boolean packet_custom_encryption = false;
-    private static boolean packet_old_iv = false;
 
     // 初期スロット数
     public static final byte DEFAULT_INV_SLOT_EQUIP = 72;
@@ -24,71 +21,58 @@ public class ServerConfig {
     public static final byte DEFAULT_INV_SLOT_CASH = 96;
     private static final byte DEFAULT_INV_SLOT_STORAGE = 4;
 
-    public static boolean PacketEncryptionEnabled() {
-        return packet_encryption;
-    }
-
-    public static boolean CustomEncryptionEnabled() {
-        return packet_custom_encryption;
-    }
-
-    public static boolean IsOldIV() {
-        return packet_old_iv;
-    }
-
     public static boolean IsKMS() {
-        return GetRegion() == Region.KMS || GetRegion() == Region.KMST;
+        return Region.getRegion() == Region.KMS || Region.getRegion() == Region.KMST;
     }
 
     public static boolean IsKMST() {
-        return GetRegion() == Region.KMST;
+        return Region.getRegion() == Region.KMST;
     }
 
     public static boolean IsJMS() {
-        return GetRegion() == Region.JMS || GetRegion() == Region.JMST;
+        return Region.getRegion() == Region.JMS || Region.getRegion() == Region.JMST;
     }
 
     public static boolean IsJMST() {
-        return GetRegion() == Region.JMST;
+        return Region.getRegion() == Region.JMST;
     }
 
     public static boolean IsCMS() {
-        return GetRegion() == Region.CMS;
+        return Region.getRegion() == Region.CMS;
     }
 
     public static boolean IsTWMS() {
-        return GetRegion() == Region.TWMS;
+        return Region.getRegion() == Region.TWMS;
     }
 
     public static boolean IsTHMS() {
-        return GetRegion() == Region.THMS;
+        return Region.getRegion() == Region.THMS;
     }
 
     public static boolean IsGMS() {
-        return GetRegion() == Region.GMS;
+        return Region.getRegion() == Region.GMS;
     }
 
     public static boolean IsEMS() {
-        return GetRegion() == Region.EMS;
+        return Region.getRegion() == Region.EMS;
     }
 
     public static boolean IsBMS() {
-        return GetRegion() == Region.BMS;
+        return Region.getRegion() == Region.BMS;
     }
 
     public static boolean IsMSEA() {
-        return GetRegion() == Region.MSEA;
+        return Region.getRegion() == Region.MSEA;
     }
 
     public static boolean IsVMS() {
-        return GetRegion() == Region.VMS;
+        return Region.getRegion() == Region.VMS;
     }
 
     public static boolean IsIMS() {
-        return GetRegion() == Region.IMS;
+        return Region.getRegion() == Region.IMS;
     }
 
-    private static int character_name_size = 13;
     private static boolean job_pirate = true;
     private static boolean job_KOC = true;
     private static boolean job_Aran = true;
@@ -97,23 +81,11 @@ public class ServerConfig {
     private static boolean job_Resistance = true;
     private static boolean is_postBB = false;
 
-    public static int GetCharacterNameSize() {
-        return character_name_size;
-    }
-
-    public static boolean IsPostBB() {
-        return is_postBB;
-    }
-
-    public static boolean IsPreBB() {
-        return !IsPostBB();
-    }
-
     public static boolean JMS146or147() {
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
-                if (146 <= GetVersion() && GetVersion() <= 147) {
+                if (146 <= Version.getVersion() && Version.getVersion() <= 147) {
                     return true;
                 }
                 return false;
@@ -126,68 +98,68 @@ public class ServerConfig {
     }
 
     public static boolean JMS146orLater() {
-        if (IsPostBB()) {
+        if (Version.PostBB()) {
             return true;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
-                if (146 <= GetVersion()) {
+                if (146 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
 
             case KMS: {
-                if (47 <= GetVersion()) {
+                if (47 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case CMS: {
-                if (62 <= GetVersion()) {
+                if (62 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case TWMS: {
-                if (73 <= GetVersion()) {
+                if (73 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case THMS: {
-                if (0 <= GetVersion()) {
+                if (0 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case GMS: {
-                if (61 <= GetVersion()) {
+                if (61 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case EMS: {
-                if (0 <= GetVersion()) {
+                if (0 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case MSEA: {
-                if (0 <= GetVersion()) {
+                if (0 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case BMS: {
-                if (24 <= GetVersion()) {
+                if (24 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case VMS: {
-                if (35 <= GetVersion()) {
+                if (35 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -201,55 +173,55 @@ public class ServerConfig {
     }
 
     public static boolean JMS147orLater() {
-        if (IsPostBB()) {
+        if (Version.PostBB()) {
             return true;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
-                if (147 <= GetVersion()) {
+                if (147 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case KMS: {
-                if (48 <= GetVersion()) {
+                if (48 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case CMS: {
-                if (63 <= GetVersion()) {
+                if (63 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case TWMS: {
-                if (74 <= GetVersion()) {
+                if (74 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case THMS: {
-                if (0 <= GetVersion()) {
+                if (0 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case GMS: {
-                if (62 <= GetVersion()) {
+                if (62 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case EMS: {
-                if (0 <= GetVersion()) {
+                if (0 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case MSEA: {
-                if (0 <= GetVersion()) {
+                if (0 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -268,7 +240,7 @@ public class ServerConfig {
             return false;
         }
 
-        if (65 <= GetVersion()) {
+        if (65 <= Version.getVersion()) {
             return true;
         }
 
@@ -281,7 +253,7 @@ public class ServerConfig {
             return false;
         }
 
-        if (95 <= GetVersion()) {
+        if (95 <= Version.getVersion()) {
             return true;
         }
 
@@ -291,56 +263,56 @@ public class ServerConfig {
     // only 5 jobs
     // シグナス実装前まではほぼ変わらないはずなのでバージョンの誤差は多少あっても問題ない
     public static boolean JMS164orLater() {
-        if (IsPostBB()) {
+        if (Version.PostBB()) {
             return true;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
-                if (164 <= GetVersion()) {
+                if (164 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case KMS: {
                 // v2.66
-                if (65 <= GetVersion()) {
+                if (65 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case CMS: {
-                if (73 <= GetVersion()) {
+                if (73 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case TWMS: {
-                if (94 <= GetVersion()) {
+                if (94 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case THMS: {
-                if (87 <= GetVersion()) {
+                if (87 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case GMS: {
-                if (72 <= GetVersion()) {
+                if (72 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case EMS: {
-                if (54 <= GetVersion()) {
+                if (54 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case MSEA: {
-                if (100 <= GetVersion()) {
+                if (100 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -354,55 +326,55 @@ public class ServerConfig {
 
     // Knights of Cygnus update
     public static boolean JMS165orLater() {
-        if (IsPostBB()) {
+        if (Version.PostBB()) {
             return true;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
-                if (165 <= GetVersion()) {
+                if (165 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case KMS: {
-                if (67 <= GetVersion()) {
+                if (67 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case CMS: {
-                if (74 <= GetVersion()) {
+                if (74 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case TWMS: {
-                if (96 <= GetVersion()) {
+                if (96 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case THMS: {
-                if (87 <= GetVersion()) {
+                if (87 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case GMS: {
-                if (73 <= GetVersion()) {
+                if (73 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case EMS: {
-                if (55 <= GetVersion()) {
+                if (55 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case MSEA: {
-                if (100 <= GetVersion()) {
+                if (100 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -418,7 +390,7 @@ public class ServerConfig {
         if (!IsTWMS()) {
             return false;
         }
-        if (74 <= GetVersion()) {
+        if (74 <= Version.getVersion()) {
             return true;
         }
         return false;
@@ -428,7 +400,7 @@ public class ServerConfig {
         if (!IsTWMS()) {
             return false;
         }
-        if (94 <= GetVersion()) {
+        if (94 <= Version.getVersion()) {
             return true;
         }
         return false;
@@ -438,7 +410,7 @@ public class ServerConfig {
         if (!IsGMS()) {
             return false;
         }
-        if (72 <= GetVersion()) {
+        if (72 <= Version.getVersion()) {
             return true;
         }
         return false;
@@ -448,7 +420,7 @@ public class ServerConfig {
         if (!IsGMS()) {
             return false;
         }
-        if (73 <= GetVersion()) {
+        if (73 <= Version.getVersion()) {
             return true;
         }
         return false;
@@ -456,13 +428,13 @@ public class ServerConfig {
 
     // under JMS v180
     public static boolean KMS84orEarlier() {
-        if (IsPostBB()) {
+        if (Version.PostBB()) {
             return false;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (GetVersion() <= 84) {
+                if (Version.getVersion() <= 84) {
                     return true;
                 }
                 return false;
@@ -475,9 +447,9 @@ public class ServerConfig {
     }
 
     public static boolean KMS84orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (84 <= GetVersion()) {
+                if (84 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -491,55 +463,55 @@ public class ServerConfig {
 
     // stable pre bb
     public static boolean JMS180orLater() {
-        if (IsPostBB()) {
+        if (Version.PostBB()) {
             return true;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
-                if (180 <= GetVersion()) {
+                if (180 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case KMS: {
-                if (92 <= GetVersion()) {
+                if (92 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case CMS: {
-                if (85 <= GetVersion()) {
+                if (85 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case TWMS: {
-                if (121 <= GetVersion()) {
+                if (121 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case THMS: {
-                if (87 <= GetVersion()) {
+                if (87 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case GMS: {
-                if (91 <= GetVersion()) {
+                if (91 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case EMS: {
-                if (70 <= GetVersion()) {
+                if (70 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case MSEA: {
-                if (100 <= GetVersion()) {
+                if (100 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -552,13 +524,13 @@ public class ServerConfig {
     }
 
     public static boolean KMS95orEarlier() {
-        if (IsPostBB()) {
+        if (Version.PostBB()) {
             return false;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (GetVersion() <= 95) {
+                if (Version.getVersion() <= 95) {
                     return true;
                 }
                 return false;
@@ -571,9 +543,9 @@ public class ServerConfig {
     }
 
     public static boolean KMS92orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (92 <= GetVersion()) {
+                if (92 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -587,9 +559,9 @@ public class ServerConfig {
 
     public static boolean KMS95orLater() {
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (95 <= GetVersion()) {
+                if (95 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -602,9 +574,9 @@ public class ServerConfig {
     }
 
     public static boolean GMS83orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case GMS: {
-                if (83 <= GetVersion()) {
+                if (83 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -617,9 +589,9 @@ public class ServerConfig {
     }
 
     public static boolean GMS84orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case GMS: {
-                if (84 <= GetVersion()) {
+                if (84 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -632,9 +604,9 @@ public class ServerConfig {
     }
 
     public static boolean GMS91orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case GMS: {
-                if (91 <= GetVersion()) {
+                if (91 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -648,55 +620,55 @@ public class ServerConfig {
 
     // pre bb with potential
     public static boolean JMS186orLater() {
-        if (IsPostBB()) {
+        if (Version.PostBB()) {
             return true;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
-                if (186 <= GetVersion()) {
+                if (186 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case KMS: {
-                if (100 <= GetVersion()) {
+                if (100 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case CMS: {
-                if (85 <= GetVersion()) {
+                if (85 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case TWMS: {
-                if (121 <= GetVersion()) {
+                if (121 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case THMS: {
-                if (87 <= GetVersion()) {
+                if (87 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case GMS: {
-                if (91 <= GetVersion()) {
+                if (91 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case EMS: {
-                if (70 <= GetVersion()) {
+                if (70 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case MSEA: {
-                if (100 <= GetVersion()) {
+                if (100 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -710,13 +682,13 @@ public class ServerConfig {
 
     public static boolean KMS114orLater() {
         // ?
-        if (IsPostBB()) {
+        if (Version.PostBB()) {
             return true;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (114 <= GetVersion()) {
+                if (114 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -729,9 +701,9 @@ public class ServerConfig {
     }
 
     public static boolean TWMS121orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case TWMS: {
-                if (121 <= GetVersion()) {
+                if (121 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -745,37 +717,37 @@ public class ServerConfig {
 
     // near Chaos update
     public static boolean JMS194orLater() {
-        if (!IsPostBB()) {
+        if (!Version.PostBB()) {
             return false;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
-                if (194 <= GetVersion()) {
+                if (194 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case JMST: {
-                if (110 <= GetVersion()) {
+                if (110 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case KMS: {
-                if (114 <= GetVersion()) {
+                if (114 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case KMST: {
-                if (391 <= GetVersion()) {
+                if (391 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case EMS: {
-                if (76 <= GetVersion()) {
+                if (76 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -789,13 +761,13 @@ public class ServerConfig {
 
     // JMS194 <= JMST110 <= JMS200
     public static boolean JMST110() {
-        if (!IsPostBB()) {
+        if (!Version.PostBB()) {
             return false;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMST: {
-                if (110 <= GetVersion()) {
+                if (110 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -808,15 +780,15 @@ public class ServerConfig {
     }
 
     public static boolean KMS118orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (118 <= GetVersion()) {
+                if (118 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case KMST: {
-                if (391 <= GetVersion()) {
+                if (391 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -829,15 +801,15 @@ public class ServerConfig {
     }
 
     public static boolean KMS119orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (119 <= GetVersion()) {
+                if (119 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case KMST: {
-                if (391 <= GetVersion()) {
+                if (391 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -850,15 +822,15 @@ public class ServerConfig {
     }
 
     public static boolean KMS121orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (121 <= GetVersion()) {
+                if (121 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case KMST: {
-                if (391 <= GetVersion()) {
+                if (391 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -871,15 +843,15 @@ public class ServerConfig {
     }
 
     public static boolean KMS127orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (127 <= GetVersion()) {
+                if (127 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case KMST: {
-                if (391 <= GetVersion()) {
+                if (391 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -892,9 +864,9 @@ public class ServerConfig {
     }
 
     public static boolean KMS118() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (118 == GetVersion()) {
+                if (118 == Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -907,9 +879,9 @@ public class ServerConfig {
     }
 
     public static boolean KMST391() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMST: {
-                if (391 <= GetVersion()) {
+                if (391 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -922,15 +894,15 @@ public class ServerConfig {
     }
 
     public static boolean KMS138orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (138 <= GetVersion()) {
+                if (138 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
             }
             case KMST: {
-                if (391 <= GetVersion()) {
+                if (391 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -943,9 +915,9 @@ public class ServerConfig {
     }
 
     public static boolean KMS148orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (148 <= GetVersion()) {
+                if (148 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -959,9 +931,9 @@ public class ServerConfig {
 
     // Phantom version
     public static boolean KMS149orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (149 <= GetVersion()) {
+                if (149 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -974,9 +946,9 @@ public class ServerConfig {
     }
 
     public static boolean KMS160orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (160 <= GetVersion()) {
+                if (160 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -990,9 +962,9 @@ public class ServerConfig {
 
     // 2012/08/13
     public static boolean TWMS148orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case TWMS: {
-                if (148 <= GetVersion()) {
+                if (148 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -1006,9 +978,9 @@ public class ServerConfig {
 
     // 2012/08/17
     public static boolean CMS104orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case CMS: {
-                if (104 <= GetVersion()) {
+                if (104 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -1023,9 +995,9 @@ public class ServerConfig {
     // Sengoku update
     // 2012/08/16
     public static boolean JMS302orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
-                if (302 <= GetVersion()) {
+                if (302 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -1039,9 +1011,9 @@ public class ServerConfig {
 
     // Angelic Buster version
     public static boolean JMS308orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
-                if (308 <= GetVersion()) {
+                if (308 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -1054,9 +1026,9 @@ public class ServerConfig {
     }
 
     public static boolean EMS89orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case EMS: {
-                if (89 <= GetVersion()) {
+                if (89 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -1070,9 +1042,9 @@ public class ServerConfig {
 
     // KMS197, 200, 211
     public static boolean KMS197orLater() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case KMS: {
-                if (197 <= GetVersion()) {
+                if (197 <= Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -1086,15 +1058,15 @@ public class ServerConfig {
 
     // test version of potential system
     public static boolean IsPrePotentialVersion() {
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
-                if (184 <= GetVersion() && GetVersion() <= 185) {
+                if (184 <= Version.getVersion() && Version.getVersion() <= 185) {
                     return true;
                 }
                 return false;
             }
             case KMS: {
-                if (95 == GetVersion()) {
+                if (95 == Version.getVersion()) {
                     return true;
                 }
                 return false;
@@ -1108,14 +1080,14 @@ public class ServerConfig {
 
     // around Pirate update
     public static boolean JMS131orEarlier() {
-        if (IsPostBB()) {
+        if (Version.PostBB()) {
             return false;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
                 // not checked v132 to v163
-                if (GetVersion() <= 131) {
+                if (Version.getVersion() <= 131) {
                     return true;
                 }
                 return false;
@@ -1130,129 +1102,46 @@ public class ServerConfig {
     // Knights of Cygnus update
     // todo : replace to orlater func
     public static boolean JMS165orEarlier() {
-        if (IsPostBB()) {
+        if (Version.PostBB()) {
             return false;
         }
 
-        switch (GetRegion()) {
+        switch (Region.getRegion()) {
             case JMS: {
-                if (GetVersion() <= 165) {
+                if (Version.getVersion() <= 165) {
                     return true;
                 }
                 return false;
             }
             case TWMS: {
-                if (GetVersion() <= 94) {
+                if (Version.getVersion() <= 94) {
                     return true;
                 }
                 return false;
             }
             case GMS: {
-                if (GetVersion() <= 73) {
+                if (Version.getVersion() <= 73) {
                     return true;
                 }
                 return false;
             }
             case EMS: {
-                if (GetVersion() <= 55) {
+                if (Version.getVersion() <= 55) {
                     return true;
                 }
                 return false;
             }
             case BMS: {
-                if (GetVersion() <= 24) {
+                if (Version.getVersion() <= 24) {
                     return true;
                 }
                 return false;
             }
             case VMS: {
-                if (GetVersion() <= 35) {
+                if (Version.getVersion() <= 35) {
                     return true;
                 }
                 return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    public static boolean SetContentFlag() {
-        switch (GetRegion()) {
-            case KMS: {
-                if (101 <= GetVersion()) {
-                    is_postBB = true;
-                }
-                return true;
-            }
-            case KMST: {
-                if (317 <= GetVersion()) {
-                    is_postBB = true;
-                }
-                return true;
-            }
-            case JMS: {
-                if (GetVersion() <= 141) {
-                    packet_old_iv = true;
-                }
-                if (187 <= GetVersion()) {
-                    is_postBB = true;
-                }
-                return true;
-            }
-            case JMST: {
-                // v110
-                is_postBB = true;
-                return true;
-            }
-            case CMS: {
-                if (87 <= GetVersion()) {
-                    is_postBB = true;
-                }
-                return true;
-            }
-            case TWMS: {
-                if (94 <= GetVersion()) {
-                    character_name_size = 15;
-                }
-                if (123 <= GetVersion()) {
-                    is_postBB = true;
-                }
-                return true;
-            }
-            case THMS: {
-                if (90 <= GetVersion()) {
-                    is_postBB = true;
-                }
-                return true;
-            }
-            case GMS: {
-                if (93 <= GetVersion()) {
-                    is_postBB = true;
-                }
-                return true;
-            }
-            case EMS: {
-                if (73 <= GetVersion()) {
-                    is_postBB = true;
-                }
-                return true;
-            }
-            case MSEA: {
-                if (105 <= GetVersion()) {
-                    is_postBB = true;
-                }
-                return true;
-            }
-            case BMS:
-            case VMS: {
-                is_postBB = false;
-                return true;
-            }
-            case IMS: {
-                is_postBB = true;
-                return true;
             }
             default: {
                 break;
@@ -1266,136 +1155,6 @@ public class ServerConfig {
     public static Charset codepage_ascii;
     public static Charset codepage_utf8;
 
-    // Version
-    private static Region region_type = Region.JMS;
-    private static byte region_number = 3; // JMS
-    public static int version = 186;
-    private static byte version_sub = 1;
-
-    public static byte GetRegionNumber() {
-        return region_number;
-    }
-
-    public static Region GetRegion() {
-        return region_type;
-    }
-
-    public static int GetVersion() {
-        return version;
-    }
-
-    public static int GetSubVersion() {
-        return version_sub;
-    }
-
-    public static String GetRegionName() {
-        return "" + region_type;
-    }
-
-    public static boolean SetRegion(String region_name) {
-        switch (region_name) {
-            case "KMS": {
-                region_type = Region.KMS;
-                region_number = 1;
-                character_name_size = 13;
-                return true;
-            }
-            case "KMST": {
-                region_type = Region.KMST;
-                region_number = 2;
-                character_name_size = 13;
-                return true;
-            }
-            case "JMS": {
-                region_type = Region.JMS;
-                region_number = 3;
-                character_name_size = 13;
-                return true;
-            }
-            case "JMST": {
-                region_type = Region.JMST;
-                region_number = 3;
-                character_name_size = 13;
-                return true;
-            }
-            case "CMS": {
-                region_type = Region.CMS;
-                region_number = 4;
-                if (ServerConfig.CMS104orLater()) {
-                    // none
-                } else {
-                    packet_custom_encryption = true;
-                }
-                character_name_size = 13;
-                return true;
-            }
-            case "TWMS": {
-                region_type = Region.TWMS;
-                region_number = 6;
-                character_name_size = 13;
-                return true;
-            }
-            case "MSEA": {
-                region_type = Region.MSEA;
-                region_number = 7;
-                packet_custom_encryption = true;
-                character_name_size = 13;
-                return true;
-            }
-            case "GMS": {
-                region_type = Region.GMS;
-                region_number = 8;
-                packet_custom_encryption = true;
-                character_name_size = 13;
-                return true;
-            }
-            case "EMS": {
-                region_type = Region.EMS;
-                region_number = 9;
-                packet_custom_encryption = true;
-                character_name_size = 13;
-                return true;
-            }
-            case "BMS": {
-                region_type = Region.BMS;
-                region_number = 9;
-                packet_custom_encryption = true;
-                character_name_size = 13;
-                return true;
-            }
-            case "THMS": {
-                region_type = Region.THMS;
-                region_number = 7;
-                packet_custom_encryption = true;
-                return true;
-            }
-            case "VMS": {
-                region_type = Region.VMS;
-                region_number = 7;
-                packet_custom_encryption = true;
-                character_name_size = 16;
-                return true;
-            }
-            case "IMS": {
-                region_type = Region.IMS;
-                region_number = 1;
-                //packet_custom_encryption = true;
-                character_name_size = 13;
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-
-        region_type = Region.unk;
-        return false;
-    }
-
-    public static void SetVersion(int ver1, int ver2) {
-        version = ver1;
-        version_sub = (byte) ver2;
-    }
     public static String wz_path, script_path;
 
     // コマンドライン引数からファイルパスを取得
@@ -1441,7 +1200,7 @@ public class ServerConfig {
             if (database_url.isEmpty()) {
                 String database_host = DataBase.getProperty("database.host");
                 String database_port = DataBase.getProperty("database.port");
-                database_url = "jdbc:mysql://" + database_host + ":" + database_port + "/" + GetRegionName() + "_v" + version + "?autoReconnect=true&characterEncoding=utf8";
+                database_url = "jdbc:mysql://" + database_host + ":" + database_port + "/" + Region.GetRegionName() + "_v" + Version.getVersion() + "?autoReconnect=true&characterEncoding=utf8";
             }
 
             database_user = DataBase.getProperty("database.user");
@@ -1546,41 +1305,41 @@ public class ServerConfig {
             豆豆奖励范围 = Integer.parseInt(Pachinko.getProperty("ddjlfw"));
         }
 
-        Properties ServerPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ServerPacket.properties");
+        Properties ServerPacketHeader = ReadPropertyFile("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ServerPacket.properties");
         if (ServerPacketHeader != null) {
             ServerPacket.init(ServerPacketHeader);
 
-            Debug.DebugLog("[SP]");
+            //Debug.DebugLog("[SP]");
             for (ServerPacket.Header header : ServerPacket.Header.values()) {
                 int val = header.get();
                 if (val != -1) {
-                    Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
+                    //Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
                 }
             }
         }
 
-        Properties ClientPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ClientPacket.properties");
+        Properties ClientPacketHeader = ReadPropertyFile("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ClientPacket.properties");
         if (ClientPacketHeader != null) {
             ClientPacket.Load(ClientPacketHeader);
 
-            Debug.DebugLog("[CP]");
+            //Debug.DebugLog("[CP]");
             for (ClientPacket.Header header : ClientPacket.Header.values()) {
                 int val = header.Get();
                 if (val != -1) {
-                    Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
+                    //Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
                 }
             }
         }
     }
 
     public static void ReloadHeader() {
-        Properties ServerPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ServerPacket.properties");
+        Properties ServerPacketHeader = ReadPropertyFile("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ServerPacket.properties");
         if (ServerPacketHeader != null) {
             ServerPacket.reset();
             ServerPacket.init(ServerPacketHeader);
             Debug.InfoLog("ServerPacket is reloaded!");
         }
-        Properties ClientPacketHeader = ReadPropertyFile("properties/packet/" + GetRegionName() + "_v" + GetVersion() + "_ClientPacket.properties");
+        Properties ClientPacketHeader = ReadPropertyFile("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ClientPacket.properties");
         if (ClientPacketHeader != null) {
             ClientPacket.Reset();
             ClientPacket.Load(ClientPacketHeader);

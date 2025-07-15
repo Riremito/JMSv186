@@ -23,6 +23,7 @@ package packet.response.data;
 import client.MapleCharacter;
 import client.PlayerStats;
 import client.inventory.MaplePet;
+import config.Content;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -42,17 +43,17 @@ public class DataGW_CharacterStat {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(chr.getId());
-        data.EncodeBuffer(chr.getName(), ServerConfig.GetCharacterNameSize());
+        data.EncodeBuffer(chr.getName(), Content.CharacterNameLength.getInt());
         data.Encode1(chr.getGender());
         data.Encode1(chr.getSkinColor());
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.KMS138orLater() || (ServerConfig.IsTHMS() && ServerConfig.IsPostBB()) || ServerConfig.EMS89orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS138orLater() || (ServerConfig.IsTHMS() && Version.PostBB()) || ServerConfig.EMS89orLater() || ServerConfig.CMS104orLater()) {
             // none
         } else if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || ServerConfig.IsBMS() || ServerConfig.IsVMS()) {
             data.EncodeZeroBytes(8);
-        } else if ((ServerConfig.IsJMS() || ServerConfig.IsTHMS() || ServerConfig.IsGMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ((ServerConfig.IsTWMS() || ServerConfig.IsEMS()) && ServerConfig.IsPreBB()))) {
+        } else if ((ServerConfig.IsJMS() || ServerConfig.IsTHMS() || ServerConfig.IsGMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ((ServerConfig.IsTWMS() || ServerConfig.IsEMS()) && Version.PreBB()))) {
             data.EncodeZeroBytes(24);
         }
 
@@ -67,7 +68,7 @@ public class DataGW_CharacterStat {
         data.Encode2(stat.luk);
 
         // BB前
-        if (ServerConfig.IsPreBB()) {
+        if (Version.PreBB()) {
             data.Encode2(stat.hp);
             data.Encode2(stat.maxhp);
             data.Encode2(stat.mp);
@@ -315,12 +316,12 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getExp());
         data.Encode2(chr.getFame());
 
-        if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTHMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS() || ServerConfig.IsMSEA() || (ServerConfig.IsEMS() && ServerConfig.IsPostBB()))
+        if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTHMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS() || ServerConfig.IsMSEA() || (ServerConfig.IsEMS() && Version.PostBB()))
                 && ServerConfig.JMS146orLater()) {
             data.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 
-        if (ServerConfig.TWMS121orLater() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || (ServerConfig.IsEMS() && ServerConfig.IsPostBB())) {
+        if (ServerConfig.TWMS121orLater() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || (ServerConfig.IsEMS() && Version.PostBB())) {
             data.Encode8(0);
         }
 
@@ -331,7 +332,7 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.IsGMS() || (ServerConfig.IsEMS() && ServerConfig.IsPreBB()) || ServerConfig.IsBMS()) {
+        if (ServerConfig.IsGMS() || (ServerConfig.IsEMS() && Version.PreBB()) || ServerConfig.IsBMS()) {
             data.Encode4(0);
         }
 
@@ -364,7 +365,7 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
         // JMS
-        if (ServerConfig.IsPreBB()) {
+        if (Version.PreBB()) {
             data.Encode8(0);
             data.Encode4(0);
             data.Encode4(0);
@@ -375,7 +376,7 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
         // Post BB
-        if (ServerConfig.IsJMS() && ServerConfig.GetVersion() == 187) {
+        if (ServerConfig.IsJMS() && Version.getVersion() == 187) {
             data.Encode4(0);
         }
         // JMS v188+
@@ -460,7 +461,7 @@ public class DataGW_CharacterStat {
         }
         // HP
         if ((statmask & OpsChangeStat.CS_HP.get()) > 0) {
-            if (ServerConfig.IsPreBB()) {
+            if (Version.PreBB()) {
                 data.Encode2(chr.getStat().getHp());
             } else {
                 data.Encode4(chr.getStat().getHp());
@@ -468,7 +469,7 @@ public class DataGW_CharacterStat {
         }
         // MAXHP
         if ((statmask & OpsChangeStat.CS_MHP.get()) > 0) {
-            if (ServerConfig.IsPreBB()) {
+            if (Version.PreBB()) {
                 data.Encode2(chr.getStat().getMaxHp());
             } else {
                 data.Encode4(chr.getStat().getMaxHp());
@@ -476,7 +477,7 @@ public class DataGW_CharacterStat {
         }
         // MP
         if ((statmask & OpsChangeStat.CS_MP.get()) > 0) {
-            if (ServerConfig.IsPreBB()) {
+            if (Version.PreBB()) {
                 data.Encode2(chr.getStat().getMp());
             } else {
                 data.Encode4(chr.getStat().getMp());
@@ -484,7 +485,7 @@ public class DataGW_CharacterStat {
         }
         // MAXMP
         if ((statmask & OpsChangeStat.CS_MMP.get()) > 0) {
-            if (ServerConfig.IsPreBB()) {
+            if (Version.PreBB()) {
                 data.Encode2(chr.getStat().getMaxMp());
             } else {
                 data.Encode4(chr.getStat().getMaxMp());
