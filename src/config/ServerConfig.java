@@ -554,49 +554,6 @@ public class ServerConfig {
         return false;
     }
 
-    // test version of potential system
-    public static boolean IsPrePotentialVersion() {
-        switch (Region.getRegion()) {
-            case JMS: {
-                if (184 <= Version.getVersion() && Version.getVersion() <= 185) {
-                    return true;
-                }
-                return false;
-            }
-            case KMS: {
-                if (95 == Version.getVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    // around Pirate update
-    public static boolean JMS131orEarlier() {
-        if (Version.PostBB()) {
-            return false;
-        }
-
-        switch (Region.getRegion()) {
-            case JMS: {
-                // not checked v132 to v163
-                if (Version.getVersion() <= 131) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
     // Knights of Cygnus update
     // todo : replace to orlater func
     public static boolean JMS165orEarlier() {

@@ -837,7 +837,7 @@ public class ResCLogin {
             sp.Encode4(0); // Character Cards
             return sp.get();
         }
-        if (ServerConfig.JMS131orEarlier()) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             sp.Encode1(3); // charslots
             sp.Encode1(0);
             return sp.get();

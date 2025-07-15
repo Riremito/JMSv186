@@ -123,7 +123,7 @@ public enum OpsScriptMan {
             SM_ASKSLIDEMENU.set(-1);
             return;
         }
-        if (ServerConfig.JMS131orEarlier()) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             SM_SAY.set(0);
             SM_ASKYESNO.set(1);
             SM_ASKTEXT.set(2);

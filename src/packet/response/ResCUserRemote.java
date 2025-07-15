@@ -67,7 +67,7 @@ public class ResCUserRemote {
         if (ServerConfig.JMS164orLater()) {
             sp.Encode1(attack.BuffKey); // bSerialAttack
         }
-        if (ServerConfig.JMS131orEarlier()) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             sp.Encode1(attack.AttackActionKey);
         } else {
             sp.Encode2(attack.AttackActionKey);
@@ -83,7 +83,7 @@ public class ResCUserRemote {
                     sp.Encode1(oned.attack.size());
                 }
                 for (Pair<Integer, Boolean> eachd : oned.attack) {
-                    if (ServerConfig.JMS131orEarlier()) {
+                    if (Version.LessOrEqual(Region.JMS, 131)) {
                         sp.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
                     } else {
                         sp.Encode1(eachd.right ? 1 : 0);

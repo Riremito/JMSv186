@@ -28,7 +28,9 @@ import client.SkillFactory;
 import client.SummonSkillEntry;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import debug.Debug;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -66,7 +68,7 @@ public class ReqCSummonedPool {
         int oid = cp.Decode4(); // older version = SkillID
 
         MapleSummon summon = null;
-        if (ServerConfig.JMS131orEarlier()) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             for (MapleSummon sms : chr.getSummons().values()) {
                 if (sms.getSkill() == oid) {
                     summon = sms;
@@ -193,7 +195,7 @@ public class ReqCSummonedPool {
             allDamage.add(new SummonAttackEntry(mob, damage));
         }
 
-        if (ServerConfig.JMS131orEarlier()) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             cp.Decode2(); // X
             cp.Decode2(); // Y
         }

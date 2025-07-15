@@ -382,7 +382,7 @@ public class ReqCLogin {
             item_ids.add(equip_weapon);
         }
 
-        if (ServerConfig.JMS131orEarlier()) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             dice_str = cp.Decode1();
             dice_dex = cp.Decode1();
             dice_int = cp.Decode1();
@@ -419,7 +419,7 @@ public class ReqCLogin {
         newchar.setSubcategory(job_dualblade);
 
         // dice
-        if (ServerConfig.JMS131orEarlier()) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             newchar.getStat().str = dice_str;
             newchar.getStat().dex = dice_dex;
             newchar.getStat().int_ = dice_int;

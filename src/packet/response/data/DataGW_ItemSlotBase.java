@@ -19,6 +19,7 @@ package packet.response.data;
 
 import client.inventory.Equip;
 import client.inventory.IItem;
+import config.Content;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -116,8 +117,8 @@ public class DataGW_ItemSlotBase {
                 final Equip equip = (Equip) item;
                 boolean hasUniqueId = 0 < equip.getUniqueId();
                 data.EncodeBuffer(RawEncode(item));
-                // JMS v184-185, KMS v95
-                if (ServerConfig.IsPrePotentialVersion()) {
+                // JMS184-185, KMS95 (test version of potential system)
+                if (Content.PrePotential.get()) {
                     data.EncodeBuffer(EncodeEquip_JMS184(equip, hasUniqueId));
                     break;
                 }

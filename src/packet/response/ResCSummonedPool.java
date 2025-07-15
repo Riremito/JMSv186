@@ -19,7 +19,9 @@
 package packet.response;
 
 import client.MapleCharacter;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import handling.MaplePacket;
 import java.util.List;
 import packet.request.parse.ParseCMovePath;
@@ -66,7 +68,7 @@ public class ResCSummonedPool {
     public static MaplePacket removeSummon(MapleSummon summon, boolean animated) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedLeaveField);
         sp.Encode4(summon.getOwnerId());
-        if (ServerConfig.JMS131orEarlier()) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             sp.Encode4(summon.getSkill());
         } else {
             sp.Encode4(summon.getObjectId());
@@ -87,7 +89,7 @@ public class ResCSummonedPool {
         sp.Encode1(allDamage.size());
         for (final SummonAttackEntry attackEntry : allDamage) {
             sp.Encode4(attackEntry.getMonster().getObjectId()); // oid
-            if (ServerConfig.JMS131orEarlier()) {
+            if (Version.LessOrEqual(Region.JMS, 131)) {
                 sp.Encode1(6);
             } else {
                 sp.Encode1(7); // who knows
@@ -101,7 +103,7 @@ public class ResCSummonedPool {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedMove);
         sp.Encode4(summon.getOwnerId());
         // very old summon type
-        if (ServerConfig.JMS131orEarlier()) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             sp.Encode4(summon.getSkill());
         } else {
             sp.Encode4(summon.getObjectId());

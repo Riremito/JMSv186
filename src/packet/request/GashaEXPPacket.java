@@ -24,7 +24,9 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import data.client.DC_Exp;
 import packet.ClientPacket;
 import packet.response.wrapper.ResWrapper;
@@ -84,7 +86,7 @@ public class GashaEXPPacket {
         UseTempExp(chr);
 
         // 兵法書実装前
-        if ((ServerConfig.JMS131orEarlier())) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             while (UseTempExp(chr)) {
                 // loop
             }

@@ -478,7 +478,7 @@ public class Structure {
             data.Encode4(0);
         }
 
-        if (ServerConfig.JMS131orEarlier()) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             if (life.getStati().size() <= 1) {
                 life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
             }

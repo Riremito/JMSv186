@@ -18,7 +18,9 @@
  */
 package packet.ops;
 
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 
 /**
  *
@@ -132,15 +134,15 @@ public enum OpsSecondaryStat {
     }
 
     public static void init() {
-        if ((ServerConfig.JMS131orEarlier())) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             return;
         }
-        if ((ServerConfig.JMS194orLater())) {
+        if (ServerConfig.JMS194orLater()) {
             // fix
             return;
         }
 
-        if ((ServerConfig.JMS131orEarlier())) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             // fixs
             return;
         }

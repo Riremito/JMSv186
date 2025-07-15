@@ -273,7 +273,7 @@ public class ResCWvsContext {
                             sp.Encode1(0);
                         }
                         sp.Encode4(ma.Inc_Meso);
-                        if (ServerConfig.JMS131orEarlier()) {
+                        if (Version.LessOrEqual(Region.JMS, 131)) {
                             sp.Encode2(0); // Internet cafe bonus
                         } else {
                             sp.Encode4(0);

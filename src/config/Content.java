@@ -47,11 +47,11 @@ public enum Content {
     PacketData_Equip_Additional_Potential,
     PacketData_Equip_Anvil,
     // bad version
-    PacketData_Pre_Potential(false), // JMS184-185, KMS95
     // settings for specific versions
     CharacterNameLength(13),
     OldIV(false),
     CustomEncryption(false),
+    PrePotential(false), // JMS184-185, KMS95
     PetNameLength(13),
     UNKNOWN;
 
@@ -119,6 +119,7 @@ public enum Content {
         BIGBANG.set(bOK);
         OldIV.set(checkOldIV());
         CustomEncryption.set(checkCustomEncryption());
+        PrePotential.set(checkPrePotential());
         CharacterNameLength.setInt(checkCharacterNameLength());
         // Pre-BB
         // JMS183 (JMS180)
@@ -237,6 +238,18 @@ public enum Content {
         if (Region.check(Region.BMS)) {
             return true;
         }
+        return false;
+    }
+
+    private static boolean checkPrePotential() {
+        // JMS186 or later has different equip data format
+        if (Version.Between(Region.JMS, 184, 185)) {
+            return true;
+        }
+        if (Version.Equal(Region.KMS, 95)) {
+            return true;
+        }
+
         return false;
     }
 

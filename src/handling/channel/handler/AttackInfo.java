@@ -27,7 +27,9 @@ import client.ISkill;
 import constants.GameConstants;
 import client.MapleCharacter;
 import client.SkillFactory;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import packet.ClientPacket;
 import packet.ServerPacket;
 import server.MapleStatEffect;
@@ -156,14 +158,14 @@ public class AttackInfo {
     }
 
     public int GetAttackAction() {
-        if (ServerConfig.JMS131orEarlier()) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             return AttackActionKey & 0x7F;
         }
         return AttackActionKey & 0x7FFF;
     }
 
     public boolean IsLeft() {
-        if (ServerConfig.JMS131orEarlier()) {
+        if (Version.LessOrEqual(Region.JMS, 131)) {
             return ((AttackActionKey >> 7) & 0x01) > 0;
         }
         return ((AttackActionKey >> 15) & 0x01) > 0;
