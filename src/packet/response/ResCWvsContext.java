@@ -227,7 +227,7 @@ public class ResCWvsContext {
         // 0 = lock   -> do not clear lock flag
         // 1 = unlock -> clear lock flag
         sp.Encode1(unlock); // CWvsContext->bExclRequestSent
-        if ((Region.IsEMS() && !ServerConfig.EMS89orLater()) || (ServerConfig.TWMS74orLater() && !ServerConfig.TWMS94orLater())) {
+        if ((Region.IsEMS() && !ServerConfig.EMS89orLater()) || Version.Between(Region.TWMS, 74, 93)) {
             sp.Encode1(0); // EMS v55
         }
         sp.EncodeBuffer(DataGW_CharacterStat.EncodeChangeStat(chr, statmask));

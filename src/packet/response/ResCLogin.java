@@ -367,7 +367,7 @@ public class ResCLogin {
                             sp.Encode4(client.getAccID());
                             sp.Encode1(client.getGender());
                             sp.Encode1(client.isGm() ? 1 : 0);
-                            if (ServerConfig.TWMS94orLater()) {
+                            if (Version.GreaterOrEqual(Region.TWMS, 94)) {
                                 sp.Encode1(client.isGm() ? 1 : 0);
                             }
                             if (ServerConfig.TWMS121orLater()) {
@@ -783,7 +783,7 @@ public class ResCLogin {
             return sp.get();
         }
 
-        if ((ServerConfig.JMS146or147()) || Region.IsVMS()) {
+        if (Version.Between(Region.JMS, 146, 147) || Region.IsVMS()) {
             sp.Encode1(2); // 2次パス無視
             sp.Encode1(0);
             sp.Encode4(charslots); // m_nSlotCount

@@ -18,30 +18,6 @@ public class ServerConfig {
     public static final byte DEFAULT_INV_SLOT_CASH = 96;
     private static final byte DEFAULT_INV_SLOT_STORAGE = 4;
 
-    private static boolean job_pirate = true;
-    private static boolean job_KOC = true;
-    private static boolean job_Aran = true;
-    private static boolean job_Evan = true;
-    private static boolean job_DB = true;
-    private static boolean job_Resistance = true;
-    private static boolean is_postBB = false;
-
-    public static boolean JMS146or147() {
-
-        switch (Region.getRegion()) {
-            case JMS: {
-                if (146 <= Version.getVersion() && Version.getVersion() <= 147) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
     public static boolean JMS146orLater() {
         if (Version.PostBB()) {
             return true;
@@ -179,32 +155,6 @@ public class ServerConfig {
         return false;
     }
 
-    // GMS62 (Pirate) + 3
-    public static boolean GMS65orLater() {
-        if (!Region.IsGMS()) {
-            return false;
-        }
-
-        if (65 <= Version.getVersion()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    // leak version
-    public static boolean GMS95orLater() {
-        if (!Region.IsGMS()) {
-            return false;
-        }
-
-        if (95 <= Version.getVersion()) {
-            return true;
-        }
-
-        return false;
-    }
-
     // only 5 jobs
     // シグナス実装前まではほぼ変わらないはずなのでバージョンの誤差は多少あっても問題ない
     public static boolean JMS164orLater() {
@@ -327,26 +277,6 @@ public class ServerConfig {
             case VMS: {
                 return false;
             }
-        }
-        return false;
-    }
-
-    public static boolean TWMS74orLater() {
-        if (!Region.IsTWMS()) {
-            return false;
-        }
-        if (74 <= Version.getVersion()) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean TWMS94orLater() {
-        if (!Region.IsTWMS()) {
-            return false;
-        }
-        if (94 <= Version.getVersion()) {
-            return true;
         }
         return false;
     }

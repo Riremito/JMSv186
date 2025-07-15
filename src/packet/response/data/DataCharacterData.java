@@ -511,241 +511,150 @@ public class DataCharacterData {
         }
         switch (Region.getRegion()) {
             case KMS:
-            case KMST:
-                {
-                    if (Version.PreBB()) {
-                        if ((datamask & 131072) > 0) {
-                            data.Encode4(chr.getMonsterBookCover());
-                        }
-                        if ((datamask & 65536) > 0) {
-                            data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
-                        }
+            case KMST: {
+                if (Version.PreBB()) {
+                    if ((datamask & 131072) > 0) {
+                        data.Encode4(chr.getMonsterBookCover());
                     }
-                    if ((datamask & 262144) > 0) {
-                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    if ((datamask & 65536) > 0) {
+                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                     }
-                    if (Version.PreBB()) {
-                        if ((datamask & 524288) > 0) {
+                }
+                if ((datamask & 262144) > 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                }
+                if (Version.PreBB()) {
+                    if ((datamask & 524288) > 0) {
+                        data.Encode2(0);
+                    }
+                }
+                if (Version.PostBB()) {
+                    if (ServerConfig.KMS197orLater()) {
+                        if ((datamask & 35184372088832L) > 0) {
                             data.Encode2(0);
                         }
-                    }
-                    if (Version.PostBB()) {
-                        if (ServerConfig.KMS197orLater()) {
-                            if ((datamask & 35184372088832L) > 0) {
-                                data.Encode2(0);
-                            }
-                            byte unk_byte = 0;
-                            data.Encode1(unk_byte); // unk
-                            {
-                                if (unk_byte != 0) {
-                                    if ((datamask & 1099511627776L) > 0) {
-                                        int loop_cnt = 0;
-                                        data.Encode4(loop_cnt);
-                                        for (int i = 0; i < loop_cnt; i++) {
-                                            data.Encode4(0);
-                                        }
+                        byte unk_byte = 0;
+                        data.Encode1(unk_byte); // unk
+                        {
+                            if (unk_byte != 0) {
+                                if ((datamask & 1099511627776L) > 0) {
+                                    int loop_cnt = 0;
+                                    data.Encode4(loop_cnt);
+                                    for (int i = 0; i < loop_cnt; i++) {
+                                        data.Encode4(0);
                                     }
                                 }
                             }
-                            if ((datamask & 17592186044416L) > 0) {
-                                data.Encode4(0); // loop, Encode4, Encode4
-                            }
                         }
-                        if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
-                            data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
+                        if ((datamask & 17592186044416L) > 0) {
+                            data.Encode4(0); // loop, Encode4, Encode4
                         }
-                        if (ServerConfig.KMS197orLater()) {
-                            if ((datamask & 8796093022208L) > 0) {
-                                // KMS197 005D7A49, 005C1DA0
-                                // v270 == 10000 || v270 == 10100 || v270 == 10110 || v270 == 10111 || v270 == 10112
-                            }
+                    }
+                    if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
+                        data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
+                    }
+                    if (ServerConfig.KMS197orLater()) {
+                        if ((datamask & 8796093022208L) > 0) {
+                            // KMS197 005D7A49, 005C1DA0
+                            // v270 == 10000 || v270 == 10100 || v270 == 10110 || v270 == 10111 || v270 == 10112
                         }
-                        if ((datamask & 4194304) > 0) {
-                            data.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                    }
+                    if ((datamask & 4194304) > 0) {
+                        data.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                    }
+                    if ((datamask & 67108864) > 0) {
+                        if (ServerConfig.KMS138orLater()) {
+                            data.Encode2(0);
                         }
-                        if ((datamask & 67108864) > 0) {
-                            if (ServerConfig.KMS138orLater()) {
-                                data.Encode2(0);
-                            }
-                        }
-                        if ((datamask & 536870912) > 0) {
-                            if (ServerConfig.KMS148orLater()) {
-                                for (int i = 0; i < (4 + 4 + 3 + 2); i++) {
-                                    data.Encode4(0);
-                                }
-                            }
-                        }
-                        if ((datamask & 268435456) > 0) {
-                            if (ServerConfig.KMS160orLater()) {
+                    }
+                    if ((datamask & 536870912) > 0) {
+                        if (ServerConfig.KMS148orLater()) {
+                            for (int i = 0; i < (4 + 4 + 3 + 2); i++) {
                                 data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode4(0);
-                            } else if (ServerConfig.KMS148orLater()) {
-                                data.Encode1(0);
-                                data.Encode2(0);
-                                data.Encode2(0);
                             }
                         }
-                        if ((datamask & 2147483648L) > 0) {
-                            if (ServerConfig.KMS149orLater()) {
-                                data.Encode2(0);
-                            }
-                        }
-                        if (ServerConfig.KMS197orLater()) {
-                            data.Encode4(0);
-                        } else if (ServerConfig.KMS160orLater()) {
+                    }
+                    if ((datamask & 268435456) > 0) {
+                        if (ServerConfig.KMS160orLater()) {
                             data.Encode4(0);
                             data.Encode4(0);
-                        }
-                        if (ServerConfig.KMS197orLater()) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                        } else if (ServerConfig.KMS148orLater()) {
                             data.Encode1(0);
-                            if ((datamask & 4294967296L) > 0) {
-                                data.Encode4(0);
-                                data.Encode4(0);
-                            }
-                            if ((datamask & 8589934592L) > 0) {
-                                data.Encode1(0);
-                                data.Encode2(0);
-                            }
-                            if ((datamask & 17179869184L) > 0) {
-                                data.Encode1(0);
-                            }
-                            if ((datamask & 34359738368L) > 0) {
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode1(0);
-                            }
-                            if ((datamask & 68719476736L) > 0) {
-                                data.Encode2(0);
-                                data.Encode2(0);
-                            }
-                            if ((datamask & 137438953472L) > 0) {
-                                data.Encode1(0);
-                            }
-                            if ((datamask & 274877906944L) > 0) {
-                                // 005CC6C0
-                                {
-                                    data.EncodeStr("KMS197TEST");
-                                    data.Encode4(0);
-                                    data.Encode4(0);
-                                    data.Encode4(0);
-                                    data.Encode4(0);
-                                    data.Encode4(0);
-                                    data.Encode1(0);
-                                    data.Encode4(0);
-                                    data.Encode4(0);
-                                    data.Encode4(0);
-                                }
-                                data.Encode4(0);
-                                data.Encode4(0);
-                            }
-                            if ((datamask & 549755813888L) > 0) {
-                                data.Encode1(0);
-                            }
-                            if ((datamask & 4398046511104L) > 0) {
-                                data.Encode4(0);
-                                data.Encode8(0);
-                                data.Encode4(0);
-                            }
-                        }
-                    }
-                    break;
-                }
-            case TWMS:
-                {
-                    if (Version.PreBB()) {
-                        if (ServerConfig.TWMS94orLater()) {
-                            if ((datamask & 131072) > 0) {
-                                data.Encode4(chr.getMonsterBookCover());
-                            }
-                            if ((datamask & 65536) > 0) {
-                                data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
-                            }
-                            if ((datamask & 262144) > 0) {
-                                data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                            }
-                            if ((datamask & 524288) > 0) {
-                                data.Encode2(0);
-                            }
-                            if (ServerConfig.TWMS121orLater()) {
-                                if ((datamask & 2097152) > 0) {
-                                    data.Encode2(0);
-                                }
-                                if ((datamask & 4194304) > 0) {
-                                    data.Encode2(0); // not 0, Encode2, EncodeBuffer8
-                                }
-                            } else {
-                                // TWMS v94
-                                if ((datamask & 1048576) > 0) {
-                                    data.Encode2(0);
-                                }
-                            }
-                        }
-                    } else {
-                        if ((datamask & 262144) > 0) {
-                            data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                        }
-                        if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
-                            data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
-                        }
-                        if ((datamask & 4194304) > 0) {
-                            data.Encode2(0); // not 0, Encode2, EncodeBuffer8
-                        }
-                        if (ServerConfig.TWMS148orLater()) {
-                            if ((datamask & 67108864) > 0) {
-                                data.Encode2(0);
-                            }
-                            if ((datamask & 536870912) > 0) {
-                                for (int i = 0; i < (4 + 4 + 3 + 2); i++) {
-                                    data.Encode4(0);
-                                }
-                            }
-                            if ((datamask & 268435456) > 0) {
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode4(0);
-                            }
-                            if ((datamask & 2147483648L) > 0) {
-                                data.Encode2(0);
-                            }
-                            if ((datamask & 4294967296L) > 0) {
-                                data.Encode4(0);
-                                data.Encode4(0);
-                            }
-                            if ((datamask & 8589934592L) > 0) {
-                                data.EncodeZeroBytes(84);
-                                data.Encode1(0);
-                            }
-                            if ((datamask & 2147483648L) > 0) {
-                                data.Encode2(0);
-                            }
-                            if ((datamask & 4294967296L) > 0) {
-                                data.Encode2(0);
-                            }
-                            if ((datamask & 17179869184L) > 0) {
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.EncodeZeroBytes(32);
-                            }
-                            break;
-                        }
-                        if ((datamask & 8388608) > 0) {
                             data.Encode2(0);
-                        }
-                        if ((datamask & 16777216) > 0) {
                             data.Encode2(0);
                         }
                     }
-                    break;
+                    if ((datamask & 2147483648L) > 0) {
+                        if (ServerConfig.KMS149orLater()) {
+                            data.Encode2(0);
+                        }
+                    }
+                    if (ServerConfig.KMS197orLater()) {
+                        data.Encode4(0);
+                    } else if (ServerConfig.KMS160orLater()) {
+                        data.Encode4(0);
+                        data.Encode4(0);
+                    }
+                    if (ServerConfig.KMS197orLater()) {
+                        data.Encode1(0);
+                        if ((datamask & 4294967296L) > 0) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                        }
+                        if ((datamask & 8589934592L) > 0) {
+                            data.Encode1(0);
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 17179869184L) > 0) {
+                            data.Encode1(0);
+                        }
+                        if ((datamask & 34359738368L) > 0) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode1(0);
+                        }
+                        if ((datamask & 68719476736L) > 0) {
+                            data.Encode2(0);
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 137438953472L) > 0) {
+                            data.Encode1(0);
+                        }
+                        if ((datamask & 274877906944L) > 0) {
+                            // 005CC6C0
+                            {
+                                data.EncodeStr("KMS197TEST");
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode1(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                            }
+                            data.Encode4(0);
+                            data.Encode4(0);
+                        }
+                        if ((datamask & 549755813888L) > 0) {
+                            data.Encode1(0);
+                        }
+                        if ((datamask & 4398046511104L) > 0) {
+                            data.Encode4(0);
+                            data.Encode8(0);
+                            data.Encode4(0);
+                        }
+                    }
                 }
-            case CMS:
-                {
-                    if (Version.PreBB()) {
+                break;
+            }
+            case TWMS: {
+                if (Version.PreBB()) {
+                    if (Version.GreaterOrEqual(Region.TWMS, 94)) {
                         if ((datamask & 131072) > 0) {
                             data.Encode4(chr.getMonsterBookCover());
                         }
@@ -758,24 +667,31 @@ public class DataCharacterData {
                         if ((datamask & 524288) > 0) {
                             data.Encode2(0);
                         }
-                        // 宅配?
-                        if ((datamask & 2097152) > 0) {
-                            data.Encode2(0);
+                        if (ServerConfig.TWMS121orLater()) {
+                            if ((datamask & 2097152) > 0) {
+                                data.Encode2(0);
+                            }
+                            if ((datamask & 4194304) > 0) {
+                                data.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                            }
+                        } else {
+                            // TWMS v94
+                            if ((datamask & 1048576) > 0) {
+                                data.Encode2(0);
+                            }
                         }
-                        if ((datamask & 4194304) > 0) {
-                            data.Encode2(0); // not 0, Encode2, EncodeBuffer20
-                        }
-                    } else {
-                        // CMS104, same as TWMS148
-                        if ((datamask & 262144) > 0) {
-                            data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                        }
-                        if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
-                            data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
-                        }
-                        if ((datamask & 4194304) > 0) {
-                            data.Encode2(0);
-                        }
+                    }
+                } else {
+                    if ((datamask & 262144) > 0) {
+                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    }
+                    if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
+                        data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
+                    }
+                    if ((datamask & 4194304) > 0) {
+                        data.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                    }
+                    if (ServerConfig.TWMS148orLater()) {
                         if ((datamask & 67108864) > 0) {
                             data.Encode2(0);
                         }
@@ -814,217 +730,19 @@ public class DataCharacterData {
                             data.Encode4(0);
                             data.EncodeZeroBytes(32);
                         }
-                    }
-                    break;
-                }
-            case MSEA:
-                {
-                    if ((datamask & 131072) > 0) {
-                        data.Encode4(chr.getMonsterBookCover());
-                    }
-                    if ((datamask & 65536) > 0) {
-                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
-                    }
-                    if ((datamask & 262144) > 0) {
-                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                    }
-                    if ((datamask & 524288) > 0) {
-                        data.Encode2(0);
-                    }
-                    if ((datamask & 2097152) > 0) {
-                        data.Encode2(0);
-                    }
-                    break;
-                }
-            case GMS:
-                {
-                    if (ServerConfig.GMS95orLater()) {
-                        // NewYearCardRecord
-                        if ((datamask & 262144) > 0) {
-                            data.Encode2(0);
-                        }
-                        // InitQuestExFromRawStr
-                        if ((datamask & 524288) > 0) {
-                            data.Encode2(0);
-                        }
-                        if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
-                            data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
-                        }
-                        // 0x400000 QuestCompleteOld
-                        if ((datamask & 4194304) > 0) {
-                            data.Encode2(0);
-                        }
-                        if ((datamask & 8388608) > 0) {
-                            // VisitorQuestLog
-                            data.Encode2(0);
-                        }
-                    } else if (ServerConfig.GMS83orLater()) {
-                        if ((datamask & 131072) > 0) {
-                            data.Encode4(chr.getMonsterBookCover());
-                        }
-                        if ((datamask & 65536) > 0) {
-                            data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
-                        }
-                        if ((datamask & 262144) > 0) {
-                            data.Encode2(0);
-                        }
-                        if ((datamask & 524288) > 0) {
-                            data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                        }
-                        if ((datamask & 1048576) > 0) {
-                            data.Encode2(0);
-                        }
-                        if (ServerConfig.GMS91orLater()) {
-                            if ((datamask & 2097152) > 0) {
-                                data.Encode2(0);
-                            }
-                        }
-                    } else {
-                        if ((datamask & 131072) > 0) {
-                            data.Encode4(chr.getMonsterBookCover());
-                        }
-                        if (ServerConfig.GMS72orLater()) {
-                            if ((datamask & 65536) > 0) {
-                                data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
-                            }
-                        }
-                        if (ServerConfig.GMS65orLater()) {
-                            if ((datamask & 262144) > 0) {
-                                data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                            }
-                        }
-                        if (ServerConfig.GMS72orLater()) {
-                            if ((datamask & 524288) > 0) {
-                                data.Encode2(0);
-                            }
-                            if ((datamask & 1048576) > 0) {
-                                data.Encode2(0);
-                            }
-                        }
-                    }
-                    break;
-                }
-            case EMS:
-                {
-                    if ((datamask & 262144) > 0) {
-                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                    }
-                    if (Version.PostBB()) {
-                        if ((datamask & 16777216) > 0) {
-                            data.Encode2(0); // unknown
-                        }
-                        if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
-                            data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
-                        }
-                        if ((datamask & 4194304) > 0) {
-                            data.Encode2(0);
-                        }
-                        if (ServerConfig.EMS89orLater()) {
-                            if ((datamask & 268435456L) > 0) {
-                                data.Encode2(0);
-                            }
-                            if ((datamask & 2147483648L) > 0) {
-                                for (int i = 0; i < (4 + 4 + 3 + 2); i++) {
-                                    data.Encode4(0);
-                                }
-                            }
-                            if ((datamask & 1073741824L) > 0) {
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode4(0);
-                            }
-                            if ((datamask & 8589934592L) > 0) {
-                                data.Encode2(0);
-                            }
-                            if ((datamask & 17179869184L) > 0) {
-                                data.Encode4(0);
-                                data.Encode4(0);
-                            }
-                            if ((datamask & 34359738368L) > 0) {
-                                data.Encode1(0);
-                                data.Encode2(0);
-                            }
-                            if ((datamask & 68719476736L) > 0) {
-                                data.Encode1(0);
-                            }
-                            if ((datamask & 137438953472L) > 0) {
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode1(0);
-                            }
-                            if ((datamask & 549755813888L) > 0) {
-                                data.Encode4(0);
-                                data.Encode4(0);
-                                data.Encode8(0);
-                            }
-                            data.Encode1(0);
-                            data.Encode1(0);
-                        }
-                        if ((datamask & 8388608) > 0) {
-                            data.Encode2(0);
-                        }
-                    } else {
-                        if ((datamask & 524288) > 0) {
-                            data.Encode2(0);
-                        }
-                        if ((datamask & 2048) > 0) {
-                            data.Encode2(0);
-                        }
-                    }
-                    break;
-                }
-            case VMS:
-                {
-                    if ((datamask & 131072) > 0) {
-                        data.Encode4(chr.getMonsterBookCover());
-                    }
-                    if ((datamask & 65536) > 0) {
-                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
-                    }
-                    if ((datamask & 262144) > 0) {
-                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                    }
-                    break;
-                }
-            case BMS:
-                {
-                    if ((datamask & 262144) > 0) {
-                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                    }
-                    if ((datamask & 524288) > 0) {
-                        data.Encode2(0);
-                    }
-                    if ((datamask & 131072) > 0) {
-                        data.Encode4(chr.getMonsterBookCover());
-                    }
-                    if ((datamask & 65536) > 0) {
-                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
-                    }
-                    break;
-                }
-            case THMS:
-                {
-                    // THMS96
-                    if (Version.PostBB()) {
-                        if ((datamask & 262144) > 0) {
-                            data.Encode2(0);
-                        }
-                        if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
-                            data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
-                        }
-                        // 0x400000 QuestCompleteOld
-                        if ((datamask & 4194304) > 0) {
-                            data.Encode2(0); // not 0, Encode2, EncodeBuffer8
-                        }
-                        // 0x800000
-                        if ((datamask & 8388608) > 0) {
-                            data.Encode2(0); // not 0, Encode2, Encode2
-                        }
                         break;
                     }
-                    // PreBB
+                    if ((datamask & 8388608) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 16777216) > 0) {
+                        data.Encode2(0);
+                    }
+                }
+                break;
+            }
+            case CMS: {
+                if (Version.PreBB()) {
                     if ((datamask & 131072) > 0) {
                         data.Encode4(chr.getMonsterBookCover());
                     }
@@ -1037,13 +755,15 @@ public class DataCharacterData {
                     if ((datamask & 524288) > 0) {
                         data.Encode2(0);
                     }
+                    // 宅配?
                     if ((datamask & 2097152) > 0) {
                         data.Encode2(0);
                     }
-                    break;
-                }
-            case IMS:
-                {
+                    if ((datamask & 4194304) > 0) {
+                        data.Encode2(0); // not 0, Encode2, EncodeBuffer20
+                    }
+                } else {
+                    // CMS104, same as TWMS148
                     if ((datamask & 262144) > 0) {
                         data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                     }
@@ -1053,86 +773,355 @@ public class DataCharacterData {
                     if ((datamask & 4194304) > 0) {
                         data.Encode2(0);
                     }
-                    break;
-                }
-            case JMS:
-            case JMST:
-            default:
-                {
-                    // 0x7C JMS, Present v146-v194
-                    if (Region.IsJMS()) {
-                        if ((datamask & 124) > 0) {
-                            data.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
+                    if ((datamask & 67108864) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 536870912) > 0) {
+                        for (int i = 0; i < (4 + 4 + 3 + 2); i++) {
+                            data.Encode4(0);
                         }
                     }
-                    if (ServerConfig.JMS146orLater()) {
-                        // 0x20000 JMS v146-v194
-                        if ((datamask & 131072) > 0) {
-                            data.Encode4(chr.getMonsterBookCover());
+                    if ((datamask & 268435456) > 0) {
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.Encode4(0);
+                    }
+                    if ((datamask & 2147483648L) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 4294967296L) > 0) {
+                        data.Encode4(0);
+                        data.Encode4(0);
+                    }
+                    if ((datamask & 8589934592L) > 0) {
+                        data.EncodeZeroBytes(84);
+                        data.Encode1(0);
+                    }
+                    if ((datamask & 2147483648L) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 4294967296L) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 17179869184L) > 0) {
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.EncodeZeroBytes(32);
+                    }
+                }
+                break;
+            }
+            case MSEA: {
+                if ((datamask & 131072) > 0) {
+                    data.Encode4(chr.getMonsterBookCover());
+                }
+                if ((datamask & 65536) > 0) {
+                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                }
+                if ((datamask & 262144) > 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                }
+                if ((datamask & 524288) > 0) {
+                    data.Encode2(0);
+                }
+                if ((datamask & 2097152) > 0) {
+                    data.Encode2(0);
+                }
+                break;
+            }
+            case GMS: {
+                if (Version.GreaterOrEqual(Region.GMS, 95)) {
+                    // NewYearCardRecord
+                    if ((datamask & 262144) > 0) {
+                        data.Encode2(0);
+                    }
+                    // InitQuestExFromRawStr
+                    if ((datamask & 524288) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
+                        data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
+                    }
+                    // 0x400000 QuestCompleteOld
+                    if ((datamask & 4194304) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 8388608) > 0) {
+                        // VisitorQuestLog
+                        data.Encode2(0);
+                    }
+                } else if (ServerConfig.GMS83orLater()) {
+                    if ((datamask & 131072) > 0) {
+                        data.Encode4(chr.getMonsterBookCover());
+                    }
+                    if ((datamask & 65536) > 0) {
+                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    }
+                    if ((datamask & 262144) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 524288) > 0) {
+                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    }
+                    if ((datamask & 1048576) > 0) {
+                        data.Encode2(0);
+                    }
+                    if (ServerConfig.GMS91orLater()) {
+                        if ((datamask & 2097152) > 0) {
+                            data.Encode2(0);
                         }
-                        // 0x10000 JMS [addMonsterBookInfo] v165-v194
+                    }
+                } else {
+                    if ((datamask & 131072) > 0) {
+                        data.Encode4(chr.getMonsterBookCover());
+                    }
+                    if (ServerConfig.GMS72orLater()) {
                         if ((datamask & 65536) > 0) {
                             data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                         }
                     }
-                    if (ServerConfig.JMST110()) {
-                        data.Encode4(0);
-                        data.Encode2(0);
-                        data.Encode4(0);
-                        data.Encode4(0);
-                    } else {
-                        if (ServerConfig.JMS194orLater()) {
-                            // 0x10000000
-                            if ((datamask & 268435456) > 0) {
-                                data.Encode4(0);
-                            }
-                            // 0x20000000
-                            if ((datamask & 536870912) > 0) {
-                                data.Encode2(0); // not 0, Encode2
-                            }
-                        }
-                    }
-                    if (ServerConfig.JMS164orLater()) {
-                        // 0x40000 (GMS 0x80000) [QuestInfoPacket] v165-v194
+                    if (Version.GreaterOrEqual(Region.GMS, 65)) {
                         if ((datamask & 262144) > 0) {
                             data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                         }
-                        if (Version.PreBB()) {
-                            if ((datamask & 524288) > 0) {
-                                // 0x80000 JMS v165, v186, not in v188
-                                data.Encode2(0); // not 0 -> Encode4, Encode2
-                            }
-                            if (ServerConfig.JMS186orLater()) {
-                                if ((datamask & 2097152) > 0) {
-                                    // 0x200000 VisitorQuestLog (GMS 0x800000)
-                                    data.Encode2(0); // not 0 -> Encode2, Encode2
-                                }
-                            }
+                    }
+                    if (ServerConfig.GMS72orLater()) {
+                        if ((datamask & 524288) > 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 1048576) > 0) {
+                            data.Encode2(0);
                         }
                     }
-                    // v188-v194
-                    if (Version.PostBB()) {
-                        // 0x200000
-                        if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
-                            data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
+                }
+                break;
+            }
+            case EMS: {
+                if ((datamask & 262144) > 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                }
+                if (Version.PostBB()) {
+                    if ((datamask & 16777216) > 0) {
+                        data.Encode2(0); // unknown
+                    }
+                    if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
+                        data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
+                    }
+                    if ((datamask & 4194304) > 0) {
+                        data.Encode2(0);
+                    }
+                    if (ServerConfig.EMS89orLater()) {
+                        if ((datamask & 268435456L) > 0) {
+                            data.Encode2(0);
                         }
-                        // 0x400000 QuestCompleteOld
-                        if ((datamask & 4194304) > 0) {
-                            data.Encode2(0); // not 0, Encode2, EncodeBuffer8
-                        }
-                        if (ServerConfig.JMST110()) {
-                            if ((datamask & 33554432) > 0) {
-                                data.Encode2(0);
+                        if ((datamask & 2147483648L) > 0) {
+                            for (int i = 0; i < (4 + 4 + 3 + 2); i++) {
+                                data.Encode4(0);
                             }
-                        } else {
-                            // 0x800000
-                            if ((datamask & 8388608) > 0) {
-                                data.Encode2(0); // not 0, Encode2, Encode2
-                            }
                         }
+                        if ((datamask & 1073741824L) > 0) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode4(0);
+                        }
+                        if ((datamask & 8589934592L) > 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 17179869184L) > 0) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                        }
+                        if ((datamask & 34359738368L) > 0) {
+                            data.Encode1(0);
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 68719476736L) > 0) {
+                            data.Encode1(0);
+                        }
+                        if ((datamask & 137438953472L) > 0) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode1(0);
+                        }
+                        if ((datamask & 549755813888L) > 0) {
+                            data.Encode4(0);
+                            data.Encode4(0);
+                            data.Encode8(0);
+                        }
+                        data.Encode1(0);
+                        data.Encode1(0);
+                    }
+                    if ((datamask & 8388608) > 0) {
+                        data.Encode2(0);
+                    }
+                } else {
+                    if ((datamask & 524288) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 2048) > 0) {
+                        data.Encode2(0);
+                    }
+                }
+                break;
+            }
+            case VMS: {
+                if ((datamask & 131072) > 0) {
+                    data.Encode4(chr.getMonsterBookCover());
+                }
+                if ((datamask & 65536) > 0) {
+                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                }
+                if ((datamask & 262144) > 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                }
+                break;
+            }
+            case BMS: {
+                if ((datamask & 262144) > 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                }
+                if ((datamask & 524288) > 0) {
+                    data.Encode2(0);
+                }
+                if ((datamask & 131072) > 0) {
+                    data.Encode4(chr.getMonsterBookCover());
+                }
+                if ((datamask & 65536) > 0) {
+                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                }
+                break;
+            }
+            case THMS: {
+                // THMS96
+                if (Version.PostBB()) {
+                    if ((datamask & 262144) > 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
+                        data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
+                    }
+                    // 0x400000 QuestCompleteOld
+                    if ((datamask & 4194304) > 0) {
+                        data.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                    }
+                    // 0x800000
+                    if ((datamask & 8388608) > 0) {
+                        data.Encode2(0); // not 0, Encode2, Encode2
                     }
                     break;
                 }
+                // PreBB
+                if ((datamask & 131072) > 0) {
+                    data.Encode4(chr.getMonsterBookCover());
+                }
+                if ((datamask & 65536) > 0) {
+                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                }
+                if ((datamask & 262144) > 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                }
+                if ((datamask & 524288) > 0) {
+                    data.Encode2(0);
+                }
+                if ((datamask & 2097152) > 0) {
+                    data.Encode2(0);
+                }
+                break;
+            }
+            case IMS: {
+                if ((datamask & 262144) > 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                }
+                if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
+                    data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
+                }
+                if ((datamask & 4194304) > 0) {
+                    data.Encode2(0);
+                }
+                break;
+            }
+            case JMS:
+            case JMST:
+            default: {
+                // 0x7C JMS, Present v146-v194
+                if (Region.IsJMS()) {
+                    if ((datamask & 124) > 0) {
+                        data.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
+                    }
+                }
+                if (ServerConfig.JMS146orLater()) {
+                    // 0x20000 JMS v146-v194
+                    if ((datamask & 131072) > 0) {
+                        data.Encode4(chr.getMonsterBookCover());
+                    }
+                    // 0x10000 JMS [addMonsterBookInfo] v165-v194
+                    if ((datamask & 65536) > 0) {
+                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    }
+                }
+                if (ServerConfig.JMST110()) {
+                    data.Encode4(0);
+                    data.Encode2(0);
+                    data.Encode4(0);
+                    data.Encode4(0);
+                } else {
+                    if (ServerConfig.JMS194orLater()) {
+                        // 0x10000000
+                        if ((datamask & 268435456) > 0) {
+                            data.Encode4(0);
+                        }
+                        // 0x20000000
+                        if ((datamask & 536870912) > 0) {
+                            data.Encode2(0); // not 0, Encode2
+                        }
+                    }
+                }
+                if (ServerConfig.JMS164orLater()) {
+                    // 0x40000 (GMS 0x80000) [QuestInfoPacket] v165-v194
+                    if ((datamask & 262144) > 0) {
+                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    }
+                    if (Version.PreBB()) {
+                        if ((datamask & 524288) > 0) {
+                            // 0x80000 JMS v165, v186, not in v188
+                            data.Encode2(0); // not 0 -> Encode4, Encode2
+                        }
+                        if (ServerConfig.JMS186orLater()) {
+                            if ((datamask & 2097152) > 0) {
+                                // 0x200000 VisitorQuestLog (GMS 0x800000)
+                                data.Encode2(0); // not 0 -> Encode2, Encode2
+                            }
+                        }
+                    }
+                }
+                // v188-v194
+                if (Version.PostBB()) {
+                    // 0x200000
+                    if ((datamask & 2097152) > 0 && (chr.getJob() / 100 == 33)) {
+                        data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
+                    }
+                    // 0x400000 QuestCompleteOld
+                    if ((datamask & 4194304) > 0) {
+                        data.Encode2(0); // not 0, Encode2, EncodeBuffer8
+                    }
+                    if (ServerConfig.JMST110()) {
+                        if ((datamask & 33554432) > 0) {
+                            data.Encode2(0);
+                        }
+                    } else {
+                        // 0x800000
+                        if ((datamask & 8388608) > 0) {
+                            data.Encode2(0); // not 0, Encode2, Encode2
+                        }
+                    }
+                }
+                break;
+            }
         }
         return data.get().getBytes();
     }
@@ -1156,5 +1145,5 @@ public class DataCharacterData {
         }
         return data.get().getBytes();
     }
-    
+
 }
