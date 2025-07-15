@@ -20,6 +20,7 @@ package packet.response;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import config.Region;
 import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
@@ -43,14 +44,14 @@ public class ResCStage {
     public static final MaplePacket SetField(MapleCharacter chr, boolean loggedin, MapleMap to, int spawnPoint) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetField);
         // JMS184orLater
-        if (((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsGMS()) && ServerConfig.JMS186orLater())
+        if (((Region.IsJMS() || Region.IsCMS() || Region.IsGMS()) && ServerConfig.JMS186orLater())
                 || ServerConfig.EMS89orLater()) {
             sp.EncodeBuffer(DataCClientOptMan.EncodeOpt()); // 2 bytes
         }
         // チャンネル
         sp.Encode4(chr.getClient().getChannel() - 1); // m_nChannelID
         if (ServerConfig.KMS138orLater()
-                || (ServerConfig.IsJMS() && ServerConfig.JMS146orLater())
+                || (Region.IsJMS() && ServerConfig.JMS146orLater())
                 || ServerConfig.EMS89orLater()
                 || ServerConfig.TWMS148orLater()
                 || ServerConfig.CMS104orLater()) {
@@ -61,13 +62,13 @@ public class ResCStage {
             sp.Encode1(1); // Supreme/Ibara World
         }
 
-        if (((ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsTHMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ServerConfig.IsEMS() || ServerConfig.IsGMS() || ServerConfig.IsIMS()) && ServerConfig.JMS180orLater())
-                || (ServerConfig.IsKMS() && Version.PostBB())) {
+        if (((Region.IsJMS() || Region.IsTWMS() || Region.IsTHMS() || Region.IsCMS() || Region.IsMSEA() || Region.IsEMS() || Region.IsGMS() || Region.IsIMS()) && ServerConfig.JMS180orLater())
+                || (Region.IsKMS() && Version.PostBB())) {
             sp.Encode4(0); // m_dwOldDriverID
         }
 
         sp.Encode1(chr.getPortalCount()); // sNotifierMessage?
-        if (ServerConfig.IsCMS()) {
+        if (Region.IsCMS()) {
             sp.Encode1(0);
         }
         if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
@@ -87,7 +88,7 @@ public class ResCStage {
             // キャラクター情報
             sp.EncodeBuffer(DataCharacterData.Encode(chr));
             // JMS184orLater
-            if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS())
+            if ((Region.IsJMS() || Region.IsCMS() || Region.IsTWMS() || Region.IsGMS())
                     && ServerConfig.JMS186orLater()) {
                 // ログアウトギフト
                 sp.EncodeBuffer(DataCWvsContext.LogoutGiftConfig());
@@ -108,7 +109,7 @@ public class ResCStage {
                 sp.Encode4(chr.getStat().getHp());
             }
 
-            if (ServerConfig.IsEMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS() || ServerConfig.IsVMS() || ServerConfig.IsBMS() || ServerConfig.IsTHMS() || ServerConfig.IsMSEA()) {
+            if (Region.IsEMS() || Region.IsTWMS() || Region.IsGMS() || Region.IsVMS() || Region.IsBMS() || Region.IsTHMS() || Region.IsMSEA()) {
                 boolean m_bChaseEnable = false;
                 sp.Encode1(m_bChaseEnable ? 1 : 0); // m_bChaseEnable
                 if (m_bChaseEnable) {
@@ -225,28 +226,28 @@ public class ResCStage {
         sp.EncodeBuffer(DataCharacterData.Encode(c.getPlayer()));
         // CCashShop::LoadData
         {
-            if (ServerConfig.IsEMS() || ServerConfig.IsGMS() || ServerConfig.IsBMS()) {
+            if (Region.IsEMS() || Region.IsGMS() || Region.IsBMS()) {
                 sp.Encode1(1); // EMS v55
             }
-            if (!(ServerConfig.IsVMS() || ServerConfig.IsTHMS() || ServerConfig.IsMSEA())) {
+            if (!(Region.IsVMS() || Region.IsTHMS() || Region.IsMSEA())) {
                 sp.EncodeStr(c.getAccountName());
             }
-            if (ServerConfig.IsEMS()) {
+            if (Region.IsEMS()) {
                 sp.Encode1(0); // EMS v55
             }
             // CWvsContext::SetSaleInfo
             {
-                if (ServerConfig.IsGMS() || ServerConfig.IsBMS()) {
+                if (Region.IsGMS() || Region.IsBMS()) {
                     sp.Encode4(0);
                 }
 
                 if (Version.PostBB() || ServerConfig.TWMS121orLater()) {
-                    if (ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsEMS()) {
+                    if (Region.IsJMS() || Region.IsTWMS() || Region.IsEMS()) {
                         sp.Encode4(0); // NotSaleCount
                     }
                 }
                 sp.EncodeBuffer(ResCCashShop.getModifiedData());
-                if (ServerConfig.JMS180orLater() && !ServerConfig.IsEMS()) { // X EMS v55
+                if (ServerConfig.JMS180orLater() && !Region.IsEMS()) { // X EMS v55
                     sp.Encode2(0); // non 0, Decode4, DecodeStr
                 }
                 sp.EncodeBuffer(ResCCashShop.getDiscountRates());
@@ -260,12 +261,12 @@ public class ResCStage {
         }
         sp.Encode1(0); // m_bEventOn
 
-        if (ServerConfig.IsIMS()) {
+        if (Region.IsIMS()) {
             sp.Encode1(0);
         }
 
         // m_nHighestCharacterLevelInThisAccount
-        if (ServerConfig.IsGMS()) {
+        if (Region.IsGMS()) {
             sp.Encode4(0);
         }
         return sp.get();

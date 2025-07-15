@@ -24,6 +24,7 @@ import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import config.Region;
 import config.ServerConfig;
 import config.Version;
 import debug.Debug;
@@ -64,7 +65,7 @@ public class ReqCLogin {
                 return true;
             }
             case CP_Check2ndPassword: {
-                if (ServerConfig.IsJMS() && Version.PostBB()) {
+                if (Region.IsJMS() && Version.PostBB()) {
                     ServerListRequest(c);
                 }
                 return true;
@@ -272,7 +273,7 @@ public class ReqCLogin {
         if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
             int unk = cp.Decode4();
         }
-        if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && Version.getVersion() == 73)) {
+        if (ServerConfig.JMS165orLater() && !(Region.IsGMS() && Version.getVersion() == 73)) {
             job_type = cp.Decode4();
 
             // バージョンによって異なる (左から順番)
@@ -345,7 +346,7 @@ public class ReqCLogin {
             body_part_count--;
             hair_id = cp.Decode4();
             body_part_count--;
-            if (ServerConfig.IsEMS() && !ServerConfig.EMS89orLater()) { // ?_? mercdes OK
+            if (Region.IsEMS() && !ServerConfig.EMS89orLater()) { // ?_? mercdes OK
                 hair_color = cp.Decode4();
                 body_part_count--;
                 skin_color = cp.Decode4();
@@ -364,7 +365,7 @@ public class ReqCLogin {
 
             face_id = cp.Decode4();
             hair_id = cp.Decode4();
-            if (ServerConfig.IsMSEA() || ServerConfig.IsTHMS() || ServerConfig.IsGMS() || ServerConfig.IsEMS() || ServerConfig.IsBMS() || ServerConfig.IsVMS() || ServerConfig.IsBMS()) {
+            if (Region.IsMSEA() || Region.IsTHMS() || Region.IsGMS() || Region.IsEMS() || Region.IsBMS() || Region.IsVMS() || Region.IsBMS()) {
                 hair_color = cp.Decode4();
                 skin_color = cp.Decode4();
             }
@@ -461,7 +462,7 @@ public class ReqCLogin {
     }
 
     public static final void CharlistRequest(ClientPacket cp, final MapleClient c) {
-        if (ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater() || ServerConfig.IsKMS() || ServerConfig.IsIMS() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater() || Region.IsKMS() || Region.IsIMS() || ServerConfig.TWMS148orLater()) {
             byte unk = cp.Decode1();
         }
 
@@ -478,7 +479,7 @@ public class ReqCLogin {
         int server = cp.Decode1(); // nWorldID
         final int channel = cp.Decode1(); // nChannelID)
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.GMS83orLater() || ServerConfig.IsIMS() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.GMS83orLater() || Region.IsIMS() || ServerConfig.CMS104orLater()) {
             int ip = cp.Decode4(); // S_addr
         }
 
@@ -493,13 +494,13 @@ public class ReqCLogin {
     public static final void DeleteChar(ClientPacket cp, final MapleClient c) {
         byte state = 0;
         // BB後
-        if (Version.PostBB() && !ServerConfig.IsKMS()) {
+        if (Version.PostBB() && !Region.IsKMS()) {
             String MapleID = cp.DecodeStr();
             if (!MapleID.equals(c.getAccountName())) {
                 // state = 0以外にすると切断されます
             }
         }
-        if (ServerConfig.IsKMS()) {
+        if (Region.IsKMS()) {
             if (ServerConfig.KMS160orLater()) {
                 String secondpw = cp.DecodeStr();
             } else {
@@ -508,10 +509,10 @@ public class ReqCLogin {
             }
         }
 
-        if (ServerConfig.IsEMS() || ServerConfig.IsGMS()) {
+        if (Region.IsEMS() || Region.IsGMS()) {
             int unke = cp.Decode4();
         }
-        if (ServerConfig.IsTHMS() || ServerConfig.IsVMS() || ServerConfig.IsBMS()) {
+        if (Region.IsTHMS() || Region.IsVMS() || Region.IsBMS()) {
             String key = cp.DecodeStr(); // 32 bytes hex or PIC
         }
 

@@ -195,7 +195,7 @@ public class ResCWvsContext {
         }
         // JMS v187+
         if (Version.PostBB()) {
-            if (!ServerConfig.IsIMS() && !ServerConfig.IsTHMS()) {
+            if (!Region.IsIMS() && !Region.IsTHMS()) {
                 sp.Encode4(buff_mask[4]);
             }
         }
@@ -227,12 +227,12 @@ public class ResCWvsContext {
         // 0 = lock   -> do not clear lock flag
         // 1 = unlock -> clear lock flag
         sp.Encode1(unlock); // CWvsContext->bExclRequestSent
-        if ((ServerConfig.IsEMS() && !ServerConfig.EMS89orLater()) || (ServerConfig.TWMS74orLater() && !ServerConfig.TWMS94orLater())) {
+        if ((Region.IsEMS() && !ServerConfig.EMS89orLater()) || (ServerConfig.TWMS74orLater() && !ServerConfig.TWMS94orLater())) {
             sp.Encode1(0); // EMS v55
         }
         sp.EncodeBuffer(DataGW_CharacterStat.EncodeChangeStat(chr, statmask));
         if (Version.PreBB()) {
-            if (ServerConfig.IsJMS()) {
+            if (Region.IsJMS()) {
                 // Pet
                 if ((statmask & OpsChangeStat.CS_PETSN.get()) > 0) {
                     int v5 = 0; // CVecCtrlUser::AddMovementInfo
@@ -334,7 +334,7 @@ public class ResCWvsContext {
                 sp.Encode4(0);
                 sp.Encode1(ma.Inc_EXP_MobEventBonusPercentage); // nMobEventBonusPercentage
                 sp.Encode1(0);
-                if (ServerConfig.IsTHMS() && Version.getVersion() == 87) {
+                if (Region.IsTHMS() && Version.getVersion() == 87) {
                     sp.Encode4(ma.Inc_EXP_WeddingBonus); // Wedding Bonus EXP(+%d)
                     sp.Encode4(0); // Party Ring Bonus EXP(+%d)
                     sp.Encode4(0); // EXP Bonus Internet Cafe(+ %d)
@@ -564,7 +564,7 @@ public class ResCWvsContext {
                 }
             }
             // JMS v180-v186, v187以降消滅
-            if (Version.PreBB() && ServerConfig.IsJMS()) {
+            if (Version.PreBB() && Region.IsJMS()) {
                 // Chair List
                 sp.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
                 // CInPacket::DecodeBuffer(v4, iPacket, 4 * chairs);

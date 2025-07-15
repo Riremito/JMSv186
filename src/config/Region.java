@@ -52,68 +52,88 @@ public enum Region {
         return this.value;
     }
 
-    private static Region region_type = Region.JMS;
+    private static Region region = Region.JMS;
 
     public static Region getRegion() {
-        return region_type;
+        return region;
     }
 
     public static int getRegionNumber() {
-        return region_type.get();
+        return region.get();
+    }
+
+    public static String GetRegionName() {
+        return "" + region;
+    }
+
+    public static boolean check(Region r) {
+        if (region == r) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean check(Region[] regions) {
+        for (Region r : regions) {
+            if (region == r) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean setRegion(String region_name) {
         switch (region_name) {
             case "KMS": {
-                region_type = KMS;
+                region = KMS;
                 return true;
             }
             case "KMST": {
-                region_type = KMST;
+                region = KMST;
                 return true;
             }
             case "JMS": {
-                region_type = JMS;
+                region = JMS;
                 return true;
             }
             case "JMST": {
-                region_type = JMST;
+                region = JMST;
                 return true;
             }
             case "CMS": {
-                region_type = CMS;
+                region = CMS;
                 return true;
             }
             case "TWMS": {
-                region_type = TWMS;
+                region = TWMS;
                 return true;
             }
             case "THMS": {
-                region_type = THMS;
+                region = THMS;
                 return true;
             }
             case "MSEA": {
-                region_type = MSEA;
+                region = MSEA;
                 return true;
             }
             case "VMS": {
-                region_type = VMS;
+                region = VMS;
                 return true;
             }
             case "GMS": {
-                region_type = GMS;
+                region = GMS;
                 return true;
             }
             case "EMS": {
-                region_type = EMS;
+                region = EMS;
                 return true;
             }
             case "BMS": {
-                region_type = BMS;
+                region = BMS;
                 return true;
             }
             case "IMS": {
-                region_type = IMS;
+                region = IMS;
                 return true;
             }
             default: {
@@ -121,11 +141,61 @@ public enum Region {
             }
         }
 
-        region_type = unk;
+        region = unk;
         return false;
     }
 
-    public static String GetRegionName() {
-        return "" + region_type;
+    // TODO : replace
+    public static boolean IsEMS() {
+        return Region.getRegion() == Region.EMS;
     }
+
+    public static boolean IsKMS() {
+        return Region.getRegion() == Region.KMS || Region.getRegion() == Region.KMST;
+    }
+
+    public static boolean IsMSEA() {
+        return Region.getRegion() == Region.MSEA;
+    }
+
+    public static boolean IsCMS() {
+        return Region.getRegion() == Region.CMS;
+    }
+
+    public static boolean IsJMS() {
+        return Region.getRegion() == Region.JMS || Region.getRegion() == Region.JMST;
+    }
+
+    public static boolean IsBMS() {
+        return Region.getRegion() == Region.BMS;
+    }
+
+    public static boolean IsIMS() {
+        return Region.getRegion() == Region.IMS;
+    }
+
+    public static boolean IsJMST() {
+        return Region.getRegion() == Region.JMST;
+    }
+
+    public static boolean IsTWMS() {
+        return Region.getRegion() == Region.TWMS;
+    }
+
+    public static boolean IsTHMS() {
+        return Region.getRegion() == Region.THMS;
+    }
+
+    public static boolean IsKMST() {
+        return Region.getRegion() == Region.KMST;
+    }
+
+    public static boolean IsGMS() {
+        return Region.getRegion() == Region.GMS;
+    }
+
+    public static boolean IsVMS() {
+        return Region.getRegion() == Region.VMS;
+    }
+
 }

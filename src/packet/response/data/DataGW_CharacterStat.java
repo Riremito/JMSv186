@@ -49,11 +49,11 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.KMS138orLater() || (ServerConfig.IsTHMS() && Version.PostBB()) || ServerConfig.EMS89orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS138orLater() || (Region.IsTHMS() && Version.PostBB()) || ServerConfig.EMS89orLater() || ServerConfig.CMS104orLater()) {
             // none
-        } else if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || ServerConfig.IsBMS() || ServerConfig.IsVMS()) {
+        } else if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || Region.IsBMS() || Region.IsVMS()) {
             data.EncodeZeroBytes(8);
-        } else if ((ServerConfig.IsJMS() || ServerConfig.IsTHMS() || ServerConfig.IsGMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ((ServerConfig.IsTWMS() || ServerConfig.IsEMS()) && Version.PreBB()))) {
+        } else if ((Region.IsJMS() || Region.IsTHMS() || Region.IsGMS() || Region.IsCMS() || Region.IsMSEA() || ((Region.IsTWMS() || Region.IsEMS()) && Version.PreBB()))) {
             data.EncodeZeroBytes(24);
         }
 
@@ -225,7 +225,7 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode4(0);
-            if (ServerConfig.IsKMS()) {
+            if (Region.IsKMS()) {
                 if (ServerConfig.KMS119orLater()) {
                     if (ServerConfig.KMS160orLater()) {
                         data.EncodeZeroBytes(21);
@@ -316,28 +316,28 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getExp());
         data.Encode2(chr.getFame());
 
-        if ((ServerConfig.IsJMS() || ServerConfig.IsCMS() || ServerConfig.IsTHMS() || ServerConfig.IsTWMS() || ServerConfig.IsGMS() || ServerConfig.IsMSEA() || (ServerConfig.IsEMS() && Version.PostBB()))
+        if ((Region.IsJMS() || Region.IsCMS() || Region.IsTHMS() || Region.IsTWMS() || Region.IsGMS() || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB()))
                 && ServerConfig.JMS146orLater()) {
             data.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 
-        if (ServerConfig.TWMS121orLater() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || (ServerConfig.IsEMS() && Version.PostBB())) {
+        if (ServerConfig.TWMS121orLater() || Region.IsCMS() || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB())) {
             data.Encode8(0);
         }
 
         data.Encode4(chr.getMapId()); // current map id
         data.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
 
-        if (ServerConfig.IsVMS()) {
+        if (Region.IsVMS()) {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.IsGMS() || (ServerConfig.IsEMS() && Version.PreBB()) || ServerConfig.IsBMS()) {
+        if (Region.IsGMS() || (Region.IsEMS() && Version.PreBB()) || Region.IsBMS()) {
             data.Encode4(0);
         }
 
         // KMS 84
-        if (ServerConfig.KMS84orEarlier() || ServerConfig.IsBMS()) {
+        if (ServerConfig.KMS84orEarlier() || Region.IsBMS()) {
             return data.get().getBytes();
         }
         // JMS 180, KMS 95
@@ -345,17 +345,17 @@ public class DataGW_CharacterStat {
             data.Encode2(chr.getSubcategory());
         }
         // KMS, CMS, EMS
-        if (ServerConfig.IsKMS() || ServerConfig.IsCMS() || ServerConfig.IsGMS() || ServerConfig.IsEMS() || ServerConfig.IsIMS() || ServerConfig.IsMSEA()) {
+        if (Region.IsKMS() || Region.IsCMS() || Region.IsGMS() || Region.IsEMS() || Region.IsIMS() || Region.IsMSEA()) {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.IsTHMS()) {
+        if (Region.IsTHMS()) {
             data.Encode4(0);
             return data.get().getBytes();
         }
 
         // TWMS
-        if (ServerConfig.IsTWMS()) {
+        if (Region.IsTWMS()) {
             data.EncodeZeroBytes(25);
             data.Encode1(0);
             data.Encode1(0);
@@ -376,7 +376,7 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
         // Post BB
-        if (ServerConfig.IsJMS() && Version.getVersion() == 187) {
+        if (Region.IsJMS() && Version.getVersion() == 187) {
             data.Encode4(0);
         }
         // JMS v188+

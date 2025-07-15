@@ -178,7 +178,7 @@ public enum Content {
         if (Version.GreaterOrEqual(Region.EMS, 73)) {
             return true;
         }
-        if (Version.RegionCheck(Region.IMS)) {
+        if (Region.check(Region.IMS)) {
             return true;
         }
         // Test Server
@@ -189,10 +189,10 @@ public enum Content {
             return true;
         }
         // no BB
-        if (Version.RegionCheck(Region.BMS)) {
+        if (Region.check(Region.BMS)) {
             return false;
         }
-        if (Version.RegionCheck(Region.VMS)) {
+        if (Region.check(Region.VMS)) {
             return false;
         }
         return false;
@@ -202,7 +202,7 @@ public enum Content {
         if (Version.LessOrEqual(Region.TWMS, 94)) {
             return 15;
         }
-        if (Version.RegionCheck(Region.VMS)) {
+        if (Region.check(Region.VMS)) {
             return 16;
         }
         return 13;
@@ -219,22 +219,22 @@ public enum Content {
         if (Version.LessOrEqual(Region.CMS, 85)) { // not checked
             return true;
         }
-        if (Version.RegionCheck(Region.THMS)) {
+        if (Region.check(Region.THMS)) {
             return true;
         }
-        if (Version.RegionCheck(Region.MSEA)) {
+        if (Region.check(Region.MSEA)) {
             return true;
         }
-        if (Version.RegionCheck(Region.VMS)) {
+        if (Region.check(Region.VMS)) {
             return true;
         }
-        if (Version.RegionCheck(Region.GMS)) {
+        if (Region.check(Region.GMS)) {
             return true;
         }
-        if (Version.RegionCheck(Region.EMS)) {
+        if (Region.check(Region.EMS)) {
             return true;
         }
-        if (Version.RegionCheck(Region.BMS)) {
+        if (Region.check(Region.BMS)) {
             return true;
         }
         return false;

@@ -18,58 +18,6 @@ public class ServerConfig {
     public static final byte DEFAULT_INV_SLOT_CASH = 96;
     private static final byte DEFAULT_INV_SLOT_STORAGE = 4;
 
-    public static boolean IsKMS() {
-        return Region.getRegion() == Region.KMS || Region.getRegion() == Region.KMST;
-    }
-
-    public static boolean IsKMST() {
-        return Region.getRegion() == Region.KMST;
-    }
-
-    public static boolean IsJMS() {
-        return Region.getRegion() == Region.JMS || Region.getRegion() == Region.JMST;
-    }
-
-    public static boolean IsJMST() {
-        return Region.getRegion() == Region.JMST;
-    }
-
-    public static boolean IsCMS() {
-        return Region.getRegion() == Region.CMS;
-    }
-
-    public static boolean IsTWMS() {
-        return Region.getRegion() == Region.TWMS;
-    }
-
-    public static boolean IsTHMS() {
-        return Region.getRegion() == Region.THMS;
-    }
-
-    public static boolean IsGMS() {
-        return Region.getRegion() == Region.GMS;
-    }
-
-    public static boolean IsEMS() {
-        return Region.getRegion() == Region.EMS;
-    }
-
-    public static boolean IsBMS() {
-        return Region.getRegion() == Region.BMS;
-    }
-
-    public static boolean IsMSEA() {
-        return Region.getRegion() == Region.MSEA;
-    }
-
-    public static boolean IsVMS() {
-        return Region.getRegion() == Region.VMS;
-    }
-
-    public static boolean IsIMS() {
-        return Region.getRegion() == Region.IMS;
-    }
-
     private static boolean job_pirate = true;
     private static boolean job_KOC = true;
     private static boolean job_Aran = true;
@@ -233,7 +181,7 @@ public class ServerConfig {
 
     // GMS62 (Pirate) + 3
     public static boolean GMS65orLater() {
-        if (!IsGMS()) {
+        if (!Region.IsGMS()) {
             return false;
         }
 
@@ -246,7 +194,7 @@ public class ServerConfig {
 
     // leak version
     public static boolean GMS95orLater() {
-        if (!IsGMS()) {
+        if (!Region.IsGMS()) {
             return false;
         }
 
@@ -384,7 +332,7 @@ public class ServerConfig {
     }
 
     public static boolean TWMS74orLater() {
-        if (!IsTWMS()) {
+        if (!Region.IsTWMS()) {
             return false;
         }
         if (74 <= Version.getVersion()) {
@@ -394,7 +342,7 @@ public class ServerConfig {
     }
 
     public static boolean TWMS94orLater() {
-        if (!IsTWMS()) {
+        if (!Region.IsTWMS()) {
             return false;
         }
         if (94 <= Version.getVersion()) {
@@ -404,7 +352,7 @@ public class ServerConfig {
     }
 
     public static boolean GMS72orLater() {
-        if (!IsGMS()) {
+        if (!Region.IsGMS()) {
             return false;
         }
         if (72 <= Version.getVersion()) {
@@ -414,7 +362,7 @@ public class ServerConfig {
     }
 
     public static boolean GMS73orLater() {
-        if (!IsGMS()) {
+        if (!Region.IsGMS()) {
             return false;
         }
         if (73 <= Version.getVersion()) {

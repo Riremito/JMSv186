@@ -210,7 +210,7 @@ public class ResCLogin {
         sp.Encode1(result.Get()); // result
 
         // EMS v55-v70
-        if (ServerConfig.IsGMS() || (ServerConfig.IsEMS() && Version.PreBB())) {
+        if (Region.IsGMS() || (Region.IsEMS() && Version.PreBB())) {
             sp.Encode1(0);
             sp.Encode4(0); // unused
         }
@@ -259,7 +259,7 @@ public class ResCLogin {
                             }
                             sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
                             sp.Encode4(3); // should be 3 for KMS v2.114 to ignore personal number
-                            sp.Encode1(ServerConfig.IsKMS() ? 1 : 0); // should be 1 for KMS v2.114 to ignore personal number
+                            sp.Encode1(Region.IsKMS() ? 1 : 0); // should be 1 for KMS v2.114 to ignore personal number
                             sp.Encode1(0); // m_nPurchaseExp
                             sp.Encode1(0); // m_nChatBlockReason
                             sp.Encode8(0); // m_dtChatUnblockDate
@@ -524,7 +524,7 @@ public class ResCLogin {
             }
             default: {
                 sp.Encode1(0); // no blue message
-                if (ServerConfig.IsBMS()) {
+                if (Region.IsBMS()) {
                     sp.Encode4(0);
                 }
                 break;
@@ -573,19 +573,19 @@ public class ResCLogin {
         // ワールドの旗
         sp.Encode1(LoginServer.WorldFlag[serverId]);
         // 吹き出し
-        sp.EncodeStr(ServerConfig.IsBMS() ? "" : LoginServer.WorldEvent[serverId]);
+        sp.EncodeStr(Region.IsBMS() ? "" : LoginServer.WorldEvent[serverId]);
         // 経験値倍率?
         sp.Encode2(100);
         // ドロップ倍率?
         sp.Encode2(100);
 
-        if (ServerConfig.IsBMS() || ServerConfig.IsGMS()) {
+        if (Region.IsBMS() || Region.IsGMS()) {
             sp.Encode1(0);
         }
 
         // チャンネル数
         sp.Encode1(internalserver ? ChannelServer.getChannels() : externalch);
-        if (ServerConfig.IsCMS()) {
+        if (Region.IsCMS()) {
             sp.Encode4(500); // 0 causes 0 div
         }
         // チャンネル情報
@@ -669,22 +669,22 @@ public class ResCLogin {
             // error
             return sp.get();
         }
-        if (ServerConfig.IsTWMS()) {
+        if (Region.IsTWMS()) {
             sp.EncodeBuffer(CharList_TWMS(c));
             return sp.get();
         }
-        if (ServerConfig.IsCMS()) {
+        if (Region.IsCMS()) {
             sp.EncodeBuffer(CharList_CMS(c));
             return sp.get();
         }
         List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
         int charslots = c.getCharacterSlots();
 
-        if (ServerConfig.IsJMS()) {
+        if (Region.IsJMS()) {
             sp.EncodeStr("");
         }
 
-        if ((ServerConfig.IsKMS() && !ServerConfig.KMS160orLater()) || ServerConfig.IsCMS() || ServerConfig.IsIMS()) {
+        if ((Region.IsKMS() && !ServerConfig.KMS160orLater()) || Region.IsCMS() || Region.IsIMS()) {
             sp.Encode4(1000000);
         }
 
@@ -694,7 +694,7 @@ public class ResCLogin {
             //Structure.CharEntry(p, chr, true, false);
             sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(DataAvatarLook.Encode(chr));
-            if ((ServerConfig.IsJMS() || ServerConfig.IsKMS() || ServerConfig.IsIMS() || ServerConfig.IsEMS() || ServerConfig.IsTHMS() || ServerConfig.IsMSEA())
+            if ((Region.IsJMS() || Region.IsKMS() || Region.IsIMS() || Region.IsEMS() || Region.IsTHMS() || Region.IsMSEA())
                     && (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater())
                     || ServerConfig.GMS83orLater()) {
                 sp.Encode1(0); // family
@@ -761,12 +761,12 @@ public class ResCLogin {
             return sp.get();
         }
 
-        if (ServerConfig.IsBMS()) {
+        if (Region.IsBMS()) {
             sp.Encode4(charslots);
             return sp.get();
         }
 
-        if (ServerConfig.IsMSEA() || ServerConfig.IsIMS()) {
+        if (Region.IsMSEA() || Region.IsIMS()) {
             sp.Encode1(2);
             sp.Encode1(0);
             sp.Encode4(charslots);
@@ -774,7 +774,7 @@ public class ResCLogin {
             return sp.get();
         }
 
-        if (ServerConfig.IsTHMS()) {
+        if (Region.IsTHMS()) {
             sp.Encode1(2); // 2nd password ingored
             sp.Encode1(0);
             sp.Encode4(charslots);
@@ -783,7 +783,7 @@ public class ResCLogin {
             return sp.get();
         }
 
-        if ((ServerConfig.JMS146or147()) || ServerConfig.IsVMS()) {
+        if ((ServerConfig.JMS146or147()) || Region.IsVMS()) {
             sp.Encode1(2); // 2次パス無視
             sp.Encode1(0);
             sp.Encode4(charslots); // m_nSlotCount
@@ -804,32 +804,32 @@ public class ResCLogin {
         }
 
         // EMS v55
-        if ((ServerConfig.IsEMS() && Version.getVersion() <= 55)
-                || (ServerConfig.IsGMS() && Version.getVersion() <= 73)) {
+        if ((Region.IsEMS() && Version.getVersion() <= 55)
+                || (Region.IsGMS() && Version.getVersion() <= 73)) {
             sp.Encode4(charslots); // m_nSlotCount
             return sp.get();
         }
-        if (ServerConfig.IsEMS() && Version.getVersion() <= 70) {
+        if (Region.IsEMS() && Version.getVersion() <= 70) {
             sp.Encode4(charslots); // m_nSlotCount
             sp.Encode4(0);
             sp.Encode8(0);
             return sp.get();
         }
 
-        if (ServerConfig.IsKMS() || ServerConfig.IsEMS()) {
+        if (Region.IsKMS() || Region.IsEMS()) {
             sp.Encode1(2);
             sp.Encode1(0);
             sp.Encode4(charslots); // m_nSlotCount
             if (Version.PostBB()) {
                 sp.Encode4(0); // m_nBuyCharCount
             }
-            if (ServerConfig.IsEMS()) {
+            if (Region.IsEMS()) {
                 sp.Encode8(0);
             }
             return sp.get();
         }
         // BIGBANG
-        if (ServerConfig.IsJMS()
+        if (Region.IsJMS()
                 && Version.getVersion() == 187) {
             sp.Encode1(2); // 2次パス無視
             sp.Encode1(0);
@@ -856,7 +856,7 @@ public class ResCLogin {
             return sp.get();
         }
 
-        if (ServerConfig.IsJMS()
+        if (Region.IsJMS()
                 && Version.getVersion() <= 176) {
             sp.Encode4(charslots);
         } else {
@@ -951,7 +951,7 @@ public class ResCLogin {
     public static final MaplePacket SetMapLogin() {
         // JMS v186.1には3つのログイン画面が存在するのでランダムに割り振ってみる
         String[] LoginScreen = {"MapLogin", "MapLogin1", "MapLogin2"};
-        if (!(ServerConfig.IsJMS() && Version.getVersion() == 186)) {
+        if (!(Region.IsJMS() && Version.getVersion() == 186)) {
             return SetMapLogin(LoginScreen[0]);
         }
         return SetMapLogin(LoginScreen[(new Random().nextInt(3))]);

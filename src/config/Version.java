@@ -42,24 +42,8 @@ public class Version {
 
     // good versions
     public static boolean GreaterOrEqual(Region region, int version) {
-        if (Region.getRegion() == region) {
+        if (Region.check(region)) {
             if (version <= getVersion()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean RegionCheck(Region region) {
-        if (Region.getRegion() == region) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean RegionCheck(Region regions[]) {
-        for (Region r : regions) {
-            if (Region.getRegion() == r) {
                 return true;
             }
         }
@@ -68,7 +52,7 @@ public class Version {
 
     // bad versions
     public static boolean Between(Region region, int version_l, int version_r) {
-        if (Region.getRegion() == region) {
+        if (Region.check(region)) {
             if (version_l <= getVersion() && getVersion() <= version_r) {
                 return true;
             }
@@ -78,7 +62,7 @@ public class Version {
 
     // really bad version
     public static boolean Equal(Region region, int version) {
-        if (Region.getRegion() == region) {
+        if (Region.check(region)) {
             if (getVersion() == version) {
                 return true;
             }
@@ -88,7 +72,7 @@ public class Version {
 
     // pre-bb older versions
     public static boolean LessOrEqual(Region region, int version) {
-        if (Region.getRegion() == region) {
+        if (Region.check(region)) {
             if (getVersion() <= version) {
                 return true;
             }

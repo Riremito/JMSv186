@@ -23,6 +23,7 @@ package handling.channel.handler;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.messages.CommandProcessor;
+import config.Region;
 import config.ServerConfig;
 import constants.ServerConstants.CommandType;
 import handling.channel.ChannelServer;
@@ -42,13 +43,13 @@ public class ChatHandler {
         MapleCharacter chr = c.getPlayer();
         byte unk = 0;
 
-        if (ServerConfig.JMS180orLater() || ServerConfig.IsBMS()) {
+        if (ServerConfig.JMS180orLater() || Region.IsBMS()) {
             cp.Decode4();
         }
 
         String text = cp.DecodeStr();
 
-        if (ServerConfig.JMS164orLater() || ServerConfig.IsBMS()) {
+        if (ServerConfig.JMS164orLater() || Region.IsBMS()) {
             unk = cp.Decode1();
         }
 

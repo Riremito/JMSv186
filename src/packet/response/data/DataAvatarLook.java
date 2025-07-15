@@ -22,6 +22,7 @@ import client.MapleCharacter;
 import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import config.Region;
 import config.ServerConfig;
 import config.Version;
 import java.util.LinkedHashMap;
@@ -83,7 +84,7 @@ public class DataAvatarLook {
         }
         final IItem cWeapon = equip.getItem((byte) -111);
         data.Encode4(cWeapon != null ? cWeapon.getItemId() : 0); // nWeaponStickerID
-        if (ServerConfig.IsBMS() || ServerConfig.IsVMS()) {
+        if (Region.IsBMS() || Region.IsVMS()) {
             data.Encode4(0);
             return data.get().getBytes();
         }
@@ -97,7 +98,7 @@ public class DataAvatarLook {
             }
             return data.get().getBytes();
         }
-        if (ServerConfig.IsKMS()) {
+        if (Region.IsKMS()) {
             if (Version.PostBB()) {
                 if (ServerConfig.KMS160orLater()) {
                     data.Encode4(0);
@@ -131,7 +132,7 @@ public class DataAvatarLook {
         if (ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode1(1);
         }
-        if (ServerConfig.IsTHMS() || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsMSEA() || ServerConfig.IsEMS() || ServerConfig.GMS83orLater()) {
+        if (Region.IsTHMS() || Region.IsTWMS() || Region.IsCMS() || Region.IsMSEA() || Region.IsEMS() || ServerConfig.GMS83orLater()) {
             data.EncodeZeroBytes(12);
         } else {
             data.Encode4(0); // pet 1?

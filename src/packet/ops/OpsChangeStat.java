@@ -18,6 +18,7 @@
  */
 package packet.ops;
 
+import config.Region;
 import config.ServerConfig;
 import config.Version;
 
@@ -91,7 +92,7 @@ public enum OpsChangeStat {
             return;
         }
         // JMS146 only?
-        if (ServerConfig.IsJMS() && ServerConfig.JMS146orLater()) {
+        if (Region.IsJMS() && ServerConfig.JMS146orLater()) {
             CS_SKIN.set(1);
             CS_FACE.set(1 << 1);
             CS_HAIR.set(1 << 2);

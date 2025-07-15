@@ -19,6 +19,7 @@ package packet.response.data;
 
 import client.inventory.Equip;
 import client.inventory.IItem;
+import config.Region;
 import config.ServerConfig;
 import config.Version;
 import data.client.DC_Date;
@@ -155,7 +156,7 @@ public class DataGW_ItemSlotBase {
                     data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
                 }
                 // リバース武器
-                if (ServerConfig.JMS164orLater() || ServerConfig.IsVMS()) {
+                if (ServerConfig.JMS164orLater() || Region.IsVMS()) {
                     data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
                     data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
                     data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
@@ -165,8 +166,8 @@ public class DataGW_ItemSlotBase {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
                 // ビシャスのハンマー
-                if (ServerConfig.JMS180orLater() || ServerConfig.GMS73orLater() || ServerConfig.IsBMS()) {
-                    if (!ServerConfig.IsKMS() || ServerConfig.KMS95orLater()) {
+                if (ServerConfig.JMS180orLater() || ServerConfig.GMS73orLater() || Region.IsBMS()) {
+                    if (!Region.IsKMS() || ServerConfig.KMS95orLater()) {
                         data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                     }
                 }
@@ -230,7 +231,7 @@ public class DataGW_ItemSlotBase {
             case 3: {
                 data.EncodeBuffer(RawEncode(item));
                 // GW_ItemSlotPet::RawDecode
-                data.EncodeBuffer(item.getPet().getName(), ServerConfig.IsBMS() ? 21 : 13);
+                data.EncodeBuffer(item.getPet().getName(), Region.IsBMS() ? 21 : 13);
                 data.Encode1(item.getPet().getLevel()); // nLevel_CS
                 data.Encode2(item.getPet().getCloseness()); // nTameness_CS
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
@@ -238,14 +239,14 @@ public class DataGW_ItemSlotBase {
                 data.Encode8(DC_Date.getMagicalExpirationDate()); // dateDead
                 data.Encode2(0); // nPetAttribute_CS
                 data.Encode2(item.getPet().getFlags()); // usPetSkill_CS
-                if (ServerConfig.JMS164orLater() || ServerConfig.IsVMS()) {
+                if (ServerConfig.JMS164orLater() || Region.IsVMS()) {
                     // 魔法の時間, デンデン専用 (残り時間)
                     data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
                 }
                 if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater() || ServerConfig.GMS83orLater()) {
                     data.Encode2(0); // nAttribute_CS
                 }
-                if (ServerConfig.JMS186orLater() && !(ServerConfig.IsEMS() && Version.PreBB()) && !ServerConfig.IsGMS()) {
+                if (ServerConfig.JMS186orLater() && !(Region.IsEMS() && Version.PreBB()) && !Region.IsGMS()) {
                     data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                     data.Encode4(0);
                 }

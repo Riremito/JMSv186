@@ -20,6 +20,7 @@ package packet.response;
 
 import client.MapleCharacter;
 import client.SkillMacro;
+import config.Region;
 import config.ServerConfig;
 import config.Version;
 import handling.MaplePacket;
@@ -75,7 +76,7 @@ public class ResCFuncKeyMappedMan {
         if (!keymap_reset) {
             int KEY_MAP_SIZE = 94; // 470
 
-            if (ServerConfig.IsKMS()) {
+            if (Region.IsKMS()) {
                 KEY_MAP_SIZE = 89; // 445
             }
 

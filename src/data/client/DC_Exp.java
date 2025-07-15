@@ -45,7 +45,7 @@ public class DC_Exp {
             return true;
         }
         // GMS
-        if (Version.RegionCheck(Region.GMS)) {
+        if (Region.check(Region.GMS)) {
             exp_table = pre_bb_2;
             return true;
         }

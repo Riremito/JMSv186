@@ -228,7 +228,7 @@ public class DataCharacterData {
             data.Encode1(chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // 0x40
         }
         // v165-v194 OK
-        if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && Version.getVersion() == 73) && !(ServerConfig.IsEMS() && Version.getVersion() == 55)) {
+        if (ServerConfig.JMS165orLater() && !(Region.IsGMS() && Version.getVersion() == 73) && !(Region.IsEMS() && Version.getVersion() == 55)) {
             // 0x100000
             if ((datamask & 1048576) > 0) {
                 data.Encode4(0);
@@ -391,7 +391,7 @@ public class DataCharacterData {
         if (Version.PostBB()) {
             data.Encode1(0); // not 0, Encode1, Encode4(size), EncodeBuffer8, Encode4(size), EncodeBuffer8
         }
-        if (ServerConfig.IsTHMS() || ServerConfig.IsVMS()) {
+        if (Region.IsTHMS() || Region.IsVMS()) {
             if ((datamask & 2) > 0) {
                 data.Encode4(0);
             }
@@ -406,7 +406,7 @@ public class DataCharacterData {
                 data.Encode1(0);
             }
             // 精霊の祝福 v165, v186
-            if (ServerConfig.JMS165orLater() && !(ServerConfig.IsGMS() && Version.getVersion() == 73)) {
+            if (ServerConfig.JMS165orLater() && !(Region.IsGMS() && Version.getVersion() == 73)) {
                 if (chr.getBlessOfFairyOrigin() != null) {
                     data.Encode1(1);
                     data.EncodeStr(chr.getBlessOfFairyOrigin());
@@ -421,14 +421,14 @@ public class DataCharacterData {
                 // ???
                 data.Encode1(0); // not 0, EncodeStr
             }
-            if (ServerConfig.IsTWMS()) {
+            if (Region.IsTWMS()) {
                 data.Encode8(0);
             }
         }
         // 0x2 (<< 1) v165-v194
         if ((datamask & 2) > 0) {
             data.EncodeBuffer(DataGW_CharacterStat.EncodeMoney(chr));
-            if (ServerConfig.IsJMS() || ServerConfig.IsTWMS() || ServerConfig.IsCMS() || ServerConfig.IsTHMS()) {
+            if (Region.IsJMS() || Region.IsTWMS() || Region.IsCMS() || Region.IsTHMS()) {
                 data.EncodeBuffer(DataGW_CharacterStat.EncodePachinko(chr));
             }
             if (ServerConfig.EMS89orLater()) {
@@ -1060,7 +1060,7 @@ public class DataCharacterData {
             default:
                 {
                     // 0x7C JMS, Present v146-v194
-                    if (ServerConfig.IsJMS()) {
+                    if (Region.IsJMS()) {
                         if ((datamask & 124) > 0) {
                             data.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
                         }

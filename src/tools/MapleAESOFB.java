@@ -22,6 +22,7 @@ package tools;
 
 import config.DisabledConfig;
 import config.Content;
+import config.Region;
 import config.ServerConfig;
 import config.Version;
 import java.security.InvalidKeyException;
@@ -76,7 +77,7 @@ public class MapleAESOFB {
         if (!DisabledConfig.PacketEncryption.get()) {
             try {
                 cipher = Cipher.getInstance("AES");
-                if (!ServerConfig.IsKMS()) {
+                if (!Region.IsKMS()) {
                     cipher.init(Cipher.ENCRYPT_MODE, skey);
                 }
                 // Thank you for reading code!
@@ -106,7 +107,7 @@ public class MapleAESOFB {
     public static byte[] oops(byte[] iv) {
         byte[] newIv = new byte[16];
         // TWMS
-        if (ServerConfig.IsTWMS()) {
+        if (Region.IsTWMS()) {
             for (int x = 0; x < 4; x++) {
                 funnyShit(funnyBytes[x], iv);
                 System.arraycopy(iv, 0, newIv, 4 * x, 4);
@@ -265,7 +266,7 @@ public class MapleAESOFB {
 
     public boolean checkPacket(byte[] packet) {
         // x64
-        if (ServerConfig.IsJMS() && 414 <= Version.getVersion()) {
+        if (Region.IsJMS() && 414 <= Version.getVersion()) {
             // KMS v373
             return true;
         }

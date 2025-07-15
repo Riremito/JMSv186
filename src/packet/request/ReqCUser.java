@@ -501,7 +501,7 @@ public class ReqCUser {
 
         // DR_Check
         if (ServerConfig.JMS180orLater()
-                && !ServerConfig.IsKMS()) {
+                && !Region.IsKMS()) {
             cp.Decode4(); // pDrInfo.dr0
             cp.Decode4(); // pDrInfo.dr1
         }
@@ -510,7 +510,7 @@ public class ReqCUser {
 
         // DR_Check
         if (ServerConfig.JMS180orLater()
-                && !ServerConfig.IsKMS()) {
+                && !Region.IsKMS()) {
             cp.Decode4(); // pDrInfo.dr2
             cp.Decode4(); // pDrInfo.dr3
         }
@@ -525,7 +525,7 @@ public class ReqCUser {
 
         // v95 1 byte cd->nCombatOrders
         if (ServerConfig.JMS180orLater()
-                && !ServerConfig.IsKMS()) {
+                && !Region.IsKMS()) {
             cp.Decode4(); // get_rand of DR_Check
             cp.Decode4(); // Crc32 of DR_Check
             // v95 4 bytes SKILLLEVELDATA::GetCrc
@@ -621,7 +621,7 @@ public class ReqCUser {
             }
 
             if (ServerConfig.JMS164orLater()) {
-                if (ServerConfig.IsTHMS() && Version.getVersion() == 87) {
+                if (Region.IsTHMS() && Version.getVersion() == 87) {
                     // No CMob::GetCrc(v366->pMob) in Version 87
                 } else {
                     cp.Decode4(); // CMob::GetCrc(v366->pMob)

@@ -221,7 +221,7 @@ public class ResCMobPool {
         }
 
         // CMob::SetTemporaryStat
-        if (ServerConfig.IsJMS() && Version.getVersion() <= 164) { // TODO
+        if (Region.IsJMS() && Version.getVersion() <= 164) { // TODO
             sp.Encode4(0); // 後でなおす
         } else {
             sp.EncodeBuffer(Structure.MonsterStatus(life));
@@ -293,7 +293,7 @@ public class ResCMobPool {
             sp.Encode1(0);
         }
 
-        if (ServerConfig.IsJMS() && Version.getVersion() <= 164) { // TODO
+        if (Region.IsJMS() && Version.getVersion() <= 164) { // TODO
             sp.Encode4(0); // 後でなおす
         } else {
             sp.EncodeBuffer(Structure.MonsterStatus(life));

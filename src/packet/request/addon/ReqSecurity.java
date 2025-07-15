@@ -19,6 +19,7 @@
 package packet.request.addon;
 
 import client.MapleClient;
+import config.Region;
 import config.ServerConfig;
 import config.Version;
 import debug.Debug;
@@ -64,7 +65,7 @@ public class ReqSecurity {
 
     public static boolean Scan(ClientPacket p) {
         // v186以外は無視
-        if (!(ServerConfig.IsJMS() && Version.getVersion() == 186)) {
+        if (!(Region.IsJMS() && Version.getVersion() == 186)) {
             return true;
         }
         int scan_address = p.Decode4();
@@ -78,7 +79,7 @@ public class ReqSecurity {
 
     public static boolean Hash(ClientPacket p) {
         // v186以外は無視
-        if (!(ServerConfig.IsJMS() && Version.getVersion() == 186)) {
+        if (!(Region.IsJMS() && Version.getVersion() == 186)) {
             return true;
         }
         final String wz_hash = p.DecodeStr();

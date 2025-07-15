@@ -339,11 +339,11 @@ public class Structure {
         }
 
         // not in v165, not in v188, but in v194 ???
-        if (ServerConfig.IsJMS() && 184 <= Version.getVersion() && Version.getVersion() <= 186) {
+        if (Region.IsJMS() && 184 <= Version.getVersion() && Version.getVersion() <= 186) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if ((ServerConfig.JMS194orLater() && !ServerConfig.IsKMS() && !ServerConfig.IsEMS()) || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if ((ServerConfig.JMS194orLater() && !Region.IsKMS() && !Region.IsEMS()) || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
@@ -427,7 +427,7 @@ public class Structure {
             }
         }
 
-        if (ServerConfig.IsEMS() && Version.PostBB()) {
+        if (Region.IsEMS() && Version.PostBB()) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }

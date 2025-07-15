@@ -22,6 +22,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import config.Region;
 import config.ServerConfig;
 import handling.MaplePacket;
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class ResCCashShop {
         // CS_COMMODITY::DecodeModifiedData
         {
             int flag = 0x01 | 0x02 | 0x04 | 0x0400;
-            if (ServerConfig.JMS147orLater() || ServerConfig.IsVMS() || ServerConfig.IsBMS() || ServerConfig.GMS84orLater()) {
+            if (ServerConfig.JMS147orLater() || Region.IsVMS() || Region.IsBMS() || ServerConfig.GMS84orLater()) {
                 data.Encode4(flag);
             } else {
                 data.Encode2(flag);

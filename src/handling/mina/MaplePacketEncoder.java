@@ -23,6 +23,7 @@ package handling.mina;
 import client.MapleClient;
 import config.DisabledConfig;
 import config.Content;
+import config.Region;
 import config.ServerConfig;
 import handling.MaplePacket;
 import tools.MapleAESOFB;
@@ -58,13 +59,13 @@ public class MaplePacketEncoder implements ProtocolEncoder {
                     if (Content.CustomEncryption.get()) {
                         MapleCustomEncryption.encryptData(unencrypted);
                     }
-                    if (ServerConfig.IsKMS() || ServerConfig.IsIMS()) {
+                    if (Region.IsKMS() || Region.IsIMS()) {
                         send_crypto.kms_encrypt(unencrypted);
                     } else {
                         send_crypto.crypt(unencrypted);
                     }
                 }
-                if (!(ServerConfig.IsKMS() || ServerConfig.IsIMS())) {
+                if (!(Region.IsKMS() || Region.IsIMS())) {
                     send_crypto.updateIv();
                 }
 
