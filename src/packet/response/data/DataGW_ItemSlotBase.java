@@ -52,7 +52,7 @@ public class DataGW_ItemSlotBase {
             }
         }
 
-        if (ServerConfig.JMS165orEarlier() || ServerConfig.KMS84orEarlier()) {
+        if (ServerConfig.JMS165orEarlier() || Version.LessOrEqual(Region.KMS, 84)) {
             data.Encode1(pos);
         } else {
             // v186+
@@ -68,7 +68,7 @@ public class DataGW_ItemSlotBase {
     public static final byte[] EncodeSlotEnd(ItemType it) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.JMS165orEarlier() || ServerConfig.KMS84orEarlier()) {
+        if (ServerConfig.JMS165orEarlier() || Version.LessOrEqual(Region.KMS, 84)) {
             data.Encode1(0);
         } else {
             // v186+
@@ -97,7 +97,7 @@ public class DataGW_ItemSlotBase {
         }
 
         // 等級
-        return (byte) ((ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) ? (rank + 16) : (rank + 4));
+        return (byte) ((ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) ? (rank + 16) : (rank + 4));
 
     }
 
@@ -122,12 +122,12 @@ public class DataGW_ItemSlotBase {
                     break;
                 }
 
-                if (ServerConfig.KMS197orLater()) {
+                if (Version.GreaterOrEqual(Region.KMS, 197)) {
                     data.EncodeBuffer(EncodeEquip_KMS197(equip, hasUniqueId));
                     break;
                 }
 
-                if (ServerConfig.EMS89orLater()) {
+                if (Version.GreaterOrEqual(Region.EMS, 89)) {
                     data.EncodeBuffer(EncodeEquip_EMS89(equip, hasUniqueId));
                     break;
                 }
@@ -162,16 +162,16 @@ public class DataGW_ItemSlotBase {
                     data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
                 }
                 // 耐久度
-                if (ServerConfig.JMS180orLater() || ServerConfig.GMS84orLater()) {
+                if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 84)) {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
                 // ビシャスのハンマー
-                if (ServerConfig.JMS180orLater() || ServerConfig.GMS73orLater() || Region.IsBMS()) {
-                    if (!Region.IsKMS() || ServerConfig.KMS95orLater()) {
+                if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 73) || Region.IsBMS()) {
+                    if (!Region.IsKMS() || Version.GreaterOrEqual(Region.KMS, 95)) {
                         data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                     }
                 }
-                if (ServerConfig.KMS127orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+                if (ServerConfig.KMS127orLater() || ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
                     data.Encode2(0);
                 }
                 // 潜在能力, 装備強化 (星)
@@ -184,10 +184,10 @@ public class DataGW_ItemSlotBase {
                     data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目?
                     data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ?
                 }
-                if (ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+                if (ServerConfig.JMS308orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
                     data.Encode2(0);
                 }
-                if (ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+                if (Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
                     data.Encode2(0);
                 }
                 if (ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
@@ -219,7 +219,7 @@ public class DataGW_ItemSlotBase {
                     break;
                 }
 
-                if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+                if (ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110)) {
                     data.Encode4(0);
                     data.Encode1(0);
                     data.Encode1(0); // 1 = 赤色アイテム
@@ -243,17 +243,17 @@ public class DataGW_ItemSlotBase {
                     // 魔法の時間, デンデン専用 (残り時間)
                     data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
                 }
-                if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater() || ServerConfig.GMS83orLater()) {
+                if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
                     data.Encode2(0); // nAttribute_CS
                 }
                 if (ServerConfig.JMS186orLater() && !(Region.IsEMS() && Version.PreBB()) && !Region.IsGMS()) {
                     data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                     data.Encode4(0);
                 }
-                if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
+                if (ServerConfig.JMS308orLater() || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
                     data.Encode4(0);
                 }
-                if (ServerConfig.KMS197orLater()) {
+                if (Version.GreaterOrEqual(Region.KMS, 197)) {
                     data.Encode2(0);
                 }
                 break;
@@ -278,12 +278,12 @@ public class DataGW_ItemSlotBase {
                 }
                 if (item_img_num == 223) {
                     // KMST only
-                    if (ServerConfig.KMST391()) {
+                    if (Version.Equal(Region.KMST, 391)) {
                         data.Encode8(0);
                     }
                 }
 
-                if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+                if (ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110)) {
                     data.Encode4(0);
                     data.Encode2(0);
                     data.Encode2(0);

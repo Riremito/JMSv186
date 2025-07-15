@@ -20,7 +20,9 @@
  */
 package packet.response;
 
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import debug.Debug;
 import handling.MaplePacket;
 import packet.ServerPacket;
@@ -42,14 +44,14 @@ public class ResCScriptMan {
         sp.Encode4(npcid); // nSpeakerTemplateID, npcid
         sp.Encode1(smt.get()); // nMsgType
 
-        if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater() || ServerConfig.GMS84orLater()) {
+        if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 84)) {
             sp.Encode1(param); // v186+, not used
         }
 
         switch (smt) {
             case SM_SAY: {
                 if (ServerConfig.JMS186orLater()
-                        || ServerConfig.KMS95orLater()) {
+                        || Version.GreaterOrEqual(Region.KMS, 95)) {
                     if ((param & 4) > 0) {
                         sp.Encode4(0); // nSpeakerTemplateID
                     }

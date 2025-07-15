@@ -151,13 +151,13 @@ public class ReqCLogin {
 
     // login
     public static final boolean OnCheckPassword(ClientPacket cp, MapleClient c) {
-        if (ServerConfig.KMS160orLater() || ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 160) || ServerConfig.JMS308orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater()) {
             byte hwid[] = cp.DecodeBuffer(16);
             int unk1 = cp.Decode4();
             byte unk2 = cp.Decode1();
             byte unk3 = cp.Decode1();
         }
-        if (ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater()) {
+        if (Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater()) {
             byte unk4 = cp.Decode1();
         }
         if (ServerConfig.CMS104orLater()) {
@@ -270,7 +270,7 @@ public class ReqCLogin {
         int dice_luk = 0;
 
         character_name = cp.DecodeStr();
-        if (ServerConfig.JMS308orLater() || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.JMS308orLater() || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
             int unk = cp.Decode4();
         }
         if (ServerConfig.JMS165orLater() && !(Region.IsGMS() && Version.getVersion() == 73)) {
@@ -335,9 +335,9 @@ public class ReqCLogin {
             job_dualblade = cp.Decode2(); // 1 = DB, 2 = キャノンシューター, 10 = 蒼龍
         }
 
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             character_gender = cp.Decode1();
-            if (!ServerConfig.KMST391()) {
+            if (!Version.Equal(Region.KMST, 391)) {
                 skin_color = cp.Decode1();
             }
             int body_part_count = cp.Decode1();
@@ -346,7 +346,7 @@ public class ReqCLogin {
             body_part_count--;
             hair_id = cp.Decode4();
             body_part_count--;
-            if (Region.IsEMS() && !ServerConfig.EMS89orLater()) { // ?_? mercdes OK
+            if (Region.IsEMS() && !Version.GreaterOrEqual(Region.EMS, 89)) { // ?_? mercdes OK
                 hair_color = cp.Decode4();
                 body_part_count--;
                 skin_color = cp.Decode4();
@@ -462,11 +462,11 @@ public class ReqCLogin {
     }
 
     public static final void CharlistRequest(ClientPacket cp, final MapleClient c) {
-        if (ServerConfig.JMS308orLater() || ServerConfig.EMS89orLater() || Region.IsKMS() || Region.IsIMS() || ServerConfig.TWMS148orLater()) {
+        if (ServerConfig.JMS308orLater() || Version.GreaterOrEqual(Region.EMS, 89) || Region.IsKMS() || Region.IsIMS() || ServerConfig.TWMS148orLater()) {
             byte unk = cp.Decode1();
         }
 
-        if (ServerConfig.GMS83orLater()) {
+        if (Version.GreaterOrEqual(Region.GMS, 83)) {
             byte m_nGameStartMode = cp.Decode1(); // m_nGameStartMode, always 2?
             if (m_nGameStartMode == 1) {
                 String str = cp.DecodeStr();
@@ -479,7 +479,7 @@ public class ReqCLogin {
         int server = cp.Decode1(); // nWorldID
         final int channel = cp.Decode1(); // nChannelID)
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.GMS83orLater() || Region.IsIMS() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 83) || Region.IsIMS() || ServerConfig.CMS104orLater()) {
             int ip = cp.Decode4(); // S_addr
         }
 
@@ -501,7 +501,7 @@ public class ReqCLogin {
             }
         }
         if (Region.IsKMS()) {
-            if (ServerConfig.KMS160orLater()) {
+            if (Version.GreaterOrEqual(Region.KMS, 160)) {
                 String secondpw = cp.DecodeStr();
             } else {
                 byte unk1 = cp.Decode1();

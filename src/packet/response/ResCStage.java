@@ -45,20 +45,20 @@ public class ResCStage {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetField);
         // JMS184orLater
         if (((Region.IsJMS() || Region.IsCMS() || Region.IsGMS()) && ServerConfig.JMS186orLater())
-                || ServerConfig.EMS89orLater()) {
+                || Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.EncodeBuffer(DataCClientOptMan.EncodeOpt()); // 2 bytes
         }
         // チャンネル
         sp.Encode4(chr.getClient().getChannel() - 1); // m_nChannelID
         if (ServerConfig.KMS138orLater()
                 || (Region.IsJMS() && ServerConfig.JMS146orLater())
-                || ServerConfig.EMS89orLater()
+                || Version.GreaterOrEqual(Region.EMS, 89)
                 || ServerConfig.TWMS148orLater()
                 || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);
         }
 
-        if (ServerConfig.EMS89orLater()) {
+        if (Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(1); // Supreme/Ibara World
         }
 
@@ -94,11 +94,11 @@ public class ResCStage {
                 sp.EncodeBuffer(DataCWvsContext.LogoutGiftConfig());
             }
         } else {
-            if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater() || ServerConfig.GMS83orLater()) {
+            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode1(0);
             }
             // KMS118 only
-            if (ServerConfig.KMS118()) {
+            if (Version.Equal(Region.KMS, 118)) {
                 sp.Encode1(0);
             }
             sp.Encode4(to.getId()); // characterStat._ZtlSecureTear_dwPosMap_CS
@@ -118,7 +118,7 @@ public class ResCStage {
                 }
             }
         }
-        if (ServerConfig.KMS197orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
             sp.Encode1(0);
         }
         // サーバーの時間?
@@ -126,16 +126,16 @@ public class ResCStage {
         if (ServerConfig.JMS194orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode4(100); // nMobStatAdjustRate
         }
-        if (ServerConfig.KMS119orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS119orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);
         }
-        if (ServerConfig.KMS127orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS127orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);
         }
-        if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);
         }
-        if (ServerConfig.KMS197orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
             sp.Encode1(0);
         }
         return sp.get();
@@ -241,7 +241,7 @@ public class ResCStage {
                     sp.Encode4(0);
                 }
 
-                if (Version.PostBB() || ServerConfig.TWMS121orLater()) {
+                if (Version.PostBB() || Version.GreaterOrEqual(Region.TWMS, 121)) {
                     if (Region.IsJMS() || Region.IsTWMS() || Region.IsEMS()) {
                         sp.Encode4(0); // NotSaleCount
                     }
@@ -255,7 +255,7 @@ public class ResCStage {
             sp.EncodeBuffer(ResCCashShop.getBestItems(), 1080);
             sp.Encode2(0); // CCashShop::DecodeStock
             sp.Encode2(0); // CCashShop::DecodeLimitGoods
-            if (ServerConfig.GMS84orLater()) {
+            if (Version.GreaterOrEqual(Region.GMS, 84)) {
                 sp.Encode2(0);
             }
         }

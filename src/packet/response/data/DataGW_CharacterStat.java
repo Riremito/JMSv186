@@ -49,9 +49,9 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.KMS138orLater() || (Region.IsTHMS() && Version.PostBB()) || ServerConfig.EMS89orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS138orLater() || (Region.IsTHMS() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.CMS104orLater()) {
             // none
-        } else if (ServerConfig.JMS131orEarlier() || ServerConfig.KMS95orEarlier() || Region.IsBMS() || Region.IsVMS()) {
+        } else if (ServerConfig.JMS131orEarlier() || Version.LessOrEqual(Region.KMS, 95) || Region.IsBMS() || Region.IsVMS()) {
             data.EncodeZeroBytes(8);
         } else if ((Region.IsJMS() || Region.IsTHMS() || Region.IsGMS() || Region.IsCMS() || Region.IsMSEA() || ((Region.IsTWMS() || Region.IsEMS()) && Version.PreBB()))) {
             data.EncodeZeroBytes(24);
@@ -84,7 +84,7 @@ public class DataGW_CharacterStat {
         data.Encode2(chr.getRemainingAp());
 
         // SP
-        if (ServerConfig.JMS186orLater() || ServerConfig.GMS83orLater()) {
+        if (ServerConfig.JMS186orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
             // is_extendsp_job
             if (GameConstants.is_extendsp_job(chr.getJob())) {
                 final int size = chr.getRemainingSpSize();
@@ -93,7 +93,7 @@ public class DataGW_CharacterStat {
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
                     if (chr.getRemainingSp(i) > 0) {
                         data.Encode1(i + 1);
-                        if (Version.GreaterOrEqual(Region.JMS, 308) || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
+                        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
                             data.Encode4(chr.getRemainingSp(i));
                         } else {
                             data.Encode1(chr.getRemainingSp(i));
@@ -107,7 +107,7 @@ public class DataGW_CharacterStat {
             data.Encode2(chr.getRemainingSp());
         }
 
-        if (ServerConfig.KMS197orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
             data.Encode8(0);
         }
 
@@ -163,7 +163,7 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.EMS89orLater()) {
+        if (Version.GreaterOrEqual(Region.EMS, 89)) {
             data.Encode4(chr.getExp());
             data.Encode4(chr.getFame());
             data.Encode4(chr.getGashaEXP());
@@ -205,10 +205,10 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+        if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110)) {
             data.Encode4(0);
             data.Encode4(0);
-            if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+            if (ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110)) {
                 data.Encode4(0);
             }
             data.Encode4(chr.getMapId());
@@ -227,7 +227,7 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
             if (Region.IsKMS()) {
                 if (ServerConfig.KMS119orLater()) {
-                    if (ServerConfig.KMS160orLater()) {
+                    if (Version.GreaterOrEqual(Region.KMS, 160)) {
                         data.EncodeZeroBytes(21);
                     } else {
                         data.EncodeZeroBytes(12);
@@ -236,25 +236,25 @@ public class DataGW_CharacterStat {
                     data.Encode1(0);
                     data.Encode4(0);
                     data.Encode1(0);
-                    if (ServerConfig.KMS160orLater()) {
+                    if (Version.GreaterOrEqual(Region.KMS, 160)) {
                         data.Encode1(0);
                     }
                     if (ServerConfig.KMS138orLater()) {
                         data.Encode4(0);
                     }
-                    if (ServerConfig.KMS160orLater()) {
+                    if (Version.GreaterOrEqual(Region.KMS, 160)) {
                         data.Encode1(0);
                     }
-                    if (ServerConfig.KMS148orLater()) {
+                    if (Version.GreaterOrEqual(Region.KMS, 148)) {
                         data.Encode4(0);
                         data.Encode4(0);
                     }
-                    if (ServerConfig.KMS160orLater()) {
+                    if (Version.GreaterOrEqual(Region.KMS, 160)) {
                         data.Encode4(0);
                         data.Encode1(0);
                         {
                             int unkloop_count = 6;
-                            if (ServerConfig.KMS197orLater()) {
+                            if (Version.GreaterOrEqual(Region.KMS, 197)) {
                                 unkloop_count = 9;
                             }
                             for (int i = 0; i < unkloop_count; i++) {
@@ -280,7 +280,7 @@ public class DataGW_CharacterStat {
             } else {
                 if (ServerConfig.JMS308orLater()) {
                     data.EncodeZeroBytes(21);
-                } else if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+                } else if (ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110)) {
                     data.EncodeZeroBytes(12);
                 }
             }
@@ -321,7 +321,7 @@ public class DataGW_CharacterStat {
             data.Encode4(chr.getGashaEXP()); // Gachapon exp
         }
 
-        if (ServerConfig.TWMS121orLater() || Region.IsCMS() || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB())) {
+        if (Version.GreaterOrEqual(Region.TWMS, 121) || Region.IsCMS() || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB())) {
             data.Encode8(0);
         }
 
@@ -337,11 +337,11 @@ public class DataGW_CharacterStat {
         }
 
         // KMS 84
-        if (ServerConfig.KMS84orEarlier() || Region.IsBMS()) {
+        if (Version.LessOrEqual(Region.KMS, 84) || Region.IsBMS()) {
             return data.get().getBytes();
         }
         // JMS 180, KMS 95
-        if (ServerConfig.JMS180orLater() || ServerConfig.KMS92orLater()) {
+        if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 92)) {
             data.Encode2(chr.getSubcategory());
         }
         // KMS, CMS, EMS
@@ -389,7 +389,7 @@ public class DataGW_CharacterStat {
     // GW_CharacterStat::DecodeMoney
     public static byte[] EncodeMoney(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
-        if (ServerConfig.KMS197orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
             data.Encode8(chr.getMeso());
         } else {
             data.Encode4(chr.getMeso());
@@ -412,7 +412,7 @@ public class DataGW_CharacterStat {
     public static byte[] EncodeChangeStat(MapleCharacter chr, int statmask) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode8(statmask);
         } else {
             data.Encode4(statmask);
@@ -502,7 +502,7 @@ public class DataGW_CharacterStat {
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
                     if (chr.getRemainingSp(i) > 0) {
                         data.Encode1(i + 1);
-                        if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
+                        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
                             data.Encode4(chr.getRemainingSp(i));
                         } else {
                             data.Encode1(chr.getRemainingSp(i));
@@ -515,7 +515,7 @@ public class DataGW_CharacterStat {
         }
         // EXP
         if ((statmask & OpsChangeStat.CS_EXP.get()) > 0) {
-            if (ServerConfig.KMS197orLater()) {
+            if (Version.GreaterOrEqual(Region.KMS, 197)) {
                 data.Encode8(chr.getExp());
             } else {
                 data.Encode4(chr.getExp());
@@ -523,7 +523,7 @@ public class DataGW_CharacterStat {
         }
         // 人気度
         if ((statmask & OpsChangeStat.CS_POP.get()) > 0) {
-            if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater() || ServerConfig.JMS302orLater()) {
+            if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater() || ServerConfig.JMS302orLater()) {
                 data.Encode4(chr.getFame());
             } else {
                 data.Encode2(chr.getFame());
@@ -531,7 +531,7 @@ public class DataGW_CharacterStat {
         }
         // Meso
         if ((statmask & OpsChangeStat.CS_MONEY.get()) > 0) {
-            if (ServerConfig.KMS197orLater()) {
+            if (Version.GreaterOrEqual(Region.KMS, 197)) {
                 data.Encode8(chr.getMeso());
             } else {
                 data.Encode4(chr.getMeso());

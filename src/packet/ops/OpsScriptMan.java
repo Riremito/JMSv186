@@ -18,6 +18,7 @@
  */
 package packet.ops;
 
+import config.Region;
 import config.ServerConfig;
 import config.Version;
 
@@ -83,7 +84,7 @@ public enum OpsScriptMan {
         if (Version.PostBB()) {
             return;
         }
-        if (ServerConfig.KMS84orEarlier()) {
+        if (Version.LessOrEqual(Region.KMS, 84)) {
             SM_SAY.set(0);
             SM_ASKYESNO.set(1);
             SM_ASKTEXT.set(2);
@@ -100,7 +101,7 @@ public enum OpsScriptMan {
             SM_SAYIMAGE.set(-1);
             SM_ASKSLIDEMENU.set(-1);
         }
-        if (ServerConfig.JMS180orLater() || ServerConfig.GMS84orLater()) {
+        if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 84)) {
             return;
         }
         if (ServerConfig.JMS146orLater()) {

@@ -20,7 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package client.inventory;
 
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import java.io.Serializable;
 import server.Randomizer;
@@ -461,7 +463,7 @@ public class Equip extends Item implements IEquip, Serializable {
             if (3 <= getRank() || 50 <= Randomizer.nextInt(100)) {
                 // レジェンダリー抽選
                 if (master) {
-                    if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+                    if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
                         if (4 <= getRank() || 50 <= Randomizer.nextInt(100)) {
                             return 4;
                         }

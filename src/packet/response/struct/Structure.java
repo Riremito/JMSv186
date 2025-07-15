@@ -279,7 +279,7 @@ public class Structure {
     public static final byte[] addSkillInfo(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.KMS148orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 148) || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode1(1);
         }
         final Map<ISkill, SkillEntry> skills = chr.getSkills();
@@ -289,7 +289,7 @@ public class Structure {
             data.Encode4(skill.getValue().skillevel);
 
             // not in v165
-            if (ServerConfig.JMS180orLater() || ServerConfig.GMS83orLater()) {
+            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
                 data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
             }
 
@@ -301,7 +301,7 @@ public class Structure {
                     data.Encode4(0);
                 }
             }
-            if (ServerConfig.KMS197orLater()) {
+            if (Version.GreaterOrEqual(Region.KMS, 197)) {
                 data.Encode2(0);
             }
         }
@@ -315,7 +315,7 @@ public class Structure {
         data.Encode2(cd.size());
         for (final MapleCoolDownValueHolder cooling : cd) {
             data.Encode4(cooling.skillId);
-            if (ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+            if (Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
                 data.Encode4((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);
             } else {
                 data.Encode2((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);
@@ -328,7 +328,7 @@ public class Structure {
         ServerPacket data = new ServerPacket();
         final List<MapleQuestStatus> started = chr.getStartedQuests();
 
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode1(0);
         }
 
@@ -343,11 +343,11 @@ public class Structure {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if ((ServerConfig.JMS194orLater() && !Region.IsKMS() && !Region.IsEMS()) || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if ((ServerConfig.JMS194orLater() && !Region.IsKMS() && !Region.IsEMS()) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89)) {
             data.Encode2(0);
         }
 
@@ -357,7 +357,7 @@ public class Structure {
     public static byte[] addQuestComplete(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (ServerConfig.KMS148orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 148) || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode1(0);
         }
 
@@ -371,7 +371,7 @@ public class Structure {
             data.Encode4(time); // completion time
         }
 
-        if (ServerConfig.KMS148orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 148) || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode2(0);
         }
         return data.get().getBytes();

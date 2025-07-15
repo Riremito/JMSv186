@@ -105,7 +105,7 @@ public class ResCShopDlg {
             if (ServerConfig.JMS186orLater()) {
                 sp.Encode4(0); // nItemPeriod
             }
-            if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
+            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84)) {
                 sp.Encode4(0); // nLevelLimited
             }
             if (ServerConfig.JMS302orLater()) {

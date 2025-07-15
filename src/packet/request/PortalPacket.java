@@ -5,6 +5,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import config.Region;
 import config.ServerConfig;
+import config.Version;
 import handling.channel.handler.PlayerHandler;
 import packet.ClientPacket;
 import server.maps.MapleMap;
@@ -17,7 +18,7 @@ public class PortalPacket {
         switch (header) {
             // ポータル or /map
             case CP_UserTransferFieldRequest: {
-                if ((ServerConfig.KMS95orLater() || Region.IsIMS() || Region.IsMSEA()) && !ServerConfig.KMST391()) {
+                if ((Version.GreaterOrEqual(Region.KMS, 95) || Region.IsIMS() || Region.IsMSEA()) && !Version.Equal(Region.KMST, 391)) {
                     short unk1 = cp.Decode2();
                     int unk2 = cp.Decode4();
                     byte portal_count = cp.Decode1();

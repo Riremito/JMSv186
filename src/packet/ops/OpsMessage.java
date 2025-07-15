@@ -18,7 +18,9 @@
  */
 package packet.ops;
 
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 
 /**
  *
@@ -46,7 +48,7 @@ public enum OpsMessage {
     UNKNOWN(-1);
 
     public static void init() {
-        if (ServerConfig.KMS84orEarlier()) {
+        if (Version.LessOrEqual(Region.KMS, 84)) {
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);
             OpsMessage.MS_CashItemExpireMessage.set(2);

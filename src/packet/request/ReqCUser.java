@@ -568,7 +568,7 @@ public class ReqCUser {
         attack.tAttackTime = cp.Decode4();
 
         if (ServerConfig.JMS186orLater()
-                || ServerConfig.KMS95orLater()) {
+                || Version.GreaterOrEqual(Region.KMS, 95)) {
             cp.Decode4(); // dwID
         }
 
@@ -1007,7 +1007,7 @@ public class ReqCUser {
         for (int i = 0; i < count; i++) {
             long stat = 0;
 
-            if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+            if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
                 stat = cp.Decode8();
             } else {
                 stat = cp.Decode4();

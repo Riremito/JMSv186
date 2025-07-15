@@ -42,7 +42,7 @@ public class DataAvatarLook {
         data.Encode1(chr.getSkinColor()); // nSkin
         data.Encode4(chr.getFace()); // nFace
         int demon_something = 0;
-        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS138orLater() || ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode4(demon_something); // demon something
         }
         data.Encode1(0); // ignored byte
@@ -88,7 +88,7 @@ public class DataAvatarLook {
             data.Encode4(0);
             return data.get().getBytes();
         }
-        if (ServerConfig.EMS89orLater()) {
+        if (Version.GreaterOrEqual(Region.EMS, 89)) {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode1(0);
@@ -100,11 +100,11 @@ public class DataAvatarLook {
         }
         if (Region.IsKMS()) {
             if (Version.PostBB()) {
-                if (ServerConfig.KMS160orLater()) {
+                if (Version.GreaterOrEqual(Region.KMS, 160)) {
                     data.Encode4(0);
                     data.Encode4(0);
                 }
-                if (ServerConfig.KMS138orLater() && !ServerConfig.KMST391()) {
+                if (ServerConfig.KMS138orLater() && !Version.Equal(Region.KMST, 391)) {
                     data.Encode1(0);
                 }
                 data.EncodeZeroBytes(12);
@@ -118,7 +118,7 @@ public class DataAvatarLook {
             }
             return data.get().getBytes();
         }
-        if (ServerConfig.JMS302orLater() || ServerConfig.JMST110()) {
+        if (ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110)) {
             if (ServerConfig.JMS302orLater()) {
                 data.Encode4(0);
                 data.Encode4(0);
@@ -132,7 +132,7 @@ public class DataAvatarLook {
         if (ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode1(1);
         }
-        if (Region.IsTHMS() || Region.IsTWMS() || Region.IsCMS() || Region.IsMSEA() || Region.IsEMS() || ServerConfig.GMS83orLater()) {
+        if (Region.IsTHMS() || Region.IsTWMS() || Region.IsCMS() || Region.IsMSEA() || Region.IsEMS() || Version.GreaterOrEqual(Region.GMS, 83)) {
             data.EncodeZeroBytes(12);
         } else {
             data.Encode4(0); // pet 1?

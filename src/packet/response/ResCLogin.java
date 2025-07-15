@@ -51,13 +51,13 @@ public class ResCLogin {
         sp.Encode1(0);
         sp.Encode4(0);
 
-        if (ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(0);
             sp.Encode8(0);
             return sp.get();
         }
 
-        if (ServerConfig.KMS148orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 148)) {
             sp.Encode1(0);
             sp.Encode2(0);
             sp.Encode2(0);
@@ -232,9 +232,9 @@ public class ResCLogin {
                             if (ServerConfig.JMS164orLater()) {
                                 sp.Encode1(client.isGm() ? 1 : 0);
                             }
-                            if (ServerConfig.KMS160orLater()) {
+                            if (Version.GreaterOrEqual(Region.KMS, 160)) {
                                 sp.Encode4(3);
-                                if (ServerConfig.KMS197orLater()) {
+                                if (Version.GreaterOrEqual(Region.KMS, 197)) {
                                     sp.Encode4(0);
                                 }
                                 sp.Encode1(1);
@@ -243,7 +243,7 @@ public class ResCLogin {
                                 sp.Encode1(0);
                                 sp.EncodeStr(client.getAccountName());
                                 sp.EncodeStr("");
-                                if (ServerConfig.KMS197orLater()) {
+                                if (Version.GreaterOrEqual(Region.KMS, 197)) {
                                     sp.Encode1(1);
                                     sp.Encode1(0);
                                     for (int i = 0; i < 16; i++) {
@@ -370,7 +370,7 @@ public class ResCLogin {
                             if (Version.GreaterOrEqual(Region.TWMS, 94)) {
                                 sp.Encode1(client.isGm() ? 1 : 0);
                             }
-                            if (ServerConfig.TWMS121orLater()) {
+                            if (Version.GreaterOrEqual(Region.TWMS, 121)) {
                                 sp.Encode4(0); // buffer4
                             }
                             sp.EncodeStr(client.getAccountName());
@@ -411,11 +411,11 @@ public class ResCLogin {
                                 sp.Encode8(0); // m_dtChatUnblockDate
                                 sp.Encode8(0); // m_dtRegisterDate
                                 sp.Encode4(0);
-                                if (ServerConfig.GMS83orLater()) {
+                                if (Version.GreaterOrEqual(Region.GMS, 83)) {
                                     sp.Encode1(1);
                                     sp.Encode1(0);
                                 }
-                                if (ServerConfig.GMS84orLater()) {
+                                if (Version.GreaterOrEqual(Region.GMS, 84)) {
                                     sp.Encode8(0);
                                 }
                             } else {
@@ -457,7 +457,7 @@ public class ResCLogin {
                                 // v70+
                                 sp.Encode1(1);
                             } else {
-                                if (ServerConfig.EMS89orLater()) {
+                                if (Version.GreaterOrEqual(Region.EMS, 89)) {
                                     sp.Encode1(0);
                                     sp.EncodeStr("");
                                 }
@@ -607,10 +607,10 @@ public class ResCLogin {
             }
         }
         sp.Encode2(0);
-        if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || ServerConfig.JMST110() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.KMS118orLater() || ServerConfig.JMS302orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode4(0);
         }
-        if (ServerConfig.EMS89orLater()) {
+        if (Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode4(0);
         }
         return sp.get();
@@ -627,7 +627,7 @@ public class ResCLogin {
         for (MapleCharacter chr : chars) {
             data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             data.EncodeBuffer(DataAvatarLook.Encode(chr));
-            if (ServerConfig.TWMS121orLater()) {
+            if (Version.GreaterOrEqual(Region.TWMS, 121)) {
                 data.Encode1(0);
             }
             data.Encode1(1);
@@ -646,7 +646,7 @@ public class ResCLogin {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode8(0);
-        } else if (ServerConfig.TWMS121orLater()) {
+        } else if (Version.GreaterOrEqual(Region.TWMS, 121)) {
             data.Encode2(3); // 2nd password state
             data.Encode8(charslots);
             data.Encode8(0);
@@ -684,7 +684,7 @@ public class ResCLogin {
             sp.EncodeStr("");
         }
 
-        if ((Region.IsKMS() && !ServerConfig.KMS160orLater()) || Region.IsCMS() || Region.IsIMS()) {
+        if ((Region.IsKMS() && !Version.GreaterOrEqual(Region.KMS, 160)) || Region.IsCMS() || Region.IsIMS()) {
             sp.Encode4(1000000);
         }
 
@@ -695,8 +695,8 @@ public class ResCLogin {
             sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(DataAvatarLook.Encode(chr));
             if ((Region.IsJMS() || Region.IsKMS() || Region.IsIMS() || Region.IsEMS() || Region.IsTHMS() || Region.IsMSEA())
-                    && (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater())
-                    || ServerConfig.GMS83orLater()) {
+                    && (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84))
+                    || Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode1(0); // family
             }
             sp.Encode1(1); // ranking
@@ -706,14 +706,14 @@ public class ResCLogin {
             sp.Encode4(chr.getJobRankMove());
         }
 
-        if (ServerConfig.KMS160orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 160)) {
             sp.Encode1(1); // 2nd password disabled
             sp.Encode1(0); // 2nd password disabled
             sp.Encode4(charslots);
             sp.Encode4(0);
             sp.Encode4(0);
             sp.Encode4(0);
-            if (ServerConfig.KMS197orLater()) {
+            if (Version.GreaterOrEqual(Region.KMS, 197)) {
                 sp.Encode4(0);
                 sp.Encode1(0);
             }
@@ -733,7 +733,7 @@ public class ResCLogin {
             return sp.get();
         }
 
-        if (ServerConfig.EMS89orLater()) {
+        if (Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(1);
             sp.Encode1(0);
             sp.Encode4(charslots);
@@ -790,14 +790,14 @@ public class ResCLogin {
             return sp.get();
         }
 
-        if (ServerConfig.GMS91orLater()) {
+        if (Version.GreaterOrEqual(Region.GMS, 91)) {
             sp.Encode1(2); // m_bLoginOpt
             sp.Encode4(charslots); // m_nSlotCount
             sp.Encode4(0); // m_nBuyCharCount
             return sp.get();
         }
 
-        if (ServerConfig.GMS83orLater()) {
+        if (Version.GreaterOrEqual(Region.GMS, 83)) {
             sp.Encode1(2); // m_bLoginOpt
             sp.Encode4(charslots); // m_nSlotCount
             return sp.get();
@@ -898,7 +898,7 @@ public class ResCLogin {
         } else {
             sp.Encode1(-1);
         }
-        if (ServerConfig.KMS148orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);
         }
         return sp.get();

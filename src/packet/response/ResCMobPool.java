@@ -52,7 +52,7 @@ public class ResCMobPool {
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             // none
         } else if (ServerConfig.JMS186orLater()
-                || ServerConfig.KMS95orLater()) {
+                || Version.GreaterOrEqual(Region.KMS, 95)) {
             sp.Encode1(0); // bNotForceLandingWhenDiscard
             sp.Encode1(0); // bNotChangeAction
         }
@@ -64,7 +64,7 @@ public class ResCMobPool {
             sp.Encode1(0);
             sp.Encode1(0);
         } else if (ServerConfig.JMS186orLater()
-                || ServerConfig.KMS95orLater()) {
+                || Version.GreaterOrEqual(Region.KMS, 95)) {
             sp.Encode4(0); //  if this is not 0, Encode4 x2 x loop count
             sp.Encode4(0); //  if this is not 0, Encode4 x loop count
         }
@@ -177,7 +177,7 @@ public class ResCMobPool {
         sp.Encode1(skillId);
         sp.Encode1(skillLevel);
         if (ServerConfig.JMS194orLater()
-                || ServerConfig.KMS95orLater()) {
+                || Version.GreaterOrEqual(Region.KMS, 95)) {
             sp.Encode4(0);
         }
         return sp.get();

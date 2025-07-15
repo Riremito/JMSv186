@@ -55,10 +55,10 @@ public class DataSecondaryStat {
         for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
             buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
         }
-        if (ServerConfig.EMS89orLater()) {
+        if (Version.GreaterOrEqual(Region.EMS, 89)) {
             data.Encode4(buff_mask[8]);
         }
-        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             data.Encode4(buff_mask[7]);
             data.Encode4(buff_mask[6]);
             data.Encode4(buff_mask[5]);

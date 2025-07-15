@@ -91,7 +91,7 @@ public class ResCWvsContext {
         sp.Encode1(unlock ? 1 : 0);// m_bExclRequestSent, unlock
         sp.Encode1((io == null) ? 0 : io.get().size());
 
-        if (ServerConfig.JMS302orLater() || ServerConfig.KMST391() || ServerConfig.KMS197orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS302orLater() || Version.Equal(Region.KMST, 391) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode1(0); // unused
         }
 
@@ -152,7 +152,7 @@ public class ResCWvsContext {
     public static final MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ChangeSkillRecordResult);
         sp.Encode1(1);
-        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);
         }
         sp.Encode2(1);
@@ -171,7 +171,7 @@ public class ResCWvsContext {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
         sp.EncodeBuffer(DataSecondaryStat.EncodeForLocal(effect));
         sp.Encode2(0); // delay
-        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode1(0);
         }
         sp.Encode1(0); // CUserLocal::SetSecondaryStatChangedPoint
@@ -185,10 +185,10 @@ public class ResCWvsContext {
         for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
             buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
         }
-        if (ServerConfig.EMS89orLater()) {
+        if (Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode4(buff_mask[8]);
         }
-        if (ServerConfig.JMS302orLater() || ServerConfig.EMS89orLater() || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
+        if (ServerConfig.JMS302orLater() || Version.GreaterOrEqual(Region.EMS, 89) || ServerConfig.TWMS148orLater() || ServerConfig.CMS104orLater()) {
             sp.Encode4(buff_mask[7]);
             sp.Encode4(buff_mask[6]);
             sp.Encode4(buff_mask[5]);
@@ -227,7 +227,7 @@ public class ResCWvsContext {
         // 0 = lock   -> do not clear lock flag
         // 1 = unlock -> clear lock flag
         sp.Encode1(unlock); // CWvsContext->bExclRequestSent
-        if ((Region.IsEMS() && !ServerConfig.EMS89orLater()) || Version.Between(Region.TWMS, 74, 93)) {
+        if ((Region.IsEMS() && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.Between(Region.TWMS, 74, 93)) {
             sp.Encode1(0); // EMS v55
         }
         sp.EncodeBuffer(DataGW_CharacterStat.EncodeChangeStat(chr, statmask));
@@ -239,7 +239,7 @@ public class ResCWvsContext {
                     sp.Encode1(v5);
                 }
             }
-            if (ServerConfig.GMS91orLater()) {
+            if (Version.GreaterOrEqual(Region.GMS, 91)) {
                 sp.Encode1(0); // not 0 -> Encode1
             }
         } else {
@@ -544,7 +544,7 @@ public class ResCWvsContext {
             // Monster Book (JMS)
             sp.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
         }
-        if (ServerConfig.JMS180orLater() || ServerConfig.KMS84orLater()) {
+        if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84)) {
             // MedalAchievementInfo::Decode
             IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
             sp.Encode4(inv_medal == null ? 0 : inv_medal.getItemId());
