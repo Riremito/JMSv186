@@ -24,7 +24,6 @@ import client.ISkill;
 import client.MapleCharacter;
 import client.PlayerStats;
 import client.SkillFactory;
-import config.ServerConfig;
 import config.Version;
 import java.util.ArrayList;
 import server.Randomizer;

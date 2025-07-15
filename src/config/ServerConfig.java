@@ -4,14 +4,11 @@ import debug.Debug;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.sql.Timestamp;
 import java.util.Properties;
 import packet.ClientPacket;
 import packet.ServerPacket;
 
 public class ServerConfig {
-
-    public static long expiration_date = (Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000;
 
     // 初期スロット数
     public static final byte DEFAULT_INV_SLOT_EQUIP = 72;

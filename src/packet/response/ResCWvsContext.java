@@ -32,6 +32,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
+import data.client.DC_Date;
 import debug.Debug;
 import handling.MaplePacket;
 import handling.channel.MapleGuildRanking;
@@ -159,7 +160,7 @@ public class ResCWvsContext {
         sp.Encode4(level);
         sp.Encode4(masterlevel);
         if (ServerConfig.JMS164orLater()) {
-            sp.Encode8(ServerConfig.expiration_date);
+            sp.Encode8(DC_Date.getMagicalExpirationDate());
         }
         sp.Encode1(4);
         return sp.get();

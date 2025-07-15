@@ -19,7 +19,6 @@
 package packet.response;
 
 import client.MapleCharacter;
-import config.ServerConfig;
 import config.Version;
 import constants.ServerConstants;
 import handling.MaplePacket;

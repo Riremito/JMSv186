@@ -19,7 +19,6 @@
 package debug;
 
 import config.Region;
-import config.ServerConfig;
 import config.Version;
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -20,7 +20,7 @@ package packet.response.data;
 
 import client.MapleClient;
 import client.inventory.IItem;
-import config.ServerConfig;
+import data.client.DC_Date;
 import packet.ServerPacket;
 import server.CashItemFactory;
 
@@ -39,7 +39,7 @@ public class DataGW_CashItemInfo {
         sp.Encode4(0); // first?
         sp.Encode2(item.getQuantity());
         sp.EncodeBuffer(item.getOwner(), 13);
-        sp.Encode8(ServerConfig.expiration_date);
+        sp.Encode8(DC_Date.getMagicalExpirationDate());
         sp.Encode8(CashItemFactory.getInstance().getItemSN(item.getItemId()));
         return sp.get().getBytes();
 

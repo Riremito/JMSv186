@@ -26,7 +26,6 @@ import client.inventory.IItem;
 import client.inventory.Equip;
 import client.inventory.IEquip;
 import client.inventory.MapleWeaponType;
-import config.ServerConfig;
 import config.Version;
 import java.lang.ref.WeakReference;
 import java.util.Map;

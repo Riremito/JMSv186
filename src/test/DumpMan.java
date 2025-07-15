@@ -19,7 +19,6 @@
 package test;
 
 import config.Region;
-import config.ServerConfig;
 import config.Version;
 import debug.Debug;
 import java.io.FileWriter;

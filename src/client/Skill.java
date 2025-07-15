@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package client;
 
-import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
 import java.util.ArrayList;

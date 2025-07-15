@@ -22,7 +22,6 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.SkillMacro;
 import config.Region;
-import config.ServerConfig;
 import config.Version;
 import debug.Debug;
 import packet.ClientPacket;

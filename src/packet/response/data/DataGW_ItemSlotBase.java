@@ -21,6 +21,7 @@ import client.inventory.Equip;
 import client.inventory.IItem;
 import config.ServerConfig;
 import config.Version;
+import data.client.DC_Date;
 import packet.ServerPacket;
 
 /**
@@ -234,7 +235,7 @@ public class DataGW_ItemSlotBase {
                 data.Encode2(item.getPet().getCloseness()); // nTameness_CS
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
                 // 魔法の効力期限, Windows時間
-                data.Encode8(ServerConfig.expiration_date); // dateDead
+                data.Encode8(DC_Date.getMagicalExpirationDate()); // dateDead
                 data.Encode2(0); // nPetAttribute_CS
                 data.Encode2(item.getPet().getFlags()); // usPetSkill_CS
                 if (ServerConfig.JMS164orLater() || ServerConfig.IsVMS()) {

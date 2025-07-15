@@ -19,7 +19,6 @@
 package data.client;
 
 import config.Region;
-import config.ServerConfig;
 import config.Version;
 
 /**
