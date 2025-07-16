@@ -23,7 +23,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import java.util.List;
 import packet.ServerPacket;
 import packet.ops.OpsShop;

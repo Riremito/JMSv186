@@ -22,7 +22,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import debug.Debug;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import packet.ServerPacket;

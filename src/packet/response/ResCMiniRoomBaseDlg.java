@@ -21,7 +21,7 @@ package packet.response;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.IItem;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import packet.ServerPacket;
 import packet.response.struct.TestHelper;
 import server.MapleTrade;

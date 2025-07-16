@@ -49,7 +49,7 @@ import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import database.DatabaseConnection;
 import debug.Debug;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.PartyOperation;
 import handling.world.MaplePartyCharacter;

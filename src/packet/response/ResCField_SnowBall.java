@@ -18,7 +18,7 @@
  */
 package packet.response;
 
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import packet.ServerPacket;
 import server.events.MapleSnowball;
 import tools.data.output.MaplePacketLittleEndianWriter;

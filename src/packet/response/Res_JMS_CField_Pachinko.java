@@ -2,7 +2,7 @@ package packet.response;
 
 import client.MapleBeans;
 import client.MapleCharacter;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.channel.handler.BeanGame;
 import java.util.List;
 import packet.ServerPacket;

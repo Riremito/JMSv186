@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.world.guild;
 
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import packet.response.ResCWvsContext;
 
 public enum MapleGuildResponse {

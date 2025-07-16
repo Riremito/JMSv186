@@ -46,7 +46,7 @@ import client.SkillFactory;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import constants.ServerConstants;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import java.awt.Point;

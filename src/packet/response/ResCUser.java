@@ -23,7 +23,7 @@ import client.inventory.IEquip;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import java.awt.Point;
 import packet.ServerPacket;
 import packet.response.struct.TestHelper;

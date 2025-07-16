@@ -63,7 +63,7 @@ import data.client.DC_Exp;
 import database.DatabaseConnection;
 import database.DatabaseException;
 import debug.Debug;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.CharacterTransfer;
 import handling.world.MapleMessenger;

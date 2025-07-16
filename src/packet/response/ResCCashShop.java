@@ -25,7 +25,7 @@ import client.inventory.MapleInventoryType;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import java.util.ArrayList;
 import packet.ops.OpsCashItemFailReason;
 import packet.ops.OpsCashItem;

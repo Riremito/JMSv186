@@ -24,7 +24,7 @@ import java.util.Iterator;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.world.World;
 import handling.world.guild.*;
 import packet.response.ResCUserPool;

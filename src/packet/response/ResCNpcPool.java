@@ -20,7 +20,7 @@ package packet.response;
 
 import client.MapleClient;
 import config.ServerConfig;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import packet.ServerPacket;

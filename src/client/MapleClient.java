@@ -40,7 +40,7 @@ import javax.script.ScriptEngine;
 import database.DatabaseConnection;
 import database.DatabaseException;
 import database.ExtraDB;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.world.MapleMessengerCharacter;

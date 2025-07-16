@@ -20,7 +20,7 @@ package packet.response;
 
 import client.MapleCharacter;
 import client.inventory.IItem;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import java.util.List;
 import packet.ServerPacket;
 import packet.response.struct.TestHelper;

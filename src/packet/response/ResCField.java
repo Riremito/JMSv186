@@ -21,7 +21,7 @@ package packet.response;
 import client.MapleCharacter;
 import client.MapleClient;
 import debug.Debug;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import java.util.List;
 import java.util.Map;
 import packet.ServerPacket;

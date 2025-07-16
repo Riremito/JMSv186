@@ -19,7 +19,7 @@
 package packet.response.wrapper;
 
 import client.MapleCharacter;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import packet.ops.OpsUserEffect;
 import packet.ops.arg.ArgUserEffect;
 import packet.response.ResCUserRemote;

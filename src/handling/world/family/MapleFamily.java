@@ -30,7 +30,7 @@ import java.util.Iterator;
 
 import client.MapleCharacter;
 import database.DatabaseConnection;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.world.World;
 import java.sql.Statement;
 import java.util.ArrayList;

@@ -36,7 +36,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import database.DatabaseConnection;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import java.util.ArrayList;
 import packet.response.ResCField;

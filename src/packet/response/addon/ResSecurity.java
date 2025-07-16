@@ -20,7 +20,7 @@ package packet.response.addon;
 
 import client.MapleClient;
 import config.ServerConfig;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import packet.ServerPacket;
 
 /**

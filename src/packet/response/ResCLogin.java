@@ -23,7 +23,7 @@ import client.MapleClient;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.login.LoginServer;
 import java.util.List;

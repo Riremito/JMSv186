@@ -25,7 +25,7 @@ import debug.DebugLogger;
 import java.io.ByteArrayOutputStream;
 
 import handling.ByteArrayMaplePacket;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import tools.HexTool;
 
 /**

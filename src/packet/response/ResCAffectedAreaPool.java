@@ -19,7 +19,7 @@
 package packet.response;
 
 import config.ServerConfig;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import packet.ServerPacket;
 import server.maps.MapleMist;
 

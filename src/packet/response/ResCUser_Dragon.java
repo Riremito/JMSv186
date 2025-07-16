@@ -18,7 +18,7 @@
  */
 package packet.response;
 
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import packet.request.parse.ParseCMovePath;
 import packet.ServerPacket;
 import server.maps.MapleDragon;

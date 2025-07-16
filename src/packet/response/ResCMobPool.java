@@ -24,7 +24,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import debug.Debug;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

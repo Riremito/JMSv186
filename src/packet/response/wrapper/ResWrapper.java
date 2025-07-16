@@ -27,7 +27,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import packet.ServerPacket;
 import packet.ops.OpsBroadcastMsg;
 import packet.ops.arg.ArgBroadcastMsg;

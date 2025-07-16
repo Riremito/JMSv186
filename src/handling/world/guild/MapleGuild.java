@@ -36,7 +36,7 @@ import client.MapleClient;
 import config.Region;
 import config.Version;
 import database.DatabaseConnection;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.world.World;
 import handling.world.guild.MapleBBSThread.MapleBBSReply;
 import java.sql.Statement;

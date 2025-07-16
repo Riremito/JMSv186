@@ -15,7 +15,7 @@ import client.inventory.MapleInventoryType;
 import client.messages.CommandProcessorUtil;
 import config.ServerConfig;
 import constants.GameConstants;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.World;
 import handling.world.CheaterData;

@@ -27,7 +27,7 @@ import client.inventory.ItemLoader;
 import client.inventory.MapleInventoryType;
 import java.sql.Connection;
 import database.DatabaseConnection;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import constants.ServerConstants;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -22,7 +22,7 @@ import client.MapleCharacter;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import java.util.List;
 import packet.request.parse.ParseCMovePath;
 import packet.ServerPacket;

@@ -23,7 +23,7 @@ package handling.cashshop;
 import config.ServerConfig;
 import debug.Debug;
 import java.net.InetSocketAddress;
-import handling.MapleServerHandler;
+import server.network.MapleServerHandler;
 import handling.channel.PlayerStorage;
 import server.network.MapleCodecFactory;
 import org.apache.mina.common.ByteBuffer;

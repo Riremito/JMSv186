@@ -23,7 +23,7 @@ import client.SkillMacro;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import java.util.Map;
 import packet.ServerPacket;
 import tools.Pair;

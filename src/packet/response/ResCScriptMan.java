@@ -24,7 +24,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import debug.Debug;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import packet.ServerPacket;
 import packet.ops.OpsScriptMan;
 import tools.data.output.MaplePacketLittleEndianWriter;

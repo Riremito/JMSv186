@@ -18,7 +18,7 @@
  */
 package packet.response;
 
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import java.awt.Point;
 import packet.ServerPacket;
 import server.maps.MapleDoor;

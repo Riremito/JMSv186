@@ -56,7 +56,7 @@ import server.MapleItemInformationProvider;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
 import database.DatabaseConnection;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import handling.world.World;

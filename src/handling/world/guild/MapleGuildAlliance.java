@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package handling.world.guild;
 
 import database.DatabaseConnection;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.world.World;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

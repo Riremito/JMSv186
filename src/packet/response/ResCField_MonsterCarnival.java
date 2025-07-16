@@ -19,7 +19,7 @@
 package packet.response;
 
 import client.MapleCharacter;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import packet.ServerPacket;
 import server.MapleCarnivalParty;
 import tools.data.output.MaplePacketLittleEndianWriter;

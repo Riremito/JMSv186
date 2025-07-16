@@ -24,7 +24,6 @@ import client.MapleClient;
 import config.ClientEdit;
 import config.Content;
 import config.Region;
-import handling.MaplePacket;
 import server.network.MapleAESOFB;
 
 import java.util.concurrent.locks.Lock;

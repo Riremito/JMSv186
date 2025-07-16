@@ -25,7 +25,7 @@ import client.inventory.MapleRing;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.channel.handler.AttackInfo;
 import java.util.List;
 import packet.ServerPacket;

@@ -27,7 +27,7 @@ import client.ISkill;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.SkillFactory;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import packet.response.ResCAffectedAreaPool;
 import server.MapleStatEffect;
 import server.life.MapleMonster;

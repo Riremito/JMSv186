@@ -21,7 +21,7 @@ package packet.response;
 import client.MapleCharacter;
 import config.Version;
 import constants.ServerConstants;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import java.awt.Point;
 import packet.ServerPacket;
 import packet.ops.arg.ArgUserEffect;

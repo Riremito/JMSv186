@@ -27,7 +27,7 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import handling.MapleServerHandler;
+import server.network.MapleServerHandler;
 import server.network.MapleCodecFactory;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;

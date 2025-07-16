@@ -26,7 +26,7 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import client.inventory.PetDataFactory;
 import database.DatabaseConnection;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.channel.PlayerStorage;

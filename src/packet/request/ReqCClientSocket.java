@@ -28,7 +28,7 @@ import config.Region;
 import config.Version;
 import database.ExtraDB;
 import debug.Debug;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.world.CharacterIdChannelPair;

@@ -34,7 +34,7 @@ import config.Version;
 import constants.GameConstants;
 import data.client.DC_Date;
 import debug.Debug;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.channel.MapleGuildRanking;
 import handling.channel.handler.InventoryHandler;
 import handling.world.MapleParty;

@@ -25,7 +25,7 @@ import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
 import constants.ServerConstants;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import packet.ServerPacket;
 import packet.response.data.DataCClientOptMan;
 import packet.response.data.DataCWvsContext;

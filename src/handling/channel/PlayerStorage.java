@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.Collection;
 import client.MapleCharacterUtil;
 import client.MapleCharacter;
-import handling.MaplePacket;
+import server.network.MaplePacket;
 import handling.world.CharacterTransfer;
 import handling.world.CheaterData;
 import handling.world.World;

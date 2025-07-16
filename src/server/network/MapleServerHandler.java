@@ -1,5 +1,6 @@
-package handling;
+package server.network;
 
+import server.network.MaplePacket;
 import constants.ServerConstants;
 import client.MapleClient;
 import debug.Debug;
