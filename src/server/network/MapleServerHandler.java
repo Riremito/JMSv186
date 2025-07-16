@@ -1,6 +1,5 @@
 package server.network;
 
-import server.network.MaplePacket;
 import constants.ServerConstants;
 import client.MapleClient;
 import debug.Debug;
@@ -8,9 +7,7 @@ import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.channel.handler.*;
 import handling.login.LoginServer;
-import server.network.MaplePacketDecoder;
 import server.Randomizer;
-import server.network.MapleAESOFB;
 import tools.data.input.ByteArrayByteStream;
 import tools.data.input.GenericSeekableLittleEndianAccessor;
 import tools.data.input.SeekableLittleEndianAccessor;

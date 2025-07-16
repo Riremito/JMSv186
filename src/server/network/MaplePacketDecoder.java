@@ -25,13 +25,11 @@ import config.ClientEdit;
 import config.Content;
 import config.Region;
 import debug.Debug;
-import server.network.MapleAESOFB;
 
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
-import server.network.MapleCustomEncryption;
 
 public class MaplePacketDecoder extends CumulativeProtocolDecoder {
 

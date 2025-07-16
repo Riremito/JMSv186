@@ -42,7 +42,6 @@ import packet.response.ResCField;
 import packet.response.ResCUIMessenger;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserPool;
-import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.Timer.WorldTimer;

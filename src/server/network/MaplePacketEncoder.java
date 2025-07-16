@@ -24,7 +24,6 @@ import client.MapleClient;
 import config.ClientEdit;
 import config.Content;
 import config.Region;
-import server.network.MapleAESOFB;
 
 import java.util.concurrent.locks.Lock;
 
@@ -32,7 +31,6 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
-import server.network.MapleCustomEncryption;
 
 public class MaplePacketEncoder implements ProtocolEncoder {
 

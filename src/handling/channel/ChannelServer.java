@@ -34,7 +34,7 @@ import client.MapleCharacter;
 import config.ServerConfig;
 import constants.ServerConstants;
 import debug.Debug;
-import handling.ByteArrayMaplePacket;
+import server.network.ByteArrayMaplePacket;
 import server.network.MaplePacket;
 import server.network.MapleServerHandler;
 import handling.login.LoginServer;

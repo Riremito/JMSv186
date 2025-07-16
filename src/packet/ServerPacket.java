@@ -19,7 +19,7 @@
 package packet;
 
 import config.ServerConfig;
-import handling.ByteArrayMaplePacket;
+import server.network.ByteArrayMaplePacket;
 import server.network.MaplePacket;
 import java.util.ArrayList;
 import java.util.Properties;
