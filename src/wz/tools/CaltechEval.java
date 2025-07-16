@@ -1,4 +1,4 @@
-package tools;
+package wz.tools;
 
 // Simple Java Math Expression Evaluator
 // Usage example: hmm

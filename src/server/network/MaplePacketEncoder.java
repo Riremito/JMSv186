@@ -18,15 +18,14 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package handling.mina;
+package server.network;
 
 import client.MapleClient;
-import config.DisabledConfig;
+import config.ClientEdit;
 import config.Content;
 import config.Region;
-import config.ServerConfig;
 import handling.MaplePacket;
-import tools.MapleAESOFB;
+import server.network.MapleAESOFB;
 
 import java.util.concurrent.locks.Lock;
 
@@ -34,7 +33,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
-import tools.MapleCustomEncryption;
+import server.network.MapleCustomEncryption;
 
 public class MaplePacketEncoder implements ProtocolEncoder {
 
@@ -55,7 +54,9 @@ public class MaplePacketEncoder implements ProtocolEncoder {
             try {
                 final byte[] header = send_crypto.getPacketHeader(unencrypted.length);
 
-                if (!DisabledConfig.PacketEncryption.get()) {
+                if (ClientEdit.PacketEncryptionRemoved.get()) {
+                    // no encryption
+                } else {
                     if (Content.CustomEncryption.get()) {
                         MapleCustomEncryption.encryptData(unencrypted);
                     }

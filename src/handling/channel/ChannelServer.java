@@ -38,7 +38,7 @@ import handling.ByteArrayMaplePacket;
 import handling.MaplePacket;
 import handling.MapleServerHandler;
 import handling.login.LoginServer;
-import handling.mina.MapleCodecFactory;
+import server.network.MapleCodecFactory;
 import handling.world.CheaterData;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import scripting.EventScriptManager;

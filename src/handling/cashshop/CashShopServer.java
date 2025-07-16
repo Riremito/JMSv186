@@ -25,7 +25,7 @@ import debug.Debug;
 import java.net.InetSocketAddress;
 import handling.MapleServerHandler;
 import handling.channel.PlayerStorage;
-import handling.mina.MapleCodecFactory;
+import server.network.MapleCodecFactory;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import org.apache.mina.common.IoAcceptor;

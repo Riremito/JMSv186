@@ -18,12 +18,11 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package tools;
+package server.network;
 
-import config.DisabledConfig;
+import config.ClientEdit;
 import config.Content;
 import config.Region;
-import config.ServerConfig;
 import config.Version;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -34,6 +33,8 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import tools.BitTools;
+import tools.HexTool;
 import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -73,8 +74,9 @@ public class MapleAESOFB {
         (byte) 0xC6, (byte) 0xE5, (byte) 0x08, (byte) 0x49};
 
     public MapleAESOFB(byte iv[], boolean isLogin, boolean isOutbound) {
-        // 暗号化
-        if (!DisabledConfig.PacketEncryption.get()) {
+        if (ClientEdit.PacketEncryptionRemoved.get()) {
+            // no encryption
+        } else {
             try {
                 cipher = Cipher.getInstance("AES");
                 if (!Region.IsKMS()) {

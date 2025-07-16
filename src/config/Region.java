@@ -174,20 +174,12 @@ public enum Region {
         return Region.getRegion() == Region.IMS;
     }
 
-    public static boolean IsJMST() {
-        return Region.getRegion() == Region.JMST;
-    }
-
     public static boolean IsTWMS() {
         return Region.getRegion() == Region.TWMS;
     }
 
     public static boolean IsTHMS() {
         return Region.getRegion() == Region.THMS;
-    }
-
-    public static boolean IsKMST() {
-        return Region.getRegion() == Region.KMST;
     }
 
     public static boolean IsGMS() {

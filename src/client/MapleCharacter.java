@@ -148,7 +148,7 @@ import server.maps.MapleDragon;
 import server.maps.MapleFoothold;
 import tools.ConcurrentEnumMap;
 import tools.FileoutputUtil;
-import tools.MockIOSession;
+import server.network.MockIOSession;
 import wz.DefaultData;
 import wz.LoadData;
 

@@ -57,7 +57,7 @@ import java.sql.Statement;
 import server.maps.MapleMap;
 import server.shops.IMaplePlayerShop;
 import tools.FileoutputUtil;
-import tools.MapleAESOFB;
+import server.network.MapleAESOFB;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

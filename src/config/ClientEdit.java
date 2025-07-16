@@ -22,22 +22,26 @@ package config;
  *
  * @author Riremito
  */
-public enum DisabledConfig {
-    PacketEncryption(false),
+public enum ClientEdit {
+    PacketEncryptionRemoved(false),
     UNKNOWN(false);
 
     private boolean value;
 
-    DisabledConfig(boolean val) {
+    ClientEdit(boolean val) {
         this.value = val;
     }
 
-    DisabledConfig() {
+    ClientEdit() {
         this.value = false;
     }
 
     public boolean get() {
         return this.value;
+    }
+
+    public static void init() {
+
     }
 
 }

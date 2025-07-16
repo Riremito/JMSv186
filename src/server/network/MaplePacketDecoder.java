@@ -18,21 +18,20 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package handling.mina;
+package server.network;
 
 import client.MapleClient;
-import config.DisabledConfig;
+import config.ClientEdit;
 import config.Content;
 import config.Region;
-import config.ServerConfig;
 import debug.Debug;
-import tools.MapleAESOFB;
+import server.network.MapleAESOFB;
 
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
-import tools.MapleCustomEncryption;
+import server.network.MapleCustomEncryption;
 
 public class MaplePacketDecoder extends CumulativeProtocolDecoder {
 
@@ -46,11 +45,6 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
     @Override
     protected boolean doDecode(IoSession session, ByteBuffer in, ProtocolDecoderOutput out) throws Exception {
         final DecoderState decoderState = (DecoderState) session.getAttribute(DECODER_STATE_KEY);
-
-        /*	if (decoderState == null) {
-	    decoderState = new DecoderState();
-	    session.setAttribute(DECODER_STATE_KEY, decoderState);
-	}*/
         final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
 
         if (decoderState.packetlength == -1) {
@@ -71,7 +65,9 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
             in.get(decryptedPacket, 0, decoderState.packetlength);
             decoderState.packetlength = -1;
 
-            if (!DisabledConfig.PacketEncryption.get()) {
+            if (ClientEdit.PacketEncryptionRemoved.get()) {
+                // no encryption
+            } else {
                 if (Region.IsKMS() || Region.IsIMS()) {
                     client.getReceiveCrypto().kms_decrypt(decryptedPacket);
                 } else {

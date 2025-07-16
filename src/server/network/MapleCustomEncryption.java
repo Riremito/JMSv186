@@ -1,4 +1,6 @@
-package tools;
+package server.network;
+
+import tools.BitTools;
 
 public class MapleCustomEncryption {
 

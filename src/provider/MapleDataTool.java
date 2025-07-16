@@ -24,7 +24,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 import provider.WzXML.MapleDataType;
-import tools.CaltechEval;
+import wz.tools.CaltechEval;
 
 public class MapleDataTool {
 
