@@ -16,30 +16,12 @@
  *
  *
  */
-package config;
+package config.property;
 
 /**
  *
  * @author Riremito
  */
-public class Property {
-
-    private static String path_wz_xml;
-    private static String path_scripts;
-
-    public static boolean setPath() {
-        // cmd line arguments
-        path_wz_xml = System.getProperty("riresaba.path.wz");
-        path_scripts = System.getProperty("riresaba.path.script");
-        return true;
-    }
-
-    public static String getDir_WzXml() {
-        return path_wz_xml;
-    }
-
-    public static String getDir_Scripts() {
-        return path_scripts;
-    }
-
+public class Property_Packet {
+    
 }

@@ -1,8 +1,7 @@
 package config;
 
+import config.property.Property;
 import debug.Debug;
-import java.io.FileReader;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Properties;
 import packet.ClientPacket;
@@ -610,8 +609,6 @@ public class ServerConfig {
     public static Charset codepage_ascii;
     public static Charset codepage_utf8;
 
-    // Database
-    public static String database_url, database_user, database_password;
     // Login Server
     public static int login_server_port, login_server_userlimit;
     public static boolean login_server_antihack;
@@ -640,22 +637,8 @@ public class ServerConfig {
 
     // propertiesファイルの読み込み
     public static void SetProperty() {
-        Properties DataBase = ReadPropertyFile("properties/database.properties");
-        {
-            // jdbc:mysql://127.0.0.1:3306/jms_v186?autoReconnect=true&characterEncoding=utf8
-            database_url = DataBase.getProperty("database.url");
-            if (database_url.isEmpty()) {
-                String database_host = DataBase.getProperty("database.host");
-                String database_port = DataBase.getProperty("database.port");
-                database_url = "jdbc:mysql://" + database_host + ":" + database_port + "/" + Region.GetRegionName() + "_v" + Version.getVersion() + "?autoReconnect=true&characterEncoding=utf8";
-            }
-
-            database_user = DataBase.getProperty("database.user");
-            database_password = DataBase.getProperty("database.password");
-        }
-
         // test
-        Properties TestConfig = ReadPropertyFile("properties/test.properties");
+        Properties TestConfig = Property.open("properties/test.properties");
         {
             // codepage
             utf8 = Boolean.parseBoolean(TestConfig.getProperty("codepage.use_utf8"));
@@ -673,7 +656,7 @@ public class ServerConfig {
             DebugConfig.open_debug_ui = Boolean.parseBoolean(TestConfig.getProperty("debug.admin_ui"));
         }
 
-        Properties LoginServer = ReadPropertyFile("properties/login.properties");
+        Properties LoginServer = Property.open("properties/login.properties");
         {
 
             login_server_port = Integer.parseInt(LoginServer.getProperty("server.port"));
@@ -681,7 +664,7 @@ public class ServerConfig {
             login_server_antihack = Boolean.parseBoolean(LoginServer.getProperty("server.antihack"));
         }
 
-        Properties GameServer = ReadPropertyFile("properties/kaede.properties");
+        Properties GameServer = Property.open("properties/kaede.properties");
         {
             game_server_channels = Integer.parseInt(GameServer.getProperty("server.channels"));
             game_server_DEFAULT_PORT = Short.parseShort(GameServer.getProperty("server.port"));
@@ -710,14 +693,14 @@ public class ServerConfig {
 
         }
 
-        Properties CashShopServer = ReadPropertyFile("properties/shop.properties");
+        Properties CashShopServer = Property.open("properties/shop.properties");
         {
             cash_shop_server_port = Integer.parseInt(CashShopServer.getProperty("server.port"));
             // Port共有
             maple_trade_space_server_port = cash_shop_server_port;
         }
 
-        Properties TestGameServer = ReadPropertyFile("properties/momiji.properties");
+        Properties TestGameServer = Property.open("properties/momiji.properties");
         {
             test_game_server_channels = Integer.parseInt(TestGameServer.getProperty("server.channels"));
             test_game_server_DEFAULT_PORT = Short.parseShort(TestGameServer.getProperty("server.port"));
@@ -727,7 +710,7 @@ public class ServerConfig {
             test_game_server_event = TestGameServer.getProperty("server.event");
         }
 
-        Properties Pachinko = ReadPropertyFile("properties/beans.properties");
+        Properties Pachinko = Property.open("properties/beans.properties");
         {
             豆豆装备 = Pachinko.getProperty("ddzb").split(",");
             豆豆坐骑 = Pachinko.getProperty("ddzq").split(",");
@@ -752,7 +735,7 @@ public class ServerConfig {
             豆豆奖励范围 = Integer.parseInt(Pachinko.getProperty("ddjlfw"));
         }
 
-        Properties ServerPacketHeader = ReadPropertyFile("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ServerPacket.properties");
+        Properties ServerPacketHeader = Property.open("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ServerPacket.properties");
         if (ServerPacketHeader != null) {
             ServerPacket.init(ServerPacketHeader);
 
@@ -765,7 +748,7 @@ public class ServerConfig {
             }
         }
 
-        Properties ClientPacketHeader = ReadPropertyFile("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ClientPacket.properties");
+        Properties ClientPacketHeader = Property.open("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ClientPacket.properties");
         if (ClientPacketHeader != null) {
             ClientPacket.Load(ClientPacketHeader);
 
@@ -780,13 +763,13 @@ public class ServerConfig {
     }
 
     public static void ReloadHeader() {
-        Properties ServerPacketHeader = ReadPropertyFile("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ServerPacket.properties");
+        Properties ServerPacketHeader = Property.open("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ServerPacket.properties");
         if (ServerPacketHeader != null) {
             ServerPacket.reset();
             ServerPacket.init(ServerPacketHeader);
             Debug.InfoLog("ServerPacket is reloaded!");
         }
-        Properties ClientPacketHeader = ReadPropertyFile("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ClientPacket.properties");
+        Properties ClientPacketHeader = Property.open("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ClientPacket.properties");
         if (ClientPacketHeader != null) {
             ClientPacket.Reset();
             ClientPacket.Load(ClientPacketHeader);
@@ -796,22 +779,6 @@ public class ServerConfig {
 
     public static boolean IsGMTestMode() {
         return DebugConfig.GM;
-    }
-
-    public static Properties ReadPropertyFile(final String path) {
-        final Properties p = new Properties();
-
-        FileReader fr;
-        try {
-            fr = new FileReader(path);
-            p.load(fr);
-            fr.close();
-        } catch (IOException e) {
-            Debug.ErrorLog("設定ファイルが見つかりません (" + path + ")");
-            return null;
-        }
-
-        return p;
     }
 
 }

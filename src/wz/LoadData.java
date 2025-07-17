@@ -1,7 +1,7 @@
 package wz;
 
 import client.SkillFactory;
-import config.Property;
+import config.property.Property_Java;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -388,7 +388,7 @@ public class LoadData {
     }
 
     private static void initQuests() {
-        MapleQuest.questData = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/Quest.wz"));
+        MapleQuest.questData = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Quest.wz"));
         MapleQuest.actions = MapleQuest.questData.getData("Act.img");
         MapleQuest.requirements = MapleQuest.questData.getData("Check.img");
         MapleQuest.info = MapleQuest.questData.getData("QuestInfo.img");
@@ -399,9 +399,9 @@ public class LoadData {
     }
 
     private static void initLife() {
-        MapleLifeFactory.data = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/Mob.wz"));
-        MapleLifeFactory.stringDataWZ = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/String.wz"));
-        MapleLifeFactory.etcDataWZ = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/Etc.wz"));
+        MapleLifeFactory.data = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Mob.wz"));
+        MapleLifeFactory.stringDataWZ = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/String.wz"));
+        MapleLifeFactory.etcDataWZ = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Etc.wz"));
         MapleLifeFactory.mobStringData = MapleLifeFactory.stringDataWZ.getData("Mob.img");
         MapleLifeFactory.npcStringData = MapleLifeFactory.stringDataWZ.getData("Npc.img");
 
@@ -412,16 +412,16 @@ public class LoadData {
 
     private static void initMaker() {
         if (ServerConfig.JMS164orLater()) {
-            ItemMakerFactory.info = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/Etc.wz")).getData("ItemMake.img");
+            ItemMakerFactory.info = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Etc.wz")).getData("ItemMake.img");
         }
     }
 
     private static void initItemInformation() {
         MapleData sub_dir = null;
-        MapleItemInformationProvider.etcData = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/Etc.wz"));
-        MapleItemInformationProvider.itemData = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/Item.wz"));
-        MapleItemInformationProvider.equipData = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/Character.wz"));
-        MapleItemInformationProvider.stringData = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/String.wz"));
+        MapleItemInformationProvider.etcData = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Etc.wz"));
+        MapleItemInformationProvider.itemData = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Item.wz"));
+        MapleItemInformationProvider.equipData = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Character.wz"));
+        MapleItemInformationProvider.stringData = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/String.wz"));
 
         if (Version.LessOrEqual(Region.JMS, 131)) {
             MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Cash");
@@ -456,7 +456,7 @@ public class LoadData {
 
     // login server
     private static void initForbiddenName() {
-        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/Etc.wz"));
+        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Etc.wz"));
 
         if (wz == null) {
             Debug.ErrorLog("initForbiddenName");
@@ -472,9 +472,9 @@ public class LoadData {
     }
 
     private static void initMapleMapFactory() {
-        MapleMapFactory.source = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/Map.wz"));
+        MapleMapFactory.source = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Map.wz"));
 
-        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/String.wz"));
+        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/String.wz"));
 
         if (wz == null) {
             Debug.ErrorLog("initMapleMapFactory");
@@ -485,7 +485,7 @@ public class LoadData {
     }
 
     private static void initCashItemFactory() {
-        CashItemFactory.data = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/Etc.wz"));
+        CashItemFactory.data = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Etc.wz"));
         CashItemFactory.commodity = CashItemFactory.data.getData("Commodity.img");
     }
 }

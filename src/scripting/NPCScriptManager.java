@@ -25,7 +25,7 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 
 import client.MapleClient;
-import config.Property;
+import config.property.Property_Java;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.Lock;
 import server.quest.MapleQuest;
@@ -263,10 +263,10 @@ public class NPCScriptManager extends AbstractScriptManager {
         if (npccm != null) {
             cms.remove(c);
             if (npccm.getType() == -1) {
-                c.removeScriptEngine(Property.getDir_Scripts() + "npc/" + npccm.getScript() + ".js");
-                c.removeScriptEngine(Property.getDir_Scripts() + "npc/notcoded.js");
+                c.removeScriptEngine(Property_Java.getDir_Scripts() + "npc/" + npccm.getScript() + ".js");
+                c.removeScriptEngine(Property_Java.getDir_Scripts() + "npc/notcoded.js");
             } else {
-                c.removeScriptEngine(Property.getDir_Scripts() + "quest/" + npccm.getQuest() + ".js");
+                c.removeScriptEngine(Property_Java.getDir_Scripts() + "quest/" + npccm.getQuest() + ".js");
             }
         }
         if (c.getPlayer() != null && c.getPlayer().getConversation() == 1) {

@@ -29,7 +29,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import client.MapleClient;
-import config.Property;
+import config.property.Property_Java;
 import tools.FileoutputUtil;
 
 /**
@@ -47,7 +47,7 @@ public abstract class AbstractScriptManager {
     protected Invocable getInvocable(String path, MapleClient c, boolean npc) {
         FileReader fr = null;
         try {
-            path = Property.getDir_Scripts() + path;
+            path = Property_Java.getDir_Scripts() + path;
             ScriptEngine engine = null;
 
             if (c != null) {

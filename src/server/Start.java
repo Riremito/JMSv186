@@ -3,10 +3,11 @@ package server;
 import config.ClientEdit;
 import config.Content;
 import config.DebugConfig;
-import config.Property;
+import config.property.Property_Java;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
+import config.property.Property_Database;
 import data.client.DC_Exp;
 import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
@@ -64,14 +65,18 @@ public class Start {
         packet.ops.PacketOps.initAll();
         // path
         Debug.InfoLog("[DataPath]");
-        if (!Property.setPath()) {
+        if (!Property_Java.setPath()) {
             Debug.ErrorLog("Invalid wz_xml or scripts dir.");
             return;
         }
-        Debug.InfoLog("wz_xml directory : " + Property.getDir_WzXml());
-        Debug.InfoLog("scripts directory : " + Property.getDir_Scripts());
+        Debug.InfoLog("wz_xml directory : " + Property_Java.getDir_WzXml());
+        Debug.InfoLog("scripts directory : " + Property_Java.getDir_Scripts());
         // read properties
         Debug.InfoLog("[Properties]");
+        if (!Property_Database.init()) {
+            Debug.ErrorLog("Property_Database.");
+            return;
+        }
         ServerConfig.SetProperty();
         LoginServer.SetWorldConfig();
         // database

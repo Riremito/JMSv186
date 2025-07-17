@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package database;
 
-import config.ServerConfig;
+import config.property.Property_Database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -61,7 +61,7 @@ public class DatabaseConnection {
                 System.err.println("ERROR" + e);
             }
             try {
-                final Connection con = DriverManager.getConnection(ServerConfig.database_url, ServerConfig.database_user, ServerConfig.database_password);
+                final Connection con = DriverManager.getConnection(Property_Database.getUrl(), Property_Database.getUser(), Property_Database.getPassword());
                 allConnections.add(con);
                 return con;
             } catch (SQLException e) {
