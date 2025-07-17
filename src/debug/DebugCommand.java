@@ -23,7 +23,7 @@ import client.MapleClient;
 import client.inventory.Equip;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
-import config.ServerConfig;
+import config.property.Property_Packet;
 import constants.GameConstants;
 import data.client.DC_Exp;
 import handling.channel.ChannelServer;
@@ -96,7 +96,9 @@ public class DebugCommand {
             // デバッグ関連
             case "/reload": {
                 // PacketHeader設定再読み込み
-                ServerConfig.ReloadHeader();
+                Property_Packet.reload();
+                Debug.InfoLog("Packet Header values are reloaded.");
+                chr.DebugMsg("Packet Header values are reloaded.");
                 chr.UpdateStat(true);
                 return true;
             }

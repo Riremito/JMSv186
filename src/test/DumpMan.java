@@ -78,7 +78,7 @@ public class DumpMan {
             fw = new FileWriter("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ClientPacket.properties");
             pw = new PrintWriter(fw);
             for (ClientPacket.Header header : ClientPacket.Header.values()) {
-                int val = (short) header.Get();
+                int val = (short) header.get();
                 if (val != -1) {
                     Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
                     pw.println(header.name() + " = " + String.format("@%04X", val));

@@ -20,7 +20,6 @@
 package packet;
 
 import config.ServerConfig;
-import java.util.Properties;
 
 public class ClientPacket {
 
@@ -35,7 +34,7 @@ public class ClientPacket {
 
     public static Header ToHeader(short w) {
         for (final Header h : Header.values()) {
-            if (h.Get() == w) {
+            if (h.get() == w) {
                 return h;
             }
         }
@@ -131,7 +130,7 @@ public class ClientPacket {
         return buffer;
     }
 
-    public enum Header {
+    public enum Header implements IHeader {
         // 独自仕様
         CP_CUSTOM_,
         CP_CUSTOM_WZ_HASH,
@@ -502,92 +501,23 @@ public class ClientPacket {
         // 定義値の変更や取得
         private int value;
 
-        Header(int header) {
-            value = header;
+        Header(int val) {
+            this.value = val;
         }
 
         Header() {
-            value = 0xFFFF;
+            this.value = -1;
         }
 
-        public boolean Set(int header) {
-            value = header;
-            return true;
+        @Override
+        public int get() {
+            return this.value;
         }
 
-        public int Get() {
-            return value;
-        }
-
-    }
-
-    // チート対策
-    public static void SetCustomHeader() {
-        // WZファイルのハッシュ値の送信
-        Header.CP_CUSTOM_WZ_HASH.Set(0x77AA);
-        // メモリスキャン
-        Header.CP_CUSTOM_MEMORY_SCAN.Set(0x77BB);
-    }
-
-    public static void Reset() {
-        for (Header header : Header.values()) {
-            header.Set(0xFFFF);
+        @Override
+        public void set(int val) {
+            this.value = val;
         }
     }
 
-    public static boolean Load(Properties props) {
-
-        for (Header header : Header.values()) {
-            String[] vars = props.getProperty(header.name(), "@FFFF").trim().split(" ");
-            int base = -1;
-            int offset = 0;
-            switch (vars.length) {
-                case 1: {
-                    if (vars[0].length() == 0) {
-                        //Debug.ErrorLog("Opcode :  " + header.name());
-                        continue;
-                    }
-                    if ("@FFFF".length() <= vars[0].length() && vars[0].charAt(0) == '@') {
-                        base = Integer.parseInt(vars[0].substring(1), 16);
-                    } else {
-                        base = Integer.parseInt(vars[0]);
-                    }
-                    break;
-                }
-                case 3: {
-                    // + or -
-                    if (vars[1].length() != 1 || (vars[1].charAt(0) != '+' && vars[1].charAt(0) != '-')) {
-                        continue;
-                    }
-                    offset = Integer.parseInt(vars[2]);
-                    if (vars[1].charAt(0) == '-') {
-                        offset = -offset;
-                    }
-                    // get base value
-                    if ("@FFFF".length() <= vars[0].length() && vars[0].charAt(0) == '@') {
-                        base = Integer.parseInt(vars[0].substring(1), 16);
-                    } else {
-                        for (Header base_header : Header.values()) {
-                            if (base_header.name().equals(vars[0])) {
-                                base = base_header.Get();
-                                break;
-                            }
-                        }
-                    }
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
-
-            if (base == -1) {
-                continue;
-            }
-
-            header.Set((short) (base + offset));
-        }
-
-        return true;
-    }
 }

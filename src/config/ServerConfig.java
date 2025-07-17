@@ -1,11 +1,8 @@
 package config;
 
 import config.property.Property;
-import debug.Debug;
 import java.nio.charset.Charset;
 import java.util.Properties;
-import packet.ClientPacket;
-import packet.ServerPacket;
 
 public class ServerConfig {
 
@@ -669,47 +666,6 @@ public class ServerConfig {
             game_server_disable_stone_consuming = Boolean.parseBoolean(GameServer.getProperty("server.custom.disable.stone_consuming"));
             game_server_disable_boss_timer = Boolean.parseBoolean(GameServer.getProperty("server.custom.disable.boss_timer"));
 
-        }
-
-        Properties ServerPacketHeader = Property.open("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ServerPacket.properties");
-        if (ServerPacketHeader != null) {
-            ServerPacket.init(ServerPacketHeader);
-
-            //Debug.DebugLog("[SP]");
-            for (ServerPacket.Header header : ServerPacket.Header.values()) {
-                int val = header.get();
-                if (val != -1) {
-                    //Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
-                }
-            }
-        }
-
-        Properties ClientPacketHeader = Property.open("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ClientPacket.properties");
-        if (ClientPacketHeader != null) {
-            ClientPacket.Load(ClientPacketHeader);
-
-            //Debug.DebugLog("[CP]");
-            for (ClientPacket.Header header : ClientPacket.Header.values()) {
-                int val = header.Get();
-                if (val != -1) {
-                    //Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
-                }
-            }
-        }
-    }
-
-    public static void ReloadHeader() {
-        Properties ServerPacketHeader = Property.open("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ServerPacket.properties");
-        if (ServerPacketHeader != null) {
-            ServerPacket.reset();
-            ServerPacket.init(ServerPacketHeader);
-            Debug.InfoLog("ServerPacket is reloaded!");
-        }
-        Properties ClientPacketHeader = Property.open("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ClientPacket.properties");
-        if (ClientPacketHeader != null) {
-            ClientPacket.Reset();
-            ClientPacket.Load(ClientPacketHeader);
-            Debug.InfoLog("ClientPacket is reloaded!");
         }
     }
 

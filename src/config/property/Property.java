@@ -52,6 +52,10 @@ public class Property {
         return prop.getProperty(name);
     }
 
+    public String get(String name, String defval) {
+        return prop.getProperty(name, defval);
+    }
+
     public int getInt(String name) {
         return Integer.parseInt(get(name));
     }
@@ -84,6 +88,10 @@ public class Property {
         if (!Property_Pachinko.init()) {
             Debug.ErrorLog("Property_Pachinko");
             return false;
+        }
+        if (!Property_Packet.init()) {
+            Debug.ErrorLog("Property_Packet is not loaded.");
+            // allow to run without loading packet header values.
         }
         return true;
     }

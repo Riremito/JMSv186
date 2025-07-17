@@ -22,7 +22,6 @@ import config.ServerConfig;
 import server.network.ByteArrayMaplePacket;
 import server.network.MaplePacket;
 import java.util.ArrayList;
-import java.util.Properties;
 
 public class ServerPacket {
 
@@ -171,7 +170,7 @@ public class ServerPacket {
         }
     }
 
-    public enum Header {
+    public enum Header implements IHeader {
         // CClientSocket::ProcessPacket, CLogin::OnPacket
         LP_BEGIN_SOCKET,
         LP_CheckPasswordResult,
@@ -777,84 +776,23 @@ public class ServerPacket {
 
         private int value;
 
-        Header(int header) {
-            value = header;
+        Header(int val) {
+            this.value = val;
         }
 
         Header() {
-            value = 0xFFFF;
+            this.value = -1;
         }
 
-        public boolean set(int header) {
-            value = header;
-            return true;
-        }
-
+        @Override
         public int get() {
-            return value;
-        }
-    }
-
-    public static void reset() {
-        for (Header header : Header.values()) {
-            header.set(0xFFFF);
-        }
-    }
-
-    public static boolean init(Properties props) {
-
-        for (Header header : Header.values()) {
-            String[] vars = props.getProperty(header.name(), "@FFFF").trim().split(" ");
-            int base = -1;
-            int offset = 0;
-            switch (vars.length) {
-                case 1: {
-                    if (vars[0].length() == 0) {
-                        //Debug.ErrorLog("Opcode :  " + header.name());
-                        continue;
-                    }
-                    if ("@FFFF".length() <= vars[0].length() && vars[0].charAt(0) == '@') {
-                        base = Integer.parseInt(vars[0].substring(1), 16);
-                    } else {
-                        base = Integer.parseInt(vars[0]);
-                    }
-                    break;
-                }
-                case 3: {
-                    // + or -
-                    if (vars[1].length() != 1 || (vars[1].charAt(0) != '+' && vars[1].charAt(0) != '-')) {
-                        continue;
-                    }
-                    offset = Integer.parseInt(vars[2]);
-                    if (vars[1].charAt(0) == '-') {
-                        offset = -offset;
-                    }
-                    // get base value
-                    if ("@FFFF".length() <= vars[0].length() && vars[0].charAt(0) == '@') {
-                        base = Integer.parseInt(vars[0].substring(1), 16);
-                    } else {
-                        for (Header base_header : Header.values()) {
-                            if (base_header.name().equals(vars[0])) {
-                                base = base_header.get();
-                                break;
-                            }
-                        }
-                    }
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
-
-            if (base == -1) {
-                continue;
-            }
-
-            header.set((short) (base + offset));
+            return this.value;
         }
 
-        return true;
+        @Override
+        public void set(int val) {
+            this.value = val;
+        }
     }
 
 }
