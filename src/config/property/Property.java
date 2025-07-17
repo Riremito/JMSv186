@@ -19,8 +19,10 @@
 package config.property;
 
 import debug.Debug;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 /**
@@ -40,7 +42,9 @@ public class Property {
         try {
             FileReader fr = new FileReader(path);
             prop = new Properties();
-            prop.load(fr);
+
+            //prop.load(fr);
+            prop.load(new InputStreamReader(new FileInputStream(path), "UTF8"));
             return true;
         } catch (IOException e) {
             // do nothing
@@ -102,9 +106,10 @@ public class Property {
 
     public static Properties open(String path) {
         try {
-            FileReader fr = new FileReader(path);
+            //FileReader fr = new FileReader(path);
             Properties pr = new Properties();
-            pr.load(fr);
+            //pr.load(fr);
+            pr.load(new InputStreamReader(new FileInputStream(path), "UTF8"));
             return pr;
         } catch (IOException e) {
             // do nothing

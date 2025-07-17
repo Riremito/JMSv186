@@ -198,7 +198,7 @@ public enum Content {
     }
 
     private static int checkCharacterNameLength() {
-        if (Version.LessOrEqual(Region.TWMS, 94)) {
+        if (Version.GreaterOrEqual(Region.TWMS, 94)) {
             return 15;
         }
         if (Region.check(Region.VMS)) {

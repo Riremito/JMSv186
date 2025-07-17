@@ -19,6 +19,7 @@
 package packet;
 
 import config.CodePage;
+import java.nio.charset.Charset;
 import server.network.ByteArrayMaplePacket;
 import server.network.MaplePacket;
 import java.util.ArrayList;
