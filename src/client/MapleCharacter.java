@@ -57,7 +57,6 @@ import java.io.Serializable;
 import client.anticheat.CheatTracker;
 import config.DeveloperMode;
 import config.Region;
-import config.ServerConfig;
 import config.Version;
 import constants.ServerConstants;
 import data.client.DC_Exp;
@@ -991,11 +990,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
             ps = con.prepareStatement("INSERT INTO inventoryslot (characterid, `equip`, `use`, `setup`, `etc`, `cash`) VALUES (?, ?, ?, ?, ?, ?)");
             ps.setInt(1, chr.id);
-            ps.setByte(2, ServerConfig.DEFAULT_INV_SLOT_EQUIP); // Eq
-            ps.setByte(3, ServerConfig.DEFAULT_INV_SLOT_USE); // Use
-            ps.setByte(4, ServerConfig.DEFAULT_INV_SLOT_SETUP); // Setup
-            ps.setByte(5, ServerConfig.DEFAULT_INV_SLOT_ETC); // ETC
-            ps.setByte(6, ServerConfig.DEFAULT_INV_SLOT_CASH); // Cash
+            ps.setByte(2, (byte) DeveloperMode.DM_INV_SLOT_EQUIP.getInt()); // Eq
+            ps.setByte(3, (byte) DeveloperMode.DM_INV_SLOT_USE.getInt()); // Use
+            ps.setByte(4, (byte) DeveloperMode.DM_INV_SLOT_SETUP.getInt()); // Setup
+            ps.setByte(5, (byte) DeveloperMode.DM_INV_SLOT_ETC.getInt()); // ETC
+            ps.setByte(6, (byte) DeveloperMode.DM_INV_SLOT_CASH.getInt()); // Cash
             ps.execute();
             ps.close();
 

@@ -5,14 +5,6 @@ import java.util.Properties;
 
 public class ServerConfig {
 
-    // 初期スロット数
-    public static final byte DEFAULT_INV_SLOT_EQUIP = 72;
-    public static final byte DEFAULT_INV_SLOT_USE = 72;
-    public static final byte DEFAULT_INV_SLOT_ETC = 24;
-    public static final byte DEFAULT_INV_SLOT_SETUP = 24;
-    public static final byte DEFAULT_INV_SLOT_CASH = 96;
-    private static final byte DEFAULT_INV_SLOT_STORAGE = 4;
-
     public static boolean JMS146orLater() {
         if (Version.PostBB()) {
             return true;

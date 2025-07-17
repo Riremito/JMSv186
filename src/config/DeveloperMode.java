@@ -36,6 +36,12 @@ public enum DeveloperMode {
     DM_ADMIN_TOOL,
     // TODO : move
     DM_CODEPAGE_UTF8(false),
+    DM_INV_SLOT_EQUIP(72),
+    DM_INV_SLOT_USE(72),
+    DM_INV_SLOT_ETC(24),
+    DM_INV_SLOT_SETUP(24),
+    DM_INV_SLOT_CASH(96),
+    DM_INV_SLOT_STORAGE(4), // not used.
     UNKNOWN;
     private int value;
 

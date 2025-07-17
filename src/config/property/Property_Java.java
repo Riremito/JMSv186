@@ -18,6 +18,8 @@
  */
 package config.property;
 
+import java.io.File;
+
 /**
  *
  * @author Riremito
@@ -31,6 +33,10 @@ public class Property_Java {
         // cmd line arguments
         path_wz_xml = System.getProperty("riresaba.path.wz");
         path_scripts = System.getProperty("riresaba.path.script");
+
+        if (!(new File(path_scripts)).isDirectory()) {
+            path_scripts = "scripts/scripts_JMS/";
+        }
         return true;
     }
 
