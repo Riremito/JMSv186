@@ -615,9 +615,6 @@ public class ServerConfig {
     public static boolean game_server_adminOnly;
     public static boolean game_server_enable_hammer, game_server_enable_EE, game_server_enable_potential, game_server_enable_mphp;
     public static boolean game_server_custom, game_server_god_equip, game_server_disable_scroll_boom, game_server_disable_scroll_failure, game_server_disable_star_consuming, game_server_disable_stone_consuming, game_server_disable_boss_timer;
-    // Game Server - Pachinko
-    public static String 豆豆装备[], 豆豆坐骑[], 消耗品[], 黄金狗几率[], 小白怪[], 大白怪[], 紫色怪[], 粉色怪[], 飞侠[], 海盗[], 法师[], 战士[], 弓箭手[], 女皇[], 白怪奖励[], 色怪奖励[], 五职业奖励[], 女皇奖励[];
-    public static int 海洋帽子几率, 力度搞假, 豆豆奖励范围;
 
     // キャラクター作成後の最初のMapID
     public static int first_mapid = 910000000; // フリーマーケット入口
@@ -672,31 +669,6 @@ public class ServerConfig {
             game_server_disable_stone_consuming = Boolean.parseBoolean(GameServer.getProperty("server.custom.disable.stone_consuming"));
             game_server_disable_boss_timer = Boolean.parseBoolean(GameServer.getProperty("server.custom.disable.boss_timer"));
 
-        }
-
-        Properties Pachinko = Property.open("properties/beans.properties");
-        {
-            豆豆装备 = Pachinko.getProperty("ddzb").split(",");
-            豆豆坐骑 = Pachinko.getProperty("ddzq").split(",");
-            消耗品 = Pachinko.getProperty("xhp").split(",");
-            海洋帽子几率 = Integer.parseInt(Pachinko.getProperty("hymzjl"));
-            黄金狗几率 = Pachinko.getProperty("hjgjl").split(",");
-            大白怪 = Pachinko.getProperty("dbg").split(",");
-            小白怪 = Pachinko.getProperty("xbg").split(",");
-            紫色怪 = Pachinko.getProperty("zsg").split(",");
-            粉色怪 = Pachinko.getProperty("fsg").split(",");
-            飞侠 = Pachinko.getProperty("fx").split(",");
-            海盗 = Pachinko.getProperty("hd").split(",");
-            法师 = Pachinko.getProperty("fs").split(",");
-            战士 = Pachinko.getProperty("zs").split(",");
-            弓箭手 = Pachinko.getProperty("gjs").split(",");
-            女皇 = Pachinko.getProperty("nh").split(",");
-            白怪奖励 = Pachinko.getProperty("bgjl").split(",");
-            色怪奖励 = Pachinko.getProperty("sgjl").split(",");
-            五职业奖励 = Pachinko.getProperty("wzyjl").split(",");
-            女皇奖励 = Pachinko.getProperty("nhjl").split(",");
-            力度搞假 = Integer.parseInt(Pachinko.getProperty("ldgj"));
-            豆豆奖励范围 = Integer.parseInt(Pachinko.getProperty("ddjlfw"));
         }
 
         Properties ServerPacketHeader = Property.open("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ServerPacket.properties");

@@ -81,6 +81,10 @@ public class Property {
             Debug.ErrorLog("Property_Dummy_World");
             return false;
         }
+        if (!Property_Pachinko.init()) {
+            Debug.ErrorLog("Property_Pachinko");
+            return false;
+        }
         return true;
     }
 
