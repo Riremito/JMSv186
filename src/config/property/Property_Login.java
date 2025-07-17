@@ -22,21 +22,33 @@ package config.property;
  *
  * @author Riremito
  */
-public class Property_World {
+public class Property_Login {
 
-    private static int port = 0;
+    private static int port = 8484;
+    private static int user_limit = 100;
+    private static boolean anti_cheat = false;
 
     public static int getPort() {
         return port;
     }
 
+    public static int getUserLimit() {
+        return user_limit;
+    }
+
+    public static boolean getAntiCheat() {
+        return anti_cheat;
+    }
+
     public static boolean init() {
-        Property conf = new Property("");
+        Property conf = new Property("properties/login.properties");
         if (!conf.open()) {
             return false;
         }
 
         port = conf.getInt("server.port");
+        user_limit = conf.getInt("server.userlimit");
+        anti_cheat = conf.getBoolean("server.antihack");
         return true;
     }
 }

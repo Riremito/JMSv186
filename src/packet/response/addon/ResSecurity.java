@@ -19,7 +19,7 @@
 package packet.response.addon;
 
 import client.MapleClient;
-import config.ServerConfig;
+import config.property.Property_Login;
 import server.network.MaplePacket;
 import packet.ServerPacket;
 
@@ -30,8 +30,7 @@ import packet.ServerPacket;
 public class ResSecurity {
 
     public static boolean Test(MapleClient c) {
-        // test for JMS v186 anti cheat
-        if (ServerConfig.login_server_antihack) {
+        if (Property_Login.getAntiCheat()) {
             c.SendPacket(ResSecurity.Hash());
             c.SendPacket(ResSecurity.Scan(0x008625B5, (short) 3)); // damage hack check
             byte mem[] = {(byte) 0x90, (byte) 0x90, (byte) 0x90};

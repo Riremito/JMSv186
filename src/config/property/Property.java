@@ -18,6 +18,7 @@
  */
 package config.property;
 
+import debug.Debug;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
@@ -57,6 +58,30 @@ public class Property {
 
     public boolean getBoolean(String name) {
         return Boolean.parseBoolean(get(name));
+    }
+
+    public static boolean initAll() {
+        if (!Property_Java.setPath()) {
+            Debug.ErrorLog("Invalid wz_xml or scripts dir.");
+            return false;
+        }
+        if (!Property_Database.init()) {
+            Debug.ErrorLog("Property_Database");
+            return false;
+        }
+        if (!Property_Login.init()) {
+            Debug.ErrorLog("Property_Login");
+            return false;
+        }
+        if (!Property_Shop.init()) {
+            Debug.ErrorLog("Property_Shop");
+            return false;
+        }
+        if (!Property_Dummy_World.init()) {
+            Debug.ErrorLog("Property_Dummy_World");
+            return false;
+        }
+        return true;
     }
 
     public static Properties open(String path) {

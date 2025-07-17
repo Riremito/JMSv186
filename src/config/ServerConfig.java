@@ -608,10 +608,6 @@ public class ServerConfig {
     public static boolean utf8 = false;
     public static Charset codepage_ascii;
     public static Charset codepage_utf8;
-
-    // Login Server
-    public static int login_server_port, login_server_userlimit;
-    public static boolean login_server_antihack;
     // Game Server
     public static int game_server_channels, game_server_DEFAULT_PORT, game_server_flags;
     public static int game_server_expRate, game_server_mesoRate, game_server_dropRate;
@@ -619,13 +615,6 @@ public class ServerConfig {
     public static boolean game_server_adminOnly;
     public static boolean game_server_enable_hammer, game_server_enable_EE, game_server_enable_potential, game_server_enable_mphp;
     public static boolean game_server_custom, game_server_god_equip, game_server_disable_scroll_boom, game_server_disable_scroll_failure, game_server_disable_star_consuming, game_server_disable_stone_consuming, game_server_disable_boss_timer;
-    // Cash Shop
-    public static int cash_shop_server_port;
-    // Maple Trade Space Server
-    public static int maple_trade_space_server_port;
-    // Test Game Server
-    public static int test_game_server_channels, test_game_server_DEFAULT_PORT, test_game_server_flags;
-    public static String test_game_server_serverName, test_game_server_serverMessage, test_game_server_event;
     // Game Server - Pachinko
     public static String 豆豆装备[], 豆豆坐骑[], 消耗品[], 黄金狗几率[], 小白怪[], 大白怪[], 紫色怪[], 粉色怪[], 飞侠[], 海盗[], 法师[], 战士[], 弓箭手[], 女皇[], 白怪奖励[], 色怪奖励[], 五职业奖励[], 女皇奖励[];
     public static int 海洋帽子几率, 力度搞假, 豆豆奖励范围;
@@ -656,14 +645,6 @@ public class ServerConfig {
             DebugConfig.open_debug_ui = Boolean.parseBoolean(TestConfig.getProperty("debug.admin_ui"));
         }
 
-        Properties LoginServer = Property.open("properties/login.properties");
-        {
-
-            login_server_port = Integer.parseInt(LoginServer.getProperty("server.port"));
-            login_server_userlimit = Integer.parseInt(LoginServer.getProperty("server.userlimit"));
-            login_server_antihack = Boolean.parseBoolean(LoginServer.getProperty("server.antihack"));
-        }
-
         Properties GameServer = Property.open("properties/kaede.properties");
         {
             game_server_channels = Integer.parseInt(GameServer.getProperty("server.channels"));
@@ -691,23 +672,6 @@ public class ServerConfig {
             game_server_disable_stone_consuming = Boolean.parseBoolean(GameServer.getProperty("server.custom.disable.stone_consuming"));
             game_server_disable_boss_timer = Boolean.parseBoolean(GameServer.getProperty("server.custom.disable.boss_timer"));
 
-        }
-
-        Properties CashShopServer = Property.open("properties/shop.properties");
-        {
-            cash_shop_server_port = Integer.parseInt(CashShopServer.getProperty("server.port"));
-            // Port共有
-            maple_trade_space_server_port = cash_shop_server_port;
-        }
-
-        Properties TestGameServer = Property.open("properties/momiji.properties");
-        {
-            test_game_server_channels = Integer.parseInt(TestGameServer.getProperty("server.channels"));
-            test_game_server_DEFAULT_PORT = Short.parseShort(TestGameServer.getProperty("server.port"));
-            test_game_server_serverMessage = TestGameServer.getProperty("server.message");
-            test_game_server_serverName = TestGameServer.getProperty("server.name");
-            test_game_server_flags = Integer.parseInt(TestGameServer.getProperty("server.flags"));
-            test_game_server_event = TestGameServer.getProperty("server.event");
         }
 
         Properties Pachinko = Property.open("properties/beans.properties");

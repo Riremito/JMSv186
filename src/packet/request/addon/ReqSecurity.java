@@ -20,8 +20,8 @@ package packet.request.addon;
 
 import client.MapleClient;
 import config.Region;
-import config.ServerConfig;
 import config.Version;
+import config.property.Property_Login;
 import debug.Debug;
 import packet.ClientPacket;
 
@@ -32,26 +32,25 @@ import packet.ClientPacket;
 public class ReqSecurity {
 
     public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+        if (Property_Login.getAntiCheat()) {
+            return false;
+        }
 
         switch (header) {
             // 独自実装
             case CP_CUSTOM_WZ_HASH: {
-                if (ServerConfig.login_server_antihack) {
-                    if (Hash(cp)) {
-                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz OK");
-                    } else {
-                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz NG");
-                    }
+                if (Hash(cp)) {
+                    Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz OK");
+                } else {
+                    Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz NG");
                 }
                 return true;
             }
             case CP_CUSTOM_MEMORY_SCAN: {
-                if (ServerConfig.login_server_antihack) {
-                    if (Scan(cp)) {
-                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory OK");
-                    } else {
-                        Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory NG");
-                    }
+                if (Scan(cp)) {
+                    Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory OK");
+                } else {
+                    Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory NG");
                 }
                 return true;
             }

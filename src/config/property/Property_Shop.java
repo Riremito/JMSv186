@@ -22,6 +22,21 @@ package config.property;
  *
  * @author Riremito
  */
-public class Property_World_Dummy {
-    
+public class Property_Shop {
+
+    private static int port = 8596;
+
+    public static int getPort() {
+        return port;
+    }
+
+    public static boolean init() {
+        Property conf = new Property("properties/shop.properties");
+        if (!conf.open()) {
+            return false;
+        }
+
+        port = conf.getInt("server.port");
+        return true;
+    }
 }

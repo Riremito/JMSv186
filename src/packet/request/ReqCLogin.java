@@ -27,6 +27,7 @@ import client.inventory.MapleInventoryType;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
+import config.property.Property_Login;
 import debug.Debug;
 import debug.DebugUser;
 import handling.channel.ChannelServer;
@@ -235,7 +236,7 @@ public class ReqCLogin {
                 c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
                 return;
             }
-            final double loadFactor = 1200 / ((double) LoginServer.getUserLimit() / load.size());
+            final double loadFactor = 1200 / ((double) Property_Login.getUserLimit() / load.size());
             for (Map.Entry<Integer, Integer> entry : load.entrySet()) {
                 usersOn += entry.getValue();
                 load.put(entry.getKey(), Math.min(1200, (int) (entry.getValue() * loadFactor)));
@@ -534,7 +535,7 @@ public class ReqCLogin {
         // 1 = "Since there are many users, you may encounter some..."
         // 2 = "The concurrent users in this world have reached the max"
         final int numPlayer = LoginServer.getUsersOn();
-        final int userLimit = LoginServer.getUserLimit();
+        final int userLimit = Property_Login.getUserLimit();
         if (numPlayer >= userLimit) {
             c.getSession().write(ResCLogin.getServerStatus(2));
         } else if (numPlayer * 2 >= userLimit) {

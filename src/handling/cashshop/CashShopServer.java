@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.cashshop;
 
-import config.ServerConfig;
+import config.property.Property_Shop;
 import debug.Debug;
 import java.net.InetSocketAddress;
 import server.network.MapleServerHandler;
@@ -54,18 +54,14 @@ public class CashShopServer {
         playersMTS = new PlayerStorage(-20);
 
         try {
-            InetSocketadd = new InetSocketAddress(ServerConfig.cash_shop_server_port);
+            InetSocketadd = new InetSocketAddress(Property_Shop.getPort());
             acceptor.bind(InetSocketadd, new MapleServerHandler(-1, MapleServerHandler.ServerType.PointShopServer), cfg);
-            Debug.InfoLog("Port = " + ServerConfig.cash_shop_server_port);
+            Debug.InfoLog("Port = " + Property_Shop.getPort());
         } catch (final Exception e) {
-            Debug.ErrorLog("Binding to port " + ServerConfig.cash_shop_server_port + " failed");
+            Debug.ErrorLog("Binding to port " + Property_Shop.getPort() + " failed");
             e.printStackTrace();
             throw new RuntimeException("Binding failed.", e);
         }
-    }
-
-    public static final int getPort() {
-        return ServerConfig.cash_shop_server_port;
     }
 
     public static final PlayerStorage getPlayerStorage() {

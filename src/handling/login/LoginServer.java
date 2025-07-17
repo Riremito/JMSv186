@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package handling.login;
 
 import config.ServerConfig;
+import config.property.Property_Dummy_World;
+import config.property.Property_Login;
 import debug.Debug;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -64,12 +66,12 @@ public class LoginServer {
         WorldFlag[NumberOfWorld] = ServerConfig.game_server_flags;
         NumberOfWorld++;
         // Momiji, not used
-        WorldChannels[NumberOfWorld] = ServerConfig.test_game_server_channels;
-        WorldPort[NumberOfWorld] = ServerConfig.test_game_server_DEFAULT_PORT;
-        WorldName[NumberOfWorld] = ServerConfig.test_game_server_serverName;
-        WorldEvent[NumberOfWorld] = ServerConfig.test_game_server_event;
-        WorldMessage[NumberOfWorld] = ServerConfig.test_game_server_serverMessage;
-        WorldFlag[NumberOfWorld] = ServerConfig.test_game_server_flags;
+        WorldChannels[NumberOfWorld] = Property_Dummy_World.getChannels();
+        WorldPort[NumberOfWorld] = Property_Dummy_World.getPort();
+        WorldName[NumberOfWorld] = Property_Dummy_World.getName();
+        WorldEvent[NumberOfWorld] = Property_Dummy_World.getEvent();
+        WorldMessage[NumberOfWorld] = Property_Dummy_World.getMessage();
+        WorldFlag[NumberOfWorld] = Property_Dummy_World.getFlags();
         NumberOfWorld++;
     }
 
@@ -93,11 +95,11 @@ public class LoginServer {
         cfg.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MapleCodecFactory()));
 
         try {
-            InetSocketadd = new InetSocketAddress(ServerConfig.login_server_port);
+            InetSocketadd = new InetSocketAddress(Property_Login.getPort());
             acceptor.bind(InetSocketadd, new MapleServerHandler(-1, MapleServerHandler.ServerType.LoginServer), cfg);
-            Debug.InfoLog("Port = " + ServerConfig.login_server_port);
+            Debug.InfoLog("Port = " + Property_Login.getPort());
         } catch (IOException e) {
-            Debug.ErrorLog("Binding to port " + ServerConfig.login_server_port + " failed" + e);
+            Debug.ErrorLog("Binding to port " + Property_Login.getPort() + " failed" + e);
         }
     }
 
@@ -117,10 +119,6 @@ public class LoginServer {
     public static void setLoad(final Map<Integer, Integer> load_, final int usersOn_) {
         load = load_;
         usersOn = usersOn_;
-    }
-
-    public static final int getUserLimit() {
-        return ServerConfig.login_server_userlimit;
     }
 
     public static final int getUsersOn() {
