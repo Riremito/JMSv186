@@ -93,6 +93,10 @@ public class Property {
             Debug.ErrorLog("Property_Packet is not loaded.");
             // allow to run without loading packet header values.
         }
+        if (!Property_Debug.init()) {
+            Debug.ErrorLog("Property_Debug is not loaded.");
+            // dev mode off
+        }
         return true;
     }
 

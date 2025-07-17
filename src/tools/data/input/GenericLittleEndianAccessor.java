@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tools.data.input;
 
-import config.ServerConfig;
+import config.CodePage;
 import debug.Debug;
 import java.awt.Point;
 
@@ -183,7 +183,7 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
             ret[x] = readByte();
         }
 
-        String conv_str = new String(ret, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        String conv_str = new String(ret, CodePage.getCodePage());
         return conv_str;
     }
 

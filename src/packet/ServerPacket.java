@@ -18,7 +18,7 @@
  */
 package packet;
 
-import config.ServerConfig;
+import config.CodePage;
 import server.network.ByteArrayMaplePacket;
 import server.network.MaplePacket;
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public class ServerPacket {
     }
 
     public void EncodeStr(String str) {
-        byte[] b = str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        byte[] b = str.getBytes(CodePage.getCodePage());
         Encode2((short) b.length);
 
         for (int i = 0; i < b.length; i++) {
@@ -93,7 +93,7 @@ public class ServerPacket {
     }
 
     public void EncodeBuffer(String str, int size) {
-        byte[] b = str.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        byte[] b = str.getBytes(CodePage.getCodePage());
         for (int i = 0; i < b.length; i++) {
             Encode1(b[i]);
         }

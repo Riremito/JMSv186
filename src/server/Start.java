@@ -1,8 +1,9 @@
 package server;
 
 import config.ClientEdit;
+import config.CodePage;
 import config.Content;
-import config.DebugConfig;
+import config.DeveloperMode;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -69,13 +70,20 @@ public class Start {
         }
         //Debug.InfoLog("wz_xml directory : " + Property_Java.getDir_WzXml());
         //Debug.InfoLog("scripts directory : " + Property_Java.getDir_Scripts());
+        // set codepage
+        Debug.InfoLog("[CodePage]");
+        CodePage.init();
 
         ServerConfig.SetProperty();
         LoginServer.SetWorldConfig();
         // database
 
         // 管理画面
-        ToolMan.Open();
+        Debug.InfoLog("[AdminTool]");
+        if (DeveloperMode.DM_ADMIN_TOOL.get()) {
+            ToolMan.Open();
+            Debug.InfoLog("Admin Tool Opened.");
+        }
 
         try {
             final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0");
@@ -99,8 +107,11 @@ public class Start {
         Debug.InfoLog("Start Login Server");
         LoginServer.run_startup_configurations();
 
-        //WZ
-        if (!DebugConfig.do_not_load_wz_xml) {
+        // wz_xml
+        Debug.InfoLog("[wz_xml]");
+        if (DeveloperMode.DM_NO_XML.get()) {
+            Debug.InfoLog("No wz xml mode.");
+        } else {
             LoadData.LoadDataFromXML();
         }
         RandomRewards.getInstance();

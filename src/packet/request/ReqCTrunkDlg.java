@@ -154,7 +154,7 @@ public class ReqCTrunkDlg {
                 return true;
             }
             default: {
-                Debug.CPLogError(cp);
+                Debug.DebugLog("ReqCTrunkDlg : not coded.");
                 break;
             }
         }

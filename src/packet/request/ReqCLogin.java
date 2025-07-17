@@ -24,6 +24,7 @@ import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import config.DeveloperMode;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -186,7 +187,7 @@ public class ReqCLogin {
             endwith_ = true;
             Debug.InfoLog("[FEMALE MODE] \"" + maple_id + "\"");
         }
-        if (ServerConfig.IsGMTestMode()) {
+        if (DeveloperMode.DM_GM_ACCOUNT.get()) {
             if (maple_id.startsWith("GM")) {
                 startwith_GM = true;
                 Debug.InfoLog("[GM MODE] \"" + maple_id + "\"");

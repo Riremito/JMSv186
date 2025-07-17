@@ -9,7 +9,7 @@ import client.PlayerStats;
 import client.SkillFactory;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
-import config.DebugConfig;
+import config.DeveloperMode;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -643,7 +643,7 @@ public class ReqCUser {
         attack.position.x = cp.Decode2();
         attack.position.y = cp.Decode2();
 
-        if (DebugConfig.log_damage) {
+        if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
             if (allDamageNumbers != null) {
                 Debug.DebugLog(cp.GetOpcodeName() + ": damage = " + allDamageNumbers);
             }
@@ -662,7 +662,7 @@ public class ReqCUser {
             for (int j = 0; j < bullets; j++) {
                 damage = cp.Decode4();
 
-                if (DebugConfig.log_damage) {
+                if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
                     Debug.DebugLog(cp.GetOpcodeName() + ": damage = " + damage);
                 }
                 ret.allDamage.add(new AttackPair(Integer.valueOf(damage), null));
@@ -686,7 +686,7 @@ public class ReqCUser {
             for (int j = 0; j < bullets; j++) {
                 damage = cp.Decode4();
 
-                if (DebugConfig.log_damage) {
+                if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
                     Debug.DebugLog(cp.GetOpcodeName() + ": damage = " + damage);
                 }
                 allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false)); //m.e. never crits
@@ -704,7 +704,7 @@ public class ReqCUser {
         for (int j = 0; j < bullets; j++) {
             damage = cp.Decode4();
 
-            if (DebugConfig.log_damage) {
+            if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
                 Debug.DebugLog(cp.GetOpcodeName() + ": damage = " + damage);
             }
             ret.allDamage.add(new AttackPair(Integer.valueOf(damage), null));

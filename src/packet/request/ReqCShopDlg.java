@@ -81,7 +81,7 @@ public class ReqCShopDlg {
             default: {
                 // not coded
                 chr.setConversation(0);
-                Debug.CPLogError(cp);
+                Debug.DebugLog("ReqCShopDlg : not coded.");
                 break;
             }
         }

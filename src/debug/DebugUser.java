@@ -22,7 +22,7 @@ import client.MapleCharacter;
 import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
-import config.DebugConfig;
+import config.DeveloperMode;
 import server.MapleItemInformationProvider;
 import wz.LoadData;
 
@@ -81,7 +81,7 @@ public class DebugUser {
     }
 
     public static boolean AddStarterSet(MapleCharacter chr) {
-        if (!DebugConfig.starter_set) {
+        if (!DeveloperMode.DM_FULL_ITEM_SET.get()) {
             return false;
         }
         // メル

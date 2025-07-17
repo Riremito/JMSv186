@@ -1,7 +1,6 @@
 package config;
 
 import config.property.Property;
-import java.nio.charset.Charset;
 import java.util.Properties;
 
 public class ServerConfig {
@@ -601,10 +600,6 @@ public class ServerConfig {
         return false;
     }
 
-    // codepage
-    public static boolean utf8 = false;
-    public static Charset codepage_ascii;
-    public static Charset codepage_utf8;
     // Game Server
     public static int game_server_channels, game_server_DEFAULT_PORT, game_server_flags;
     public static int game_server_expRate, game_server_mesoRate, game_server_dropRate;
@@ -613,31 +608,8 @@ public class ServerConfig {
     public static boolean game_server_enable_hammer, game_server_enable_EE, game_server_enable_potential, game_server_enable_mphp;
     public static boolean game_server_custom, game_server_god_equip, game_server_disable_scroll_boom, game_server_disable_scroll_failure, game_server_disable_star_consuming, game_server_disable_stone_consuming, game_server_disable_boss_timer;
 
-    // キャラクター作成後の最初のMapID
-    public static int first_mapid = 910000000; // フリーマーケット入口
-    // 存在しないMapIDへ飛んでしまった場合に強制的にワープさせる場所
-    public static int error_mapid = 800000000; // キノコ神社
-
     // propertiesファイルの読み込み
     public static void SetProperty() {
-        // test
-        Properties TestConfig = Property.open("properties/test.properties");
-        {
-            // codepage
-            utf8 = Boolean.parseBoolean(TestConfig.getProperty("codepage.use_utf8"));
-            codepage_ascii = Charset.forName(TestConfig.getProperty("codepage.ascii"));
-            codepage_utf8 = Charset.forName(TestConfig.getProperty("codepage.utf8"));
-            // map
-            first_mapid = Integer.parseInt(TestConfig.getProperty("config.first_mapid"));
-            error_mapid = Integer.parseInt(TestConfig.getProperty("config.error_mapid"));
-            // debug
-            DebugConfig.log_packet = Boolean.parseBoolean(TestConfig.getProperty("debug.show_packet"));
-            DebugConfig.log_debug = Boolean.parseBoolean(TestConfig.getProperty("debug.show_debug_log"));
-            DebugConfig.log_admin = Boolean.parseBoolean(TestConfig.getProperty("debug.show_admin_log"));
-            DebugConfig.starter_set = Boolean.parseBoolean(TestConfig.getProperty("debug.starter_set"));
-            DebugConfig.GM = Boolean.parseBoolean(TestConfig.getProperty("debug.gm_mode"));
-            DebugConfig.open_debug_ui = Boolean.parseBoolean(TestConfig.getProperty("debug.admin_ui"));
-        }
 
         Properties GameServer = Property.open("properties/kaede.properties");
         {
@@ -667,10 +639,6 @@ public class ServerConfig {
             game_server_disable_boss_timer = Boolean.parseBoolean(GameServer.getProperty("server.custom.disable.boss_timer"));
 
         }
-    }
-
-    public static boolean IsGMTestMode() {
-        return DebugConfig.GM;
     }
 
 }

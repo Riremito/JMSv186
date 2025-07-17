@@ -55,6 +55,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.io.Serializable;
 
 import client.anticheat.CheatTracker;
+import config.DeveloperMode;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -929,7 +930,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 ps.setInt(20, 100000000);
             } else {
                 //ps.setInt(20, type == 1 ? 0 : (type == 0 ? 130030000 : (type == 3 ? 900090000 : 914000000)));
-                ps.setInt(20, ServerConfig.first_mapid);
+                ps.setInt(20, DeveloperMode.DM_FIRST_MAP_ID.getInt());
             }
 
             ps.setInt(21, chr.getMeso()); // Meso

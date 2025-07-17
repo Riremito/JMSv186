@@ -19,7 +19,6 @@
 package test;
 
 import client.MapleCharacter;
-import config.DebugConfig;
 import handling.channel.ChannelServer;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
@@ -45,9 +44,6 @@ public class ToolMan {
     static JTextField tf_level;
 
     public static void Open() {
-        if (!DebugConfig.open_debug_ui) {
-            return;
-        }
         JFrame f = new JFrame();
         f.setTitle("ToolMan");
         f.setSize(800, 600);

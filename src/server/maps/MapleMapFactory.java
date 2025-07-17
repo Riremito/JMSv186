@@ -20,9 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.maps;
 
+import config.DeveloperMode;
 import config.property.Property_Java;
 import config.Region;
-import config.ServerConfig;
 import config.Version;
 import debug.Debug;
 import java.awt.Point;
@@ -90,7 +90,7 @@ public class MapleMapFactory {
                 } catch (Exception e) {
                     // 存在しないMapIDが指定された場合は指定MapIDへ強制移動する
                     Debug.ErrorLog("Invalid MapID = " + mapid);
-                    mapid = ServerConfig.error_mapid;
+                    mapid = DeveloperMode.DM_ERROR_MAP_ID.getInt();
                     omapid = Integer.valueOf(mapid);
                     mapData = source.getData(getMapName(mapid));
                 }

@@ -19,7 +19,7 @@
 // クライアント側から送信されるパケットのヘッダの定義
 package packet;
 
-import config.ServerConfig;
+import config.CodePage;
 
 public class ClientPacket {
 
@@ -116,7 +116,7 @@ public class ClientPacket {
             buffer[i] = Decode1();
         }
 
-        return new String(buffer, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        return new String(buffer, CodePage.getCodePage());
     }
 
     public byte[] DecodeAll() {

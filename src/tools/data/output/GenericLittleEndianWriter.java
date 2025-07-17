@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tools.data.output;
 
-import config.ServerConfig;
+import config.CodePage;
 import java.awt.Point;
 
 /**
@@ -135,14 +135,14 @@ public class GenericLittleEndianWriter implements LittleEndianWriter {
      */
     @Override
     public final void writeAsciiString(final String s) {
-        byte[] bytes = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        byte[] bytes = s.getBytes(CodePage.getCodePage());
 
         write(bytes);
     }
 
     @Override
     public final void writeAsciiString(String s, final int max) {
-        byte bytes[] = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        byte bytes[] = s.getBytes(CodePage.getCodePage());
 
         for (int i = 0; (i < bytes.length && i < max); i++) {
             write(bytes[i]);
@@ -160,8 +160,8 @@ public class GenericLittleEndianWriter implements LittleEndianWriter {
      */
     @Override
     public final void writeMapleAsciiString(final String s) {
-        byte[] bytes = s.getBytes(ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
-        String conv_str = new String(bytes, ServerConfig.utf8 ? ServerConfig.codepage_utf8 : ServerConfig.codepage_ascii);
+        byte[] bytes = s.getBytes(CodePage.getCodePage());
+        String conv_str = new String(bytes, CodePage.getCodePage());
 
         writeShort((short) bytes.length);
         writeAsciiString(conv_str);

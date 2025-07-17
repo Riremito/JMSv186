@@ -4,10 +4,9 @@
 package debug;
 
 import client.MapleCharacter;
-import config.DebugConfig;
+import config.DeveloperMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import packet.ServerPacket;
 import packet.ClientPacket;
 
 public class Debug {
@@ -18,7 +17,7 @@ public class Debug {
 
     // デバッグ出力
     public static boolean DebugLog(String text) {
-        if (!DebugConfig.log_debug) {
+        if (!DeveloperMode.DM_DEBUG_LOG.get()) {
             return false;
         }
 
@@ -46,7 +45,7 @@ public class Debug {
 
     // 管理用
     public static boolean AdminLog(String text) {
-        if (!DebugConfig.log_admin) {
+        if (!DeveloperMode.DM_ADMIN_LOG.get()) {
             return false;
         }
 
@@ -56,20 +55,6 @@ public class Debug {
 
     public static void CPLog(ClientPacket cp) {
         Log("[CP][" + cp.GetOpcodeName() + "]\n" + cp.Packet());
-    }
-
-    public static void CPLogError(ClientPacket cp) {
-        Log("[CP][" + cp.GetOpcodeName() + "]\n" + cp.Packet());
-    }
-
-    // パケット出力 (Server Packet)
-    public static boolean LPLog(ServerPacket sp) {
-        if (!DebugConfig.log_packet) {
-            return false;
-        }
-
-        Log("[SP][" + sp.getOpcodeName() + "]\n" + sp.Packet());
-        return true;
     }
 
     // 不要なNPCを設置しない
