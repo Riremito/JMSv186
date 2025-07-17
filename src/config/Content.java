@@ -86,11 +86,9 @@ public enum Content {
     }
 
     public static void showContentList() {
-        Debug.InfoLog("----- Content List -----");
         for (final Content content : Content.values()) {
             Debug.InfoLog(content.toString() + " : " + content.get());
         }
-        Debug.InfoLog("------------------------");
     }
 
     public static void init() {

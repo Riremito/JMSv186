@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.life;
 
-import config.ServerConfig;
+import config.Property;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ import tools.StringUtil;
 public class MobAttackInfoFactory {
 
     private static final MobAttackInfoFactory instance = new MobAttackInfoFactory();
-    private static final MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(ServerConfig.wz_path + "/Mob.wz"));
+    private static final MapleDataProvider dataSource = MapleDataProviderFactory.getDataProvider(new File(Property.getDir_WzXml() + "/Mob.wz"));
     private static Map<Pair<Integer, Integer>, MobAttackInfo> mobAttacks = new HashMap<Pair<Integer, Integer>, MobAttackInfo>();
 
     public static MobAttackInfoFactory getInstance() {

@@ -1,7 +1,9 @@
 package server;
 
+import config.ClientEdit;
 import config.Content;
 import config.DebugConfig;
+import config.Property;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -27,36 +29,55 @@ import wz.LoadData;
 public class Start {
 
     public final static void main(final String args[]) {
-        // バージョン設定
-        String server_region = "JMS";
-        int server_version = 186;
-        int server_version_sub = 1;
+        // default = JMS186.1
+        // set region & version
+        Debug.InfoLog("[Version]");
         if (3 <= args.length) {
-            server_region = args[0];
-            server_version = Integer.parseInt(args[1]);
-            server_version_sub = Integer.parseInt(args[2]);
-        }
+            String server_region = args[0];
+            int server_version = Integer.parseInt(args[1]);
+            int server_version_sub = Integer.parseInt(args[2]);
 
-        Region.setRegion(server_region);
-        Version.setVersion(server_version, server_version_sub);
-        // test
+            if (!Region.setRegion(server_region)) {
+                Debug.ErrorLog("Invalid region name.");
+                return;
+            }
+
+            Version.setVersion(server_version, server_version_sub);
+        }
+        Debug.InfoLog(Region.GetRegionName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
+        // DevLog
+        Debug.InfoLog("[DevLog]");
         DebugLogger.init();
+        // TODO : debug config
+        // update content flags
+        Debug.InfoLog("[Content]");
         Content.init();
         Content.showContentList();
-
-        // 設定の読み込み
-        ServerConfig.SetDataPath();
+        // update client edit flags
+        Debug.InfoLog("[ClientEdit]");
+        ClientEdit.init();
+        // update exp table
+        Debug.InfoLog("[ExpTable]");
+        DC_Exp.init();
+        // update packet enum values
+        Debug.InfoLog("[PacketOps]");
+        packet.ops.PacketOps.initAll();
+        // path
+        Debug.InfoLog("[DataPath]");
+        if (!Property.setPath()) {
+            Debug.ErrorLog("Invalid wz_xml or scripts dir.");
+            return;
+        }
+        Debug.InfoLog("wz_xml directory : " + Property.getDir_WzXml());
+        Debug.InfoLog("scripts directory : " + Property.getDir_Scripts());
+        // read properties
+        Debug.InfoLog("[Properties]");
         ServerConfig.SetProperty();
         LoginServer.SetWorldConfig();
+        // database
 
         // 管理画面
         ToolMan.Open();
-
-        Debug.InfoLog(Region.GetRegionName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
-
-        // 設定更新
-        DC_Exp.init();
-        packet.ops.PacketOps.initAll();
 
         try {
             final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0");
@@ -108,6 +129,7 @@ public class Start {
         LoginServer.setOn(); //now or later
         RankingWorker.getInstance().run();
         Debug.InfoLog("OK");
+        return;
     }
 
     public static class Shutdown implements Runnable {

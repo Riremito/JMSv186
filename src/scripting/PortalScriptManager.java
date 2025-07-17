@@ -35,7 +35,7 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 
 import client.MapleClient;
-import config.ServerConfig;
+import config.Property;
 import debug.Debug;
 import server.MaplePortal;
 import tools.FileoutputUtil;
@@ -57,7 +57,7 @@ public class PortalScriptManager {
         }
          */
 
-        final File scriptFile = new File(ServerConfig.script_path + "portal/" + scriptName + ".js");
+        final File scriptFile = new File(Property.getDir_Scripts() + "portal/" + scriptName + ".js");
 
         /*
         if (!scriptFile.exists()) {

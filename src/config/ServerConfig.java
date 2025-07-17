@@ -610,14 +610,6 @@ public class ServerConfig {
     public static Charset codepage_ascii;
     public static Charset codepage_utf8;
 
-    public static String wz_path, script_path;
-
-    // コマンドライン引数からファイルパスを取得
-    public static void SetDataPath() {
-        wz_path = System.getProperty("riresaba.path.wz");
-        script_path = System.getProperty("riresaba.path.script");
-    }
-
     // Database
     public static String database_url, database_user, database_password;
     // Login Server

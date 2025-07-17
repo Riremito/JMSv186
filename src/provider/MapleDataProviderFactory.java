@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package provider;
 
-import config.ServerConfig;
+import config.Property;
 import java.io.File;
 import provider.WzXML.XMLWZFile;
 
@@ -40,7 +40,7 @@ public class MapleDataProviderFactory {
     }
 
     public static MapleDataProvider getDataProvider(String path) {
-        File dir = new File(ServerConfig.wz_path + "/" + path);
+        File dir = new File(Property.getDir_WzXml() + "/" + path);
 
         if (!dir.exists()) {
             return null;
@@ -54,6 +54,6 @@ public class MapleDataProviderFactory {
     }
 
     public static File fileInWZPath(String filename) {
-        return new File(ServerConfig.wz_path, filename);
+        return new File(Property.getDir_WzXml(), filename);
     }
 }

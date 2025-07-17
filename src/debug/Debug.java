@@ -4,7 +4,6 @@
 package debug;
 
 import client.MapleCharacter;
-import client.MapleClient;
 import config.DebugConfig;
 import java.text.SimpleDateFormat;
 import java.util.Date;
