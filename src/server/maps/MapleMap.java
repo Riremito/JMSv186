@@ -2425,7 +2425,7 @@ public final class MapleMap {
         monsterSpawn.addAll(newSpawn);
 
         if (first && spawnSize > 0) {
-            lastSpawnTime = System.currentTimeMillis();
+            lastSpawnTime = 0; // 即沸き
             if (GameConstants.isForceRespawn(mapid)) {
                 createMobInterval = 15000;
             }
@@ -3193,7 +3193,8 @@ public final class MapleMap {
     }
 
     public final boolean canSpawn() {
-        return lastSpawnTime > 0 && isSpawns && lastSpawnTime + createMobInterval < System.currentTimeMillis();
+        // 即沸き
+        return lastSpawnTime == 0 || (lastSpawnTime > 0 && isSpawns && lastSpawnTime + createMobInterval < System.currentTimeMillis());
     }
 
     public final boolean canHurt() {
