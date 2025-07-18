@@ -189,6 +189,9 @@ public class ResCCashShop {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopQueryCashResult);
         sp.Encode4(chr.getCSPoints(1)); // NEXON POINT
         sp.Encode4(chr.getCSPoints(2)); // MAPLE POINT
+        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+            sp.Encode4(0);
+        }
         return sp.get();
     }
 
@@ -277,7 +280,7 @@ public class ResCCashShop {
                     // buffer 8 bytes
                     for (IItem item : cis.coupon_items_normal) {
                         sp.Encode2(item.getQuantity());
-                        sp.Encode2(0);
+                        sp.Encode2(0); // inventory will be scrolled to the slot id. but this packet does not insert item to your inventory.
                         sp.Encode4(item.getItemId());
                     }
                 }
