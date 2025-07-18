@@ -25,7 +25,6 @@ import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import config.Region;
-import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
 import debug.Debug;
@@ -191,23 +190,13 @@ public class TestHelper {
                     mplew.writeShort(equip.getExpPercentage() * 4); // Item Exp... 98% = 25%
                 }
                 mplew.writeInt(equip.getDurability());
-                if (ServerConfig.game_server_enable_hammer) {
-                    mplew.writeInt(equip.getViciousHammer());
-                } else {
-                    mplew.writeInt(0);
-                }
+                mplew.writeInt(equip.getViciousHammer());
                 if (!hasUniqueId) {
                     mplew.write(equip.getHidden()); //7 = unique for the lulz
                     mplew.write(equip.getEnhance());
-                    if (ServerConfig.game_server_enable_potential) {
-                        mplew.writeShort(equip.getPotential1()); //potential stuff 1. total damage
-                        mplew.writeShort(equip.getPotential2()); //potential stuff 2. critical rate
-                        mplew.writeShort(equip.getPotential3()); //potential stuff 3. all stats
-                    } else {
-                        mplew.writeShort(0);
-                        mplew.writeShort(0);
-                        mplew.writeShort(0);
-                    }
+                    mplew.writeShort(equip.getPotential1()); //potential stuff 1. total damage
+                    mplew.writeShort(equip.getPotential2()); //potential stuff 2. critical rate
+                    mplew.writeShort(equip.getPotential3()); //potential stuff 3. all stats
                 }
                 mplew.writeShort(equip.getHpR());
                 mplew.writeShort(equip.getMpR());

@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.life;
 
+import config.ContentCustom;
 import java.awt.Point;
 import java.util.concurrent.atomic.AtomicBoolean;
 import packet.response.wrapper.ResWrapper;
@@ -43,15 +44,13 @@ public class SpawnPointAreaBoss extends Spawns {
         this.pos1 = pos1;
         this.pos2 = pos2;
         this.pos3 = pos3;
-        // 10分間隔未満は通常処理
-        if (mobTime < 600) {
-            this.mobTime = (mobTime < 0 ? -1 : (mobTime * 1000));
-        } else {
-            // 10分以上の間隔の場合は1秒に設定
-            this.mobTime = 1000;
-        }
+        this.mobTime = (mobTime < 0 ? -1 : (mobTime * 1000));
         this.msg = msg;
         this.nextPossibleSpawn = System.currentTimeMillis();
+
+        if (ContentCustom.CC_MASTER_MONSTER_TIMER.get()) {
+            this.mobTime = ContentCustom.CC_MASTER_MONSTER_TIMER.getInt() * 1000;
+        }
     }
 
     @Override

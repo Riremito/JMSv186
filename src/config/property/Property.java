@@ -85,6 +85,10 @@ public class Property {
             Debug.ErrorLog("Property_Shop");
             return false;
         }
+        if (!Property_World.init()) {
+            Debug.ErrorLog("Property_World");
+            return false;
+        }
         if (!Property_Dummy_World.init()) {
             Debug.ErrorLog("Property_Dummy_World");
             return false;

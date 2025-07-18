@@ -5,7 +5,6 @@ import config.CodePage;
 import config.Content;
 import config.DeveloperMode;
 import config.Region;
-import config.ServerConfig;
 import config.Version;
 import config.property.Property;
 import data.client.DC_Exp;
@@ -74,7 +73,6 @@ public class Start {
         Debug.InfoLog("[CodePage]");
         CodePage.init();
 
-        ServerConfig.SetProperty();
         LoginServer.SetWorldConfig();
         // database
 

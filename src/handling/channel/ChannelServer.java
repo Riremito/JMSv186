@@ -31,7 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 import client.MapleCharacter;
-import config.ServerConfig;
+import config.ContentCustom;
+import config.property.Property_World;
 import constants.ServerConstants;
 import debug.Debug;
 import server.network.ByteArrayMaplePacket;
@@ -101,7 +102,7 @@ public class ChannelServer implements Serializable {
     }
 
     public static int getChannels() {
-        return ServerConfig.game_server_channels;
+        return Property_World.getChannels();
     }
 
     public final void loadEvents() {
@@ -117,25 +118,25 @@ public class ChannelServer implements Serializable {
 
     // 独自仕様かどうか
     public static boolean IsCustom() {
-        return ServerConfig.game_server_custom;
+        return ContentCustom.CC_WZ_MAP_ADDED.get();
     }
 
     public final void run_startup_configurations() {
         setChannel(channel); //instances.put
         try {
 
-            expRate = ServerConfig.game_server_expRate;
-            mesoRate = ServerConfig.game_server_mesoRate;
-            dropRate = ServerConfig.game_server_dropRate;
-            serverMessage = ServerConfig.game_server_serverMessage;
-            serverName = ServerConfig.game_server_serverName;
-            flags = ServerConfig.game_server_flags;
-            adminOnly = ServerConfig.game_server_adminOnly;
+            expRate = Property_World.getRateExp();
+            mesoRate = Property_World.getRateMeso();
+            dropRate = Property_World.getRateDrop();
+            serverMessage = Property_World.getMessage();
+            serverName = Property_World.getName();
+            flags = Property_World.getFlags();
+            adminOnly = Property_World.getAdminOnly();
 
             // 壊れている可能性あり
-            eventSM = new EventScriptManager(this, ServerConfig.game_server_events.split(","));
+            eventSM = new EventScriptManager(this, Property_World.getEvents().split(","));
 
-            port = (short) (ServerConfig.game_server_DEFAULT_PORT + channel - 1);
+            port = (short) (Property_World.getPort() + channel - 1);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -303,7 +304,7 @@ public class ChannelServer implements Serializable {
 
     public final void reloadEvents() {
         eventSM.cancel();
-        eventSM = new EventScriptManager(this, ServerConfig.game_server_events.split(","));
+        eventSM = new EventScriptManager(this, Property_World.getEvents().split(","));
         eventSM.init();
     }
 
@@ -326,7 +327,7 @@ public class ChannelServer implements Serializable {
     public static final void startChannel_Main() {
         serverStartTime = System.currentTimeMillis();
 
-        for (int i = 0; i < ServerConfig.game_server_channels; i++) {
+        for (int i = 0; i < Property_World.getChannels(); i++) {
             newInstance(ServerConstants.Channel_Key[i], i + 1).run_startup_configurations();
         }
     }

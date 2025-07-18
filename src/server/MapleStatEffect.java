@@ -20,7 +20,7 @@ import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
-import config.ServerConfig;
+import config.ContentState;
 import constants.GameConstants;
 import handling.channel.ChannelServer;
 import java.util.Arrays;
@@ -930,7 +930,9 @@ public class MapleStatEffect implements Serializable {
         final PlayerStats stat = applyto.getStat();
         if (primary) {
             if (itemConNo != 0 && !applyto.isClone()) {
-                if (!ServerConfig.game_server_disable_stone_consuming) {
+                if (ContentState.CS_LOCK_LOSING_STONE.get()) {
+                    // do nothing
+                } else {
                     MapleInventoryManipulator.removeById(applyto.getClient(), GameConstants.getInventoryType(itemCon), itemCon, itemConNo, false, true);
                 }
             }
@@ -987,8 +989,9 @@ public class MapleStatEffect implements Serializable {
                 item = use.getItem((byte) i);
                 if (item != null) {
                     if (GameConstants.isThrowingStar(item.getItemId()) && item.getQuantity() >= 200) {
-                        // 手裏剣の消費を無効化
-                        if (!ServerConfig.game_server_disable_star_consuming) {
+                        if (ContentState.CS_LOCK_LOSING_THRWOING.get()) {
+                            // do nothing
+                        } else {
                             MapleInventoryManipulator.removeById(applyto.getClient(), MapleInventoryType.USE, item.getItemId(), 200, false, true);
                         }
                         break;

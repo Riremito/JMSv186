@@ -20,9 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.login;
 
-import config.ServerConfig;
 import config.property.Property_Dummy_World;
 import config.property.Property_Login;
+import config.property.Property_World;
 import debug.Debug;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -58,12 +58,12 @@ public class LoginServer {
 
     public static final void SetWorldConfig() {
         // Kaede
-        WorldChannels[NumberOfWorld] = ServerConfig.game_server_channels;
-        WorldPort[NumberOfWorld] = ServerConfig.game_server_DEFAULT_PORT;
-        WorldName[NumberOfWorld] = ServerConfig.game_server_serverName;
-        WorldEvent[NumberOfWorld] = ServerConfig.game_server_event;
-        WorldMessage[NumberOfWorld] = ServerConfig.game_server_serverMessage;
-        WorldFlag[NumberOfWorld] = ServerConfig.game_server_flags;
+        WorldChannels[NumberOfWorld] = Property_World.getChannels();
+        WorldPort[NumberOfWorld] = Property_World.getPort();
+        WorldName[NumberOfWorld] = Property_World.getName();
+        WorldEvent[NumberOfWorld] = Property_World.getEvent();
+        WorldMessage[NumberOfWorld] = Property_World.getMessage();
+        WorldFlag[NumberOfWorld] = Property_World.getFlags();
         NumberOfWorld++;
         // Momiji, not used
         WorldChannels[NumberOfWorld] = Property_Dummy_World.getChannels();

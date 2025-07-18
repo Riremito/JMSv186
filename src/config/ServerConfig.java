@@ -1,8 +1,5 @@
 package config;
 
-import config.property.Property;
-import java.util.Properties;
-
 public class ServerConfig {
 
     public static boolean JMS146orLater() {
@@ -590,47 +587,6 @@ public class ServerConfig {
             }
         }
         return false;
-    }
-
-    // Game Server
-    public static int game_server_channels, game_server_DEFAULT_PORT, game_server_flags;
-    public static int game_server_expRate, game_server_mesoRate, game_server_dropRate;
-    public static String game_server_serverName, game_server_serverMessage, game_server_event, game_server_events;
-    public static boolean game_server_adminOnly;
-    public static boolean game_server_enable_hammer, game_server_enable_EE, game_server_enable_potential, game_server_enable_mphp;
-    public static boolean game_server_custom, game_server_god_equip, game_server_disable_scroll_boom, game_server_disable_scroll_failure, game_server_disable_star_consuming, game_server_disable_stone_consuming, game_server_disable_boss_timer;
-
-    // propertiesファイルの読み込み
-    public static void SetProperty() {
-
-        Properties GameServer = Property.open("properties/kaede.properties");
-        {
-            game_server_channels = Integer.parseInt(GameServer.getProperty("server.channels"));
-            game_server_DEFAULT_PORT = Short.parseShort(GameServer.getProperty("server.port"));
-            game_server_expRate = Integer.parseInt(GameServer.getProperty("server.rate.exp"));
-            game_server_mesoRate = Integer.parseInt(GameServer.getProperty("server.rate.meso"));
-            game_server_dropRate = Integer.parseInt(GameServer.getProperty("server.rate.drop"));
-            game_server_serverMessage = GameServer.getProperty("server.message");
-            game_server_serverName = GameServer.getProperty("server.name");
-            game_server_flags = Integer.parseInt(GameServer.getProperty("server.flags"));
-            game_server_adminOnly = Boolean.parseBoolean(GameServer.getProperty("server.admin", "false"));
-            game_server_events = GameServer.getProperty("server.events");
-            game_server_event = GameServer.getProperty("server.event");
-
-            game_server_enable_hammer = Boolean.parseBoolean(GameServer.getProperty("server.enable.hammer"));
-            game_server_enable_EE = Boolean.parseBoolean(GameServer.getProperty("server.enable.ee"));
-            game_server_enable_potential = Boolean.parseBoolean(GameServer.getProperty("server.enable.potential"));
-            game_server_enable_mphp = Boolean.parseBoolean(GameServer.getProperty("server.enable.mphp"));
-
-            game_server_custom = Boolean.parseBoolean(GameServer.getProperty("server.custom"));
-            game_server_god_equip = Boolean.parseBoolean(GameServer.getProperty("server.custom.god_equip"));
-            game_server_disable_scroll_boom = Boolean.parseBoolean(GameServer.getProperty("server.custom.disable.scroll_boom"));
-            game_server_disable_scroll_failure = Boolean.parseBoolean(GameServer.getProperty("server.custom.disable.scroll_failure"));
-            game_server_disable_star_consuming = Boolean.parseBoolean(GameServer.getProperty("server.custom.disable.star_consuming"));
-            game_server_disable_stone_consuming = Boolean.parseBoolean(GameServer.getProperty("server.custom.disable.stone_consuming"));
-            game_server_disable_boss_timer = Boolean.parseBoolean(GameServer.getProperty("server.custom.disable.boss_timer"));
-
-        }
     }
 
 }

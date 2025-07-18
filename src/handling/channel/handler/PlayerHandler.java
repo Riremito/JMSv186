@@ -32,6 +32,7 @@ import client.MapleClient;
 import client.MapleCharacter;
 import client.PlayerStats;
 import client.anticheat.CheatingOffense;
+import config.ContentState;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -641,7 +642,9 @@ public class PlayerHandler {
                     bulletConsume = effect.getBulletConsume() * (ShadowPartner != null ? 2 : 1);
                 }
                 // 手裏剣の消費を無効化
-                if (!ServerConfig.game_server_disable_star_consuming) {
+                if (ContentState.CS_LOCK_LOSING_THRWOING.get()) {
+                    // do nothing
+                } else {
                     if (!MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, projectile, bulletConsume, false, true)) {
                         chr.dropMessage(5, "You do not have enough arrows/bullets/stars.");
                         Debug.ErrorLog("rangedAttack : 5");
