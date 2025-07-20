@@ -15,11 +15,10 @@ import handling.cashshop.CashShopServer;
 import handling.login.LoginInformationProvider;
 import handling.world.World;
 import java.sql.SQLException;
-import database.DatabaseConnection;
+import database.query.DB_Accounts;
 import debug.Debug;
 import debug.DebugLogger;
 import handling.world.family.MapleFamilyBuff;
-import java.sql.PreparedStatement;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.PlayerNPC;
@@ -75,20 +74,13 @@ public class Start {
 
         LoginServer.SetWorldConfig();
         // database
+        DB_Accounts.resetLoginState();
 
         // 管理画面
         Debug.InfoLog("[AdminTool]");
         if (DeveloperMode.DM_ADMIN_TOOL.get()) {
             ToolMan.Open();
             Debug.InfoLog("Admin Tool Opened.");
-        }
-
-        try {
-            final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE accounts SET loggedin = 0");
-            ps.executeUpdate();
-            ps.close();
-        } catch (SQLException ex) {
-            throw new RuntimeException("[EXCEPTION] Please check if the SQL server is active.");
         }
 
         World.init();
