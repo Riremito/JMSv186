@@ -36,6 +36,7 @@ public class Property_Debug {
         DeveloperMode.DM_ERROR_MAP_ID.setInt(conf.getInt("config.error_mapid"));
         // debug
         DeveloperMode.DM_DEBUG_LOG.set(conf.getBoolean("debug.show_debug_log"));
+        DeveloperMode.DM_XML_LOG.set(conf.getBoolean("debug.show_xml_log"));
         DeveloperMode.DM_ADMIN_LOG.set(conf.getBoolean("debug.show_admin_log"));
         DeveloperMode.DM_GM_ACCOUNT.set(conf.getBoolean("debug.gm_mode"));
         DeveloperMode.DM_FULL_ITEM_SET.set(conf.getBoolean("debug.starter_set"));

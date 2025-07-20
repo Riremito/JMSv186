@@ -18,13 +18,9 @@
  */
 package data.wz;
 
-import config.property.Property_Java;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 
 /**
@@ -33,30 +29,24 @@ import provider.MapleDataTool;
  */
 public class DW_Etc {
 
-    private static DW_Etc instance = null;
+    private static DataWz wz = null;
 
-    private static DW_Etc getInstance() {
-        if (instance == null) {
-            instance = new DW_Etc();
+    private static DataWz getWz() {
+        if (wz == null) {
+            wz = new DataWz("Etc.wz");
         }
-        return instance;
+        return wz;
     }
 
-    private MapleDataProvider wz_root = null;
+    private static List<String> ForbiddenName = null;
 
-    DW_Etc() {
-        this.wz_root = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Etc.wz"));
-    }
-
-    private List<String> ForbiddenName = null;
-
-    public List<String> getForbiddenName() {
+    private static List<String> getForbiddenName() {
         if (ForbiddenName != null) {
             return ForbiddenName;
         }
 
         ForbiddenName = new ArrayList<String>();
-        final MapleData nameData = this.wz_root.getData("ForbiddenName.img");
+        final MapleData nameData = getWz().loadData("ForbiddenName.img");
         for (final MapleData data : nameData.getChildren()) {
             ForbiddenName.add(MapleDataTool.getString(data));
         }
@@ -65,7 +55,7 @@ public class DW_Etc {
     }
 
     public static boolean isForbiddenName(String character_name) {
-        for (final String forbidden_name : getInstance().getForbiddenName()) {
+        for (final String forbidden_name : getForbiddenName()) {
             if (character_name.contains(forbidden_name)) {
                 return true;
             }

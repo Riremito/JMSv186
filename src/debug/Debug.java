@@ -25,6 +25,15 @@ public class Debug {
         return true;
     }
 
+    public static boolean XmlLog(String text) {
+        if (!DeveloperMode.DM_XML_LOG.get()) {
+            return false;
+        }
+
+        Log("[XML] " + text);
+        return true;
+    }
+
     // 情報出力
     public static void InfoLog(String text) {
         Log("[INFO] " + text);

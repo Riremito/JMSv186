@@ -30,6 +30,7 @@ public enum DeveloperMode {
     DM_CHECK_DAMAGE,
     DM_SKILL_COOL_TIME(3000),
     DM_DEBUG_LOG,
+    DM_XML_LOG,
     DM_ADMIN_LOG,
     DM_GM_ACCOUNT,
     DM_FULL_ITEM_SET,
