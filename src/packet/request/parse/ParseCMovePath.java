@@ -109,7 +109,7 @@ public class ParseCMovePath {
         int offset_end_action = 0;
         final int tail_data_size = getTailDataSize(cp); // for only mob.
 
-        if (Version.LessOrEqual(Region.JMS, 165)) {
+        if (Version.LessOrEqual(Region.JMS, 165) || Version.LessOrEqual(Region.GMS, 83)) {
             // JMS131-165
             offset_end_x = data.length - 13 - tail_data_size;
             offset_end_fh = data.length - 5 - tail_data_size;

@@ -96,6 +96,10 @@ public enum OpsMovePathAttr {
             MPA_FALLDOWN.set(15);
             return;
         }
+        if (Version.GreaterOrEqual(Region.GMS, 83)) {
+            MPA_FALLDOWN.set(15);
+            return;
+        }
 
         MPA_FALLDOWN.set(12);
         return;
