@@ -52,8 +52,8 @@ public class MapleQuest implements Serializable {
      */
     private static boolean loadQuest(MapleQuest ret, int id) throws NullPointerException {
         // read reqs
-        final MapleData basedata1 = DW_Quest.getRequirements().getChildByPath(String.valueOf(id));
-        final MapleData basedata2 = DW_Quest.getActions().getChildByPath(String.valueOf(id));
+        final MapleData basedata1 = DW_Quest.getCheck().getChildByPath(String.valueOf(id));
+        final MapleData basedata2 = DW_Quest.getAct().getChildByPath(String.valueOf(id));
 
         if (basedata1 == null || basedata2 == null) {
             return false;
@@ -117,7 +117,7 @@ public class MapleQuest implements Serializable {
             }
         }
 
-        final MapleData questInfo = DW_Quest.getInfo().getChildByPath(String.valueOf(id));
+        final MapleData questInfo = DW_Quest.getQuestInfo().getChildByPath(String.valueOf(id));
         if (questInfo != null) {
             ret.name = MapleDataTool.getString("name", questInfo, "");
             ret.autoStart = MapleDataTool.getInt("autoStart", questInfo, 0) == 1;
@@ -126,7 +126,7 @@ public class MapleQuest implements Serializable {
             ret.selectedSkillID = MapleDataTool.getInt("selectedSkillID", questInfo, 0);
         }
 
-        final MapleData pquestInfo = DW_Quest.getPinfo().getChildByPath(String.valueOf(id));
+        final MapleData pquestInfo = DW_Quest.getPQuest().getChildByPath(String.valueOf(id));
         if (pquestInfo != null) {
             for (MapleData d : pquestInfo.getChildByPath("rank")) {
                 List<Pair<String, Pair<String, Integer>>> pInfo = new ArrayList<Pair<String, Pair<String, Integer>>>();

@@ -35,37 +35,37 @@ public class DW_Quest {
         return wz;
     }
 
-    private static MapleData actions = null;
-    private static MapleData requirements = null;
-    private static MapleData info = null;
-    private static MapleData pinfo = null;
+    private static MapleData img_Act = null;
+    private static MapleData img_Check = null;
+    private static MapleData img_QuestInfo = null;
+    private static MapleData img_PQuest = null;
 
-    public static MapleData getActions() {
-        if (actions == null) {
-            actions = getWz().loadData("Act.img");
+    public static MapleData getAct() {
+        if (img_Act == null) {
+            img_Act = getWz().loadData("Act.img");
         }
-        return actions;
+        return img_Act;
     }
 
-    public static MapleData getRequirements() {
-        if (requirements == null) {
-            requirements = getWz().loadData("Check.img");
+    public static MapleData getCheck() {
+        if (img_Check == null) {
+            img_Check = getWz().loadData("Check.img");
         }
-        return requirements;
+        return img_Check;
     }
 
-    public static MapleData getInfo() {
-        if (info == null) {
-            info = getWz().loadData("QuestInfo.img");
+    public static MapleData getQuestInfo() {
+        if (img_QuestInfo == null) {
+            img_QuestInfo = getWz().loadData("QuestInfo.img");
         }
-        return info;
+        return img_QuestInfo;
     }
 
-    public static MapleData getPinfo() {
-        if (pinfo == null) {
-            pinfo = getWz().loadData("PQuest.img");
+    public static MapleData getPQuest() {
+        if (img_PQuest == null) {
+            img_PQuest = getWz().loadData("PQuest.img");
         }
-        return pinfo;
+        return img_PQuest;
     }
 
 }

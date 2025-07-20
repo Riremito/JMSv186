@@ -38,24 +38,32 @@ public class DW_Etc {
         return wz;
     }
 
-    private static List<String> ForbiddenName = null;
+    private static MapleData img_ForbiddenName = null;
 
-    private static List<String> getForbiddenName() {
-        if (ForbiddenName != null) {
-            return ForbiddenName;
+    public static MapleData getForbiddenName() {
+        if (img_ForbiddenName == null) {
+            img_ForbiddenName = getWz().loadData("ForbiddenName.img");
+        }
+        return img_ForbiddenName;
+    }
+
+    private static List<String> list_fn = null;
+
+    private static List<String> getFN() {
+        if (list_fn != null) {
+            return list_fn;
         }
 
-        ForbiddenName = new ArrayList<String>();
-        final MapleData nameData = getWz().loadData("ForbiddenName.img");
-        for (final MapleData data : nameData.getChildren()) {
-            ForbiddenName.add(MapleDataTool.getString(data));
+        list_fn = new ArrayList<String>();
+        for (final MapleData data : getForbiddenName().getChildren()) {
+            list_fn.add(MapleDataTool.getString(data));
         }
 
-        return ForbiddenName;
+        return list_fn;
     }
 
     public static boolean isForbiddenName(String character_name) {
-        for (final String forbidden_name : getForbiddenName()) {
+        for (final String forbidden_name : getFN()) {
             if (character_name.contains(forbidden_name)) {
                 return true;
             }
