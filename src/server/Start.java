@@ -12,7 +12,6 @@ import handling.channel.ChannelServer;
 import handling.channel.MapleGuildRanking;
 import handling.login.LoginServer;
 import handling.cashshop.CashShopServer;
-import handling.login.LoginInformationProvider;
 import handling.world.World;
 import java.sql.SQLException;
 import database.query.DB_Accounts;
@@ -71,11 +70,10 @@ public class Start {
         // set codepage
         Debug.InfoLog("[CodePage]");
         CodePage.init();
-
-        LoginServer.SetWorldConfig();
+        // ログインサーバー上のゲームサーバー情報
+        LoginServer.SetWorldConfig(); // TODO : fix
         // database
         DB_Accounts.resetLoginState();
-
         // 管理画面
         Debug.InfoLog("[AdminTool]");
         if (DeveloperMode.DM_ADMIN_TOOL.get()) {
@@ -92,7 +90,6 @@ public class Start {
         CloneTimer.getInstance().start();
         EventTimer.getInstance().start();
         BuffTimer.getInstance().start();
-        LoginInformationProvider.getInstance();
 
         Debug.InfoLog("Start Login Server");
         LoginServer.run_startup_configurations();

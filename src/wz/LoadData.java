@@ -7,7 +7,6 @@ import config.ServerConfig;
 import config.Version;
 import debug.Debug;
 import debug.DebugLoadTime;
-import handling.login.LoginInformationProvider;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
@@ -33,10 +32,6 @@ public class LoadData {
     public static void LoadDataFromXML() {
         DebugLoadTime dlt = new DebugLoadTime("initDataIDs");
         initDataIDs();
-        dlt.End();
-
-        dlt = new DebugLoadTime("initForbiddenName");
-        initForbiddenName();
         dlt.End();
 
         dlt = new DebugLoadTime("initQuests");
@@ -451,23 +446,6 @@ public class LoadData {
         }
         MapleItemInformationProvider.insStringData = MapleItemInformationProvider.stringData.getData("Ins.img");
         MapleItemInformationProvider.petStringData = MapleItemInformationProvider.stringData.getData("Pet.img");
-
-    }
-
-    // login server
-    private static void initForbiddenName() {
-        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Etc.wz"));
-
-        if (wz == null) {
-            Debug.ErrorLog("initForbiddenName");
-            return;
-        }
-
-        final MapleData nameData = wz.getData("ForbiddenName.img");
-
-        for (final MapleData data : nameData.getChildren()) {
-            LoginInformationProvider.ForbiddenName.add(MapleDataTool.getString(data));
-        }
 
     }
 

@@ -29,10 +29,10 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import config.property.Property_Login;
+import data.wz.DW_Etc;
 import debug.Debug;
 import debug.DebugUser;
 import handling.channel.ChannelServer;
-import handling.login.LoginInformationProvider;
 import handling.login.LoginServer;
 import java.util.ArrayList;
 import java.util.List;
@@ -405,7 +405,7 @@ public class ReqCLogin {
             return false;
         }
         // name check
-        if (!MapleCharacterUtil.canCreateChar(character_name) || LoginInformationProvider.getInstance().isForbiddenName(character_name)) {
+        if (!MapleCharacterUtil.canCreateChar(character_name) || DW_Etc.getInstance().isForbiddenName(character_name)) {
             c.SendPacket(ResCLogin.addNewCharEntry(null, false));
             return false;
         }
@@ -460,7 +460,7 @@ public class ReqCLogin {
 
     public static final void CheckCharName(ClientPacket cp, final MapleClient c) {
         String name = cp.DecodeStr();
-        c.getSession().write(ResCLogin.charNameResponse(name, !MapleCharacterUtil.canCreateChar(name) || LoginInformationProvider.getInstance().isForbiddenName(name)));
+        c.getSession().write(ResCLogin.charNameResponse(name, !MapleCharacterUtil.canCreateChar(name) || DW_Etc.getInstance().isForbiddenName(name)));
     }
 
     public static final void CharlistRequest(ClientPacket cp, final MapleClient c) {
