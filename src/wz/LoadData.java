@@ -24,7 +24,6 @@ import server.MapleCarnivalFactory;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
 import server.maps.MapleMapFactory;
-import server.quest.MapleQuest;
 
 // バージョンごとにwzの構造が変わるので、変わっていたら読み取り方法もそれに合わせて変更する必要がある
 public class LoadData {
@@ -32,10 +31,6 @@ public class LoadData {
     public static void LoadDataFromXML() {
         DebugLoadTime dlt = new DebugLoadTime("initDataIDs");
         initDataIDs();
-        dlt.End();
-
-        dlt = new DebugLoadTime("initQuests");
-        initQuests();
         dlt.End();
 
         dlt = new DebugLoadTime("initLife");
@@ -380,17 +375,6 @@ public class LoadData {
         }
 
         return list.size();
-    }
-
-    private static void initQuests() {
-        MapleQuest.questData = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Quest.wz"));
-        MapleQuest.actions = MapleQuest.questData.getData("Act.img");
-        MapleQuest.requirements = MapleQuest.questData.getData("Check.img");
-        MapleQuest.info = MapleQuest.questData.getData("QuestInfo.img");
-
-        if (ServerConfig.JMS164orLater()) {
-            MapleQuest.pinfo = MapleQuest.questData.getData("PQuest.img");
-        }
     }
 
     private static void initLife() {

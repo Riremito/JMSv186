@@ -9,13 +9,13 @@ import java.util.Map;
 
 import client.MapleCharacter;
 import client.MapleQuestStatus;
+import data.wz.DW_Quest;
 import java.util.ArrayList;
 import packet.ops.OpsUserEffect;
 import packet.response.wrapper.WrapCUserLocal;
 import packet.response.wrapper.WrapCUserRemote;
 import scripting.NPCScriptManager;
 import provider.MapleData;
-import provider.MapleDataProvider;
 import provider.MapleDataTool;
 import tools.FileoutputUtil;
 import tools.Pair;
@@ -36,11 +36,6 @@ public class MapleQuest implements Serializable {
     private boolean repeatable = false, customend = false;
     private int viewMedalItem = 0, selectedSkillID = 0;
     protected String name = "";
-    public static MapleDataProvider questData;
-    public static MapleData actions;
-    public static MapleData requirements;
-    public static MapleData info = null;
-    public static MapleData pinfo = null;
 
     protected MapleQuest(final int id) {
         relevantMobs = new LinkedHashMap<Integer, Integer>();
@@ -57,8 +52,8 @@ public class MapleQuest implements Serializable {
      */
     private static boolean loadQuest(MapleQuest ret, int id) throws NullPointerException {
         // read reqs
-        final MapleData basedata1 = requirements.getChildByPath(String.valueOf(id));
-        final MapleData basedata2 = actions.getChildByPath(String.valueOf(id));
+        final MapleData basedata1 = DW_Quest.getRequirements().getChildByPath(String.valueOf(id));
+        final MapleData basedata2 = DW_Quest.getActions().getChildByPath(String.valueOf(id));
 
         if (basedata1 == null || basedata2 == null) {
             return false;
@@ -122,30 +117,26 @@ public class MapleQuest implements Serializable {
             }
         }
 
-        if (info != null) {
-            final MapleData questInfo = info.getChildByPath(String.valueOf(id));
-            if (questInfo != null) {
-                ret.name = MapleDataTool.getString("name", questInfo, "");
-                ret.autoStart = MapleDataTool.getInt("autoStart", questInfo, 0) == 1;
-                ret.autoPreComplete = MapleDataTool.getInt("autoPreComplete", questInfo, 0) == 1;
-                ret.viewMedalItem = MapleDataTool.getInt("viewMedalItem", questInfo, 0);
-                ret.selectedSkillID = MapleDataTool.getInt("selectedSkillID", questInfo, 0);
-            }
+        final MapleData questInfo = DW_Quest.getInfo().getChildByPath(String.valueOf(id));
+        if (questInfo != null) {
+            ret.name = MapleDataTool.getString("name", questInfo, "");
+            ret.autoStart = MapleDataTool.getInt("autoStart", questInfo, 0) == 1;
+            ret.autoPreComplete = MapleDataTool.getInt("autoPreComplete", questInfo, 0) == 1;
+            ret.viewMedalItem = MapleDataTool.getInt("viewMedalItem", questInfo, 0);
+            ret.selectedSkillID = MapleDataTool.getInt("selectedSkillID", questInfo, 0);
         }
 
-        if (pinfo != null) {
-            final MapleData pquestInfo = pinfo.getChildByPath(String.valueOf(id));
-            if (pquestInfo != null) {
-                for (MapleData d : pquestInfo.getChildByPath("rank")) {
-                    List<Pair<String, Pair<String, Integer>>> pInfo = new ArrayList<Pair<String, Pair<String, Integer>>>();
-                    //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
-                    for (MapleData c : d) {
-                        for (MapleData b : c) {
-                            pInfo.add(new Pair<String, Pair<String, Integer>>(c.getName(), new Pair<String, Integer>(b.getName(), MapleDataTool.getInt(b, 0))));
-                        }
+        final MapleData pquestInfo = DW_Quest.getPinfo().getChildByPath(String.valueOf(id));
+        if (pquestInfo != null) {
+            for (MapleData d : pquestInfo.getChildByPath("rank")) {
+                List<Pair<String, Pair<String, Integer>>> pInfo = new ArrayList<Pair<String, Pair<String, Integer>>>();
+                //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
+                for (MapleData c : d) {
+                    for (MapleData b : c) {
+                        pInfo.add(new Pair<String, Pair<String, Integer>>(c.getName(), new Pair<String, Integer>(b.getName(), MapleDataTool.getInt(b, 0))));
                     }
-                    ret.partyQuestInfo.put(d.getName(), pInfo);
                 }
+                ret.partyQuestInfo.put(d.getName(), pInfo);
             }
         }
 

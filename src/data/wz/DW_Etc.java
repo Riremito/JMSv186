@@ -35,7 +35,7 @@ public class DW_Etc {
 
     private static DW_Etc instance = null;
 
-    public static DW_Etc getInstance() {
+    private static DW_Etc getInstance() {
         if (instance == null) {
             instance = new DW_Etc();
         }
@@ -65,7 +65,7 @@ public class DW_Etc {
     }
 
     public static boolean isForbiddenName(String character_name) {
-        for (final String forbidden_name : instance.getForbiddenName()) {
+        for (final String forbidden_name : getInstance().getForbiddenName()) {
             if (character_name.contains(forbidden_name)) {
                 return true;
             }

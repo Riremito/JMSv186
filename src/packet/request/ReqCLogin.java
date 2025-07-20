@@ -405,7 +405,7 @@ public class ReqCLogin {
             return false;
         }
         // name check
-        if (!MapleCharacterUtil.canCreateChar(character_name) || DW_Etc.getInstance().isForbiddenName(character_name)) {
+        if (!MapleCharacterUtil.canCreateChar(character_name) || DW_Etc.isForbiddenName(character_name)) {
             c.SendPacket(ResCLogin.addNewCharEntry(null, false));
             return false;
         }
@@ -460,7 +460,7 @@ public class ReqCLogin {
 
     public static final void CheckCharName(ClientPacket cp, final MapleClient c) {
         String name = cp.DecodeStr();
-        c.getSession().write(ResCLogin.charNameResponse(name, !MapleCharacterUtil.canCreateChar(name) || DW_Etc.getInstance().isForbiddenName(name)));
+        c.getSession().write(ResCLogin.charNameResponse(name, !MapleCharacterUtil.canCreateChar(name) || DW_Etc.isForbiddenName(name)));
     }
 
     public static final void CharlistRequest(ClientPacket cp, final MapleClient c) {

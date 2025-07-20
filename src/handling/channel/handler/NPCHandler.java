@@ -137,7 +137,8 @@ public class NPCHandler {
                 break;
             }
         }
-        c.getPlayer().Info("Quest ID = " + quest + ", Action = " + action);
+
+        chr.DebugMsg("Quest ID = " + quest + ", Action = " + action);
     }
 
     public static final void NPCMoreTalk(MapleClient c, OpsScriptMan smt, byte action, int selection, String text) {
