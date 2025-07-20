@@ -18,12 +18,7 @@
  */
 package data.wz;
 
-import config.ServerConfig;
-import config.property.Property_Java;
-import java.io.File;
 import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
 
 /**
  *
@@ -31,46 +26,46 @@ import provider.MapleDataProviderFactory;
  */
 public class DW_Quest {
 
-    private static DW_Quest instance = null;
+    private static DataWz wz = null;
 
-    public static DW_Quest getInstance() {
-        if (instance == null) {
-            instance = new DW_Quest();
+    private static DataWz getWz() {
+        if (wz == null) {
+            wz = new DataWz("Quest.wz");
         }
-        return instance;
+        return wz;
     }
 
-    private MapleDataProvider wz_root = null;
-    private MapleData actions = null;
-    private MapleData requirements = null;
-    private MapleData info = null;
-    private MapleData pinfo = null;
-
-    DW_Quest() {
-        this.wz_root = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Quest.wz"));
-
-        this.actions = wz_root.getData("Act.img");
-        this.requirements = wz_root.getData("Check.img");
-        this.info = wz_root.getData("QuestInfo.img");
-        if (ServerConfig.JMS164orLater()) {
-            this.pinfo = wz_root.getData("PQuest.img");
-        }
-    }
+    private static MapleData actions = null;
+    private static MapleData requirements = null;
+    private static MapleData info = null;
+    private static MapleData pinfo = null;
 
     public static MapleData getActions() {
-        return getInstance().actions;
+        if (actions == null) {
+            actions = getWz().loadData("Act.img");
+        }
+        return actions;
     }
 
     public static MapleData getRequirements() {
-        return getInstance().requirements;
+        if (requirements == null) {
+            requirements = getWz().loadData("Check.img");
+        }
+        return requirements;
     }
 
     public static MapleData getInfo() {
-        return getInstance().info;
+        if (info == null) {
+            info = getWz().loadData("QuestInfo.img");
+        }
+        return info;
     }
 
     public static MapleData getPinfo() {
-        return getInstance().pinfo;
+        if (pinfo == null) {
+            pinfo = getWz().loadData("PQuest.img");
+        }
+        return pinfo;
     }
 
 }
