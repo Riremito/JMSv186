@@ -130,7 +130,7 @@ public class ReqCMobPool {
             // none
             cp.Decode1();
             cp.Decode1();
-        } else if (ServerConfig.JMS186orLater() || Version.GreaterOrEqual(Region.KMS, 95)) {
+        } else if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater()) {
             cp.Decode4(); // 0
             cp.Decode4(); // 0
         }
@@ -141,7 +141,7 @@ public class ReqCMobPool {
             cp.Decode4(); // 1
         }
 
-        if (ServerConfig.JMS186orLater() || Version.GreaterOrEqual(Region.KMS, 95)) {
+        if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater()) {
             int ffddcc_1 = cp.Decode4(); // 0x00FFDDCC
             int ffddcc_2 = cp.Decode4(); // 0x00FFDDCC
             cp.Decode4();

@@ -77,14 +77,17 @@ public class ParseCMovePath {
                 return (1 + 2 * 4); // JMS186-194
             }
             case CP_MobMove: {
+                if (Version.GreaterOrEqual(Region.KMS, 114)) {
+                    return 17;
+                }
                 if (Version.GreaterOrEqual(Region.JMS, 302)) {
                     return (1 + 54);
                 }
                 if (Version.PostBB()) {
                     return (1 + 24); // JMS187+
                 }
-                if (Version.GreaterOrEqual(Region.JMS, 180)) {
-                    return (1 + 2 * 4 + 1 * 4 + 4); // JMS180-186
+                if (Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.JMS, 180)) {
+                    return (1 + 2 * 4 + 1 * 4 + 4); // KMS95, JMS180-186
                 }
                 return (1 + 2 * 4); // KMS65, JMS131-165
             }

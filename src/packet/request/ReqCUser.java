@@ -500,7 +500,7 @@ public class ReqCUser {
         attack.FieldKey = cp.Decode1();
 
         // DR_Check
-        if (Version.LessOrEqual(Region.KMS, 65)) {
+        if (Version.LessOrEqual(Region.KMS, 114)) {
             // ?
         } else if (ServerConfig.JMS180orLater()) {
             cp.Decode4(); // pDrInfo.dr0
@@ -510,7 +510,7 @@ public class ReqCUser {
         attack.HitKey = cp.Decode1(); // nDamagePerMob | (16 * nCount)
 
         // DR_Check
-        if (Version.LessOrEqual(Region.KMS, 65)) {
+        if (Version.LessOrEqual(Region.KMS, 114)) {
             // ?
         } else if (ServerConfig.JMS180orLater()) {
             cp.Decode4(); // pDrInfo.dr2
@@ -526,7 +526,7 @@ public class ReqCUser {
         }
 
         // v95 1 byte cd->nCombatOrders
-        if (Version.LessOrEqual(Region.KMS, 65)) {
+        if (Version.LessOrEqual(Region.KMS, 114)) {
             // ?
         } else if (ServerConfig.JMS180orLater()) {
             cp.Decode4(); // get_rand of DR_Check
@@ -538,7 +538,7 @@ public class ReqCUser {
             cp.Decode1();
         }
 
-        if (Version.LessOrEqual(Region.KMS, 65)) {
+        if (Version.LessOrEqual(Region.KMS, 95)) {
             // ?
         } else if (ServerConfig.JMS164orLater()) {
             cp.Decode4(); // Crc
@@ -549,7 +549,7 @@ public class ReqCUser {
             attack.tKeyDown = cp.Decode4();
         }
 
-        if (ServerConfig.JMS194orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 114) || ServerConfig.JMS194orLater()) {
             if (attack.AttackHeader == ClientPacket.Header.CP_UserShootAttack) {
                 cp.Decode1();
             }
