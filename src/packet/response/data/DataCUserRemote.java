@@ -23,6 +23,7 @@ import client.MapleCharacter;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
+import config.Region;
 import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
@@ -46,8 +47,10 @@ public class DataCUserRemote {
     // CUserRemote::Init
     public static byte[] Init(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
-        // 自分のキャラクターの場合はここで終了
-        if (ServerConfig.JMS164orLater()) {
+
+        if (Version.LessOrEqual(Region.KMS, 65)) {
+            // nothing
+        } else if (ServerConfig.JMS164orLater()) {
             data.Encode1(chr.getLevel());
         }
         data.EncodeStr(chr.getName());
