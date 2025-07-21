@@ -130,18 +130,18 @@ public class ReqCMobPool {
             // none
             cp.Decode1();
             cp.Decode1();
-        } else if (ServerConfig.JMS186orLater() || Region.IsKMS()) {
+        } else if (ServerConfig.JMS186orLater() || Version.GreaterOrEqual(Region.KMS, 95)) {
             cp.Decode4(); // 0
             cp.Decode4(); // 0
         }
 
         cp.Decode1(); // 0
 
-        if (ServerConfig.JMS164orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 65) || ServerConfig.JMS164orLater()) {
             cp.Decode4(); // 1
         }
 
-        if (ServerConfig.JMS186orLater() || Region.IsKMS()) {
+        if (ServerConfig.JMS186orLater() || Version.GreaterOrEqual(Region.KMS, 95)) {
             int ffddcc_1 = cp.Decode4(); // 0x00FFDDCC
             int ffddcc_2 = cp.Decode4(); // 0x00FFDDCC
             cp.Decode4();

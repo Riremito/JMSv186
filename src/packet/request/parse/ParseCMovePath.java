@@ -69,7 +69,7 @@ public class ParseCMovePath {
         // ignore bytes : last Encode1 + unknown bytes (Post-BB)
         switch (cp.GetOpcode()) {
             case CP_UserMove: {
-                return (1 + 17); // JMS164-302
+                return (1 + 17); // KMS65, JMS164-302
             }
             case CP_DragonMove:
             case CP_SummonedMove:
@@ -86,7 +86,7 @@ public class ParseCMovePath {
                 if (Version.GreaterOrEqual(Region.JMS, 180)) {
                     return (1 + 2 * 4 + 1 * 4 + 4); // JMS180-186
                 }
-                return (1 + 2 * 4); // JMS131-165
+                return (1 + 2 * 4); // KMS65, JMS131-165
             }
             default: {
                 Debug.ErrorLog("ParseCMovePath : invalid header.");
