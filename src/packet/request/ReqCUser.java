@@ -736,9 +736,13 @@ public class ReqCUser {
             cp.Decode4();
         }
 
-        // not in JMS147
-        if (ServerConfig.JMS164orLater()) {
-            cp.Decode4();
+        if (Version.LessOrEqual(Region.KMS, 65)) {
+            // nothing
+        } else {
+            // not in JMS147
+            if (ServerConfig.JMS164orLater()) {
+                cp.Decode4();
+            }
         }
 
         if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
