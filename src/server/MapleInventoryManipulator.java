@@ -18,6 +18,8 @@ import client.inventory.MaplePet;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
+import config.Region;
+import config.Version;
 import packet.ops.OpsCashItem;
 import packet.response.ResCCashShop;
 import packet.response.wrapper.ResWrapper;
@@ -411,6 +413,9 @@ public class MapleInventoryManipulator {
     }
 
     private static final IItem checkEnhanced(final IItem before, final MapleCharacter chr) {
+        if (Version.LessOrEqual(Region.KMS, 95) || Version.LessOrEqual(Region.JMS, 185)) {
+            return before;
+        }
         if (before instanceof Equip) {
             final Equip eq = (Equip) before;
             if (eq.getHidden() == 0 && (eq.getUpgradeSlots() >= 1 || eq.getLevel() >= 1) && Randomizer.nextInt(100) > 80) { //20% chance of pot?
