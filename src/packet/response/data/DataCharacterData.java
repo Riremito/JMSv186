@@ -520,10 +520,13 @@ public class DataCharacterData {
                         data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                     }
                 }
-                if ((datamask & 262144) > 0) {
-                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                if (Version.GreaterOrEqual(Region.KMS, 65)) {
+                    if ((datamask & 262144) > 0) {
+                        data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    }
                 }
-                if (Version.PreBB()) {
+                // not in KMS55
+                if (Version.Between(Region.KMS, 65, 95)) {
                     if ((datamask & 524288) > 0) {
                         data.Encode2(0);
                     }

@@ -25,7 +25,6 @@ import debug.Debug;
  * @author Riremito
  */
 public enum Content {
-    Packet_HeaderSize(2),
     Job_Pirate, // JMS147
     Job_KnightsOfCygnus, // JMS165
     Job_Aran, // JMS173
@@ -49,6 +48,7 @@ public enum Content {
     // bad version
     // settings for specific versions
     CharacterNameLength(13),
+    PacketHeaderSize(2),
     OldIV(false),
     CustomEncryption(false),
     PrePotential(false), // JMS184-185, KMS95
@@ -116,6 +116,7 @@ public enum Content {
         bOK = checkBigBang();
         BIGBANG.set(bOK);
         OldIV.set(checkOldIV());
+        PacketHeaderSize.setInt(checkPacketHeaderSize());
         CustomEncryption.set(checkCustomEncryption());
         PrePotential.set(checkPrePotential());
         CharacterNameLength.setInt(checkCharacterNameLength());
@@ -205,6 +206,13 @@ public enum Content {
             return 16;
         }
         return 13;
+    }
+
+    private static int checkPacketHeaderSize() {
+        if (Version.LessOrEqual(Region.KMS, 55)) {
+            return 1;
+        }
+        return 2;
     }
 
     private static boolean checkOldIV() {

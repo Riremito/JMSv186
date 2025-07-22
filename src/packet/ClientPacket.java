@@ -20,6 +20,7 @@
 package packet;
 
 import config.CodePage;
+import config.Content;
 
 public class ClientPacket {
 
@@ -43,10 +44,15 @@ public class ClientPacket {
     }
 
     public String Packet() {
-        short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));
-        String text = String.format("@%04X", header);
+        String text = null;
+        if (Content.PacketHeaderSize.getInt() == 2) {
+            short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));
+            text = String.format("@%04X", header);
+        } else {
+            text = String.format("@%02X", packet[0]);
+        }
 
-        for (int i = 2; i < packet.length; i++) {
+        for (int i = Content.PacketHeaderSize.getInt(); i < packet.length; i++) {
             text += String.format(" %02X", packet[i]);
         }
 
@@ -54,21 +60,29 @@ public class ClientPacket {
     }
 
     public String GetOpcodeName() {
-        if (packet.length < 2) {
+        if (packet.length < Content.PacketHeaderSize.getInt()) {
             return Header.UNKNOWN.toString();
         }
 
-        short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));
-        return ToHeader(header).toString();
+        if (Content.PacketHeaderSize.getInt() == 2) {
+            short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));
+            return ToHeader(header).toString();
+        }
+
+        return ToHeader((short) (packet[0] & 0xFF)).toString();
     }
 
     public Header GetOpcode() {
-        if (packet.length < 2) {
+        if (packet.length < Content.PacketHeaderSize.getInt()) {
             return Header.UNKNOWN;
         }
 
-        short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));
-        return ToHeader(header);
+        if (Content.PacketHeaderSize.getInt() == 2) {
+            short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));
+            return ToHeader(header);
+        }
+
+        return ToHeader((short) (packet[0] & 0xFF));
     }
 
     public byte Decode1() {

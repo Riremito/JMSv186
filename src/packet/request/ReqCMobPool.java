@@ -137,7 +137,7 @@ public class ReqCMobPool {
 
         cp.Decode1(); // 0
 
-        if (Version.GreaterOrEqual(Region.KMS, 65) || ServerConfig.JMS164orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 55) || ServerConfig.JMS164orLater()) {
             cp.Decode4(); // 1
         }
 

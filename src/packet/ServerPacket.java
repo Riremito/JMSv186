@@ -19,7 +19,7 @@
 package packet;
 
 import config.CodePage;
-import java.nio.charset.Charset;
+import config.Content;
 import server.network.ByteArrayMaplePacket;
 import server.network.MaplePacket;
 import java.util.ArrayList;
@@ -34,8 +34,10 @@ public class ServerPacket {
         short w = (short) header.get();
 
         packet.add((byte) (w & 0xFF));
-        packet.add((byte) ((w >> 8) & 0xFF));
-        encoded += 2;
+        if (Content.PacketHeaderSize.getInt() == 2) {
+            packet.add((byte) ((w >> 8) & 0xFF));
+        }
+        encoded += Content.PacketHeaderSize.getInt();
     }
 
     public ServerPacket(short w) {
@@ -128,10 +130,16 @@ public class ServerPacket {
             b[i] = packet.get(i);
         }
 
-        short header = (short) (((short) b[0] & 0xFF) | ((short) b[1] & 0xFF << 8));
-        String text = String.format("@%04X", header);
+        String text = null;
 
-        for (int i = 2; i < encoded; i++) {
+        if (Content.PacketHeaderSize.getInt() == 2) {
+            short header = (short) (((short) b[0] & 0xFF) | ((short) b[1] & 0xFF << 8));
+            text = String.format("@%04X", header);
+        } else {
+            text = String.format("@%02X", b[0]);
+        }
+
+        for (int i = Content.PacketHeaderSize.getInt(); i < encoded; i++) {
             text += String.format(" %02X", b[i]);
         }
 
@@ -139,7 +147,7 @@ public class ServerPacket {
     }
 
     public String getOpcodeName() {
-        if (encoded < 2) {
+        if (encoded < Content.PacketHeaderSize.getInt()) {
             return Header.UNKNOWN.toString();
         }
 

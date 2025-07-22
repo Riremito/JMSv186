@@ -59,12 +59,15 @@ public class GenericLittleEndianAccessor implements LittleEndianAccessor {
     @Override
     public final byte readByte() {
         if (!already_used) {
-            already_used = true;
-            Debug.DebugLog("OLD_CLIENT_PACKET readByte");
             StackTraceElement[] ste = new Throwable().getStackTrace();
             if (1 < ste.length) {
-                Debug.DebugLog(ste[1].getFileName() + ":" + ste[1].getLineNumber());
-                Debug.DebugLog(ste[1].getClassName() + "." + ste[1].getMethodName());
+                if ("messageReceived".equals(ste[1].getMethodName())) {
+                } else {
+                    already_used = true;
+                    Debug.DebugLog("OLD_CLIENT_PACKET readByte");
+                    Debug.DebugLog(ste[1].getFileName() + ":" + ste[1].getLineNumber());
+                    Debug.DebugLog(ste[1].getClassName() + "." + ste[1].getMethodName());
+                }
             }
         }
         return (byte) bs.readByte();

@@ -2,6 +2,7 @@ package server.network;
 
 import constants.ServerConstants;
 import client.MapleClient;
+import config.Content;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -145,7 +146,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         try {
             // please remove slea!
             SeekableLittleEndianAccessor slea = new GenericSeekableLittleEndianAccessor(new ByteArrayByteStream((byte[]) message));
-            if (slea.available() < 2) {
+            if (slea.available() < Content.PacketHeaderSize.getInt()) {
                 return;
             }
             // client
@@ -153,11 +154,23 @@ public class MapleServerHandler extends IoHandlerAdapter {
             if (!c.isReceiving()) {
                 return;
             }
-            slea.readShort(); // read header
+
+            // TODO : remove
+            if (Content.PacketHeaderSize.getInt() == 2) {
+                slea.readShort(); // read header
+            } else {
+                slea.readByte();
+            }
 
             // client packet
             ClientPacket cp = new ClientPacket((byte[]) message);
-            short header_val = cp.Decode2();
+            short header_val = 0;
+            if (Content.PacketHeaderSize.getInt() == 2) {
+                header_val = cp.Decode2();
+            } else {
+                header_val = (short) (cp.Decode1() & 0xFF);
+            }
+            //Debug.DebugLog("DD = " + String.format("%02X", header_val));
             ClientPacket.Header header = ClientPacket.ToHeader(header_val);
 
             // not coded
