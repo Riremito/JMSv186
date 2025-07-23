@@ -31,6 +31,7 @@ import packet.request.ReqCTownPortalPool;
 import packet.request.ReqCUser_Pet;
 import packet.request.ReqCCashShop;
 import packet.request.ReqCClientSocket;
+import packet.request.ReqCDropPool;
 import packet.request.ReqCLogin;
 import packet.request.Req_Farm;
 import packet.response.ResCClientSocket;
@@ -440,9 +441,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return true;
             }
             case CP_DropPickUpRequest: {
-                // c
-                InventoryHandler.Pickup_Player(p, c, c.getPlayer());
-                return true;
+                return ReqCDropPool.OnPacket(cp, header, c);
             }
             case CP_ReactorHit:
             case CP_ReactorTouch: {

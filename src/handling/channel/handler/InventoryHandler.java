@@ -23,7 +23,6 @@ package handling.channel.handler;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
-import java.awt.Point;
 
 import client.inventory.Equip;
 import client.inventory.IItem;
@@ -37,7 +36,6 @@ import client.MapleStat;
 import client.PlayerStats;
 import constants.GameConstants;
 import client.SkillFactory;
-import client.anticheat.CheatingOffense;
 import config.ServerConfig;
 import debug.Debug;
 import handling.world.MaplePartyCharacter;
@@ -1178,45 +1176,34 @@ public class InventoryHandler {
         c.getSession().write(ResWrapper.enableActions());
     }
 
-    public static final void Pickup_Player(final SeekableLittleEndianAccessor slea, MapleClient c, final MapleCharacter chr) {
-        if (c.getPlayer().getPlayerShop() != null || c.getPlayer().getConversation() > 0 || c.getPlayer().getTrade() != null) { //hack
-            return;
-        }
-        chr.updateTick(slea.readInt());
-        slea.skip(1); // [4] Seems to be tickcount, [1] always 0
-        final Point Client_Reportedpos = slea.readPos();
-        if (chr == null) {
-            return;
-        }
-        final MapleMapObject ob = chr.getMap().getMapObject(slea.readInt(), MapleMapObjectType.ITEM);
+    public static final boolean PickUp(MapleCharacter chr, int object_id) {
+        final MapleMapObject object = chr.getMap().getMapObject(object_id, MapleMapObjectType.ITEM);
 
-        if (ob == null) {
-            c.getSession().write(ResWrapper.enableActions());
-            return;
+        if (object == null) {
+            Debug.ErrorLog("PickUp : item null");
+            return false;
         }
-        final MapleMapItem mapitem = (MapleMapItem) ob;
+
+        final MapleMapItem mapitem = (MapleMapItem) object;
         final Lock lock = mapitem.getLock();
         lock.lock();
         try {
             if (mapitem.isPickedUp()) {
-                c.getSession().write(ResWrapper.enableActions());
-                return;
+                Debug.ErrorLog("PickUp : isPickedUp");
+                return false;
             }
             if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
-                c.getSession().write(ResWrapper.enableActions());
-                return;
+                Debug.ErrorLog("PickUp : getOwner");
+                return false;
             }
             if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwner() != chr.getId() && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwner()) == null)) {
-                c.getSession().write(ResWrapper.enableActions());
-                return;
+                Debug.ErrorLog("PickUp : isPlayerDrop");
+                return false;
             }
-            final double Distance = Client_Reportedpos.distanceSq(mapitem.getPosition());
-            if (Distance > 2500) {
-                //chr.getCheatTracker().registerOffense(CheatingOffense.ITEMVAC_CLIENT, String.valueOf(Distance));
-            } else if (chr.getPosition().distanceSq(mapitem.getPosition()) > 640000.0) {
-                chr.getCheatTracker().registerOffense(CheatingOffense.ITEMVAC_SERVER);
-            }
+
+            // Meso
             if (mapitem.getMeso() > 0) {
+                // ?_?
                 if (chr.getParty() != null && mapitem.getOwner() != chr.getId()) {
                     final List<MapleCharacter> toGive = new LinkedList<MapleCharacter>();
 
@@ -1232,26 +1219,32 @@ public class InventoryHandler {
                 } else {
                     chr.gainMeso(mapitem.getMeso(), true, true);
                 }
-                removeItem(chr, mapitem, ob);
-            } else {
-                if (MapleItemInformationProvider.getInstance().isPickupBlocked(mapitem.getItem().getItemId())) {
-                    c.getSession().write(ResWrapper.enableActions());
-                    c.getPlayer().dropMessage(5, "This item cannot be picked up.");
-                } else if (useItem(c, mapitem.getItemId())) {
-                    removeItem(c.getPlayer(), mapitem, ob);
-                } else if (MapleInventoryManipulator.checkSpace(c, mapitem.getItem().getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
-                    if (mapitem.getItem().getQuantity() >= 50 && GameConstants.isUpgradeScroll(mapitem.getItem().getItemId())) {
-                        c.setMonitored(true); //hack check
-                    }
-                    if (MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster)) {
-                        removeItem(chr, mapitem, ob);
-                    }
-                } else {
-                    c.getSession().write(ResWrapper.getInventoryFull());
-                    c.getSession().write(ResWrapper.getShowInventoryFull());
-                    c.getSession().write(ResWrapper.enableActions());
-                }
+
+                removeItem(chr, mapitem, object);
+                return true;
             }
+
+            // item
+            if (MapleItemInformationProvider.getInstance().isPickupBlocked(mapitem.getItem().getItemId())) {
+                Debug.ErrorLog("PickUp : isPickupBlocked");
+                return false;
+            }
+            if (useItem(chr.getClient(), mapitem.getItemId())) {
+                removeItem(chr, mapitem, object);
+                Debug.InfoLog("PickUp : useItem");
+                return true;
+            }
+            if (!MapleInventoryManipulator.checkSpace(chr.getClient(), mapitem.getItem().getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
+                chr.SendPacket(ResWrapper.getShowInventoryFull());
+                Debug.ErrorLog("PickUp : checkSpace");
+                return false;
+            }
+            if (!MapleInventoryManipulator.addFromDrop(chr.getClient(), mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster)) {
+                Debug.ErrorLog("PickUp : addFromDrop");
+                return false;
+            }
+            removeItem(chr, mapitem, object);
+            return true;
         } finally {
             lock.unlock();
         }
@@ -1286,7 +1279,6 @@ public class InventoryHandler {
 
     public static final void removeItem_Pet(final MapleCharacter chr, final MapleMapItem mapitem, int pet) {
         mapitem.setPickedUp(true);
-        Debug.DebugLog("PICKUP REMOVEITEM PET");
         chr.getMap().broadcastMessage(ResCDropPool.DropLeaveField(mapitem, LeaveType.PICK_UP_PET, chr, pet), mapitem.getPosition());
         chr.getMap().removeMapObject(mapitem);
         if (mapitem.isRandDrop()) {
@@ -1296,7 +1288,6 @@ public class InventoryHandler {
 
     private static final void removeItem(final MapleCharacter chr, final MapleMapItem mapitem, final MapleMapObject ob) {
         mapitem.setPickedUp(true);
-        Debug.DebugLog("PICKUP REMOVEITEM");
         chr.getMap().broadcastMessage(ResCDropPool.DropLeaveField(mapitem, LeaveType.PICK_UP, chr, 0), mapitem.getPosition());
         chr.getMap().removeMapObject(ob);
         if (mapitem.isRandDrop()) {
