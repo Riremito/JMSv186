@@ -97,7 +97,30 @@ public enum OpsUserEffect {
         return UNKNOWN;
     }
 
+    private static void reset() {
+        for (final OpsUserEffect o : OpsUserEffect.values()) {
+            o.set(-1);
+        }
+    }
+
     public static void init() {
+        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 131)) {
+            reset();
+            UserEffect_LevelUp.set(0);
+            UserEffect_SkillUse.set(1);
+            UserEffect_SkillAffected.set(2);
+            UserEffect_Quest.set(3);
+            UserEffect_Pet.set(4);
+            UserEffect_SkillSpecial.set(5);
+            UserEffect_ProtectOnDieItemUse.set(6);
+            UserEffect_PlayPortalSE.set(7);
+            UserEffect_JobChanged.set(8);
+            UserEffect_QuestComplete.set(9);
+            UserEffect_IncDecHPEffect.set(10);
+            UserEffect_BuffItemEffect.set(11);
+            return;
+        }
+
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
@@ -148,22 +171,6 @@ public enum OpsUserEffect {
             // 48 : かえでのエフェクト
             // 49 : 48と同じ
             // 50 : 紫の謎エフェクト
-            return;
-        }
-
-        if (Version.LessOrEqual(Region.JMS, 131)) {
-            UserEffect_LevelUp.set(0);
-            UserEffect_SkillUse.set(1);
-            UserEffect_SkillAffected.set(2);
-            UserEffect_Quest.set(3);
-            UserEffect_Pet.set(4);
-            UserEffect_SkillSpecial.set(5);
-            UserEffect_ProtectOnDieItemUse.set(6);
-            UserEffect_PlayPortalSE.set(7);
-            UserEffect_JobChanged.set(8);
-            UserEffect_QuestComplete.set(9);
-            UserEffect_IncDecHPEffect.set(10);
-            UserEffect_BuffItemEffect.set(11);
             return;
         }
         if (Version.GreaterOrEqual(Region.JMS, 186)) {

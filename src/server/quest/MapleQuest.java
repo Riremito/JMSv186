@@ -9,6 +9,8 @@ import java.util.Map;
 
 import client.MapleCharacter;
 import client.MapleQuestStatus;
+import config.Region;
+import config.Version;
 import data.wz.DW_Quest;
 import java.util.ArrayList;
 import packet.ops.OpsUserEffect;
@@ -126,17 +128,20 @@ public class MapleQuest implements Serializable {
             ret.selectedSkillID = MapleDataTool.getInt("selectedSkillID", questInfo, 0);
         }
 
-        final MapleData pquestInfo = DW_Quest.getPQuest().getChildByPath(String.valueOf(id));
-        if (pquestInfo != null) {
-            for (MapleData d : pquestInfo.getChildByPath("rank")) {
-                List<Pair<String, Pair<String, Integer>>> pInfo = new ArrayList<Pair<String, Pair<String, Integer>>>();
-                //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
-                for (MapleData c : d) {
-                    for (MapleData b : c) {
-                        pInfo.add(new Pair<String, Pair<String, Integer>>(c.getName(), new Pair<String, Integer>(b.getName(), MapleDataTool.getInt(b, 0))));
+        // not in KMS55
+        if (Version.GreaterOrEqual(Region.KMS, 65)) {
+            final MapleData pquestInfo = DW_Quest.getPQuest().getChildByPath(String.valueOf(id));
+            if (pquestInfo != null) {
+                for (MapleData d : pquestInfo.getChildByPath("rank")) {
+                    List<Pair<String, Pair<String, Integer>>> pInfo = new ArrayList<Pair<String, Pair<String, Integer>>>();
+                    //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
+                    for (MapleData c : d) {
+                        for (MapleData b : c) {
+                            pInfo.add(new Pair<String, Pair<String, Integer>>(c.getName(), new Pair<String, Integer>(b.getName(), MapleDataTool.getInt(b, 0))));
+                        }
                     }
+                    ret.partyQuestInfo.put(d.getName(), pInfo);
                 }
-                ret.partyQuestInfo.put(d.getName(), pInfo);
             }
         }
 

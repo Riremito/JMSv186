@@ -1137,9 +1137,12 @@ public class ReqCUser {
         }
 
         byte unk = cp.Decode1();
-        int time_stamp_2 = cp.Decode4();
 
-        chr.updateTick(time_stamp_2);
+        if (Version.LessOrEqual(Region.KMS, 65)) {
+        } else {
+            int time_stamp_2 = cp.Decode4();
+            chr.updateTick(time_stamp_2);
+        }
 
         if (chr.getStat().getHp() <= 0) {
             return false;
