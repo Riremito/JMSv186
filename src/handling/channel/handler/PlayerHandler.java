@@ -358,7 +358,7 @@ public class PlayerHandler {
         if (itemId != 5510000) {
             chr.setItemEffect(itemId);
         }
-        chr.getMap().broadcastMessage(chr, ResCUserRemote.itemEffect(chr.getId(), itemId), false);
+        chr.getMap().broadcastMessage(chr, ResCUserRemote.SetActiveEffectItem(chr, itemId), false);
     }
 
     public static final void CancelItemEffect(final int id, final MapleCharacter chr) {

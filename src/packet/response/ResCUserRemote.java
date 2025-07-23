@@ -181,12 +181,12 @@ public class ResCUserRemote {
     }
 
     // CUser::SetActiveEffectItem
-    public static MaplePacket itemEffect(int characterid, int itemid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserSetActiveEffectItem.get());
-        mplew.writeInt(characterid);
-        mplew.writeInt(itemid);
-        return mplew.getPacket();
+    public static MaplePacket SetActiveEffectItem(MapleCharacter chr, int itemid) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserSetActiveEffectItem);
+
+        sp.Encode4(chr.getId());
+        sp.Encode4(itemid);
+        return sp.get();
     }
 
     // CUserRemote::OnSetActivePortableChair
