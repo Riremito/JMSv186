@@ -885,7 +885,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void showInstruction(final String msg, final int width, final int height) {
-        c.getSession().write(ResCUserLocal.sendHint(msg, width, height));
+        c.SendPacket(ResCUserLocal.BalloonMsg(msg, width, height));
     }
 
     public final void playerSummonHint(final boolean summon) {

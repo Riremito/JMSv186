@@ -223,8 +223,10 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket sendHint(String hint, int width, int height) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+    // CUserLocal::OnBalloonMsg
+    public static MaplePacket BalloonMsg(String hint, int width, int height) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserBalloonMsg);
+
         if (width < 1) {
             width = hint.length() * 10;
             if (width < 40) {
@@ -234,12 +236,13 @@ public class ResCUserLocal {
         if (height < 5) {
             height = 5;
         }
-        mplew.writeShort(ServerPacket.Header.LP_UserBalloonMsg.get());
-        mplew.writeMapleAsciiString(hint);
-        mplew.writeShort(width);
-        mplew.writeShort(height);
-        mplew.write(1);
-        return mplew.getPacket();
+
+        sp.EncodeStr(hint);
+        sp.Encode2(width);
+        sp.Encode2(height);
+        sp.Encode1(1);
+
+        return sp.get();
     }
 
     public static final MaplePacket sendRepairWindow(int npc) {
