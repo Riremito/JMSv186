@@ -44,12 +44,12 @@ public class ReqCUser {
     public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
-            return false;
+            return true;
         }
 
         MapleMap map = chr.getMap();
         if (map == null) {
-            return false;
+            return true;
         }
 
         switch (header) {
@@ -422,12 +422,12 @@ public class ReqCUser {
     public static boolean OnFamilyPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
-            return false;
+            return true;
         }
 
         MapleMap map = chr.getMap();
         if (map == null) {
-            return false;
+            return true;
         }
 
         switch (header) {
@@ -471,6 +471,7 @@ public class ReqCUser {
                 break;
             }
         }
+
         return false;
     }
 

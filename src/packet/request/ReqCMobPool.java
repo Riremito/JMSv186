@@ -61,7 +61,7 @@ public class ReqCMobPool {
                 MapleMonster monster_to = map.getMonsterByOid(oid_to);
 
                 if (monster_to == null) {
-                    return false;
+                    return true;
                 }
 
                 MobHandler.FriendlyDamage(chr, monster, monster_to);
@@ -78,7 +78,7 @@ public class ReqCMobPool {
                 MapleMonster monster_to = map.getMonsterByOid(oid_to);
 
                 if (monster_to == null) {
-                    return false;
+                    return true;
                 }
 
                 cp.Decode1();

@@ -250,7 +250,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
         // CUser::OnSummonedPacket
         switch (header) {
             case CP_MigrateIn:
-            case CP_AliveAck: {
+            case CP_AliveAck:
+            case CP_SecurityPacket: {
                 return ReqCClientSocket.OnPacket(header, cp, c);
             }
             case CP_GoldHammerRequest: {
