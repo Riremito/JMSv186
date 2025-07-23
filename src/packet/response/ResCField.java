@@ -720,15 +720,16 @@ public class ResCField {
         return mplew.getPacket();
     }
 
-    public static MaplePacket startMapEffect(String msg, int itemid, boolean active) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_BlowWeather.get());
-        //        mplew.write(active ? 0 : 1);
-        mplew.writeInt(itemid);
-        if (active) {
-            mplew.writeMapleAsciiString(msg);
+    // CField::OnBlowWeather
+    public static MaplePacket BlowWeather(String msg, int itemid, boolean active) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_BlowWeather);
+
+        sp.Encode4(active ? itemid : 0);
+        if (active && itemid != 0) {
+            sp.EncodeStr(msg);
         }
-        return mplew.getPacket();
+
+        return sp.get();
     }
 
     public static final MaplePacket getMovingPlatforms(final MapleMap map) {

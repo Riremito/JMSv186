@@ -1751,13 +1751,13 @@ public final class MapleMap {
     }
 
     public final void startExtendedMapEffect(final String msg, final int itemId) {
-        broadcastMessage(ResCField.startMapEffect(msg, itemId, true));
+        broadcastMessage(ResCField.BlowWeather(msg, itemId, true));
         MapTimer.getInstance().schedule(new Runnable() {
 
             @Override
             public void run() {
                 broadcastMessage(ResWrapper.removeMapEffect());
-                broadcastMessage(ResCField.startMapEffect(msg, itemId, false));
+                broadcastMessage(ResCField.BlowWeather(msg, itemId, false));
                 //dont remove mapeffect.
             }
         }, 60000);
@@ -1901,14 +1901,14 @@ public final class MapleMap {
             }
         }
         if ((mapid == 10000 && chr.getJob() == 0) || (mapid == 130030000 && chr.getJob() == 1000) || (mapid == 914000000 && chr.getJob() == 2000) || (mapid == 900010000 && chr.getJob() == 2001)) {
-            chr.getClient().getSession().write(ResCField.startMapEffect("Welcome to " + chr.getClient().getChannelServer().getServerName() + "!", 5122000, true));
+            chr.getClient().getSession().write(ResCField.BlowWeather("Welcome to " + chr.getClient().getChannelServer().getServerName() + "!", 5122000, true));
             chr.dropMessage(1, "Welcome to " + chr.getClient().getChannelServer().getServerName() + ", " + chr.getName() + " ! \r\nUse @joyce to collect your Item Of Appreciation once you're level 10! \r\nUse @help for commands. \r\nGood luck and have fun!");
             chr.dropMessage(5, "Your EXP Rate will be set to " + GameConstants.getExpRate_Below10(chr.getJob()) + "x until you reach level 10.");
             chr.dropMessage(5, "Use @joyce to collect your Item Of Appreciation once you're level 10! Use @help for commands. Good luck and have fun!");
 
         }
         if (permanentWeather > 0) {
-            chr.getClient().getSession().write(ResCField.startMapEffect("", permanentWeather, false)); //snow, no msg
+            chr.getClient().getSession().write(ResCField.BlowWeather("", permanentWeather, false)); //snow, no msg
         }
         if (getPlatforms().size() > 0) {
             chr.getClient().getSession().write(ResCField.getMovingPlatforms(this));

@@ -54,7 +54,7 @@ public class MapleMapEffect {
     }
 
     public MaplePacket makeStartData() {
-        return jukebox ? ResCField.playCashSong(itemId, msg) : ResCField.startMapEffect(msg, itemId, active);
+        return jukebox ? ResCField.playCashSong(itemId, msg) : ResCField.BlowWeather(msg, itemId, active);
     }
 
     public void sendStartData(MapleClient c) {

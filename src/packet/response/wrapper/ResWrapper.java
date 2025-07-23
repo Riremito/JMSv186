@@ -628,7 +628,7 @@ public class ResWrapper {
     }
 
     public static MaplePacket removeMapEffect() {
-        return ResCField.startMapEffect(null, 0, false);
+        return ResCField.BlowWeather(null, 0, false);
     }
 
     public static final MaplePacket sendGhostStatus(final String type, final String amount) {
