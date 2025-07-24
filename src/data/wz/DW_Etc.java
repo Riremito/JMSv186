@@ -21,6 +21,7 @@ package data.wz;
 import java.util.ArrayList;
 import java.util.List;
 import provider.MapleData;
+import provider.MapleDataProvider;
 import provider.MapleDataTool;
 
 /**
@@ -36,6 +37,10 @@ public class DW_Etc {
             wz = new DataWz("Etc.wz");
         }
         return wz;
+    }
+
+    public static MapleDataProvider getWzRoot() {
+        return getWz().getWzRoot();
     }
 
     private static MapleData img_ForbiddenName = null;

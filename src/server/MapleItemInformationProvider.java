@@ -19,12 +19,15 @@ import config.ContentState;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
+import data.wz.DW_Character;
+import data.wz.DW_Etc;
+import data.wz.DW_Item;
+import data.wz.DW_String;
 import debug.Debug;
 import java.util.LinkedList;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
-import provider.MapleDataProvider;
 import provider.MapleDataTool;
 import provider.WzXML.MapleDataType;
 import server.StructSetItem.SetItem;
@@ -34,16 +37,6 @@ import wz.LoadData;
 public class MapleItemInformationProvider {
 
     private final static MapleItemInformationProvider instance = new MapleItemInformationProvider();
-    public static MapleDataProvider etcData = null;
-    public static MapleDataProvider itemData = null;
-    public static MapleDataProvider equipData = null;
-    public static MapleDataProvider stringData = null;
-    public static MapleData cashStringData = null;
-    public static MapleData consumeStringData = null;
-    public static MapleData eqpStringData = null;
-    public static MapleData etcStringData = null;
-    public static MapleData insStringData = null;
-    public static MapleData petStringData = null;
     protected final Map<Integer, List<Integer>> scrollReqCache = new HashMap<Integer, List<Integer>>();
     protected final Map<Integer, Short> slotMaxCache = new HashMap<Integer, Short>();
     protected final Map<Integer, List<StructPotentialItem>> potentialCache = new HashMap<Integer, List<StructPotentialItem>>();
@@ -94,7 +87,7 @@ public class MapleItemInformationProvider {
         if (!ServerConfig.JMS186orLater()) {
             return;
         }
-        final MapleData setsData = etcData.getData("SetItemInfo.img");
+        final MapleData setsData = DW_Etc.getWzRoot().getData("SetItemInfo.img");
         StructSetItem itemz;
         SetItem itez;
         for (MapleData dat : setsData) {
@@ -126,7 +119,7 @@ public class MapleItemInformationProvider {
             }
             setItems.put(itemz.setItemID, itemz);
         }
-        final MapleData potsData = itemData.getData("ItemOption.img");
+        final MapleData potsData = DW_Item.getWzRoot().getData("ItemOption.img");
         StructPotentialItem item;
         List<StructPotentialItem> items;
         for (MapleData dat : potsData) {
@@ -256,29 +249,29 @@ public class MapleItemInformationProvider {
         final List<Pair<Integer, String>> itemPairs = new ArrayList<Pair<Integer, String>>();
         MapleData itemsData;
 
-        for (final MapleData itemFolder : cashStringData.getChildren()) {
+        for (final MapleData itemFolder : DW_String.getCash().getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        for (final MapleData itemFolder : consumeStringData.getChildren()) {
+        for (final MapleData itemFolder : DW_String.getConsume().getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        for (final MapleData eqpType : eqpStringData.getChildren()) {
+        for (final MapleData eqpType : DW_String.getEqp().getChildren()) {
             for (final MapleData itemFolder : eqpType.getChildren()) {
                 itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
             }
         }
 
-        for (final MapleData itemFolder : etcStringData.getChildren()) {
+        for (final MapleData itemFolder : DW_String.getEtc().getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        for (final MapleData itemFolder : insStringData.getChildren()) {
+        for (final MapleData itemFolder : DW_String.getIns().getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        for (final MapleData itemFolder : petStringData.getChildren()) {
+        for (final MapleData itemFolder : DW_String.getPet().getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
         return itemPairs;
@@ -289,66 +282,66 @@ public class MapleItemInformationProvider {
         MapleData data;
 
         if (itemId >= 5010000) {
-            data = cashStringData;
+            data = DW_String.getCash();
         } else if (itemId >= 2000000 && itemId < 3000000) {
-            data = consumeStringData;
+            data = DW_String.getConsume();
         } else if ((itemId >= 1142000 && itemId < 1143000) || (itemId >= 1010000 && itemId < 1040000) || (itemId >= 1122000 && itemId < 1123000)) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Accessory";
         } else if (itemId >= 1000000 && itemId < 1010000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Cap";
         } else if (itemId >= 1102000 && itemId < 1103000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Cape";
         } else if (itemId >= 1040000 && itemId < 1050000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Coat";
         } else if (itemId >= 20000 && itemId < 22000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Face";
         } else if (itemId >= 1080000 && itemId < 1090000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Glove";
         } else if (itemId >= 30000 && itemId < 32000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Hair";
         } else if (itemId >= 1050000 && itemId < 1060000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Longcoat";
         } else if (itemId >= 1060000 && itemId < 1070000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Pants";
         } else if (itemId >= 1610000 && itemId < 1660000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Mechanic";
         } else if (itemId >= 1802000 && itemId < 1810000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "PetEquip";
         } else if (itemId >= 1920000 && itemId < 2000000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Dragon";
         } else if (itemId >= 1112000 && itemId < 1120000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Ring";
         } else if (itemId >= 1092000 && itemId < 1100000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Shield";
         } else if (itemId >= 1070000 && itemId < 1080000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Shoes";
         } else if (itemId >= 1900000 && itemId < 1920000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Taming";
         } else if (itemId >= 1300000 && itemId < 1800000) {
-            data = eqpStringData;
+            data = DW_String.getEqp();
             cat = "Weapon";
         } else if (itemId >= 4000000 && itemId < 5000000) {
-            data = etcStringData;
+            data = DW_String.getEtc();
         } else if (itemId >= 3000000 && itemId < 4000000) {
-            data = insStringData;
+            data = DW_String.getIns();
         } else if (itemId >= 5000000 && itemId < 5010000) {
-            data = petStringData;
+            data = DW_String.getPet();
         } else {
             return null;
         }
@@ -362,27 +355,27 @@ public class MapleItemInformationProvider {
     protected final MapleData getItemData(final int itemId) {
         MapleData ret = null;
         final String idStr = "0" + String.valueOf(itemId);
-        MapleDataDirectoryEntry root = itemData.getRoot();
+        MapleDataDirectoryEntry root = DW_Item.getWzRoot().getRoot();
         for (final MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
             // we should have .img files here beginning with the first 4 IID
             for (final MapleDataFileEntry iFile : topDir.getFiles()) {
                 if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
-                    ret = itemData.getData(topDir.getName() + "/" + iFile.getName());
+                    ret = DW_Item.getWzRoot().getData(topDir.getName() + "/" + iFile.getName());
                     if (ret == null) {
                         return null;
                     }
                     ret = ret.getChildByPath(idStr);
                     return ret;
                 } else if (iFile.getName().equals(idStr.substring(1) + ".img")) {
-                    return itemData.getData(topDir.getName() + "/" + iFile.getName());
+                    return DW_Item.getWzRoot().getData(topDir.getName() + "/" + iFile.getName());
                 }
             }
         }
-        root = equipData.getRoot();
+        root = DW_Character.getWzRoot().getRoot();
         for (final MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
             for (final MapleDataFileEntry iFile : topDir.getFiles()) {
                 if (iFile.getName().equals(idStr + ".img")) {
-                    return equipData.getData(topDir.getName() + "/" + iFile.getName());
+                    return DW_Character.getWzRoot().getData(topDir.getName() + "/" + iFile.getName());
                 }
             }
         }

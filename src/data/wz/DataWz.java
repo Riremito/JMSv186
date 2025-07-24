@@ -38,13 +38,17 @@ public class DataWz {
         setWzRoot(name);
     }
 
-    public final void setWzRoot(String name) {
+    public MapleDataProvider getWzRoot() {
+        return this.wz_root;
+    }
+
+    private void setWzRoot(String name) {
         Debug.XmlLog("setWzRoot = " + name);
         this.name = name;
         this.wz_root = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/" + name));
     }
 
-    public final MapleData loadData(String path) {
+    public MapleData loadData(String path) {
         Debug.XmlLog("loadData = " + this.name + "/" + path);
         return this.wz_root.getData(path);
     }

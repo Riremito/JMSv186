@@ -18,20 +18,19 @@
  */
 package data.wz;
 
-import provider.MapleData;
 import provider.MapleDataProvider;
 
 /**
  *
  * @author Riremito
  */
-public class DW_Quest {
+public class DW_Item {
 
     private static DataWz wz = null;
 
     private static DataWz getWz() {
         if (wz == null) {
-            wz = new DataWz("Quest.wz");
+            wz = new DataWz("Item.wz");
         }
         return wz;
     }
@@ -39,38 +38,4 @@ public class DW_Quest {
     public static MapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
     }
-
-    private static MapleData img_Act = null;
-    private static MapleData img_Check = null;
-    private static MapleData img_QuestInfo = null;
-    private static MapleData img_PQuest = null;
-
-    public static MapleData getAct() {
-        if (img_Act == null) {
-            img_Act = getWz().loadData("Act.img");
-        }
-        return img_Act;
-    }
-
-    public static MapleData getCheck() {
-        if (img_Check == null) {
-            img_Check = getWz().loadData("Check.img");
-        }
-        return img_Check;
-    }
-
-    public static MapleData getQuestInfo() {
-        if (img_QuestInfo == null) {
-            img_QuestInfo = getWz().loadData("QuestInfo.img");
-        }
-        return img_QuestInfo;
-    }
-
-    public static MapleData getPQuest() {
-        if (img_PQuest == null) {
-            img_PQuest = getWz().loadData("PQuest.img");
-        }
-        return img_PQuest;
-    }
-
 }

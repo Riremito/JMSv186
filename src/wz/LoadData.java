@@ -2,9 +2,7 @@ package wz;
 
 import client.SkillFactory;
 import config.property.Property_Java;
-import config.Region;
 import config.ServerConfig;
-import config.Version;
 import debug.Debug;
 import debug.DebugLoadTime;
 import java.io.File;
@@ -39,10 +37,6 @@ public class LoadData {
 
         dlt = new DebugLoadTime("initMaker");
         initMaker();
-        dlt.End();
-
-        dlt = new DebugLoadTime("initItemInformation");
-        initItemInformation();
         dlt.End();
 
         // gomi
@@ -393,44 +387,6 @@ public class LoadData {
         if (ServerConfig.JMS164orLater()) {
             ItemMakerFactory.info = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Etc.wz")).getData("ItemMake.img");
         }
-    }
-
-    private static void initItemInformation() {
-        MapleData sub_dir = null;
-        MapleItemInformationProvider.etcData = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Etc.wz"));
-        MapleItemInformationProvider.itemData = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Item.wz"));
-        MapleItemInformationProvider.equipData = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Character.wz"));
-        MapleItemInformationProvider.stringData = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/String.wz"));
-
-        if (Version.LessOrEqual(Region.JMS, 131)) {
-            MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Cash");
-            MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Con");
-            MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Eqp");
-            MapleItemInformationProvider.etcStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Etc");
-            MapleItemInformationProvider.insStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Ins");
-            MapleItemInformationProvider.petStringData = MapleItemInformationProvider.stringData.getData("Item.img").getChildByPath("Pet");
-            return;
-        }
-
-        MapleItemInformationProvider.cashStringData = MapleItemInformationProvider.stringData.getData("Cash.img");
-        MapleItemInformationProvider.consumeStringData = MapleItemInformationProvider.stringData.getData("Consume.img");
-        sub_dir = MapleItemInformationProvider.consumeStringData.getChildByPath("Con");
-        if (sub_dir != null) {
-            MapleItemInformationProvider.consumeStringData = sub_dir;
-        }
-        MapleItemInformationProvider.eqpStringData = MapleItemInformationProvider.stringData.getData("Eqp.img");
-        sub_dir = MapleItemInformationProvider.eqpStringData.getChildByPath("Eqp");
-        if (sub_dir != null) {
-            MapleItemInformationProvider.eqpStringData = sub_dir;
-        }
-        MapleItemInformationProvider.etcStringData = MapleItemInformationProvider.stringData.getData("Etc.img");
-        sub_dir = MapleItemInformationProvider.etcStringData.getChildByPath("Etc");
-        if (sub_dir != null) {
-            MapleItemInformationProvider.etcStringData = sub_dir;
-        }
-        MapleItemInformationProvider.insStringData = MapleItemInformationProvider.stringData.getData("Ins.img");
-        MapleItemInformationProvider.petStringData = MapleItemInformationProvider.stringData.getData("Pet.img");
-
     }
 
     private static void initMapleMapFactory() {
