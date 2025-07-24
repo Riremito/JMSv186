@@ -369,7 +369,7 @@ public class DataCharacterData {
     // CharacterInfo
     public static byte[] Encode(MapleCharacter chr, long datamask) {
         ServerPacket data = new ServerPacket();
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Version.LessOrEqual(Region.KMS, 43) || Version.LessOrEqual(Region.JMS, 131)) {
             data.Encode2((short) datamask); // statmask
         } else {
             data.Encode8(datamask); // statmask
@@ -513,11 +513,14 @@ public class DataCharacterData {
             case KMS:
             case KMST: {
                 if (Version.PreBB()) {
-                    if ((datamask & 131072) > 0) {
-                        data.Encode4(chr.getMonsterBookCover());
-                    }
-                    if ((datamask & 65536) > 0) {
-                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    // not in KMS43
+                    if (Version.GreaterOrEqual(Region.KMS, 55)) {
+                        if ((datamask & 131072) > 0) {
+                            data.Encode4(chr.getMonsterBookCover());
+                        }
+                        if ((datamask & 65536) > 0) {
+                            data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                        }
                     }
                 }
                 if (Version.GreaterOrEqual(Region.KMS, 65)) {

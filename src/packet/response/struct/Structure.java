@@ -403,8 +403,12 @@ public class Structure {
             data.Encode4(ring.getItemId());
         }
 
-        data.Encode2(0);
-        // if not 0, 48 bytes
+        if (Version.LessOrEqual(Region.KMS, 41)) {
+            // nothing
+        } else {
+            data.Encode2(0);
+            // if not 0, 48 bytes
+        }
 
         return data.get().getBytes();
     }
