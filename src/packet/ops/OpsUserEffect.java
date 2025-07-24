@@ -104,7 +104,7 @@ public enum OpsUserEffect {
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 131)) {
+        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 147)) {
             reset();
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
