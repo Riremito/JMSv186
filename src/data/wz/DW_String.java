@@ -67,78 +67,73 @@ public class DW_String {
 
     public static MapleData getCash() {
         if (img_Cash == null) {
-            img_Cash = getWz().loadData("Cash.img");
-            if (img_Cash == null) {
-                img_Cash = getItem();
-            }
-            if (img_Cash != null) {
+            if (getItem() == null) {
+                img_Cash = getWz().loadData("Cash.img");
                 img_Cash = checkSubDirectory(img_Cash, "Cash");
+                return img_Cash;
             }
+            img_Cash = checkSubDirectory(getItem(), "Cash");
         }
         return img_Cash;
     }
 
     public static MapleData getConsume() {
         if (img_Consume == null) {
-            img_Consume = getWz().loadData("Consume.img");
-            if (img_Consume == null) {
-                img_Consume = getItem();
-            }
-            if (img_Consume != null) {
+            if (getItem() == null) {
+                img_Consume = getWz().loadData("Consume.img");
                 img_Consume = checkSubDirectory(img_Consume, "Con");
+                return img_Consume;
             }
+            img_Consume = checkSubDirectory(getItem(), "Con");
         }
         return img_Consume;
     }
 
     public static MapleData getEqp() {
         if (img_Eqp == null) {
-            img_Eqp = getWz().loadData("Eqp.img");
-            if (img_Eqp == null) {
-                img_Eqp = getItem();
-            }
-            if (img_Eqp != null) {
+            if (getItem() == null) {
+                img_Eqp = getWz().loadData("Eqp.img");
                 img_Eqp = checkSubDirectory(img_Eqp, "Eqp");
+                return img_Eqp;
             }
+            img_Eqp = checkSubDirectory(getItem(), "Eqp");
         }
         return img_Eqp;
     }
 
     public static MapleData getEtc() {
         if (img_Etc == null) {
-            img_Etc = getWz().loadData("Etc.img");
-            if (img_Etc == null) {
-                img_Etc = getItem();
-            }
-            if (img_Etc != null) {
+            if (getItem() == null) {
+                img_Etc = getWz().loadData("Etc.img");
                 img_Etc = checkSubDirectory(img_Etc, "Etc");
+                return img_Etc;
             }
+            img_Etc = checkSubDirectory(getItem(), "Etc");
         }
         return img_Etc;
     }
 
     public static MapleData getIns() {
         if (img_Ins == null) {
-            img_Ins = getWz().loadData("Ins.img");
-            if (img_Ins == null) {
-                img_Ins = getItem();
-            }
-            if (img_Ins != null) {
+            if (getItem() == null) {
+                img_Ins = getWz().loadData("Ins.img");
                 img_Ins = checkSubDirectory(img_Ins, "Ins");
+                return img_Ins;
             }
+            img_Ins = checkSubDirectory(getItem(), "Ins");
         }
         return img_Ins;
     }
 
     public static MapleData getPet() {
         if (img_Pet == null) {
-            img_Pet = getWz().loadData("Pet.img");
-            if (img_Pet == null) {
-                img_Pet = getItem();
-            }
-            if (img_Pet != null) {
+            // please do not use old PetDialog.img (Pet.img)
+            if (getItem() == null) {
+                img_Pet = getWz().loadData("Pet.img");
                 img_Pet = checkSubDirectory(img_Pet, "Pet");
+                return img_Pet;
             }
+            img_Pet = checkSubDirectory(getItem(), "Pet");
         }
         return img_Pet;
     }
