@@ -20,6 +20,8 @@ package packet.request;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import config.Region;
+import config.Version;
 import handling.channel.handler.InventoryHandler;
 import packet.ClientPacket;
 import server.maps.MapleMap;
@@ -44,8 +46,8 @@ public class ReqCDropPool {
         switch (header) {
             case CP_DropPickUpRequest: // CWvsContext::SendDropPickUpRequest
             {
-                byte unk1 = cp.Decode1();
-                int update_time = cp.Decode4();
+                byte unk1 = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
+                int update_time = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 short drop_x = cp.Decode2();
                 short drop_y = cp.Decode2();
                 int object_id = cp.Decode4();

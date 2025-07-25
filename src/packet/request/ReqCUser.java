@@ -320,7 +320,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserDropMoneyRequest: {
-                int time_stamp = cp.Decode4();
+                int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 int mesos = cp.Decode4();
                 PlayerHandler.DropMeso(mesos, chr);
                 return true;
@@ -823,7 +823,7 @@ public class ReqCUser {
     // CharInfoRequest
     public static final boolean OnCharacterInfoRequest(ClientPacket cp, MapleCharacter chr, MapleMap map) {
         // CCheatInspector::InspectExclRequestTime
-        final int update_time = cp.Decode4();
+        final int update_time = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         final int m_dwCharacterId = cp.Decode4();
         final MapleCharacter player = map.getCharacterById(m_dwCharacterId); // CUser::FindUser
 

@@ -117,7 +117,7 @@ public class ReqCMobPool {
     // MoveMonster
     public static boolean OnMove(ClientPacket cp, MapleCharacter chr, MapleMonster monster) {
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            byte unk = cp.Decode1();
+            byte unk1 = cp.Decode1();
         }
         short moveid = cp.Decode2();
         boolean bNextAttackPossible = cp.Decode1() > 0;
@@ -135,7 +135,7 @@ public class ReqCMobPool {
             cp.Decode4(); // 0
         }
 
-        cp.Decode1(); // 0
+        byte unk2 = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1(); // 0
 
         if (Version.GreaterOrEqual(Region.KMS, 55) || ServerConfig.JMS164orLater()) {
             cp.Decode4(); // 1

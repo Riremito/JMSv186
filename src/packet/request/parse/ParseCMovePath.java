@@ -80,6 +80,9 @@ public class ParseCMovePath {
                 return (1 + 2 * 4); // JMS186-194
             }
             case CP_MobMove: {
+                if (Version.LessOrEqual(Region.KMS, 31)) {
+                    return 1;
+                }
                 if (Version.GreaterOrEqual(Region.KMS, 114)) {
                     return 17;
                 }

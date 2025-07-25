@@ -117,7 +117,8 @@ public class PlayerHandler {
             int unk1 = cp.Decode4();
         }
 
-        chr.updateTick(cp.Decode4());
+        int timestamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        chr.updateTick(timestamp);
 
         final byte type = cp.Decode1(); //-4 is mist, -3 and -2 are map damage.
         if (Version.GreaterOrEqual(Region.KMS, 55) || ServerConfig.JMS164orLater()) {
