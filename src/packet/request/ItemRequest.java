@@ -29,7 +29,9 @@ import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MapleMount;
 import client.inventory.MaplePet;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import debug.Debug;
 import handling.channel.handler.PlayerHandler;
@@ -231,7 +233,7 @@ public class ItemRequest {
     }
 
     public static boolean OnStatChangeItemUse(ClientPacket cp, MapleCharacter chr) {
-        int timestamp = cp.Decode4();
+        int timestamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         short item_slot = cp.Decode2();
         int item_id = cp.Decode4();
         return UseItem(chr, item_slot, item_id, timestamp);
@@ -439,7 +441,7 @@ public class ItemRequest {
             // 拡声器
             case 5071000: {
                 String message = cp.DecodeStr();
-                byte ear = cp.Decode1();
+                byte ear = Version.LessOrEqual(Region.KMS, 31) ? 1 : cp.Decode1();
 
                 ArgBroadcastMsg bma = new ArgBroadcastMsg();
                 bma.bm = OpsBroadcastMsg.BM_SPEAKERWORLD;

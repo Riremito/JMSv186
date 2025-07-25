@@ -196,7 +196,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserChangeSlotPositionRequest: {
-                int timestamp = cp.Decode4();
+                int timestamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 byte slot_type = cp.Decode1();
                 short slot_from = cp.Decode2();
                 short slot_to = cp.Decode2();
@@ -264,7 +264,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserPortalScrollUseRequest: {
-                int time_stamp = cp.Decode4();
+                int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 short slot = cp.Decode2();
                 int item_id = cp.Decode4();
                 chr.updateTick(time_stamp);
@@ -274,7 +274,7 @@ public class ReqCUser {
             case CP_UserUpgradeItemUseRequest:
             case CP_UserHyperUpgradeItemUseRequest:
             case CP_UserItemOptionUpgradeItemUseRequest: {
-                int time_stamp = cp.Decode4();
+                int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 short scroll_slot = cp.Decode2();
                 short equip_slot = cp.Decode2();
                 chr.updateTick(time_stamp);
@@ -838,7 +838,7 @@ public class ReqCUser {
 
     public static boolean OnAbilityUpRequest(ClientPacket cp, MapleCharacter chr) {
 
-        int time_stamp = cp.Decode4();
+        int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         long flag = 0;
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
@@ -1159,7 +1159,7 @@ public class ReqCUser {
     }
 
     public static boolean OnSkillUpRequest(ClientPacket cp, MapleCharacter chr) {
-        int time_stamp = cp.Decode4();
+        int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int skill_id = cp.Decode4();
 
         chr.updateTick(time_stamp);

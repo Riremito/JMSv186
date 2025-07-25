@@ -5583,6 +5583,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void updateTick(int newTick) {
+        if (newTick == 0) {
+            return;
+        }
         anticheat.updateTick(newTick);
     }
 

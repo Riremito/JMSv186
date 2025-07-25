@@ -773,7 +773,11 @@ public class PlayerHandler {
     }
 
     public static final void ChangeMapSpecial(ClientPacket cp, final MapleClient c) {
-        cp.Decode1();
+        if (Version.LessOrEqual(Region.KMS, 31)) {
+            // nothing
+        } else {
+            cp.Decode1();
+        }
         String portal_name = cp.DecodeStr();
 
         final MaplePortal portal = c.getPlayer().getMap().getPortal(portal_name);

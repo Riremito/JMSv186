@@ -118,6 +118,11 @@ public class ResCStage {
                 }
             }
         }
+
+        if (Version.LessOrEqual(Region.KMS, 31)) {
+            return sp.get();
+        }
+
         if (Version.GreaterOrEqual(Region.KMS, 197)) {
             sp.Encode1(0);
         }

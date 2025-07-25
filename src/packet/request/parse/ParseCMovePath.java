@@ -69,6 +69,9 @@ public class ParseCMovePath {
         // ignore bytes : last Encode1 + unknown bytes (Post-BB)
         switch (cp.GetOpcode()) {
             case CP_UserMove: {
+                if (Version.LessOrEqual(Region.KMS, 31)) {
+                    return (1 + 9);
+                }
                 return (1 + 17); // KMS65, JMS164-302
             }
             case CP_DragonMove:

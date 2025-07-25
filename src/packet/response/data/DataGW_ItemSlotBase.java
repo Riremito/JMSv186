@@ -151,6 +151,12 @@ public class DataGW_ItemSlotBase {
                 data.Encode2(equip.getSpeed());
                 data.Encode2(equip.getJump());
                 data.EncodeStr(equip.getOwner());
+
+                if (Version.LessOrEqual(Region.KMS, 31)) {
+                    data.Encode2(0);
+                    break;
+                }
+
                 if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                     data.Encode4(equip.getFlag());
                 } else {
@@ -240,6 +246,11 @@ public class DataGW_ItemSlotBase {
                 data.Encode8(DC_Date.getMagicalExpirationDate()); // dateDead
                 data.Encode2(0); // nPetAttribute_CS
                 data.Encode2(item.getPet().getFlags()); // usPetSkill_CS
+
+                if (Version.LessOrEqual(Region.KMS, 31)) {
+                    break;
+                }
+
                 if (ServerConfig.JMS164orLater() || Region.IsVMS()) {
                     // 魔法の時間, デンデン専用 (残り時間)
                     data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
@@ -266,6 +277,10 @@ public class DataGW_ItemSlotBase {
                 data.Encode2(item.getQuantity());
                 data.EncodeStr(item.getOwner());
                 data.Encode2(item.getFlag());
+
+                if (Version.LessOrEqual(Region.KMS, 31)) {
+                    break;
+                }
 
                 int item_img_num = item.getItemId() / 10000;
 
