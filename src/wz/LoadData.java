@@ -18,7 +18,6 @@ import provider.MapleDataProviderFactory;
 import provider.MapleDataTool;
 import server.CashItemFactory;
 import server.ItemMakerFactory;
-import server.MapleCarnivalFactory;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
 import server.maps.MapleMapFactory;
@@ -54,10 +53,6 @@ public class LoadData {
 
         dlt = new DebugLoadTime("SkillFactory");
         SkillFactory.getSkill(99999999);
-        dlt.End();
-
-        dlt = new DebugLoadTime("MapleCarnivalFactory");
-        MapleCarnivalFactory.getInstance().initialize();
         dlt.End();
 
         dlt = new DebugLoadTime("initMapleMapFactory");
