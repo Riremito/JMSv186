@@ -98,8 +98,8 @@ public enum OpsUserEffect {
     }
 
     private static void reset() {
-        for (final OpsUserEffect o : OpsUserEffect.values()) {
-            o.set(-1);
+        for (final OpsUserEffect ops : OpsUserEffect.values()) {
+            ops.set(-1);
         }
     }
 

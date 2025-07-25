@@ -82,7 +82,18 @@ public enum OpsTrunk implements IPacketOps {
         return UNKNOWN;
     }
 
+    private static void reset() {
+        for (final OpsTrunk ops : OpsTrunk.values()) {
+            ops.set(-1);
+        }
+    }
+
     public static void init() {
+        if (Version.LessOrEqual(Region.KMS, 43)) {
+            reset();
+            TrunkRes_OpenTrunkDlg.set(19);
+            return;
+        }
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             TrunkReq_Load.set(0);
             TrunkReq_Save.set(1);
