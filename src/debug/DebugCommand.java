@@ -18,14 +18,17 @@
  */
 package debug;
 
+import client.ISkill;
 import client.MapleCharacter;
 import client.MapleClient;
+import client.SkillFactory;
 import client.inventory.Equip;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import config.property.Property_Packet;
 import constants.GameConstants;
 import data.client.DC_Exp;
+import data.wz.DW_Skill;
 import handling.channel.ChannelServer;
 import java.awt.Point;
 import packet.request.ReqCUser;
@@ -277,6 +280,14 @@ public class DebugCommand {
                 for (int i = chr.getLevel(); i < new_level; i++) {
                     chr.gainExp(DC_Exp.getExpNeededForLevel(i), true, true, true);
                 }
+                return true;
+            }
+            case "/bs": {
+                getBasicSkill(chr);
+                return true;
+            }
+            case "/rbs": {
+                resetBasicSkill(chr);
                 return true;
             }
             // Map移動関連
@@ -564,6 +575,45 @@ public class DebugCommand {
             remoteNPCTalk(c, npc_id, def_npc_id);
         }
 
+        return true;
+    }
+
+    // basic skill test
+    private static String debug_basic_job = "000.img";
+    private static int debug_basic_skill_ids[] = {
+        1003, // legendary spirit
+        1004, // riding
+        //1006, // jump down
+        1007, // item maker
+    };
+
+    private static boolean checkDebugBasicSkill(int skill_id) {
+        for (int id : debug_basic_skill_ids) {
+            if (id == skill_id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean getBasicSkill(MapleCharacter chr) {
+        for (int skill_id : DW_Skill.getBasicSkill(chr, debug_basic_job)) {
+            chr.DebugMsg("AddSkill : " + skill_id);
+            if (!checkDebugBasicSkill(skill_id)) {
+                continue;
+            }
+            ISkill skill = SkillFactory.getSkill(skill_id);
+            chr.changeSkillLevel(skill, skill.getMaxLevel(), skill.getMaxLevel());
+        }
+        return true;
+    }
+
+    private static boolean resetBasicSkill(MapleCharacter chr) {
+        for (int skill_id : DW_Skill.getBasicSkill(chr, debug_basic_job)) {
+            chr.DebugMsg("RemoveSkill : " + skill_id);
+            ISkill skill = SkillFactory.getSkill(skill_id);
+            chr.changeSkillLevel(skill, (byte) 0, (byte) 0);
+        }
         return true;
     }
 

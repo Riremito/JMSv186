@@ -18,7 +18,9 @@
  */
 package data.wz;
 
+import client.MapleCharacter;
 import debug.Debug;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import provider.MapleData;
@@ -45,6 +47,27 @@ public class DW_Skill {
         return getWz().getWzRoot();
     }
 
+    // test
+    public static ArrayList<Integer> getBasicSkill(MapleCharacter chr, String job_img_name) {
+        ArrayList<Integer> list = new ArrayList<Integer>();
+
+        MapleData md_job = getWzRoot().getData(job_img_name);
+        if (md_job == null) {
+            return list;
+        }
+        MapleData md_skill_dir = md_job.getChildByPath("skill");
+        if (md_skill_dir == null) {
+            return list;
+        }
+        for (MapleData md_skill : md_skill_dir.getChildren()) {
+            int skill_id = Integer.parseInt(md_skill.getName());
+            if (skill_id == 0) {
+                continue;
+            }
+            list.add(skill_id);
+        }
+        return list;
+    }
     // Monster Carnival
     private static Map<Integer, MapleCarnivalFactory.MCSkill> map_MCSkill = null;
     private static Map<Integer, MapleCarnivalFactory.MCSkill> map_MCGuardian = null;

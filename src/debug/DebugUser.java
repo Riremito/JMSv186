@@ -90,6 +90,8 @@ public class DebugUser {
         chr.setTama(500000);
         // 装備
         {
+            AddItem(chr, 1902000); // うり坊
+            AddItem(chr, 1912000); // 鞍
             AddItem(chr, 1302064); // メイプルグローリーソード
             AddItem(chr, 1402039); // メイプルソールロヘン
             AddItem(chr, 1312032); // メイプルスチールアックス
@@ -147,6 +149,7 @@ public class DebugUser {
             AddItem(chr, 2049400, 100); // 高級潜在能力覚醒の書
             AddItem(chr, 2060003, 100); // 弓専用の矢
             AddItem(chr, 2061003, 100); // 弩専用の矢
+            AddItem(chr, 2070006, 600); // 日の手裏剣
             AddItem(chr, 2070000, 600); // 水の手裏剣
             AddItem(chr, 2100000, 100); // 黒い包み
             AddItem(chr, 2120000, 100); // ペットのエサ
@@ -195,6 +198,7 @@ public class DebugUser {
         }
         // 設置
         {
+            AddItem(chr, 3010000); // リラックスチェア
             AddItem(chr, 3010047); // ドラゴン(アビス)
             AddItem(chr, 3011000); // 釣り用の椅子
             AddItem(chr, 3012000); // ハートラブチェア
@@ -214,6 +218,8 @@ public class DebugUser {
         {
             AddItem(chr, 4006000, 100); // 魔法の石
             AddItem(chr, 4006001, 100); // 召喚の石
+            AddItem(chr, 4080000);      // 五目並べセット
+            AddItem(chr, 4080100);      // 神経衰弱セット
         }
         // ポイントアイテム
         {
@@ -231,14 +237,19 @@ public class DebugUser {
             AddItem(chr, 5050100);      // AP初期化の書
             //AddItem(chr, 5051000);      // 
             AddItem(chr, 5051001);      // SP初期化の書
+            AddItem(chr, 5060000, 10);   // ネームメーカー
             AddItem(chr, 5062000, 100); // ミラクルキューブ
             AddItem(chr, 5062001, 100); // ハイパーミラクルキューブ
             AddItem(chr, 5062002, 100); // マスターミラクルキューブ
             AddItem(chr, 5062003, 100); // ハイパーマスターミラクルキューブ
             AddItem(chr, 5071000, 100); // 拡声器
+            AddItem(chr, 5075000, 10);  // メッセージ送信機
+            AddItem(chr, 5075003, 10);  // メッセージ拡声器
             AddItem(chr, 5076000, 100); // アイテム拡声器
             AddItem(chr, 5140000);      // 営業許可証
+            AddItem(chr, 5200002, 10);  // 金のメル袋
             AddItem(chr, 5220000, 100); // ガシャポンチケット
+            AddItem(chr, 5230000, 10);  // 不思議なフクロウ
             AddItem(chr, 5370000);      // 黒板
             AddItem(chr, 5570000, 100); // ビシャスのハンマー
             AddItem(chr, 5610000, 100); // ベガの呪文書(10%)
