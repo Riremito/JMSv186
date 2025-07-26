@@ -498,7 +498,7 @@ public class ReqCUser {
         attack.X = chr.getPosition().x;
         attack.Y = chr.getPosition().y;
 
-        attack.FieldKey = cp.Decode1();
+        attack.FieldKey = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
 
         // DR_Check
         if (Version.LessOrEqual(Region.KMS, 114)) {
@@ -569,7 +569,7 @@ public class ReqCUser {
         }
 
         // v95 4 bytes crc
-        attack.nAttackActionType = cp.Decode1();
+        attack.nAttackActionType = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         attack.nAttackSpeed = cp.Decode1();
         attack.tAttackTime = cp.Decode4();
 
@@ -1267,7 +1267,7 @@ public class ReqCUser {
     }
 
     public static boolean OnSkillUseRequest(ClientPacket cp, MapleCharacter chr) {
-        int time_stamp = cp.Decode4();
+        int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int skill_id = cp.Decode4();
         byte skill_level = cp.Decode1();
 

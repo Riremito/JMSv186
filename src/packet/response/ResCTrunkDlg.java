@@ -95,11 +95,15 @@ public class ResCTrunkDlg {
     // getStorage
     public static MaplePacket Open(int npcId, byte slots, Collection<IItem> items, int meso) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
-        sp.Encode1(OpsTrunk.TrunkRes_OpenTrunkDlg.get());
+        if (Version.LessOrEqual(Region.KMS, 31)) {
+            // may be other operation uses different header value
+        } else {
+            sp.Encode1(OpsTrunk.TrunkRes_OpenTrunkDlg.get());
+        }
         sp.Encode4(npcId);
         sp.Encode1(slots);
 
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Version.LessOrEqual(Region.KMS, 31) || Version.LessOrEqual(Region.JMS, 131)) {
             sp.Encode2(126);
         } else {
             sp.Encode8(126);
