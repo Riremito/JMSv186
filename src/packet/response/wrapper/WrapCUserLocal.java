@@ -18,10 +18,13 @@
  */
 package packet.response.wrapper;
 
+import handling.channel.handler.ItemMakerHandler;
+import packet.ServerPacket;
 import server.network.MaplePacket;
 import packet.ops.OpsUserEffect;
 import packet.ops.arg.ArgUserEffect;
 import packet.response.ResCUserLocal;
+import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -47,6 +50,13 @@ public class WrapCUserLocal {
         arg.ops = ops;
         arg.skill_id = skill_id;
         arg.skill_on = skill_on;
+        return ResCUserLocal.EffectLocal(arg);
+    }
+
+    public static final MaplePacket EffectLocal(OpsUserEffect ops, ItemMakerHandler.ItemMakerResult imr) {
+        ArgUserEffect arg = new ArgUserEffect();
+        arg.ops = ops;
+        arg.imr = imr;
         return ResCUserLocal.EffectLocal(arg);
     }
 

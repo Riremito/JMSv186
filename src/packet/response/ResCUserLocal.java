@@ -95,6 +95,9 @@ public class ResCUserLocal {
                 data.Encode4(arg.skill_id);
                 break;
             }
+            case UserEffect_ItemMaker: {
+                data.Encode4(arg.imr.get());
+            }
             default: {
                 break;
             }
@@ -155,14 +158,6 @@ public class ResCUserLocal {
         mplew.write(4);
         mplew.write(0);
         mplew.writeInt(index); // Pet Index
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket ItemMakerResult(boolean is_success) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectLocal.get());
-        mplew.write(OpsUserEffect.UserEffect_ItemMaker.get());
-        mplew.writeInt(is_success ? 0 : 1);
         return mplew.getPacket();
     }
 

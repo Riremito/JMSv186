@@ -19,6 +19,7 @@
 package packet.ops.arg;
 
 import client.MapleCharacter;
+import handling.channel.handler.ItemMakerHandler;
 import packet.ops.OpsUserEffect;
 
 /**
@@ -33,4 +34,5 @@ public class ArgUserEffect {
     public int item_quantity = 0;
     public int skill_id = 0;
     public boolean skill_on = true;
+    public ItemMakerHandler.ItemMakerResult imr;
 }

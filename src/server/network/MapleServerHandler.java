@@ -379,6 +379,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_UserQuestRequest:
             case CP_UserCalcDamageStatSetRequest:
             case CP_UserMacroSysDataModified:
+            case CP_UserItemMakeRequest:
             case CP_UserUseGachaponBoxRequest:
             case CP_UserRepairDurabilityAll:
             case CP_UserRepairDurability:
@@ -461,10 +462,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             case CP_MemoRequest: {
                 // c
                 PlayersHandler.Note(p, c.getPlayer());
-                return true;
-            }
-            case CP_UserItemMakeRequest: {
-                ItemMakerHandler.ItemMaker(p, c);
                 return true;
             }
             case USE_TREASUER_CHEST: {

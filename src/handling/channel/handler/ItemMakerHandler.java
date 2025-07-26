@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package handling.channel.handler;
 
+import client.MapleCharacter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -30,8 +31,11 @@ import client.SkillFactory;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import constants.GameConstants;
-import packet.response.ResCUserLocal;
+import debug.Debug;
+import packet.ClientPacket;
+import packet.ops.OpsUserEffect;
 import packet.response.ResCUserRemote;
+import packet.response.wrapper.WrapCUserLocal;
 import server.ItemMakerFactory;
 import server.ItemMakerFactory.GemCreateEntry;
 import server.ItemMakerFactory.ItemMakerCreateEntry;
@@ -39,96 +43,193 @@ import server.Randomizer;
 import server.MapleItemInformationProvider;
 import server.MapleInventoryManipulator;
 import tools.Pair;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 public class ItemMakerHandler {
 
-    public static final void ItemMaker(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        //System.out.println(slea.toString()); //change?
-        final int makerType = slea.readInt();
+    enum RecipeClass {
+        RECIPE_CLASS_START(0),
+        RECIPE_CLASS_NORMAL(1),
+        RECIPE_CLASS_HIDDEN(2),
+        RECIPE_CLASS_MONSTER_CRYSTAL(3),
+        RECIPE_CLASS_EQUIP_DISASSEMBLE(4),
+        RECIPE_CLASS_END(5),
+        UNKNOWN;
 
-        switch (makerType) {
-            case 1: { // Gem
-                final int toCreate = slea.readInt();
+        private int value;
+
+        RecipeClass(int value) {
+            this.value = value;
+        }
+
+        RecipeClass() {
+            this.value = -1;
+        }
+
+        public int get() {
+            return this.value;
+        }
+
+        public void set(int value) {
+            this.value = value;
+        }
+
+        public static RecipeClass find(int value) {
+            for (final RecipeClass ops : RecipeClass.values()) {
+                if (ops.get() == value) {
+                    return ops;
+                }
+            }
+            return UNKNOWN;
+        }
+    }
+
+    public enum ItemMakerResult {
+        ITEM_MAKER_RESULT_SUCCESS(0),
+        ITEM_MAKER_RESULT_DESTROYED(1),
+        ITEM_MAKER_ERR_UNKNOWN(2),
+        ITEM_MAKER_ERR_EMPTYSLOT(3),
+        ITEM_MAKER_ERR_EMPTYSLOT_EQUIP(4),
+        ITEM_MAKER_ERR_EMPTYSLOT_COMSUME(5),
+        ITEM_MAKER_ERR_EMPTYSLOT_INSTALL(6),
+        ITEM_MAKER_ERR_EMPTYSLOT_ETC(7),
+        UNKNOWN;
+
+        private int value;
+
+        ItemMakerResult(int value) {
+            this.value = value;
+        }
+
+        ItemMakerResult() {
+            value = -1;
+        }
+
+        public int get() {
+            return this.value;
+        }
+
+        public void set(int value) {
+            this.value = value;
+        }
+
+        public static ItemMakerResult find(int value) {
+            for (final ItemMakerResult ops : ItemMakerResult.values()) {
+                if (ops.get() == value) {
+                    return ops;
+                }
+            }
+            return UNKNOWN;
+        }
+    }
+
+    public static boolean OnItemMakeRequest(ClientPacket cp, MapleCharacter chr) {
+        MapleClient c = chr.getClient();
+        int type = cp.Decode4();
+
+        switch (RecipeClass.find(type)) {
+            case RECIPE_CLASS_NORMAL: {
+                int toCreate = cp.Decode4();
 
                 if (GameConstants.isGem(toCreate)) {
                     final GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(toCreate);
                     if (gem == null) {
-                        return;
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 1");
+                        return false;
                     }
                     if (!hasSkill(c, gem.getReqSkillLevel())) {
-                        return; // H4x
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 2");
+                        return false;
                     }
-                    if (c.getPlayer().getMeso() < gem.getCost()) {
-                        return; // H4x
+                    if (chr.getMeso() < gem.getCost()) {
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 3");
+                        return false;
                     }
                     final int randGemGiven = getRandomGem(gem.getRandomReward());
 
                     if (c.getPlayer().getInventory(GameConstants.getInventoryType(randGemGiven)).isFull()) {
-                        return; // We'll do handling for this later
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 4");
+                        return false;
                     }
                     final int taken = checkRequiredNRemove(c, gem.getReqRecipes());
                     if (taken == 0) {
-                        return; // We'll do handling for this later
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 5");
+                        return false;
                     }
-                    c.getPlayer().gainMeso(-gem.getCost(), false);
+
+                    chr.gainMeso(-gem.getCost(), false);
                     MapleInventoryManipulator.addById(c, randGemGiven, (byte) (taken == randGemGiven ? 9 : 1)); // Gem is always 1
 
-                    c.getSession().write(ResCUserLocal.ItemMakerResult(true));
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), ResCUserRemote.ItemMakerResultTo(c.getPlayer(), true), false);
-                } else if (GameConstants.isOtherGem(toCreate)) {
-                    //non-gems that are gems
-                    //stim and numEnchanter always 0
+                    chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemMaker, ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS));
+                    chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
+                    return true;
+                }
+                if (GameConstants.isOtherGem(toCreate)) {
                     final GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(toCreate);
                     if (gem == null) {
-                        return;
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 6");
+                        return false;
                     }
                     if (!hasSkill(c, gem.getReqSkillLevel())) {
-                        return; // H4x
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 7");
+                        return false;
                     }
-                    if (c.getPlayer().getMeso() < gem.getCost()) {
-                        return; // H4x
+                    if (chr.getMeso() < gem.getCost()) {
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 8");
+                        return false;
                     }
 
-                    if (c.getPlayer().getInventory(GameConstants.getInventoryType(toCreate)).isFull()) {
-                        return; // We'll do handling for this later
+                    if (chr.getInventory(GameConstants.getInventoryType(toCreate)).isFull()) {
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 9");
+                        return false;
                     }
                     if (checkRequiredNRemove(c, gem.getReqRecipes()) == 0) {
-                        return; // We'll do handling for this later
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 10");
+                        return false;
                     }
-                    c.getPlayer().gainMeso(-gem.getCost(), false);
+
+                    chr.gainMeso(-gem.getCost(), false);
+
                     if (GameConstants.getInventoryType(toCreate) == MapleInventoryType.EQUIP) {
                         MapleInventoryManipulator.addbyItem(c, MapleItemInformationProvider.getInstance().getEquipById(toCreate));
                     } else {
                         MapleInventoryManipulator.addById(c, toCreate, (byte) 1); // Gem is always 1
                     }
 
-                    c.getSession().write(ResCUserLocal.ItemMakerResult(true));
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), ResCUserRemote.ItemMakerResultTo(c.getPlayer(), true), false);
-                } else {
-                    final boolean stimulator = slea.readByte() > 0;
-                    final int numEnchanter = slea.readInt();
+                    chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemMaker, ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS));
+                    chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
+                    return true;
+                }
+                {
+                    boolean stimulator = cp.Decode1() > 0;
+                    int numEnchanter = cp.Decode4();
 
                     final ItemMakerCreateEntry create = ItemMakerFactory.getInstance().getCreateInfo(toCreate);
                     if (create == null) {
-                        return;
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 11");
+                        return false;
                     }
                     if (numEnchanter > create.getTUC()) {
-                        return; // h4x
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 12");
+                        return false;
                     }
                     if (!hasSkill(c, create.getReqSkillLevel())) {
-                        return; // H4x
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 13");
+                        return false;
                     }
-                    if (c.getPlayer().getMeso() < create.getCost()) {
-                        return; // H4x
+                    if (chr.getMeso() < create.getCost()) {
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 14");
+                        return false;
                     }
-                    if (c.getPlayer().getInventory(GameConstants.getInventoryType(toCreate)).isFull()) {
-                        return; // We'll do handling for this later
+                    if (chr.getInventory(GameConstants.getInventoryType(toCreate)).isFull()) {
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 15");
+                        return false;
                     }
                     if (checkRequiredNRemove(c, create.getReqItems()) == 0) {
-                        return; // We'll do handling for this later
+                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 16");
+                        return false;
                     }
-                    c.getPlayer().gainMeso(-create.getCost(), false);
+
+                    chr.gainMeso(-create.getCost(), false);
 
                     final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                     final Equip toGive = (Equip) ii.getEquipById(toCreate);
@@ -139,7 +240,7 @@ public class ItemMakerHandler {
                             MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, create.getStimulator(), 1, false, false);
                         }
                         for (int i = 0; i < numEnchanter; i++) {
-                            final int enchant = slea.readInt();
+                            int enchant = cp.Decode4();
                             if (c.getPlayer().haveItem(enchant, 1, false, true)) {
                                 final Map<String, Byte> stats = ii.getItemMakeStats(enchant);
                                 if (stats != null) {
@@ -149,44 +250,58 @@ public class ItemMakerHandler {
                             }
                         }
                     }
+
                     MapleInventoryManipulator.addbyItem(c, toGive);
-                    c.getSession().write(ResCUserLocal.ItemMakerResult(true));
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), ResCUserRemote.ItemMakerResultTo(c.getPlayer(), true), false);
+                    chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemMaker, ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS));
+                    chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
                 }
-                break;
+                return true;
             }
-            case 3: { // Making Crystals
-                final int etc = slea.readInt();
-                if (c.getPlayer().haveItem(etc, 100, false, true)) {
-                    MapleInventoryManipulator.addById(c, getCreateCrystal(etc), (short) 1);
-                    MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, etc, 100, false, false);
+            case RECIPE_CLASS_MONSTER_CRYSTAL: {
+                int etc = cp.Decode4();
 
-                    c.getSession().write(ResCUserLocal.ItemMakerResult(true));
-                    c.getPlayer().getMap().broadcastMessage(c.getPlayer(), ResCUserRemote.ItemMakerResultTo(c.getPlayer(), true), false);
+                if (!chr.haveItem(etc, 100, false, true)) {
+                    Debug.ErrorLog("RECIPE_CLASS_MONSTER_CRYSTAL");
+                    return false;
                 }
-                break;
-            }
-            case 4: { // Disassembling EQ.
-                final int itemId = slea.readInt();
-                c.getPlayer().updateTick(slea.readInt());
-                final byte slot = (byte) slea.readInt();
+                MapleInventoryManipulator.addById(c, getCreateCrystal(etc), (short) 1);
+                MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, etc, 100, false, false);
 
-                final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(slot);
+                chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemMaker, ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS));
+                chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
+
+                return true;
+            }
+            case RECIPE_CLASS_EQUIP_DISASSEMBLE: {
+                int itemId = cp.Decode4();
+                int unk = cp.Decode4();
+                int slot = cp.Decode4();
+
+                final IItem toUse = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) slot);
                 if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1) {
-                    return;
+                    Debug.ErrorLog("RECIPE_CLASS_EQUIP_DISASSEMBLE");
+                    return false;
                 }
+
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
                 if (!ii.isDropRestricted(itemId) && !ii.isAccountShared(itemId)) {
                     final int[] toGive = getCrystal(itemId, ii.getReqLevel(itemId));
                     MapleInventoryManipulator.addById(c, toGive[0], (byte) toGive[1]);
-                    MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.EQUIP, slot, (byte) 1, false);
+                    MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.EQUIP, (short) slot, (byte) 1, false);
                 }
-                c.getSession().write(ResCUserLocal.ItemMakerResult(true));
-                c.getPlayer().getMap().broadcastMessage(c.getPlayer(), ResCUserRemote.ItemMakerResultTo(c.getPlayer(), true), false);
+
+                chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemMaker, ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS));
+                chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
+                return true;
+            }
+            default: {
+                Debug.ErrorLog("OnItemMakeRequest : not coded.");
                 break;
             }
         }
+
+        return false;
     }
 
     private static final int getCreateCrystal(final int etc) {

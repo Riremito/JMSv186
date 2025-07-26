@@ -598,10 +598,10 @@ public class DebugCommand {
 
     private static boolean getBasicSkill(MapleCharacter chr) {
         for (int skill_id : DW_Skill.getBasicSkill(chr, debug_basic_job)) {
-            chr.DebugMsg("AddSkill : " + skill_id);
             if (!checkDebugBasicSkill(skill_id)) {
                 continue;
             }
+            chr.DebugMsg("AddSkill : " + skill_id);
             ISkill skill = SkillFactory.getSkill(skill_id);
             chr.changeSkillLevel(skill, skill.getMaxLevel(), skill.getMaxLevel());
         }

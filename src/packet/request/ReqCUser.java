@@ -19,6 +19,7 @@ import handling.channel.handler.AttackInfo;
 import handling.channel.handler.ChatHandler;
 import handling.channel.handler.HiredMerchantHandler;
 import handling.channel.handler.InventoryHandler;
+import handling.channel.handler.ItemMakerHandler;
 import handling.channel.handler.NPCHandler;
 import handling.channel.handler.PlayerHandler;
 import handling.channel.handler.PlayerInteractionHandler;
@@ -365,6 +366,10 @@ public class ReqCUser {
             }
             case CP_UserMacroSysDataModified: {
                 return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
+            }
+            case CP_UserItemMakeRequest: {
+                ItemMakerHandler.OnItemMakeRequest(cp, chr);
+                return true;
             }
             case CP_UserUseGachaponBoxRequest: {
                 short slot = cp.Decode2();
