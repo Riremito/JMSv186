@@ -47,14 +47,14 @@ public class NPCScriptManager extends AbstractScriptManager {
             if (!cms.containsKey(c)) {
                 Invocable iv = getInvocable("npc/" + npc + ".js", c, true);
                 if (iv == null) {
-                    c.getPlayer().Info("NPC Script = " + npc + ", MapID = " + c.getPlayer().getMapId());
+                    c.getPlayer().DebugMsg("NPC Script = " + npc + ", MapID = " + c.getPlayer().getMapId());
                     iv = getInvocable("npc/notcoded.js", c, true); //safe disposal
                     if (iv == null) {
                         dispose(c);
                         return;
                     }
                 } else {
-                    c.getPlayer().Info("NPC Script = " + npc + ", MapID = " + c.getPlayer().getMapId());
+                    c.getPlayer().DebugMsg("NPC Script = " + npc + ", MapID = " + c.getPlayer().getMapId());
                 }
                 final ScriptEngine scriptengine = (ScriptEngine) iv;
                 final NPCConversationManager cm = new NPCConversationManager(c, npc, -1, (byte) -1, iv);
@@ -89,14 +89,14 @@ public class NPCScriptManager extends AbstractScriptManager {
             if (!cms.containsKey(c)) {
                 Invocable iv = getInvocable("npc/" + script_name + ".js", c, true);
                 if (iv == null) {
-                    c.getPlayer().Info("NPC Script = " + script_name + ", MapID = " + c.getPlayer().getMapId());
+                    c.getPlayer().DebugMsg("NPC Script = " + script_name + ", MapID = " + c.getPlayer().getMapId());
                     iv = getInvocable("npc/notcoded.js", c, true); //safe disposal
                     if (iv == null) {
                         dispose(c);
                         return;
                     }
                 } else {
-                    c.getPlayer().Info("NPC Script = " + script_name + ", MapID = " + c.getPlayer().getMapId());
+                    c.getPlayer().DebugMsg("NPC Script = " + script_name + ", MapID = " + c.getPlayer().getMapId());
                 }
                 final ScriptEngine scriptengine = (ScriptEngine) iv;
                 final NPCConversationManager cm = new NPCConversationManager(c, npc_icon, -1, (byte) -1, iv, script_name);

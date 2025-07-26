@@ -4729,13 +4729,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         SendPacket(ResWrapper.BroadCastMsgEvent(text));
     }
 
-    public void Info(String text) {
-        if (GetInformation()) {
-            client.getSession().write(ResWrapper.BroadCastMsgEvent(text));
-        }
-    }
-
     public void Notice(String text) {
+        Debug.DebugLog("Notice");
         client.getSession().write(ResWrapper.BroadCastMsgEvent(text));
     }
 

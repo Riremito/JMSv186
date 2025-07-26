@@ -761,11 +761,11 @@ public class PlayerInteractionHandler {
 
         final HiredMerchant merchant = (HiredMerchant) c.getPlayer().getRemoteStore();
         if (merchant == null) {
-            c.getPlayer().Info("merchant == null");
+            c.getPlayer().DebugMsg("merchant == null");
             return false;
         }
 
-        c.getPlayer().Info("RemoteStore");
+        c.getPlayer().DebugMsg("RemoteStore");
 
         merchant.setOpen(false);
 

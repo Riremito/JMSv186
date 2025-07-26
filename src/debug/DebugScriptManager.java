@@ -72,7 +72,7 @@ public class DebugScriptManager {
         // スクリプトの実行
         DebugScript script = ((Invocable) debug).getInterface(DebugScript.class);
 
-        c.getPlayer().Info("デバッグ中...");
+        c.getPlayer().DebugMsg("デバッグ中...");
         script.debug(c);
 
         return true;

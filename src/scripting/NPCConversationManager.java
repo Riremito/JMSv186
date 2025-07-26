@@ -476,7 +476,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void openShop(int id) {
-        c.getPlayer().Info("ShopID = " + id + ", MapID = " + c.getPlayer().getMapId());
+        c.getPlayer().DebugMsg("ShopID = " + id + ", MapID = " + c.getPlayer().getMapId());
         MapleShopFactory.getInstance().getShop(id).sendShop(c);
     }
 
@@ -490,7 +490,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void OpenCustomShop(MapleShop shop) {
-        c.getPlayer().Info("Custom Shop, MapID = " + c.getPlayer().getMapId());
+        c.getPlayer().DebugMsg("Custom Shop, MapID = " + c.getPlayer().getMapId());
         shop.sendShop(c);
     }
 

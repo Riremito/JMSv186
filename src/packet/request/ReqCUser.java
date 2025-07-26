@@ -58,7 +58,7 @@ public class ReqCUser {
                     Debug.ErrorLog("chage map not coded yet");
                 }
                 if (c.getPlayer().GetInformation()) {
-                    c.getPlayer().Info("MapID = " + c.getPlayer().getMapId());
+                    c.getPlayer().DebugMsg("MapID = " + c.getPlayer().getMapId());
                 }
                 return true;
             }

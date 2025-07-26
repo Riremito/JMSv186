@@ -89,7 +89,7 @@ public class InventoryHandler {
         final short dst = slot_to;
 
         if (dst != 0) {
-            c.getPlayer().Info("ItemMove = " + src + " -> " + dst + " (" + quantity + ")");
+            c.getPlayer().DebugMsg("ItemMove = " + src + " -> " + dst + " (" + quantity + ")");
         }
 
         if (src < 0 && dst > 0) {

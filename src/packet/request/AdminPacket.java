@@ -234,13 +234,13 @@ public class AdminPacket {
 
     private static boolean ChangeJob(MapleCharacter chr, int jobid) {
         if (!LoadData.IsValidJobID(jobid)) {
-            chr.Notice("Invalid JobID");
-            chr.Notice("Vaild JobID: " + LoadData.GetJobIDs());
+            chr.DebugMsg("Invalid JobID");
+            chr.DebugMsg("Vaild JobID: " + LoadData.GetJobIDs());
             return false;
         }
 
         chr.changeJob(jobid);
-        chr.Notice("JobID -> " + jobid);
+        chr.DebugMsg("JobID -> " + jobid);
         return true;
     }
 
@@ -287,7 +287,7 @@ public class AdminPacket {
 
     private static boolean CreateNPC(MapleCharacter chr, int npcid, int x, int y) {
         if (!LoadData.IsValidNPCID(npcid)) {
-            chr.Notice("Invalid NPCID");
+            chr.DebugMsg("Invalid NPCID");
             return false;
         }
 

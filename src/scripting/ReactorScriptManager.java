@@ -51,7 +51,7 @@ public class ReactorScriptManager extends AbstractScriptManager {
         try {
             final Invocable iv = getInvocable("reactor/" + reactor.getReactorId() + ".js", c);
             
-            c.getPlayer().Info("Reactor Script = " + reactor.getReactorId() + ", MapID = " + c.getPlayer().getMapId());
+            c.getPlayer().DebugMsg("Reactor Script = " + reactor.getReactorId() + ", MapID = " + c.getPlayer().getMapId());
 
             if (iv == null) {
                 return;
