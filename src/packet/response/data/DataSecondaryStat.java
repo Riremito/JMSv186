@@ -35,6 +35,14 @@ import tools.Pair;
 public class DataSecondaryStat {
 
     // SecondaryStat::DecodeForRemote
+    public static byte[] EncodeForRemote_JMS147(MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+        data.EncodeZeroBytes(16);
+        data.Encode1(0);
+        data.Encode1(0);
+        return data.get().getBytes();
+    }
+
     public static byte[] EncodeForRemote_JMS302(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
         data.EncodeZeroBytes(32);

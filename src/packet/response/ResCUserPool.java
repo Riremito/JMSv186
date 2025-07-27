@@ -37,7 +37,9 @@ public class ResCUserPool {
 
         sp.Encode4(chr.getId());
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Version.Equal(Region.JMS, 147)) {
+            sp.EncodeBuffer(DataCUserRemote.Init_JMS147(chr));
+        } else if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.EncodeBuffer(DataCUserRemote.Init_JMS302(chr));
         } else {
             sp.EncodeBuffer(DataCUserRemote.Init(chr));

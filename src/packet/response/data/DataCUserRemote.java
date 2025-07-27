@@ -241,6 +241,82 @@ public class DataCUserRemote {
         return data.get().getBytes();
     }
 
+    public static byte[] Init_JMS147(MapleCharacter chr) {
+        MapleGuild guild = null;
+        IMaplePlayerShop shop = chr.getPlayerShop();
+        if (0 < chr.getGuildId()) {
+            guild = World.Guild.getGuild(chr.getGuildId());
+        }
+        ServerPacket data = new ServerPacket();
+        // CUserRemote::Init
+        data.EncodeStr(chr.getName());
+        data.EncodeStr((guild != null) ? guild.getName() : "");
+        data.Encode2((guild != null) ? guild.getLogoBG() : 0);
+        data.Encode1((guild != null) ? guild.getLogoBGColor() : 0);
+        data.Encode2((guild != null) ? guild.getLogo() : 0);
+        data.Encode1((guild != null) ? guild.getLogoColor() : 0);
+        data.EncodeBuffer(DataSecondaryStat.EncodeForRemote_JMS147(chr));
+        data.Encode2(0);
+        data.EncodeBuffer(DataAvatarLook.Encode(chr));
+        data.Encode4(0); // m_dwDriverID
+        data.Encode4(chr.getItemEffect());
+        data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
+        data.Encode2(chr.getPosition().x);
+        data.Encode2(chr.getPosition().y);
+        data.Encode1(chr.getStance()); // m_nMoveAction
+        data.Encode2(chr.getFH());
+        for (int i = 0; i < 4; i++) {
+            MaplePet pet = chr.getPet(i);
+            data.Encode1(pet != null ? 1 : 0); // 3 -> null
+            if (pet == null) {
+                break;
+            }
+            data.EncodeBuffer(DataCPet.Init(pet));
+        }
+        data.Encode4(chr.getMount().getLevel()); // m_nTamingMobLevel
+        data.Encode4(chr.getMount().getExp()); // m_nTamingMobExp
+        data.Encode4(chr.getMount().getFatigue()); // m_nTamingMobFatigue
+        data.Encode1((shop != null) ? shop.getGameType() : 0); // m_nMiniRoomType
+        if (shop != null && shop.getGameType() != 0) {
+            // AnnounceBox & Interaction : TODO Remove
+            data.Encode4(((AbstractPlayerStore) shop).getObjectId()); // m_dwMiniRoomSN
+            data.EncodeStr(shop.getDescription()); // m_sMiniRoomTitle
+            data.Encode1((shop.getPassword().length() != 0) ? 1 : 0); // m_bPrivate
+            data.Encode1(shop.getItemId() % 10); // m_nGameKind
+            data.Encode1(shop.getSize()); // m_nCurUsers
+            data.Encode1(shop.getMaxSize()); // m_nMaxUsers
+            data.Encode1(shop.isOpen() ? 0 : 1); // m_bGameOn
+        }
+        boolean is_adboard = (chr.getChalkboard() != null) && (0 < chr.getChalkboard().length());
+        data.Encode1(is_adboard ? 1 : 0); // m_bADBoardRemote
+        if (is_adboard) {
+            data.EncodeStr(chr.getChalkboard());
+        }
+
+        boolean is_couple = false;
+        data.Encode1(is_couple ? 1 : 0);
+        if (is_couple) {
+            data.Encode8(0);
+            data.Encode8(0);
+            data.Encode4(0);
+        }
+        boolean is_friend = false;
+        data.Encode1(is_friend ? 1 : 0);
+        if (is_friend) {
+            data.Encode8(0);
+            data.Encode8(0);
+            data.Encode4(0);
+        }
+        data.Encode1((0 < chr.getMarriageId()) ? 1 : 0);
+        if (0 < chr.getMarriageId()) {
+            data.Encode4(chr.getId()); // m_dwMarriageCharacterID
+            data.Encode4(chr.getMarriageId()); // m_dwMarriagePairCharacterID
+            data.Encode4(chr.getMarriageItemId()); // m_nWeddingRingID
+        }
+        data.Encode1(chr.getEffectMask()); // m_nDelayedEffectFlag
+        return data.get().getBytes();
+    }
+
     public static byte[] Init_JMS302(MapleCharacter chr) {
         MapleGuild guild = null;
         IMaplePlayerShop shop = chr.getPlayerShop();

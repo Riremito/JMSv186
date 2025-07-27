@@ -55,6 +55,37 @@ public class ResCUserRemote {
     // CUserRemote::OnAttack
     public static MaplePacket UserAttack(AttackInfo attack) {
         ServerPacket sp = new ServerPacket(attack.GetHeader());
+
+        if (Version.LessOrEqual(Region.JMS, 147)) {
+            sp.Encode4(attack.CharacterId);
+            sp.Encode1(attack.HitKey);
+            sp.Encode1(attack.SkillLevel); // nPassiveSLV
+            if (0 < attack.nSkillID) {
+                sp.Encode4(attack.nSkillID); // nSkillID
+            }
+            sp.Encode1(attack.BuffKey); // bSerialAttack
+            sp.Encode1(attack.AttackActionKey);
+            sp.Encode1(attack.nAttackActionType);
+            sp.Encode1(attack.nAttackSpeed); // nActionSpeed
+            sp.Encode4(attack.nBulletItemID); // nBulletItemID
+            for (AttackPair oned : attack.allDamage) {
+                if (oned.attack != null) {
+                    sp.Encode4(oned.objectid);
+                    sp.Encode1(7);
+                    if (attack.IsMesoExplosion()) {
+                        sp.Encode1(oned.attack.size());
+                    }
+                    for (Pair<Integer, Boolean> eachd : oned.attack) {
+                        sp.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
+                    }
+                }
+            }
+            if (attack.IsQuantumExplosion()) {
+                sp.Encode4(attack.tKeyDown);
+            }
+            return sp.get();
+        }
+
         sp.Encode4(attack.CharacterId);
         sp.Encode1(attack.HitKey);
         if (ServerConfig.JMS164orLater()) {
@@ -67,7 +98,7 @@ public class ResCUserRemote {
         if (ServerConfig.JMS164orLater()) {
             sp.Encode1(attack.BuffKey); // bSerialAttack
         }
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Version.LessOrEqual(Region.JMS, 147)) {
             sp.Encode1(attack.AttackActionKey);
         } else {
             sp.Encode2(attack.AttackActionKey);

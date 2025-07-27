@@ -116,9 +116,7 @@ public class ReqCMobPool {
 
     // MoveMonster
     public static boolean OnMove(ClientPacket cp, MapleCharacter chr, MapleMonster monster) {
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            byte unk1 = cp.Decode1();
-        }
+        byte unk1 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
         short moveid = cp.Decode2();
         boolean bNextAttackPossible = cp.Decode1() > 0;
 
@@ -136,10 +134,7 @@ public class ReqCMobPool {
         }
 
         byte unk2 = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1(); // 0
-
-        if (Version.GreaterOrEqual(Region.KMS, 55) || ServerConfig.JMS164orLater()) {
-            cp.Decode4(); // 1
-        }
+        int unk3 = Version.LessOrEqual(Region.KMS, 43) ? 1 : cp.Decode4(); // 1
 
         if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater()) {
             int ffddcc_1 = cp.Decode4(); // 0x00FFDDCC
@@ -151,9 +146,7 @@ public class ReqCMobPool {
             }
         }
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            byte unk = cp.Decode1();
-        }
+        byte unk4 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
 
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
