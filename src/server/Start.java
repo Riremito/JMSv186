@@ -50,7 +50,7 @@ public class Start {
         // update content flags
         Debug.InfoLog("[Content]");
         Content.init();
-        Content.showContentList();
+        //Content.showContentList();
         // update client edit flags
         Debug.InfoLog("[ClientEdit]");
         ClientEdit.init();

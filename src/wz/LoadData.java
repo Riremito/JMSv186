@@ -3,6 +3,7 @@ package wz;
 import client.SkillFactory;
 import config.property.Property_Java;
 import config.ServerConfig;
+import data.wz.ids.DWI_List;
 import debug.Debug;
 import debug.DebugLoadTime;
 import java.io.File;
@@ -26,11 +27,7 @@ import server.maps.MapleMapFactory;
 public class LoadData {
 
     public static void LoadDataFromXML() {
-        DebugLoadTime dlt = new DebugLoadTime("initDataIDs");
-        initDataIDs();
-        dlt.End();
-
-        dlt = new DebugLoadTime("initLife");
+        DebugLoadTime dlt = new DebugLoadTime("initLife");
         initLife();
         dlt.End();
 
@@ -64,15 +61,16 @@ public class LoadData {
         dlt.End();
     }
 
-    final private static ArrayList<Integer> jobids = new ArrayList<Integer>();
-    final private static ArrayList<Integer> skinids = new ArrayList<Integer>();
-    final private static ArrayList<Integer> faceids = new ArrayList<Integer>();
-    final private static ArrayList<Integer> hairids = new ArrayList<Integer>();
-    final private static ArrayList<Integer> mapids = new ArrayList<Integer>();
-    final private static ArrayList<Integer> npcids = new ArrayList<Integer>();
-    final private static ArrayList<Integer> mobids = new ArrayList<Integer>();
+    final private static DWI_List jobids = new DWI_List((ids) -> LoadXMLs("Skill.wz", "(\\d+)\\.img", ids));
+    final private static DWI_List skinids = new DWI_List((ids) -> LoadSkinXMLs("Character.wz", "0*(\\d+)\\.img", ids));
+    final private static DWI_List faceids = new DWI_List((ids) -> LoadXMLs("Character.wz/Face", "0*(\\d+)\\.img", ids));
+    final private static DWI_List hairids = new DWI_List((ids) -> LoadXMLs("Character.wz/Hair", "0*(\\d+)\\.img", ids));
+    final private static DWI_List npcids = new DWI_List((ids) -> LoadXMLs("NPC.wz", "0*(\\d+)\\.img", ids));
+    final private static DWI_List mobids = new DWI_List((ids) -> LoadXMLs("Mob.wz", "0*(\\d+)\\.img", ids));
+    final private static DWI_List mapids = new DWI_List((ids) -> LoadMapXMLs(ids));
+    final private static DWI_List itemids = new DWI_List((ids) -> LoadItemXMLs(ids));
+
     final private static ArrayList<Integer> reactorids = new ArrayList<Integer>();
-    final private static ArrayList<Integer> itemids = new ArrayList<Integer>();
     final private static ArrayList<Integer> skillids = new ArrayList<Integer>();
     final private static ArrayList<Integer> morphids = new ArrayList<Integer>();
     final private static ArrayList<Integer> taimingmobids = new ArrayList<Integer>();
@@ -82,31 +80,31 @@ public class LoadData {
     final public static ArrayList<Integer> potential_legendary = new ArrayList<Integer>();
 
     public static boolean IsValidJobID(int id) {
-        return jobids.contains(id);
+        return jobids.isValidID(id);
     }
 
     public static boolean IsValidSkinID(int id) {
-        return skinids.contains(id);
+        return skinids.isValidID(id);
     }
 
     public static boolean IsValidFaceID(int id) {
-        return faceids.contains(id);
+        return faceids.isValidID(id);
     }
 
     public static boolean IsValidHairID(int id) {
-        return hairids.contains(id);
+        return hairids.isValidID(id);
     }
 
     public static boolean IsValidMapID(int id) {
-        return mapids.contains(id);
+        return mapids.isValidID(id);
     }
 
     public static boolean IsValidNPCID(int id) {
-        return npcids.contains(id);
+        return npcids.isValidID(id);
     }
 
     public static boolean IsValidMobID(int id) {
-        return mobids.contains(id);
+        return mobids.isValidID(id);
     }
 
     public static boolean IsValidReactorID(int id) {
@@ -114,23 +112,23 @@ public class LoadData {
     }
 
     public static boolean IsValidItemID(int id) {
-        return itemids.contains(id);
+        return itemids.isValidID(id);
     }
 
     // test for gm command
     public static ArrayList<Integer> GetJobIDs() {
-        return jobids;
+        return jobids.getIds();
     }
 
     public static int GetMapIDIndex(int id) {
-        return mapids.indexOf(id);
+        return mapids.getIds().indexOf(id);
     }
 
     public static int GetMapIDByIndex(int index) {
-        if (index < 0 || mapids.size() <= index) {
+        if (index < 0 || mapids.getIds().size() <= index) {
             return -1;
         }
-        return mapids.get(index);
+        return mapids.getIds().get(index);
     }
 
     public enum DataType {
@@ -150,28 +148,28 @@ public class LoadData {
 
         switch (dt) {
             case SKIN: {
-                return skinids.get(rand.nextInt(skinids.size()));
+                return skinids.getRandom();
             }
             case FACE: {
-                return faceids.get(rand.nextInt(faceids.size()));
+                return faceids.getRandom();
             }
             case HAIR: {
-                return hairids.get(rand.nextInt(hairids.size()));
+                return hairids.getRandom();
             }
             case JOB: {
-                return jobids.get(rand.nextInt(jobids.size()));
+                return jobids.getRandom();
             }
             case MAP: {
-                return mapids.get(rand.nextInt(mapids.size()));
+                return mapids.getRandom();
             }
             case NPC: {
-                return npcids.get(rand.nextInt(npcids.size()));
+                return npcids.getRandom();
             }
             case MOB: {
-                return mobids.get(rand.nextInt(mobids.size()));
+                return mobids.getRandom();
             }
             case ITEM: {
-                return itemids.get(rand.nextInt(itemids.size()));
+                return itemids.getRandom();
             }
             default: {
                 break;
@@ -198,46 +196,32 @@ public class LoadData {
         return 0;
     }
 
-    private static void initDataIDs() {
-        // 職業ID
-        LoadXMLs("Skill.wz", "(\\d+)\\.img", jobids);
-        // 肌色, 顔, 髪型
-        LoadSkinXMLs("Character.wz", "0*(\\d+)\\.img", skinids);
-        LoadXMLs("Character.wz/Face", "0*(\\d+)\\.img", faceids);
-        LoadXMLs("Character.wz/Hair", "0*(\\d+)\\.img", hairids);
-        // NPC
-        LoadXMLs("NPC.wz", "0*(\\d+)\\.img", npcids);
-        // Mob
-        LoadXMLs("Mob.wz", "0*(\\d+)\\.img", mobids);
-        // Map
-        LoadXMLs("Map.wz/Map/Map0", "0*(\\d+)\\.img", mapids);
-        LoadXMLs("Map.wz/Map/Map1", "0*(\\d+)\\.img", mapids);
-        LoadXMLs("Map.wz/Map/Map2", "0*(\\d+)\\.img", mapids);
-        LoadXMLs("Map.wz/Map/Map3", "0*(\\d+)\\.img", mapids);
-        LoadXMLs("Map.wz/Map/Map4", "0*(\\d+)\\.img", mapids);
-        LoadXMLs("Map.wz/Map/Map5", "0*(\\d+)\\.img", mapids);
-        LoadXMLs("Map.wz/Map/Map6", "0*(\\d+)\\.img", mapids);
-        LoadXMLs("Map.wz/Map/Map7", "0*(\\d+)\\.img", mapids);
-        LoadXMLs("Map.wz/Map/Map8", "0*(\\d+)\\.img", mapids);
-        LoadXMLs("Map.wz/Map/Map9", "0*(\\d+)\\.img", mapids);
+    private static int LoadMapXMLs(ArrayList<Integer> list) {
+        DebugLoadTime dlt = new DebugLoadTime("LoadMapXMLs");
+        LoadXMLs("Map.wz/Map/Map0", "0*(\\d+)\\.img", list);
+        LoadXMLs("Map.wz/Map/Map1", "0*(\\d+)\\.img", list);
+        LoadXMLs("Map.wz/Map/Map2", "0*(\\d+)\\.img", list);
+        LoadXMLs("Map.wz/Map/Map3", "0*(\\d+)\\.img", list);
+        LoadXMLs("Map.wz/Map/Map4", "0*(\\d+)\\.img", list);
+        LoadXMLs("Map.wz/Map/Map5", "0*(\\d+)\\.img", list);
+        LoadXMLs("Map.wz/Map/Map6", "0*(\\d+)\\.img", list);
+        LoadXMLs("Map.wz/Map/Map7", "0*(\\d+)\\.img", list);
+        LoadXMLs("Map.wz/Map/Map8", "0*(\\d+)\\.img", list);
+        LoadXMLs("Map.wz/Map/Map9", "0*(\\d+)\\.img", list);
+        dlt.End();
+        return list.size();
+    }
 
-        Debug.DebugLog("JobIDs = " + jobids.size());
-        Debug.DebugLog("SkinIDs = " + skinids.size());
-        Debug.DebugLog("FaceIDs = " + faceids.size());
-        Debug.DebugLog("HairIDs = " + hairids.size());
-        Debug.DebugLog("NPCIDs = " + npcids.size());
-        Debug.DebugLog("MobIDs = " + mobids.size());
-        Debug.DebugLog("MapIDs = " + mapids.size());
-
-        // test
-        LoadItemXMLs("Item.wz/Cash/", itemids);
-        LoadItemXMLs("Item.wz/Consume/", itemids);
-        LoadItemXMLs("Item.wz/Etc/", itemids);
-        LoadItemXMLs("Item.wz/Install/", itemids);
-        LoadEquipXMLs("Character.wz/", itemids);
-        LoadXMLs("Item.wz/Pet/", "0*(\\d+)\\.img", itemids);
-        Debug.DebugLog("ItemIDs = " + itemids.size());
-        //LoadTownMaps();
+    private static int LoadItemXMLs(ArrayList<Integer> list) {
+        DebugLoadTime dlt = new DebugLoadTime("LoadItemXMLs");
+        LoadItemXMLs("Item.wz/Cash/", list);
+        LoadItemXMLs("Item.wz/Consume/", list);
+        LoadItemXMLs("Item.wz/Etc/", list);
+        LoadItemXMLs("Item.wz/Install/", list);
+        LoadEquipXMLs("Character.wz/", list);
+        LoadXMLs("Item.wz/Pet/", "0*(\\d+)\\.img", list);
+        dlt.End();
+        return list.size();
     }
 
     private static int LoadTownMaps() {
