@@ -129,7 +129,7 @@ public class DebugCommand {
             }
             case "/test":
             case "/help": {
-                remoteNPCTalk(c, 1012003, 9010021);
+                remoteNPCTalk(c, 9010021, 1012003);
                 return true;
             }
             case "/npctalk": {
@@ -351,7 +351,7 @@ public class DebugCommand {
             }
             case "/jc":
             case "/転職": {
-                remoteNPCTalk(c, 1012003, 9330104);
+                remoteNPCTalk(c, 9330104, 1012003);
                 return true;
             }
             // ランダム関連
