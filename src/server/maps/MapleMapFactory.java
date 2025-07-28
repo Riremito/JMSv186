@@ -24,6 +24,8 @@ import config.DeveloperMode;
 import config.property.Property_Java;
 import config.Region;
 import config.Version;
+import data.wz.DW_Map;
+import data.wz.DW_String;
 import data.wz.ids.DWI_Validation;
 import debug.Debug;
 import java.awt.Point;
@@ -43,7 +45,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import provider.MapleData;
-import provider.MapleDataProvider;
 import provider.MapleDataTool;
 import server.PortalFactory;
 import server.life.AbstractLoadedMapleLife;
@@ -53,12 +54,9 @@ import server.life.MapleNPC;
 import server.maps.MapleNodes.MapleNodeInfo;
 import server.maps.MapleNodes.MaplePlatform;
 import tools.StringUtil;
-import wz.LoadData;
 
 public class MapleMapFactory {
 
-    public static MapleDataProvider source;
-    public static MapleData nameData;
     private final Map<Integer, MapleMap> maps = new HashMap<Integer, MapleMap>();
     private final Map<Integer, MapleMap> instanceMap = new HashMap<Integer, MapleMap>();
     private static final Map<Integer, MapleNodes> mapInfos = new HashMap<Integer, MapleNodes>();
@@ -87,19 +85,19 @@ public class MapleMapFactory {
 
                 MapleData mapData;
                 try {
-                    mapData = source.getData(getMapName(mapid));
+                    mapData = DW_Map.getWzRoot().getData(getMapName(mapid));
                 } catch (Exception e) {
                     // 存在しないMapIDが指定された場合は指定MapIDへ強制移動する
                     Debug.ErrorLog("Invalid MapID = " + mapid);
                     mapid = DeveloperMode.DM_ERROR_MAP_ID.getInt();
                     omapid = Integer.valueOf(mapid);
-                    mapData = source.getData(getMapName(mapid));
+                    mapData = DW_Map.getWzRoot().getData(getMapName(mapid));
                 }
                 //MapleData mapData = source.getData(getMapName(mapid));
 
                 MapleData link = mapData.getChildByPath("info/link");
                 if (link != null) {
-                    mapData = source.getData(getMapName(MapleDataTool.getIntConvert("info/link", mapData)));
+                    mapData = DW_Map.getWzRoot().getData(getMapName(MapleDataTool.getIntConvert("info/link", mapData)));
                 }
 
                 float monsterRate = 0;
@@ -237,8 +235,8 @@ public class MapleMapFactory {
                 }
 
                 try {
-                    map.setMapName(MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(omapid)), ""));
-                    map.setStreetName(MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(omapid)), ""));
+                    map.setMapName(MapleDataTool.getString("mapName", DW_String.getMap().getChildByPath(getMapStringName(omapid)), ""));
+                    map.setStreetName(MapleDataTool.getString("streetName", DW_String.getMap().getChildByPath(getMapStringName(omapid)), ""));
                 } catch (Exception e) {
                     map.setMapName("");
                     map.setStreetName("");
@@ -291,10 +289,10 @@ public class MapleMapFactory {
         if (isInstanceMapLoaded(instanceid)) {
             return getInstanceMap(instanceid);
         }
-        MapleData mapData = source.getData(getMapName(mapid));
+        MapleData mapData = DW_Map.getWzRoot().getData(getMapName(mapid));
         MapleData link = mapData.getChildByPath("info/link");
         if (link != null) {
-            mapData = source.getData(getMapName(MapleDataTool.getIntConvert("info/link", mapData)));
+            mapData = DW_Map.getWzRoot().getData(getMapName(MapleDataTool.getIntConvert("info/link", mapData)));
         }
 
         float monsterRate = 0;
@@ -388,8 +386,8 @@ public class MapleMapFactory {
             }
         }
         try {
-            map.setMapName(MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(mapid)), ""));
-            map.setStreetName(MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(mapid)), ""));
+            map.setMapName(MapleDataTool.getString("mapName", DW_String.getMap().getChildByPath(getMapStringName(mapid)), ""));
+            map.setStreetName(MapleDataTool.getString("streetName", DW_String.getMap().getChildByPath(getMapStringName(mapid)), ""));
         } catch (Exception e) {
             map.setMapName("");
             map.setStreetName("");
