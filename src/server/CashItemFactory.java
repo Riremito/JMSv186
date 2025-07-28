@@ -1,5 +1,6 @@
 package server;
 
+import data.wz.DW_Etc;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -10,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import provider.MapleData;
-import provider.MapleDataProvider;
 import provider.MapleDataTool;
 import server.CashItemInfo.CashModInfo;
 
@@ -22,8 +22,6 @@ public class CashItemFactory {
     private final Map<Integer, CashItemInfo> itemStats = new HashMap<Integer, CashItemInfo>();
     private final Map<Integer, List<CashItemInfo>> itemPackage = new HashMap<Integer, List<CashItemInfo>>();
     private final Map<Integer, CashModInfo> itemMods = new HashMap<Integer, CashModInfo>();
-    public static MapleDataProvider data = null;
-    public static MapleData commodity = null;
 
     public static final CashItemFactory getInstance() {
         return instance;
@@ -33,35 +31,32 @@ public class CashItemFactory {
     }
 
     public void initialize() {
-        //System.out.println("Loading CashItemFactory :::");
-        if (data != null) {
-            final List<Integer> itemids = new ArrayList<Integer>();
-            for (MapleData field : data.getData("Commodity.img").getChildren()) {
-                final int itemId = MapleDataTool.getIntConvert("ItemId", field, 0);
-                final int SN = MapleDataTool.getIntConvert("SN", field, 0);
+        final List<Integer> itemids = new ArrayList<Integer>();
+        for (MapleData field : DW_Etc.getCommodity().getChildren()) {
+            final int itemId = MapleDataTool.getIntConvert("ItemId", field, 0);
+            final int SN = MapleDataTool.getIntConvert("SN", field, 0);
 
-                final CashItemInfo stats = new CashItemInfo(itemId,
-                        MapleDataTool.getIntConvert("Count", field, 1),
-                        MapleDataTool.getIntConvert("Price", field, 0), SN,
-                        MapleDataTool.getIntConvert("Period", field, 0),
-                        MapleDataTool.getIntConvert("Gender", field, 2),
-                        MapleDataTool.getIntConvert("OnSale", field, 0) > 0);
+            final CashItemInfo stats = new CashItemInfo(itemId,
+                    MapleDataTool.getIntConvert("Count", field, 1),
+                    MapleDataTool.getIntConvert("Price", field, 0), SN,
+                    MapleDataTool.getIntConvert("Period", field, 0),
+                    MapleDataTool.getIntConvert("Gender", field, 2),
+                    MapleDataTool.getIntConvert("OnSale", field, 0) > 0);
 
-                if (SN > 0) {
-                    itemStats.put(SN, stats);
-                }
+            if (SN > 0) {
+                itemStats.put(SN, stats);
+            }
 
-                if (itemId > 0) {
-                    itemids.add(itemId);
-                }
+            if (itemId > 0) {
+                itemids.add(itemId);
             }
-            for (int i : itemids) {
-                getPackageItems(i);
-            }
-            for (int i : itemStats.keySet()) {
-                getModInfo(i);
-                getItem(i); //init the modinfo's citem
-            }
+        }
+        for (int i : itemids) {
+            getPackageItems(i);
+        }
+        for (int i : itemStats.keySet()) {
+            getModInfo(i);
+            getItem(i); //init the modinfo's citem
         }
         initialized = true;
     }
@@ -75,7 +70,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (MapleData field : commodity.getChildren()) {
+        for (MapleData field : DW_Etc.getCommodity().getChildren()) {
             int SN = MapleDataTool.getIntConvert("SN", field, 0);
 
             if (SN <= 0 || item_SN != SN) {
@@ -107,7 +102,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (MapleData field : commodity.getChildren()) {
+        for (MapleData field : DW_Etc.getCommodity().getChildren()) {
             int ItemId = MapleDataTool.getIntConvert("ItemId", field, 0);
             if (ItemId != itemid) {
                 continue;
@@ -135,11 +130,10 @@ public class CashItemFactory {
         }
         final List<CashItemInfo> packageItems = new ArrayList<CashItemInfo>();
 
-        final MapleData b = data.getData("CashPackage.img");
-        if (b == null || b.getChildByPath(itemId + "/SN") == null) {
+        if (DW_Etc.getCashPackage() == null || DW_Etc.getCashPackage().getChildByPath(itemId + "/SN") == null) {
             return null;
         }
-        for (MapleData d : b.getChildByPath(itemId + "/SN").getChildren()) {
+        for (MapleData d : DW_Etc.getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
             packageItems.add(itemStats.get(Integer.valueOf(MapleDataTool.getIntConvert(d))));
         }
         itemPackage.put(itemId, packageItems);

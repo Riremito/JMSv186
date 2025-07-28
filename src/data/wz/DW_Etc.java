@@ -46,6 +46,8 @@ public class DW_Etc {
     private static MapleData img_ForbiddenName = null;
     private static MapleData img_NpcLocation = null;
     private static MapleData img_ItemMake = null;
+    private static MapleData img_Commodity = null;
+    private static MapleData img_CashPackage = null;
 
     public static MapleData getForbiddenName() {
         if (img_ForbiddenName == null) {
@@ -66,6 +68,20 @@ public class DW_Etc {
             img_ItemMake = getWz().loadData("ItemMake.img");
         }
         return img_ItemMake;
+    }
+
+    public static MapleData getCommodity() {
+        if (img_Commodity == null) {
+            img_Commodity = getWz().loadData("Commodity.img");
+        }
+        return img_Commodity;
+    }
+
+    public static MapleData getCashPackage() {
+        if (img_CashPackage == null) {
+            img_CashPackage = getWz().loadData("CashPackage.img");
+        }
+        return img_CashPackage;
     }
 
     private static List<String> list_fn = null;
