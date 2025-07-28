@@ -20,6 +20,7 @@ package data.wz;
 
 import debug.Debug;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import provider.MapleData;
@@ -53,7 +54,7 @@ public class DW_Mob {
         if (map_QuestCountGroup != null) {
             return map_QuestCountGroup;
         }
-
+        map_QuestCountGroup = new HashMap<>();
         for (MapleDataDirectoryEntry mapz : getWzRoot().getRoot().getSubdirectories()) {
             if (mapz.getName().equals("QuestCountGroup")) {
                 for (MapleDataFileEntry entry : mapz.getFiles()) {
