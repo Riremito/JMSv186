@@ -53,6 +53,7 @@ public class DW_String {
     private static MapleData img_Mob = null;
     private static MapleData img_Npc = null;
     private static MapleData img_Map = null;
+    private static MapleData img_Skill = null;
 
     public static MapleData getMob() {
         if (img_Mob == null) {
@@ -73,6 +74,13 @@ public class DW_String {
             img_Map = getWz().loadData("Map.img");
         }
         return img_Map;
+    }
+
+    public static MapleData getSkill() {
+        if (img_Skill == null) {
+            img_Skill = getWz().loadData("Skill.img");
+        }
+        return img_Skill;
     }
 
     private static MapleData img_Item = null; // JMS131

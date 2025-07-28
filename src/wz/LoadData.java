@@ -1,6 +1,5 @@
 package wz;
 
-import client.SkillFactory;
 import debug.DebugLoadTime;
 import server.MapleItemInformationProvider;
 
@@ -13,10 +12,6 @@ public class LoadData {
 
         dlt = new DebugLoadTime("MapleItemInformationProvider");
         MapleItemInformationProvider.getInstance().load();
-        dlt.End();
-
-        dlt = new DebugLoadTime("SkillFactory");
-        SkillFactory.getSkill(99999999);
         dlt.End();
     }
 }
