@@ -30,8 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import provider.MapleData;
-import provider.MapleDataDirectoryEntry;
-import provider.MapleDataFileEntry;
 import provider.MapleDataTool;
 import provider.WzXML.MapleDataType;
 import tools.Pair;
@@ -42,7 +40,6 @@ public class MapleLifeFactory {
     private static Map<Integer, String> npcNames = new HashMap<Integer, String>();
     private static Map<Integer, MapleMonsterStats> monsterStats = new HashMap<Integer, MapleMonsterStats>();
     private static Map<Integer, Integer> NPCLoc = new HashMap<Integer, Integer>();
-    private static Map<Integer, List<Integer>> questCount = new HashMap<Integer, List<Integer>>();
 
     public static AbstractLoadedMapleLife getLife(int id, String type) {
         if (type.equalsIgnoreCase("n")) {
@@ -64,31 +61,8 @@ public class MapleLifeFactory {
         return map;
     }
 
-    public static final void loadQuestCounts() {
-        if (questCount.size() > 0) {
-            return;
-        }
-        for (MapleDataDirectoryEntry mapz : DW_Mob.getWzRoot().getRoot().getSubdirectories()) {
-            if (mapz.getName().equals("QuestCountGroup")) {
-                for (MapleDataFileEntry entry : mapz.getFiles()) {
-                    final int id = Integer.parseInt(entry.getName().substring(0, entry.getName().length() - 4));
-                    MapleData dat = DW_Mob.getWzRoot().getData("QuestCountGroup/" + entry.getName());
-                    if (dat != null && dat.getChildByPath("info") != null) {
-                        List<Integer> z = new ArrayList<Integer>();
-                        for (MapleData da : dat.getChildByPath("info")) {
-                            z.add(MapleDataTool.getInt(da, 0));
-                        }
-                        questCount.put(id, z);
-                    } else {
-                        System.out.println("null questcountgroup");
-                    }
-                }
-            }
-        }
-    }
-
     public static final List<Integer> getQuestCount(final int id) {
-        return questCount.get(id);
+        return DW_Mob.getQuestCountGroup().get(id);
     }
 
     // fix broken MP mob
