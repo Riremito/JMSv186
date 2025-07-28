@@ -1,5 +1,6 @@
 package server;
 
+import data.wz.DW_Etc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,6 @@ public class ItemMakerFactory {
     private final static ItemMakerFactory instance = new ItemMakerFactory();
     protected Map<Integer, ItemMakerCreateEntry> createCache = new HashMap<Integer, ItemMakerCreateEntry>();
     protected Map<Integer, GemCreateEntry> gemCache = new HashMap<Integer, GemCreateEntry>();
-    public static MapleData info = null;
 
     public static ItemMakerFactory getInstance() {
         // DO ItemMakerFactory.getInstance() on ChannelServer startup.
@@ -26,7 +26,7 @@ public class ItemMakerFactory {
         // 0 = Item upgrade crystals
         // 1 / 2/ 4/ 8 = Item creation
 
-        if (info == null) {
+        if (DW_Etc.getItemMake() == null) {
             return;
         }
 
@@ -35,7 +35,7 @@ public class ItemMakerFactory {
         GemCreateEntry ret;
         ItemMakerCreateEntry imt;
 
-        for (MapleData dataType : info.getChildren()) {
+        for (MapleData dataType : DW_Etc.getItemMake().getChildren()) {
             int type = Integer.parseInt(dataType.getName());
             switch (type) {
                 case 0: { // Caching of gem

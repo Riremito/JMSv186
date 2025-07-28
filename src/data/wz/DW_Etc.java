@@ -45,6 +45,7 @@ public class DW_Etc {
 
     private static MapleData img_ForbiddenName = null;
     private static MapleData img_NpcLocation = null;
+    private static MapleData img_ItemMake = null;
 
     public static MapleData getForbiddenName() {
         if (img_ForbiddenName == null) {
@@ -58,6 +59,13 @@ public class DW_Etc {
             img_NpcLocation = getWz().loadData("NpcLocation.img");
         }
         return img_NpcLocation;
+    }
+
+    public static MapleData getItemMake() {
+        if (img_ItemMake == null) {
+            img_ItemMake = getWz().loadData("ItemMake.img");
+        }
+        return img_ItemMake;
     }
 
     private static List<String> list_fn = null;
