@@ -50,6 +50,23 @@ public class DW_String {
         return md;
     }
 
+    private static MapleData img_Mob = null;
+    private static MapleData img_Npc = null;
+
+    public static MapleData getMob() {
+        if (img_Mob == null) {
+            img_Mob = getWz().loadData("Mob.img");
+        }
+        return img_Mob;
+    }
+
+    public static MapleData getNpc() {
+        if (img_Npc == null) {
+            img_Npc = getWz().loadData("Npc.img");
+        }
+        return img_Npc;
+    }
+
     private static MapleData img_Item = null; // JMS131
     private static MapleData img_Cash = null;
     private static MapleData img_Consume = null;

@@ -18,10 +18,24 @@
  */
 package data.wz;
 
+import provider.MapleDataProvider;
+
 /**
  *
  * @author Riremito
  */
 public class DW_Mob {
-    
+
+    private static DataWz wz = null;
+
+    private static DataWz getWz() {
+        if (wz == null) {
+            wz = new DataWz("Mob.wz");
+        }
+        return wz;
+    }
+
+    public static MapleDataProvider getWzRoot() {
+        return getWz().getWzRoot();
+    }
 }

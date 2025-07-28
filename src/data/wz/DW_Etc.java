@@ -44,12 +44,20 @@ public class DW_Etc {
     }
 
     private static MapleData img_ForbiddenName = null;
+    private static MapleData img_NpcLocation = null;
 
     public static MapleData getForbiddenName() {
         if (img_ForbiddenName == null) {
             img_ForbiddenName = getWz().loadData("ForbiddenName.img");
         }
         return img_ForbiddenName;
+    }
+
+    public static MapleData getNpcLocation() {
+        if (img_NpcLocation == null) {
+            img_NpcLocation = getWz().loadData("NpcLocation.img");
+        }
+        return img_NpcLocation;
     }
 
     private static List<String> list_fn = null;

@@ -18,8 +18,7 @@ import server.maps.MapleMapFactory;
 public class LoadData {
 
     public static void LoadDataFromXML() {
-        DebugLoadTime dlt = new DebugLoadTime("initLife");
-        initLife();
+        DebugLoadTime dlt = new DebugLoadTime("TEST");
         dlt.End();
 
         dlt = new DebugLoadTime("initMaker");
@@ -50,18 +49,6 @@ public class LoadData {
         dlt = new DebugLoadTime("initCashItemFactory");
         initCashItemFactory();
         dlt.End();
-    }
-
-    private static void initLife() {
-        MapleLifeFactory.data = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Mob.wz"));
-        MapleLifeFactory.stringDataWZ = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/String.wz"));
-        MapleLifeFactory.etcDataWZ = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/Etc.wz"));
-        MapleLifeFactory.mobStringData = MapleLifeFactory.stringDataWZ.getData("Mob.img");
-        MapleLifeFactory.npcStringData = MapleLifeFactory.stringDataWZ.getData("Npc.img");
-
-        if (ServerConfig.JMS164orLater()) {
-            MapleLifeFactory.npclocData = MapleLifeFactory.etcDataWZ.getData("NpcLocation.img");
-        }
     }
 
     private static void initMaker() {
