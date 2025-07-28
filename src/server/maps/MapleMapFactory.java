@@ -24,6 +24,7 @@ import config.DeveloperMode;
 import config.property.Property_Java;
 import config.Region;
 import config.Version;
+import data.wz.ids.DWI_Validation;
 import debug.Debug;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -721,7 +722,7 @@ public class MapleMapFactory {
                 return;
         }
 
-        if (!LoadData.IsValidMobID(monsterid)) {
+        if (!DWI_Validation.isValidMobID(monsterid)) {
             Debug.ErrorLog("Invalid Mob ID = " + monsterid);
             return;
         }

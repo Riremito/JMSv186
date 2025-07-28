@@ -60,6 +60,7 @@ import config.Region;
 import config.Version;
 import constants.ServerConstants;
 import data.client.DC_Exp;
+import data.wz.ids.DWI_Validation;
 import database.DatabaseConnection;
 import database.DatabaseException;
 import debug.Debug;
@@ -149,7 +150,7 @@ import server.maps.MapleFoothold;
 import tools.ConcurrentEnumMap;
 import tools.FileoutputUtil;
 import server.network.MockIOSession;
-import wz.DefaultData;
+import data.wz.ids.DWI_Dafault;
 import wz.LoadData;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Serializable {
@@ -665,7 +666,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 rs.close();
 
                 for (Pair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(false, charid).values()) {
-                    if (!LoadData.IsValidItemID(mit.getLeft().getItemId())) {
+                    if (!DWI_Validation.isValidItemID(mit.getLeft().getItemId())) {
                         Debug.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
                         continue;
                     }
@@ -2222,9 +2223,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void setSkinColor(byte skinColor) {
-        if (!LoadData.IsValidSkinID(skinColor)) {
+        if (!DWI_Validation.isValidSkinID(skinColor)) {
             Debug.ErrorLog("Invalid skin id : " + skinColor);
-            this.skinColor = DefaultData.SKIN;
+            this.skinColor = DWI_Dafault.SKIN;
             return;
         }
 
@@ -2260,18 +2261,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void setHair(int hair) {
-        if (!LoadData.IsValidHairID(hair)) {
+        if (!DWI_Validation.isValidHairID(hair)) {
             Debug.ErrorLog("Invalid hair id : " + hair);
-            this.hair = DefaultData.HAIR;
+            this.hair = DWI_Dafault.HAIR;
             return;
         }
         this.hair = hair;
     }
 
     public void setFace(int face) {
-        if (!LoadData.IsValidFaceID(face)) {
+        if (!DWI_Validation.isValidFaceID(face)) {
             Debug.ErrorLog("Invalid face id : " + face);
-            this.face = DefaultData.FACE;
+            this.face = DWI_Dafault.FACE;
             return;
         }
         this.face = face;
@@ -2323,9 +2324,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void setJob(int job) {
-        if (!LoadData.IsValidJobID(job)) {
+        if (!DWI_Validation.isValidJobID(job)) {
             Debug.ErrorLog("Invalid job id : " + job);
-            this.job = DefaultData.JOB;
+            this.job = DWI_Dafault.JOB;
             return;
         }
         this.job = job;
@@ -5729,19 +5730,19 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void setPetAutoHPItem(int item_id) {
-        if (item_id == 0 || LoadData.IsValidItemID(item_id)) {
+        if (item_id == 0 || DWI_Validation.isValidItemID(item_id)) {
             this.pet_auto_hp_item_id = item_id;
         }
     }
 
     public void setPetAutoMPItem(int item_id) {
-        if (item_id == 0 || LoadData.IsValidItemID(item_id)) {
+        if (item_id == 0 || DWI_Validation.isValidItemID(item_id)) {
             this.pet_auto_mp_item_id = item_id;
         }
     }
 
     public void setPetAutoCureItem(int item_id) {
-        if (item_id == 0 || LoadData.IsValidItemID(item_id)) {
+        if (item_id == 0 || DWI_Validation.isValidItemID(item_id)) {
             this.pet_auto_cure_item_id = item_id;
         }
     }

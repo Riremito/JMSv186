@@ -24,6 +24,7 @@ import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import data.client.DC_Date;
+import data.wz.ids.DWI_Validation;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -539,7 +540,7 @@ public class ReqCCashShop {
                 CashItemInfo cashitem = CashItemFactory.getInstance().getItem(test_item_SN);
                 IItem item = chr.getCashInventory().toItem(cashitem);
 
-                if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && LoadData.IsValidItemID(item.getItemId())) {
+                if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && DWI_Validation.isValidItemID(item.getItemId())) {
                     chr.getCashInventory().addToInventory(item);
                     items_cash.add(item); // リストへ追加
                 } else {
@@ -586,7 +587,7 @@ public class ReqCCashShop {
         CashItemInfo cashitem = CashItemFactory.getInstance().getItem(test_item_SN);
         IItem item = chr.getCashInventory().toItem(cashitem);
 
-        if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && LoadData.IsValidItemID(item.getItemId())) {
+        if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && DWI_Validation.isValidItemID(item.getItemId())) {
             chr.getCashInventory().removeFromInventory(box_item);
             chr.getCashInventory().addToInventory(item);
             c.SendPacket(ResCCashShop.OnCashItemGachaponResult(box_item, item, c));

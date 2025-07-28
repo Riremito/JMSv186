@@ -30,6 +30,7 @@ import config.ServerConfig;
 import config.Version;
 import config.property.Property_Login;
 import data.wz.DW_Etc;
+import data.wz.ids.DWI_Validation;
 import debug.Debug;
 import debug.DebugUser;
 import handling.channel.ChannelServer;
@@ -399,7 +400,7 @@ public class ReqCLogin {
             }
         }
         // data check
-        if (!LoadData.IsValidFaceID(face_id) || !LoadData.IsValidHairID(hair_id)) {
+        if (!DWI_Validation.isValidFaceID(face_id) || !DWI_Validation.isValidHairID(hair_id)) {
             Debug.DebugLog("Character creation error");
             c.SendPacket(ResCLogin.addNewCharEntry(null, false));
             return false;
@@ -443,7 +444,7 @@ public class ReqCLogin {
     }
 
     public static boolean SetDefaultEquip(MapleCharacter newchar, int item_id) {
-        if (!LoadData.IsValidItemID(item_id)) {
+        if (!DWI_Validation.isValidItemID(item_id)) {
             Debug.ErrorLog("SetDefaultEquip, item_id = " + item_id);
             return false;
         }

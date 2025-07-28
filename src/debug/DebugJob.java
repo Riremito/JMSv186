@@ -25,6 +25,7 @@ import client.MapleCharacter;
 import client.PlayerStats;
 import client.SkillFactory;
 import config.Version;
+import data.wz.ids.DWI_Validation;
 import java.util.ArrayList;
 import server.Randomizer;
 import wz.LoadData;
@@ -306,7 +307,7 @@ public class DebugJob {
     public static boolean DefStat(MapleCharacter chr, int job_id, int level) {
         ResetStat(chr);
 
-        if (!LoadData.IsValidJobID(job_id)) {
+        if (!DWI_Validation.isValidJobID(job_id)) {
             return false;
         }
         int next_level = 1;
@@ -390,7 +391,7 @@ public class DebugJob {
     public static boolean AllSkill(MapleCharacter chr, boolean reset) {
         int job_id = chr.getJob();
 
-        if (!LoadData.IsValidJobID(job_id)) {
+        if (!DWI_Validation.isValidJobID(job_id)) {
             return false;
         }
 
@@ -414,7 +415,7 @@ public class DebugJob {
             // 4次転職
             case 2: {
                 job_id -= 1;
-                if (!LoadData.IsValidJobID(job_id)) {
+                if (!DWI_Validation.isValidJobID(job_id)) {
                     return false;
                 }
                 job_list.add(job_id);
@@ -422,7 +423,7 @@ public class DebugJob {
             // 3次転職
             case 1: {
                 job_id -= 1;
-                if (!LoadData.IsValidJobID(job_id)) {
+                if (!DWI_Validation.isValidJobID(job_id)) {
                     return false;
                 }
                 job_list.add(job_id);
@@ -431,7 +432,7 @@ public class DebugJob {
                 // 2次転職
                 if ((job_id % 100) != 0) {
                     job_id -= job_id % 100;
-                    if (!LoadData.IsValidJobID(job_id)) {
+                    if (!DWI_Validation.isValidJobID(job_id)) {
                         return false;
                     }
                     job_list.add(job_id);

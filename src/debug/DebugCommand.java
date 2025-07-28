@@ -29,6 +29,9 @@ import config.property.Property_Packet;
 import constants.GameConstants;
 import data.client.DC_Exp;
 import data.wz.DW_Skill;
+import data.wz.ids.DWI_Random;
+import data.wz.ids.DWI_Validation;
+import data.wz.ids.DWI_LoadXML;
 import handling.channel.ChannelServer;
 import java.awt.Point;
 import packet.request.ReqCUser;
@@ -42,7 +45,6 @@ import server.life.MapleNPC;
 import server.maps.MapleDynamicPortal;
 import server.maps.MapleMap;
 import server.maps.SavedLocationType;
-import wz.LoadData;
 
 /**
  *
@@ -138,7 +140,7 @@ public class DebugCommand {
                 }
                 int npc_id = parseInt(splitted[1]);
 
-                if (!LoadData.IsValidNPCID(npc_id) || !remoteNPCTalk(c, npc_id)) {
+                if (!DWI_Validation.isValidNPCID(npc_id) || !remoteNPCTalk(c, npc_id)) {
                     chr.DebugMsg("[RemoteNPCTalk] Invalid NPCID.");
                     return false;
                 }
@@ -152,7 +154,7 @@ public class DebugCommand {
                 }
                 int npc_id = parseInt(splitted[1]);
                 // set Chief Stan
-                if (!LoadData.IsValidNPCID(npc_id) || !remoteNPCTalk(c, npc_id, 1012003)) {
+                if (!DWI_Validation.isValidNPCID(npc_id) || !remoteNPCTalk(c, npc_id, 1012003)) {
                     chr.DebugMsg("[RemoteNPCTalk2] Invalid NPCID.");
                     return false;
                 }
@@ -307,8 +309,8 @@ public class DebugCommand {
                 return true;
             }
             case "/prevmap": {
-                int index = LoadData.GetMapIDIndex(c.getPlayer().getMapId());
-                int map_id = LoadData.GetMapIDByIndex(index - 1);
+                int index = DWI_Random.getMapIndex(c.getPlayer().getMapId());
+                int map_id = DWI_Random.getMapByIndex(index - 1);
 
                 if (map_id <= 0) {
                     return false;
@@ -318,8 +320,8 @@ public class DebugCommand {
                 return true;
             }
             case "/nextmap": {
-                int index = LoadData.GetMapIDIndex(c.getPlayer().getMapId());
-                int map_id = LoadData.GetMapIDByIndex(index + 1);
+                int index = DWI_Random.getMapIndex(c.getPlayer().getMapId());
+                int map_id = DWI_Random.getMapByIndex(index + 1);
 
                 if (map_id <= 0) {
                     return false;
@@ -356,9 +358,9 @@ public class DebugCommand {
             }
             // ランダム関連
             case "/randombeauty": {
-                int skinid = LoadData.GetRandomID(LoadData.DataType.SKIN);
-                int faceid = LoadData.GetRandomID(LoadData.DataType.FACE);
-                int hairid = LoadData.GetRandomID(LoadData.DataType.HAIR);
+                int skinid = DWI_LoadXML.getSkin().getRandom();
+                int faceid = DWI_LoadXML.getFace().getRandom();
+                int hairid = DWI_LoadXML.getHair().getRandom();
 
                 chr.setSkinColor((byte) (skinid % 100));
                 chr.setFace(faceid);
@@ -369,7 +371,7 @@ public class DebugCommand {
             }
             case "/randomdrop": {
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                int itemid = LoadData.GetRandomID(LoadData.DataType.ITEM);
+                int itemid = DWI_LoadXML.getItem().getRandom();
                 IItem toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
                 chr.getMap().spawnItemDrop(c.getPlayer(), c.getPlayer(), toDrop, c.getPlayer().getPosition(), true, true);
                 String item_name = MapleItemInformationProvider.getInstance().getName(toDrop.getItemId());
@@ -390,7 +392,7 @@ public class DebugCommand {
                 }
 
                 for (int i = 0; i < mob_count; i++) {
-                    int mobid = LoadData.GetRandomID(LoadData.DataType.MOB);
+                    int mobid = DWI_LoadXML.getMob().getRandom();
                     Debug.InfoLog("RandomSpawn: " + mobid);
                     MapleMonster mob = MapleLifeFactory.getMonster(mobid);
                     chr.getMap().spawnMonsterOnGroundBelow(mob, c.getPlayer().getPosition());
@@ -400,7 +402,7 @@ public class DebugCommand {
                 return true;
             }
             case "/randommap": {
-                int mapid = LoadData.GetRandomID(LoadData.DataType.MAP);
+                int mapid = DWI_LoadXML.getMap().getRandom();
                 MapleMap map = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(mapid);
                 chr.changeMap(map, map.getPortal(0));
                 chr.DebugMsg("[RandomMap] " + map.getId() + " - " + map.getStreetName() + "_" + map.getMapName()); // MapName code is buggy.
@@ -421,7 +423,7 @@ public class DebugCommand {
                 }
                 int map_id_to = parseInt(splitted[1]);
 
-                if (map_id_to == 0 || !LoadData.IsValidMapID(map_id_to)) {
+                if (map_id_to == 0 || !DWI_Validation.isValidMapID(map_id_to)) {
                     chr.DebugMsg("[AddPortal] Invalid MapID.");
                     return false;
                 }
@@ -449,7 +451,7 @@ public class DebugCommand {
     }
 
     public static boolean changeMap(MapleCharacter chr, int map_id) {
-        if (!LoadData.IsValidMapID(map_id)) {
+        if (!DWI_Validation.isValidMapID(map_id)) {
             return false;
         }
 
@@ -569,7 +571,7 @@ public class DebugCommand {
             }
         }
 
-        if (LoadData.IsValidNPCID(npc_id)) {
+        if (DWI_Validation.isValidNPCID(npc_id)) {
             remoteNPCTalk(c, npc_id);
         } else {
             remoteNPCTalk(c, npc_id, def_npc_id);

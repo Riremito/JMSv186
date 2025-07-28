@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +16,13 @@
  *
  *
  */
-package wz;
+package data.wz.ids;
 
 /**
  *
  * @author Riremito
  */
-public class DefaultData {
+public class DWI_Dafault {
 
     public static final int JOB = 210;
     public static final int SKIN = 3;

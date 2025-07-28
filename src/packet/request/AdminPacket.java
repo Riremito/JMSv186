@@ -4,6 +4,8 @@ package packet.request;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleStat;
+import data.wz.ids.DWI_Validation;
+import data.wz.ids.DWI_LoadXML;
 import debug.Debug;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -233,9 +235,9 @@ public class AdminPacket {
     }
 
     private static boolean ChangeJob(MapleCharacter chr, int jobid) {
-        if (!LoadData.IsValidJobID(jobid)) {
+        if (!DWI_Validation.isValidJobID(jobid)) {
             chr.DebugMsg("Invalid JobID");
-            chr.DebugMsg("Vaild JobID: " + LoadData.GetJobIDs());
+            chr.DebugMsg("Vaild JobID: " + DWI_LoadXML.GetJobIDs());
             return false;
         }
 
@@ -286,7 +288,7 @@ public class AdminPacket {
     }
 
     private static boolean CreateNPC(MapleCharacter chr, int npcid, int x, int y) {
-        if (!LoadData.IsValidNPCID(npcid)) {
+        if (!DWI_Validation.isValidNPCID(npcid)) {
             chr.DebugMsg("Invalid NPCID");
             return false;
         }

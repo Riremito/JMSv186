@@ -24,6 +24,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
+import data.wz.ids.DWI_Random;
 import java.io.Serializable;
 import server.Randomizer;
 import wz.LoadData;
@@ -491,10 +492,10 @@ public class Equip extends Item implements IEquip, Serializable {
             }
         }
 
-        setPotential1(LoadData.getRandomPotential(newrank));
-        setPotential2(LoadData.getRandomPotential((2 <= newrank) ? ((50 <= Randomizer.nextInt(100)) ? newrank : newrank - 1) : 1));
+        setPotential1(DWI_Random.getRandomPotential(newrank));
+        setPotential2(DWI_Random.getRandomPotential((2 <= newrank) ? ((50 <= Randomizer.nextInt(100)) ? newrank : newrank - 1) : 1));
         if (lines == 3) {
-            setPotential3(LoadData.getRandomPotential((2 <= newrank) ? ((50 <= Randomizer.nextInt(100)) ? newrank : newrank - 1) : 1));
+            setPotential3(DWI_Random.getRandomPotential((2 <= newrank) ? ((50 <= Randomizer.nextInt(100)) ? newrank : newrank - 1) : 1));
         }
         return true;
     }

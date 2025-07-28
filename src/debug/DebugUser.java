@@ -23,6 +23,7 @@ import client.inventory.Item;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import config.DeveloperMode;
+import data.wz.ids.DWI_Validation;
 import server.MapleItemInformationProvider;
 import wz.LoadData;
 
@@ -38,7 +39,7 @@ public class DebugUser {
     }
 
     public static boolean AddItem(MapleCharacter chr, int itemid, int count) {
-        if (!LoadData.IsValidItemID(itemid)) {
+        if (!DWI_Validation.isValidItemID(itemid)) {
             return false;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();

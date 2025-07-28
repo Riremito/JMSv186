@@ -23,6 +23,7 @@ import data.wz.DW_Character;
 import data.wz.DW_Etc;
 import data.wz.DW_Item;
 import data.wz.DW_String;
+import data.wz.ids.DWI_LoadXML;
 import debug.Debug;
 import java.util.LinkedList;
 import provider.MapleData;
@@ -206,19 +207,19 @@ public class MapleItemInformationProvider {
             int potential_id = Integer.parseInt(dat.getName());
             switch (potential_id / 10000) {
                 case 1: {
-                    LoadData.potential_rare.add(potential_id);
+                    DWI_LoadXML.potential_rare.add(potential_id);
                     break;
                 }
                 case 2: {
-                    LoadData.potential_epic.add(potential_id);
+                    DWI_LoadXML.potential_epic.add(potential_id);
                     break;
                 }
                 case 3: {
-                    LoadData.potential_unique.add(potential_id);
+                    DWI_LoadXML.potential_unique.add(potential_id);
                     break;
                 }
                 case 4: {
-                    LoadData.potential_legendary.add(potential_id);
+                    DWI_LoadXML.potential_legendary.add(potential_id);
                     break;
                 }
                 default: {

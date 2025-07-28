@@ -19,6 +19,7 @@ import client.inventory.MapleInventoryIdentifier;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
+import data.wz.ids.DWI_Validation;
 import database.DatabaseConnection;
 import packet.ops.OpsShop;
 import packet.response.ResCShopDlg;
@@ -77,7 +78,7 @@ public class MapleShop {
     }
 
     public void addItem(MapleShopItem item) {
-        if (LoadData.IsValidItemID(item.getItemId())) {
+        if (DWI_Validation.isValidItemID(item.getItemId())) {
             items.add(item);
         }
     }
