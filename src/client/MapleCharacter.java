@@ -151,7 +151,6 @@ import tools.ConcurrentEnumMap;
 import tools.FileoutputUtil;
 import server.network.MockIOSession;
 import data.wz.ids.DWI_Dafault;
-import wz.LoadData;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Serializable {
 

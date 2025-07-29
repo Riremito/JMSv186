@@ -16,31 +16,21 @@ import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import config.ContentCustom;
 import config.ContentState;
-import config.Region;
-import config.ServerConfig;
-import config.Version;
 import data.wz.DW_Character;
 import data.wz.DW_Etc;
 import data.wz.DW_Item;
 import data.wz.DW_String;
-import data.wz.ids.DWI_LoadXML;
-import debug.Debug;
-import java.util.LinkedList;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
 import provider.MapleDataTool;
-import provider.WzXML.MapleDataType;
-import server.StructSetItem.SetItem;
 import tools.Pair;
-import wz.LoadData;
 
 public class MapleItemInformationProvider {
 
     private final static MapleItemInformationProvider instance = new MapleItemInformationProvider();
     protected final Map<Integer, List<Integer>> scrollReqCache = new HashMap<Integer, List<Integer>>();
     protected final Map<Integer, Short> slotMaxCache = new HashMap<Integer, Short>();
-    protected final Map<Integer, List<StructPotentialItem>> potentialCache = new HashMap<Integer, List<StructPotentialItem>>();
     protected final Map<Integer, MapleStatEffect> itemEffects = new HashMap<Integer, MapleStatEffect>();
     protected final Map<Integer, Map<String, Integer>> equipStatsCache = new HashMap<Integer, Map<String, Integer>>();
     protected final Map<Integer, Map<String, Byte>> itemMakeStatsCache = new HashMap<Integer, Map<String, Byte>>();
@@ -71,172 +61,14 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<Integer, Map<Integer, Map<String, Integer>>>();
     protected final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<Integer, Map<Integer, List<Integer>>>();
     protected final Map<Integer, Pair<Integer, List<StructRewardItem>>> RewardItem = new HashMap<Integer, Pair<Integer, List<StructRewardItem>>>();
-    protected final Map<Integer, StructSetItem> setItems = new HashMap<Integer, StructSetItem>();
     protected final Map<Integer, Pair<Integer, List<Integer>>> questItems = new HashMap<Integer, Pair<Integer, List<Integer>>>();
 
-    protected MapleItemInformationProvider() {
-        //System.out.println("Loading MapleItemInformationProvider :::");
+    public final StructSetItem getSetItem(int setItemId) {
+        return DW_Etc.getSetItemInfoList().get(setItemId);
     }
 
-    public final void load() {
-        if (setItems.size() != 0 || potentialCache.size() != 0) {
-            return;
-        }
-        getAllItems();
-        // 潜在能力実装がv186のためそれ以前では存在しない
-        // v186以外で全然違うので使い物にならない
-        if (!ServerConfig.JMS186orLater()) {
-            return;
-        }
-        final MapleData setsData = DW_Etc.getWzRoot().getData("SetItemInfo.img");
-        StructSetItem itemz;
-        SetItem itez;
-        for (MapleData dat : setsData) {
-            itemz = new StructSetItem();
-            itemz.setItemID = Integer.parseInt(dat.getName());
-            itemz.completeCount = MapleDataTool.getIntConvert("completeCount", dat, 0);
-            for (MapleData level : dat.getChildByPath("ItemID")) {
-                if (level.getType() != MapleDataType.INT) {
-                    Debug.ErrorLog("SetItemInfo.img, " + dat.getName() + " error");
-                    continue;
-                }
-                itemz.itemIDs.add(MapleDataTool.getIntConvert(level));
-            }
-            for (MapleData level : dat.getChildByPath("Effect")) {
-                itez = new SetItem();
-                itez.incPDD = MapleDataTool.getIntConvert("incPDD", level, 0);
-                itez.incMDD = MapleDataTool.getIntConvert("incMDD", level, 0);
-                itez.incSTR = MapleDataTool.getIntConvert("incSTR", level, 0);
-                itez.incDEX = MapleDataTool.getIntConvert("incDEX", level, 0);
-                itez.incINT = MapleDataTool.getIntConvert("incINT", level, 0);
-                itez.incLUK = MapleDataTool.getIntConvert("incLUK", level, 0);
-                itez.incACC = MapleDataTool.getIntConvert("incACC", level, 0);
-                itez.incPAD = MapleDataTool.getIntConvert("incPAD", level, 0);
-                itez.incMAD = MapleDataTool.getIntConvert("incMAD", level, 0);
-                itez.incSpeed = MapleDataTool.getIntConvert("incSpeed", level, 0);
-                itez.incMHP = MapleDataTool.getIntConvert("incMHP", level, 0);
-                itez.incMMP = MapleDataTool.getIntConvert("incMMP", level, 0);
-                itemz.items.put(Integer.parseInt(level.getName()), itez);
-            }
-            setItems.put(itemz.setItemID, itemz);
-        }
-        final MapleData potsData = DW_Item.getWzRoot().getData("ItemOption.img");
-        StructPotentialItem item;
-        List<StructPotentialItem> items;
-        for (MapleData dat : potsData) {
-            items = new LinkedList<StructPotentialItem>();
-            for (MapleData level : dat.getChildByPath("level")) {
-                item = new StructPotentialItem();
-                item.optionType = MapleDataTool.getIntConvert("info/optionType", dat, 0);
-                item.reqLevel = MapleDataTool.getIntConvert("info/reqLevel", dat, 0);
-                item.face = MapleDataTool.getString("face", level, "");
-                item.boss = MapleDataTool.getIntConvert("boss", level, 0) > 0;
-                item.potentialID = Integer.parseInt(dat.getName());
-                item.attackType = (short) MapleDataTool.getIntConvert("attackType", level, 0);
-                item.incMHP = (short) MapleDataTool.getIntConvert("incMHP", level, 0);
-                item.incMMP = (short) MapleDataTool.getIntConvert("incMMP", level, 0);
-
-                item.incSTR = (byte) MapleDataTool.getIntConvert("incSTR", level, 0);
-                item.incDEX = (byte) MapleDataTool.getIntConvert("incDEX", level, 0);
-                item.incINT = (byte) MapleDataTool.getIntConvert("incINT", level, 0);
-                item.incLUK = (byte) MapleDataTool.getIntConvert("incLUK", level, 0);
-                item.incACC = (byte) MapleDataTool.getIntConvert("incACC", level, 0);
-                item.incEVA = (byte) MapleDataTool.getIntConvert("incEVA", level, 0);
-                item.incSpeed = (byte) MapleDataTool.getIntConvert("incSpeed", level, 0);
-                item.incJump = (byte) MapleDataTool.getIntConvert("incJump", level, 0);
-                item.incPAD = (byte) MapleDataTool.getIntConvert("incPAD", level, 0);
-                item.incMAD = (byte) MapleDataTool.getIntConvert("incMAD", level, 0);
-                item.incPDD = (byte) MapleDataTool.getIntConvert("incPDD", level, 0);
-                item.incMDD = (byte) MapleDataTool.getIntConvert("incMDD", level, 0);
-                item.prop = (byte) MapleDataTool.getIntConvert("prop", level, 0);
-                item.time = (byte) MapleDataTool.getIntConvert("time", level, 0);
-                item.incSTRr = (byte) MapleDataTool.getIntConvert("incSTRr", level, 0);
-                item.incDEXr = (byte) MapleDataTool.getIntConvert("incDEXr", level, 0);
-                item.incINTr = (byte) MapleDataTool.getIntConvert("incINTr", level, 0);
-                item.incLUKr = (byte) MapleDataTool.getIntConvert("incLUKr", level, 0);
-                item.incMHPr = (byte) MapleDataTool.getIntConvert("incMHPr", level, 0);
-                item.incMMPr = (byte) MapleDataTool.getIntConvert("incMMPr", level, 0);
-                item.incACCr = (byte) MapleDataTool.getIntConvert("incACCr", level, 0);
-                item.incEVAr = (byte) MapleDataTool.getIntConvert("incEVAr", level, 0);
-                item.incPADr = (byte) MapleDataTool.getIntConvert("incPADr", level, 0);
-                item.incMADr = (byte) MapleDataTool.getIntConvert("incMADr", level, 0);
-                item.incPDDr = (byte) MapleDataTool.getIntConvert("incPDDr", level, 0);
-                item.incMDDr = (byte) MapleDataTool.getIntConvert("incMDDr", level, 0);
-                item.incCr = (byte) MapleDataTool.getIntConvert("incCr", level, 0);
-                item.incDAMr = (byte) MapleDataTool.getIntConvert("incDAMr", level, 0);
-                item.RecoveryHP = (byte) MapleDataTool.getIntConvert("RecoveryHP", level, 0);
-                item.RecoveryMP = (byte) MapleDataTool.getIntConvert("RecoveryMP", level, 0);
-                item.HP = (byte) MapleDataTool.getIntConvert("HP", level, 0);
-                item.MP = (byte) MapleDataTool.getIntConvert("MP", level, 0);
-                item.level = (byte) MapleDataTool.getIntConvert("level", level, 0);
-                item.ignoreTargetDEF = (byte) MapleDataTool.getIntConvert("ignoreTargetDEF", level, 0);
-                item.ignoreDAM = (byte) MapleDataTool.getIntConvert("ignoreDAM", level, 0);
-                item.DAMreflect = (byte) MapleDataTool.getIntConvert("DAMreflect", level, 0);
-                item.mpconReduce = (byte) MapleDataTool.getIntConvert("mpconReduce", level, 0);
-                item.mpRestore = (byte) MapleDataTool.getIntConvert("mpRestore", level, 0);
-                item.incMesoProp = (byte) MapleDataTool.getIntConvert("incMesoProp", level, 0);
-                item.incRewardProp = (byte) MapleDataTool.getIntConvert("incRewardProp", level, 0);
-                item.incAllskill = (byte) MapleDataTool.getIntConvert("incAllskill", level, 0);
-                item.ignoreDAMr = (byte) MapleDataTool.getIntConvert("ignoreDAMr", level, 0);
-                item.RecoveryUP = (byte) MapleDataTool.getIntConvert("RecoveryUP", level, 0);
-                switch (item.potentialID) {
-                    case 31001:
-                    case 31002:
-                    case 31003:
-                    case 31004:
-                        item.skillID = item.potentialID - 23001;
-                        break;
-                    default:
-                        item.skillID = 0;
-                        break;
-                }
-                items.add(item);
-            }
-            potentialCache.put(Integer.parseInt(dat.getName()), items);
-
-            // 潜在能力, 不要なもの削除
-            if (Version.GreaterOrEqual(Region.JMS, 302)) {
-                StructPotentialItem ci = items.get(0);
-                if (ci.incSTRr == 0 && ci.incDEXr == 0 && ci.incINTr == 0 && ci.incLUKr == 0
-                        && ci.incMHPr == 0 && ci.incMMPr == 0
-                        && ci.incPADr == 0 && ci.incMADr == 0) {
-                    continue;
-                }
-            }
-
-            int potential_id = Integer.parseInt(dat.getName());
-            switch (potential_id / 10000) {
-                case 1: {
-                    DWI_LoadXML.potential_rare.add(potential_id);
-                    break;
-                }
-                case 2: {
-                    DWI_LoadXML.potential_epic.add(potential_id);
-                    break;
-                }
-                case 3: {
-                    DWI_LoadXML.potential_unique.add(potential_id);
-                    break;
-                }
-                case 4: {
-                    DWI_LoadXML.potential_legendary.add(potential_id);
-                    break;
-                }
-                default: {
-                    Debug.ErrorLog("invalid rank potential : " + potential_id);
-                    break;
-                }
-            }
-
-        }
-    }
-
-    public final List<StructPotentialItem> getPotentialInfo(final int potId) {
-        return potentialCache.get(potId);
-    }
-
-    public final Map<Integer, List<StructPotentialItem>> getAllPotentialInfo() {
-        return potentialCache;
+    public final List<StructPotentialItem> getPotentialInfo(int potId) {
+        return DW_Item.getItemOptionList().get(potId);
     }
 
     public static final MapleItemInformationProvider getInstance() {
@@ -673,10 +505,6 @@ public class MapleItemInformationProvider {
             return 0;
         }
         return getEquipStats(itemId).get("setItemID");
-    }
-
-    public final StructSetItem getSetItem(final int setItemId) {
-        return setItems.get((byte) setItemId);
     }
 
     public final List<Integer> getScrollReqs(final int itemId) {

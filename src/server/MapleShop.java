@@ -24,7 +24,6 @@ import database.DatabaseConnection;
 import packet.ops.OpsShop;
 import packet.response.ResCShopDlg;
 import packet.response.wrapper.ResWrapper;
-import wz.LoadData;
 
 public class MapleShop {
 

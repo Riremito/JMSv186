@@ -25,7 +25,6 @@ import client.inventory.MapleInventoryType;
 import config.DeveloperMode;
 import data.wz.ids.DWI_Validation;
 import server.MapleItemInformationProvider;
-import wz.LoadData;
 
 /**
  *

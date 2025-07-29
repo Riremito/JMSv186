@@ -18,6 +18,7 @@
  */
 package data.wz.ids;
 
+import data.wz.DW_Item;
 import java.util.Random;
 
 /**
@@ -40,16 +41,16 @@ public class DWI_Random {
     public static int getRandomPotential(int rank) {
         Random rand = new Random();
         if (rank == 1) {
-            return DWI_LoadXML.potential_rare.get(rand.nextInt(DWI_LoadXML.potential_rare.size()));
+            return DW_Item.getRarePotential().get(rand.nextInt(DW_Item.getRarePotential().size()));
         }
         if (rank == 2) {
-            return DWI_LoadXML.potential_epic.get(rand.nextInt(DWI_LoadXML.potential_epic.size()));
+            return DW_Item.getEpicPotential().get(rand.nextInt(DW_Item.getEpicPotential().size()));
         }
         if (rank == 3) {
-            return DWI_LoadXML.potential_unique.get(rand.nextInt(DWI_LoadXML.potential_unique.size()));
+            return DW_Item.getUniquePotential().get(rand.nextInt(DW_Item.getUniquePotential().size()));
         }
         if (rank == 4) {
-            return DWI_LoadXML.potential_legendary.get(rand.nextInt(DWI_LoadXML.potential_legendary.size()));
+            return DW_Item.getLegendaryPotential().get(rand.nextInt(DW_Item.getLegendaryPotential().size()));
         }
         return 0;
     }

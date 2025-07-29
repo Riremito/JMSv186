@@ -40,7 +40,6 @@ import server.CashItemFactory;
 import server.CashItemInfo;
 import server.MTSStorage;
 import server.MapleInventoryManipulator;
-import wz.LoadData;
 
 /**
  *

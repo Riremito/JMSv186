@@ -22,7 +22,6 @@ import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.life.PlayerNPC;
 import test.ToolMan;
-import wz.LoadData;
 
 public class Start {
 
@@ -93,14 +92,6 @@ public class Start {
 
         Debug.InfoLog("Start Login Server");
         LoginServer.run_startup_configurations();
-
-        // wz_xml
-        Debug.InfoLog("[wz_xml]");
-        if (DeveloperMode.DM_NO_XML.get()) {
-            Debug.InfoLog("No wz xml mode.");
-        } else {
-            LoadData.LoadDataFromXML();
-        }
         RandomRewards.getInstance();
 
         MapleOxQuizFactory.getInstance().initialize();

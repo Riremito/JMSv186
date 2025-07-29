@@ -21,13 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package client.inventory;
 
 import config.Region;
-import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
 import data.wz.ids.DWI_Random;
 import java.io.Serializable;
 import server.Randomizer;
-import wz.LoadData;
 
 public class Equip extends Item implements IEquip, Serializable {
 

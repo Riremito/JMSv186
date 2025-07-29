@@ -18,11 +18,17 @@
  */
 package data.wz;
 
+import debug.Debug;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataTool;
+import provider.WzXML.MapleDataType;
+import server.StructSetItem;
+import server.StructSetItem.SetItem;
 
 /**
  *
@@ -106,6 +112,60 @@ public class DW_Etc {
             }
         }
         return false;
+    }
+
+    private static MapleData img_SetItemInfo = null;
+    private static Map<Integer, StructSetItem> map_SetItemInfo = null;
+
+    public static MapleData getSetItemInfo() {
+        if (img_SetItemInfo == null) {
+            img_SetItemInfo = getWz().loadData("SetItemInfo.img");
+        }
+        return img_SetItemInfo;
+    }
+
+    public static Map<Integer, StructSetItem> getSetItemInfoList() {
+        if (map_SetItemInfo != null) {
+            return map_SetItemInfo;
+        }
+
+        map_SetItemInfo = new HashMap<>();
+
+        if (getSetItemInfo() == null) {
+            return map_SetItemInfo;
+        }
+
+        for (MapleData dat : getSetItemInfo()) {
+            StructSetItem itemz = new StructSetItem();
+            itemz.setItemID = Integer.parseInt(dat.getName());
+            itemz.completeCount = MapleDataTool.getIntConvert("completeCount", dat, 0);
+            for (MapleData level : dat.getChildByPath("ItemID")) {
+                if (level.getType() != MapleDataType.INT) {
+                    Debug.ErrorLog("SetItemInfo.img, " + dat.getName() + " error");
+                    continue;
+                }
+                itemz.itemIDs.add(MapleDataTool.getIntConvert(level));
+            }
+            for (MapleData level : dat.getChildByPath("Effect")) {
+                SetItem itez = new SetItem();
+                itez.incPDD = MapleDataTool.getIntConvert("incPDD", level, 0);
+                itez.incMDD = MapleDataTool.getIntConvert("incMDD", level, 0);
+                itez.incSTR = MapleDataTool.getIntConvert("incSTR", level, 0);
+                itez.incDEX = MapleDataTool.getIntConvert("incDEX", level, 0);
+                itez.incINT = MapleDataTool.getIntConvert("incINT", level, 0);
+                itez.incLUK = MapleDataTool.getIntConvert("incLUK", level, 0);
+                itez.incACC = MapleDataTool.getIntConvert("incACC", level, 0);
+                itez.incPAD = MapleDataTool.getIntConvert("incPAD", level, 0);
+                itez.incMAD = MapleDataTool.getIntConvert("incMAD", level, 0);
+                itez.incSpeed = MapleDataTool.getIntConvert("incSpeed", level, 0);
+                itez.incMHP = MapleDataTool.getIntConvert("incMHP", level, 0);
+                itez.incMMP = MapleDataTool.getIntConvert("incMMP", level, 0);
+                itemz.items.put(Integer.parseInt(level.getName()), itez);
+            }
+            map_SetItemInfo.put(itemz.setItemID, itemz);
+        }
+
+        return map_SetItemInfo;
     }
 
 }

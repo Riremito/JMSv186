@@ -80,7 +80,6 @@ import server.MapleShopItem;
 import server.MapleStatEffect;
 import server.SpeedRunner;
 import server.maps.SpeedRunType;
-import server.StructPotentialItem;
 import server.Timer.CloneTimer;
 import server.maps.Event_PyramidSubway;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -1296,30 +1295,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return false;
         }
         return MapleInventoryManipulator.drop(c, inv, (short) slot, (short) quantity, true);
-    }
-
-    public final List<Integer> getAllPotentialInfo() {
-        return new ArrayList<Integer>(MapleItemInformationProvider.getInstance().getAllPotentialInfo().keySet());
-    }
-
-    public final String getPotentialInfo(final int id) {
-        final List<StructPotentialItem> potInfo = MapleItemInformationProvider.getInstance().getPotentialInfo(id);
-        final StringBuilder builder = new StringBuilder("#b#ePOTENTIAL INFO FOR ID: ");
-        builder.append(id);
-        builder.append("#n#k\r\n\r\n");
-        int minLevel = 1, maxLevel = 10;
-        for (StructPotentialItem item : potInfo) {
-            builder.append("#eLevels ");
-            builder.append(minLevel);
-            builder.append("~");
-            builder.append(maxLevel);
-            builder.append(": #n");
-            builder.append(item.toString());
-            minLevel += 10;
-            maxLevel += 10;
-            builder.append("\r\n");
-        }
-        return builder.toString();
     }
 
     public final void sendRPS() {

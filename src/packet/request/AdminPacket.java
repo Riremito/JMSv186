@@ -16,7 +16,6 @@ import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
 import server.maps.MapleMap;
 import tools.Pair;
-import wz.LoadData;
 
 // CP_Admin, CP_Log
 public class AdminPacket {

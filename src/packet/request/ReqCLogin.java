@@ -45,7 +45,6 @@ import packet.response.ResCClientSocket;
 import packet.response.ResCLogin;
 import packet.response.ResCLogin.LoginResult;
 import server.MapleItemInformationProvider;
-import wz.LoadData;
 
 /**
  *

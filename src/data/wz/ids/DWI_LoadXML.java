@@ -77,10 +77,6 @@ public class DWI_LoadXML {
         return ids_mob;
     }
 
-    public static final ArrayList<Integer> potential_unique = new ArrayList<Integer>();
-    public static final ArrayList<Integer> potential_legendary = new ArrayList<Integer>();
-    public static final ArrayList<Integer> potential_rare = new ArrayList<Integer>();
-    public static final ArrayList<Integer> potential_epic = new ArrayList<Integer>();
     public static final ArrayList<Integer> reactorids = new ArrayList<Integer>();
 
     public static int LoadSkinXMLs(String path, String regex, ArrayList<Integer> list) {
