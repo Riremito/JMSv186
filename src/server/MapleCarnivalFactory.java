@@ -2,7 +2,6 @@ package server;
 
 import client.MapleDisease;
 import data.wz.DW_Skill;
-import server.life.MobSkillFactory;
 import server.life.MobSkill;
 
 public class MapleCarnivalFactory {
@@ -34,7 +33,7 @@ public class MapleCarnivalFactory {
         }
 
         public MobSkill getSkill() {
-            return MobSkillFactory.getMobSkill(skillid, 1); //level?
+            return DW_Skill.getMobSkillData(skillid, 1); //level?
         }
 
         public MapleDisease getDisease() {

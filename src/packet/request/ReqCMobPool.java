@@ -6,6 +6,7 @@ import client.MapleClient;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
+import data.wz.DW_Skill;
 import debug.Debug;
 import handling.channel.handler.MobHandler;
 import packet.ClientPacket;
@@ -14,7 +15,6 @@ import packet.response.ResCMobPool;
 import server.Randomizer;
 import server.life.MapleMonster;
 import server.life.MobSkill;
-import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import tools.Pair;
 
@@ -172,7 +172,7 @@ public class ReqCMobPool {
                 realskill = skillToUse.getLeft();
                 level = skillToUse.getRight();
                 // Skill ID and Level
-                final MobSkill mobSkill = MobSkillFactory.getMobSkill(realskill, level);
+                final MobSkill mobSkill = DW_Skill.getMobSkillData(realskill, level);
 
                 if (mobSkill != null && !mobSkill.checkCurrentBuff(chr, monster)) {
                     final long now = System.currentTimeMillis();

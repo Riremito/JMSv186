@@ -219,14 +219,14 @@ public class DW_Item {
     }
 
     // Pet
-    private static Map<Pair<Integer, Integer>, PetCommand> petCommands = null;
-    private static Map<Integer, Integer> petHunger = null;
+    private static Map<Pair<Integer, Integer>, PetCommand> map_petCommands = null;
+    private static Map<Integer, Integer> map_petHunger = null;
 
     public static PetCommand getPetCommand(final int petId, final int skillId) {
-        if (petCommands == null) {
-            petCommands = new HashMap<>();
+        if (map_petCommands == null) {
+            map_petCommands = new HashMap<>();
         }
-        PetCommand pc_found = petCommands.get(new Pair<>(petId, skillId));
+        PetCommand pc_found = map_petCommands.get(new Pair<>(petId, skillId));
         if (pc_found != null) {
             return pc_found;
         }
@@ -239,22 +239,22 @@ public class DW_Item {
             inc = MapleDataTool.getInt("interact/" + skillId + "/inc", skillData, 0);
         }
         PetCommand ret = new PetCommand(petId, skillId, prob, inc);
-        petCommands.put(new Pair<>(petId, skillId), ret);
+        map_petCommands.put(new Pair<>(petId, skillId), ret);
         return ret;
     }
 
     public static int getHunger(final int petId) {
-        if (petHunger == null) {
-            petHunger = new HashMap<>();
+        if (map_petHunger == null) {
+            map_petHunger = new HashMap<>();
         }
-        Integer found = petHunger.get(petId);
+        Integer found = map_petHunger.get(petId);
         if (found != null) {
             return found;
         }
 
         MapleData hungerData = getWz().loadData("Pet/" + petId + ".img").getChildByPath("info/hungry");
         Integer ret = MapleDataTool.getInt(hungerData, 1);
-        petHunger.put(petId, ret);
+        map_petHunger.put(petId, ret);
         return ret;
     }
 

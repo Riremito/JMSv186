@@ -15,6 +15,7 @@ import client.inventory.MapleInventoryType;
 import client.messages.CommandProcessorUtil;
 import config.property.Property_Java;
 import constants.GameConstants;
+import data.wz.DW_Skill;
 import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.World;
@@ -56,7 +57,6 @@ import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.life.MapleMonsterInformationProvider;
 import server.life.MapleNPC;
-import server.life.MobSkillFactory;
 import server.life.OverrideMonsterStats;
 import server.maps.MapleMap;
 import server.maps.MapleMapObject;
@@ -1264,13 +1264,13 @@ public class AdminCommand {
                 victim.setChair(0);
                 victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
                 victim.getMap().broadcastMessage(victim, ResCUserRemote.SetActivePortableChair(c.getPlayer().getId(), 0), false);
-                victim.giveDebuff(dis, MobSkillFactory.getMobSkill(type, CommandProcessorUtil.getOptionalIntArg(splitted, 3, 1)));
+                victim.giveDebuff(dis, DW_Skill.getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 3, 1)));
             } else {
                 for (MapleCharacter victim : c.getPlayer().getMap().getCharactersThreadsafe()) {
                     victim.setChair(0);
                     victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
                     victim.getMap().broadcastMessage(victim, ResCUserRemote.SetActivePortableChair(c.getPlayer().getId(), 0), false);
-                    victim.giveDebuff(dis, MobSkillFactory.getMobSkill(type, CommandProcessorUtil.getOptionalIntArg(splitted, 2, 1)));
+                    victim.giveDebuff(dis, DW_Skill.getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 2, 1)));
                 }
             }
             return 1;

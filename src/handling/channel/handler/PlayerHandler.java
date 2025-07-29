@@ -38,6 +38,7 @@ import config.ServerConfig;
 import config.Version;
 import constants.MapConstants;
 import data.wz.DW_Mob;
+import data.wz.DW_Skill;
 import debug.Debug;
 import handling.channel.ChannelServer;
 import packet.ClientPacket;
@@ -56,7 +57,6 @@ import server.events.MapleSnowball.MapleSnowballs;
 import server.life.MapleMonster;
 import server.life.MobAttackInfo;
 import server.life.MobSkill;
-import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 import server.maps.FieldLimitType;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -168,7 +168,7 @@ public class PlayerHandler {
                     } else {
                         mpattack += attackInfo.getMpBurn();
                     }
-                    final MobSkill skill = MobSkillFactory.getMobSkill(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
+                    final MobSkill skill = DW_Skill.getMobSkillData(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
                     if (skill != null && (damage == -1 || damage > 0)) {
                         //skill.applyEffect(chr, attacker, false);
                     }
@@ -193,7 +193,7 @@ public class PlayerHandler {
             //if (slea.available() == 3) {
             byte level = cp.Decode1();
             if (level > 0) {
-                final MobSkill skill = MobSkillFactory.getMobSkill(cp.Decode2(), level);
+                final MobSkill skill = DW_Skill.getMobSkillData(cp.Decode2(), level);
                 if (skill != null) {
                     //skill.applyEffect(chr, attacker, false);
                 }

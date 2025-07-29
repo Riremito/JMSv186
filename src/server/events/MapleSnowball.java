@@ -23,11 +23,11 @@ package server.events;
 
 import client.MapleCharacter;
 import client.MapleDisease;
+import data.wz.DW_Skill;
 import java.util.concurrent.ScheduledFuture;
 import packet.response.ResCField_SnowBall;
 import packet.response.wrapper.ResWrapper;
 import server.Timer.EventTimer;
-import server.life.MobSkillFactory;
 import server.maps.MapleMap;
 
 public class MapleSnowball extends MapleEvent {
@@ -248,7 +248,7 @@ public class MapleSnowball extends MapleEvent {
                             }, 10000);
                             for (MapleCharacter chrz : chr.getMap().getCharactersThreadsafe()) {
                                 if ((ball.getTeam() == 0 && chr.getPosition().y < -80) || (ball.getTeam() == 1 && chr.getPosition().y > -80)) {
-                                    chrz.giveDebuff(MapleDisease.SEDUCE, MobSkillFactory.getMobSkill(128, 1)); //go left
+                                    chrz.giveDebuff(MapleDisease.SEDUCE, DW_Skill.getMobSkillData(128, 1)); //go left
                                 }
                             }
                         }

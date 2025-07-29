@@ -24,6 +24,7 @@ import client.Skill;
 import static client.SkillFactory.getName;
 import client.SummonSkillEntry;
 import debug.Debug;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,8 @@ import provider.MapleDataFileEntry;
 import provider.MapleDataProvider;
 import provider.MapleDataTool;
 import server.MapleCarnivalFactory;
+import server.life.MobSkill;
+import tools.Pair;
 
 /**
  *
@@ -146,6 +149,75 @@ public class DW_Skill {
         }
         return list;
     }
+    // Mob
+    private static Map<Pair<Integer, Integer>, MobSkill> map_mobSkills = null;
+    private static MapleData img_MobSkill = null;
+
+    private static MapleData getMobSkill() {
+        if (img_MobSkill == null) {
+            img_MobSkill = getWz().loadData("MobSkill.img");
+        }
+        return img_MobSkill;
+    }
+
+    public static MobSkill getMobSkillData(int skillId, int level) {
+        if (map_mobSkills == null) {
+            map_mobSkills = new HashMap<>();
+        }
+
+        MobSkill ms_found = map_mobSkills.get(new Pair<>(skillId, level));
+        if (ms_found != null) {
+            return ms_found;
+        }
+
+        if (getMobSkill() == null || getMobSkill().getChildren() == null || getMobSkill().getChildByPath(String.valueOf(skillId)) == null || getMobSkill().getChildByPath(String.valueOf(skillId)).getChildren() == null || getMobSkill().getChildByPath(String.valueOf(skillId)).getChildByPath("level") == null) {
+            return null;
+        }
+
+        final MapleData skillData = getMobSkill().getChildByPath(skillId + "/level/" + level);
+
+        if (skillData == null) {
+            return null;
+        }
+
+        if (skillData.getChildren() == null) {
+            return null;
+        }
+
+        List<Integer> toSummon = new ArrayList<>();
+        for (int i = 0; i > -1; i++) {
+            if (skillData.getChildByPath(String.valueOf(i)) == null) {
+                break;
+            }
+            toSummon.add(MapleDataTool.getInt(skillData.getChildByPath(String.valueOf(i)), 0));
+        }
+
+        final MapleData ltd = skillData.getChildByPath("lt");
+        Point lt = null;
+        Point rb = null;
+        if (ltd != null) {
+            lt = (Point) ltd.getData();
+            rb = (Point) skillData.getChildByPath("rb").getData();
+        }
+
+        MobSkill ret = new MobSkill(skillId, level);
+        ret.addSummons(toSummon);
+        ret.setCoolTime(MapleDataTool.getInt("interval", skillData, 0) * 1000);
+        ret.setDuration(MapleDataTool.getInt("time", skillData, 1) * 1000);
+        ret.setHp(MapleDataTool.getInt("hp", skillData, 100));
+        ret.setMpCon(MapleDataTool.getInt(skillData.getChildByPath("mpCon"), 0));
+        ret.setSpawnEffect(MapleDataTool.getInt("summonEffect", skillData, 0));
+        ret.setX(MapleDataTool.getInt("x", skillData, 1));
+        ret.setY(MapleDataTool.getInt("y", skillData, 1));
+        ret.setProp(MapleDataTool.getInt("prop", skillData, 100) / 100f);
+        ret.setLimit((short) MapleDataTool.getInt("limit", skillData, 0));
+        ret.setLtRb(lt, rb);
+
+        map_mobSkills.put(new Pair<>(skillId, level), ret);
+
+        return ret;
+    }
+
     // Monster Carnival
     private static Map<Integer, MapleCarnivalFactory.MCSkill> map_MCSkill = null;
     private static Map<Integer, MapleCarnivalFactory.MCSkill> map_MCGuardian = null;
