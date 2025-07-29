@@ -28,6 +28,10 @@ import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
 import provider.MapleDataProvider;
 import provider.MapleDataTool;
+import server.life.MapleMonster;
+import server.life.MobAttackInfo;
+import tools.Pair;
+import tools.StringUtil;
 
 /**
  *
@@ -46,6 +50,38 @@ public class DW_Mob {
 
     public static MapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
+    }
+
+    private static Map<Pair<Integer, Integer>, MobAttackInfo> map_mobAttacks = null;
+
+    public static MobAttackInfo getMobAttackInfo(MapleMonster mob, int attack) {
+        if (map_mobAttacks == null) {
+            map_mobAttacks = new HashMap<>();
+        }
+        MobAttackInfo mai_found = map_mobAttacks.get(new Pair<>(mob.getId(), attack));
+        if (mai_found != null) {
+            return mai_found;
+        }
+
+        MobAttackInfo ret = new MobAttackInfo();
+        MapleData mobData = getWzRoot().getData(StringUtil.getLeftPaddedStr(Integer.toString(mob.getId()) + ".img", '0', 11));
+        if (mobData != null) {
+            MapleData infoData = mobData.getChildByPath("info/link");
+            if (infoData != null) {
+                String linkedmob = MapleDataTool.getString("info/link", mobData);
+                mobData = getWzRoot().getData(StringUtil.getLeftPaddedStr(linkedmob + ".img", '0', 11));
+            }
+            final MapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
+            if (attackData != null) {
+                ret.setDeadlyAttack(attackData.getChildByPath("deadlyAttack") != null);
+                ret.setMpBurn(MapleDataTool.getInt("mpBurn", attackData, 0));
+                ret.setDiseaseSkill(MapleDataTool.getInt("disease", attackData, 0));
+                ret.setDiseaseLevel(MapleDataTool.getInt("level", attackData, 0));
+                ret.setMpCon(MapleDataTool.getInt("conMP", attackData, 0));
+            }
+        }
+        map_mobAttacks.put(new Pair<>(mob.getId(), attack), ret);
+        return ret;
     }
 
     private static Map<Integer, List<Integer>> map_QuestCountGroup = null;

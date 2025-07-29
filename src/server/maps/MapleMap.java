@@ -47,6 +47,7 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
+import data.wz.DW_Reactor;
 import database.DatabaseConnection;
 import debug.Debug;
 import server.network.MaplePacket;
@@ -3008,7 +3009,7 @@ public final class MapleMap {
             }
         }
         if (guardz != null) {
-            final MapleReactorStats stats = MapleReactorFactory.getReactor(9980000 + team);
+            final MapleReactorStats stats = DW_Reactor.getReactor(9980000 + team);
             final MapleReactor my = new MapleReactor(stats, 9980000 + team);
             stats.setFacingDirection((byte) 0); //always
             my.setPosition(guardz);

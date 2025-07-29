@@ -25,6 +25,7 @@ import config.property.Property_Java;
 import config.Region;
 import config.Version;
 import data.wz.DW_Map;
+import data.wz.DW_Reactor;
 import data.wz.DW_String;
 import data.wz.ids.DWI_Validation;
 import debug.Debug;
@@ -461,7 +462,7 @@ public class MapleMapFactory {
     }
 
     private final MapleReactor loadReactor(final MapleData reactor, final String id, final byte FacingDirection) {
-        final MapleReactorStats stats = MapleReactorFactory.getReactor(Integer.parseInt(id));
+        final MapleReactorStats stats = DW_Reactor.getReactor(Integer.parseInt(id));
         final MapleReactor myReactor = new MapleReactor(stats, Integer.parseInt(id));
 
         stats.setFacingDirection(FacingDirection);

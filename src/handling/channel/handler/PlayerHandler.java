@@ -37,6 +37,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import constants.MapConstants;
+import data.wz.DW_Mob;
 import debug.Debug;
 import handling.channel.ChannelServer;
 import packet.ClientPacket;
@@ -54,7 +55,6 @@ import server.Randomizer;
 import server.events.MapleSnowball.MapleSnowballs;
 import server.life.MapleMonster;
 import server.life.MobAttackInfo;
-import server.life.MobAttackInfoFactory;
 import server.life.MobSkill;
 import server.life.MobSkillFactory;
 import server.maps.MapleMap;
@@ -160,7 +160,7 @@ public class PlayerHandler {
                 return;
             }
             if (type != -1) { // Bump damage
-                final MobAttackInfo attackInfo = MobAttackInfoFactory.getInstance().getMobAttackInfo(attacker, type);
+                final MobAttackInfo attackInfo = DW_Mob.getMobAttackInfo(attacker, type);
                 if (attackInfo != null) {
                     if (attackInfo.isDeadlyAttack()) {
                         isDeadlyAttack = true;
