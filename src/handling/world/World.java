@@ -24,7 +24,7 @@ import client.MapleCoolDownValueHolder;
 import client.MapleDiseaseValueHolder;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
-import client.inventory.PetDataFactory;
+import data.wz.DW_Item;
 import database.DatabaseConnection;
 import server.network.MaplePacket;
 import handling.cashshop.CashShopServer;
@@ -1406,7 +1406,7 @@ public class World {
                             return;
                         }
                     }
-                    int newFullness = pet.getFullness() - PetDataFactory.getHunger(pet.getPetItemId());
+                    int newFullness = pet.getFullness() - DW_Item.getHunger(pet.getPetItemId());
                     if (newFullness <= 5) {
                         pet.setFullness(15);
                         chr.unequipPet(pet, true, true);

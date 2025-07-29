@@ -18,6 +18,7 @@
  */
 package data.wz;
 
+import client.inventory.PetCommand;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -27,6 +28,7 @@ import provider.MapleData;
 import provider.MapleDataProvider;
 import provider.MapleDataTool;
 import server.StructPotentialItem;
+import tools.Pair;
 
 /**
  *
@@ -214,6 +216,46 @@ public class DW_Item {
         }
         getItemOptionList();
         return list_LegendaryPotential;
+    }
+
+    // Pet
+    private static Map<Pair<Integer, Integer>, PetCommand> petCommands = null;
+    private static Map<Integer, Integer> petHunger = null;
+
+    public static PetCommand getPetCommand(final int petId, final int skillId) {
+        if (petCommands == null) {
+            petCommands = new HashMap<>();
+        }
+        PetCommand pc_found = petCommands.get(new Pair<>(petId, skillId));
+        if (pc_found != null) {
+            return pc_found;
+        }
+
+        MapleData skillData = getWz().loadData("Pet/" + petId + ".img");
+        int prob = 0;
+        int inc = 0;
+        if (skillData != null) {
+            prob = MapleDataTool.getInt("interact/" + skillId + "/prob", skillData, 0);
+            inc = MapleDataTool.getInt("interact/" + skillId + "/inc", skillData, 0);
+        }
+        PetCommand ret = new PetCommand(petId, skillId, prob, inc);
+        petCommands.put(new Pair<>(petId, skillId), ret);
+        return ret;
+    }
+
+    public static int getHunger(final int petId) {
+        if (petHunger == null) {
+            petHunger = new HashMap<>();
+        }
+        Integer found = petHunger.get(petId);
+        if (found != null) {
+            return found;
+        }
+
+        MapleData hungerData = getWz().loadData("Pet/" + petId + ".img").getChildByPath("info/hungry");
+        Integer ret = MapleDataTool.getInt(hungerData, 1);
+        petHunger.put(petId, ret);
+        return ret;
     }
 
 }

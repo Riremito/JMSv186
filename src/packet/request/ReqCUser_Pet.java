@@ -24,10 +24,9 @@ import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import client.inventory.PetCommand;
-import client.inventory.PetDataFactory;
 import config.Region;
-import config.ServerConfig;
 import config.Version;
+import data.wz.DW_Item;
 import handling.channel.handler.InventoryHandler;
 import handling.world.MaplePartyCharacter;
 import java.util.LinkedList;
@@ -255,7 +254,7 @@ public class ReqCUser_Pet {
         }
         slea.skip(5);
         final byte command = slea.readByte();
-        final PetCommand petCommand = PetDataFactory.getPetCommand(pet.getPetItemId(), (int) command);
+        final PetCommand petCommand = DW_Item.getPetCommand(pet.getPetItemId(), (int) command);
         boolean success = false;
         if (Randomizer.nextInt(99) <= petCommand.getProbability()) {
             success = true;
