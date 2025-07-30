@@ -29,14 +29,18 @@ import config.property.Property_Packet;
 import constants.GameConstants;
 import data.client.DC_Exp;
 import data.wz.DW_Skill;
+import data.wz.DW_String;
 import data.wz.ids.DWI_Random;
 import data.wz.ids.DWI_Validation;
 import data.wz.ids.DWI_LoadXML;
 import handling.channel.ChannelServer;
 import java.awt.Point;
+import java.util.ArrayList;
 import packet.request.ReqCUser;
 import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
+import provider.MapleData;
+import provider.MapleDataTool;
 import scripting.NPCScriptManager;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
@@ -159,6 +163,13 @@ public class DebugCommand {
                     return false;
                 }
                 chr.DebugMsg("[RemoteNPCTalk2] " + npc_id);
+                return true;
+            }
+            case "/search": {
+                if (splitted.length < 3) {
+                    return false;
+                }
+                searchString(chr, splitted[1].toLowerCase(), splitted[2]);
                 return true;
             }
             // ボス関連
@@ -616,6 +627,202 @@ public class DebugCommand {
             ISkill skill = SkillFactory.getSkill(skill_id);
             chr.changeSkillLevel(skill, (byte) 0, (byte) 0);
         }
+        return true;
+    }
+
+    static public class NameData {
+
+        public int id = 0;
+        boolean available = true;
+        public String name = null;
+        public String mapName = null;
+        public String streetName = null;
+    }
+
+    private static ArrayList<NameData> list_NameData_Npc = null;
+    private static ArrayList<NameData> list_NameData_Mob = null;
+    private static ArrayList<NameData> list_NameData_Item = null;
+    private static ArrayList<NameData> list_NameData_Map = null;
+    private static ArrayList<NameData> list_NameData_Skill = null;
+
+    private static boolean searchString(MapleCharacter chr, String type, String search_name) {
+
+        switch (type) {
+            case "npc": {
+                if (list_NameData_Npc == null) {
+                    list_NameData_Npc = new ArrayList<>();
+                    for (MapleData wz_data : DW_String.getNpc().getChildren()) {
+                        int id = Integer.parseInt(wz_data.getName());
+                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        NameData nd = new NameData();
+                        nd.id = id;
+                        nd.available = DWI_Validation.isValidNPCID(id);
+                        nd.name = name;
+                        list_NameData_Npc.add(nd);
+                    }
+
+                }
+                for (NameData nd : list_NameData_Npc) {
+                    if (nd.name.contains(search_name)) {
+                        if (nd.available) {
+                            chr.DebugMsg(nd.id + " : \"" + nd.name + "\"");
+                        } else {
+                            chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
+                        }
+                    }
+                }
+                return true;
+            }
+            case "mob": {
+                if (list_NameData_Mob == null) {
+                    list_NameData_Mob = new ArrayList<>();
+                    for (MapleData wz_data : DW_String.getMob().getChildren()) {
+                        int id = Integer.parseInt(wz_data.getName());
+                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        NameData nd = new NameData();
+                        nd.id = id;
+                        nd.available = DWI_Validation.isValidMobID(id);
+                        nd.name = name;
+                        list_NameData_Mob.add(nd);
+                    }
+
+                }
+                for (NameData nd : list_NameData_Mob) {
+                    if (nd.name.contains(search_name)) {
+                        if (nd.available) {
+                            chr.DebugMsg(nd.id + " : \"" + nd.name + "\"");
+                        } else {
+                            chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
+                        }
+                    }
+                }
+                return true;
+            }
+            case "item": {
+                if (list_NameData_Item == null) {
+                    list_NameData_Item = new ArrayList<>();
+                    for (MapleData wz_root : DW_String.getEqp().getChildren()) {
+                        for (MapleData wz_data : wz_root.getChildren()) {
+                            int id = Integer.parseInt(wz_data.getName());
+                            String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                            NameData nd = new NameData();
+                            nd.id = id;
+                            nd.available = DWI_Validation.isValidItemID(id);
+                            nd.name = name;
+                            list_NameData_Item.add(nd);
+                        }
+                    }
+                    for (MapleData wz_data : DW_String.getConsume().getChildren()) {
+                        int id = Integer.parseInt(wz_data.getName());
+                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        NameData nd = new NameData();
+                        nd.id = id;
+                        nd.available = DWI_Validation.isValidItemID(id);
+                        nd.name = name;
+                        list_NameData_Item.add(nd);
+                    }
+                    for (MapleData wz_data : DW_String.getIns().getChildren()) {
+                        int id = Integer.parseInt(wz_data.getName());
+                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        NameData nd = new NameData();
+                        nd.id = id;
+                        nd.available = DWI_Validation.isValidItemID(id);
+                        nd.name = name;
+                        list_NameData_Item.add(nd);
+                    }
+                    for (MapleData wz_data : DW_String.getEtc().getChildren()) {
+                        int id = Integer.parseInt(wz_data.getName());
+                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        NameData nd = new NameData();
+                        nd.id = id;
+                        nd.available = DWI_Validation.isValidItemID(id);
+                        nd.name = name;
+                        list_NameData_Item.add(nd);
+                    }
+                    for (MapleData wz_data : DW_String.getPet().getChildren()) {
+                        int id = Integer.parseInt(wz_data.getName());
+                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        NameData nd = new NameData();
+                        nd.id = id;
+                        nd.available = DWI_Validation.isValidItemID(id);
+                        nd.name = name;
+                        list_NameData_Item.add(nd);
+                    }
+                }
+                for (NameData nd : list_NameData_Item) {
+                    if (nd.name.contains(search_name)) {
+                        if (nd.available) {
+                            chr.DebugMsgItem(nd.id + " : \"" + nd.name + "\"", nd.id);
+                        } else {
+                            chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
+                        }
+                    }
+                }
+                return true;
+            }
+            case "map": {
+                if (list_NameData_Map == null) {
+                    list_NameData_Map = new ArrayList<>();
+                    for (MapleData wz_root : DW_String.getMap().getChildren()) {
+                        for (MapleData wz_data : wz_root.getChildren()) {
+                            int id = Integer.parseInt(wz_data.getName());
+                            String mapName = MapleDataTool.getString(wz_data.getChildByPath("mapName"), "");
+                            String streetName = MapleDataTool.getString(wz_data.getChildByPath("streetName"), "");
+                            NameData nd = new NameData();
+                            nd.id = id;
+                            nd.available = DWI_Validation.isValidMapID(id); // test
+                            nd.mapName = mapName;
+                            nd.streetName = streetName;
+                            list_NameData_Map.add(nd);
+                        }
+                    }
+
+                }
+                for (NameData nd : list_NameData_Map) {
+                    if (nd.mapName.contains(search_name) || nd.streetName.contains(search_name)) {
+                        if (nd.available) {
+                            chr.DebugMsg(nd.id + " : \"" + nd.streetName + "\" - \"" + nd.mapName + "\"");
+                        } else {
+                            chr.DebugMsg2(nd.id + " : \"" + nd.streetName + "\" - \"" + nd.mapName + "\"");
+                        }
+                    }
+                }
+                return true;
+            }
+            case "skill": {
+                if (list_NameData_Skill == null) {
+                    list_NameData_Skill = new ArrayList<>();
+                    for (MapleData wz_data : DW_String.getSkill().getChildren()) {
+                        if (wz_data.getChildByPath("bookName") != null) {
+                            continue;
+                        }
+                        int id = Integer.parseInt(wz_data.getName());
+                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        NameData nd = new NameData();
+                        nd.id = id;
+                        nd.available = true; // test
+                        nd.name = name;
+                        list_NameData_Skill.add(nd);
+                    }
+
+                }
+                for (NameData nd : list_NameData_Skill) {
+                    if (nd.name.contains(search_name)) {
+                        if (nd.available) {
+                            chr.DebugMsg(nd.id + " : \"" + nd.name + "\"");
+                        } else {
+                            chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
+                        }
+                    }
+                }
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        chr.DebugMsg("searchString==");
         return true;
     }
 
