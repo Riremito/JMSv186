@@ -42,7 +42,7 @@ public class DW_Reactor {
         return wz;
     }
 
-    public static MapleDataProvider getWzRoot() {
+    private static MapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
     }
     private static Map<Integer, MapleReactorStats> map_reactorStats = null;

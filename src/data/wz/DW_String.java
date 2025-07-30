@@ -37,7 +37,7 @@ public class DW_String {
         return wz;
     }
 
-    public static MapleDataProvider getWzRoot() {
+    private static MapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
     }
 

@@ -36,7 +36,7 @@ public class DW_Quest {
         return wz;
     }
 
-    public static MapleDataProvider getWzRoot() {
+    private static MapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
     }
 

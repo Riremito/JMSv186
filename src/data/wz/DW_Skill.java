@@ -52,7 +52,7 @@ public class DW_Skill {
         return wz;
     }
 
-    public static MapleDataProvider getWzRoot() {
+    private static MapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
     }
 
