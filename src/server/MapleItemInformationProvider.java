@@ -20,9 +20,9 @@ import data.wz.DW_Character;
 import data.wz.DW_Etc;
 import data.wz.DW_Item;
 import data.wz.DW_String;
+import debug.Debug;
+import debug.DebugLoadTime;
 import provider.MapleData;
-import provider.MapleDataDirectoryEntry;
-import provider.MapleDataFileEntry;
 import provider.MapleDataTool;
 import tools.Pair;
 
@@ -185,34 +185,24 @@ public class MapleItemInformationProvider {
         }
     }
 
-    protected final MapleData getItemData(final int itemId) {
-        MapleData ret = null;
-        final String idStr = "0" + String.valueOf(itemId);
-        MapleDataDirectoryEntry root = DW_Item.getWzRoot().getRoot();
-        for (final MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
-            // we should have .img files here beginning with the first 4 IID
-            for (final MapleDataFileEntry iFile : topDir.getFiles()) {
-                if (iFile.getName().equals(idStr.substring(0, 4) + ".img")) {
-                    ret = DW_Item.getWzRoot().getData(topDir.getName() + "/" + iFile.getName());
-                    if (ret == null) {
-                        return null;
-                    }
-                    ret = ret.getChildByPath(idStr);
-                    return ret;
-                } else if (iFile.getName().equals(idStr.substring(1) + ".img")) {
-                    return DW_Item.getWzRoot().getData(topDir.getName() + "/" + iFile.getName());
-                }
-            }
+    protected final MapleData getItemData(int id) {
+        //DebugLoadTime dlt = new DebugLoadTime("getItemData : " + id);
+
+        MapleData md_character = DW_Character.getItemData(id);
+        if (md_character != null) {
+            //dlt.End();
+            return md_character;
         }
-        root = DW_Character.getWzRoot().getRoot();
-        for (final MapleDataDirectoryEntry topDir : root.getSubdirectories()) {
-            for (final MapleDataFileEntry iFile : topDir.getFiles()) {
-                if (iFile.getName().equals(idStr + ".img")) {
-                    return DW_Character.getWzRoot().getData(topDir.getName() + "/" + iFile.getName());
-                }
-            }
+
+        MapleData md_item = DW_Item.getItemData(id);
+        if (md_item != null) {
+            //dlt.End();
+            return md_item;
         }
-        return ret;
+
+        //dlt.End();
+        Debug.ErrorLog("getItemData : " + id);
+        return null;
     }
 
     /**

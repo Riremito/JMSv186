@@ -19,12 +19,15 @@
 package data.wz;
 
 import client.inventory.PetCommand;
+import debug.Debug;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import provider.MapleData;
+import provider.MapleDataDirectoryEntry;
+import provider.MapleDataFileEntry;
 import provider.MapleDataProvider;
 import provider.MapleDataTool;
 import server.StructPotentialItem;
@@ -47,6 +50,69 @@ public class DW_Item {
 
     public static MapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
+    }
+
+    private static final int item_sub_type_pet = 500;
+
+    public static MapleData getItemData(int id) {
+        int item_type = id / 1000000;
+        if (item_type <= 1) {
+            return null;
+        }
+        int item_sub_type = id / 10000;
+
+        // Pet
+        if (item_sub_type == item_sub_type_pet) {
+            return getItemData_Pet(id);
+        }
+
+        String target_img_name = String.format("%04d.img", item_sub_type);
+        String target_dir_name = String.format("%08d", id);
+
+        for (MapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
+            for (MapleDataFileEntry mdfe : mdde.getFiles()) {
+                if (mdfe.getName().equals(target_img_name)) {
+                    MapleData md_item_sub_type = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
+                    if (md_item_sub_type == null) {
+                        Debug.ErrorLog("getItemData : Invalid item type = " + item_sub_type);
+                        return null;
+                    }
+                    MapleData md_item = md_item_sub_type.getChildByPath(target_dir_name);
+                    if (md_item == null) {
+                        Debug.ErrorLog("getItemData : Invalid item id = " + id);
+                        return null;
+                    }
+                    return md_item;
+                }
+            }
+        }
+
+        Debug.ErrorLog("getItemData : err item id " + id);
+        return null;
+    }
+
+    public static MapleData getItemData_Pet(int id) {
+        int item_sub_type = id / 10000;
+        if (item_sub_type != item_sub_type_pet) {
+            return null;
+        }
+        String target_img_name = String.format("%d.img", id);
+
+        for (MapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
+            if (mdde.getName().equals("Pet")) {
+                for (MapleDataFileEntry mdfe : mdde.getFiles()) {
+                    if (mdfe.getName().equals(target_img_name)) {
+                        MapleData md_pet = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
+                        if (md_pet == null) {
+                            Debug.ErrorLog("getItemData_Pet : Invalid pet id = " + id);
+                            return null;
+                        }
+                    }
+                }
+                return null;
+            }
+        }
+        return null;
     }
 
     private static MapleData img_ItemOption = null;

@@ -18,6 +18,10 @@
  */
 package data.wz;
 
+import debug.Debug;
+import provider.MapleData;
+import provider.MapleDataDirectoryEntry;
+import provider.MapleDataFileEntry;
 import provider.MapleDataProvider;
 
 /**
@@ -35,7 +39,31 @@ public class DW_Character {
         return wz;
     }
 
-    public static MapleDataProvider getWzRoot() {
+    private static MapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
+    }
+
+    public static MapleData getItemData(int id) {
+        int item_type = id / 1000000;
+        if (2 <= item_type) {
+            return null;
+        }
+
+        String target_img_name = String.format("%08d.img", id);
+        for (MapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
+            for (MapleDataFileEntry mdfe : mdde.getFiles()) {
+                if (mdfe.getName().equals(target_img_name)) {
+                    MapleData md_equip = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
+                    if (md_equip == null) {
+                        Debug.ErrorLog("getItemData : Invalid equip id = " + id);
+                        return null;
+                    }
+                    return md_equip;
+                }
+            }
+        }
+
+        Debug.ErrorLog("getItemData : err equip id " + id);
+        return null;
     }
 }
