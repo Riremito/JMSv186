@@ -574,13 +574,17 @@ public class ResCLogin {
         sp.Encode1(LoginServer.WorldFlag[serverId]);
         // 吹き出し
         sp.EncodeStr(Region.IsBMS() ? "" : LoginServer.WorldEvent[serverId]);
-        // 経験値倍率?
-        sp.Encode2(100);
-        // ドロップ倍率?
-        sp.Encode2(100);
 
-        if (Region.IsBMS() || Region.IsGMS()) {
-            sp.Encode1(0);
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+
+        } else {
+            // 経験値倍率?
+            sp.Encode2(100);
+            // ドロップ倍率?
+            sp.Encode2(100);
+            if (Region.IsBMS() || Region.IsGMS()) {
+                sp.Encode1(0);
+            }
         }
 
         // チャンネル数
@@ -704,6 +708,10 @@ public class ResCLogin {
             sp.Encode4(chr.getRankMove());
             sp.Encode4(chr.getJobRank()); // world ranking
             sp.Encode4(chr.getJobRankMove());
+        }
+
+        if (Version.LessOrEqual(Region.KMS, 31)) {
+            return sp.get();
         }
 
         if (Version.GreaterOrEqual(Region.KMS, 160)) {

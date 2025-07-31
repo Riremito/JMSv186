@@ -18,6 +18,7 @@
  */
 package data.wz.ids;
 
+import config.Content;
 import debug.Debug;
 import debug.DebugLoadTime;
 import java.util.ArrayList;
@@ -36,14 +37,14 @@ import provider.MapleDataTool;
  */
 public class DWI_LoadXML {
 
-    private static final DWI_List ids_skin = new DWI_List(ids -> DWI_LoadXML.LoadSkinXMLs("Character.wz", "0*(\\d+)\\.img", ids));
-    private static final DWI_List ids_face = new DWI_List(ids -> DWI_LoadXML.LoadXMLs("Character.wz/Face", "0*(\\d+)\\.img", ids));
-    private static final DWI_List ids_hair = new DWI_List(ids -> DWI_LoadXML.LoadXMLs("Character.wz/Hair", "0*(\\d+)\\.img", ids));
-    private static final DWI_List ids_job = new DWI_List(ids -> DWI_LoadXML.LoadXMLs("Skill.wz", "(\\d+)\\.img", ids));
+    private static final DWI_List ids_skin = new DWI_List(ids -> DWI_LoadXML.LoadSkinXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Character" : "Character.wz", "0*(\\d+)\\.img", ids));
+    private static final DWI_List ids_face = new DWI_List(ids -> DWI_LoadXML.LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Character/Face" : "Character.wz/Face", "0*(\\d+)\\.img", ids));
+    private static final DWI_List ids_hair = new DWI_List(ids -> DWI_LoadXML.LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Character/Hair" : "Character.wz/Hair", "0*(\\d+)\\.img", ids));
+    private static final DWI_List ids_job = new DWI_List(ids -> DWI_LoadXML.LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Skill" : "Skill.wz", "(\\d+)\\.img", ids));
     private static final DWI_List ids_map = new DWI_List(ids -> DWI_LoadXML.LoadMapXMLs(ids));
     private static final DWI_List ids_item = new DWI_List(ids -> DWI_LoadXML.LoadItemXMLs(ids));
-    private static final DWI_List ids_npc = new DWI_List(ids -> DWI_LoadXML.LoadXMLs("NPC.wz", "0*(\\d+)\\.img", ids));
-    private static final DWI_List ids_mob = new DWI_List(ids -> DWI_LoadXML.LoadXMLs("Mob.wz", "0*(\\d+)\\.img", ids));
+    private static final DWI_List ids_npc = new DWI_List(ids -> DWI_LoadXML.LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/NPC" : "NPC.wz", "0*(\\d+)\\.img", ids));
+    private static final DWI_List ids_mob = new DWI_List(ids -> DWI_LoadXML.LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Mob" : "Mob.wz", "0*(\\d+)\\.img", ids));
 
     public static DWI_List getSkin() {
         return ids_skin;
@@ -100,12 +101,12 @@ public class DWI_LoadXML {
 
     public static int LoadItemXMLs(ArrayList<Integer> list) {
         DebugLoadTime dlt = new DebugLoadTime("LoadItemXMLs");
-        LoadItemXMLs("Item.wz/Cash/", list);
-        LoadItemXMLs("Item.wz/Consume/", list);
-        LoadItemXMLs("Item.wz/Etc/", list);
-        LoadItemXMLs("Item.wz/Install/", list);
-        LoadEquipXMLs("Character.wz/", list);
-        LoadXMLs("Item.wz/Pet/", "0*(\\d+)\\.img", list);
+        LoadItemXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Item/Cash/" : "Item.wz/Cash/", list);
+        LoadItemXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Item/Consume/" : "Item.wz/Consume/", list);
+        LoadItemXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Item/Etc/" : "Item.wz/Etc/", list);
+        LoadItemXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Item/Install/" : "Item.wz/Install/", list);
+        LoadEquipXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Character/" : "Character.wz/", list);
+        LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Item/Pet/" : "Item.wz/Pet/", "0*(\\d+)\\.img", list);
         dlt.End();
         return list.size();
     }
@@ -154,16 +155,16 @@ public class DWI_LoadXML {
 
     public static int LoadMapXMLs(ArrayList<Integer> list) {
         DebugLoadTime dlt = new DebugLoadTime("LoadMapXMLs");
-        LoadXMLs("Map.wz/Map/Map0", "0*(\\d+)\\.img", list);
-        LoadXMLs("Map.wz/Map/Map1", "0*(\\d+)\\.img", list);
-        LoadXMLs("Map.wz/Map/Map2", "0*(\\d+)\\.img", list);
-        LoadXMLs("Map.wz/Map/Map3", "0*(\\d+)\\.img", list);
-        LoadXMLs("Map.wz/Map/Map4", "0*(\\d+)\\.img", list);
-        LoadXMLs("Map.wz/Map/Map5", "0*(\\d+)\\.img", list);
-        LoadXMLs("Map.wz/Map/Map6", "0*(\\d+)\\.img", list);
-        LoadXMLs("Map.wz/Map/Map7", "0*(\\d+)\\.img", list);
-        LoadXMLs("Map.wz/Map/Map8", "0*(\\d+)\\.img", list);
-        LoadXMLs("Map.wz/Map/Map9", "0*(\\d+)\\.img", list);
+        LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Map/Map/Map0" : "Map.wz/Map/Map0", "0*(\\d+)\\.img", list);
+        LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Map/Map/Map1" : "Map.wz/Map/Map1", "0*(\\d+)\\.img", list);
+        LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Map/Map/Map2" : "Map.wz/Map/Map2", "0*(\\d+)\\.img", list);
+        LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Map/Map/Map3" : "Map.wz/Map/Map3", "0*(\\d+)\\.img", list);
+        LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Map/Map/Map4" : "Map.wz/Map/Map4", "0*(\\d+)\\.img", list);
+        LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Map/Map/Map5" : "Map.wz/Map/Map5", "0*(\\d+)\\.img", list);
+        LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Map/Map/Map6" : "Map.wz/Map/Map6", "0*(\\d+)\\.img", list);
+        LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Map/Map/Map7" : "Map.wz/Map/Map7", "0*(\\d+)\\.img", list);
+        LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Map/Map/Map8" : "Map.wz/Map/Map8", "0*(\\d+)\\.img", list);
+        LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Map/Map/Map9" : "Map.wz/Map/Map9", "0*(\\d+)\\.img", list);
         dlt.End();
         return list.size();
     }

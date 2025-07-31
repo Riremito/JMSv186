@@ -18,6 +18,7 @@
  */
 package data.wz;
 
+import config.Content;
 import provider.MapleDataProvider;
 
 /**
@@ -30,7 +31,7 @@ public class DW_Map {
 
     private static DataWz getWz() {
         if (wz == null) {
-            wz = new DataWz("Map.wz");
+            wz = new DataWz(Content.Wz_SingleFile.get() ? "Data.wz/Map" : "Map.wz");
         }
         return wz;
     }

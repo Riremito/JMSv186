@@ -19,6 +19,7 @@
 package data.wz;
 
 import client.inventory.PetCommand;
+import config.Content;
 import debug.Debug;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class DW_Item {
 
     private static DataWz getWz() {
         if (wz == null) {
-            wz = new DataWz("Item.wz");
+            wz = new DataWz(Content.Wz_SingleFile.get() ? "Data.wz/Item" : "Item.wz");
         }
         return wz;
     }

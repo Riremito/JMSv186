@@ -74,11 +74,15 @@ public class DataAvatarLook {
         }
         data.Encode1(255); // end of visible items
         // masked itens
-        for (final Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
-            data.Encode1(entry.getKey());
-            data.Encode4(entry.getValue());
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+            // nothing
+        } else {
+            for (final Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
+                data.Encode1(entry.getKey());
+                data.Encode4(entry.getValue());
+            }
+            data.Encode1(255); // ending markers
         }
-        data.Encode1(255); // ending markers
         if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode1(255); // ending markers
         }

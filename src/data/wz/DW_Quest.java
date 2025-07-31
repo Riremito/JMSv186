@@ -18,6 +18,7 @@
  */
 package data.wz;
 
+import config.Content;
 import provider.MapleData;
 import provider.MapleDataProvider;
 
@@ -31,7 +32,7 @@ public class DW_Quest {
 
     private static DataWz getWz() {
         if (wz == null) {
-            wz = new DataWz("Quest.wz");
+            wz = new DataWz(Content.Wz_SingleFile.get() ? "Data.wz/Quest" : "Quest.wz");
         }
         return wz;
     }

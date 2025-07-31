@@ -25,6 +25,7 @@ import debug.Debug;
  * @author Riremito
  */
 public enum Content {
+    Wz_SingleFile(false),
     Job_Pirate, // JMS147
     Job_KnightsOfCygnus, // JMS165
     Job_Aran, // JMS173
@@ -114,6 +115,7 @@ public enum Content {
         }
         // JMS187
         bOK = checkBigBang();
+        Wz_SingleFile.set(checkWzSingleFile());
         BIGBANG.set(bOK);
         OldIV.set(checkOldIV());
         PacketHeaderSize.setInt(checkPacketHeaderSize());
@@ -150,6 +152,13 @@ public enum Content {
             bOK = true;
         }
 
+    }
+
+    private static boolean checkWzSingleFile() {
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+            return true;
+        }
+        return false;
     }
 
     // BIGBANG

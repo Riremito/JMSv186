@@ -23,6 +23,7 @@ import client.MapleCharacter;
 import client.Skill;
 import static client.SkillFactory.getName;
 import client.SummonSkillEntry;
+import config.Content;
 import debug.Debug;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class DW_Skill {
 
     private static DataWz getWz() {
         if (wz == null) {
-            wz = new DataWz("Skill.wz");
+            wz = new DataWz(Content.Wz_SingleFile.get() ? "Data.wz/Skill" : "Skill.wz");
         }
         return wz;
     }

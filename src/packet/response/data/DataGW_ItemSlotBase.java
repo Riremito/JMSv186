@@ -152,6 +152,10 @@ public class DataGW_ItemSlotBase {
                 data.Encode2(equip.getJump());
                 data.EncodeStr(equip.getOwner());
 
+                if (Version.LessOrEqual(Region.KMS, 1)) {
+                    break;
+                }
+
                 if (Version.LessOrEqual(Region.KMS, 31)) {
                     data.Encode2(0);
                     break;
@@ -276,6 +280,10 @@ public class DataGW_ItemSlotBase {
                 // GW_ItemSlotBundle::RawDecode
                 data.Encode2(item.getQuantity());
                 data.EncodeStr(item.getOwner());
+
+                if (Version.LessOrEqual(Region.KMS, 1)) {
+                    break;
+                }
                 data.Encode2(item.getFlag());
 
                 if (Version.LessOrEqual(Region.KMS, 31)) {

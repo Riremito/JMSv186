@@ -18,6 +18,7 @@
  */
 package data.wz;
 
+import config.Content;
 import debug.Debug;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class DW_Mob {
 
     private static DataWz getWz() {
         if (wz == null) {
-            wz = new DataWz("Mob.wz");
+            wz = new DataWz(Content.Wz_SingleFile.get() ? "Data.wz/Mob" : "Mob.wz");
         }
         return wz;
     }

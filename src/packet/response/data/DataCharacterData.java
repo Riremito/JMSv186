@@ -487,7 +487,11 @@ public class DataCharacterData {
         }
         // 0x8000 [addCoolDownInfo] v165-v194
         if ((datamask & 32768) > 0) {
-            data.EncodeBuffer(Structure.addCoolDownInfo(chr));
+            if (Version.LessOrEqual(Region.KMS, 1)) {
+
+            } else {
+                data.EncodeBuffer(Structure.addCoolDownInfo(chr));
+            }
         }
         // 0x200 [addQuestInfo] changed v165,v186,v188,v194
         if ((datamask & 512) > 0) {
@@ -495,7 +499,11 @@ public class DataCharacterData {
         }
         // 0x4000 QuestComplete v165-v194
         if ((datamask & 16384) > 0) {
-            data.EncodeBuffer(Structure.addQuestComplete(chr));
+            if (Version.LessOrEqual(Region.KMS, 1)) {
+
+            } else {
+                data.EncodeBuffer(Structure.addQuestComplete(chr));
+            }
         }
         // 0x400 MiniGameRecord v165-v194
         if ((datamask & 1024) > 0) {

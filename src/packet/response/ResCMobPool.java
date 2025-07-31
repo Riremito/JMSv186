@@ -213,7 +213,11 @@ public class ResCMobPool {
     public static MaplePacket Spawn(MapleMonster life, int spawnType, int effect, int link) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobEnterField);
         sp.Encode4(life.getObjectId());
-        sp.Encode1(1); // 1 = Control normal, 5 = Control none
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+
+        } else {
+            sp.Encode1(1); // 1 = Control normal, 5 = Control none
+        }
         sp.Encode4(life.getId());
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
@@ -221,7 +225,9 @@ public class ResCMobPool {
         }
 
         // CMob::SetTemporaryStat
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 164)) { // TODO
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+
+        } else if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 164)) { // TODO
             sp.Encode4(0); // 後でなおす
         } else {
             sp.EncodeBuffer(Structure.MonsterStatus(life));
@@ -242,6 +248,12 @@ public class ResCMobPool {
         if (spawnType == -3 || 0 <= spawnType) {
             sp.Encode4(link); // dwOption
         }
+
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+            sp.Encode4(0); // mob stat?
+            return sp.get();
+        }
+
         sp.Encode1(life.getCarnivalTeam()); // m_nTeamForMCarnival
         if (ServerConfig.JMS146orLater()) {
             sp.Encode4(0); // nEffectItemID
@@ -286,14 +298,19 @@ public class ResCMobPool {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobChangeController);
         sp.Encode1(aggro ? 2 : 1);
         sp.Encode4(life.getObjectId());
-        sp.Encode1(1); // 1 = Control normal, 5 = Control none
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+        } else {
+            sp.Encode1(1); // 1 = Control normal, 5 = Control none
+        }
         sp.Encode4(life.getId());
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
         }
 
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 164)) { // TODO
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+
+        } else if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 164)) { // TODO
             sp.Encode4(0); // 後でなおす
         } else {
             sp.EncodeBuffer(Structure.MonsterStatus(life));
@@ -310,6 +327,13 @@ public class ResCMobPool {
         sp.Encode2(life.getFh()); // FH
         sp.Encode2(life.getOriginFh()); // Origin FH
         sp.Encode1(life.isFake() ? -4 : newSpawn ? -2 : -1);
+
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+            // spawm valuen changed?
+            sp.Encode4(0);
+            return sp.get();
+        }
+
         sp.Encode1(life.getCarnivalTeam());
         if (ServerConfig.JMS146orLater()) {
             sp.Encode4(0);

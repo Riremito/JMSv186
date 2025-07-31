@@ -392,15 +392,19 @@ public class Structure {
             data.Encode8(ring.getPartnerRingId());
         }
 
-        List<MapleRing> fRing = aRing.getRight();
-        data.Encode2(fRing.size());
-        for (MapleRing ring : fRing) {
-            // 37 bytes
-            data.Encode4(ring.getPartnerChrId());
-            data.EncodeBuffer(ring.getPartnerName(), 13);
-            data.Encode8(ring.getRingId());
-            data.Encode8(ring.getPartnerRingId());
-            data.Encode4(ring.getItemId());
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+            // nothing
+        } else {
+            List<MapleRing> fRing = aRing.getRight();
+            data.Encode2(fRing.size());
+            for (MapleRing ring : fRing) {
+                // 37 bytes
+                data.Encode4(ring.getPartnerChrId());
+                data.EncodeBuffer(ring.getPartnerName(), 13);
+                data.Encode8(ring.getRingId());
+                data.Encode8(ring.getPartnerRingId());
+                data.Encode4(ring.getItemId());
+            }
         }
 
         if (Version.LessOrEqual(Region.KMS, 41)) {
@@ -418,6 +422,10 @@ public class Structure {
         final int[] mapz = chr.getRegRocks();
         for (int i = 0; i < 5; i++) { // VIP teleport map
             data.Encode4(mapz[i]);
+        }
+
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+            return data.get().getBytes();
         }
 
         final int[] map = chr.getRocks();

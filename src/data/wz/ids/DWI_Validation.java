@@ -41,6 +41,10 @@ public class DWI_Validation {
 
     // Skill.wz
     public static boolean isValidJobID(int id) {
+        // KMS001
+        if (id == 0) {
+            return true;
+        }
         return DWI_LoadXML.getJob().isValidID(id);
     }
 

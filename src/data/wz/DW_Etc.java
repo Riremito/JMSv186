@@ -18,6 +18,7 @@
  */
 package data.wz;
 
+import config.Content;
 import debug.Debug;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class DW_Etc {
 
     private static DataWz getWz() {
         if (wz == null) {
-            wz = new DataWz("Etc.wz");
+            wz = new DataWz(Content.Wz_SingleFile.get() ? "Data.wz/Etc" : "Etc.wz");
         }
         return wz;
     }

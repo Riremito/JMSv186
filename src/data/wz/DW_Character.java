@@ -18,6 +18,7 @@
  */
 package data.wz;
 
+import config.Content;
 import debug.Debug;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
@@ -34,7 +35,7 @@ public class DW_Character {
 
     private static DataWz getWz() {
         if (wz == null) {
-            wz = new DataWz("Character.wz");
+            wz = new DataWz(Content.Wz_SingleFile.get() ? "Data.wz/Character" : "Character.wz");
         }
         return wz;
     }

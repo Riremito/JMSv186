@@ -18,6 +18,7 @@
  */
 package data.wz;
 
+import config.Content;
 import java.util.HashMap;
 import java.util.Map;
 import provider.MapleData;
@@ -37,7 +38,7 @@ public class DW_Reactor {
 
     private static DataWz getWz() {
         if (wz == null) {
-            wz = new DataWz("Reactor.wz");
+            wz = new DataWz(Content.Wz_SingleFile.get() ? "Data.wz/Reactor" : "Reactor.wz");
         }
         return wz;
     }

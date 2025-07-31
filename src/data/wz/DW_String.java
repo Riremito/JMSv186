@@ -18,6 +18,7 @@
  */
 package data.wz;
 
+import config.Content;
 import debug.Debug;
 import provider.MapleData;
 import provider.MapleDataProvider;
@@ -32,7 +33,7 @@ public class DW_String {
 
     private static DataWz getWz() {
         if (wz == null) {
-            wz = new DataWz("String.wz");
+            wz = new DataWz(Content.Wz_SingleFile.get() ? "Data.wz/String" : "String.wz");
         }
         return wz;
     }
