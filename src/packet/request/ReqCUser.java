@@ -576,7 +576,7 @@ public class ReqCUser {
         // v95 4 bytes crc
         attack.nAttackActionType = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         attack.nAttackSpeed = cp.Decode1();
-        attack.tAttackTime = cp.Decode4();
+        attack.tAttackTime = Version.LessOrEqual(Region.KMS, 1) ? 0 : cp.Decode4();
 
         if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater()) {
             cp.Decode4(); // dwID
