@@ -38,49 +38,56 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
     public static class DecoderState {
 
         public int packetlength = -1;
+        public int required_size = 0;
     }
 
     @Override
     protected boolean doDecode(IoSession session, ByteBuffer in, ProtocolDecoderOutput out) throws Exception {
         final DecoderState decoderState = (DecoderState) session.getAttribute(DECODER_STATE_KEY);
         final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        // header check
+        in.mark(); // rollback position
 
-        if (decoderState.packetlength == -1) {
-            if (in.remaining() >= 4) {
-                final int packetHeader = in.getInt();
-                if (!client.getReceiveCrypto().checkPacket(packetHeader)) {
-                    Debug.ErrorLog("checkPacket");
-                    session.close();
-                    return false;
-                }
-                decoderState.packetlength = MapleAESOFB.getPacketLength(packetHeader);
-            } else {
-                return false;
-            }
+        int buffer_size = in.remaining();
+        if (buffer_size < 4) {
+            Debug.ErrorLog("doDecode size error");
+            return false;
         }
-        if (in.remaining() >= decoderState.packetlength) {
-            final byte decryptedPacket[] = new byte[decoderState.packetlength];
-            in.get(decryptedPacket, 0, decoderState.packetlength);
-            decoderState.packetlength = -1;
 
-            if (ClientEdit.PacketEncryptionRemoved.get()) {
-                // no encryption
-            } else {
-                if (Region.IsKMS() || Region.IsIMS()) {
-                    client.getReceiveCrypto().kms_decrypt(decryptedPacket);
-                } else {
-                    client.getReceiveCrypto().crypt(decryptedPacket);
+        int header_data = in.getInt(); // +4
+        if (client.getReceiveCrypto().checkPacket(header_data)) {
+            int required_size = MapleAESOFB.getPacketLength(header_data);
+            buffer_size = in.remaining();
+
+            if (required_size <= buffer_size) {
+                byte decryptedPacket[] = new byte[required_size];
+                in.get(decryptedPacket, 0, required_size); // +required_size
+                if (!ClientEdit.PacketEncryptionRemoved.get()) {
+                    if (Region.check(Region.KMS) || Region.check(Region.IMS)) {
+                        client.getReceiveCrypto().kms_decrypt(decryptedPacket);
+                    } else {
+                        client.getReceiveCrypto().crypt(decryptedPacket);
+                        if (Content.CustomEncryption.get()) {
+                            MapleCustomEncryption.decryptData(decryptedPacket);
+                        }
+                        client.getReceiveCrypto().updateIv();
+                    }
                 }
-                if (Content.CustomEncryption.get()) {
-                    MapleCustomEncryption.decryptData(decryptedPacket);
+                out.write(decryptedPacket);
+                // warning
+                if (required_size < buffer_size) {
+                    //Debug.InfoLog("doDecode size ( " + buffer_size + " / " + required_size + " )");
                 }
+                return true;
             }
-            if (!(Region.IsKMS() || Region.IsIMS())) {
-                client.getReceiveCrypto().updateIv();
-            }
-            out.write(decryptedPacket);
-            return true;
+            // reset
+            //Debug.ErrorLog("doDecode size ( " + buffer_size + " / " + required_size + " )");
+            in.reset(); // rollback because client still does not send full size of packet buffer.
+            return false;
         }
+
+        session.close();
+        Debug.ErrorLog("doDecode header error");
         return false;
     }
 }

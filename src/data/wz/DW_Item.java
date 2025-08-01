@@ -105,14 +105,17 @@ public class DW_Item {
                     if (mdfe.getName().equals(target_img_name)) {
                         MapleData md_pet = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
                         if (md_pet == null) {
-                            Debug.ErrorLog("getItemData_Pet : Invalid pet id = " + id);
+                            Debug.ErrorLog("getItemData_Pet : Invalid pet id 1 = " + id);
                             return null;
                         }
+                        return md_pet;
                     }
                 }
+                Debug.ErrorLog("getItemData_Pet : Invalid pet id 2 = " + id);
                 return null;
             }
         }
+        Debug.ErrorLog("getItemData_Pet : Invalid pet id 3 = " + id);
         return null;
     }
 
