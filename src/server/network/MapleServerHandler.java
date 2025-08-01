@@ -116,9 +116,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 session);
         client.setChannel(channel);
 
-        MaplePacketDecoder.DecoderState decoderState = new MaplePacketDecoder.DecoderState();
-        session.setAttribute(MaplePacketDecoder.DECODER_STATE_KEY, decoderState);
-
         session.write(ResCClientSocket.getHello(ServerConstants.Use_Fixed_IV ? serverSend : ivSend, ServerConstants.Use_Fixed_IV ? serverRecv : ivRecv));
         session.setAttribute(MapleClient.CLIENT_KEY, client);
         session.setIdleTime(IdleStatus.READER_IDLE, 60);

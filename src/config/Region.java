@@ -23,6 +23,7 @@ package config;
  * @author Riremito
  */
 public enum Region {
+    KMSB(1),
     KMS(1),
     KMST(2),
     JMS(3),
@@ -84,6 +85,10 @@ public enum Region {
 
     public static boolean setRegion(String region_name) {
         switch (region_name) {
+            case "KMSB": {
+                region = KMSB;
+                return true;
+            }
             case "KMS": {
                 region = KMS;
                 return true;
@@ -151,7 +156,7 @@ public enum Region {
     }
 
     public static boolean IsKMS() {
-        return Region.getRegion() == Region.KMS || Region.getRegion() == Region.KMST;
+        return Region.check(Region.KMS) || Region.check(Region.KMST);
     }
 
     public static boolean IsMSEA() {

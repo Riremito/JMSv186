@@ -24,6 +24,7 @@ import client.MapleClient;
 import config.ClientEdit;
 import config.Content;
 import config.Region;
+import config.Version;
 import debug.Debug;
 
 import org.apache.mina.common.ByteBuffer;
@@ -33,18 +34,64 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 
 public class MaplePacketDecoder extends CumulativeProtocolDecoder {
 
-    public static final String DECODER_STATE_KEY = MaplePacketDecoder.class.getName() + ".STATE";
+    protected boolean doDecode_KMSB(IoSession session, ByteBuffer in, ProtocolDecoderOutput out) throws Exception {
+        final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        byte key[] = client.getReceiveCrypto().getIv();
+        // header check
+        in.mark(); // rollback position
 
-    public static class DecoderState {
+        int buffer_size = in.remaining();
+        if (buffer_size < 2) {
+            Debug.ErrorLog("doDecode_KMSB size error 1");
+            return false;
+        }
+        int header_version = ((in.get() ^ key[2] & 0xFF) | ((in.get() ^ key[3]) << 8) & 0xFF00) & 0xFFFF;
+        if (Version.getVersion() != header_version) {
+            session.close();
+            Debug.ErrorLog("doDecode_KMSB header error : " + String.format("%04X", header_version));
+            return false;
+        }
 
-        public int packetlength = -1;
-        public int required_size = 0;
+        buffer_size = in.remaining();
+        if (buffer_size < 2) {
+            Debug.ErrorLog("doDecode_KMSB size error 2");
+            in.reset();
+            return false;
+        }
+        int required_size = (in.get() & 0xFF) | (in.get() << 8) & 0xFF00;
+        buffer_size = in.remaining();
+
+        if (buffer_size < required_size) {
+            Debug.ErrorLog("KMSB size ( " + buffer_size + " / " + required_size + " )");
+            in.reset();
+            return false;
+        }
+
+        byte packet[] = new byte[required_size];
+        in.get(packet, 0, required_size); // +required_size
+
+        for (int i = 0; i < packet.length; i++) {
+            int v = (byte) (packet[i] ^ key[0]) & 0xFF;
+            packet[i] = (byte) ((v << 4) & 0xF0 | (v >> 4) & 0x0F);
+        }
+
+        out.write(packet);
+        // warning
+        if (required_size < buffer_size) {
+            Debug.InfoLog("KMSB size ( " + buffer_size + " / " + required_size + " )");
+        }
+        return true;
     }
 
     @Override
     protected boolean doDecode(IoSession session, ByteBuffer in, ProtocolDecoderOutput out) throws Exception {
-        final DecoderState decoderState = (DecoderState) session.getAttribute(DECODER_STATE_KEY);
+
+        if (Region.check(Region.KMSB)) {
+            return doDecode_KMSB(session, in, out);
+        }
+
         final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+
         // header check
         in.mark(); // rollback position
 
@@ -63,7 +110,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
                 byte decryptedPacket[] = new byte[required_size];
                 in.get(decryptedPacket, 0, required_size); // +required_size
                 if (!ClientEdit.PacketEncryptionRemoved.get()) {
-                    if (Region.check(Region.KMS) || Region.check(Region.IMS)) {
+                    if (Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.IMS)) {
                         client.getReceiveCrypto().kms_decrypt(decryptedPacket);
                     } else {
                         client.getReceiveCrypto().crypt(decryptedPacket);

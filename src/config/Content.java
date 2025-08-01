@@ -155,6 +155,9 @@ public enum Content {
     }
 
     private static boolean checkWzSingleFile() {
+        if (Region.check(Region.KMSB)) {
+            return true;
+        }
         if (Version.LessOrEqual(Region.KMS, 1)) {
             return true;
         }
@@ -218,6 +221,9 @@ public enum Content {
     }
 
     private static int checkPacketHeaderSize() {
+        if (Region.check(Region.KMSB)) {
+            return 1;
+        }
         if (Version.LessOrEqual(Region.KMS, 55)) {
             return 1;
         }

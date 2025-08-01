@@ -54,6 +54,11 @@ public class ResCClientSocket {
         ServerPacket sp = new ServerPacket((short) 0); // dummy
 
         switch (Region.getRegion()) {
+            case KMSB: {
+                sp.Encode2(Version.getVersion());
+                sp.EncodeStr(String.valueOf(Version.getSubVersion()));
+                break;
+            }
             case KMS:
             case KMST: {
                 long xor_version = 0;

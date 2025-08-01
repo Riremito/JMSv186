@@ -105,6 +105,10 @@ public class MapleAESOFB {
         this.iv = iv;
     }
 
+    public byte[] getIv() {
+        return this.iv;
+    }
+
     // JMS v131
     public static byte[] oops(byte[] iv) {
         byte[] newIv = new byte[16];
