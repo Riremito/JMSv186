@@ -23,6 +23,7 @@ package server.life;
 import data.wz.DW_Etc;
 import data.wz.DW_Mob;
 import data.wz.DW_String;
+import data.wz.ids.DWI_LoadXML;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +46,8 @@ public class MapleLifeFactory {
         if (type.equalsIgnoreCase("n")) {
             return getNPC(id);
         } else if (type.equalsIgnoreCase("m")) {
+            // randomize mob
+            //id = DWI_LoadXML.getMob().getRandom();
             return getMonster(id);
         } else {
             System.err.println("Unknown Life type: " + type + "");
