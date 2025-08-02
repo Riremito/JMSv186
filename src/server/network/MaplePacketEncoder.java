@@ -25,8 +25,6 @@ import config.ClientEdit;
 import config.Content;
 import config.Region;
 
-import java.util.concurrent.locks.Lock;
-
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
@@ -38,44 +36,35 @@ public class MaplePacketEncoder implements ProtocolEncoder {
     public void encode(final IoSession session, final Object message, final ProtocolEncoderOutput out) throws Exception {
         final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
 
-        if (client != null) {
-            final MapleAESOFB send_crypto = client.getSendCrypto();
-
-            final byte[] inputInitialPacket = ((MaplePacket) message).getBytes();
-            final byte[] unencrypted = new byte[inputInitialPacket.length];
-            System.arraycopy(inputInitialPacket, 0, unencrypted, 0, inputInitialPacket.length); // Copy the input > "unencrypted"
-            final byte[] ret = new byte[unencrypted.length + 4]; // Create new bytes with length = "unencrypted" + 4
-
-            final Lock mutex = client.getLock();
-            mutex.lock();
-            try {
-                final byte[] header = send_crypto.getPacketHeader(unencrypted.length);
-
-                if (ClientEdit.PacketEncryptionRemoved.get()) {
-                    // no encryption
-                } else {
-                    if (Content.CustomEncryption.get()) {
-                        MapleCustomEncryption.encryptData(unencrypted);
-                    }
-                    if (Region.IsKMS() || Region.IsIMS()) {
-                        send_crypto.kms_encrypt(unencrypted);
-                    } else {
-                        send_crypto.crypt(unencrypted);
-                    }
-                }
-                if (!(Region.IsKMS() || Region.IsIMS())) {
-                    send_crypto.updateIv();
-                }
-
-                System.arraycopy(header, 0, ret, 0, 4); // Copy the header > "Ret", first 4 bytes
-            } finally {
-                mutex.unlock();
-            }
-            System.arraycopy(unencrypted, 0, ret, 4, unencrypted.length); // Copy the unencrypted > "ret"
-            out.write(ByteBuffer.wrap(ret));
-        } else { // no client object created yet, send unencrypted (hello)
+        // raw packet
+        if (client == null) {
             out.write(ByteBuffer.wrap(((MaplePacket) message).getBytes()));
+            return;
         }
+
+        // packet encryption
+        final byte[] raw_server_packet = ((MaplePacket) message).getBytes();
+        final byte[] header = client.getSendCrypto().getPacketHeader(raw_server_packet.length); // 4 bytes
+        final byte[] packet = raw_server_packet.clone();
+
+        if (!ClientEdit.PacketEncryptionRemoved.get()) {
+            if (Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.IMS)) {
+                client.getSendCrypto().kms_encrypt(packet);
+            } else {
+                if (Content.CustomEncryption.get()) {
+                    MapleCustomEncryption.encryptData(packet);
+                }
+                client.getSendCrypto().crypt(packet);
+                client.getSendCrypto().updateIv();
+            }
+        }
+
+        final byte[] encrypted_server_packet = new byte[header.length + packet.length];
+        System.arraycopy(header, 0, encrypted_server_packet, 0, header.length);
+        System.arraycopy(packet, 0, encrypted_server_packet, header.length, packet.length);
+
+        out.write(ByteBuffer.wrap(encrypted_server_packet));
+        return;
     }
 
     @Override
