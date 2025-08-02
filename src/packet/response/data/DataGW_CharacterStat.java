@@ -51,7 +51,7 @@ public class DataGW_CharacterStat {
 
         if (ServerConfig.KMS138orLater() || (Region.IsTHMS() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 104)) {
             // none
-        } else if (Version.LessOrEqual(Region.JMS, 131) || Version.LessOrEqual(Region.KMS, 95) || Region.IsBMS() || Region.IsVMS()) {
+        } else if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.JMS, 131) || Version.LessOrEqual(Region.KMS, 95) || Region.IsBMS() || Region.IsVMS()) {
             data.EncodeZeroBytes(8);
         } else if ((Region.IsJMS() || Region.IsTHMS() || Region.IsGMS() || Region.IsCMS() || Region.IsMSEA() || ((Region.IsTWMS() || Region.IsEMS()) && Version.PreBB()))) {
             data.EncodeZeroBytes(24);
@@ -329,6 +329,13 @@ public class DataGW_CharacterStat {
         data.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
 
         if (Region.IsVMS()) {
+            return data.get().getBytes();
+        }
+
+        if (Region.check(Region.KMSB)) {
+            data.Encode8(0);
+            data.Encode4(0);
+            data.Encode4(0);
             return data.get().getBytes();
         }
 

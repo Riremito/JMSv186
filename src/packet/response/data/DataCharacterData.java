@@ -369,7 +369,7 @@ public class DataCharacterData {
     // CharacterInfo
     public static byte[] Encode(MapleCharacter chr, long datamask) {
         ServerPacket data = new ServerPacket();
-        if (Version.LessOrEqual(Region.KMS, 43) || Version.LessOrEqual(Region.JMS, 131)) {
+        if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.KMS, 43) || Version.LessOrEqual(Region.JMS, 131)) {
             data.Encode2((short) datamask); // statmask
         } else {
             data.Encode8(datamask); // statmask
@@ -399,30 +399,32 @@ public class DataCharacterData {
         if ((datamask & 1) > 0) {
             // キャラクター情報
             data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
-            // 友達リストの上限
-            data.Encode1(chr.getBuddylist().getCapacity());
-            if (Version.GreaterOrEqual(Region.EMS, 89)) {
-                data.Encode1(0);
-                data.Encode1(0);
-            }
-            // 精霊の祝福 v165, v186
-            if (ServerConfig.JMS165orLater() && !(Region.IsGMS() && Version.getVersion() == 73)) {
-                if (chr.getBlessOfFairyOrigin() != null) {
-                    data.Encode1(1);
-                    data.EncodeStr(chr.getBlessOfFairyOrigin());
-                } else {
+            if (!Region.check(Region.KMSB)) {
+                // 友達リストの上限
+                data.Encode1(chr.getBuddylist().getCapacity());
+                if (Version.GreaterOrEqual(Region.EMS, 89)) {
+                    data.Encode1(0);
                     data.Encode1(0);
                 }
-            }
-            // 祝福系統
-            if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
-                // 女王の祝福 max 24
-                data.Encode1(0); // not 0, EncodeStr
-                // ???
-                data.Encode1(0); // not 0, EncodeStr
-            }
-            if (Region.IsTWMS()) {
-                data.Encode8(0);
+                // 精霊の祝福 v165, v186
+                if (ServerConfig.JMS165orLater() && !(Region.IsGMS() && Version.getVersion() == 73)) {
+                    if (chr.getBlessOfFairyOrigin() != null) {
+                        data.Encode1(1);
+                        data.EncodeStr(chr.getBlessOfFairyOrigin());
+                    } else {
+                        data.Encode1(0);
+                    }
+                }
+                // 祝福系統
+                if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+                    // 女王の祝福 max 24
+                    data.Encode1(0); // not 0, EncodeStr
+                    // ???
+                    data.Encode1(0); // not 0, EncodeStr
+                }
+                if (Region.IsTWMS()) {
+                    data.Encode8(0);
+                }
             }
         }
         // 0x2 (<< 1) v165-v194

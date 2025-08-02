@@ -19,6 +19,7 @@
 package config.property;
 
 import config.DeveloperMode;
+import config.Region;
 
 /**
  *
@@ -32,7 +33,7 @@ public class Property_Debug {
             return false;
         }
 
-        DeveloperMode.DM_FIRST_MAP_ID.setInt(conf.getInt("config.first_mapid"));
+        DeveloperMode.DM_FIRST_MAP_ID.setInt(Region.check(Region.KMSB) ? 100000000 : conf.getInt("config.first_mapid"));
         DeveloperMode.DM_ERROR_MAP_ID.setInt(conf.getInt("config.error_mapid"));
         // debug
         DeveloperMode.DM_DEBUG_LOG.set(conf.getBoolean("debug.show_debug_log"));

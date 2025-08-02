@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Random;
 import packet.ServerPacket;
 import packet.response.data.DataAvatarLook;
+import packet.response.data.DataCharacterData;
 import packet.response.data.DataGW_CharacterStat;
 
 /**
@@ -561,6 +562,10 @@ public class ResCLogin {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CreateNewCharacterResult);
         sp.Encode1(worked ? 0 : 1);
         if (worked) {
+            if (Region.check(Region.KMSB)) {
+                sp.EncodeBuffer(DataCharacterData.Encode(chr, 1));
+                return sp.get();
+            }
             sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(DataAvatarLook.Encode(chr));
         }
@@ -720,6 +725,10 @@ public class ResCLogin {
         // キャラクターの数
         sp.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
+            if (Region.check(Region.KMSB)) {
+                sp.EncodeBuffer(DataCharacterData.Encode(chr, 1));
+                continue;
+            }
             //Structure.CharEntry(p, chr, true, false);
             sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(DataAvatarLook.Encode(chr));
