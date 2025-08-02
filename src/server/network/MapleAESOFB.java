@@ -101,7 +101,7 @@ public class MapleAESOFB {
         this.mapleVersion = (short) (((vesrion >> 8) & 0xFF) | ((vesrion << 8) & 0xFF00));
     }
 
-    private void setIv(byte[] iv) {
+    public void setIv(byte[] iv) {
         this.iv = iv;
     }
 

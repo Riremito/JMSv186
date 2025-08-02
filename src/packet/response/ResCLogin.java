@@ -224,6 +224,29 @@ public class ResCLogin {
             case SUCCESS: {
                 {
                     switch (Region.getRegion()) {
+                        case KMSB: {
+                            int server_id = 0;
+                            sp.Encode4(client.getAccID());
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.EncodeStr(client.getAccountName());
+                            sp.Encode4(0);
+                            sp.Encode4(0);
+                            sp.Encode1(1); // number of worlds
+                            {
+                                sp.Encode1(LoginServer.WorldFlag[server_id]);
+                                sp.EncodeStr(LoginServer.WorldName[server_id]);
+                                sp.Encode1(ChannelServer.getChannels()); // number of  channels
+                                for (int i = 0; i < ChannelServer.getChannels(); i++) {
+                                    sp.EncodeStr(LoginServer.WorldName[server_id] + "-" + (i + 1));
+                                    sp.Encode4(ChannelServer.getPopulation(i + 1) * 200);
+                                    sp.Encode1(server_id); // serverId
+                                    sp.Encode1(i); // channel
+                                    sp.Encode1(0);
+                                }
+                            }
+                            break;
+                        }
                         case KMS:
                         case KMST: {
                             sp.Encode4(client.getAccID()); // m_dwAccountId
@@ -518,6 +541,7 @@ public class ResCLogin {
                 }
                 break;
             }
+
             case BLOCKED_MAPLEID_WITH_MESSAGE: {
                 sp.Encode1(32); // 0x20 and 0x40 are blue message flag
                 break;
@@ -673,6 +697,7 @@ public class ResCLogin {
             // error
             return sp.get();
         }
+
         if (Region.IsTWMS()) {
             sp.EncodeBuffer(CharList_TWMS(c));
             return sp.get();
@@ -688,7 +713,7 @@ public class ResCLogin {
             sp.EncodeStr("");
         }
 
-        if ((Region.IsKMS() && !Version.GreaterOrEqual(Region.KMS, 160)) || Region.IsCMS() || Region.IsIMS()) {
+        if (Region.check(Region.KMSB) || (Region.IsKMS() && !Version.GreaterOrEqual(Region.KMS, 160)) || Region.IsCMS() || Region.IsIMS()) {
             sp.Encode4(1000000);
         }
 
@@ -710,7 +735,7 @@ public class ResCLogin {
             sp.Encode4(chr.getJobRankMove());
         }
 
-        if (Version.LessOrEqual(Region.KMS, 31)) {
+        if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.KMS, 31)) {
             return sp.get();
         }
 

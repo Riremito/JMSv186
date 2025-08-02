@@ -45,7 +45,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
             Debug.ErrorLog("doDecode_KMSB size error 1");
             return false;
         }
-        int header_version = ((in.get() ^ key[2] & 0xFF) | ((in.get() ^ key[3]) << 8) & 0xFF00) & 0xFFFF;
+        int header_version = ((byte) (in.get() ^ key[2] & 0xFF) | (((byte) (in.get() ^ key[3])) << 8) & 0xFF00) & 0xFFFF;
         if (Version.getVersion() != header_version) {
             session.close();
             Debug.ErrorLog("doDecode_KMSB header error : " + String.format("%04X", header_version));
@@ -80,6 +80,14 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
         if (required_size < buffer_size) {
             Debug.InfoLog("KMSB size ( " + buffer_size + " / " + required_size + " )");
         }
+
+        int seed = (int) ((key[0] & 0xFF) | (key[1] << 8 & 0xFF00) | (key[2] << 16 & 0xFF0000) | (key[3] << 24 & 0xFF000000) & 0xFFFFFFFF);
+        int next_key = 214013 * seed + 2531011;
+        key[0] = (byte) (next_key & 0xFF);
+        key[1] = (byte) ((next_key >> 8) & 0xFF);
+        key[2] = (byte) ((next_key >> 16) & 0xFF);
+        key[3] = (byte) ((next_key >> 24) & 0xFF);
+        client.getReceiveCrypto().setIv(key);
         return true;
     }
 

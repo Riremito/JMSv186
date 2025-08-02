@@ -24,6 +24,7 @@ import client.MapleClient;
 import config.ClientEdit;
 import config.Content;
 import config.Region;
+import config.Version;
 
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
@@ -32,8 +33,60 @@ import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 
 public class MaplePacketEncoder implements ProtocolEncoder {
 
+    public void encode_KMSB(final IoSession session, final Object message, final ProtocolEncoderOutput out) throws Exception {
+        final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+
+        // raw packet
+        if (client == null) {
+            out.write(ByteBuffer.wrap(((MaplePacket) message).getBytes()));
+            return;
+        }
+
+        // packet encryption
+        final byte[] raw_server_packet = ((MaplePacket) message).getBytes();
+        final byte[] header_version = new byte[2];
+        final byte[] header_size = new byte[2];
+        final byte[] packet = raw_server_packet.clone();
+        byte key[] = client.getSendCrypto().getIv();
+        short version = (short) (0xFFFF - Version.getVersion());
+
+        header_version[0] = (byte) (version & 0xFF);
+        header_version[0] = (byte) (header_version[0] ^ key[2]);
+        header_version[1] = (byte) ((version >> 8) & 0xFF);
+        header_version[1] = (byte) (header_version[1] ^ key[3]);
+
+        header_size[0] = (byte) (packet.length & 0xFF);
+        header_size[1] = (byte) ((packet.length >> 8) & 0xFF);
+
+        for (int i = 0; i < packet.length; i++) {
+            packet[i] = (byte) ((packet[i] << 4) & 0xF0 | (packet[i] >> 4) & 0x0F);
+            packet[i] = (byte) (packet[i] ^ key[0]);
+        }
+
+        final byte[] encrypted_server_packet = new byte[header_version.length + header_size.length + packet.length];
+        System.arraycopy(header_version, 0, encrypted_server_packet, 0, header_version.length);
+        System.arraycopy(header_size, 0, encrypted_server_packet, header_version.length, header_size.length);
+        System.arraycopy(packet, 0, encrypted_server_packet, header_version.length + header_size.length, packet.length);
+
+        out.write(ByteBuffer.wrap(encrypted_server_packet));
+
+        int seed = (int) ((key[0] & 0xFF) | (key[1] << 8 & 0xFF00) | (key[2] << 16 & 0xFF0000) | (key[3] << 24 & 0xFF000000)) & 0xFFFFFFFF;
+        int next_key = 214013 * seed + 2531011;
+        key[0] = (byte) (next_key & 0xFF);
+        key[1] = (byte) ((next_key >> 8) & 0xFF);
+        key[2] = (byte) ((next_key >> 16) & 0xFF);
+        key[3] = (byte) ((next_key >> 24) & 0xFF);
+        client.getSendCrypto().setIv(key);
+        return;
+    }
+
     @Override
     public void encode(final IoSession session, final Object message, final ProtocolEncoderOutput out) throws Exception {
+        if (Region.check(Region.KMSB)) {
+            encode_KMSB(session, message, out);
+            return;
+        }
+
         final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
 
         // raw packet
