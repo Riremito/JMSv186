@@ -532,6 +532,13 @@ public class ClientPacket {
         public void set(int val) {
             this.value = val;
         }
+
+        public boolean between(Header low, Header high) {
+            if (low.ordinal() <= ordinal() && ordinal() <= high.ordinal()) {
+                return true;
+            }
+            return false;
+        }
     }
 
 }

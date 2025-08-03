@@ -17,7 +17,6 @@ import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoSession;
 import tools.FileoutputUtil;
 import packet.ClientPacket;
-import packet.request.AdminPacket;
 import packet.request.ReqCUser_Dragon;
 import packet.request.FriendRequest;
 import packet.request.ItemRequest;
@@ -33,9 +32,9 @@ import packet.request.ReqCCashShop;
 import packet.request.ReqCClientSocket;
 import packet.request.ReqCDropPool;
 import packet.request.ReqCLogin;
+import packet.request.ReqCNpcPool;
 import packet.request.Req_Farm;
 import packet.response.ResCClientSocket;
-import packet.response.ResCNpcPool;
 
 public class MapleServerHandler extends IoHandlerAdapter {
 
@@ -224,227 +223,130 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
     // Login Server
     public static final boolean handleLoginPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) throws Exception {
-        return ReqCLogin.OnPacket(header, cp, c);
+        if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
+            return ReqCLogin.OnPacket(header, cp, c);
+        }
+        return false;
     }
 
     // Point Shop (Cash Shop)
     public static final boolean handlePointShopPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) throws Exception {
-        return ReqCCashShop.OnPacket(header, cp, c);
+        if (header.between(ClientPacket.Header.CP_BEGIN_CASHSHOP, ClientPacket.Header.CP_END_CASHSHOP) || header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET) || header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
+            return ReqCCashShop.OnPacket(header, cp, c);
+        }
+        return false;
     }
 
     // Maple Trade Space (MTS)
     public static final boolean handleMapleTradeSpacePacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) throws Exception {
-        return ReqCITC.OnPacket(header, cp, c);
+        if (header.between(ClientPacket.Header.CP_BEGIN_ITC, ClientPacket.Header.CP_END_ITC) || header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET) || header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
+            return ReqCITC.OnPacket(header, cp, c);
+        }
+        return false;
     }
 
     // Game Server
     // CClientSocket::ProcessPacket
     public static final boolean handleGamePacket(SeekableLittleEndianAccessor p, ClientPacket.Header header, ClientPacket cp, MapleClient c) throws Exception {
-        // CClientSocket::ProcessUserPacket
-        // CUser::OnPacket
-        // CUser::OnPetPacket
-        // CUser::OnFieldPacket
-        // CUser::OnSummonedPacket
-        switch (header) {
-            case CP_MigrateIn:
-            case CP_AliveAck:
-            case CP_SecurityPacket: {
-                return ReqCClientSocket.OnPacket(header, cp, c);
-            }
-            case CP_GoldHammerRequest: {
-                return ReqCUIItemUpgrade.Accept(c, cp);
-            }
-            // サーバーメッセージ
-            case CP_BroadcastMsg: {
-                return true;
-            }
-            // GMコマンド
-            case CP_Admin:
-            // GMコマンドの文字列
-            case CP_Log: {
-                AdminPacket.OnPacket(cp, header, c);
-                return true;
-            }
-            // 雪玉専用？
-            case CP_EventStart: {
-                return true;
-            }
-            // MapleTV
-            case GM_COMMAND_MAPLETV: {
-                return true;
-            }
-            // 未実装的な奴
-            case CP_INVITE_PARTY_MATCH: {
-                // @00EE Data: 91 00 00 00 A5 00 00 00 05 00 00 00 FF FF EF 0F
-                return true;
-            }
-            case CP_CANCEL_INVITE_PARTY_MATCH: {
-                // @00EF
-                return true;
-            }
-            case CP_RaiseUIState: {
-                // @0105 EC 1D 00 00 01
-                // @0105 EC 1D 00 00 00
-                // 布製の人形などETCアイテムからUIを開くタイプの処理
-                // 最後の末尾のフラグが01なら開いて、00なら閉じる
-                return true;
-            }
-            case CP_RaiseRefesh: {
-                // @0104 EC 1D
-                // ETCアイテムのUIの更新処理だと思われる
-                return true;
-            }
-            case CP_RaiseIncExp: {
-                // @0106 60 00 5E 85 3D 00 0D C4 00 00 64 00 00 00
-                // ETCアイテムのUIにアイテムをドロップした際の処理
-                return true;
-            }
-            // ウェディング系の謎UI
-            case CP_WeddingWishListRequest: {
-                // @0091 06 01 00 FA DD 13 00 01 00
-                // アイテムを選択して送る
-                // @0091 08
-                // 出る
-                return true;
-            }
-            // グループクエスト or 遠征隊検索
-            case CP_PartyAdverRequest: {
-                return true;
-            }
-            // CUser
-            case CP_UserTransferFieldRequest:
-            case CP_UserTransferChannelRequest:
-            case CP_UserMigrateToCashShopRequest:
-            case CP_UserMove:
-            case CP_UserSitRequest:
-            case CP_UserPortableChairSitRequest:
-            case CP_UserMeleeAttack:
-            case CP_UserShootAttack:
-            case CP_UserMagicAttack:
-            case CP_UserBodyAttack:
-            case CP_UserHit:
-            case CP_UserChat:
-            case CP_UserADBoardClose:
-            case CP_UserEmotion:
-            case CP_UserActivateEffectItem:
-            case CP_UserMonsterBookSetCover:
-            case CP_UserSelectNpc:
-            case CP_UserRemoteShopOpenRequest:
-            case CP_UserScriptMessageAnswer:
-            case CP_UserShopRequest:
-            case CP_UserTrunkRequest:
-            case CP_UserEntrustedShopRequest:
-            case CP_UserStoreBankRequest:
-            case CP_UserParcelRequest:
-            case CP_UserEffectLocal:
-            case CP_ShopScannerRequest:
-            case CP_ShopLinkRequest:
-            case CP_AdminShopRequest:
-            case CP_UserSortItemRequest:
-            case CP_UserGatherItemRequest:
-            case CP_UserChangeSlotPositionRequest:
-            case CP_UserStatChangeItemUseRequest:
-            case CP_UserStatChangeItemCancelRequest:
-            case CP_UserMobSummonItemUseRequest:
-            case CP_UserPetFoodItemUseRequest:
-            case CP_UserTamingMobFoodItemUseRequest:
-            case CP_UserScriptItemUseRequest:
-            case CP_UserConsumeCashItemUseRequest:
-            case CP_UserDestroyPetItemRequest:
-            case CP_UserBridleItemUseRequest:
-            case CP_UserSkillLearnItemUseRequest:
-            case CP_UserShopScannerItemUseRequest:
-            case CP_UserPortalScrollUseRequest:
-            case CP_UserUpgradeItemUseRequest:
-            case CP_UserHyperUpgradeItemUseRequest:
-            case CP_UserItemOptionUpgradeItemUseRequest:
-            case CP_UserItemReleaseRequest:
-            case CP_UserAbilityUpRequest:
-            case CP_UserAbilityMassUpRequest:
-            case CP_UserChangeStatRequest:
-            case CP_UserSkillUpRequest:
-            case CP_UserSkillUseRequest:
-            case CP_UserSkillCancelRequest:
-            case CP_UserSkillPrepareRequest:
-            case CP_UserDropMoneyRequest:
-            case CP_UserGivePopularityRequest:
-            case CP_UserCharacterInfoRequest:
-            case CP_UserActivatePetRequest:
-            case CP_UserTemporaryStatUpdateRequest:
-            case CP_UserPortalScriptRequest:
-            case CP_UserPortalTeleportRequest:
-            case CP_UserQuestRequest:
-            case CP_UserCalcDamageStatSetRequest:
-            case CP_UserMacroSysDataModified:
-            case CP_UserItemMakeRequest:
-            case CP_UserUseGachaponBoxRequest:
-            case CP_UserRepairDurabilityAll:
-            case CP_UserRepairDurability:
-            case CP_FuncKeyMappedModified:
-            case CP_UserMigrateToITCRequest:
-            case CP_UserExpUpItemUseRequest:
-            case CP_UserTempExpUseRequest:
-            case CP_TalkToTutor:
-            case CP_RequestIncCombo:
-            case CP_QuickslotKeyMappedModified:
-            case CP_UpdateScreenSetting: {
-                return ReqCUser.OnPacket(cp, header, c);
-            }
-            case CP_FamilyChartRequest:
-            case CP_FamilyInfoRequest:
-            case CP_FamilyRegisterJunior:
-            case CP_FamilyUnregisterJunior:
-            case CP_FamilyUnregisterParent:
-            case CP_FamilyUsePrivilege:
-            case CP_FamilySetPrecept:
-            case CP_FamilySummonResult:
-            case CP_FamilyJoinResult: {
+        // socket
+        if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
+            // AdminPacket.OnPacket(cp, header, c);
+            return ReqCClientSocket.OnPacket(header, cp, c);
+        }
+        // user
+        if (header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
+            // family
+            if (header.between(ClientPacket.Header.CP_FamilyChartRequest, ClientPacket.Header.CP_FamilySummonResult)) {
                 return ReqCUser.OnFamilyPacket(cp, header, c);
             }
+            // pet
+            if (header.between(ClientPacket.Header.CP_BEGIN_PET, ClientPacket.Header.CP_END_PET)) {
+                return ReqCUser_Pet.OnPetPacket(header, cp, c);
+            }
+            // summon
+            if (header.between(ClientPacket.Header.CP_BEGIN_SUMMONED, ClientPacket.Header.CP_END_SUMMONED)) {
+                return ReqCSummonedPool.OnPacket(cp, header, c);
+            }
+            // dragon
+            if (header.between(ClientPacket.Header.CP_BEGIN_DRAGON, ClientPacket.Header.CP_END_DRAGON)) {
+                return ReqCUser_Dragon.OnMove(cp, c);
+            }
+            return ReqCUser.OnPacket(cp, header, c);
+        }
+        // field
+        if (header.between(ClientPacket.Header.CP_BEGIN_FIELD, ClientPacket.Header.CP_END_FIELD)) {
+            // life
+            if (header.between(ClientPacket.Header.CP_BEGIN_LIFEPOOL, ClientPacket.Header.CP_END_LIFEPOOL)) {
+                // mob
+                if (header.between(ClientPacket.Header.CP_BEGIN_MOB, ClientPacket.Header.CP_END_MOB)) {
+                    return ReqCMobPool.OnPacket(cp, header, c);
+                }
+                // npc
+                if (header.between(ClientPacket.Header.CP_BEGIN_NPC, ClientPacket.Header.CP_END_NPC)) {
+                    ReqCNpcPool.OnPacket(c, header, cp);
+                    return true;
+                }
+                return false;
+            }
+            // drop
+            if (header.between(ClientPacket.Header.CP_BEGIN_DROPPOOL, ClientPacket.Header.CP_END_DROPPOOL)) {
+                return ReqCDropPool.OnPacket(cp, header, c);
+            }
+            // reactor
+            if (header.between(ClientPacket.Header.CP_BEGIN_REACTORPOOL, ClientPacket.Header.CP_END_REACTORPOOL)) {
+                return ReqCReactorPool.OnPacket(cp, header, c);
+            }
+            // event field
+            if (header.between(ClientPacket.Header.CP_BEGIN_EVENT_FIELD, ClientPacket.Header.CP_END_EVENT_FIELD)) {
+                return true;
+            }
+            // monster carnival field
+            if (header.between(ClientPacket.Header.CP_BEGIN_MONSTER_CARNIVAL_FIELD, ClientPacket.Header.CP_END_MONSTER_CARNIVAL_FIELD)) {
+                return true;
+            }
+            if (header.between(ClientPacket.Header.CP_BEGIN_PARTY_MATCH, ClientPacket.Header.CP_END_PARTY_MATCH)) {
+                return true;
+            }
+            // CP_CONTISTATE
+            // CP_RequestFootHoldInfo
+            // CP_FootHoldInfo
+            return false;
+        }
+        if (header.between(ClientPacket.Header.CP_BEGIN_RAISE, ClientPacket.Header.CP_END_RAISE)) {
+            // 布製の人形などETCアイテムからUIを開くタイプの処理
+            return true;
+        }
+        if (header.between(ClientPacket.Header.CP_BEGIN_ITEMUPGRADE, ClientPacket.Header.CP_END_ITEMUPGRADE)) {
+            ReqCUIItemUpgrade.Accept(c, cp);
+            return true;
+        }
+        if (header.between(ClientPacket.Header.CP_BEGIN_BATTLERECORD, ClientPacket.Header.CP_END_BATTLERECORD)) {
+            return true;
+        }
+        if (header.between(ClientPacket.Header.CP_BEGIN_MAPLETV, ClientPacket.Header.CP_END_MAPLETV)) {
+            return true;
+        }
+        if (header.between(ClientPacket.Header.CP_BEGIN_CHARACTERSALE, ClientPacket.Header.CP_END_CHARACTERSALE)) {
+            return true;
+        }
+
+        // CP_CheckSSN2OnCreateNewCharacter
+        // CP_CheckSPWOnCreateNewCharacter
+        // CP_FirstSSNOnCreateNewCharacter
+        //
+        // CP_SendMateMail
+        // CP_RequestGuildBoardAuthKey
+        // CP_RequestConsultAuthKey
+        // CP_RequestClassCompetitionAuthKey
+        // CP_RequestWebBoardAuthKey
+        //
+        // CP_LogoutGiftSelect
+        // CP_NO
+        switch (header) {
             case CP_JMS_JUKEBOX:
             case CP_JMS_InstancePortalCreate:
             case CP_JMS_InstancePortalEnter: {
                 return ItemRequest.OnPacket(header, cp, c);
-            }
-            // Pet
-            case CP_PetMove:
-            case CP_PetAction:
-            case CP_PetInteractionRequest:
-            case CP_PetDropPickUpRequest:
-            case CP_PetStatChangeItemUseRequest:
-            case CP_PetUpdateExceptionListRequest: {
-                return ReqCUser_Pet.OnPetPacket(header, cp, c);
-            }
-            // CUser::OnSummonedPacket
-            case CP_SummonedMove:
-            case CP_SummonedAttack:
-            case CP_SummonedHit:
-            case CP_SummonedSkill:
-            case CP_Remove: {
-                return ReqCSummonedPool.OnPacket(cp, header, c);
-            }
-            case CP_DragonMove: {
-                return ReqCUser_Dragon.OnMove(cp, c);
-            }
-            case CP_MobAttackMob:
-            case CP_MobEscortCollision:
-            case CP_MobRequestEscortInfo:
-            case CP_MobMove:
-            case CP_MobApplyCtrl:
-            case CP_MobHitByMob:
-            case CP_MobSelfDestruct: {
-                return ReqCMobPool.OnPacket(cp, header, c);
-            }
-            case CP_NpcMove: {
-                ResCNpcPool.NPCAnimation(p, c);
-                return true;
-            }
-            case CP_DropPickUpRequest: {
-                return ReqCDropPool.OnPacket(cp, header, c);
-            }
-            case CP_ReactorHit:
-            case CP_ReactorTouch: {
-                return ReqCReactorPool.OnPacket(cp, header, c);
             }
             case CP_MarriageRequest: {
                 PlayersHandler.RingAction(p, c);
