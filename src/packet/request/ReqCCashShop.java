@@ -47,13 +47,6 @@ import server.MapleInventoryManipulator;
  */
 public class ReqCCashShop {
 
-    /*
-        @00F8 : CP_CashShopChargeParamRequest
-        @00F9 : CP_CashShopQueryCashRequest
-        @00FA : CP_CashShopCashItemRequest
-        @00FB : CP_CashShopCheckCouponRequest
-        @00FE : CP_JMS_RECOMMENDED_AVATAR
-     */
     public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
@@ -68,15 +61,12 @@ public class ReqCCashShop {
                 long box_SN = cp.Decode8();
                 return OnGachaponOpen(c, box_SN);
             }
-            // 充填ボタンをクリックした場合の処理
             case CP_CashShopChargeParamRequest: {
-                // ブラウザが開いてしまうので無効化
-                //c.SendPacket(PointShopResponse.ChargeParamResult());
-                c.enableCSActions();
+                chr.SendPacket(ResCCashShop.CashShopChargeParamResult(chr));
                 return true;
             }
             case CP_CashShopQueryCashRequest: {
-                c.enableCSActions();
+                chr.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
                 return true;
             }
             case CP_CashShopCashItemRequest: {
@@ -152,7 +142,7 @@ public class ReqCCashShop {
         } else {
             CashShopServer.getPlayerStorage().registerPlayer(chr);
             c.SendPacket(ResCStage.SetCashShop(c));
-            c.SendPacket(ResCCashShop.QueryCashResult(c.getPlayer()));
+            c.SendPacket(ResCCashShop.CashShopQueryCashResult(c.getPlayer()));
             c.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_LoadLocker_Done, c));
             updateFreeCouponDate(c.getPlayer());
         }
@@ -585,7 +575,7 @@ public class ReqCCashShop {
     }
 
     private static final void doCSPackets(MapleClient c) {
-        c.getSession().write(ResCCashShop.QueryCashResult(c.getPlayer()));
+        c.getSession().write(ResCCashShop.CashShopQueryCashResult(c.getPlayer()));
         c.getPlayer().getCashInventory().checkExpire(c);
     }
 

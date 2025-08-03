@@ -1396,7 +1396,7 @@ public class MapleClient implements Serializable {
 
     // Point Shop
     public void enableCSActions() {
-        getSession().write(ResCCashShop.QueryCashResult(player));
+        getSession().write(ResCCashShop.CashShopQueryCashResult(player));
     }
 
 }

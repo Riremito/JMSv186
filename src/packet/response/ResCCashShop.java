@@ -41,6 +41,24 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class ResCCashShop {
 
+    // CCashShop::OnChargeParamResult
+    public static MaplePacket CashShopChargeParamResult(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopChargeParamResult);
+        sp.EncodeStr(chr.getClient().getAccountName()); // nexon id
+        return sp.get();
+    }
+
+    // CCashShop::OnQueryCashResult
+    public static MaplePacket CashShopQueryCashResult(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopQueryCashResult);
+        sp.Encode4(chr.getNexonPoint());
+        sp.Encode4(chr.getMaplePoint());
+        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+            sp.Encode4(0);
+        }
+        return sp.get();
+    }
+
     /*
     @016D : LP_CashShopChargeParamResult
     @016E : LP_JMS_POINTSHOP_PRESENT_DIALOG
@@ -170,28 +188,10 @@ public class ResCCashShop {
         return data.get().getBytes();
     }
 
-    // CCashShop::OnChargeParamResult, 充填ボタン
-    public static MaplePacket ChargeParamResult() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopChargeParamResult);
-        sp.EncodeStr("nexon_id"); // nexon id
-        return sp.get();
-    }
-
     // おめでとうございます！ポイントショップのインベントリにのプレゼントをお送りしました。
     public static MaplePacket presentDialog() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_POINTSHOP_PRESENT_DIALOG);
         // 多分未実装
-        return sp.get();
-    }
-
-    // CCashShop::OnQueryCashResult
-    public static MaplePacket QueryCashResult(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopQueryCashResult);
-        sp.Encode4(chr.getNexonPoint());
-        sp.Encode4(chr.getMaplePoint());
-        if (Version.GreaterOrEqual(Region.GMS, 95)) {
-            sp.Encode4(0);
-        }
         return sp.get();
     }
 
