@@ -47,8 +47,8 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
         }
         int header_version = ((byte) (in.get() ^ key[2] & 0xFF) | (((byte) (in.get() ^ key[3])) << 8) & 0xFF00) & 0xFFFF;
         if (Version.getVersion() != header_version) {
+            Debug.ErrorLog("doDecode_KMSB dc.");
             session.close();
-            Debug.ErrorLog("doDecode_KMSB header error : " + String.format("%04X", header_version));
             return false;
         }
 
@@ -141,8 +141,8 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
             return false;
         }
 
+        Debug.ErrorLog("doDecode dc.");
         session.close();
-        Debug.ErrorLog("doDecode header error");
         return false;
     }
 }

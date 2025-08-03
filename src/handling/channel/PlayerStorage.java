@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Collection;
 import client.MapleCharacterUtil;
 import client.MapleCharacter;
+import debug.Debug;
 import server.network.MaplePacket;
 import handling.world.CharacterTransfer;
 import handling.world.CheaterData;
@@ -188,6 +189,7 @@ public class PlayerStorage {
         try {
             final Iterator<MapleCharacter> itr = nameToChar.values().iterator();
             MapleCharacter chr;
+            Debug.InfoLog("disconnectAll dc.");
             while (itr.hasNext()) {
                 chr = itr.next();
 

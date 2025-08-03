@@ -16,6 +16,7 @@ import client.messages.CommandProcessorUtil;
 import config.property.Property_Java;
 import constants.GameConstants;
 import data.wz.DW_Skill;
+import debug.Debug;
 import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.World;
@@ -279,6 +280,7 @@ public class AdminCommand {
                 victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
             }
             if (level < 2 && victim != null) {
+                Debug.InfoLog("command dc.");
                 victim.getClient().getSession().close();
                 if (level >= 1) {
                     victim.getClient().disconnect(true, false);

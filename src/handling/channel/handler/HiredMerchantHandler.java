@@ -34,6 +34,7 @@ import client.MapleCharacter;
 import constants.GameConstants;
 import client.inventory.ItemLoader;
 import database.DatabaseConnection;
+import debug.Debug;
 import handling.world.World;
 import java.util.Map;
 import packet.response.ResCStoreBankDlg;
@@ -68,6 +69,7 @@ public class HiredMerchantHandler {
                     break;
             }
         } else {
+            Debug.ErrorLog("UseHiredMerchant dc.");
             c.getSession().close();
         }
     }

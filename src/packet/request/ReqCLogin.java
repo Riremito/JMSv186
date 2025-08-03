@@ -505,7 +505,7 @@ public class ReqCLogin {
 
         final int Character_ID = cp.Decode4();
         if (!c.login_Auth(Character_ID)) {
-            Debug.ErrorLog("Delete Character Error");
+            Debug.ErrorLog("DeleteChar dc.");
             c.getSession().close();
             return;
         }
@@ -568,6 +568,7 @@ public class ReqCLogin {
 
     public static final boolean SelectCharacter(MapleClient c, int charId) {
         if (!c.login_Auth(charId)) {
+            Debug.ErrorLog("SelectCharacter dc.");
             c.getSession().close();
             return false;
         }

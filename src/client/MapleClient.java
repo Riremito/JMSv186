@@ -40,6 +40,7 @@ import javax.script.ScriptEngine;
 import database.DatabaseConnection;
 import database.DatabaseException;
 import database.ExtraDB;
+import debug.Debug;
 import server.network.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -1104,6 +1105,7 @@ public class MapleClient implements Serializable {
                 try {
                     if (getLatency() < 0) {
                         if (getSession().isConnected()) {
+                            Debug.ErrorLog("sendPing dc.");
                             getSession().close();
                         }
                     }

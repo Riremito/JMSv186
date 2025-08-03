@@ -3490,6 +3490,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.execute();
             ps.close();
 
+            Debug.ErrorLog("tempban dc .");
             client.getSession().close();
 
             ps = con.prepareStatement("UPDATE accounts SET tempban = ?, banreason = ?, greason = ? WHERE id = ?");
@@ -3547,6 +3548,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             System.err.println("Error while banning" + ex);
             return false;
         }
+
+        Debug.ErrorLog("ban dc .");
         client.getSession().close();
         return true;
     }

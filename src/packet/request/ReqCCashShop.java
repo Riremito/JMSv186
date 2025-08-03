@@ -117,6 +117,7 @@ public class ReqCCashShop {
             transfer = CashShopServer.getPlayerStorageMTS().getPendingCharacter(playerid);
             mts = true;
             if (transfer == null) {
+                Debug.ErrorLog("EnterCS dc.");
                 c.getSession().close();
                 return;
             }
@@ -126,6 +127,7 @@ public class ReqCCashShop {
         c.setAccID(chr.getAccountID());
         if (!c.CheckIPAddress()) {
             // Remote hack
+            Debug.ErrorLog("EnterCS dc 2.");
             c.getSession().close();
             return;
         }
@@ -138,6 +140,7 @@ public class ReqCCashShop {
         }
         if (!allowLogin) {
             c.setPlayer(null);
+            Debug.ErrorLog("EnterCS dc 3.");
             c.getSession().close();
             return;
         }

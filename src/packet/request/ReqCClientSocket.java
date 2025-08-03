@@ -156,8 +156,8 @@ public class ReqCClientSocket {
 
         if (!c.CheckIPAddress()) {
             c.setPlayer(null);
+            Debug.ErrorLog("EnterGameServer dc 1.");
             c.getSession().close();
-            Debug.ErrorLog("remoted hack detected.");
             return false;
         }
 
@@ -167,7 +167,7 @@ public class ReqCClientSocket {
                 if (World.isCharacterListConnected(c.loadCharacterNames(c.getWorld()))) {
                     c.setPlayer(null);
                     c.getSession().close();
-                    Debug.ErrorLog("already loggedin.");
+                    Debug.ErrorLog("EnterGameServer dc 2.");
                     return false;
                 }
                 // OK
