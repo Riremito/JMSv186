@@ -76,7 +76,6 @@ import org.apache.mina.common.TrafficMask;
 import org.apache.mina.common.TransportType;
 import org.apache.mina.common.WriteFuture;
 import packet.ServerPacket;
-import packet.response.ResCITC;
 import packet.response.ResCCashShop;
 import packet.response.ResCClientSocket;
 import server.Timer.PingTimer;
@@ -1396,11 +1395,6 @@ public class MapleClient implements Serializable {
     // Point Shop
     public void enableCSActions() {
         getSession().write(ResCCashShop.QueryCashResult(player));
-    }
-
-    // MTS
-    public void enableMTSSActions() {
-        getSession().write(ResCITC.QueryCashResult(player));
     }
 
 }

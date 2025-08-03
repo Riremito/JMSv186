@@ -1,4 +1,21 @@
-// User
+/*
+ * Copyright (C) 2025 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
 package packet.request;
 
 import client.ISkill;
@@ -40,9 +57,25 @@ import server.maps.MapleMap;
 import tools.AttackPair;
 import tools.Pair;
 
+/**
+ *
+ * @author Riremito
+ */
 public class ReqCUser {
 
-    public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
+    public static boolean OnPacket_Login(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+        switch (header) {
+            case CP_UpdateScreenSetting: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return true;
@@ -68,7 +101,8 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMigrateToCashShopRequest: {
-                return ReqCCashShop.OnPacket(header, cp, c);
+                ReqCClientSocket.EnterCS(c, chr, false);
+                return true;
             }
             case CP_UserMove: {
                 OnMove(cp, map, chr);
@@ -389,7 +423,8 @@ public class ReqCUser {
                 return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
             }
             case CP_UserMigrateToITCRequest: {
-                return ReqCITC.OnPacket(header, cp, c);
+                ReqCClientSocket.EnterCS(c, chr, true);
+                return true;
             }
             // 兵法書
             case CP_UserExpUpItemUseRequest:
@@ -414,6 +449,35 @@ public class ReqCUser {
                 byte unk2 = cp.Decode1();
                 byte unk3 = cp.Decode1();
                 byte unk4 = cp.Decode1();
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean OnPacket_CS_ITC(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+        switch (header) {
+            case CP_UpdateScreenSetting: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        MapleCharacter chr = c.getPlayer();
+
+        if (chr == null) {
+            Debug.ErrorLog("character is not online.");
+            return false;
+        }
+
+        switch (header) {
+            case CP_UserTransferFieldRequest: {
+                ReqCCashShop.LeaveCS(c, chr);
                 return true;
             }
             default: {

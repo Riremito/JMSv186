@@ -410,10 +410,10 @@ public class ClientPacket {
         CP_END_NPC,
         CP_END_LIFEPOOL,
         CP_BEGIN_DROPPOOL,
-        CP_DropPickUpRequest, // ITEM_PICKUP
+        CP_DropPickUpRequest,
         CP_END_DROPPOOL,
         CP_BEGIN_REACTORPOOL,
-        CP_ReactorHit, // DAMAGE_REACTOR
+        CP_ReactorHit,
         CP_ReactorTouch,
         CP_RequireFieldObstacleStatus,
         CP_END_REACTORPOOL,

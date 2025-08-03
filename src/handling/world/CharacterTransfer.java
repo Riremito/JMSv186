@@ -44,7 +44,7 @@ public class CharacterTransfer implements Externalizable {
 
     public int characterid, accountid, exp,
             meso, hair, face, mapid, guildid,
-            partyid, messengerid, mBookCover, dojo, ACash, MaplePoints,
+            partyid, messengerid, mBookCover, dojo, nexonPoint, maplePoint,
             mount_itemid, mount_exp, points, vpoints, marriageId,
             familyid, seniorid, junior1, junior2, currentrep, totalrep, battleshipHP,
             tama;
@@ -72,8 +72,8 @@ public class CharacterTransfer implements Externalizable {
         this.accountid = chr.getAccountID();
         this.accountname = chr.getClient().getAccountName();
         this.channel = (byte) chr.getClient().getChannel();
-        this.ACash = chr.getCSPoints(1);
-        this.MaplePoints = chr.getCSPoints(2);
+        this.nexonPoint = chr.getNexonPoint();
+        this.maplePoint = chr.getMaplePoint();
         this.vpoints = chr.getVPoints();
         this.name = chr.getName();
         this.fame = chr.getFame();
@@ -195,8 +195,8 @@ public class CharacterTransfer implements Externalizable {
         this.accountid = in.readInt();
         this.accountname = in.readUTF();
         this.channel = in.readByte();
-        this.ACash = in.readInt();
-        this.MaplePoints = in.readInt();
+        this.nexonPoint = in.readInt();
+        this.maplePoint = in.readInt();
         this.name = in.readUTF();
         this.fame = in.readShort();
         this.gender = in.readByte();
@@ -344,8 +344,8 @@ public class CharacterTransfer implements Externalizable {
         out.writeInt(this.accountid);
         out.writeUTF(this.accountname);
         out.writeByte(this.channel);
-        out.writeInt(this.ACash);
-        out.writeInt(this.MaplePoints);
+        out.writeInt(this.nexonPoint);
+        out.writeInt(this.maplePoint);
         out.writeUTF(this.name);
         out.writeShort(this.fame);
         out.writeByte(this.gender);

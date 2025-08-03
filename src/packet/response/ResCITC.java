@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,11 +34,15 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class ResCITC {
 
-    public static MaplePacket QueryCashResult(final MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCQueryCashResult);
+    public static final MaplePacket ITCChargeParamResult() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCChargeParamResult);
+        return sp.get();
+    }
 
-        sp.Encode4(chr.getCSPoints(1)); // Nexon Point
-        sp.Encode4(chr.getCSPoints(2)); // Maple Point
+    public static MaplePacket ITCQueryCashResult(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCQueryCashResult);
+        sp.Encode4(chr.getNexonPoint());
+        sp.Encode4(chr.getMaplePoint());
         return sp.get();
     }
 
@@ -154,12 +158,6 @@ public class ResCITC {
                 mplew.write(41);
             }
         }
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket openWebSite() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCChargeParamResult.get());
         return mplew.getPacket();
     }
 

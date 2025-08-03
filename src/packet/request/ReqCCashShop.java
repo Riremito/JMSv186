@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,29 +53,20 @@ public class ReqCCashShop {
         @00FA : CP_CashShopCashItemRequest
         @00FB : CP_CashShopCheckCouponRequest
         @00FE : CP_JMS_RECOMMENDED_AVATAR
-
-        @00AB : CP_CashGachaponOpenRequest
      */
-    public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+        MapleCharacter chr = c.getPlayer();
+        if (chr == null) {
+            Debug.ErrorLog("character is not online (CS).");
+            return false;
+        }
+
         switch (header) {
-            case CP_AliveAck: {
-                return true;
-            }
-            // 入場リクエスト
-            case CP_UserMigrateToCashShopRequest: {
-                ReqCClientSocket.EnterCS(c, c.getPlayer(), false);
-                return true;
-            }
-            // 退出
-            case CP_UserTransferFieldRequest: {
-                LeaveCS(c, c.getPlayer());
-                return true;
-            }
-            // 入場
-            case CP_MigrateIn: {
-                int character_id = cp.Decode4();
-                EnterCS(character_id, c);
-                return true;
+            // アバターランダムボックスのオープン処理
+            case CP_CashGachaponOpenRequest: {
+                // TODO : rename or move
+                long box_SN = cp.Decode8();
+                return OnGachaponOpen(c, box_SN);
             }
             // 充填ボタンをクリックした場合の処理
             case CP_CashShopChargeParamRequest: {
@@ -104,11 +95,6 @@ public class ReqCCashShop {
                 OnCheckCoupon(c, character_name, coupon_code, (coupon_15 != 0), message);
                 c.enableCSActions();
                 return true;
-            }
-            // アバターランダムボックスのオープン処理
-            case CP_CashGachaponOpenRequest: {
-                long box_SN = cp.Decode8();
-                return OnGachaponOpen(c, box_SN);
             }
             // オススメアバターを選択した時の処理
             case CP_JMS_RECOMMENDED_AVATAR: {

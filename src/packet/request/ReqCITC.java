@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,14 @@
  */
 package packet.request;
 
+import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.Equip;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import constants.GameConstants;
 import constants.ServerConstants;
+import debug.Debug;
 import packet.ClientPacket;
 import packet.response.ResCITC;
 import server.MTSCart;
@@ -38,34 +40,21 @@ import tools.data.input.SeekableLittleEndianAccessor;
  */
 public class ReqCITC {
 
-    public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+        MapleCharacter chr = c.getPlayer();
+        if (chr == null) {
+            Debug.ErrorLog("character is not online (ITC).");
+            return false;
+        }
 
+        // itc
         switch (header) {
-            case CP_AliveAck: {
-                return true;
-            }
-            // 入場リクエスト
-            case CP_UserMigrateToITCRequest: {
-                ReqCClientSocket.EnterCS(c, c.getPlayer(), true);
-                return true;
-            }
-            // 退出
-            case CP_UserTransferFieldRequest: {
-                ReqCCashShop.LeaveCS(c, c.getPlayer());
-                return true;
-            }
-            // 入場
-            case CP_MigrateIn: {
-                int character_id = cp.Decode4();
-                ReqCCashShop.EnterCS(character_id, c);
-                return true;
-            }
             case CP_ITCChargeParamRequest: {
-                ReqCITC.OnChargeParamResult(c);
+                chr.SendPacket(ResCITC.ITCChargeParamResult());
                 return true;
             }
             case CP_ITCQueryCashRequest: {
-                ReqCITC.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
+                chr.SendPacket(ResCITC.ITCQueryCashResult(chr));
                 return true;
             }
             case CP_ITCItemRequest: {
@@ -219,7 +208,7 @@ public class ReqCITC {
             //buyNow, buy from cart
             final MTSStorage.MTSItemInfo mts = MTSStorage.getInstance().getSingleItem(slea.readInt());
             if (mts != null && mts.getCharacterId() != c.getPlayer().getId()) {
-                if (c.getPlayer().getCSPoints(1) > mts.getRealPrice()) {
+                if (c.getPlayer().getNexonPoint() > mts.getRealPrice()) {
                     if (MTSStorage.getInstance().removeFromBuyNow(mts.getId(), c.getPlayer().getId(), false)) {
                         c.getPlayer().modifyCSPoints(1, -mts.getRealPrice(), false);
                         MTSStorage.getInstance().getCart(mts.getCharacterId()).increaseOwedNX(mts.getPrice());
@@ -255,13 +244,9 @@ public class ReqCITC {
         c.getSession().write(MTSStorage.getInstance().getCurrentMTS(cart));
         c.getSession().write(MTSStorage.getInstance().getCurrentNotYetSold(cart));
         c.getSession().write(MTSStorage.getInstance().getCurrentTransfer(cart, changed));
-        c.getSession().write(ResCITC.QueryCashResult(c.getPlayer()));
+        c.getSession().write(ResCITC.ITCQueryCashResult(c.getPlayer()));
         //c.getSession().write(MTSCSPacket.enableCSUse());
         MTSStorage.getInstance().checkExpirations();
-    }
-
-    public static void OnChargeParamResult(final MapleClient c) {
-        c.getSession().write(ResCITC.openWebSite());
     }
 
 }

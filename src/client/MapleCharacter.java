@@ -161,7 +161,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private int subcategory;
     private int level, mulung_energy, combo, availableCP, totalCP, fame, hpApUsed, job, remainingAp;
     private int accountid, id, meso, exp, hair, face, mapid, bookCover, dojo,
-            guildid = 0, fallcounter = 0, maplepoints, acash, chair, itemEffect, points, vpoints,
+            guildid = 0, fallcounter = 0, maplePoint, nexonPoint, chair, itemEffect, points, vpoints,
             rank = 1, rankMove = 0, jobRank = 1, jobRankMove = 0, marriageId, marriageItemId = 0,
             currentrep, totalrep, linkMid = 0, coconutteam = 0, followid = 0, battleshipHP = 0;
     private Point old = new Point(0, 0);
@@ -338,8 +338,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
             if (rs.next()) {
                 ret.client.setAccountName(rs.getString("name"));
-                ret.acash = rs.getInt("ACash");
-                ret.maplepoints = rs.getInt("mPoints");
+                ret.nexonPoint = rs.getInt("ACash");
+                ret.maplePoint = rs.getInt("mPoints");
                 ret.points = rs.getInt("points");
                 ret.vpoints = rs.getInt("vpoints");
             }
@@ -488,8 +488,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ret.storage = (MapleStorage) ct.storage;
         ret.cs = (CashShop) ct.cs;
         client.setAccountName(ct.accountname);
-        ret.acash = ct.ACash;
-        ret.maplepoints = ct.MaplePoints;
+        ret.nexonPoint = ct.nexonPoint;
+        ret.maplePoint = ct.maplePoint;
         ret.numClones = 0;
         ret.mount = new MapleMount(ret, ct.mount_itemid, GameConstants.isKOC(ret.job) ? 10001004 : (GameConstants.isAran(ret.job) ? 20001004 : (GameConstants.isEvan(ret.job) ? 20011004 : 1004)), ct.mount_Fatigue, ct.mount_level, ct.mount_exp);
 
@@ -680,8 +680,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 rs = ps.executeQuery();
                 if (rs.next()) {
                     ret.getClient().setAccountName(rs.getString("name"));
-                    ret.acash = rs.getInt("ACash");
-                    ret.maplepoints = rs.getInt("mPoints");
+                    ret.nexonPoint = rs.getInt("ACash");
+                    ret.maplePoint = rs.getInt("mPoints");
                     ret.points = rs.getInt("points");
                     ret.vpoints = rs.getInt("vpoints");
 
@@ -689,7 +689,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                         final Calendar cal = Calendar.getInstance();
                         cal.setTimeInMillis(rs.getTimestamp("lastlogon").getTime());
                         if (cal.get(Calendar.DAY_OF_WEEK) + 1 == Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
-                            ret.acash += 500;
+                            ret.nexonPoint += 500;
                         }
                     }
                     rs.close();
@@ -1293,8 +1293,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.close();
 
             ps = con.prepareStatement("UPDATE accounts SET `ACash` = ?, `mPoints` = ?, `points` = ?, `vpoints` = ? WHERE id = ?");
-            ps.setInt(1, acash);
-            ps.setInt(2, maplepoints);
+            ps.setInt(1, nexonPoint);
+            ps.setInt(2, maplePoint);
             ps.setInt(3, points);
             ps.setInt(4, vpoints);
             ps.setInt(5, client.getAccID());
@@ -4111,22 +4111,22 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
         switch (type) {
             case 1:
-                if (acash + quantity < 0) {
+                if (nexonPoint + quantity < 0) {
                     if (show) {
                         dropMessage(-1, "You have gained the max cash. No cash will be awarded.");
                     }
                     return;
                 }
-                acash += quantity;
+                nexonPoint += quantity;
                 break;
             case 2:
-                if (maplepoints + quantity < 0) {
+                if (maplePoint + quantity < 0) {
                     if (show) {
                         dropMessage(-1, "You have gained the max maple points. No cash will be awarded.");
                     }
                     return;
                 }
-                maplepoints += quantity;
+                maplePoint += quantity;
                 break;
             default:
                 break;
@@ -4137,27 +4137,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
     }
 
-    public int getCSPoints(int type) {
-        switch (type) {
-            case 1:
-                return acash;
-            case 2:
-                return maplepoints;
-            default:
-                return 0;
-        }
+    public int getNexonPoint() {
+        return nexonPoint;
+    }
+
+    public int getMaplePoint() {
+        return maplePoint;
     }
 
     public boolean checkNexonPoint(int value) {
         // 購入不可
-        if (acash < value) {
+        if (nexonPoint < value) {
             return false;
         }
         return true;
     }
 
     public boolean checkMaplePoint(int value) {
-        if (maplepoints < value) {
+        if (maplePoint < value) {
             return false;
         }
         return true;
@@ -4165,18 +4162,18 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public boolean useNexonPoint(int value) {
         // マイナス値不可
-        if (value < 0 || acash < value) {
+        if (value < 0 || nexonPoint < value) {
             return false;
         }
-        acash -= value;
+        nexonPoint -= value;
         return true;
     }
 
     public boolean useMaplePoint(int value) {
-        if (value < 0 || maplepoints < value) {
+        if (value < 0 || maplePoint < value) {
             return false;
         }
-        maplepoints -= value;
+        maplePoint -= value;
         return true;
     }
 
@@ -4184,7 +4181,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (value < 0) {
             return false;
         }
-        maplepoints += value;
+        maplePoint += value;
         return true;
     }
 
@@ -4832,10 +4829,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void modifyAchievementCSPoints(int type, int quantity) {
         switch (type) {
             case 1:
-                acash += quantity;
+                nexonPoint += quantity;
                 break;
             case 2:
-                maplepoints += quantity;
+                maplePoint += quantity;
                 break;
         }
     }
@@ -6033,8 +6030,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ret.storage = storage;
         ret.cs = this.cs;
         ret.client.setAccountName(client.getAccountName());
-        ret.acash = acash;
-        ret.maplepoints = maplepoints;
+        ret.nexonPoint = nexonPoint;
+        ret.maplePoint = maplePoint;
         ret.clone = true;
         ret.client.setChannel(this.client.getChannel());
         while (map.getCharacterById(ret.id) != null || client.getChannelServer().getPlayerStorage().getCharacterById(ret.id) != null) {

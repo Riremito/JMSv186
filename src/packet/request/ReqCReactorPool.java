@@ -1,33 +1,47 @@
-// 設置物
+/*
+ * Copyright (C) 2025 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
 package packet.request;
 
 import client.MapleClient;
 import config.Region;
 import config.Version;
+import debug.Debug;
 import packet.ClientPacket;
 import scripting.ReactorScriptManager;
 import server.maps.MapleReactor;
 
+/**
+ *
+ * @author Riremito
+ */
 public class ReqCReactorPool {
 
     public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
-        int oid = cp.Decode4();
-        MapleReactor reactor = c.getPlayer().getMap().getReactorByOid(oid);
-
-        // 存在しない設置物
-        if (reactor == null) {
-            return false;
-        }
-
-        // 既に起動済み
-        if (!reactor.isAlive()) {
-            return false;
-        }
-
         switch (header) {
-            // 攻撃
             case CP_ReactorHit: {
-                // HitReactor
+                int oid = cp.Decode4();
+                MapleReactor reactor = c.getPlayer().getMap().getReactorByOid(oid);
+                if (reactor == null || !reactor.isAlive()) {
+                    Debug.ErrorLog("ReactorHit");
+                    return true;
+                }
+
                 if (Version.GreaterOrEqual(Region.JMS, 302)) {
                     int unk = cp.Decode4();
                 }
@@ -37,9 +51,15 @@ public class ReqCReactorPool {
                 reactor.hitReactor(charPos, stance, c);
                 return true;
             }
-            // 触れる
             case CP_ReactorTouch: {
-                // TouchReactor
+                int oid = cp.Decode4();
+
+                MapleReactor reactor = c.getPlayer().getMap().getReactorByOid(oid);
+                if (reactor == null || !reactor.isAlive()) {
+                    Debug.ErrorLog("ReactorTouch");
+                    return true;
+                }
+
                 byte touched = cp.Decode1();
 
                 if (touched == 0) {
@@ -53,6 +73,9 @@ public class ReqCReactorPool {
                 }
 
                 ReactorScriptManager.getInstance().act(c, reactor);
+                return true;
+            }
+            case CP_RequireFieldObstacleStatus: {
                 return true;
             }
             default: {

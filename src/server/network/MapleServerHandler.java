@@ -179,7 +179,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             switch (server_type) {
                 // ログインサーバー
                 case LoginServer: {
-                    if (!handleLoginPacket(header, cp, c)) {
+                    if (!handleLoginPacket(c, header, cp)) {
                         Debug.CPLog(cp);
                     }
                     break;
@@ -191,14 +191,28 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     }
                     break;
                 }
-                // ポイントショップとMTS (共通)
                 case PointShopServer:
                 case MapleTradeSpaceServer: {
-                    if (!handlePointShopPacket(header, cp, c) && !handleMapleTradeSpacePacket(header, cp, c)) {
+                    // currently CS and ITC are same server.
+                    if (!handlePointShopPacket(c, header, cp) && !handleMapleTradeSpacePacket(c, header, cp)) {
                         Debug.CPLog(cp);
                     }
                     break;
                 }
+                /*
+                case PointShopServer: {
+                    if (!handlePointShopPacket(c, header, cp)) {
+                        Debug.CPLog(cp);
+                    }
+                    break;
+                }
+                case MapleTradeSpaceServer: {
+                    if (!handleMapleTradeSpacePacket(c, header, cp)) {
+                        Debug.CPLog(cp);
+                    }
+                    break;
+                }
+                 */
                 default: {
                     break;
                 }
@@ -221,26 +235,41 @@ public class MapleServerHandler extends IoHandlerAdapter {
         super.sessionIdle(session, status);
     }
 
-    // Login Server
-    public static final boolean handleLoginPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) throws Exception {
+    public static final boolean handleLoginPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception {
         if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
+            if (ReqCClientSocket.OnPacket_Login(c, header, cp)) {
+                return true;
+            }
             return ReqCLogin.OnPacket(header, cp, c);
         }
-        return false;
-    }
-
-    // Point Shop (Cash Shop)
-    public static final boolean handlePointShopPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) throws Exception {
-        if (header.between(ClientPacket.Header.CP_BEGIN_CASHSHOP, ClientPacket.Header.CP_END_CASHSHOP) || header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET) || header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
-            return ReqCCashShop.OnPacket(header, cp, c);
+        if (header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
+            return ReqCUser.OnPacket_Login(c, header, cp);
         }
         return false;
     }
 
-    // Maple Trade Space (MTS)
-    public static final boolean handleMapleTradeSpacePacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) throws Exception {
-        if (header.between(ClientPacket.Header.CP_BEGIN_ITC, ClientPacket.Header.CP_END_ITC) || header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET) || header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
-            return ReqCITC.OnPacket(header, cp, c);
+    public static final boolean handlePointShopPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception {
+        if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
+            return ReqCClientSocket.OnPacket_CS_ITC(c, header, cp);
+        }
+        if (header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
+            return ReqCUser.OnPacket_CS_ITC(c, header, cp);
+        }
+        if (header.between(ClientPacket.Header.CP_BEGIN_CASHSHOP, ClientPacket.Header.CP_END_CASHSHOP)) {
+            return ReqCCashShop.OnPacket(c, header, cp);
+        }
+        return false;
+    }
+
+    public static final boolean handleMapleTradeSpacePacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception {
+        if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
+            return ReqCClientSocket.OnPacket_CS_ITC(c, header, cp);
+        }
+        if (header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
+            return ReqCUser.OnPacket_CS_ITC(c, header, cp);
+        }
+        if (header.between(ClientPacket.Header.CP_BEGIN_ITC, ClientPacket.Header.CP_END_ITC)) {
+            return ReqCITC.OnPacket(c, header, cp);
         }
         return false;
     }
@@ -251,7 +280,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
         // socket
         if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
             // AdminPacket.OnPacket(cp, header, c);
-            return ReqCClientSocket.OnPacket(header, cp, c);
+            return ReqCClientSocket.OnPacket(c, header, cp);
         }
         // user
         if (header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
@@ -271,7 +300,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             if (header.between(ClientPacket.Header.CP_BEGIN_DRAGON, ClientPacket.Header.CP_END_DRAGON)) {
                 return ReqCUser_Dragon.OnMove(cp, c);
             }
-            return ReqCUser.OnPacket(cp, header, c);
+            return ReqCUser.OnPacket(c, header, cp);
         }
         // field
         if (header.between(ClientPacket.Header.CP_BEGIN_FIELD, ClientPacket.Header.CP_END_FIELD)) {
@@ -425,7 +454,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 UserInterfaceHandler.ShipObjectRequest(p.readInt(), c);
                 return true;
             }
-
             case CP_MCarnivalRequest: {
                 MonsterCarnivalHandler.MonsterCarnival(p, c);
                 return true;

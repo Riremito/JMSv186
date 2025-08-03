@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -187,8 +187,8 @@ public class ResCCashShop {
     // CCashShop::OnQueryCashResult
     public static MaplePacket QueryCashResult(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopQueryCashResult);
-        sp.Encode4(chr.getCSPoints(1)); // NEXON POINT
-        sp.Encode4(chr.getCSPoints(2)); // MAPLE POINT
+        sp.Encode4(chr.getNexonPoint());
+        sp.Encode4(chr.getMaplePoint());
         if (Version.GreaterOrEqual(Region.GMS, 95)) {
             sp.Encode4(0);
         }

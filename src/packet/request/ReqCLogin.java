@@ -52,6 +52,7 @@ import server.MapleItemInformationProvider;
  */
 public class ReqCLogin {
 
+    // CLogin::OnPacket
     public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
         switch (header) {
             // ログイン
@@ -61,9 +62,6 @@ public class ReqCLogin {
                     Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
                     c.SendPacket(ResCClientSocket.AuthenMessage());
                 }
-                return true;
-            }
-            case CP_AliveAck: {
                 return true;
             }
             case CP_Check2ndPassword: {
@@ -103,16 +101,6 @@ public class ReqCLogin {
                 DeleteChar(cp, c);
                 return true;
             }
-            // クラッシュデータ
-            case CP_ExceptionLog: {
-                // @000F EncodeBuffer(CrashDumpLog)
-                // 起動時に何らかの条件で前回のクラッシュの詳細のテキストが送信される
-                // 文字列で送信されているがnullで終わっていないので注意
-                return true;
-            }
-            case CP_SecurityPacket: {
-                return true;
-            }
             // キャラクター選択
             case CP_SelectCharacter:
             case CP_CheckPinCode: {
@@ -138,9 +126,6 @@ public class ReqCLogin {
                 // クライアントがログイン画面に移行した場合に送信される (初回限定)
                 // BIGBANG前後のJMSでMapLoginが複数存在するバージョンで必要となる
                 c.SendPacket(ResCLogin.SetMapLogin("MapLogin"));
-                return true;
-            }
-            case CP_UpdateScreenSetting: {
                 return true;
             }
             default: {

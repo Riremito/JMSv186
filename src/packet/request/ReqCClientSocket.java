@@ -58,9 +58,31 @@ import server.maps.MapleMap;
  */
 public class ReqCClientSocket {
 
-    public static boolean login_test = false;
+    // CClientSocket::ProcessPacket
+    public static boolean OnPacket_Login(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+        switch (header) {
+            case CP_MigrateIn: {
+                OnMigrateIn(cp, c);
+                return true;
+            }
+            case CP_AliveAck: {
+                return true;
+            }
+            case CP_ExceptionLog: {
+                return true;
+            }
+            case CP_SecurityPacket: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
 
-    public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+    // CClientSocket::ProcessPacket
+    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: // Enter Game Server (Login)
             {
@@ -71,6 +93,27 @@ public class ReqCClientSocket {
                 return true;
             }
             case CP_ExceptionLog: {
+                return true;
+            }
+            case CP_SecurityPacket: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // CClientSocket::ProcessPacket
+    public static boolean OnPacket_CS_ITC(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+        switch (header) {
+            case CP_MigrateIn: {
+                int character_id = cp.Decode4();
+                ReqCCashShop.EnterCS(character_id, c);
+                return true;
+            }
+            case CP_AliveAck: {
                 return true;
             }
             case CP_SecurityPacket: {
