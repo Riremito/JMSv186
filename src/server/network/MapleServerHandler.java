@@ -31,6 +31,7 @@ import packet.request.ReqCUser_Pet;
 import packet.request.ReqCCashShop;
 import packet.request.ReqCClientSocket;
 import packet.request.ReqCDropPool;
+import packet.request.ReqCField;
 import packet.request.ReqCLogin;
 import packet.request.ReqCNpcPool;
 import packet.request.Req_Farm;
@@ -340,10 +341,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             if (header.between(ClientPacket.Header.CP_BEGIN_PARTY_MATCH, ClientPacket.Header.CP_END_PARTY_MATCH)) {
                 return true;
             }
-            // CP_CONTISTATE
-            // CP_RequestFootHoldInfo
-            // CP_FootHoldInfo
-            return false;
+            return ReqCField.OnPacket(c, header, cp);
         }
         if (header.between(ClientPacket.Header.CP_BEGIN_RAISE, ClientPacket.Header.CP_END_RAISE)) {
             // 布製の人形などETCアイテムからUIを開くタイプの処理
@@ -451,11 +449,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_FriendRequest: {
                 FriendRequest.OnPacket(cp, c);
-                return true;
-            }
-            case CP_CONTISTATE: {
-                // p
-                UserInterfaceHandler.ShipObjectRequest(p.readInt(), c);
                 return true;
             }
             case CP_MCarnivalRequest: {

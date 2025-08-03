@@ -20,7 +20,7 @@ package packet.response;
 
 import server.network.MaplePacket;
 import packet.ServerPacket;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import packet.ops.OpsContiMove;
 
 /**
  *
@@ -28,22 +28,18 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class ResCField_ContiMove {
 
-    public static MaplePacket boatPacket(int effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        // 1034: balrog boat comes, 1548: boat comes, 3: boat leaves
-        mplew.writeShort(ServerPacket.Header.LP_CONTISTATE.get());
-        mplew.writeShort(effect); // 0A 04 balrog
-        //this packet had 3: boat leaves
-        return mplew.getPacket();
+    public static MaplePacket ContiMove(OpsContiMove ops1, OpsContiMove ops2) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CONTIMOVE);
+        sp.Encode1(ops1.get());
+        sp.Encode1(ops2.get());
+        return sp.get();
     }
 
-    public static MaplePacket boatEffect(int effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        // 1034: balrog boat comes, 1548: boat comes, 3: boat leaves
-        mplew.writeShort(ServerPacket.Header.LP_CONTIMOVE.get());
-        mplew.writeShort(effect); // 0A 04 balrog
-        //this packet had the other ones o.o
-        return mplew.getPacket();
+    public static MaplePacket ContiState(OpsContiMove ops) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CONTISTATE);
+        sp.Encode1(ops.get());
+        sp.Encode1(0); // 0 or 1, CShip::AppearShip
+        return sp.get();
     }
-    
+
 }

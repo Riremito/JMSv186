@@ -40,6 +40,7 @@ public class PacketOps {
         OpsQuest.init();
         OpsMovePathAttr.init();
         OpsFuncKeyMapped.init();
+        OpsContiMove.init();
     }
 
 }

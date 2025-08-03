@@ -661,23 +661,19 @@ public class ResCField {
     }
 
     public static MaplePacket getClockTime(int hour, int min, int sec) {
-        // Current Time
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Clock.get());
-        mplew.write(1); //Clock-Type
-        mplew.write(hour);
-        mplew.write(min);
-        mplew.write(sec);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Clock);
+        sp.Encode1(1); // station clock
+        sp.Encode1(hour);
+        sp.Encode1(min);
+        sp.Encode1(sec);
+        return sp.get();
     }
 
     public static MaplePacket getClock(int time) {
-        // time in seconds
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Clock.get());
-        mplew.write(2); // clock type. if you send 3 here you have to send another byte (which does not matter at all) before the timestamp
-        mplew.writeInt(time);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Clock);
+        sp.Encode1(2); // timer
+        sp.Encode4(time);
+        return sp.get();
     }
 
     public static MaplePacket getFindReplyWithMap(String target, int mapid, final boolean buddy) {
