@@ -107,6 +107,8 @@ public class SpawnPointAreaBoss extends Spawns {
 
         if (msg != null) {
             map.broadcastMessage(ResWrapper.BroadCastMsgNotice(msg));
+            // TODO : replace to DebugMsg
+            map.broadcastMessage(ResWrapper.BroadCastMsgNotice("Master Monster = " + monster.getId() + ", MapID = " + map.getId()));
         }
         return mob;
     }

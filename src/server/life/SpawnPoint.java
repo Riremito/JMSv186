@@ -130,10 +130,9 @@ public class SpawnPoint extends Spawns {
         }
         if (msg != null) {
             map.broadcastMessage(ResWrapper.BroadCastMsgNotice(msg));
-            // デバッグ出力
             if (mob.getStats().isBoss()) {
-                String debug_msg = "BossID = " + monster.getId() + ", MapID = " + map.getId();
-                map.broadcastMessage(ResWrapper.BroadCastMsgEvent(debug_msg));
+                // TODO : replace to DebugMsg
+                map.broadcastMessage(ResWrapper.BroadCastMsgNotice("Normal Boss Mob = " + monster.getId() + ", MapID = " + map.getId()));
             }
         }
         return mob;

@@ -1340,7 +1340,7 @@ public class ReqCUser {
         int skill_id = cp.Decode4();
         byte skill_level = cp.Decode1();
 
-        Debug.DebugLog("OnSkillUseRequest :  " + skill_id);
+        //Debug.DebugLog("OnSkillUseRequest :  " + skill_id);
         chr.updateTick(time_stamp);
         PlayerHandler.SpecialMove(chr, cp, skill_id, skill_level, null);
         return true;

@@ -2398,14 +2398,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 //client.getPlayer().UpdateStat(true);
             }
 
-            Debug.DebugLog(getName() + " Enter Map = " + to.getId());
+            //Debug.DebugLog(getName() + " Enter Map = " + to.getId());
             to.spawnMerchant(this); // show merchant
             to.spawnDynamicPortal(this); // show dynamic portal;
 
             map.removePlayer(this);
             if (!clone && client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {
                 map = to;
-                Debug.DebugLog("stance : " + getStance() + " -> " + OpsMovePathAttr.MPA_NORMAL.get());
+                //Debug.DebugLog("stance : " + getStance() + " -> " + OpsMovePathAttr.MPA_NORMAL.get());
                 setStance(OpsMovePathAttr.MPA_NORMAL.get());
                 setPosition(pos);
                 to.addPlayer(this);

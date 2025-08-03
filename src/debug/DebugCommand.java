@@ -748,6 +748,15 @@ public class DebugCommand {
                         nd.name = name;
                         list_NameData_Item.add(nd);
                     }
+                    for (MapleData wz_data : DW_String.getCash().getChildren()) {
+                        int id = Integer.parseInt(wz_data.getName());
+                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        NameData nd = new NameData();
+                        nd.id = id;
+                        nd.available = DWI_Validation.isValidItemID(id);
+                        nd.name = name;
+                        list_NameData_Item.add(nd);
+                    }
                 }
                 for (NameData nd : list_NameData_Item) {
                     if (nd.name.contains(search_name)) {
