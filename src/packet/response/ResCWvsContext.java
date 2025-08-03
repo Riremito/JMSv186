@@ -2101,12 +2101,12 @@ public class ResCWvsContext {
         return mplew.getPacket();
     }
 
-    public static MaplePacket yellowChat(String msg) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SetWeekEventMessage.get());
-        mplew.write(-1); //could be something like mob displaying message.
-        mplew.writeMapleAsciiString(msg);
-        return mplew.getPacket();
+    public static MaplePacket SetWeekEventMessage(String text) {
+        // not in KMS31
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetWeekEventMessage);
+        sp.Encode1(-1);
+        sp.EncodeStr(text);
+        return sp.get();
     }
 
     public static MaplePacket getShowQuestCompletion(int id) {

@@ -23,21 +23,8 @@ public abstract class CommandExecute {
     //1 = Success
     //0 = Something Went Wrong
 
-    enum ReturnValue {
-
-        DONT_LOG,
-        LOG;
-    }
-
     public CommandType getType() {
         return CommandType.NORMAL;
     }
 
-    public static abstract class TradeExecute extends CommandExecute {
-
-        @Override
-        public CommandType getType() {
-            return CommandType.TRADE;
-        }
-    }
 }

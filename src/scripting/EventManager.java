@@ -328,7 +328,7 @@ public class EventManager {
     }
 
     public void broadcastYellowMsg(final String msg) {
-        getChannelServer().broadcastPacket(ResCWvsContext.yellowChat(msg));
+        getChannelServer().broadcastPacket(ResCWvsContext.SetWeekEventMessage(msg));
     }
 
     // event/2xEvent.js

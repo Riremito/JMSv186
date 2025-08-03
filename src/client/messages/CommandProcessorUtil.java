@@ -1,21 +1,10 @@
 package client.messages;
 
-import tools.StringUtil;
-
 /**
  *
  * @author Emilyx3
  */
 public class CommandProcessorUtil {
-
-    public static String joinAfterString(String splitted[], String str) {
-        for (int i = 1; i < splitted.length; i++) {
-            if (splitted[i].equalsIgnoreCase(str) && i + 1 < splitted.length) {
-                return StringUtil.joinStringFrom(splitted, i + 1);
-            }
-        }
-        return null;
-    }
 
     public static int getOptionalIntArg(String splitted[], int position, int def) {
         if (splitted.length > position) {
@@ -59,14 +48,6 @@ public class CommandProcessorUtil {
             }
         }
         return null;
-    }
-
-    public static int getNamedIntArg(String splitted[], int startpos, String name, int def) {
-        Integer ret = getNamedIntArg(splitted, startpos, name);
-        if (ret == null) {
-            return def;
-        }
-        return ret.intValue();
     }
 
     public static Double getNamedDoubleArg(String splitted[], int startpos, String name) {

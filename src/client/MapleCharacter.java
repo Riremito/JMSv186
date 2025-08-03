@@ -4729,6 +4729,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         SendPacket(ResWrapper.BroadCastMsgEvent(text));
     }
 
+    // 黄色
+    public void DebugMsg3(String text) {
+        SendPacket(ResCWvsContext.SetWeekEventMessage(text));
+    }
+
     public void Notice(String text) {
         Debug.DebugLog("Notice");
         client.getSession().write(ResWrapper.BroadCastMsgEvent(text));

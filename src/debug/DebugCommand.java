@@ -103,6 +103,12 @@ public class DebugCommand {
 
         switch (splitted[0]) {
             // デバッグ関連
+            case "/testmsg": {
+                chr.DebugMsg("BLUE.");
+                chr.DebugMsg2("PINK.");
+                chr.DebugMsg3("YELLOW.");
+                return true;
+            }
             case "/reload": {
                 // PacketHeader設定再読み込み
                 Property_Packet.reload();
