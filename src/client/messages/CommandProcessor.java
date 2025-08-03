@@ -25,9 +25,6 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.messages.commands.*;
 import client.messages.commands.AdminCommand;
-import client.messages.commands.GMCommand;
-import client.messages.commands.InternCommand;
-import client.messages.commands.PlayerCommand;
 import constants.ServerConstants.CommandType;
 import constants.ServerConstants.PlayerGMRank;
 import database.DatabaseConnection;
@@ -47,7 +44,7 @@ public class CommandProcessor {
     static {
 
         Class<?>[] CommandFiles = {
-            PlayerCommand.class, InternCommand.class, GMCommand.class, AdminCommand.class
+            AdminCommand.class
         };
 
         for (Class<?> clasz : CommandFiles) {
