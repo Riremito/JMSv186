@@ -21,6 +21,7 @@ package packet.request;
 import client.MapleCharacter;
 import client.MapleClient;
 import debug.Debug;
+import handling.channel.handler.BeanGame;
 import packet.ClientPacket;
 import packet.ops.OpsContiMove;
 import packet.response.ResCField_ContiMove;
@@ -56,6 +57,14 @@ public class ReqCField {
                 return true;
             }
             case CP_FootHoldInfo: {
+                return true;
+            }
+            case BEANS_OPERATION: {
+                BeanGame.BeanGame1(c, cp);
+                return true;
+            }
+            case BEANS_UPDATE: {
+                chr.UpdateStat(true);
                 return true;
             }
             case CP_JMS_PachinkoPrizes: {

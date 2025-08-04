@@ -419,8 +419,21 @@ public class ReqCUser {
                 //NPCHandler.repair(p, c);
                 return true;
             }
+            case CP_FriendRequest: {
+                FriendRequest.OnPacket(cp, c);
+                return true;
+            }
+            case CP_EnterTownPortalRequest: {
+                ReqCTownPortalPool.TryEnterTownPortal(cp, c);
+                return true;
+            }
             case CP_FuncKeyMappedModified: {
                 return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
+            }
+            case CP_JMS_JUKEBOX:
+            case CP_JMS_InstancePortalCreate:
+            case CP_JMS_InstancePortalEnter: {
+                return ItemRequest.OnPacket(header, cp, c);
             }
             case CP_UserMigrateToITCRequest: {
                 ReqCClientSocket.EnterCS(c, chr, true);
@@ -449,6 +462,11 @@ public class ReqCUser {
                 byte unk2 = cp.Decode1();
                 byte unk3 = cp.Decode1();
                 byte unk4 = cp.Decode1();
+                return true;
+            }
+            case CP_JMS_FarmEnter:
+            case CP_JMS_FarmLeave: {
+                Req_Farm.OnPacket(header, cp, c);
                 return true;
             }
             default: {

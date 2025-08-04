@@ -251,6 +251,7 @@ public class ClientPacket {
         CP_UserBridleItemUseRequest, // USE_CATCH_ITEM
         CP_UserSkillLearnItemUseRequest, // USE_SKILL_BOOK
         CP_UserSkillResetItemUseRequest,
+        CP_JMS_MONSTERBOOK_SET,
         CP_UserShopScannerItemUseRequest, // USE_OWL_MINERVA
         CP_UserMapTransferItemUseRequest, // USE_TELE_ROCK
         CP_UserPortalScrollUseRequest, // USE_RETURN_SCROLL
@@ -347,6 +348,7 @@ public class ClientPacket {
         CP_UserMigrateToITCRequest,
         CP_UserExpUpItemUseRequest,
         CP_UserTempExpUseRequest,
+        CP_JMS_JUKEBOX, // ItemID 2150001
         CP_NewYearCardRequest,
         CP_RandomMorphRequest,
         CP_CashItemGachaponRequest,
@@ -387,6 +389,8 @@ public class ClientPacket {
         CP_UserPamsSongUseRequest,
         CP_QuestGuideRequest,
         CP_UserRepeatEffectRemove,
+        CP_JMS_FarmEnter,
+        CP_JMS_FarmLeave,
         CP_END_USER,
         CP_BEGIN_FIELD,
         CP_BEGIN_LIFEPOOL,
@@ -435,6 +439,8 @@ public class ClientPacket {
         CP_END_PARTY_MATCH,
         CP_RequestFootHoldInfo,
         CP_FootHoldInfo,
+        BEANS_OPERATION,
+        BEANS_UPDATE,
         CP_JMS_PachinkoPrizes,
         CP_END_FIELD,
         // ポイントショップ
@@ -492,12 +498,6 @@ public class ClientPacket {
         CP_NO,
         // JMS headers
         GM_COMMAND_MAPLETV, // Super Megaphone Exploitのパケット
-        BEANS_OPERATION, // PACHINKO_GAME, パチンコ
-        BEANS_UPDATE, // PACHINKO_UPDATE, パチンコ
-        CP_JMS_MONSTERBOOK_SET,
-        CP_JMS_JUKEBOX, // ItemID 2150001
-        CP_JMS_FarmEnter,
-        CP_JMS_FarmLeave,
         // old header names
         WHEEL_OF_FORTUNE, // 不明
         SOLOMON, // 名称不明

@@ -18,15 +18,12 @@ import org.apache.mina.common.IoSession;
 import tools.FileoutputUtil;
 import packet.ClientPacket;
 import packet.request.ReqCUser_Dragon;
-import packet.request.FriendRequest;
-import packet.request.ItemRequest;
 import packet.request.ReqCMobPool;
 import packet.request.ReqCReactorPool;
 import packet.request.ReqCSummonedPool;
 import packet.request.ReqCUser;
 import packet.request.ReqCUIItemUpgrade;
 import packet.request.ReqCITC;
-import packet.request.ReqCTownPortalPool;
 import packet.request.ReqCUser_Pet;
 import packet.request.ReqCCashShop;
 import packet.request.ReqCClientSocket;
@@ -34,7 +31,6 @@ import packet.request.ReqCDropPool;
 import packet.request.ReqCField;
 import packet.request.ReqCLogin;
 import packet.request.ReqCNpcPool;
-import packet.request.Req_Farm;
 import packet.response.ResCClientSocket;
 
 public class MapleServerHandler extends IoHandlerAdapter {
@@ -374,11 +370,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
         // CP_LogoutGiftSelect
         // CP_NO
         switch (header) {
-            case CP_JMS_JUKEBOX:
-            case CP_JMS_InstancePortalCreate:
-            case CP_JMS_InstancePortalEnter: {
-                return ItemRequest.OnPacket(header, cp, c);
-            }
             case CP_MarriageRequest: {
                 PlayersHandler.RingAction(p, c);
                 return true;
@@ -447,10 +438,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PartyHandler.DenyPartyRequest(p, c);
                 return true;
             }
-            case CP_FriendRequest: {
-                FriendRequest.OnPacket(cp, c);
-                return true;
-            }
             case CP_MCarnivalRequest: {
                 MonsterCarnivalHandler.MonsterCarnival(p, c);
                 return true;
@@ -485,26 +472,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_UserFollowCharacterWithdraw: {
                 PlayersHandler.FollowReply(p, c);
-                return true;
-            }
-            // パチンコ
-            case BEANS_OPERATION: {
-                BeanGame.BeanGame1(p, c);
-                return true;
-            }
-            case BEANS_UPDATE: {
-                BeanGame.BeanGame2(p, c);
-                return true;
-            }
-            // ミスティックドア
-            case CP_EnterTownPortalRequest: {
-                ReqCTownPortalPool.TryEnterTownPortal(cp, c);
-                return true;
-            }
-            // 農場
-            case CP_JMS_FarmEnter:
-            case CP_JMS_FarmLeave: {
-                Req_Farm.OnPacket(header, cp, c);
                 return true;
             }
             default: {

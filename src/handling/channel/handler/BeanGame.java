@@ -9,11 +9,10 @@ import constants.BeansConstants;
 import data.client.DC_Exp;
 import java.util.ArrayList;
 import java.util.List;
+import packet.ClientPacket;
 import packet.response.Res_JMS_CField_Pachinko;
 import packet.response.wrapper.ResWrapper;
-import tools.FileoutputUtil;
 import server.Randomizer;
-import tools.data.input.LittleEndianAccessor;
 
 public class BeanGame {
 
@@ -32,7 +31,7 @@ public class BeanGame {
     public static int 黄金狗设置局数 = 0;
     public static int 海洋帽子 = 1002743;
 
-    public static final void BeanGame1(LittleEndianAccessor slea, MapleClient c) {
+    public static final void BeanGame1(MapleClient c, ClientPacket cp) {
         BeansConstants Beans = new BeansConstants();
         String 豆豆装备[] = Beans.get豆豆装备();
         String 豆豆坐骑[] = Beans.get豆豆坐骑();
@@ -58,7 +57,7 @@ public class BeanGame {
         //System.out.println("豆豆出现包" +slea.toString());
         MapleCharacter chr = c.getPlayer();
         List<MapleBeans> beansInfo = new ArrayList<>();
-        int type = slea.readByte();
+        int type = cp.Decode1();
         int 力度 = 0;
         int 豆豆序号 = 0;
         int 力度搞假A = 0;
@@ -67,21 +66,21 @@ public class BeanGame {
         }
         switch (type) {
             case 0://开始打豆豆
-                力度 = slea.readShort();
-                slea.readInt();
+                力度 = cp.Decode2();
+                cp.Decode4();
                 chr.setBeansRange(力度 + 力度搞假A);
                 c.getSession().write(ResWrapper.enableActions());
                 break;
             case 1://点开始的时候 确认打豆豆的力度
                 //01 E8 03
-                力度 = slea.readShort();
+                力度 = cp.Decode2();
                 chr.setBeansRange(力度 + 力度搞假A);
                 c.getSession().write(ResWrapper.enableActions());
                 break;
             case 2://暂时没去注意这个 而且IDA里面也没有对应内容
                 //没存在的必要
                 //02 1B 00 00 00
-                slea.readInt();
+                cp.Decode4();
                 break;
             case 3:
                 //打豆豆进洞以后的数据
@@ -399,7 +398,7 @@ public class BeanGame {
                             }
                             break;
                         default:
-                            System.out.println("未处理的类型A【" + type + "】\n包" + slea.toString());
+                            //System.out.println("未处理的类型A【" + type + "】\n包" + slea.toString());
                             break;
                     }
                     // int 奖励豆豆 = Randomizer.nextInt(150) + 50;
@@ -428,8 +427,8 @@ public class BeanGame {
             case 0x0B:
                 //0B[11] - 点start/stop的时候获得start/stop时豆豆的力度和序号
                 //0 - 刚打开界面的时候设置的力度
-                力度 = slea.readShort();
-                豆豆序号 = slea.readInt() + 1;//这里获得的Int是最后一个豆豆的序号
+                力度 = cp.Decode2();
+                豆豆序号 = cp.Decode4() + 1;//这里获得的Int是最后一个豆豆的序号
                 chr.setBeansRange(力度 + 力度搞假A);
                 chr.setBeansNum(豆豆序号);
                 if (豆豆序号 == 1) {
@@ -438,12 +437,12 @@ public class BeanGame {
                 break;
             case 6:
                 //点暂停或者满5个豆豆后客户端发送的豆豆信息 最多5个豆豆
-                slea.skip(1);
-                int 循环次数 = slea.readByte();
+                cp.Decode1();
+                int 循环次数 = cp.Decode1();
                 if (循环次数 == 0) {
                     return;
                 } else if (循环次数 != 1) {
-                    slea.skip((循环次数 - 1) * 8);
+                    //slea.skip((循环次数 - 1) * 8);
                 }   //int 临时豆豆序号 = slea.readInt();
                 //豆豆序号 = (临时豆豆序号 == 1 ? 0 : 临时豆豆序号) + (chr.getBeansNum()  == 临时豆豆序号 ? 1 : 0);
                 if (chr.isCanSetBeansNum()) {
@@ -453,8 +452,8 @@ public class BeanGame {
                 chr.setCanSetBeansNum(true);
                 break;
             default:
-                System.out.println("未处理的类型【" + type + "】\n包" + slea.toString());
-                FileoutputUtil.log("log\\打豆豆获取到未知类型.log", "类型【" + type + "】\n包" + slea.toString());
+                //System.out.println("未处理的类型【" + type + "】\n包" + slea.toString());
+                //FileoutputUtil.log("log\\打豆豆获取到未知类型.log", "类型【" + type + "】\n包" + slea.toString());
                 break;
         }
         if (type == 0x0B || type
@@ -508,9 +507,5 @@ public class BeanGame {
         public byte getType() {
             return type;
         }
-    }
-
-    public static final void BeanGame2(LittleEndianAccessor slea, MapleClient c) {
-        c.getSession().write(ResWrapper.enableActions());
     }
 }
