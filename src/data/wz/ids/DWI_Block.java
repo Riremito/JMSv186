@@ -51,6 +51,11 @@ public class DWI_Block {
     };
 
     private static final int[] mapleTV_npcs = {
+        9250022,
+        9250023,
+        9250024,
+        9250025,
+        9250026,
         9250042,
         9250043,
         9250044,
@@ -58,7 +63,7 @@ public class DWI_Block {
         9250046
     };
 
-    public static boolean checkNpc(int id, String name) {
+    public static boolean checkNpc(int id) {
         if (ContentState.CS_HIDE_EVENT_NPC.get()) {
             for (int blocked_id : event_npcs) {
                 if (blocked_id == id) {
@@ -68,10 +73,7 @@ public class DWI_Block {
         }
 
         if (ContentState.CS_HIDE_MAPLE_TV.get()) {
-            // JMS131, 9700001
-            if (name.endsWith("電光板")) {
-                return true;
-            }
+            // old ver = 9700001 ?_?
             // JMS147, 9250042
             for (int blocked_id : mapleTV_npcs) {
                 if (blocked_id == id) {

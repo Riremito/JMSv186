@@ -23,7 +23,6 @@ package server.life;
 import data.wz.DW_Etc;
 import data.wz.DW_Mob;
 import data.wz.DW_String;
-import data.wz.ids.DWI_LoadXML;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

@@ -179,7 +179,7 @@ public class MapleMapFactory {
 
                         } else if (myLife != null) {
                             // hide npc
-                            if (!DWI_Block.checkNpc(myLife.getId(), MapleLifeFactory.getNPC(myLife.getId()).getName())) {
+                            if (!DWI_Block.checkNpc(myLife.getId())) {
                                 map.addMapObject(myLife);
                             }
                         }
