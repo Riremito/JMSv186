@@ -23,6 +23,7 @@ package config;
  * @author Riremito
  */
 public enum ContentState {
+    CS_NETCAFE(false), // ネットカフェ
     CS_LOCK_HP_WASH, // HP振り替え
     CS_LOCK_HAMMER, // ビシャスのハンマー
     CS_LOCK_EE_SCROLL, // 装備強化

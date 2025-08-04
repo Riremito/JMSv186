@@ -24,6 +24,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.MapleQuestStatus;
 import client.inventory.MaplePet;
+import config.ContentState;
 import config.Region;
 import config.Version;
 import config.property.Property_Shop;
@@ -298,7 +299,9 @@ public class ReqCClientSocket {
         //chr.checkBerserk();
         //}
         // internet cafe
-        chr.SendPacket(ResCClientSocket.AuthenCodeChanged());
+        if (ContentState.CS_NETCAFE.get()) {
+            chr.SendPacket(ResCClientSocket.AuthenCodeChanged());
+        }
         // 上部スライドメッセージ
         chr.SendPacket(ResWrapper.BroadCastMsgSlide(channel.getServerMessage()));
         // [other players]

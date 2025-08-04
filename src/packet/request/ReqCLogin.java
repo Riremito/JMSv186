@@ -24,6 +24,7 @@ import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import config.ContentState;
 import config.DeveloperMode;
 import config.Region;
 import config.ServerConfig;
@@ -60,7 +61,9 @@ public class ReqCLogin {
             case CP_CheckPassword: {
                 if (OnCheckPassword(cp, c)) {
                     Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
-                    c.SendPacket(ResCClientSocket.AuthenMessage());
+                    if (ContentState.CS_NETCAFE.get()) {
+                        c.SendPacket(ResCClientSocket.AuthenMessage());
+                    }
                 }
                 return true;
             }
