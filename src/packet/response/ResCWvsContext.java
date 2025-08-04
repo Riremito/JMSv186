@@ -59,6 +59,7 @@ import packet.ServerPacket;
 import packet.ops.OpsBodyPart;
 import packet.ops.arg.ArgBroadcastMsg;
 import packet.ops.OpsChangeStat;
+import packet.ops.OpsMapTransfer;
 import packet.ops.arg.ArgFriend;
 import packet.ops.arg.ArgMessage;
 import packet.ops.OpsSecondaryStat;
@@ -709,23 +710,26 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket getTrockRefresh(MapleCharacter chr, boolean vip, boolean delete) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MapTransferResult.get());
-        mplew.write(delete ? 2 : 3);
-        mplew.write(vip ? 1 : 0);
-        if (vip) {
-            int[] map = chr.getRocks();
-            for (int i = 0; i < 10; i++) {
-                mplew.writeInt(map[i]);
+    public static MaplePacket MapTransferResult(MapleCharacter chr, OpsMapTransfer ops_res, boolean vip) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MapTransferResult);
+        sp.Encode1(ops_res.get());
+        sp.Encode1(vip ? 1 : 0);
+
+        switch (ops_res) {
+            case MapTransferRes_DeleteList:
+            case MapTransferRes_RegisterList: {
+                int map_list[] = vip ? chr.getRocks() : chr.getRegRocks();
+                for (int map_id : map_list) {
+                    sp.Encode4(map_id);
+                }
+                break;
             }
-        } else {
-            int[] map = chr.getRegRocks();
-            for (int i = 0; i < 5; i++) {
-                mplew.writeInt(map[i]);
+            default: {
+                break;
             }
         }
-        return mplew.getPacket();
+
+        return sp.get();
     }
 
     public static MaplePacket cancelDebuff(long mask, boolean first) {

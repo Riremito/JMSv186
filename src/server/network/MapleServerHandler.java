@@ -357,27 +357,9 @@ public class MapleServerHandler extends IoHandlerAdapter {
             return true;
         }
 
-        // CP_CheckSSN2OnCreateNewCharacter
-        // CP_CheckSPWOnCreateNewCharacter
-        // CP_FirstSSNOnCreateNewCharacter
-        //
-        // CP_SendMateMail
-        // CP_RequestGuildBoardAuthKey
-        // CP_RequestConsultAuthKey
-        // CP_RequestClassCompetitionAuthKey
-        // CP_RequestWebBoardAuthKey
-        //
-        // CP_LogoutGiftSelect
-        // CP_NO
         switch (header) {
             case CP_MarriageRequest: {
                 PlayersHandler.RingAction(p, c);
-                return true;
-
-            }
-            case CP_UserMapTransferRequest: {
-                // c
-                PlayerHandler.TrockAddMap(p, c, c.getPlayer());
                 return true;
             }
             case CP_MemoRequest: {

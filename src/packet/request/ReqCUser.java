@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
 import packet.ops.OpsChangeStat;
+import packet.ops.OpsMapTransfer;
 import packet.request.parse.ParseCMovePath;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
@@ -298,6 +299,11 @@ public class ReqCUser {
                 InventoryHandler.OwlMinerva(c, slot, owl_item_id, target_id);
                 return true;
             }
+            case CP_UserMapTransferItemUseRequest: {
+                // 消費アイテムのテレポストーン
+                OnUserMapTransferItemUseRequest(chr, cp);
+                return true;
+            }
             case CP_UserPortalScrollUseRequest: {
                 int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 short slot = cp.Decode2();
@@ -386,6 +392,10 @@ public class ReqCUser {
                 // ポータルカウント, ポータル名, 元のX座標, 元のY座標, 移動先のX座標, 移動先のY座標
                 // ポータル利用時のスクリプト実行用だがJMSとEMS以外では利用されておらず意味がない
                 // サーバー側で特にみる必要もないが、マップ内ポータルを利用した時にサーバー側でスクリプトを実行したい場合は必要になる
+                return true;
+            }
+            case CP_UserMapTransferRequest: {
+                OnUserMapTransferRequest(chr, cp);
                 return true;
             }
             case CP_UserQuestRequest: {
@@ -923,6 +933,49 @@ public class ReqCUser {
         return true;
     }
 
+    public static boolean OnUserMapTransferItemUseRequest(MapleCharacter chr, ClientPacket cp) {
+        short slot = cp.Decode2();
+        int item_id = cp.Decode4();
+        byte cmd = cp.Decode1();
+        MapleMap target_map = null;
+        OpsMapTransfer ops_res = OpsMapTransfer.MapTransferRes_Unknown;
+        // shared with cash item teleport rock, CWvsContext::RunMapTransferItem
+        switch (cmd) {
+            case 0: {
+                int target_map_id = cp.Decode4();
+                for (int map_id : chr.getRegRocks()) {
+                    if (map_id == target_map_id) {
+                        target_map = chr.getClient().getChannelServer().getMapFactory().getMap(target_map_id);
+                        if (target_map != null) {
+                            ops_res = OpsMapTransfer.MapTransferRes_Use;
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+            case 1: {
+                String target_name = cp.DecodeStr();
+                ops_res = OpsMapTransfer.MapTransferRes_TargetNotExist;
+                // not coded.
+                break;
+            }
+            default: {
+                Debug.ErrorLog("OnUserMapTransferItemUseRequest : not coded " + cmd);
+                break;
+            }
+        }
+        int timestamp = cp.Decode4();
+
+        chr.SendPacket(ResCWvsContext.MapTransferResult(chr, ops_res, false));
+        if (ops_res == OpsMapTransfer.MapTransferRes_Use) {
+            chr.changeMap(target_map, target_map.getPortal(0));
+            return true;
+        }
+        chr.UpdateStat(true);
+        return false;
+    }
+
     public static boolean OnAbilityUpRequest(ClientPacket cp, MapleCharacter chr) {
 
         int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
@@ -1396,6 +1449,21 @@ public class ReqCUser {
         }
         byte m_nPrepareSkillActionSpeed = cp.Decode1();
         PlayerHandler.SkillEffect(chr, skill_id, skill_level, action, m_nPrepareSkillActionSpeed);
+        return true;
+    }
+
+    public static boolean OnUserMapTransferRequest(MapleCharacter chr, ClientPacket cp) {
+        byte cmd = cp.Decode1();
+        byte rock_type = cp.Decode1();
+        OpsMapTransfer ops_req = OpsMapTransfer.find(cmd);
+        int target_map_id = 999999999;
+
+        if (ops_req == OpsMapTransfer.MapTransferReq_DeleteList) {
+            target_map_id = cp.Decode4();
+        }
+
+        OpsMapTransfer ops_res = PlayerHandler.TrockAddMap(chr, ops_req, rock_type, target_map_id);
+        chr.SendPacket(ResCWvsContext.MapTransferResult(chr, ops_res, rock_type != 0));
         return true;
     }
 

@@ -41,6 +41,7 @@ public class PacketOps {
         OpsMovePathAttr.init();
         OpsFuncKeyMapped.init();
         OpsContiMove.init();
+        OpsMapTransfer.init();
     }
 
 }

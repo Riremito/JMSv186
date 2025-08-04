@@ -42,11 +42,11 @@ import data.wz.DW_Skill;
 import debug.Debug;
 import handling.channel.ChannelServer;
 import packet.ClientPacket;
+import packet.ops.OpsMapTransfer;
 import packet.response.ResCField_SnowBall;
 import packet.response.ResCMobPool;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
-import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -83,32 +83,40 @@ public class PlayerHandler {
         }
     }
 
-    public static final void TrockAddMap(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        final byte addrem = slea.readByte();
-        final byte vip = slea.readByte();
-
-        if (vip == 1) {
-            if (addrem == 0) {
-                chr.deleteFromRocks(slea.readInt());
-            } else if (addrem == 1) {
-                if (!FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
-                    chr.addRockMap();
-                } else {
-                    chr.dropMessage(1, "You may not add this map.");
+    public static OpsMapTransfer TrockAddMap(MapleCharacter chr, OpsMapTransfer ops_req, byte rock_type, int target_map_id) {
+        switch (ops_req) {
+            case MapTransferReq_DeleteList: {
+                if (rock_type == 0) {
+                    chr.deleteFromRegRocks(target_map_id);
+                    return OpsMapTransfer.MapTransferRes_DeleteList;
                 }
+                if (rock_type == 1) {
+                    chr.deleteFromRocks(target_map_id);
+                    return OpsMapTransfer.MapTransferRes_DeleteList;
+                }
+                return OpsMapTransfer.MapTransferRes_Unknown;
             }
-        } else {
-            if (addrem == 0) {
-                chr.deleteFromRegRocks(slea.readInt());
-            } else if (addrem == 1) {
-                if (!FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
-                    chr.addRegRockMap();
-                } else {
-                    chr.dropMessage(1, "You may not add this map.");
+            case MapTransferReq_RegisterList: {
+                if (FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
+                    return OpsMapTransfer.MapTransferRes_NotAllowed;
                 }
+                if (rock_type == 0) {
+                    chr.addRegRockMap();
+                    return OpsMapTransfer.MapTransferRes_RegisterList;
+                }
+                if (rock_type == 1) {
+                    chr.addRockMap();
+                    return OpsMapTransfer.MapTransferRes_RegisterList;
+                }
+                return OpsMapTransfer.MapTransferRes_Unknown;
+            }
+            default: {
+                Debug.ErrorLog("TrockAddMap : not coded " + ops_req);
+                break;
             }
         }
-        c.getSession().write(ResCWvsContext.getTrockRefresh(chr, vip == 1, addrem == 3));
+
+        return OpsMapTransfer.MapTransferRes_Unknown;
     }
 
     public static final void TakeDamage(ClientPacket cp, final MapleClient c, final MapleCharacter chr) {
