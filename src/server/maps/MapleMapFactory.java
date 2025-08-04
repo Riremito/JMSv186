@@ -27,6 +27,7 @@ import config.Version;
 import data.wz.DW_Map;
 import data.wz.DW_Reactor;
 import data.wz.DW_String;
+import data.wz.ids.DWI_Block;
 import data.wz.ids.DWI_Validation;
 import debug.Debug;
 import java.awt.Point;
@@ -168,14 +169,17 @@ public class MapleMapFactory {
 
                         if (myLife instanceof MapleMonster) {
                             final MapleMonster mob = (MapleMonster) myLife;
-
-                            map.addMonsterSpawn(mob,
-                                    MapleDataTool.getInt("mobTime", life, 0),
-                                    (byte) MapleDataTool.getInt("team", life, -1),
-                                    mob.getId() == bossid ? msg : null);
+                            // hide mob
+                            if (!DWI_Block.checkMob(myLife.getId())) {
+                                map.addMonsterSpawn(mob,
+                                        MapleDataTool.getInt("mobTime", life, 0),
+                                        (byte) MapleDataTool.getInt("team", life, -1),
+                                        mob.getId() == bossid ? msg : null);
+                            }
 
                         } else if (myLife != null) {
-                            if (!Debug.CheckNPCBlock(myLife.getId(), MapleLifeFactory.getNPC(myLife.getId()).getName())) {
+                            // hide npc
+                            if (!DWI_Block.checkNpc(myLife.getId(), MapleLifeFactory.getNPC(myLife.getId()).getName())) {
                                 map.addMapObject(myLife);
                             }
                         }
