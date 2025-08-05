@@ -21,11 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package handling.channel.handler;
 
 import client.MapleClient;
-import client.MapleCharacterUtil;
-import constants.ServerConstants;
-import packet.response.ResCUserLocal;
 import scripting.NPCScriptManager;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 public class UserInterfaceHandler {
 
@@ -37,17 +33,4 @@ public class UserInterfaceHandler {
         }
     }
 
-    public static final void InGame_Poll(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        if (ServerConstants.PollEnabled) {
-            c.getPlayer().updateTick(slea.readInt());
-            final int selection = slea.readInt();
-
-            if (selection >= 0 && selection <= ServerConstants.Poll_Answers.length) {
-                if (MapleCharacterUtil.SetPoll(c.getAccID(), selection)) {
-                    c.getSession().write(ResCUserLocal.getPollReply("Thank you."));
-                    //idk what goes here lol
-                }
-            }
-        }
-    }
 }

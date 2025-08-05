@@ -58,7 +58,6 @@ import server.life.MobAttackInfo;
 import server.life.MobSkill;
 import server.maps.MapleMap;
 import server.maps.FieldLimitType;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 public class PlayerHandler {
 
@@ -920,15 +919,5 @@ public class PlayerHandler {
                 c.getSession().write(ResWrapper.enableActions());
             }
         }
-    }
-
-    public static final void snowBall(SeekableLittleEndianAccessor slea, MapleClient c) {
-        //B2 00
-        //01 [team]
-        //00 00 [unknown]
-        //89 [position]
-        //01 [stage]
-        c.getSession().write(ResWrapper.enableActions());
-        //empty, we do this in closerange
     }
 }
