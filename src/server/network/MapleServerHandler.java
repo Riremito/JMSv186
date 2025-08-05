@@ -370,14 +370,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 MonsterCarnivalHandler.MonsterCarnival(p, c);
                 return true;
             }
-            case UPDATE_QUEST: {
-                NPCHandler.UpdateQuest(p, c);
-                return true;
-            }
-            case USE_ITEM_QUEST: {
-                NPCHandler.UseItemQuest(p, c);
-                return true;
-            }
             default: {
                 break;
             }

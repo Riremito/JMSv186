@@ -258,24 +258,26 @@ public class NPCHandler {
         c.getPlayer().forceReAddItem(eq.copy(), type);
     }
 
-    public static final void UpdateQuest(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final MapleQuest quest = MapleQuest.getInstance(slea.readShort());
+    public static void UpdateQuest(MapleCharacter chr, ClientPacket cp) {
+        short quest_id = cp.Decode2();
+        final MapleQuest quest = MapleQuest.getInstance(quest_id);
         if (quest != null) {
-            c.getPlayer().updateQuest(c.getPlayer().getQuest(quest), true);
+            chr.updateQuest(chr.getQuest(quest), true);
         }
     }
 
-    public static final void UseItemQuest(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final short slot = slea.readShort();
-        final int itemId = slea.readInt();
-        final IItem item = c.getPlayer().getInventory(MapleInventoryType.ETC).getItem(slot);
-        final short qid = slea.readShort();
-        slea.readShort();
+    public static void UseItemQuest(MapleCharacter chr, ClientPacket cp) {
+        short slot = cp.Decode2();
+        int itemId = cp.Decode4();
+        IItem item = chr.getInventory(MapleInventoryType.ETC).getItem(slot);
+        short qid = cp.Decode2();
+        short unk = cp.Decode2();
+
         final MapleQuest quest = MapleQuest.getInstance(qid);
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         Pair<Integer, List<Integer>> questItemInfo = null;
         boolean found = false;
-        for (IItem i : c.getPlayer().getInventory(MapleInventoryType.ETC)) {
+        for (IItem i : chr.getInventory(MapleInventoryType.ETC)) {
             if (i.getItemId() / 10000 == 422) {
                 questItemInfo = ii.questItemInfo(i.getItemId());
                 if (questItemInfo != null && questItemInfo.getLeft() == qid && questItemInfo.getRight().contains(itemId)) {
@@ -285,12 +287,12 @@ public class NPCHandler {
             }
         }
         if (quest != null && found && item != null && item.getQuantity() > 0 && item.getItemId() == itemId) {
-            final int newData = slea.readInt();
-            final MapleQuestStatus stats = c.getPlayer().getQuestNoAdd(quest);
+            final int newData = cp.Decode4();
+            final MapleQuestStatus stats = chr.getQuestNoAdd(quest);
             if (stats != null && stats.getStatus() == 1) {
                 stats.setCustomData(String.valueOf(newData));
-                c.getPlayer().updateQuest(stats, true);
-                MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.ETC, slot, (short) 1, false);
+                chr.updateQuest(stats, true);
+                MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.ETC, slot, (short) 1, false);
             }
         }
     }
