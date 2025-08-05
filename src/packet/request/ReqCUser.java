@@ -436,8 +436,57 @@ public class ReqCUser {
                 //NPCHandler.repair(p, c);
                 return true;
             }
+
+            case CP_UserFollowCharacterRequest: {
+                //PlayersHandler.FollowRequest(p, c);
+                return true;
+            }
+            case CP_UserFollowCharacterWithdraw: {
+                //PlayersHandler.FollowReply(p, c);
+                return true;
+            }
+            case CP_GroupMessage: {
+                // c
+                //ChatHandler.Others(p, c, c.getPlayer());
+                return true;
+            }
+            case CP_Whisper: {
+                //ChatHandler.Whisper_Find(p, c);
+                return true;
+            }
+            case CP_Messenger: {
+                //ChatHandler.Messenger(p, c);
+                return true;
+            }
+            case CP_MiniRoom: {
+                // c
+                //PlayerInteractionHandler.PlayerInteraction(p, c, c.getPlayer());
+                return true;
+            }
+            case CP_PartyRequest: {
+                //PartyHandler.PartyOperatopn(p, c);
+                return true;
+            }
+            case CP_PartyResult: {
+                //PartyHandler.DenyPartyRequest(p, c);
+                return true;
+            }
+            case CP_GuildRequest: {
+                //GuildHandler.Guild(p, c);
+                return true;
+            }
+            case CP_GuildResult: {
+                //p.skip(1);
+                //GuildHandler.DenyGuildRequest(p.readMapleAsciiString(), c);
+                return true;
+            }
             case CP_FriendRequest: {
                 FriendRequest.OnPacket(cp, c);
+                return true;
+            }
+            case CP_MemoRequest: {
+                // c
+                //PlayersHandler.Note(p, c.getPlayer());
                 return true;
             }
             case CP_EnterTownPortalRequest: {
@@ -446,6 +495,27 @@ public class ReqCUser {
             }
             case CP_FuncKeyMappedModified: {
                 return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
+            }
+            case CP_RPSGame: {
+                //NPCHandler.RPSGame(p, c);
+                return true;
+            }
+            case CP_MarriageRequest: {
+                //PlayersHandler.RingAction(p, c);
+                return true;
+            }
+
+            case CP_AllianceRequest: {
+                //AllianceHandler.HandleAlliance(p, c, false);
+                return true;
+            }
+            case CP_AllianceResult: {
+                //AllianceHandler.HandleAlliance(p, c, true);
+                return true;
+            }
+            case CP_GuildBBS: {
+                //BBSHandler.BBSOperatopn(p, c);
+                return true;
             }
             case CP_JMS_JUKEBOX:
             case CP_JMS_InstancePortalCreate:

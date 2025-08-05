@@ -499,7 +499,6 @@ public class ClientPacket {
         // JMS headers
         GM_COMMAND_MAPLETV, // Super Megaphone Exploitのパケット
         // old header names
-        WHEEL_OF_FORTUNE, // 不明
         SOLOMON, // 名称不明
         CYGNUS_SUMMON, // 名称不明
         UPDATE_QUEST, // 不明
