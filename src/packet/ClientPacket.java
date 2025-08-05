@@ -33,6 +33,10 @@ public class ClientPacket {
         decoded = 0;
     }
 
+    public int getSize() {
+        return packet.length;
+    }
+
     public static Header ToHeader(short w) {
         for (final Header h : Header.values()) {
             if (h.get() == w) {

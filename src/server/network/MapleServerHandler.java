@@ -8,9 +8,6 @@ import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.login.LoginServer;
 import server.Randomizer;
-import tools.data.input.ByteArrayByteStream;
-import tools.data.input.GenericSeekableLittleEndianAccessor;
-import tools.data.input.SeekableLittleEndianAccessor;
 import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoSession;
@@ -144,9 +141,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
     @Override
     public void messageReceived(final IoSession session, final Object message) {
         try {
-            // please remove slea!
-            SeekableLittleEndianAccessor slea = new GenericSeekableLittleEndianAccessor(new ByteArrayByteStream((byte[]) message));
-            if (slea.available() < Content.PacketHeaderSize.getInt()) {
+            ClientPacket cp = new ClientPacket((byte[]) message);
+            if (cp.getSize() < Content.PacketHeaderSize.getInt()) {
                 return;
             }
             // client
@@ -155,22 +151,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 return;
             }
 
-            // TODO : remove
-            if (Content.PacketHeaderSize.getInt() == 2) {
-                slea.readShort(); // read header
-            } else {
-                slea.readByte();
-            }
-
-            // client packet
-            ClientPacket cp = new ClientPacket((byte[]) message);
             short header_val = 0;
             if (Content.PacketHeaderSize.getInt() == 2) {
                 header_val = cp.Decode2();
             } else {
                 header_val = (short) (cp.Decode1() & 0xFF);
             }
-            //Debug.DebugLog("DD = " + String.format("%02X", header_val));
+
             ClientPacket.Header header = ClientPacket.ToHeader(header_val);
 
             // not coded
