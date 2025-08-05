@@ -6,7 +6,6 @@ import config.Content;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
-import handling.channel.handler.*;
 import handling.login.LoginServer;
 import server.Randomizer;
 import tools.data.input.ByteArrayByteStream;
@@ -30,6 +29,7 @@ import packet.request.ReqCClientSocket;
 import packet.request.ReqCDropPool;
 import packet.request.ReqCField;
 import packet.request.ReqCField_Coconut;
+import packet.request.ReqCField_MonsterCarnival;
 import packet.request.ReqCField_SnowBall;
 import packet.request.ReqCLogin;
 import packet.request.ReqCNpcPool;
@@ -189,7 +189,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 }
                 // ゲームサーバー
                 case GameServer: {
-                    if (!handleGamePacket(slea, header, cp, c)) {
+                    if (!handleGamePacket(c, header, cp)) {
                         Debug.CPLog(cp);
                     }
                     break;
@@ -279,7 +279,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
     // Game Server
     // CClientSocket::ProcessPacket
-    public static final boolean handleGamePacket(SeekableLittleEndianAccessor p, ClientPacket.Header header, ClientPacket cp, MapleClient c) throws Exception {
+    public static final boolean handleGamePacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception {
         // socket
         if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
             // AdminPacket.OnPacket(cp, header, c);
@@ -340,7 +340,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // monster carnival field
             if (header.between(ClientPacket.Header.CP_BEGIN_MONSTER_CARNIVAL_FIELD, ClientPacket.Header.CP_END_MONSTER_CARNIVAL_FIELD)) {
-                return true;
+                return ReqCField_MonsterCarnival.OnPacket(c, header, cp);
             }
             if (header.between(ClientPacket.Header.CP_BEGIN_PARTY_MATCH, ClientPacket.Header.CP_END_PARTY_MATCH)) {
                 return true;
@@ -365,15 +365,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             return true;
         }
 
-        switch (header) {
-            case CP_MCarnivalRequest: {
-                MonsterCarnivalHandler.MonsterCarnival(p, c);
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
         return false;
     }
 
