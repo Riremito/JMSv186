@@ -111,9 +111,6 @@ public class ItemRequest {
             case CP_UserMobSummonItemUseRequest: {
                 return true;
             }
-            case USE_TREASUER_CHEST: {
-                return true;
-            }
             case CP_UserSkillLearnItemUseRequest: {
                 return true;
             }
@@ -121,9 +118,6 @@ public class ItemRequest {
                 return true;
             }
             case CP_UserTamingMobFoodItemUseRequest: {
-                return true;
-            }
-            case CP_UserUseGachaponBoxRequest: {
                 return true;
             }
             case CP_ShopLinkRequest: {

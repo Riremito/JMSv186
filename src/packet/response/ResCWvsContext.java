@@ -1918,6 +1918,12 @@ public class ResCWvsContext {
         return mplew.getPacket();
     }
 
+    public static MaplePacket SuccessInUseGachaponBox(int box_item_id) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SuccessInUseGachaponBox);
+        sp.Encode4(box_item_id);
+        return sp.get();
+    }
+
     public static final MaplePacket temporaryStats_Balrog(final MapleCharacter chr) {
         final List<Pair<MapleStat.Temp, Integer>> stats = new ArrayList<Pair<MapleStat.Temp, Integer>>();
         int offset = 1 + (chr.getLevel() - 90) / 20;

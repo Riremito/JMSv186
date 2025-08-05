@@ -501,7 +501,6 @@ public class ClientPacket {
         // old header names
         WHEEL_OF_FORTUNE, // 不明
         SOLOMON, // 名称不明
-        USE_TREASUER_CHEST, // 名称不明
         CYGNUS_SUMMON, // 名称不明
         UPDATE_QUEST, // 不明
         QUEST_ITEM, // 不明

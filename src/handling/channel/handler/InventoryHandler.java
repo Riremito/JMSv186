@@ -55,7 +55,6 @@ import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
-import packet.response.wrapper.WrapCUserLocal;
 import server.Randomizer;
 import server.RandomRewards;
 import server.MapleShopFactory;
@@ -178,7 +177,7 @@ public class InventoryHandler {
         return sortedList;
     }
 
-    public static final boolean UseRewardItem(short slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
+    public static final int UseRewardItem(short slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
         final IItem toUse = c.getPlayer().getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
         c.getSession().write(ResWrapper.enableActions());
         if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId) {
@@ -205,7 +204,7 @@ public class InventoryHandler {
                                 c.getSession().write(ResCUserLocal.showRewardItemAnimation(reward.itemid, reward.effect));
                                 chr.getMap().broadcastMessage(chr, ResCUserRemote.showRewardItemAnimation(reward.itemid, reward.effect, chr.getId()), false);
                                 rewarded = true;
-                                return true;
+                                return reward.itemid;
                             }
                         }
                     }
@@ -216,7 +215,7 @@ public class InventoryHandler {
                 chr.dropMessage(6, "Insufficient inventory slot.");
             }
         }
-        return false;
+        return 0;
     }
 
     public static final void UseScriptedNPCItem(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
@@ -436,32 +435,27 @@ public class InventoryHandler {
         c.getSession().write(ResWrapper.enableActions());
     }
 
-    public static final void UseTreasureChest(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        final short slot = slea.readShort();
-        final int itemid = slea.readInt();
-
+    public static final int UseTreasureChest(MapleCharacter chr, short slot, int item_id) {
         final IItem toUse = chr.getInventory(MapleInventoryType.ETC).getItem((byte) slot);
-        if (toUse == null || toUse.getQuantity() <= 0 || toUse.getItemId() != itemid) {
-            c.getSession().write(ResWrapper.enableActions());
-            return;
+        if (toUse == null || toUse.getQuantity() <= 0 || toUse.getItemId() != item_id) {
+            return 0;
         }
+
         int reward;
         int keyIDforRemoval = 0;
-        String box;
 
         switch (toUse.getItemId()) {
             case 4280000: // Gold box
                 reward = RandomRewards.getInstance().getGoldBoxReward();
                 keyIDforRemoval = 5490000;
-                box = "Gold";
                 break;
             case 4280001: // Silver box
                 reward = RandomRewards.getInstance().getSilverBoxReward();
                 keyIDforRemoval = 5490001;
-                box = "Silver";
                 break;
-            default: // Up to no good
-                return;
+            default: {
+                return 0;
+            }
         }
 
         // Get the quantity
@@ -474,25 +468,21 @@ public class InventoryHandler {
                 amount = 100; // Power Elixir
                 break;
         }
-        if (chr.getInventory(MapleInventoryType.CASH).countById(keyIDforRemoval) > 0) {
-            final IItem item = MapleInventoryManipulator.addbyId_Gachapon(c, reward, (short) amount);
 
-            if (item == null) {
-                chr.dropMessage(5, "Please check your item inventory and see if you have a Master Key, or if the inventory is full.");
-                c.getSession().write(ResWrapper.enableActions());
-                return;
-            }
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.ETC, (byte) slot, (short) 1, true);
-            MapleInventoryManipulator.removeById(c, MapleInventoryType.CASH, keyIDforRemoval, 1, true, false);
-            c.getSession().write(WrapCUserLocal.getShowItemGain(reward, (short) amount, true));
-
-            if (GameConstants.gachaponRareItem(item.getItemId()) > 0) {
-                World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgGachaponAnnounce(c.getPlayer(), item).getBytes());
-            }
-        } else {
-            chr.dropMessage(5, "Please check your item inventory and see if you have a Master Key, or if the inventory is full.");
-            c.getSession().write(ResWrapper.enableActions());
+        if (chr.getInventory(MapleInventoryType.CASH).countById(keyIDforRemoval) <= 0) {
+            return 0;
         }
+
+        final IItem item = MapleInventoryManipulator.addbyId_Gachapon(chr.getClient(), reward, (short) amount);
+
+        if (item == null) {
+            return 0;
+        }
+
+        MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.ETC, (byte) slot, (short) 1, true);
+        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.CASH, keyIDforRemoval, 1, true, false);
+
+        return reward;
     }
 
     public static final void UseCashItem(final SeekableLittleEndianAccessor slea, final MapleClient c, ClientPacket op) {

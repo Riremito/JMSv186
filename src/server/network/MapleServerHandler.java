@@ -375,11 +375,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 PlayersHandler.Note(p, c.getPlayer());
                 return true;
             }
-            case USE_TREASUER_CHEST: {
-                // c
-                InventoryHandler.UseTreasureChest(p, c, c.getPlayer());
-                return true;
-            }
             case CP_GroupMessage: {
                 // c
                 ChatHandler.Others(p, c, c.getPlayer());

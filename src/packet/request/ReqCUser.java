@@ -53,6 +53,7 @@ import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCUserLocal;
 import server.Randomizer;
 import server.maps.MapleMap;
 import tools.AttackPair;
@@ -418,7 +419,13 @@ public class ReqCUser {
             case CP_UserUseGachaponBoxRequest: {
                 short slot = cp.Decode2();
                 int item_id = cp.Decode4();
-                InventoryHandler.UseRewardItem(slot, item_id, c, c.getPlayer());
+                int reward = InventoryHandler.UseTreasureChest(chr, slot, item_id);
+                if (reward != 0) {
+                    chr.SendPacket(ResCWvsContext.SuccessInUseGachaponBox(item_id));
+                    chr.SendPacket(WrapCUserLocal.getShowItemGain(reward, (short) 1, true));
+                } else {
+                    chr.UpdateStat(true);
+                }
                 return true;
             }
             case CP_UserRepairDurabilityAll: {
