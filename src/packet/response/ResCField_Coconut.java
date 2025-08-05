@@ -20,7 +20,6 @@ package packet.response;
 
 import server.network.MaplePacket;
 import packet.ServerPacket;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -28,27 +27,20 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class ResCField_Coconut {
 
-    // 00 01 00 00 00 00
-    public static MaplePacket coconutScore(int[] coconutscore) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CoconutScore.get());
-        mplew.writeShort(coconutscore[0]);
-        mplew.writeShort(coconutscore[1]);
-        return mplew.getPacket();
+    // not checked.
+    public static MaplePacket CoconutHit(int nTarget, int nDelay, int nState) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CoconutHit);
+        sp.Encode2(nTarget); // -1 = ALL
+        sp.Encode2(nDelay); // nDelay
+        sp.Encode1(nState); // 1 = spawn, 3 = destroy
+        return sp.get();
     }
 
-    public static MaplePacket hitCoconut(boolean spawn, int id, int type) {
-        // FF 00 00 00 00 00 00
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CoconutHit.get());
-        if (spawn) {
-            mplew.write(0);
-            mplew.writeInt(128);
-        } else {
-            mplew.writeInt(id);
-            mplew.write(type); // What action to do for the coconut.
-        }
-        return mplew.getPacket();
+    public static MaplePacket CoconutScore(int[] coconutscore) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CoconutScore);
+        sp.Encode2(coconutscore[0]); // maple team score
+        sp.Encode2(coconutscore[1]); // story team score
+        return sp.get();
     }
-    
+
 }

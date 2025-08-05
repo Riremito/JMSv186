@@ -43,7 +43,6 @@ import debug.Debug;
 import handling.channel.ChannelServer;
 import packet.ClientPacket;
 import packet.ops.OpsMapTransfer;
-import packet.response.ResCField_SnowBall;
 import packet.response.ResCMobPool;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
@@ -129,7 +128,7 @@ public class PlayerHandler {
         chr.updateTick(timestamp);
 
         final byte type = cp.Decode1(); //-4 is mist, -3 and -2 are map damage.
-        if (Version.GreaterOrEqual(Region.KMS, 55) || ServerConfig.JMS164orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 55) || ServerConfig.JMS147orLater()) {
             cp.Decode1(); // Element - 0x00 = elementless, 0x01 = ice, 0x02 = fire, 0x03 = lightning
         }
         int damage = cp.Decode4();
@@ -931,12 +930,5 @@ public class PlayerHandler {
         //01 [stage]
         c.getSession().write(ResWrapper.enableActions());
         //empty, we do this in closerange
-    }
-
-    public static final void leftKnockBack(SeekableLittleEndianAccessor slea, final MapleClient c) {
-        if (c.getPlayer().getMapId() / 10000 == 10906) { //must be in snowball map or else its like infinite FJ
-            c.getSession().write(ResCField_SnowBall.leftKnockBack());
-            c.getSession().write(ResWrapper.enableActions());
-        }
     }
 }

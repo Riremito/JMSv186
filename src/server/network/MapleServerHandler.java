@@ -29,6 +29,8 @@ import packet.request.ReqCCashShop;
 import packet.request.ReqCClientSocket;
 import packet.request.ReqCDropPool;
 import packet.request.ReqCField;
+import packet.request.ReqCField_Coconut;
+import packet.request.ReqCField_SnowBall;
 import packet.request.ReqCLogin;
 import packet.request.ReqCNpcPool;
 import packet.response.ResCClientSocket;
@@ -328,7 +330,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // event field
             if (header.between(ClientPacket.Header.CP_BEGIN_EVENT_FIELD, ClientPacket.Header.CP_END_EVENT_FIELD)) {
-                return true;
+                if (ReqCField_SnowBall.OnPacket(c, header, cp)) {
+                    return true;
+                }
+                if (ReqCField_Coconut.OnPacket(c, header, cp)) {
+                    return true;
+                }
+                return false;
             }
             // monster carnival field
             if (header.between(ClientPacket.Header.CP_BEGIN_MONSTER_CARNIVAL_FIELD, ClientPacket.Header.CP_END_MONSTER_CARNIVAL_FIELD)) {
@@ -422,18 +430,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case CP_MCarnivalRequest: {
                 MonsterCarnivalHandler.MonsterCarnival(p, c);
-                return true;
-            }
-            case LEFT_KNOCK_BACK: {
-                PlayerHandler.leftKnockBack(p, c);
-                return true;
-            }
-            case CP_SnowBallTouch: {
-                PlayerHandler.snowBall(p, c);
-                return true;
-            }
-            case CP_CoconutHit: {
-                PlayersHandler.hitCoconut(p, c);
                 return true;
             }
             case CP_RPSGame: {

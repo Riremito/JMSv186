@@ -503,7 +503,6 @@ public class ClientPacket {
         SOLOMON, // 名称不明
         USE_TREASUER_CHEST, // 名称不明
         CYGNUS_SUMMON, // 名称不明
-        LEFT_KNOCK_BACK, // イベント関連?
         UPDATE_QUEST, // 不明
         QUEST_ITEM, // 不明
         USE_ITEM_QUEST, // 多分Quest Value Addition Exploitのパケット
