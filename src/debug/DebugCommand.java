@@ -36,6 +36,7 @@ import data.wz.ids.DWI_LoadXML;
 import handling.channel.ChannelServer;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.List;
 import packet.request.ReqCUser;
 import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
@@ -45,7 +46,10 @@ import scripting.NPCScriptManager;
 import server.MapleItemInformationProvider;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
+import server.life.MapleMonsterInformationProvider;
 import server.life.MapleNPC;
+import server.life.MonsterDropEntry;
+import server.life.Spawns;
 import server.maps.MapleDynamicPortal;
 import server.maps.MapleMap;
 import server.maps.SavedLocationType;
@@ -176,6 +180,11 @@ public class DebugCommand {
                     return false;
                 }
                 searchString(chr, splitted[1].toLowerCase(), splitted[2]);
+                return true;
+            }
+            case "/checkmapdata":
+            case "/mapdata": {
+                checkMapData(chr);
                 return true;
             }
             // ボス関連
@@ -838,6 +847,43 @@ public class DebugCommand {
         }
 
         chr.DebugMsg("searchString==");
+        return true;
+    }
+
+    private static boolean checkMapData(MapleCharacter chr) {
+        MapleMap map = chr.getMap();
+        if (map == null) {
+            return false;
+        }
+
+        List<Integer> mob_ids = new ArrayList<>();
+        List<Integer> mob_counts = new ArrayList<>();
+        for (Spawns s : map.getMonsterSpawn()) {
+            int id = s.getMonster().getId();
+            int index = mob_ids.indexOf(id);
+            if (index != -1) {
+                mob_counts.set(index, mob_counts.get(index) + 1);
+                continue;
+            }
+            mob_ids.add(id);
+            mob_counts.add(1);
+        }
+
+        for (int i = 0; i < mob_ids.size(); i++) {
+            int mob_id = mob_ids.get(i);
+            int mob_count = mob_counts.get(i);
+            MapleData md_mob = DW_String.getMob().getChildByPath(Integer.toString(mob_id));
+            String mob_name = md_mob != null ? MapleDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
+            if (!DWI_Validation.isValidMobID(mob_id)) {
+                chr.DebugMsg2("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
+                continue;
+            }
+            chr.DebugMsg("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
+            for (MonsterDropEntry mde : MapleMonsterInformationProvider.getInstance().retrieveDrop(mob_id)) {
+                chr.DebugMsg(mde.itemId + " : " + mde.chance);
+            }
+        }
+
         return true;
     }
 

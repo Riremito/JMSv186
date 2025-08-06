@@ -3205,4 +3205,8 @@ public final class MapleMap {
         }
         return false;
     }
+
+    public List<Spawns> getMonsterSpawn() {
+        return monsterSpawn;
+    }
 }
