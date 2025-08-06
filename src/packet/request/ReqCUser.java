@@ -455,13 +455,10 @@ public class ReqCUser {
                 return true;
             }
             case CP_Messenger: {
-                //ChatHandler.Messenger(p, c);
-                return true;
+                return ReqCUIMessenger.OnPacket(c, header, cp);
             }
             case CP_MiniRoom: {
-                // c
-                //PlayerInteractionHandler.PlayerInteraction(p, c, c.getPlayer());
-                return true;
+                return ReqCMiniRoomBaseDlg.OnPacket(c, header, cp);
             }
             case CP_PartyRequest: {
                 //PartyHandler.PartyOperatopn(p, c);
@@ -497,8 +494,7 @@ public class ReqCUser {
                 return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
             }
             case CP_RPSGame: {
-                //NPCHandler.RPSGame(p, c);
-                return true;
+                return ReqCRPSGameDlg.OnPacket(c, header, cp);
             }
             case CP_MarriageRequest: {
                 //PlayersHandler.RingAction(p, c);
