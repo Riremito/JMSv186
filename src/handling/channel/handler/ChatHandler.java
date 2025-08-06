@@ -26,12 +26,10 @@ import client.messages.CommandProcessor;
 import config.Region;
 import config.ServerConfig;
 import constants.ServerConstants.CommandType;
-import handling.channel.ChannelServer;
 import handling.world.MapleMessenger;
 import handling.world.MapleMessengerCharacter;
 import handling.world.World;
 import packet.ClientPacket;
-import packet.response.ResCField;
 import packet.response.ResCUIMessenger;
 import packet.response.ResCUser;
 import packet.response.wrapper.ResWrapper;
@@ -197,73 +195,4 @@ public class ChatHandler {
         }
     }
 
-    public static final void Whisper_Find(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final byte mode = slea.readByte();
-        slea.readInt(); //ticks
-        switch (mode) {
-            case 68: //buddy
-            case 5: { // Find
-
-                final String recipient = slea.readMapleAsciiString();
-                MapleCharacter player = c.getChannelServer().getPlayerStorage().getCharacterByName(recipient);
-                if (player != null) {
-                    if (!player.isGM() || c.getPlayer().isGM() && player.isGM()) {
-
-                        c.getSession().write(ResCField.getFindReplyWithMap(player.getName(), player.getMap().getId(), mode == 68));
-                    } else {
-                        c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
-                    }
-                } else { // Not found
-                    int ch = World.Find.findChannel(recipient);
-                    if (ch > 0) {
-                        player = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(recipient);
-                        if (player == null) {
-                            break;
-                        }
-                        if (player != null) {
-                            if (!player.isGM() || (c.getPlayer().isGM() && player.isGM())) {
-                                c.getSession().write(ResCField.getFindReply(recipient, (byte) ch, mode == 68));
-                            } else {
-                                c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
-                            }
-                            return;
-                        }
-                    }
-                    if (ch == -10) {
-                        c.getSession().write(ResCField.getFindReplyWithCS(recipient, mode == 68));
-                    } else if (ch == -20) {
-                        c.getSession().write(ResCField.getFindReplyWithMTS(recipient, mode == 68));
-                    } else {
-                        c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
-                    }
-                }
-                break;
-            }
-            case 6: { // Whisper
-                if (!c.getPlayer().getCanTalk()) {
-                    c.getSession().write(ResWrapper.BroadCastMsgNotice("You have been muted and are therefore unable to talk."));
-                    return;
-                }
-                //c.getPlayer().getCheatTracker().checkMsg();
-                final String recipient = slea.readMapleAsciiString();
-                final String text = slea.readMapleAsciiString();
-                final int ch = World.Find.findChannel(recipient);
-                if (ch > 0) {
-                    MapleCharacter player = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(recipient);
-                    if (player == null) {
-                        break;
-                    }
-                    player.getClient().getSession().write(ResCField.getWhisper(c.getPlayer().getName(), c.getChannel(), text));
-                    if (!c.getPlayer().isGM() && player.isGM()) {
-                        c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
-                    } else {
-                        c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 1));
-                    }
-                } else {
-                    c.getSession().write(ResCField.getWhisperReply(recipient, (byte) 0));
-                }
-            }
-            break;
-        }
-    }
 }

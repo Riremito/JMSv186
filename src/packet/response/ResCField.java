@@ -25,8 +25,10 @@ import server.network.MaplePacket;
 import java.util.List;
 import java.util.Map;
 import packet.ServerPacket;
+import packet.ops.OpsLocationResult;
 import packet.ops.OpsTransferChannel;
 import packet.ops.OpsTransferField;
+import packet.ops.Ops_Whisper;
 import packet.ops.arg.ArgFieldEffect;
 import packet.response.struct.TestHelper;
 import server.maps.MapleMap;
@@ -615,26 +617,6 @@ public class ResCField {
         return mplew.getPacket();
     }
 
-    public static MaplePacket getFindReplyWithMTS(String target, final boolean buddy) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Whisper.get());
-        mplew.write(buddy ? 72 : 9);
-        mplew.writeMapleAsciiString(target);
-        mplew.write(0);
-        mplew.writeInt(-1);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getFindReplyWithCS(String target, final boolean buddy) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Whisper.get());
-        mplew.write(buddy ? 72 : 9);
-        mplew.writeMapleAsciiString(target);
-        mplew.write(2);
-        mplew.writeInt(-1);
-        return mplew.getPacket();
-    }
-
     public static MaplePacket showEquipEffect() {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_FieldSpecificData.get());
@@ -683,44 +665,61 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket getFindReplyWithMap(String target, int mapid, final boolean buddy) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Whisper.get());
-        mplew.write(buddy ? 72 : 9);
-        mplew.writeMapleAsciiString(target);
-        mplew.write(1);
-        mplew.writeInt(mapid);
-        mplew.writeZeroBytes(8); // ?? official doesn't send zeros here but whatever
-        return mplew.getPacket();
-    }
+    public static MaplePacket Whisper(Ops_Whisper req_res, Ops_Whisper loc_whis, MapleCharacter chr_from, String name_to, String message, MapleCharacter chr_to) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Whisper);
 
-    public static MaplePacket getFindReply(String target, int channel, final boolean buddy) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Whisper.get());
-        mplew.write(buddy ? 72 : 9);
-        mplew.writeMapleAsciiString(target);
-        mplew.write(3);
-        mplew.writeInt(channel - 1);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getWhisperReply(String target, byte reply) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Whisper.get());
-        mplew.write(10); // whisper?
-        mplew.writeMapleAsciiString(target);
-        mplew.write(reply); //  0x0 = cannot find char, 0x1 = success
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket getWhisper(String sender, int channel, String text) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Whisper.get());
-        mplew.write(18);
-        mplew.writeMapleAsciiString(sender);
-        mplew.writeShort(channel - 1);
-        mplew.writeMapleAsciiString(text);
-        return mplew.getPacket();
+        sp.Encode1(req_res.get() | loc_whis.get());
+        switch (req_res) {
+            case WP_Result: {
+                if (loc_whis == Ops_Whisper.WP_Whisper) {
+                    sp.EncodeStr(name_to);
+                    sp.Encode1((chr_to != null) ? 1 : 0); // found or not found
+                    break;
+                }
+                if (loc_whis == Ops_Whisper.WP_Location) {
+                    sp.EncodeStr(name_to);
+                    // not found
+                    if (chr_to == null) {
+                        sp.Encode1(OpsLocationResult.LR_None.get());
+                        sp.Encode4(0);
+                        break;
+                    }
+                    // cs & itc
+                    if (chr_to.getClient().getChannel() < 0) {
+                        sp.Encode1(OpsLocationResult.LR_ShopSvr.get());
+                        sp.Encode4(0);
+                        break;
+                    }
+                    // same channel
+                    if (chr_to.getClient().getChannel() == chr_from.getClient().getChannel()) {
+                        sp.Encode1(OpsLocationResult.LR_GameSvr.get());
+                        sp.Encode4(chr_to.getMapId());
+                        break;
+                    }
+                    // different channel
+                    sp.Encode1(OpsLocationResult.LR_OtherChannel.get());
+                    sp.Encode4(chr_to.getClient().getChannel());
+                    break;
+                }
+                break;
+            }
+            case WP_Receive: {
+                if (loc_whis == Ops_Whisper.WP_Whisper) {
+                    sp.EncodeStr(chr_from.getName()); // sender name
+                    sp.Encode1(chr_from.getClient().getChannel() - 1); // sender channel
+                    sp.Encode1(0); // admin?
+                    sp.EncodeStr(message); // sender message
+                    break;
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+        // 9  (0x09) = 0x01 | 0x08
+        // 72 (0x48) = 0x08 | 0x40
+        return sp.get();
     }
 
     // CField::OnBlowWeather

@@ -32,6 +32,8 @@ import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
 import debug.Debug;
+import handling.cashshop.CashShopServer;
+import handling.channel.ChannelServer;
 import handling.channel.handler.AttackInfo;
 import handling.channel.handler.ChatHandler;
 import handling.channel.handler.HiredMerchantHandler;
@@ -42,12 +44,14 @@ import handling.channel.handler.PlayerHandler;
 import handling.channel.handler.PlayerInteractionHandler;
 import handling.channel.handler.PlayersHandler;
 import handling.channel.handler.UserInterfaceHandler;
+import handling.world.World;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
 import packet.ops.OpsChangeStat;
 import packet.ops.OpsMapTransfer;
+import packet.ops.Ops_Whisper;
 import packet.request.parse.ParseCMovePath;
 import packet.response.ResCField;
 import packet.response.ResCUserLocal;
@@ -462,7 +466,8 @@ public class ReqCUser {
                 return true;
             }
             case CP_Whisper: {
-                //ChatHandler.Whisper_Find(p, c);
+                // 内緒話, 探す
+                OnWhisper(chr, cp);
                 return true;
             }
             case CP_Messenger: {
@@ -1580,5 +1585,53 @@ public class ReqCUser {
             }
         }
         return true;
+    }
+
+    private static boolean OnWhisper(MapleCharacter chr, ClientPacket cp) {
+        int operation = cp.Decode1();
+        Ops_Whisper loc_whis = Ops_Whisper.find(operation & ~Ops_Whisper.WP_Request.get());
+
+        switch (loc_whis) {
+            case WP_Location: {
+                String player_name = cp.DecodeStr();
+
+                int ch = World.Find.findChannel(player_name);
+                Debug.DebugLog("CH = " + ch);
+                MapleCharacter chr_to = null;
+                // something wrong for cs
+                if (0 < ch) {
+                    chr_to = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(player_name);
+                } else if (ch == -10) {
+                    chr_to = CashShopServer.getPlayerStorage().getCharacterByName(player_name);
+                } else if (ch == -20) {
+                    chr_to = CashShopServer.getPlayerStorageMTS().getCharacterByName(player_name);
+                }
+                chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Location, chr, player_name, null, chr_to));
+                return true;
+            }
+            case WP_Whisper: {
+                String name_to = cp.DecodeStr();
+                String message = cp.DecodeStr();
+                int ch = World.Find.findChannel(name_to);
+                if (ch < 0) {
+                    chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Whisper, chr, name_to, message, null));
+                    return false;
+                }
+                MapleCharacter chr_to = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(name_to);
+                if (chr_to == null) {
+                    chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Whisper, chr, name_to, message, null));
+                    return false;
+                }
+                chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Whisper, chr, name_to, message, chr_to));
+                chr_to.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Receive, Ops_Whisper.WP_Whisper, chr, name_to, message, chr_to));
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        Debug.ErrorLog("OnWhisper : not coded " + operation);
+        return false;
     }
 }
