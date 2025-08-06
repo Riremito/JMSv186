@@ -60,6 +60,13 @@ public class ResCField {
         return sp.get();
     }
 
+    public static MaplePacket MobSummonItemUseResult(boolean result) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobSummonItemUseResult);
+
+        sp.Encode1(result ? 1 : 0);
+        return sp.get();
+    }
+
     public static MaplePacket playCashSong(int itemid, String name) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_PlayJukeBox.get());

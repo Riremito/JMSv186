@@ -49,12 +49,18 @@ import packet.ClientPacket;
 import packet.ops.OpsChangeStat;
 import packet.ops.OpsMapTransfer;
 import packet.request.parse.ParseCMovePath;
+import packet.response.ResCField;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCUserLocal;
+import server.MapleInventoryManipulator;
+import server.MapleItemInformationProvider;
 import server.Randomizer;
+import server.life.MapleLifeFactory;
+import server.life.MapleMonster;
+import server.maps.FieldLimitType;
 import server.maps.MapleMap;
 import tools.AttackPair;
 import tools.Pair;
@@ -253,7 +259,12 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMobSummonItemUseRequest: {
-                //ItemRequest.UseSummonBag(p, c, c.getPlayer());
+                int timestamp = cp.Decode4();
+                short slot = cp.Decode2();
+                int item_id = cp.Decode4();
+                boolean ret = OnUserMobSummonItemUseRequest(chr, slot, item_id);
+                chr.SendPacket(ResCField.MobSummonItemUseResult(ret));
+                chr.UpdateStat(true); // unlock is needed.
                 return true;
             }
             case CP_UserPetFoodItemUseRequest: {
@@ -1540,4 +1551,34 @@ public class ReqCUser {
         return true;
     }
 
+    public static boolean OnUserMobSummonItemUseRequest(MapleCharacter chr, short slot, int item_id) {
+        IItem item_used = chr.getInventory(MapleInventoryType.USE).getItem(slot);
+        if (item_used == null) {
+            return false;
+        }
+        if (item_used.getItemId() != item_id) {
+            return false;
+        }
+        if (item_used.getQuantity() < 1) {
+            return false;
+        }
+        MapleMap map = chr.getMap();
+        if (FieldLimitType.SummoningBag.check(map.getFieldLimit())) {
+            return false;
+        }
+        // used
+        MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, slot, (short) 1, false);
+        // spawn mobs
+        List<Pair<Integer, Integer>> summon_info = MapleItemInformationProvider.getInstance().getSummonMobs(item_id);
+        if (summon_info == null) {
+            return true;
+        }
+        for (Pair<Integer, Integer> summon_data : summon_info) {
+            if (Randomizer.nextInt(100) < summon_data.getRight()) {
+                MapleMonster monster = MapleLifeFactory.getMonster(summon_data.getLeft());
+                chr.getMap().spawnMonster_sSack(monster, chr.getPosition(), 0);
+            }
+        }
+        return true;
+    }
 }
