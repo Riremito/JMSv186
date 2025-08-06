@@ -19,9 +19,13 @@
 package data.wz;
 
 import config.Content;
+import data.wz.ids.DWI_Validation;
 import debug.Debug;
+import java.util.ArrayList;
+import java.util.List;
 import provider.MapleData;
 import provider.MapleDataProvider;
+import provider.MapleDataTool;
 
 /**
  *
@@ -170,6 +174,73 @@ public class DW_String {
             img_Pet = checkSubDirectory(getItem(), "Pet");
         }
         return img_Pet;
+    }
+
+    // MonsterBook
+    private static MapleData img_MonsterBook = null;
+    private static List<DropMonsterBook> list_drop_monsterbook = null;
+    private static boolean bookAvailable = true;
+
+    public static class DropMonsterBook {
+
+        public int mob_id = 0;
+        public List<Integer> drop_ids = new ArrayList<>();
+    }
+
+    public static boolean checkBookAvailable() {
+        return bookAvailable;
+    }
+
+    public static MapleData getMonsterBook() {
+        if (img_MonsterBook == null) {
+            img_MonsterBook = getWz().loadData("MonsterBook.img");
+            if (img_MonsterBook == null) {
+                bookAvailable = false;
+            }
+        }
+        return img_MonsterBook;
+    }
+
+    public static DropMonsterBook getMonseterBookDrop(int mob_id) {
+        if (list_drop_monsterbook == null) {
+            list_drop_monsterbook = new ArrayList<>();
+        }
+
+        for (DropMonsterBook dmb : list_drop_monsterbook) {
+            if (dmb.mob_id == mob_id) {
+                return dmb;
+            }
+        }
+
+        int count = 0;
+        DropMonsterBook dmb = new DropMonsterBook();
+        dmb.mob_id = mob_id;
+
+        MapleData md_book = getMonsterBook();
+        if (md_book != null) {
+            for (MapleData md_mob : md_book.getChildren()) {
+                if (Integer.parseInt(md_mob.getName()) == mob_id) {
+                    MapleData md_reward = md_mob.getChildByPath("reward");
+                    if (md_reward == null) {
+                        break;
+                    }
+                    for (MapleData md_drop_item : md_reward.getChildren()) {
+                        int item_id = MapleDataTool.getInt(md_drop_item);
+                        if (!DWI_Validation.isValidItemID(item_id)) {
+                            Debug.ErrorLog("invalid monsterbook drop : " + item_id);
+                            continue;
+                        }
+                        dmb.drop_ids.add(item_id);
+                        count++;
+                    }
+                    Debug.DebugLog("monsterbook drop loaded : " + mob_id + " (" + count + ")");
+                    break;
+                }
+            }
+        }
+
+        list_drop_monsterbook.add(dmb);
+        return dmb;
     }
 
 }

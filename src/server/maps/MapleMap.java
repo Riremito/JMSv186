@@ -48,6 +48,8 @@ import client.inventory.MaplePet;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import data.wz.DW_Reactor;
+import data.wz.DW_String;
+import data.wz.DW_String.DropMonsterBook;
 import database.DatabaseConnection;
 import debug.Debug;
 import server.network.MaplePacket;
@@ -427,9 +429,9 @@ public final class MapleMap {
         return ret;
     }
 
-    private void dropFromMonster(final MapleCharacter chr, final MapleMonster mob) {
+    private int dropFromMonster(final MapleCharacter chr, final MapleMonster mob) {
         if (mob == null || chr == null || ChannelServer.getInstance(channel) == null || dropsDisabled || mob.dropsDisabled() || chr.getPyramidSubway() != null) { //no drops in pyramid ok? no cash either
-            return;
+            return -1;
         }
 
         //We choose not to readLock for this.
@@ -457,6 +459,8 @@ public final class MapleMap {
         Collections.shuffle(dropEntry);
 
         final boolean forced_drop = mob.getStats().isBoss();
+
+        int dropped_count = 0;
 
         // この辺でドロップ確定させるMobのIDのチェック処理を入れる
         for (final MonsterDropEntry de : dropEntry) {
@@ -487,6 +491,7 @@ public final class MapleMap {
 
                     if (mesos > 0) {
                         spawnMobMesoDrop((int) (mesos * (chr.getStat().mesoBuff / 100.0) * chr.getDropMod() * cmServerrate), calcDropPos(pos, mob.getPosition()), mob, chr, false, droptype);
+                        dropped_count++;
                     }
                 } else {
                     // 装備
@@ -498,10 +503,83 @@ public final class MapleMap {
                         idrop = new Item(de.itemId, (byte) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(range <= 0 ? 1 : range) + de.Minimum : 1), (byte) 0);
                     }
                     spawnMobDrop(idrop, calcDropPos(pos, mob.getPosition()), mob, chr, droptype, de.questid);
+                    dropped_count++;
                 }
                 d++;
             }
         }
+
+        // drop data in DB
+        if (dropEntry.size() != 0) {
+            return dropped_count;
+        }
+        int meso_value = (Randomizer.nextInt(100) < 50) ? 0 : 10 + Randomizer.nextInt(150);
+
+        if (droptype == 3) {
+            pos.x = (mobpos + (dropped_count % 2 == 0 ? (40 * (dropped_count + 1) / 2) : -(40 * (dropped_count / 2))));
+        } else {
+            pos.x = (mobpos + ((dropped_count % 2 == 0) ? (25 * (dropped_count + 1) / 2) : -(25 * (dropped_count / 2))));
+        }
+
+        if (0 < meso_value) {
+            spawnMobMesoDrop(meso_value, calcDropPos(pos, mob.getPosition()), mob, chr, false, droptype);
+            dropped_count++;
+        }
+
+        if (!DW_String.checkBookAvailable()) {
+            return dropped_count;
+        }
+
+        // load from monster book
+        DropMonsterBook book_info = DW_String.getMonseterBookDrop(mob.getId());
+        for (int item_id : book_info.drop_ids) {
+            int type = item_id / 1000000;
+            // 装備 3%
+            if (type == 1) {
+                if (!(Randomizer.nextInt(100) < 3)) {
+                    continue;
+                }
+            }
+            // 消費 5%
+            if (type == 2) {
+                if (!(Randomizer.nextInt(100) < 5)) {
+                    continue;
+                }
+            }
+            // Setup 5%
+            if (type == 3) {
+                if (!(Randomizer.nextInt(100) < 5)) {
+                    continue;
+                }
+            }
+            // ETC 50%
+            if (type == 4) {
+                if (book_info.drop_ids.get(0) == item_id) {
+                    if (!(Randomizer.nextInt(100) < 50)) {
+                        continue;
+                    }
+                } else {
+                    // ETC 5%
+                    if (!(Randomizer.nextInt(100) < 5)) {
+                        continue;
+                    }
+                }
+            }
+            if (GameConstants.getInventoryType(item_id) == MapleInventoryType.EQUIP) {
+                idrop = ii.randomizeStats((Equip) ii.getEquipById(item_id));
+            } else {
+                idrop = new Item(item_id, (byte) 0, (short) 1, (byte) 0);
+            }
+            if (droptype == 3) {
+                pos.x = (mobpos + (dropped_count % 2 == 0 ? (40 * (dropped_count + 1) / 2) : -(40 * (dropped_count / 2))));
+            } else {
+                pos.x = (mobpos + ((dropped_count % 2 == 0) ? (25 * (dropped_count + 1) / 2) : -(25 * (dropped_count / 2))));
+            }
+            spawnMobDrop(idrop, calcDropPos(pos, mob.getPosition()), mob, chr, droptype, (short) 0);
+            dropped_count++;
+        }
+
+        return dropped_count;
     }
 
     public void removeMonster(final MapleMonster monster) {
