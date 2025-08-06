@@ -1045,7 +1045,6 @@ public class MapleStatEffect implements Serializable {
         if (summonMovementType != null) {
             final MapleSummon tosummon = new MapleSummon(applyfrom, this, new Point(pos == null ? applyfrom.getPosition() : pos), summonMovementType);
             if (!tosummon.isPuppet()) {
-                applyfrom.getCheatTracker().resetSummonAttack();
             }
             applyfrom.getMap().spawnSummon(tosummon);
             applyfrom.getSummons().put(sourceid, tosummon);
@@ -1253,7 +1252,6 @@ public class MapleStatEffect implements Serializable {
         if (summonMovementType != null) {
             final MapleSummon tosummon = new MapleSummon(chr, this, chr.getPosition(), summonMovementType);
             if (!tosummon.isPuppet()) {
-                chr.getCheatTracker().resetSummonAttack();
                 chr.getMap().spawnSummon(tosummon);
                 chr.getSummons().put(sourceid, tosummon);
                 tosummon.addHP((short) x);

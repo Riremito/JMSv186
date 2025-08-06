@@ -22,8 +22,6 @@ package handling.channel;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 import java.util.Collections;
@@ -33,7 +31,6 @@ import client.MapleCharacter;
 import debug.Debug;
 import server.network.MaplePacket;
 import handling.world.CharacterTransfer;
-import handling.world.CheaterData;
 import handling.world.World;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import server.Timer.PingTimer;
@@ -158,26 +155,6 @@ public class PlayerStorage {
 
     public final int getConnectedClients() {
         return idToChar.size();
-    }
-
-    public final List<CheaterData> getCheaters() {
-        final List<CheaterData> cheaters = new ArrayList<CheaterData>();
-
-        rL.lock();
-        try {
-            final Iterator<MapleCharacter> itr = nameToChar.values().iterator();
-            MapleCharacter chr;
-            while (itr.hasNext()) {
-                chr = itr.next();
-
-                if (chr.getCheatTracker().getPoints() > 0) {
-                    cheaters.add(new CheaterData(chr.getCheatTracker().getPoints(), MapleCharacterUtil.makeMapleReadable(chr.getName()) + " (" + chr.getCheatTracker().getPoints() + ") " + chr.getCheatTracker().getSummary()));
-                }
-            }
-        } finally {
-            rL.unlock();
-        }
-        return cheaters;
     }
 
     public final void disconnectAll() {

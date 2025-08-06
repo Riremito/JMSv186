@@ -40,7 +40,6 @@ import server.network.MaplePacket;
 import server.network.MapleServerHandler;
 import handling.login.LoginServer;
 import server.network.MapleCodecFactory;
-import handling.world.CheaterData;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import scripting.EventScriptManager;
 import server.MapleSquad;
@@ -66,7 +65,6 @@ import server.events.MapleFitness;
 import server.events.MapleOla;
 import server.events.MapleOxQuiz;
 import server.events.MapleSnowball;
-import tools.CollectionUtil;
 
 public class ChannelServer implements Serializable {
 
@@ -541,13 +539,6 @@ public class ChannelServer implements Serializable {
 
     public int getConnectedClients() {
         return getPlayerStorage().getConnectedClients();
-    }
-
-    public List<CheaterData> getCheaters() {
-        List<CheaterData> cheaters = getPlayerStorage().getCheaters();
-
-        Collections.sort(cheaters);
-        return CollectionUtil.copyFirst(cheaters, 20);
     }
 
     public void broadcastMessage(byte[] message) {

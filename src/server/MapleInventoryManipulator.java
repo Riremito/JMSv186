@@ -781,7 +781,6 @@ public class MapleInventoryManipulator {
             return false;
         }
         final Point dropPos = new Point(c.getPlayer().getPosition());
-        c.getPlayer().getCheatTracker().checkDrop();
         if (quantity < source.getQuantity() && !GameConstants.isRechargable(source.getItemId())) {
             final IItem target = source.copy();
             target.setQuantity(quantity);

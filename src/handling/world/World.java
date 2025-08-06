@@ -47,7 +47,6 @@ import packet.response.wrapper.ResWrapper;
 import server.Timer.WorldTimer;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
-import tools.CollectionUtil;
 
 public class World {
 
@@ -89,15 +88,6 @@ public class World {
         }
         ret.put(0, total);
         return ret;
-    }
-
-    public static List<CheaterData> getCheaters() {
-        List<CheaterData> allCheaters = new ArrayList<CheaterData>();
-        for (ChannelServer cs : ChannelServer.getAllInstances()) {
-            allCheaters.addAll(cs.getCheaters());
-        }
-        Collections.sort(allCheaters);
-        return CollectionUtil.copyFirst(allCheaters, 10);
     }
 
     public static boolean isConnected(String charName) {

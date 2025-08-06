@@ -54,7 +54,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.io.Serializable;
 
-import client.anticheat.CheatTracker;
 import config.DeveloperMode;
 import config.Region;
 import config.Version;
@@ -186,7 +185,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     private transient MapleCarnivalParty carnivalParty;
     private BuddyList buddylist;
     private MonsterBook monsterbook;
-    private transient CheatTracker anticheat;
     private MapleClient client;
     private PlayerStats stats;
     private transient PlayerRandomStream CRand;
@@ -298,7 +296,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 savedLocations[i] = -1;
             }
             questinfo = new LinkedHashMap<Integer, String>();
-            anticheat = new CheatTracker(this);
             pets = new ArrayList<MaplePet>();
         }
     }
@@ -2337,10 +2334,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public boolean isInvincible() {
         return invincible;
-    }
-
-    public CheatTracker getCheatTracker() {
-        return anticheat;
     }
 
     public BuddyList getBuddylist() {
@@ -5558,9 +5551,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (getTrade() != null) {
             MapleTrade.cancelTrade(getTrade(), client);
         }
-        if (getCheatTracker() != null) {
-            getCheatTracker().dispose();
-        }
         if (!dc) {
             cancelEffectFromBuffStat(MapleBuffStat.MONSTER_RIDING);
             cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
@@ -5583,10 +5573,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void updateTick(int newTick) {
-        if (newTick == 0) {
-            return;
-        }
-        anticheat.updateTick(newTick);
+        return;
     }
 
     public boolean canUseFamilyBuff(MapleFamilyBuffEntry buff) {

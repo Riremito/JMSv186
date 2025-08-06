@@ -31,7 +31,6 @@ import client.MapleBuffStat;
 import client.MapleClient;
 import client.MapleCharacter;
 import client.PlayerStats;
-import client.anticheat.CheatingOffense;
 import config.ContentState;
 import config.Region;
 import config.ServerConfig;
@@ -188,11 +187,8 @@ public class PlayerHandler {
         } else if (damage < -1) {
             return;
         }
-        chr.getCheatTracker().checkTakeDamage(damage);
 
         if (damage > 0) {
-            chr.getCheatTracker().setAttacksWithoutHit(false);
-
             if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
                 chr.cancelMorphs();
             }
@@ -462,7 +458,6 @@ public class PlayerHandler {
             return;
         }
         if (!chr.isAlive() || chr.getMap() == null) {
-            chr.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
             Debug.ErrorLog("closeRangeAttack : 2");
             return;
         }
@@ -756,7 +751,6 @@ public class PlayerHandler {
         }
         chr.gainMeso(-meso, false, true);
         chr.getMap().spawnMesoDrop(meso, chr.getPosition(), chr, chr, true, (byte) 0);
-        chr.getCheatTracker().checkDrop(true);
     }
 
     public static final void ChangeEmotion(final int emote, final MapleCharacter chr) {

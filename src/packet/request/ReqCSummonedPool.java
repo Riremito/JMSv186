@@ -168,7 +168,6 @@ public class ReqCSummonedPool {
         }
 
         final List<SummonAttackEntry> allDamage = new ArrayList<SummonAttackEntry>();
-        chr.getCheatTracker().checkSummonAttack();
 
         for (int i = 0; i < numAttacked; i++) {
             final MapleMonster mob = map.getMonsterByOid(cp.Decode4());

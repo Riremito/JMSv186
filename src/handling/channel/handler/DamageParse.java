@@ -32,8 +32,6 @@ import client.MapleCharacter;
 import client.inventory.MapleInventoryType;
 import client.PlayerStats;
 import client.SkillFactory;
-import client.anticheat.CheatTracker;
-import client.anticheat.CheatingOffense;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import debug.Debug;
@@ -60,7 +58,6 @@ public class DamageParse {
 
     public static void applyAttack(final AttackInfo attack, final ISkill theSkill, final MapleCharacter player, int attackCount, final double maxDamagePerMonster, final MapleStatEffect effect, final AttackType attack_type) {
         if (!player.isAlive()) {
-            player.getCheatTracker().registerOffense(CheatingOffense.ATTACKING_WHILE_DEAD);
             return;
         }
         if (attack.skill != 0) {
@@ -211,14 +208,11 @@ public class DamageParse {
                             if (Tempest) { // Monster buffed with Tempest
                                 if (eachd > monster.getMobMaxHp()) {
                                     eachd = (int) Math.min(monster.getMobMaxHp(), Integer.MAX_VALUE);
-                                    player.getCheatTracker().registerOffense(CheatingOffense.HIGH_DAMAGE);
                                 }
                             } else if (!monster.isBuffed(MonsterStatus.DAMAGE_IMMUNITY) && !monster.isBuffed(MonsterStatus.WEAPON_IMMUNITY) && !monster.isBuffed(MonsterStatus.WEAPON_DAMAGE_REFLECT)) {
                                 if (eachd > maxDamagePerHit) {
-                                    player.getCheatTracker().registerOffense(CheatingOffense.HIGH_DAMAGE);
                                     if (eachd > maxDamagePerHit * 2) {
                                         eachd = (int) (maxDamagePerHit * 2); // Convert to server calculated damage
-                                        player.getCheatTracker().registerOffense(CheatingOffense.HIGH_DAMAGE_2);
                                     }
                                 }
                             } else {
@@ -244,9 +238,6 @@ public class DamageParse {
                 totDamage += totDamageToOneMonster;
                 player.checkMonsterAggro(monster);
 
-                if (player.getPosition().distanceSq(monster.getPosition()) > 700000.0) { // 815^2 <-- the most ranged attack in the game is Flame Wheel at 815 range
-                    player.getCheatTracker().registerOffense(CheatingOffense.ATTACK_FARAWAY_MONSTER); // , Double.toString(Math.sqrt(distance))
-                }
                 // pickpocket
                 if (player.getBuffedValue(MapleBuffStat.PICKPOCKET) != null) {
                     switch (attack.skill) {
@@ -463,14 +454,6 @@ public class DamageParse {
         if (attack.skill != 0 && (attack.GetMobCount() > 0 || (attack.skill != 4331003 && attack.skill != 4341002)) && attack.skill != 21101003 && attack.skill != 5110001 && attack.skill != 15100004 && attack.skill != 11101002 && attack.skill != 13101002) {
             effect.applyTo(player, attack.position);
         }
-        if (totDamage > 1) {
-            final CheatTracker tracker = player.getCheatTracker();
-
-            tracker.setAttacksWithoutHit(true);
-            if (tracker.getAttacksWithoutHit() > 1000) {
-                //tracker.registerOffense(CheatingOffense.ATTACK_WITHOUT_GETTING_HIT, Integer.toString(tracker.getAttacksWithoutHit()));
-            }
-        }
     }
 
     public static final void applyAttackMagic(final AttackInfo attack, final ISkill theSkill, final MapleCharacter player, final MapleStatEffect effect) {
@@ -562,15 +545,12 @@ public class DamageParse {
                                 // In special case such as Chain lightning, the damage will be reduced from the maxMP.
                                 if (eachd > monster.getMobMaxHp()) {
                                     eachd = (int) Math.min(monster.getMobMaxHp(), Integer.MAX_VALUE);
-                                    player.getCheatTracker().registerOffense(CheatingOffense.HIGH_DAMAGE_MAGIC);
                                 }
                             } else if (!monster.isBuffed(MonsterStatus.DAMAGE_IMMUNITY) && !monster.isBuffed(MonsterStatus.MAGIC_IMMUNITY) && !monster.isBuffed(MonsterStatus.MAGIC_DAMAGE_REFLECT)) {
                                 if (eachd > maxDamagePerHit) {
-                                    player.getCheatTracker().registerOffense(CheatingOffense.HIGH_DAMAGE_MAGIC);
                                     if (eachd > MaxDamagePerHit * 2) {
 //				    System.out.println("EXCEED!!! Client damage : " + eachd + " Server : " + MaxDamagePerHit);
                                         eachd = (int) (MaxDamagePerHit * 2); // Convert to server calculated damage
-                                        player.getCheatTracker().registerOffense(CheatingOffense.HIGH_DAMAGE_MAGIC_2);
                                     }
                                 }
                             } else {
@@ -585,9 +565,6 @@ public class DamageParse {
                 totDamage += totDamageToOneMonster;
                 player.checkMonsterAggro(monster);
 
-                if (player.getPosition().distanceSq(monster.getPosition()) > 700000.0) { // 600^2, 550 is approximatly the range of ultis
-                    player.getCheatTracker().registerOffense(CheatingOffense.ATTACK_FARAWAY_MONSTER);
-                }
                 if (attack.skill == 2301002 && !monsterstats.getUndead()) {
                     Debug.ErrorLog("applyAttackMagic : 5");
                     return;
@@ -624,14 +601,6 @@ public class DamageParse {
             effect.applyTo(player);
         }
 
-        if (totDamage > 1) {
-            final CheatTracker tracker = player.getCheatTracker();
-            tracker.setAttacksWithoutHit(true);
-
-            if (tracker.getAttacksWithoutHit() > 1000) {
-                //tracker.registerOffense(CheatingOffense.ATTACK_WITHOUT_GETTING_HIT, Integer.toString(tracker.getAttacksWithoutHit()));
-            }
-        }
     }
 
     private static final double CalculateMaxMagicDamagePerHit(final MapleCharacter chr, final ISkill skill, final MapleMonster monster, final MapleMonsterStats mobstats, final PlayerStats stats, final Element elem, final Integer sharpEye, final double maxDamagePerMonster) {

@@ -25,7 +25,6 @@ import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import client.MapleStat;
-import client.anticheat.CheatingOffense;
 import constants.GameConstants;
 import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
@@ -77,10 +76,8 @@ public class PlayersHandler {
         final MapleCharacter target = (MapleCharacter) chr.getMap().getMapObject(who, MapleMapObjectType.PLAYER);
 
         if (target == chr) { // faming self
-            chr.getCheatTracker().registerOffense(CheatingOffense.FAMING_SELF);
             return;
         } else if (chr.getLevel() < 15) {
-            chr.getCheatTracker().registerOffense(CheatingOffense.FAMING_UNDER_15);
             return;
         }
         switch (chr.canGiveFame(target)) {
