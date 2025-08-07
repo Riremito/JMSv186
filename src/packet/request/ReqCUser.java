@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
 import packet.ops.OpsChangeStat;
+import packet.ops.OpsChatGroup;
 import packet.ops.OpsMapTransfer;
 import packet.ops.Ops_Whisper;
 import packet.request.parse.ParseCMovePath;
@@ -1599,12 +1600,12 @@ public class ReqCUser {
 
         String chattext = cp.DecodeStr();
 
-        switch (type) {
-            case 0: {
+        switch (OpsChatGroup.find(type)) {
+            case CG_Friend: {
                 World.Buddy.buddyChat(recipients, chr.getId(), chr.getName(), chattext);
                 return true;
             }
-            case 1: {
+            case CG_Party: {
                 MapleParty party = chr.getParty();
                 if (party != null) {
                     return true;
@@ -1612,7 +1613,7 @@ public class ReqCUser {
                 World.Party.partyChat(party.getId(), chattext, chr.getName());
                 return true;
             }
-            case 2: {
+            case CG_Guild: {
                 int guild_id = chr.getGuildId();
                 if (guild_id <= 0) {
                     return true;
@@ -1620,13 +1621,22 @@ public class ReqCUser {
                 World.Guild.guildChat(guild_id, chr.getName(), chr.getId(), chattext);
                 return true;
             }
-            case 3: {
+            case CG_Alliance: {
                 int guild_id = chr.getGuildId();
                 if (guild_id <= 0) {
                     return true;
                 }
                 World.Alliance.allianceChat(guild_id, chr.getName(), chr.getId(), chattext);
                 return true;
+            }
+            case CG_Couple: {
+                break;
+            }
+            case CG_ToCouple: {
+                break;
+            }
+            case CG_Expedition: {
+                break;
             }
             default: {
                 break;

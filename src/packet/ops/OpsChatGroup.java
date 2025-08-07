@@ -52,6 +52,15 @@ public enum OpsChatGroup implements IPacketOps {
         this.value = val;
     }
 
+    public static OpsChatGroup find(int val) {
+        for (final OpsChatGroup ops : OpsChatGroup.values()) {
+            if (ops.get() == val) {
+                return ops;
+            }
+        }
+        return UNKNOWN;
+    }
+
     public static void init() {
 
     }
