@@ -18,7 +18,10 @@
  */
 package packet.response.data;
 
+import client.BuddylistEntry;
+import client.MapleCharacter;
 import config.ServerConfig;
+import java.util.Collection;
 import packet.ServerPacket;
 
 /**
@@ -39,5 +42,35 @@ public class DataCWvsContext {
         data.Encode4(0); // item3?
         return data.get().getBytes();
     }
-    
+
+    // CWvsContext::CFriend::Reset
+    public static byte[] CFriend_Reset(MapleCharacter chr) {
+        Collection<BuddylistEntry> friend_list = chr.getBuddylist().getBuddies();
+
+        ServerPacket data_friend = new ServerPacket();
+        for (BuddylistEntry friend : friend_list) {
+            // KMS55 : 22 bytes
+            // KMS65 : 39 bytes
+            data_friend.Encode4(friend.getCharacterId());
+            data_friend.EncodeBuffer(friend.getName(), 13);
+            data_friend.Encode1(0);
+            data_friend.Encode4(friend.getChannel() == -1 ? -1 : friend.getChannel() - 1);
+            if (friend.getGroup() != null) {
+                data_friend.EncodeBuffer(friend.getGroup(), 17); // マイ友 (tag)
+            }
+        }
+
+        ServerPacket data_in_shop = new ServerPacket();
+        for (BuddylistEntry friend : friend_list) {
+            // 4 bytes
+            data_in_shop.Encode4(0);
+        }
+
+        ServerPacket data = new ServerPacket();
+        data.Encode1(friend_list.size());
+        data.EncodeBuffer(data_friend.get().getBytes());
+        data.EncodeBuffer(data_in_shop.get().getBytes());
+        return data.get().getBytes();
+    }
+
 }

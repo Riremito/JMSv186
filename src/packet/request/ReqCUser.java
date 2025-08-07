@@ -18,6 +18,7 @@
  */
 package packet.request;
 
+import packet.request.sub.ReqSub_FriendRequest;
 import client.ISkill;
 import client.MapleBuffStat;
 import client.MapleCharacter;
@@ -494,7 +495,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_FriendRequest: {
-                FriendRequest.OnPacket(cp, c);
+                ReqSub_FriendRequest.OnFriendRequest(chr, cp);
                 return true;
             }
             case CP_MemoRequest: {

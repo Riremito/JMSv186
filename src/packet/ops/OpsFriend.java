@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,46 +22,51 @@ package packet.ops;
  *
  * @author Riremito
  */
-public enum OpsFriend {
-    // GMS v95
-    FriendReq_LoadFriend(0x0),
-    FriendReq_SetFriend(0x1),
-    FriendReq_AcceptFriend(0x2),
-    FriendReq_DeleteFriend(0x3),
-    FriendReq_NotifyLogin(0x4),
-    FriendReq_NotifyLogout(0x5),
-    FriendReq_IncMaxCount(0x6),
-    FriendRes_LoadFriend_Done(0x7),
-    FriendRes_NotifyChange_FriendInfo(0x8),
-    FriendRes_Invite(0x9),
-    FriendRes_SetFriend_Done(0xA),
-    FriendRes_SetFriend_FullMe(0xB),
-    FriendRes_SetFriend_FullOther(0xC),
-    FriendRes_SetFriend_AlreadySet(0xD),
-    FriendRes_SetFriend_Master(0xE),
-    FriendRes_SetFriend_UnknownUser(0xF),
-    FriendRes_SetFriend_Unknown(0x10),
-    FriendRes_AcceptFriend_Unknown(0x11),
-    FriendRes_DeleteFriend_Done(0x12),
-    FriendRes_DeleteFriend_Unknown(0x13),
-    FriendRes_Notify(0x14),
-    FriendRes_IncMaxCount_Done(0x15),
-    FriendRes_IncMaxCount_Unknown(0x16),
-    FriendRes_PleaseWait(0x17),
+public enum OpsFriend implements IPacketOps {
+    FriendReq_LoadFriend(0),
+    FriendReq_SetFriend(1),
+    FriendReq_AcceptFriend(2),
+    FriendReq_DeleteFriend(3),
+    FriendReq_NotifyLogin(4),
+    FriendReq_NotifyLogout(5),
+    FriendReq_IncMaxCount(6),
+    FriendRes_LoadFriend_Done(7),
+    FriendRes_NotifyChange_FriendInfo(8),
+    FriendRes_Invite(9),
+    FriendRes_SetFriend_Done(10),
+    FriendRes_SetFriend_FullMe(11),
+    FriendRes_SetFriend_FullOther(12),
+    FriendRes_SetFriend_AlreadySet(13),
+    FriendRes_SetFriend_Master(14),
+    FriendRes_SetFriend_UnknownUser(15),
+    FriendRes_SetFriend_Unknown(16),
+    FriendRes_AcceptFriend_Unknown(17),
+    FriendRes_DeleteFriend_Done(18),
+    FriendRes_DeleteFriend_Unknown(19),
+    FriendRes_Notify(20),
+    FriendRes_IncMaxCount_Done(21),
+    FriendRes_IncMaxCount_Unknown(22),
+    FriendRes_PleaseWait(23),
     UNKNOWN(-1);
 
     private int value;
 
-    OpsFriend(int flag) {
-        value = flag;
+    OpsFriend(int val) {
+        this.value = val;
     }
 
     OpsFriend() {
-        value = -1;
+        this.value = -1;
     }
 
+    @Override
     public int get() {
-        return value;
+        return this.value;
+    }
+
+    @Override
+    public void set(int val) {
+        this.value = val;
     }
 
     public static OpsFriend find(int val) {
@@ -72,4 +77,9 @@ public enum OpsFriend {
         }
         return UNKNOWN;
     }
+
+    public static void init() {
+
+    }
+
 }

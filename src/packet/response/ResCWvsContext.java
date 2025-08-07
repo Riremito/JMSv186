@@ -18,7 +18,6 @@
  */
 package packet.response;
 
-import client.BuddylistEntry;
 import client.MapleBuffStat;
 import client.MapleCharacter;
 import client.MapleDisease;
@@ -65,6 +64,7 @@ import packet.ops.arg.ArgMessage;
 import packet.ops.OpsSecondaryStat;
 import packet.request.ItemRequest;
 import packet.response.data.DataCUIUserInfo;
+import packet.response.data.DataCWvsContext;
 import packet.response.data.DataSecondaryStat;
 import packet.response.data.DataGW_CharacterStat;
 import packet.response.data.DataGW_ItemSlotBase;
@@ -1729,7 +1729,7 @@ public class ResCWvsContext {
             case FriendRes_LoadFriend_Done:
             case FriendRes_SetFriend_Done:
             case FriendRes_DeleteFriend_Done: {
-                sp.EncodeBuffer(Reset_Encode(frs.chr));
+                sp.EncodeBuffer(DataCWvsContext.CFriend_Reset(frs.chr));
                 break;
             }
             case FriendRes_NotifyChange_FriendInfo: {
@@ -1799,29 +1799,8 @@ public class ResCWvsContext {
                 break;
             }
         }
-        return sp.get();
-    }
 
-    // CWvsContext::CFriend::Reset
-    public static byte[] Reset_Encode(MapleCharacter chr) {
-        Collection<BuddylistEntry> friend_list = chr.getBuddylist().getBuddies();
-        ServerPacket data_friend = new ServerPacket();
-        ServerPacket data_in_shop = new ServerPacket();
-        for (BuddylistEntry friend : friend_list) {
-            // 39 bytes
-            data_friend.Encode4(friend.getCharacterId());
-            data_friend.EncodeBuffer(friend.getName(), 13);
-            data_friend.Encode1(0);
-            data_friend.Encode4(friend.getChannel() == -1 ? -1 : friend.getChannel() - 1);
-            data_friend.EncodeBuffer(friend.getGroup(), 17);
-            // 4 bytes
-            data_in_shop.Encode4(0);
-        }
-        ServerPacket data = new ServerPacket();
-        data.Encode1(friend_list.size());
-        data.EncodeBuffer(data_friend.get().getBytes());
-        data.EncodeBuffer(data_in_shop.get().getBytes());
-        return data.get().getBytes();
+        return sp.get();
     }
 
     public static MaplePacket getOwlOpen() {

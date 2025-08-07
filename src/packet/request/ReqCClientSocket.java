@@ -284,10 +284,6 @@ public class ReqCClientSocket {
         // family
         chr.SendPacket(ResCWvsContext.getFamilyData());
         chr.SendPacket(ResCWvsContext.getFamilyInfo(chr));
-        // idk - 2
-        if (pendingBuddyRequest != null) {
-            chr.SendPacket(ResWrapper.requestBuddylistAdd(pendingBuddyRequest.getId(), pendingBuddyRequest.getName(), pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
-        }
         chr.UpdateStat(true); // this gives you crash, if you did not send pet spawn packet in JMS131.
         //chr.showNote();
         chr.baseSkills(); // ?_?

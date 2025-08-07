@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +16,15 @@
  *
  *
  */
-package packet.request;
+package packet.request.sub;
 
 import client.BuddyList;
 import client.BuddylistEntry;
 import client.CharacterNameAndId;
 import client.MapleCharacter;
 import client.MapleClient;
+import config.Region;
+import config.Version;
 import database.DatabaseConnection;
 import debug.Debug;
 import handling.channel.ChannelServer;
@@ -31,58 +33,96 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import packet.ClientPacket;
 import packet.ops.OpsFriend;
+import packet.ops.arg.ArgFriend;
+import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 
 /**
  *
  * @author Riremito
  */
-public class FriendRequest {
+public class ReqSub_FriendRequest {
 
-    public static boolean OnPacket(ClientPacket cp, MapleClient c) {
-        byte bf = cp.Decode1();
-        OpsFriend flag = OpsFriend.find(bf);
+    private static final String fakeFriend = "FakeFriend";
 
-        switch (flag) {
+    // CP_FriendRequest
+    public static boolean OnFriendRequest(MapleCharacter chr, ClientPacket cp) {
+        byte flag = cp.Decode1();
+        OpsFriend ops_req = OpsFriend.find(flag);
+
+        switch (ops_req) {
             case FriendReq_LoadFriend: {
-                break;
+                return true;
             }
             case FriendReq_SetFriend: {
-                String friend_name = cp.DecodeStr();
-                String friend_tag = cp.DecodeStr();
+                String name = cp.DecodeStr();
+                String tag = (Version.LessOrEqual(Region.KMS, 55) || Version.LessOrEqual(Region.JMS, 147)) ? null : cp.DecodeStr(); // KMS65, JMS164
 
-                SetFriend(c, friend_name, friend_tag);
-                break;
+                // fake data
+                if (name.equals(fakeFriend)) {
+                    BuddylistEntry be_fakefriend = new BuddylistEntry(name, chr.getId() + 1000, tag, chr.getClient().getChannel(), true, chr.getLevel(), chr.getJob());
+                    chr.getBuddylist().put(be_fakefriend);
+                } else {
+                    int ch = World.Find.findChannel(name);
+                    if (ch != -1) {
+                        MapleCharacter chr_friend = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(name);
+                        if (chr_friend != null) {
+                            BuddylistEntry be_friend = new BuddylistEntry(name, chr_friend.getId(), tag, chr_friend.getClient().getChannel(), true, chr_friend.getLevel(), chr_friend.getJob());
+                            chr.getBuddylist().put(be_friend);
+                        }
+                    } else {
+                        CharacterIdNameBuddyCapacity cibc = getCharacterIdAndNameFromDatabase(name, tag);
+                        if (cibc != null) {
+                            BuddylistEntry be_friend = new BuddylistEntry(name, cibc.getId(), tag, 0, true, cibc.getLevel(), cibc.getJob());
+                            chr.getBuddylist().put(be_friend);
+                        }
+                    }
+                }
+
+                ArgFriend arg = new ArgFriend();
+                arg.flag = OpsFriend.FriendRes_SetFriend_Done;
+                arg.chr = chr;
+                chr.SendPacket(ResCWvsContext.FriendResult(arg));
+                //SetFriend(c, friend_name, friend_tag);
+                return true;
             }
             case FriendReq_AcceptFriend: {
                 int friend_id = cp.Decode4();
 
-                AcceptFriend(c, friend_id);
-                break;
+                //AcceptFriend(c, friend_id);
+                return true;
             }
             case FriendReq_DeleteFriend: {
                 int friend_id = cp.Decode4();
+                chr.getBuddylist().remove(friend_id);
 
-                DeleteFriend(c, friend_id);
-                break;
+                ArgFriend arg = new ArgFriend();
+                arg.flag = OpsFriend.FriendRes_DeleteFriend_Done;
+                arg.chr = chr;
+                chr.SendPacket(ResCWvsContext.FriendResult(arg));
+                //DeleteFriend(c, friend_id);
+                return true;
             }
             case FriendReq_NotifyLogin: {
-                break;
+                return true;
             }
             case FriendReq_NotifyLogout: {
-                break;
+                return true;
             }
             case FriendReq_IncMaxCount: {
-                break;
+                return true;
             }
             default: {
-                Debug.ErrorLog("FriendRequest not coded : " + bf);
+                Debug.ErrorLog("OnFriendRequest not coded : " + flag);
                 break;
             }
         }
-        return true;
+
+        return false;
     }
 
     private static void SetFriend(MapleClient c, String friend_name, String friend_tag) {
@@ -244,20 +284,27 @@ public class FriendRequest {
         }
     }
 
-    private static final CharacterIdNameBuddyCapacity getCharacterIdAndNameFromDatabase(final String name, final String group) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE name LIKE ?");
-        ps.setString(1, name);
-        ResultSet rs = ps.executeQuery();
-        CharacterIdNameBuddyCapacity ret = null;
-        if (rs.next()) {
-            if (rs.getInt("gm") == 0) {
-                ret = new CharacterIdNameBuddyCapacity(rs.getInt("id"), rs.getString("name"), rs.getInt("level"), rs.getInt("job"), group, rs.getInt("buddyCapacity"));
+    private static final CharacterIdNameBuddyCapacity getCharacterIdAndNameFromDatabase(final String name, final String group) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps;
+            ps = con.prepareStatement("SELECT * FROM characters WHERE name LIKE ?");
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            CharacterIdNameBuddyCapacity ret = null;
+            if (rs.next()) {
+                if (rs.getInt("gm") == 0) {
+                    ret = new CharacterIdNameBuddyCapacity(rs.getInt("id"), rs.getString("name"), rs.getInt("level"), rs.getInt("job"), group, rs.getInt("buddyCapacity"));
+                }
             }
+            rs.close();
+            ps.close();
+            return ret;
+        } catch (SQLException ex) {
+            Logger.getLogger(ReqSub_FriendRequest.class.getName()).log(Level.SEVERE, null, ex);
         }
-        rs.close();
-        ps.close();
-        return ret;
+
+        return null;
     }
 
     private static final void notifyRemoteChannel(final MapleClient c, final int remoteChannel, final int otherCid, final String group, final BuddyList.BuddyOperation operation) {
