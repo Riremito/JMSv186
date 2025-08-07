@@ -25,6 +25,7 @@ import server.network.MaplePacket;
 import java.util.List;
 import java.util.Map;
 import packet.ServerPacket;
+import packet.ops.OpsChatGroup;
 import packet.ops.OpsLocationResult;
 import packet.ops.OpsTransferChannel;
 import packet.ops.OpsTransferField;
@@ -77,16 +78,10 @@ public class ResCField {
         return mplew.getPacket();
     }
 
-    public static MaplePacket GroupMessage(String name, String message, int mode) {
+    public static MaplePacket GroupMessage(OpsChatGroup ops, String name, String message) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GroupMessage);
 
-        /*
-            0 : 友達
-            1 : グループ
-            2 : ギルド
-            3 : 連合
-         */
-        sp.Encode1(mode);
+        sp.Encode1(ops.get());
         sp.EncodeStr(name);
         sp.EncodeStr(message);
         return sp.get();

@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import packet.ops.OpsChatGroup;
 import packet.response.ResCField;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
@@ -436,11 +437,11 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public final void guildChat(final String name, final int cid, final String msg) {
-        broadcast(ResCField.GroupMessage(name, msg, 2), cid);
+        broadcast(ResCField.GroupMessage(OpsChatGroup.CG_Guild, name, msg), cid);
     }
 
     public final void allianceChat(final String name, final int cid, final String msg) {
-        broadcast(ResCField.GroupMessage(name, msg, 3), cid);
+        broadcast(ResCField.GroupMessage(OpsChatGroup.CG_Alliance, name, msg), cid);
     }
 
     public final String getRankTitle(final int rank) {

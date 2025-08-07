@@ -38,6 +38,7 @@ import handling.world.guild.MapleGuildAlliance;
 import handling.world.guild.MapleGuildCharacter;
 import handling.world.guild.MapleGuildSummary;
 import java.util.Collection;
+import packet.ops.OpsChatGroup;
 import packet.response.ResCField;
 import packet.response.ResCUIMessenger;
 import packet.response.ResCUserLocal;
@@ -164,7 +165,7 @@ public class World {
                 if (ch > 0) {
                     MapleCharacter chr = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(partychar.getName());
                     if (chr != null && !chr.getName().equalsIgnoreCase(namefrom)) { //Extra check just in case
-                        chr.getClient().getSession().write(ResCField.GroupMessage(namefrom, chattext, 1));
+                        chr.SendPacket(ResCField.GroupMessage(OpsChatGroup.CG_Party, namefrom, chattext));
                     }
                 }
             }
@@ -251,7 +252,7 @@ public class World {
                 if (ch > 0) {
                     MapleCharacter chr = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterById(characterId);
                     if (chr != null && chr.getBuddylist().containsVisible(cidFrom)) {
-                        chr.SendPacket(ResCField.GroupMessage(nameFrom, chattext, 0));
+                        chr.SendPacket(ResCField.GroupMessage(OpsChatGroup.CG_Friend, nameFrom, chattext));
                     }
                 }
             }
