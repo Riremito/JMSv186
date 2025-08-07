@@ -77,13 +77,19 @@ public class ResCField {
         return mplew.getPacket();
     }
 
-    public static MaplePacket multiChat(String name, String chattext, int mode) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_GroupMessage.get());
-        mplew.write(mode); //  0 buddychat; 1 partychat; 2 guildchat
-        mplew.writeMapleAsciiString(name);
-        mplew.writeMapleAsciiString(chattext);
-        return mplew.getPacket();
+    public static MaplePacket GroupMessage(String name, String message, int mode) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GroupMessage);
+
+        /*
+            0 : 友達
+            1 : グループ
+            2 : ギルド
+            3 : 連合
+         */
+        sp.Encode1(mode);
+        sp.EncodeStr(name);
+        sp.EncodeStr(message);
+        return sp.get();
     }
 
     // environmentChange, musicChange, showEffect, playSound

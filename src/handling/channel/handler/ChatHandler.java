@@ -72,48 +72,6 @@ public class ChatHandler {
         }
     }
 
-    public static final void Others(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        final int type = slea.readByte();
-        final byte numRecipients = slea.readByte();
-        int recipients[] = new int[numRecipients];
-
-        for (byte i = 0; i < numRecipients; i++) {
-            recipients[i] = slea.readInt();
-        }
-        final String chattext = slea.readMapleAsciiString();
-        if (chr == null || !chr.getCanTalk()) {
-            c.getSession().write(ResWrapper.BroadCastMsgNotice("You have been muted and are therefore unable to talk."));
-            return;
-        }
-        if (CommandProcessor.processCommand(c, chattext, CommandType.NORMAL)) {
-            return;
-        }
-        //chr.getCheatTracker().checkMsg();
-        switch (type) {
-            case 0:
-                World.Buddy.buddyChat(recipients, chr.getId(), chr.getName(), chattext);
-                break;
-            case 1:
-                if (chr.getParty() == null) {
-                    break;
-                }
-                World.Party.partyChat(chr.getParty().getId(), chattext, chr.getName());
-                break;
-            case 2:
-                if (chr.getGuildId() <= 0) {
-                    break;
-                }
-                World.Guild.guildChat(chr.getGuildId(), chr.getName(), chr.getId(), chattext);
-                break;
-            case 3:
-                if (chr.getGuildId() <= 0) {
-                    break;
-                }
-                World.Alliance.allianceChat(chr.getGuildId(), chr.getName(), chr.getId(), chattext);
-                break;
-        }
-    }
-
     public static final void Messenger(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         String input;
         MapleMessenger messenger = c.getPlayer().getMessenger();

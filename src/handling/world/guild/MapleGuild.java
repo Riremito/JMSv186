@@ -436,11 +436,11 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public final void guildChat(final String name, final int cid, final String msg) {
-        broadcast(ResCField.multiChat(name, msg, 2), cid);
+        broadcast(ResCField.GroupMessage(name, msg, 2), cid);
     }
 
     public final void allianceChat(final String name, final int cid, final String msg) {
-        broadcast(ResCField.multiChat(name, msg, 3), cid);
+        broadcast(ResCField.GroupMessage(name, msg, 3), cid);
     }
 
     public final String getRankTitle(final int rank) {

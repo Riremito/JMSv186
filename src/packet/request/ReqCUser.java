@@ -45,6 +45,7 @@ import handling.channel.handler.PlayerHandler;
 import handling.channel.handler.PlayerInteractionHandler;
 import handling.channel.handler.PlayersHandler;
 import handling.channel.handler.UserInterfaceHandler;
+import handling.world.MapleParty;
 import handling.world.World;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -462,8 +463,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_GroupMessage: {
-                // c
-                //ChatHandler.Others(p, c, c.getPlayer());
+                OnGroupMessage(chr, cp);
                 return true;
             }
             case CP_Whisper: {
@@ -1586,6 +1586,55 @@ public class ReqCUser {
             }
         }
         return true;
+    }
+
+    public static boolean OnGroupMessage(MapleCharacter chr, ClientPacket cp) {
+        int type = cp.Decode1();
+        byte numRecipients = cp.Decode1();
+        int recipients[] = new int[numRecipients];
+
+        for (byte i = 0; i < numRecipients; i++) {
+            recipients[i] = cp.Decode4();
+        }
+
+        String chattext = cp.DecodeStr();
+
+        switch (type) {
+            case 0: {
+                World.Buddy.buddyChat(recipients, chr.getId(), chr.getName(), chattext);
+                return true;
+            }
+            case 1: {
+                MapleParty party = chr.getParty();
+                if (party != null) {
+                    return true;
+                }
+                World.Party.partyChat(party.getId(), chattext, chr.getName());
+                return true;
+            }
+            case 2: {
+                int guild_id = chr.getGuildId();
+                if (guild_id <= 0) {
+                    return true;
+                }
+                World.Guild.guildChat(guild_id, chr.getName(), chr.getId(), chattext);
+                return true;
+            }
+            case 3: {
+                int guild_id = chr.getGuildId();
+                if (guild_id <= 0) {
+                    return true;
+                }
+                World.Alliance.allianceChat(guild_id, chr.getName(), chr.getId(), chattext);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        Debug.ErrorLog("OnGroupMessage : not coded = " + type);
+        return false;
     }
 
     private static boolean OnWhisper(MapleCharacter chr, ClientPacket cp) {

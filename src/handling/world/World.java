@@ -164,7 +164,7 @@ public class World {
                 if (ch > 0) {
                     MapleCharacter chr = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(partychar.getName());
                     if (chr != null && !chr.getName().equalsIgnoreCase(namefrom)) { //Extra check just in case
-                        chr.getClient().getSession().write(ResCField.multiChat(namefrom, chattext, 1));
+                        chr.getClient().getSession().write(ResCField.GroupMessage(namefrom, chattext, 1));
                     }
                 }
             }
@@ -251,7 +251,7 @@ public class World {
                 if (ch > 0) {
                     MapleCharacter chr = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterById(characterId);
                     if (chr != null && chr.getBuddylist().containsVisible(cidFrom)) {
-                        chr.getClient().getSession().write(ResCField.multiChat(nameFrom, chattext, 0));
+                        chr.SendPacket(ResCField.GroupMessage(nameFrom, chattext, 0));
                     }
                 }
             }
