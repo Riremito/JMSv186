@@ -1897,17 +1897,6 @@ public class GameConstants {
         }
         return true;
     }
-    public static int[] owlItems = new int[]{
-        1082002, // work gloves
-        2070005,
-        2070006,
-        1022047,
-        1102041,
-        2044705,
-        2340000, // white scroll
-        2040017,
-        1092030,
-        2040804};
 
     public static int getMasterySkill(final int job) {
         if (job >= 1410 && job <= 1412) {

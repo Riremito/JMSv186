@@ -54,6 +54,7 @@ import packet.ClientPacket;
 import packet.ops.OpsChangeStat;
 import packet.ops.OpsChatGroup;
 import packet.ops.OpsMapTransfer;
+import packet.ops.OpsShopScanner;
 import packet.ops.Ops_Whisper;
 import packet.request.parse.ParseCMovePath;
 import packet.response.ResCField;
@@ -69,6 +70,7 @@ import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
+import server.shops.HiredMerchant;
 import tools.AttackPair;
 import tools.Pair;
 
@@ -216,8 +218,7 @@ public class ReqCUser {
                 return ReqCParcelDlg.Accept(c, cp);
             }
             case CP_ShopScannerRequest: {
-                // @003B 05
-                // クライアントが不思議なフクロウのUIを開くときにパケットが送信されているが、UIはクライアント側で開くのでサーバーからは何も出来ない
+                OnShopScannerRequest(chr, cp);
                 return true;
             }
             case CP_ShopLinkRequest: {
@@ -311,11 +312,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserShopScannerItemUseRequest: {
-                // 消費アイテム版の不思議なフクロウが存在し、専用のパケットが送信される
-                short slot = cp.Decode2();
-                int owl_item_id = cp.Decode4();
-                int target_id = cp.Decode4();
-                InventoryHandler.OwlMinerva(c, slot, owl_item_id, target_id);
+                OnUserShopScannerItemUseRequest(chr, cp);
                 return true;
             }
             case CP_UserMapTransferItemUseRequest: {
@@ -1021,6 +1018,41 @@ public class ReqCUser {
         }
 
         chr.SendPacket(ResCWvsContext.CharacterInfo(player, chr.getId() == m_dwCharacterId));
+        return true;
+    }
+
+    public static boolean OnShopScannerRequest(MapleCharacter chr, ClientPacket cp) {
+        byte req = cp.Decode1();
+
+        switch (OpsShopScanner.find(req)) {
+            case ShopScannerReq_LoadHotList: {
+                chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_LoadHotListResult));
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        Debug.ErrorLog("OnShopScannerRequest : not coded " + req);
+        return false;
+    }
+
+    public static boolean OnUserShopScannerItemUseRequest(MapleCharacter chr, ClientPacket cp) {
+        short owl_slot = cp.Decode2(); // inlined
+        int owl_item_id = cp.Decode4(); // inlined
+        int target_item_id = cp.Decode4();
+        int timestamp = cp.Decode4();
+
+        IItem item_used = chr.getInventory(MapleInventoryType.USE).getItem(owl_slot);
+        if (item_used == null || item_used.getItemId() != 2310000) {
+            Debug.ErrorLog("OnUserShopScannerItemUseRequest : invalid owl.");
+            return false;
+        }
+        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, owl_item_id, 1, true, false);
+        final List<HiredMerchant> hms = chr.getClient().getChannelServer().searchMerchant(target_item_id);
+        // not coded.
+        chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_SearchResult));
         return true;
     }
 

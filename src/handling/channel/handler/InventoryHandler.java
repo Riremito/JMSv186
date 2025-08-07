@@ -1060,12 +1060,7 @@ public class InventoryHandler {
             case 5230000: {// owl of minerva
                 final int itemSearch = slea.readInt();
                 final List<HiredMerchant> hms = c.getChannelServer().searchMerchant(itemSearch);
-                if (hms.size() > 0) {
-                    c.getSession().write(ResCWvsContext.getOwlSearched(itemSearch, hms));
-                    used = true;
-                } else {
-                    c.getPlayer().dropMessage(1, "Unable to find the item.");
-                }
+                // owl
                 break;
             }
             case 5281001: //idk, but probably
@@ -1339,30 +1334,6 @@ public class InventoryHandler {
 
     }
 
-    public static final void OwlMinerva(MapleClient c, short slot, int itemid, int itemSearch) {
-        final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
-        if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemid && itemid == 2310000) {
-            final List<HiredMerchant> hms = c.getChannelServer().searchMerchant(itemSearch);
-            if (hms.size() > 0) {
-                c.getSession().write(ResCWvsContext.getOwlSearched(itemSearch, hms));
-                MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, itemid, 1, true, false);
-            } else {
-                c.getPlayer().dropMessage(1, "Unable to find the item.");
-            }
-        }
-        c.getSession().write(ResWrapper.enableActions());
-    }
-
-    public static final void Owl(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        if (c.getPlayer().haveItem(5230000, 1, true, false) || c.getPlayer().haveItem(2310000, 1, true, false)) {
-            if (c.getPlayer().getMapId() >= 910000000 && c.getPlayer().getMapId() <= 910000022) {
-                c.getSession().write(ResCWvsContext.getOwlOpen());
-            } else {
-                c.getPlayer().dropMessage(5, "This can only be used inside the Free Market.");
-                c.getSession().write(ResWrapper.enableActions());
-            }
-        }
-    }
     public static final int OWL_ID = 2; //don't change. 0 = owner ID, 1 = store ID, 2 = object ID
 
     public static final void OwlWarp(MapleClient c, int id, int map) {
