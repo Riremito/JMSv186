@@ -37,19 +37,21 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 public class ResCUser {
 
     // CUser::OnChat
-    public static MaplePacket getChatText(int cidfrom, String text, boolean whiteBG, int show) {
+    public static MaplePacket UserChat(MapleCharacter chr, String message, boolean bOnlyBalloon) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserChat);
-        sp.Encode4(cidfrom);
-        sp.Encode1(whiteBG ? 1 : 0);
-        sp.EncodeStr(text);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(chr.isGM() ? 1 : 0);
+        sp.EncodeStr(message);
+
         if (ServerConfig.JMS146orLater()) {
-            sp.Encode1((byte) show);
+            sp.Encode1(bOnlyBalloon ? 1 : 0); // skill macro
         }
+
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
         }
-        // if LP_UserChatNLCPQ, add more str
-        // p.EncodeStr("");
+
         return sp.get();
     }
 

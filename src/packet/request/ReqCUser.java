@@ -27,16 +27,17 @@ import client.PlayerStats;
 import client.SkillFactory;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import client.messages.CommandProcessor;
 import config.DeveloperMode;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
+import constants.ServerConstants;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.channel.handler.AttackInfo;
-import handling.channel.handler.ChatHandler;
 import handling.channel.handler.HiredMerchantHandler;
 import handling.channel.handler.InventoryHandler;
 import handling.channel.handler.ItemMakerHandler;
@@ -58,6 +59,7 @@ import packet.ops.OpsShopScanner;
 import packet.ops.Ops_Whisper;
 import packet.request.parse.ParseCMovePath;
 import packet.response.ResCField;
+import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
@@ -158,7 +160,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserChat: {
-                ChatHandler.GeneralChat(cp, c);
+                OnUserChat(chr, map, cp);
                 return true;
             }
             case CP_UserADBoardClose: {
@@ -316,7 +318,6 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMapTransferItemUseRequest: {
-                // 消費アイテムのテレポストーン
                 OnUserMapTransferItemUseRequest(chr, cp);
                 return true;
             }
@@ -344,7 +345,6 @@ public class ReqCUser {
                 ItemRequest.UseMagnify(cp, c);
                 return true;
             }
-            // AP使用
             case CP_UserAbilityUpRequest: {
                 OnAbilityUpRequest(cp, chr);
                 return true;
@@ -353,12 +353,10 @@ public class ReqCUser {
                 OnAbilityMassUpRequest(cp, chr);
                 return true;
             }
-            // 自動回復類
             case CP_UserChangeStatRequest: {
                 OnChangeStatRequest(cp, chr);
                 return true;
             }
-            // SP使用
             case CP_UserSkillUpRequest: {
                 OnSkillUpRequest(cp, chr);
                 return true;
@@ -367,7 +365,6 @@ public class ReqCUser {
                 OnSkillUseRequest(cp, chr);
                 return true;
             }
-            // buff
             case CP_UserSkillCancelRequest: {
                 OnSkillCancelRequest(cp, chr);
                 return true;
@@ -1001,6 +998,20 @@ public class ReqCUser {
         chr.setChair(item_id);
         chr.getMap().broadcastMessage(chr, ResCUserRemote.SetActivePortableChair(chr.getId(), item_id), false);
         chr.SendPacket(ResWrapper.StatChanged(chr)); // ?_?
+        return true;
+    }
+
+    public static boolean OnUserChat(MapleCharacter chr, MapleMap map, ClientPacket cp) {
+        int timestamp = (ServerConfig.JMS180orLater() || Region.IsBMS()) ? cp.Decode4() : 0;
+        String message = cp.DecodeStr();
+        boolean bOnlyBalloon = (ServerConfig.JMS147orLater() || Region.IsBMS()) ? (cp.Decode1() != 0) : false; // skill macro
+
+        // command
+        if (CommandProcessor.processCommand(chr.getClient(), message, ServerConstants.CommandType.NORMAL)) {
+            return true;
+        }
+
+        map.broadcastMessage(ResCUser.UserChat(chr, message, bOnlyBalloon), chr.getPosition());
         return true;
     }
 

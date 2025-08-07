@@ -22,55 +22,13 @@ package handling.channel.handler;
 
 import client.MapleClient;
 import client.MapleCharacter;
-import client.messages.CommandProcessor;
-import config.Region;
-import config.ServerConfig;
-import constants.ServerConstants.CommandType;
 import handling.world.MapleMessenger;
 import handling.world.MapleMessengerCharacter;
 import handling.world.World;
-import packet.ClientPacket;
 import packet.response.ResCUIMessenger;
-import packet.response.ResCUser;
-import packet.response.wrapper.ResWrapper;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class ChatHandler {
-
-    public static final void GeneralChat(ClientPacket cp, final MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
-        byte unk = 0;
-
-        if (ServerConfig.JMS180orLater() || Region.IsBMS()) {
-            cp.Decode4();
-        }
-
-        String text = cp.DecodeStr();
-
-        if (ServerConfig.JMS164orLater() || Region.IsBMS()) {
-            unk = cp.Decode1();
-        }
-
-        if (chr != null && !CommandProcessor.processCommand(c, text, CommandType.NORMAL)) {
-            if (!chr.isGM() && text.length() >= 70) {
-                return;
-            }
-            if (chr.getCanTalk() || chr.isStaff()) {
-                //Note: This patch is needed to prevent chat packet from being broadcast to people who might be packet sniffing.
-                if (chr.isHidden()) {
-                    chr.getMap().broadcastGMMessage(chr, ResCUser.getChatText(chr.getId(), text, c.getPlayer().isGM(), unk), true);
-                } else {
-                    //chr.getCheatTracker().checkMsg();
-                    chr.getMap().broadcastMessage(ResCUser.getChatText(chr.getId(), text, false/*c.getPlayer().isGM()*/, unk), c.getPlayer().getPosition());
-                }
-                if (text.equalsIgnoreCase(c.getChannelServer().getServerName() + " rocks")) {
-                    chr.finishAchievement(11);
-                }
-            } else {
-                c.getSession().write(ResWrapper.BroadCastMsgNotice("You have been muted and are therefore unable to talk."));
-            }
-        }
-    }
 
     public static final void Messenger(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         String input;

@@ -50,7 +50,6 @@ import packet.response.ResCDropPool.LeaveType;
 import packet.request.ItemRequest;
 import packet.response.ResCField;
 import packet.response.ResCUIItemUpgrade;
-import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
@@ -1069,8 +1068,6 @@ public class InventoryHandler {
                 Rectangle bounds = new Rectangle((int) c.getPlayer().getPosition().getX(), (int) c.getPlayer().getPosition().getY(), 1, 1);
                 MapleMist mist = new MapleMist(bounds, c.getPlayer());
                 c.getPlayer().getMap().spawnMist(mist, 10000, true);
-                c.getPlayer().getMap().broadcastMessage(ResCUser.getChatText(c.getPlayer().getId(), "Oh no, I farted!", false, 1));
-                c.getSession().write(ResWrapper.enableActions());
                 used = true;
                 break;
             }
