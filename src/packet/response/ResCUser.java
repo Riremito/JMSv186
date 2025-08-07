@@ -56,17 +56,20 @@ public class ResCUser {
     }
 
     // CUser::OnADBoard
-    public static MaplePacket useChalkboard(final int charid, final String msg) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserADBoard.get());
-        mplew.writeInt(charid);
-        if (msg == null || msg.length() <= 0) {
-            mplew.write(0);
-        } else {
-            mplew.write(1);
-            mplew.writeMapleAsciiString(msg);
+    public static MaplePacket UserADBoard(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserADBoard);
+
+        String message = chr.getADBoard();
+        boolean open = (message != null);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(open ? 1 : 0);
+
+        if (open) {
+            sp.EncodeStr(message);
         }
-        return mplew.getPacket();
+
+        return sp.get();
     }
 
     // CUser::OnMiniRoomBalloon

@@ -167,7 +167,7 @@ public class CharacterTransfer implements Externalizable {
         }
 
         this.BlessOfFairy = chr.getBlessOfFairyOrigin();
-        this.chalkboard = chr.getChalkboard();
+        this.chalkboard = chr.getADBoard();
         this.skillmacro = chr.getMacros();
         this.keymap = chr.getKeyLayout().Layout();
         this.savedlocation = chr.getSavedLocations();

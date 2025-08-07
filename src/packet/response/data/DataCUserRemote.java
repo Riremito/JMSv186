@@ -216,9 +216,9 @@ public class DataCUserRemote {
         data.EncodeBuffer(Structure.AnnounceBox(chr));
         // ADBoardBalloon (黒板) 1 byte flag + data
         {
-            data.Encode1(chr.getChalkboard() != null && chr.getChalkboard().length() > 0 ? 1 : 0);
-            if (chr.getChalkboard() != null && chr.getChalkboard().length() > 0) {
-                data.EncodeStr(chr.getChalkboard());
+            data.Encode1(chr.getADBoard() != null && chr.getADBoard().length() > 0 ? 1 : 0);
+            if (chr.getADBoard() != null && chr.getADBoard().length() > 0) {
+                data.EncodeStr(chr.getADBoard());
             }
         }
         data.Encode1(0); //count4 -> buf0x10 4
@@ -287,10 +287,10 @@ public class DataCUserRemote {
             data.Encode1(shop.getMaxSize()); // m_nMaxUsers
             data.Encode1(shop.isOpen() ? 0 : 1); // m_bGameOn
         }
-        boolean is_adboard = (chr.getChalkboard() != null) && (0 < chr.getChalkboard().length());
+        boolean is_adboard = (chr.getADBoard() != null) && (0 < chr.getADBoard().length());
         data.Encode1(is_adboard ? 1 : 0); // m_bADBoardRemote
         if (is_adboard) {
-            data.EncodeStr(chr.getChalkboard());
+            data.EncodeStr(chr.getADBoard());
         }
 
         boolean is_couple = false;
@@ -401,10 +401,10 @@ public class DataCUserRemote {
             data.Encode1(shop.getMaxSize()); // m_nMaxUsers
             data.Encode1(shop.isOpen() ? 0 : 1); // m_bGameOn
         }
-        boolean is_adboard = (chr.getChalkboard() != null) && (0 < chr.getChalkboard().length());
+        boolean is_adboard = (chr.getADBoard() != null) && (0 < chr.getADBoard().length());
         data.Encode1(is_adboard ? 1 : 0); // m_bADBoardRemote
         if (is_adboard) {
-            data.EncodeStr(chr.getChalkboard());
+            data.EncodeStr(chr.getADBoard());
         }
 
         boolean unk_data_1 = false;

@@ -473,11 +473,11 @@ public class MapleInventoryManipulator {
         }
     }
 
-    public static void removeFromSlot(final MapleClient c, final MapleInventoryType type, final short slot, final short quantity, final boolean fromDrop) {
-        removeFromSlot(c, type, slot, quantity, fromDrop, false);
+    public static void removeFromSlot(final MapleClient c, final MapleInventoryType type, final short slot, final short quantity, final boolean unlock) {
+        removeFromSlot(c, type, slot, quantity, unlock, false);
     }
 
-    public static void removeFromSlot(final MapleClient c, final MapleInventoryType type, final short slot, short quantity, final boolean fromDrop, final boolean consume) {
+    public static void removeFromSlot(final MapleClient c, final MapleInventoryType type, final short slot, short quantity, final boolean unlock, final boolean consume) {
         if (c.getPlayer() == null || c.getPlayer().getInventory(type) == null) {
             return;
         }
@@ -487,9 +487,9 @@ public class MapleInventoryManipulator {
             c.getPlayer().getInventory(type).removeItem(slot, quantity, allowZero);
 
             if (item.getQuantity() == 0 && !allowZero) {
-                c.getSession().write(ResWrapper.clearInventoryItem(type, item.getPosition(), fromDrop));
+                c.getSession().write(ResWrapper.clearInventoryItem(type, item.getPosition(), unlock));
             } else {
-                c.getSession().write(ResWrapper.updateInventorySlot(type, (Item) item, fromDrop));
+                c.getSession().write(ResWrapper.updateInventorySlot(type, (Item) item, unlock));
             }
         }
     }

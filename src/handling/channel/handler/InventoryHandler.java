@@ -1071,16 +1071,6 @@ public class InventoryHandler {
                 used = true;
                 break;
             }
-            case 5370000: { // Chalkboard
-                c.getPlayer().setChalkboard(slea.readMapleAsciiString());
-                break;
-            }
-            case 5370001: { // BlackBoard
-                if (c.getPlayer().getMapId() / 1000000 == 910) {
-                    c.getPlayer().setChalkboard(slea.readMapleAsciiString());
-                }
-                break;
-            }
             case 5390000: // Diablo Messenger
             case 5390001: // Cloud 9 Messenger
             case 5390002: // Loveholic Messenger

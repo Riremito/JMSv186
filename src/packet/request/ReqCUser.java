@@ -164,7 +164,8 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserADBoardClose: {
-                c.getPlayer().setChalkboard(null);
+                chr.setADBoard(null);
+                map.broadcastMessage(ResCUser.UserADBoard(chr));
                 return true;
             }
             case CP_UserEmotion: {
@@ -290,9 +291,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserConsumeCashItemUseRequest: {
-                if (!ItemRequest.OnPacket(header, cp, c)) {
-                    //InventoryHandler.UseCashItem(p, c, cp); // to do remove
-                }
+                OnUserConsumeCashItemUseRequest(chr, map, cp);
                 return true;
             }
             case CP_UserDestroyPetItemRequest: {
@@ -1630,6 +1629,38 @@ public class ReqCUser {
             }
         }
         return true;
+    }
+
+    public static boolean OnUserConsumeCashItemUseRequest(MapleCharacter chr, MapleMap map, ClientPacket cp) {
+        int timestamp = ServerConfig.JMS180orLater() ? cp.Decode4() : 0;
+        short cash_item_slot = cp.Decode2();
+        int cash_item_id = cp.Decode4();
+
+        Runnable item_use = chr.checkItemSlot(MapleInventoryType.CASH, cash_item_slot, cash_item_id);
+        if (item_use == null) {
+            Debug.ErrorLog("OnUserConsumeCashItemUseRequest : invalid item.");
+            return true;
+        }
+
+        int cash_item_type = cash_item_id / 10000;
+
+        switch (cash_item_type) {
+            case 537: // 5370000
+            {
+                String message = cp.DecodeStr();
+                chr.setADBoard(message);
+                map.broadcastMessage(ResCUser.UserADBoard(chr));
+                item_use.run();
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        // not coded.
+        Debug.ErrorLog("OnUserConsumeCashItemUseRequest : not coded yet. type = " + cash_item_type);
+        return false;
     }
 
     public static boolean OnGroupMessage(MapleCharacter chr, ClientPacket cp) {

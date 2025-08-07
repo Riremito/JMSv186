@@ -2973,6 +2973,43 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return inventory[type.ordinal()];
     }
 
+    // removeFromSlot like
+    private boolean useItemDone(MapleInventoryType type, IItem item_used, short item_quantity) {
+        boolean isRecharge = GameConstants.isRechargable(item_used.getItemId());
+
+        getInventory(type).removeItem(item_used.getPosition(), item_quantity, isRecharge);
+
+        if (item_used.getQuantity() == 0 && !isRecharge) {
+            SendPacket(ResWrapper.clearInventoryItem(type, item_used.getPosition(), true));
+        } else {
+            SendPacket(ResWrapper.updateInventorySlot(type, (Item) item_used, true));
+        }
+
+        return true;
+    }
+
+    // removeFromSlot like
+    public Runnable checkItemSlot(MapleInventoryType type, short item_slot, int item_id, short item_quantity) {
+        IItem item_used = getInventory(type).getItem(item_slot);
+
+        if (item_used == null) {
+            return null;
+        }
+        if (item_used.getItemId() != item_id) {
+            return null;
+        }
+        if (item_used.getQuantity() < item_quantity) {
+            return null;
+        }
+
+        Runnable use_item = () -> useItemDone(type, item_used, item_quantity);
+        return use_item;
+    }
+
+    public Runnable checkItemSlot(MapleInventoryType type, short item_slot, int item_id) {
+        return checkItemSlot(type, item_slot, item_id, (short) 1);
+    }
+
     public final MapleInventory[] getInventorys() {
         return inventory;
     }
@@ -4554,12 +4591,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
     }
 
-    public void setChalkboard(String text) {
+    public void setADBoard(String text) {
         this.chalktext = text;
-        map.broadcastMessage(ResCUser.useChalkboard(getId(), text));
     }
 
-    public String getChalkboard() {
+    public String getADBoard() {
         return chalktext;
     }
 
