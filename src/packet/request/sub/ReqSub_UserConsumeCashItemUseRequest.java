@@ -22,8 +22,11 @@ import client.MapleCharacter;
 import client.inventory.MapleInventoryType;
 import config.ServerConfig;
 import debug.Debug;
+import handling.channel.handler.PlayerHandler;
 import packet.ClientPacket;
+import packet.request.ReqCUser_Pet;
 import packet.response.ResCUser;
+import server.maps.FieldLimitType;
 import server.maps.MapleMap;
 
 /**
@@ -46,6 +49,37 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         int cash_item_type = cash_item_id / 10000;
 
         switch (cash_item_type) {
+            case 504: // 5040000
+            {
+                byte action = cp.Decode1();
+                int map_id = 999999999;
+                MapleCharacter target_chr = null;
+                if (action == 0) {
+                    map_id = cp.Decode4();
+                } else {
+                    String target_name = cp.DecodeStr();
+                    target_chr = chr.getClient().getChannelServer().getPlayerStorage().getCharacterByName(target_name);
+                    if (target_chr == null) {
+                        return false;
+                    }
+                    map_id = target_chr.getMap().getId();
+                }
+                if (FieldLimitType.VipRock.check(chr.getClient().getChannelServer().getMapFactory().getMap(map_id).getFieldLimit())) {
+                    return false;
+                }
+                item_use.run();
+                if (action == 0) {
+                    PlayerHandler.ChangeMap(chr.getClient(), map_id);
+                } else {
+                    chr.changeMap(target_chr.getMap(), target_chr.getMap().findClosestSpawnpoint(target_chr.getPosition()));
+                }
+                return true;
+            }
+            case 524: {
+                // TODO : fix
+                ReqCUser_Pet.OnPetFood(chr, MapleInventoryType.CASH, cash_item_slot, cash_item_id);
+                return true;
+            }
             case 537: // 5370000
             {
                 String message = cp.DecodeStr();

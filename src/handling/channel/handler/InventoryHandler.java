@@ -60,15 +60,12 @@ import server.MapleShopFactory;
 import server.MapleItemInformationProvider;
 import server.MapleInventoryManipulator;
 import server.StructRewardItem;
-import server.quest.MapleQuest;
 import server.maps.SavedLocationType;
-import server.maps.FieldLimitType;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 import server.life.MapleMonster;
-import server.life.MapleLifeFactory;
 import scripting.NPCScriptManager;
 import server.maps.MapleMist;
 import server.shops.HiredMerchant;
@@ -500,51 +497,6 @@ public class InventoryHandler {
         boolean used = false, cc = false;
 
         switch (itemId) {
-            case 5043001: // NPC Teleport Rock
-            case 5043000: { // NPC Teleport Rock
-                final short questid = slea.readShort();
-                final int npcid = slea.readInt();
-                final MapleQuest quest = MapleQuest.getInstance(questid);
-
-                if (c.getPlayer().getQuest(quest).getStatus() == 1 && quest.canComplete(c.getPlayer(), npcid)) {
-                    final int mapId = MapleLifeFactory.getNPCLocation(npcid);
-                    if (mapId != -1) {
-                        final MapleMap map = c.getChannelServer().getMapFactory().getMap(mapId);
-                        if (map.containsNPC(npcid) && !FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) && !FieldLimitType.VipRock.check(map.getFieldLimit()) && c.getPlayer().getEventInstance() == null) {
-                            c.getPlayer().changeMap(map, map.getPortal(0));
-                        }
-                        used = true;
-                    } else {
-                        c.getPlayer().dropMessage(1, "Unknown error has occurred.");
-                    }
-                }
-                break;
-            }
-            case 2320000: // The Teleport Rock
-            case 5041000: // VIP Teleport Rock
-            case 5040000: // The Teleport Rock
-            case 5040001: { // Teleport Coke
-                if (slea.readByte() == 0) { // Rocktype
-                    final MapleMap target = c.getChannelServer().getMapFactory().getMap(slea.readInt());
-                    if ((itemId == 5041000 && c.getPlayer().isRockMap(target.getId())) || (itemId != 5041000 && c.getPlayer().isRegRockMap(target.getId()))) {
-                        if (!FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) && !FieldLimitType.VipRock.check(target.getFieldLimit()) && c.getPlayer().getEventInstance() == null) { //Makes sure this map doesn't have a forced return map
-                            c.getPlayer().changeMap(target, target.getPortal(0));
-                            used = true;
-                        }
-                    }
-                } else {
-                    final MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
-                    if (victim != null && !victim.isGM() && c.getPlayer().getEventInstance() == null && victim.getEventInstance() == null) {
-                        if (!FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) && !FieldLimitType.VipRock.check(c.getChannelServer().getMapFactory().getMap(victim.getMapId()).getFieldLimit())) {
-                            if (itemId == 5041000 || (victim.getMapId() / 100000000) == (c.getPlayer().getMapId() / 100000000)) { // Viprock or same continent
-                                c.getPlayer().changeMap(victim.getMap(), victim.getMap().findClosestSpawnpoint(victim.getPosition()));
-                                used = true;
-                            }
-                        }
-                    }
-                }
-                break;
-            }
             case 5050000: { // AP Reset
                 List<Pair<MapleStat, Integer>> statupdate = new ArrayList<Pair<MapleStat, Integer>>(2);
                 final int apto = slea.readInt();

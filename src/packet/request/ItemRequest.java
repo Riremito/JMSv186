@@ -34,7 +34,6 @@ import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
 import debug.Debug;
-import handling.channel.handler.PlayerHandler;
 import handling.world.World;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,10 +78,6 @@ public class ItemRequest {
         }
 
         switch (header) {
-            // ポイントアイテム
-            case CP_UserConsumeCashItemUseRequest: {
-                return ConsumeCashItemUse(cp, chr);
-            }
             // 回復薬
             case CP_UserStatChangeItemUseRequest: {
                 OnStatChangeItemUse(cp, chr);
@@ -255,24 +250,10 @@ public class ItemRequest {
         int item_type = item_id / 10000;
 
         switch (item_type) {
-            // テレポストーン
-            case 504: {
-                byte action = cp.Decode1();
-                if (action == 0) {
-                    int map_id = cp.Decode4();
-                    PlayerHandler.ChangeMap(chr.getClient(), map_id);
-                }
-                return true;
-            }
             case 507: {
                 if (UseMegaphone(cp, chr, item_id)) {
                     RemoveCashItem(chr, item_slot);
                 }
-                return true;
-            }
-            // pet food
-            case 524: {
-                ReqCUser_Pet.OnPetFood(chr, MapleInventoryType.CASH, item_slot, item_id);
                 return true;
             }
             default: {
