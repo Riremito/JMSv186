@@ -150,6 +150,7 @@ import tools.ConcurrentEnumMap;
 import tools.FileoutputUtil;
 import server.network.MockIOSession;
 import data.wz.ids.DWI_Dafault;
+import debug.DebugMan;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Serializable {
 
@@ -6132,6 +6133,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         for (IItem equip : getInventory(MapleInventoryType.EQUIPPED)) {
             clones[0].get().getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
         }
+        return true;
+    }
+
+    private DebugMan debugMan = null;
+
+    public DebugMan getDebugMan() {
+        return this.debugMan;
+    }
+
+    public boolean setDebugMan(DebugMan debugMan) {
+        if (debugMan != null && this.debugMan != null) {
+            return false;
+        }
+        this.debugMan = debugMan;
         return true;
     }
 }

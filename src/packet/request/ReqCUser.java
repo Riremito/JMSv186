@@ -35,6 +35,7 @@ import config.Version;
 import constants.GameConstants;
 import constants.ServerConstants;
 import debug.Debug;
+import debug.DebugMan;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.channel.handler.AttackInfo;
@@ -195,6 +196,10 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserScriptMessageAnswer: {
+                if (chr.getDebugMan() != null) {
+                    DebugMan.OnScriptMessageAnswerHook(chr, cp);
+                    return true;
+                }
                 ReqCScriptMan.OnScriptMessageAnswer(cp, c);
                 return true;
             }

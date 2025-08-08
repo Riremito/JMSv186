@@ -175,6 +175,12 @@ public class DebugCommand {
                 chr.DebugMsg("[RemoteNPCTalk2] " + npc_id);
                 return true;
             }
+            case "/dm": {
+                DebugMan debugMan = new DebugMan(chr);
+                chr.setDebugMan(debugMan);
+                debugMan.action();
+                return true;
+            }
             case "/search": {
                 if (splitted.length < 3) {
                     return false;
