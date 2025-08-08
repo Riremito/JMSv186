@@ -58,6 +58,7 @@ import packet.ops.OpsMapTransfer;
 import packet.ops.OpsShopScanner;
 import packet.ops.Ops_Whisper;
 import packet.request.parse.ParseCMovePath;
+import packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import packet.response.ResCField;
 import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
@@ -1632,35 +1633,7 @@ public class ReqCUser {
     }
 
     public static boolean OnUserConsumeCashItemUseRequest(MapleCharacter chr, MapleMap map, ClientPacket cp) {
-        int timestamp = ServerConfig.JMS180orLater() ? cp.Decode4() : 0;
-        short cash_item_slot = cp.Decode2();
-        int cash_item_id = cp.Decode4();
-
-        Runnable item_use = chr.checkItemSlot(MapleInventoryType.CASH, cash_item_slot, cash_item_id);
-        if (item_use == null) {
-            Debug.ErrorLog("OnUserConsumeCashItemUseRequest : invalid item.");
-            return true;
-        }
-
-        int cash_item_type = cash_item_id / 10000;
-
-        switch (cash_item_type) {
-            case 537: // 5370000
-            {
-                String message = cp.DecodeStr();
-                chr.setADBoard(message);
-                map.broadcastMessage(ResCUser.UserADBoard(chr));
-                item_use.run();
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-
-        // not coded.
-        Debug.ErrorLog("OnUserConsumeCashItemUseRequest : not coded yet. type = " + cash_item_type);
-        return false;
+        return ReqSub_UserConsumeCashItemUseRequest.OnUserConsumeCashItemUseRequestInternal(chr, map, cp);
     }
 
     public static boolean OnGroupMessage(MapleCharacter chr, ClientPacket cp) {
