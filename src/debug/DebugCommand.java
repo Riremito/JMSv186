@@ -176,11 +176,6 @@ public class DebugCommand {
                 return true;
             }
             case "/dm": {
-                /*
-                if (splitted.length < 2) {
-                    return false;
-                }
-                 */
                 DebugManTest dm_test = new DebugManTest();
                 dm_test.start(chr);
                 return true;

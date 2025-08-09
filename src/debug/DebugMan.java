@@ -42,7 +42,7 @@ public class DebugMan {
         ((DebugMan) dm).updateStatus(action);
 
         int m_nSelect = -1;
-        if (type == OpsScriptMan.SM_ASKMENU) {
+        if (type == OpsScriptMan.SM_ASKMENU && action == 1) {
             m_nSelect = cp.Decode4();
         }
 
@@ -51,7 +51,7 @@ public class DebugMan {
         switch (type) {
             case SM_SAY:
             case SM_ASKMENU: {
-                if (action == 1) {
+                if (action != -1) {
                     if (dm.action(chr, ((DebugMan) dm).getStatus(), m_nSelect)) {
                         // continue
                         return true;
@@ -79,11 +79,18 @@ public class DebugMan {
 
     private boolean updateStatus(int val) {
         switch (val) {
-            case 1: {
+            case 1: // next
+            {
                 this.status++;
                 return true;
             }
-            case -1: {
+            case 0: // prev
+            {
+                this.status--;
+                return true;
+            }
+            case -1: // cancel
+            {
                 this.status = -1;
                 return true;
             }
@@ -110,16 +117,24 @@ public class DebugMan {
     }
 
     protected void askMenu(MapleCharacter chr, NpcTag nt) {
-        chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_ASKMENU, (byte) 0, nt.get(), false, false));
+        askMenu(chr, nt, false, false);
     }
 
     protected void say(MapleCharacter chr, NpcTag nt) {
+        say(chr, nt, false, false);
+    }
+
+    protected void askMenu(MapleCharacter chr, NpcTag nt, boolean prev, boolean next) {
+        chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_ASKMENU, (byte) 0, nt.get(), prev, next));
+    }
+
+    protected void say(MapleCharacter chr, NpcTag nt, boolean prev, boolean next) {
         if (nt.get().contains("#L")) {
             Debug.ErrorLog("DebugMan : say.");
-            askMenu(chr, nt);
+            askMenu(chr, nt, prev, next);
             return;
         }
-        chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_SAY, (byte) 0, nt.get(), false, false));
+        chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_SAY, (byte) 0, nt.get(), prev, next));
     }
 
     protected class NpcTag {
@@ -127,7 +142,14 @@ public class DebugMan {
         protected String msg = "";
 
         protected void add(String text) {
-            this.msg += text + "\r\n";
+            this.add(text, true);
+        }
+
+        protected void add(String text, boolean crlf) {
+            this.msg += text;
+            if (crlf) {
+                this.msg += "\r\n";
+            }
         }
 
         protected void addMenu(int num, String text) {

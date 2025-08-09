@@ -46,23 +46,24 @@ public class DebugManTest extends DebugMan implements IDebugMan {
         switch (status) {
             case 0: {
                 NpcTag nt = new NpcTag();
-                nt.addMenu(2, "#m100000000#");
-                nt.addMenu(3, "#m200000000#");
+                nt.add("DebugManTest...");
+                nt.addMenu(11, "#m100000000#");
+                nt.addMenu(22, "#m200000000#");
                 super.askMenu(chr, nt);
                 return true;
             }
             case 1: {
                 NpcTag nt = new NpcTag();
-                if (answer == 2) {
+                if (answer == 11) {
                     nt.add("go to #m100000000#.");
                     target_map_id = 100000000;
-                    super.say(chr, nt);
+                    super.say(chr, nt, true, false);
                     return true;
                 }
-                if (answer == 3) {
-                    nt.add("go to #m100000000#.");
+                if (answer == 22) {
+                    nt.add("go to #m200000000#.");
                     target_map_id = 200000000;
-                    super.say(chr, nt);
+                    super.say(chr, nt, true, false);
                     return true;
                 }
                 return false;
