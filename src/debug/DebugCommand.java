@@ -176,9 +176,13 @@ public class DebugCommand {
                 return true;
             }
             case "/dm": {
-                DebugMan debugMan = new DebugMan(chr);
-                chr.setDebugMan(debugMan);
-                debugMan.action();
+                /*
+                if (splitted.length < 2) {
+                    return false;
+                }
+                 */
+                DebugManTest dm_test = new DebugManTest();
+                dm_test.start(chr);
                 return true;
             }
             case "/search": {

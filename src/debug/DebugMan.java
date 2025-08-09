@@ -29,18 +29,55 @@ import packet.response.ResCScriptMan;
  */
 public class DebugMan {
 
-    private int status = 0;
-    private MapleCharacter chr = null;
+    protected static final int DEFAULT_NPC_ID = 1012003;
 
-    public DebugMan(MapleCharacter chr) {
-        this.chr = chr;
+    public static boolean OnScriptMessageAnswerHook(MapleCharacter chr, ClientPacket cp) {
+        IDebugMan dm = chr.getDebugMan();
+
+        int cm_type = cp.Decode1();
+        int action = cp.Decode1();
+
+        OpsScriptMan type = OpsScriptMan.find(cm_type);
+
+        ((DebugMan) dm).updateStatus(action);
+
+        int m_nSelect = -1;
+        if (type == OpsScriptMan.SM_ASKMENU) {
+            m_nSelect = cp.Decode4();
+        }
+
+        chr.DebugMsg("DebugMan : anwser (" + type + ", " + action + ", " + m_nSelect + ")");
+
+        switch (type) {
+            case SM_SAY:
+            case SM_ASKMENU: {
+                if (action == 1) {
+                    if (dm.action(chr, ((DebugMan) dm).getStatus(), m_nSelect)) {
+                        // continue
+                        return true;
+                    }
+                }
+                // end
+                dm.end(chr);
+                return false;
+            }
+            default: {
+                break;
+            }
+        }
+
+        dm.end(chr);
+        Debug.ErrorLog("OnScriptMessageAnswerHook not coded = " + cm_type + ", " + action);
+        return false;
     }
 
-    public int getStatus() {
+    private int status = 0;
+
+    private int getStatus() {
         return status;
     }
 
-    public boolean updateStatus(int val) {
+    private boolean updateStatus(int val) {
         switch (val) {
             case 1: {
                 this.status++;
@@ -57,86 +94,50 @@ public class DebugMan {
         return false;
     }
 
-    public boolean action() {
-        return action(-1);
+    public boolean start(IDebugMan debugMan, MapleCharacter chr) {
+        this.status = 0;
+        chr.DebugMsg("DebugMan : started.");
+        chr.setDebugMan(debugMan);
+        debugMan.action(chr, this.status, 0);
+        return true;
     }
 
-    public class NpcTag {
+    public boolean end(MapleCharacter chr) {
+        this.status = -1;
+        chr.DebugMsg("DebugMan : finished.");
+        chr.setDebugMan(null);
+        return true;
+    }
 
-        private String msg = "";
+    protected void askMenu(MapleCharacter chr, NpcTag nt) {
+        chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_ASKMENU, (byte) 0, nt.get(), false, false));
+    }
 
-        private void addMenu(int num, String text) {
+    protected void say(MapleCharacter chr, NpcTag nt) {
+        if (nt.get().contains("#L")) {
+            Debug.ErrorLog("DebugMan : say.");
+            askMenu(chr, nt);
+            return;
+        }
+        chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_SAY, (byte) 0, nt.get(), false, false));
+    }
+
+    protected class NpcTag {
+
+        protected String msg = "";
+
+        protected void add(String text) {
+            this.msg += text + "\r\n";
+        }
+
+        protected void addMenu(int num, String text) {
             this.msg += "#L" + num + "##b" + text + "#k#l\r\n";
         }
 
-        private String get() {
+        protected String get() {
             return this.msg;
         }
 
-    }
-
-    public boolean action(int answer) {
-        switch (status) {
-            case 0: {
-                chr.DebugMsg("DebugMan started.");
-                NpcTag nt = new NpcTag();
-                nt.addMenu(2, "#m100000000#");
-                nt.addMenu(3, "#m200000000#");
-                chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_ASKMENU, (byte) 0, nt.get(), false, false));
-                return true;
-            }
-            case 1: {
-                if (answer == 2) {
-                    chr.DebugMsg("Henesys.");
-                    chr.setDebugMan(null);
-                    return true;
-                }
-                if (answer == 3) {
-                    chr.DebugMsg("Oribs.");
-                    chr.setDebugMan(null);
-                    return true;
-                }
-
-                chr.setDebugMan(null);
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-
-        chr.setDebugMan(null); // NPC talk ended.
-        chr.DebugMsg("DebugMan finished.");
-        return false;
-    }
-
-    private static final int DEFAULT_NPC_ID = 1012003;
-
-    public static boolean OnScriptMessageAnswerHook(MapleCharacter chr, ClientPacket cp) {
-        DebugMan dm = chr.getDebugMan();
-
-        int cm_type = cp.Decode1();
-        int action = cp.Decode1();
-
-        OpsScriptMan type = OpsScriptMan.find(cm_type);
-
-        chr.DebugMsg("DebugMan : " + type + ", " + action);
-        switch (type) {
-            case SM_ASKMENU: {
-                dm.updateStatus(action);
-                if (action == 1) {
-                    int m_nSelect = cp.Decode4();
-                    dm.action(m_nSelect);
-                }
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-
-        Debug.ErrorLog("OnScriptMessageAnswerHook not coded = " + cm_type + ", " + action);
-        return false;
     }
 
 }

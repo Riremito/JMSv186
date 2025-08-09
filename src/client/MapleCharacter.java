@@ -150,7 +150,7 @@ import tools.ConcurrentEnumMap;
 import tools.FileoutputUtil;
 import server.network.MockIOSession;
 import data.wz.ids.DWI_Dafault;
-import debug.DebugMan;
+import debug.IDebugMan;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Serializable {
 
@@ -6136,13 +6136,13 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return true;
     }
 
-    private DebugMan debugMan = null;
+    private IDebugMan debugMan = null;
 
-    public DebugMan getDebugMan() {
+    public IDebugMan getDebugMan() {
         return this.debugMan;
     }
 
-    public boolean setDebugMan(DebugMan debugMan) {
+    public boolean setDebugMan(IDebugMan debugMan) {
         if (debugMan != null && this.debugMan != null) {
             return false;
         }
