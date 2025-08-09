@@ -23,6 +23,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
+import debug.DebugShop;
 import server.network.MaplePacket;
 import java.util.List;
 import packet.ServerPacket;
@@ -38,10 +39,11 @@ import tools.BitTools;
 public class ResCShopDlg {
 
     // CShopDlg::OnPacket
-    public static MaplePacket confirmShopTransaction(OpsShop ops, int level) {
+    public static MaplePacket ShopResult(OpsShop ops, int level) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ShopResult);
 
         sp.Encode1(ops.get());
+
         switch (ops) {
             case ShopRes_SellSuccess: {
                 /*
@@ -74,13 +76,73 @@ public class ResCShopDlg {
         return sp.get();
     }
 
-    public static MaplePacket confirmShopTransaction(OpsShop ops) {
-        return confirmShopTransaction(ops, 0);
+    public static MaplePacket ShopResult(OpsShop ops) {
+        return ResCShopDlg.ShopResult(ops, 0);
     }
 
     // CShopDlg::OnPacket
-    // CShopDlg::SetShopDlg
-    public static MaplePacket getNPCShop(MapleClient c, int sid, List<MapleShopItem> items) {
+    public static MaplePacket OpenShopDlg_DS(DebugShop ds) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_OpenShopDlg);
+
+        if (ServerConfig.JMS194orLater()) {
+            sp.Encode1(0);
+        }
+
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            sp.Encode4(0);
+        }
+
+        sp.Encode4(ds.getNpcId());
+
+        if (ServerConfig.JMS194orLater()) {
+            sp.Encode1(0);
+        }
+
+        sp.Encode2(ds.getShopStocks().size());
+
+        for (DebugShop.ShopStock ss : ds.getShopStocks()) {
+            sp.Encode4(ss.item_id);
+            sp.Encode4(ss.item_price);
+
+            if (ServerConfig.JMS180orLater()) {
+                sp.Encode4(0); // nTokenItemID
+                sp.Encode4(0); // nTokenPrice
+            }
+
+            if (ServerConfig.JMS186orLater()) {
+                sp.Encode4(0); // nItemPeriod
+            }
+
+            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84)) {
+                sp.Encode4(0); // nLevelLimited
+            }
+
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                sp.Encode4(0);
+                sp.Encode1(0);
+                sp.Encode4(0);
+            }
+
+            if (GameConstants.isRechargable(ss.item_id)) {
+                sp.EncodeZeroBytes(6);
+                sp.Encode2(0);
+                sp.Encode2(0);
+            } else {
+                sp.Encode2(1);
+                if (ServerConfig.JMS146orLater()) {
+                    sp.Encode2(1); // buyable
+                }
+            }
+
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                sp.Encode1(0);
+                sp.Encode4(0);
+            }
+        }
+        return sp.get();
+    }
+
+    public static MaplePacket OpenShopDlg(MapleClient c, int sid, List<MapleShopItem> items) {
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_OpenShopDlg);
         if (ServerConfig.JMS194orLater()) {

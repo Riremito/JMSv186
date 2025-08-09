@@ -36,6 +36,7 @@ import constants.GameConstants;
 import constants.ServerConstants;
 import debug.Debug;
 import debug.DebugMan;
+import debug.DebugShop;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.channel.handler.AttackInfo;
@@ -204,6 +205,10 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserShopRequest: {
+                if (chr.getDebugShop() != null) {
+                    DebugShop.OnUserShopRequestHook(chr, cp);
+                    return true;
+                }
                 ReqCShopDlg.OnPacket(cp, c);
                 return true;
             }

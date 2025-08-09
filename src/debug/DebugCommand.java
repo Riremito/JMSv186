@@ -37,6 +37,7 @@ import handling.channel.ChannelServer;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import packet.request.ReqCUser;
 import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
@@ -186,6 +187,14 @@ public class DebugCommand {
                     dm.start(chr);
                     return true;
                 }
+                return true;
+            }
+            case "/ds": {
+                DebugShop ds = new DebugShop();
+                for (int i = 0; i < 10; i++) {
+                    ds.add(DWI_LoadXML.getItem().getRandom(), (new Random()).nextInt(Integer.MAX_VALUE) + 1);
+                }
+                ds.start(chr);
                 return true;
             }
             case "/search": {

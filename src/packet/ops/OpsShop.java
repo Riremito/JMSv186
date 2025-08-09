@@ -30,6 +30,7 @@ public enum OpsShop implements IPacketOps {
     ShopReq_Sell,
     ShopReq_Recharge,
     ShopReq_Close,
+    // req should be found by find func.
     ShopRes_BuySuccess,
     ShopRes_BuyNoStock,
     ShopRes_BuyNoMoney,
@@ -82,6 +83,24 @@ public enum OpsShop implements IPacketOps {
     }
 
     public static void init() {
+        if (Version.LessOrEqual(Region.JMS, 147)) {
+            ShopReq_Buy.set(0);
+            ShopReq_Sell.set(1);
+            ShopReq_Recharge.set(2);
+            ShopReq_Close.set(4);
+            ShopRes_BuySuccess.set(0);
+            ShopRes_BuyNoStock.set(1);
+            ShopRes_BuyNoMoney.set(2);
+            ShopRes_BuyUnknown.set(3);
+            ShopRes_SellSuccess.set(4);
+            ShopRes_SellNoStock.set(5);
+            ShopRes_SellUnkonwn.set(6);
+            ShopRes_RechargeSuccess.set(7);
+            ShopRes_RechargeNoStock.set(8);
+            ShopRes_RechargeNoMoney.set(9);
+            ShopRes_RechargeUnknown.set(10);
+            return;
+        }
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             ShopReq_Buy.set(0);
             ShopReq_Sell.set(1);
