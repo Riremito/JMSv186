@@ -176,8 +176,16 @@ public class DebugCommand {
                 return true;
             }
             case "/dm": {
-                DebugManTest dm_test = new DebugManTest();
-                dm_test.start(chr);
+                if (splitted.length < 2) {
+                    DebugManTest dm_test = new DebugManTest();
+                    dm_test.start(chr);
+                    return true;
+                }
+                if (splitted[1].equals("nm")) {
+                    DebugMan_NM dm = new DebugMan_NM();
+                    dm.start(chr);
+                    return true;
+                }
                 return true;
             }
             case "/search": {

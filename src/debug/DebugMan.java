@@ -156,6 +156,10 @@ public class DebugMan {
             this.msg += "#L" + num + "##b" + text + "#k#l\r\n";
         }
 
+        protected void addMenuRed(int num, String text) {
+            this.msg += "#L" + num + "##r" + text + "#k#l\r\n";
+        }
+
         protected String get() {
             return this.msg;
         }
