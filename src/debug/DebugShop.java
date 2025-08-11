@@ -30,6 +30,7 @@ import packet.ClientPacket;
 import packet.ops.OpsShop;
 import packet.response.ResCShopDlg;
 import provider.MapleData;
+import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 
 /**
@@ -196,13 +197,17 @@ public class DebugShop {
     }
 
     public boolean setItemTest(int item_sub_type) {
+        int item_count = 0;
         MapleData md_item_sub_type = DW_Item.getItemImg(item_sub_type);
         if (md_item_sub_type != null) {
             for (MapleData md_item : md_item_sub_type.getChildren()) {
                 int item_id = Integer.parseInt(md_item.getName());
                 this.addItem(item_id);
+                item_count++;
             }
         }
+
+        Debug.InfoLog("DebugShop : setItemTest(" + item_sub_type + "), loaded " + item_count + " items.");
         return true;
     }
 
@@ -234,6 +239,14 @@ public class DebugShop {
             return false;
         }
 
+        if (!MapleInventoryManipulator.checkSpace(chr.getClient(), item_id, quantity, "")) {
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyUnknown));
+            return false;
+        }
+
+        MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+        MapleInventoryManipulator.addById(chr.getClient(), item_id, (short) quantity); // bool...?
+        chr.gainMeso(ss.item_price, false);
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuySuccess));
         return true;
     }
