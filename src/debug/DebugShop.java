@@ -19,6 +19,7 @@
 package debug;
 
 import client.MapleCharacter;
+import client.inventory.IItem;
 import config.ServerConfig;
 import constants.GameConstants;
 import data.wz.DW_Item;
@@ -252,11 +253,39 @@ public class DebugShop {
     }
 
     public boolean sell(MapleCharacter chr, short item_slot, int item_id, int quantity) {
-        if (false) {
+        boolean is_recharge_item = GameConstants.isRechargable(item_id);
+        IItem item = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
+        if (item == null) {
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
+            return false;
+        }
+        if (item.getItemId() != item_id) {
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
+            return false;
+        }
+        if (item.getQuantity() < quantity || quantity < 0) {
+            if (!is_recharge_item) {
+                chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
+                return false;
+            }
+        }
+        if (is_recharge_item) {
+            quantity = (int) item.getQuantity();
+        }
+        MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+        int item_price = is_recharge_item ? (int) (miip.getWholePrice(item.getItemId()) / (double) miip.getSlotMax(chr.getClient(), item.getItemId())) : (int) miip.getPrice(item.getItemId());
+        item_price *= quantity;
+        if (item_price < 0) {
+            item_price = 0;
+            Debug.ErrorLog("item price set to 0 : " + item_id + " (" + quantity + ")");
+        }
+        if (item_price + chr.getMeso() < 0) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
             return false;
         }
 
+        MapleInventoryManipulator.removeFromSlot(chr.getClient(), GameConstants.getInventoryType(item_id), item_slot, (short) quantity, false);
+        chr.gainMeso(item_price, false);
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
         return true;
     }
