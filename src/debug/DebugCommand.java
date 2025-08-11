@@ -28,6 +28,7 @@ import client.inventory.MapleInventoryType;
 import config.property.Property_Packet;
 import constants.GameConstants;
 import data.client.DC_Exp;
+import data.wz.DW_Item;
 import data.wz.DW_Skill;
 import data.wz.DW_String;
 import data.wz.ids.DWI_Random;
@@ -37,7 +38,6 @@ import handling.channel.ChannelServer;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import packet.request.ReqCUser;
 import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
@@ -191,12 +191,24 @@ public class DebugCommand {
             }
             case "/ds": {
                 DebugShop ds = new DebugShop();
+                MapleData md_item_sub_type = DW_Item.getItemImg(207);
+                if (md_item_sub_type != null) {
+                    for (MapleData md_item : md_item_sub_type.getChildren()) {
+                        int item_id = Integer.parseInt(md_item.getName());
+                        ds.addItemRecharge(item_id, 50);
+                    }
+                    for (MapleData md_item : md_item_sub_type.getChildren()) {
+                        int item_id = Integer.parseInt(md_item.getName());
+                        ds.addItem(item_id);
+                    }
+                }
                 for (int i = 0; i < 10; i++) {
-                    ds.add(DWI_LoadXML.getItem().getRandom(), (new Random()).nextInt(Integer.MAX_VALUE) + 1);
+                    ds.addItem(DWI_LoadXML.getItem().getRandom());
                 }
                 ds.start(chr);
                 return true;
             }
+
             case "/search": {
                 if (splitted.length < 3) {
                     return false;

@@ -21,7 +21,6 @@ import data.wz.DW_Etc;
 import data.wz.DW_Item;
 import data.wz.DW_String;
 import debug.Debug;
-import debug.DebugLoadTime;
 import provider.MapleData;
 import provider.MapleDataTool;
 import tools.Pair;
@@ -228,6 +227,10 @@ public class MapleItemInformationProvider {
         }
         slotMaxCache.put(itemId, ret);
         return ret;
+    }
+
+    public short getSlotMax(int item_id) {
+        return getSlotMax(null, item_id);
     }
 
     public final int getWholePrice(final int itemId) {

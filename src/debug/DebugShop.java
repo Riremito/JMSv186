@@ -20,12 +20,14 @@ package debug;
 
 import client.MapleCharacter;
 import config.ServerConfig;
+import constants.GameConstants;
 import data.wz.ids.DWI_Validation;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
 import packet.ops.OpsShop;
 import packet.response.ResCShopDlg;
+import server.MapleItemInformationProvider;
 
 /**
  *
@@ -105,15 +107,60 @@ public class DebugShop {
         return true;
     }
 
-    public boolean add(int item_id, int item_price) {
+    public boolean addItem(int item_id) {
         if (!DWI_Validation.isValidItemID(item_id)) {
-            Debug.ErrorLog("DebugShop : add, invalid item id = " + item_id);
+            Debug.ErrorLog("DebugShop : addItem, invalid item id = " + item_id);
+            return false;
+        }
+
+        MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+        int item_slot_max = miip.getSlotMax(item_id);
+        int item_price = (int) miip.getPrice(item_id) * item_slot_max;
+        int item_quantity = GameConstants.isRechargable(item_id) ? item_slot_max : 1;
+
+        if (item_price <= 1) {
+            item_price = 298000; // test
+        } else {
+            item_price *= 10;
+        }
+
+        ShopStock st = new ShopStock();
+        st.item_id = item_id;
+        st.item_price = item_price;
+        st.item_quantity = item_quantity;
+        st.item_slot_max = item_slot_max;
+        shopStocks.add(st);
+        return true;
+    }
+
+    public boolean addItem(int item_id, int item_price, int item_quantity, int item_slot_max) {
+        if (!DWI_Validation.isValidItemID(item_id)) {
+            Debug.ErrorLog("DebugShop : addItem, invalid item id = " + item_id);
             return false;
         }
 
         ShopStock st = new ShopStock();
         st.item_id = item_id;
         st.item_price = item_price;
+        st.item_quantity = item_quantity;
+        st.item_slot_max = item_slot_max;
+        shopStocks.add(st);
+        return true;
+    }
+
+    public boolean addItemRecharge(int item_id, int item_recharge_price) {
+        if (!DWI_Validation.isValidItemID(item_id)) {
+            Debug.ErrorLog("DebugShop : addItemRecharge, invalid item id = " + item_id);
+            return false;
+        }
+
+        MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+        int item_slot_max = miip.getSlotMax(item_id);
+        ShopStock st = new ShopStock();
+        st.item_id = item_id;
+        st.item_price = 0; // hide
+        st.item_recharge_price = item_recharge_price;
+        st.item_slot_max = item_slot_max;
         shopStocks.add(st);
         return true;
     }
@@ -160,8 +207,11 @@ public class DebugShop {
 
     public class ShopStock {
 
-        public int item_id;
-        public int item_price;
+        public int item_id = 0;
+        public int item_price = 2100000000;
+        public int item_quantity = 1;
+        public int item_recharge_price = 0;
+        public int item_slot_max = 1;
     }
 
 }

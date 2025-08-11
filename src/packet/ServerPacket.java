@@ -80,6 +80,10 @@ public class ServerPacket {
         Encode4((int) ((qw >> 32) & 0xFFFFFFFF));
     }
 
+    public void EncodeDouble(double d) {
+        Encode8(Double.doubleToLongBits(d));
+    }
+
     public void EncodeStr(String str) {
         byte[] b = str.getBytes(CodePage.getCodePage());
         Encode2((short) b.length);

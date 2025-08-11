@@ -92,17 +92,18 @@ public class ResCShopDlg {
             sp.Encode4(0);
         }
 
-        sp.Encode4(ds.getNpcId());
+        sp.Encode4(ds.getNpcId()); // m_dwNpcTemplateID
 
         if (ServerConfig.JMS194orLater()) {
             sp.Encode1(0);
         }
 
-        sp.Encode2(ds.getShopStocks().size());
+        sp.Encode2(ds.getShopStocks().size()); // nCount
 
         for (DebugShop.ShopStock ss : ds.getShopStocks()) {
-            sp.Encode4(ss.item_id);
-            sp.Encode4(ss.item_price);
+            sp.Encode4(ss.item_id); // nItemID
+            sp.Encode4(ss.item_price); // nPrice
+            // nDiscountRate (1)
 
             if (ServerConfig.JMS180orLater()) {
                 sp.Encode4(0); // nTokenItemID
@@ -123,15 +124,15 @@ public class ResCShopDlg {
                 sp.Encode4(0);
             }
 
+            // 207 || 233
             if (GameConstants.isRechargable(ss.item_id)) {
-                sp.EncodeZeroBytes(6);
-                sp.Encode2(0);
-                sp.Encode2(0);
+                // dUnitPrice (8)
+                sp.EncodeDouble((ss.item_price != 0) ? 0.0 : (double) ss.item_recharge_price);
             } else {
-                sp.Encode2(1);
-                if (ServerConfig.JMS146orLater()) {
-                    sp.Encode2(1); // buyable
-                }
+                sp.Encode2(ss.item_quantity); // nQuantity
+            }
+            if (ServerConfig.JMS146orLater()) {
+                sp.Encode2(ss.item_slot_max); // nMaxPerSlot
             }
 
             if (Version.GreaterOrEqual(Region.JMS, 302)) {

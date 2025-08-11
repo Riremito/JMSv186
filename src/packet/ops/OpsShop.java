@@ -94,11 +94,12 @@ public enum OpsShop implements IPacketOps {
             ShopRes_BuyUnknown.set(3);
             ShopRes_SellSuccess.set(4);
             ShopRes_SellNoStock.set(5);
-            ShopRes_SellUnkonwn.set(6);
-            ShopRes_RechargeSuccess.set(7);
-            ShopRes_RechargeNoStock.set(8);
-            ShopRes_RechargeNoMoney.set(9);
-            ShopRes_RechargeUnknown.set(10);
+            ShopRes_SellIncorrectRequest.set(6);
+            ShopRes_SellUnkonwn.set(7);
+            ShopRes_RechargeSuccess.set(8);
+            ShopRes_RechargeNoStock.set(9);
+            ShopRes_RechargeNoMoney.set(10);
+            ShopRes_RechargeUnknown.set(11);
             return;
         }
         if (Version.GreaterOrEqual(Region.JMS, 302)) {

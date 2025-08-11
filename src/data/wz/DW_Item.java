@@ -92,6 +92,35 @@ public class DW_Item {
         return null;
     }
 
+    public static MapleData getItemImg(int item_sub_type) {
+        if (item_sub_type < 200) {
+            return null;
+        }
+
+        // Pet
+        if (item_sub_type == item_sub_type_pet) {
+            return null;
+        }
+
+        String target_img_name = String.format("%04d.img", item_sub_type);
+
+        for (MapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
+            for (MapleDataFileEntry mdfe : mdde.getFiles()) {
+                if (mdfe.getName().equals(target_img_name)) {
+                    MapleData md_item_sub_type = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
+                    if (md_item_sub_type == null) {
+                        Debug.ErrorLog("getItemImg : Invalid item type = " + item_sub_type);
+                        return null;
+                    }
+                    return md_item_sub_type;
+                }
+            }
+        }
+
+        Debug.ErrorLog("getItemImg : err item_sub_type " + item_sub_type);
+        return null;
+    }
+
     public static MapleData getItemData_Pet(int id) {
         int item_sub_type = id / 10000;
         if (item_sub_type != item_sub_type_pet) {
