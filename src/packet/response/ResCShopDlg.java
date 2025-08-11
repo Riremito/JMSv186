@@ -128,6 +128,8 @@ public class ResCShopDlg {
             if (GameConstants.isRechargable(ss.item_id)) {
                 // dUnitPrice (8)
                 sp.EncodeDouble((ss.item_price != 0) ? 0.0 : (double) ss.item_recharge_price);
+                // nQuantity is unitialized if you put rechage item in first shop slot,
+                // you need to put other item in first slot to initialize quantity value.
             } else {
                 sp.Encode2(ss.item_quantity); // nQuantity
             }

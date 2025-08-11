@@ -191,6 +191,11 @@ public class DebugCommand {
             }
             case "/ds": {
                 DebugShop ds = new DebugShop();
+
+                //for (int i = 0; i < 10; i++) {
+                ds.addItem(DWI_LoadXML.getItem().getRandom());
+                //}
+
                 MapleData md_item_sub_type = DW_Item.getItemImg(207);
                 if (md_item_sub_type != null) {
                     for (MapleData md_item : md_item_sub_type.getChildren()) {
@@ -201,9 +206,6 @@ public class DebugCommand {
                         int item_id = Integer.parseInt(md_item.getName());
                         ds.addItem(item_id);
                     }
-                }
-                for (int i = 0; i < 10; i++) {
-                    ds.addItem(DWI_LoadXML.getItem().getRandom());
                 }
                 ds.start(chr);
                 return true;
