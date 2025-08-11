@@ -20,6 +20,7 @@ package debug;
 
 import client.MapleCharacter;
 import client.inventory.IItem;
+import client.inventory.MapleInventoryType;
 import config.ServerConfig;
 import constants.GameConstants;
 import data.wz.DW_Item;
@@ -30,6 +31,7 @@ import java.util.List;
 import packet.ClientPacket;
 import packet.ops.OpsShop;
 import packet.response.ResCShopDlg;
+import packet.response.wrapper.ResWrapper;
 import provider.MapleData;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -69,7 +71,7 @@ public class DebugShop {
             case ShopReq_Recharge: {
                 short item_slot = cp.Decode2();
 
-                ds.recharge(chr);
+                ds.recharge(chr, item_slot);
                 return true;
             }
             case ShopReq_Close: {
@@ -221,6 +223,21 @@ public class DebugShop {
 
     private ShopStock getStock(int item_id) {
         for (ShopStock ss : shopStocks) {
+            if (ss.item_price <= 0) {
+                continue;
+            }
+            if (ss.item_id == item_id) {
+                return ss;
+            }
+        }
+        return null;
+    }
+
+    private ShopStock getRecharge(int item_id) {
+        for (ShopStock ss : shopStocks) {
+            if (ss.item_price != 0) {
+                continue;
+            }
             if (ss.item_id == item_id) {
                 return ss;
             }
@@ -235,7 +252,8 @@ public class DebugShop {
             return false;
         }
 
-        if (chr.getMeso() < ss.item_price) {
+        int item_price = ss.item_price * quantity;
+        if (chr.getMeso() < item_price) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyNoMoney));
             return false;
         }
@@ -247,7 +265,7 @@ public class DebugShop {
 
         MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
         MapleInventoryManipulator.addById(chr.getClient(), item_id, (short) quantity); // bool...?
-        chr.gainMeso(ss.item_price, false);
+        chr.gainMeso(-item_price, false);
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuySuccess));
         return true;
     }
@@ -290,7 +308,36 @@ public class DebugShop {
         return true;
     }
 
-    public boolean recharge(MapleCharacter chr) {
+    public boolean recharge(MapleCharacter chr, short item_slot) {
+        IItem item = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        if (item == null) {
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_RechargeUnknown));
+            return false;
+        }
+        int item_id = item.getItemId();
+        if (!GameConstants.isRechargable(item_id)) {
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_RechargeUnknown));
+            return false;
+        }
+        ShopStock ss = getRecharge(item_id);
+        if (ss == null) {
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_RechargeUnknown));
+            return false;
+        }
+        if (ss.item_slot_max <= item.getQuantity()) {
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_RechargeUnknown));
+            return false;
+        }
+        int recharge_count = ss.item_slot_max - item.getQuantity();
+        int rechager_price = ss.item_recharge_price * recharge_count;
+        if (chr.getMeso() < rechager_price) {
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_RechargeNoMoney));
+            return false;
+        }
+
+        chr.gainMeso(-rechager_price, false);
+        item.setQuantity((short) ss.item_slot_max);
+        chr.SendPacket(ResWrapper.updateInventorySlot(MapleInventoryType.USE, item, false));
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_RechargeSuccess));
         return true;
     }

@@ -199,6 +199,9 @@ public class DebugCommand {
                 }
 
                 int item_sub_type = parseInt(splitted[1]);
+                if (item_sub_type == 207 || item_sub_type == 233) {
+                    ds.setRechargeAll();
+                }
                 ds.setItemTest(item_sub_type);
                 ds.start(chr);
                 return true;
