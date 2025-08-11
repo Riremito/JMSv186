@@ -21,12 +21,15 @@ package debug;
 import client.MapleCharacter;
 import config.ServerConfig;
 import constants.GameConstants;
+import data.wz.DW_Item;
+import data.wz.ids.DWI_LoadXML;
 import data.wz.ids.DWI_Validation;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
 import packet.ops.OpsShop;
 import packet.response.ResCShopDlg;
+import provider.MapleData;
 import server.MapleItemInformationProvider;
 
 /**
@@ -36,6 +39,7 @@ import server.MapleItemInformationProvider;
 public class DebugShop {
 
     protected static final int DEFAULT_NPC_ID = 1012003;
+    protected static final int ITEM_ID_FOR_UNINITIALIZED_QUANTITY = 2000000;
 
     public static boolean OnUserShopRequestHook(MapleCharacter chr, ClientPacket cp) {
         DebugShop ds = chr.getDebugShop();
@@ -96,6 +100,14 @@ public class DebugShop {
 
     public boolean start(MapleCharacter chr) {
         chr.DebugMsg("DebugShop : started.");
+        if (0 < this.shopStocks.size()) {
+            if (GameConstants.isRechargable(this.shopStocks.get(0).item_id)) {
+                List<ShopStock> old_shopStocks = shopStocks;
+                shopStocks = new ArrayList<>();
+                addItem(ITEM_ID_FOR_UNINITIALIZED_QUANTITY);
+                shopStocks.addAll(old_shopStocks);
+            }
+        }
         chr.setDebugShop(this);
         chr.SendPacket(ResCShopDlg.OpenShopDlg_DS(this));
         return true;
@@ -162,6 +174,42 @@ public class DebugShop {
         st.item_recharge_price = item_recharge_price;
         st.item_slot_max = item_slot_max;
         shopStocks.add(st);
+        return true;
+    }
+
+    public boolean setRechargeAll() {
+        return setRechargeAll(50);
+    }
+
+    public boolean setRechargeAll(int item_recharge_price) {
+        int item_sub_types[] = {207, 233};
+        for (int item_sub_type : item_sub_types) {
+            MapleData md_item_sub_type = DW_Item.getItemImg(item_sub_type);
+            if (md_item_sub_type != null) {
+                for (MapleData md_item : md_item_sub_type.getChildren()) {
+                    int item_id = Integer.parseInt(md_item.getName());
+                    this.addItemRecharge(item_id, item_recharge_price);
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean setItemTest(int item_sub_type) {
+        MapleData md_item_sub_type = DW_Item.getItemImg(item_sub_type);
+        if (md_item_sub_type != null) {
+            for (MapleData md_item : md_item_sub_type.getChildren()) {
+                int item_id = Integer.parseInt(md_item.getName());
+                this.addItem(item_id);
+            }
+        }
+        return true;
+    }
+
+    public boolean setRandomItems(int count) {
+        for (int i = 0; i < count; i++) {
+            this.addItem(DWI_LoadXML.getItem().getRandom());
+        }
         return true;
     }
 

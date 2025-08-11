@@ -28,7 +28,6 @@ import client.inventory.MapleInventoryType;
 import config.property.Property_Packet;
 import constants.GameConstants;
 import data.client.DC_Exp;
-import data.wz.DW_Item;
 import data.wz.DW_Skill;
 import data.wz.DW_String;
 import data.wz.ids.DWI_Random;
@@ -192,21 +191,15 @@ public class DebugCommand {
             case "/ds": {
                 DebugShop ds = new DebugShop();
 
-                //for (int i = 0; i < 10; i++) {
-                ds.addItem(DWI_LoadXML.getItem().getRandom());
-                //}
-
-                MapleData md_item_sub_type = DW_Item.getItemImg(207);
-                if (md_item_sub_type != null) {
-                    for (MapleData md_item : md_item_sub_type.getChildren()) {
-                        int item_id = Integer.parseInt(md_item.getName());
-                        ds.addItemRecharge(item_id, 50);
-                    }
-                    for (MapleData md_item : md_item_sub_type.getChildren()) {
-                        int item_id = Integer.parseInt(md_item.getName());
-                        ds.addItem(item_id);
-                    }
+                if (splitted.length < 2) {
+                    ds.setRandomItems(100);
+                    ds.setRechargeAll();
+                    ds.start(chr);
+                    return true;
                 }
+
+                int item_sub_type = parseInt(splitted[1]);
+                ds.setItemTest(item_sub_type);
                 ds.start(chr);
                 return true;
             }
