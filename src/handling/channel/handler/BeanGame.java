@@ -67,7 +67,7 @@ public class BeanGame {
         switch (type) {
             case 0://开始打豆豆
                 力度 = cp.Decode2();
-                cp.Decode4();
+                //cp.Decode4();
                 chr.setBeansRange(力度 + 力度搞假A);
                 c.getSession().write(ResWrapper.enableActions());
                 break;
@@ -80,7 +80,7 @@ public class BeanGame {
             case 2://暂时没去注意这个 而且IDA里面也没有对应内容
                 //没存在的必要
                 //02 1B 00 00 00
-                cp.Decode4();
+                //cp.Decode4();
                 break;
             case 3:
                 //打豆豆进洞以后的数据
