@@ -423,12 +423,12 @@ public class ResCLogin {
                         case GMS: {
                             if (Version.PreBB()) {
                                 sp.Encode4(client.getAccID()); // m_dwAccountId
-                                sp.Encode1(0);
                                 sp.Encode1(client.getGender()); // m_nGender
                                 sp.Encode1(client.isGm() ? 1 : 0); // m_nGradeCode
                                 if (ServerConfig.JMS164orLater()) {
-                                    sp.Encode1(client.isGm() ? 1 : 0);
+                                    sp.Encode1(client.isGm() ? 0x80 : 0); // Admin F1
                                 }
+                                sp.Encode1(0);
                                 sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
                                 sp.Encode1(0); // m_nPurchaseExp
                                 sp.Encode1(0); // m_nChatBlockReason
