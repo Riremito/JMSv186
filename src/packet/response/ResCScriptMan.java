@@ -24,6 +24,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import debug.Debug;
+import java.util.ArrayList;
 import server.network.MaplePacket;
 import packet.ServerPacket;
 import packet.ops.OpsScriptMan;
@@ -39,6 +40,10 @@ public class ResCScriptMan {
     // CScriptMan::OnScriptMessage
     // getNPCTalk, getMapSelection, getNPCTalkStyle, getNPCTalkNum, getNPCTalkText, getEvanTutorial
     public static MaplePacket ScriptMessage(int npcid, OpsScriptMan smt, byte param, String text, boolean prev, boolean next) {
+        return ScriptMessage(npcid, smt, param, text, prev, next, null);
+    }
+
+    public static MaplePacket ScriptMessage(int npcid, OpsScriptMan smt, byte param, String text, boolean prev, boolean next, ArrayList<Integer> ids) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ScriptMessage);
         sp.Encode1(4); // nSpeakerTypeID, not used
         sp.Encode4(npcid); // nSpeakerTemplateID, npcid
@@ -103,8 +108,12 @@ public class ResCScriptMan {
             }
             case SM_ASKAVATAR: {
                 sp.EncodeStr(text);
-                // 1 byte size
-                // 4 bytes array
+                sp.Encode1((ids != null) ? ids.size() : 0);
+                if (ids != null) {
+                    for (int id : ids) {
+                        sp.Encode4(id);
+                    }
+                }
                 break;
             }
             case SM_ASKMEMBERSHOPAVATAR: {

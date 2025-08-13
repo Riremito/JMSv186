@@ -19,6 +19,7 @@
 package debug;
 
 import client.MapleCharacter;
+import java.util.ArrayList;
 import packet.ClientPacket;
 import packet.ops.OpsScriptMan;
 import packet.response.ResCScriptMan;
@@ -42,15 +43,21 @@ public class DebugMan {
         ((DebugMan) dm).updateStatus(action);
 
         int m_nSelect = -1;
-        if (type == OpsScriptMan.SM_ASKMENU && action == 1) {
-            m_nSelect = cp.Decode4();
+        if (action == 1) {
+            if (type == OpsScriptMan.SM_ASKMENU) {
+                m_nSelect = cp.Decode4();
+            }
+            if (type == OpsScriptMan.SM_ASKAVATAR) {
+                m_nSelect = (int) cp.Decode1();
+            }
         }
 
         chr.DebugMsg("DebugMan : anwser (" + type + ", " + action + ", " + m_nSelect + ")");
 
         switch (type) {
             case SM_SAY:
-            case SM_ASKMENU: {
+            case SM_ASKMENU:
+            case SM_ASKAVATAR: {
                 if (action != -1) {
                     if (dm.action(chr, ((DebugMan) dm).getStatus(), m_nSelect)) {
                         // continue
@@ -122,6 +129,10 @@ public class DebugMan {
 
     protected void say(MapleCharacter chr, NpcTag nt) {
         say(chr, nt, false, false);
+    }
+
+    protected void askAvatar(MapleCharacter chr, NpcTag nt, ArrayList<Integer> ids) {
+        chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_ASKAVATAR, (byte) 0, nt.get(), false, false, ids));
     }
 
     protected void askMenu(MapleCharacter chr, NpcTag nt, boolean prev, boolean next) {

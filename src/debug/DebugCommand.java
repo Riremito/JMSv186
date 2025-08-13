@@ -186,6 +186,11 @@ public class DebugCommand {
                     dm.start(chr);
                     return true;
                 }
+                if (splitted[1].equals("cc")) {
+                    DebugMan_CC dm = new DebugMan_CC();
+                    dm.start(chr);
+                    return true;
+                }
                 return true;
             }
             case "/ds": {
