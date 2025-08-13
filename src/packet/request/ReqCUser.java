@@ -58,6 +58,7 @@ import packet.ops.OpsChangeStat;
 import packet.ops.OpsChatGroup;
 import packet.ops.OpsMapTransfer;
 import packet.ops.OpsShopScanner;
+import packet.ops.OpsTransferField;
 import packet.ops.Ops_Whisper;
 import packet.request.parse.ParseCMovePath;
 import packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
@@ -110,12 +111,7 @@ public class ReqCUser {
 
         switch (header) {
             case CP_UserTransferFieldRequest: {
-                if (!PortalPacket.OnPacket(cp, header, c)) {
-                    Debug.ErrorLog("chage map not coded yet");
-                }
-                if (c.getPlayer().GetInformation()) {
-                    c.getPlayer().DebugMsg("MapID = " + c.getPlayer().getMapId());
-                }
+                OnUserTransferFieldRequest(chr, cp);
                 return true;
             }
             case CP_UserTransferChannelRequest: {
@@ -407,14 +403,11 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserPortalScriptRequest: {
-                PlayerHandler.ChangeMapSpecial(cp, c);
+                OnUserPortalScriptRequest(chr, cp);
                 return true;
             }
             case CP_UserPortalTeleportRequest: {
-                // @0063 [13] [04 00 75 70 30 30] [9F 01] [04 00] [C9 01] [F4 FE]
-                // ポータルカウント, ポータル名, 元のX座標, 元のY座標, 移動先のX座標, 移動先のY座標
-                // ポータル利用時のスクリプト実行用だがJMSとEMS以外では利用されておらず意味がない
-                // サーバー側で特にみる必要もないが、マップ内ポータルを利用した時にサーバー側でスクリプトを実行したい場合は必要になる
+                OnUserPortalTeleportRequest(chr, cp);
                 return true;
             }
             case CP_UserMapTransferRequest: {
@@ -664,6 +657,48 @@ public class ReqCUser {
             }
         }
 
+        return false;
+    }
+
+    public static boolean OnUserTransferFieldRequest(MapleCharacter chr, ClientPacket cp) {
+        boolean isKMS95orLater = Version.GreaterOrEqual(Region.KMS, 95) || Region.check(Region.IMS) || Region.check(Region.MSEA); // not in KMST391
+        short unk1 = isKMS95orLater ? cp.Decode2() : 0; // ?_?
+        int unk2 = isKMS95orLater ? cp.Decode4() : 0; // 0
+        byte portal_count = cp.Decode1();
+        int map_id = cp.Decode4(); // -1 = use portal, 0 = revivie, id = /map command.
+        String portal_name = cp.DecodeStr();
+        boolean isPortal = !portal_name.equals("");
+        short x = isPortal ? cp.Decode2() : 0;
+        short y = isPortal ? cp.Decode2() : 0;
+        byte unk3 = cp.Decode1();
+        byte unk4 = cp.Decode1(); // revive_type -> JMS302 = 4 bytes
+
+        if (isPortal) {
+            // map_id is -1. (in JMS.)
+            if (chr.mapChangePortal(map_id, portal_name)) {
+                return true;
+            }
+        } else {
+            if (!chr.isAlive()) {
+                // revive
+                if (map_id == 0) {
+                    final MapleMap to = (unk4 > 0) ? chr.getMap() : chr.getMap().getReturnMap();
+                    chr.changeMap(to, to.getPortal(0));
+                    chr.getStat().setHp(chr.getStat().getMaxHp());
+                    chr.UpdateStat(true);
+                    return true;
+                }
+                // hack?
+            } else {
+                if (chr.mapChangeDirect(map_id)) {
+                    return true;
+                }
+                // error?
+            }
+        }
+
+        Debug.ErrorLog("OnUserTransferFieldRequest : map_to = " + map_id + ", portal = \"" + portal_name + "\"");
+        chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
         return false;
     }
 
@@ -1593,6 +1628,31 @@ public class ReqCUser {
         }
         byte m_nPrepareSkillActionSpeed = cp.Decode1();
         PlayerHandler.SkillEffect(chr, skill_id, skill_level, action, m_nPrepareSkillActionSpeed);
+        return true;
+    }
+
+    public static boolean OnUserPortalScriptRequest(MapleCharacter chr, ClientPacket cp) {
+        byte portal_count = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
+        String portal_name = cp.DecodeStr();
+        short chr_x = cp.Decode2();
+        short chr_y = cp.Decode2();
+        //chr.DebugMsg("OnUserPortalScriptRequest : map = " + chr.getMap().getId() + ", portal = \"" + portal_name + "\"");
+        if (!chr.mapChangePortal(chr.getMap().getId(), portal_name)) {
+            //chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean OnUserPortalTeleportRequest(MapleCharacter chr, ClientPacket cp) {
+        byte portal_count = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
+        String portal_name = cp.DecodeStr();
+        short chr_x = cp.Decode2();
+        short chr_y = cp.Decode2();
+        short portal_to_x = cp.Decode2();
+        short portal_to_y = cp.Decode2();
+
+        //chr.DebugMsg("OnUserPortalTeleportRequest : map = " + chr.getMap().getId() + ", portal = \"" + portal_name + "\"");
         return true;
     }
 

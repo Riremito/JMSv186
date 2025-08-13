@@ -6165,4 +6165,31 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return true;
     }
 
+    public boolean mapChangeDirect(int map_id) {
+        MapleMap map_to = ChannelServer.getInstance(client.getChannel()).getMapFactory().getMap(map_id);
+        if (map_to == null) {
+            return false;
+        }
+
+        DebugMsg("mapChangeDirect : map = " + map.getId() + " -> " + map_to.getId());
+        // TODO : error handling
+        changeMap(map_to, map_to.getPortal(0));
+        return true;
+    }
+
+    public boolean mapChangePortal(int map_id, String portal_name) {
+        if (map == null) {
+            return false;
+        }
+        MaplePortal portal = map.getPortal(portal_name);
+        if (portal == null) {
+            return false;
+        }
+
+        DebugMsg("mapChangePortal : map = " + map.getId() + ", portal = \"" + portal_name + "\"" + " -> " + portal.getTargetMapId());
+        // TODO : error handling
+        portal.enterPortal(client);
+        return true;
+    }
+
 }
