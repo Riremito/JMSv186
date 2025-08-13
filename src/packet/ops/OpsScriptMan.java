@@ -76,6 +76,7 @@ public enum OpsScriptMan {
 
     public static void init() {
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            SM_ASKAVATAR.set(9);
             SM_ASKACCEPT.set(14);
             SM_ASKBOXTEXT.set(15);
             SM_ASKSLIDEMENU.set(16);
