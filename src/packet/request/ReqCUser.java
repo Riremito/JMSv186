@@ -62,6 +62,7 @@ import packet.ops.OpsShopScanner;
 import packet.ops.OpsTransferField;
 import packet.ops.Ops_Whisper;
 import packet.request.parse.ParseCMovePath;
+import packet.request.sub.ReqSub_Admin;
 import packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import packet.response.ResCField;
 import packet.response.ResCUser;
@@ -491,6 +492,15 @@ public class ReqCUser {
             case CP_GuildResult: {
                 //p.skip(1);
                 //GuildHandler.DenyGuildRequest(p.readMapleAsciiString(), c);
+                return true;
+            }
+            case CP_Admin: {
+                ReqSub_Admin.OnAdmin(chr, cp);
+                return true;
+            }
+            case CP_Log: {
+                String text = cp.DecodeStr();
+                Debug.AdminLog("[OnLog] " + text);
                 return true;
             }
             case CP_FriendRequest: {

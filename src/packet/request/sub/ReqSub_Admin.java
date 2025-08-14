@@ -1,66 +1,54 @@
-// GM Command
-package packet.request;
+/*
+ * Copyright (C) 2025 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
+package packet.request.sub;
 
 import client.MapleCharacter;
-import client.MapleClient;
 import client.MapleStat;
 import data.wz.ids.DWI_Validation;
 import data.wz.ids.DWI_LoadXML;
 import debug.Debug;
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
 import packet.ClientPacket;
 import packet.response.ResCNpcPool;
 import server.life.MapleLifeFactory;
 import server.life.MapleNPC;
 import server.maps.MapleMap;
-import tools.Pair;
 
-// CP_Admin, CP_Log
-public class AdminPacket {
+/**
+ *
+ * @author Riremito
+ */
+public class ReqSub_Admin {
 
-    public static boolean OnPacket(ClientPacket p, ClientPacket.Header header, MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
-        if (chr == null) {
-            return false;
-        }
-
-        switch (header) {
-            case CP_Admin: {
-                //GMCommand.Accept(op, c);
-                AdminCommand(p, c, chr);
-                return true;
-            }
-            // 入力したコマンド文字列
-            case CP_Log: {
-                //GMCommand.AcceptMessage(op, c);
-                AdminCommandLogger(p, c);
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-
-        return false;
-    }
-
-    private static boolean AdminCommand(ClientPacket p, MapleClient c, MapleCharacter chr) {
-        byte command = p.Decode1();
-
-        Debug.AdminLog("[Official GM Command] " + String.format("%02X", command));
+    public static boolean OnAdmin(MapleCharacter chr, ClientPacket cp) {
+        byte command = cp.Decode1();
 
         switch (command) {
             // /create
             case 0x00: {
                 // アイテム作成
-                int itemid = p.Decode4();
+                int itemid = cp.Decode4();
                 return true;
             }
             // /exp
             case 0x02: {
-                int exp = p.Decode4();
+                int exp = cp.Decode4();
                 chr.setExp(exp);
                 chr.UpdateStat(true);
                 return true;
@@ -69,19 +57,19 @@ public class AdminPacket {
             // /ban test
             case 0x03: {
                 // @0086 [03] 04 00 74 65 73 74
-                String text = p.DecodeStr();
+                String text = cp.DecodeStr();
                 return true;
             }
             // /norank test
             case 0x06: {
                 // @0086 [06] 04 00 74 65 73 74
-                String text = p.DecodeStr();
+                String text = cp.DecodeStr();
                 return true;
             }
             // /unblock test
             case 0x05: {
                 // @0086 [05] 04 00 74 65 73 74
-                String text = p.DecodeStr();
+                String text = cp.DecodeStr();
                 return true;
             }
             // /pton test
@@ -89,20 +77,20 @@ public class AdminPacket {
             case 0x07: {
                 // @0086 [07] 01 04 00 74 65 73 74
                 // @0086 [07] 00 04 00 74 65 73 74
-                boolean flag = (p.Decode1() != 0);
-                String text = p.DecodeStr();
+                boolean flag = (cp.Decode1() != 0);
+                String text = cp.DecodeStr();
                 return true;
             }
             // /hide 0, 1
             case 0x0F: {
                 // @0086 [0F] 00
-                boolean flag = (p.Decode1() != 0);
+                boolean flag = (cp.Decode1() != 0);
                 return true;
             }
             // /questreset 111
             case 0x16: {
                 // @0086 [16] 6F 00
-                int questid = p.Decode2();
+                int questid = cp.Decode2();
                 return true;
             }
             // /hackcheckcountreload
@@ -113,8 +101,8 @@ public class AdminPacket {
             // /summon
             case 0x1A: {
                 // Mob召喚
-                int mobid = p.Decode4();
-                int count = p.Decode4();
+                int mobid = cp.Decode4();
+                int count = cp.Decode4();
                 return true;
             }
             // /levelset 111
@@ -125,14 +113,14 @@ public class AdminPacket {
             // /job 900
             case 0x1D: {
                 // @0086 [1D] 84 03 00 00
-                int jobid = p.Decode4();
+                int jobid = cp.Decode4();
                 ChangeJob(chr, jobid);
                 return true;
             }
             // /apget 111
             case 0x1F: {
                 // @0086 [1F] 6F 00 00 00
-                int point = p.Decode4();
+                int point = cp.Decode4();
 
                 GetAP(chr, point);
                 return true;
@@ -140,49 +128,49 @@ public class AdminPacket {
             // /spget 111
             case 0x20: {
                 // @0086 [20] 6F 00 00 00
-                int point = p.Decode4();
+                int point = cp.Decode4();
 
                 GetSP(chr, point);
                 return true;
             }
             // /str
             case 0x21: {
-                int point = p.Decode4();
+                int point = cp.Decode4();
 
-                UpdateStat(c, chr, MapleStat.STR, point);
+                UpdateStat(chr, MapleStat.STR, point);
                 return true;
             }
             // /dex
             case 0x22: {
-                int point = p.Decode4();
+                int point = cp.Decode4();
 
-                UpdateStat(c, chr, MapleStat.DEX, point);
+                UpdateStat(chr, MapleStat.DEX, point);
                 return true;
             }
             // /int
             case 0x23: {
-                int point = p.Decode4();
+                int point = cp.Decode4();
 
-                UpdateStat(c, chr, MapleStat.INT, point);
+                UpdateStat(chr, MapleStat.INT, point);
                 return true;
             }
             // /luk
             case 0x24: {
-                int point = p.Decode4();
+                int point = cp.Decode4();
 
-                UpdateStat(c, chr, MapleStat.LUK, point);
+                UpdateStat(chr, MapleStat.LUK, point);
                 return true;
             }
             // /mmon test
             case 0x26: {
                 // @0086 [26] 04 00 74 65 73 74
-                String text = p.DecodeStr();
+                String text = cp.DecodeStr();
                 return true;
             }
             // /mmoff test
             case 0x27: {
                 // @0086 [24] 04 00 74 65 73 74
-                String text = p.DecodeStr();
+                String text = cp.DecodeStr();
                 return true;
             }
             // /refreshweatherevent
@@ -193,14 +181,14 @@ public class AdminPacket {
             // /stagesystem test 7
             case 0x33: {
                 // @0086 [33] 04 00 74 65 73 74 [07]
-                String text = p.DecodeStr();
-                int stage = p.Decode1();
+                String text = cp.DecodeStr();
+                int stage = cp.Decode1();
                 return true;
             }
             // /activatestagesystem 1
             case 0x34: {
                 // @0086 [34] [01]
-                boolean flag = (p.Decode1() != 0);
+                boolean flag = (cp.Decode1() != 0);
                 return true;
             }
             // /cubecomplete
@@ -210,27 +198,21 @@ public class AdminPacket {
             }
             // /createnpc
             case 0x3B: {
-                int mapid = p.Decode4();
-                int npcid = p.Decode4();
-                int x = p.Decode4();
-                int y = p.Decode4();
+                int mapid = cp.Decode4();
+                int npcid = cp.Decode4();
+                int x = cp.Decode4();
+                int y = cp.Decode4();
 
                 CreateNPC(chr, npcid, x, y);
                 return true;
             }
             default: {
-                Debug.ErrorLog("Unknown Official GM Command");
                 break;
             }
         }
 
+        Debug.AdminLog("[OnAdmin] not coded = " + command);
         return false;
-    }
-
-    private static boolean AdminCommandLogger(ClientPacket p, final MapleClient c) {
-        String text = p.DecodeStr();
-        Debug.AdminLog("[GM Command Text] " + text);
-        return true;
     }
 
     private static boolean ChangeJob(MapleCharacter chr, int jobid) {
@@ -253,7 +235,7 @@ public class AdminPacket {
         chr.gainSP((short) point);
     }
 
-    private static boolean UpdateStat(MapleClient c, MapleCharacter chr, MapleStat stat, int point) {
+    private static boolean UpdateStat(MapleCharacter chr, MapleStat stat, int point) {
         if (point < 4 || 30000 < point) {
             return false;
         }
@@ -280,9 +262,7 @@ public class AdminPacket {
             }
         }
 
-        final List<Pair<MapleStat, Integer>> statupdate = new ArrayList<>(2);
-        statupdate.add(new Pair<>(stat, point));
-        c.getPlayer().UpdateStat(true);
+        chr.UpdateStat(true);
         return true;
     }
 
