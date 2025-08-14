@@ -280,7 +280,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // pet
             if (header.between(ClientPacket.Header.CP_BEGIN_PET, ClientPacket.Header.CP_END_PET)) {
-                return ReqCUser_Pet.OnPetPacket(header, cp, c);
+                return ReqCUser_Pet.OnPetPacket(c, header, cp);
             }
             // summon
             if (header.between(ClientPacket.Header.CP_BEGIN_SUMMONED, ClientPacket.Header.CP_END_SUMMONED)) {

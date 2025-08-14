@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,42 +83,6 @@ public class ItemRequest {
                 OnStatChangeItemUse(cp, chr);
                 return true;
             }
-            case CP_UserItemReleaseRequest: {
-                return true;
-            }
-            case CP_UserScriptItemUseRequest: {
-                return true;
-            }
-            case CP_UserPortalScrollUseRequest: {
-                return true;
-            }
-            case CP_UserUpgradeItemUseRequest: {
-                return true;
-            }
-            case CP_UserItemOptionUpgradeItemUseRequest: {
-                return true;
-            }
-            case CP_UserHyperUpgradeItemUseRequest: {
-                return true;
-            }
-            case CP_UserMobSummonItemUseRequest: {
-                return true;
-            }
-            case CP_UserSkillLearnItemUseRequest: {
-                return true;
-            }
-            case CP_UserBridleItemUseRequest: {
-                return true;
-            }
-            case CP_UserTamingMobFoodItemUseRequest: {
-                return true;
-            }
-            case CP_ShopLinkRequest: {
-                return true;
-            }
-            case CP_UserShopScannerItemUseRequest: {
-                return true;
-            }
             case CP_UserSkillResetItemUseRequest: {
                 // v194
                 cp.Decode4(); // 2114524514, 00A67BE0
@@ -177,10 +141,6 @@ public class ItemRequest {
     }
 
     public static boolean UseItem(MapleCharacter chr, short item_slot, int item_id) {
-        return UseItem(chr, item_slot, item_id, 0);
-    }
-
-    public static boolean UseItem(MapleCharacter chr, short item_slot, int item_id, int timestamp) {
         IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
 
         if (toUse == null || toUse.getItemId() != item_id || toUse.getQuantity() < 1) {
@@ -213,9 +173,6 @@ public class ItemRequest {
             chr.setNextConsume(time + (chr.getMap().getConsumeItemCoolTime() * 1000));
         }
 
-        if (timestamp != 0) {
-            chr.updateTick(timestamp);
-        }
         return true;
     }
 
@@ -223,7 +180,7 @@ public class ItemRequest {
         int timestamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         short item_slot = cp.Decode2();
         int item_id = cp.Decode4();
-        return UseItem(chr, item_slot, item_id, timestamp);
+        return UseItem(chr, item_slot, item_id);
     }
 
     public static void RemoveCashItem(MapleCharacter chr, short item_slot) {

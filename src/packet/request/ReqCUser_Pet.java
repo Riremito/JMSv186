@@ -27,6 +27,7 @@ import client.inventory.PetCommand;
 import config.Region;
 import config.Version;
 import data.wz.DW_Item;
+import debug.Debug;
 import handling.channel.handler.InventoryHandler;
 import handling.world.MaplePartyCharacter;
 import java.util.LinkedList;
@@ -56,68 +57,58 @@ public class ReqCUser_Pet {
     private static final int EXCEPTION_LIST_MESO = 0x7FFFFFFF;
 
     // CUserPool::OnUserCommonPacket
-    public static boolean OnPetPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+    public static boolean OnPetPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
-        if (chr == null || !chr.isAlive() || chr.getMap() == null) {
-            return false;
+        if (chr == null) {
+            return true;
         }
-        // between CP_BEGIN_PET and CP_END_PET and some packets
-        switch (header) {
-            case CP_UserPetFoodItemUseRequest: {
-                int timestamp = cp.Decode4();
-                short item_slot = cp.Decode2();
-                int item_id = cp.Decode4();
 
-                OnPetFood(chr, MapleInventoryType.USE, item_slot, item_id);
-                chr.updateTick(timestamp);
-                return true;
-            }
-            // 期限切れデンデン使用時のステータス更新とPointShopへ入場準備
-            case CP_UserDestroyPetItemRequest: {
-                c.getPlayer().UpdateStat(true); // OK, CANCEL 有効化
-                return true;
-            }
-            // SpawnPet
-            case CP_UserActivatePetRequest: {
-                int timestamp = cp.Decode4();
-                short item_slot = cp.Decode2();
-                byte flag = 0;
-                if (Version.PostBB() || Version.LessOrEqual(Region.JMS, 131)) {
-                    flag = 1;
-                } else {
-                    flag = cp.Decode1();
-                }
-                chr.spawnPet(item_slot, flag > 0 ? true : false);
-                chr.updateTick(timestamp); // unused
-                return true;
-            }
+        MapleMap map = chr.getMap();
+        if (map == null) {
+            return true;
+        }
+
+        MaplePet pet = null;
+        // outside CUser
+        if (Version.LessOrEqual(Region.JMS, 147)) {
+            long pet_uid = Version.LessOrEqual(Region.JMS, 147) ? cp.Decode8() : 0; // outside CUser
+            pet = chr.getPetByUniqueId(pet_uid);
+        } else {
+            int pet_index = cp.Decode4();
+            pet = chr.getPet(pet_index);
+        }
+
+        if (pet == null) {
+            Debug.ErrorLog("OnPetPacket : no pet.");
+            return true;
+        }
+
+        switch (header) {
             // MovePet
             case CP_PetMove: {
-                OnMove(cp, chr);
+                OnMove(map, chr, pet, cp);
                 return true;
             }
             // PetChat
             case CP_PetAction: {
-                OnAction(cp, chr);
+                OnAction(map, chr, pet, cp);
                 return true;
             }
             // PetCommand
             case CP_PetInteractionRequest: {
-
                 return true;
             }
             // Pickup_Pet
             case CP_PetDropPickUpRequest: {
-                OnDropPickUp(cp, chr);
+                OnDropPickUp(chr, pet, cp);
                 return true;
             }
             // Pet_AutoPotion
             case CP_PetStatChangeItemUseRequest: {
-                OnStatChangeItemUse(cp, chr);
+                OnStatChangeItemUse(chr, cp);
                 return true;
             }
             case CP_PetUpdateExceptionListRequest: {
-                int unk1 = cp.Decode4(); // not used
                 byte item_count = cp.Decode1();
                 for (int i = 0; i < item_count; i++) {
                     int item_id = cp.Decode4();
@@ -161,15 +152,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static boolean OnMove(ClientPacket cp, MapleCharacter chr) {
-        int pet_index = cp.Decode4();
-        MaplePet pet = chr.getPet(pet_index);
-        MapleMap map = chr.getMap();
-
-        if (pet == null || map == null) {
-            return false;
-        }
-
+    public static boolean OnMove(MapleMap map, MapleCharacter chr, MaplePet pet, ClientPacket cp) {
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             byte unk = cp.Decode1();
         }
@@ -179,49 +162,33 @@ public class ReqCUser_Pet {
             move_path.update(pet);
         }
 
-        map.broadcastMessage(chr, ResCUser_Pet.movePet(chr, pet_index, move_path), false);
+        map.broadcastMessage(chr, ResCUser_Pet.movePet(chr, chr.getPetIndex(pet), move_path), false);
         return true;
     }
 
-    public static boolean OnAction(ClientPacket cp, MapleCharacter chr) {
-        int pet_index = cp.Decode4();
+    public static boolean OnAction(MapleMap map, MapleCharacter chr, MaplePet pet, ClientPacket cp) {
         byte nType = cp.Decode1();
         byte nAction = cp.Decode1();
         String pet_message = cp.DecodeStr();
 
-        MaplePet pet = chr.getPet(pet_index);
-        MapleMap map = chr.getMap();
-
-        if (pet == null || map == null) {
-            return false;
-        }
-
-        map.broadcastMessage(chr, ResCUser_Pet.petChat(chr, pet_index, nType, nAction, pet_message), false);
+        map.broadcastMessage(chr, ResCUser_Pet.petChat(chr, chr.getPetIndex(pet), nType, nAction, pet_message), false);
         return true;
     }
 
-    public static boolean OnDropPickUp(ClientPacket cp, MapleCharacter chr) {
-        int pet_index = cp.Decode4();
-        MaplePet pet = chr.getPet(pet_index);
-        MapleMap map = chr.getMap();
-
-        if (pet == null || map == null) {
-            return false;
-        }
-
+    public static boolean OnDropPickUp(MapleCharacter chr, MaplePet pet, ClientPacket cp) {
         byte unk1 = cp.Decode1(); // unk
         int timestamp = cp.Decode4();
         short drop_x = cp.Decode2();
         short drop_y = cp.Decode2();
         int drop_id = cp.Decode4();
-        int drop_CRC = cp.Decode4();
+        int drop_CRC = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
         short unk2 = cp.Decode2(); // unk
         // trap
         if ((drop_id % 13) == 0) {
-            short pet_x = cp.Decode2();
-            short pet_y = cp.Decode2();
-            int pet_xy_CRC = cp.Decode4();
-            int drop_xy_CRC = cp.Decode4();
+            short pet_x = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode2();
+            short pet_y = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode2();
+            int pet_xy_CRC = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
+            int drop_xy_CRC = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
         }
 
         MapleMapItem mapitem = (MapleMapItem) chr.getMap().getMapObject(drop_id, MapleMapObjectType.ITEM);
@@ -229,17 +196,17 @@ public class ReqCUser_Pet {
             return false;
         }
 
-        Pickup_Pet(chr, mapitem, pet_index);
+        Pickup_Pet(chr, mapitem, chr.getPetIndex(pet));
         chr.updateTick(timestamp);
         return true;
     }
 
-    public static boolean OnStatChangeItemUse(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnStatChangeItemUse(MapleCharacter chr, ClientPacket cp) {
         byte unk1 = cp.Decode1();
         int timestamp = cp.Decode4();
         short item_slot = cp.Decode2();
         int item_id = cp.Decode4();
-        return ItemRequest.UseItem(chr, item_slot, item_id, timestamp);
+        return ItemRequest.UseItem(chr, item_slot, item_id);
     }
 
     public static final void PetCommand(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {

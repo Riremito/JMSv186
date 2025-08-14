@@ -3761,6 +3761,17 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return null;
     }
 
+    public MaplePet getPetByUniqueId(long ped_uid) {
+        for (final MaplePet pet : pets) {
+            if (pet.getSummoned()) {
+                if (pet.getUniqueId() == ped_uid) {
+                    return pet;
+                }
+            }
+        }
+        return null;
+    }
+
     public void removePetCS(MaplePet pet) {
         pets.remove(pet);
     }

@@ -280,15 +280,18 @@ public class ReqCUser {
             }
             case CP_UserMobSummonItemUseRequest: {
                 int timestamp = cp.Decode4();
-                short slot = cp.Decode2();
+                short item_slot = cp.Decode2();
                 int item_id = cp.Decode4();
-                boolean ret = OnUserMobSummonItemUseRequest(chr, slot, item_id);
+                boolean ret = OnUserMobSummonItemUseRequest(chr, item_slot, item_id);
                 chr.SendPacket(ResCField.MobSummonItemUseResult(ret));
                 chr.UpdateStat(true); // unlock is needed.
                 return true;
             }
             case CP_UserPetFoodItemUseRequest: {
-                ReqCUser_Pet.OnPetPacket(header, cp, c);
+                int timestamp = cp.Decode4();
+                short item_slot = cp.Decode2();
+                int item_id = cp.Decode4();
+                OnUserPetFoodItemUseRequest(chr, item_slot, item_id);
                 return true;
             }
             case CP_UserTamingMobFoodItemUseRequest: {
@@ -304,7 +307,8 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserDestroyPetItemRequest: {
-                ReqCUser_Pet.OnPetPacket(header, cp, c);
+                // // 期限切れデンデン使用時のステータス更新とPointShopへ入場準備
+                chr.UpdateStat(true); // OK, CANCEL 有効化
                 return true;
             }
             case CP_UserBridleItemUseRequest: {
@@ -398,7 +402,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserActivatePetRequest: {
-                ReqCUser_Pet.OnPetPacket(header, cp, c);
+                OnUserActivatePetRequest(chr, cp);
                 return true;
             }
             case CP_UserTemporaryStatUpdateRequest: {
@@ -1096,6 +1100,15 @@ public class ReqCUser {
         return true;
     }
 
+    public static final boolean OnUserActivatePetRequest(MapleCharacter chr, ClientPacket cp) {
+        int timestamp = cp.Decode4();
+        short item_slot = cp.Decode2();
+        byte flag = (Version.LessOrEqual(Region.JMS, 131) || Version.PostBB()) ? 1 : cp.Decode1();
+
+        chr.spawnPet(item_slot, flag > 0 ? true : false);
+        return true;
+    }
+
     public static boolean OnShopScannerRequest(MapleCharacter chr, ClientPacket cp) {
         byte req = cp.Decode1();
 
@@ -1690,8 +1703,8 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserMobSummonItemUseRequest(MapleCharacter chr, short slot, int item_id) {
-        IItem item_used = chr.getInventory(MapleInventoryType.USE).getItem(slot);
+    public static boolean OnUserMobSummonItemUseRequest(MapleCharacter chr, short item_slot, int item_id) {
+        IItem item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (item_used == null) {
             return false;
         }
@@ -1706,7 +1719,7 @@ public class ReqCUser {
             return false;
         }
         // used
-        MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, slot, (short) 1, false);
+        MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
         // spawn mobs
         List<Pair<Integer, Integer>> summon_info = MapleItemInformationProvider.getInstance().getSummonMobs(item_id);
         if (summon_info == null) {
@@ -1719,6 +1732,10 @@ public class ReqCUser {
             }
         }
         return true;
+    }
+
+    public static boolean OnUserPetFoodItemUseRequest(MapleCharacter chr, short item_slot, int item_id) {
+        return ReqCUser_Pet.OnPetFood(chr, MapleInventoryType.USE, item_slot, item_id);
     }
 
     public static boolean OnUserConsumeCashItemUseRequest(MapleCharacter chr, MapleMap map, ClientPacket cp) {
