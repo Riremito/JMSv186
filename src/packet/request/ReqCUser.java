@@ -34,6 +34,7 @@ import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
 import constants.ServerConstants;
+import data.client.DC_Exp;
 import debug.Debug;
 import debug.DebugMan;
 import debug.DebugShop;
@@ -537,10 +538,18 @@ public class ReqCUser {
                 ReqCClientSocket.EnterCS(c, chr, true);
                 return true;
             }
-            // 兵法書
-            case CP_UserExpUpItemUseRequest:
+            case CP_UserExpUpItemUseRequest: {
+                int timestamp = cp.Decode4();
+                short nPOS = cp.Decode2();
+                int nItemID = cp.Decode4();
+
+                OnUserExpUpItemUseRequest(chr, nPOS, nItemID);
+                return true;
+            }
             case CP_UserTempExpUseRequest: {
-                GashaEXPPacket.OnPacket(cp, header, c);
+                int timestamp = cp.Decode4();
+
+                OnUserTempExpUseRequest(chr);
                 return true;
             }
             case CP_TalkToTutor: {
@@ -1811,4 +1820,51 @@ public class ReqCUser {
         Debug.ErrorLog("OnWhisper : not coded " + operation);
         return false;
     }
+
+    private static boolean OnUserExpUpItemUseRequest(MapleCharacter chr, short nPOS, int nItemID) {
+        IItem item = chr.getInventory(MapleInventoryType.USE).getItem(nPOS);
+        if (item == null || chr.getGashaEXP() > 0 || item.getItemId() != nItemID || (nItemID / 10000) != 237) {
+            chr.UpdateStat(true);
+            return false;
+        }
+        // TODO : level check and save to DB.
+
+        int exp_gasha = MapleItemInformationProvider.getInstance().getItemEffect(item.getItemId()).getExp();
+        chr.setGashaEXP(exp_gasha);
+
+        OnUserTempExpUseRequest(chr);
+
+        // 兵法書実装前
+        if (Version.LessOrEqual(Region.JMS, 131)) {
+            while (OnUserTempExpUseRequest(chr)) {
+                // loop
+            }
+        }
+
+        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, nItemID, 1, true, false);
+        return true;
+    }
+
+    private static boolean OnUserTempExpUseRequest(MapleCharacter chr) {
+        int exp_table = DC_Exp.getExpNeededForLevel(chr.getLevel());
+        int exp_current = chr.getExp();
+        int exp_temp = chr.getGashaEXP();
+
+        if (exp_temp <= 0) {
+            chr.UpdateStat(true);
+            return false;
+        }
+
+        if (exp_table - exp_current - exp_temp > 0) {
+            chr.setGashaEXP(0);
+            chr.gainExp(exp_temp, true, true, false);
+        } else {
+            chr.setGashaEXP(exp_temp - (exp_table - exp_current));
+            chr.gainExp(exp_table - exp_current, true, true, false);
+        }
+
+        chr.UpdateStat(true);
+        return true;
+    }
+
 }
