@@ -68,6 +68,7 @@ import packet.request.parse.ParseCMovePath;
 import packet.request.sub.ReqSub_Admin;
 import packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import packet.response.ResCField;
+import packet.response.ResCMobPool;
 import packet.response.ResCUIVega;
 import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
@@ -318,7 +319,12 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserBridleItemUseRequest: {
-                //ItemRequest.UseCatchItem(p, c, c.getPlayer());
+                int timestamp = cp.Decode4();
+                short item_slot = cp.Decode2();
+                int item_id = cp.Decode4();
+                int mob_oid = cp.Decode4();
+
+                OnUserBridleItemUseRequest(map, chr, item_slot, item_id, mob_oid);
                 return true;
             }
             case CP_UserSkillLearnItemUseRequest: {
@@ -2036,6 +2042,72 @@ public class ReqCUser {
 
     public static boolean OnUserConsumeCashItemUseRequest(MapleCharacter chr, MapleMap map, ClientPacket cp) {
         return ReqSub_UserConsumeCashItemUseRequest.OnUserConsumeCashItemUseRequestInternal(chr, map, cp);
+    }
+
+    public static boolean OnUserBridleItemUseRequest(MapleMap map, MapleCharacter chr, short item_slot, int item_id, int mob_oid) {
+        MapleMonster mob = map.getMonsterByOid(mob_oid);
+
+        if (mob == null) {
+            return false;
+        }
+
+        final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == item_id && mob != null) {
+            switch (item_id) {
+                case 2270004: {
+                    if (mob.getHp() <= mob.getMobMaxHp() / 2) {
+                        map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 1));
+                        map.killMonster(mob, chr, true, false, (byte) 0);
+                        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
+                        MapleInventoryManipulator.addById(chr.getClient(), 4001169, (short) 1);
+                    } else {
+                        map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 0));
+                        chr.SendPacket(ResWrapper.BroadCastMsgEvent("The monster has too much physical strength, so you cannot catch it."));
+                    }
+                    break;
+                }
+                case 2270002: {
+                    if (mob.getHp() <= mob.getMobMaxHp() / 2) {
+                        map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 1));
+                        map.killMonster(mob, chr, true, false, (byte) 0);
+                        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
+                    } else {
+                        map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 0));
+                        chr.SendPacket(ResWrapper.BroadCastMsgEvent("The monster has too much physical strength, so you cannot catch it."));
+                    }
+                    break;
+                }
+                case 2270000: {
+                    // Pheromone Perfume
+                    if (mob.getId() != 9300101) {
+                        break;
+                    }
+                    map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 1));
+                    map.killMonster(mob, chr, true, false, (byte) 0);
+                    MapleInventoryManipulator.addById(chr.getClient(), 1902000, (short) 1, null);
+                    MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
+                    break;
+                }
+                case 2270003: {
+                    // Cliff's Magic Cane
+                    if (mob.getId() != 9500320) {
+                        break;
+                    }
+                    if (mob.getHp() <= mob.getMobMaxHp() / 2) {
+                        map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 1));
+                        map.killMonster(mob, chr, true, false, (byte) 0);
+                        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
+                    } else {
+                        map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 0));
+                        chr.SendPacket(ResWrapper.BroadCastMsgEvent("The monster has too much physical strength, so you cannot catch it."));
+                    }
+                    break;
+                }
+            }
+        }
+
+        chr.SendPacket(ResWrapper.enableActions());
+        return true;
     }
 
     public static boolean OnUserSkillLearnItemUseRequest(MapleMap map, MapleCharacter chr, short item_slot, final int item_id) {
