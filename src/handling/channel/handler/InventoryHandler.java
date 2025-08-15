@@ -1054,19 +1054,7 @@ public class InventoryHandler {
                 break;
             }
             default: {
-                if (itemId / 10000 == 512) {
-                    final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                    final String msg = ii.getMsg(itemId).replaceFirst("%s", c.getPlayer().getName()).replaceFirst("%s", slea.readMapleAsciiString());
-                    c.getPlayer().getMap().startMapEffect(msg, itemId);
-
-                    final int buff = ii.getStateChangeItem(itemId);
-                    if (buff != 0) {
-                        for (MapleCharacter mChar : c.getPlayer().getMap().getCharactersThreadsafe()) {
-                            ii.getItemEffect(buff).applyTo(mChar);
-                        }
-                    }
-                    used = true;
-                } else if (itemId / 10000 == 510) {
+                if (itemId / 10000 == 510) {
                     c.getPlayer().getMap().startJukebox(c.getPlayer().getName(), itemId);
                     used = true;
                 } else if (itemId / 10000 == 520) {

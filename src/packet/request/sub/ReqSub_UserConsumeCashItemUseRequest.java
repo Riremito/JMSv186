@@ -105,6 +105,21 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
                 return true;
             }
+            case 512: {
+                String message = cp.DecodeStr();
+                MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+                String msg = miip.getMsg(cash_item_id).replaceFirst("%s", chr.getName()).replaceFirst("%s", message);
+                map.startMapEffect(msg, cash_item_id);
+
+                final int buff = miip.getStateChangeItem(cash_item_id);
+                if (buff != 0) {
+                    for (MapleCharacter mChar : map.getCharactersThreadsafe()) {
+                        miip.getItemEffect(buff).applyTo(mChar);
+                    }
+                }
+
+                return true;
+            }
             case 517: {
                 if (cashItem517_PetNameChange(chr, cash_item_id, cp)) {
                     item_use.run();
