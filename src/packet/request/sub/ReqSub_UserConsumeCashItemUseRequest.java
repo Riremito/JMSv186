@@ -19,6 +19,7 @@
 package packet.request.sub;
 
 import client.MapleCharacter;
+import client.inventory.Equip;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import config.Region;
@@ -29,12 +30,15 @@ import handling.channel.handler.PlayerHandler;
 import handling.world.World;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import packet.ClientPacket;
 import packet.ops.OpsBodyPart;
 import packet.ops.OpsBroadcastMsg;
 import packet.ops.arg.ArgBroadcastMsg;
 import packet.request.ReqCUser_Pet;
+import packet.response.ResCParcelDlg;
 import packet.response.ResCUser;
+import packet.response.ResCUserLocal;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.MapleItemInformationProvider;
@@ -47,7 +51,7 @@ import server.maps.MapleMap;
  */
 public class ReqSub_UserConsumeCashItemUseRequest {
 
-    public static boolean OnUserConsumeCashItemUseRequestInternal(MapleCharacter chr, MapleMap map, ClientPacket cp) {
+    public static boolean OnUserConsumeCashItemUseRequestInternal(MapleMap map, MapleCharacter chr, ClientPacket cp) {
         int timestamp = ServerConfig.JMS180orLater() ? cp.Decode4() : 0;
         short cash_item_slot = cp.Decode2();
         int cash_item_id = cp.Decode4();
@@ -87,8 +91,25 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
                 return true;
             }
+            case 506: {
+                if (cashItem506_MiracleCube(chr, cash_item_id, cp)) {
+                    item_use.run();
+                }
+                return true;
+            }
             case 507: {
                 if (cashItem507_Megaphone(chr, cash_item_id, cp)) {
+                    item_use.run();
+                }
+                return true;
+            }
+            case 517: {
+                item_use.run();
+                return true;
+            }
+            case 520: // 5201000
+            {
+                if (cashItem520_Money(chr, cash_item_id)) {
                     item_use.run();
                 }
                 return true;
@@ -96,6 +117,12 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 524: {
                 // TODO : fix
                 ReqCUser_Pet.OnPetFood(chr, MapleInventoryType.CASH, cash_item_slot, cash_item_id);
+                return true;
+            }
+            case 533: // 速達
+            {
+                chr.SendPacket(ResCParcelDlg.Open(true, false));
+                chr.UpdateStat(true);
                 return true;
             }
             case 537: // 5370000
@@ -113,6 +140,34 @@ public class ReqSub_UserConsumeCashItemUseRequest {
 
         // not coded.
         Debug.ErrorLog("OnUserConsumeCashItemUseRequest : not coded yet. type = " + cash_item_type);
+        return false;
+    }
+
+    public static boolean cashItem506_MiracleCube(MapleCharacter chr, int cash_item_id, ClientPacket cp) {
+        switch (cash_item_id) {
+            case 5062000:
+            case 5062001:
+            case 5062002:
+            case 5062003: {
+                int equip_slot = cp.Decode4();
+                IItem item = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) equip_slot);
+                if (item == null) {
+                    return false;
+                }
+
+                Equip equip = (Equip) item;
+                equip.resetPotential(cash_item_id == 5062001 || cash_item_id == 5062003, cash_item_id == 5062002 || cash_item_id == 5062003);
+                chr.SendPacket(ResCUser.UserItemUnreleaseEffect(chr));
+                chr.getMap().broadcastMessage(chr, ResCUser.UserItemUnreleaseEffect(chr), false);
+                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, equip));
+                //MapleInventoryManipulator.addById(chr.getClient(), 2430112, (short) 1);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
         return false;
     }
 
@@ -239,6 +294,65 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         }
 
         chr.SendPacket(ResWrapper.enableActions());
+        return false;
+    }
+
+    public static boolean cashItem520_Money(MapleCharacter chr, int cash_item_id) {
+        switch (cash_item_id) {
+            case 5201000:
+            case 5201001:
+            case 5201002: // パチンコ玉
+            {
+                int tama = MapleItemInformationProvider.getInstance().getInt(cash_item_id, "info/dama");
+                if (!chr.gainTama(tama, true)) {
+                    chr.SendPacket(ResCUserLocal.PachinkoBoxFailure());
+                    return false;
+                }
+
+                chr.SendPacket(ResCUserLocal.PachinkoBoxSuccess(tama));
+                return true;
+            }
+            case 5202000: // ランダムメル袋 (未実装アイテム)
+            {
+                int randommeso = 0;
+                int meso = MapleItemInformationProvider.getInstance().getInt(cash_item_id, "info/meso");
+                int mesomax = MapleItemInformationProvider.getInstance().getInt(cash_item_id, "info/mesomax");
+                int mesomin = MapleItemInformationProvider.getInstance().getInt(cash_item_id, "info/mesomin");
+                int mesostdev = MapleItemInformationProvider.getInstance().getInt(cash_item_id, "info/mesostdev");
+
+                Random random = new Random();
+                int r = random.nextInt(4);
+
+                switch (r) {
+                    case 0:
+                        randommeso = mesomin;
+                        break;
+                    case 1:
+                        randommeso = mesostdev;
+                        break;
+                    case 2:
+                        randommeso = meso;
+                        break;
+                    case 3:
+                        randommeso = mesomax;
+                        break;
+                    default:
+                        randommeso = mesomin;
+                        break;
+                }
+
+                if (!chr.gainMeso(randommeso, false)) {
+                    chr.SendPacket(ResCUserLocal.RandomMesoBagFailed());
+                }
+
+                chr.SendPacket(ResCUserLocal.RandomMesoBagSuccess((byte) (r + 1), randommeso));
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
         return false;
     }
 

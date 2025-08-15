@@ -315,7 +315,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserConsumeCashItemUseRequest: {
-                OnUserConsumeCashItemUseRequest(chr, map, cp);
+                OnUserConsumeCashItemUseRequest(map, chr, cp);
                 return true;
             }
             case CP_UserDestroyPetItemRequest: {
@@ -1469,7 +1469,7 @@ public class ReqCUser {
                 && (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3))) {
             eqq.setHidden(0); // 未確認状態へ変更
             chr.SendPacket(ResWrapper.scrolledItem(magnify, toReveal, false, true));
-            map.broadcastMessage(ResCUser.getPotentialReset(chr.getId(), eqq.getPosition()));
+            map.broadcastMessage(ResCUser.UserItemReleaseEffect(chr, eqq.getPosition()));
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
             //Debug.DebugLog("potential updated");
         } else {
@@ -2065,8 +2065,8 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserConsumeCashItemUseRequest(MapleCharacter chr, MapleMap map, ClientPacket cp) {
-        return ReqSub_UserConsumeCashItemUseRequest.OnUserConsumeCashItemUseRequestInternal(chr, map, cp);
+    public static boolean OnUserConsumeCashItemUseRequest(MapleMap map, MapleCharacter chr, ClientPacket cp) {
+        return ReqSub_UserConsumeCashItemUseRequest.OnUserConsumeCashItemUseRequestInternal(map, chr, cp);
     }
 
     public static boolean OnUserBridleItemUseRequest(MapleMap map, MapleCharacter chr, short item_slot, int item_id, int mob_oid) {

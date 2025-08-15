@@ -19,22 +19,15 @@
 package packet.request;
 
 import client.MapleCharacter;
-import client.inventory.Equip;
-import client.inventory.IEquip.ScrollResult;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import config.ServerConfig;
 import debug.Debug;
-import java.util.Random;
 import packet.ClientPacket;
-import packet.response.ResCParcelDlg;
 import packet.response.ResCUser_Pet;
-import packet.response.ResCUser;
-import packet.response.ResCUserLocal;
 import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
-import server.MapleItemInformationProvider;
 
 /**
  *
@@ -93,82 +86,6 @@ public class ItemRequest {
                 RemoveCashItem(chr, item_slot);
                 chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
                 chr.getMap().broadcastMessage(ResCUser_Pet.changePetName(chr, pet_index, pet_name));
-                return true;
-            }
-            // パチンコ玉
-            case 5201000:
-            case 5201001:
-            case 5201002: {
-                final int tama = MapleItemInformationProvider.getInstance().getInt(item_id, "info/dama");
-                if (chr.gainTama(tama, true)) {
-                    chr.SendPacket(ResCUserLocal.PachinkoBoxSuccess(tama));
-                    RemoveCashItem(chr, item_slot);
-                } else {
-                    chr.SendPacket(ResCUserLocal.PachinkoBoxFailure());
-                }
-                return true;
-            }
-            // ランダムメル袋 (未実装アイテム)
-            case 5202000: {
-                int randommeso = 0;
-                final int meso = MapleItemInformationProvider.getInstance().getInt(item_id, "info/meso");
-                final int mesomax = MapleItemInformationProvider.getInstance().getInt(item_id, "info/mesomax");
-                final int mesomin = MapleItemInformationProvider.getInstance().getInt(item_id, "info/mesomin");
-                final int mesostdev = MapleItemInformationProvider.getInstance().getInt(item_id, "info/mesostdev");
-
-                Random random = new Random();
-                int r = random.nextInt(4);
-
-                switch (r) {
-                    case 0:
-                        randommeso = mesomin;
-                        break;
-                    case 1:
-                        randommeso = mesostdev;
-                        break;
-                    case 2:
-                        randommeso = meso;
-                        break;
-                    case 3:
-                        randommeso = mesomax;
-                        break;
-                    default:
-                        randommeso = mesomin;
-                        break;
-                }
-
-                if (chr.gainMeso(randommeso, false)) {
-                    chr.SendPacket(ResCUserLocal.RandomMesoBagSuccess((byte) (r + 1), randommeso));
-                    RemoveCashItem(chr, item_slot);
-                } else {
-                    chr.SendPacket(ResCUserLocal.RandomMesoBagFailed());
-                }
-                return true;
-            }
-            // 速達
-            case 5330000: {
-                chr.SendPacket(ResCParcelDlg.Open(true, false));
-                return true;
-            }
-            // ミラクルキューブ
-            case 5062000:
-            case 5062001:
-            case 5062002:
-            case 5062003: {
-                int equip_slot = cp.Decode4();
-                IItem item = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) equip_slot);
-                if (item != null) {
-                    final Equip equip = (Equip) item;
-                    equip.resetPotential(item_id == 5062001 || item_id == 5062003, item_id == 5062002 || item_id == 5062003);
-
-                    chr.SendPacket(ResCUser.getPotentialEffect(chr.getId(), equip.getPosition()));
-                    chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(chr.getId(), ScrollResult.SUCCESS, false), false);
-                    chr.SendPacket(ResWrapper.scrolledItem(toUse, item, false, true));
-                    RemoveCashItem(chr, item_slot);
-                    chr.forceReAddItem_NoUpdate(item, MapleInventoryType.EQUIP);
-                    chr.saveToDB(false, false);
-                    //MapleInventoryManipulator.addById(chr.getClient(), 2430112, (short) 1);
-                }
                 return true;
             }
             default: {

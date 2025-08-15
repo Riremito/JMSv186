@@ -139,17 +139,17 @@ public class ResCUser {
     // CUser::ShowItemHyperUpgradeEffect
     // CUser::ShowItemOptionUpgradeEffect
     // CUser::ShowItemReleaseEffect
-    public static MaplePacket getPotentialReset(int chr, short pos) {
+    public static MaplePacket UserItemReleaseEffect(MapleCharacter chr, short equip_item_slot) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemReleaseEffect);
-        sp.Encode4(chr);
-        sp.Encode2(pos);
+        sp.Encode4(chr.getId());
+        sp.Encode2(equip_item_slot);
         return sp.get();
     }
 
     // CUser::ShowItemUnreleaseEffect
-    public static MaplePacket getPotentialEffect(int chr, short pos) {
+    public static MaplePacket UserItemUnreleaseEffect(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemUnreleaseEffect);
-        sp.Encode4(chr);
+        sp.Encode4(chr.getId());
         sp.Encode1(1);
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode4(0); // 金印 2049500
