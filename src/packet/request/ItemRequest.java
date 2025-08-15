@@ -494,44 +494,6 @@ public class ItemRequest {
         c.getSession().write(ResWrapper.enableActions());
     }
 
-    public static final void UseMagnify(ClientPacket cp, final MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
-        int time_stamp = cp.Decode4(); // time
-        short slot_use_item = cp.Decode2();
-        short slot_equip_item = cp.Decode2();
-        final IItem magnify = chr.getInventory(MapleInventoryType.USE).getItem(slot_use_item);
-        IItem toReveal = (slot_equip_item < 0) ? chr.getInventory(MapleInventoryType.EQUIPPED).getItem(slot_equip_item) : chr.getInventory(MapleInventoryType.EQUIP).getItem(slot_equip_item);
-
-        if (magnify == null || toReveal == null) {
-            chr.SendPacket(ResWrapper.getInventoryFull());
-            Debug.ErrorLog("potential err 1");
-            return;
-        }
-
-        final Equip eqq = (Equip) toReveal;
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        final int reqLevel = ii.getReqLevel(eqq.getItemId()) / 10;
-
-        Debug.DebugLog("eqq.getState =  " + eqq.getHidden() + ", magnify.getItemId = " + magnify.getItemId() + ", reqLevel = " + reqLevel);
-        Debug.DebugLog("" + eqq.getPotential1() + ", " + eqq.getPotential2() + ", " + eqq.getPotential3());
-        if (eqq.getHidden() == 1
-                && (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3))) {
-            eqq.setHidden(0); // 未確認状態へ変更
-            chr.SendPacket(ResWrapper.scrolledItem(magnify, toReveal, false, true));
-            chr.getMap().broadcastMessage(ResCUser.getPotentialReset(chr.getId(), eqq.getPosition()));
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
-            Debug.DebugLog("potential updated");
-        } else {
-            chr.SendPacket(ResWrapper.getInventoryFull());
-            Debug.ErrorLog("potential err 2");
-            return;
-        }
-    }
-
-    public static final boolean UseUpgradeScroll(short slot, short dst, final byte ws, final MapleClient c, final MapleCharacter chr) {
-        return UseUpgradeScroll(slot, dst, ws, c, chr, 0);
-    }
-
     public static final boolean UseUpgradeScroll(short slot, short dst, final byte ws, final MapleClient c, final MapleCharacter chr, final int vegas) {
         boolean whiteScroll = true;
         boolean legendarySpirit = false; // legendary spirit skill
@@ -707,23 +669,6 @@ public class ItemRequest {
             c.ProcessPacket(ResCUIVega.Result(scrollSuccess == IEquip.ScrollResult.SUCCESS));
         }
         return true;
-    }
-
-    public static final void UseReturnScroll(MapleClient c, MapleCharacter chr, short slot, int itemId) {
-        if (!chr.isAlive()) {
-            c.getSession().write(ResWrapper.enableActions());
-            return;
-        }
-        final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
-        if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId) {
-            c.getSession().write(ResWrapper.enableActions());
-            return;
-        }
-        if (MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyReturnScroll(chr)) {
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
-        } else {
-            c.getSession().write(ResWrapper.enableActions());
-        }
     }
 
     public static final void UseMountFood(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
