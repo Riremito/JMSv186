@@ -276,7 +276,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserStatChangeItemUseRequest: {
-                ItemRequest.OnPacket(header, cp, c);
+                OnUserStatChangeItemUseRequest(chr, cp);
                 return true;
             }
             case CP_UserStatChangeItemCancelRequest: {
@@ -1987,6 +1987,15 @@ public class ReqCUser {
 
         OpsMapTransfer ops_res = PlayerHandler.TrockAddMap(chr, ops_req, rock_type, target_map_id);
         chr.SendPacket(ResCWvsContext.MapTransferResult(chr, ops_res, rock_type != 0));
+        return true;
+    }
+
+    public static boolean OnUserStatChangeItemUseRequest(MapleCharacter chr, ClientPacket cp) {
+        int timestamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        short item_slot = cp.Decode2();
+        int item_id = cp.Decode4();
+
+        chr.useItem(item_slot, item_id);
         return true;
     }
 

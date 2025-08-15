@@ -206,7 +206,9 @@ public class ReqCUser_Pet {
         int timestamp = cp.Decode4();
         short item_slot = cp.Decode2();
         int item_id = cp.Decode4();
-        return ItemRequest.UseItem(chr, item_slot, item_id);
+
+        chr.useItem(item_slot, item_id);
+        return true;
     }
 
     public static final void PetCommand(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {

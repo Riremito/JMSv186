@@ -6203,4 +6203,37 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return true;
     }
 
+    public boolean useItem(short item_slot, int item_id) {
+        IItem toUse = this.getInventory(MapleInventoryType.USE).getItem(item_slot);
+
+        if (toUse == null || toUse.getItemId() != item_id || toUse.getQuantity() < 1) {
+            this.SendPacket(ResWrapper.StatChanged(this));
+            return false;
+        }
+
+        long time = System.currentTimeMillis();
+        if (this.getNextConsume() > time) {
+            this.DebugMsg2("You may not use this item yet.");
+            this.SendPacket(ResWrapper.StatChanged(this));
+            return false;
+        }
+
+        if (FieldLimitType.PotionUse.check(map.getFieldLimit())) {
+            this.SendPacket(ResWrapper.StatChanged(this));
+            return false;
+        }
+
+        if (!MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyTo(this)) {
+            this.SendPacket(ResWrapper.StatChanged(this));
+            return false;
+        }
+
+        MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, item_slot, (short) 1, false);
+        if (map.getConsumeItemCoolTime() > 0) {
+            this.setNextConsume(time + (this.map.getConsumeItemCoolTime() * 1000));
+        }
+
+        return true;
+    }
+
 }

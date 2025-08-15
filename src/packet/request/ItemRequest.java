@@ -52,7 +52,6 @@ import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.life.MapleMonster;
-import server.maps.FieldLimitType;
 import server.maps.MapleMap;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -64,70 +63,6 @@ public class ItemRequest {
 
     // 勲章が装備されるスロットのID
     private static final short SLOT_EQUIPPED_MEDAL = (short) -21;
-
-    public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
-
-        if (chr == null || chr.getMap() == null) {
-            return false;
-        }
-
-        switch (header) {
-            // 回復薬
-            case CP_UserStatChangeItemUseRequest: {
-                OnStatChangeItemUse(cp, chr);
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-        c.getPlayer().UpdateStat(true);
-        return false;
-    }
-
-    public static boolean UseItem(MapleCharacter chr, short item_slot, int item_id) {
-        IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
-
-        if (toUse == null || toUse.getItemId() != item_id || toUse.getQuantity() < 1) {
-            chr.SendPacket(ResWrapper.StatChanged(chr));
-            return false;
-        }
-
-        // ?
-        final long time = System.currentTimeMillis();
-        if (chr.getNextConsume() > time) {
-            chr.dropMessage(5, "You may not use this item yet.");
-            chr.SendPacket(ResWrapper.StatChanged(chr));
-            return false;
-        }
-
-        MapleMap map = chr.getMap();
-
-        if (FieldLimitType.PotionUse.check(map.getFieldLimit())) {
-            chr.SendPacket(ResWrapper.StatChanged(chr));
-            return false;
-        }
-
-        if (!MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyTo(chr)) {
-            chr.SendPacket(ResWrapper.StatChanged(chr));
-            return false;
-        }
-
-        MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
-        if (chr.getMap().getConsumeItemCoolTime() > 0) {
-            chr.setNextConsume(time + (chr.getMap().getConsumeItemCoolTime() * 1000));
-        }
-
-        return true;
-    }
-
-    public static boolean OnStatChangeItemUse(ClientPacket cp, MapleCharacter chr) {
-        int timestamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
-        short item_slot = cp.Decode2();
-        int item_id = cp.Decode4();
-        return UseItem(chr, item_slot, item_id);
-    }
 
     public static void RemoveCashItem(MapleCharacter chr, short item_slot) {
         MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.CASH, item_slot, (short) 1, false, true);
