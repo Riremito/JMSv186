@@ -177,13 +177,14 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket sendMesobagSuccess(int mesos) {
+    public static MaplePacket MesoGive_Succeeded(int mesos) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Succeeded);
+
         sp.Encode4(mesos);
         return sp.get();
     }
 
-    public static MaplePacket sendMesobagFailed() {
+    public static MaplePacket MesoGive_Failed() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Failed);
         return sp.get();
     }

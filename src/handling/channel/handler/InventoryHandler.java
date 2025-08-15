@@ -1054,19 +1054,7 @@ public class InventoryHandler {
                 break;
             }
             default: {
-                if (itemId / 10000 == 520) {
-                    final int mesars = MapleItemInformationProvider.getInstance().getMeso(itemId);
-                    if (mesars > 0 && c.getPlayer().getMeso() < (Integer.MAX_VALUE - mesars)) {
-                        used = true;
-                        if (Math.random() > 0.1) {
-                            final int gainmes = Randomizer.nextInt(mesars);
-                            c.getPlayer().gainMeso(gainmes, false);
-                            c.getSession().write(ResCUserLocal.sendMesobagSuccess(gainmes));
-                        } else {
-                            c.getSession().write(ResCUserLocal.sendMesobagFailed());
-                        }
-                    }
-                } else if (itemId / 10000 == 562) {
+                if (itemId / 10000 == 562) {
                     //ItemRequest.UseSkillBook(slot, itemId, c, c.getPlayer()); //this should handle removing
                 } else if (itemId / 10000 == 553) {
                     UseRewardItem(slot, itemId, c, c.getPlayer());// this too

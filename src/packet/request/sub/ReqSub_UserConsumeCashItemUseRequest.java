@@ -358,6 +358,20 @@ public class ReqSub_UserConsumeCashItemUseRequest {
 
     public static boolean cashItem520_Money(MapleCharacter chr, int cash_item_id) {
         switch (cash_item_id) {
+            case 5200000:
+            case 5200001:
+            case 5200002: // メル袋
+            {
+                final int meso = MapleItemInformationProvider.getInstance().getMeso(cash_item_id);
+
+                if (!chr.gainMeso(meso, false)) {
+                    chr.SendPacket(ResCUserLocal.MesoGive_Failed());
+                    return false;
+                }
+
+                chr.SendPacket(ResCUserLocal.MesoGive_Succeeded(meso));
+                return true;
+            }
             case 5201000:
             case 5201001:
             case 5201002: // パチンコ玉
@@ -402,6 +416,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
 
                 if (!chr.gainMeso(randommeso, false)) {
                     chr.SendPacket(ResCUserLocal.RandomMesoBagFailed());
+                    return false;
                 }
 
                 chr.SendPacket(ResCUserLocal.RandomMesoBagSuccess((byte) (r + 1), randommeso));
