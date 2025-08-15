@@ -162,7 +162,7 @@ public class ReqCUser_Pet {
             move_path.update(pet);
         }
 
-        map.broadcastMessage(chr, ResCUser_Pet.movePet(chr, chr.getPetIndex(pet), move_path), false);
+        map.broadcastMessage(chr, ResCUser_Pet.PetMove(chr, pet, move_path), false);
         return true;
     }
 

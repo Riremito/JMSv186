@@ -134,10 +134,17 @@ public class ResCUser_Pet {
         return Activated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, true);
     }
 
-    public static final MaplePacket movePet(MapleCharacter chr, int pet_index, ParseCMovePath data) {
+    public static final MaplePacket PetMove(MapleCharacter chr, MaplePet pet, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetMove);
+
         sp.Encode4(chr.getId());
-        sp.Encode4(pet_index);
+
+        if (Version.LessOrEqual(Region.JMS, 147)) {
+            sp.Encode1(0);
+        } else {
+            sp.Encode4(chr.getPetIndex(pet));
+        }
+
         sp.EncodeBuffer(data.get());
         return sp.get();
     }
