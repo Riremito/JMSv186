@@ -55,7 +55,6 @@ import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.Randomizer;
 import server.RandomRewards;
-import server.MapleShopFactory;
 import server.MapleItemInformationProvider;
 import server.MapleInventoryManipulator;
 import server.StructRewardItem;
@@ -1002,17 +1001,6 @@ public class InventoryHandler {
                 used = true;
                 break;
             }
-            case 5100000: { // Congratulatory Song
-                c.getPlayer().getMap().broadcastMessage(ResWrapper.musicChange("Jukebox/Congratulation"));
-                used = true;
-                break;
-            }
-            case 5230000: {// owl of minerva
-                final int itemSearch = slea.readInt();
-                final List<HiredMerchant> hms = c.getChannelServer().searchMerchant(itemSearch);
-                // owl
-                break;
-            }
             case 5281001: //idk, but probably
             case 5280001: // Gas Skill
             case 5281000: { // Passed gas
@@ -1044,13 +1032,6 @@ public class InventoryHandler {
                 } else {
                     c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
                 }
-                break;
-            }
-            // さすらいの商人ミョミョ
-            case 5450000: {
-                // 適当なSHOPを指定しているので修正必要
-                MapleShopFactory.getInstance().getShop(11100).sendShop(c);
-                //used = true;
                 break;
             }
             default: {

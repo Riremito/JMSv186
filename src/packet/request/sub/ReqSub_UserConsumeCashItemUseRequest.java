@@ -27,6 +27,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import debug.Debug;
+import debug.DebugShop;
 import handling.channel.handler.PlayerHandler;
 import handling.world.World;
 import java.util.LinkedList;
@@ -35,6 +36,7 @@ import java.util.Random;
 import packet.ClientPacket;
 import packet.ops.OpsBodyPart;
 import packet.ops.OpsBroadcastMsg;
+import packet.ops.OpsShopScanner;
 import packet.ops.arg.ArgBroadcastMsg;
 import packet.request.ReqCUser_Pet;
 import packet.response.ResCParcelDlg;
@@ -46,6 +48,7 @@ import packet.response.wrapper.ResWrapper;
 import server.MapleItemInformationProvider;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
+import server.shops.HiredMerchant;
 
 /**
  *
@@ -141,6 +144,14 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
                 return true;
             }
+            case 523: {
+                // OnUserShopScannerItemUseRequest
+                int target_item_id = cp.Decode4();
+                final List<HiredMerchant> hms = chr.getClient().getChannelServer().searchMerchant(target_item_id);
+                chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_SearchResult));
+                item_use.run();
+                return true;
+            }
             case 524: {
                 // TODO : fix
                 ReqCUser_Pet.OnPetFood(chr, MapleInventoryType.CASH, cash_item_slot, cash_item_id);
@@ -158,6 +169,16 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 chr.setADBoard(message);
                 map.broadcastMessage(ResCUser.UserADBoard(chr));
                 //item_use.run();
+                return true;
+            }
+            case 545: {
+                //MapleShopFactory.getInstance().getShop(11100).sendShop(chr.getClient());
+                // test
+                DebugShop ds = new DebugShop();
+                ds.setRechargeAll();
+                ds.setRandomItems(3);
+                ds.start(chr);
+                chr.UpdateStat(true);
                 return true;
             }
             default: {
