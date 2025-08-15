@@ -62,7 +62,6 @@ import packet.ops.arg.ArgFriend;
 import packet.ops.arg.ArgMessage;
 import packet.ops.OpsSecondaryStat;
 import packet.ops.OpsShopScanner;
-import packet.request.ItemRequest;
 import packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import packet.response.data.DataCUIUserInfo;
 import packet.response.data.DataCWvsContext;

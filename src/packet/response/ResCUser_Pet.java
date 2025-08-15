@@ -153,10 +153,15 @@ public class ResCUser_Pet {
         return sp.get();
     }
 
-    public static MaplePacket changePetName(MapleCharacter chr, int pet_index, String pet_name) {
+    public static MaplePacket PetNameChanged(MapleCharacter chr, MaplePet pet, String pet_name) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetNameChanged);
+
         sp.Encode4(chr.getId());
-        sp.Encode4(pet_index);
+        if (Version.LessOrEqual(Region.JMS, 147)) {
+            sp.Encode1(0); // 0 = success
+        } else {
+            sp.Encode4(chr.getPetIndex(pet));
+        }
         sp.EncodeStr(pet_name);
         return sp.get();
     }

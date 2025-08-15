@@ -22,6 +22,7 @@ import client.MapleCharacter;
 import client.inventory.Equip;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import client.inventory.MaplePet;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -39,6 +40,7 @@ import packet.request.ReqCUser_Pet;
 import packet.response.ResCParcelDlg;
 import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
+import packet.response.ResCUser_Pet;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.MapleItemInformationProvider;
@@ -104,7 +106,9 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 return true;
             }
             case 517: {
-                item_use.run();
+                if (cashItem517_PetNameChange(chr, cash_item_id, cp)) {
+                    item_use.run();
+                }
                 return true;
             }
             case 520: // 5201000
@@ -294,6 +298,38 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         }
 
         chr.SendPacket(ResWrapper.enableActions());
+        return false;
+    }
+
+    public static boolean cashItem517_PetNameChange(MapleCharacter chr, int cash_item_id, ClientPacket cp) {
+        switch (cash_item_id) {
+            case 5170000: {
+                MaplePet pet = null;
+
+                if (Version.LessOrEqual(Region.JMS, 147)) {
+                    pet = chr.getPet(0);
+                } else {
+                    long pet_uid = cp.Decode8();
+                    pet = chr.getPetByUniqueId(pet_uid);
+                }
+
+                String pet_name = cp.DecodeStr();
+
+                if (pet == null) {
+                    chr.SendPacket(ResWrapper.StatChanged(chr));
+                    return false;
+                }
+
+                // new name
+                pet.setName(pet_name);
+                chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
+                chr.getMap().broadcastMessage(chr, ResCUser_Pet.PetNameChanged(chr, pet, pet_name), true);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
         return false;
     }
 
