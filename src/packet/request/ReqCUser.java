@@ -29,6 +29,7 @@ import client.inventory.Equip;
 import client.inventory.IEquip;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import client.inventory.MapleMount;
 import client.messages.CommandProcessor;
 import config.DeveloperMode;
 import config.Region;
@@ -302,7 +303,11 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserTamingMobFoodItemUseRequest: {
-                //ItemRequest.UseMountFood(p, c, c.getPlayer());
+                int timestamp = cp.Decode4();
+                short item_slot = cp.Decode2();
+                int item_id = cp.Decode4();
+
+                OnUserTamingMobFoodItemUseRequest(map, chr, item_slot, item_id);
                 return true;
             }
             case CP_UserScriptItemUseRequest: {
@@ -2038,6 +2043,30 @@ public class ReqCUser {
 
     public static boolean OnUserPetFoodItemUseRequest(MapleCharacter chr, short item_slot, int item_id) {
         return ReqCUser_Pet.OnPetFood(chr, MapleInventoryType.USE, item_slot, item_id);
+    }
+
+    public static boolean OnUserTamingMobFoodItemUseRequest(MapleMap map, MapleCharacter chr, short item_slot, int item_id) {
+        final IItem item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        final MapleMount mount = chr.getMount();
+
+        if (item_used != null && item_used.getQuantity() > 0 && item_used.getItemId() == item_id && mount != null) {
+            final int fatigue = mount.getFatigue();
+            boolean levelup = false;
+            mount.setFatigue((byte) -30);
+            if (fatigue > 0) {
+                mount.increaseExp();
+                final int level = mount.getLevel();
+                if (mount.getExp() >= GameConstants.getMountExpNeededForLevel(level + 1) && level < 31) {
+                    mount.setLevel((byte) (level + 1));
+                    levelup = true;
+                }
+            }
+            map.broadcastMessage(ResCWvsContext.updateMount(chr, levelup));
+            MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
+        }
+
+        chr.SendPacket(ResWrapper.enableActions());
+        return true;
     }
 
     public static boolean OnUserConsumeCashItemUseRequest(MapleCharacter chr, MapleMap map, ClientPacket cp) {

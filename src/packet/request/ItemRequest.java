@@ -26,7 +26,6 @@ import client.inventory.IEquip;
 import client.inventory.IEquip.ScrollResult;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
-import client.inventory.MapleMount;
 import client.inventory.MaplePet;
 import config.Region;
 import config.ServerConfig;
@@ -50,7 +49,6 @@ import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
-import tools.data.input.SeekableLittleEndianAccessor;
 
 /**
  *
@@ -533,30 +531,6 @@ public class ItemRequest {
             c.ProcessPacket(ResCUIVega.Result(scrollSuccess == IEquip.ScrollResult.SUCCESS));
         }
         return true;
-    }
-
-    public static final void UseMountFood(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        c.getPlayer().updateTick(slea.readInt());
-        final byte slot = (byte) slea.readShort();
-        final int itemid = slea.readInt(); //2260000 usually
-        final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
-        final MapleMount mount = chr.getMount();
-        if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == itemid && mount != null) {
-            final int fatigue = mount.getFatigue();
-            boolean levelup = false;
-            mount.setFatigue((byte) -30);
-            if (fatigue > 0) {
-                mount.increaseExp();
-                final int level = mount.getLevel();
-                if (mount.getExp() >= GameConstants.getMountExpNeededForLevel(level + 1) && level < 31) {
-                    mount.setLevel((byte) (level + 1));
-                    levelup = true;
-                }
-            }
-            chr.getMap().broadcastMessage(ResCWvsContext.updateMount(chr, levelup));
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, slot, (short) 1, false);
-        }
-        c.getSession().write(ResWrapper.enableActions());
     }
 
 }
