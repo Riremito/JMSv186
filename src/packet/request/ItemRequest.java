@@ -50,14 +50,12 @@ import packet.response.ResCUIVega;
 import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
 import packet.response.ResCWvsContext;
-import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
 import server.life.MapleMonster;
 import server.maps.FieldLimitType;
-import server.maps.MapleDynamicPortal;
 import server.maps.MapleMap;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -81,55 +79,6 @@ public class ItemRequest {
             // 回復薬
             case CP_UserStatChangeItemUseRequest: {
                 OnStatChangeItemUse(cp, chr);
-                return true;
-            }
-            case CP_UserSkillResetItemUseRequest: {
-                // v194
-                cp.Decode4(); // 2114524514, 00A67BE0
-                short item_slot = cp.Decode2(); // 60, 00A67BEE
-                int item_id = cp.Decode4(); // 2500000, 00A67BFC
-                return true;
-            }
-            case CP_JMS_MONSTERBOOK_SET: {
-                // v194
-                cp.Decode4(); // 2114843894, 00A60ACB
-                int item_slot = cp.Decode4(); // 64, 00A60AD9 4 bytes
-                int song_time = cp.Decode4(); // 2560000, 00A60AE3
-                return true;
-            }
-            case CP_JMS_JUKEBOX: {
-                // v194
-                cp.Decode4(); // 2113673714, 00A70E25
-                short item_slot = cp.Decode2(); // 43, 00A70E36
-                int item_id = cp.Decode4(); // 2150001, 00A70E40
-                int song_time = cp.Decode4(); // 113788, 00A70E4A
-                c.getPlayer().UpdateStat(true);
-                return true;
-            }
-            case CP_JMS_InstancePortalEnter: {
-                int portal_id = cp.Decode4();
-                byte flag = cp.Decode1();
-                //MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(749050200);
-                //c.getPlayer().changeMap(to, to.getPortal(0));
-                MapleDynamicPortal dynamic_portal = chr.getMap().findDynamicPortal(portal_id);
-                if (dynamic_portal == null) {
-                    c.getPlayer().UpdateStat(true);
-                    return true;
-                }
-                dynamic_portal.warp(chr);
-                return true;
-            }
-            case CP_JMS_InstancePortalCreate: {
-                // v194
-                cp.Decode4(); // -2145728229, 00A6618A
-                short item_slot = cp.Decode2(); // 50, 00A66198
-                int item_id = cp.Decode4(); // 2420004, 00A661A6
-                short x = cp.Decode2(); // -1776, 00A661C1
-                short y = cp.Decode2(); // 213, 00A661DD
-                MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(item_id, 749050200, x, y);
-                c.getPlayer().getMap().addMapObject(dynamic_portal);
-                c.getPlayer().getMap().broadcastMessage(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
-                c.getPlayer().UpdateStat(true);
                 return true;
             }
             default: {

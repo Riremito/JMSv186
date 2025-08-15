@@ -69,6 +69,7 @@ import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
+import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCUserLocal;
 import server.MapleInventoryManipulator;
@@ -77,6 +78,7 @@ import server.Randomizer;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
 import server.maps.FieldLimitType;
+import server.maps.MapleDynamicPortal;
 import server.maps.MapleMap;
 import server.shops.HiredMerchant;
 import tools.AttackPair;
@@ -325,6 +327,24 @@ public class ReqCUser {
                 }
                 return true;
             }
+            case CP_UserSkillResetItemUseRequest: {
+                int timestamp = cp.Decode4();
+                short item_slot = cp.Decode2();
+                int item_id = cp.Decode4(); // 2500000
+
+                // not coded.
+                chr.UpdateStat(true);
+                return true;
+            }
+            case CP_JMS_MONSTERBOOK_SET: {
+                int timestamp = cp.Decode4(); // 2114843894
+                int item_slot = cp.Decode4();
+                int song_time = cp.Decode4(); // 2560000
+
+                // not coded.
+                chr.UpdateStat(true);
+                return true;
+            }
             case CP_UserShopScannerItemUseRequest: {
                 OnUserShopScannerItemUseRequest(chr, cp);
                 return true;
@@ -543,10 +563,30 @@ public class ReqCUser {
                 //BBSHandler.BBSOperatopn(p, c);
                 return true;
             }
-            case CP_JMS_JUKEBOX:
-            case CP_JMS_InstancePortalCreate:
             case CP_JMS_InstancePortalEnter: {
-                return ItemRequest.OnPacket(header, cp, c);
+                int portal_id = cp.Decode4();
+                byte flag = cp.Decode1();
+                // 749050200
+                MapleDynamicPortal dynamic_portal = chr.getMap().findDynamicPortal(portal_id);
+                if (dynamic_portal == null) {
+                    chr.UpdateStat(true);
+                    return true;
+                }
+                dynamic_portal.warp(chr);
+                return true;
+            }
+            case CP_JMS_InstancePortalCreate: {
+                int timestamp = cp.Decode4();
+                short item_slot = cp.Decode2();
+                int item_id = cp.Decode4(); // 2420004
+                short x = cp.Decode2();
+                short y = cp.Decode2();
+
+                MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(item_id, 749050200, x, y);
+                map.addMapObject(dynamic_portal);
+                map.broadcastMessage(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
+                chr.UpdateStat(true);
+                return true;
             }
             case CP_UserMigrateToITCRequest: {
                 ReqCClientSocket.EnterCS(c, chr, true);
@@ -564,6 +604,17 @@ public class ReqCUser {
                 int timestamp = cp.Decode4();
 
                 OnUserTempExpUseRequest(chr);
+                return true;
+            }
+
+            case CP_JMS_JUKEBOX: {
+                int timestamp = cp.Decode4();
+                short item_slot = cp.Decode2();
+                int item_id = cp.Decode4(); // 2150001
+                int song_time = cp.Decode4(); // 113788
+
+                // not coded.
+                chr.UpdateStat(true);
                 return true;
             }
             case CP_TalkToTutor: {
