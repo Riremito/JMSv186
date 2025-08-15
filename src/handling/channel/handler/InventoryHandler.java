@@ -1083,7 +1083,7 @@ public class InventoryHandler {
                         }
                     }
                 } else if (itemId / 10000 == 562) {
-                    ItemRequest.UseSkillBook(slot, itemId, c, c.getPlayer()); //this should handle removing
+                    //ItemRequest.UseSkillBook(slot, itemId, c, c.getPlayer()); //this should handle removing
                 } else if (itemId / 10000 == 553) {
                     UseRewardItem(slot, itemId, c, c.getPlayer());// this too
                 } else {

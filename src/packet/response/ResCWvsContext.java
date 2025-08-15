@@ -1848,17 +1848,20 @@ public class ResCWvsContext {
         return mplew.getPacket();
     }
 
-    public static MaplePacket useSkillBook(MapleCharacter chr, int skillid, int maxlevel, boolean canuse, boolean success) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SkillLearnItemResult.get());
-        mplew.write(0); //?
-        mplew.writeInt(chr.getId());
-        mplew.write(1);
-        mplew.writeInt(skillid);
-        mplew.writeInt(maxlevel);
-        mplew.write(canuse ? 1 : 0);
-        mplew.write(success ? 1 : 0);
-        return mplew.getPacket();
+    public static MaplePacket SkillLearnItemResult(MapleCharacter chr, boolean bIsMaterbook, boolean bUsed, boolean bSucceed) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SkillLearnItemResult);
+
+        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.PostBB()) {
+            sp.Encode1(1); // bOnExclRequest
+        }
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(bIsMaterbook ? 1 : 0); // bIsMaterbook
+        sp.Encode4(0); // not used
+        sp.Encode4(0); // not used
+        sp.Encode1(bUsed ? 1 : 0); // bUsed[0]
+        sp.Encode1(bSucceed ? 1 : 0); // bSucceed
+        return sp.get();
     }
 
     public static final MaplePacket getSlotUpdate(byte invType, byte newSlots) {

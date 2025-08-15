@@ -54,6 +54,7 @@ import handling.world.World;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import packet.ClientPacket;
 import packet.ops.OpsChangeStat;
 import packet.ops.OpsChatGroup;
@@ -319,12 +320,11 @@ public class ReqCUser {
             }
             case CP_UserSkillLearnItemUseRequest: {
                 int time_stamp = cp.Decode4();
-                short slot = cp.Decode2();
+                short item_slot = cp.Decode2();
                 int item_id = cp.Decode4();
-                chr.updateTick(time_stamp);
-                if (ItemRequest.UseSkillBook(slot, item_id, c, c.getPlayer())) {
-                    c.getPlayer().saveToDB(false, false);
-                }
+
+                OnUserSkillLearnItemUseRequest(map, chr, item_slot, item_id);
+                //chr.saveToDB(false, false);
                 return true;
             }
             case CP_UserSkillResetItemUseRequest: {
@@ -1791,6 +1791,55 @@ public class ReqCUser {
 
     public static boolean OnUserConsumeCashItemUseRequest(MapleCharacter chr, MapleMap map, ClientPacket cp) {
         return ReqSub_UserConsumeCashItemUseRequest.OnUserConsumeCashItemUseRequestInternal(chr, map, cp);
+    }
+
+    public static boolean OnUserSkillLearnItemUseRequest(MapleMap map, MapleCharacter chr, short item_slot, final int item_id) {
+        int item_type = item_id / 10000;
+        boolean bIsMaterbook = (item_type == 229);
+        boolean bUsed = false;
+        boolean bSucceed = false;
+
+        final IItem toUse = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
+        if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != item_id) {
+            chr.SendPacket(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
+            return false;
+        }
+
+        final Map<String, Integer> skilldata = MapleItemInformationProvider.getInstance().getSkillStats(toUse.getItemId());
+        if (skilldata == null) {
+            chr.SendPacket(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
+            return false;
+        }
+
+        final int SuccessRate = skilldata.get("success");
+        final int ReqSkillLevel = skilldata.get("reqSkillLevel");
+        final int MasterLevel = skilldata.get("masterLevel");
+        byte i = 0;
+        Integer CurrentLoopedSkillId;
+
+        while (true) {
+            CurrentLoopedSkillId = skilldata.get("skillid" + i);
+            i++;
+            if (CurrentLoopedSkillId == null) {
+                break; // End of data
+            }
+            final ISkill CurrSkillData = SkillFactory.getSkill(CurrentLoopedSkillId);
+            if (CurrSkillData != null && CurrSkillData.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(CurrSkillData) >= ReqSkillLevel && chr.getMasterLevel(CurrSkillData) < MasterLevel) {
+                bUsed = true;
+                if (Randomizer.nextInt(100) <= SuccessRate && SuccessRate != 0) {
+                    bSucceed = true;
+                    chr.changeSkillLevel(CurrSkillData, chr.getSkillLevel(CurrSkillData), (byte) MasterLevel);
+                } else {
+                    bSucceed = false;
+                }
+                MapleInventoryManipulator.removeFromSlot(chr.getClient(), GameConstants.getInventoryType(item_id), item_slot, (short) 1, false);
+                break;
+            }
+        }
+
+        map.broadcastMessage(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
+        chr.SendPacket(ResWrapper.enableActions());
+        return true;
     }
 
     public static boolean OnGroupMessage(MapleCharacter chr, ClientPacket cp) {

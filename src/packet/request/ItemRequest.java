@@ -18,7 +18,6 @@
  */
 package packet.request;
 
-import client.ISkill;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.SkillFactory;
@@ -37,7 +36,6 @@ import debug.Debug;
 import handling.world.World;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import packet.ClientPacket;
 import packet.ops.OpsBodyPart;
@@ -53,7 +51,6 @@ import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
-import server.Randomizer;
 import server.life.MapleMonster;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
@@ -529,49 +526,6 @@ public class ItemRequest {
             Debug.ErrorLog("potential err 2");
             return;
         }
-    }
-
-    public static final boolean UseSkillBook(short slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
-        final IItem toUse = chr.getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
-        if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId) {
-            return false;
-        }
-        final Map<String, Integer> skilldata = MapleItemInformationProvider.getInstance().getSkillStats(toUse.getItemId());
-        if (skilldata == null) {
-            // Hacking or used an unknown item
-            return false;
-        }
-        boolean canuse = false;
-        boolean success = false;
-        int skill = 0;
-        int maxlevel = 0;
-        final int SuccessRate = skilldata.get("success");
-        final int ReqSkillLevel = skilldata.get("reqSkillLevel");
-        final int MasterLevel = skilldata.get("masterLevel");
-        byte i = 0;
-        Integer CurrentLoopedSkillId;
-        while (true) {
-            CurrentLoopedSkillId = skilldata.get("skillid" + i);
-            i++;
-            if (CurrentLoopedSkillId == null) {
-                break; // End of data
-            }
-            final ISkill CurrSkillData = SkillFactory.getSkill(CurrentLoopedSkillId);
-            if (CurrSkillData != null && CurrSkillData.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(CurrSkillData) >= ReqSkillLevel && chr.getMasterLevel(CurrSkillData) < MasterLevel) {
-                canuse = true;
-                if (Randomizer.nextInt(100) <= SuccessRate && SuccessRate != 0) {
-                    success = true;
-                    chr.changeSkillLevel(CurrSkillData, chr.getSkillLevel(CurrSkillData), (byte) MasterLevel);
-                } else {
-                    success = false;
-                }
-                MapleInventoryManipulator.removeFromSlot(c, GameConstants.getInventoryType(itemId), slot, (short) 1, false);
-                break;
-            }
-        }
-        c.getPlayer().getMap().broadcastMessage(ResCWvsContext.useSkillBook(chr, skill, maxlevel, canuse, success));
-        c.getSession().write(ResWrapper.enableActions());
-        return canuse;
     }
 
     public static final boolean UseUpgradeScroll(short slot, short dst, final byte ws, final MapleClient c, final MapleCharacter chr) {
