@@ -1271,11 +1271,7 @@ public class ReqCUser {
         boolean whiteScroll = true;
         boolean legendarySpirit = false; // legendary spirit skill
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        /*
-        if ((ws & 2) == 2) {
-        whiteScroll = true;
-        }
-         */
+
         IEquip toScroll;
         if (equip_slot < 0) {
             toScroll = (IEquip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot);

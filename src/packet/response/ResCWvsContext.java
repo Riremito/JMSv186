@@ -63,6 +63,7 @@ import packet.ops.arg.ArgMessage;
 import packet.ops.OpsSecondaryStat;
 import packet.ops.OpsShopScanner;
 import packet.request.ItemRequest;
+import packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import packet.response.data.DataCUIUserInfo;
 import packet.response.data.DataCWvsContext;
 import packet.response.data.DataSecondaryStat;
@@ -620,7 +621,7 @@ public class ResCWvsContext {
             }
             case BM_SPEAKERCHANNEL: // 5070000, メガホン
             {
-                String text = ItemRequest.MegaphoneGetSenderName(bma.chr) + " : " + bma.message;
+                String text = ReqSub_UserConsumeCashItemUseRequest.MegaphoneGetSenderName(bma.chr) + " : " + bma.message;
                 sp.EncodeStr(text);
                 break;
             }
@@ -628,7 +629,7 @@ public class ResCWvsContext {
             case BM_HEARTSPEAKER: // 5073000, ハート拡声器
             case BM_SKULLSPEAKER: // 5074000, ドクロ拡声器
             {
-                String text = ItemRequest.MegaphoneGetSenderName(bma.chr) + " : " + bma.message;
+                String text = ReqSub_UserConsumeCashItemUseRequest.MegaphoneGetSenderName(bma.chr) + " : " + bma.message;
                 int channel = bma.chr.getClient().getChannel() - 1;
                 sp.EncodeStr(text);
                 sp.Encode1(channel);
@@ -637,7 +638,7 @@ public class ResCWvsContext {
             }
             case BM_ITEMSPEAKER: // 5076000, アイテム拡声器
             {
-                String text = ItemRequest.MegaphoneGetSenderName(bma.chr) + " : " + bma.message;
+                String text = ReqSub_UserConsumeCashItemUseRequest.MegaphoneGetSenderName(bma.chr) + " : " + bma.message;
                 int channel = bma.chr.getClient().getChannel() - 1;
                 boolean show_item = bma.item != null;
                 sp.EncodeStr(text);
@@ -651,7 +652,7 @@ public class ResCWvsContext {
             }
             case MEGAPHONE_TRIPLE: // 5077000, 三連拡声器
             {
-                String name = ItemRequest.MegaphoneGetSenderName(bma.chr);
+                String name = ReqSub_UserConsumeCashItemUseRequest.MegaphoneGetSenderName(bma.chr);
                 int channel = bma.chr.getClient().getChannel() - 1;
                 String text1 = bma.messages.get(0); // ?_?
 

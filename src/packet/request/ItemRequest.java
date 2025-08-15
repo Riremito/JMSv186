@@ -19,33 +19,19 @@
 package packet.request;
 
 import client.MapleCharacter;
-import client.MapleClient;
-import client.SkillFactory;
 import client.inventory.Equip;
-import client.inventory.IEquip;
 import client.inventory.IEquip.ScrollResult;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
-import config.Region;
 import config.ServerConfig;
-import config.Version;
-import constants.GameConstants;
 import debug.Debug;
-import handling.world.World;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 import packet.ClientPacket;
-import packet.ops.OpsBodyPart;
-import packet.ops.OpsBroadcastMsg;
-import packet.ops.arg.ArgBroadcastMsg;
 import packet.response.ResCParcelDlg;
 import packet.response.ResCUser_Pet;
-import packet.response.ResCUIVega;
 import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
-import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -55,9 +41,6 @@ import server.MapleItemInformationProvider;
  * @author Riremito
  */
 public class ItemRequest {
-
-    // 勲章が装備されるスロットのID
-    private static final short SLOT_EQUIPPED_MEDAL = (short) -21;
 
     public static void RemoveCashItem(MapleCharacter chr, short item_slot) {
         MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.CASH, item_slot, (short) 1, false, true);
@@ -81,18 +64,6 @@ public class ItemRequest {
         }
 
         int item_type = item_id / 10000;
-
-        switch (item_type) {
-            case 507: {
-                if (UseMegaphone(cp, chr, item_id)) {
-                    RemoveCashItem(chr, item_slot);
-                }
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
 
         switch (item_id) {
             case 5170000: {
@@ -206,331 +177,6 @@ public class ItemRequest {
         }
 
         return false;
-    }
-
-    // 勲章の名前を付けたキャラクター名
-    public static String MegaphoneGetSenderName(MapleCharacter chr) {
-        IItem equipped_medal = chr.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
-        // "キャラクター名"
-        if (equipped_medal == null) {
-            return chr.getName();
-        }
-        String medal_name = MapleItemInformationProvider.getInstance().getName(equipped_medal.getItemId());
-
-        //Debug.DebugLog("medal = " + equipped_medal.getItemId());
-        if (medal_name == null) {
-            return chr.getName();
-        }
-
-        int padding = medal_name.indexOf("の勲章");
-        if (padding > 0) {
-            medal_name = medal_name.substring(0, padding);
-        }
-        // "<勲章> キャラクター名"
-        return "<" + medal_name + "> " + chr.getName();
-    }
-
-    public static boolean UseMegaphone(ClientPacket cp, MapleCharacter chr, int item_id) {
-        byte channel = (byte) chr.getClient().getChannel();
-        switch (item_id) {
-            // メガホン
-            case 5070000: {
-                String message = cp.DecodeStr();
-
-                ArgBroadcastMsg bma = new ArgBroadcastMsg();
-                bma.bm = OpsBroadcastMsg.BM_SPEAKERCHANNEL;
-                bma.chr = chr;
-                bma.message = message;
-                chr.getClient().getChannelServer().broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
-                return true;
-            }
-            // 拡声器
-            case 5071000: {
-                String message = cp.DecodeStr();
-                byte ear = Version.LessOrEqual(Region.KMS, 31) ? 1 : cp.Decode1();
-
-                ArgBroadcastMsg bma = new ArgBroadcastMsg();
-                bma.bm = OpsBroadcastMsg.BM_SPEAKERWORLD;
-                bma.chr = chr;
-                bma.message = message;
-                bma.ear = ear;
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
-                return true;
-            }
-            // 高機能拡声器 (使えない)
-            case 5072000: {
-                break;
-            }
-            // ハート拡声器
-            case 5073000: {
-                String message = cp.DecodeStr();
-                byte ear = cp.Decode1();
-
-                ArgBroadcastMsg bma = new ArgBroadcastMsg();
-                bma.bm = OpsBroadcastMsg.BM_HEARTSPEAKER;
-                bma.chr = chr;
-                bma.message = message;
-                bma.ear = ear;
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
-                return true;
-            }
-            // ドクロ拡声器
-            case 5074000: {
-                String message = cp.DecodeStr();
-                byte ear = cp.Decode1();
-
-                ArgBroadcastMsg bma = new ArgBroadcastMsg();
-                bma.bm = OpsBroadcastMsg.BM_SKULLSPEAKER;
-                bma.chr = chr;
-                bma.message = message;
-                bma.ear = ear;
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
-                return true;
-            }
-            // MapleTV
-            case 5075000:
-            case 5075001:
-            case 5075002:
-            case 5075003:
-            case 5075004:
-            case 5075005: {
-                break;
-            }
-            // アイテム拡声器
-            case 5076000: {
-                String message = cp.DecodeStr();
-                byte ear = cp.Decode1();
-                byte showitem = cp.Decode1();
-                IItem item = null;
-                if (showitem == 1) {
-                    // アイテム情報
-                    int type = cp.Decode4();
-                    int slot = cp.Decode4();
-                    item = chr.getInventory(MapleInventoryType.getByType((byte) type)).getItem((short) slot);
-                }
-
-                ArgBroadcastMsg bma = new ArgBroadcastMsg();
-                bma.bm = OpsBroadcastMsg.BM_ITEMSPEAKER;
-                bma.chr = chr;
-                bma.message = message;
-                bma.ear = ear;
-                bma.item = item;
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
-                return true;
-            }
-            // 三連拡声器
-            case 5077000: {
-                List<String> messages = new LinkedList<>();
-                // メッセージの行数
-                byte line = cp.Decode1();
-                if (3 < line) {
-                    Debug.ErrorLog("三連拡声器 - lines");
-                    return false;
-                }
-                for (int i = 0; i < line; i++) {
-                    String message = cp.DecodeStr();
-                    if (message.length() > 65) {
-                        Debug.ErrorLog("三連拡声器 - letters");
-                        return false;
-                    }
-                    messages.add(message);
-                }
-                byte ear = cp.Decode1();
-
-                ArgBroadcastMsg bma = new ArgBroadcastMsg();
-                bma.bm = OpsBroadcastMsg.MEGAPHONE_TRIPLE;
-                bma.chr = chr;
-                bma.ear = ear;
-                bma.multi_line = true;
-                bma.messages = messages;
-
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-
-        chr.SendPacket(ResWrapper.enableActions());
-        return false;
-    }
-
-    public static final boolean UseUpgradeScroll(short slot, short dst, final byte ws, final MapleClient c, final MapleCharacter chr, final int vegas) {
-        boolean whiteScroll = true;
-        boolean legendarySpirit = false; // legendary spirit skill
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        /*
-        if ((ws & 2) == 2) {
-        whiteScroll = true;
-        }
-         */
-        IEquip toScroll;
-        if (dst < 0) {
-            toScroll = (IEquip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
-        } else {
-            // legendary spirit
-            legendarySpirit = true;
-            toScroll = (IEquip) chr.getInventory(MapleInventoryType.EQUIP).getItem(dst);
-        }
-        if (toScroll == null) {
-            return false;
-        }
-        final byte oldLevel = (byte) toScroll.getLevel();
-        final byte oldEnhance = (byte) toScroll.getEnhance();
-        final byte oldState = (byte) toScroll.getHidden();
-        final byte oldFlag = (byte) toScroll.getFlag();
-        final byte oldSlots = (byte) toScroll.getUpgradeSlots();
-        IItem scroll = chr.getInventory(MapleInventoryType.USE).getItem(slot);
-        if (scroll == null) {
-            c.getSession().write(ResWrapper.getInventoryFull());
-            return false;
-        }
-        // 黄金つち (ビシャスのハンマー)
-        if (scroll.getItemId() == 2470000) {
-            final Equip toHammer = (Equip) toScroll;
-            if (toHammer.getViciousHammer() >= 2 || toHammer.getUpgradeSlots() > 120) {
-                c.getSession().write(ResWrapper.getInventoryFull());
-                return false;
-            }
-            toHammer.setViciousHammer((byte) (toHammer.getViciousHammer() + 1));
-            toHammer.setUpgradeSlots((byte) (toHammer.getUpgradeSlots() + 1));
-            c.SendPacket(ResWrapper.scrolledItem(scroll, toHammer, false, false));
-            chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
-            chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(c.getPlayer().getId(), IEquip.ScrollResult.SUCCESS, legendarySpirit), vegas == 0);
-            return true;
-        }
-        if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
-            if (toScroll.getUpgradeSlots() < 1) {
-                c.getSession().write(ResWrapper.getInventoryFull());
-                return false;
-            }
-        } else if (GameConstants.isEquipScroll(scroll.getItemId())) {
-            if (toScroll.getUpgradeSlots() >= 1 || toScroll.getEnhance() >= 100 || vegas > 0 || ii.isCash(toScroll.getItemId())) {
-                c.getSession().write(ResWrapper.getInventoryFull());
-                return false;
-            }
-        } else if (GameConstants.isPotentialScroll(scroll.getItemId())) {
-            if (toScroll.getHidden() >= 1 || (toScroll.getLevel() == 0 && toScroll.getUpgradeSlots() == 0) || vegas > 0 || ii.isCash(toScroll.getItemId())) {
-                c.getSession().write(ResWrapper.getInventoryFull());
-                return false;
-            }
-        }
-        if (!GameConstants.canScroll(toScroll.getItemId()) && !GameConstants.isChaosScroll(toScroll.getItemId())) {
-            c.getSession().write(ResWrapper.getInventoryFull());
-            return false;
-        }
-        if ((GameConstants.isCleanSlate(scroll.getItemId()) || GameConstants.isTablet(scroll.getItemId()) || GameConstants.isChaosScroll(scroll.getItemId())) && (vegas > 0 || ii.isCash(toScroll.getItemId()))) {
-            c.getSession().write(ResWrapper.getInventoryFull());
-            return false;
-        }
-        if (GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() < 0) {
-            //not a durability item
-            c.getSession().write(ResWrapper.getInventoryFull());
-            return false;
-        } else if (!GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() >= 0) {
-            c.getSession().write(ResWrapper.getInventoryFull());
-            return false;
-        }
-        IItem wscroll = null;
-        // Anti cheat and validation
-        List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
-        if (scrollReqs.size() > 0 && !scrollReqs.contains(toScroll.getItemId())) {
-            c.getSession().write(ResWrapper.getInventoryFull());
-            return false;
-        }
-        if (whiteScroll) {
-            wscroll = chr.getInventory(MapleInventoryType.USE).findById(2340000);
-            if (wscroll == null) {
-                whiteScroll = false;
-            }
-        }
-        if (scroll.getItemId() == 2049115 && toScroll.getItemId() != 1003068) {
-            //ravana
-            return false;
-        }
-        if (GameConstants.isTablet(scroll.getItemId())) {
-            switch (scroll.getItemId() % 1000 / 100) {
-                case 0:
-                    //1h
-                    if (GameConstants.isTwoHanded(toScroll.getItemId()) || !GameConstants.isWeapon(toScroll.getItemId())) {
-                        return false;
-                    }
-                    break;
-                case 1:
-                    //2h
-                    if (!GameConstants.isTwoHanded(toScroll.getItemId()) || !GameConstants.isWeapon(toScroll.getItemId())) {
-                        return false;
-                    }
-                    break;
-                case 2:
-                    //armor
-                    if (GameConstants.isAccessory(toScroll.getItemId()) || GameConstants.isWeapon(toScroll.getItemId())) {
-                        return false;
-                    }
-                    break;
-                case 3:
-                    //accessory
-                    if (!GameConstants.isAccessory(toScroll.getItemId()) || GameConstants.isWeapon(toScroll.getItemId())) {
-                        return false;
-                    }
-                    break;
-            }
-        } else if (!GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isChaosScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
-            if (!ii.canScroll(scroll.getItemId(), toScroll.getItemId())) {
-                return false;
-            }
-        }
-        if (GameConstants.isAccessoryScroll(scroll.getItemId()) && !GameConstants.isAccessory(toScroll.getItemId())) {
-            return false;
-        }
-        if (scroll.getQuantity() <= 0) {
-            return false;
-        }
-        if (legendarySpirit && vegas == 0) {
-            if (chr.getSkillLevel(SkillFactory.getSkill(1003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(10001003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(20001003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(20011003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(30001003)) <= 0) {
-                return false;
-            }
-        }
-        // Scroll Success/ Failure/ Curse
-        final IEquip scrolled = (IEquip) ii.scrollEquipWithId(toScroll, scroll, whiteScroll, chr, vegas);
-        IEquip.ScrollResult scrollSuccess;
-        if (scrolled == null) {
-            scrollSuccess = IEquip.ScrollResult.CURSE;
-        } else if (scrolled.getLevel() > oldLevel || scrolled.getEnhance() > oldEnhance || scrolled.getHidden() > oldState || scrolled.getFlag() > oldFlag) {
-            scrollSuccess = IEquip.ScrollResult.SUCCESS;
-        } else if (GameConstants.isCleanSlate(scroll.getItemId()) && scrolled.getUpgradeSlots() > oldSlots) {
-            scrollSuccess = IEquip.ScrollResult.SUCCESS;
-        } else {
-            scrollSuccess = IEquip.ScrollResult.FAIL;
-        }
-        // Update
-        chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
-        if (whiteScroll) {
-            MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false, false);
-        }
-        if (scrollSuccess == IEquip.ScrollResult.CURSE) {
-            c.SendPacket(ResWrapper.scrolledItem(scroll, toScroll, true, false));
-            if (dst < 0) {
-                chr.getInventory(MapleInventoryType.EQUIPPED).removeItem(toScroll.getPosition());
-            } else {
-                chr.getInventory(MapleInventoryType.EQUIP).removeItem(toScroll.getPosition());
-            }
-        } else if (vegas == 0) {
-            c.SendPacket(ResWrapper.scrolledItem(scroll, scrolled, false, false));
-        }
-        chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(c.getPlayer().getId(), scrollSuccess, legendarySpirit), vegas == 0);
-        // equipped item was scrolled and changed
-        if (dst < 0 && (scrollSuccess == IEquip.ScrollResult.SUCCESS || scrollSuccess == IEquip.ScrollResult.CURSE) && vegas == 0) {
-            chr.equipChanged();
-        }
-        // ベガの呪文書
-        if (vegas != 0) {
-            c.getPlayer().forceReAddItem(toScroll, MapleInventoryType.EQUIP);
-            c.ProcessPacket(ResCUIVega.Start());
-            c.ProcessPacket(ResCUIVega.Result(scrollSuccess == IEquip.ScrollResult.SUCCESS));
-        }
-        return true;
     }
 
 }

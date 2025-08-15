@@ -47,7 +47,6 @@ import packet.ClientPacket;
 import packet.ops.OpsBodyPart;
 import packet.response.ResCDropPool;
 import packet.response.ResCDropPool.LeaveType;
-import packet.request.ItemRequest;
 import packet.response.ResCField;
 import packet.response.ResCUIItemUpgrade;
 import packet.response.ResCUserLocal;
@@ -917,7 +916,7 @@ public class InventoryHandler {
                 final byte dst = (byte) slea.readInt();
                 slea.readInt(); // Inventory type, always use
                 final byte src = (byte) slea.readInt();
-                used = ItemRequest.UseUpgradeScroll(src, dst, (byte) 2, c, c.getPlayer(), itemId); //cannot use ws with vega but we dont care
+                //used = ItemRequest.UseUpgradeScroll(src, dst, (byte) 2, c, c.getPlayer(), itemId); //cannot use ws with vega but we dont care
                 if (used) {
                     c.getPlayer().saveToDB(false, false);
                 }
