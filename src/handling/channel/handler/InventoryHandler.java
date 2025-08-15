@@ -1054,10 +1054,7 @@ public class InventoryHandler {
                 break;
             }
             default: {
-                if (itemId / 10000 == 510) {
-                    c.getPlayer().getMap().startJukebox(c.getPlayer().getName(), itemId);
-                    used = true;
-                } else if (itemId / 10000 == 520) {
+                if (itemId / 10000 == 520) {
                     final int mesars = MapleItemInformationProvider.getInstance().getMeso(itemId);
                     if (mesars > 0 && c.getPlayer().getMeso() < (Integer.MAX_VALUE - mesars)) {
                         used = true;

@@ -105,6 +105,13 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
                 return true;
             }
+            case 510: {
+                int song_time = cp.Decode4(); // unused
+
+                map.startJukebox(chr.getName(), cash_item_id);
+                item_use.run();
+                return true;
+            }
             case 512: {
                 String message = cp.DecodeStr();
                 MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
@@ -118,6 +125,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     }
                 }
 
+                item_use.run();
                 return true;
             }
             case 517: {

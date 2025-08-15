@@ -70,12 +70,12 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket playCashSong(int itemid, String name) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_PlayJukeBox.get());
-        mplew.writeInt(itemid);
-        mplew.writeMapleAsciiString(name);
-        return mplew.getPacket();
+    public static MaplePacket PlayJukeBox(int item_id, String name) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PlayJukeBox);
+
+        sp.Encode4(item_id);
+        sp.EncodeStr(name);
+        return sp.get();
     }
 
     public static MaplePacket GroupMessage(OpsChatGroup ops, String name, String message) {

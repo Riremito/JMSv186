@@ -628,7 +628,7 @@ public class ReqCUser {
                 int item_id = cp.Decode4(); // 2150001
                 int song_time = cp.Decode4(); // 113788
 
-                // not coded.
+                map.startJukebox(chr.getName(), item_id);
                 chr.UpdateStat(true);
                 return true;
             }

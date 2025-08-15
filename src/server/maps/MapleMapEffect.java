@@ -50,11 +50,11 @@ public class MapleMapEffect {
     }
 
     public MaplePacket makeDestroyData() { //jukebox doesn't REALLY have a destroy, but 0 stops all music
-        return jukebox ? ResCField.playCashSong(0, "") : ResWrapper.removeMapEffect();
+        return jukebox ? ResCField.PlayJukeBox(0, "") : ResWrapper.removeMapEffect();
     }
 
     public MaplePacket makeStartData() {
-        return jukebox ? ResCField.playCashSong(itemId, msg) : ResCField.BlowWeather(msg, itemId, active);
+        return jukebox ? ResCField.PlayJukeBox(itemId, msg) : ResCField.BlowWeather(msg, itemId, active);
     }
 
     public void sendStartData(MapleClient c) {
