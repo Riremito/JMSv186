@@ -227,6 +227,15 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         return -1;
     }
 
+    public short getNextItem(short slot) {
+        for (short i = slot; i <= slotLimit; i++) {
+            if (inventory.keySet().contains(i)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     public short getNumFreeSlot() {
         if (isFull()) {
             return 0;

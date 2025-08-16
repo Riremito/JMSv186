@@ -53,7 +53,7 @@ public enum MapleInventoryType {
                 return l;
             }
         }
-        return null;
+        return UNDEFINED;
     }
 
     public static MapleInventoryType getByWZName(String name) {

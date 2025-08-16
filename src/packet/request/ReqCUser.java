@@ -1998,26 +1998,27 @@ public class ReqCUser {
     }
 
     public static boolean OnUserGatherItemRequest(MapleCharacter chr, byte slot_type) {
-        MapleInventoryType invType = MapleInventoryType.getByType(slot_type);
-        MapleInventory Inv = chr.getInventory(invType);
+        MapleInventoryType mit = MapleInventoryType.getByType(slot_type);
 
-        final List<IItem> itemMap = new LinkedList<>();
-        for (IItem item : Inv.list()) {
-            itemMap.add(item.copy()); // clone all  items T___T.
-        }
-        for (IItem itemStats : itemMap) {
-            MapleInventoryManipulator.removeById(chr.getClient(), invType, itemStats.getItemId(), itemStats.getQuantity(), true, false);
+        if (mit == MapleInventoryType.UNDEFINED || mit == MapleInventoryType.EQUIPPED) {
+            return false;
         }
 
-        final List<IItem> sortedItems = sortItems(itemMap);
-        for (IItem item : sortedItems) {
-            MapleInventoryManipulator.addFromDrop(chr.getClient(), item, false);
+        MapleInventory mi = chr.getInventory(mit);
+
+        // 1. 最初の空きスロットを探す
+        // 2. 空きスロット以降に存在するアイテムを探す
+        // 3. アイテムを空きスロットに移動する
+        for (short slot_to = mi.getNextFreeSlot(); slot_to <= mi.getSlotLimit(); slot_to++) {
+            short slot_from = mi.getNextItem(slot_to);
+            if (slot_from == 0) {
+                break;
+            }
+            // 多分1回のpacketで送信するようにしたほうが良い
+            OnUserChangeSlotPositionRequest(chr, slot_type, slot_from, slot_to, (short) -1);
         }
-        itemMap.clear();
-        sortedItems.clear();
 
         chr.SendPacket(ResCWvsContext.GatherItemResult(slot_type));
-        chr.SendPacket(ResWrapper.enableActions());
         return true;
     }
 
