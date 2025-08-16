@@ -73,29 +73,6 @@ import tools.data.input.SeekableLittleEndianAccessor;
 
 public class InventoryHandler {
 
-    public static final void ItemMove(MapleClient c, byte slot_type, short slot_from, short slot_to, short quantity) {
-        if (c.getPlayer().getPlayerShop() != null || c.getPlayer().getConversation() > 0 || c.getPlayer().getTrade() != null) { //hack
-            return;
-        }
-        final MapleInventoryType type = MapleInventoryType.getByType(slot_type);
-        final short src = slot_from;
-        final short dst = slot_to;
-
-        if (dst != 0) {
-            c.getPlayer().DebugMsg("ItemMove = " + src + " -> " + dst + " (" + quantity + ")");
-        }
-
-        if (src < 0 && dst > 0) {
-            MapleInventoryManipulator.unequip(c, src, dst);
-        } else if (dst < 0) {
-            MapleInventoryManipulator.equip(c, src, dst);
-        } else if (dst == 0) {
-            MapleInventoryManipulator.drop(c, type, src, quantity);
-        } else {
-            MapleInventoryManipulator.move(c, type, src, dst);
-        }
-    }
-
     public static final void ItemSort(MapleClient c, byte slot_type) {
         final MapleInventoryType pInvType = MapleInventoryType.getByType(slot_type);
         if (pInvType == MapleInventoryType.UNDEFINED) {

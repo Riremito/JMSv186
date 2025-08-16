@@ -273,8 +273,7 @@ public class ReqCUser {
                 short slot_to = cp.Decode2();
                 short quantity = cp.Decode2();
 
-                chr.updateTick(timestamp);
-                InventoryHandler.ItemMove(c, slot_type, slot_from, slot_to, quantity);
+                OnUserChangeSlotPositionRequest(chr, slot_type, slot_from, slot_to, quantity);
                 return true;
             }
             case CP_UserStatChangeItemUseRequest: {
@@ -1995,6 +1994,43 @@ public class ReqCUser {
         OpsMapTransfer ops_res = PlayerHandler.TrockAddMap(chr, ops_req, rock_type, target_map_id);
         chr.SendPacket(ResCWvsContext.MapTransferResult(chr, ops_res, rock_type != 0));
         return true;
+    }
+
+    public static boolean OnUserChangeSlotPositionRequest(MapleCharacter chr, byte slot_type, short slot_from, short slot_to, short quantity) {
+        if (chr.getPlayerShop() != null || chr.getTrade() != null) {
+            return false;
+        }
+
+        MapleInventoryType type = MapleInventoryType.getByType(slot_type);
+
+        // equipped
+        if (slot_from <= -1 || slot_to <= -1) {
+            chr.DebugMsg("Equipped : " + slot_from + " -> " + slot_to);
+        }
+
+        // drop
+        if (slot_to == 0) {
+            MapleInventoryManipulator.drop(chr.getClient(), type, slot_from, quantity);
+            return true;
+        }
+
+        if (type == MapleInventoryType.EQUIP) {
+            if (1 <= slot_from && slot_to <= -1) {
+                MapleInventoryManipulator.equip(chr.getClient(), slot_from, slot_to);
+                return true;
+            }
+            if (slot_from <= -1 && 1 <= slot_to) {
+                MapleInventoryManipulator.unequip(chr.getClient(), slot_from, slot_to);
+                return true;
+            }
+            if (slot_from <= -1 && slot_to <= -1) {
+                Debug.ErrorLog("OnUserChangeSlotPositionRequest : user tried moving equipped slot " + slot_from + " -> " + slot_to);
+                return false;
+            }
+        }
+
+        MapleInventoryManipulator.move(chr.getClient(), type, slot_from, slot_to);
+        return false;
     }
 
     public static boolean OnUserStatChangeItemUseRequest(MapleCharacter chr, ClientPacket cp) {
