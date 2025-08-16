@@ -431,15 +431,17 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket finishedGather(byte type) {
+    public static MaplePacket GatherItemResult(byte type) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GatherItemResult);
+
         sp.Encode1(0); // unused
         sp.Encode1(type);
         return sp.get();
     }
 
-    public static MaplePacket finishedSort(byte type) {
+    public static MaplePacket SortItemResult(byte type) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SortItemResult);
+
         sp.Encode1(0); // unused
         sp.Encode1(type);
         return sp.get();

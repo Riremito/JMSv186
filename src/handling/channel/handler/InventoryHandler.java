@@ -41,7 +41,6 @@ import debug.Debug;
 import handling.world.MaplePartyCharacter;
 import handling.world.World;
 import java.awt.Rectangle;
-import java.util.Collections;
 import java.util.concurrent.locks.Lock;
 import packet.ClientPacket;
 import packet.ops.OpsBodyPart;
@@ -72,81 +71,6 @@ import tools.Pair;
 import tools.data.input.SeekableLittleEndianAccessor;
 
 public class InventoryHandler {
-
-    public static final void ItemSort(MapleClient c, byte slot_type) {
-        final MapleInventoryType pInvType = MapleInventoryType.getByType(slot_type);
-        if (pInvType == MapleInventoryType.UNDEFINED) {
-            c.getSession().write(ResWrapper.enableActions());
-            return;
-        }
-        final MapleInventory pInv = c.getPlayer().getInventory(pInvType); //Mode should correspond with MapleInventoryType
-        boolean sorted = false;
-
-        while (!sorted) {
-            final byte freeSlot = (byte) pInv.getNextFreeSlot();
-            if (freeSlot != -1) {
-                byte itemSlot = -1;
-                for (byte i = (byte) (freeSlot + 1); i <= pInv.getSlotLimit(); i++) {
-                    if (pInv.getItem(i) != null) {
-                        itemSlot = i;
-                        break;
-                    }
-                }
-                if (itemSlot > 0) {
-                    MapleInventoryManipulator.move(c, pInvType, itemSlot, freeSlot);
-                } else {
-                    sorted = true;
-                }
-            } else {
-                sorted = true;
-            }
-        }
-        c.getSession().write(ResCWvsContext.finishedSort(pInvType.getType()));
-        c.getSession().write(ResWrapper.enableActions());
-    }
-
-    public static final void ItemGather(MapleClient c, byte slot_type) {
-        final MapleInventoryType invType = MapleInventoryType.getByType(slot_type);
-        MapleInventory Inv = c.getPlayer().getInventory(invType);
-
-        final List<IItem> itemMap = new LinkedList<IItem>();
-        for (IItem item : Inv.list()) {
-            itemMap.add(item.copy()); // clone all  items T___T.
-        }
-        for (IItem itemStats : itemMap) {
-            MapleInventoryManipulator.removeById(c, invType, itemStats.getItemId(), itemStats.getQuantity(), true, false);
-        }
-
-        final List<IItem> sortedItems = sortItems(itemMap);
-        for (IItem item : sortedItems) {
-            MapleInventoryManipulator.addFromDrop(c, item, false);
-        }
-        c.getSession().write(ResCWvsContext.finishedGather(slot_type));
-        c.getSession().write(ResWrapper.enableActions());
-        itemMap.clear();
-        sortedItems.clear();
-    }
-
-    private static final List<IItem> sortItems(final List<IItem> passedMap) {
-        final List<Integer> itemIds = new ArrayList<Integer>(); // empty list.
-        for (IItem item : passedMap) {
-            itemIds.add(item.getItemId()); // adds all item ids to the empty list to be sorted.
-        }
-        Collections.sort(itemIds); // sorts item ids
-
-        final List<IItem> sortedList = new LinkedList<IItem>(); // ordered list pl0x <3.
-
-        for (Integer val : itemIds) {
-            for (IItem item : passedMap) {
-                if (val == item.getItemId()) { // Goes through every index and finds the first value that matches
-                    sortedList.add(item);
-                    passedMap.remove(item);
-                    break;
-                }
-            }
-        }
-        return sortedList;
-    }
 
     public static final int UseRewardItem(short slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
         final IItem toUse = c.getPlayer().getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);

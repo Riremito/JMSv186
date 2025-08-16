@@ -28,6 +28,7 @@ import client.SkillFactory;
 import client.inventory.Equip;
 import client.inventory.IEquip;
 import client.inventory.IItem;
+import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import client.inventory.MapleMount;
 import client.messages.CommandProcessor;
@@ -56,6 +57,8 @@ import handling.world.MapleParty;
 import handling.world.World;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import packet.ClientPacket;
@@ -250,20 +253,18 @@ public class ReqCUser {
             case CP_AdminShopRequest: {
                 return true;
             }
-            case CP_UserSortItemRequest: {
-                int timestamp = cp.Decode4();
-                byte slot_type = cp.Decode1();
-
-                chr.updateTick(timestamp);
-                InventoryHandler.ItemSort(c, slot_type);
-                return true;
-            }
             case CP_UserGatherItemRequest: {
                 int timestamp = cp.Decode4();
                 byte slot_type = cp.Decode1();
 
-                chr.updateTick(timestamp);
-                InventoryHandler.ItemGather(c, slot_type);
+                OnUserGatherItemRequest(chr, slot_type);
+                return true;
+            }
+            case CP_UserSortItemRequest: {
+                int timestamp = cp.Decode4();
+                byte slot_type = cp.Decode1();
+
+                OnUserSortItemRequest(chr, slot_type);
                 return true;
             }
             case CP_UserChangeSlotPositionRequest: {
@@ -1993,6 +1994,87 @@ public class ReqCUser {
 
         OpsMapTransfer ops_res = PlayerHandler.TrockAddMap(chr, ops_req, rock_type, target_map_id);
         chr.SendPacket(ResCWvsContext.MapTransferResult(chr, ops_res, rock_type != 0));
+        return true;
+    }
+
+    public static boolean OnUserGatherItemRequest(MapleCharacter chr, byte slot_type) {
+        MapleInventoryType invType = MapleInventoryType.getByType(slot_type);
+        MapleInventory Inv = chr.getInventory(invType);
+
+        final List<IItem> itemMap = new LinkedList<>();
+        for (IItem item : Inv.list()) {
+            itemMap.add(item.copy()); // clone all  items T___T.
+        }
+        for (IItem itemStats : itemMap) {
+            MapleInventoryManipulator.removeById(chr.getClient(), invType, itemStats.getItemId(), itemStats.getQuantity(), true, false);
+        }
+
+        final List<IItem> sortedItems = sortItems(itemMap);
+        for (IItem item : sortedItems) {
+            MapleInventoryManipulator.addFromDrop(chr.getClient(), item, false);
+        }
+        itemMap.clear();
+        sortedItems.clear();
+
+        chr.SendPacket(ResCWvsContext.GatherItemResult(slot_type));
+        chr.SendPacket(ResWrapper.enableActions());
+        return true;
+    }
+
+    private static List<IItem> sortItems(final List<IItem> passedMap) {
+        final List<Integer> itemIds = new ArrayList<>(); // empty list.
+        for (IItem item : passedMap) {
+            itemIds.add(item.getItemId()); // adds all item ids to the empty list to be sorted.
+        }
+        Collections.sort(itemIds); // sorts item ids
+
+        final List<IItem> sortedList = new LinkedList<>(); // ordered list pl0x <3.
+
+        for (Integer val : itemIds) {
+            for (IItem item : passedMap) {
+                if (val == item.getItemId()) { // Goes through every index and finds the first value that matches
+                    sortedList.add(item);
+                    passedMap.remove(item);
+                    break;
+                }
+            }
+        }
+        return sortedList;
+    }
+
+    public static boolean OnUserSortItemRequest(MapleCharacter chr, byte slot_type) {
+        MapleInventoryType pInvType = MapleInventoryType.getByType(slot_type);
+
+        if (pInvType == MapleInventoryType.UNDEFINED) {
+            chr.SendPacket(ResWrapper.enableActions());
+            return false;
+        }
+
+        MapleInventory pInv = chr.getInventory(pInvType); //Mode should correspond with MapleInventoryType
+        boolean sorted = false;
+
+        while (!sorted) {
+            final byte freeSlot = (byte) pInv.getNextFreeSlot();
+            if (freeSlot != -1) {
+                byte itemSlot = -1;
+                for (byte i = (byte) (freeSlot + 1); i <= pInv.getSlotLimit(); i++) {
+                    if (pInv.getItem(i) != null) {
+                        itemSlot = i;
+                        break;
+                    }
+                }
+                if (itemSlot > 0) {
+                    MapleInventoryManipulator.move(chr.getClient(), pInvType, itemSlot, freeSlot);
+                } else {
+                    sorted = true;
+                }
+            } else {
+                sorted = true;
+            }
+        }
+
+        chr.SendPacket(ResCWvsContext.SortItemResult(pInvType.getType()));
+        chr.SendPacket(ResWrapper.enableActions());
         return true;
     }
 
