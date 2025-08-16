@@ -57,8 +57,6 @@ import handling.world.MapleParty;
 import handling.world.World;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import packet.ClientPacket;
@@ -2019,62 +2017,45 @@ public class ReqCUser {
         }
 
         chr.SendPacket(ResCWvsContext.GatherItemResult(slot_type));
+        chr.SendPacket(ResWrapper.enableActions()); // 必要
         return true;
     }
 
-    private static List<IItem> sortItems(final List<IItem> passedMap) {
-        final List<Integer> itemIds = new ArrayList<>(); // empty list.
-        for (IItem item : passedMap) {
-            itemIds.add(item.getItemId()); // adds all item ids to the empty list to be sorted.
-        }
-        Collections.sort(itemIds); // sorts item ids
-
-        final List<IItem> sortedList = new LinkedList<>(); // ordered list pl0x <3.
-
-        for (Integer val : itemIds) {
-            for (IItem item : passedMap) {
-                if (val == item.getItemId()) { // Goes through every index and finds the first value that matches
-                    sortedList.add(item);
-                    passedMap.remove(item);
-                    break;
-                }
-            }
-        }
-        return sortedList;
-    }
-
     public static boolean OnUserSortItemRequest(MapleCharacter chr, byte slot_type) {
-        MapleInventoryType pInvType = MapleInventoryType.getByType(slot_type);
+        MapleInventoryType mit = MapleInventoryType.getByType(slot_type);
 
-        if (pInvType == MapleInventoryType.UNDEFINED) {
-            chr.SendPacket(ResWrapper.enableActions());
+        if (mit == MapleInventoryType.UNDEFINED || mit == MapleInventoryType.EQUIPPED) {
             return false;
         }
 
-        MapleInventory pInv = chr.getInventory(pInvType); //Mode should correspond with MapleInventoryType
-        boolean sorted = false;
+        MapleInventory mi = chr.getInventory(mit);
+        short slot_limit = (short) mi.getSlotLimit();
+        for (short slot_to = 1; slot_to <= slot_limit; slot_to++) {
+            IItem item_to = mi.getItem(slot_to);
+            if (item_to == null) {
+                break;
+            }
 
-        while (!sorted) {
-            final byte freeSlot = (byte) pInv.getNextFreeSlot();
-            if (freeSlot != -1) {
-                byte itemSlot = -1;
-                for (byte i = (byte) (freeSlot + 1); i <= pInv.getSlotLimit(); i++) {
-                    if (pInv.getItem(i) != null) {
-                        itemSlot = i;
-                        break;
-                    }
+            int item_id = item_to.getItemId();
+            short slot_from = slot_to;
+
+            for (short slot = slot_to; slot <= slot_limit; slot++) {
+                IItem item = mi.getItem(slot);
+                if (item == null) {
+                    break;
                 }
-                if (itemSlot > 0) {
-                    MapleInventoryManipulator.move(chr.getClient(), pInvType, itemSlot, freeSlot);
-                } else {
-                    sorted = true;
+                if (item.getItemId() < item_id) {
+                    slot_from = slot;
+                    item_id = item.getItemId();
                 }
-            } else {
-                sorted = true;
+            }
+
+            if (slot_from != slot_to) {
+                OnUserChangeSlotPositionRequest(chr, slot_type, slot_from, slot_to, (short) -1);
             }
         }
 
-        chr.SendPacket(ResCWvsContext.SortItemResult(pInvType.getType()));
+        chr.SendPacket(ResCWvsContext.SortItemResult(slot_type));
         chr.SendPacket(ResWrapper.enableActions());
         return true;
     }
