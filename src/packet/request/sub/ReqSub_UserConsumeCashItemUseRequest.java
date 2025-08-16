@@ -43,6 +43,7 @@ import packet.ops.arg.ArgBroadcastMsg;
 import packet.request.ReqCUser;
 import packet.request.ReqCUser_Pet;
 import packet.response.ResCParcelDlg;
+import packet.response.ResCUIItemUpgrade;
 import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUser_Pet;
@@ -184,6 +185,45 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 chr.UpdateStat(true);
                 return true;
             }
+            case 557: // 5570000
+            {
+                int inv_type = cp.Decode4(); // unused
+                int item_slot = cp.Decode4();
+                IItem item = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) item_slot);
+
+                if (item == null) {
+                    return false;
+                }
+
+                Equip equip = (Equip) item;
+                if (!GameConstants.canHammer(equip.getItemId()) || MapleItemInformationProvider.getInstance().getSlots(equip.getItemId()) <= 0) {
+                    return false;
+                }
+                // TODO : supports 3+
+                if (2 <= equip.getViciousHammer()) {
+                    chr.SendPacket(ResCUIItemUpgrade.Failure(1));
+                    return false;
+                }
+
+                equip.setViciousHammer(equip.getViciousHammer() + 1);
+                equip.setUpgradeSlots(equip.getUpgradeSlots() + 1);
+
+                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, equip));
+                chr.SendPacket(ResCUIItemUpgrade.Update(equip.getViciousHammer()));
+                item_use.run();
+                return true;
+            }
+            case 561: {
+                int inv_type_equip = cp.Decode4(); // unused
+                int equip_slot = cp.Decode4();
+                int inv_type_use = cp.Decode4(); // unused
+                int scroll_slot = cp.Decode4();
+
+                if (ReqCUser.OnUserUpgradeItemUseRequest(map, chr, (short) scroll_slot, (short) equip_slot, cash_item_id)) {
+                    item_use.run();
+                }
+                return true;
+            }
             case 562: {
                 ReqCUser.OnUserSkillLearnItemUseRequest(map, chr, cash_item_slot, cash_item_id);
                 return true;
@@ -203,7 +243,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 5060000: // ネームメーカー
             {
                 short equipped_slot = cp.Decode2();
-                int timestamp = cp.Decode4();
+                int timestamp = Version.LessOrEqual(Region.JMS, 147) ? cp.Decode4() : 0; // not in JMS302
 
                 if (0 <= equipped_slot) {
                     return false;

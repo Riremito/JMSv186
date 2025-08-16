@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 
-import client.inventory.Equip;
 import client.inventory.IItem;
 import client.ISkill;
 import client.inventory.ItemFlag;
@@ -47,7 +46,6 @@ import packet.ops.OpsBodyPart;
 import packet.response.ResCDropPool;
 import packet.response.ResCDropPool.LeaveType;
 import packet.response.ResCField;
-import packet.response.ResCUIItemUpgrade;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
@@ -769,38 +767,6 @@ public class InventoryHandler {
                         c.getPlayer().forceReAddItem_Flag(item, type);
                         used = true;
                     }
-                }
-                break;
-            }
-            case 5570000: { // Vicious Hammer
-                slea.readInt(); // Inventory type, Hammered eq is always EQ.
-                final Equip item = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem((byte) slea.readInt());
-                // another int here, D3 49 DC 00
-                if (item != null) {
-                    if (GameConstants.canHammer(item.getItemId()) && MapleItemInformationProvider.getInstance().getSlots(item.getItemId()) > 0 && item.getViciousHammer() <= 2) {
-                        item.setViciousHammer((byte) (item.getViciousHammer() + 1));
-                        item.setUpgradeSlots((byte) (item.getUpgradeSlots() + 1));
-
-                        c.getPlayer().forceReAddItem(item, MapleInventoryType.EQUIP);
-                        // ビシャスのハンマーのアニメーションの終わる通知待ち状態へ
-                        c.ProcessPacket(ResCUIItemUpgrade.Update(item.getViciousHammer()));
-                        used = true;
-                    } else {
-                        c.ProcessPacket(ResCUIItemUpgrade.Failure(1));
-                    }
-                }
-
-                break;
-            }
-            case 5610001:
-            case 5610000: { // Vega 30
-                slea.readInt(); // Inventory type, always eq
-                final byte dst = (byte) slea.readInt();
-                slea.readInt(); // Inventory type, always use
-                final byte src = (byte) slea.readInt();
-                //used = ItemRequest.UseUpgradeScroll(src, dst, (byte) 2, c, c.getPlayer(), itemId); //cannot use ws with vega but we dont care
-                if (used) {
-                    c.getPlayer().saveToDB(false, false);
                 }
                 break;
             }
