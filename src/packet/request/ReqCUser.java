@@ -2137,17 +2137,17 @@ public class ReqCUser {
 
     public static boolean OnUserSkillLearnItemUseRequest(MapleMap map, MapleCharacter chr, short item_slot, final int item_id) {
         int item_type = item_id / 10000;
-        boolean bIsMaterbook = (item_type == 229);
+        boolean bIsMaterbook = (item_type == 229 || item_type == 562);
         boolean bUsed = false;
         boolean bSucceed = false;
 
-        final IItem toUse = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
-        if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != item_id) {
+        final IItem item_used = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
+        if (item_used == null || item_used.getQuantity() < 1 || item_used.getItemId() != item_id) {
             chr.SendPacket(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
             return false;
         }
 
-        final Map<String, Integer> skilldata = MapleItemInformationProvider.getInstance().getSkillStats(toUse.getItemId());
+        final Map<String, Integer> skilldata = MapleItemInformationProvider.getInstance().getSkillStats(item_used.getItemId());
         if (skilldata == null) {
             chr.SendPacket(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
             return false;

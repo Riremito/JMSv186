@@ -38,6 +38,7 @@ import packet.ops.OpsBodyPart;
 import packet.ops.OpsBroadcastMsg;
 import packet.ops.OpsShopScanner;
 import packet.ops.arg.ArgBroadcastMsg;
+import packet.request.ReqCUser;
 import packet.request.ReqCUser_Pet;
 import packet.response.ResCParcelDlg;
 import packet.response.ResCUser;
@@ -61,7 +62,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         short cash_item_slot = cp.Decode2();
         int cash_item_id = cp.Decode4();
 
-        Runnable item_use = chr.checkItemSlot(MapleInventoryType.CASH, cash_item_slot, cash_item_id);
+        Runnable item_use = chr.checkItemSlot(cash_item_slot, cash_item_id);
         if (item_use == null) {
             Debug.ErrorLog("OnUserConsumeCashItemUseRequest : invalid item.");
             return true;
@@ -179,6 +180,10 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 ds.setRandomItems(3);
                 ds.start(chr);
                 chr.UpdateStat(true);
+                return true;
+            }
+            case 562: {
+                ReqCUser.OnUserSkillLearnItemUseRequest(map, chr, cash_item_slot, cash_item_id);
                 return true;
             }
             default: {

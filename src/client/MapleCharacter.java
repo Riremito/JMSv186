@@ -2991,7 +2991,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     // removeFromSlot like
-    public Runnable checkItemSlot(MapleInventoryType type, short item_slot, int item_id, short item_quantity) {
+    public Runnable checkItemSlot(short item_slot, int item_id, short item_quantity) {
+        MapleInventoryType type = GameConstants.getInventoryType(item_id);
         IItem item_used = getInventory(type).getItem(item_slot);
 
         if (item_used == null) {
@@ -3008,8 +3009,8 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return use_item;
     }
 
-    public Runnable checkItemSlot(MapleInventoryType type, short item_slot, int item_id) {
-        return checkItemSlot(type, item_slot, item_id, (short) 1);
+    public Runnable checkItemSlot(short item_slot, int item_id) {
+        return checkItemSlot(item_slot, item_id, (short) 1);
     }
 
     public final MapleInventory[] getInventorys() {
