@@ -751,24 +751,6 @@ public class InventoryHandler {
                 }
                 break;
             }
-            case 5060000: { // Item Tag
-                final IItem item = c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(slea.readByte());
-
-                if (item != null && item.getOwner().equals("")) {
-                    boolean change = true;
-                    for (String z : GameConstants.RESERVED) {
-                        if (c.getPlayer().getName().indexOf(z) != -1 || item.getOwner().indexOf(z) != -1) {
-                            change = false;
-                        }
-                    }
-                    if (change) {
-                        item.setOwner(c.getPlayer().getName());
-                        c.getPlayer().forceReAddItem(item, MapleInventoryType.EQUIPPED);
-                        used = true;
-                    }
-                }
-                break;
-            }
             case 5520001: //p.karma
             case 5520000: { // Karma
                 final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
@@ -819,67 +801,6 @@ public class InventoryHandler {
                 //used = ItemRequest.UseUpgradeScroll(src, dst, (byte) 2, c, c.getPlayer(), itemId); //cannot use ws with vega but we dont care
                 if (used) {
                     c.getPlayer().saveToDB(false, false);
-                }
-                break;
-            }
-            case 5060001: { // Sealing Lock
-                final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
-                final IItem item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
-                // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
-                if (item != null && item.getExpiration() == -1) {
-                    byte flag = item.getFlag();
-                    flag |= ItemFlag.LOCK.getValue();
-                    item.setFlag(flag);
-
-                    c.getPlayer().forceReAddItem_Flag(item, type);
-                    used = true;
-                }
-                break;
-            }
-            case 5061000: { // Sealing Lock 7 days
-                final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
-                final IItem item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
-                // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
-                if (item != null && item.getExpiration() == -1) {
-                    byte flag = item.getFlag();
-                    flag |= ItemFlag.LOCK.getValue();
-                    item.setFlag(flag);
-                    item.setExpiration(System.currentTimeMillis() + (7 * 24 * 60 * 60 * 1000));
-
-                    c.getPlayer().forceReAddItem_Flag(item, type);
-                    used = true;
-                }
-                break;
-            }
-            case 5061001: { // Sealing Lock 30 days
-                final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
-                final IItem item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
-                // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
-                if (item != null && item.getExpiration() == -1) {
-                    byte flag = item.getFlag();
-                    flag |= ItemFlag.LOCK.getValue();
-                    item.setFlag(flag);
-
-                    item.setExpiration(System.currentTimeMillis() + (30 * 24 * 60 * 60 * 1000));
-
-                    c.getPlayer().forceReAddItem_Flag(item, type);
-                    used = true;
-                }
-                break;
-            }
-            case 5061002: { // Sealing Lock 90 days
-                final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
-                final IItem item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
-                // another int here, lock = 5A E5 F2 0A, 7 day = D2 30 F3 0A
-                if (item != null && item.getExpiration() == -1) {
-                    byte flag = item.getFlag();
-                    flag |= ItemFlag.LOCK.getValue();
-                    item.setFlag(flag);
-
-                    item.setExpiration(System.currentTimeMillis() + (90 * 24 * 60 * 60 * 1000));
-
-                    c.getPlayer().forceReAddItem_Flag(item, type);
-                    used = true;
                 }
                 break;
             }

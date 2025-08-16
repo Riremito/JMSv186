@@ -267,6 +267,7 @@ public class DebugShop {
         MapleInventoryManipulator.addById(chr.getClient(), item_id, (short) quantity); // bool...?
         chr.gainMeso(-item_price, false);
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuySuccess));
+        chr.DebugMsg("DebugShop : buy " + item_id);
         return true;
     }
 

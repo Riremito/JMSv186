@@ -21,11 +21,13 @@ package packet.request.sub;
 import client.MapleCharacter;
 import client.inventory.Equip;
 import client.inventory.IItem;
+import client.inventory.ItemFlag;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
+import constants.GameConstants;
 import debug.Debug;
 import debug.DebugShop;
 import handling.channel.handler.PlayerHandler;
@@ -98,7 +100,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 return true;
             }
             case 506: {
-                if (cashItem506_MiracleCube(chr, cash_item_id, cp)) {
+                if (cashItem506(chr, cash_item_id, cp)) {
                     item_use.run();
                 }
                 return true;
@@ -196,12 +198,63 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         return false;
     }
 
-    public static boolean cashItem506_MiracleCube(MapleCharacter chr, int cash_item_id, ClientPacket cp) {
+    public static boolean cashItem506(MapleCharacter chr, int cash_item_id, ClientPacket cp) {
         switch (cash_item_id) {
+            case 5060000: // ネームメーカー
+            {
+                short equipped_slot = cp.Decode2();
+                int timestamp = cp.Decode4();
+
+                if (0 <= equipped_slot) {
+                    return false;
+                }
+
+                IItem item = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) equipped_slot);
+                if (item == null) {
+                    return false;
+                }
+
+                item.setOwner(chr.getName());
+                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, item));
+                return true;
+            }
+            case 5060001: // 封印の錠
+            {
+                int inv_type = cp.Decode4(); // unused
+                int item_slot = cp.Decode4();
+
+                MapleInventoryType type = MapleInventoryType.getByType((byte) inv_type);
+
+                IItem item = chr.getInventory(type).getItem((short) item_slot);
+                if (item == null) {
+                    return false;
+                }
+
+                boolean isTarget = false;
+
+                if (type == MapleInventoryType.EQUIP) {
+                    isTarget = true;
+                }
+
+                if (type == MapleInventoryType.USE) {
+                    if (GameConstants.isRechargable(item.getItemId())) {
+                        isTarget = true;
+                    }
+                }
+
+                if (!isTarget) {
+                    return false;
+                }
+
+                item.setFlag((byte) (item.getFlag() | ItemFlag.LOCK.getValue()));
+                chr.SendPacket(ResWrapper.addInventorySlot(type, item));
+                return true;
+            }
             case 5062000:
             case 5062001:
             case 5062002:
-            case 5062003: {
+            case 5062003: // miracle cubes
+            {
                 int equip_slot = cp.Decode4();
                 IItem item = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) equip_slot);
                 if (item == null) {
