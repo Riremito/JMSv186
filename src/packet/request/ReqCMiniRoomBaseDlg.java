@@ -19,9 +19,13 @@
 package packet.request;
 
 import client.MapleCharacter;
+import data.wz.ids.DWI_LoadXML;
 import debug.Debug;
 import java.util.List;
 import packet.ClientPacket;
+import packet.ops.OpsEntrustedShop;
+import packet.ops.OpsMiniRoomProtocol;
+import packet.ops.OpsMiniRoomType;
 import packet.response.ResCField;
 import packet.response.ResCMiniRoomBaseDlg;
 import server.maps.MapleMap;
@@ -35,8 +39,65 @@ import tools.Pair;
 public class ReqCMiniRoomBaseDlg {
 
     public static boolean OnMiniRoom(MapleMap map, MapleCharacter chr, ClientPacket cp) {
+        byte protocol_req = cp.Decode1();
+
+        switch (OpsMiniRoomProtocol.find(protocol_req)) {
+            case MRP_Create: {
+                byte miniroom_type = cp.Decode1();
+                if (OpsMiniRoomType.find(miniroom_type) == OpsMiniRoomType.MR_EntrustedShop) {
+                    String title = cp.DecodeStr();
+                    byte es_req = cp.Decode1();
+                    if (OpsEntrustedShop.find(es_req) != OpsEntrustedShop.EntrustedShopReq_CheckOpenPossible) {
+                        return false;
+                    }
+                    short cash_item_slot = cp.Decode2();
+                    int cash_item_id = cp.Decode4();
+
+                    int cash_item_type = cash_item_id / 10000;
+                    if (cash_item_type != 503 || !DWI_LoadXML.getItem().isValidID(cash_item_id)) {
+                        return false;
+                    }
+
+                    Runnable item_use = chr.checkItemSlot(cash_item_slot, cash_item_id);
+                    if (item_use == null) {
+                        return false;
+                    }
+
+                    return true;
+                }
+                return false;
+            }
+            case MRP_Invite: {
+                return true;
+            }
+            case MRP_Enter: {
+                return true;
+            }
+            case MRP_Chat: {
+                return true;
+            }
+            case MRP_GameMessage: {
+                return true;
+            }
+            case MRP_UserChat: {
+                return true;
+            }
+            case MRP_Avatar: {
+                return true;
+            }
+            case MRP_Leave: {
+                return true;
+            }
+            case MRP_Balloon: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
 
         //PlayerInteractionHandler.PlayerInteraction(p, chr.getClient(), chr);
+        Debug.ErrorLog("OnMiniRoom : not coded = " + protocol_req);
         return false;
     }
 
@@ -52,7 +113,7 @@ public class ReqCMiniRoomBaseDlg {
         final HiredMerchant merchant = (HiredMerchant) chr.getRemoteStore();
         if (merchant == null) {
             // test
-            chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStatic(chr));
+            chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticTest(chr));
             return false;
         }
 

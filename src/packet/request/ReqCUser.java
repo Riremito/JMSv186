@@ -50,7 +50,6 @@ import handling.channel.handler.InventoryHandler;
 import handling.channel.handler.ItemMakerHandler;
 import handling.channel.handler.NPCHandler;
 import handling.channel.handler.PlayerHandler;
-import handling.channel.handler.PlayerInteractionHandler;
 import handling.channel.handler.PlayersHandler;
 import handling.channel.handler.UserInterfaceHandler;
 import handling.world.MapleParty;
@@ -226,6 +225,8 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserEntrustedShopRequest: {
+                byte es_req = cp.Decode1();
+                long cash_item_uid = cp.Decode8();
                 HiredMerchantHandler.UseHiredMerchant(c);
                 return true;
             }

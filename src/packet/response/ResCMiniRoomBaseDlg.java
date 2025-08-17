@@ -43,7 +43,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class ResCMiniRoomBaseDlg {
 
-    public static MaplePacket EnterResultStatic(MapleCharacter chr) {
+    public static MaplePacket EnterResultStaticTest(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
         byte m_nMyPosition = 0;
