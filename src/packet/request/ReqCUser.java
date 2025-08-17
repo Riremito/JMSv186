@@ -61,6 +61,7 @@ import java.util.Map;
 import packet.ClientPacket;
 import packet.ops.OpsChangeStat;
 import packet.ops.OpsChatGroup;
+import packet.ops.OpsEntrustedShop;
 import packet.ops.OpsMapTransfer;
 import packet.ops.OpsShopScanner;
 import packet.ops.OpsTransferField;
@@ -227,7 +228,8 @@ public class ReqCUser {
             case CP_UserEntrustedShopRequest: {
                 byte es_req = cp.Decode1();
                 long cash_item_uid = cp.Decode8();
-                HiredMerchantHandler.UseHiredMerchant(c);
+
+                OnUserEntrustedShopRequest(map, chr, es_req, cash_item_uid);
                 return true;
             }
             case CP_UserStoreBankRequest: {
@@ -1175,6 +1177,17 @@ public class ReqCUser {
         byte flag = (Version.LessOrEqual(Region.JMS, 131) || Version.PostBB()) ? 1 : cp.Decode1();
 
         chr.spawnPet(item_slot, flag > 0 ? true : false);
+        return true;
+    }
+
+    public static boolean OnUserEntrustedShopRequest(MapleMap map, MapleCharacter chr, byte es_req, long cash_item_uid) {
+        chr.DebugMsg("OnUserEntrustedShopRequest : " + es_req + "," + cash_item_uid);
+        // HiredMerchantHandler.UseHiredMerchant(c);
+        if (OpsEntrustedShop.find(es_req) != OpsEntrustedShop.EntrustedShopReq_CheckOpenPossible) {
+            return false;
+        }
+
+        chr.SendPacket(ResCWvsContext.EntrustedShopCheckResult(OpsEntrustedShop.EntrustedShopRes_OpenPossible));
         return true;
     }
 

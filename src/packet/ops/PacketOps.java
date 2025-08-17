@@ -44,6 +44,8 @@ public class PacketOps {
         OpsMapTransfer.init();
         OpsMiniRoomProtocol.init();
         OpsMiniRoomType.init();
+        OpsEntrustedShop.init();
+        OpsMREnterResult.init();
     }
 
 }

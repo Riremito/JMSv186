@@ -57,6 +57,7 @@ import packet.ServerPacket;
 import packet.ops.OpsBodyPart;
 import packet.ops.arg.ArgBroadcastMsg;
 import packet.ops.OpsChangeStat;
+import packet.ops.OpsEntrustedShop;
 import packet.ops.OpsMapTransfer;
 import packet.ops.arg.ArgFriend;
 import packet.ops.arg.ArgMessage;
@@ -70,7 +71,6 @@ import packet.response.data.DataGW_CharacterStat;
 import packet.response.data.DataGW_ItemSlotBase;
 import packet.response.struct.InvOp;
 import packet.response.struct.TestHelper;
-import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCWvsContext;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
@@ -1838,17 +1838,44 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static final MaplePacket sendTitleBox() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_EntrustedShopCheckResult.get());
-        /*
-        0x07    店を開く
-        0x09    プレドリックから～
-        0x0A    他のキャラクターがアイテムを使用中
-        0x0B    今は開店できません
-         */
-        mplew.write(7);
-        return mplew.getPacket();
+    public static MaplePacket EntrustedShopCheckResult(OpsEntrustedShop ops_res) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_EntrustedShopCheckResult);
+
+        sp.Encode1(ops_res.get());
+
+        switch (ops_res) {
+            case EntrustedShopRes_OpenImpossible_Using: {
+                sp.Encode4(910000018); // used last 3 numbers to decide FreeMarket room.
+                sp.Encode1(0); // channel
+                break;
+            }
+            case EntrustedShopReq_SetMiniMapColor: {
+                // may be res...
+                sp.Encode4(123);
+                break;
+            }
+            case EntrustedShopReq_RenameResult: {
+                // may be res...
+                sp.Encode1(1); // 0 = fail, 1 = success.
+                break;
+            }
+            case EntrustedShopRes_GetPosResult: {
+                // client sends change channel packet after this.
+                sp.Encode4(0);
+                sp.Encode1(0); // channel
+                break;
+            }
+            case EntrustedShopRes_Enter: {
+                // client sends enter shop packet after this.
+                sp.Encode4(123); // own shop id.
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return sp.get();
     }
 
     public static MaplePacket SkillLearnItemResult(MapleCharacter chr, boolean bIsMaterbook, boolean bUsed, boolean bSucceed) {

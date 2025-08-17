@@ -37,6 +37,7 @@ import database.DatabaseConnection;
 import debug.Debug;
 import handling.world.World;
 import java.util.Map;
+import packet.ops.OpsEntrustedShop;
 import packet.response.ResCStoreBankDlg;
 import packet.response.ResCWvsContext;
 import server.MapleInventoryManipulator;
@@ -59,7 +60,7 @@ public class HiredMerchantHandler {
                     boolean merch = World.hasMerchant(c.getPlayer().getAccountID());
                     if (!merch) {
 //		    c.getPlayer().dropMessage(1, "The Hired Merchant is temporary disabled until it's fixed.");
-                        c.getSession().write(ResCWvsContext.sendTitleBox());
+                        c.getSession().write(ResCWvsContext.EntrustedShopCheckResult(OpsEntrustedShop.EntrustedShopRes_OpenPossible));
                     } else {
                         c.getPlayer().dropMessage(1, "Please close the existing store and try again.");
                     }

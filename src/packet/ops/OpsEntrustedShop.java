@@ -40,7 +40,7 @@ public enum OpsEntrustedShop implements IPacketOps {
     EntrustedShopRes_OpenImpossible_Block,
     EntrustedShopRes_Create_Failed,
     EntrustedShopReq_SetMiniMapColor,
-    EntrustedShopReq_RenameResult,
+    EntrustedShopReq_RenameResult, // ?_? res?
     EntrustedShopRes_ItemExistInStoreBank,
     EntrustedShopRes_GetPosResult,
     EntrustedShopRes_Enter,
@@ -99,6 +99,17 @@ public enum OpsEntrustedShop implements IPacketOps {
     public static void init() {
         if (Version.LessOrEqual(Region.JMS, 147)) {
             EntrustedShopReq_CheckOpenPossible.set(0);
+            EntrustedShopRes_OpenPossible.set(7);
+            EntrustedShopRes_OpenImpossible_Using.set(8);
+            EntrustedShopRes_OpenImpossible_Stored.set(9);
+            EntrustedShopRes_OpenImpossible_AnotherCharacter.set(10);
+            EntrustedShopRes_OpenImpossible_Block.set(11);
+            EntrustedShopRes_Create_Failed.set(12);
+            EntrustedShopReq_SetMiniMapColor.set(13);
+            EntrustedShopReq_RenameResult.set(14);
+            EntrustedShopRes_ItemExistInStoreBank.set(15);
+            EntrustedShopRes_GetPosResult.set(16);
+            EntrustedShopRes_Enter.set(17);
             return;
         }
     }
