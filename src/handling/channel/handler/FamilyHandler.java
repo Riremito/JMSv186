@@ -32,6 +32,7 @@ import handling.world.family.MapleFamilyCharacter;
 import java.util.List;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import server.maps.FieldLimitType;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -169,7 +170,7 @@ public class FamilyHandler {
         } else if (c.getPlayer().isGM() || !addChr.isGM()) {
             addChr.getClient().getSession().write(ResCWvsContext.sendFamilyInvite(c.getPlayer().getId(), c.getPlayer().getLevel(), c.getPlayer().getJob(), c.getPlayer().getName()));
         }
-        c.getSession().write(ResWrapper.enableActions());
+        c.getSession().write(WrapCWvsContext.updateStat());
     }
 
     public static final void FamilyPrecept(final SeekableLittleEndianAccessor slea, MapleClient c) {
@@ -232,7 +233,7 @@ public class FamilyHandler {
             fam.resetPedigree();
         }
         c.getPlayer().dropMessage(1, "Broke up with (" + other.getName() + ").\r\nFamily relationship has ended.");
-        c.getSession().write(ResWrapper.enableActions());
+        c.getSession().write(WrapCWvsContext.updateStat());
     }
 
     public static final void DeleteSenior(final SeekableLittleEndianAccessor slea, MapleClient c) {
@@ -263,7 +264,7 @@ public class FamilyHandler {
             fam.resetPedigree();
         }
         c.getPlayer().dropMessage(1, "Broke up with (" + mgc.getName() + ").\r\nFamily relationship has ended.");
-        c.getSession().write(ResWrapper.enableActions());
+        c.getSession().write(WrapCWvsContext.updateStat());
     }
 
     public static final void AcceptFamily(SeekableLittleEndianAccessor slea, MapleClient c) {

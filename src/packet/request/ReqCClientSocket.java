@@ -50,6 +50,7 @@ import packet.response.ResCStage;
 import packet.response.ResCUser_Pet;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
 
@@ -241,7 +242,7 @@ public class ReqCClientSocket {
             chr.SendPacket(ResWrapper.getCharInfo(chr));
         }
         // initialize
-        chr.SendPacket(ResWrapper.getInventoryFull()); // TWMS148 gets weird stat without sending this.
+        chr.SendPacket(WrapCWvsContext.updateInv()); // TWMS148 gets weird stat without sending this.
         chr.SendPacket(ResCWvsContext.ForcedStatReset());
         // pet
         for (final MaplePet pet : chr.getPets()) {

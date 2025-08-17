@@ -41,6 +41,7 @@ import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCUserLocal;
 import packet.response.wrapper.WrapCUserRemote;
+import packet.response.wrapper.WrapCWvsContext;
 import server.MapleCarnivalFactory.MCSkill;
 import server.Timer.BuffTimer;
 import server.life.MapleMonster;
@@ -917,11 +918,11 @@ public class MapleStatEffect implements Serializable {
             //} else if (isSoaring() && !applyfrom.getMap().canSoar()) {
             //	return false;
         } else if (sourceid == 4341006 && applyfrom.getBuffedValue(MapleBuffStat.MIRROR_IMAGE) == null) {
-            applyfrom.getClient().getSession().write(ResWrapper.enableActions());
+            applyfrom.getClient().getSession().write(WrapCWvsContext.updateStat());
             return false; //not working
         } else if (sourceid == 33101004 && applyfrom.getMap().isTown()) {
             applyfrom.dropMessage(5, "You may not use this skill in towns.");
-            applyfrom.getClient().getSession().write(ResWrapper.enableActions());
+            applyfrom.getClient().getSession().write(WrapCWvsContext.updateStat());
             return false; //not supposed to
         }
         int hpchange = calcHPChange(applyfrom, primary);

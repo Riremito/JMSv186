@@ -32,6 +32,7 @@ import java.util.List;
 import packet.response.ResCEmployeePool;
 import packet.response.ResCField;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import server.MapleInventoryManipulator;
 import server.Timer.EtcTimer;
 import server.maps.MapleMapObjectType;
@@ -100,7 +101,7 @@ public class HiredMerchant extends AbstractPlayerStore {
             saveItems();
         } else {
             c.getPlayer().dropMessage(1, "Your inventory is full.");
-            c.getSession().write(ResWrapper.enableActions());
+            c.getSession().write(WrapCWvsContext.updateStat());
         }
     }
 

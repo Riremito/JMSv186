@@ -79,6 +79,7 @@ import packet.response.ResCWvsContext;
 import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCUserLocal;
+import packet.response.wrapper.WrapCWvsContext;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
@@ -1259,7 +1260,7 @@ public class ReqCUser {
         if (MapleItemInformationProvider.getInstance().getItemEffect(item_used.getItemId()).applyReturnScroll(chr)) {
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
         } else {
-            chr.SendPacket(ResWrapper.enableActions());
+            chr.SendPacket(WrapCWvsContext.updateStat());
         }
 
         return true;
@@ -1288,14 +1289,14 @@ public class ReqCUser {
         final byte oldSlots = (byte) toScroll.getUpgradeSlots();
         IItem scroll = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (scroll == null) {
-            chr.SendPacket(ResWrapper.getInventoryFull());
+            chr.SendPacket(WrapCWvsContext.updateInv());
             return false;
         }
         // 黄金つち (ビシャスのハンマー)
         if (scroll.getItemId() == 2470000) {
             final Equip toHammer = (Equip) toScroll;
             if (toHammer.getViciousHammer() >= 2 || toHammer.getUpgradeSlots() > 120) {
-                chr.SendPacket(ResWrapper.getInventoryFull());
+                chr.SendPacket(WrapCWvsContext.updateInv());
                 return false;
             }
             toHammer.setViciousHammer((byte) (toHammer.getViciousHammer() + 1));
@@ -1307,41 +1308,41 @@ public class ReqCUser {
         }
         if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
             if (toScroll.getUpgradeSlots() < 1) {
-                chr.SendPacket(ResWrapper.getInventoryFull());
+                chr.SendPacket(WrapCWvsContext.updateInv());
                 return false;
             }
         } else if (GameConstants.isEquipScroll(scroll.getItemId())) {
             if (toScroll.getUpgradeSlots() >= 1 || toScroll.getEnhance() >= 100 || vegas > 0 || ii.isCash(toScroll.getItemId())) {
-                chr.SendPacket(ResWrapper.getInventoryFull());
+                chr.SendPacket(WrapCWvsContext.updateInv());
                 return false;
             }
         } else if (GameConstants.isPotentialScroll(scroll.getItemId())) {
             if (toScroll.getHidden() >= 1 || (toScroll.getLevel() == 0 && toScroll.getUpgradeSlots() == 0) || vegas > 0 || ii.isCash(toScroll.getItemId())) {
-                chr.SendPacket(ResWrapper.getInventoryFull());
+                chr.SendPacket(WrapCWvsContext.updateInv());
                 return false;
             }
         }
         if (!GameConstants.canScroll(toScroll.getItemId()) && !GameConstants.isChaosScroll(toScroll.getItemId())) {
-            chr.SendPacket(ResWrapper.getInventoryFull());
+            chr.SendPacket(WrapCWvsContext.updateInv());
             return false;
         }
         if ((GameConstants.isCleanSlate(scroll.getItemId()) || GameConstants.isTablet(scroll.getItemId()) || GameConstants.isChaosScroll(scroll.getItemId())) && (vegas > 0 || ii.isCash(toScroll.getItemId()))) {
-            chr.SendPacket(ResWrapper.getInventoryFull());
+            chr.SendPacket(WrapCWvsContext.updateInv());
             return false;
         }
         if (GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() < 0) {
             //not a durability item
-            chr.SendPacket(ResWrapper.getInventoryFull());
+            chr.SendPacket(WrapCWvsContext.updateInv());
             return false;
         } else if (!GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() >= 0) {
-            chr.SendPacket(ResWrapper.getInventoryFull());
+            chr.SendPacket(WrapCWvsContext.updateInv());
             return false;
         }
         IItem wscroll = null;
         // Anti cheat and validation
         List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
         if (scrollReqs.size() > 0 && !scrollReqs.contains(toScroll.getItemId())) {
-            chr.SendPacket(ResWrapper.getInventoryFull());
+            chr.SendPacket(WrapCWvsContext.updateInv());
             return false;
         }
         if (whiteScroll) {
@@ -1453,7 +1454,7 @@ public class ReqCUser {
         IItem toReveal = (equip_slot < 0) ? chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot) : chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
 
         if (magnify == null || toReveal == null) {
-            chr.SendPacket(ResWrapper.getInventoryFull());
+            chr.SendPacket(WrapCWvsContext.updateInv());
             return false;
         }
 
@@ -1471,7 +1472,7 @@ public class ReqCUser {
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
             //Debug.DebugLog("potential updated");
         } else {
-            chr.SendPacket(ResWrapper.getInventoryFull());
+            chr.SendPacket(WrapCWvsContext.updateInv());
             //Debug.ErrorLog("potential err 2");
             return false;
         }
@@ -2017,7 +2018,7 @@ public class ReqCUser {
         }
 
         chr.SendPacket(ResCWvsContext.GatherItemResult(slot_type));
-        chr.SendPacket(ResWrapper.enableActions()); // 必要
+        chr.SendPacket(WrapCWvsContext.updateStat()); // 必要
         return true;
     }
 
@@ -2056,7 +2057,7 @@ public class ReqCUser {
         }
 
         chr.SendPacket(ResCWvsContext.SortItemResult(slot_type));
-        chr.SendPacket(ResWrapper.enableActions());
+        chr.SendPacket(WrapCWvsContext.updateStat());
         return true;
     }
 
@@ -2161,7 +2162,7 @@ public class ReqCUser {
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
         }
 
-        chr.SendPacket(ResWrapper.enableActions());
+        chr.SendPacket(WrapCWvsContext.updateStat());
         return true;
     }
 
@@ -2231,7 +2232,7 @@ public class ReqCUser {
             }
         }
 
-        chr.SendPacket(ResWrapper.enableActions());
+        chr.SendPacket(WrapCWvsContext.updateStat());
         return true;
     }
 
@@ -2280,7 +2281,7 @@ public class ReqCUser {
         }
 
         map.broadcastMessage(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
-        chr.SendPacket(ResWrapper.enableActions());
+        chr.SendPacket(WrapCWvsContext.updateStat());
         return true;
     }
 

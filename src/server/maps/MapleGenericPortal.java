@@ -27,6 +27,7 @@ import handling.channel.ChannelServer;
 import packet.ops.OpsTransferField;
 import packet.response.ResCField;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import scripting.PortalScriptManager;
 import server.MaplePortal;
 
@@ -124,7 +125,7 @@ public class MapleGenericPortal implements MaplePortal {
             }
         }
         if (c != null && c.getPlayer() != null && c.getPlayer().getMap() == currentmap) { // Character is still on the same map.
-            c.getSession().write(ResWrapper.enableActions());
+            c.getSession().write(WrapCWvsContext.updateStat());
         }
     }
 

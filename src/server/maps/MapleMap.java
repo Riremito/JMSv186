@@ -81,6 +81,7 @@ import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCUserLocal;
 import packet.response.wrapper.WrapCUserRemote;
+import packet.response.wrapper.WrapCWvsContext;
 import server.MapleItemInformationProvider;
 import server.MaplePortal;
 import server.MapleStatEffect;
@@ -1501,7 +1502,7 @@ public final class MapleMap {
                     //c.getSession().write(PartyResponse.partyPortal(door.getTown().getId(), door.getTarget().getId(), door.getSkill(), door.getTargetPosition()));
                 }
                 //c.getSession().write(MysticDoorResponse.setMysticDoorInfo(door));
-                c.getSession().write(ResWrapper.enableActions());
+                c.getSession().write(WrapCWvsContext.updateStat());
             }
         }, new SpawnCondition() {
 

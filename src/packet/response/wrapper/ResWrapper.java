@@ -24,7 +24,6 @@ import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import config.Region;
-import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
 import server.network.MaplePacket;
@@ -57,10 +56,6 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  * @author Riremito
  */
 public class ResWrapper {
-
-    public static MaplePacket getInventoryFull() {
-        return ResCWvsContext.InventoryOperation(true, null);
-    }
 
     public static MaplePacket addInventorySlot(MapleInventoryType type, IItem item) {
         return addInventorySlot(type, item, false);
@@ -567,10 +562,6 @@ public class ResWrapper {
     // プレイヤー情報の初期化
     public static final MaplePacket getCharInfo(final MapleCharacter chr) {
         return ResCStage.SetField(chr, true, null, 0);
-    }
-
-    public static final MaplePacket enableActions() {
-        return ResCWvsContext.StatChanged(null, 1, 0);
     }
 
     // マップ移動

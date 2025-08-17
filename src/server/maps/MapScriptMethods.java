@@ -31,6 +31,7 @@ import packet.response.ResCField;
 import packet.response.ResCMobPool;
 import packet.response.ResCUserLocal;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import scripting.EventManager;
 import scripting.NPCScriptManager;
 import server.Randomizer;
@@ -533,7 +534,7 @@ public class MapScriptMethods {
             case evanTogether:
             case aranTutorAlone:
             case evanAlone: { //no idea
-                c.getSession().write(ResWrapper.enableActions());
+                c.getSession().write(WrapCWvsContext.updateStat());
                 break;
             }
             case startEreb:
@@ -542,7 +543,7 @@ public class MapScriptMethods {
             case evanleaveD: {
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
-                c.getSession().write(ResWrapper.enableActions());
+                c.getSession().write(WrapCWvsContext.updateStat());
                 break;
             }
             case dojang_Msg: {
@@ -592,7 +593,7 @@ public class MapScriptMethods {
                     case 900090004:
                         c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                         c.getSession().write(ResCUserLocal.IntroLock(false));
-                        c.getSession().write(ResWrapper.enableActions());
+                        c.getSession().write(WrapCWvsContext.updateStat());
                         final MapleMap mapto = c.getChannelServer().getMapFactory().getMap(900010000);
                         c.getPlayer().changeMap(mapto, mapto.getPortal(0));
                         return;
@@ -602,7 +603,7 @@ public class MapScriptMethods {
             case TD_MC_title: {
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
-                c.getSession().write(ResWrapper.enableActions());
+                c.getSession().write(WrapCWvsContext.updateStat());
                 c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "temaD/enter/mushCatle")));
                 break;
             }
@@ -610,7 +611,7 @@ public class MapScriptMethods {
                 if (c.getPlayer().getMapId() == 104000000) {
                     c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                     c.getSession().write(ResCUserLocal.IntroLock(false));
-                    c.getSession().write(ResWrapper.enableActions());
+                    c.getSession().write(WrapCWvsContext.updateStat());
                     c.getSession().write(ResWrapper.MapNameDisplay(c.getPlayer().getMapId()));
                 }
                 MedalQuest m = null;
@@ -671,7 +672,7 @@ public class MapScriptMethods {
             case go1020000:
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
-                c.getSession().write(ResWrapper.enableActions());
+                c.getSession().write(WrapCWvsContext.updateStat());
             case go20000:
             case go30000:
             case go40000:
@@ -751,7 +752,7 @@ public class MapScriptMethods {
                 c.getSession().write(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
-                c.getSession().write(ResWrapper.enableActions());
+                c.getSession().write(WrapCWvsContext.updateStat());
                 break;
             }
             case rienArrow: {

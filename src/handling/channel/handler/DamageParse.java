@@ -39,6 +39,7 @@ import java.util.Map;
 import packet.response.ResCDropPool;
 import packet.response.ResCDropPool.LeaveType;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import server.MapleStatEffect;
 import server.Randomizer;
 import server.Timer.MapTimer;
@@ -62,7 +63,7 @@ public class DamageParse {
         }
         if (attack.skill != 0) {
             if (effect == null) {
-                player.getClient().getSession().write(ResWrapper.enableActions());
+                player.getClient().getSession().write(WrapCWvsContext.updateStat());
                 Debug.ErrorLog("applyAttack : 1");
                 return;
             }

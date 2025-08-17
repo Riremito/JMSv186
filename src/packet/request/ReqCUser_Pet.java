@@ -39,6 +39,7 @@ import packet.response.ResCUser_Pet;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
@@ -132,7 +133,7 @@ public class ReqCUser_Pet {
 
         IItem toUse = chr.getInventory(item_type).getItem(item_slot);
         if (toUse == null || toUse.getItemId() != item_id || toUse.getQuantity() < 1) {
-            chr.SendPacket(ResWrapper.enableActions());
+            chr.SendPacket(WrapCWvsContext.updateStat());
             return false;
         }
 
@@ -251,18 +252,18 @@ public class ReqCUser_Pet {
         lock.lock();
         try {
             if (mapitem.isPickedUp()) {
-                chr.SendPacket(ResWrapper.getInventoryFull());
+                chr.SendPacket(WrapCWvsContext.updateInv());
                 return;
             }
             if (mapitem.getOwner() != chr.getId() && mapitem.isPlayerDrop()) {
                 return;
             }
             if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
-                chr.SendPacket(ResWrapper.enableActions());
+                chr.SendPacket(WrapCWvsContext.updateStat());
                 return;
             }
             if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwner() != chr.getId() && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwner()) == null)) {
-                chr.SendPacket(ResWrapper.enableActions());
+                chr.SendPacket(WrapCWvsContext.updateStat());
                 return;
             }
 
@@ -286,7 +287,7 @@ public class ReqCUser_Pet {
                 InventoryHandler.removeItem_Pet(chr, mapitem, pet_index);
             } else {
                 if (MapleItemInformationProvider.getInstance().isPickupBlocked(mapitem.getItemId()) || mapitem.getItemId() / 10000 == 291) {
-                    chr.SendPacket(ResWrapper.enableActions());
+                    chr.SendPacket(WrapCWvsContext.updateStat());
                 } else if (InventoryHandler.useItem(c, mapitem.getItemId())) {
                     InventoryHandler.removeItem_Pet(chr, mapitem, pet_index);
                 } else if (MapleInventoryManipulator.checkSpace(c, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {

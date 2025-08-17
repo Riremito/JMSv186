@@ -152,6 +152,7 @@ import server.network.MockIOSession;
 import data.wz.ids.DWI_Dafault;
 import debug.DebugShop;
 import debug.IDebugMan;
+import packet.response.wrapper.WrapCWvsContext;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Serializable {
 
@@ -3140,7 +3141,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public boolean gainMeso(int gain, boolean show, boolean enableActions, boolean inChat) {
         if (meso + gain < 0) {
-            client.getSession().write(ResWrapper.enableActions());
+            client.getSession().write(WrapCWvsContext.updateStat());
             return false;
         }
         meso += gain;
@@ -3153,7 +3154,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public boolean gainTama(int gain, boolean show) {
         if (tama + gain < 0) {
-            client.ProcessPacket(ResWrapper.enableActions());
+            client.ProcessPacket(WrapCWvsContext.updateStat());
             return false;
         }
         gainTama(gain);

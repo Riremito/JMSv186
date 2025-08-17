@@ -45,6 +45,7 @@ import packet.response.ResCMobPool;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
@@ -353,7 +354,7 @@ public class PlayerHandler {
     public static final void UseItemEffect(final int itemId, final MapleClient c, final MapleCharacter chr) {
         final IItem toUse = chr.getInventory(MapleInventoryType.CASH).findById(itemId);
         if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1) {
-            c.getSession().write(ResWrapper.enableActions());
+            c.getSession().write(WrapCWvsContext.updateStat());
             return;
         }
         if (itemId != 5510000) {
@@ -479,7 +480,7 @@ public class PlayerHandler {
 
             if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
                 if (chr.skillisCooling(attack.skill)) {
-                    c.getSession().write(ResWrapper.enableActions());
+                    c.getSession().write(WrapCWvsContext.updateStat());
                     Debug.ErrorLog("closeRangeAttack : 4");
                     return;
                 }
@@ -606,7 +607,7 @@ public class PlayerHandler {
             }
             if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
                 if (chr.skillisCooling(attack.skill)) {
-                    c.getSession().write(ResWrapper.enableActions());
+                    c.getSession().write(WrapCWvsContext.updateStat());
                     Debug.ErrorLog("rangedAttack : 2");
                     return;
                 }
@@ -722,7 +723,7 @@ public class PlayerHandler {
         }
         if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
             if (chr.skillisCooling(attack.skill)) {
-                c.getSession().write(ResWrapper.enableActions());
+                c.getSession().write(WrapCWvsContext.updateStat());
                 Debug.ErrorLog("MagicDamage : 2");
                 return;
             }
@@ -744,7 +745,7 @@ public class PlayerHandler {
 
     public static final void DropMeso(final int meso, final MapleCharacter chr) {
         if (!chr.isAlive() || (meso < 10 || meso > 50000) || (meso > chr.getMeso())) {
-            chr.getClient().getSession().write(ResWrapper.enableActions());
+            chr.getClient().getSession().write(WrapCWvsContext.updateStat());
             return;
         }
         chr.gainMeso(-meso, false, true);

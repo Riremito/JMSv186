@@ -50,6 +50,7 @@ import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import server.Randomizer;
 import server.RandomRewards;
 import server.MapleItemInformationProvider;
@@ -72,7 +73,7 @@ public class InventoryHandler {
 
     public static final int UseRewardItem(short slot, final int itemId, final MapleClient c, final MapleCharacter chr) {
         final IItem toUse = c.getPlayer().getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
-        c.getSession().write(ResWrapper.enableActions());
+        c.getSession().write(WrapCWvsContext.updateStat());
         if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId) {
             if (chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.USE).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.SETUP).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.ETC).getNextFreeSlot() > -1) {
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -325,7 +326,7 @@ public class InventoryHandler {
                 c.getPlayer().dropMessage(5, "The skill has been attained.");
             }
         }
-        c.getSession().write(ResWrapper.enableActions());
+        c.getSession().write(WrapCWvsContext.updateStat());
     }
 
     public static final int UseTreasureChest(MapleCharacter chr, short slot, int item_id) {
@@ -387,7 +388,7 @@ public class InventoryHandler {
 
         final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.CASH).getItem(slot);
         if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1) {
-            c.getSession().write(ResWrapper.enableActions());
+            c.getSession().write(WrapCWvsContext.updateStat());
             return;
         }
 
@@ -836,7 +837,7 @@ public class InventoryHandler {
         if (used) {
             MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.CASH, slot, (short) 1, false, true);
         }
-        c.getSession().write(ResWrapper.enableActions());
+        c.getSession().write(WrapCWvsContext.updateStat());
     }
 
     public static final boolean PickUp(MapleCharacter chr, int object_id) {
@@ -1015,7 +1016,7 @@ public class InventoryHandler {
     public static final int OWL_ID = 2; //don't change. 0 = owner ID, 1 = store ID, 2 = object ID
 
     public static final void OwlWarp(MapleClient c, int id, int map) {
-        c.getSession().write(ResWrapper.enableActions());
+        c.getSession().write(WrapCWvsContext.updateStat());
         if (c.getPlayer().getMapId() >= 910000000 && c.getPlayer().getMapId() <= 910000022 && c.getPlayer().getPlayerShop() == null) {
             if (map >= 910000001 && map <= 910000022) {
                 final MapleMap mapp = c.getChannelServer().getMapFactory().getMap(map);

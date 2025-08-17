@@ -14,6 +14,7 @@ import java.lang.ref.WeakReference;
 import packet.response.ResCField;
 import packet.response.ResCMiniRoomBaseDlg;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 
 public class MapleTrade {
 
@@ -156,12 +157,12 @@ public class MapleTrade {
         }
         final byte flag = item.getFlag();
         if (ItemFlag.UNTRADEABLE.check(flag) || ItemFlag.LOCK.check(flag)) {
-            c.getSession().write(ResWrapper.enableActions());
+            c.getSession().write(WrapCWvsContext.updateStat());
             return false;
         }
         if (ii.isDropRestricted(item.getItemId()) || ii.isAccountShared(item.getItemId())) {
             if (!(ItemFlag.KARMA_EQ.check(flag) || ItemFlag.KARMA_USE.check(flag))) {
-                c.getSession().write(ResWrapper.enableActions());
+                c.getSession().write(WrapCWvsContext.updateStat());
                 return false;
             }
         }

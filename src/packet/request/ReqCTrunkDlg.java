@@ -12,6 +12,7 @@ import packet.ClientPacket;
 import packet.ops.OpsTrunk;
 import packet.response.ResCTrunkDlg;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.MapleStorage;
@@ -90,7 +91,7 @@ public class ReqCTrunkDlg {
 
                 final byte flag = item.getFlag();
                 if (ii.isPickupRestricted(item.getItemId()) && storage.findById(item.getItemId()) != null) {
-                    c.getSession().write(ResWrapper.enableActions());
+                    c.getSession().write(WrapCWvsContext.updateStat());
                     return false;
                 }
 
@@ -101,7 +102,7 @@ public class ReqCTrunkDlg {
                         } else if (ItemFlag.KARMA_USE.check(flag)) {
                             item.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
                         } else {
-                            c.getSession().write(ResWrapper.enableActions());
+                            c.getSession().write(WrapCWvsContext.updateStat());
                             return false;
                         }
                     }

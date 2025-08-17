@@ -30,6 +30,7 @@ import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.maps.MapleMapObjectType;
@@ -114,7 +115,7 @@ public class PlayersHandler {
         final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId) {
-            c.getSession().write(ResWrapper.enableActions());
+            c.getSession().write(WrapCWvsContext.updateStat());
             return;
         }
         switch (itemId) {
@@ -216,7 +217,7 @@ public class PlayersHandler {
             }
             if (errcode > 0) {
                 c.getSession().write(ResCWvsContext.sendEngagement((byte) errcode, 0, null, null));
-                c.getSession().write(ResWrapper.enableActions());
+                c.getSession().write(WrapCWvsContext.updateStat());
                 return;
             }
             c.getPlayer().setMarriageItemId(itemid);
@@ -231,14 +232,14 @@ public class PlayersHandler {
             final MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
             if (c.getPlayer().getMarriageId() > 0 || chr == null || chr.getId() != id || chr.getMarriageItemId() <= 0 || !chr.haveItem(chr.getMarriageItemId(), 1) || chr.getMarriageId() > 0) {
                 c.getSession().write(ResCWvsContext.sendEngagement((byte) 0x1D, 0, null, null));
-                c.getSession().write(ResWrapper.enableActions());
+                c.getSession().write(WrapCWvsContext.updateStat());
                 return;
             }
             if (accepted) {
                 final int newItemId = 1112300 + (chr.getMarriageItemId() - 2240004);
                 if (!MapleInventoryManipulator.checkSpace(c, newItemId, 1, "") || !MapleInventoryManipulator.checkSpace(chr.getClient(), newItemId, 1, "")) {
                     c.getSession().write(ResCWvsContext.sendEngagement((byte) 0x15, 0, null, null));
-                    c.getSession().write(ResWrapper.enableActions());
+                    c.getSession().write(WrapCWvsContext.updateStat());
                     return;
                 }
                 MapleInventoryManipulator.addById(c, newItemId, (short) 1);
@@ -250,7 +251,7 @@ public class PlayersHandler {
             } else {
                 chr.getClient().getSession().write(ResCWvsContext.sendEngagement((byte) 0x1E, 0, null, null));
             }
-            c.getSession().write(ResWrapper.enableActions());
+            c.getSession().write(WrapCWvsContext.updateStat());
             chr.setMarriageItemId(0);
         } else if (mode == 3) { //drop, only works for ETC
             final int itemId = slea.readInt();

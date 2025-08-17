@@ -49,6 +49,7 @@ import packet.response.ResCUserLocal;
 import packet.response.ResCUser_Pet;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import server.MapleItemInformationProvider;
 import server.maps.FieldLimitType;
 import server.maps.MapleMap;
@@ -439,7 +440,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             }
         }
 
-        chr.SendPacket(ResWrapper.enableActions());
+        chr.SendPacket(WrapCWvsContext.updateStat());
         return false;
     }
 

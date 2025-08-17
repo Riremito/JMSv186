@@ -71,6 +71,7 @@ import packet.response.data.DataGW_ItemSlotBase;
 import packet.response.struct.InvOp;
 import packet.response.struct.TestHelper;
 import packet.response.wrapper.ResWrapper;
+import packet.response.wrapper.WrapCWvsContext;
 import server.MapleItemInformationProvider;
 import server.MapleStatEffect;
 import tools.Pair;
@@ -1056,7 +1057,7 @@ public class ResCWvsContext {
         for (int i = 0; i < noGuilds; i++) {
             g[i] = World.Guild.getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
-                return ResWrapper.enableActions();
+                return WrapCWvsContext.updateStat();
             }
         }
         mplew.write(noGuilds);
@@ -1157,7 +1158,7 @@ public class ResCWvsContext {
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
             g[i] = World.Guild.getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
-                return ResWrapper.enableActions();
+                return WrapCWvsContext.updateStat();
             }
         }
         mplew.writeInt(noGuilds);
@@ -1401,7 +1402,7 @@ public class ResCWvsContext {
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
             g[i] = World.Guild.getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
-                return ResWrapper.enableActions();
+                return WrapCWvsContext.updateStat();
             }
         }
         for (MapleGuild gg : g) {
