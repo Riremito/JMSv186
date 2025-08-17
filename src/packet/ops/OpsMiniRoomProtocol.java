@@ -18,6 +18,9 @@
  */
 package packet.ops;
 
+import config.Region;
+import config.Version;
+
 /**
  *
  * @author Riremito
@@ -125,6 +128,26 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
     }
 
     public static void init() {
+        if (Version.LessOrEqual(Region.JMS, 147)) {
+            ESP_PutItem.set(29); // アイテム追加
+            ESP_BuyItem.set(30);
+            ESP_BuyResult.set(31);
+            ESP_Refresh.set(32);
+            ESP_AddSoldItem.set(33);
+            ESP_MoveItemToInventory.set(34); // アイテム回収
+            ESP_GoOut.set(35); // 商店から出る -> MRP_Leave
+            ESP_ArrangeItem.set(36); // アイテム整理
+            ESP_WithdrawAll.set(37); // 商店のクローズ
+            ESP_WithdrawAllResult.set(38);
+            ESP_WithdrawMoney.set(39); // メル回収
+            ESP_WithdrawMoneyResult.set(40);
+            ESP_AdminChangeTitle.set(-1);
+            ESP_DeliverVisitList.set(-1);
+            ESP_DeliverBlackList.set(-1);
+            ESP_AddBlackList.set(-1);
+            ESP_DeleteBlackList.set(-1);
+            return;
+        }
     }
 
 }
