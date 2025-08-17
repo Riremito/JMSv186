@@ -6209,24 +6209,24 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         IItem toUse = this.getInventory(MapleInventoryType.USE).getItem(item_slot);
 
         if (toUse == null || toUse.getItemId() != item_id || toUse.getQuantity() < 1) {
-            this.SendPacket(ResWrapper.StatChanged(this));
+            this.SendPacket(WrapCWvsContext.updateInv());
             return false;
         }
 
         long time = System.currentTimeMillis();
         if (this.getNextConsume() > time) {
             this.DebugMsg2("You may not use this item yet.");
-            this.SendPacket(ResWrapper.StatChanged(this));
+            this.SendPacket(WrapCWvsContext.updateInv());
             return false;
         }
 
         if (FieldLimitType.PotionUse.check(map.getFieldLimit())) {
-            this.SendPacket(ResWrapper.StatChanged(this));
+            this.SendPacket(WrapCWvsContext.updateInv());
             return false;
         }
 
         if (!MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyTo(this)) {
-            this.SendPacket(ResWrapper.StatChanged(this));
+            this.SendPacket(WrapCWvsContext.updateInv());
             return false;
         }
 

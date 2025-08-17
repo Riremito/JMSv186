@@ -104,14 +104,16 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 506: {
                 if (cashItem506(chr, cash_item_id, cp)) {
                     item_use.run();
+                    return true;
                 }
-                return true;
+                return false;
             }
             case 507: {
                 if (cashItem507_Megaphone(chr, cash_item_id, cp)) {
                     item_use.run();
+                    return true;
                 }
-                return true;
+                return false;
             }
             case 510: {
                 int song_time = cp.Decode4(); // unused
@@ -139,15 +141,17 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 517: {
                 if (cashItem517_PetNameChange(chr, cash_item_id, cp)) {
                     item_use.run();
+                    return true;
                 }
-                return true;
+                return false;
             }
             case 520: // 5201000
             {
                 if (cashItem520_Money(chr, cash_item_id)) {
                     item_use.run();
+                    return true;
                 }
-                return true;
+                return false;
             }
             case 523: {
                 // OnUserShopScannerItemUseRequest
@@ -173,7 +177,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 String message = cp.DecodeStr();
                 chr.setADBoard(message);
                 map.broadcastMessage(ResCUser.UserADBoard(chr));
-                //item_use.run();
+                chr.SendPacket(WrapCWvsContext.updateInv());
                 return true;
             }
             case 545: {
@@ -183,7 +187,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 ds.setRechargeAll();
                 ds.setRandomItems(3);
                 ds.start(chr);
-                chr.UpdateStat(true);
+                chr.SendPacket(WrapCWvsContext.updateInv());
                 return true;
             }
             case 557: // 5570000
@@ -222,8 +226,9 @@ public class ReqSub_UserConsumeCashItemUseRequest {
 
                 if (ReqCUser.OnUserUpgradeItemUseRequest(map, chr, (short) scroll_slot, (short) equip_slot, cash_item_id)) {
                     item_use.run();
+                    return true;
                 }
-                return true;
+                return false;
             }
             case 562: {
                 ReqCUser.OnUserSkillLearnItemUseRequest(map, chr, cash_item_slot, cash_item_id);
@@ -459,7 +464,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 String pet_name = cp.DecodeStr();
 
                 if (pet == null) {
-                    chr.SendPacket(ResWrapper.StatChanged(chr));
+                    chr.SendPacket(WrapCWvsContext.updateInv());
                     return false;
                 }
 

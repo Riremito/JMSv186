@@ -141,7 +141,7 @@ public class ReqCUser_Pet {
         int pet_previous_level = pet.getLevel();
         pet.feed(inc_fullness, (item_type == MapleInventoryType.CASH) ? 100 : 10);
         MapleInventoryManipulator.removeById(chr.getClient(), item_type, item_id, 1, true, false);
-        chr.SendPacket(ResWrapper.StatChanged(chr));
+        chr.SendPacket(WrapCWvsContext.updateInv());
 
         // 情報更新
         chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));

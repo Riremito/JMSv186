@@ -314,7 +314,9 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserConsumeCashItemUseRequest: {
-                OnUserConsumeCashItemUseRequest(map, chr, cp);
+                if (!OnUserConsumeCashItemUseRequest(map, chr, cp)) {
+                    chr.SendPacket(WrapCWvsContext.updateInv());
+                }
                 return true;
             }
             case CP_UserDestroyPetItemRequest: {
@@ -1130,7 +1132,7 @@ public class ReqCUser {
 
         chr.setChair(item_id);
         chr.getMap().broadcastMessage(chr, ResCUserRemote.SetActivePortableChair(chr.getId(), item_id), false);
-        chr.SendPacket(ResWrapper.StatChanged(chr)); // ?_?
+        chr.SendPacket(WrapCWvsContext.updateInv()); // ?_?
         return true;
     }
 
@@ -1157,7 +1159,7 @@ public class ReqCUser {
         final MapleCharacter player = map.getCharacterById(m_dwCharacterId); // CUser::FindUser
 
         if (player == null) {
-            chr.SendPacket(ResWrapper.StatChanged(chr));
+            chr.SendPacket(WrapCWvsContext.updateStat());
             return false;
         }
 
