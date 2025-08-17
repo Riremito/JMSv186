@@ -201,7 +201,8 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserRemoteShopOpenRequest: {
-                PlayerInteractionHandler.RemoteStore(c);
+                short item_slot = cp.Decode2();
+                ReqCMiniRoomBaseDlg.RemoteStore(chr, item_slot);
                 return true;
             }
             case CP_UserScriptMessageAnswer: {
@@ -515,7 +516,7 @@ public class ReqCUser {
                 return ReqCUIMessenger.OnPacket(c, header, cp);
             }
             case CP_MiniRoom: {
-                return ReqCMiniRoomBaseDlg.OnPacket(c, header, cp);
+                return ReqCMiniRoomBaseDlg.OnMiniRoom(map, chr, cp);
             }
             case CP_PartyRequest: {
                 //PartyHandler.PartyOperatopn(p, c);

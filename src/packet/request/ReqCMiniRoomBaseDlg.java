@@ -19,9 +19,14 @@
 package packet.request;
 
 import client.MapleCharacter;
-import client.MapleClient;
+import debug.Debug;
+import java.util.List;
 import packet.ClientPacket;
+import packet.response.ResCField;
+import packet.response.ResCMiniRoomBaseDlg;
 import server.maps.MapleMap;
+import server.shops.HiredMerchant;
+import tools.Pair;
 
 /**
  *
@@ -29,28 +34,41 @@ import server.maps.MapleMap;
  */
 public class ReqCMiniRoomBaseDlg {
 
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
-        if (chr == null) {
-            return true;
-        }
+    public static boolean OnMiniRoom(MapleMap map, MapleCharacter chr, ClientPacket cp) {
 
-        MapleMap map = chr.getMap();
-        if (map == null) {
-            return true;
-        }
-
-        //PlayerInteractionHandler.PlayerInteraction(p, c, c.getPlayer());
-        switch (header) {
-            case CP_MiniRoom: {
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-
+        //PlayerInteractionHandler.PlayerInteraction(p, chr.getClient(), chr);
         return false;
+    }
+
+    // 雇用商店遠隔管理機
+    public static boolean RemoteStore(MapleCharacter chr, short item_slot) {
+        Runnable item_use = chr.checkItemSlot(item_slot, 5470000);
+
+        if (item_use == null) {
+            Debug.ErrorLog("RemoteStore : no item.");
+            return false;
+        }
+
+        final HiredMerchant merchant = (HiredMerchant) chr.getRemoteStore();
+        if (merchant == null) {
+            // test
+            chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStatic(chr));
+            return false;
+        }
+
+        merchant.setOpen(false);
+
+        // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
+        List<Pair<Byte, MapleCharacter>> visitors = merchant.getVisitors();
+        for (int i = 0; i < visitors.size(); i++) {
+            visitors.get(i).getRight().getClient().getSession().write(ResCField.MaintenanceHiredMerchant((byte) i + 1));
+            visitors.get(i).getRight().setPlayerShop(null);
+            merchant.removeVisitor(visitors.get(i).getRight());
+        }
+
+        chr.setPlayerShop(merchant);
+        chr.SendPacket(ResCField.getHiredMerch(chr, merchant, false));
+        return true;
     }
 
 }

@@ -31,7 +31,6 @@ import client.inventory.MapleInventoryType;
 import java.util.List;
 import packet.response.ResCEmployeePool;
 import packet.response.ResCField;
-import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCWvsContext;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -750,37 +749,4 @@ public class PlayerInteractionHandler {
         }
     }
 
-    // 雇用商店遠隔管理機
-    public static final boolean RemoteStore(MapleClient c) {
-        // 雇用商店遠隔管理機 5470000
-        // short slot = p.readShort();
-        // アイテム欄の癒しの該当するスロットのitemIDが5470000かどうか確認したほうが良い
-        // 自分の雇用商店の情報をCH変更時、ログアウト時に保持する必要がある
-        // 現状の実装だとCH変更またはログアウトすると情報が消失するためDBにデータを追加し、ログイン時にデータを読み込む必要がある
-        // どうせ使わないし面倒くさいので後回し
-        //
-
-        final HiredMerchant merchant = (HiredMerchant) c.getPlayer().getRemoteStore();
-        if (merchant == null) {
-            c.getPlayer().DebugMsg("merchant == null");
-            return false;
-        }
-
-        c.getPlayer().DebugMsg("RemoteStore");
-
-        merchant.setOpen(false);
-
-        // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
-        List<Pair<Byte, MapleCharacter>> visitors = merchant.getVisitors();
-        for (int i = 0; i < visitors.size(); i++) {
-            visitors.get(i).getRight().getClient().getSession().write(ResCField.MaintenanceHiredMerchant((byte) i + 1));
-            visitors.get(i).getRight().setPlayerShop(null);
-            merchant.removeVisitor(visitors.get(i).getRight());
-        }
-
-        c.getPlayer().setPlayerShop(merchant);
-        c.getSession().write(ResCField.getHiredMerch(c.getPlayer(), merchant, false));
-
-        return true;
-    }
 }

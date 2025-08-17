@@ -20,10 +20,19 @@ package packet.response;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import client.inventory.Equip;
 import client.inventory.IItem;
+import client.inventory.MapleInventoryType;
+import constants.GameConstants;
+import data.wz.ids.DWI_LoadXML;
 import server.network.MaplePacket;
 import packet.ServerPacket;
+import packet.ops.OpsMiniRoomProtocol;
+import packet.ops.OpsMiniRoomType;
+import packet.response.data.DataAvatarLook;
+import packet.response.data.DataGW_ItemSlotBase;
 import packet.response.struct.TestHelper;
+import server.MapleItemInformationProvider;
 import server.MapleTrade;
 import tools.HexTool;
 import tools.data.output.MaplePacketLittleEndianWriter;
@@ -33,6 +42,68 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  * @author Riremito
  */
 public class ResCMiniRoomBaseDlg {
+
+    public static MaplePacket EnterResultStatic(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        byte m_nMyPosition = 0;
+
+        sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
+        sp.Encode1(OpsMiniRoomType.MR_EntrustedShop.get());
+        sp.Encode1(4); // m_nMaxUsers (max 8)
+        sp.Encode1(m_nMyPosition); // m_nMyPosition
+        // VisitorSlot
+        for (int visitor_index = 0; visitor_index <= 1; visitor_index++) {
+            boolean isEmployer = false;
+            sp.Encode1(visitor_index); // first slot is employer
+            if (1 <= visitor_index) {
+                sp.EncodeBuffer(DataAvatarLook.Encode(chr)); // CMiniRoomBaseDlg::DecodeAvatar
+            } else {
+                sp.Encode4(5030000); // dwTemplateID
+                isEmployer = true;
+            }
+            sp.EncodeStr(isEmployer ? "Employer" : chr.getName());
+            if (!isEmployer) {
+                // GMS95
+                //sp.Encode2(chr.getJob()); // m_anJobCode[i]
+            }
+        }
+        sp.Encode1(-1); // visiter slot end
+        {
+            sp.Encode2(0);
+            sp.EncodeStr("TestPlayer");
+            if (m_nMyPosition == 0) {
+                sp.Encode4((16 * 60 * 60 + 52 * 60) * 1000); // 商店終了 / 07:07
+                sp.Encode1(0); // 0 = already opened, 1 = open
+                int sold_item_count = 3;
+                sp.Encode1(sold_item_count);
+                for (int i = 0; i < sold_item_count; i++) {
+                    sp.Encode4(DWI_LoadXML.getItem().getRandom());
+                    sp.Encode2(7); // quanty
+                    sp.Encode4(123); // price
+                    sp.EncodeStr(chr.getName()); // buyer
+                }
+                sp.Encode4(123456); // 総受付金額 ?_?
+            }
+            sp.EncodeStr("test message.");
+            sp.Encode1(4); // merchant slot
+            sp.Encode4(789012); // merchant mesos
+
+            int sale_item_count = 3;
+            sp.Encode1(sale_item_count);
+            for (int i = 0; i < sale_item_count; i++) {
+                MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+                int itemid = DWI_LoadXML.getItem().getRandom();
+                IItem item_gen = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? miip.randomizeStats((Equip) miip.getEquipById(itemid)) : new client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
+
+                sp.Encode2(1); // bundle
+                sp.Encode2(1); // quanty
+                sp.Encode4(456); // price
+                sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item_gen));
+            }
+        }
+        return sp.get();
+    }
 
     public static MaplePacket getTradeInvite(MapleCharacter c, boolean isPointTrade) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
@@ -144,5 +215,5 @@ public class ResCMiniRoomBaseDlg {
         mplew.writeInt(meso);
         return mplew.getPacket();
     }
-    
+
 }

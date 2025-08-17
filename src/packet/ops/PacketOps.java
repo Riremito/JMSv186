@@ -42,6 +42,8 @@ public class PacketOps {
         OpsFuncKeyMapped.init();
         OpsContiMove.init();
         OpsMapTransfer.init();
+        OpsMiniRoomProtocol.init();
+        OpsMiniRoomType.init();
     }
 
 }
