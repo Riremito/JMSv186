@@ -20,7 +20,6 @@ package packet.request.parse;
 
 import client.inventory.MaplePet;
 import config.Region;
-import config.ServerConfig;
 import config.Version;
 import debug.Debug;
 import java.awt.Point;
@@ -63,6 +62,7 @@ public class ParseCMovePath {
     public void update(AnimatedMapleMapObject life) {
         life.setStance(move_end_action);
         life.setPosition(move_end);
+        life.setFH(move_end_foothold_id);
     }
 
     private int getTailDataSize(ClientPacket cp) {

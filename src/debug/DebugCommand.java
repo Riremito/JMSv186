@@ -28,6 +28,7 @@ import client.inventory.MapleInventoryType;
 import config.property.Property_Packet;
 import constants.GameConstants;
 import data.client.DC_Exp;
+import data.wz.DW_Item;
 import data.wz.DW_Skill;
 import data.wz.DW_String;
 import data.wz.ids.DWI_Random;
@@ -37,7 +38,9 @@ import handling.channel.ChannelServer;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import packet.request.ReqCUser;
+import packet.response.ResCEmployeePool;
 import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
 import provider.MapleData;
@@ -51,8 +54,10 @@ import server.life.MapleNPC;
 import server.life.MonsterDropEntry;
 import server.life.Spawns;
 import server.maps.MapleDynamicPortal;
+import server.maps.MapleFoothold;
 import server.maps.MapleMap;
 import server.maps.SavedLocationType;
+import server.shops.HiredMerchant;
 
 /**
  *
@@ -211,7 +216,56 @@ public class DebugCommand {
                 ds.start(chr);
                 return true;
             }
+            case "/check": {
+                chr.DebugMsg("X  : " + chr.getPosition().x);
+                chr.DebugMsg("Y  : " + chr.getPosition().y);
+                chr.DebugMsg("FH : " + chr.getFH());
+                chr.DebugMsg("Ac : " + chr.getStance());
+                return true;
+            }
+            case "/hm": {
+                List<Integer> ids = new ArrayList<>();
+                MapleData md_item_sub_type = DW_Item.getItemImg(503);
+                if (md_item_sub_type != null) {
+                    for (MapleData md_item : md_item_sub_type.getChildren()) {
+                        int item_id = Integer.parseInt(md_item.getName());
+                        ids.add(item_id);
+                    }
+                }
 
+                Random rand = new Random();
+                int count = 0;
+                for (MapleFoothold mfh : chr.getMap().getFootholds().getAll()) {
+                    if (30 < count) {
+                        break;
+                    }
+                    if (mfh.getId() < chr.getFH()) {
+                        continue;
+                    }
+                    count++;
+                    int id_inc = 0;
+                    int fh_id = 0;
+                    int fh_x = 0;
+                    int fh_y = 0;
+                    if (mfh.getId() == chr.getFH()) {
+                        fh_id = chr.getFH();
+                        fh_x = chr.getPosition().x;
+                        fh_y = chr.getPosition().y;
+                    } else {
+                        fh_id = mfh.getId();
+                        fh_x = mfh.getX1();
+                        fh_y = mfh.getY1();
+                        id_inc = fh_id;
+                    }
+                    int item_id = ids.get(rand.nextInt(ids.size()));
+                    HiredMerchant hm = new HiredMerchant(chr, item_id, "DebugHiredMarchant");
+                    hm.setTest(chr.getId() + id_inc, fh_id, ids.get(rand.nextInt(ids.size())), 7777 + id_inc);
+                    hm.setPosition(new Point(fh_x, fh_y));
+                    chr.SendPacket(ResCEmployeePool.EmployeeLeaveField(hm));
+                    chr.SendPacket(ResCEmployeePool.EmployeeEnterField(hm));
+                }
+                return true;
+            }
             case "/search": {
                 if (splitted.length < 3) {
                     return false;

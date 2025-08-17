@@ -20,9 +20,7 @@ package packet.response;
 
 import server.network.MaplePacket;
 import packet.ServerPacket;
-import packet.response.struct.TestHelper;
 import server.shops.HiredMerchant;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -30,23 +28,39 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class ResCEmployeePool {
 
-    public static final MaplePacket spawnHiredMerchant(final HiredMerchant hm) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_EmployeeEnterField.get());
-        mplew.writeInt(hm.getOwnerId());
-        mplew.writeInt(hm.getItemId());
-        mplew.writePos(hm.getPosition());
-        mplew.writeShort(0);
-        mplew.writeMapleAsciiString(hm.getOwnerName());
-        TestHelper.addInteraction(mplew, hm);
-        return mplew.getPacket();
+    public static MaplePacket EmployeeEnterField(HiredMerchant hm) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_EmployeeEnterField);
+
+        sp.Encode4(hm.getOwnerId()); // dwEmployerID
+        sp.Encode4(hm.getItemId()); // dwTemplateID (Employee NPC Look)
+        // CEmployee::Init
+        {
+            sp.Encode2(hm.getPosition().x); // m_ptPos.x
+            sp.Encode2(hm.getPosition().y); // m_ptPos.y
+            sp.Encode2(hm.getFH()); // Foothold
+            sp.EncodeStr(hm.getOwnerName());
+        }
+        // CEmployee::SetBalloon
+        {
+            // TestHelper.addInteraction(mplew, hm);
+            int m_nMiniRoomType = hm.getGameType();
+            sp.Encode1(m_nMiniRoomType); // m_nMiniRoomType
+            if (m_nMiniRoomType != 0) {
+                sp.Encode4(hm.getStoreId()); // m_dwMiniRoomSN
+                sp.EncodeStr(hm.getDescription());
+                sp.Encode1(hm.getItemSubType() % 100); // nSpec (Store Look)
+                sp.Encode1(0); // nCurUsers
+                sp.Encode1(3); // nMaxUsers
+            }
+        }
+        return sp.get();
     }
 
-    public static final MaplePacket destroyHiredMerchant(final int id) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_EmployeeLeaveField.get());
-        mplew.writeInt(id);
-        return mplew.getPacket();
+    public static MaplePacket EmployeeLeaveField(HiredMerchant hm) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_EmployeeLeaveField);
+
+        sp.Encode4(hm.getOwnerId());
+        return sp.get();
     }
-    
+
 }

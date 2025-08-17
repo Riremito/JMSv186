@@ -31,7 +31,6 @@ import java.util.LinkedList;
 import java.util.List;
 import packet.response.ResCEmployeePool;
 import packet.response.ResCField;
-import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCWvsContext;
 import server.MapleInventoryManipulator;
 import server.Timer.EtcTimer;
@@ -43,9 +42,12 @@ public class HiredMerchant extends AbstractPlayerStore {
     private List<String> blacklist;
     private int storeid;
     private long start;
+    private int foothold_id;
+    private int item_sub_type;
 
     public HiredMerchant(MapleCharacter owner, int itemId, String desc) {
         super(owner, itemId, desc, "", 3);
+        this.item_sub_type = itemId % 100;
         start = System.currentTimeMillis();
         blacklist = new LinkedList<String>();
         this.schedule = EtcTimer.getInstance().schedule(new Runnable() {
@@ -55,6 +57,21 @@ public class HiredMerchant extends AbstractPlayerStore {
                 closeShop(true, true, 0);
             }
         }, 1000 * 60 * 60 * 24);
+    }
+
+    public void setTest(int owner_id, int fh, int st, int store_id) {
+        this.ownerId = owner_id; // overwritten
+        this.foothold_id = fh;
+        this.item_sub_type = st % 100;
+        this.storeid = store_id;
+    }
+
+    public int getFH() {
+        return this.foothold_id;
+    }
+
+    public int getItemSubType() {
+        return this.item_sub_type;
     }
 
     public byte getShopType() {
@@ -115,7 +132,7 @@ public class HiredMerchant extends AbstractPlayerStore {
         }
         if (remove) {
             ChannelServer.getInstance(channel).removeMerchant(this);
-            getMap().broadcastMessage(ResCEmployeePool.destroyHiredMerchant(getOwnerId()));
+            getMap().broadcastMessage(ResCEmployeePool.EmployeeLeaveField(this));
         }
         getMap().removeMapObject(this);
         schedule = null;
@@ -137,14 +154,14 @@ public class HiredMerchant extends AbstractPlayerStore {
     @Override
     public void sendDestroyData(MapleClient client) {
         if (isAvailable()) {
-            client.getSession().write(ResCEmployeePool.destroyHiredMerchant(getOwnerId()));
+            client.getSession().write(ResCEmployeePool.EmployeeLeaveField(this));
         }
     }
 
     @Override
     public void sendSpawnData(MapleClient client) {
         if (isAvailable()) {
-            client.getSession().write(ResCEmployeePool.spawnHiredMerchant(this));
+            client.getSession().write(ResCEmployeePool.EmployeeEnterField(this));
         }
     }
 

@@ -242,4 +242,8 @@ public class MapleFootholdTree {
         }
         return null;
     }
+
+    public List<MapleFoothold> getAll() {
+        return this.footholds;
+    }
 }

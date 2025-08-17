@@ -23,15 +23,29 @@ package server.maps;
 public abstract class AbstractAnimatedMapleMapObject extends AbstractMapleMapObject implements AnimatedMapleMapObject {
 
     private int stance;
+    private int foothold_id;
 
+    @Override
     public int getStance() {
         return stance;
     }
 
+    @Override
     public void setStance(int stance) {
         this.stance = stance;
     }
 
+    @Override
+    public int getFH() {
+        return this.foothold_id;
+    }
+
+    @Override
+    public void setFH(int foothold_id) {
+        this.foothold_id = foothold_id;
+    }
+
+    @Override
     public boolean isFacingLeft() {
         return getStance() % 2 != 0;
     }

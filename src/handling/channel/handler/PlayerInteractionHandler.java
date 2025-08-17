@@ -294,7 +294,7 @@ public class PlayerInteractionHandler {
                             merchant.setStoreid(c.getChannelServer().addMerchant(merchant));
                             merchant.setOpen(true);
                             merchant.setAvailable(true);
-                            chr.getMap().broadcastMessage(ResCEmployeePool.spawnHiredMerchant(merchant));
+                            chr.getMap().broadcastMessage(ResCEmployeePool.EmployeeEnterField(merchant));
                             chr.setPlayerShop(null);
 
                         } else if (shop.getShopType() == 2) {
