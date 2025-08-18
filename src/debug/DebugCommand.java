@@ -233,13 +233,18 @@ public class DebugCommand {
                     }
                 }
 
+                if (chr.getFH() <= 0) {
+                    return false;
+                }
+
+                List<HiredMerchant> hms = new ArrayList<>();
                 Random rand = new Random();
                 int count = 0;
                 for (MapleFoothold mfh : chr.getMap().getFootholds().getAll()) {
                     if (30 < count) {
                         break;
                     }
-                    if (mfh.getId() < chr.getFH()) {
+                    if (mfh.getId() < chr.getFH() - 15) {
                         continue;
                     }
                     count++;
@@ -256,6 +261,25 @@ public class DebugCommand {
                         fh_x = mfh.getX1();
                         fh_y = mfh.getY1();
                         id_inc = fh_id;
+
+                        int fh_width = mfh.getX2() - mfh.getX1();
+
+                        if (fh_width == 0) {
+                            continue;
+                        }
+
+                        fh_x = mfh.getX1() + fh_width / 2;
+                        boolean bOK = true;
+                        for (HiredMerchant hm : hms) {
+                            int distance = (int) Math.sqrt((hm.getPosition().x - fh_x) * (hm.getPosition().x - fh_x) + (hm.getPosition().y - fh_y) * (hm.getPosition().y - fh_y));
+                            if (distance <= 100) {
+                                bOK = false;
+                                break;
+                            }
+                        }
+                        if (!bOK) {
+                            continue;
+                        }
                     }
                     int item_id = ids.get(rand.nextInt(ids.size()));
                     HiredMerchant hm = new HiredMerchant(chr, item_id, "DebugHiredMarchant");
@@ -263,6 +287,7 @@ public class DebugCommand {
                     hm.setPosition(new Point(fh_x, fh_y));
                     chr.SendPacket(ResCEmployeePool.EmployeeLeaveField(hm));
                     chr.SendPacket(ResCEmployeePool.EmployeeEnterField(hm));
+                    hms.add(hm);
                 }
                 return true;
             }
