@@ -31,8 +31,6 @@ import packet.ops.OpsTransferChannel;
 import packet.ops.OpsTransferField;
 import packet.ops.Ops_Whisper;
 import packet.ops.arg.ArgFieldEffect;
-import packet.response.data.DataAvatarLook;
-import packet.response.data.DataGW_ItemSlotBase;
 import packet.response.struct.TestHelper;
 import server.maps.MapleMap;
 import server.maps.MapleNodes;
@@ -294,14 +292,6 @@ public class ResCField {
             mplew.writeInt(item.price);
             TestHelper.addItemInfo(mplew, item.item, true, true);
         }
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket updateHiredMerchant(final HiredMerchant shop) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_EmployeeMiniRoomBalloon.get());
-        mplew.writeInt(shop.getOwnerId());
-        TestHelper.addInteraction(mplew, shop);
         return mplew.getPacket();
     }
 

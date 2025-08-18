@@ -39,6 +39,7 @@ import database.DatabaseConnection;
 import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import java.util.ArrayList;
+import packet.response.ResCEmployeePool;
 import packet.response.ResCField;
 import packet.response.ResCUser;
 import server.maps.AbstractMapleMapObject;
@@ -187,7 +188,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     public void update() {
         if (isAvailable()) {
             if (getShopType() == IMaplePlayerShop.HIRED_MERCHANT) {
-                getMap().broadcastMessage(ResCField.updateHiredMerchant((HiredMerchant) this));
+                getMap().broadcastMessage(ResCEmployeePool.EmployeeMiniRoomBalloon((HiredMerchant) this));
             } else if (getMCOwner() != null) {
                 getMap().broadcastMessage(ResCUser.sendPlayerShopBox(getMCOwner()));
             }
