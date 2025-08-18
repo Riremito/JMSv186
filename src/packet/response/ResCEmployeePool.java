@@ -69,7 +69,7 @@ public class ResCEmployeePool {
         int m_nMiniRoomType = hm.getGameType();
         data.Encode1(m_nMiniRoomType); // m_nMiniRoomType
         if (m_nMiniRoomType != 0) {
-            data.Encode4(hm.getStoreId()); // m_dwMiniRoomSN
+            data.Encode4(hm.getObjectId()); // m_dwMiniRoomSN
             data.EncodeStr(hm.getDescription());
             data.Encode1(hm.getItemSubType() % 100); // nSpec (Store Look)
             data.Encode1(hm.getSize()); // nCurUsers

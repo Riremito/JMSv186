@@ -26,9 +26,11 @@ import packet.ClientPacket;
 import packet.ops.OpsEntrustedShop;
 import packet.ops.OpsMiniRoomProtocol;
 import packet.ops.OpsMiniRoomType;
+import packet.response.ResCEmployeePool;
 import packet.response.ResCField;
 import packet.response.ResCMiniRoomBaseDlg;
 import server.maps.MapleMap;
+import server.maps.MapleMapObjectType;
 import server.shops.HiredMerchant;
 import tools.Pair;
 
@@ -71,6 +73,16 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MRP_Enter: {
+                int miniroom_id = cp.Decode4();
+                byte unk = cp.Decode1();
+
+                HiredMerchant hm = (HiredMerchant) chr.getMap().getMapObject(miniroom_id, MapleMapObjectType.HIRED_MERCHANT);
+                if (hm == null) {
+                    Debug.ErrorLog("hm == null.");
+                    return false;
+                }
+                //hm.addVisitor(chr);
+                chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStatic(hm, chr));
                 return true;
             }
             case MRP_Chat: {
@@ -113,7 +125,11 @@ public class ReqCMiniRoomBaseDlg {
         final HiredMerchant merchant = (HiredMerchant) chr.getRemoteStore();
         if (merchant == null) {
             // test
-            chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticTest(chr));
+            //chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticTest(chr));
+
+            HiredMerchant hm = new HiredMerchant(chr, 5030000, "DebugHiredMarchant");
+            chr.getMap().addMapObject(hm);
+            chr.SendPacket(ResCEmployeePool.EmployeeEnterField(hm));
             return false;
         }
 

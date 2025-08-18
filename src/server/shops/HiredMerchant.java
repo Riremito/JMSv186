@@ -48,6 +48,7 @@ public class HiredMerchant extends AbstractPlayerStore {
     public HiredMerchant(MapleCharacter owner, int itemId, String desc) {
         super(owner, itemId, desc, "", 3);
         this.item_sub_type = itemId % 100;
+        this.foothold_id = owner.getFH();
         start = System.currentTimeMillis();
         blacklist = new LinkedList<String>();
         this.schedule = EtcTimer.getInstance().schedule(new Runnable() {
@@ -64,6 +65,7 @@ public class HiredMerchant extends AbstractPlayerStore {
         this.foothold_id = fh;
         this.item_sub_type = st % 100;
         this.storeid = store_id;
+        //super.setObjectId(this.ownerId - 1);
     }
 
     public int getFH() {
