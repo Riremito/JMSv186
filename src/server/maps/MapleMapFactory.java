@@ -82,8 +82,10 @@ public class MapleMapFactory {
             try {
                 map = maps.get(omapid);
                 if (map != null) {
+                    Debug.DebugLog("getMap : " + mapid + ", cached.");
                     return map;
                 }
+                Debug.DebugLog("getMap : " + mapid + ", not cached.");
 
                 MapleData mapData;
                 try {
