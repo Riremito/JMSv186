@@ -982,10 +982,11 @@ public class ResCLogin {
         return sp.get();
     }
 
-    public static final MaplePacket charNameResponse(final String charname, final boolean nameUsed) {
+    public static MaplePacket CheckDuplicatedIDResult(String name, boolean isOK) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CheckDuplicatedIDResult);
-        sp.EncodeStr(charname);
-        sp.Encode1(nameUsed ? 1 : 0);
+
+        sp.EncodeStr(name);
+        sp.Encode1(isOK ? 0 : 1); // 0 = OK
         return sp.get();
     }
 

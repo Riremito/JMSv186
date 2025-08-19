@@ -19,11 +19,11 @@
 package packet.request;
 
 import client.MapleCharacter;
-import client.MapleCharacterUtil;
 import client.MapleClient;
 import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
+import config.Content;
 import config.ContentState;
 import config.DeveloperMode;
 import config.Region;
@@ -32,6 +32,7 @@ import config.Version;
 import config.property.Property_Login;
 import data.wz.DW_Etc;
 import data.wz.ids.DWI_Validation;
+import database.query.DB_Characters;
 import debug.Debug;
 import debug.DebugUser;
 import handling.channel.ChannelServer;
@@ -88,10 +89,10 @@ public class ReqCLogin {
                 CharlistRequest(cp, c);
                 return true;
             }
-            // キャラクター作成時の名前重複確認
             case CP_CheckDuplicatedID: {
-                // p
-                CheckCharName(cp, c);
+                String name = cp.DecodeStr();
+
+                OnCheckDuplicatedID(c, name);
                 return true;
             }
             // キャラクター作成
@@ -393,7 +394,7 @@ public class ReqCLogin {
             return false;
         }
         // name check
-        if (!MapleCharacterUtil.canCreateChar(character_name) || DW_Etc.isForbiddenName(character_name)) {
+        if (!canCreateChar(character_name)) {
             c.SendPacket(ResCLogin.addNewCharEntry(null, false));
             return false;
         }
@@ -446,9 +447,27 @@ public class ReqCLogin {
         return true;
     }
 
-    public static final void CheckCharName(ClientPacket cp, final MapleClient c) {
-        String name = cp.DecodeStr();
-        c.getSession().write(ResCLogin.charNameResponse(name, !MapleCharacterUtil.canCreateChar(name) || DW_Etc.isForbiddenName(name)));
+    public static void OnCheckDuplicatedID(MapleClient c, String name) {
+        boolean isOK = canCreateChar(name);
+
+        c.SendPacket(ResCLogin.CheckDuplicatedIDResult(name, isOK));
+    }
+
+    public static boolean canCreateChar(final String name) {
+        if (name.getBytes().length < 2) {
+            return false;
+        }
+        if ((Content.CharacterNameLength.getInt() - 1) < name.getBytes().length) {
+            return false;
+        }
+        if (DW_Etc.isForbiddenName(name)) {
+            return false;
+        }
+        // already registered
+        if (DB_Characters.getIdByName(name) != -1) {
+            return false;
+        }
+        return true;
     }
 
     public static final void CharlistRequest(ClientPacket cp, final MapleClient c) {
