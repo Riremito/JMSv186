@@ -30,7 +30,6 @@ import server.maps.MapleMap;
  */
 public class Req_Farm {
 
-    // CDragon::OnMove
     public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
@@ -59,4 +58,5 @@ public class Req_Farm {
 
         return false;
     }
+
 }

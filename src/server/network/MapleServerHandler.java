@@ -30,6 +30,7 @@ import packet.request.ReqCField_MonsterCarnival;
 import packet.request.ReqCField_SnowBall;
 import packet.request.ReqCLogin;
 import packet.request.ReqCNpcPool;
+import packet.request.Req_MapleTV;
 import packet.response.ResCClientSocket;
 
 public class MapleServerHandler extends IoHandlerAdapter {
@@ -345,7 +346,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             return true;
         }
         if (header.between(ClientPacket.Header.CP_BEGIN_MAPLETV, ClientPacket.Header.CP_END_MAPLETV)) {
-            return true;
+            return Req_MapleTV.OnPacket(c, header, cp);
         }
         if (header.between(ClientPacket.Header.CP_BEGIN_CHARACTERSALE, ClientPacket.Header.CP_END_CHARACTERSALE)) {
             return true;
