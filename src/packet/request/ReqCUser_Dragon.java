@@ -32,7 +32,7 @@ import server.maps.MapleDragon;
 public class ReqCUser_Dragon {
 
     // CDragon::OnMove
-    public static boolean OnMove(ClientPacket cp, MapleClient c) {
+    public static boolean OnMove(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null || chr.isHidden()) {
             return false;

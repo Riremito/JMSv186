@@ -20,7 +20,7 @@ import tools.Pair;
 
 public class ReqCMobPool {
 
-    public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
+    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return true;

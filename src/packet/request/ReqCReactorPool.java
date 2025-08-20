@@ -32,7 +32,7 @@ import server.maps.MapleReactor;
  */
 public class ReqCReactorPool {
 
-    public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
+    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         switch (header) {
             case CP_ReactorHit: {
                 int oid = cp.Decode4();

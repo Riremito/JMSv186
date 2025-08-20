@@ -55,7 +55,7 @@ import server.MapleItemInformationProvider;
 public class ReqCLogin {
 
     // CLogin::OnPacket
-    public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         switch (header) {
             // ログイン
             // CClientSocket::OnCheckPassword

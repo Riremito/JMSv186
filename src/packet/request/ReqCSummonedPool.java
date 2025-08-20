@@ -54,7 +54,7 @@ import server.maps.SummonMovementType;
 public class ReqCSummonedPool {
 
     // CUser::OnSummonedPacket
-    public static boolean OnPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
+    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return false;

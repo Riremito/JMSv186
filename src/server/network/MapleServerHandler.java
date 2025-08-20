@@ -230,7 +230,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             if (ReqCClientSocket.OnPacket_Login(c, header, cp)) {
                 return true;
             }
-            return ReqCLogin.OnPacket(header, cp, c);
+            return ReqCLogin.OnPacket(c, header, cp);
         }
         if (header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
             return ReqCUser.OnPacket_Login(c, header, cp);
@@ -269,14 +269,13 @@ public class MapleServerHandler extends IoHandlerAdapter {
     public static final boolean handleGamePacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception {
         // socket
         if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
-            // AdminPacket.OnPacket(cp, header, c);
             return ReqCClientSocket.OnPacket(c, header, cp);
         }
         // user
         if (header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
             // family
             if (header.between(ClientPacket.Header.CP_FamilyChartRequest, ClientPacket.Header.CP_FamilySummonResult)) {
-                return ReqCUser.OnFamilyPacket(cp, header, c);
+                return ReqCUser.OnFamilyPacket(c, header, cp);
             }
             // pet
             if (header.between(ClientPacket.Header.CP_BEGIN_PET, ClientPacket.Header.CP_END_PET)) {
@@ -284,11 +283,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // summon
             if (header.between(ClientPacket.Header.CP_BEGIN_SUMMONED, ClientPacket.Header.CP_END_SUMMONED)) {
-                return ReqCSummonedPool.OnPacket(cp, header, c);
+                return ReqCSummonedPool.OnPacket(c, header, cp);
             }
             // dragon
             if (header.between(ClientPacket.Header.CP_BEGIN_DRAGON, ClientPacket.Header.CP_END_DRAGON)) {
-                return ReqCUser_Dragon.OnMove(cp, c);
+                return ReqCUser_Dragon.OnMove(c, header, cp);
             }
             return ReqCUser.OnPacket(c, header, cp);
         }
@@ -298,7 +297,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             if (header.between(ClientPacket.Header.CP_BEGIN_LIFEPOOL, ClientPacket.Header.CP_END_LIFEPOOL)) {
                 // mob
                 if (header.between(ClientPacket.Header.CP_BEGIN_MOB, ClientPacket.Header.CP_END_MOB)) {
-                    return ReqCMobPool.OnPacket(cp, header, c);
+                    return ReqCMobPool.OnPacket(c, header, cp);
                 }
                 // npc
                 if (header.between(ClientPacket.Header.CP_BEGIN_NPC, ClientPacket.Header.CP_END_NPC)) {
@@ -309,11 +308,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // drop
             if (header.between(ClientPacket.Header.CP_BEGIN_DROPPOOL, ClientPacket.Header.CP_END_DROPPOOL)) {
-                return ReqCDropPool.OnPacket(cp, header, c);
+                return ReqCDropPool.OnPacket(c, header, cp);
             }
             // reactor
             if (header.between(ClientPacket.Header.CP_BEGIN_REACTORPOOL, ClientPacket.Header.CP_END_REACTORPOOL)) {
-                return ReqCReactorPool.OnPacket(cp, header, c);
+                return ReqCReactorPool.OnPacket(c, header, cp);
             }
             // event field
             if (header.between(ClientPacket.Header.CP_BEGIN_EVENT_FIELD, ClientPacket.Header.CP_END_EVENT_FIELD)) {

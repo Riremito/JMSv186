@@ -698,7 +698,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnFamilyPacket(ClientPacket cp, ClientPacket.Header header, MapleClient c) {
+    public static boolean OnFamilyPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return true;
