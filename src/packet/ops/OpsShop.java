@@ -162,7 +162,7 @@ public enum OpsShop implements IPacketOps {
         ShopReq_Buy.set(0);
         ShopReq_Sell.set(1);
         ShopReq_Recharge.set(2);
-        ShopReq_Close.set(3);
+        ShopReq_Close.set(4);
         ShopRes_BuySuccess.set(0);
         ShopRes_BuyNoStock.set(1);
         ShopRes_BuyNoMoney.set(2);
