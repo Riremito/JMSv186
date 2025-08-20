@@ -26,7 +26,7 @@ public enum ContentState {
     CS_NETCAFE(false), // ネットカフェ
     CS_HIDE_EVENT_MOB(true),
     CS_HIDE_EVENT_NPC(true),
-    CS_HIDE_MAPLE_TV(true),
+    CS_HIDE_MAPLE_TV(false),
     CS_LOCK_HP_WASH, // HP振り替え
     CS_LOCK_HAMMER, // ビシャスのハンマー
     CS_LOCK_EE_SCROLL, // 装備強化

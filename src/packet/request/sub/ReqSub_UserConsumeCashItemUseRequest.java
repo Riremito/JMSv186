@@ -30,8 +30,10 @@ import config.Version;
 import constants.GameConstants;
 import debug.Debug;
 import debug.DebugShop;
+import handling.channel.ChannelServer;
 import handling.channel.handler.PlayerHandler;
 import handling.world.World;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -42,6 +44,7 @@ import packet.ops.OpsShopScanner;
 import packet.ops.arg.ArgBroadcastMsg;
 import packet.request.ReqCUser;
 import packet.request.ReqCUser_Pet;
+import packet.response.ResCMapleTVMan;
 import packet.response.ResCParcelDlg;
 import packet.response.ResCUIItemUpgrade;
 import packet.response.ResCUser;
@@ -323,6 +326,16 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         return false;
     }
 
+    public static MapleCharacter findCharacterByName(String name_to) {
+        int ch = World.Find.findChannel(name_to);
+        if (ch != -1) {
+            MapleCharacter chr_to = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(name_to);
+            return chr_to;
+        }
+
+        return null;
+    }
+
     public static boolean cashItem507_Megaphone(MapleCharacter chr, int cash_item_id, ClientPacket cp) {
         byte channel = (byte) chr.getClient().getChannel();
         switch (cash_item_id) {
@@ -380,14 +393,82 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
                 return true;
             }
-            // MapleTV
-            case 5075000:
-            case 5075001:
-            case 5075002:
-            case 5075003:
-            case 5075004:
-            case 5075005: {
-                break;
+            case 5075000: // メッセージ送信機 (MapleTV)
+            {
+                // 15 sec
+                byte nFlag = cp.Decode1();
+                String name_to = cp.DecodeStr();
+                List<String> messages = new ArrayList<>();
+                for (int i = 0; i < 5; i++) {
+                    messages.add(cp.DecodeStr());
+                }
+
+                MapleCharacter chr_to = name_to.equals("") ? null : findCharacterByName(name_to);
+                chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage(nFlag, 0, chr, messages, chr_to));
+                return true;
+            }
+            case 5075001: // スターメッセージ送信機
+            {
+                // 30 sec
+                List<String> messages = new ArrayList<>();
+                for (int i = 0; i < 5; i++) {
+                    messages.add(cp.DecodeStr());
+                }
+
+                chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage((byte) 1, 1, chr, messages, null));
+                return true;
+            }
+            case 5075002: // ハートメッセージ送信機
+            {
+                // 60 sec
+                String name_to = cp.DecodeStr();
+                List<String> messages = new ArrayList<>();
+                for (int i = 0; i < 5; i++) {
+                    messages.add(cp.DecodeStr());
+                }
+
+                MapleCharacter chr_to = findCharacterByName(name_to);
+                chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage((byte) 3, 2, chr, messages, chr_to));
+                return true;
+            }
+            case 5075003: // メッセージ拡声器
+            {
+                byte nFlag = cp.Decode1();
+                byte ear = cp.Decode1();
+                String name_to = cp.DecodeStr();
+                List<String> messages = new ArrayList<>();
+                for (int i = 0; i < 5; i++) {
+                    messages.add(cp.DecodeStr());
+                }
+
+                MapleCharacter chr_to = name_to.equals("") ? null : findCharacterByName(name_to);
+                chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage(nFlag, 0, chr, messages, chr_to));
+                return true;
+            }
+            case 5075004: // スターメッセージ拡声器
+            {
+                byte ear = cp.Decode1();
+                List<String> messages = new ArrayList<>();
+                for (int i = 0; i < 5; i++) {
+                    messages.add(cp.DecodeStr());
+                }
+
+                chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage((byte) 1, 1, chr, messages, null));
+                // TODO : smega things
+                return true;
+            }
+            case 5075005: // ハートメッセージ拡声器
+            {
+                byte ear = cp.Decode1();
+                String name_to = cp.DecodeStr();
+                List<String> messages = new ArrayList<>();
+                for (int i = 0; i < 5; i++) {
+                    messages.add(cp.DecodeStr());
+                }
+
+                MapleCharacter chr_to = findCharacterByName(name_to);
+                chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage((byte) 3, 2, chr, messages, chr_to));
+                return true;
             }
             // アイテム拡声器
             case 5076000: {
