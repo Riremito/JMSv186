@@ -148,6 +148,10 @@ public class ClientPacket {
         return buffer;
     }
 
+    public int getRemainingSize() {
+        return packet.length - decoded;
+    }
+
     public enum Header implements IHeader {
         // 独自仕様
         CP_CUSTOM_,

@@ -315,7 +315,7 @@ public class Structure {
         data.Encode2(cd.size());
         for (final MapleCoolDownValueHolder cooling : cd) {
             data.Encode4(cooling.skillId);
-            if (Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+            if (Version.GreaterOrEqual(Region.JMS, 302) | Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                 data.Encode4((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);
             } else {
                 data.Encode2((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);

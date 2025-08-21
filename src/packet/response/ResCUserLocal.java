@@ -19,6 +19,7 @@
 package packet.response;
 
 import client.MapleCharacter;
+import config.DeveloperMode;
 import config.Version;
 import constants.ServerConstants;
 import server.network.MaplePacket;
@@ -408,6 +409,10 @@ public class ResCUserLocal {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SkillCooltimeSet);
 
         sp.Encode4(skill_id);
+
+        if (DeveloperMode.DM_SKILL_COOL_TIME.getInt() != 0) {
+            cool_time = Math.min(cool_time, DeveloperMode.DM_SKILL_COOL_TIME.getInt());
+        }
 
         if (Version.PostBB()) {
             sp.Encode4(cool_time);

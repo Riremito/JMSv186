@@ -18,15 +18,13 @@
  */
 package packet.response;
 
-import client.MapleClient;
 import config.ServerConfig;
 import server.network.MaplePacket;
 import packet.ServerPacket;
+import packet.request.parse.ParseCMovePath;
 import packet.response.data.DataAvatarLook;
 import server.life.MapleNPC;
 import server.life.PlayerNPC;
-import tools.data.input.SeekableLittleEndianAccessor;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -96,21 +94,18 @@ public class ResCNpcPool {
         return sp.get();
     }
 
-    public static final void NpcMove(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_NpcMove.get());
-        final int length = (int) slea.available();
-        if (length == 6) {
-            // NPC Talk
-            mplew.writeInt(slea.readInt());
-            mplew.writeShort(slea.readShort());
-        } else if (length > 6) {
-            // NPC Move
-            mplew.write(slea.read(length - 9));
-        } else {
-            return;
+    public static MaplePacket NpcMove(MapleNPC npc, int nChatIdx, int m_nOneTimeAction, ParseCMovePath move_path) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_NpcMove);
+
+        sp.Encode4(npc.getObjectId());
+        sp.Encode1(nChatIdx);
+        sp.Encode1(m_nOneTimeAction);
+
+        if (move_path != null) {
+            sp.EncodeBuffer(move_path.get());
         }
-        c.getSession().write(mplew.getPacket());
+
+        return sp.get();
     }
 
 }

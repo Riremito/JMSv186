@@ -1272,6 +1272,14 @@ public final class MapleMap {
         return (MapleNPC) mmo;
     }
 
+    public List<MapleMapObject> getMapObjects(MapleMapObjectType type) {
+        List<MapleMapObject> mmos = new ArrayList<>();
+        for (MapleMapObject mmo : mapobjects.get(type).values()) {
+            mmos.add(mmo);
+        }
+        return mmos;
+    }
+
     public final MapleReactor getReactorByOid(final int oid) {
         MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.REACTOR);
         if (mmo == null) {

@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Random;
 import packet.request.ReqCUser;
 import packet.response.ResCEmployeePool;
+import packet.response.ResCNpcPool;
 import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
 import provider.MapleData;
@@ -57,6 +58,8 @@ import server.life.Spawns;
 import server.maps.MapleDynamicPortal;
 import server.maps.MapleFoothold;
 import server.maps.MapleMap;
+import server.maps.MapleMapObject;
+import server.maps.MapleMapObjectType;
 import server.maps.SavedLocationType;
 import server.shops.HiredMerchant;
 
@@ -298,6 +301,15 @@ public class DebugCommand {
                 pnpc.update(chr);
                 chr.getMap().addMapObject(pnpc);
                 pnpc.sendSpawnData(chr.getClient());
+                return true;
+            }
+
+            case "/npccon": {
+                for (MapleMapObject mmo : chr.getMap().getMapObjects(MapleMapObjectType.NPC)) {
+                    MapleNPC npc = chr.getMap().getNPCByOid(mmo.getObjectId());
+                    chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+                    chr.DebugMsg("NpcControl : id = " + npc.getId() + ", oid = " + npc.getObjectId());
+                }
                 return true;
             }
             case "/search": {

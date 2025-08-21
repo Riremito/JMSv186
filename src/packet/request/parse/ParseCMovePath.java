@@ -74,6 +74,7 @@ public class ParseCMovePath {
                 }
                 return (1 + 17); // KMS65, JMS164-302
             }
+            case CP_NpcMove:
             case CP_DragonMove:
             case CP_SummonedMove:
             case CP_PetMove: {
@@ -108,6 +109,9 @@ public class ParseCMovePath {
 
     // CMovePath::Decode
     public boolean Decode(ClientPacket cp) {
+        if (cp.getRemainingSize() == 0) {
+            return false;
+        }
         data = cp.DecodeAll();
         // offset
         final int offset_start_x = 0;

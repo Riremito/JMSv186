@@ -4289,6 +4289,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void addCooldown(int skillId, long startTime, long length) {
+        if (DeveloperMode.DM_SKILL_COOL_TIME.getInt() != 0) {
+            startTime = Math.min(startTime, DeveloperMode.DM_SKILL_COOL_TIME.getInt());
+        }
+
         coolDowns.put(Integer.valueOf(skillId), new MapleCoolDownValueHolder(skillId, startTime, length));
     }
 

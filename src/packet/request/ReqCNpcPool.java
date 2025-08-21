@@ -21,6 +21,10 @@ package packet.request;
 import client.MapleCharacter;
 import client.MapleClient;
 import packet.ClientPacket;
+import packet.request.parse.ParseCMovePath;
+import packet.response.ResCNpcPool;
+import server.life.MapleNPC;
+import server.maps.MapleMap;
 
 /**
  *
@@ -33,10 +37,31 @@ public class ReqCNpcPool {
         if (chr == null) {
             return false;
         }
+        MapleMap map = chr.getMap();
+        if (map == null) {
+            return false;
+        }
+
+        int npc_oid = cp.Decode4();
+
+        MapleNPC npc = map.getNPCByOid(npc_oid);
+        if (npc == null) {
+            return false;
+        }
 
         switch (header) {
             case CP_NpcMove: {
-                // ResCNpcPool.NPCAnimation(p, c);
+                byte nChatIdx = cp.Decode1();
+                byte m_nOneTimeAction = cp.Decode1();
+
+                ParseCMovePath move_path = move_path = new ParseCMovePath();
+                if (move_path.Decode(cp)) {
+                    move_path.update(npc);
+                } else {
+                    move_path = null;
+                }
+
+                map.broadcastMessage(ResCNpcPool.NpcMove(npc, nChatIdx, m_nOneTimeAction, move_path));
                 return true;
             }
             default: {
