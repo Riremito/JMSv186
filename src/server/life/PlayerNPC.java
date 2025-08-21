@@ -47,6 +47,7 @@ public class PlayerNPC extends MapleNPC {
     private int mapid, face, hair, charId;
     private byte skin, gender;
     private int[] pets = new int[3];
+    private MapleCharacter chr_src = null;
 
     public PlayerNPC(ResultSet rs) throws Exception {
         super(rs.getInt("ScriptId"), rs.getString("name"));
@@ -137,6 +138,8 @@ public class PlayerNPC extends MapleNPC {
         if (chr == null || charId != chr.getId()) {
             return; //cant use name as it mightve been change actually..
         }
+        this.chr_src = chr;
+
         setName(chr.getName());
         setHair(chr.getHair());
         setFace(chr.getFace());
@@ -151,7 +154,11 @@ public class PlayerNPC extends MapleNPC {
             }
             equips.put((byte) item.getPosition(), item.getItemId());
         }
-        saveToDB();
+        //saveToDB();
+    }
+
+    public MapleCharacter getCharacter() {
+        return this.chr_src;
     }
 
     public void destroy() {
@@ -286,7 +293,7 @@ public class PlayerNPC extends MapleNPC {
     public void sendSpawnData(MapleClient client) {
         client.SendPacket(ResCNpcPool.NpcEnterField(this, true));
         client.SendPacket(ResCNpcPool.ImitatedNPCData(this));
-        client.SendPacket(ResCNpcPool.NpcChangeController(this, true));
+        client.SendPacket(ResCNpcPool.NpcChangeController(this, false, true));
     }
 
     public MapleNPC getNPCFromWZ() {

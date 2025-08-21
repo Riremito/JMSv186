@@ -20,7 +20,6 @@ import debug.DebugLogger;
 import handling.world.family.MapleFamilyBuff;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
-import server.life.PlayerNPC;
 import test.ToolMan;
 
 public class Start {
@@ -111,7 +110,6 @@ public class Start {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        PlayerNPC.loadAll();// touch - so we see database problems early...
         World.registerRespawn();
         LoginServer.setOn(); //now or later
         RankingWorker.getInstance().run();

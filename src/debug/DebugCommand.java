@@ -52,6 +52,7 @@ import server.life.MapleMonster;
 import server.life.MapleMonsterInformationProvider;
 import server.life.MapleNPC;
 import server.life.MonsterDropEntry;
+import server.life.PlayerNPC;
 import server.life.Spawns;
 import server.maps.MapleDynamicPortal;
 import server.maps.MapleFoothold;
@@ -290,6 +291,13 @@ public class DebugCommand {
                     chr.SendPacket(ResCEmployeePool.EmployeeEnterField(hm));
                     hms.add(hm);
                 }
+                return true;
+            }
+            case "/pnpc": {
+                PlayerNPC pnpc = new PlayerNPC(chr, 9901000, chr.getMap(), chr);
+                pnpc.update(chr);
+                chr.getMap().addMapObject(pnpc);
+                pnpc.sendSpawnData(chr.getClient());
                 return true;
             }
             case "/search": {

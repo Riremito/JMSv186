@@ -21,9 +21,8 @@ package packet.response;
 import client.MapleClient;
 import config.ServerConfig;
 import server.network.MaplePacket;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import packet.ServerPacket;
+import packet.response.data.DataAvatarLook;
 import server.life.MapleNPC;
 import server.life.PlayerNPC;
 import tools.data.input.SeekableLittleEndianAccessor;
@@ -36,74 +35,45 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 public class ResCNpcPool {
 
     public static MaplePacket ImitatedNPCData(PlayerNPC npc) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ImitatedNPCData.get());
-        mplew.write(npc.getF() == 1 ? 0 : 1);
-        mplew.writeInt(npc.getId());
-        mplew.writeMapleAsciiString(npc.getName());
-        mplew.write(npc.getGender());
-        mplew.write(npc.getSkin());
-        mplew.writeInt(npc.getFace());
-        mplew.write(0);
-        mplew.writeInt(npc.getHair());
-        Map<Byte, Integer> equip = npc.getEquips();
-        Map<Byte, Integer> myEquip = new LinkedHashMap<Byte, Integer>();
-        Map<Byte, Integer> maskedEquip = new LinkedHashMap<Byte, Integer>();
-        for (Map.Entry<Byte, Integer> position : equip.entrySet()) {
-            byte pos = (byte) (position.getKey() * -1);
-            if (pos < 100 && myEquip.get(pos) == null) {
-                myEquip.put(pos, position.getValue());
-            } else if ((pos > 100 || pos == -128) && pos != 111) {
-                // don't ask. o.o
-                pos = (byte) (pos == -128 ? 28 : pos - 100);
-                if (myEquip.get(pos) != null) {
-                    maskedEquip.put(pos, myEquip.get(pos));
-                }
-                myEquip.put(pos, position.getValue());
-            } else if (myEquip.get(pos) != null) {
-                maskedEquip.put(pos, position.getValue());
-            }
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ImitatedNPCData);
+
+        int number_of_npcs = (npc.getCharacter() == null) ? 0 : 1;
+        sp.Encode1(number_of_npcs); // number of npcs
+        if (number_of_npcs != 0) {
+            sp.Encode4(npc.getId()); // dwTemplateID
+            sp.EncodeStr(npc.getName()); // sName
+            sp.EncodeBuffer(DataAvatarLook.Encode(npc.getCharacter())); // AvatarLook::Decode
         }
-        for (Map.Entry<Byte, Integer> entry : myEquip.entrySet()) {
-            mplew.write(entry.getKey());
-            mplew.writeInt(entry.getValue());
-        }
-        mplew.write(255);
-        for (Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
-            mplew.write(entry.getKey());
-            mplew.writeInt(entry.getValue());
-        }
-        mplew.write(255);
-        Integer cWeapon = equip.get((byte) -111);
-        if (cWeapon != null) {
-            mplew.writeInt(cWeapon);
-        } else {
-            mplew.writeInt(0);
-        }
-        for (int i = 0; i < 3; i++) {
-            mplew.writeInt(npc.getPet(i));
-        }
-        return mplew.getPacket();
+
+        return sp.get();
     }
 
     public static MaplePacket NpcEnterField(MapleNPC npc, boolean show) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_NpcEnterField);
 
-        sp.Encode4(npc.getObjectId());
-        sp.Encode4(npc.getId());
-        sp.Encode2(npc.getPosition().x);
-        sp.Encode2(npc.getCy());
-        sp.Encode1(npc.getF() == 1 ? 0 : 1);
-        sp.Encode2(npc.getFh());
-        sp.Encode2(npc.getRx0());
-        sp.Encode2(npc.getRx1());
-        sp.Encode1(show ? 1 : 0);
+        sp.Encode4(npc.getObjectId()); // dwNpcId
+        sp.Encode4(npc.getId()); // NpcTemplate
+        sp.EncodeBuffer(CNpc_Init(npc, show)); // CNpc::Init
+        return sp.get();
+    }
+
+    // CNpc::Init
+    public static byte[] CNpc_Init(MapleNPC npc, boolean show) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode2(npc.getPosition().x); // m_ptPos.x
+        data.Encode2(npc.getPosition().y); // m_ptPos.y
+        data.Encode1(npc.getF() == 1 ? 0 : 1); // m_nMoveAction
+        data.Encode2(npc.getFh()); // Foothold
+        data.Encode2(npc.getRx0()); // m_rgHorz.low
+        data.Encode2(npc.getRx1()); // m_rgHorz.high
+        data.Encode1(show ? 1 : 0); // m_bEnabled
 
         if (ServerConfig.JMS194orLater()) {
-            sp.Encode1(0);
+            data.Encode1(0);
         }
 
-        return sp.get();
+        return data.get().getBytes();
     }
 
     public static MaplePacket NpcLeaveField(MapleNPC npc) {
@@ -113,21 +83,17 @@ public class ResCNpcPool {
         return sp.get();
     }
 
-    public static MaplePacket NpcChangeController(MapleNPC npc, boolean MiniMap) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_NpcChangeController.get());
-        mplew.write(1);
-        mplew.writeInt(npc.getObjectId());
-        // フォーマット不明
-        mplew.writeInt(npc.getId());
-        mplew.writeShort(npc.getPosition().x);
-        mplew.writeShort(npc.getCy());
-        mplew.write(npc.getF() == 1 ? 0 : 1);
-        mplew.writeShort(npc.getFh());
-        mplew.writeShort(npc.getRx0());
-        mplew.writeShort(npc.getRx1());
-        mplew.write(MiniMap ? 1 : 0);
-        return mplew.getPacket();
+    public static MaplePacket NpcChangeController(MapleNPC npc, boolean is_local, boolean show) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_NpcChangeController);
+
+        sp.Encode1(is_local ? 1 : 0);
+        sp.Encode4(npc.getObjectId());
+        if (is_local) {
+            sp.Encode4(npc.getId());
+            sp.EncodeBuffer(CNpc_Init(npc, show)); // CNpc::Init
+        }
+
+        return sp.get();
     }
 
     public static final void NpcMove(final SeekableLittleEndianAccessor slea, final MapleClient c) {
