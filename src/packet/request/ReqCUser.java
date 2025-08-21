@@ -71,6 +71,7 @@ import packet.request.sub.ReqSub_Admin;
 import packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import packet.response.ResCField;
 import packet.response.ResCMobPool;
+import packet.response.ResCNpcPool;
 import packet.response.ResCUIVega;
 import packet.response.ResCUser;
 import packet.response.ResCUserLocal;
@@ -85,9 +86,12 @@ import server.MapleItemInformationProvider;
 import server.Randomizer;
 import server.life.MapleLifeFactory;
 import server.life.MapleMonster;
+import server.life.MapleNPC;
 import server.maps.FieldLimitType;
 import server.maps.MapleDynamicPortal;
 import server.maps.MapleMap;
+import server.maps.MapleMapObject;
+import server.maps.MapleMapObjectType;
 import server.shops.HiredMerchant;
 import tools.AttackPair;
 import tools.Pair;
@@ -1088,6 +1092,14 @@ public class ReqCUser {
             map.movePlayer(chr_clone, chr_clone.getPosition());
             map.broadcastMessageClone(chr_clone, ResCUserRemote.Move(chr_clone, move_path));
         }
+
+        if (chr.getAccompany()) {
+            for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.NPC)) {
+                MapleNPC npc = chr.getMap().getNPCByOid(mmo.getObjectId());
+                map.broadcastMessage(ResCNpcPool.NpcMove(npc, -1, -1, move_path));
+            }
+        }
+
         return true;
     }
 

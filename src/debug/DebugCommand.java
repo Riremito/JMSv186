@@ -303,13 +303,17 @@ public class DebugCommand {
                 pnpc.sendSpawnData(chr.getClient());
                 return true;
             }
-
             case "/npccon": {
                 for (MapleMapObject mmo : chr.getMap().getMapObjects(MapleMapObjectType.NPC)) {
                     MapleNPC npc = chr.getMap().getNPCByOid(mmo.getObjectId());
                     chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
                     chr.DebugMsg("NpcControl : id = " + npc.getId() + ", oid = " + npc.getObjectId());
                 }
+                return true;
+            }
+            case "/accompany": {
+                chr.setAccompany();
+                chr.DebugMsg("Accompany : " + chr.getAccompany());
                 return true;
             }
             case "/search": {

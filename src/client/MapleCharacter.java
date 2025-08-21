@@ -6242,4 +6242,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return true;
     }
 
+    private boolean isAccompany = false;
+
+    public void setAccompany() {
+        this.isAccompany = !this.isAccompany;
+    }
+
+    public boolean getAccompany() {
+        return this.isAccompany;
+    }
+
 }
