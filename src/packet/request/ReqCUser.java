@@ -1096,7 +1096,8 @@ public class ReqCUser {
         if (chr.getAccompany()) {
             for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.NPC)) {
                 MapleNPC npc = chr.getMap().getNPCByOid(mmo.getObjectId());
-                map.broadcastMessage(ResCNpcPool.NpcMove(npc, -1, -1, move_path));
+                move_path.update(npc);
+                map.broadcastMessageDelayed(chr, ResCNpcPool.NpcMove(npc, -1, -1, move_path));
             }
         }
 

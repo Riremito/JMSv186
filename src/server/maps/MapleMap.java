@@ -2312,6 +2312,16 @@ public final class MapleMap {
         }, clone_delay);
     }
 
+    public final void broadcastMessageDelayed(MapleCharacter source, MaplePacket packet) {
+        int delay = 1000;
+        MapTimer.getInstance().schedule(new Runnable() {
+            @Override
+            public void run() {
+                broadcastMessage(source, packet, true);
+            }
+        }, delay);
+    }
+
 
     /*	public void broadcastMessage(MapleCharacter source, MaplePacket packet, boolean repeatToSource, boolean ranged) {
     broadcastMessage(repeatToSource ? null : source, packet, ranged ? MapleCharacter.MAX_VIEW_RANGE_SQ : Double.POSITIVE_INFINITY, source.getPosition());
