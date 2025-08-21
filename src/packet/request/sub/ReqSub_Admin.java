@@ -293,7 +293,7 @@ public class ReqSub_Admin {
         npc.setFh(map.getFootholds().findBelow(npc_xy).getId());
         npc.setCustom(true);
         map.addMapObject(npc);
-        map.broadcastMessage(ResCNpcPool.spawnNPC(npc, true));
+        map.broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
         return true;
     }
 }

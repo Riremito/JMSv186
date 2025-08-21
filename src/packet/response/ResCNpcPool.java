@@ -35,47 +35,7 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class ResCNpcPool {
 
-    public static MaplePacket removeNPC(final int objectid) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_NpcLeaveField);
-        p.Encode4(objectid);
-        return p.get();
-    }
-
-    public static MaplePacket spawnNPC(MapleNPC life, boolean show) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_NpcEnterField);
-        p.Encode4(life.getObjectId());
-        p.Encode4(life.getId());
-        p.Encode2(life.getPosition().x);
-        p.Encode2(life.getCy());
-        p.Encode1(life.getF() == 1 ? 0 : 1);
-        p.Encode2(life.getFh());
-        p.Encode2(life.getRx0());
-        p.Encode2(life.getRx1());
-        p.Encode1(show ? 1 : 0);
-        if (ServerConfig.JMS194orLater()) {
-            p.Encode1(0);
-        }
-        return p.get();
-    }
-
-    public static MaplePacket spawnNPCRequestController(MapleNPC life, boolean MiniMap) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_NpcChangeController.get());
-        mplew.write(1);
-        mplew.writeInt(life.getObjectId());
-        // フォーマット不明
-        mplew.writeInt(life.getId());
-        mplew.writeShort(life.getPosition().x);
-        mplew.writeShort(life.getCy());
-        mplew.write(life.getF() == 1 ? 0 : 1);
-        mplew.writeShort(life.getFh());
-        mplew.writeShort(life.getRx0());
-        mplew.writeShort(life.getRx1());
-        mplew.write(MiniMap ? 1 : 0);
-        return mplew.getPacket();
-    }
-
-    public static MaplePacket spawnPlayerNPC(PlayerNPC npc) {
+    public static MaplePacket ImitatedNPCData(PlayerNPC npc) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_ImitatedNPCData.get());
         mplew.write(npc.getF() == 1 ? 0 : 1);
@@ -126,7 +86,51 @@ public class ResCNpcPool {
         return mplew.getPacket();
     }
 
-    public static final void NPCAnimation(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static MaplePacket NpcEnterField(MapleNPC npc, boolean show) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_NpcEnterField);
+
+        sp.Encode4(npc.getObjectId());
+        sp.Encode4(npc.getId());
+        sp.Encode2(npc.getPosition().x);
+        sp.Encode2(npc.getCy());
+        sp.Encode1(npc.getF() == 1 ? 0 : 1);
+        sp.Encode2(npc.getFh());
+        sp.Encode2(npc.getRx0());
+        sp.Encode2(npc.getRx1());
+        sp.Encode1(show ? 1 : 0);
+
+        if (ServerConfig.JMS194orLater()) {
+            sp.Encode1(0);
+        }
+
+        return sp.get();
+    }
+
+    public static MaplePacket NpcLeaveField(MapleNPC npc) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_NpcLeaveField);
+
+        sp.Encode4(npc.getObjectId());
+        return sp.get();
+    }
+
+    public static MaplePacket NpcChangeController(MapleNPC npc, boolean MiniMap) {
+        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        mplew.writeShort(ServerPacket.Header.LP_NpcChangeController.get());
+        mplew.write(1);
+        mplew.writeInt(npc.getObjectId());
+        // フォーマット不明
+        mplew.writeInt(npc.getId());
+        mplew.writeShort(npc.getPosition().x);
+        mplew.writeShort(npc.getCy());
+        mplew.write(npc.getF() == 1 ? 0 : 1);
+        mplew.writeShort(npc.getFh());
+        mplew.writeShort(npc.getRx0());
+        mplew.writeShort(npc.getRx1());
+        mplew.write(MiniMap ? 1 : 0);
+        return mplew.getPacket();
+    }
+
+    public static final void NpcMove(final SeekableLittleEndianAccessor slea, final MapleClient c) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         mplew.writeShort(ServerPacket.Header.LP_NpcMove.get());
         final int length = (int) slea.available();
@@ -142,5 +146,5 @@ public class ResCNpcPool {
         }
         c.getSession().write(mplew.getPacket());
     }
-    
+
 }

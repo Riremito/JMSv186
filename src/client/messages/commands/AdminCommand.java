@@ -770,7 +770,7 @@ public class AdminCommand {
                 npc.setFh(c.getPlayer().getMap().getFootholds().findBelow(c.getPlayer().getPosition()).getId());
                 npc.setCustom(true);
                 c.getPlayer().getMap().addMapObject(npc);
-                c.getPlayer().getMap().broadcastMessage(ResCNpcPool.spawnNPC(npc, true));
+                c.getPlayer().getMap().broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
 
                 // ファイルへ追記
                 try (FileWriter fw = new FileWriter(Property_Java.getDir_Scripts() + "map/temp/" + c.getPlayer().getMapId() + ".txt", true)) {

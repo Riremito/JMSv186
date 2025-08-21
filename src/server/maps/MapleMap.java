@@ -1304,7 +1304,7 @@ public final class MapleMap {
         npc.setFh(getFootholds().findBelow(pos).getId());
         npc.setCustom(true);
         addMapObject(npc);
-        broadcastMessage(ResCNpcPool.spawnNPC(npc, true));
+        broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
     }
 
     public final void removeNpc(final int npcid) {
@@ -1314,7 +1314,7 @@ public final class MapleMap {
             while (itr.hasNext()) {
                 MapleNPC npc = (MapleNPC) itr.next();
                 if (npc.isCustom() && npc.getId() == npcid) {
-                    broadcastMessage(ResCNpcPool.removeNPC(npc.getObjectId()));
+                    broadcastMessage(ResCNpcPool.NpcLeaveField(npc));
                     itr.remove();
                 }
             }
@@ -2957,7 +2957,7 @@ public final class MapleMap {
         List<MapleNPC> npcs = getAllNPCsThreadsafe();
         for (MapleNPC npc : npcs) {
             if (npc.isCustom()) {
-                broadcastMessage(ResCNpcPool.spawnNPC(npc, false));
+                broadcastMessage(ResCNpcPool.NpcEnterField(npc, false));
                 removeMapObject(npc);
             }
         }

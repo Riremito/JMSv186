@@ -52,7 +52,7 @@ public class Req_MapleTV {
                 byte unk1 = cp.Decode1();
                 byte unk2 = cp.Decode1();
                 byte unk3 = cp.Decode1();
-                int unk4 = cp.Decode4(); // 0x54
+                int chr_id = cp.Decode4(); // character_id
 
                 List<String> messages = new ArrayList<>();
                 for (int i = 0; i < 5; i++) {
