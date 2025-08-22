@@ -42,6 +42,7 @@ import java.util.Random;
 import packet.request.ReqCUser;
 import packet.response.ResCEmployeePool;
 import packet.response.ResCNpcPool;
+import packet.response.ResCUserLocal;
 import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
 import provider.MapleData;
@@ -604,6 +605,17 @@ public class DebugCommand {
             }
             case "/slot": {
                 ResWrapper.MiroSlot(chr);
+                return true;
+            }
+            case "/poll": {
+                String questions[] = {"Question1", "Question2"};
+                String answers[][] = {
+                    {"123", "aiueo", "asdf"},
+                    {"456", "qwert"}
+                };
+
+                // client strings won't be cleared, buggy...
+                chr.SendPacket(ResCUserLocal.PollQuestion(questions, answers));
                 return true;
             }
             case "/xxxx": {

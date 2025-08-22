@@ -361,6 +361,7 @@ public class ClientPacket {
         CP_RandomMorphRequest,
         CP_CashItemGachaponRequest,
         CP_CashGachaponOpenRequest,
+        CP_JMS_Poll_Answer,
         CP_ChangeMaplePointRequest,
         CP_TalkToTutor,
         CP_RequestIncCombo,

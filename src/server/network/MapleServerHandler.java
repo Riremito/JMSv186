@@ -1,6 +1,5 @@
 package server.network;
 
-import constants.ServerConstants;
 import client.MapleClient;
 import config.Content;
 import debug.Debug;
@@ -106,16 +105,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
         final byte serverRecv[] = new byte[]{70, 114, 122, (byte) Randomizer.nextInt(255)};
         final byte serverSend[] = new byte[]{82, 48, 120, (byte) Randomizer.nextInt(255)};
-        final byte ivRecv[] = ServerConstants.Use_Fixed_IV ? new byte[]{9, 0, 0x5, 0x5F} : serverRecv;
-        final byte ivSend[] = ServerConstants.Use_Fixed_IV ? new byte[]{1, 0x5F, 4, 0x3F} : serverSend;
 
         final MapleClient client = new MapleClient(
-                new MapleAESOFB(ivSend, server_type == ServerType.LoginServer, true), // Sent Cypher
-                new MapleAESOFB(ivRecv, server_type == ServerType.LoginServer, false), // Recv Cypher
+                new MapleAESOFB(serverSend, server_type == ServerType.LoginServer, true), // Sent Cypher
+                new MapleAESOFB(serverRecv, server_type == ServerType.LoginServer, false), // Recv Cypher
                 session);
         client.setChannel(channel);
 
-        session.write(ResCClientSocket.getHello(ServerConstants.Use_Fixed_IV ? serverSend : ivSend, ServerConstants.Use_Fixed_IV ? serverRecv : ivRecv));
+        session.write(ResCClientSocket.getHello(serverSend, serverRecv));
         session.setAttribute(MapleClient.CLIENT_KEY, client);
         session.setIdleTime(IdleStatus.READER_IDLE, 60);
         session.setIdleTime(IdleStatus.WRITER_IDLE, 60);

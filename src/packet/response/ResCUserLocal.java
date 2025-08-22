@@ -21,7 +21,6 @@ package packet.response;
 import client.MapleCharacter;
 import config.DeveloperMode;
 import config.Version;
-import constants.ServerConstants;
 import server.network.MaplePacket;
 import java.awt.Point;
 import packet.ServerPacket;
@@ -392,17 +391,19 @@ public class ResCUserLocal {
         return mplew.getPacket();
     }
 
-    public static MaplePacket getPollQuestion() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_JMS_Poll_Question.get());
-        mplew.writeInt(1);
-        mplew.writeInt(14);
-        mplew.writeMapleAsciiString(ServerConstants.Poll_Question);
-        mplew.writeInt(ServerConstants.Poll_Answers.length); // pollcount
-        for (byte i = 0; i < ServerConstants.Poll_Answers.length; i++) {
-            mplew.writeMapleAsciiString(ServerConstants.Poll_Answers[i]);
+    public static MaplePacket PollQuestion(String questions[], String answers[][]) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Poll_Question);
+
+        sp.Encode4(questions.length); // number of questions, this may support only 1 question...
+        for (int i = 0; i < questions.length; i++) {
+            sp.Encode4(i + 1); // unused
+            sp.EncodeStr(questions[i]);
+            sp.Encode4(answers[i].length);
+            for (int j = 0; j < answers[i].length; j++) {
+                sp.EncodeStr(answers[i][j]);
+            }
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static MaplePacket SkillCooltimeSet(int skill_id, int cool_time) {

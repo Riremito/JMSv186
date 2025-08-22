@@ -649,6 +649,12 @@ public class ReqCUser {
                 PlayerHandler.AranCombo(c, chr);
                 return true;
             }
+            case CP_JMS_Poll_Answer: {
+                int question_id = cp.Decode4();
+                int answer_id = cp.Decode4();
+                chr.DebugMsg("Poll : " + question_id + ", " + answer_id);
+                return true;
+            }
             case CP_QuickslotKeyMappedModified: {
                 return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
             }

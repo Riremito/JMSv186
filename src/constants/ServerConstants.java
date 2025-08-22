@@ -45,40 +45,10 @@ public class ServerConstants {
         }
         return 0;
     }
-    // Start of Poll
-    public static final boolean PollEnabled = true;
-    public static final String Poll_Question = "Are you mudkiz?";
-    public static final String[] Poll_Answers = {"test1", "test2", "test3"};
-    // End of Poll
-    public static final boolean Use_Fixed_IV = false;
     public static final int MIN_MTS = 110;
     public static final int MTS_BASE = 0; //+1000 to everything in MSEA but cash is costly here
     public static final int MTS_TAX = 10; //+% to everything
     public static final int MTS_MESO = 5000; //mesos needed
-    public static final int CHANNEL_COUNT = 7;
-    public static final String CashShop_Key = "a;!%dfb_=*-a123d9{P~";
-    public static final String Login_Key = "pWv]xq:SPTCtk^LGnU9F";
-    public static final String[] Channel_Key = {"a56=-_dcSAgb",
-        "y5(9=8@nV$;G",
-        "yS5j943GzdUm",
-        "G]R8Frg;kx6Y",
-        "Z)?7fh*([N6S",
-        "p4H8=*sknaEK",
-        "A!Z7:mS.2?Kq",
-        "M5:!rfv[?mdF",
-        "Ee@3-7u5s6xy",
-        "p]6L3eS(R;8A",
-        "gZ,^k9.npy#F",
-        "cG3M,*7%@zgt",
-        "t+#@TV^3)hL9",
-        "mw4:?sAU7[!6",
-        "b6L]HF(2S,aE",
-        "H@rAq]#^Y3+J",
-        "o2A%wKCuqc7Txk5?#rNZ",
-        "d4.Np*B89C6+]y2M^z-7",
-        "oTL2jy9^zkH.84u(%b[d",
-        "WCSJZj3tGX,[4hu;9s?g"
-    };
 
     public static enum PlayerGMRank {
 

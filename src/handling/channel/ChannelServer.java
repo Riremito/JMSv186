@@ -33,7 +33,6 @@ import java.util.Map;
 import client.MapleCharacter;
 import config.ContentCustom;
 import config.property.Property_World;
-import constants.ServerConstants;
 import debug.Debug;
 import server.network.ByteArrayMaplePacket;
 import server.network.MaplePacket;
@@ -72,7 +71,7 @@ public class ChannelServer implements Serializable {
     private int expRate, mesoRate, dropRate, cashRate;
     private short port = 8585;
     private int channel, running_MerchantID = 0, flags = 0;
-    private String serverMessage, key, serverName;
+    private String serverMessage, serverName;
     private boolean shutdown = false, finishedShutdown = false, MegaphoneMuteState = false, adminOnly = false;
     private PlayerStorage players;
     private MapleServerHandler serverHandler;
@@ -88,8 +87,7 @@ public class ChannelServer implements Serializable {
     private int eventmap = -1;
     private final Map<MapleEventType, MapleEvent> events = new EnumMap<MapleEventType, MapleEvent>(MapleEventType.class);
 
-    private ChannelServer(final String key, final int channel) {
-        this.key = key;
+    private ChannelServer(int channel) {
         this.channel = channel;
         mapFactory = new MapleMapFactory();
         mapFactory.setChannel(channel);
@@ -204,8 +202,8 @@ public class ChannelServer implements Serializable {
         return mapFactory;
     }
 
-    public static final ChannelServer newInstance(final String key, final int channel) {
-        return new ChannelServer(key, channel);
+    public static final ChannelServer newInstance(int channel) {
+        return new ChannelServer(channel);
     }
 
     public static final ChannelServer getInstance(final int channel) {
@@ -326,7 +324,7 @@ public class ChannelServer implements Serializable {
         serverStartTime = System.currentTimeMillis();
 
         for (int i = 0; i < Property_World.getChannels(); i++) {
-            newInstance(ServerConstants.Channel_Key[i], i + 1).run_startup_configurations();
+            newInstance(i + 1).run_startup_configurations();
         }
     }
 
