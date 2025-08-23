@@ -26,7 +26,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -78,9 +77,9 @@ public class MapleClient {
     private String accountName = null;
     private MapleCharacter player = null;
 
-    public MapleClient(MapleAESOFB send, MapleAESOFB receive, IoSession session) {
-        this.aes_send = send;
-        this.aes_recv = receive;
+    public MapleClient(MapleAESOFB aes_send, MapleAESOFB aes_recv, IoSession session) {
+        this.aes_send = aes_send;
+        this.aes_recv = aes_recv;
         this.session = session;
     }
 
@@ -120,6 +119,10 @@ public class MapleClient {
         return this.player;
     }
 
+    public void setPlayer(MapleCharacter player) {
+        this.player = player;
+    }
+
     public final String getSessionIPAddress() {
         return session.getRemoteAddress().toString().split(":")[0];
     }
@@ -133,13 +136,12 @@ public class MapleClient {
             CHANGE_CHANNEL = 6;
     public static final int DEFAULT_CHARSLOT = 6;
     public static final String CLIENT_KEY = "CLIENT";
-    private int channel = 1, accId = 1, world, birthday;
+    private int channel = 1, accId = 1, world;
     private int charslots = DEFAULT_CHARSLOT;
     private boolean loggedIn = false, serverTransition = false;
-    private transient Calendar tempban = null;
     private transient long lastPong = 0, lastPing = 0;
     private boolean gm;
-    private byte greason = 1, gender = -1;
+    private byte gender = -1;
     public transient short loginAttempt = 0;
     private transient List<Integer> allowedChar = new LinkedList<Integer>();
     private transient Set<String> macs = new HashSet<String>();
@@ -155,10 +157,6 @@ public class MapleClient {
 
     public final Lock getNPCLock() {
         return npc_mutex;
-    }
-
-    public void setPlayer(MapleCharacter player) {
-        this.player = player;
     }
 
     public void createdChar(final int id) {
@@ -230,92 +228,6 @@ public class MapleClient {
 
         lTempban.setTimeInMillis(0);
         return lTempban;
-    }
-
-    public Calendar getTempBanCalendar() {
-        return tempban;
-    }
-
-    public byte getBanReason() {
-        return greason;
-    }
-
-    private void loadMacsIfNescessary() throws SQLException {
-        if (macs.isEmpty()) {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT macs FROM accounts WHERE id = ?");
-            ps.setInt(1, accId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                if (rs.getString("macs") != null) {
-                    String[] macData = rs.getString("macs").split(", ");
-                    for (String mac : macData) {
-                        if (!mac.equals("")) {
-                            macs.add(mac);
-                        }
-                    }
-                }
-            } else {
-                rs.close();
-                ps.close();
-                throw new RuntimeException("No valid account associated with this client.");
-            }
-            rs.close();
-            ps.close();
-        }
-    }
-
-    public void banMacs() {
-        try {
-            loadMacsIfNescessary();
-            if (this.macs.size() > 0) {
-                String[] macBans = new String[this.macs.size()];
-                int z = 0;
-                for (String mac : this.macs) {
-                    macBans[z] = mac;
-                    z++;
-                }
-                banMacs(macBans);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static final void banMacs(String[] macs) {
-        Connection con = DatabaseConnection.getConnection();
-        try {
-            List<String> filtered = new LinkedList<String>();
-            PreparedStatement ps = con.prepareStatement("SELECT filter FROM macfilters");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                filtered.add(rs.getString("filter"));
-            }
-            rs.close();
-            ps.close();
-
-            ps = con.prepareStatement("INSERT INTO macbans (mac) VALUES (?)");
-            for (String mac : macs) {
-                boolean matched = false;
-                for (String filter : filtered) {
-                    if (mac.matches(filter)) {
-                        matched = true;
-                        break;
-                    }
-                }
-                if (!matched) {
-                    ps.setString(1, mac);
-                    try {
-                        ps.executeUpdate();
-                    } catch (SQLException e) {
-                        // can fail because of UNIQUE key, we dont care
-                    }
-                }
-            }
-            ps.close();
-        } catch (SQLException e) {
-            System.err.println("Error banning MACs" + e);
-        }
     }
 
     /**
@@ -393,8 +305,6 @@ public class MapleClient {
                 secondPassword = rs.getString("2ndpassword");
                 salt2 = rs.getString("salt2");
                 gm = rs.getInt("gm") > 0;
-                greason = rs.getByte("greason");
-                tempban = getTempBanCalendar(rs);
                 gender = rs.getByte("gender");
 
                 if (secondPassword != null && salt2 != null) {
@@ -503,7 +413,6 @@ public class MapleClient {
                 ps.close();
                 throw new DatabaseException("Everything sucks");
             }
-            birthday = rs.getInt("bday");
             byte state = rs.getByte("loggedin");
 
             if (state == MapleClient.LOGIN_SERVER_TRANSITION || state == MapleClient.CHANGE_CHANNEL) {
@@ -524,10 +433,6 @@ public class MapleClient {
             loggedIn = false;
             throw new DatabaseException("error getting login state", e);
         }
-    }
-
-    public final boolean checkBirthDate(final int date) {
-        return birthday == date;
     }
 
     public final void removalTask() {
@@ -722,20 +627,6 @@ public class MapleClient {
         return true;
     }
 
-    public final void DebugMessage(final StringBuilder sb) {
-        sb.append(getSession().getRemoteAddress());
-        sb.append("Connected: ");
-        sb.append(getSession().isConnected());
-        sb.append(" Closing: ");
-        sb.append(getSession().isClosing());
-        sb.append(" ClientKeySet: ");
-        sb.append(getSession().getAttribute(MapleClient.CLIENT_KEY) != null);
-        sb.append(" loggedin: ");
-        sb.append(isLoggedIn());
-        sb.append(" has char: ");
-        sb.append(getPlayer() != null);
-    }
-
     public final int getChannel() {
         return channel;
     }
@@ -832,18 +723,6 @@ public class MapleClient {
         return (int) (lastPong - lastPing);
     }
 
-    public final long getLastPong() {
-        return lastPong;
-    }
-
-    public final long getLastPing() {
-        return lastPing;
-    }
-
-    public final void pongReceived() {
-        lastPong = System.currentTimeMillis();
-    }
-
     public final void sendPing() {
         lastPing = System.currentTimeMillis();
         SendPacket(ResCClientSocket.AliveReq());
@@ -901,31 +780,6 @@ public class MapleClient {
             builder.replace(start, start + 2, parm.toString());
         }
         return builder.toString();
-    }
-
-    public static final int findAccIdForCharacterName(final String charName) {
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT accountid FROM characters WHERE name = ?");
-            ps.setString(1, charName);
-            ResultSet rs = ps.executeQuery();
-
-            int ret = -1;
-            if (rs.next()) {
-                ret = rs.getInt("accountid");
-            }
-            rs.close();
-            ps.close();
-
-            return ret;
-        } catch (final SQLException e) {
-            System.err.println("findAccIdForCharacterName SQL error");
-        }
-        return -1;
-    }
-
-    public final Set<String> getMacs() {
-        return Collections.unmodifiableSet(macs);
     }
 
     public final boolean isGm() {
@@ -1008,103 +862,6 @@ public class MapleClient {
             return false;
         }
         return true;
-    }
-
-    public static final byte unbanIPMacs(String charname) {
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT accountid from characters where name = ?");
-            ps.setString(1, charname);
-
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                return -1;
-            }
-            final int accid = rs.getInt(1);
-            rs.close();
-            ps.close();
-
-            ps = con.prepareStatement("SELECT * FROM accounts WHERE id = ?");
-            ps.setInt(1, accid);
-            rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                return -1;
-            }
-            final String sessionIP = rs.getString("sessionIP");
-            final String macs = rs.getString("macs");
-            rs.close();
-            ps.close();
-            byte ret = 0;
-            if (sessionIP != null) {
-                PreparedStatement psa = con.prepareStatement("DELETE FROM ipbans WHERE ip = ?");
-                psa.setString(1, sessionIP);
-                psa.execute();
-                psa.close();
-                ret++;
-            }
-            if (macs != null) {
-                String[] macz = macs.split(", ");
-                for (String mac : macz) {
-                    if (!mac.equals("")) {
-                        PreparedStatement psa = con.prepareStatement("DELETE FROM macbans WHERE mac = ?");
-                        psa.setString(1, mac);
-                        psa.execute();
-                        psa.close();
-                    }
-                }
-                ret++;
-            }
-            return ret;
-        } catch (SQLException e) {
-            System.err.println("Error while unbanning" + e);
-            return -2;
-        }
-    }
-
-    public static final byte unHellban(String charname) {
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT accountid from characters where name = ?");
-            ps.setString(1, charname);
-
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                return -1;
-            }
-            final int accid = rs.getInt(1);
-            rs.close();
-            ps.close();
-
-            ps = con.prepareStatement("SELECT * FROM accounts WHERE id = ?");
-            ps.setInt(1, accid);
-            rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                return -1;
-            }
-            final String sessionIP = rs.getString("sessionIP");
-            final String email = rs.getString("email");
-            rs.close();
-            ps.close();
-            ps = con.prepareStatement("UPDATE accounts SET banned = 0, banreason = '' WHERE email = ?" + (sessionIP == null ? "" : " OR sessionIP = ?"));
-            ps.setString(1, email);
-            if (sessionIP != null) {
-                ps.setString(2, sessionIP);
-            }
-            ps.execute();
-            ps.close();
-            return 0;
-        } catch (SQLException e) {
-            System.err.println("Error while unbanning" + e);
-            return -2;
-        }
     }
 
     // Point Shop
