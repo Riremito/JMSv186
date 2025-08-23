@@ -350,7 +350,7 @@ public class ReqCClientSocket {
         ExtraDB.saveData(chr);
         chr.getMap().removePlayer(chr);
         c.setPlayer(null);
-        c.setReceiving(false);
+        c.setOffline();
     }
 
     // CClientSocket::OnMigrateOut

@@ -390,9 +390,6 @@ public class MapleInventoryManipulator {
                 throw new RuntimeException("Trying to create equip with non-one quantity");
             }
         }
-        if (item.getQuantity() >= 50 && GameConstants.isUpgradeScroll(item.getItemId())) {
-            c.setMonitored(true);
-        }
         if (before == 0) {
             switch (item.getItemId()) {
                 case AramiaFireWorks.KEG_ID:

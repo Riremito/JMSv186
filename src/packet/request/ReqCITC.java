@@ -136,9 +136,6 @@ public class ReqCITC {
                     return;
                 }
             }
-            if (quantity >= 50 && GameConstants.isUpgradeScroll(item.getItemId())) {
-                c.setMonitored(true); //hack check
-            }
             final long expiration = System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000);
             item.setQuantity(quantity);
             MTSStorage.getInstance().addToBuyNow(cart, item, price, c.getPlayer().getId(), c.getPlayer().getName(), expiration);

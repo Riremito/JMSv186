@@ -158,7 +158,7 @@ public class ReqCCashShop {
         } finally {
             chr.saveToDB(false, true);
             c.setPlayer(null);
-            c.setReceiving(false);
+            c.setOffline();
         }
     }
 

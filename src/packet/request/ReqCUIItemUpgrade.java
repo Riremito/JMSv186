@@ -36,7 +36,7 @@ public class ReqCUIItemUpgrade {
         // 用途不明
         int hammered = p.Decode4();
         // 関数に成功可否を渡しても良いと思われるが、成功確率が100%なので意味がない
-        c.ProcessPacket(ResCUIItemUpgrade.Success());
+        c.SendPacket(ResCUIItemUpgrade.Success());
         return true;
     }
 

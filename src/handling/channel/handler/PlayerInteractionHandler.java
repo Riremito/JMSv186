@@ -378,9 +378,6 @@ public class PlayerInteractionHandler {
                                 return;
                             }
                         }
-                        if (bundles_perbundle >= 50 && GameConstants.isUpgradeScroll(ivItem.getItemId())) {
-                            c.setMonitored(true); //hack check
-                        }
                         if (GameConstants.isThrowingStar(ivItem.getItemId()) || GameConstants.isBullet(ivItem.getItemId())) {
                             // Ignore the bundles
                             MapleInventoryManipulator.removeFromSlot(c, type, slot, ivItem.getQuantity(), true);
@@ -424,9 +421,6 @@ public class PlayerInteractionHandler {
                         || chr.getMeso() - (check2) < 0 || shop.getMeso() + (check2) < 0) {
                     return;
                 }
-                if (quantity >= 50 && GameConstants.isUpgradeScroll(tobuy.item.getItemId())) {
-                    c.setMonitored(true); //hack check
-                }
                 shop.buy(c, item, quantity);
                 shop.broadcastToVisitors(ResCField.shopItemUpdate(shop));
                 break;
@@ -449,9 +443,6 @@ public class PlayerInteractionHandler {
                             return;
                         }
                         item_get.setQuantity((short) check);
-                        if (item_get.getQuantity() >= 50 && GameConstants.isUpgradeScroll(item.item.getItemId())) {
-                            c.setMonitored(true); //hack check
-                        }
                         if (MapleInventoryManipulator.checkSpace(c, item_get.getItemId(), item_get.getQuantity(), item_get.getOwner())) {
                             MapleInventoryManipulator.addFromDrop(c, item_get, false);
                             item.bundles = 0;

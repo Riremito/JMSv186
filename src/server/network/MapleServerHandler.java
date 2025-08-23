@@ -145,7 +145,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // client
             MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-            if (!c.isReceiving()) {
+            if (c.isOffline()) {
+                Debug.ErrorLog("messageReceived : Migrating.");
                 return;
             }
 

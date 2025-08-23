@@ -3154,12 +3154,12 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public boolean gainTama(int gain, boolean show) {
         if (tama + gain < 0) {
-            client.ProcessPacket(WrapCWvsContext.updateStat());
+            SendPacket(WrapCWvsContext.updateStat());
             return false;
         }
         gainTama(gain);
         if (show) {
-            client.ProcessPacket(ResWrapper.GainTamaMessage(gain));
+            SendPacket(ResWrapper.GainTamaMessage(gain));
         }
         return true;
     }
@@ -5289,7 +5289,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         saveToDB(false, false);
         getMap().removePlayer(this);
         client.setPlayer(null);
-        client.setReceiving(false);
+        client.setOffline();
     }
 
     public void expandInventory(byte type, int amount) {
@@ -5735,7 +5735,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void gainTama(int s) {
         this.tama += s;
-        client.ProcessPacket(ResCWvsContext.PachinkoResult(this));
+        SendPacket(ResCWvsContext.PachinkoResult(this));
     }
 
     public int getBeansRange() {

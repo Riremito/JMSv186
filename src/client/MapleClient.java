@@ -33,7 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.io.Serializable;
 
 import javax.script.ScriptEngine;
 
@@ -52,7 +51,6 @@ import handling.world.World;
 import handling.world.family.MapleFamilyCharacter;
 import handling.world.guild.MapleGuildCharacter;
 import java.io.UnsupportedEncodingException;
-import java.net.SocketAddress;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Statement;
 import server.maps.MapleMap;
@@ -64,28 +62,68 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.mina.common.CloseFuture;
-import org.apache.mina.common.IdleStatus;
-import org.apache.mina.common.IoFilterChain;
-import org.apache.mina.common.IoHandler;
-import org.apache.mina.common.IoService;
-import org.apache.mina.common.IoServiceConfig;
 
 import org.apache.mina.common.IoSession;
-import org.apache.mina.common.IoSessionConfig;
-import org.apache.mina.common.TrafficMask;
-import org.apache.mina.common.TransportType;
-import org.apache.mina.common.WriteFuture;
-import packet.ServerPacket;
 import packet.response.ResCCashShop;
 import packet.response.ResCClientSocket;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
-import tools.data.output.MaplePacketLittleEndianWriter;
 
-public class MapleClient implements Serializable {
+public class MapleClient {
 
-    private static final long serialVersionUID = 9179541993413738569L;
+    private final IoSession session;
+    private boolean offline = false;
+    private final MapleAESOFB aes_send;
+    private final MapleAESOFB aes_recv;
+    private String accountName = null;
+    private MapleCharacter player = null;
+
+    public MapleClient(MapleAESOFB send, MapleAESOFB receive, IoSession session) {
+        this.aes_send = send;
+        this.aes_recv = receive;
+        this.session = session;
+    }
+
+    public final IoSession getSession() {
+        return this.session;
+    }
+
+    public boolean isOffline() {
+        return this.offline;
+    }
+
+    public void setOffline() {
+        this.offline = true;
+    }
+
+    public void SendPacket(MaplePacket packet) {
+        this.session.write(packet);
+    }
+
+    public final MapleAESOFB getReceiveCrypto() {
+        return this.aes_recv;
+    }
+
+    public final MapleAESOFB getSendCrypto() {
+        return this.aes_send;
+    }
+
+    public final String getAccountName() {
+        return this.accountName;
+    }
+
+    public final void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
+    public MapleCharacter getPlayer() {
+        return this.player;
+    }
+
+    public final String getSessionIPAddress() {
+        return session.getRemoteAddress().toString().split(":")[0];
+    }
+
     public static final transient byte LOGIN_NOTLOGGEDIN = 0,
             LOGIN_SERVER_TRANSITION = 1,
             LOGIN_LOGGEDIN = 2,
@@ -95,16 +133,11 @@ public class MapleClient implements Serializable {
             CHANGE_CHANNEL = 6;
     public static final int DEFAULT_CHARSLOT = 6;
     public static final String CLIENT_KEY = "CLIENT";
-    private transient MapleAESOFB send, receive;
-    private transient IoSession session;
-    private MapleCharacter player;
     private int channel = 1, accId = 1, world, birthday;
     private int charslots = DEFAULT_CHARSLOT;
     private boolean loggedIn = false, serverTransition = false;
     private transient Calendar tempban = null;
-    private String accountName;
     private transient long lastPong = 0, lastPing = 0;
-    private boolean monitored = false, receiving = true;
     private boolean gm;
     private byte greason = 1, gender = -1;
     public transient short loginAttempt = 0;
@@ -116,283 +149,12 @@ public class MapleClient implements Serializable {
     private final transient Lock npc_mutex = new ReentrantLock();
     private final static Lock login_mutex = new ReentrantLock(true);
 
-    public class DebugIoSession implements IoSession {
-
-        private IoSession session;
-
-        DebugIoSession(IoSession io) {
-            this.session = io;
-        }
-
-        @Override
-        public IoService getService() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public IoServiceConfig getServiceConfig() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public IoHandler getHandler() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public IoSessionConfig getConfig() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public IoFilterChain getFilterChain() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public WriteFuture write(Object o) {
-            return session.write(o);
-        }
-
-        @Override
-        public CloseFuture close() {
-            return session.close();
-        }
-
-        @Override
-        public Object getAttachment() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Object setAttachment(Object o) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Object getAttribute(String string) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Object setAttribute(String string, Object o) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Object setAttribute(String string) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Object removeAttribute(String string) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public boolean containsAttribute(String string) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public Set<String> getAttributeKeys() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public TransportType getTransportType() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public boolean isConnected() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public boolean isClosing() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public CloseFuture getCloseFuture() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public SocketAddress getRemoteAddress() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public SocketAddress getLocalAddress() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public SocketAddress getServiceAddress() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public int getIdleTime(IdleStatus is) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public long getIdleTimeInMillis(IdleStatus is) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setIdleTime(IdleStatus is, int i) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public int getWriteTimeout() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public long getWriteTimeoutInMillis() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setWriteTimeout(int i) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public TrafficMask getTrafficMask() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void setTrafficMask(TrafficMask tm) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void suspendRead() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void suspendWrite() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void resumeRead() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public void resumeWrite() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public long getReadBytes() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public long getWrittenBytes() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public long getReadMessages() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public long getWrittenMessages() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public long getWrittenWriteRequests() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public int getScheduledWriteRequests() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public int getScheduledWriteBytes() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public long getCreationTime() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public long getLastIoTime() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public long getLastReadTime() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public long getLastWriteTime() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public boolean isIdle(IdleStatus is) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public int getIdleCount(IdleStatus is) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public long getLastIdleTime(IdleStatus is) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-    }
-
-    public MapleClient(MapleAESOFB send, MapleAESOFB receive, IoSession session) {
-        this.send = send;
-        this.receive = receive;
-        this.session = session;
-    }
-
-    public final MapleAESOFB getReceiveCrypto() {
-        return receive;
-    }
-
-    public final MapleAESOFB getSendCrypto() {
-        return send;
-    }
-
-    public final DebugIoSession getSession() {
-        return new DebugIoSession(session);
-    }
-
     public final Lock getLock() {
         return mutex;
     }
 
     public final Lock getNPCLock() {
         return npc_mutex;
-    }
-
-    public MapleCharacter getPlayer() {
-        return player;
     }
 
     public void setPlayer(MapleCharacter player) {
@@ -842,8 +604,8 @@ public class MapleClient implements Serializable {
                 ExtraDB.saveData(player);
             }
             if (shutdown) {
-                player = null;
-                receiving = false;
+                this.player = null;
+                this.offline = true;
                 return;
             }
 
@@ -933,10 +695,6 @@ public class MapleClient implements Serializable {
         if (!serverTransition && isLoggedIn()) {
             updateLoginState(MapleClient.LOGIN_NOTLOGGEDIN, getSessionIPAddress());
         }
-    }
-
-    public final String getSessionIPAddress() {
-        return session.getRemoteAddress().toString().split(":")[0];
     }
 
     public final boolean CheckIPAddress() {
@@ -1056,14 +814,6 @@ public class MapleClient implements Serializable {
 
     public final void setSecondPassword(final String secondPassword) {
         this.secondPassword = secondPassword;
-    }
-
-    public final String getAccountName() {
-        return accountName;
-    }
-
-    public final void setAccountName(final String accountName) {
-        this.accountName = accountName;
     }
 
     public final void setChannel(final int channel) {
@@ -1355,43 +1105,6 @@ public class MapleClient implements Serializable {
             System.err.println("Error while unbanning" + e);
             return -2;
         }
-    }
-
-    public boolean isMonitored() {
-        return monitored;
-    }
-
-    public void setMonitored(boolean m) {
-        this.monitored = m;
-    }
-
-    public boolean isReceiving() {
-        return receiving;
-    }
-
-    public void setReceiving(boolean m) {
-        this.receiving = m;
-    }
-
-    public void DebugPacket(MaplePacket packet) {
-        getSession().write(packet);
-    }
-
-    public MaplePacketLittleEndianWriter getOutPacket() {
-        return new MaplePacketLittleEndianWriter();
-    }
-
-    public ServerPacket ServerPacket(short header) {
-        return new ServerPacket(header);
-    }
-
-    // 名称ミス
-    public void ProcessPacket(MaplePacket packet) {
-        getSession().write(packet);
-    }
-
-    public void SendPacket(MaplePacket packet) {
-        getSession().write(packet);
     }
 
     // Point Shop

@@ -66,7 +66,7 @@ public class ReqCParcelDlg {
         switch (Action.Find(action)) {
             // 配送
             case SEND: {
-                c.ProcessPacket(ResCParcelDlg.Send());
+                c.SendPacket(ResCParcelDlg.Send());
                 return true;
             }
             // 閉じる
