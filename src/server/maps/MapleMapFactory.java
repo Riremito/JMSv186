@@ -480,7 +480,7 @@ public class MapleMapFactory {
         return myReactor;
     }
 
-    private String getMapName(int mapid) {
+    public static String getMapName(int mapid) {
         String mapName = StringUtil.getLeftPaddedStr(Integer.toString(mapid), '0', 9);
         StringBuilder builder = new StringBuilder("Map/Map");
         builder.append(mapid / 100000000);
