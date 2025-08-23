@@ -71,7 +71,7 @@ public class ReqCCashShop {
             }
             case CP_CashShopCashItemRequest: {
                 OnCashItem(cp, c);
-                c.enableCSActions();
+                chr.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
                 return false;
             }
             case CP_CashShopCheckCouponRequest: {
@@ -83,12 +83,12 @@ public class ReqCCashShop {
                     message = cp.DecodeStr();
                 }
                 OnCheckCoupon(c, character_name, coupon_code, (coupon_15 != 0), message);
-                c.enableCSActions();
+                chr.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
                 return true;
             }
             // オススメアバターを選択した時の処理
             case CP_JMS_RECOMMENDED_AVATAR: {
-                c.enableCSActions();
+                chr.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
                 return false;
             }
             default: {
@@ -96,7 +96,7 @@ public class ReqCCashShop {
             }
         }
 
-        c.enableCSActions();
+        chr.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
         return false;
     }
 

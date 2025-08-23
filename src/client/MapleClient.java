@@ -25,7 +25,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -63,7 +62,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.mina.common.IoSession;
-import packet.response.ResCCashShop;
 import packet.response.ResCClientSocket;
 import server.Timer.PingTimer;
 import server.quest.MapleQuest;
@@ -74,7 +72,12 @@ public class MapleClient {
     private boolean offline = false;
     private final MapleAESOFB aes_send;
     private final MapleAESOFB aes_recv;
+    private int accId = 1;
+    private int world;
+    private int channel = 1;
     private String accountName = null;
+    private boolean gameMaster;
+    private byte gender = 0;
     private MapleCharacter player = null;
 
     public MapleClient(MapleAESOFB aes_send, MapleAESOFB aes_recv, IoSession session) {
@@ -107,6 +110,14 @@ public class MapleClient {
         return this.aes_send;
     }
 
+    public void setAccID(int id) {
+        this.accId = id;
+    }
+
+    public int getAccID() {
+        return this.accId;
+    }
+
     public final String getAccountName() {
         return this.accountName;
     }
@@ -115,12 +126,44 @@ public class MapleClient {
         this.accountName = accountName;
     }
 
+    public final int getChannel() {
+        return this.channel;
+    }
+
+    public final void setChannel(final int channel) {
+        this.channel = channel;
+    }
+
+    public final int getWorld() {
+        return this.world;
+    }
+
+    public final void setWorld(final int world) {
+        this.world = world;
+    }
+
     public MapleCharacter getPlayer() {
         return this.player;
     }
 
     public void setPlayer(MapleCharacter player) {
         this.player = player;
+    }
+
+    public final boolean isGameMaster() {
+        return this.gameMaster;
+    }
+
+    public void setGameMaster() {
+        this.gameMaster = true;
+    }
+
+    public final byte getGender() {
+        return this.gender;
+    }
+
+    public final void setGender(byte gender) {
+        this.gender = gender;
     }
 
     public final String getSessionIPAddress() {
@@ -136,12 +179,9 @@ public class MapleClient {
             CHANGE_CHANNEL = 6;
     public static final int DEFAULT_CHARSLOT = 6;
     public static final String CLIENT_KEY = "CLIENT";
-    private int channel = 1, accId = 1, world;
     private int charslots = DEFAULT_CHARSLOT;
     private boolean loggedIn = false, serverTransition = false;
     private transient long lastPong = 0, lastPing = 0;
-    private boolean gm;
-    private byte gender = -1;
     public transient short loginAttempt = 0;
     private transient List<Integer> allowedChar = new LinkedList<Integer>();
     private transient Set<String> macs = new HashSet<String>();
@@ -212,22 +252,6 @@ public class MapleClient {
 
     public boolean isLoggedIn() {
         return loggedIn;
-    }
-
-    private Calendar getTempBanCalendar(ResultSet rs) throws SQLException {
-        Calendar lTempban = Calendar.getInstance();
-        if (rs.getLong("tempban") == 0) { // basically if timestamp in db is 0000-00-00
-            lTempban.setTimeInMillis(0);
-            return lTempban;
-        }
-        Calendar today = Calendar.getInstance();
-        lTempban.setTimeInMillis(rs.getTimestamp("tempban").getTime());
-        if (today.getTimeInMillis() < lTempban.getTimeInMillis()) {
-            return lTempban;
-        }
-
-        lTempban.setTimeInMillis(0);
-        return lTempban;
     }
 
     /**
@@ -304,7 +328,7 @@ public class MapleClient {
                 accId = rs.getInt("id");
                 secondPassword = rs.getString("2ndpassword");
                 salt2 = rs.getString("salt2");
-                gm = rs.getInt("gm") > 0;
+                gameMaster = rs.getInt("gm") > 0;
                 gender = rs.getByte("gender");
 
                 if (secondPassword != null && salt2 != null) {
@@ -312,7 +336,7 @@ public class MapleClient {
                 }
                 ps.close();
 
-                if (banned > 0 && !gm) {
+                if (banned > 0 && !gameMaster) {
                     loginok = 3;
                 } else {
                     if (banned == -1) {
@@ -371,14 +395,6 @@ public class MapleClient {
         } catch (SQLException e) {
             System.err.println("Error while unbanning" + e);
         }
-    }
-
-    public void setAccID(int id) {
-        this.accId = id;
-    }
-
-    public int getAccID() {
-        return this.accId;
     }
 
     public final void updateLoginState(final int newstate, final String SessionID) { // TODO hide?
@@ -627,10 +643,6 @@ public class MapleClient {
         return true;
     }
 
-    public final int getChannel() {
-        return channel;
-    }
-
     public final ChannelServer getChannelServer() {
         return ChannelServer.getInstance(channel);
     }
@@ -691,34 +703,6 @@ public class MapleClient {
         return 1;
     }
 
-    public final byte getGender() {
-        return gender;
-    }
-
-    public final void setGender(final byte gender) {
-        this.gender = gender;
-    }
-
-    public final String getSecondPassword() {
-        return secondPassword;
-    }
-
-    public final void setSecondPassword(final String secondPassword) {
-        this.secondPassword = secondPassword;
-    }
-
-    public final void setChannel(final int channel) {
-        this.channel = channel;
-    }
-
-    public final int getWorld() {
-        return world;
-    }
-
-    public final void setWorld(final int world) {
-        this.world = world;
-    }
-
     public final int getLatency() {
         return (int) (lastPong - lastPing);
     }
@@ -753,10 +737,6 @@ public class MapleClient {
         return getLogMessage(cfor == null ? null : cfor.getClient(), message);
     }
 
-    public static final String getLogMessage(final MapleCharacter cfor, final String message, final Object... parms) {
-        return getLogMessage(cfor == null ? null : cfor.getClient(), message, parms);
-    }
-
     public static final String getLogMessage(final MapleClient cfor, final String message, final Object... parms) {
         final StringBuilder builder = new StringBuilder();
         if (cfor != null) {
@@ -780,14 +760,6 @@ public class MapleClient {
             builder.replace(start, start + 2, parm.toString());
         }
         return builder.toString();
-    }
-
-    public final boolean isGm() {
-        return gm;
-    }
-
-    public void setGM() {
-        gm = true;
     }
 
     public final void setScriptEngine(final String name, final ScriptEngine e) {
@@ -862,11 +834,6 @@ public class MapleClient {
             return false;
         }
         return true;
-    }
-
-    // Point Shop
-    public void enableCSActions() {
-        getSession().write(ResCCashShop.CashShopQueryCashResult(player));
     }
 
 }

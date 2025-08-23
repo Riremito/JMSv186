@@ -196,7 +196,7 @@ public class ReqCLogin {
         }
         // GM test
         if (startwith_GM) {
-            c.setGM();
+            c.setGameMaster();
         }
         if (loginok != 0) {
             c.SendPacket(ResCLogin.CheckPasswordResult(c, loginok));
@@ -211,7 +211,7 @@ public class ReqCLogin {
     private static long lastUpdate = 0;
 
     public static void registerClient(final MapleClient c) {
-        if (LoginServer.isAdminOnly() && !c.isGm()) {
+        if (LoginServer.isAdminOnly() && !c.isGameMaster()) {
             c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.INVALID_ADMIN_IP));
             return;
         }
