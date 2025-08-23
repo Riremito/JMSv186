@@ -14,7 +14,7 @@ import handling.login.LoginServer;
 import handling.cashshop.CashShopServer;
 import handling.world.World;
 import java.sql.SQLException;
-import database.query.DB_Accounts;
+import database.query.DQ_Accounts;
 import debug.Debug;
 import debug.DebugLogger;
 import handling.world.family.MapleFamilyBuff;
@@ -71,7 +71,7 @@ public class Start {
         // ログインサーバー上のゲームサーバー情報
         LoginServer.SetWorldConfig(); // TODO : fix
         // database
-        DB_Accounts.resetLoginState();
+        DQ_Accounts.resetLoginState();
         // 管理画面
         Debug.InfoLog("[AdminTool]");
         if (DeveloperMode.DM_ADMIN_TOOL.get()) {

@@ -22,28 +22,39 @@ import database.DatabaseConnection;
 import debug.Debug;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
  *
  * @author Riremito
  */
-public class DB_Accounts {
+public class DQ_Characters {
 
-    public static final String table_name = "accounts";
+    public static final String DB_TABLE_NAME = "characters";
 
-    // 初期化
-    public static boolean resetLoginState() {
+    public static int getIdByName(String name) {
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE " + table_name + " SET loggedin = 0");
-            ps.executeUpdate();
+            PreparedStatement ps = con.prepareStatement("SELECT id FROM " + DB_TABLE_NAME + " WHERE name = ?");
+            ps.setString(1, name);
+
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                rs.close();
+                ps.close();
+                return -1;
+            }
+
+            int id = rs.getInt("id");
+            rs.close();
             ps.close();
-            return true;
-        } catch (SQLException ex) {
-            Debug.ExceptionLog("Database Error : " + table_name);
+            return id;
+        } catch (SQLException e) {
+            Debug.ExceptionLog("Database Error : " + DB_TABLE_NAME);
         }
 
-        return false;
+        return -1;
     }
+
 }

@@ -32,7 +32,8 @@ import config.Version;
 import config.property.Property_Login;
 import data.wz.DW_Etc;
 import data.wz.ids.DWI_Validation;
-import database.query.DB_Characters;
+import database.query.DQ_Accounts;
+import database.query.DQ_Characters;
 import debug.Debug;
 import debug.DebugUser;
 import handling.channel.ChannelServer;
@@ -185,8 +186,7 @@ public class ReqCLogin {
         c.setAccountName(maple_id);
         int loginok = c.login(maple_id, password);
         if (loginok == 5) {
-            if (c.auto_register(maple_id, password) == 1) {
-                Debug.InfoLog("[NEW MAPLEID] \"" + maple_id + "\"");
+            if (DQ_Accounts.autoRegister(maple_id, password)) {
                 loginok = c.login(maple_id, password);
             }
         }
@@ -464,7 +464,7 @@ public class ReqCLogin {
             return false;
         }
         // already registered
-        if (DB_Characters.getIdByName(name) != -1) {
+        if (DQ_Characters.getIdByName(name) != -1) {
             return false;
         }
         return true;

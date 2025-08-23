@@ -48,9 +48,6 @@ import handling.world.PartyOperation;
 import handling.world.World;
 import handling.world.family.MapleFamilyCharacter;
 import handling.world.guild.MapleGuildCharacter;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Statement;
 import server.maps.MapleMap;
 import server.shops.IMaplePlayerShop;
 import tools.FileoutputUtil;
@@ -58,8 +55,6 @@ import server.network.MapleAESOFB;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.mina.common.IoSession;
 import packet.response.ResCClientSocket;
@@ -254,13 +249,6 @@ public class MapleClient {
         return loggedIn;
     }
 
-    /**
-     * Returns 0 on success, a state to be used for
-     * {@link MaplePacketCreator#getLoginFailed(int)} otherwise.
-     *
-     * @param success
-     * @return The state of the login.
-     */
     public int finishLogin() {
         login_mutex.lock();
         try {
@@ -272,42 +260,6 @@ public class MapleClient {
             updateLoginState(MapleClient.LOGIN_LOGGEDIN, getSessionIPAddress());
         } finally {
             login_mutex.unlock();
-        }
-        return 0;
-    }
-
-    public int auto_register(String MapleID, String pwd) {
-        String password1_hash = null;
-        String password2_hash = null;
-        try {
-            password1_hash = LoginCryptoLegacy.encodeSHA1(pwd);
-            password2_hash = LoginCryptoLegacy.encodeSHA1("777777");
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(MapleClient.class.getName()).log(Level.SEVERE, null, ex);
-            return 0;
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(MapleClient.class.getName()).log(Level.SEVERE, null, ex);
-            return 0;
-        }
-
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO accounts (name, password, 2ndpassword, ACash, gender) VALUES (?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, MapleID);
-            ps.setString(2, password1_hash);
-            ps.setString(3, password2_hash);
-            ps.setInt(4, 10000000);
-            // 性別
-            ps.setByte(5, (byte) 0);
-            ps.executeUpdate();
-
-            ResultSet rs = ps.getGeneratedKeys();
-            rs.next();
-            rs.close();
-            ps.close();
-            return 1;
-        } catch (SQLException e) {
-            System.err.println("ERROR" + e);
         }
         return 0;
     }
@@ -629,7 +581,7 @@ public class MapleClient {
             if (rs.next()) {
                 final String sessionIP = rs.getString("SessionIP");
 
-                if (sessionIP != null) { // Probably a login proced skipper?
+                if (sessionIP != null) {
                     canlogin = getSessionIPAddress().equals(sessionIP.split(":")[0]);
                 }
             }
