@@ -184,10 +184,10 @@ public class ReqCLogin {
             }
         }
         c.setAccountName(maple_id);
-        int loginok = c.login(maple_id, password);
+        int loginok = DQ_Accounts.login(c, maple_id, password);
         if (loginok == 5) {
             if (DQ_Accounts.autoRegister(maple_id, password)) {
-                loginok = c.login(maple_id, password);
+                loginok = DQ_Accounts.login(c, maple_id, password);
             }
         }
         // アカウントの性別変更
@@ -594,7 +594,7 @@ public class ReqCLogin {
             c.getSession().close();
             return false;
         }
-        c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
+        DQ_Accounts.updateLoginState(c, MapleClient.LOGIN_SERVER_TRANSITION);
         c.SendPacket(ResCLogin.SelectCharacterResult(LoginServer.WorldPort[SelectedWorld] + SelectedChannel, charId));
         return true;
     }

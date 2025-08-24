@@ -25,6 +25,7 @@ import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
 import data.client.DC_Date;
 import data.wz.ids.DWI_Validation;
+import database.query.DQ_Accounts;
 import debug.Debug;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -115,13 +116,13 @@ public class ReqCCashShop {
         MapleCharacter chr = MapleCharacter.ReconstructChr(transfer, c, false);
         c.setPlayer(chr);
         c.setAccID(chr.getAccountID());
-        if (!c.CheckIPAddress()) {
+        if (!DQ_Accounts.checkLoginIP(c)) {
             // Remote hack
             Debug.ErrorLog("EnterCS dc 2.");
             c.getSession().close();
             return;
         }
-        final int state = c.getLoginState();
+        final int state = DQ_Accounts.getLoginState(c);
         boolean allowLogin = false;
         if (state == MapleClient.LOGIN_SERVER_TRANSITION || state == MapleClient.CHANGE_CHANNEL) {
             if (!World.isCharacterListConnected(c.loadCharacterNames(c.getWorld()))) {
@@ -134,7 +135,7 @@ public class ReqCCashShop {
             c.getSession().close();
             return;
         }
-        c.updateLoginState(MapleClient.LOGIN_LOGGEDIN, c.getSessionIPAddress());
+        DQ_Accounts.updateLoginState(c, MapleClient.LOGIN_LOGGEDIN);
         if (mts) {
             CashShopServer.getPlayerStorageMTS().registerPlayer(chr);
             c.SendPacket(ResCStage.SetITC(chr));
@@ -151,7 +152,7 @@ public class ReqCCashShop {
     public static void LeaveCS(MapleClient c, MapleCharacter chr) {
         CashShopServer.getPlayerStorageMTS().deregisterPlayer(chr);
         CashShopServer.getPlayerStorage().deregisterPlayer(chr);
-        c.updateLoginState(MapleClient.LOGIN_SERVER_TRANSITION, c.getSessionIPAddress());
+        DQ_Accounts.updateLoginState(c, MapleClient.LOGIN_SERVER_TRANSITION);
         try {
             World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
             c.SendPacket(ResCClientSocket.MigrateCommand(ChannelServer.getInstance(c.getChannel()).getPort()));

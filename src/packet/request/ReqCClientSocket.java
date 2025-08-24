@@ -29,6 +29,7 @@ import config.Region;
 import config.Version;
 import config.property.Property_Shop;
 import database.ExtraDB;
+import database.query.DQ_Accounts;
 import debug.Debug;
 import server.network.MaplePacket;
 import handling.channel.ChannelServer;
@@ -156,14 +157,14 @@ public class ReqCClientSocket {
         c.setPlayer(chr);
         c.setAccID(chr.getAccountID());
 
-        if (!c.CheckIPAddress()) {
+        if (!DQ_Accounts.checkLoginIP(c)) {
             c.setPlayer(null);
             Debug.ErrorLog("EnterGameServer dc 1.");
             c.getSession().close();
             return false;
         }
 
-        switch (c.getLoginState()) {
+        switch (DQ_Accounts.getLoginState(c)) {
             case MapleClient.LOGIN_SERVER_TRANSITION:
             case MapleClient.CHANGE_CHANNEL: {
                 if (World.isCharacterListConnected(c.loadCharacterNames(c.getWorld()))) {
@@ -187,7 +188,7 @@ public class ReqCClientSocket {
         }
 
         // entering game server
-        c.updateLoginState(MapleClient.LOGIN_LOGGEDIN, c.getSessionIPAddress());
+        DQ_Accounts.updateLoginState(c, MapleClient.LOGIN_LOGGEDIN);
         channel.addPlayer(chr);
         // [update character data in server]
         // character
@@ -344,7 +345,7 @@ public class ReqCClientSocket {
         PlayerBuffStorage.addDiseaseToStorage(chr.getId(), chr.getAllDiseases());
         World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), mts ? -20 : -10);
         ch.removePlayer(chr);
-        c.updateLoginState(MapleClient.CHANGE_CHANNEL, c.getSessionIPAddress());
+        DQ_Accounts.updateLoginState(c, MapleClient.CHANGE_CHANNEL);
         c.SendPacket(ResCClientSocket.MigrateCommand(Property_Shop.getPort()));
         chr.saveToDB(false, false);
         ExtraDB.saveData(chr);

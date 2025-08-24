@@ -149,6 +149,7 @@ import tools.ConcurrentEnumMap;
 import tools.FileoutputUtil;
 import server.network.MockIOSession;
 import data.wz.ids.DWI_Dafault;
+import database.query.DQ_Accounts;
 import debug.DebugShop;
 import debug.IDebugMan;
 import packet.response.wrapper.WrapCWvsContext;
@@ -1345,11 +1346,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             con.commit();
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println(MapleClient.getLogMessage(this, "[charsave] Error saving character data") + e);
+            Debug.ExceptionLog("[charsave] Error saving character data");
             try {
                 con.rollback();
             } catch (SQLException ex) {
-                System.err.println(MapleClient.getLogMessage(this, "[charsave] Error Rolling Back") + e);
+                Debug.ExceptionLog("[charsave] Error Rolling Back");
             }
         } finally {
             try {
@@ -1365,7 +1366,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 con.setAutoCommit(true);
                 con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
             } catch (SQLException e) {
-                System.err.println(MapleClient.getLogMessage(this, "[charsave] Error going back to autocommit mode") + e);
+                Debug.ExceptionLog("[charsave] Error going back to autocommit mode");
             }
         }
     }
@@ -5135,7 +5136,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         PlayerBuffStorage.addDiseaseToStorage(getId(), getAllDiseases());
         World.ChannelChange_Data(new CharacterTransfer(this), getId(), channel);
         ch.removePlayer(this);
-        client.updateLoginState(MapleClient.CHANGE_CHANNEL, client.getSessionIPAddress());
+        DQ_Accounts.updateLoginState(client, MapleClient.CHANGE_CHANNEL);
 
         client.SendPacket(ResCClientSocket.MigrateCommand(toch.getPort()));
         saveToDB(false, false);
