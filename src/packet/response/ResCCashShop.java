@@ -241,7 +241,7 @@ public class ResCCashShop {
                     sp.EncodeBuffer(DataGW_CashItemInfo.Encode(item, c));
                 }
                 sp.Encode2(c.getPlayer().getStorage().getSlots()); // m_nTrunkCount
-                sp.Encode2(c.getCharacterSlots()); // m_nCharacterSlotCount
+                sp.Encode2(c.getCharSlots()); // m_nCharacterSlotCount
                 sp.Encode2(0);// m_nBuyCharacterCount
                 sp.Encode2(c.getCharaterCount());// m_nCharacterCount
                 break;

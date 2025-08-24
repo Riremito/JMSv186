@@ -62,6 +62,8 @@ import server.quest.MapleQuest;
 
 public class MapleClient {
 
+    public static final int DEFAULT_CHARSLOT = 6;
+
     private final IoSession session;
     private boolean offline = false;
     private final MapleAESOFB aes_send;
@@ -74,6 +76,7 @@ public class MapleClient {
     private byte gender = 0;
     private boolean loggedIn = false;
     private boolean serverTransition = false;
+    private int charslots = DEFAULT_CHARSLOT;
     private MapleCharacter player = null;
 
     public MapleClient(MapleAESOFB aes_send, MapleAESOFB aes_recv, IoSession session) {
@@ -191,6 +194,15 @@ public class MapleClient {
         this.serverTransition = serverTransition;
     }
 
+    public int getCharSlots() {
+        return this.charslots;
+    }
+
+    public boolean setCharSlots(int charslots) {
+        this.charslots = charslots;
+        return true;
+    }
+
     public static final transient byte LOGIN_NOTLOGGEDIN = 0,
             LOGIN_SERVER_TRANSITION = 1,
             LOGIN_LOGGEDIN = 2,
@@ -198,9 +210,7 @@ public class MapleClient {
             CASH_SHOP_TRANSITION = 4,
             LOGIN_CS_LOGGEDIN = 5,
             CHANGE_CHANNEL = 6;
-    public static final int DEFAULT_CHARSLOT = 6;
     public static final String CLIENT_KEY = "CLIENT";
-    private int charslots = DEFAULT_CHARSLOT;
     private transient long lastPong = 0, lastPing = 0;
     public transient short loginAttempt = 0;
     private transient List<Integer> allowedChar = new LinkedList<Integer>();
@@ -558,56 +568,6 @@ public class MapleClient {
             this.name = name;
             this.id = id;
         }
-    }
-
-    public int getCharacterSlots() {
-        if (charslots != DEFAULT_CHARSLOT) {
-            return charslots; //save a sql
-        }
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM character_slots WHERE accid = ? AND worldid = ?");
-            ps.setInt(1, accId);
-            ps.setInt(2, world);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                charslots = rs.getInt("charslots");
-            } else {
-                PreparedStatement psu = con.prepareStatement("INSERT INTO character_slots (accid, worldid, charslots) VALUES (?, ?, ?)");
-                psu.setInt(1, accId);
-                psu.setInt(2, world);
-                psu.setInt(3, charslots);
-                psu.executeUpdate();
-                psu.close();
-            }
-            rs.close();
-            ps.close();
-        } catch (SQLException sqlE) {
-            sqlE.printStackTrace();
-        }
-
-        return charslots;
-    }
-
-    public boolean gainCharacterSlot() {
-        if (getCharacterSlots() >= 15) {
-            return false;
-        }
-        charslots++;
-
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE character_slots SET charslots = ? WHERE worldid = ? AND accid = ?");
-            ps.setInt(1, charslots);
-            ps.setInt(2, world);
-            ps.setInt(3, accId);
-            ps.executeUpdate();
-            ps.close();
-        } catch (SQLException sqlE) {
-            sqlE.printStackTrace();
-            return false;
-        }
-        return true;
     }
 
 }

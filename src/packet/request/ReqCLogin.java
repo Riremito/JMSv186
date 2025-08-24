@@ -33,6 +33,7 @@ import config.property.Property_Login;
 import data.wz.DW_Etc;
 import data.wz.ids.DWI_Validation;
 import database.query.DQ_Accounts;
+import database.query.DQ_Character_slots;
 import database.query.DQ_Characters;
 import debug.Debug;
 import debug.DebugUser;
@@ -576,6 +577,7 @@ public class ReqCLogin {
         SelectedChannel = channel - 1;
         c.setWorld(server);
         c.setChannel(channel);
+        DQ_Character_slots.setCharacterSlots(c); // requires world id
         c.SendPacket(ResCLogin.getCharList(c, ResCLogin.LoginResult.SUCCESS));
     }
 

@@ -655,7 +655,7 @@ public class ResCLogin {
             data.Encode4(1000000);
         }
         List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
-        int charslots = c.getCharacterSlots();
+        int charslots = c.getCharSlots();
         data.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
             data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
@@ -712,7 +712,7 @@ public class ResCLogin {
             return sp.get();
         }
         List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
-        int charslots = c.getCharacterSlots();
+        int charslots = c.getCharSlots();
 
         if (Region.IsJMS()) {
             sp.EncodeStr("");
@@ -952,7 +952,7 @@ public class ResCLogin {
             data.Encode4(1000000);
         }
         List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
-        int charslots = c.getCharacterSlots();
+        int charslots = c.getCharSlots();
         data.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
             data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
