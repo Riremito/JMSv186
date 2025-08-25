@@ -155,7 +155,7 @@ public class ReqCClientSocket {
         MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, c, true) : MapleCharacter.ReconstructChr(transfer, c, true);
         ExtraDB.loadData(chr);
         c.setPlayer(chr);
-        c.setAccID(chr.getAccountID());
+        c.setId(chr.getAccountID());
 
         if (!DQ_Accounts.checkLoginIP(c)) {
             c.setPlayer(null);

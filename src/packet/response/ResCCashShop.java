@@ -44,7 +44,7 @@ public class ResCCashShop {
     // CCashShop::OnChargeParamResult
     public static MaplePacket CashShopChargeParamResult(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopChargeParamResult);
-        sp.EncodeStr(chr.getClient().getAccountName()); // nexon id
+        sp.EncodeStr(chr.getClient().getMapleId()); // nexon id
         return sp.get();
     }
 

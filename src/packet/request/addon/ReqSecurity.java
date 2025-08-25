@@ -40,17 +40,17 @@ public class ReqSecurity {
             // 独自実装
             case CP_CUSTOM_WZ_HASH: {
                 if (Hash(cp)) {
-                    Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz OK");
+                    Debug.DebugLog("MapleID:" + c.getMapleId() + ", wz OK");
                 } else {
-                    Debug.DebugLog("MapleID:" + c.getAccountName() + ", wz NG");
+                    Debug.DebugLog("MapleID:" + c.getMapleId() + ", wz NG");
                 }
                 return true;
             }
             case CP_CUSTOM_MEMORY_SCAN: {
                 if (Scan(cp)) {
-                    Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory OK");
+                    Debug.DebugLog("MapleID:" + c.getMapleId() + ", memory OK");
                 } else {
-                    Debug.DebugLog("MapleID:" + c.getAccountName() + ", memory NG");
+                    Debug.DebugLog("MapleID:" + c.getMapleId() + ", memory NG");
                 }
                 return true;
             }

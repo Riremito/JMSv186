@@ -314,7 +314,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ret.level = 1;
         ret.remainingAp = 0;
         ret.fame = 0;
-        ret.accountid = client.getAccID();
+        ret.accountid = client.getId();
         ret.buddylist = new BuddyList((byte) 20);
 
         ret.stats.str = 12;
@@ -337,7 +337,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                ret.client.setAccountName(rs.getString("name"));
+                ret.client.setMapleId(rs.getString("name"));
                 ret.nexonPoint = rs.getInt("ACash");
                 ret.maplePoint = rs.getInt("mPoints");
                 ret.points = rs.getInt("points");
@@ -487,7 +487,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ret.lastmonthfameids = ct.famedcharacters;
         ret.storage = (MapleStorage) ct.storage;
         ret.cs = (CashShop) ct.cs;
-        client.setAccountName(ct.accountname);
+        client.setMapleId(ct.accountname);
         ret.nexonPoint = ct.nexonPoint;
         ret.maplePoint = ct.maplePoint;
         ret.numClones = 0;
@@ -679,7 +679,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 ps.setInt(1, ret.accountid);
                 rs = ps.executeQuery();
                 if (rs.next()) {
-                    ret.getClient().setAccountName(rs.getString("name"));
+                    ret.getClient().setMapleId(rs.getString("name"));
                     ret.nexonPoint = rs.getInt("ACash");
                     ret.maplePoint = rs.getInt("mPoints");
                     ret.points = rs.getInt("points");
@@ -1297,7 +1297,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.setInt(2, maplePoint);
             ps.setInt(3, points);
             ps.setInt(4, vpoints);
-            ps.setInt(5, client.getAccID());
+            ps.setInt(5, client.getId());
             ps.execute();
             ps.close();
 
@@ -5888,7 +5888,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ret.meso = 0;
         ret.remainingAp = 0;
         ret.fame = 0;
-        ret.accountid = client.getAccID();
+        ret.accountid = client.getId();
         ret.name = name;
         ret.level = level;
         ret.fame = fame;
@@ -5932,7 +5932,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ret.lastfametime = lastfametime;
         ret.storage = storage;
         ret.cs = this.cs;
-        ret.client.setAccountName(client.getAccountName());
+        ret.client.setMapleId(client.getMapleId());
         ret.nexonPoint = nexonPoint;
         ret.maplePoint = maplePoint;
         ret.clone = true;

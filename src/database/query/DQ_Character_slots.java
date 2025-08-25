@@ -40,7 +40,7 @@ public class DQ_Character_slots {
         try {
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE accid = ? AND worldid = ?");
-            ps.setInt(1, c.getAccID());
+            ps.setInt(1, c.getId());
             ps.setInt(2, c.getWorld());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -48,7 +48,7 @@ public class DQ_Character_slots {
                 c.setCharSlots(charslots); // set
             } else {
                 PreparedStatement psu = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (accid, worldid, charslots) VALUES (?, ?, ?)");
-                psu.setInt(1, c.getAccID());
+                psu.setInt(1, c.getId());
                 psu.setInt(2, c.getWorld());
                 psu.setInt(3, charslots);
                 psu.executeUpdate();
@@ -75,7 +75,7 @@ public class DQ_Character_slots {
             PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET charslots = ? WHERE worldid = ? AND accid = ?");
             ps.setInt(1, charslots);
             ps.setInt(2, c.getWorld());
-            ps.setInt(3, c.getAccID());
+            ps.setInt(3, c.getId());
             ps.executeUpdate();
             ps.close();
             return true;

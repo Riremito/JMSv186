@@ -34,7 +34,7 @@ public class DataGW_CashItemInfo {
     public static byte[] Encode(IItem item, MapleClient c) {
         ServerPacket sp = new ServerPacket();
         sp.Encode8(item.getUniqueId());
-        sp.Encode8(c.getAccID());
+        sp.Encode8(c.getId());
         sp.Encode4(item.getItemId());
         sp.Encode4(0); // first?
         sp.Encode2(item.getQuantity());

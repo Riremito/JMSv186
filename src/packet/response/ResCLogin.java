@@ -157,10 +157,10 @@ public class ResCLogin {
         sp.Encode1(result.Get()); // result code
         switch (result) {
             case SUCCESS: {
-                sp.Encode4(c.getAccID()); // dwAccountId
+                sp.Encode4(c.getId()); // dwAccountId
                 sp.Encode1(c.getGender()); // nGender
                 sp.Encode1(0); // nGradeCode
-                sp.EncodeStr(c.getAccountName()); // sNexonClubID
+                sp.EncodeStr(c.getMapleId()); // sNexonClubID
                 sp.Encode1(0);
                 sp.Encode1(0);
                 sp.Encode8(0); // buf
@@ -227,10 +227,10 @@ public class ResCLogin {
                     switch (Region.getRegion()) {
                         case KMSB: {
                             int server_id = 0;
-                            sp.Encode4(client.getAccID());
+                            sp.Encode4(client.getId());
                             sp.Encode1(0);
                             sp.Encode1(0);
-                            sp.EncodeStr(client.getAccountName());
+                            sp.EncodeStr(client.getMapleId());
                             sp.Encode4(0);
                             sp.Encode4(0);
                             sp.Encode1(1); // number of worlds
@@ -250,7 +250,7 @@ public class ResCLogin {
                         }
                         case KMS:
                         case KMST: {
-                            sp.Encode4(client.getAccID()); // m_dwAccountId
+                            sp.Encode4(client.getId()); // m_dwAccountId
                             sp.Encode1(client.getGender()); // m_nGender
                             sp.Encode1(client.isGameMaster() ? 1 : 0); // m_nGradeCode
                             if (ServerConfig.JMS164orLater()) {
@@ -265,7 +265,7 @@ public class ResCLogin {
                                 sp.Encode1(0);
                                 sp.Encode8(0);
                                 sp.Encode1(0);
-                                sp.EncodeStr(client.getAccountName());
+                                sp.EncodeStr(client.getMapleId());
                                 sp.EncodeStr("");
                                 if (Version.GreaterOrEqual(Region.KMS, 197)) {
                                     sp.Encode1(1);
@@ -281,7 +281,7 @@ public class ResCLogin {
                                 sp.Encode1(0);
                                 break;
                             }
-                            sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
+                            sp.EncodeStr(client.getMapleId()); // m_sNexonClubID
                             sp.Encode4(3); // should be 3 for KMS v2.114 to ignore personal number
                             sp.Encode1(Region.IsKMS() ? 1 : 0); // should be 1 for KMS v2.114 to ignore personal number
                             sp.Encode1(0); // m_nPurchaseExp
@@ -294,7 +294,7 @@ public class ResCLogin {
                         case JMST:
                         default: {
                             sp.Encode1(0); // OK
-                            sp.Encode4(client.getAccID()); // m_dwAccountId
+                            sp.Encode4(client.getId()); // m_dwAccountId
                             sp.Encode1(client.getGender()); // m_nGender
                             sp.Encode1(client.isGameMaster() ? 1 : 0); // m_nGradeCode
                             if (ServerConfig.JMS164orLater()) {
@@ -305,8 +305,8 @@ public class ResCLogin {
                                 sp.Encode4(0);
                                 sp.Encode1(0);
                                 sp.Encode1(0);
-                                sp.EncodeStr(client.getAccountName());
-                                sp.EncodeStr(client.getAccountName());
+                                sp.EncodeStr(client.getMapleId());
+                                sp.EncodeStr(client.getMapleId());
                                 sp.Encode1(0);
                                 sp.Encode1(0);
                                 sp.Encode1(0);
@@ -317,8 +317,8 @@ public class ResCLogin {
                                 sp.EncodeStr("");
                                 break;
                             }
-                            sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
-                            sp.EncodeStr(client.getAccountName());
+                            sp.EncodeStr(client.getMapleId()); // m_sNexonClubID
+                            sp.EncodeStr(client.getMapleId());
                             sp.Encode1(0);
                             sp.Encode1(0); // m_nPurchaseExp
                             sp.Encode1(0); // m_nChatBlockReason
@@ -347,11 +347,11 @@ public class ResCLogin {
                             break;
                         }
                         case CMS: {
-                            sp.Encode4(client.getAccID());
+                            sp.Encode4(client.getId());
                             sp.Encode1(client.getGender());
                             sp.Encode1(client.isGameMaster() ? 1 : 0);
                             sp.Encode1(client.isGameMaster() ? 1 : 0);
-                            sp.EncodeStr(client.getAccountName());
+                            sp.EncodeStr(client.getMapleId());
                             sp.Encode4(0);
                             sp.Encode1(0);
                             sp.Encode1(0);
@@ -364,8 +364,8 @@ public class ResCLogin {
                             sp.Encode8(0); // buffer
                             sp.EncodeStr("");
                             sp.Encode1(0);
-                            sp.EncodeStr(String.valueOf(client.getAccID()));
-                            sp.EncodeStr(client.getAccountName());
+                            sp.EncodeStr(String.valueOf(client.getId()));
+                            sp.EncodeStr(client.getMapleId());
                             sp.Encode1(1);
                             if (Version.GreaterOrEqual(Region.CMS, 104)) {
                                 sp.Encode1(0);
@@ -375,11 +375,11 @@ public class ResCLogin {
                             break;
                         }
                         case THMS: {
-                            sp.Encode4(client.getAccID());
+                            sp.Encode4(client.getId());
                             sp.Encode1(client.getGender());
                             sp.Encode1(client.isGameMaster() ? 1 : 0);
                             sp.Encode1(client.isGameMaster() ? 1 : 0);
-                            sp.EncodeStr(client.getAccountName());
+                            sp.EncodeStr(client.getMapleId());
                             sp.Encode1(0);
                             sp.Encode1(0);
                             sp.Encode8(0);
@@ -388,7 +388,7 @@ public class ResCLogin {
                             break;
                         }
                         case TWMS: {
-                            sp.Encode4(client.getAccID());
+                            sp.Encode4(client.getId());
                             sp.Encode1(client.getGender());
                             sp.Encode1(client.isGameMaster() ? 1 : 0);
                             if (Version.GreaterOrEqual(Region.TWMS, 94)) {
@@ -397,7 +397,7 @@ public class ResCLogin {
                             if (Version.GreaterOrEqual(Region.TWMS, 121)) {
                                 sp.Encode4(0); // buffer4
                             }
-                            sp.EncodeStr(client.getAccountName());
+                            sp.EncodeStr(client.getMapleId());
                             sp.Encode4(0);
                             sp.Encode1(0);
                             sp.Encode1(0);
@@ -409,11 +409,11 @@ public class ResCLogin {
                         }
                         case MSEA: {
                             // MSEA100
-                            sp.Encode4(client.getAccID());
+                            sp.Encode4(client.getId());
                             sp.Encode1(client.getGender());
                             sp.Encode1(0);
                             sp.Encode1(0);
-                            sp.EncodeStr(client.getAccountName());
+                            sp.EncodeStr(client.getMapleId());
                             sp.Encode1(0);
                             sp.Encode1(0);
                             sp.Encode8(0);
@@ -422,14 +422,14 @@ public class ResCLogin {
                         }
                         case GMS: {
                             if (Version.PreBB()) {
-                                sp.Encode4(client.getAccID()); // m_dwAccountId
+                                sp.Encode4(client.getId()); // m_dwAccountId
                                 sp.Encode1(client.getGender()); // m_nGender
                                 sp.Encode1(client.isGameMaster() ? 1 : 0); // m_nGradeCode
                                 if (ServerConfig.JMS164orLater()) {
                                     sp.Encode1(client.isGameMaster() ? 0x80 : 0); // Admin F1
                                 }
                                 sp.Encode1(0);
-                                sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
+                                sp.EncodeStr(client.getMapleId()); // m_sNexonClubID
                                 sp.Encode1(0); // m_nPurchaseExp
                                 sp.Encode1(0); // m_nChatBlockReason
                                 sp.Encode8(0); // m_dtChatUnblockDate
@@ -444,12 +444,12 @@ public class ResCLogin {
                                 }
                             } else {
                                 // GMS v95
-                                sp.Encode4(client.getAccID()); // m_dwAccountId
+                                sp.Encode4(client.getId()); // m_dwAccountId
                                 sp.Encode1(0);
                                 sp.Encode1(0);
                                 sp.Encode2(0);
                                 sp.Encode1(0);
-                                sp.EncodeStr(client.getAccountName());
+                                sp.EncodeStr(client.getMapleId());
                                 sp.Encode1(0);
                                 sp.Encode1(0);
                                 sp.Encode8(0);
@@ -462,7 +462,7 @@ public class ResCLogin {
                             break;
                         }
                         case EMS: {
-                            sp.Encode4(client.getAccID()); // m_dwAccountId
+                            sp.Encode4(client.getId()); // m_dwAccountId
                             // EMS v55-v70
                             if (Version.PreBB()) {
                                 sp.Encode1(0);
@@ -472,7 +472,7 @@ public class ResCLogin {
                             if (ServerConfig.JMS164orLater()) {
                                 sp.Encode1(client.isGameMaster() ? 1 : 0);
                             }
-                            sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
+                            sp.EncodeStr(client.getMapleId()); // m_sNexonClubID
                             sp.Encode1(0); // m_nPurchaseExp
                             sp.Encode1(0); // m_nChatBlockReason
                             sp.Encode8(0); // m_dtChatUnblockDate
@@ -493,11 +493,11 @@ public class ResCLogin {
                         case BMS: {
                             sp.Encode1(0); // m_nRegStatID
                             sp.Encode4(0); // m_nUseDay
-                            sp.Encode4(client.getAccID()); // m_dwAccountId
+                            sp.Encode4(client.getId()); // m_dwAccountId
                             sp.Encode1(client.getGender()); // m_nGender
                             sp.Encode1(client.isGameMaster() ? 1 : 0); // m_nGradeCode
                             sp.Encode1(client.isGameMaster() ? 1 : 0);
-                            sp.EncodeStr(client.getAccountName()); // m_sNexonClubID
+                            sp.EncodeStr(client.getMapleId()); // m_sNexonClubID
                             sp.Encode1(0); // m_nPurchaseExp
                             sp.Encode1(0); // m_nChatBlockReason
                             sp.Encode8(0); // m_dtChatUnblockDate
@@ -507,11 +507,11 @@ public class ResCLogin {
                             break;
                         }
                         case VMS: {
-                            sp.Encode4(client.getAccID());
+                            sp.Encode4(client.getId());
                             sp.Encode1(0);
                             sp.Encode1(0);
                             sp.Encode1(0);
-                            sp.EncodeStr(client.getAccountName());
+                            sp.EncodeStr(client.getMapleId());
                             sp.Encode1(0);
                             sp.Encode1(0);
                             sp.Encode8(0);
@@ -519,11 +519,11 @@ public class ResCLogin {
                             break;
                         }
                         case IMS: {
-                            sp.Encode4(client.getAccID());
+                            sp.Encode4(client.getId());
                             sp.Encode1(client.getGender());
                             sp.Encode1(0);
                             sp.Encode1(0);
-                            sp.EncodeStr(client.getAccountName());
+                            sp.EncodeStr(client.getMapleId());
                             sp.Encode4(3);
                             sp.Encode1(1);
                             sp.Encode1(0);
@@ -907,11 +907,11 @@ public class ResCLogin {
         return sp.get();
     }
 
-    // キャラクター削除
-    public static final MaplePacket deleteCharResponse(final int cid, final int state) {
+    public static final MaplePacket DeleteCharacterResult(int character_id, boolean success) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DeleteCharacterResult);
-        sp.Encode4(cid);
-        sp.Encode1(state);
+
+        sp.Encode4(character_id);
+        sp.Encode1(success ? 0 : 1);
         return sp.get();
     }
 

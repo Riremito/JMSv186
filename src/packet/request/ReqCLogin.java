@@ -63,7 +63,7 @@ public class ReqCLogin {
             // CClientSocket::OnCheckPassword
             case CP_CheckPassword: {
                 if (OnCheckPassword(cp, c)) {
-                    Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getAccountName() + "\"");
+                    Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getMapleId() + "\"");
                     if (ContentState.CS_NETCAFE.get()) {
                         c.SendPacket(ResCClientSocket.AuthenMessage());
                     }
@@ -104,7 +104,7 @@ public class ReqCLogin {
             }
             // キャラクター削除
             case CP_DeleteCharacter: {
-                DeleteChar(cp, c);
+                OnDeleteCharacter(c, cp);
                 return true;
             }
             // キャラクター選択
@@ -164,10 +164,8 @@ public class ReqCLogin {
     }
 
     public static final boolean OnCheckPassword(MapleClient c, String maple_id, String password) {
-        c.loginAttempt++;
-        if (5 < c.loginAttempt) {
+        if (5 <= c.loginAttempt()) {
             c.SendPacket(ResCLogin.CheckPasswordResult(c, LoginResult.SYSTEM_ERROR));
-            //c.getSession().close();
             return false;
         }
         boolean endwith_ = false;
@@ -184,7 +182,7 @@ public class ReqCLogin {
                 Debug.InfoLog("[GM MODE] \"" + maple_id + "\"");
             }
         }
-        c.setAccountName(maple_id);
+        c.setMapleId(maple_id);
         int loginok = DQ_Accounts.login(c, maple_id, password);
         if (loginok == 5) {
             if (DQ_Accounts.autoRegister(maple_id, password)) {
@@ -202,7 +200,7 @@ public class ReqCLogin {
         if (loginok != 0) {
             c.SendPacket(ResCLogin.CheckPasswordResult(c, loginok));
         } else {
-            c.loginAttempt = 0;
+            c.resetLoginAttempt();
             registerClient(c);
             return true;
         }
@@ -501,12 +499,11 @@ public class ReqCLogin {
         CharlistRequest(c, server, channel + 1);
     }
 
-    public static final void DeleteChar(ClientPacket cp, final MapleClient c) {
-        byte state = 0;
+    public static boolean OnDeleteCharacter(MapleClient c, ClientPacket cp) {
         // BB後
         if (Version.PostBB() && !Region.IsKMS()) {
             String MapleID = cp.DecodeStr();
-            if (!MapleID.equals(c.getAccountName())) {
+            if (!MapleID.equals(c.getMapleId())) {
                 // state = 0以外にすると切断されます
             }
         }
@@ -528,14 +525,14 @@ public class ReqCLogin {
 
         final int Character_ID = cp.Decode4();
         if (!c.login_Auth(Character_ID)) {
-            Debug.ErrorLog("DeleteChar dc.");
+            Debug.ErrorLog("OnDeleteCharacter dc.");
             c.getSession().close();
-            return;
+            return false;
         }
-        if (state == 0) {
-            state = (byte) c.deleteCharacter(Character_ID);
-        }
-        c.getSession().write(ResCLogin.deleteCharResponse(Character_ID, state));
+
+        boolean success = DQ_Characters.deleteCharacter(c, Character_ID);
+        c.SendPacket(ResCLogin.DeleteCharacterResult(Character_ID, success));
+        return success;
     }
 
     // 必要なさそう

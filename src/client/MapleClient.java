@@ -25,14 +25,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import javax.script.ScriptEngine;
-
 import database.DatabaseConnection;
 import database.ExtraDB;
 import database.query.DQ_Accounts;
@@ -51,10 +47,8 @@ import server.maps.MapleMap;
 import server.shops.IMaplePlayerShop;
 import tools.FileoutputUtil;
 import server.network.MapleAESOFB;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import org.apache.mina.common.IoSession;
 import packet.response.ResCClientSocket;
 import server.Timer.PingTimer;
@@ -68,13 +62,15 @@ public class MapleClient {
     private boolean offline = false;
     private final MapleAESOFB aes_send;
     private final MapleAESOFB aes_recv;
-    private int accId = 1;
+    private String nexon_id = null;
+    private String maple_id = null;
+    private int id = 0;
     private int world;
     private int channel = 1;
-    private String accountName = null;
     private boolean gameMaster;
     private byte gender = 0;
     private boolean loggedIn = false;
+    private int loginAttempt = 0;
     private boolean serverTransition = false;
     private int charslots = DEFAULT_CHARSLOT;
     private MapleCharacter player = null;
@@ -85,16 +81,14 @@ public class MapleClient {
         this.session = session;
     }
 
-    public boolean logintest(int accId, String secondPassword, String salt2, boolean gameMaster, byte gender) {
-        this.accId = accId;
-        this.secondPassword = secondPassword;
-        this.salt2 = salt2;
+    public boolean setAccountData(int id, boolean gameMaster, byte gender) {
+        this.id = id;
         this.gameMaster = gameMaster;
         this.gender = gender;
         return true;
     }
 
-    public final IoSession getSession() {
+    public IoSession getSession() {
         return this.session;
     }
 
@@ -110,43 +104,43 @@ public class MapleClient {
         this.session.write(packet);
     }
 
-    public final MapleAESOFB getReceiveCrypto() {
+    public MapleAESOFB getReceiveCrypto() {
         return this.aes_recv;
     }
 
-    public final MapleAESOFB getSendCrypto() {
+    public MapleAESOFB getSendCrypto() {
         return this.aes_send;
     }
 
-    public void setAccID(int id) {
-        this.accId = id;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public int getAccID() {
-        return this.accId;
+    public int getId() {
+        return this.id;
     }
 
-    public final String getAccountName() {
-        return this.accountName;
+    public String getMapleId() {
+        return this.maple_id;
     }
 
-    public final void setAccountName(String accountName) {
-        this.accountName = accountName;
+    public void setMapleId(String maple_id) {
+        this.maple_id = maple_id;
     }
 
-    public final int getChannel() {
+    public int getChannel() {
         return this.channel;
     }
 
-    public final void setChannel(final int channel) {
+    public void setChannel(final int channel) {
         this.channel = channel;
     }
 
-    public final int getWorld() {
+    public int getWorld() {
         return this.world;
     }
 
-    public final void setWorld(final int world) {
+    public void setWorld(final int world) {
         this.world = world;
     }
 
@@ -158,7 +152,7 @@ public class MapleClient {
         this.player = player;
     }
 
-    public final boolean isGameMaster() {
+    public boolean isGameMaster() {
         return this.gameMaster;
     }
 
@@ -166,15 +160,15 @@ public class MapleClient {
         this.gameMaster = true;
     }
 
-    public final byte getGender() {
+    public byte getGender() {
         return this.gender;
     }
 
-    public final void setGender(byte gender) {
+    public void setGender(byte gender) {
         this.gender = gender;
     }
 
-    public final String getSessionIPAddress() {
+    public String getSessionIPAddress() {
         return session.getRemoteAddress().toString().split(":")[0];
     }
 
@@ -184,6 +178,14 @@ public class MapleClient {
 
     public void setLoggedIn(boolean loggedin) {
         this.loggedIn = loggedin;
+    }
+
+    public int loginAttempt() {
+        return this.loginAttempt++;
+    }
+
+    public void resetLoginAttempt() {
+        this.loginAttempt = 0;
     }
 
     public boolean getServerTransition() {
@@ -212,11 +214,8 @@ public class MapleClient {
             CHANGE_CHANNEL = 6;
     public static final String CLIENT_KEY = "CLIENT";
     private transient long lastPong = 0, lastPing = 0;
-    public transient short loginAttempt = 0;
     private transient List<Integer> allowedChar = new LinkedList<Integer>();
-    private transient Set<String> macs = new HashSet<String>();
     private transient Map<String, ScriptEngine> engines = new HashMap<String, ScriptEngine>();
-    private transient String secondPassword, salt2; // To be used only on login
     private final transient Lock mutex = new ReentrantLock(true);
     private final transient Lock npc_mutex = new ReentrantLock();
     private final static Lock login_mutex = new ReentrantLock(true);
@@ -242,7 +241,7 @@ public class MapleClient {
     }
 
     public final List<MapleCharacter> loadCharacters(final int serverId) { // TODO make this less costly zZz
-        final List<MapleCharacter> chars = new LinkedList<MapleCharacter>();
+        final List<MapleCharacter> chars = new LinkedList<>();
 
         for (final CharNameAndId cni : loadCharactersInternal(serverId)) {
             final MapleCharacter chr = MapleCharacter.loadCharFromDB(cni.id, this, false);
@@ -253,7 +252,7 @@ public class MapleClient {
     }
 
     public List<String> loadCharacterNames(int serverId) {
-        List<String> chars = new LinkedList<String>();
+        List<String> chars = new LinkedList<>();
         for (CharNameAndId cni : loadCharactersInternal(serverId)) {
             chars.add(cni.name);
         }
@@ -261,11 +260,11 @@ public class MapleClient {
     }
 
     private List<CharNameAndId> loadCharactersInternal(int serverId) {
-        List<CharNameAndId> chars = new LinkedList<CharNameAndId>();
+        List<CharNameAndId> chars = new LinkedList<>();
         try {
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("SELECT id, name FROM characters WHERE accountid = ? AND world = ?");
-            ps.setInt(1, accId);
+            ps.setInt(1, id);
             ps.setInt(2, serverId);
 
             ResultSet rs = ps.executeQuery();
@@ -462,62 +461,6 @@ public class MapleClient {
 
     public final ChannelServer getChannelServer() {
         return ChannelServer.getInstance(channel);
-    }
-
-    public final int deleteCharacter(final int cid) {
-        try {
-            final Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT guildid, guildrank, familyid, name FROM characters WHERE id = ? AND accountid = ?");
-            ps.setInt(1, cid);
-            ps.setInt(2, accId);
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                return 1;
-            }
-            if (rs.getInt("guildid") > 0) { // is in a guild when deleted
-                if (rs.getInt("guildrank") == 1) { //cant delete when leader
-                    rs.close();
-                    ps.close();
-                    return 1;
-                }
-                World.Guild.deleteGuildCharacter(rs.getInt("guildid"), cid);
-            }
-            if (rs.getInt("familyid") > 0) {
-                World.Family.getFamily(rs.getInt("familyid")).leaveFamily(cid);
-            }
-            rs.close();
-            ps.close();
-
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM characters WHERE id = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM monsterbook WHERE charid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM hiredmerch WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM mts_cart WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM mts_items WHERE characterid = ?", cid);
-            //MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM cheatlog WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM mountdata WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryitems WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM famelog WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM famelog WHERE characterid_to = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM dueypackages WHERE RecieverId = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM wishlist WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM buddies WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM buddies WHERE buddyid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM keymap WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM savedlocations WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM mountdata WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM skillmacros WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM trocklocations WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM queststatus WHERE characterid = ?", cid);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryslot WHERE characterid = ?", cid);
-            return 0;
-        } catch (Exception e) {
-            FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
-            e.printStackTrace();
-        }
-        return 1;
     }
 
     public final int getLatency() {

@@ -64,7 +64,7 @@ public class DQ_Accounts {
         try {
             PreparedStatement ps;
             ps = con.prepareStatement("SELECT loggedin, lastlogin, `birthday` + 0 AS `bday` FROM " + DB_TABLE_NAME + " WHERE id = ?");
-            ps.setInt(1, c.getAccID());
+            ps.setInt(1, c.getId());
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
                 ps.close();
@@ -99,7 +99,7 @@ public class DQ_Accounts {
             PreparedStatement ps = con.prepareStatement("UPDATE accounts SET loggedin = ?, SessionIP = ?, lastlogin = CURRENT_TIMESTAMP() WHERE id = ?");
             ps.setInt(1, newstate);
             ps.setString(2, ip_addr);
-            ps.setInt(3, c.getAccID());
+            ps.setInt(3, c.getId());
             ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {
@@ -174,7 +174,8 @@ public class DQ_Accounts {
                     secondPassword = LoginCrypto.rand_r(secondPassword);
                 }
 
-                c.logintest(accId, secondPassword, salt2, gameMaster, gender);
+                // secondPassword, salt2
+                c.setAccountData(accId, gameMaster, gender);
 
                 ps.close();
 
@@ -233,7 +234,7 @@ public class DQ_Accounts {
 
         try {
             final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT SessionIP FROM " + DB_TABLE_NAME + " WHERE id = ?");
-            ps.setInt(1, c.getAccID());
+            ps.setInt(1, c.getId());
             final ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {

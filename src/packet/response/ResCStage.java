@@ -212,7 +212,7 @@ public class ResCStage {
         sp.EncodeBuffer(DataCharacterData.Encode(chr));
         // CITC::LoadData
         {
-            sp.EncodeStr(chr.getClient().getAccountName());
+            sp.EncodeStr(chr.getClient().getMapleId());
             sp.Encode4(ServerConstants.MTS_MESO); // m_nRegisterFeeMeso
             sp.Encode4(ServerConstants.MTS_TAX); // m_nCommissionRate
             sp.Encode4(ServerConstants.MTS_BASE); // m_nCommissionBase
@@ -235,7 +235,7 @@ public class ResCStage {
                 sp.Encode1(1); // EMS v55
             }
             if (!(Region.IsVMS() || Region.IsTHMS() || Region.IsMSEA())) {
-                sp.EncodeStr(c.getAccountName());
+                sp.EncodeStr(c.getMapleId());
             }
             if (Region.IsEMS()) {
                 sp.Encode1(0); // EMS v55

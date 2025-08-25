@@ -115,7 +115,7 @@ public class ReqCCashShop {
         }
         MapleCharacter chr = MapleCharacter.ReconstructChr(transfer, c, false);
         c.setPlayer(chr);
-        c.setAccID(chr.getAccountID());
+        c.setId(chr.getAccountID());
         if (!DQ_Accounts.checkLoginIP(c)) {
             // Remote hack
             Debug.ErrorLog("EnterCS dc 2.");
@@ -467,7 +467,7 @@ public class ReqCCashShop {
     private static boolean DestoryItem(MapleCharacter chr, String nexon_id, long item_unique_id) {
         IItem item = chr.getCashInventory().findByCashId(item_unique_id);
 
-        if (item == null || item.getQuantity() < 1 || !chr.getClient().getAccountName().equals(nexon_id)) {
+        if (item == null || item.getQuantity() < 1 || !chr.getClient().getMapleId().equals(nexon_id)) {
             chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Destroy_Failed, chr.getClient()));
             return false;
         }
