@@ -243,6 +243,20 @@ public class MapleClient {
         return getCharacterIds().size();
     }
 
+    private Map<String, ScriptEngine> engines = new HashMap<>();
+
+    public final void setScriptEngine(final String name, final ScriptEngine e) {
+        engines.put(name, e);
+    }
+
+    public final ScriptEngine getScriptEngine(final String name) {
+        return engines.get(name);
+    }
+
+    public final void removeScriptEngine(final String name) {
+        engines.remove(name);
+    }
+
     public static final transient byte LOGIN_NOTLOGGEDIN = 0,
             LOGIN_SERVER_TRANSITION = 1,
             LOGIN_LOGGEDIN = 2,
@@ -252,32 +266,10 @@ public class MapleClient {
             CHANGE_CHANNEL = 6;
     public static final String CLIENT_KEY = "CLIENT";
     private transient long lastPong = 0, lastPing = 0;
-    private transient Map<String, ScriptEngine> engines = new HashMap<String, ScriptEngine>();
-    private final transient Lock mutex = new ReentrantLock(true);
     private final transient Lock npc_mutex = new ReentrantLock();
-    private final static Lock login_mutex = new ReentrantLock(true);
-
-    public final Lock getLock() {
-        return mutex;
-    }
 
     public final Lock getNPCLock() {
         return npc_mutex;
-    }
-
-    public int finishLogin() {
-        login_mutex.lock();
-        try {
-            final byte state = DQ_Accounts.getLoginState(this);
-            if (state > MapleClient.LOGIN_NOTLOGGEDIN && state != MapleClient.LOGIN_WAITING) { // already loggedin
-                loggedIn = false;
-                return 7;
-            }
-            DQ_Accounts.updateLoginState(this, MapleClient.LOGIN_LOGGEDIN);
-        } finally {
-            login_mutex.unlock();
-        }
-        return 0;
     }
 
     public final void removalTask() {
@@ -473,18 +465,6 @@ public class MapleClient {
                 }
             }
         }, 60000); // note: idletime gets added to this too
-    }
-
-    public final void setScriptEngine(final String name, final ScriptEngine e) {
-        engines.put(name, e);
-    }
-
-    public final ScriptEngine getScriptEngine(final String name) {
-        return engines.get(name);
-    }
-
-    public final void removeScriptEngine(final String name) {
-        engines.remove(name);
     }
 
 }

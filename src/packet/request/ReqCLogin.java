@@ -232,7 +232,7 @@ public class ReqCLogin {
             LoginServer.setLoad(load, usersOn);
             lastUpdate = System.currentTimeMillis();
         }
-        if (c.finishLogin() == 0) {
+        if (DQ_Accounts.finishLogin(c)) {
             c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.SUCCESS));
         } else {
             c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));

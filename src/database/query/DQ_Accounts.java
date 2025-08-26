@@ -32,6 +32,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -256,6 +258,24 @@ public class DQ_Accounts {
         }
 
         return ret;
+    }
+
+    private final static Lock login_mutex = new ReentrantLock(true);
+
+    public static boolean finishLogin(MapleClient c) {
+        login_mutex.lock();
+        try {
+            final byte state = getLoginState(c);
+            if (state > MapleClient.LOGIN_NOTLOGGEDIN && state != MapleClient.LOGIN_WAITING) {
+                // already loggedin
+                c.setLoggedIn(false);
+                return false;
+            }
+            updateLoginState(c, MapleClient.LOGIN_LOGGEDIN);
+        } finally {
+            login_mutex.unlock();
+        }
+        return true;
     }
 
 }
