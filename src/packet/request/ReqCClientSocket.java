@@ -69,6 +69,7 @@ public class ReqCClientSocket {
                 return true;
             }
             case CP_AliveAck: {
+                c.recvPong();
                 return true;
             }
             case CP_ExceptionLog: {
@@ -93,6 +94,7 @@ public class ReqCClientSocket {
                 return true;
             }
             case CP_AliveAck: {
+                c.recvPong();
                 return true;
             }
             case CP_ExceptionLog: {
@@ -117,6 +119,7 @@ public class ReqCClientSocket {
                 return true;
             }
             case CP_AliveAck: {
+                c.recvPong();
                 return true;
             }
             case CP_SecurityPacket: {

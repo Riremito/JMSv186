@@ -219,6 +219,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
         if (client != null) {
             client.sendPing();
+            client.SendPacket(ResCClientSocket.AliveReq());
         }
 
         super.sessionIdle(session, status);

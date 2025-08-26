@@ -138,7 +138,6 @@ public class ResCClientSocket {
     }
 
     // CClientSocket::OnAliveReq
-    // getPing
     public static final MaplePacket AliveReq() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AliveReq);
         return sp.get();

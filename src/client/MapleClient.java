@@ -27,7 +27,6 @@ import javax.script.ScriptEngine;
 import database.ExtraDB;
 import database.query.DQ_Accounts;
 import database.query.DQ_Characters;
-import debug.Debug;
 import server.network.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -46,8 +45,6 @@ import server.network.MapleAESOFB;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.mina.common.IoSession;
-import packet.response.ResCClientSocket;
-import server.Timer.PingTimer;
 import server.quest.MapleQuest;
 
 public class MapleClient {
@@ -257,6 +254,18 @@ public class MapleClient {
         engines.remove(name);
     }
 
+    // ping pong
+    private int alive_req = 0;
+    private int alive_res = 0;
+
+    public void recvPong() {
+        alive_res++;
+    }
+
+    public final void sendPing() {
+        alive_req++;
+    }
+
     public static final transient byte LOGIN_NOTLOGGEDIN = 0,
             LOGIN_SERVER_TRANSITION = 1,
             LOGIN_LOGGEDIN = 2,
@@ -265,12 +274,6 @@ public class MapleClient {
             LOGIN_CS_LOGGEDIN = 5,
             CHANGE_CHANNEL = 6;
     public static final String CLIENT_KEY = "CLIENT";
-    private transient long lastPong = 0, lastPing = 0;
-    private final transient Lock npc_mutex = new ReentrantLock();
-
-    public final Lock getNPCLock() {
-        return npc_mutex;
-    }
 
     public final void removalTask() {
         try {
@@ -441,30 +444,11 @@ public class MapleClient {
         return ChannelServer.getInstance(channel);
     }
 
-    public final int getLatency() {
-        return (int) (lastPong - lastPing);
-    }
+    // TODO : remove, probably not needed.
+    private final Lock npc_mutex = new ReentrantLock();
 
-    public final void sendPing() {
-        lastPing = System.currentTimeMillis();
-        SendPacket(ResCClientSocket.AliveReq());
-
-        PingTimer.getInstance().schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    if (getLatency() < 0) {
-                        if (getSession().isConnected()) {
-                            Debug.ErrorLog("sendPing dc.");
-                            getSession().close();
-                        }
-                    }
-                } catch (final NullPointerException e) {
-                    // client already gone
-                }
-            }
-        }, 60000); // note: idletime gets added to this too
+    public final Lock getNPCLock() {
+        return npc_mutex;
     }
 
 }
