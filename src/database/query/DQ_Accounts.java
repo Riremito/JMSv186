@@ -21,6 +21,7 @@ package database.query;
 import client.LoginCrypto;
 import client.LoginCryptoLegacy;
 import client.MapleClient;
+import client.MapleClientState;
 import constants.GameConstants;
 import database.DatabaseConnection;
 import database.DatabaseException;
@@ -61,7 +62,7 @@ public class DQ_Accounts {
         return false;
     }
 
-    public static final byte getLoginState(MapleClient c) {
+    public static final MapleClientState getLoginState(MapleClient c) {
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps;
@@ -72,17 +73,17 @@ public class DQ_Accounts {
                 ps.close();
                 throw new DatabaseException("Everything sucks");
             }
-            byte state = rs.getByte("loggedin");
+            MapleClientState state = MapleClientState.find(rs.getByte("loggedin"));
 
-            if (state == MapleClient.LOGIN_SERVER_TRANSITION || state == MapleClient.CHANGE_CHANNEL) {
+            if (state == MapleClientState.LOGIN_SERVER_TRANSITION || state == MapleClientState.CHANGE_CHANNEL) {
                 if (rs.getTimestamp("lastlogin").getTime() + 20000 < System.currentTimeMillis()) { // connecting to chanserver timeout
-                    state = MapleClient.LOGIN_NOTLOGGEDIN;
+                    state = MapleClientState.LOGIN_NOTLOGGEDIN;
                     updateLoginState(c, state);
                 }
             }
             rs.close();
             ps.close();
-            if (state == MapleClient.LOGIN_LOGGEDIN) {
+            if (state == MapleClientState.LOGIN_LOGGEDIN) {
                 c.setLoggedIn(true);
             } else {
                 c.setLoggedIn(false);
@@ -94,12 +95,12 @@ public class DQ_Accounts {
         }
     }
 
-    public static void updateLoginState(MapleClient c, int newstate) {
+    public static void updateLoginState(MapleClient c, MapleClientState newstate) {
         String ip_addr = c.getSessionIPAddress();
         try {
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("UPDATE accounts SET loggedin = ?, SessionIP = ?, lastlogin = CURRENT_TIMESTAMP() WHERE id = ?");
-            ps.setInt(1, newstate);
+            ps.setInt(1, newstate.get());
             ps.setString(2, ip_addr);
             ps.setInt(3, c.getId());
             ps.executeUpdate();
@@ -107,11 +108,11 @@ public class DQ_Accounts {
         } catch (SQLException e) {
             System.err.println("error updating login state" + e);
         }
-        if (newstate == MapleClient.LOGIN_NOTLOGGEDIN || newstate == MapleClient.LOGIN_WAITING) {
+        if (newstate == MapleClientState.LOGIN_NOTLOGGEDIN || newstate == MapleClientState.LOGIN_WAITING) {
             c.setLoggedIn(false);
             c.setServerTransition(false);
         } else {
-            boolean serverTransition = (newstate == MapleClient.LOGIN_SERVER_TRANSITION || newstate == MapleClient.CHANGE_CHANNEL);
+            boolean serverTransition = (newstate == MapleClientState.LOGIN_SERVER_TRANSITION || newstate == MapleClientState.CHANGE_CHANNEL);
             c.setServerTransition(serverTransition);
             c.setLoggedIn(!serverTransition);
         }
@@ -188,8 +189,8 @@ public class DQ_Accounts {
                         //unban();
                         Debug.ErrorLog("banned == -1");
                     }
-                    byte loginstate = getLoginState(c);
-                    if (loginstate > MapleClient.LOGIN_NOTLOGGEDIN) { // already loggedin
+                    MapleClientState loginstate = getLoginState(c);
+                    if (loginstate.get() > MapleClientState.LOGIN_NOTLOGGEDIN.get()) { // already loggedin
                         c.setLoggedIn(false);
                         loginok = 7;
                     } else {
@@ -265,13 +266,13 @@ public class DQ_Accounts {
     public static boolean finishLogin(MapleClient c) {
         login_mutex.lock();
         try {
-            final byte state = getLoginState(c);
-            if (state > MapleClient.LOGIN_NOTLOGGEDIN && state != MapleClient.LOGIN_WAITING) {
+            final MapleClientState state = getLoginState(c);
+            if (state.get() > MapleClientState.LOGIN_NOTLOGGEDIN.get() && state != MapleClientState.LOGIN_WAITING) {
                 // already loggedin
                 c.setLoggedIn(false);
                 return false;
             }
-            updateLoginState(c, MapleClient.LOGIN_LOGGEDIN);
+            updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         } finally {
             login_mutex.unlock();
         }

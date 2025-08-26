@@ -20,6 +20,7 @@ package packet.request;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import client.MapleClientState;
 import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
@@ -122,9 +123,9 @@ public class ReqCCashShop {
             c.getSession().close();
             return;
         }
-        final int state = DQ_Accounts.getLoginState(c);
+        final MapleClientState state = DQ_Accounts.getLoginState(c);
         boolean allowLogin = false;
-        if (state == MapleClient.LOGIN_SERVER_TRANSITION || state == MapleClient.CHANGE_CHANNEL) {
+        if (state == MapleClientState.LOGIN_SERVER_TRANSITION || state == MapleClientState.CHANGE_CHANNEL) {
             if (!World.isCharacterListConnected(c)) {
                 allowLogin = true;
             }
@@ -135,7 +136,7 @@ public class ReqCCashShop {
             c.getSession().close();
             return;
         }
-        DQ_Accounts.updateLoginState(c, MapleClient.LOGIN_LOGGEDIN);
+        DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         if (mts) {
             CashShopServer.getPlayerStorageMTS().registerPlayer(chr);
             c.SendPacket(ResCStage.SetITC(chr));
@@ -152,7 +153,7 @@ public class ReqCCashShop {
     public static void LeaveCS(MapleClient c, MapleCharacter chr) {
         CashShopServer.getPlayerStorageMTS().deregisterPlayer(chr);
         CashShopServer.getPlayerStorage().deregisterPlayer(chr);
-        DQ_Accounts.updateLoginState(c, MapleClient.LOGIN_SERVER_TRANSITION);
+        DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
             World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
             c.SendPacket(ResCClientSocket.MigrateCommand(ChannelServer.getInstance(c.getChannel()).getPort()));

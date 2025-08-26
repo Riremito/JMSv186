@@ -22,6 +22,7 @@ import client.BuddylistEntry;
 import client.CharacterNameAndId;
 import client.MapleCharacter;
 import client.MapleClient;
+import client.MapleClientState;
 import client.MapleQuestStatus;
 import client.inventory.MaplePet;
 import config.ContentState;
@@ -168,8 +169,8 @@ public class ReqCClientSocket {
         }
 
         switch (DQ_Accounts.getLoginState(c)) {
-            case MapleClient.LOGIN_SERVER_TRANSITION:
-            case MapleClient.CHANGE_CHANNEL: {
+            case LOGIN_SERVER_TRANSITION:
+            case CHANGE_CHANNEL: {
                 if (World.isCharacterListConnected(c)) {
                     c.setPlayer(null);
                     c.getSession().close();
@@ -191,7 +192,7 @@ public class ReqCClientSocket {
         }
 
         // entering game server
-        DQ_Accounts.updateLoginState(c, MapleClient.LOGIN_LOGGEDIN);
+        DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         channel.addPlayer(chr);
         // [update character data in server]
         // character
@@ -348,7 +349,7 @@ public class ReqCClientSocket {
         PlayerBuffStorage.addDiseaseToStorage(chr.getId(), chr.getAllDiseases());
         World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), mts ? -20 : -10);
         ch.removePlayer(chr);
-        DQ_Accounts.updateLoginState(c, MapleClient.CHANGE_CHANNEL);
+        DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
         c.SendPacket(ResCClientSocket.MigrateCommand(Property_Shop.getPort()));
         chr.saveToDB(false, false);
         ExtraDB.saveData(chr);

@@ -49,8 +49,8 @@ import server.quest.MapleQuest;
 
 public class MapleClient {
 
+    public static final String CLIENT_KEY = "CLIENT";
     public static final int DEFAULT_CHARSLOT = 6;
-
     private final IoSession session;
     private boolean offline = false;
     private final MapleAESOFB aes_send;
@@ -240,6 +240,10 @@ public class MapleClient {
         return getCharacterIds().size();
     }
 
+    public final ChannelServer getChannelServer() {
+        return ChannelServer.getInstance(channel);
+    }
+
     private Map<String, ScriptEngine> engines = new HashMap<>();
 
     public final void setScriptEngine(final String name, final ScriptEngine e) {
@@ -265,15 +269,6 @@ public class MapleClient {
     public final void sendPing() {
         alive_req++;
     }
-
-    public static final transient byte LOGIN_NOTLOGGEDIN = 0,
-            LOGIN_SERVER_TRANSITION = 1,
-            LOGIN_LOGGEDIN = 2,
-            LOGIN_WAITING = 3,
-            CASH_SHOP_TRANSITION = 4,
-            LOGIN_CS_LOGGEDIN = 5,
-            CHANGE_CHANNEL = 6;
-    public static final String CLIENT_KEY = "CLIENT";
 
     public final void removalTask() {
         try {
@@ -436,12 +431,8 @@ public class MapleClient {
             }
         }
         if (!serverTransition && isLoggedIn()) {
-            DQ_Accounts.updateLoginState(this, MapleClient.LOGIN_NOTLOGGEDIN);
+            DQ_Accounts.updateLoginState(this, MapleClientState.LOGIN_NOTLOGGEDIN);
         }
-    }
-
-    public final ChannelServer getChannelServer() {
-        return ChannelServer.getInstance(channel);
     }
 
     // TODO : remove, probably not needed.

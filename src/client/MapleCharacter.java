@@ -5136,7 +5136,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         PlayerBuffStorage.addDiseaseToStorage(getId(), getAllDiseases());
         World.ChannelChange_Data(new CharacterTransfer(this), getId(), channel);
         ch.removePlayer(this);
-        DQ_Accounts.updateLoginState(client, MapleClient.CHANGE_CHANNEL);
+        DQ_Accounts.updateLoginState(client, MapleClientState.CHANGE_CHANNEL);
 
         client.SendPacket(ResCClientSocket.MigrateCommand(toch.getPort()));
         saveToDB(false, false);

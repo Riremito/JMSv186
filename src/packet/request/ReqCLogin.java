@@ -20,6 +20,7 @@ package packet.request;
 
 import client.MapleCharacter;
 import client.MapleClient;
+import client.MapleClientState;
 import client.inventory.IItem;
 import client.inventory.MapleInventory;
 import client.inventory.MapleInventoryType;
@@ -583,7 +584,7 @@ public class ReqCLogin {
             c.getSession().close();
             return false;
         }
-        DQ_Accounts.updateLoginState(c, MapleClient.LOGIN_SERVER_TRANSITION);
+        DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
         c.SendPacket(ResCLogin.SelectCharacterResult(LoginServer.WorldPort[SelectedWorld] + SelectedChannel, charId));
         return true;
     }
