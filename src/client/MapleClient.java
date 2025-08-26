@@ -20,18 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package client;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.script.ScriptEngine;
-import database.DatabaseConnection;
 import database.ExtraDB;
 import database.query.DQ_Accounts;
+import database.query.DQ_Characters;
 import debug.Debug;
 import server.network.MaplePacket;
 import handling.cashshop.CashShopServer;
@@ -43,6 +38,7 @@ import handling.world.PartyOperation;
 import handling.world.World;
 import handling.world.family.MapleFamilyCharacter;
 import handling.world.guild.MapleGuildCharacter;
+import java.util.ArrayList;
 import server.maps.MapleMap;
 import server.shops.IMaplePlayerShop;
 import tools.FileoutputUtil;
@@ -73,6 +69,8 @@ public class MapleClient {
     private int loginAttempt = 0;
     private boolean serverTransition = false;
     private int charslots = DEFAULT_CHARSLOT;
+    private List<Integer> character_ids = null;
+    private List<MapleCharacter> characters = null;
     private MapleCharacter player = null;
 
     public MapleClient(MapleAESOFB aes_send, MapleAESOFB aes_recv, IoSession session) {
@@ -205,6 +203,46 @@ public class MapleClient {
         return true;
     }
 
+    public List<Integer> getCharacterIds() {
+        return getCharacterIds(false);
+    }
+
+    public List<Integer> getCharacterIds(boolean reload) {
+        if (reload || this.character_ids == null) {
+            this.character_ids = DQ_Characters.getCharatcerIds(this);
+        }
+        return this.character_ids;
+    }
+
+    public final List<MapleCharacter> loadCharactersFromDB() {
+        return loadCharactersFromDB(false);
+    }
+
+    public final List<MapleCharacter> loadCharactersFromDB(boolean reload) {
+        if (!reload && characters != null) {
+            return characters;
+        }
+        characters = new ArrayList<>();
+        for (int character_id : getCharacterIds(true)) {
+            MapleCharacter chr_mine = MapleCharacter.loadCharFromDB(character_id, this, false);
+            characters.add(chr_mine);
+        }
+        return characters;
+    }
+
+    public void addCharacter(MapleCharacter chr_new) {
+        getCharacterIds().add(chr_new.getId());
+        characters.add(chr_new);
+    }
+
+    public final boolean checkCharacterId(int character_id) {
+        return getCharacterIds().contains(character_id);
+    }
+
+    public int getCharaterCount() {
+        return getCharacterIds().size();
+    }
+
     public static final transient byte LOGIN_NOTLOGGEDIN = 0,
             LOGIN_SERVER_TRANSITION = 1,
             LOGIN_LOGGEDIN = 2,
@@ -214,7 +252,6 @@ public class MapleClient {
             CHANGE_CHANNEL = 6;
     public static final String CLIENT_KEY = "CLIENT";
     private transient long lastPong = 0, lastPing = 0;
-    private transient List<Integer> allowedChar = new LinkedList<Integer>();
     private transient Map<String, ScriptEngine> engines = new HashMap<String, ScriptEngine>();
     private final transient Lock mutex = new ReentrantLock(true);
     private final transient Lock npc_mutex = new ReentrantLock();
@@ -226,57 +263,6 @@ public class MapleClient {
 
     public final Lock getNPCLock() {
         return npc_mutex;
-    }
-
-    public void createdChar(final int id) {
-        allowedChar.add(id);
-    }
-
-    public final boolean login_Auth(final int id) {
-        return allowedChar.contains(id);
-    }
-
-    public int getCharaterCount() {
-        return allowedChar.size();
-    }
-
-    public final List<MapleCharacter> loadCharacters(final int serverId) { // TODO make this less costly zZz
-        final List<MapleCharacter> chars = new LinkedList<>();
-
-        for (final CharNameAndId cni : loadCharactersInternal(serverId)) {
-            final MapleCharacter chr = MapleCharacter.loadCharFromDB(cni.id, this, false);
-            chars.add(chr);
-            allowedChar.add(chr.getId());
-        }
-        return chars;
-    }
-
-    public List<String> loadCharacterNames(int serverId) {
-        List<String> chars = new LinkedList<>();
-        for (CharNameAndId cni : loadCharactersInternal(serverId)) {
-            chars.add(cni.name);
-        }
-        return chars;
-    }
-
-    private List<CharNameAndId> loadCharactersInternal(int serverId) {
-        List<CharNameAndId> chars = new LinkedList<>();
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT id, name FROM characters WHERE accountid = ? AND world = ?");
-            ps.setInt(1, id);
-            ps.setInt(2, serverId);
-
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                chars.add(new CharNameAndId(rs.getString("name"), rs.getInt("id")));
-            }
-            rs.close();
-            ps.close();
-        } catch (SQLException e) {
-            System.err.println("error loading characters internal" + e);
-        }
-        return chars;
     }
 
     public int finishLogin() {
@@ -499,18 +485,6 @@ public class MapleClient {
 
     public final void removeScriptEngine(final String name) {
         engines.remove(name);
-    }
-
-    protected static final class CharNameAndId {
-
-        public final String name;
-        public final int id;
-
-        public CharNameAndId(final String name, final int id) {
-            super();
-            this.name = name;
-            this.id = id;
-        }
     }
 
 }

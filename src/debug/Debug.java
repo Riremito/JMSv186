@@ -48,6 +48,11 @@ public class Debug {
         Log("[EXCEPTION] " + text);
     }
 
+    // DB Error
+    public static void DBErrorLog(String table_name, String func_name) {
+        Log("[DB_ERROR] " + table_name + " : " + func_name);
+    }
+
     public static void DebugLog(MapleCharacter chr, String text) {
         Log("[DEBUG_CHR][\"" + chr.getName() + "\"] " + text);
     }

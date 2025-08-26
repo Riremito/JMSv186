@@ -177,7 +177,7 @@ public class ResCLogin {
     // CLogin::OnViewAllCharResult
     public static MaplePacket ViewAllCharResult(MapleClient c, boolean isAlloc) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ViewAllCharResult);
-        List<MapleCharacter> chars = c.loadCharacters(0); // world 0 only (test)
+        List<MapleCharacter> chars = c.loadCharactersFromDB(); // world 0 only (test)
         sp.Encode1(isAlloc ? 1 : 0);
 
         if (isAlloc) {
@@ -654,7 +654,7 @@ public class ResCLogin {
         if (!Version.GreaterOrEqual(Region.TWMS, 148)) {
             data.Encode4(1000000);
         }
-        List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
+        List<MapleCharacter> chars = c.loadCharactersFromDB();
         int charslots = c.getCharSlots();
         data.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
@@ -711,7 +711,7 @@ public class ResCLogin {
             sp.EncodeBuffer(CharList_CMS(c));
             return sp.get();
         }
-        List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
+        List<MapleCharacter> chars = c.loadCharactersFromDB(true);
         int charslots = c.getCharSlots();
 
         if (Region.IsJMS()) {
@@ -922,16 +922,6 @@ public class ResCLogin {
         return sp.get();
     }
 
-    // CLogin::OnViewAllCharResult
-    public static MaplePacket ViewAllCharResult_v201(MapleClient c) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ViewAllCharResult);
-        List<MapleCharacter> chars = c.loadCharacters(0);
-        sp.Encode1(3); // error code
-        sp.Encode1(0);
-        sp.Encode1(0);
-        return sp.get();
-    }
-
     // ワールドセレクト
     public static final MaplePacket getEndOfServerList() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_WorldInformation);
@@ -951,7 +941,7 @@ public class ResCLogin {
         if (Version.PreBB()) {
             data.Encode4(1000000);
         }
-        List<MapleCharacter> chars = c.loadCharacters(c.getWorld());
+        List<MapleCharacter> chars = c.loadCharactersFromDB();
         int charslots = c.getCharSlots();
         data.Encode1(chars.size());
         for (MapleCharacter chr : chars) {

@@ -27,6 +27,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -35,6 +37,27 @@ import java.sql.SQLException;
 public class DQ_Characters {
 
     public static final String DB_TABLE_NAME = "characters";
+
+    public static List<Integer> getCharatcerIds(MapleClient c) {
+        List<Integer> character_ids = new ArrayList<>();
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT id, name FROM " + DB_TABLE_NAME + " WHERE accountid = ? AND world = ?");
+            ps.setInt(1, c.getId());
+            ps.setInt(2, c.getWorld());
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int character_id = rs.getInt("id");
+                character_ids.add(character_id);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            Debug.DBErrorLog(DB_TABLE_NAME, "getCharatcerIds");
+        }
+        return character_ids;
+    }
 
     public static int getIdByName(String name) {
         try {
@@ -54,7 +77,7 @@ public class DQ_Characters {
             ps.close();
             return id;
         } catch (SQLException e) {
-            Debug.ExceptionLog("Database Error : " + DB_TABLE_NAME);
+            Debug.DBErrorLog(DB_TABLE_NAME, "getIdByName");
         }
 
         return -1;
@@ -63,19 +86,21 @@ public class DQ_Characters {
     public static boolean deleteCharacter(MapleClient c, int character_id) {
         try {
             final Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT guildid, guildrank, familyid, name FROM characters WHERE id = ? AND accountid = ?");
+            PreparedStatement ps = con.prepareStatement("SELECT guildid, guildrank, familyid, name FROM " + DB_TABLE_NAME + " WHERE id = ? AND accountid = ?");
             ps.setInt(1, character_id);
             ps.setInt(2, c.getId());
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
                 rs.close();
                 ps.close();
-                return false;
+                Debug.ErrorLog("deleteCharacter : 1");
+                return true;
             }
             if (rs.getInt("guildid") > 0) { // is in a guild when deleted
                 if (rs.getInt("guildrank") == 1) { //cant delete when leader
                     rs.close();
                     ps.close();
+                    Debug.ErrorLog("deleteCharacter : 2");
                     return false;
                 }
                 World.Guild.deleteGuildCharacter(rs.getInt("guildid"), character_id);
@@ -86,7 +111,7 @@ public class DQ_Characters {
             rs.close();
             ps.close();
 
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM characters WHERE id = ?", character_id);
+            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM " + DB_TABLE_NAME + " WHERE id = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM monsterbook WHERE charid = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM hiredmerch WHERE characterid = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM mts_cart WHERE characterid = ?", character_id);
@@ -110,7 +135,7 @@ public class DQ_Characters {
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryslot WHERE characterid = ?", character_id);
             return true;
         } catch (Exception e) {
-            Debug.ExceptionLog("deleteCharacter");
+            Debug.DBErrorLog(DB_TABLE_NAME, "deleteCharacter");
         }
         return false;
     }

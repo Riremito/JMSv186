@@ -167,7 +167,7 @@ public class ReqCClientSocket {
         switch (DQ_Accounts.getLoginState(c)) {
             case MapleClient.LOGIN_SERVER_TRANSITION:
             case MapleClient.CHANGE_CHANNEL: {
-                if (World.isCharacterListConnected(c.loadCharacterNames(c.getWorld()))) {
+                if (World.isCharacterListConnected(c)) {
                     c.setPlayer(null);
                     c.getSession().close();
                     Debug.ErrorLog("EnterGameServer dc 2.");

@@ -40,7 +40,6 @@ import debug.DebugUser;
 import handling.channel.ChannelServer;
 import handling.login.LoginServer;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import packet.ClientPacket;
 import packet.ops.OpsBodyPart;
@@ -426,7 +425,7 @@ public class ReqCLogin {
         DebugUser.AddStarterSet(newchar);
         MapleCharacter.saveNewCharToDB(newchar);
         c.SendPacket(ResCLogin.addNewCharEntry(newchar, true));
-        c.createdChar(newchar.getId());
+        c.addCharacter(newchar);
         return true;
     }
 
@@ -523,15 +522,15 @@ public class ReqCLogin {
             String key = cp.DecodeStr(); // 32 bytes hex or PIC
         }
 
-        final int Character_ID = cp.Decode4();
-        if (!c.login_Auth(Character_ID)) {
+        final int character_id = cp.Decode4();
+        if (!c.checkCharacterId(character_id)) {
             Debug.ErrorLog("OnDeleteCharacter dc.");
             c.getSession().close();
             return false;
         }
 
-        boolean success = DQ_Characters.deleteCharacter(c, Character_ID);
-        c.SendPacket(ResCLogin.DeleteCharacterResult(Character_ID, success));
+        boolean success = DQ_Characters.deleteCharacter(c, character_id);
+        c.SendPacket(ResCLogin.DeleteCharacterResult(character_id, success));
         return success;
     }
 
@@ -578,17 +577,8 @@ public class ReqCLogin {
         c.SendPacket(ResCLogin.getCharList(c, ResCLogin.LoginResult.SUCCESS));
     }
 
-    public static final boolean SelectCharacterTest(MapleClient c) {
-        List<MapleCharacter> chars = c.loadCharacters(0);
-        if (chars == null) {
-            return false;
-        }
-        final int charId = chars.get(0).getId();
-        return SelectCharacter(c, charId);
-    }
-
     public static final boolean SelectCharacter(MapleClient c, int charId) {
-        if (!c.login_Auth(charId)) {
+        if (!c.checkCharacterId(charId)) {
             Debug.ErrorLog("SelectCharacter dc.");
             c.getSession().close();
             return false;

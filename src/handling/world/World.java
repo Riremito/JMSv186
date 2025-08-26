@@ -19,6 +19,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import client.BuddylistEntry;
 
 import client.MapleCharacter;
+import client.MapleClient;
 
 import client.MapleCoolDownValueHolder;
 import client.MapleDiseaseValueHolder;
@@ -26,6 +27,7 @@ import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import data.wz.DW_Item;
 import database.DatabaseConnection;
+import database.query.DQ_Characters;
 import server.network.MaplePacket;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
@@ -105,10 +107,10 @@ public class World {
         getStorage(toChannel).registerPendingPlayer(Data, characterid);
     }
 
-    public static boolean isCharacterListConnected(List<String> charName) {
+    public static boolean isCharacterListConnected(MapleClient c) {
         for (ChannelServer cs : ChannelServer.getAllInstances()) {
-            for (final String c : charName) {
-                if (cs.getPlayerStorage().getCharacterByName(c) != null) {
+            for (int character_id : DQ_Characters.getCharatcerIds(c)) {
+                if (cs.getPlayerStorage().getCharacterById(character_id) != null) {
                     return true;
                 }
             }

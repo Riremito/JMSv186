@@ -125,7 +125,7 @@ public class ReqCCashShop {
         final int state = DQ_Accounts.getLoginState(c);
         boolean allowLogin = false;
         if (state == MapleClient.LOGIN_SERVER_TRANSITION || state == MapleClient.CHANGE_CHANNEL) {
-            if (!World.isCharacterListConnected(c.loadCharacterNames(c.getWorld()))) {
+            if (!World.isCharacterListConnected(c)) {
                 allowLogin = true;
             }
         }
