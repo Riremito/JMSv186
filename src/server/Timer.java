@@ -101,19 +101,6 @@ public abstract class Timer {
         }
     }
 
-    public static class CheatTimer extends Timer {
-
-        private static CheatTimer instance = new CheatTimer();
-
-        private CheatTimer() {
-            name = "Cheattimer";
-        }
-
-        public static CheatTimer getInstance() {
-            return instance;
-        }
-    }
-
     public static class PingTimer extends Timer {
 
         private static PingTimer instance = new PingTimer();

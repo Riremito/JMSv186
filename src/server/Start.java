@@ -88,6 +88,7 @@ public class Start {
         CloneTimer.getInstance().start();
         EventTimer.getInstance().start();
         BuffTimer.getInstance().start();
+        PingTimer.getInstance().start();
 
         Debug.InfoLog("Start Login Server");
         LoginServer.run_startup_configurations();

@@ -25,6 +25,7 @@ package config;
 public enum DeveloperMode {
     // Developer Mode
     DM_NO_XML,
+    DM_NO_ALIVE_CHECK(true),
     DM_FIRST_MAP_ID(0),
     DM_ERROR_MAP_ID(800000000),
     DM_CHECK_DAMAGE,

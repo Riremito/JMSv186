@@ -113,8 +113,8 @@ public class MapleServerHandler extends IoHandlerAdapter {
         session.setAttribute(MapleClient.CLIENT_KEY, client);
         session.setAttribute(MapleAESOFB.AES_ENC_KEY, aes_enc);
         session.setAttribute(MapleAESOFB.AES_DEC_KEY, aes_dec);
-        session.setIdleTime(IdleStatus.READER_IDLE, 60);
-        session.setIdleTime(IdleStatus.WRITER_IDLE, 60);
+        session.setIdleTime(IdleStatus.READER_IDLE, 10);
+        //session.setIdleTime(IdleStatus.WRITER_IDLE, 5);
     }
 
     // クライアントを切断

@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package client;
 
+import config.DeveloperMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -289,8 +290,20 @@ public class MapleClient {
         this.alive_res++;
     }
 
-    public final void sendPing() {
+    public final boolean sendPing() {
+        int alive_diff = alive_req - alive_res;
+
+        // or use  PingTimer.
+        if (alive_diff <= -1 || 3 <= alive_diff) {
+            if (!DeveloperMode.DM_NO_ALIVE_CHECK.get()) {
+                Debug.DebugLog("Ping DC : " + alive_req + ", " + alive_res);
+                session.close();
+                return false;
+            }
+        }
+
         this.alive_req++;
+        return true;
     }
 
 }
