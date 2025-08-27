@@ -108,10 +108,11 @@ public class MapleServerHandler extends IoHandlerAdapter {
         final MapleClient client = new MapleClient(session);
         client.setChannel(channel);
 
+        session.setAttribute(MapleAESOFB.AES_ENC_KEY, null);
         session.write(ResCClientSocket.getHello(serverSend, serverRecv)); // send raw packet before server starts packet encryption.
+        session.setAttribute(MapleClient.CLIENT_KEY, client);
         session.setAttribute(MapleAESOFB.AES_ENC_KEY, aes_enc);
         session.setAttribute(MapleAESOFB.AES_DEC_KEY, aes_dec);
-        session.setAttribute(MapleClient.CLIENT_KEY, client); // packet encryption started.
         session.setIdleTime(IdleStatus.READER_IDLE, 60);
         session.setIdleTime(IdleStatus.WRITER_IDLE, 60);
     }

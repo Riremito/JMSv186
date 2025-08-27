@@ -20,7 +20,6 @@
  */
 package server.network;
 
-import client.MapleClient;
 import config.ClientEdit;
 import config.Content;
 import config.Region;
@@ -34,11 +33,10 @@ import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 public class MaplePacketEncoder implements ProtocolEncoder {
 
     public void encode_KMSB(final IoSession session, final Object message, final ProtocolEncoderOutput out) throws Exception {
-        final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
         MapleAESOFB aes_enc = (MapleAESOFB) session.getAttribute(MapleAESOFB.AES_ENC_KEY);
 
         // raw packet
-        if (client == null) {
+        if (aes_enc == null) {
             out.write(ByteBuffer.wrap(((MaplePacket) message).getBytes()));
             return;
         }
@@ -88,11 +86,10 @@ public class MaplePacketEncoder implements ProtocolEncoder {
             return;
         }
 
-        final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
         MapleAESOFB aes_enc = (MapleAESOFB) session.getAttribute(MapleAESOFB.AES_ENC_KEY);
 
         // raw packet
-        if (client == null) {
+        if (aes_enc == null) {
             out.write(ByteBuffer.wrap(((MaplePacket) message).getBytes()));
             return;
         }
