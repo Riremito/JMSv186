@@ -46,6 +46,9 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class MapleAESOFB {
 
+    public static final String AES_ENC_KEY = "AES_ENC";
+    public static final String AES_DEC_KEY = "AES_DEC";
+
     private byte iv[];
     private Cipher cipher;
     private short mapleVersion;

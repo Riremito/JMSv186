@@ -31,7 +31,6 @@ import debug.Debug;
 import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import java.util.ArrayList;
-import server.network.MapleAESOFB;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.mina.common.IoSession;
@@ -41,8 +40,6 @@ public class MapleClient {
     public static final String CLIENT_KEY = "CLIENT";
     public static final int DEFAULT_CHARSLOT = 6;
 
-    private final MapleAESOFB aes_send;
-    private final MapleAESOFB aes_recv;
     private final IoSession session;
     private boolean migrating = false;
     private String nexon_id = null;
@@ -60,9 +57,7 @@ public class MapleClient {
     private List<MapleCharacter> characters = null;
     private MapleCharacter player = null;
 
-    public MapleClient(MapleAESOFB aes_send, MapleAESOFB aes_recv, IoSession session) {
-        this.aes_send = aes_send;
-        this.aes_recv = aes_recv;
+    public MapleClient(IoSession session) {
         this.session = session;
     }
 
@@ -94,14 +89,6 @@ public class MapleClient {
 
     public void SendPacket(MaplePacket packet) {
         this.session.write(packet);
-    }
-
-    public MapleAESOFB getReceiveCrypto() {
-        return this.aes_recv;
-    }
-
-    public MapleAESOFB getSendCrypto() {
-        return this.aes_send;
     }
 
     public void setId(int id) {

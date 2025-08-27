@@ -20,7 +20,6 @@
  */
 package server.network;
 
-import client.MapleClient;
 import config.ClientEdit;
 import config.Content;
 import config.Region;
@@ -35,8 +34,8 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 public class MaplePacketDecoder extends CumulativeProtocolDecoder {
 
     protected boolean doDecode_KMSB(IoSession session, ByteBuffer in, ProtocolDecoderOutput out) throws Exception {
-        final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-        byte key[] = client.getReceiveCrypto().getIv();
+        MapleAESOFB aes_dec = (MapleAESOFB) session.getAttribute(MapleAESOFB.AES_DEC_KEY);
+        byte key[] = aes_dec.getIv();
         // header check
         in.mark(); // rollback position
 
@@ -87,7 +86,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
         key[1] = (byte) ((next_key >> 8) & 0xFF);
         key[2] = (byte) ((next_key >> 16) & 0xFF);
         key[3] = (byte) ((next_key >> 24) & 0xFF);
-        client.getReceiveCrypto().setIv(key);
+        aes_dec.setIv(key);
         return true;
     }
 
@@ -98,7 +97,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
             return doDecode_KMSB(session, in, out);
         }
 
-        final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        MapleAESOFB aes_dec = (MapleAESOFB) session.getAttribute(MapleAESOFB.AES_DEC_KEY);
 
         // header check
         in.mark(); // rollback position
@@ -110,7 +109,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
         }
 
         int header_data = in.getInt(); // +4
-        if (client.getReceiveCrypto().checkPacket(header_data)) {
+        if (aes_dec.checkPacket(header_data)) {
             int required_size = MapleAESOFB.getPacketLength(header_data);
             buffer_size = in.remaining();
 
@@ -119,13 +118,13 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
                 in.get(decryptedPacket, 0, required_size); // +required_size
                 if (!ClientEdit.PacketEncryptionRemoved.get()) {
                     if (Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.IMS)) {
-                        client.getReceiveCrypto().kms_decrypt(decryptedPacket);
+                        aes_dec.kms_decrypt(decryptedPacket);
                     } else {
-                        client.getReceiveCrypto().crypt(decryptedPacket);
+                        aes_dec.crypt(decryptedPacket);
                         if (Content.CustomEncryption.get()) {
                             MapleCustomEncryption.decryptData(decryptedPacket);
                         }
-                        client.getReceiveCrypto().updateIv();
+                        aes_dec.updateIv();
                     }
                 }
                 out.write(decryptedPacket);

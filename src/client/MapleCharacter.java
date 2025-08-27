@@ -5877,7 +5877,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public MapleCharacter cloneCopy() {
-        MapleClient cs = new MapleClient(null, null, new MockIOSession());
+        MapleClient cs = new MapleClient(new MockIOSession());
 
         final int minus = (getId() + Randomizer.nextInt(getId())); // really randomize it, dont want it to fail
 

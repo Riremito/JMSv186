@@ -35,6 +35,7 @@ public class MaplePacketEncoder implements ProtocolEncoder {
 
     public void encode_KMSB(final IoSession session, final Object message, final ProtocolEncoderOutput out) throws Exception {
         final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        MapleAESOFB aes_enc = (MapleAESOFB) session.getAttribute(MapleAESOFB.AES_ENC_KEY);
 
         // raw packet
         if (client == null) {
@@ -47,7 +48,7 @@ public class MaplePacketEncoder implements ProtocolEncoder {
         final byte[] header_version = new byte[2];
         final byte[] header_size = new byte[2];
         final byte[] packet = raw_server_packet.clone();
-        byte key[] = client.getSendCrypto().getIv();
+        byte key[] = aes_enc.getIv();
         short version = (short) (0xFFFF - Version.getVersion());
 
         header_version[0] = (byte) (version & 0xFF);
@@ -76,7 +77,7 @@ public class MaplePacketEncoder implements ProtocolEncoder {
         key[1] = (byte) ((next_key >> 8) & 0xFF);
         key[2] = (byte) ((next_key >> 16) & 0xFF);
         key[3] = (byte) ((next_key >> 24) & 0xFF);
-        client.getSendCrypto().setIv(key);
+        aes_enc.setIv(key);
         return;
     }
 
@@ -88,6 +89,7 @@ public class MaplePacketEncoder implements ProtocolEncoder {
         }
 
         final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        MapleAESOFB aes_enc = (MapleAESOFB) session.getAttribute(MapleAESOFB.AES_ENC_KEY);
 
         // raw packet
         if (client == null) {
@@ -97,18 +99,18 @@ public class MaplePacketEncoder implements ProtocolEncoder {
 
         // packet encryption
         final byte[] raw_server_packet = ((MaplePacket) message).getBytes();
-        final byte[] header = client.getSendCrypto().getPacketHeader(raw_server_packet.length); // 4 bytes
+        final byte[] header = aes_enc.getPacketHeader(raw_server_packet.length); // 4 bytes
         final byte[] packet = raw_server_packet.clone();
 
         if (!ClientEdit.PacketEncryptionRemoved.get()) {
             if (Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.IMS)) {
-                client.getSendCrypto().kms_encrypt(packet);
+                aes_enc.kms_encrypt(packet);
             } else {
                 if (Content.CustomEncryption.get()) {
                     MapleCustomEncryption.encryptData(packet);
                 }
-                client.getSendCrypto().crypt(packet);
-                client.getSendCrypto().updateIv();
+                aes_enc.crypt(packet);
+                aes_enc.updateIv();
             }
         }
 
