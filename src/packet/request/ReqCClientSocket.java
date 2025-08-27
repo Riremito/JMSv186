@@ -162,9 +162,7 @@ public class ReqCClientSocket {
         c.setId(chr.getAccountID());
 
         if (!DQ_Accounts.checkLoginIP(c)) {
-            c.setPlayer(null);
-            Debug.ErrorLog("EnterGameServer dc 1.");
-            c.getSession().close();
+            c.loginFailed("EnterGameServer 1."); // Remote hack
             return false;
         }
 
@@ -172,9 +170,7 @@ public class ReqCClientSocket {
             case LOGIN_SERVER_TRANSITION:
             case CHANGE_CHANNEL: {
                 if (World.isCharacterListConnected(c)) {
-                    c.setPlayer(null);
-                    c.getSession().close();
-                    Debug.ErrorLog("EnterGameServer dc 2.");
+                    c.loginFailed("EnterGameServer 2.");
                     return false;
                 }
                 // OK
@@ -354,8 +350,7 @@ public class ReqCClientSocket {
         chr.saveToDB(false, false);
         ExtraDB.saveData(chr);
         chr.getMap().removePlayer(chr);
-        c.setPlayer(null);
-        c.setOffline();
+        c.setMigrating();
     }
 
     // CClientSocket::OnMigrateOut

@@ -5142,8 +5142,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         client.SendPacket(ResCClientSocket.MigrateCommand(toch.getPort()));
         saveToDB(false, false);
         getMap().removePlayer(this);
-        client.setPlayer(null);
-        client.setOffline();
+        client.setMigrating();
     }
 
     public void expandInventory(byte type, int amount) {

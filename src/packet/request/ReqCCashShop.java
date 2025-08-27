@@ -109,8 +109,7 @@ public class ReqCCashShop {
             transfer = CashShopServer.getPlayerStorageMTS().getPendingCharacter(playerid);
             mts = true;
             if (transfer == null) {
-                Debug.ErrorLog("EnterCS dc.");
-                c.getSession().close();
+                c.loginFailed("EnterCS 1.");
                 return;
             }
         }
@@ -118,9 +117,7 @@ public class ReqCCashShop {
         c.setPlayer(chr);
         c.setId(chr.getAccountID());
         if (!DQ_Accounts.checkLoginIP(c)) {
-            // Remote hack
-            Debug.ErrorLog("EnterCS dc 2.");
-            c.getSession().close();
+            c.loginFailed("EnterCS 2."); // Remote hack
             return;
         }
         final MapleClientState state = DQ_Accounts.getLoginState(c);
@@ -131,9 +128,7 @@ public class ReqCCashShop {
             }
         }
         if (!allowLogin) {
-            c.setPlayer(null);
-            Debug.ErrorLog("EnterCS dc 3.");
-            c.getSession().close();
+            c.loginFailed("EnterCS 3.");
             return;
         }
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
@@ -159,8 +154,7 @@ public class ReqCCashShop {
             c.SendPacket(ResCClientSocket.MigrateCommand(ChannelServer.getInstance(c.getChannel()).getPort()));
         } finally {
             chr.saveToDB(false, true);
-            c.setPlayer(null);
-            c.setOffline();
+            c.setMigrating();
         }
     }
 

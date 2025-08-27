@@ -525,8 +525,7 @@ public class ReqCLogin {
 
         final int character_id = cp.Decode4();
         if (!c.checkCharacterId(character_id)) {
-            Debug.ErrorLog("OnDeleteCharacter dc.");
-            c.getSession().close();
+            c.loginFailed("OnDeleteCharacter");
             return false;
         }
 
@@ -580,8 +579,7 @@ public class ReqCLogin {
 
     public static final boolean SelectCharacter(MapleClient c, int charId) {
         if (!c.checkCharacterId(charId)) {
-            Debug.ErrorLog("SelectCharacter dc.");
-            c.getSession().close();
+            c.loginFailed("SelectCharacter");
             return false;
         }
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);

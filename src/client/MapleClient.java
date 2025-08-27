@@ -27,6 +27,7 @@ import javax.script.ScriptEngine;
 import database.ExtraDB;
 import database.query.DQ_Accounts;
 import database.query.DQ_Characters;
+import debug.Debug;
 import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import java.util.ArrayList;
@@ -39,10 +40,11 @@ public class MapleClient {
 
     public static final String CLIENT_KEY = "CLIENT";
     public static final int DEFAULT_CHARSLOT = 6;
-    private final IoSession session;
-    private boolean offline = false;
+
     private final MapleAESOFB aes_send;
     private final MapleAESOFB aes_recv;
+    private final IoSession session;
+    private boolean migrating = false;
     private String nexon_id = null;
     private String maple_id = null;
     private int id = 0;
@@ -75,12 +77,19 @@ public class MapleClient {
         return this.session;
     }
 
-    public boolean isOffline() {
-        return this.offline;
+    public boolean isMigrating() {
+        return this.migrating;
     }
 
-    public void setOffline() {
-        this.offline = true;
+    public void setMigrating() {
+        this.migrating = true;
+        this.player = null;
+    }
+
+    public void loginFailed(String text) {
+        Debug.ErrorLog("loginFailed : " + text);
+        this.player = null;
+        this.session.close();
     }
 
     public void SendPacket(MaplePacket packet) {
@@ -232,6 +241,45 @@ public class MapleClient {
         return ChannelServer.getInstance(channel);
     }
 
+    public boolean disconnect(boolean RemoveInChannelServer, boolean fromCS) {
+        return disconnect(RemoveInChannelServer, fromCS, false);
+    }
+
+    public boolean disconnect(boolean RemoveInChannelServer, boolean fromCS, boolean shutdown) {
+        if (!this.loggedIn) {
+            return false;
+        }
+        // save to DB
+        if (player != null) {
+            player.removalTask();
+            player.saveToDB(true, fromCS);
+            if (!fromCS) {
+                ExtraDB.saveData(player);
+            }
+        }
+        if (shutdown) {
+            this.player = null;
+            this.migrating = true;
+            return true;
+        }
+        // dc
+        if (player != null) {
+            player.disconnect(RemoveInChannelServer, fromCS);
+            this.player = null;
+        }
+        if (!serverTransition) {
+            DQ_Accounts.updateLoginState(this, MapleClientState.LOGIN_NOTLOGGEDIN);
+        }
+        return true;
+    }
+
+    // TODO : remove, probably not needed.
+    private final Lock npc_mutex = new ReentrantLock();
+
+    public final Lock getNPCLock() {
+        return npc_mutex;
+    }
+
     private Map<String, ScriptEngine> engines = new HashMap<>();
 
     public final void setScriptEngine(final String name, final ScriptEngine e) {
@@ -251,50 +299,11 @@ public class MapleClient {
     private int alive_res = 0;
 
     public void recvPong() {
-        alive_res++;
+        this.alive_res++;
     }
 
     public final void sendPing() {
-        alive_req++;
-    }
-
-    public boolean disconnect(boolean RemoveInChannelServer, boolean fromCS) {
-        return disconnect(RemoveInChannelServer, fromCS, false);
-    }
-
-    public boolean disconnect(boolean RemoveInChannelServer, boolean fromCS, boolean shutdown) {
-        if (!this.loggedIn) {
-            return false;
-        }
-        // save to DB
-        if (player != null) {
-            player.removalTask();
-            player.saveToDB(true, fromCS);
-            if (!fromCS) {
-                ExtraDB.saveData(player);
-            }
-        }
-        if (shutdown) {
-            this.player = null;
-            this.offline = true;
-            return true;
-        }
-        // dc
-        if (player != null) {
-            player.disconnect(RemoveInChannelServer, fromCS);
-            this.player = null;
-        }
-        if (!serverTransition) {
-            DQ_Accounts.updateLoginState(this, MapleClientState.LOGIN_NOTLOGGEDIN);
-        }
-        return true;
-    }
-
-    // TODO : remove, probably not needed.
-    private final Lock npc_mutex = new ReentrantLock();
-
-    public final Lock getNPCLock() {
-        return npc_mutex;
+        this.alive_req++;
     }
 
 }

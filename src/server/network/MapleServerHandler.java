@@ -67,7 +67,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
         switch (server_type) {
             case LoginServer: {
                 if (LoginServer.isShutdown()) {
-                    Debug.ErrorLog("sessionOpened dc 1.");
                     session.close();
                     return;
                 }
@@ -76,7 +75,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case GameServer: {
                 if (ChannelServer.getInstance(channel).isShutdown()) {
-                    Debug.ErrorLog("sessionOpened dc 2.");
                     session.close();
                     return;
                 }
@@ -85,7 +83,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             case PointShopServer: {
                 if (CashShopServer.isShutdown()) {
-                    Debug.ErrorLog("sessionOpened dc 3.");
                     session.close();
                     return;
                 }
@@ -127,7 +124,6 @@ public class MapleServerHandler extends IoHandlerAdapter {
             try {
                 client.disconnect(true, server_type == ServerType.PointShopServer);
             } finally {
-                //Debug.InfoLog("sessionClosed dc.");
                 session.close();
                 session.removeAttribute(MapleClient.CLIENT_KEY);
             }
@@ -145,7 +141,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             }
             // client
             MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-            if (c.isOffline()) {
+            if (c.isMigrating()) {
                 Debug.ErrorLog("messageReceived : Migrating.");
                 return;
             }
