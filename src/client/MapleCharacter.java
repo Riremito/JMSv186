@@ -152,6 +152,7 @@ import data.wz.ids.DWI_Dafault;
 import database.query.DQ_Accounts;
 import debug.DebugShop;
 import debug.IDebugMan;
+import handling.cashshop.CashShopServer;
 import packet.response.wrapper.WrapCWvsContext;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Serializable {
@@ -6103,6 +6104,143 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public boolean getAccompany() {
         return this.isAccompany;
+    }
+
+    public final void removalTask() {
+        try {
+            this.cancelAllBuffs_();
+            this.cancelAllDebuffs();
+            if (this.getMarriageId() > 0) {
+                final MapleQuestStatus stat1 = this.getQuestNAdd(MapleQuest.getInstance(160001));
+                final MapleQuestStatus stat2 = this.getQuestNAdd(MapleQuest.getInstance(160002));
+                if (stat1.getCustomData() != null && (stat1.getCustomData().equals("2_") || stat1.getCustomData().equals("2"))) {
+                    //dc in process of marriage
+                    if (stat2.getCustomData() != null) {
+                        stat2.setCustomData("0");
+                    }
+                    stat1.setCustomData("3");
+                }
+            }
+            this.changeRemoval(true);
+            if (this.getEventInstance() != null) {
+                this.getEventInstance().playerDisconnected(this, this.getId());
+            }
+            if (this.getMap() != null) {
+                switch (this.getMapId()) {
+                    case 541010100: //latanica
+                    case 541020800: //scar/targa
+                    case 551030200: //krexel
+                    case 220080001: //pap
+                        this.getMap().addDisconnected(this.getId());
+                        break;
+                }
+                this.getMap().removePlayer(this);
+            }
+
+            final IMaplePlayerShop shop = this.getPlayerShop();
+            if (shop != null) {
+                shop.removeVisitor(this);
+                if (shop.isOwner(this)) {
+                    if (shop.getShopType() == 1 && shop.isAvailable()) {
+                        shop.setOpen(true);
+                    } else {
+                        shop.closeShop(true, true, 6);
+                    }
+                }
+            }
+            this.setMessenger(null);
+        } catch (final Throwable e) {
+            Debug.ErrorLog("removalTask");
+        }
+    }
+
+    public final boolean disconnect(final boolean RemoveInChannelServer, final boolean fromCS) {
+        final String namez = this.getName();
+        final int idz = this.getId(), messengerid = this.getMessenger() == null ? 0 : this.getMessenger().getId(), gid = this.getGuildId(), fid = this.getFamilyId();
+        final BuddyList bl = this.getBuddylist();
+        final MaplePartyCharacter chrp = new MaplePartyCharacter(this);
+        final MapleMessengerCharacter chrm = new MapleMessengerCharacter(this);
+        final MapleGuildCharacter chrg = this.getMGC();
+        final MapleFamilyCharacter chrf = this.getMFC();
+
+        // fix---
+        if (!fromCS) {
+            final ChannelServer ch = ChannelServer.getInstance(map == null ? client.getChannel() : map.getChannel());
+
+            try {
+                if (ch == null || clone || ch.isShutdown()) {
+                    return false;
+                }
+                if (messengerid > 0) {
+                    World.Messenger.leaveMessenger(messengerid, chrm);
+                }
+                if (party != null) {
+                    chrp.setOnline(false);
+                    World.Party.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
+                    if (map != null && party.getLeader().getId() == idz) {
+                        MaplePartyCharacter lchr = null;
+                        for (MaplePartyCharacter pchr : party.getMembers()) {
+                            if (pchr != null && map.getCharacterById(pchr.getId()) != null && (lchr == null || lchr.getLevel() < pchr.getLevel())) {
+                                lchr = pchr;
+                            }
+                        }
+                        if (lchr != null) {
+                            World.Party.updateParty(party.getId(), PartyOperation.CHANGE_LEADER_DC, lchr);
+                        }
+                    }
+                }
+                if (bl != null) {
+                    if (!client.getServerTransition()) {
+                        World.Buddy.loggedOff(namez, idz, client.getChannel(), bl.getBuddyIds(), gmLevel, hidden);
+                    } else { // Change channel
+                        World.Buddy.loggedOn(namez, idz, client.getChannel(), bl.getBuddyIds(), gmLevel, hidden);
+                    }
+                }
+                if (gid > 0) {
+                    World.Guild.setGuildMemberOnline(chrg, false, -1);
+                }
+                if (fid > 0) {
+                    World.Family.setFamilyMemberOnline(chrf, false, -1);
+                }
+            } catch (final Exception e) {
+                e.printStackTrace();
+                FileoutputUtil.outputFileError(FileoutputUtil.Acc_Stuck, e);
+            } finally {
+                if (RemoveInChannelServer && ch != null) {
+                    ch.removePlayer(idz, namez);
+                }
+            }
+        } else {
+            final int ch = World.Find.findChannel(idz);
+            if (ch > 0) {
+                disconnect(RemoveInChannelServer, false);//u lie
+                return false;
+            }
+            try {
+                if (party != null) {
+                    chrp.setOnline(false);
+                    World.Party.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
+                }
+                if (!client.getServerTransition()) {
+                    World.Buddy.loggedOff(namez, idz, client.getChannel(), bl.getBuddyIds(), gmLevel, hidden);
+                } else { // Change channel
+                    World.Buddy.loggedOn(namez, idz, client.getChannel(), bl.getBuddyIds(), gmLevel, hidden);
+                }
+                if (gid > 0) {
+                    World.Guild.setGuildMemberOnline(chrg, false, -1);
+                }
+                this.setMessenger(null);
+            } catch (final Exception e) {
+                e.printStackTrace();
+                FileoutputUtil.outputFileError(FileoutputUtil.Acc_Stuck, e);
+            } finally {
+                if (RemoveInChannelServer && ch > 0) {
+                    CashShopServer.getPlayerStorage().deregisterPlayer(idz, namez);
+                }
+            }
+        }
+
+        return true;
     }
 
 }
