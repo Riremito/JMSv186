@@ -54,7 +54,8 @@ public class ResCStage {
                 || (Region.IsJMS() && ServerConfig.JMS146orLater())
                 || Version.GreaterOrEqual(Region.EMS, 89)
                 || Version.GreaterOrEqual(Region.TWMS, 148)
-                || Version.GreaterOrEqual(Region.CMS, 104)) {
+                || Version.GreaterOrEqual(Region.CMS, 104)
+                || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode1(0);
         }
 
@@ -71,7 +72,7 @@ public class ResCStage {
         if (Region.IsCMS()) {
             sp.Encode1(0);
         }
-        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode4(0);
         }
         sp.Encode1(loggedin ? 1 : 0); // bCharacterData, 1 = all data, 0 = map change
@@ -86,7 +87,11 @@ public class ResCStage {
                 sp.Encode4(0);
             }
             // キャラクター情報
-            sp.EncodeBuffer(DataCharacterData.Encode(chr));
+            if (Version.GreaterOrEqual(Region.GMS, 111)) {
+                sp.EncodeBuffer(DataCharacterData.Encode(chr, -1L & ~0x200000000L));
+            } else {
+                sp.EncodeBuffer(DataCharacterData.Encode(chr));
+            }
             // JMS184orLater
             if ((Region.IsJMS() || Region.IsCMS() || Region.IsTWMS() || Region.IsGMS())
                     && ServerConfig.JMS186orLater()) {

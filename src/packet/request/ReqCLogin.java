@@ -325,7 +325,7 @@ public class ReqCLogin {
             job_dualblade = cp.Decode2(); // 1 = DB, 2 = キャノンシューター, 10 = 蒼龍
         }
 
-        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             character_gender = cp.Decode1();
             if (!Version.Equal(Region.KMST, 391)) {
                 skin_color = cp.Decode1();
@@ -336,7 +336,7 @@ public class ReqCLogin {
             body_part_count--;
             hair_id = cp.Decode4();
             body_part_count--;
-            if (Region.IsEMS() && !Version.GreaterOrEqual(Region.EMS, 89)) { // ?_? mercdes OK
+            if ((Region.IsEMS() && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.GreaterOrEqual(Region.GMS, 111)) { // ?_? mercdes OK
                 hair_color = cp.Decode4();
                 body_part_count--;
                 skin_color = cp.Decode4();

@@ -42,7 +42,7 @@ public class DataAvatarLook {
         data.Encode1(chr.getSkinColor()); // nSkin
         data.Encode4(chr.getFace()); // nFace
         int demon_something = 0;
-        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode4(demon_something); // demon something
         }
         data.Encode1(0); // ignored byte
@@ -133,8 +133,8 @@ public class DataAvatarLook {
             // data.Encode4(0);
             return data.get().getBytes();
         }
-        if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
-            data.Encode1(1);
+        if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+            data.Encode1(0); // mercedes ear
         }
         if (Region.IsTHMS() || Region.IsTWMS() || Region.IsCMS() || Region.IsMSEA() || Region.IsEMS() || Version.GreaterOrEqual(Region.GMS, 83)) {
             data.EncodeZeroBytes(12);

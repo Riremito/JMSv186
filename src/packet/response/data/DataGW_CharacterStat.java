@@ -205,14 +205,17 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
 
-        if (ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110)) {
+        if (ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode4(0);
             data.Encode4(0);
-            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110)) {
+            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.Equal(Region.JMST, 110)) {
                 data.Encode4(0);
             }
             data.Encode4(chr.getMapId());
             data.Encode1(chr.getInitialSpawnpoint());
+            if (Version.GreaterOrEqual(Region.GMS, 111)) {
+                data.Encode4(0);
+            }
             data.Encode2(chr.getSubcategory());
             if (GameConstants.is_demonslayer(chr.getJob())) {
                 data.Encode4(0);
@@ -280,7 +283,7 @@ public class DataGW_CharacterStat {
             } else {
                 if (Version.GreaterOrEqual(Region.JMS, 308)) {
                     data.EncodeZeroBytes(21);
-                } else if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110)) {
+                } else if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.Equal(Region.JMST, 110)) {
                     data.EncodeZeroBytes(12);
                 }
             }
@@ -288,6 +291,14 @@ public class DataGW_CharacterStat {
             data.Encode1(0);
             data.Encode4(0);
             data.Encode1(0);
+
+            if (Version.GreaterOrEqual(Region.GMS, 111)) {
+                data.Encode4(0);
+                data.Encode4(0);
+                data.Encode4(0);
+                return data.get().getBytes();
+            }
+
             if (Version.GreaterOrEqual(Region.JMS, 308)) {
                 data.Encode1(0);
             }
