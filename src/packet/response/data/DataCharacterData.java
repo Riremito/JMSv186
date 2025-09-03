@@ -392,11 +392,11 @@ public class DataCharacterData {
             data.Encode1(0); // not 0, Encode1, Encode4(size), EncodeBuffer8, Encode4(size), EncodeBuffer8
         }
         if (Region.IsTHMS() || Region.IsVMS()) {
-            if ((datamask & 2) != 0) {
+            if ((datamask & 0x02) != 0) {
                 data.Encode4(0);
             }
         }
-        if ((datamask & 1) != 0) {
+        if ((datamask & 0x01) != 0) {
             // キャラクター情報
             data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             if (!Region.check(Region.KMSB)) {
@@ -428,7 +428,7 @@ public class DataCharacterData {
             }
         }
         // 0x2 (<< 1) v165-v194
-        if ((datamask & 2) != 0) {
+        if ((datamask & 0x02) != 0) {
             data.EncodeBuffer(DataGW_CharacterStat.EncodeMoney(chr));
             if (Region.IsJMS() || Region.IsTWMS() || Region.IsCMS() || Region.IsTHMS()) {
                 data.EncodeBuffer(DataGW_CharacterStat.EncodePachinko(chr));
@@ -438,57 +438,70 @@ public class DataCharacterData {
                 data.Encode4(0);
             }
         }
-        if ((datamask & 33554432) != 0) {
+        if ((datamask & 0x02000000) != 0) {
             // EMS89 0x8000000 || 0x08
             if (ServerConfig.KMS138orLater() && !Version.Equal(Region.KMST, 391) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
                 data.Encode4(0);
             }
         }
         // 0x4 (<< 2), 0x100000, 0x4 [addInventoryInfo]
-        if ((datamask & 4) != 0) {
+        if ((datamask & 0x04) != 0) {
             data.EncodeBuffer(InventoryInfo(chr, datamask));
         }
         if (ServerConfig.KMS127orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
-            if ((datamask & 16777216) != 0) {
+            if ((datamask & 0x01000000) != 0) {
                 data.Encode4(0);
             }
         }
         if (Version.Equal(Region.KMST, 391)) {
-            if ((datamask & 33554432) != 0) {
+            if ((datamask & 0x02000000) != 0) {
                 data.Encode4(0);
             }
         }
-        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
-            if ((datamask & 1073741824L) != 0) { // 0x40000000
+        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+            if ((datamask & 0x40000000L) != 0) { // 0x40000000
                 data.Encode4(0); // encode8, encode8
             }
         } else if (Version.GreaterOrEqual(Region.KMS, 148)) {
-            if ((datamask & 67108864) != 0) {
+            if ((datamask & 0x04000000) != 0) {
                 data.Encode4(0);
             }
         }
         if (ServerConfig.KMS119orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
-            if ((datamask & 8388608) != 0) {
+            if ((datamask & 0x00800000) != 0) {
                 data.Encode1(0);
             }
         }
         if (Version.GreaterOrEqual(Region.EMS, 89)) {
-            if ((datamask & 67108864) != 0) {
+            if ((datamask & 0x04000000) != 0) {
                 data.Encode4(0);
             }
-            if ((datamask & 4294967296L) != 0) {
+            if ((datamask & 0x100000000L) != 0) {
                 data.Encode4(0);
             }
-            if ((datamask & 33554432) != 0) {
+            if ((datamask & 0x02000000) != 0) {
                 data.Encode1(0);
             }
         }
+
+        if (Version.GreaterOrEqual(Region.GMS, 111)) {
+            if ((datamask & 0x40000000L) != 0) {
+                data.Encode4(0); // encode4, encode8
+            }
+            if ((datamask & 0x40000000000L) != 0) {
+                data.Encode4(0); // encode8, encode8
+            }
+            if ((datamask & 0x20000000) != 0) {
+                data.Encode1(0);
+            }
+        }
+
         // 0x100 [addSkillInfo] v165 changed v186-v194
-        if ((datamask & 256) != 0) {
+        if ((datamask & 0x100) != 0) {
             data.EncodeBuffer(Structure.addSkillInfo(chr));
         }
         // 0x8000 [addCoolDownInfo] v165-v194
-        if ((datamask & 32768) != 0) {
+        if ((datamask & 0x8000) != 0) {
             if (Version.LessOrEqual(Region.KMS, 1)) {
 
             } else {
@@ -496,11 +509,11 @@ public class DataCharacterData {
             }
         }
         // 0x200 [addQuestInfo] changed v165,v186,v188,v194
-        if ((datamask & 512) != 0) {
+        if ((datamask & 0x200) != 0) {
             data.EncodeBuffer(Structure.addQuestInfo(chr));
         }
         // 0x4000 QuestComplete v165-v194
-        if ((datamask & 16384) != 0) {
+        if ((datamask & 0x4000) != 0) {
             if (Version.LessOrEqual(Region.KMS, 1)) {
 
             } else {
@@ -508,15 +521,15 @@ public class DataCharacterData {
             }
         }
         // 0x400 MiniGameRecord v165-v194
-        if ((datamask & 1024) != 0) {
+        if ((datamask & 0x400) != 0) {
             data.Encode2(0); // not 0 -> Encode4 x5
         }
         // 0x800 [addRingInfo] v165-v194
-        if ((datamask & 2048) != 0) {
+        if ((datamask & 0x800) != 0) {
             data.EncodeBuffer(Structure.addRingInfo(chr)); // 2x3
         }
         // 0x1000 [addRocksInfo] v165-v188 changed v194
-        if ((datamask & 4096) != 0) {
+        if ((datamask & 0x1000) != 0) {
             data.EncodeBuffer(Structure.addRocksInfo(chr));
         }
         switch (Region.getRegion()) {
@@ -850,22 +863,66 @@ public class DataCharacterData {
             }
             case GMS: {
                 if (Version.GreaterOrEqual(Region.GMS, 95)) {
+                    if (Version.GreaterOrEqual(Region.GMS, 111)) {
+                        if ((datamask & 0x00020000) != 0) {
+                            data.Encode4(0);
+                        }
+                        if ((datamask & 0x00010000) != 0) {
+                            data.Encode1(0);
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x80000000L) != 0) {
+                            data.Encode4(0);
+                        }
+                        if ((datamask & 0x100000000L) != 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x00040000) != 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x00080000) != 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x00400000) != 0 && (chr.getJob() / 100 == 33)) {
+                            data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
+                        }
+                        if ((datamask & 0x80000000L) != 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x4000000000L) != 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x20000000000L) != 0) {
+                            for (int i = 0; i < (6 + 5 + 4 + 3); i++) {
+                                data.Encode4(0);
+                            }
+                        }
+                        if ((datamask & 0x10000000000L) != 0) {
+                            data.Encode1(0);
+                            data.Encode2(0);
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x01000000) != 0) {
+                            data.Encode2(0);
+                        }
+                        break;
+                    }
                     // NewYearCardRecord
-                    if ((datamask & 262144) != 0) {
+                    if ((datamask & 0x00040000) != 0) {
                         data.Encode2(0);
                     }
                     // InitQuestExFromRawStr
-                    if ((datamask & 524288) != 0) {
+                    if ((datamask & 0x00080000) != 0) {
                         data.Encode2(0);
                     }
-                    if ((datamask & 2097152) != 0 && (chr.getJob() / 100 == 33)) {
+                    if ((datamask & 0x00200000) != 0 && (chr.getJob() / 100 == 33)) {
                         data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
                     }
                     // 0x400000 QuestCompleteOld
-                    if ((datamask & 4194304) != 0) {
+                    if ((datamask & 0x00400000) != 0) {
                         data.Encode2(0);
                     }
-                    if ((datamask & 8388608) != 0) {
+                    if ((datamask & 0x00800000) != 0) {
                         // VisitorQuestLog
                         data.Encode2(0);
                     }
@@ -1066,17 +1123,17 @@ public class DataCharacterData {
             default: {
                 // 0x7C JMS, Present v146-v194
                 if (Region.IsJMS()) {
-                    if ((datamask & 124) != 0) {
+                    if ((datamask & 0x7C) != 0) {
                         data.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
                     }
                 }
                 if (ServerConfig.JMS146orLater()) {
                     // 0x20000 JMS v146-v194
-                    if ((datamask & 131072) != 0) {
+                    if ((datamask & 0x20000) != 0) {
                         data.Encode4(chr.getMonsterBookCover());
                     }
                     // 0x10000 JMS [addMonsterBookInfo] v165-v194
-                    if ((datamask & 65536) != 0) {
+                    if ((datamask & 0x10000) != 0) {
                         data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                     }
                 }
@@ -1088,27 +1145,27 @@ public class DataCharacterData {
                 } else {
                     if (ServerConfig.JMS194orLater()) {
                         // 0x10000000
-                        if ((datamask & 268435456) != 0) {
+                        if ((datamask & 0x10000000L) != 0) {
                             data.Encode4(0);
                         }
                         // 0x20000000
-                        if ((datamask & 536870912) != 0) {
+                        if ((datamask & 0x20000000L) != 0) {
                             data.Encode2(0); // not 0, Encode2
                         }
                     }
                 }
                 if (ServerConfig.JMS164orLater()) {
                     // 0x40000 (GMS 0x80000) [QuestInfoPacket] v165-v194
-                    if ((datamask & 262144) != 0) {
+                    if ((datamask & 0x00040000) != 0) {
                         data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                     }
                     if (Version.PreBB()) {
-                        if ((datamask & 524288) != 0) {
+                        if ((datamask & 0x00080000) != 0) {
                             // 0x80000 JMS v165, v186, not in v188
                             data.Encode2(0); // not 0 -> Encode4, Encode2
                         }
                         if (ServerConfig.JMS186orLater()) {
-                            if ((datamask & 2097152) != 0) {
+                            if ((datamask & 0x00200000) != 0) {
                                 // 0x200000 VisitorQuestLog (GMS 0x800000)
                                 data.Encode2(0); // not 0 -> Encode2, Encode2
                             }
@@ -1118,20 +1175,20 @@ public class DataCharacterData {
                 // v188-v194
                 if (Version.PostBB()) {
                     // 0x200000
-                    if ((datamask & 2097152) != 0 && (chr.getJob() / 100 == 33)) {
+                    if ((datamask & 0x200000) != 0 && (chr.getJob() / 100 == 33)) {
                         data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
                     }
                     // 0x400000 QuestCompleteOld
-                    if ((datamask & 4194304) != 0) {
+                    if ((datamask & 0x400000) != 0) {
                         data.Encode2(0); // not 0, Encode2, EncodeBuffer8
                     }
                     if (Version.Equal(Region.JMST, 110)) {
-                        if ((datamask & 33554432) != 0) {
+                        if ((datamask & 0x02000000) != 0) {
                             data.Encode2(0);
                         }
                     } else {
                         // 0x800000
-                        if ((datamask & 8388608) != 0) {
+                        if ((datamask & 0x800000) != 0) {
                             data.Encode2(0); // not 0, Encode2, Encode2
                         }
                     }
