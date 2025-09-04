@@ -103,7 +103,10 @@ public class ResCShopDlg {
         for (DebugShop.ShopStock ss : ds.getShopStocks()) {
             sp.Encode4(ss.item_id); // nItemID
             sp.Encode4(ss.item_price); // nPrice
-            // nDiscountRate (1)
+
+            if (Version.GreaterOrEqual(Region.GMS, 91)) {
+                sp.Encode1(0); // nDiscountRate
+            }
 
             if (ServerConfig.JMS180orLater()) {
                 sp.Encode4(0); // nTokenItemID
