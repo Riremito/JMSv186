@@ -91,7 +91,7 @@ public class ResCWvsContext {
         sp.Encode1(unlock ? 1 : 0);// m_bExclRequestSent, unlock
         sp.Encode1((io == null) ? 0 : io.get().size());
 
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.KMST, 391) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.KMST, 391) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode1(0); // unused
         }
 
@@ -152,7 +152,7 @@ public class ResCWvsContext {
     public static final MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ChangeSkillRecordResult);
         sp.Encode1(1);
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode1(0);
         }
         sp.Encode2(1);
@@ -171,7 +171,7 @@ public class ResCWvsContext {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
         sp.EncodeBuffer(DataSecondaryStat.EncodeForLocal(effect));
         sp.Encode2(0); // delay
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode1(0);
         }
         sp.Encode1(0); // CUserLocal::SetSecondaryStatChangedPoint
@@ -339,6 +339,8 @@ public class ResCWvsContext {
                     sp.Encode4(0); // Party Ring Bonus EXP(+%d)
                     sp.Encode4(0); // EXP Bonus Internet Cafe(+ %d)
                     sp.Encode4(0); // Rainbow Week Bonus EXP(+%d)
+                } else if (Version.GreaterOrEqual(Region.GMS, 111)) {
+                    sp.Encode4(0);
                 } else {
                     sp.Encode4(ma.Inc_EXP_WeddingBonus); // 結婚ボーナス経験値
                     sp.Encode4(0); // グループリングボーナスEXP (?)
@@ -354,6 +356,23 @@ public class ResCWvsContext {
                 sp.Encode4(ma.Inc_EXP_EquipmentBonus); // アイテム装着ボーナス経験値
                 sp.Encode4(0); // not used
                 sp.Encode4(ma.Inc_EXP_RainbowWeekBonus); // レインボーウィークボーナス経験値
+
+                if (Version.GreaterOrEqual(Region.GMS, 111)) {
+                    sp.Encode1(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    if (ma.InChat != 0) {
+                        sp.Encode4(0);
+                    }
+                    break;
+                }
+
                 if (Version.GreaterOrEqual(Region.JMS, 302)) {
                     sp.Encode4(0);
                     sp.Encode4(0);

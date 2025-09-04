@@ -770,6 +770,7 @@ public class ReqCUser {
         int unk2 = isKMS95orLater ? cp.Decode4() : 0; // 0
         byte portal_count = cp.Decode1();
         int map_id = cp.Decode4(); // -1 = use portal, 0 = revivie, id = /map command.
+        int gms111_checksum = Version.GreaterOrEqual(Region.GMS, 111) ? cp.Decode4() : 0;
         String portal_name = cp.DecodeStr();
         boolean isPortal = !portal_name.equals("");
         short x = isPortal ? cp.Decode2() : 0;

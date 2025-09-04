@@ -67,7 +67,7 @@ public enum OpsMessage {
             OpsMessage.MS_JMS_Pachinko.set(-1);
             return;
         }
-        if (ServerConfig.JMS194orLater()) {
+        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 111)) {
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);
             OpsMessage.MS_CashItemExpireMessage.set(2);

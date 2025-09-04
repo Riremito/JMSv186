@@ -337,10 +337,12 @@ public class ReqCLogin {
             hair_id = cp.Decode4();
             body_part_count--;
             if ((Region.IsEMS() && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.GreaterOrEqual(Region.GMS, 111)) { // ?_? mercdes OK
-                hair_color = cp.Decode4();
-                body_part_count--;
-                skin_color = cp.Decode4();
-                body_part_count--;
+                if (OpsNewCharacter.find(job_type) != OpsNewCharacter.Mercedes) {
+                    hair_color = cp.Decode4();
+                    body_part_count--;
+                    skin_color = cp.Decode4();
+                    body_part_count--;
+                }
             }
 
             for (int i = 0; i < body_part_count; i++) {
