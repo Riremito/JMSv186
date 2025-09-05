@@ -83,7 +83,7 @@ public class DataAvatarLook {
             }
             data.Encode1(255); // ending markers
         }
-        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 116)) {
             data.Encode1(255); // ending markers
         }
         final IItem cWeapon = equip.getItem((byte) -111);

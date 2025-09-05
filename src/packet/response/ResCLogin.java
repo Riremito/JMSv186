@@ -842,6 +842,10 @@ public class ResCLogin {
             }
             sp.Encode4(charslots); // m_nSlotCount
             sp.Encode4(0); // m_nBuyCharCount
+            if (Version.GreaterOrEqual(Region.GMS, 116)) {
+                sp.Encode4(0);
+                sp.Encode4(0);
+            }
             return sp.get();
         }
 
@@ -936,7 +940,7 @@ public class ResCLogin {
         } else {
             sp.Encode1(-1);
         }
-        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 116)) {
             sp.Encode1(0);
         }
         return sp.get();

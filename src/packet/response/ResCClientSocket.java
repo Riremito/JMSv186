@@ -39,6 +39,10 @@ public class ResCClientSocket {
         if (GameServerIP != 0) {
             return GameServerIP;
         }
+        if (Version.GreaterOrEqual(Region.GMS, 116)) {
+            GameServerIP = 0x34621F08; // 8.31.98.52, CClientSocket::Connect
+            return GameServerIP;
+        }
         try {
             byte[] ip_bytes = InetAddress.getByName("127.0.0.1").getAddress();
             GameServerIP = ip_bytes[0] | (ip_bytes[1] << 8) | (ip_bytes[2] << 16) | (ip_bytes[3] << 24);

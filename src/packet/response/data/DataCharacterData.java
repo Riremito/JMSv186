@@ -293,7 +293,7 @@ public class DataCharacterData {
             }
             // カンナ?
             if (ServerConfig.KMS127orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
-                if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+                if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 116)) {
                     for (Item item : equipped) {
                         if (item.getPosition() <= -1500 && item.getPosition() > -1600) {
                             data.EncodeBuffer(DataGW_ItemSlotBase.EncodeSlot(item));
@@ -376,6 +376,9 @@ public class DataCharacterData {
         }
         if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
             data.Encode1(0); // nCombatOrders
+        }
+        if (Version.GreaterOrEqual(Region.GMS, 116)) {
+            data.Encode1(0);
         }
         if (Version.GreaterOrEqual(Region.KMS, 197)) {
             for (int i = 0; i < 3; i++) {
@@ -893,10 +896,42 @@ public class DataCharacterData {
                             data.Encode2(0);
                         }
                         if ((datamask & 0x20000000000L) != 0) {
-                            for (int i = 0; i < (6 + 5 + 4 + 3); i++) {
+                            int unk_loop_cnt = Version.GreaterOrEqual(Region.GMS, 116) ? (4 + 4 + 3 + 2) : (6 + 5 + 4 + 3);
+                            for (int i = 0; i < unk_loop_cnt; i++) {
                                 data.Encode4(0);
                             }
                         }
+                        if (Version.GreaterOrEqual(Region.GMS, 116)) {
+                            if ((datamask & 0x10000000000L) != 0) {
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                            }
+                            if ((datamask & 0x80000000000L) != 0) {
+                                data.Encode2(0);
+                            }
+                            if ((datamask & 0x100000000000L) != 0) {
+                                data.Encode4(0);
+                                data.Encode4(0);
+                            }
+                            if ((datamask & 0x200000000000L) != 0) {
+                                data.EncodeZeroBytes(84);
+                                data.Encode1(0);
+                            }
+                            if ((datamask & 0x01000000) != 0) {
+                                data.Encode2(0);
+                            }
+                            if ((datamask & 0x400000000000L) != 0) {
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.Encode4(0);
+                                data.EncodeZeroBytes(32);
+                            }
+                            break;
+                        }
+                        // GMS111
                         if ((datamask & 0x10000000000L) != 0) {
                             data.Encode1(0);
                             data.Encode2(0);

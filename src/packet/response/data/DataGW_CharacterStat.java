@@ -281,7 +281,7 @@ public class DataGW_CharacterStat {
                 }
                 return data.get().getBytes();
             } else {
-                if (Version.GreaterOrEqual(Region.JMS, 308)) {
+                if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.GMS, 116)) {
                     data.EncodeZeroBytes(21);
                 } else if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.Equal(Region.JMST, 110)) {
                     data.EncodeZeroBytes(12);
@@ -291,36 +291,35 @@ public class DataGW_CharacterStat {
             data.Encode1(0);
             data.Encode4(0);
             data.Encode1(0);
-
-            if (Version.GreaterOrEqual(Region.GMS, 111)) {
-                data.Encode4(0);
-                data.Encode4(0);
-                data.Encode4(0);
-                return data.get().getBytes();
-            }
-
             if (Version.GreaterOrEqual(Region.JMS, 308)) {
                 data.Encode1(0);
             }
-            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 116)) {
                 data.Encode4(0);
                 data.Encode1(0);
+            }
+            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111)) {
                 data.Encode4(0);
                 data.Encode4(0);
                 data.Encode4(0);
+            }
+            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 116)) {
                 data.Encode1(0);
-
                 for (int i = 0; i < 6; i++) {
                     data.Encode4(0);
                     data.Encode1(0);
                     data.Encode4(0);
                 }
+            }
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                data.Encode4(0);
+                data.Encode4(0);
+                data.EncodeZeroBytes(8);
+            }
+            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 116)) {
                 data.Encode4(0);
                 data.Encode4(0);
             }
-            data.EncodeZeroBytes(8);
-            data.Encode4(0);
-            data.Encode4(0);
             return data.get().getBytes();
         }
 
