@@ -20,6 +20,7 @@ import debug.DebugLogger;
 import handling.world.family.MapleFamilyBuff;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
+import server.network.MapleAESOFB;
 import test.ToolMan;
 
 public class Start {
@@ -45,6 +46,8 @@ public class Start {
         Debug.InfoLog("[DevLog]");
         DebugLogger.init();
         // TODO : debug config
+        // AES
+        MapleAESOFB.setAesKey();
         // update content flags
         Debug.InfoLog("[Content]");
         Content.init();
