@@ -556,7 +556,7 @@ public class ReqCLogin {
         // かえで
         c.SendPacket(ResCLogin.getServerList(0));
         // もみじ (サーバーを分離すると接続人数を取得するのが難しくなる)
-        c.SendPacket(ResCLogin.getServerList(1, false, 16));
+        c.SendPacket(ResCLogin.getServerList(1, false, LoginServer.WorldChannels[1]));
         c.SendPacket(ResCLogin.getEndOfServerList());
         if (ServerConfig.JMS186orLater()) {
             c.SendPacket(ResCLogin.RecommendWorldMessage());

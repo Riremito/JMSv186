@@ -55,10 +55,12 @@ public class LoginServer {
     public static final String WorldName[] = new String[WolrdLimit];
     public static final int WorldFlag[] = new int[WolrdLimit];
     public static final int WorldChannels[] = new int[WolrdLimit];
+    public static final int WorldLanguages[] = new int[WolrdLimit];
 
     public static final void SetWorldConfig() {
         // Kaede
         WorldChannels[NumberOfWorld] = Property_World.getChannels();
+        WorldLanguages[NumberOfWorld] = Property_World.getLanguages();
         WorldPort[NumberOfWorld] = Property_World.getPort();
         WorldName[NumberOfWorld] = Property_World.getName();
         WorldEvent[NumberOfWorld] = Property_World.getEvent();
@@ -67,6 +69,7 @@ public class LoginServer {
         NumberOfWorld++;
         // Momiji, not used
         WorldChannels[NumberOfWorld] = Property_Dummy_World.getChannels();
+        WorldLanguages[NumberOfWorld] = Property_Dummy_World.getLanguages();
         WorldPort[NumberOfWorld] = Property_Dummy_World.getPort();
         WorldName[NumberOfWorld] = Property_Dummy_World.getName();
         WorldEvent[NumberOfWorld] = Property_Dummy_World.getEvent();

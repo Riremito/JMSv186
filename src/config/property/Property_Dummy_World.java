@@ -18,6 +18,8 @@
  */
 package config.property;
 
+import config.Region;
+
 /**
  *
  * @author Riremito
@@ -25,6 +27,7 @@ package config.property;
 public class Property_Dummy_World {
 
     private static int channels;
+    private static int languages = 1;
     private static int port_default;
     private static int flags;
     private static String name;
@@ -33,6 +36,10 @@ public class Property_Dummy_World {
 
     public static int getChannels() {
         return channels;
+    }
+
+    public static int getLanguages() {
+        return languages;
     }
 
     public static int getPort() {
@@ -61,6 +68,10 @@ public class Property_Dummy_World {
             return false;
         }
         channels = conf.getInt("server.channels");
+        if (Region.check(Region.EMS)) {
+            languages = 5;
+            channels = 2 * languages;
+        }
         port_default = conf.getInt("server.port");
         flags = conf.getInt("server.flags");
         name = conf.get("server.name");

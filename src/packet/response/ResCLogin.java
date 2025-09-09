@@ -637,7 +637,7 @@ public class ResCLogin {
             // ワールドID
             sp.Encode1(serverId);
             sp.Encode1(i); // channel
-            sp.Encode1(0);
+            sp.Encode1(Region.check(Region.EMS) ? i % LoginServer.WorldLanguages[serverId] : 0); // language
             if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode1(0);
             }
