@@ -448,6 +448,9 @@ public class ResCLogin {
                                 sp.Encode1(0);
                                 sp.Encode1(0);
                                 sp.Encode2(0);
+                                if (Version.GreaterOrEqual(Region.GMS, 126)) {
+                                    sp.Encode4(0);
+                                }
                                 sp.Encode1(0);
                                 sp.EncodeStr(client.getMapleId());
                                 sp.Encode1(0);
@@ -845,6 +848,10 @@ public class ResCLogin {
             if (Version.GreaterOrEqual(Region.GMS, 116)) {
                 sp.Encode4(0);
                 sp.Encode4(0);
+            }
+            if (Version.GreaterOrEqual(Region.GMS, 126)) {
+                sp.Encode4(0);
+                sp.Encode1(0);
             }
             return sp.get();
         }
