@@ -260,7 +260,7 @@ public class ReqCLogin {
         int dice_luk = 0;
 
         character_name = cp.DecodeStr();
-        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 126)) {
             int unk = cp.Decode4();
         }
         if (ServerConfig.JMS165orLater() && !(Region.IsGMS() && Version.getVersion() == 73)) {
@@ -337,7 +337,7 @@ public class ReqCLogin {
             hair_id = cp.Decode4();
             body_part_count--;
             if ((Region.IsEMS() && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.GreaterOrEqual(Region.GMS, 111)) { // ?_? mercdes OK
-                if (OpsNewCharacter.find(job_type) != OpsNewCharacter.Mercedes) {
+                if (OpsNewCharacter.find(job_type).ordinal() < OpsNewCharacter.Mercedes.ordinal()) {
                     hair_color = cp.Decode4();
                     body_part_count--;
                     skin_color = cp.Decode4();

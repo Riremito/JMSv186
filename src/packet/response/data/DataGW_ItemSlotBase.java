@@ -185,6 +185,12 @@ public class DataGW_ItemSlotBase {
                 if (ServerConfig.KMS127orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
                     data.Encode2(0);
                 }
+                if (Version.GreaterOrEqual(Region.GMS, 126)) {
+                    data.Encode2(0);
+                    data.Encode4(0);
+                    data.Encode1(0);
+                    data.Encode1(0);
+                }
                 // 潜在能力, 装備強化 (星)
                 if (ServerConfig.JMS186orLater()) {
                     data.Encode1(getPotentialRank(equip)); // option._ZtlSecureTear_nGrade
@@ -203,6 +209,9 @@ public class DataGW_ItemSlotBase {
                 }
                 if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
                     data.Encode2(0);
+                    data.Encode2(0);
+                }
+                if (Version.GreaterOrEqual(Region.GMS, 126)) {
                     data.Encode2(0);
                 }
                 if (Version.GreaterOrEqual(Region.JMS, 302)) {
@@ -270,7 +279,7 @@ public class DataGW_ItemSlotBase {
                     data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                     data.Encode4(0);
                 }
-                if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
+                if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 126)) {
                     data.Encode4(0);
                 }
                 if (Version.GreaterOrEqual(Region.KMS, 197)) {

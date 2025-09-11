@@ -304,6 +304,9 @@ public class DataCharacterData {
                 }
                 data.EncodeBuffer(DataGW_ItemSlotBase.EncodeSlotEnd(DataGW_ItemSlotBase.ItemType.Equip));
             }
+            if (Version.GreaterOrEqual(Region.GMS, 126)) {
+                data.EncodeBuffer(DataGW_ItemSlotBase.EncodeSlotEnd(DataGW_ItemSlotBase.ItemType.Equip));
+            }
             if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
                 data.EncodeBuffer(DataGW_ItemSlotBase.EncodeSlotEnd(DataGW_ItemSlotBase.ItemType.Equip));
                 data.EncodeBuffer(DataGW_ItemSlotBase.EncodeSlotEnd(DataGW_ItemSlotBase.ItemType.Equip));
@@ -443,10 +446,19 @@ public class DataCharacterData {
         }
         if ((datamask & 0x02000000) != 0) {
             // EMS89 0x8000000 || 0x08
+            // GMS126 0x2000000 || 0x08
             if (ServerConfig.KMS138orLater() && !Version.Equal(Region.KMST, 391) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
                 data.Encode4(0);
             }
         }
+
+        if (Version.GreaterOrEqual(Region.GMS, 126)) {
+            // GMS126 0x40000 || 0x08
+            if ((datamask & 0x40000) != 0 || (datamask & 0x08) != 0) {
+                data.Encode4(0);
+            }
+        }
+
         // 0x4 (<< 2), 0x100000, 0x4 [addInventoryInfo]
         if ((datamask & 0x04) != 0) {
             data.EncodeBuffer(InventoryInfo(chr, datamask));
@@ -865,7 +877,88 @@ public class DataCharacterData {
                 break;
             }
             case GMS: {
-                if (Version.GreaterOrEqual(Region.GMS, 95)) {
+                if (Version.GreaterOrEqual(Region.GMS, 126)) {
+                    if ((datamask & 0x00020000) != 0) {
+                        data.Encode4(0);
+                    }
+                    if ((datamask & 0x00010000) != 0) {
+                        data.Encode1(0);
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x100000000000L) != 0) {
+                        data.Encode4(0);
+                    }
+                    if ((datamask & 0x200000000000L) != 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x4000000000L) != 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x00040000) != 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x00200000) != 0 && (chr.getJob() / 100 == 33)) {
+                        data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
+                    }
+                    if ((datamask & 0x00400000) != 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x04000000) != 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x20000000L) != 0) {
+                        int unk_loop_cnt = (4 + 4 + 3 + 2);
+                        for (int i = 0; i < unk_loop_cnt; i++) {
+                            data.Encode4(0);
+                        }
+                    }
+                    if ((datamask & 0x10000000L) != 0) {
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.Encode4(0);
+                    }
+                    if ((datamask & 0x80000000L) != 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x100000000L) != 0) {
+                        data.Encode4(0);
+                        data.Encode4(0);
+                    }
+                    if ((datamask & 0x200000000L) != 0) {
+                        data.Encode1(0);
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x400000000L) != 0) {
+                        data.Encode1(0);
+                    }
+                    if ((datamask & 0x800000000L) != 0) {
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.Encode1(0);
+                    }
+                    if ((datamask & 0x2000000000L) != 0) {
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.Encode8(0);
+                    }
+                    if ((datamask & 0x1000000000000L) != 0) {
+                        data.EncodeZeroBytes(84);
+                        data.Encode1(0);
+                    }
+                    if ((datamask & 0x8000000000L) != 0) {
+                        data.Encode2(0);
+                    }
+                    if ((datamask & 0x2000000000000L) != 0) {
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.Encode4(0);
+                        data.EncodeZeroBytes(32);
+                    }
+                    break;
+                } else if (Version.GreaterOrEqual(Region.GMS, 95)) {
                     if (Version.GreaterOrEqual(Region.GMS, 111)) {
                         if ((datamask & 0x00020000) != 0) {
                             data.Encode4(0);

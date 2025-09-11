@@ -87,7 +87,9 @@ public class ResCStage {
                 sp.Encode4(0);
             }
             // キャラクター情報
-            if (Version.GreaterOrEqual(Region.GMS, 111)) {
+            if (Version.GreaterOrEqual(Region.GMS, 126)) {
+                sp.EncodeBuffer(DataCharacterData.Encode(chr, -1L & ~0x400000000000L));
+            } else if (Version.GreaterOrEqual(Region.GMS, 111)) {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr, -1L & ~0x200000000L));
             } else {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr));
@@ -142,7 +144,7 @@ public class ResCStage {
         if (ServerConfig.KMS127orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode1(0);
         }
-        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 126)) {
             sp.Encode1(0);
         }
         if (Version.GreaterOrEqual(Region.KMS, 197)) {

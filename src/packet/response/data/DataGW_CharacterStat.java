@@ -93,7 +93,7 @@ public class DataGW_CharacterStat {
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
                     if (chr.getRemainingSp(i) > 0) {
                         data.Encode1(i + 1);
-                        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
+                        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 126)) {
                             data.Encode4(chr.getRemainingSp(i));
                         } else {
                             data.Encode1(chr.getRemainingSp(i));
@@ -291,7 +291,7 @@ public class DataGW_CharacterStat {
             data.Encode1(0);
             data.Encode4(0);
             data.Encode1(0);
-            if (Version.GreaterOrEqual(Region.JMS, 308)) {
+            if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.GMS, 126)) {
                 data.Encode1(0);
             }
             if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 116)) {

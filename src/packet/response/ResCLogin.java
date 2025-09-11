@@ -52,6 +52,14 @@ public class ResCLogin {
         sp.Encode1(0);
         sp.Encode4(0);
 
+        if (Version.GreaterOrEqual(Region.GMS, 126)) {
+            sp.Encode1(0);
+            sp.Encode1(0);
+            sp.Encode8(0);
+            sp.Encode1(0);
+            return sp.get();
+        }
+
         if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(0);
             sp.Encode8(0);

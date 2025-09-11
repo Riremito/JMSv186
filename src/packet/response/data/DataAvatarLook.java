@@ -122,8 +122,8 @@ public class DataAvatarLook {
             }
             return data.get().getBytes();
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110)) {
-            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 126)) {
+            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 126)) {
                 data.Encode4(0);
                 data.Encode4(0);
                 data.Encode1(0);

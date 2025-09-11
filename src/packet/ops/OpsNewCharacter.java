@@ -96,7 +96,7 @@ public enum OpsNewCharacter {
         if (Version.GreaterOrEqual(Region.TWMS, 148)) {
             Chivalrous.set(10);
         }
-        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 126)) {
             Luminous.set(10); // v308
             Kaizer.set(11); // v308
             AngelicBuster.set(12); // v308

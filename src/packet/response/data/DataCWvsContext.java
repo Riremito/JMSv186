@@ -20,7 +20,9 @@ package packet.response.data;
 
 import client.BuddylistEntry;
 import client.MapleCharacter;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import java.util.Collection;
 import packet.ServerPacket;
 
@@ -34,6 +36,10 @@ public class DataCWvsContext {
     public static byte[] LogoutGiftConfig() {
         ServerPacket data = new ServerPacket();
         data.Encode4(0); // something
+        if (Version.GreaterOrEqual(Region.GMS, 126)) {
+            // 0 = no data.
+            return data.get().getBytes();
+        }
         if (ServerConfig.JMS194orLater()) {
             data.Encode4(0);
         }
