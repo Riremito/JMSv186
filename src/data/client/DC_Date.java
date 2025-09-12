@@ -26,11 +26,22 @@ import java.sql.Timestamp;
  */
 public class DC_Date {
 
-    public static final long magical_expiration_date = (Timestamp.valueOf("2027-07-07 07:00:00").getTime() + Timestamp.valueOf("2339-01-01 18:00:00").getTime()) * 10000;
+    private static final String DATE_BASE = "2339-01-01 18:00:00"; // UTC+9 (JST)
+    private static final String DATE_MAGICAL = "2027-07-07 07:00:00";
+    private static final String DATE_FOREVER = "2079-07-07 07:00:00";
 
-    // 2027-07-07
+    public static long getTimeStamp(String date) {
+        return (Timestamp.valueOf(date).getTime() + Timestamp.valueOf(DATE_BASE).getTime()) * 10000;
+    }
+
+    // 2027-07-07 (Pet)
     public static long getMagicalExpirationDate() {
-        return magical_expiration_date;
+        return getTimeStamp(DATE_MAGICAL);
+    }
+
+    // 2079-07-07 (non Pet items)
+    public static long getNoExpirationDate() {
+        return getTimeStamp(DATE_FOREVER);
     }
 
 }
