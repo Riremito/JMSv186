@@ -102,4 +102,17 @@ public enum OpsNewCharacter {
             AngelicBuster.set(12); // v308
         }
     }
+
+    public static boolean isBadCodedJobs_GMS(OpsNewCharacter ops) {
+        switch (ops) {
+            case Mercedes: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return false;
+    }
 }

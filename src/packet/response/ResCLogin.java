@@ -450,6 +450,30 @@ public class ResCLogin {
                                 if (Version.GreaterOrEqual(Region.GMS, 84)) {
                                     sp.Encode8(0);
                                 }
+                            } else if (Version.GreaterOrEqual(Region.GMS, 131)) {
+                                // GMS131
+                                sp.Encode4(client.getId()); // m_dwAccountId
+                                sp.Encode1(0);
+                                sp.Encode1(0);
+                                sp.Encode2(0);
+                                sp.Encode4(0);
+                                sp.Encode1(0);
+                                sp.EncodeStr(client.getMapleId());
+                                sp.Encode1(0);
+                                sp.Encode1(0);
+                                sp.Encode8(0);
+                                sp.Encode8(0);
+                                sp.Encode4(0);
+                                sp.Encode1(1); // available job
+                                {
+                                    sp.Encode1(0);
+                                    for (int i = 0; i < 17; i++) {
+                                        sp.Encode1(1);
+                                    }
+                                }
+                                sp.Encode1(1); // pic
+                                sp.Encode1(0);
+                                sp.Encode8(0);
                             } else {
                                 // GMS v95
                                 sp.Encode4(client.getId()); // m_dwAccountId
@@ -464,6 +488,7 @@ public class ResCLogin {
                                 sp.Encode1(0);
                                 sp.Encode1(0);
                                 sp.Encode8(0);
+
                                 if (Version.GreaterOrEqual(Region.GMS, 111)) {
                                     sp.Encode1(0);
                                 }

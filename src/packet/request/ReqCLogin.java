@@ -337,7 +337,8 @@ public class ReqCLogin {
             hair_id = cp.Decode4();
             body_part_count--;
             if ((Region.IsEMS() && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.GreaterOrEqual(Region.GMS, 111)) { // ?_? mercdes OK
-                if (OpsNewCharacter.find(job_type).ordinal() < OpsNewCharacter.Mercedes.ordinal()) {
+                OpsNewCharacter onc = OpsNewCharacter.find(job_type);
+                if (!OpsNewCharacter.isBadCodedJobs_GMS(onc)) {
                     hair_color = cp.Decode4();
                     body_part_count--;
                     skin_color = cp.Decode4();
