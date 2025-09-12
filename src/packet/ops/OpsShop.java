@@ -102,7 +102,7 @@ public enum OpsShop implements IPacketOps {
             ShopRes_RechargeUnknown.set(11);
             return;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 131)) {
             ShopReq_Buy.set(0);
             ShopReq_Sell.set(1);
             ShopReq_Recharge.set(2);

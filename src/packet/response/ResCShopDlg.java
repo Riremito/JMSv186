@@ -23,6 +23,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
+import data.client.DC_Date;
 import debug.DebugShop;
 import server.network.MaplePacket;
 import java.util.List;
@@ -69,7 +70,10 @@ public class ResCShopDlg {
             }
         }
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 131)) {
+            sp.Encode1(0);
+        }
+        if(Version.GreaterOrEqual(Region.GMS, 131)){
             sp.Encode1(0);
         }
 
@@ -88,13 +92,13 @@ public class ResCShopDlg {
             sp.Encode1(0);
         }
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 131)) {
             sp.Encode4(0);
         }
 
         sp.Encode4(ds.getNpcId()); // m_dwNpcTemplateID
 
-        if (ServerConfig.JMS194orLater()) {
+        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 131)) {
             sp.Encode1(0);
         }
 
@@ -126,7 +130,14 @@ public class ResCShopDlg {
                 sp.Encode1(0);
                 sp.Encode4(0);
             }
-
+            if (Version.GreaterOrEqual(Region.GMS, 131)) {
+                sp.Encode4(0);
+                sp.Encode8(0);
+                sp.Encode8(DC_Date.getMagicalExpirationDate());
+                sp.Encode4(0);
+                sp.Encode1(0);
+                sp.Encode4(0);
+            }
             // 207 || 233
             if (GameConstants.isRechargable(ss.item_id)) {
                 // dUnitPrice (8)
@@ -140,9 +151,15 @@ public class ResCShopDlg {
                 sp.Encode2(ss.item_slot_max); // nMaxPerSlot
             }
 
-            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 131)) {
                 sp.Encode1(0);
                 sp.Encode4(0);
+            }
+            if (Version.GreaterOrEqual(Region.GMS, 131)) {
+                sp.Encode4(0);
+                sp.Encode4(0);
+                sp.Encode4(0);
+                sp.EncodeZeroBytes(32);
             }
         }
         return sp.get();
