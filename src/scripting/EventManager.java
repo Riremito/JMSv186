@@ -29,7 +29,7 @@ import javax.script.Invocable;
 import javax.script.ScriptException;
 
 import client.MapleCharacter;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.channel.ChannelServer;
 import handling.world.MapleParty;
 import java.util.ArrayList;
@@ -325,7 +325,7 @@ public class EventManager {
 
     public void broadcastShip(final int mapid, final int effect) {
         //getMapFactory().getMap(mapid).broadcastMessage(ResCField_ContiMove.boatPacket(effect));
-        Debug.ErrorLog("broadcastShip, " + mapid + ", " + effect);
+        DebugLogger.ErrorLog("broadcastShip, " + mapid + ", " + effect);
     }
 
     public void broadcastYellowMsg(final String msg) {

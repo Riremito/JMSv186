@@ -23,7 +23,7 @@ package handling.login;
 import config.property.Property_Dummy_World;
 import config.property.Property_Login;
 import config.property.Property_World;
-import debug.Debug;
+import debug.DebugLogger;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -100,9 +100,9 @@ public class LoginServer {
         try {
             InetSocketadd = new InetSocketAddress(Property_Login.getPort());
             acceptor.bind(InetSocketadd, new MapleServerHandler(-1, MapleServerHandler.ServerType.LoginServer), cfg);
-            Debug.InfoLog("Port = " + Property_Login.getPort());
+            DebugLogger.InfoLog("Port = " + Property_Login.getPort());
         } catch (IOException e) {
-            Debug.ErrorLog("Binding to port " + Property_Login.getPort() + " failed" + e);
+            DebugLogger.ErrorLog("Binding to port " + Property_Login.getPort() + " failed" + e);
         }
     }
 

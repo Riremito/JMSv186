@@ -20,7 +20,7 @@ package test;
 
 import config.Region;
 import config.Version;
-import debug.Debug;
+import debug.DebugLogger;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -68,7 +68,7 @@ public class DumpMan {
             for (ServerPacket.Header header : ServerPacket.Header.values()) {
                 int val = (short) header.get();
                 if (val != -1) {
-                    Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
+                    DebugLogger.DebugLog(String.format("@%04X", val) + " : " + header.name());
                     pw.println(header.name() + " = " + String.format("@%04X", val));
                 }
             }
@@ -80,7 +80,7 @@ public class DumpMan {
             for (ClientPacket.Header header : ClientPacket.Header.values()) {
                 int val = (short) header.get();
                 if (val != -1) {
-                    Debug.DebugLog(String.format("@%04X", val) + " : " + header.name());
+                    DebugLogger.DebugLog(String.format("@%04X", val) + " : " + header.name());
                     pw.println(header.name() + " = " + String.format("@%04X", val));
                 }
             }

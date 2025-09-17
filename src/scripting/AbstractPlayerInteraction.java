@@ -49,7 +49,7 @@ import server.life.MapleMonster;
 import server.life.MapleLifeFactory;
 import server.quest.MapleQuest;
 import client.inventory.MapleInventoryIdentifier;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.world.World;
 import packet.ops.OpsFieldEffect;
 import packet.ops.arg.ArgFieldEffect;
@@ -504,17 +504,17 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void playerMessage(final int type, final String message) {
-        Debug.DebugLog("playerMessage is called.");
+        DebugLogger.DebugLog("playerMessage is called.");
         c.SendPacket(ResWrapper.BroadCastMsg_SN(type, message));
     }
 
     public final void mapMessage(final int type, final String message) {
-        Debug.DebugLog("mapMessage is called.");
+        DebugLogger.DebugLog("mapMessage is called.");
         c.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsg_SN(type, message));
     }
 
     public final void guildMessage(final int type, final String message) {
-        Debug.DebugLog("guildMessage is called.");
+        DebugLogger.DebugLog("guildMessage is called.");
         if (getPlayer().getGuildId() > 0) {
             World.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.BroadCastMsg_SN(type, message));
         }

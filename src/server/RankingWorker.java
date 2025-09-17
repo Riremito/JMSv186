@@ -25,7 +25,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import database.DatabaseConnection;
-import debug.Debug;
+import debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -64,12 +64,12 @@ public class RankingWorker {
             con = DatabaseConnection.getConnection();
             updateRanking();
 
-            Debug.InfoLog("Ranking Update = OK");
+            DebugLogger.InfoLog("Ranking Update = OK");
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        Debug.InfoLog("Ranking Update = NG");
+        DebugLogger.InfoLog("Ranking Update = NG");
         return false;
     }
 

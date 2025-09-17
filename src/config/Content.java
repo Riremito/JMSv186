@@ -18,7 +18,7 @@
  */
 package config;
 
-import debug.Debug;
+import debug.DebugLogger;
 
 /**
  *
@@ -88,7 +88,7 @@ public enum Content {
 
     public static void showContentList() {
         for (final Content content : Content.values()) {
-            Debug.InfoLog(content.toString() + " : " + content.get());
+            DebugLogger.InfoLog(content.toString() + " : " + content.get());
         }
     }
 

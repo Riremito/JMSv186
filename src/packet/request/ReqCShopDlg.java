@@ -22,7 +22,7 @@ import client.MapleCharacter;
 import client.MapleClient;
 import config.ServerConfig;
 import constants.GameConstants;
-import debug.Debug;
+import debug.DebugLogger;
 import packet.ClientPacket;
 import packet.ops.OpsShop;
 import server.MapleShop;
@@ -81,7 +81,7 @@ public class ReqCShopDlg {
             default: {
                 // not coded
                 chr.setConversation(0);
-                Debug.DebugLog("ReqCShopDlg : not coded.");
+                DebugLogger.DebugLog("ReqCShopDlg : not coded.");
                 break;
             }
         }

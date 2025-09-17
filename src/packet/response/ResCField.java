@@ -20,7 +20,7 @@ package packet.response;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import debug.Debug;
+import debug.DebugLogger;
 import server.network.MaplePacket;
 import java.util.List;
 import java.util.Map;
@@ -144,7 +144,7 @@ public class ResCField {
                 break;
             }
             default: {
-                Debug.ErrorLog("FieldEffect not coded : " + st.flag);
+                DebugLogger.ErrorLog("FieldEffect not coded : " + st.flag);
                 break;
             }
         }

@@ -37,14 +37,13 @@ import config.ServerConfig;
 import config.Version;
 import data.wz.DW_Mob;
 import data.wz.DW_Skill;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.channel.ChannelServer;
 import packet.ClientPacket;
 import packet.ops.OpsMapTransfer;
 import packet.response.ResCMobPool;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
-import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCWvsContext;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -107,7 +106,7 @@ public class PlayerHandler {
                 return OpsMapTransfer.MapTransferRes_Unknown;
             }
             default: {
-                Debug.ErrorLog("TrockAddMap : not coded " + ops_req);
+                DebugLogger.ErrorLog("TrockAddMap : not coded " + ops_req);
                 break;
             }
         }
@@ -453,11 +452,11 @@ public class PlayerHandler {
     public static final void closeRangeAttack(MapleClient c, AttackInfo attack, final boolean energy) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null || (energy && chr.getBuffedValue(MapleBuffStat.ENERGY_CHARGE) == null && chr.getBuffedValue(MapleBuffStat.BODY_PRESSURE) == null && !GameConstants.isKOC(chr.getJob()))) {
-            Debug.ErrorLog("closeRangeAttack : 1");
+            DebugLogger.ErrorLog("closeRangeAttack : 1");
             return;
         }
         if (!chr.isAlive() || chr.getMap() == null) {
-            Debug.ErrorLog("closeRangeAttack : 2");
+            DebugLogger.ErrorLog("closeRangeAttack : 2");
             return;
         }
         attack = DamageParse.Modify_AttackCrit(attack, chr, 1);
@@ -472,7 +471,7 @@ public class PlayerHandler {
             skillLevel = chr.getSkillLevel(skill);
             effect = attack.getAttackEffect(chr, skillLevel, skill);
             if (effect == null) {
-                Debug.ErrorLog("closeRangeAttack : 3");
+                DebugLogger.ErrorLog("closeRangeAttack : 3");
                 return;
             }
             maxdamage *= effect.getDamage() / 100.0;
@@ -481,7 +480,7 @@ public class PlayerHandler {
             if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
                 if (chr.skillisCooling(attack.skill)) {
                     c.getSession().write(WrapCWvsContext.updateStat());
-                    Debug.ErrorLog("closeRangeAttack : 4");
+                    DebugLogger.ErrorLog("closeRangeAttack : 4");
                     return;
                 }
                 c.getSession().write(ResCUserLocal.SkillCooltimeSet(attack.skill, effect.getCooldown()));
@@ -560,7 +559,7 @@ public class PlayerHandler {
 
             if (isFinisher(attack.skill)) {
                 if (numFinisherOrbs == 0) {
-                    Debug.ErrorLog("closeRangeAttack : 5");
+                    DebugLogger.ErrorLog("closeRangeAttack : 5");
                     return;
                 }
                 maxdamage = 199999; // FIXME reenable damage calculation for finishers
@@ -592,7 +591,7 @@ public class PlayerHandler {
             skillLevel = chr.getSkillLevel(skill);
             effect = attack.getAttackEffect(chr, skillLevel, skill);
             if (effect == null) {
-                Debug.ErrorLog("rangedAttack : 1");
+                DebugLogger.ErrorLog("rangedAttack : 1");
                 return;
             }
 
@@ -608,7 +607,7 @@ public class PlayerHandler {
             if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
                 if (chr.skillisCooling(attack.skill)) {
                     c.getSession().write(WrapCWvsContext.updateStat());
-                    Debug.ErrorLog("rangedAttack : 2");
+                    DebugLogger.ErrorLog("rangedAttack : 2");
                     return;
                 }
                 c.getSession().write(ResCUserLocal.SkillCooltimeSet(attack.skill, effect.getCooldown()));
@@ -622,14 +621,14 @@ public class PlayerHandler {
         int projectile = 0, visProjectile = 0;
         if (!GameConstants.is_mercedes(attack.skill / 10000) && attack.nShootRange0a != 0 && chr.getBuffedValue(MapleBuffStat.SOULARROW) == null && attack.skill != 4111004) {
             if (chr.getInventory(MapleInventoryType.USE).getItem(attack.ProperBulletPosition) == null) {
-                Debug.ErrorLog("rangedAttack : 3");
+                DebugLogger.ErrorLog("rangedAttack : 3");
                 return;
             }
             projectile = chr.getInventory(MapleInventoryType.USE).getItem(attack.ProperBulletPosition).getItemId();
 
             if (attack.pnCashItemPos > 0) {
                 if (chr.getInventory(MapleInventoryType.CASH).getItem(attack.pnCashItemPos) == null) {
-                    Debug.ErrorLog("rangedAttack : 4");
+                    DebugLogger.ErrorLog("rangedAttack : 4");
                     return;
                 }
                 visProjectile = chr.getInventory(MapleInventoryType.CASH).getItem(attack.pnCashItemPos).getItemId();
@@ -648,7 +647,7 @@ public class PlayerHandler {
                 } else {
                     if (!MapleInventoryManipulator.removeById(c, MapleInventoryType.USE, projectile, bulletConsume, false, true)) {
                         chr.dropMessage(5, "You do not have enough arrows/bullets/stars.");
-                        Debug.ErrorLog("rangedAttack : 5");
+                        DebugLogger.ErrorLog("rangedAttack : 5");
                         return;
                     }
                 }
@@ -718,13 +717,13 @@ public class PlayerHandler {
         final int skillLevel = chr.getSkillLevel(skill);
         final MapleStatEffect effect = attack.getAttackEffect(chr, skillLevel, skill);
         if (effect == null) {
-            Debug.ErrorLog("MagicDamage : 1");
+            DebugLogger.ErrorLog("MagicDamage : 1");
             return;
         }
         if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
             if (chr.skillisCooling(attack.skill)) {
                 c.getSession().write(WrapCWvsContext.updateStat());
-                Debug.ErrorLog("MagicDamage : 2");
+                DebugLogger.ErrorLog("MagicDamage : 2");
                 return;
             }
             c.getSession().write(ResCUserLocal.SkillCooltimeSet(attack.skill, effect.getCooldown()));

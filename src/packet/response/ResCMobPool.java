@@ -23,7 +23,7 @@ import client.status.MonsterStatusEffect;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import debug.Debug;
+import debug.DebugLogger;
 import server.network.MaplePacket;
 import java.util.Collections;
 import java.util.List;
@@ -236,7 +236,7 @@ public class ResCMobPool {
         // CMob::Init
         // credit to 垂垂 for fixing mob fall down issue
         if (life.getFh() == 0) {
-            Debug.DebugLog("Spawn FH = 0");
+            DebugLogger.DebugLog("Spawn FH = 0");
         }
 
         sp.Encode2(life.getPosition().x); // m_ptPosPrev.x
@@ -318,7 +318,7 @@ public class ResCMobPool {
 
         // credit to 垂垂 for fixing mob fall down issue
         if (life.getFh() == 0) {
-            Debug.DebugLog("Control FH = 0");
+            DebugLogger.DebugLog("Control FH = 0");
         }
 
         sp.Encode2(life.getPosition().x);

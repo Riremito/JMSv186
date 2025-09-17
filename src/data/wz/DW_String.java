@@ -20,7 +20,7 @@ package data.wz;
 
 import config.Content;
 import data.wz.ids.DWI_Validation;
-import debug.Debug;
+import debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.List;
 import provider.MapleData;
@@ -49,7 +49,7 @@ public class DW_String {
     private static MapleData checkSubDirectory(MapleData md, String dir_name) {
         MapleData sub_dir = md.getChildByPath(dir_name);
         if (sub_dir != null) {
-            Debug.XmlLog("SubDir OK : " + dir_name);
+            DebugLogger.XmlLog("SubDir OK : " + dir_name);
             return sub_dir;
         }
         return md;
@@ -227,13 +227,13 @@ public class DW_String {
                     for (MapleData md_drop_item : md_reward.getChildren()) {
                         int item_id = MapleDataTool.getInt(md_drop_item);
                         if (!DWI_Validation.isValidItemID(item_id)) {
-                            Debug.ErrorLog("invalid monsterbook drop : " + item_id);
+                            DebugLogger.ErrorLog("invalid monsterbook drop : " + item_id);
                             continue;
                         }
                         dmb.drop_ids.add(item_id);
                         count++;
                     }
-                    Debug.DebugLog("monsterbook drop loaded : " + mob_id + " (" + count + ")");
+                    DebugLogger.DebugLog("monsterbook drop loaded : " + mob_id + " (" + count + ")");
                     break;
                 }
             }

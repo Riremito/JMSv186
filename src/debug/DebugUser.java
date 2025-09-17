@@ -44,7 +44,7 @@ public class DebugUser {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         // 存在しないitemid
         if (!ii.itemExists(itemid)) {
-            Debug.ErrorLog("AddItem: " + itemid);
+            DebugLogger.ErrorLog("AddItem: " + itemid);
             return false;
         }
         switch (itemid / 1000000) {

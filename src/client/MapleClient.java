@@ -28,7 +28,7 @@ import javax.script.ScriptEngine;
 import database.ExtraDB;
 import database.query.DQ_Accounts;
 import database.query.DQ_Characters;
-import debug.Debug;
+import debug.DebugLogger;
 import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import java.util.ArrayList;
@@ -83,7 +83,7 @@ public class MapleClient {
     }
 
     public void loginFailed(String text) {
-        Debug.ErrorLog("loginFailed : " + text);
+        DebugLogger.ErrorLog("loginFailed : " + text);
         this.player = null;
         this.session.close();
     }
@@ -296,7 +296,7 @@ public class MapleClient {
         // or use  PingTimer.
         if (alive_diff <= -1 || 3 <= alive_diff) {
             if (!DeveloperMode.DM_NO_ALIVE_CHECK.get()) {
-                Debug.DebugLog("Ping DC : " + alive_req + ", " + alive_res);
+                DebugLogger.DebugLog("Ping DC : " + alive_req + ", " + alive_res);
                 session.close();
                 return false;
             }

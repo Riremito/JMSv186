@@ -20,7 +20,7 @@ package config.property;
 
 import config.Region;
 import config.Version;
-import debug.Debug;
+import debug.DebugLogger;
 import packet.ClientPacket;
 import packet.ServerPacket;
 import packet.IHeader;
@@ -105,7 +105,7 @@ public class Property_Packet {
                         if (base_header.name().equals(vars[0])) {
                             base = base_header.get();
                             if (base == -1) {
-                                Debug.ErrorLog("base is @FFFF.");
+                                DebugLogger.ErrorLog("base is @FFFF.");
                             }
                             break;
                         }

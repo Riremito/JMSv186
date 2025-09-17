@@ -20,7 +20,7 @@ package packet.request;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.channel.handler.NPCHandler;
 import packet.ClientPacket;
 import packet.ops.OpsScriptMan;
@@ -116,7 +116,7 @@ public class ReqCScriptMan {
             }
         }
 
-        Debug.ErrorLog("OnScriptMessageAnswer not coded.");
+        DebugLogger.ErrorLog("OnScriptMessageAnswer not coded.");
         //NPCHandler.NPCMoreTalk(c, cp); // test
         return false;
     }

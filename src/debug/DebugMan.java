@@ -74,7 +74,7 @@ public class DebugMan {
         }
 
         dm.end(chr);
-        Debug.ErrorLog("OnScriptMessageAnswerHook not coded = " + cm_type + ", " + action);
+        DebugLogger.ErrorLog("OnScriptMessageAnswerHook not coded = " + cm_type + ", " + action);
         return false;
     }
 
@@ -141,7 +141,7 @@ public class DebugMan {
 
     protected void say(MapleCharacter chr, NpcTag nt, boolean prev, boolean next) {
         if (nt.get().contains("#L")) {
-            Debug.ErrorLog("DebugMan : say.");
+            DebugLogger.ErrorLog("DebugMan : say.");
             askMenu(chr, nt, prev, next);
             return;
         }

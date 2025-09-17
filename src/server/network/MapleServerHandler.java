@@ -2,7 +2,7 @@ package server.network;
 
 import client.MapleClient;
 import config.Content;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.login.LoginServer;
@@ -70,7 +70,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     session.close();
                     return;
                 }
-                Debug.InfoLog("[Login Server] Connected " + address);
+                DebugLogger.InfoLog("[Login Server] Connected " + address);
                 break;
             }
             case GameServer: {
@@ -78,7 +78,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     session.close();
                     return;
                 }
-                Debug.InfoLog("[Game Server " + String.format("%02d", channel) + "]  Connected " + address);
+                DebugLogger.InfoLog("[Game Server " + String.format("%02d", channel) + "]  Connected " + address);
                 break;
             }
             case PointShopServer: {
@@ -86,16 +86,16 @@ public class MapleServerHandler extends IoHandlerAdapter {
                     session.close();
                     return;
                 }
-                Debug.InfoLog("[Cash Shop Server] Connected " + address);
+                DebugLogger.InfoLog("[Cash Shop Server] Connected " + address);
                 break;
             }
             case MapleTradeSpaceServer: {
                 // ポイントショップとMTSを別のサーバーに分離した場合は修正が必要
-                Debug.InfoLog("[Maple Trade Space Server] Connected " + address);
+                DebugLogger.InfoLog("[Maple Trade Space Server] Connected " + address);
                 break;
             }
             default: {
-                Debug.ErrorLog("[Unknown Server] Connected " + address);
+                DebugLogger.ErrorLog("[Unknown Server] Connected " + address);
                 break;
             }
         }
@@ -144,7 +144,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
             // client
             MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
             if (c.isMigrating()) {
-                Debug.ErrorLog("messageReceived : Migrating.");
+                DebugLogger.ErrorLog("messageReceived : Migrating.");
                 return;
             }
 
@@ -159,7 +159,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
 
             // not coded
             if (header == ClientPacket.Header.UNKNOWN) {
-                Debug.CPLog(cp);
+                DebugLogger.CPLog(cp);
                 return;
             }
 
@@ -167,14 +167,14 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 // ログインサーバー
                 case LoginServer: {
                     if (!handleLoginPacket(c, header, cp)) {
-                        Debug.CPLog(cp);
+                        DebugLogger.CPLog(cp);
                     }
                     break;
                 }
                 // ゲームサーバー
                 case GameServer: {
                     if (!handleGamePacket(c, header, cp)) {
-                        Debug.CPLog(cp);
+                        DebugLogger.CPLog(cp);
                     }
                     break;
                 }
@@ -182,7 +182,7 @@ public class MapleServerHandler extends IoHandlerAdapter {
                 case MapleTradeSpaceServer: {
                     // currently CS and ITC are same server.
                     if (!handlePointShopPacket(c, header, cp) && !handleMapleTradeSpacePacket(c, header, cp)) {
-                        Debug.CPLog(cp);
+                        DebugLogger.CPLog(cp);
                     }
                     break;
                 }

@@ -20,7 +20,7 @@ package database.query;
 
 import client.MapleClient;
 import database.DatabaseConnection;
-import debug.Debug;
+import debug.DebugLogger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -58,7 +58,7 @@ public class DQ_Character_slots {
             ps.close();
             return true;
         } catch (SQLException sqlE) {
-            Debug.ExceptionLog("getCharacterSlots");
+            DebugLogger.ExceptionLog("getCharacterSlots");
         }
 
         return false;
@@ -80,7 +80,7 @@ public class DQ_Character_slots {
             ps.close();
             return true;
         } catch (SQLException sqlE) {
-            Debug.ExceptionLog("gainCharacterSlot");
+            DebugLogger.ExceptionLog("gainCharacterSlot");
         }
         return false;
     }

@@ -23,7 +23,7 @@ package packet.response;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import debug.Debug;
+import debug.DebugLogger;
 import java.util.ArrayList;
 import server.network.MaplePacket;
 import packet.ServerPacket;
@@ -139,7 +139,7 @@ public class ResCScriptMan {
                 break;
             }
             default: {
-                Debug.ErrorLog("ScriptMessage not coded.");
+                DebugLogger.ErrorLog("ScriptMessage not coded.");
                 break;
             }
         }

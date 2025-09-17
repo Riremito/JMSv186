@@ -25,7 +25,7 @@ import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
 import constants.GameConstants;
 import constants.ServerConstants;
-import debug.Debug;
+import debug.DebugLogger;
 import packet.ClientPacket;
 import packet.response.ResCITC;
 import server.MTSCart;
@@ -43,7 +43,7 @@ public class ReqCITC {
     public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
-            Debug.ErrorLog("character is not online (ITC).");
+            DebugLogger.ErrorLog("character is not online (ITC).");
             return false;
         }
 

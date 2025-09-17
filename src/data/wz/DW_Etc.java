@@ -19,7 +19,7 @@
 package data.wz;
 
 import config.Content;
-import debug.Debug;
+import debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -142,7 +142,7 @@ public class DW_Etc {
             itemz.completeCount = MapleDataTool.getIntConvert("completeCount", dat, 0);
             for (MapleData level : dat.getChildByPath("ItemID")) {
                 if (level.getType() != MapleDataType.INT) {
-                    Debug.ErrorLog("SetItemInfo.img, " + dat.getName() + " error");
+                    DebugLogger.ErrorLog("SetItemInfo.img, " + dat.getName() + " error");
                     continue;
                 }
                 itemz.itemIDs.add(MapleDataTool.getIntConvert(level));

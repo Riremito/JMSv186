@@ -15,7 +15,6 @@ import handling.cashshop.CashShopServer;
 import handling.world.World;
 import java.sql.SQLException;
 import database.query.DQ_Accounts;
-import debug.Debug;
 import debug.DebugLogger;
 import handling.world.family.MapleFamilyBuff;
 import server.Timer.*;
@@ -28,58 +27,57 @@ public class Start {
     public final static void main(final String args[]) {
         // default = JMS186.1
         // set region & version
-        Debug.InfoLog("[Version]");
+        DebugLogger.SetupLog("VERSION");
         if (3 <= args.length) {
             String server_region = args[0];
             int server_version = Integer.parseInt(args[1]);
             int server_version_sub = Integer.parseInt(args[2]);
 
             if (!Region.setRegion(server_region)) {
-                Debug.ErrorLog("Invalid region name.");
+                DebugLogger.ErrorLog("Invalid region name.");
                 return;
             }
 
             Version.setVersion(server_version, server_version_sub);
         }
-        Debug.InfoLog(Region.GetRegionName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
+        DebugLogger.InfoLog(Region.GetRegionName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
         // DevLog
-        Debug.InfoLog("[DevLog]");
+        DebugLogger.SetupLog("DEV_LOG");
         DebugLogger.init();
         // TODO : debug config
         // AES
         MapleAESOFB.setAesKey();
         // update content flags
-        Debug.InfoLog("[Content]");
+        DebugLogger.SetupLog("FLAG_CONTENT");
         Content.init();
         //Content.showContentList();
         // update client edit flags
-        Debug.InfoLog("[ClientEdit]");
+        DebugLogger.SetupLog("FLAG_CLIENT_EDIT");
         ClientEdit.init();
         // update exp table
-        Debug.InfoLog("[ExpTable]");
+        DebugLogger.SetupLog("EXP_TABLE");
         DC_Exp.init();
         // update packet enum values
-        Debug.InfoLog("[PacketOps]");
+        DebugLogger.SetupLog("PACKET_OPS");
         packet.ops.PacketOps.initAll();
         // read properties
-        Debug.InfoLog("[Properties]");
+        DebugLogger.SetupLog("PROPERTIES");
         if (!Property.initAll()) {
             return;
         }
         //Debug.InfoLog("wz_xml directory : " + Property_Java.getDir_WzXml());
         //Debug.InfoLog("scripts directory : " + Property_Java.getDir_Scripts());
         // set codepage
-        Debug.InfoLog("[CodePage]");
+        DebugLogger.SetupLog("CODEPAGE");
         CodePage.init();
         // ログインサーバー上のゲームサーバー情報
         LoginServer.SetWorldConfig(); // TODO : fix
         // database
         DQ_Accounts.resetLoginState();
         // 管理画面
-        Debug.InfoLog("[AdminTool]");
         if (DeveloperMode.DM_ADMIN_TOOL.get()) {
+            DebugLogger.SetupLog("admin tool is opened.");
             ToolMan.Open();
-            Debug.InfoLog("Admin Tool Opened.");
         }
 
         World.init();
@@ -93,7 +91,7 @@ public class Start {
         BuffTimer.getInstance().start();
         PingTimer.getInstance().start();
 
-        Debug.InfoLog("Start Login Server");
+        DebugLogger.SetupLog("LOGIN_SERVER");
         LoginServer.run_startup_configurations();
         RandomRewards.getInstance();
 
@@ -101,10 +99,10 @@ public class Start {
         MapleGuildRanking.getInstance().getRank();
         MapleFamilyBuff.getBuffEntry();
 
-        Debug.InfoLog("Start Game Server");
+        DebugLogger.SetupLog("GAME_SERVER");
         ChannelServer.startChannel_Main();
 
-        Debug.InfoLog("Start Cash Shop Server");
+        DebugLogger.SetupLog("CASHSHOP_SERVER");
         CashShopServer.run_startup_configurations();
         MTSStorage.load();
 
@@ -116,8 +114,9 @@ public class Start {
         }
         World.registerRespawn();
         LoginServer.setOn(); //now or later
+        DebugLogger.SetupLog("RANKING");
         RankingWorker.getInstance().run();
-        Debug.InfoLog("OK");
+        DebugLogger.SetupLog("DONE!");
         return;
     }
 

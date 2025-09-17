@@ -20,7 +20,7 @@ package packet.request;
 
 import client.MapleCharacter;
 import data.wz.ids.DWI_LoadXML;
-import debug.Debug;
+import debug.DebugLogger;
 import java.util.List;
 import packet.ClientPacket;
 import packet.ops.OpsEntrustedShop;
@@ -78,7 +78,7 @@ public class ReqCMiniRoomBaseDlg {
 
                 HiredMerchant hm = (HiredMerchant) chr.getMap().getMapObject(miniroom_id, MapleMapObjectType.HIRED_MERCHANT);
                 if (hm == null) {
-                    Debug.ErrorLog("hm == null.");
+                    DebugLogger.ErrorLog("hm == null.");
                     return false;
                 }
                 //hm.addVisitor(chr);
@@ -109,7 +109,7 @@ public class ReqCMiniRoomBaseDlg {
         }
 
         //PlayerInteractionHandler.PlayerInteraction(p, chr.getClient(), chr);
-        Debug.ErrorLog("OnMiniRoom : not coded = " + protocol_req);
+        DebugLogger.ErrorLog("OnMiniRoom : not coded = " + protocol_req);
         return false;
     }
 
@@ -118,7 +118,7 @@ public class ReqCMiniRoomBaseDlg {
         Runnable item_use = chr.checkItemSlot(item_slot, 5470000);
 
         if (item_use == null) {
-            Debug.ErrorLog("RemoteStore : no item.");
+            DebugLogger.ErrorLog("RemoteStore : no item.");
             return false;
         }
 

@@ -21,7 +21,7 @@ package packet.request.parse;
 import client.inventory.MaplePet;
 import config.Region;
 import config.Version;
-import debug.Debug;
+import debug.DebugLogger;
 import java.awt.Point;
 import packet.ClientPacket;
 import packet.ops.OpsMovePathAttr;
@@ -99,7 +99,7 @@ public class ParseCMovePath {
                 return (1 + 2 * 4); // KMS65, JMS131-165
             }
             default: {
-                Debug.ErrorLog("ParseCMovePath : invalid header.");
+                DebugLogger.ErrorLog("ParseCMovePath : invalid header.");
                 break;
             }
         }

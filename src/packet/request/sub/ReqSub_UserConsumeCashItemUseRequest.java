@@ -28,7 +28,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
-import debug.Debug;
+import debug.DebugLogger;
 import debug.DebugShop;
 import handling.channel.ChannelServer;
 import handling.channel.handler.PlayerHandler;
@@ -71,7 +71,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
 
         Runnable item_use = chr.checkItemSlot(cash_item_slot, cash_item_id);
         if (item_use == null) {
-            Debug.ErrorLog("OnUserConsumeCashItemUseRequest : invalid item.");
+            DebugLogger.ErrorLog("OnUserConsumeCashItemUseRequest : invalid item.");
             return true;
         }
 
@@ -243,7 +243,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         }
 
         // not coded.
-        Debug.ErrorLog("OnUserConsumeCashItemUseRequest : not coded yet. type = " + cash_item_type);
+        DebugLogger.ErrorLog("OnUserConsumeCashItemUseRequest : not coded yet. type = " + cash_item_type);
         return false;
     }
 
@@ -498,13 +498,13 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 // メッセージの行数
                 byte line = cp.Decode1();
                 if (3 < line) {
-                    Debug.ErrorLog("三連拡声器 - lines");
+                    DebugLogger.ErrorLog("三連拡声器 - lines");
                     return false;
                 }
                 for (int i = 0; i < line; i++) {
                     String message = cp.DecodeStr();
                     if (message.length() > 65) {
-                        Debug.ErrorLog("三連拡声器 - letters");
+                        DebugLogger.ErrorLog("三連拡声器 - letters");
                         return false;
                     }
                     messages.add(message);

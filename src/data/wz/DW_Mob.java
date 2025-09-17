@@ -19,7 +19,7 @@
 package data.wz;
 
 import config.Content;
-import debug.Debug;
+import debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,7 +104,7 @@ public class DW_Mob {
                         }
                         map_QuestCountGroup.put(id, z);
                     } else {
-                        Debug.ErrorLog("null questcountgroup");
+                        DebugLogger.ErrorLog("null questcountgroup");
                     }
                 }
             }

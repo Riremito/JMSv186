@@ -31,7 +31,7 @@ import client.status.MonsterStatusEffect;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import debug.Debug;
+import debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -111,7 +111,7 @@ public class ReqCSummonedPool {
             }
         }
 
-        Debug.ErrorLog("Not coded: " + cp.GetOpcodeName());
+        DebugLogger.ErrorLog("Not coded: " + cp.GetOpcodeName());
         return false;
     }
 

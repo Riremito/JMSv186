@@ -20,7 +20,7 @@ import data.wz.DW_Character;
 import data.wz.DW_Etc;
 import data.wz.DW_Item;
 import data.wz.DW_String;
-import debug.Debug;
+import debug.DebugLogger;
 import provider.MapleData;
 import provider.MapleDataTool;
 import tools.Pair;
@@ -200,7 +200,7 @@ public class MapleItemInformationProvider {
         }
 
         //dlt.End();
-        Debug.ErrorLog("getItemData : " + id);
+        DebugLogger.ErrorLog("getItemData : " + id);
         return null;
     }
 

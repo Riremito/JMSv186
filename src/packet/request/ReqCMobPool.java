@@ -7,7 +7,7 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import data.wz.DW_Skill;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.channel.handler.MobHandler;
 import packet.ClientPacket;
 import packet.request.parse.ParseCMovePath;
@@ -142,7 +142,7 @@ public class ReqCMobPool {
             cp.Decode4();
 
             if (ffddcc_1 != 0x00FFDDCC || ffddcc_2 != 0x00FFDDCC) {
-                Debug.DebugLog("0x00FFDDCC... " + String.format("08X", ffddcc_1) + " | " + String.format("08X", ffddcc_2));
+                DebugLogger.DebugLog("0x00FFDDCC... " + String.format("08X", ffddcc_1) + " | " + String.format("08X", ffddcc_2));
             }
         }
 

@@ -51,7 +51,7 @@ import data.wz.DW_Reactor;
 import data.wz.DW_String;
 import data.wz.DW_String.DropMonsterBook;
 import database.DatabaseConnection;
-import debug.Debug;
+import debug.DebugLogger;
 import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.PartyOperation;
@@ -1501,7 +1501,7 @@ public final class MapleMap {
     }
 
     public final void spawnDoor(final MapleDoor door) {
-        Debug.DebugLog("Spawn Door : " + door.getMapId());
+        DebugLogger.DebugLog("Spawn Door : " + door.getMapId());
         spawnAndAddRangedMapObject(door, new DelayedPacketCreation() {
 
             public final void sendPackets(MapleClient c) {
@@ -1796,7 +1796,7 @@ public final class MapleMap {
             if (item.getOwner() == chr.getId()) {
                 item.setPickedUp(true);
 
-                Debug.DebugLog("PICKUP REVER");
+                DebugLogger.DebugLog("PICKUP REVER");
                 broadcastMessage(ResCDropPool.DropLeaveField(item, LeaveType.PICK_UP, chr, 0), item.getPosition());
                 if (item.getMeso() > 0) {
                     chr.gainMeso(item.getMeso(), false);
@@ -2662,11 +2662,11 @@ public final class MapleMap {
     }
 
     public MapleDynamicPortal findDynamicPortalLink(int map_id_to) {
-        Debug.InfoLog("findDynamicPortalLink map_id_to" + map_id_to);
+        DebugLogger.InfoLog("findDynamicPortalLink map_id_to" + map_id_to);
         for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
             MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
 
-            Debug.InfoLog("findDynamicPortalLink obj_to" + dynamic_portal.getMapID());
+            DebugLogger.InfoLog("findDynamicPortalLink obj_to" + dynamic_portal.getMapID());
             if (dynamic_portal.getMapID() == map_id_to) {
                 return dynamic_portal;
             }

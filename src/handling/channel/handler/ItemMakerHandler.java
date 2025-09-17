@@ -31,7 +31,7 @@ import client.SkillFactory;
 import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import constants.GameConstants;
-import debug.Debug;
+import debug.DebugLogger;
 import packet.ClientPacket;
 import packet.ops.OpsUserEffect;
 import packet.response.ResCUserRemote;
@@ -133,26 +133,26 @@ public class ItemMakerHandler {
                 if (GameConstants.isGem(toCreate)) {
                     final GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(toCreate);
                     if (gem == null) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 1");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 1");
                         return false;
                     }
                     if (!hasSkill(c, gem.getReqSkillLevel())) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 2");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 2");
                         return false;
                     }
                     if (chr.getMeso() < gem.getCost()) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 3");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 3");
                         return false;
                     }
                     final int randGemGiven = getRandomGem(gem.getRandomReward());
 
                     if (c.getPlayer().getInventory(GameConstants.getInventoryType(randGemGiven)).isFull()) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 4");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 4");
                         return false;
                     }
                     final int taken = checkRequiredNRemove(c, gem.getReqRecipes());
                     if (taken == 0) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 5");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 5");
                         return false;
                     }
 
@@ -166,24 +166,24 @@ public class ItemMakerHandler {
                 if (GameConstants.isOtherGem(toCreate)) {
                     final GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(toCreate);
                     if (gem == null) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 6");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 6");
                         return false;
                     }
                     if (!hasSkill(c, gem.getReqSkillLevel())) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 7");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 7");
                         return false;
                     }
                     if (chr.getMeso() < gem.getCost()) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 8");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 8");
                         return false;
                     }
 
                     if (chr.getInventory(GameConstants.getInventoryType(toCreate)).isFull()) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 9");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 9");
                         return false;
                     }
                     if (checkRequiredNRemove(c, gem.getReqRecipes()) == 0) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 10");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 10");
                         return false;
                     }
 
@@ -205,27 +205,27 @@ public class ItemMakerHandler {
 
                     final ItemMakerCreateEntry create = ItemMakerFactory.getInstance().getCreateInfo(toCreate);
                     if (create == null) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 11");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 11");
                         return false;
                     }
                     if (numEnchanter > create.getTUC()) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 12");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 12");
                         return false;
                     }
                     if (!hasSkill(c, create.getReqSkillLevel())) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 13");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 13");
                         return false;
                     }
                     if (chr.getMeso() < create.getCost()) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 14");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 14");
                         return false;
                     }
                     if (chr.getInventory(GameConstants.getInventoryType(toCreate)).isFull()) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 15");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 15");
                         return false;
                     }
                     if (checkRequiredNRemove(c, create.getReqItems()) == 0) {
-                        Debug.ErrorLog("RECIPE_CLASS_NORMAL : 16");
+                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 16");
                         return false;
                     }
 
@@ -261,7 +261,7 @@ public class ItemMakerHandler {
                 int etc = cp.Decode4();
 
                 if (!chr.haveItem(etc, 100, false, true)) {
-                    Debug.ErrorLog("RECIPE_CLASS_MONSTER_CRYSTAL");
+                    DebugLogger.ErrorLog("RECIPE_CLASS_MONSTER_CRYSTAL");
                     return false;
                 }
                 MapleInventoryManipulator.addById(c, getCreateCrystal(etc), (short) 1);
@@ -279,7 +279,7 @@ public class ItemMakerHandler {
 
                 final IItem toUse = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) slot);
                 if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1) {
-                    Debug.ErrorLog("RECIPE_CLASS_EQUIP_DISASSEMBLE");
+                    DebugLogger.ErrorLog("RECIPE_CLASS_EQUIP_DISASSEMBLE");
                     return false;
                 }
 
@@ -296,7 +296,7 @@ public class ItemMakerHandler {
                 return true;
             }
             default: {
-                Debug.ErrorLog("OnItemMakeRequest : not coded.");
+                DebugLogger.ErrorLog("OnItemMakeRequest : not coded.");
                 break;
             }
         }

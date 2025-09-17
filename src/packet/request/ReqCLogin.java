@@ -36,7 +36,7 @@ import data.wz.ids.DWI_Validation;
 import database.query.DQ_Accounts;
 import database.query.DQ_Character_slots;
 import database.query.DQ_Characters;
-import debug.Debug;
+import debug.DebugLogger;
 import debug.DebugUser;
 import handling.channel.ChannelServer;
 import handling.login.LoginServer;
@@ -63,7 +63,7 @@ public class ReqCLogin {
             // CClientSocket::OnCheckPassword
             case CP_CheckPassword: {
                 if (OnCheckPassword(cp, c)) {
-                    Debug.InfoLog("[LOGIN MAPLEID] \"" + c.getMapleId() + "\"");
+                    DebugLogger.InfoLog("[LOGIN MAPLEID] \"" + c.getMapleId() + "\"");
                     if (ContentState.CS_NETCAFE.get()) {
                         c.SendPacket(ResCClientSocket.AuthenMessage());
                     }
@@ -174,12 +174,12 @@ public class ReqCLogin {
         if (maple_id.length() >= 5 && maple_id.endsWith("_")) {
             maple_id = maple_id.substring(0, maple_id.length() - 1);
             endwith_ = true;
-            Debug.InfoLog("[FEMALE MODE] \"" + maple_id + "\"");
+            DebugLogger.InfoLog("[FEMALE MODE] \"" + maple_id + "\"");
         }
         if (DeveloperMode.DM_GM_ACCOUNT.get()) {
             if (maple_id.startsWith("GM")) {
                 startwith_GM = true;
-                Debug.InfoLog("[GM MODE] \"" + maple_id + "\"");
+                DebugLogger.InfoLog("[GM MODE] \"" + maple_id + "\"");
             }
         }
         c.setMapleId(maple_id);
@@ -384,14 +384,14 @@ public class ReqCLogin {
             if ((dice_str + dice_dex + dice_int + dice_luk) != 25
                     || dice_str < 4 || dice_str < 4 || dice_dex < 4 || dice_int < 4 || dice_luk < 4
                     || 12 < dice_str || 12 < dice_dex || 12 < dice_int || 12 < dice_luk) {
-                Debug.DebugLog("dice error");
+                DebugLogger.DebugLog("dice error");
                 c.SendPacket(ResCLogin.addNewCharEntry(null, false));
                 return false;
             }
         }
         // data check
         if (!DWI_Validation.isValidFaceID(face_id) || !DWI_Validation.isValidHairID(hair_id)) {
-            Debug.DebugLog("Character creation error");
+            DebugLogger.DebugLog("Character creation error");
             c.SendPacket(ResCLogin.addNewCharEntry(null, false));
             return false;
         }
@@ -435,7 +435,7 @@ public class ReqCLogin {
 
     public static boolean SetDefaultEquip(MapleCharacter newchar, int item_id) {
         if (!DWI_Validation.isValidItemID(item_id)) {
-            Debug.ErrorLog("SetDefaultEquip, item_id = " + item_id);
+            DebugLogger.ErrorLog("SetDefaultEquip, item_id = " + item_id);
             return false;
         }
 
@@ -443,7 +443,7 @@ public class ReqCLogin {
         MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
         IItem item = miip.getEquipById(item_id);
         OpsBodyPart bodypart = OpsBodyPart.get_bodypart_from_item(item_id);
-        Debug.DebugLog("SetDefaultEquip, item_id = " + item_id + ", slot = " + -bodypart.get());
+        DebugLogger.DebugLog("SetDefaultEquip, item_id = " + item_id + ", slot = " + -bodypart.get());
         item.setPosition((short) -bodypart.get());
         mv_equipped.addFromDB(item);
         return true;

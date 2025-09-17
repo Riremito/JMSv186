@@ -21,7 +21,7 @@ package database.query;
 import client.MapleCharacter;
 import client.MapleClient;
 import database.DatabaseConnection;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.world.World;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,7 +54,7 @@ public class DQ_Characters {
             rs.close();
             ps.close();
         } catch (SQLException e) {
-            Debug.DBErrorLog(DB_TABLE_NAME, "getCharatcerIds");
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "getCharatcerIds");
         }
         return character_ids;
     }
@@ -77,7 +77,7 @@ public class DQ_Characters {
             ps.close();
             return id;
         } catch (SQLException e) {
-            Debug.DBErrorLog(DB_TABLE_NAME, "getIdByName");
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "getIdByName");
         }
 
         return -1;
@@ -93,14 +93,14 @@ public class DQ_Characters {
             if (!rs.next()) {
                 rs.close();
                 ps.close();
-                Debug.ErrorLog("deleteCharacter : 1");
+                DebugLogger.ErrorLog("deleteCharacter : 1");
                 return true;
             }
             if (rs.getInt("guildid") > 0) { // is in a guild when deleted
                 if (rs.getInt("guildrank") == 1) { //cant delete when leader
                     rs.close();
                     ps.close();
-                    Debug.ErrorLog("deleteCharacter : 2");
+                    DebugLogger.ErrorLog("deleteCharacter : 2");
                     return false;
                 }
                 World.Guild.deleteGuildCharacter(rs.getInt("guildid"), character_id);
@@ -135,7 +135,7 @@ public class DQ_Characters {
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryslot WHERE characterid = ?", character_id);
             return true;
         } catch (Exception e) {
-            Debug.DBErrorLog(DB_TABLE_NAME, "deleteCharacter");
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteCharacter");
         }
         return false;
     }

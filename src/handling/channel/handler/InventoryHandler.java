@@ -36,7 +36,7 @@ import client.PlayerStats;
 import constants.GameConstants;
 import client.SkillFactory;
 import config.ServerConfig;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.world.MaplePartyCharacter;
 import handling.world.World;
 import java.awt.Rectangle;
@@ -844,7 +844,7 @@ public class InventoryHandler {
         final MapleMapObject object = chr.getMap().getMapObject(object_id, MapleMapObjectType.ITEM);
 
         if (object == null) {
-            Debug.ErrorLog("PickUp : item null");
+            DebugLogger.ErrorLog("PickUp : item null");
             return false;
         }
 
@@ -853,15 +853,15 @@ public class InventoryHandler {
         lock.lock();
         try {
             if (mapitem.isPickedUp()) {
-                Debug.ErrorLog("PickUp : isPickedUp");
+                DebugLogger.ErrorLog("PickUp : isPickedUp");
                 return false;
             }
             if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
-                Debug.ErrorLog("PickUp : getOwner");
+                DebugLogger.ErrorLog("PickUp : getOwner");
                 return false;
             }
             if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwner() != chr.getId() && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwner()) == null)) {
-                Debug.ErrorLog("PickUp : isPlayerDrop");
+                DebugLogger.ErrorLog("PickUp : isPlayerDrop");
                 return false;
             }
 
@@ -890,21 +890,21 @@ public class InventoryHandler {
 
             // item
             if (MapleItemInformationProvider.getInstance().isPickupBlocked(mapitem.getItem().getItemId())) {
-                Debug.ErrorLog("PickUp : isPickupBlocked");
+                DebugLogger.ErrorLog("PickUp : isPickupBlocked");
                 return false;
             }
             if (useItem(chr.getClient(), mapitem.getItemId())) {
                 removeItem(chr, mapitem, object);
-                Debug.InfoLog("PickUp : useItem");
+                DebugLogger.InfoLog("PickUp : useItem");
                 return true;
             }
             if (!MapleInventoryManipulator.checkSpace(chr.getClient(), mapitem.getItem().getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
                 chr.SendPacket(ResWrapper.getShowInventoryFull());
-                Debug.ErrorLog("PickUp : checkSpace");
+                DebugLogger.ErrorLog("PickUp : checkSpace");
                 return false;
             }
             if (!MapleInventoryManipulator.addFromDrop(chr.getClient(), mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster)) {
-                Debug.ErrorLog("PickUp : addFromDrop");
+                DebugLogger.ErrorLog("PickUp : addFromDrop");
                 return false;
             }
             removeItem(chr, mapitem, object);

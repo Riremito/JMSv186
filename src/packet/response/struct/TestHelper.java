@@ -27,7 +27,7 @@ import client.inventory.MapleInventoryType;
 import config.Region;
 import config.Version;
 import constants.GameConstants;
-import debug.Debug;
+import debug.DebugLogger;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import server.shops.AbstractPlayerStore;
@@ -117,7 +117,7 @@ public class TestHelper {
             mplew.write(DataGW_ItemSlotBase.Encode(item));
             return;
         }
-        Debug.ErrorLog("!!! addItemInfo, old");
+        DebugLogger.ErrorLog("!!! addItemInfo, old");
         addItemInfo(mplew, item, zeroPosition, leaveOut, false);
     }
 

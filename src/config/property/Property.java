@@ -18,7 +18,7 @@
  */
 package config.property;
 
-import debug.Debug;
+import debug.DebugLogger;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -70,39 +70,39 @@ public class Property {
 
     public static boolean initAll() {
         if (!Property_Java.setPath()) {
-            Debug.ErrorLog("Invalid wz_xml or scripts dir.");
+            DebugLogger.ErrorLog("Invalid wz_xml or scripts dir.");
             return false;
         }
         if (!Property_Database.init()) {
-            Debug.ErrorLog("Property_Database");
+            DebugLogger.ErrorLog("Property_Database");
             return false;
         }
         if (!Property_Login.init()) {
-            Debug.ErrorLog("Property_Login");
+            DebugLogger.ErrorLog("Property_Login");
             return false;
         }
         if (!Property_Shop.init()) {
-            Debug.ErrorLog("Property_Shop");
+            DebugLogger.ErrorLog("Property_Shop");
             return false;
         }
         if (!Property_World.init()) {
-            Debug.ErrorLog("Property_World");
+            DebugLogger.ErrorLog("Property_World");
             return false;
         }
         if (!Property_Dummy_World.init()) {
-            Debug.ErrorLog("Property_Dummy_World");
+            DebugLogger.ErrorLog("Property_Dummy_World");
             return false;
         }
         if (!Property_Pachinko.init()) {
-            Debug.ErrorLog("Property_Pachinko");
+            DebugLogger.ErrorLog("Property_Pachinko");
             return false;
         }
         if (!Property_Packet.init()) {
-            Debug.ErrorLog("Property_Packet is not loaded.");
+            DebugLogger.ErrorLog("Property_Packet is not loaded.");
             // allow to run without loading packet header values.
         }
         if (!Property_Debug.init()) {
-            Debug.ErrorLog("Property_Debug is not loaded.");
+            DebugLogger.ErrorLog("Property_Debug is not loaded.");
             // dev mode off
         }
         return true;

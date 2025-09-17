@@ -20,7 +20,7 @@ package data.wz;
 
 import client.inventory.PetCommand;
 import config.Content;
-import debug.Debug;
+import debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -75,12 +75,12 @@ public class DW_Item {
                 if (mdfe.getName().equals(target_img_name)) {
                     MapleData md_item_sub_type = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
                     if (md_item_sub_type == null) {
-                        Debug.ErrorLog("getItemData : Invalid item type = " + item_sub_type);
+                        DebugLogger.ErrorLog("getItemData : Invalid item type = " + item_sub_type);
                         return null;
                     }
                     MapleData md_item = md_item_sub_type.getChildByPath(target_dir_name);
                     if (md_item == null) {
-                        Debug.ErrorLog("getItemData : Invalid item id = " + id);
+                        DebugLogger.ErrorLog("getItemData : Invalid item id = " + id);
                         return null;
                     }
                     return md_item;
@@ -88,7 +88,7 @@ public class DW_Item {
             }
         }
 
-        Debug.ErrorLog("getItemData : err item id " + id);
+        DebugLogger.ErrorLog("getItemData : err item id " + id);
         return null;
     }
 
@@ -109,7 +109,7 @@ public class DW_Item {
                 if (mdfe.getName().equals(target_img_name)) {
                     MapleData md_item_sub_type = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
                     if (md_item_sub_type == null) {
-                        Debug.ErrorLog("getItemImg : Invalid item type = " + item_sub_type);
+                        DebugLogger.ErrorLog("getItemImg : Invalid item type = " + item_sub_type);
                         return null;
                     }
                     return md_item_sub_type;
@@ -117,7 +117,7 @@ public class DW_Item {
             }
         }
 
-        Debug.ErrorLog("getItemImg : err item_sub_type " + item_sub_type);
+        DebugLogger.ErrorLog("getItemImg : err item_sub_type " + item_sub_type);
         return null;
     }
 
@@ -134,17 +134,17 @@ public class DW_Item {
                     if (mdfe.getName().equals(target_img_name)) {
                         MapleData md_pet = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
                         if (md_pet == null) {
-                            Debug.ErrorLog("getItemData_Pet : Invalid pet id 1 = " + id);
+                            DebugLogger.ErrorLog("getItemData_Pet : Invalid pet id 1 = " + id);
                             return null;
                         }
                         return md_pet;
                     }
                 }
-                Debug.ErrorLog("getItemData_Pet : Invalid pet id 2 = " + id);
+                DebugLogger.ErrorLog("getItemData_Pet : Invalid pet id 2 = " + id);
                 return null;
             }
         }
-        Debug.ErrorLog("getItemData_Pet : Invalid pet id 3 = " + id);
+        DebugLogger.ErrorLog("getItemData_Pet : Invalid pet id 3 = " + id);
         return null;
     }
 

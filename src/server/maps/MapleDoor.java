@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import client.MapleCharacter;
 import client.MapleClient;
-import debug.Debug;
+import debug.DebugLogger;
 import java.lang.ref.WeakReference;
 import packet.response.ResCTownPortalPool;
 import server.MaplePortal;
@@ -111,7 +111,7 @@ public class MapleDoor extends AbstractMapleMapObject {
         for (final MaplePortal port : map_town.getPortals()) {
             if (port.getType() == MaplePortal.DOOR_PORTAL) {
                 freePortals.add(port);
-                Debug.DebugLog("MYSTIC = " + (byte) port.getId());
+                DebugLogger.DebugLog("MYSTIC = " + (byte) port.getId());
             }
         }
         // already used

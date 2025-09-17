@@ -19,7 +19,7 @@
 package data.wz;
 
 import config.property.Property_Java;
-import debug.Debug;
+import debug.DebugLogger;
 import java.io.File;
 import provider.MapleData;
 import provider.MapleDataProvider;
@@ -43,13 +43,13 @@ public class DataWz {
     }
 
     private void setWzRoot(String name) {
-        Debug.XmlLog("setWzRoot = " + name);
+        DebugLogger.XmlLog("setWzRoot = " + name);
         this.name = name;
         this.wz_root = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/" + name));
     }
 
     public MapleData loadData(String path) {
-        Debug.XmlLog("loadData = " + this.name + "/" + path);
+        DebugLogger.XmlLog("loadData = " + this.name + "/" + path);
         return this.wz_root.getData(path);
     }
 }

@@ -61,7 +61,6 @@ import data.client.DC_Exp;
 import data.wz.ids.DWI_Validation;
 import database.DatabaseConnection;
 import database.DatabaseException;
-import debug.Debug;
 import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.CharacterTransfer;
@@ -150,6 +149,7 @@ import tools.FileoutputUtil;
 import server.network.MockIOSession;
 import data.wz.ids.DWI_Dafault;
 import database.query.DQ_Accounts;
+import debug.DebugLogger;
 import debug.DebugShop;
 import debug.IDebugMan;
 import handling.cashshop.CashShopServer;
@@ -667,7 +667,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
                 for (Pair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(false, charid).values()) {
                     if (!DWI_Validation.isValidItemID(mit.getLeft().getItemId())) {
-                        Debug.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
+                        DebugLogger.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
                         continue;
                     }
                     ret.getInventory(mit.getRight()).addFromDB(mit.getLeft());
@@ -961,7 +961,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ps.close();
             rs.close();
 
-            Debug.InfoLog("[NEW CHARACTER] \"" + chr.name + "\"");
+            DebugLogger.InfoLog("[NEW CHARACTER] \"" + chr.name + "\"");
 
             ps = con.prepareStatement("INSERT INTO queststatus (`queststatusid`, `characterid`, `quest`, `status`, `time`, `forfeited`, `customData`) VALUES (DEFAULT, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
             pse = con.prepareStatement("INSERT INTO queststatusmobs VALUES (DEFAULT, ?, ?, ?)");
@@ -1239,7 +1239,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     ps.setLong(5, skill.getValue().expiration);
                     ps.execute();
                 } else {
-                    Debug.ErrorLog("ApplicableSkill : error = " + skill.getKey().getId());
+                    DebugLogger.ErrorLog("ApplicableSkill : error = " + skill.getKey().getId());
                 }
             }
             ps.close();
@@ -1347,11 +1347,11 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             con.commit();
         } catch (Exception e) {
             e.printStackTrace();
-            Debug.ExceptionLog("[charsave] Error saving character data");
+            DebugLogger.ExceptionLog("[charsave] Error saving character data");
             try {
                 con.rollback();
             } catch (SQLException ex) {
-                Debug.ExceptionLog("[charsave] Error Rolling Back");
+                DebugLogger.ExceptionLog("[charsave] Error Rolling Back");
             }
         } finally {
             try {
@@ -1367,7 +1367,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 con.setAutoCommit(true);
                 con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
             } catch (SQLException e) {
-                Debug.ExceptionLog("[charsave] Error going back to autocommit mode");
+                DebugLogger.ExceptionLog("[charsave] Error going back to autocommit mode");
             }
         }
     }
@@ -2224,7 +2224,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void setSkinColor(byte skinColor) {
         if (!DWI_Validation.isValidSkinID(skinColor)) {
-            Debug.ErrorLog("Invalid skin id : " + skinColor);
+            DebugLogger.ErrorLog("Invalid skin id : " + skinColor);
             this.skinColor = DWI_Dafault.SKIN;
             return;
         }
@@ -2262,7 +2262,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void setHair(int hair) {
         if (!DWI_Validation.isValidHairID(hair)) {
-            Debug.ErrorLog("Invalid hair id : " + hair);
+            DebugLogger.ErrorLog("Invalid hair id : " + hair);
             this.hair = DWI_Dafault.HAIR;
             return;
         }
@@ -2271,7 +2271,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void setFace(int face) {
         if (!DWI_Validation.isValidFaceID(face)) {
-            Debug.ErrorLog("Invalid face id : " + face);
+            DebugLogger.ErrorLog("Invalid face id : " + face);
             this.face = DWI_Dafault.FACE;
             return;
         }
@@ -2325,7 +2325,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void setJob(int job) {
         if (!DWI_Validation.isValidJobID(job)) {
-            Debug.ErrorLog("Invalid job id : " + job);
+            DebugLogger.ErrorLog("Invalid job id : " + job);
             this.job = DWI_Dafault.JOB;
             return;
         }
@@ -2615,7 +2615,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void changeSkillLevel(final ISkill skill, byte newLevel, byte newMasterlevel, long expiration) {
         if (skill == null || (!GameConstants.isApplicableSkill(skill.getId()) && !GameConstants.isApplicableSkill_(skill.getId()))) {
-            Debug.ErrorLog("changeSkillLevel : error = " + skill.getId());
+            DebugLogger.ErrorLog("changeSkillLevel : error = " + skill.getId());
             return;
         }
         client.getSession().write(ResCWvsContext.updateSkill(skill.getId(), newLevel, newMasterlevel, expiration));
@@ -4219,7 +4219,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
 
             diseases.put(disease, new MapleDiseaseValueHolder(disease, System.currentTimeMillis(), duration));
-            Debug.ErrorLog("debuff");
+            DebugLogger.ErrorLog("debuff");
             //client.getSession().write(ResCWvsContext.giveDebuff(debuff, skillid, level, (int) duration));
             //map.broadcastMessage(this, ResCUserRemote.giveForeignDebuff(id, debuff, skillid, level), false);
         }
@@ -4237,7 +4237,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (hasDisease(debuff)) {
             long mask = debuff.getValue();
             boolean first = debuff.isFirst();
-            Debug.ErrorLog("dispelDebuff");
+            DebugLogger.ErrorLog("dispelDebuff");
             //client.getSession().write(ResCWvsContext.cancelDebuff(mask, first));
             //map.broadcastMessage(this, ResCUserRemote.cancelForeignDebuff(id, mask, first), false);
 
@@ -4637,7 +4637,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void Notice(String text) {
-        Debug.DebugLog("Notice");
+        DebugLogger.DebugLog("Notice");
         client.getSession().write(ResWrapper.BroadCastMsgEvent(text));
     }
 
@@ -6149,7 +6149,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             }
             this.setMessenger(null);
         } catch (final Throwable e) {
-            Debug.ErrorLog("removalTask");
+            DebugLogger.ErrorLog("removalTask");
         }
     }
 

@@ -32,7 +32,7 @@ import config.ServerConfig;
 import config.Version;
 import constants.GameConstants;
 import data.client.DC_Date;
-import debug.Debug;
+import debug.DebugLogger;
 import server.network.MaplePacket;
 import handling.channel.MapleGuildRanking;
 import handling.world.MapleParty;
@@ -292,7 +292,7 @@ public class ResCWvsContext {
                         break;
                     }
                     default: {
-                        Debug.ErrorLog("Unknown DropPickUp Type" + ma.dt.get());
+                        DebugLogger.ErrorLog("Unknown DropPickUp Type" + ma.dt.get());
                         break;
                     }
                 }
@@ -316,7 +316,7 @@ public class ResCWvsContext {
                         break;
                     }
                     default: {
-                        Debug.ErrorLog("Unknown QuestRecord Type" + ma.dt.get());
+                        DebugLogger.ErrorLog("Unknown QuestRecord Type" + ma.dt.get());
                         break;
                     }
                 }
@@ -1815,7 +1815,7 @@ public class ResCWvsContext {
                 break;
             }
             default: {
-                Debug.ErrorLog("FriendResult not coded : " + frs.flag);
+                DebugLogger.ErrorLog("FriendResult not coded : " + frs.flag);
                 break;
             }
         }

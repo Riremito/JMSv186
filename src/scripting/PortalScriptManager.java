@@ -36,7 +36,7 @@ import javax.script.ScriptEngineManager;
 
 import client.MapleClient;
 import config.property.Property_Java;
-import debug.Debug;
+import debug.DebugLogger;
 import server.MaplePortal;
 import tools.FileoutputUtil;
 
@@ -96,14 +96,14 @@ public class PortalScriptManager {
         chr.DebugMsg(text);
 
         if (script == null) {
-            Debug.ErrorLog(text);
+            DebugLogger.ErrorLog(text);
             return false;
         }
 
         try {
             script.enter(new PortalPlayerInteraction(c, portal));
         } catch (Exception e) {
-            Debug.ExceptionLog(text);
+            DebugLogger.ExceptionLog(text);
             return false;
         }
 

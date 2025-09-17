@@ -24,7 +24,7 @@ import client.Skill;
 import static client.SkillFactory.getName;
 import client.SummonSkillEntry;
 import config.Content;
-import debug.Debug;
+import debug.DebugLogger;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,7 +107,7 @@ public class DW_Skill {
                                 try {
                                     skill_name = getName(skillid);
                                 } catch (RuntimeException e) {
-                                    Debug.ErrorLog("" + skillid);
+                                    DebugLogger.ErrorLog("" + skillid);
                                 }
                                 skil.setName(skill_name);
                                 map_Skill.put(skillid, skil);
@@ -236,7 +236,7 @@ public class DW_Skill {
                 mobSkillID = MapleDataTool.getInt("mobSkillID", md, 0);
             } catch (NumberFormatException e) {
                 // MCSkill.img/4/mobSkillID
-                Debug.ErrorLog("MCSkill.img/" + md.getName() + "/mobSkillID");
+                DebugLogger.ErrorLog("MCSkill.img/" + md.getName() + "/mobSkillID");
                 continue;
             }
             map_MCSkill.put(Integer.parseInt(md.getName()), new MapleCarnivalFactory.MCSkill(MapleDataTool.getInt("spendCP", md, 0), mobSkillID, MapleDataTool.getInt("level", md, 0), MapleDataTool.getInt("target", md, 1) > 1));

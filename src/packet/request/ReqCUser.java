@@ -39,7 +39,7 @@ import config.Version;
 import constants.GameConstants;
 import constants.ServerConstants;
 import data.client.DC_Exp;
-import debug.Debug;
+import debug.DebugLogger;
 import debug.DebugMan;
 import debug.DebugShop;
 import handling.cashshop.CashShopServer;
@@ -548,7 +548,7 @@ public class ReqCUser {
             }
             case CP_Log: {
                 String text = cp.DecodeStr();
-                Debug.AdminLog("[OnLog] " + text);
+                DebugLogger.AdminLog("[OnLog] " + text);
                 return true;
             }
             case CP_FriendRequest: {
@@ -691,7 +691,7 @@ public class ReqCUser {
         MapleCharacter chr = c.getPlayer();
 
         if (chr == null) {
-            Debug.ErrorLog("character is not online.");
+            DebugLogger.ErrorLog("character is not online.");
             return false;
         }
 
@@ -802,7 +802,7 @@ public class ReqCUser {
             }
         }
 
-        Debug.ErrorLog("OnUserTransferFieldRequest : map_to = " + map_id + ", portal = \"" + portal_name + "\"");
+        DebugLogger.ErrorLog("OnUserTransferFieldRequest : map_to = " + map_id + ", portal = \"" + portal_name + "\"");
         chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
         return false;
     }
@@ -980,7 +980,7 @@ public class ReqCUser {
 
         if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
             if (allDamageNumbers != null) {
-                Debug.DebugLog(cp.GetOpcodeName() + ": damage = " + allDamageNumbers);
+                DebugLogger.DebugLog(cp.GetOpcodeName() + ": damage = " + allDamageNumbers);
             }
         }
 
@@ -998,7 +998,7 @@ public class ReqCUser {
                 damage = cp.Decode4();
 
                 if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                    Debug.DebugLog(cp.GetOpcodeName() + ": damage = " + damage);
+                    DebugLogger.DebugLog(cp.GetOpcodeName() + ": damage = " + damage);
                 }
                 ret.allDamage.add(new AttackPair(Integer.valueOf(damage), null));
                 cp.Decode1();
@@ -1022,7 +1022,7 @@ public class ReqCUser {
                 damage = cp.Decode4();
 
                 if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                    Debug.DebugLog(cp.GetOpcodeName() + ": damage = " + damage);
+                    DebugLogger.DebugLog(cp.GetOpcodeName() + ": damage = " + damage);
                 }
                 allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false)); //m.e. never crits
             }
@@ -1040,7 +1040,7 @@ public class ReqCUser {
             damage = cp.Decode4();
 
             if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                Debug.DebugLog(cp.GetOpcodeName() + ": damage = " + damage);
+                DebugLogger.DebugLog(cp.GetOpcodeName() + ": damage = " + damage);
             }
             ret.allDamage.add(new AttackPair(Integer.valueOf(damage), null));
             cp.Decode2();
@@ -1224,7 +1224,7 @@ public class ReqCUser {
             }
         }
 
-        Debug.ErrorLog("OnShopScannerRequest : not coded " + req);
+        DebugLogger.ErrorLog("OnShopScannerRequest : not coded " + req);
         return false;
     }
 
@@ -1236,7 +1236,7 @@ public class ReqCUser {
 
         IItem item_used = chr.getInventory(MapleInventoryType.USE).getItem(owl_slot);
         if (item_used == null || item_used.getItemId() != 2310000) {
-            Debug.ErrorLog("OnUserShopScannerItemUseRequest : invalid owl.");
+            DebugLogger.ErrorLog("OnUserShopScannerItemUseRequest : invalid owl.");
             return false;
         }
         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, owl_item_id, 1, true, false);
@@ -1274,7 +1274,7 @@ public class ReqCUser {
                 break;
             }
             default: {
-                Debug.ErrorLog("OnUserMapTransferItemUseRequest : not coded " + cmd);
+                DebugLogger.ErrorLog("OnUserMapTransferItemUseRequest : not coded " + cmd);
                 break;
             }
         }
@@ -1910,7 +1910,7 @@ public class ReqCUser {
         final ISkill skill = SkillFactory.getSkill(skill_id);
         if (skill.hasRequiredSkill()) {
             if (chr.getSkillLevel(SkillFactory.getSkill(skill.getRequiredSkillId())) < skill.getRequiredSkillLevel()) {
-                Debug.ErrorLog("Use SP 1 = " + skill_id);
+                DebugLogger.ErrorLog("Use SP 1 = " + skill_id);
                 return false;
             }
         }
@@ -1918,14 +1918,14 @@ public class ReqCUser {
         final int curLevel = chr.getSkillLevel(skill);
         if (skill.isInvisible() && chr.getSkillLevel(skill) == 0) {
             if ((skill.isFourthJob() && chr.getMasterLevel(skill) == 0) || (!skill.isFourthJob() && maxlevel < 10 && !isBeginnerSkill)) {
-                Debug.ErrorLog("Use SP 2 = " + skill_id);
+                DebugLogger.ErrorLog("Use SP 2 = " + skill_id);
                 return false;
             }
         }
         for (int i : GameConstants.blockedSkills) {
             if (skill.getId() == i) {
                 chr.dropMessage(1, "You may not add this skill.");
-                Debug.ErrorLog("Use SP 3 = " + skill_id);
+                DebugLogger.ErrorLog("Use SP 3 = " + skill_id);
                 return false;
             }
         }
@@ -1943,7 +1943,7 @@ public class ReqCUser {
             chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
             return true;
         }
-        Debug.ErrorLog("Use SP 4 = " + skill_id);
+        DebugLogger.ErrorLog("Use SP 4 = " + skill_id);
         return false;
     }
 
@@ -2126,7 +2126,7 @@ public class ReqCUser {
                 return true;
             }
             if (slot_from <= -1 && slot_to <= -1) {
-                Debug.ErrorLog("OnUserChangeSlotPositionRequest : user tried moving equipped slot " + slot_from + " -> " + slot_to);
+                DebugLogger.ErrorLog("OnUserChangeSlotPositionRequest : user tried moving equipped slot " + slot_from + " -> " + slot_to);
                 return false;
             }
         }
@@ -2376,7 +2376,7 @@ public class ReqCUser {
             }
         }
 
-        Debug.ErrorLog("OnGroupMessage : not coded = " + type);
+        DebugLogger.ErrorLog("OnGroupMessage : not coded = " + type);
         return false;
     }
 
@@ -2389,7 +2389,7 @@ public class ReqCUser {
                 String player_name = cp.DecodeStr();
 
                 int ch = World.Find.findChannel(player_name);
-                Debug.DebugLog("CH = " + ch);
+                DebugLogger.DebugLog("CH = " + ch);
                 MapleCharacter chr_to = null;
                 // something wrong for cs
                 if (0 < ch) {
@@ -2424,7 +2424,7 @@ public class ReqCUser {
             }
         }
 
-        Debug.ErrorLog("OnWhisper : not coded " + operation);
+        DebugLogger.ErrorLog("OnWhisper : not coded " + operation);
         return false;
     }
 

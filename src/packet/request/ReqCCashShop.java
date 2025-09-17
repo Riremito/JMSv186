@@ -27,7 +27,7 @@ import client.inventory.MapleInventoryType;
 import data.client.DC_Date;
 import data.wz.ids.DWI_Validation;
 import database.query.DQ_Accounts;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.cashshop.CashShopServer;
 import handling.channel.ChannelServer;
 import handling.world.CharacterTransfer;
@@ -52,7 +52,7 @@ public class ReqCCashShop {
     public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
-            Debug.ErrorLog("character is not online (CS).");
+            DebugLogger.ErrorLog("character is not online (CS).");
             return false;
         }
 
@@ -264,7 +264,7 @@ public class ReqCCashShop {
                 return BuyFreeItem(item_SN, c);
             }
             default: {
-                Debug.ErrorLog("OnCashItem not coded : " + type);
+                DebugLogger.ErrorLog("OnCashItem not coded : " + type);
                 break;
             }
         }
@@ -278,13 +278,13 @@ public class ReqCCashShop {
         if (is_maple_point) {
             // Maple Point 残高不足
             if (!chr.checkMaplePoint(price)) {
-                Debug.ErrorLog("BuyCashItem : mp");
+                DebugLogger.ErrorLog("BuyCashItem : mp");
                 return false;
             }
         } else {
             // Nexon Point 残高不足
             if (!chr.checkNexonPoint(price)) {
-                Debug.ErrorLog("BuyCashItem : np");
+                DebugLogger.ErrorLog("BuyCashItem : np");
                 return false;
             }
         }
@@ -307,12 +307,12 @@ public class ReqCCashShop {
         CashItemInfo cashitem = CashItemFactory.getInstance().getItem(item_SN);
 
         if (chr == null) {
-            Debug.ErrorLog("BuyCashItem : chr");
+            DebugLogger.ErrorLog("BuyCashItem : chr");
             return false;
         }
 
         if (cashitem == null) {
-            Debug.ErrorLog("BuyCashItem : Invalid Item");
+            DebugLogger.ErrorLog("BuyCashItem : Invalid Item");
             return false;
         }
 
@@ -327,7 +327,7 @@ public class ReqCCashShop {
             usePoint(chr, use_maple_point, cashitem.getPrice());
             checkBuyDestroy(chr, item.getItemId());
         } else {
-            Debug.ErrorLog("BuyCashItem : ERR");
+            DebugLogger.ErrorLog("BuyCashItem : ERR");
         }
 
         return true;
@@ -343,17 +343,17 @@ public class ReqCCashShop {
         CashItemInfo cashitem = CashItemFactory.getInstance().getItem(item_SN);
 
         if (chr == null) {
-            Debug.ErrorLog("BuyFreeItem : chr");
+            DebugLogger.ErrorLog("BuyFreeItem : chr");
             return false;
         }
 
         if (cashitem == null) {
-            Debug.ErrorLog("BuyFreeItem : Invalid Item");
+            DebugLogger.ErrorLog("BuyFreeItem : Invalid Item");
             return false;
         }
 
         if (chr.getCashInventory().findItem(FREE_COUPON_ITEM_ID) == null) {
-            Debug.ErrorLog("BuyFreeItem : No Free Coupon");
+            DebugLogger.ErrorLog("BuyFreeItem : No Free Coupon");
             return false;
         }
 
@@ -362,7 +362,7 @@ public class ReqCCashShop {
             chr.getCashInventory().addToInventory(item);
             c.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_FreeCashItem_Done, c, new ResCCashShop.CashItemStruct(item)));
         } else {
-            Debug.ErrorLog("BuyFreeItem : ERR");
+            DebugLogger.ErrorLog("BuyFreeItem : ERR");
         }
 
         return true;

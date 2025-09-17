@@ -23,7 +23,7 @@ import client.MapleClient;
 import client.SkillMacro;
 import config.Region;
 import config.Version;
-import debug.Debug;
+import debug.DebugLogger;
 import packet.ClientPacket;
 import packet.ops.OpsFuncKeyMapped;
 import packet.response.ResCFuncKeyMappedMan;
@@ -122,7 +122,7 @@ public class ReqCFuncKeyMappedMan {
                 return true;
             }
             default: {
-                Debug.ErrorLog("OnFuncKeyMappedModified not coded " + funckey_type);
+                DebugLogger.ErrorLog("OnFuncKeyMappedModified not coded " + funckey_type);
                 break;
             }
         }

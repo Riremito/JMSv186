@@ -47,7 +47,7 @@ public class ClientPacket {
         return Header.UNKNOWN;
     }
 
-    public String Packet() {
+    public String get() {
         String text = null;
         if (Content.PacketHeaderSize.getInt() == 2) {
             short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));

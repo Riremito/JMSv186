@@ -7,11 +7,10 @@ import client.inventory.IItem;
 import client.inventory.ItemFlag;
 import client.inventory.MapleInventoryType;
 import constants.GameConstants;
-import debug.Debug;
+import debug.DebugLogger;
 import packet.ClientPacket;
 import packet.ops.OpsTrunk;
 import packet.response.ResCTrunkDlg;
-import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCWvsContext;
 import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
@@ -155,7 +154,7 @@ public class ReqCTrunkDlg {
                 return true;
             }
             default: {
-                Debug.DebugLog("ReqCTrunkDlg : not coded.");
+                DebugLogger.DebugLog("ReqCTrunkDlg : not coded.");
                 break;
             }
         }

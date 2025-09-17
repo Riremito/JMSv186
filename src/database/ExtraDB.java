@@ -19,7 +19,7 @@
 package database;
 
 import client.MapleCharacter;
-import debug.Debug;
+import debug.DebugLogger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +38,7 @@ public class ExtraDB {
     public static final String DATA_PET_CURE = "pet_cure";
 
     public static void loadData(MapleCharacter chr) {
-        Debug.DebugLog("ExtraDB : Load");
+        DebugLogger.DebugLog("ExtraDB : Load");
         ExtraDBData pet_hp = get(chr, DATA_PET_HP);
         if (pet_hp.getOk()) {
             chr.setPetAutoHPItem(pet_hp.getInt());
@@ -54,7 +54,7 @@ public class ExtraDB {
     }
 
     public static void saveData(MapleCharacter chr) {
-        Debug.DebugLog("ExtraDB : Save");
+        DebugLogger.DebugLog("ExtraDB : Save");
         setInt(chr, DATA_PET_HP, chr.getPetAutoHPItem());
         setInt(chr, DATA_PET_MP, chr.getPetAutoMPItem());
         setInt(chr, DATA_PET_CURE, chr.getPetAutoCureItem());

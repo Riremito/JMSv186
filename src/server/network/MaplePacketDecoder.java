@@ -24,7 +24,7 @@ import config.ClientEdit;
 import config.Content;
 import config.Region;
 import config.Version;
-import debug.Debug;
+import debug.DebugLogger;
 
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
@@ -41,19 +41,19 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
 
         int buffer_size = in.remaining();
         if (buffer_size < 2) {
-            Debug.ErrorLog("doDecode_KMSB size error 1");
+            DebugLogger.ErrorLog("doDecode_KMSB size error 1");
             return false;
         }
         int header_version = ((byte) (in.get() ^ key[2] & 0xFF) | (((byte) (in.get() ^ key[3])) << 8) & 0xFF00) & 0xFFFF;
         if (Version.getVersion() != header_version) {
-            Debug.ErrorLog("doDecode_KMSB dc.");
+            DebugLogger.ErrorLog("doDecode_KMSB dc.");
             session.close();
             return false;
         }
 
         buffer_size = in.remaining();
         if (buffer_size < 2) {
-            Debug.ErrorLog("doDecode_KMSB size error 2");
+            DebugLogger.ErrorLog("doDecode_KMSB size error 2");
             in.reset();
             return false;
         }
@@ -61,7 +61,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
         buffer_size = in.remaining();
 
         if (buffer_size < required_size) {
-            Debug.ErrorLog("KMSB size ( " + buffer_size + " / " + required_size + " )");
+            DebugLogger.ErrorLog("KMSB size ( " + buffer_size + " / " + required_size + " )");
             in.reset();
             return false;
         }
@@ -77,7 +77,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
         out.write(packet);
         // warning
         if (required_size < buffer_size) {
-            Debug.InfoLog("KMSB size ( " + buffer_size + " / " + required_size + " )");
+            DebugLogger.InfoLog("KMSB size ( " + buffer_size + " / " + required_size + " )");
         }
 
         int seed = (int) ((key[0] & 0xFF) | (key[1] << 8 & 0xFF00) | (key[2] << 16 & 0xFF0000) | (key[3] << 24 & 0xFF000000) & 0xFFFFFFFF);
@@ -104,7 +104,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
 
         int buffer_size = in.remaining();
         if (buffer_size < 4) {
-            Debug.ErrorLog("doDecode size error");
+            DebugLogger.ErrorLog("doDecode size error");
             return false;
         }
 
@@ -140,7 +140,7 @@ public class MaplePacketDecoder extends CumulativeProtocolDecoder {
             return false;
         }
 
-        Debug.ErrorLog("doDecode dc.");
+        DebugLogger.ErrorLog("doDecode dc.");
         session.close();
         return false;
     }

@@ -19,7 +19,7 @@
 package data.wz;
 
 import config.Content;
-import debug.Debug;
+import debug.DebugLogger;
 import provider.MapleData;
 import provider.MapleDataDirectoryEntry;
 import provider.MapleDataFileEntry;
@@ -56,7 +56,7 @@ public class DW_Character {
                 if (mdfe.getName().equals(target_img_name)) {
                     MapleData md_equip = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
                     if (md_equip == null) {
-                        Debug.ErrorLog("getItemData : Invalid equip id = " + id);
+                        DebugLogger.ErrorLog("getItemData : Invalid equip id = " + id);
                         return null;
                     }
                     return md_equip;
@@ -64,7 +64,7 @@ public class DW_Character {
             }
         }
 
-        Debug.ErrorLog("getItemData : err equip id " + id);
+        DebugLogger.ErrorLog("getItemData : err equip id " + id);
         return null;
     }
 }

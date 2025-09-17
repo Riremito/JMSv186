@@ -21,7 +21,7 @@ package packet.response;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import debug.Debug;
+import debug.DebugLogger;
 import server.network.MaplePacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -48,7 +48,7 @@ public class ResCClientSocket {
             GameServerIP = ip_bytes[0] | (ip_bytes[1] << 8) | (ip_bytes[2] << 16) | (ip_bytes[3] << 24);
         } catch (UnknownHostException ex) {
             GameServerIP = 16777343; // 127.0.0.1
-            Debug.ErrorLog("GameServerIP set to 127.0.0.1");
+            DebugLogger.ErrorLog("GameServerIP set to 127.0.0.1");
         }
         return GameServerIP;
     }

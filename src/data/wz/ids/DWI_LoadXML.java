@@ -19,8 +19,8 @@
 package data.wz.ids;
 
 import config.Content;
-import debug.Debug;
 import debug.DebugLoadTime;
+import debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -83,7 +83,7 @@ public class DWI_LoadXML {
     public static int LoadSkinXMLs(String path, String regex, ArrayList<Integer> list) {
         MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
         if (wz == null) {
-            Debug.ErrorLog("wz path: " + path);
+            DebugLogger.ErrorLog("wz path: " + path);
             return 0;
         }
         Pattern pattern = Pattern.compile(regex);
@@ -114,7 +114,7 @@ public class DWI_LoadXML {
     public static int LoadItemXMLs(String path, ArrayList<Integer> list) {
         MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
         if (wz == null) {
-            Debug.ErrorLog("wz path: " + path);
+            DebugLogger.ErrorLog("wz path: " + path);
             return 0;
         }
         Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
@@ -128,7 +128,7 @@ public class DWI_LoadXML {
                         int id = Integer.parseInt(data.getName());
                         list.add(id);
                     } else {
-                        Debug.DebugLog("invalid item data = " + dir.getName() + " -> " + data.getName());
+                        DebugLogger.DebugLog("invalid item data = " + dir.getName() + " -> " + data.getName());
                     }
                 }
             }
@@ -139,7 +139,7 @@ public class DWI_LoadXML {
     public static int LoadXMLs(String path, String regex, ArrayList<Integer> list) {
         MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
         if (wz == null) {
-            Debug.ErrorLog("wz path: " + path);
+            DebugLogger.ErrorLog("wz path: " + path);
             return 0;
         }
         Pattern pattern = Pattern.compile(regex);
@@ -172,7 +172,7 @@ public class DWI_LoadXML {
     public static int LoadEquipXMLs(String path, ArrayList<Integer> list) {
         MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
         if (wz == null) {
-            Debug.ErrorLog("wz path: " + path);
+            DebugLogger.ErrorLog("wz path: " + path);
             return 0;
         }
         Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
@@ -195,7 +195,7 @@ public class DWI_LoadXML {
         MapleDataProvider wz = MapleDataProviderFactory.getDataProvider("Map.wz/Map");
         Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
         for (MapleDataDirectoryEntry map_dir : wz.getRoot().getSubdirectories()) {
-            Debug.DebugLog("dir = " + map_dir.getName());
+            DebugLogger.DebugLog("dir = " + map_dir.getName());
             for (MapleDataFileEntry dir : map_dir.getFiles()) {
                 Matcher img_matcher = img_pattern.matcher(dir.getName());
                 if (img_matcher.matches()) {
@@ -205,7 +205,7 @@ public class DWI_LoadXML {
                     if (MapleDataTool.getInt("info/town", map_data) != 0) {
                         int map_id_return = MapleDataTool.getInt("info/returnMap", map_data);
                         if (map_id_return == map_id) {
-                            Debug.DebugLog("town mapid = " + map_id);
+                            DebugLogger.DebugLog("town mapid = " + map_id);
                         }
                     }
                 }

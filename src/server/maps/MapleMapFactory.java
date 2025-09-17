@@ -29,7 +29,7 @@ import data.wz.DW_Reactor;
 import data.wz.DW_String;
 import data.wz.ids.DWI_Block;
 import data.wz.ids.DWI_Validation;
-import debug.Debug;
+import debug.DebugLogger;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.HashMap;
@@ -82,17 +82,17 @@ public class MapleMapFactory {
             try {
                 map = maps.get(omapid);
                 if (map != null) {
-                    Debug.DebugLog("getMap : " + mapid + ", cached.");
+                    DebugLogger.DebugLog("getMap : " + mapid + ", cached.");
                     return map;
                 }
-                Debug.DebugLog("getMap : " + mapid + ", not cached.");
+                DebugLogger.DebugLog("getMap : " + mapid + ", not cached.");
 
                 MapleData mapData;
                 try {
                     mapData = DW_Map.getWzRoot().getData(getMapName(mapid));
                 } catch (Exception e) {
                     // 存在しないMapIDが指定された場合は指定MapIDへ強制移動する
-                    Debug.ErrorLog("Invalid MapID = " + mapid);
+                    DebugLogger.ErrorLog("Invalid MapID = " + mapid);
                     mapid = DeveloperMode.DM_ERROR_MAP_ID.getInt();
                     omapid = Integer.valueOf(mapid);
                     mapData = DW_Map.getWzRoot().getData(getMapName(mapid));
@@ -216,7 +216,7 @@ public class MapleMapFactory {
                                         //Debug.DebugLog("Spawn NPC, NPC = " + npc.getName() + " (" + npc_id + "), Map = " + MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(omapid))) + " - " + MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(omapid))) + " (" + mapid + ")");
                                     }
                                 } else {
-                                    Debug.ErrorLog("spawn npc format error: " + mapid);
+                                    DebugLogger.ErrorLog("spawn npc format error: " + mapid);
                                 }
                             }
                         }
@@ -728,7 +728,7 @@ public class MapleMapFactory {
         }
 
         if (!DWI_Validation.isValidMobID(monsterid)) {
-            Debug.ErrorLog("Invalid Mob ID = " + monsterid);
+            DebugLogger.ErrorLog("Invalid Mob ID = " + monsterid);
             return;
         }
 

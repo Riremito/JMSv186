@@ -31,7 +31,7 @@ import config.Version;
 import config.property.Property_Shop;
 import database.ExtraDB;
 import database.query.DQ_Accounts;
-import debug.Debug;
+import debug.DebugLogger;
 import server.network.MaplePacket;
 import handling.channel.ChannelServer;
 import handling.world.CharacterIdChannelPair;
@@ -175,14 +175,14 @@ public class ReqCClientSocket {
                 }
                 // OK
                 if (transfer != null) {
-                    Debug.DebugLog(chr, "CC");
+                    DebugLogger.DebugLog(chr, "CC");
                 } else {
-                    Debug.DebugLog(chr, "Login");
+                    DebugLogger.DebugLog(chr, "Login");
                 }
                 break;
             }
             default: {
-                Debug.ErrorLog("invalid client state.");
+                DebugLogger.ErrorLog("invalid client state.");
                 return false;
             }
         }
@@ -318,7 +318,7 @@ public class ReqCClientSocket {
             return true;
         }
 
-        Debug.DebugLog("users = " + World.getConnected().get(0));
+        DebugLogger.DebugLog("users = " + World.getConnected().get(0));
         return true;
     }
 

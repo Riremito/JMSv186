@@ -15,6 +15,6 @@ public class DebugLoadTime {
     public void End() {
         time_end = System.currentTimeMillis();
         long time = time_end - time_start;
-        Debug.DebugLog(text + ": " + time + " (ms)");
+        DebugLogger.DebugLog(text + ": " + time + " (ms)");
     }
 }

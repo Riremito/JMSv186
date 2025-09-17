@@ -21,7 +21,7 @@ package packet.request;
 import client.MapleClient;
 import config.Region;
 import config.Version;
-import debug.Debug;
+import debug.DebugLogger;
 import packet.ClientPacket;
 import scripting.ReactorScriptManager;
 import server.maps.MapleReactor;
@@ -38,7 +38,7 @@ public class ReqCReactorPool {
                 int oid = cp.Decode4();
                 MapleReactor reactor = c.getPlayer().getMap().getReactorByOid(oid);
                 if (reactor == null || !reactor.isAlive()) {
-                    Debug.ErrorLog("ReactorHit");
+                    DebugLogger.ErrorLog("ReactorHit");
                     return true;
                 }
 
@@ -56,7 +56,7 @@ public class ReqCReactorPool {
 
                 MapleReactor reactor = c.getPlayer().getMap().getReactorByOid(oid);
                 if (reactor == null || !reactor.isAlive()) {
-                    Debug.ErrorLog("ReactorTouch");
+                    DebugLogger.ErrorLog("ReactorTouch");
                     return true;
                 }
 

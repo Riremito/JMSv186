@@ -34,11 +34,10 @@ import client.PlayerStats;
 import client.SkillFactory;
 import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
-import debug.Debug;
+import debug.DebugLogger;
 import java.util.Map;
 import packet.response.ResCDropPool;
 import packet.response.ResCDropPool.LeaveType;
-import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCWvsContext;
 import server.MapleStatEffect;
 import server.Randomizer;
@@ -64,12 +63,12 @@ public class DamageParse {
         if (attack.skill != 0) {
             if (effect == null) {
                 player.getClient().getSession().write(WrapCWvsContext.updateStat());
-                Debug.ErrorLog("applyAttack : 1");
+                DebugLogger.ErrorLog("applyAttack : 1");
                 return;
             }
             if (GameConstants.isMulungSkill(attack.skill)) {
                 if (player.getMapId() / 10000 != 92502) {
-                    Debug.ErrorLog("applyAttack : 2");
+                    DebugLogger.ErrorLog("applyAttack : 2");
                     return;
                 } else {
                     player.mulung_EnergyModify(false);
@@ -77,23 +76,23 @@ public class DamageParse {
             }
             if (GameConstants.isPyramidSkill(attack.skill)) {
                 if (player.getMapId() / 1000000 != 926) {
-                    Debug.ErrorLog("applyAttack : 3");
+                    DebugLogger.ErrorLog("applyAttack : 3");
                     return;
                 } else {
                     if (player.getPyramidSubway() == null || !player.getPyramidSubway().onSkillUse(player)) {
-                        Debug.ErrorLog("applyAttack : 4");
+                        DebugLogger.ErrorLog("applyAttack : 4");
                         return;
                     }
                 }
             }
             if (attack.GetMobCount() > effect.getMobCount()) { // Must be done here, since NPE with normal atk
-                Debug.ErrorLog("applyAttack : 5");
+                DebugLogger.ErrorLog("applyAttack : 5");
                 return;
             }
         }
         if (attack.GetDamagePerMob() > attackCount) {
             if (attack.skill != 4211006) {
-                Debug.ErrorLog("applyAttack : 6");
+                DebugLogger.ErrorLog("applyAttack : 6");
                 return;
             }
         }
@@ -101,7 +100,7 @@ public class DamageParse {
             // Don't ever do this. it's too expensive.
             if (!player.getStat().checkEquipDurabilitys(player, -1)) { //i guess this is how it works ?
                 player.dropMessage(5, "An item has run out of durability but has no inventory room to go to.");
-                Debug.ErrorLog("applyAttack : 7");
+                DebugLogger.ErrorLog("applyAttack : 7");
                 return;
             } //lol
         }
@@ -121,21 +120,21 @@ public class DamageParse {
                     try {
                         if (mapitem.getMeso() > 0) {
                             if (mapitem.isPickedUp()) {
-                                Debug.ErrorLog("applyAttack : 8");
+                                DebugLogger.ErrorLog("applyAttack : 8");
                                 return;
                             }
                             map.removeMapObject(mapitem);
                             map.broadcastMessage(ResCDropPool.DropLeaveField(mapitem, LeaveType.MESO_EXPLOSION));
                             mapitem.setPickedUp(true);
                         } else {
-                            Debug.ErrorLog("applyAttack : 9");
+                            DebugLogger.ErrorLog("applyAttack : 9");
                             return;
                         }
                     } finally {
                         mapitem.getLock().unlock();
                     }
                 } else {
-                    Debug.ErrorLog("applyAttack : 10");
+                    DebugLogger.ErrorLog("applyAttack : 10");
                     return; // etc explosion, exploding nonexistant things, etc.
                 }
             }
@@ -224,7 +223,7 @@ public class DamageParse {
                         }
                     }
                     if (player == null) { // o_O
-                        Debug.ErrorLog("applyAttack : 11");
+                        DebugLogger.ErrorLog("applyAttack : 11");
                         return;
                     }
                     if (player.getClient().getChannelServer().isAdminOnly()) {
@@ -449,7 +448,7 @@ public class DamageParse {
             }
         }
         if (attack.skill == 4331003 && totDamageToOneMonster < hpMob) {
-            Debug.ErrorLog("applyAttack : 12");
+            DebugLogger.ErrorLog("applyAttack : 12");
             return;
         }
         if (attack.skill != 0 && (attack.GetMobCount() > 0 || (attack.skill != 4331003 && attack.skill != 4341002)) && attack.skill != 21101003 && attack.skill != 5110001 && attack.skill != 15100004 && attack.skill != 11101002 && attack.skill != 13101002) {
@@ -462,13 +461,13 @@ public class DamageParse {
         if (attack.GetDamagePerMob() > 0 && attack.GetMobCount() > 0) {
             if (!player.getStat().checkEquipDurabilitys(player, -1)) { //i guess this is how it works ?
                 player.dropMessage(5, "An item has run out of durability but has no inventory room to go to.");
-                Debug.ErrorLog("applyAttackMagic : 1");
+                DebugLogger.ErrorLog("applyAttackMagic : 1");
                 return;
             } //lol
         }
         if (GameConstants.isMulungSkill(attack.skill)) {
             if (player.getMapId() / 10000 != 92502) {
-                Debug.ErrorLog("applyAttackMagic : 2");
+                DebugLogger.ErrorLog("applyAttackMagic : 2");
                 return;
             } else {
                 player.mulung_EnergyModify(false);
@@ -476,11 +475,11 @@ public class DamageParse {
         }
         if (GameConstants.isPyramidSkill(attack.skill)) {
             if (player.getMapId() / 1000000 != 926) {
-                Debug.ErrorLog("applyAttackMagic : 3");
+                DebugLogger.ErrorLog("applyAttackMagic : 3");
                 return;
             } else {
                 if (player.getPyramidSubway() == null || !player.getPyramidSubway().onSkillUse(player)) {
-                    Debug.ErrorLog("applyAttackMagic : 4");
+                    DebugLogger.ErrorLog("applyAttackMagic : 4");
                     return;
                 }
             }
@@ -567,7 +566,7 @@ public class DamageParse {
                 player.checkMonsterAggro(monster);
 
                 if (attack.skill == 2301002 && !monsterstats.getUndead()) {
-                    Debug.ErrorLog("applyAttackMagic : 5");
+                    DebugLogger.ErrorLog("applyAttackMagic : 5");
                     return;
                 }
 

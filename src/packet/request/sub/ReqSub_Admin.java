@@ -22,7 +22,7 @@ import client.MapleCharacter;
 import client.MapleStat;
 import data.wz.ids.DWI_Validation;
 import data.wz.ids.DWI_LoadXML;
-import debug.Debug;
+import debug.DebugLogger;
 import java.awt.Point;
 import packet.ClientPacket;
 import packet.response.ResCNpcPool;
@@ -211,7 +211,7 @@ public class ReqSub_Admin {
             }
         }
 
-        Debug.AdminLog("[OnAdmin] not coded = " + command);
+        DebugLogger.AdminLog("[OnAdmin] not coded = " + command);
         return false;
     }
 

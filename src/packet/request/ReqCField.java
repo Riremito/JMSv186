@@ -20,7 +20,7 @@ package packet.request;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.channel.handler.BeanGame;
 import packet.ClientPacket;
 import packet.ops.OpsContiMove;
@@ -113,7 +113,7 @@ public class ReqCField {
                 return true;
             }
             default: {
-                Debug.ErrorLog("OnContiState not coded, map id = " + map_id);
+                DebugLogger.ErrorLog("OnContiState not coded, map id = " + map_id);
                 break;
             }
         }

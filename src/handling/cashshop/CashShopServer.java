@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package handling.cashshop;
 
 import config.property.Property_Shop;
-import debug.Debug;
+import debug.DebugLogger;
 import java.net.InetSocketAddress;
 import server.network.MapleServerHandler;
 import handling.channel.PlayerStorage;
@@ -56,9 +56,9 @@ public class CashShopServer {
         try {
             InetSocketadd = new InetSocketAddress(Property_Shop.getPort());
             acceptor.bind(InetSocketadd, new MapleServerHandler(-1, MapleServerHandler.ServerType.PointShopServer), cfg);
-            Debug.InfoLog("Port = " + Property_Shop.getPort());
+            DebugLogger.InfoLog("Port = " + Property_Shop.getPort());
         } catch (final Exception e) {
-            Debug.ErrorLog("Binding to port " + Property_Shop.getPort() + " failed");
+            DebugLogger.ErrorLog("Binding to port " + Property_Shop.getPort() + " failed");
             e.printStackTrace();
             throw new RuntimeException("Binding failed.", e);
         }
@@ -76,11 +76,11 @@ public class CashShopServer {
         if (finishedShutdown) {
             return;
         }
-        Debug.InfoLog("Saving all connected clients (CS)...");
+        DebugLogger.InfoLog("Saving all connected clients (CS)...");
         players.disconnectAll();
         playersMTS.disconnectAll();
         MTSStorage.getInstance().saveBuyNow(true);
-        Debug.InfoLog("Shutting down CS...");
+        DebugLogger.InfoLog("Shutting down CS...");
         acceptor.unbindAll();
         finishedShutdown = true;
     }

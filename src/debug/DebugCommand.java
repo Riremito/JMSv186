@@ -126,7 +126,7 @@ public class DebugCommand {
             case "/reload": {
                 // PacketHeader設定再読み込み
                 Property_Packet.reload();
-                Debug.InfoLog("Packet Header values are reloaded.");
+                DebugLogger.InfoLog("Packet Header values are reloaded.");
                 chr.DebugMsg("Packet Header values are reloaded.");
                 chr.UpdateStat(true);
                 return true;
@@ -561,7 +561,7 @@ public class DebugCommand {
 
                 for (int i = 0; i < mob_count; i++) {
                     int mobid = DWI_LoadXML.getMob().getRandom();
-                    Debug.InfoLog("RandomSpawn: " + mobid);
+                    DebugLogger.InfoLog("RandomSpawn: " + mobid);
                     MapleMonster mob = MapleLifeFactory.getMonster(mobid);
                     chr.getMap().spawnMonsterOnGroundBelow(mob, c.getPlayer().getPosition());
                     chr.DebugMsg("[RandomSpawn] " + mob.getId() + " - " + mob.getStats().getName());

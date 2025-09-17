@@ -27,7 +27,7 @@ import client.inventory.PetCommand;
 import config.Region;
 import config.Version;
 import data.wz.DW_Item;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.channel.handler.InventoryHandler;
 import handling.world.MaplePartyCharacter;
 import java.util.LinkedList;
@@ -80,7 +80,7 @@ public class ReqCUser_Pet {
         }
 
         if (pet == null) {
-            Debug.ErrorLog("OnPetPacket : no pet.");
+            DebugLogger.ErrorLog("OnPetPacket : no pet.");
             return true;
         }
 

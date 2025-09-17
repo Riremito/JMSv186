@@ -25,7 +25,7 @@ import client.MapleClientState;
 import constants.GameConstants;
 import database.DatabaseConnection;
 import database.DatabaseException;
-import debug.Debug;
+import debug.DebugLogger;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -57,7 +57,7 @@ public class DQ_Accounts {
             ps.close();
             return true;
         } catch (SQLException ex) {
-            Debug.ExceptionLog("Database Error : " + DB_TABLE_NAME);
+            DebugLogger.ExceptionLog("Database Error : " + DB_TABLE_NAME);
         }
         return false;
     }
@@ -145,10 +145,10 @@ public class DQ_Accounts {
             rs.close();
             ps.close();
 
-            Debug.InfoLog("[AutoRegister] \"" + maple_id + "\"");
+            DebugLogger.InfoLog("[AutoRegister] \"" + maple_id + "\"");
             return true;
         } catch (SQLException e) {
-            Debug.ExceptionLog("Database Error : " + DB_TABLE_NAME);
+            DebugLogger.ExceptionLog("Database Error : " + DB_TABLE_NAME);
         }
 
         return false;
@@ -187,7 +187,7 @@ public class DQ_Accounts {
                 } else {
                     if (banned == -1) {
                         //unban();
-                        Debug.ErrorLog("banned == -1");
+                        DebugLogger.ErrorLog("banned == -1");
                     }
                     MapleClientState loginstate = getLoginState(c);
                     if (loginstate.get() > MapleClientState.LOGIN_NOTLOGGEDIN.get()) { // already loggedin
@@ -251,11 +251,11 @@ public class DQ_Accounts {
             rs.close();
             ps.close();
         } catch (final SQLException e) {
-            Debug.ExceptionLog("checkLoginIP");
+            DebugLogger.ExceptionLog("checkLoginIP");
         }
 
         if (!ret) {
-            Debug.ErrorLog("checkLoginIP");
+            DebugLogger.ErrorLog("checkLoginIP");
         }
 
         return ret;

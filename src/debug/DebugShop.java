@@ -83,7 +83,7 @@ public class DebugShop {
             }
         }
 
-        Debug.ErrorLog("OnUserShopRequestHook : not coded = " + shop_req);
+        DebugLogger.ErrorLog("OnUserShopRequestHook : not coded = " + shop_req);
         return false;
     }
 
@@ -125,7 +125,7 @@ public class DebugShop {
 
     public boolean addItem(int item_id) {
         if (!DWI_Validation.isValidItemID(item_id)) {
-            Debug.ErrorLog("DebugShop : addItem, invalid item id = " + item_id);
+            DebugLogger.ErrorLog("DebugShop : addItem, invalid item id = " + item_id);
             return false;
         }
 
@@ -151,7 +151,7 @@ public class DebugShop {
 
     public boolean addItem(int item_id, int item_price, int item_quantity, int item_slot_max) {
         if (!DWI_Validation.isValidItemID(item_id)) {
-            Debug.ErrorLog("DebugShop : addItem, invalid item id = " + item_id);
+            DebugLogger.ErrorLog("DebugShop : addItem, invalid item id = " + item_id);
             return false;
         }
 
@@ -166,7 +166,7 @@ public class DebugShop {
 
     public boolean addItemRecharge(int item_id, int item_recharge_price) {
         if (!DWI_Validation.isValidItemID(item_id)) {
-            Debug.ErrorLog("DebugShop : addItemRecharge, invalid item id = " + item_id);
+            DebugLogger.ErrorLog("DebugShop : addItemRecharge, invalid item id = " + item_id);
             return false;
         }
 
@@ -210,7 +210,7 @@ public class DebugShop {
             }
         }
 
-        Debug.InfoLog("DebugShop : setItemTest(" + item_sub_type + "), loaded " + item_count + " items.");
+        DebugLogger.InfoLog("DebugShop : setItemTest(" + item_sub_type + "), loaded " + item_count + " items.");
         return true;
     }
 
@@ -296,7 +296,7 @@ public class DebugShop {
         item_price *= quantity;
         if (item_price < 0) {
             item_price = 0;
-            Debug.ErrorLog("item price set to 0 : " + item_id + " (" + quantity + ")");
+            DebugLogger.ErrorLog("item price set to 0 : " + item_id + " (" + quantity + ")");
         }
         if (item_price + chr.getMeso() < 0) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));

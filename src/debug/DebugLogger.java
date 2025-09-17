@@ -18,6 +18,8 @@
  */
 package debug;
 
+import client.MapleCharacter;
+import config.DeveloperMode;
 import config.Region;
 import config.Version;
 import java.io.File;
@@ -26,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import packet.ClientPacket;
 
 /**
  *
@@ -49,9 +52,9 @@ public class DebugLogger {
             fw.write((getDate() + " Server Reboot - " + Region.getRegion() + " " + Version.getVersion() + "." + Version.getSubVersion() + "\r\n"));
             fw.flush();
         } catch (FileNotFoundException ex) {
-            Debug.ExceptionLog("DebugLogger - open");
+            ExceptionLog("DebugLogger - open");
         } catch (IOException ex) {
-            Debug.ExceptionLog("DebugLogger - first write");
+            ExceptionLog("DebugLogger - first write");
         }
     }
 
@@ -60,26 +63,105 @@ public class DebugLogger {
             try {
                 fw.close();
             } catch (IOException ex) {
-                Debug.ExceptionLog("DebugLogger - close");
+                ExceptionLog("DebugLogger - close");
             }
         }
         fw = null;
+    }
+
+    public static boolean DevLog(String text) {
+        if (fw == null) {
+            return false;
+        }
+        try {
+            if (!DeveloperMode.DM_LOG_DEV.get()) {
+                return false;
+            }
+            fw.write(getDate() + "[DEV]" + text + "\r\n");
+            fw.flush();
+            return true;
+        } catch (IOException ex) {
+            ExceptionLog("DebugLogger - write");
+        }
+
+        return false;
     }
 
     private static String getDate() {
         return new SimpleDateFormat("[yyyy/MM/dd HH:mm:ss]").format(new Date());
     }
 
-    public static void DevLog(String text) {
-        if (fw == null) {
-            return;
+    public static boolean DebugLog(String log_text) {
+        if (!DeveloperMode.DM_LOG_DEBUG.get()) {
+            return false;
         }
-        try {
-            fw.write(getDate() + "[DEV]" + text + "\r\n");
-            fw.flush();
-        } catch (IOException ex) {
-            Debug.ExceptionLog("DebugLogger - write");
+        Log("DEBUG", log_text);
+        return true;
+    }
+
+    public static boolean DebugLog(MapleCharacter chr, String log_text) {
+        if (!DeveloperMode.DM_LOG_DEBUG.get()) {
+            return false;
         }
+        Log("DEBUG_CHR : \"" + chr.getName() + "\"", log_text);
+        return true;
+    }
+
+    public static boolean InfoLog(String log_text) {
+        if (!DeveloperMode.DM_LOG_INFO.get()) {
+            return false;
+        }
+        Log("INFO", log_text);
+        return true;
+    }
+
+    public static void ErrorLog(String log_text) {
+        Log("ERROR", log_text);
+    }
+
+    public static void DBErrorLog(String table_name, String func_name) {
+        Log("ERROR_DB", table_name + " : " + func_name);
+    }
+
+    public static void ExceptionLog(String log_text) {
+        Log("EXCEPTION", log_text);
+    }
+
+    public static boolean SetupLog(String log_text) {
+        if (!DeveloperMode.DM_LOG_SETUP.get()) {
+            return false;
+        }
+        Log("SETUP", log_text);
+        return true;
+    }
+
+    public static boolean XmlLog(String log_text) {
+        if (!DeveloperMode.DM_LOG_WZ.get()) {
+            return false;
+        }
+        Log("WZ", log_text);
+        return true;
+    }
+
+    public static boolean AdminLog(String log_text) {
+        if (!DeveloperMode.DM_LOG_ADMIN.get()) {
+            return false;
+        }
+        Log("ADMIN", log_text);
+        return true;
+    }
+
+    public static void CPLog(ClientPacket cp) {
+        Log("ClientPacket", cp.GetOpcodeName() + "\n" + cp.get());
+    }
+
+    private static void Log(String log_type, String log_text) {
+        Log("[" + log_type + "] " + log_text);
+    }
+
+    private static void Log(String log_text) {
+        // [Date][DEBUG] xxxx
+        System.out.println(getDate() + log_text);
     }
 
 }

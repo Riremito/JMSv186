@@ -22,7 +22,7 @@ import client.MapleClient;
 import config.Region;
 import config.Version;
 import config.property.Property_Login;
-import debug.Debug;
+import debug.DebugLogger;
 import packet.ClientPacket;
 
 /**
@@ -40,17 +40,17 @@ public class ReqSecurity {
             // 独自実装
             case CP_CUSTOM_WZ_HASH: {
                 if (Hash(cp)) {
-                    Debug.DebugLog("MapleID:" + c.getMapleId() + ", wz OK");
+                    DebugLogger.DebugLog("MapleID:" + c.getMapleId() + ", wz OK");
                 } else {
-                    Debug.DebugLog("MapleID:" + c.getMapleId() + ", wz NG");
+                    DebugLogger.DebugLog("MapleID:" + c.getMapleId() + ", wz NG");
                 }
                 return true;
             }
             case CP_CUSTOM_MEMORY_SCAN: {
                 if (Scan(cp)) {
-                    Debug.DebugLog("MapleID:" + c.getMapleId() + ", memory OK");
+                    DebugLogger.DebugLog("MapleID:" + c.getMapleId() + ", memory OK");
                 } else {
-                    Debug.DebugLog("MapleID:" + c.getMapleId() + ", memory NG");
+                    DebugLogger.DebugLog("MapleID:" + c.getMapleId() + ", memory NG");
                 }
                 return true;
             }
@@ -82,7 +82,7 @@ public class ReqSecurity {
             return true;
         }
         final String wz_hash = p.DecodeStr();
-        Debug.DebugLog(wz_hash);
+        DebugLogger.DebugLog(wz_hash);
         // v186 Skill.wz
         return wz_hash.startsWith("2e6008284345bbf5552b45ba206464404e474cbe8d8ba31bd61d0b4733422948");
     }

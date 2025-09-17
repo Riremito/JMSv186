@@ -14,7 +14,7 @@ import client.messages.CommandProcessorUtil;
 import config.property.Property_Java;
 import constants.GameConstants;
 import data.wz.DW_Skill;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.channel.ChannelServer;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -75,7 +75,7 @@ public class AdminCommand {
                 victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
             }
             if (level < 2 && victim != null) {
-                Debug.InfoLog("command dc.");
+                DebugLogger.InfoLog("command dc.");
                 victim.getClient().getSession().close();
                 if (level >= 1) {
                     victim.getClient().disconnect(true, false);

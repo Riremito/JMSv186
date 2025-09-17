@@ -26,7 +26,7 @@ import client.MapleClient;
 import config.Region;
 import config.Version;
 import database.DatabaseConnection;
-import debug.Debug;
+import debug.DebugLogger;
 import handling.channel.ChannelServer;
 import handling.world.World;
 import java.sql.Connection;
@@ -117,7 +117,7 @@ public class ReqSub_FriendRequest {
                 return true;
             }
             default: {
-                Debug.ErrorLog("OnFriendRequest not coded : " + flag);
+                DebugLogger.ErrorLog("OnFriendRequest not coded : " + flag);
                 break;
             }
         }
