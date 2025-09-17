@@ -46,6 +46,7 @@ public class PacketOps {
         OpsMiniRoomType.init();
         OpsEntrustedShop.init();
         OpsMREnterResult.init();
+        OpsITC.init();
     }
 
 }

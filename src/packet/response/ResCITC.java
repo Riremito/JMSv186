@@ -34,15 +34,27 @@ import tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class ResCITC {
 
+    // CITC::OnChargeParamResult
     public static final MaplePacket ITCChargeParamResult() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCChargeParamResult);
+
         return sp.get();
     }
 
+    // CITC::OnQueryCashResult
     public static MaplePacket ITCQueryCashResult(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCQueryCashResult);
-        sp.Encode4(chr.getNexonPoint());
-        sp.Encode4(chr.getMaplePoint());
+
+        sp.Encode4(chr.getNexonPoint()); // nNexonCash (signed)
+        sp.Encode4(chr.getMaplePoint()); // nMaplePoint (signed)
+        return sp.get();
+    }
+
+    // CITC::OnNormalItemResult
+    public static final MaplePacket ITCNormalItemResult() {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+
+        sp.Encode1(0);
         return sp.get();
     }
 
