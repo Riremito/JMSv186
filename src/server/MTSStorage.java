@@ -41,6 +41,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import packet.response.ResCITC;
+import packet.response.wrapper.WrapCITC;
 import tools.Pair;
 
 public class MTSStorage {
@@ -287,11 +288,11 @@ public class MTSStorage {
         mutex.readLock().lock();
         try {
             if (cart.getTab() == 1) { //buyNow
-                return ResCITC.sendMTS(getBuyNow(cart.getType(), cart.getPage()), cart.getTab(), cart.getType(), cart.getPage(), buyNow.size() / 16 + (buyNow.size() % 16 > 0 ? 1 : 0));
+                return WrapCITC.sendMTS(getBuyNow(cart.getType(), cart.getPage()), cart.getTab(), cart.getType(), cart.getPage(), buyNow.size() / 16 + (buyNow.size() % 16 > 0 ? 1 : 0));
             } else if (cart.getTab() == 4) {
-                return ResCITC.sendMTS(getCartItems(cart), cart.getTab(), cart.getType(), cart.getPage(), 0);
+                return WrapCITC.sendMTS(getCartItems(cart), cart.getTab(), cart.getType(), cart.getPage(), 0);
             } else {
-                return ResCITC.sendMTS(new ArrayList<MTSItemInfo>(), cart.getTab(), cart.getType(), cart.getPage(), 0);
+                return WrapCITC.sendMTS(new ArrayList<MTSItemInfo>(), cart.getTab(), cart.getType(), cart.getPage(), 0);
             }
         } finally {
             mutex.readLock().unlock();
@@ -312,14 +313,14 @@ public class MTSStorage {
                     nys.add(r);
                 }
             }
-            return ResCITC.getNotYetSoldInv(nys);
+            return WrapCITC.getNotYetSoldInv(nys);
         } finally {
             mutex.readLock().unlock();
         }
     }
 
     public final MaplePacket getCurrentTransfer(final MTSCart cart, final boolean changed) {
-        return ResCITC.getTransferInventory(cart.getInventory(), changed);
+        return WrapCITC.getTransferInventory(cart.getInventory(), changed);
     }
 
     private final List<MTSItemInfo> getBuyNow(final int type, int page) {

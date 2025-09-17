@@ -28,6 +28,7 @@ import constants.ServerConstants;
 import debug.DebugLogger;
 import packet.ClientPacket;
 import packet.response.ResCITC;
+import packet.response.wrapper.WrapCITC;
 import server.MTSCart;
 import server.MTSStorage;
 import server.MapleInventoryManipulator;
@@ -81,13 +82,13 @@ public class ReqCITC {
             final byte invType = slea.readByte(); //1 = equip 2 = everything else
             if (invType != 1 && invType != 2) {
                 //pet?
-                c.getSession().write(ResCITC.getMTSFailSell());
+                c.getSession().write(WrapCITC.getMTSFailSell());
                 doMTSPackets(cart, c);
                 return;
             }
             final int itemid = slea.readInt(); //itemid
             if (slea.readByte() != 0) {
-                c.getSession().write(ResCITC.getMTSFailSell());
+                c.getSession().write(WrapCITC.getMTSFailSell());
                 doMTSPackets(cart, c);
                 return; //we don't like uniqueIDs
             }
@@ -124,14 +125,14 @@ public class ReqCITC {
             final MapleInventoryType type = GameConstants.getInventoryType(itemid);
             final IItem item = c.getPlayer().getInventory(type).getItem(slot).copy();
             if (ii.isCash(itemid) || quantity <= 0 || item == null || item.getQuantity() <= 0 || item.getItemId() != itemid || item.getUniqueId() > 0 || item.getQuantity() < quantity || price < ServerConstants.MIN_MTS || c.getPlayer().getMeso() < ServerConstants.MTS_MESO || cart.getNotYetSold().size() >= 10 || ii.isDropRestricted(itemid) || ii.isAccountShared(itemid) || item.getExpiration() > -1 || item.getFlag() > 0) {
-                c.getSession().write(ResCITC.getMTSFailSell());
+                c.getSession().write(WrapCITC.getMTSFailSell());
                 doMTSPackets(cart, c);
                 return;
             }
             if (type == MapleInventoryType.EQUIP) {
                 final Equip eq = (Equip) item;
                 if (eq.getHidden() > 0 || eq.getEnhance() > 0 || eq.getDurability() > -1) {
-                    c.getSession().write(ResCITC.getMTSFailSell());
+                    c.getSession().write(WrapCITC.getMTSFailSell());
                     doMTSPackets(cart, c);
                     return;
                 }
@@ -141,16 +142,16 @@ public class ReqCITC {
             MTSStorage.getInstance().addToBuyNow(cart, item, price, c.getPlayer().getId(), c.getPlayer().getName(), expiration);
             MapleInventoryManipulator.removeFromSlot(c, type, slot, quantity, false);
             c.getPlayer().gainMeso(-ServerConstants.MTS_MESO, false);
-            c.getSession().write(ResCITC.getMTSConfirmSell());
+            c.getSession().write(WrapCITC.getMTSConfirmSell());
         } else if (op == 5) {
             //change page/tab
             cart.changeInfo(slea.readInt(), slea.readInt(), slea.readInt());
         } else if (op == 7) {
             //cancel sale
             if (!MTSStorage.getInstance().removeFromBuyNow(slea.readInt(), c.getPlayer().getId(), true)) {
-                c.getSession().write(ResCITC.getMTSFailCancel());
+                c.getSession().write(WrapCITC.getMTSFailCancel());
             } else {
-                c.getSession().write(ResCITC.getMTSConfirmCancel());
+                c.getSession().write(WrapCITC.getMTSConfirmCancel());
                 sendMTSPackets(cart, c, true);
                 return;
             }
@@ -173,33 +174,33 @@ public class ReqCITC {
                         c.getPlayer().addPet(item_.getPet());
                     }
                     cart.removeFromInventory(item);
-                    c.getSession().write(ResCITC.getMTSConfirmTransfer(item_.getQuantity(), pos)); //IF this is actually pos and pos
+                    c.getSession().write(WrapCITC.getMTSConfirmTransfer(item_.getQuantity(), pos)); //IF this is actually pos and pos
                     sendMTSPackets(cart, c, true);
                     return;
                 } else {
                     //System.out.println("addByItem is less than 0");
-                    c.getSession().write(ResCITC.getMTSFailBuy());
+                    c.getSession().write(WrapCITC.getMTSFailBuy());
                 }
             } else {
                 //System.out.println("CheckSpace return false");
-                c.getSession().write(ResCITC.getMTSFailBuy());
+                c.getSession().write(WrapCITC.getMTSFailBuy());
             }
         } else if (op == 9) {
             //add to cart
             final int id = slea.readInt();
             if (MTSStorage.getInstance().checkCart(id, c.getPlayer().getId()) && cart.addToCart(id)) {
-                c.getSession().write(ResCITC.addToCartMessage(false, false));
+                c.getSession().write(WrapCITC.addToCartMessage(false, false));
             } else {
-                c.getSession().write(ResCITC.addToCartMessage(true, false));
+                c.getSession().write(WrapCITC.addToCartMessage(true, false));
             }
         } else if (op == 10) {
             //delete from cart
             final int id = slea.readInt();
             if (cart.getCart().contains(id)) {
                 cart.removeFromCart(id);
-                c.getSession().write(ResCITC.addToCartMessage(false, true));
+                c.getSession().write(WrapCITC.addToCartMessage(false, true));
             } else {
-                c.getSession().write(ResCITC.addToCartMessage(true, true));
+                c.getSession().write(WrapCITC.addToCartMessage(true, true));
             }
         } else if (op == 16 || op == 17) {
             //buyNow, buy from cart
@@ -209,17 +210,17 @@ public class ReqCITC {
                     if (MTSStorage.getInstance().removeFromBuyNow(mts.getId(), c.getPlayer().getId(), false)) {
                         c.getPlayer().modifyCSPoints(1, -mts.getRealPrice(), false);
                         MTSStorage.getInstance().getCart(mts.getCharacterId()).increaseOwedNX(mts.getPrice());
-                        c.getSession().write(ResCITC.getMTSConfirmBuy());
+                        c.getSession().write(WrapCITC.getMTSConfirmBuy());
                         sendMTSPackets(cart, c, true);
                         return;
                     } else {
-                        c.getSession().write(ResCITC.getMTSFailBuy());
+                        c.getSession().write(WrapCITC.getMTSFailBuy());
                     }
                 } else {
-                    c.getSession().write(ResCITC.getMTSFailBuy());
+                    c.getSession().write(WrapCITC.getMTSFailBuy());
                 }
             } else {
-                c.getSession().write(ResCITC.getMTSFailBuy());
+                c.getSession().write(WrapCITC.getMTSFailBuy());
             }
         } else if (c.getPlayer().isAdmin()) {
             //System.out.println("New MTS Op " + op + ", \n" + slea.toString());
@@ -233,7 +234,7 @@ public class ReqCITC {
 
     public static void MTSUpdate(final MTSCart cart, final MapleClient c) {
         c.getPlayer().modifyCSPoints(1, MTSStorage.getInstance().getCart(c.getPlayer().getId()).getSetOwedNX(), false);
-        c.getSession().write(ResCITC.getMTSWantedListingOver(0, 0));
+        c.getSession().write(WrapCITC.getMTSWantedListingOver(0, 0));
         doMTSPackets(cart, c);
     }
 
