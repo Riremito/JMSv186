@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import packet.ClientPacket;
 import packet.request.parse.ParseCMovePath;
+import packet.response.ResCNpcPool;
 import packet.response.ResCUser_Pet;
 import packet.response.ResCUserLocal;
 import packet.response.ResCUserRemote;
@@ -44,8 +45,10 @@ import server.MapleInventoryManipulator;
 import server.MapleItemInformationProvider;
 import server.Randomizer;
 import server.life.MapleMonster;
+import server.life.MapleNPC;
 import server.maps.MapleMap;
 import server.maps.MapleMapItem;
+import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 import tools.data.input.SeekableLittleEndianAccessor;
 
@@ -164,6 +167,15 @@ public class ReqCUser_Pet {
         }
 
         map.broadcastMessage(chr, ResCUser_Pet.PetMove(chr, pet, move_path), false);
+
+        // NPC Pet test.
+        if (chr.getNPCPet()) {
+            for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.NPC)) {
+                MapleNPC npc = chr.getMap().getNPCByOid(mmo.getObjectId());
+                move_path.update(npc);
+                map.broadcastMessageDelayed(chr, ResCNpcPool.NpcMove(npc, -1, -1, move_path));
+            }
+        }
         return true;
     }
 

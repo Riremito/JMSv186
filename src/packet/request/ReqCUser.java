@@ -1100,6 +1100,7 @@ public class ReqCUser {
             map.broadcastMessageClone(chr_clone, ResCUserRemote.Move(chr_clone, move_path));
         }
 
+        // NPC move test.
         if (chr.getAccompany()) {
             for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.NPC)) {
                 MapleNPC npc = chr.getMap().getNPCByOid(mmo.getObjectId());

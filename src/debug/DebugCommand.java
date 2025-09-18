@@ -317,6 +317,11 @@ public class DebugCommand {
                 chr.DebugMsg("Accompany : " + chr.getAccompany());
                 return true;
             }
+            case "/npcpet": {
+                chr.setNPCPet();
+                chr.DebugMsg("NPCPet : " + chr.getNPCPet());
+                return true;
+            }
             case "/search": {
                 if (splitted.length < 3) {
                     return false;

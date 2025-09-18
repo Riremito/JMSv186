@@ -6096,6 +6096,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     private boolean isAccompany = false;
+    private boolean isNPCPet = false;
 
     public void setAccompany() {
         this.isAccompany = !this.isAccompany;
@@ -6103,6 +6104,14 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public boolean getAccompany() {
         return this.isAccompany;
+    }
+
+    public void setNPCPet() {
+        this.isNPCPet = !this.isNPCPet;
+    }
+
+    public boolean getNPCPet() {
+        return this.isNPCPet;
     }
 
     public final void removalTask() {

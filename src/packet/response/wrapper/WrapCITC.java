@@ -21,6 +21,9 @@ package packet.response.wrapper;
 import client.inventory.IItem;
 import java.util.List;
 import packet.ServerPacket;
+import packet.ops.OpsITC;
+import packet.ops.arg.ArgITCNormalItemResult;
+import packet.response.ResCITC;
 import packet.response.struct.TestHelper;
 import server.MTSStorage;
 import server.network.MaplePacket;
@@ -34,18 +37,18 @@ import tools.data.output.MaplePacketLittleEndianWriter;
 public class WrapCITC {
 
     public static final MaplePacket getMTSFailCancel() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
-        mplew.write(38);
-        mplew.write(66);
-        return mplew.getPacket();
+        ArgITCNormalItemResult arg = new ArgITCNormalItemResult();
+        arg.ops_res = OpsITC.ITCRes_CancelSaleItem_Failed;
+        arg.ops_fail_reason = OpsITC.ITCFailReason_NoRemainCash;
+
+        return ResCITC.ITCNormalItemResult(arg);
     }
 
     public static final MaplePacket getMTSConfirmSell() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
-        mplew.write(29);
-        return mplew.getPacket();
+        ArgITCNormalItemResult arg = new ArgITCNormalItemResult();
+        arg.ops_res = OpsITC.ITCRes_RegisterSaleEntry_Done;
+
+        return ResCITC.ITCNormalItemResult(arg);
     }
 
     public static final MaplePacket addToCartMessage(boolean fail, boolean remove) {
@@ -70,10 +73,10 @@ public class WrapCITC {
     }
 
     public static final MaplePacket getMTSConfirmCancel() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
-        mplew.write(37);
-        return mplew.getPacket();
+        ArgITCNormalItemResult arg = new ArgITCNormalItemResult();
+        arg.ops_res = OpsITC.ITCRes_CancelSaleItem_Done;
+
+        return ResCITC.ITCNormalItemResult(arg);
     }
 
     public static final MaplePacket sendMTS(final List<MTSStorage.MTSItemInfo> items, final int tab, final int type, final int page, final int pages) {
@@ -136,10 +139,10 @@ public class WrapCITC {
     }
 
     public static final MaplePacket getMTSConfirmBuy() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
-        mplew.write(51);
-        return mplew.getPacket();
+        ArgITCNormalItemResult arg = new ArgITCNormalItemResult();
+        arg.ops_res = OpsITC.ITCRes_BuyItem_Done;
+
+        return ResCITC.ITCNormalItemResult(arg);
     }
 
     public static final MaplePacket getMTSConfirmTransfer(final int quantity, final int pos) {
@@ -152,11 +155,11 @@ public class WrapCITC {
     }
 
     public static final MaplePacket getMTSFailBuy() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
-        mplew.write(52);
-        mplew.write(66);
-        return mplew.getPacket();
+        ArgITCNormalItemResult arg = new ArgITCNormalItemResult();
+        arg.ops_res = OpsITC.ITCRes_BuyItem_Failed;
+        arg.ops_fail_reason = OpsITC.ITCFailReason_NoRemainCash;
+
+        return ResCITC.ITCNormalItemResult(arg);
     }
 
     public static final MaplePacket getNotYetSoldInv(final List<MTSStorage.MTSItemInfo> items) {
@@ -171,11 +174,11 @@ public class WrapCITC {
     }
 
     public static final MaplePacket getMTSFailSell() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
-        mplew.write(30);
-        mplew.write(66);
-        return mplew.getPacket();
+        ArgITCNormalItemResult arg = new ArgITCNormalItemResult();
+        arg.ops_res = OpsITC.ITCRes_RegisterSaleEntry_Failed;
+        arg.ops_fail_reason = OpsITC.ITCFailReason_NoRemainCash;
+
+        return ResCITC.ITCNormalItemResult(arg);
     }
-    
+
 }
