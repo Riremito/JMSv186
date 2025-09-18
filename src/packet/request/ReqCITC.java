@@ -21,6 +21,9 @@ package packet.request;
 import client.MapleCharacter;
 import client.MapleClient;
 import client.inventory.IItem;
+import client.inventory.MapleInventoryType;
+import constants.GameConstants;
+import constants.ServerConstants;
 import debug.DebugLogger;
 import packet.ClientPacket;
 import packet.ops.OpsITC;
@@ -80,7 +83,38 @@ public class ReqCITC {
             }
             case ITCReq_RegisterSaleEntry: {
                 // 2
-                break;
+                byte unused_item_type = cp.Decode1();
+                int item_id = cp.Decode4();
+                // skip unused item data.
+                cp.setBackCursor(-14);
+                int inv_slot = cp.Decode4();
+                int item_quantity = cp.Decode4();
+                int price = cp.Decode4();
+                byte hours = cp.Decode1(); // 07
+                byte unk1 = cp.Decode1(); // 01
+                if (hours != 7 || price < 0 || item_quantity <= 0 || inv_slot <= 0) {
+                    chr.SendPacket(WrapCITC.getMTSFailSell());
+                    return true;
+                }
+                MapleInventoryType inv_type = GameConstants.getInventoryType(item_id);
+                IItem item = chr.getInventory(inv_type).getItem((short) inv_slot);
+                if (GameConstants.isRechargable(item_id)) {
+                    item_quantity = item.getQuantity();
+                }
+                if (item.getItemId() != item_id || item_quantity <= 0 || item.getQuantity() < item_quantity) {
+                    chr.SendPacket(WrapCITC.getMTSFailSell());
+                    return true;
+                }
+
+                IItem item_copy = item.copy();
+                item_copy.setQuantity((short) item_quantity);
+                long expiration = System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000);
+                MTSStorage.getInstance().addToBuyNow(cart, item_copy, price, chr.getId(), chr.getName(), expiration);
+                MapleInventoryManipulator.removeFromSlot(c, inv_type, (short) inv_slot, (short) item_quantity, false);
+                chr.gainMeso(-ServerConstants.MTS_MESO, false);
+                chr.SendPacket(WrapCITC.getMTSConfirmSell());
+                sendMTSPackets(cart, c, true);
+                return true;
             }
             case ITCReq_SaleCurrentItemToWish: {
                 break;
@@ -101,7 +135,7 @@ public class ReqCITC {
                 int unk3 = cp.Decode4(); // page
                 cart.changeInfo(unk1, unk2, unk3);
                 doMTSPackets(cart, c);
-                break;
+                return true;
             }
             case ITCReq_GetSearchITCList: {
                 break;
@@ -234,7 +268,7 @@ public class ReqCITC {
                 MTSStorage.getInstance().getCart(mts.getCharacterId()).increaseOwedNX(mts.getPrice());
                 c.getSession().write(WrapCITC.getMTSConfirmBuy());
                 sendMTSPackets(cart, c, true);
-                break;
+                return true;
             }
             case ITCReq_RegAuction: {
                 // 18
@@ -263,76 +297,6 @@ public class ReqCITC {
         }
 
         DebugLogger.ErrorLog("OnITCItemRequest : not coded = " + ops_req + "(" + req + ")");
-        /*
-        if (req == 2) {
-            //put up for sale
-            final byte invType = slea.readByte(); //1 = equip 2 = everything else
-            if (invType != 1 && invType != 2) {
-                //pet?
-                c.getSession().write(WrapCITC.getMTSFailSell());
-                doMTSPackets(cart, c);
-                return;
-            }
-            final int itemid = slea.readInt(); //itemid
-            if (slea.readByte() != 0) {
-                c.getSession().write(WrapCITC.getMTSFailSell());
-                doMTSPackets(cart, c);
-                return; //we don't like uniqueIDs
-            }
-            slea.skip(8); //expiration, don't matter
-            short stars = 1;
-            short quantity = 1;
-            byte slot = 0;
-            if (invType == 1) {
-                slea.skip(32);
-            } else {
-                stars = slea.readShort(); //the entire quantity of the item
-            }
-            slea.readMapleAsciiString(); //owner
-            //again? =/
-            if (invType == 1) {
-                slea.skip(48);
-                slot = (byte) slea.readInt();
-                slea.skip(4); //skip the quantity int, equips are always 1
-            } else {
-                slea.readShort(); //flag
-                if (GameConstants.isThrowingStar(itemid) || GameConstants.isBullet(itemid)) {
-                    slea.skip(8); //recharge ID thing
-                }
-                slot = (byte) slea.readInt();
-                if (GameConstants.isThrowingStar(itemid) || GameConstants.isBullet(itemid)) {
-                    quantity = stars; //this is due to stars you need to use the entire quantity, not specified
-                    slea.skip(4); //so just skip the quantity int
-                } else {
-                    quantity = (short) slea.readInt(); //specified quantity
-                }
-            }
-            final int price = slea.readInt();
-            final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            final MapleInventoryType type = GameConstants.getInventoryType(itemid);
-            final IItem item = c.getPlayer().getInventory(type).getItem(slot).copy();
-            if (ii.isCash(itemid) || quantity <= 0 || item == null || item.getQuantity() <= 0 || item.getItemId() != itemid || item.getUniqueId() > 0 || item.getQuantity() < quantity || price < ServerConstants.MIN_MTS || c.getPlayer().getMeso() < ServerConstants.MTS_MESO || cart.getNotYetSold().size() >= 10 || ii.isDropRestricted(itemid) || ii.isAccountShared(itemid) || item.getExpiration() > -1 || item.getFlag() > 0) {
-                c.getSession().write(WrapCITC.getMTSFailSell());
-                doMTSPackets(cart, c);
-                return;
-            }
-            if (type == MapleInventoryType.EQUIP) {
-                final Equip eq = (Equip) item;
-                if (eq.getHidden() > 0 || eq.getEnhance() > 0 || eq.getDurability() > -1) {
-                    c.getSession().write(WrapCITC.getMTSFailSell());
-                    doMTSPackets(cart, c);
-                    return;
-                }
-            }
-            final long expiration = System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000);
-            item.setQuantity(quantity);
-            MTSStorage.getInstance().addToBuyNow(cart, item, price, c.getPlayer().getId(), c.getPlayer().getName(), expiration);
-            MapleInventoryManipulator.removeFromSlot(c, type, slot, quantity, false);
-            c.getPlayer().gainMeso(-ServerConstants.MTS_MESO, false);
-            c.getSession().write(WrapCITC.getMTSConfirmSell());
-        }
-        doMTSPackets(cart, c);
-         */
         return false;
     }
 

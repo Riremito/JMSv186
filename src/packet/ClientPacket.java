@@ -148,6 +148,14 @@ public class ClientPacket {
         return buffer;
     }
 
+    public boolean setBackCursor(int cur) {
+        if (getRemainingSize() + cur < 0) {
+            return false;
+        }
+        this.decoded = packet.length + cur;
+        return true;
+    }
+
     public int getRemainingSize() {
         return packet.length - decoded;
     }
