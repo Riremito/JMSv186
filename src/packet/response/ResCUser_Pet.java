@@ -101,7 +101,7 @@ public class ResCUser_Pet {
             return sp.get();
         }
 
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Version.LessOrEqual(Region.KMS, 31) || Version.LessOrEqual(Region.JMS, 131)) {
             // no data
         } else {
             sp.Encode4(chr.getPetIndex(pet));
@@ -109,7 +109,7 @@ public class ResCUser_Pet {
         sp.Encode1(spawn ? 1 : 0);
 
         if (spawn) {
-            if (Version.LessOrEqual(Region.JMS, 131)) {
+            if (Version.LessOrEqual(Region.KMS, 31) || Version.LessOrEqual(Region.JMS, 131)) {
                 // no data
             } else {
                 sp.Encode1(0);

@@ -1193,9 +1193,9 @@ public class ReqCUser {
     }
 
     public static final boolean OnUserActivatePetRequest(MapleCharacter chr, ClientPacket cp) {
-        int timestamp = cp.Decode4();
+        int timestamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         short item_slot = cp.Decode2();
-        byte flag = (Version.LessOrEqual(Region.JMS, 131) || Version.PostBB()) ? 1 : cp.Decode1();
+        byte flag = (Version.LessOrEqual(Region.KMS, 31) || Version.LessOrEqual(Region.JMS, 131) || Version.PostBB()) ? 1 : cp.Decode1();
 
         chr.spawnPet(item_slot, flag > 0 ? true : false);
         return true;

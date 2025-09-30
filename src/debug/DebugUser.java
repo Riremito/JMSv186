@@ -224,6 +224,7 @@ public class DebugUser {
         // ポイントアイテム
         {
             AddItem(chr, 5000023);      // ペンギン
+            AddItem(chr, 5000001);
             AddItem(chr, 5010000);      // ニコニコ太陽
             //AddItem(chr, 5021001);      // 音速紙飛行機
             AddItem(chr, 5030000);      // エルフ商人
