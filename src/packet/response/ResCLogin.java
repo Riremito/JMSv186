@@ -60,7 +60,7 @@ public class ResCLogin {
             return sp.get();
         }
 
-        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(0);
             sp.Encode8(0);
             return sp.get();
@@ -266,7 +266,7 @@ public class ResCLogin {
                             }
                             if (Version.GreaterOrEqual(Region.KMS, 160)) {
                                 sp.Encode4(3);
-                                if (Version.GreaterOrEqual(Region.KMS, 197)) {
+                                if (Version.GreaterOrEqual(Region.KMS, 169)) {
                                     sp.Encode4(0);
                                 }
                                 sp.Encode1(1);
@@ -794,7 +794,7 @@ public class ResCLogin {
             sp.Encode4(0);
             sp.Encode4(0);
             sp.Encode4(0);
-            if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            if (Version.GreaterOrEqual(Region.KMS, 169)) {
                 sp.Encode4(0);
                 sp.Encode1(0);
             }
