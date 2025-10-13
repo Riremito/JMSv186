@@ -62,7 +62,7 @@ public class ReqCLogin {
             // ログイン
             // CClientSocket::OnCheckPassword
             case CP_CheckPassword: {
-                if (OnCheckPassword(cp, c)) {
+                if (OnCheckPassword(c, cp)) {
                     DebugLogger.InfoLog("[LOGIN MAPLEID] \"" + c.getMapleId() + "\"");
                     if (ContentState.CS_NETCAFE.get()) {
                         c.SendPacket(ResCClientSocket.AuthenMessage());
@@ -72,34 +72,30 @@ public class ReqCLogin {
             }
             case CP_Check2ndPassword: {
                 if (Region.IsJMS() && Version.PostBB()) {
-                    ServerListRequest(c);
+                    OnWorldInfoRequest(c);
                 }
                 return true;
             }
-            // サーバー一覧
             case CP_WorldInfoRequest: {
-                ServerListRequest(c);
+                OnWorldInfoRequest(c);
                 return true;
             }
-            // サーバーの状態
-            case CP_CheckUserLimit: {
-                ServerStatusRequest(c);
-                return true;
-            }
-            // キャラクター一覧
             case CP_SelectWorld: {
-                CharlistRequest(cp, c);
+                OnSelectWorld(c, cp);
+                return true;
+            }
+            case CP_CheckUserLimit: {
+                OnCheckUserLimit(c);
                 return true;
             }
             case CP_CheckDuplicatedID: {
-                String name = cp.DecodeStr();
+                String character_name = cp.DecodeStr();
 
-                OnCheckDuplicatedID(c, name);
+                OnCheckDuplicatedID(c, character_name);
                 return true;
             }
-            // キャラクター作成
             case CP_CreateNewCharacter: {
-                CreateChar(cp, c);
+                OnCreateNewCharacter(c, cp);
                 return true;
             }
             // キャラクター削除
@@ -108,9 +104,16 @@ public class ReqCLogin {
                 return true;
             }
             // キャラクター選択
-            case CP_SelectCharacter:
             case CP_CheckPinCode: {
-                OnSelectCharacter(cp, c);
+                String password_2 = cp.DecodeStr(); // 2次パスワード (KMS160)
+                int character_id = cp.Decode4();
+                OnSelectCharacter(c, character_id);
+                return true;
+            }
+            // キャラクター選択
+            case CP_SelectCharacter: {
+                int character_id = cp.Decode4();
+                OnSelectCharacter(c, character_id);
                 return true;
             }
             case CP_ViewAllChar: {
@@ -142,8 +145,7 @@ public class ReqCLogin {
         return false;
     }
 
-    // login
-    public static final boolean OnCheckPassword(ClientPacket cp, MapleClient c) {
+    public static boolean OnCheckPassword(MapleClient c, ClientPacket cp) {
         if (Version.GreaterOrEqual(Region.KMS, 160) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148)) {
             byte hwid[] = cp.DecodeBuffer(16);
             int unk1 = cp.Decode4();
@@ -240,10 +242,10 @@ public class ReqCLogin {
             return;
         }
         // 2次パスワード要求する場合は入力を待つ必要がある, -1で無視すれば不要
-        ReqCLogin.ServerListRequest(c);
+        ReqCLogin.OnWorldInfoRequest(c);
     }
 
-    public static boolean CreateChar(ClientPacket cp, final MapleClient c) {
+    public static boolean OnCreateNewCharacter(MapleClient c, ClientPacket cp) {
         String character_name;
         byte character_gender = c.getGender();
         int job_type = 0;
@@ -385,19 +387,19 @@ public class ReqCLogin {
                     || dice_str < 4 || dice_str < 4 || dice_dex < 4 || dice_int < 4 || dice_luk < 4
                     || 12 < dice_str || 12 < dice_dex || 12 < dice_int || 12 < dice_luk) {
                 DebugLogger.DebugLog("dice error");
-                c.SendPacket(ResCLogin.addNewCharEntry(null, false));
+                c.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
                 return false;
             }
         }
         // data check
         if (!DWI_Validation.isValidFaceID(face_id) || !DWI_Validation.isValidHairID(hair_id)) {
             DebugLogger.DebugLog("Character creation error");
-            c.SendPacket(ResCLogin.addNewCharEntry(null, false));
+            c.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
             return false;
         }
         // name check
-        if (!canCreateChar(character_name)) {
-            c.SendPacket(ResCLogin.addNewCharEntry(null, false));
+        if (!checkCharacterName(character_name)) {
+            c.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
             return false;
         }
 
@@ -428,7 +430,7 @@ public class ReqCLogin {
 
         DebugUser.AddStarterSet(newchar);
         MapleCharacter.saveNewCharToDB(newchar);
-        c.SendPacket(ResCLogin.addNewCharEntry(newchar, true));
+        c.SendPacket(ResCLogin.CreateNewCharacterResult(newchar, true));
         c.addCharacter(newchar);
         return true;
     }
@@ -449,30 +451,13 @@ public class ReqCLogin {
         return true;
     }
 
-    public static void OnCheckDuplicatedID(MapleClient c, String name) {
-        boolean isOK = canCreateChar(name);
+    public static void OnCheckDuplicatedID(MapleClient c, String character_name) {
+        boolean isOK = checkCharacterName(character_name);
 
-        c.SendPacket(ResCLogin.CheckDuplicatedIDResult(name, isOK));
+        c.SendPacket(ResCLogin.CheckDuplicatedIDResult(character_name, isOK));
     }
 
-    public static boolean canCreateChar(final String name) {
-        if (name.getBytes().length < 2) {
-            return false;
-        }
-        if ((Content.CharacterNameLength.getInt() - 1) < name.getBytes().length) {
-            return false;
-        }
-        if (DW_Etc.isForbiddenName(name)) {
-            return false;
-        }
-        // already registered
-        if (DQ_Characters.getIdByName(name) != -1) {
-            return false;
-        }
-        return true;
-    }
-
-    public static final void CharlistRequest(ClientPacket cp, final MapleClient c) {
+    public static boolean OnSelectWorld(MapleClient c, ClientPacket cp) {
         if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.EMS, 89) || Region.IsKMS() || Region.IsIMS() || Version.GreaterOrEqual(Region.TWMS, 148)) {
             byte unk = cp.Decode1();
         }
@@ -487,19 +472,28 @@ public class ReqCLogin {
             }
         }
 
-        int server = cp.Decode1(); // nWorldID
-        final int channel = cp.Decode1(); // nChannelID)
+        int world = cp.Decode1(); // nWorldID
+        int channel = cp.Decode1(); // nChannelID
 
         if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 83) || Region.IsIMS() || Version.GreaterOrEqual(Region.CMS, 104)) {
             int ip = cp.Decode4(); // S_addr
         }
 
-        // もみじ block test
-        if (server == 1) {
-            c.SendPacket(ResCLogin.getCharList(c, ResCLogin.LoginResult.TOO_MANY_USERS));
-            return;
+        // もみじ(1)
+        if (world == 1) {
+            c.SendPacket(ResCLogin.SelectWorldResult(c, ResCLogin.LoginResult.TOO_MANY_USERS));
+            return false;
         }
-        CharlistRequest(c, server, channel + 1);
+        // 強制的にかえで(0)に書き換える
+        if (world == 12) {
+            world = 0;
+        }
+
+        c.setWorld(world);
+        c.setChannel(channel + 1); // CHを数字で扱う
+        DQ_Character_slots.setCharacterSlots(c);
+        c.SendPacket(ResCLogin.SelectWorldResult(c, ResCLogin.LoginResult.SUCCESS));
+        return true;
     }
 
     public static boolean OnDeleteCharacter(MapleClient c, ClientPacket cp) {
@@ -537,65 +531,64 @@ public class ReqCLogin {
         return success;
     }
 
-    // 必要なさそう
-    public static final void ServerStatusRequest(final MapleClient c) {
-        // 0 = Select world normally
-        // 1 = "Since there are many users, you may encounter some..."
-        // 2 = "The concurrent users in this world have reached the max"
-        final int numPlayer = LoginServer.getUsersOn();
-        final int userLimit = Property_Login.getUserLimit();
-        if (numPlayer >= userLimit) {
-            c.getSession().write(ResCLogin.getServerStatus(2));
-        } else if (numPlayer * 2 >= userLimit) {
-            c.getSession().write(ResCLogin.getServerStatus(1));
-        } else {
-            c.getSession().write(ResCLogin.getServerStatus(0));
+    // JMS以外必要
+    public static void OnCheckUserLimit(MapleClient c) {
+        int world_users = LoginServer.getUsersOn();
+        int world_max_users = Property_Login.getUserLimit();
+        int world_status = 0;
+
+        if ((world_max_users / 2) <= world_users) {
+            world_status = 1;
+            DebugLogger.ErrorLog("OnCheckUserLimit : too many users.");
         }
+        if (world_max_users <= world_users) {
+            world_status = 2;
+            DebugLogger.ErrorLog("OnCheckUserLimit : max users limit.");
+        }
+
+        c.SendPacket(ResCLogin.CheckUserLimitResult(world_status));
     }
 
-    public static final void ServerListRequest(final MapleClient c) {
+    public static void OnWorldInfoRequest(MapleClient c) {
         // かえで
-        c.SendPacket(ResCLogin.getServerList(0));
+        c.SendPacket(ResCLogin.WorldInformation(0));
         // もみじ (サーバーを分離すると接続人数を取得するのが難しくなる)
-        c.SendPacket(ResCLogin.getServerList(1, false, LoginServer.WorldChannels[1]));
-        c.SendPacket(ResCLogin.getEndOfServerList());
+        c.SendPacket(ResCLogin.WorldInformation(1, false, LoginServer.WorldChannels[1]));
+        c.SendPacket(ResCLogin.WorldInformation(-1));
+
         if (ServerConfig.JMS186orLater()) {
             c.SendPacket(ResCLogin.RecommendWorldMessage());
             c.SendPacket(ResCLogin.LatestConnectedWorld());
         }
+
     }
 
-    private static int SelectedChannel = 0;
-    private static int SelectedWorld = 0;
-
-    public static final void CharlistRequest(MapleClient c, int server, int channel) {
-        if (server == 12) {
-            server = 0;
-        }
-        SelectedWorld = server;
-        SelectedChannel = channel - 1;
-        c.setWorld(server);
-        c.setChannel(channel);
-        DQ_Character_slots.setCharacterSlots(c); // requires world id
-        c.SendPacket(ResCLogin.getCharList(c, ResCLogin.LoginResult.SUCCESS));
-    }
-
-    public static final boolean SelectCharacter(MapleClient c, int charId) {
-        if (!c.checkCharacterId(charId)) {
-            c.loginFailed("SelectCharacter");
+    public static boolean OnSelectCharacter(MapleClient c, int character_id) {
+        if (!c.checkCharacterId(character_id)) {
+            c.loginFailed("OnSelectCharacter");
             return false;
         }
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
-        c.SendPacket(ResCLogin.SelectCharacterResult(LoginServer.WorldPort[SelectedWorld] + SelectedChannel, charId));
+        c.SendPacket(ResCLogin.SelectCharacterResult(LoginServer.WorldPort[c.getWorld()] + c.getChannel() - 1, character_id));
         return true;
     }
 
-    // CClientSocket::OnSelectCharacter
-    public static final boolean OnSelectCharacter(ClientPacket cp, MapleClient c) {
-        if (cp.GetOpcode() == ClientPacket.Header.CP_CheckPinCode) {
-            String secondpw = cp.DecodeStr(); // KMS160
+    // TODO : move to other class.
+    public static boolean checkCharacterName(final String character_name) {
+        if (character_name.getBytes().length < 2) {
+            return false;
         }
-        final int charId = cp.Decode4();
-        return SelectCharacter(c, charId);
+        if ((Content.CharacterNameLength.getInt() - 1) < character_name.getBytes().length) {
+            return false;
+        }
+        if (DW_Etc.isForbiddenName(character_name)) {
+            return false;
+        }
+        // already registered
+        if (DQ_Characters.getIdByName(character_name) != -1) {
+            return false;
+        }
+        return true;
     }
+
 }
