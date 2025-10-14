@@ -145,104 +145,38 @@ public class ReqCLogin {
         return false;
     }
 
+    // KMS beta to KMS149 and JMS302.
     public static boolean OnCheckPassword(MapleClient c, ClientPacket cp) {
-        if (Version.GreaterOrEqual(Region.KMS, 160) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148)) {
-            byte hwid[] = cp.DecodeBuffer(16);
-            int unk1 = cp.Decode4();
-            byte unk2 = cp.Decode1();
-            byte unk3 = cp.Decode1();
+        // KMS160 or later, JMS308 or later.
+        if (Version.GreaterOrEqual(Region.KMS, 160) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.EMS, 89)) {
+            return OnCheckPassword_KMS160(c, cp);
         }
-        if (Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148)) {
-            byte unk4 = cp.Decode1();
-        }
-        if (Version.GreaterOrEqual(Region.CMS, 104)) {
-            byte hwid[] = cp.DecodeBuffer(16);
-            int unk1 = cp.Decode4();
-            byte unk2 = cp.Decode1();
-        }
+        // KMS149 or before, JMS302 or before.
+        String maple_id = cp.DecodeStr(); // clean GMS83+ clients set password here by NMCO.
+        String password = cp.DecodeStr(); // clean GMS83+ clients set passport here by NMCO.
+        byte hwid[] = cp.DecodeBuffer(16);
+        // you can ignore all data after hwid.
+        int unk1 = cp.Decode4(); // 0
+        byte unk2 = (Version.GreaterOrEqual(Region.KMS, 31) || Version.GreaterOrEqual(Region.JMS, 131)) ? cp.Decode1() : 2; // old KMS uses 0?
+        byte unk3 = (Version.GreaterOrEqual(Region.JMS, 147)) ? cp.Decode1() : 0; // JMS147
+        // GMS83, BYTE
+        // GMS83, DWORD
+
+        return checkLogin(c, maple_id, password);
+    }
+
+    // after KMS160 and JMS308.
+    // around phantom or tempest update.
+    public static boolean OnCheckPassword_KMS160(MapleClient c, ClientPacket cp) {
+        byte hwid[] = cp.DecodeBuffer(16);
+        int unk1 = cp.Decode4(); // 0
+        byte unk2 = cp.Decode1(); // 2
+        byte unk3 = (Version.GreaterOrEqual(Region.KMS, 160) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.EMS, 89)) ? cp.Decode1() : 0;
+        byte unk4 = (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.EMS, 89)) ? cp.Decode1() : 0;
         String maple_id = cp.DecodeStr();
         String password = cp.DecodeStr();
-        return OnCheckPassword(c, maple_id, password);
-    }
 
-    public static final boolean OnCheckPassword(MapleClient c, String maple_id, String password) {
-        if (5 <= c.loginAttempt()) {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, LoginResult.SYSTEM_ERROR));
-            return false;
-        }
-        boolean endwith_ = false;
-        boolean startwith_GM = false;
-        // MapleIDは最低4文字なので、5文字以上の場合に性別変更の特殊判定を行う
-        if (maple_id.length() >= 5 && maple_id.endsWith("_")) {
-            maple_id = maple_id.substring(0, maple_id.length() - 1);
-            endwith_ = true;
-            DebugLogger.InfoLog("[FEMALE MODE] \"" + maple_id + "\"");
-        }
-        if (DeveloperMode.DM_GM_ACCOUNT.get()) {
-            if (maple_id.startsWith("GM")) {
-                startwith_GM = true;
-                DebugLogger.InfoLog("[GM MODE] \"" + maple_id + "\"");
-            }
-        }
-        c.setMapleId(maple_id);
-        int loginok = DQ_Accounts.login(c, maple_id, password);
-        if (loginok == 5) {
-            if (DQ_Accounts.autoRegister(maple_id, password)) {
-                loginok = DQ_Accounts.login(c, maple_id, password);
-            }
-        }
-        // アカウントの性別変更
-        if (endwith_) {
-            c.setGender((byte) 1);
-        }
-        // GM test
-        if (startwith_GM) {
-            c.setGameMaster();
-        }
-        if (loginok != 0) {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, loginok));
-        } else {
-            c.resetLoginAttempt();
-            registerClient(c);
-            return true;
-        }
-        return false;
-    }
-
-    private static long lastUpdate = 0;
-
-    public static void registerClient(final MapleClient c) {
-        if (LoginServer.isAdminOnly() && !c.isGameMaster()) {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.INVALID_ADMIN_IP));
-            return;
-        }
-        if (System.currentTimeMillis() - lastUpdate > 600000) {
-            // Update once every 10 minutes
-            lastUpdate = System.currentTimeMillis();
-            final Map<Integer, Integer> load = ChannelServer.getChannelLoad();
-            int usersOn = 0;
-            if (load == null || load.size() <= 0) {
-                // In an unfortunate event that client logged in before load
-                lastUpdate = 0;
-                c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
-                return;
-            }
-            final double loadFactor = 1200 / ((double) Property_Login.getUserLimit() / load.size());
-            for (Map.Entry<Integer, Integer> entry : load.entrySet()) {
-                usersOn += entry.getValue();
-                load.put(entry.getKey(), Math.min(1200, (int) (entry.getValue() * loadFactor)));
-            }
-            LoginServer.setLoad(load, usersOn);
-            lastUpdate = System.currentTimeMillis();
-        }
-        if (DQ_Accounts.finishLogin(c)) {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.SUCCESS));
-        } else {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
-            return;
-        }
-        // 2次パスワード要求する場合は入力を待つ必要がある, -1で無視すれば不要
-        ReqCLogin.OnWorldInfoRequest(c);
+        return checkLogin(c, maple_id, password);
     }
 
     public static boolean OnCreateNewCharacter(MapleClient c, ClientPacket cp) {
@@ -574,6 +508,86 @@ public class ReqCLogin {
     }
 
     // TODO : move to other class.
+    public static final boolean checkLogin(MapleClient c, String maple_id, String password) {
+        if (5 <= c.loginAttempt()) {
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, LoginResult.SYSTEM_ERROR));
+            return false;
+        }
+        boolean endwith_ = false;
+        boolean startwith_GM = false;
+        // MapleIDは最低4文字なので、5文字以上の場合に性別変更の特殊判定を行う
+        if (maple_id.length() >= 5 && maple_id.endsWith("_")) {
+            maple_id = maple_id.substring(0, maple_id.length() - 1);
+            endwith_ = true;
+            DebugLogger.InfoLog("[FEMALE MODE] \"" + maple_id + "\"");
+        }
+        if (DeveloperMode.DM_GM_ACCOUNT.get()) {
+            if (maple_id.startsWith("GM")) {
+                startwith_GM = true;
+                DebugLogger.InfoLog("[GM MODE] \"" + maple_id + "\"");
+            }
+        }
+        c.setMapleId(maple_id);
+        int loginok = DQ_Accounts.login(c, maple_id, password);
+        if (loginok == 5) {
+            if (DQ_Accounts.autoRegister(maple_id, password)) {
+                loginok = DQ_Accounts.login(c, maple_id, password);
+            }
+        }
+        // アカウントの性別変更
+        if (endwith_) {
+            c.setGender((byte) 1);
+        }
+        // GM test
+        if (startwith_GM) {
+            c.setGameMaster();
+        }
+        if (loginok != 0) {
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, loginok));
+        } else {
+            c.resetLoginAttempt();
+            registerClient(c);
+            return true;
+        }
+        return false;
+    }
+
+    private static long lastUpdate = 0;
+
+    public static void registerClient(final MapleClient c) {
+        if (LoginServer.isAdminOnly() && !c.isGameMaster()) {
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.INVALID_ADMIN_IP));
+            return;
+        }
+        if (System.currentTimeMillis() - lastUpdate > 600000) {
+            // Update once every 10 minutes
+            lastUpdate = System.currentTimeMillis();
+            final Map<Integer, Integer> load = ChannelServer.getChannelLoad();
+            int usersOn = 0;
+            if (load == null || load.size() <= 0) {
+                // In an unfortunate event that client logged in before load
+                lastUpdate = 0;
+                c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
+                return;
+            }
+            final double loadFactor = 1200 / ((double) Property_Login.getUserLimit() / load.size());
+            for (Map.Entry<Integer, Integer> entry : load.entrySet()) {
+                usersOn += entry.getValue();
+                load.put(entry.getKey(), Math.min(1200, (int) (entry.getValue() * loadFactor)));
+            }
+            LoginServer.setLoad(load, usersOn);
+            lastUpdate = System.currentTimeMillis();
+        }
+        if (DQ_Accounts.finishLogin(c)) {
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.SUCCESS));
+        } else {
+            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
+            return;
+        }
+        // 2次パスワード要求する場合は入力を待つ必要がある, -1で無視すれば不要
+        ReqCLogin.OnWorldInfoRequest(c);
+    }
+
     public static boolean checkCharacterName(final String character_name) {
         if (character_name.getBytes().length < 2) {
             return false;
