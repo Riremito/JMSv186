@@ -73,7 +73,7 @@ public class ResCShopDlg {
         if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 131)) {
             sp.Encode1(0);
         }
-        if(Version.GreaterOrEqual(Region.GMS, 131)){
+        if (Version.GreaterOrEqual(Region.GMS, 131)) {
             sp.Encode1(0);
         }
 
@@ -112,7 +112,7 @@ public class ResCShopDlg {
                 sp.Encode1(0); // nDiscountRate
             }
 
-            if (ServerConfig.JMS180orLater()) {
+            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode4(0); // nTokenItemID
                 sp.Encode4(0); // nTokenPrice
             }
@@ -121,7 +121,7 @@ public class ResCShopDlg {
                 sp.Encode4(0); // nItemPeriod
             }
 
-            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84)) {
+            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode4(0); // nLevelLimited
             }
 

@@ -59,9 +59,8 @@ public class ReqCLogin {
     // CLogin::OnPacket
     public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
         switch (header) {
-            // ログイン
-            // CClientSocket::OnCheckPassword
             case CP_CheckPassword: {
+                // ログイン
                 if (OnCheckPassword(c, cp)) {
                     DebugLogger.InfoLog("[LOGIN MAPLEID] \"" + c.getMapleId() + "\"");
                     if (ContentState.CS_NETCAFE.get()) {
@@ -71,69 +70,81 @@ public class ReqCLogin {
                 return true;
             }
             case CP_Check2ndPassword: {
-                if (Region.IsJMS() && Version.PostBB()) {
-                    OnWorldInfoRequest(c);
-                }
+                // 2次パスワード入力
+                DebugLogger.TestLog("Check2ndPassword");
+                OnWorldInfoRequest(c);
                 return true;
             }
             case CP_WorldInfoRequest: {
+                // ワールド情報の取得
                 OnWorldInfoRequest(c);
                 return true;
             }
             case CP_SelectWorld: {
+                // チャンネル選択
                 OnSelectWorld(c, cp);
                 return true;
             }
             case CP_CheckUserLimit: {
+                // JMSは不要
                 OnCheckUserLimit(c);
                 return true;
             }
             case CP_CheckDuplicatedID: {
+                // キャラクター名の確認
                 String character_name = cp.DecodeStr();
-
                 OnCheckDuplicatedID(c, character_name);
                 return true;
             }
             case CP_CreateNewCharacter: {
+                // キャラクター作成
                 OnCreateNewCharacter(c, cp);
                 return true;
             }
-            // キャラクター削除
             case CP_DeleteCharacter: {
+                // キャラクター削除
                 OnDeleteCharacter(c, cp);
                 return true;
             }
-            // キャラクター選択
             case CP_CheckPinCode: {
+                DebugLogger.TestLog("CheckPinCode");
                 String password_2 = cp.DecodeStr(); // 2次パスワード (KMS160)
                 int character_id = cp.Decode4();
+
                 OnSelectCharacter(c, character_id);
                 return true;
             }
-            // キャラクター選択
             case CP_SelectCharacter: {
+                // キャラクター選択
                 int character_id = cp.Decode4();
                 OnSelectCharacter(c, character_id);
                 return true;
             }
             case CP_ViewAllChar: {
+                // JMS186 : @000A
                 c.SendPacket(ResCLogin.ViewAllCharResult(c, true));
                 c.SendPacket(ResCLogin.ViewAllCharResult(c, false));
                 return true;
             }
             case CP_JMS_CheckGameGuardUpdated: {
-                // ログインボタン有効化 (GG専用)
+                // JMS147 : @0010
+                // ログインボタンの有効化 (GameGuard Update)
                 c.SendPacket(ResCLogin.CheckGameGuardUpdated(true));
                 return true;
             }
             case CP_JMS_MapLogin: {
-                // クライアントがログイン画面に移行した場合に送信される
+                // JMS186 : @0018
+                // MapLoginの表示が完了
+                return true;
+            }
+            case CP_JMS_SafetyPassword: {
+                // JMS186 : @0019
+                // 安心パスワード
                 return true;
             }
             case CP_JMS_GetMapLogin: {
-                // @0018
-                // クライアントがログイン画面に移行した場合に送信される (初回限定)
-                // BIGBANG前後のJMSでMapLoginが複数存在するバージョンで必要となる
+                // JMS186 : @001A
+                // MapLoginの設定を取得 (UI.wz/MapLogin.img)
                 c.SendPacket(ResCLogin.SetMapLogin("MapLogin"));
                 return true;
             }

@@ -115,6 +115,12 @@ public class DebugLogger {
         return true;
     }
 
+    // TODO : remove after refactoring all codes.
+    public static boolean TestLog(String log_text) {
+        Log("TEST", log_text);
+        return true;
+    }
+
     public static void ErrorLog(String log_text) {
         Log("ERROR", log_text);
     }
