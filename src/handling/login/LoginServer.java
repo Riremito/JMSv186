@@ -29,7 +29,6 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import server.network.MapleServerHandler;
 import server.network.MapleCodecFactory;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
@@ -38,6 +37,7 @@ import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
+import server.network.PH_Login;
 
 public class LoginServer {
 
@@ -99,7 +99,7 @@ public class LoginServer {
 
         try {
             InetSocketadd = new InetSocketAddress(Property_Login.getPort());
-            acceptor.bind(InetSocketadd, new MapleServerHandler(-1, MapleServerHandler.ServerType.LoginServer), cfg);
+            acceptor.bind(InetSocketadd, new PH_Login(), cfg);
             DebugLogger.InfoLog("Port = " + Property_Login.getPort());
         } catch (IOException e) {
             DebugLogger.ErrorLog("Binding to port " + Property_Login.getPort() + " failed" + e);

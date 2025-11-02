@@ -36,7 +36,6 @@ import config.property.Property_World;
 import debug.DebugLogger;
 import server.network.ByteArrayMaplePacket;
 import server.network.MaplePacket;
-import server.network.MapleServerHandler;
 import handling.login.LoginServer;
 import server.network.MapleCodecFactory;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -64,6 +63,7 @@ import server.events.MapleFitness;
 import server.events.MapleOla;
 import server.events.MapleOxQuiz;
 import server.events.MapleSnowball;
+import server.network.PH_Game;
 
 public class ChannelServer implements Serializable {
 
@@ -74,7 +74,6 @@ public class ChannelServer implements Serializable {
     private String serverMessage, serverName;
     private boolean shutdown = false, finishedShutdown = false, MegaphoneMuteState = false, adminOnly = false;
     private PlayerStorage players;
-    private MapleServerHandler serverHandler;
     private IoAcceptor acceptor;
     private final MapleMapFactory mapFactory;
     private EventScriptManager eventSM;
@@ -149,8 +148,7 @@ public class ChannelServer implements Serializable {
         loadEvents();
 
         try {
-            this.serverHandler = new MapleServerHandler(channel, MapleServerHandler.ServerType.GameServer);
-            acceptor.bind(new InetSocketAddress(port), serverHandler, acceptor_config);
+            acceptor.bind(new InetSocketAddress(port), new PH_Game(channel), acceptor_config);
             DebugLogger.InfoLog("Channel " + channel + " Port = " + port);
             eventSM.init();
         } catch (IOException e) {
@@ -517,10 +515,6 @@ public class ChannelServer implements Serializable {
 
     public final static int getChannelCount() {
         return instances.size();
-    }
-
-    public final MapleServerHandler getServerHandler() {
-        return serverHandler;
     }
 
     public final int getTempFlag() {

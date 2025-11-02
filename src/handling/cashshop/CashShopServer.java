@@ -23,7 +23,6 @@ package handling.cashshop;
 import config.property.Property_Shop;
 import debug.DebugLogger;
 import java.net.InetSocketAddress;
-import server.network.MapleServerHandler;
 import handling.channel.PlayerStorage;
 import server.network.MapleCodecFactory;
 import org.apache.mina.common.ByteBuffer;
@@ -33,6 +32,7 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import server.MTSStorage;
+import server.network.PH_CashShop;
 
 public class CashShopServer {
 
@@ -55,7 +55,7 @@ public class CashShopServer {
 
         try {
             InetSocketadd = new InetSocketAddress(Property_Shop.getPort());
-            acceptor.bind(InetSocketadd, new MapleServerHandler(-1, MapleServerHandler.ServerType.PointShopServer), cfg);
+            acceptor.bind(InetSocketadd, new PH_CashShop(), cfg);
             DebugLogger.InfoLog("Port = " + Property_Shop.getPort());
         } catch (final Exception e) {
             DebugLogger.ErrorLog("Binding to port " + Property_Shop.getPort() + " failed");
