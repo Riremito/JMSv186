@@ -27,5 +27,7 @@ import packet.ClientPacket;
  */
 public interface IPacketHandler {
 
+    public boolean isShutdown();
+
     public boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception;
 }

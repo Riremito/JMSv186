@@ -19,9 +19,7 @@
 package server.network;
 
 import client.MapleClient;
-import debug.DebugLogger;
 import handling.channel.ChannelServer;
-import org.apache.mina.common.IoSession;
 import packet.ClientPacket;
 import packet.request.ReqCClientSocket;
 import packet.request.ReqCDropPool;
@@ -45,23 +43,14 @@ import packet.request.Req_MapleTV;
  */
 public class PH_Game extends PacketHandler implements IPacketHandler {
 
-    private final String server_name;
-
     public PH_Game(int channel) {
         super(channel);
         this.server_name = "Channel" + String.format("%02d", this.channel);
     }
 
     @Override
-    public void sessionOpened(final IoSession session) throws Exception {
-        String client_ip = session.getRemoteAddress().toString();
-        if (ChannelServer.getInstance(this.channel).isShutdown()) {
-            session.close();
-            DebugLogger.ErrorLog("[Server : " + server_name + "] sessionOpened. (" + client_ip + ")");
-            return;
-        }
-        DebugLogger.InfoLog("[Server : " + server_name + "] sessionOpened. (" + client_ip + ")");
-        super.sessionOpened(session);
+    public boolean isShutdown() {
+        return ChannelServer.getInstance(this.channel).isShutdown();
     }
 
     @Override

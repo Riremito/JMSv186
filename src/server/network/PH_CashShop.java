@@ -19,9 +19,7 @@
 package server.network;
 
 import client.MapleClient;
-import debug.DebugLogger;
 import handling.cashshop.CashShopServer;
-import org.apache.mina.common.IoSession;
 import packet.ClientPacket;
 import packet.request.ReqCCashShop;
 import packet.request.ReqCClientSocket;
@@ -36,18 +34,12 @@ public class PH_CashShop extends PacketHandler implements IPacketHandler {
 
     public PH_CashShop() {
         super(-1);
+        this.server_name = "CashShop";
     }
 
     @Override
-    public void sessionOpened(final IoSession session) throws Exception {
-        String client_ip = session.getRemoteAddress().toString();
-        if (CashShopServer.isShutdown()) {
-            session.close();
-            DebugLogger.ErrorLog("[Server : CashShop] sessionOpened. (" + client_ip + ")");
-            return;
-        }
-        DebugLogger.InfoLog("[Server : CashShop] sessionOpened. (" + client_ip + ")");
-        super.sessionOpened(session);
+    public boolean isShutdown() {
+        return CashShopServer.isShutdown();
     }
 
     @Override

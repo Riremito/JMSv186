@@ -35,6 +35,7 @@ import tools.FileoutputUtil;
  */
 public class PacketHandler extends IoHandlerAdapter {
 
+    protected String server_name;
     protected int channel = -1;
 
     public PacketHandler(int channel) {
@@ -45,15 +46,24 @@ public class PacketHandler extends IoHandlerAdapter {
         this.channel = -1;
     }
 
+    protected void log(IoSession session, String text) {
+        String client_ip = session.getRemoteAddress().toString();
+        DebugLogger.InfoLog("[Server_" + this.server_name + "][" + client_ip + "]" + " " + text);
+    }
+
     @Override
     public void sessionCreated(IoSession session) throws Exception {
-        DebugLogger.DebugLog("sessionCreated.");
+        log(session, "sessionCreated.");
         super.sessionCreated(session);
     }
 
     @Override
     public void sessionOpened(final IoSession session) throws Exception {
-        DebugLogger.DebugLog("sessionOpened.");
+        log(session, "sessionOpened.");
+        if (((IPacketHandler) this).isShutdown()) {
+            session.close();
+            return;
+        }
 
         final byte serverRecv[] = new byte[]{70, 114, 122, (byte) Randomizer.nextInt(255)};
         final byte serverSend[] = new byte[]{82, 48, 120, (byte) Randomizer.nextInt(255)};
@@ -74,7 +84,7 @@ public class PacketHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionClosed(final IoSession session) throws Exception {
-        DebugLogger.DebugLog("sessionClosed.");
+        log(session, "sessionClosed.");
         final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
 
         if (client != null) {
@@ -90,7 +100,7 @@ public class PacketHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionIdle(final IoSession session, final IdleStatus status) throws Exception {
-        DebugLogger.DebugLog("sessionIdle.");
+        log(session, "sessionIdle.");
         final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
 
         if (client != null) {
@@ -103,13 +113,13 @@ public class PacketHandler extends IoHandlerAdapter {
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        DebugLogger.DebugLog("exceptionCaught.");
+        log(session, "exceptionCaught.");
         super.exceptionCaught(session, cause);
     }
 
     @Override
     public void messageReceived(final IoSession session, final Object message) {
-        DebugLogger.DebugLog("messageReceived.");
+        log(session, "messageReceived.");
         try {
             ClientPacket cp = new ClientPacket((byte[]) message);
             if (cp.getSize() < Content.PacketHeaderSize.getInt()) {
@@ -118,7 +128,7 @@ public class PacketHandler extends IoHandlerAdapter {
             // client
             MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
             if (c.isMigrating()) {
-                DebugLogger.ErrorLog("messageReceived : Migrating.");
+                log(session, "messageReceived : Migrating.");
                 return;
             }
 
@@ -148,11 +158,8 @@ public class PacketHandler extends IoHandlerAdapter {
 
     @Override
     public void messageSent(final IoSession session, final Object message) throws Exception {
-        DebugLogger.DebugLog("messageSent.");
-        final Runnable r = ((MaplePacket) message).getOnSend();
-        if (r != null) {
-            r.run();
-        }
+        log(session, "messageSent.");
+        //log(session, (new ClientPacket(((MaplePacket) message).getBytes())).get()); // server packet
         super.messageSent(session, message);
     }
 }

@@ -20,11 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.network;
 
-public interface MaplePacket extends java.io.Serializable {
+public interface MaplePacket {
 
     public byte[] getBytes();
-
-    public Runnable getOnSend();
-
-    public void setOnSend(final Runnable onSend);
 }
