@@ -21,7 +21,9 @@ package debug;
 import client.MapleCharacter;
 import client.inventory.IItem;
 import client.inventory.MapleInventoryType;
+import config.Region;
 import config.ServerConfig;
+import config.Version;
 import constants.GameConstants;
 import data.wz.DW_Item;
 import data.wz.ids.DWI_LoadXML;
@@ -53,7 +55,7 @@ public class DebugShop {
         switch (OpsShop.find(shop_req)) {
             case ShopReq_Buy: {
                 short unk1 = cp.Decode2();
-                byte unk2 = ServerConfig.JMS194orLater() ? cp.Decode1() : 0;
+                byte unk2 = (ServerConfig.JMS194orLater() && !Version.GreaterOrEqual(Region.EMS, 89)) ? cp.Decode1() : 0;
                 int item_id = cp.Decode4();
                 short quantity = cp.Decode2();
 
