@@ -34,6 +34,7 @@ public enum DeveloperMode {
     DM_LOG_DEBUG,
     DM_LOG_INFO(true),
     DM_LOG_SETUP(true),
+    DM_LOG_NETWORK(false),
     DM_LOG_WZ,
     DM_LOG_ADMIN,
     DM_GM_ACCOUNT,

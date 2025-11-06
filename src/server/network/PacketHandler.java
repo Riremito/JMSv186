@@ -24,6 +24,8 @@ import debug.DebugLogger;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.common.IoSession;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import packet.ClientPacket;
 import packet.response.ResCClientSocket;
 import server.Randomizer;
@@ -34,6 +36,23 @@ import tools.FileoutputUtil;
  * @author Riremito
  */
 public class PacketHandler extends IoHandlerAdapter {
+
+    private static SocketAcceptorConfig cfg = null;
+    private static MapleCodecFactory mcf = null;
+    private static ProtocolCodecFilter pcf = null;
+
+    public static SocketAcceptorConfig getSocketAcceptorConfig() {
+        if (cfg != null) {
+            return cfg;
+        }
+        mcf = new MapleCodecFactory();
+        pcf = new ProtocolCodecFilter(mcf);
+        cfg = new SocketAcceptorConfig();
+        cfg.getSessionConfig().setTcpNoDelay(true);
+        cfg.setDisconnectOnUnbind(true);
+        cfg.getFilterChain().addLast("codec", pcf);
+        return cfg;
+    }
 
     protected String server_name;
     protected int channel = -1;
@@ -48,7 +67,7 @@ public class PacketHandler extends IoHandlerAdapter {
 
     protected void log(IoSession session, String text) {
         String client_ip = session.getRemoteAddress().toString();
-        DebugLogger.InfoLog("[Server_" + this.server_name + "][" + client_ip + "]" + " " + text);
+        DebugLogger.NetworkLog("[Server_" + this.server_name + "][" + client_ip + "]" + " " + text);
     }
 
     @Override

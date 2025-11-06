@@ -24,6 +24,7 @@ import config.ClientEdit;
 import config.Content;
 import config.Region;
 import config.Version;
+import debug.DebugLogger;
 
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
@@ -121,6 +122,7 @@ public class MaplePacketEncoder implements ProtocolEncoder {
 
     @Override
     public void dispose(IoSession session) throws Exception {
-        // nothing to do
+        // session closed.
+        //DebugLogger.DebugLog("dispose. (enc)");
     }
 }

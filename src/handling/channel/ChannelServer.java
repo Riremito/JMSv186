@@ -37,7 +37,6 @@ import debug.DebugLogger;
 import server.network.ByteArrayMaplePacket;
 import server.network.MaplePacket;
 import handling.login.LoginServer;
-import server.network.MapleCodecFactory;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import scripting.EventScriptManager;
 import server.MapleSquad;
@@ -48,8 +47,6 @@ import server.life.PlayerNPC;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import org.apache.mina.common.IoAcceptor;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import java.io.Serializable;
 import java.util.EnumMap;
@@ -64,6 +61,7 @@ import server.events.MapleOla;
 import server.events.MapleOxQuiz;
 import server.events.MapleSnowball;
 import server.network.PH_Game;
+import server.network.PacketHandler;
 
 public class ChannelServer implements Serializable {
 
@@ -140,15 +138,11 @@ public class ChannelServer implements Serializable {
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
 
         acceptor = new SocketAcceptor();
-        final SocketAcceptorConfig acceptor_config = new SocketAcceptorConfig();
-        acceptor_config.getSessionConfig().setTcpNoDelay(true);
-        acceptor_config.setDisconnectOnUnbind(true);
-        acceptor_config.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MapleCodecFactory()));
         players = new PlayerStorage(channel);
         loadEvents();
 
         try {
-            acceptor.bind(new InetSocketAddress(port), new PH_Game(channel), acceptor_config);
+            acceptor.bind(new InetSocketAddress(port), new PH_Game(channel), PacketHandler.getSocketAcceptorConfig());
             DebugLogger.InfoLog("Channel " + channel + " Port = " + port);
             eventSM.init();
         } catch (IOException e) {

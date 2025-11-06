@@ -141,6 +141,14 @@ public class DebugLogger {
         return true;
     }
 
+    public static boolean NetworkLog(String log_text) {
+        if (!DeveloperMode.DM_LOG_NETWORK.get()) {
+            return false;
+        }
+        Log("NETWORK", log_text);
+        return true;
+    }
+
     public static boolean XmlLog(String log_text) {
         if (!DeveloperMode.DM_LOG_WZ.get()) {
             return false;
