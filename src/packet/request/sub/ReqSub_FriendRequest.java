@@ -27,7 +27,7 @@ import config.Region;
 import config.Version;
 import database.DatabaseConnection;
 import debug.DebugLogger;
-import server.server.Server_Game;
+import server.server.ServerOdinGame;
 import handling.world.World;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -69,7 +69,7 @@ public class ReqSub_FriendRequest {
                 } else {
                     int ch = World.Find.findChannel(name);
                     if (ch != -1) {
-                        MapleCharacter chr_friend = Server_Game.getInstance(ch).getPlayerStorage().getCharacterByName(name);
+                        MapleCharacter chr_friend = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(name);
                         if (chr_friend != null) {
                             BuddylistEntry be_friend = new BuddylistEntry(name, chr_friend.getId(), tag, chr_friend.getClient().getChannel(), true, chr_friend.getLevel(), chr_friend.getJob());
                             chr.getBuddylist().put(be_friend);
@@ -144,7 +144,7 @@ public class ReqSub_FriendRequest {
                 int channel = World.Find.findChannel(friend_name);
                 MapleCharacter otherChar = null;
                 if (channel > 0) {
-                    otherChar = Server_Game.getInstance(channel).getPlayerStorage().getCharacterByName(friend_name);
+                    otherChar = ServerOdinGame.getInstance(channel).getPlayerStorage().getCharacterByName(friend_name);
                     if (!otherChar.isGM() || c.getPlayer().isGM()) {
                         charWithId = new CharacterIdNameBuddyCapacity(otherChar.getId(), otherChar.getName(), otherChar.getLevel(), otherChar.getJob(), friend_tag, otherChar.getBuddylist().getCapacity());
                     }
@@ -233,7 +233,7 @@ public class ReqSub_FriendRequest {
                     rs.close();
                     ps.close();
                 } else {
-                    final MapleCharacter otherChar = Server_Game.getInstance(channel).getPlayerStorage().getCharacterById(friend_id);
+                    final MapleCharacter otherChar = ServerOdinGame.getInstance(channel).getPlayerStorage().getCharacterById(friend_id);
                     otherName = otherChar.getName();
                     otherLevel = otherChar.getLevel();
                     otherJob = otherChar.getJob();

@@ -8,10 +8,10 @@ import config.Region;
 import config.Version;
 import config.property.Property;
 import data.client.DC_Exp;
-import server.server.Server_Game;
+import server.server.ServerOdinGame;
 import handling.channel.MapleGuildRanking;
-import server.server.Server_Login;
-import server.server.Server_CashShop;
+import server.server.ServerOdinLogin;
+import server.server.ServerOdinCashShop;
 import handling.world.World;
 import java.sql.SQLException;
 import database.query.DQ_Accounts;
@@ -71,7 +71,7 @@ public class Start {
         DebugLogger.SetupLog("CODEPAGE");
         CodePage.init();
         // ログインサーバー上のゲームサーバー情報
-        Server_Login.SetWorldConfig(); // TODO : fix
+        ServerOdinLogin.SetWorldConfig(); // TODO : fix
         // database
         DQ_Accounts.resetLoginState();
         // 管理画面
@@ -92,7 +92,7 @@ public class Start {
         PingTimer.getInstance().start();
 
         DebugLogger.SetupLog("LOGIN_SERVER");
-        Server_Login.run_startup_configurations();
+        ServerOdinLogin.run_startup_configurations();
         RandomRewards.getInstance();
 
         MapleOxQuizFactory.getInstance().initialize();
@@ -100,10 +100,10 @@ public class Start {
         MapleFamilyBuff.getBuffEntry();
 
         DebugLogger.SetupLog("GAME_SERVER");
-        Server_Game.startChannel_Main();
+        ServerOdinGame.startChannel_Main();
 
         DebugLogger.SetupLog("CASHSHOP_SERVER");
-        Server_CashShop.run_startup_configurations();
+        ServerOdinCashShop.run_startup_configurations();
         MTSStorage.load();
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Shutdown()));
@@ -113,7 +113,7 @@ public class Start {
             e.printStackTrace();
         }
         World.registerRespawn();
-        Server_Login.setOn(); //now or later
+        ServerOdinLogin.setOn(); //now or later
         DebugLogger.SetupLog("RANKING");
         RankingWorker.getInstance().run();
         DebugLogger.SetupLog("DONE!");

@@ -37,7 +37,7 @@ import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import database.DatabaseConnection;
 import server.network.MaplePacket;
-import server.server.Server_Game;
+import server.server.ServerOdinGame;
 import java.util.ArrayList;
 import packet.response.ResCEmployeePool;
 import packet.response.ResCField;
@@ -357,7 +357,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     }
 
     public MapleMap getMap() {
-        return Server_Game.getInstance(channel).getMapFactory().getMap(map);
+        return ServerOdinGame.getInstance(channel).getMapFactory().getMap(map);
     }
 
     @Override

@@ -28,8 +28,8 @@ import data.client.DC_Date;
 import data.wz.ids.DWI_Validation;
 import database.query.DQ_Accounts;
 import debug.DebugLogger;
-import server.server.Server_CashShop;
-import server.server.Server_Game;
+import server.server.ServerOdinCashShop;
+import server.server.ServerOdinGame;
 import handling.world.CharacterTransfer;
 import handling.world.World;
 import java.util.ArrayList;
@@ -103,10 +103,10 @@ public class ReqCCashShop {
     }
 
     public static void EnterCS(final int playerid, final MapleClient c) {
-        CharacterTransfer transfer = Server_CashShop.getPlayerStorage().getPendingCharacter(playerid);
+        CharacterTransfer transfer = ServerOdinCashShop.getPlayerStorage().getPendingCharacter(playerid);
         boolean mts = false;
         if (transfer == null) {
-            transfer = Server_CashShop.getPlayerStorageMTS().getPendingCharacter(playerid);
+            transfer = ServerOdinCashShop.getPlayerStorageMTS().getPendingCharacter(playerid);
             mts = true;
             if (transfer == null) {
                 c.loginFailed("EnterCS 1.");
@@ -133,11 +133,11 @@ public class ReqCCashShop {
         }
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         if (mts) {
-            Server_CashShop.getPlayerStorageMTS().registerPlayer(chr);
+            ServerOdinCashShop.getPlayerStorageMTS().registerPlayer(chr);
             c.SendPacket(ResCStage.SetITC(chr));
             ReqCITC.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
         } else {
-            Server_CashShop.getPlayerStorage().registerPlayer(chr);
+            ServerOdinCashShop.getPlayerStorage().registerPlayer(chr);
             c.SendPacket(ResCStage.SetCashShop(c));
             c.SendPacket(ResCCashShop.CashShopQueryCashResult(c.getPlayer()));
             c.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_LoadLocker_Done, c));
@@ -146,12 +146,12 @@ public class ReqCCashShop {
     }
 
     public static void LeaveCS(MapleClient c, MapleCharacter chr) {
-        Server_CashShop.getPlayerStorageMTS().deregisterPlayer(chr);
-        Server_CashShop.getPlayerStorage().deregisterPlayer(chr);
+        ServerOdinCashShop.getPlayerStorageMTS().deregisterPlayer(chr);
+        ServerOdinCashShop.getPlayerStorage().deregisterPlayer(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
             World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
-            c.SendPacket(ResCClientSocket.MigrateCommand(Server_Game.getInstance(c.getChannel()).getPort()));
+            c.SendPacket(ResCClientSocket.MigrateCommand(ServerOdinGame.getInstance(c.getChannel()).getPort()));
         } finally {
             chr.saveToDB(false, true);
             c.setMigrating();

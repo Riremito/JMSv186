@@ -19,7 +19,7 @@
 package server.network;
 
 import client.MapleClient;
-import server.server.Server_Game;
+import server.server.ServerOdinGame;
 import packet.ClientPacket;
 import packet.request.ReqCClientSocket;
 import packet.request.ReqCDropPool;
@@ -50,7 +50,7 @@ public class PacketHandler_Game extends PacketHandler implements IPacketHandler 
 
     @Override
     public boolean isShutdown() {
-        return Server_Game.getInstance(this.channel).isShutdown();
+        return ServerOdinGame.getInstance(this.channel).isShutdown();
     }
 
     @Override

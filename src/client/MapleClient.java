@@ -30,7 +30,7 @@ import database.query.DQ_Accounts;
 import database.query.DQ_Characters;
 import debug.DebugLogger;
 import server.network.MaplePacket;
-import server.server.Server_Game;
+import server.server.ServerOdinGame;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -225,8 +225,8 @@ public class MapleClient {
         return getCharacterIds().size();
     }
 
-    public final Server_Game getChannelServer() {
-        return Server_Game.getInstance(channel);
+    public final ServerOdinGame getChannelServer() {
+        return ServerOdinGame.getInstance(channel);
     }
 
     public boolean disconnect(boolean RemoveInChannelServer, boolean fromCS) {

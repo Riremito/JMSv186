@@ -19,7 +19,7 @@
 package test;
 
 import client.MapleCharacter;
-import server.server.Server_Game;
+import server.server.ServerOdinGame;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -163,8 +163,8 @@ public class ToolMan {
             return null;
         }
         String target_name = (String) cb_character.getSelectedItem();
-        for (int i : Server_Game.getAllInstance()) {
-            Server_Game channel = Server_Game.getInstance(i);
+        for (int i : ServerOdinGame.getAllInstance()) {
+            ServerOdinGame channel = ServerOdinGame.getInstance(i);
             if (channel != null) {
                 MapleCharacter c = channel.getPlayerStorage().getCharacterByName(target_name);
                 if (c != null) {
@@ -181,8 +181,8 @@ public class ToolMan {
             return false;
         }
         int mapid = Integer.parseInt(tf_mapid.getText());
-        for (int i : Server_Game.getAllInstance()) {
-            Server_Game ch = Server_Game.getInstance(i);
+        for (int i : ServerOdinGame.getAllInstance()) {
+            ServerOdinGame ch = ServerOdinGame.getInstance(i);
             MapleMap map = ch.getMapFactory().getMap(mapid);
             c.changeMap(map, map.getPortal(0));
             return true;
@@ -192,8 +192,8 @@ public class ToolMan {
 
     // test
     private static void PanelTest() {
-        for (int i : Server_Game.getAllInstance()) {
-            Server_Game channel = Server_Game.getInstance(i);
+        for (int i : ServerOdinGame.getAllInstance()) {
+            ServerOdinGame channel = ServerOdinGame.getInstance(i);
             if (channel != null) {
                 for (MapleCharacter chr : channel.getPlayerStorage().getAllCharacters()) {
                     if (chr != null) {
@@ -230,8 +230,8 @@ public class ToolMan {
 
     private static void UpdateCharacterListComboBox() {
         cb_character.removeAllItems();
-        for (int i : Server_Game.getAllInstance()) {
-            Server_Game channel = Server_Game.getInstance(i);
+        for (int i : ServerOdinGame.getAllInstance()) {
+            ServerOdinGame channel = ServerOdinGame.getInstance(i);
             if (channel != null) {
                 for (MapleCharacter chr : channel.getPlayerStorage().getAllCharacters()) {
                     if (chr != null) {

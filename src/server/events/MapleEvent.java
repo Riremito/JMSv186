@@ -23,7 +23,7 @@ package server.events;
 
 import client.MapleCharacter;
 import server.network.MaplePacket;
-import server.server.Server_Game;
+import server.server.ServerOdinGame;
 import handling.world.World;
 import packet.response.ResCField;
 import packet.response.wrapper.ResWrapper;
@@ -53,8 +53,8 @@ public abstract class MapleEvent {
         return getChannelServer().getMapFactory().getMap(mapid[i]);
     }
 
-    public Server_Game getChannelServer() {
-        return Server_Game.getInstance(channel);
+    public ServerOdinGame getChannelServer() {
+        return ServerOdinGame.getInstance(channel);
     }
 
     public void broadcast(final MaplePacket packet) {
@@ -136,7 +136,7 @@ public abstract class MapleEvent {
         isRunning = false;
     }
 
-    public static final void setEvent(final Server_Game cserv, final boolean auto) {
+    public static final void setEvent(final ServerOdinGame cserv, final boolean auto) {
         if (auto) {
             for (MapleEventType t : MapleEventType.values()) {
                 final MapleEvent e = cserv.getEvent(t);
@@ -165,7 +165,7 @@ public abstract class MapleEvent {
             return;
         } //o_o
         for (MapleEventType t : MapleEventType.values()) {
-            final MapleEvent e = Server_Game.getInstance(channel).getEvent(t);
+            final MapleEvent e = ServerOdinGame.getInstance(channel).getEvent(t);
             if (e.isRunning) {
                 if (chr.getMapId() == 109050000) { //finished map
                     e.finished(chr);
@@ -193,7 +193,7 @@ public abstract class MapleEvent {
         }
     }
 
-    public static final String scheduleEvent(final MapleEventType event, final Server_Game cserv) {
+    public static final String scheduleEvent(final MapleEventType event, final ServerOdinGame cserv) {
         if (cserv.getEvent() != -1 || cserv.getEvent(event) == null) {
             return "The event must not have been already scheduled.";
         }

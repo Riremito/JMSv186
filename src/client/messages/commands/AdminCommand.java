@@ -15,7 +15,7 @@ import config.property.Property_Java;
 import constants.GameConstants;
 import data.wz.DW_Skill;
 import debug.DebugLogger;
-import server.server.Server_Game;
+import server.server.ServerOdinGame;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -465,7 +465,7 @@ public class AdminCommand {
             if (splitted.length > 1) {
                 final int rate = Integer.parseInt(splitted[1]);
                 if (splitted.length > 2 && splitted[2].equalsIgnoreCase("all")) {
-                    for (Server_Game cserv : Server_Game.getAllInstances()) {
+                    for (ServerOdinGame cserv : ServerOdinGame.getAllInstances()) {
                         cserv.setExpRate(rate);
                     }
                 } else {
@@ -486,7 +486,7 @@ public class AdminCommand {
             if (splitted.length > 1) {
                 final int rate = Integer.parseInt(splitted[1]);
                 if (splitted.length > 2 && splitted[2].equalsIgnoreCase("all")) {
-                    for (Server_Game cserv : Server_Game.getAllInstances()) {
+                    for (ServerOdinGame cserv : ServerOdinGame.getAllInstances()) {
                         cserv.setDropRate(rate);
                     }
                 } else {
@@ -507,7 +507,7 @@ public class AdminCommand {
             if (splitted.length > 1) {
                 final int rate = Integer.parseInt(splitted[1]);
                 if (splitted.length > 2 && splitted[2].equalsIgnoreCase("all")) {
-                    for (Server_Game cserv : Server_Game.getAllInstances()) {
+                    for (ServerOdinGame cserv : ServerOdinGame.getAllInstances()) {
                         cserv.setMesoRate(rate);
                     }
                 } else {
@@ -866,7 +866,7 @@ public class AdminCommand {
 
         @Override
         public int execute(MapleClient c, String[] splitted) {
-            for (Server_Game instance : Server_Game.getAllInstances()) {
+            for (ServerOdinGame instance : ServerOdinGame.getAllInstances()) {
                 instance.reloadEvents();
             }
             return 1;
@@ -947,13 +947,13 @@ public class AdminCommand {
         @Override
         public int execute(MapleClient c, String[] splitted) {
             final int mapId = Integer.parseInt(splitted[1]);
-            for (Server_Game cserv : Server_Game.getAllInstances()) {
+            for (ServerOdinGame cserv : ServerOdinGame.getAllInstances()) {
                 if (cserv.getMapFactory().isMapLoaded(mapId) && cserv.getMapFactory().getMap(mapId).getCharactersSize() > 0) {
                     c.getPlayer().dropMessage(5, "There exists characters on channel " + cserv.getChannel());
                     return 0;
                 }
             }
-            for (Server_Game cserv : Server_Game.getAllInstances()) {
+            for (ServerOdinGame cserv : ServerOdinGame.getAllInstances()) {
                 if (cserv.getMapFactory().isMapLoaded(mapId)) {
                     cserv.getMapFactory().removeMap(mapId);
                 }

@@ -32,7 +32,7 @@ import server.MTSStorage;
 import server.network.PacketHandler_CashShop;
 import server.network.PacketHandler;
 
-public class Server_CashShop {
+public class ServerOdinCashShop {
 
     private static InetSocketAddress InetSocketadd;
     private static IoAcceptor acceptor;

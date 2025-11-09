@@ -30,7 +30,7 @@ import javax.script.ScriptException;
 
 import client.MapleCharacter;
 import debug.DebugLogger;
-import server.server.Server_Game;
+import server.server.ServerOdinGame;
 import handling.world.MapleParty;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +59,7 @@ public class EventManager {
     private Properties props = new Properties();
     private String name;
 
-    public EventManager(Server_Game cserv, Invocable iv, String name) {
+    public EventManager(ServerOdinGame cserv, Invocable iv, String name) {
         this.iv = iv;
         this.channel = cserv.getChannel();
         this.name = name;
@@ -121,8 +121,8 @@ public class EventManager {
         return channel;
     }
 
-    public Server_Game getChannelServer() {
-        return Server_Game.getInstance(channel);
+    public ServerOdinGame getChannelServer() {
+        return ServerOdinGame.getInstance(channel);
     }
 
     public EventInstanceManager getInstance(String name) {
@@ -148,7 +148,7 @@ public class EventManager {
             setProperty("leader", "true");
         }
         if (this.name.equals("CWKPQ")) { //hard code it because i said so
-            final MapleSquad squad = Server_Game.getInstance(channel).getMapleSquad("CWKPQ");//so fkin hacky
+            final MapleSquad squad = ServerOdinGame.getInstance(channel).getMapleSquad("CWKPQ");//so fkin hacky
             if (squad != null) {
                 squad.clear();
             }

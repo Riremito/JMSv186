@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 
-import server.server.Server_Game;
+import server.server.ServerOdinGame;
 import tools.FileoutputUtil;
 
 /**
@@ -53,7 +53,7 @@ public class EventScriptManager extends AbstractScriptManager {
         return runningInstanceMapId.addAndGet(1);
     }
 
-    public EventScriptManager(final Server_Game cserv, final String[] scripts) {
+    public EventScriptManager(final ServerOdinGame cserv, final String[] scripts) {
         super();
         for (final String script : scripts) {
             if (!script.equals("")) {

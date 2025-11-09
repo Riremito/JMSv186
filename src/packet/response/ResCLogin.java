@@ -24,8 +24,8 @@ import config.Region;
 import config.ServerConfig;
 import config.Version;
 import server.network.MaplePacket;
-import server.server.Server_Game;
-import server.server.Server_Login;
+import server.server.ServerOdinGame;
+import server.server.ServerOdinLogin;
 import java.util.List;
 import java.util.Random;
 import packet.ServerPacket;
@@ -243,12 +243,12 @@ public class ResCLogin {
                             sp.Encode4(0);
                             sp.Encode1(1); // number of worlds
                             {
-                                sp.Encode1(Server_Login.WorldFlag[server_id]);
-                                sp.EncodeStr(Server_Login.WorldName[server_id]);
-                                sp.Encode1(Server_Game.getChannels()); // number of  channels
-                                for (int i = 0; i < Server_Game.getChannels(); i++) {
-                                    sp.EncodeStr(Server_Login.WorldName[server_id] + "-" + (i + 1));
-                                    sp.Encode4(Server_Game.getPopulation(i + 1) * 200);
+                                sp.Encode1(ServerOdinLogin.WorldFlag[server_id]);
+                                sp.EncodeStr(ServerOdinLogin.WorldName[server_id]);
+                                sp.Encode1(ServerOdinGame.getChannels()); // number of  channels
+                                for (int i = 0; i < ServerOdinGame.getChannels(); i++) {
+                                    sp.EncodeStr(ServerOdinLogin.WorldName[server_id] + "-" + (i + 1));
+                                    sp.Encode4(ServerOdinGame.getPopulation(i + 1) * 200);
                                     sp.Encode1(server_id); // serverId
                                     sp.Encode1(i); // channel
                                     sp.Encode1(0);
@@ -644,11 +644,11 @@ public class ResCLogin {
         }
 
         // ワールド名
-        sp.EncodeStr(Server_Login.WorldName[world]);
+        sp.EncodeStr(ServerOdinLogin.WorldName[world]);
         // ワールドの旗
-        sp.Encode1(Server_Login.WorldFlag[world]);
+        sp.Encode1(ServerOdinLogin.WorldFlag[world]);
         // 吹き出し
-        sp.EncodeStr(Region.IsBMS() ? "" : Server_Login.WorldEvent[world]);
+        sp.EncodeStr(Region.IsBMS() ? "" : ServerOdinLogin.WorldEvent[world]);
 
         if (Version.LessOrEqual(Region.KMS, 1)) {
 
@@ -663,24 +663,24 @@ public class ResCLogin {
         }
 
         // チャンネル数
-        sp.Encode1(internalserver ? Server_Game.getChannels() : externalch);
+        sp.Encode1(internalserver ? ServerOdinGame.getChannels() : externalch);
         if (Region.IsCMS()) {
             sp.Encode4(500); // 0 causes 0 div
         }
         // チャンネル情報
-        for (int i = 0; i < (internalserver ? Server_Game.getChannels() : externalch); i++) {
+        for (int i = 0; i < (internalserver ? ServerOdinGame.getChannels() : externalch); i++) {
             // チャンネル名
-            sp.EncodeStr(Server_Login.WorldName[world] + "-" + (i + 1));
+            sp.EncodeStr(ServerOdinLogin.WorldName[world] + "-" + (i + 1));
             // 接続人数表示
-            if (internalserver && Server_Game.getPopulation(i + 1) < 5) {
-                sp.Encode4(Server_Game.getPopulation(i + 1) * 200);
+            if (internalserver && ServerOdinGame.getPopulation(i + 1) < 5) {
+                sp.Encode4(ServerOdinGame.getPopulation(i + 1) * 200);
             } else {
                 sp.Encode4(1000);
             }
             // ワールドID
             sp.Encode1(world);
             sp.Encode1(i); // channel
-            sp.Encode1(Region.check(Region.EMS) ? i % Server_Login.WorldLanguages[world] : 0); // language
+            sp.Encode1(Region.check(Region.EMS) ? i % ServerOdinLogin.WorldLanguages[world] : 0); // language
             if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode1(0);
             }

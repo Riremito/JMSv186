@@ -23,8 +23,6 @@ package server.server;
 import config.property.Property_Dummy_World;
 import config.property.Property_Login;
 import config.property.Property_World;
-import debug.DebugLogger;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,11 +31,10 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import org.apache.mina.common.IoAcceptor;
 
-import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import server.network.PacketHandler_Login;
 import server.network.PacketHandler;
 
-public class Server_Login {
+public class ServerOdinLogin {
 
     private static InetSocketAddress InetSocketadd;
     private static IoAcceptor acceptor;
@@ -85,19 +82,10 @@ public class Server_Login {
     }
 
     public static final void run_startup_configurations() {
-
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
-
-        acceptor = new SocketAcceptor();
-
-        try {
-            InetSocketadd = new InetSocketAddress(Property_Login.getPort());
-            acceptor.bind(InetSocketadd, new PacketHandler_Login(), PacketHandler.getSocketAcceptorConfig());
-            DebugLogger.InfoLog("Port = " + Property_Login.getPort());
-        } catch (IOException e) {
-            DebugLogger.ErrorLog("Binding to port " + Property_Login.getPort() + " failed" + e);
-        }
+        Server server_login = Server.add("127.0.0.1", Property_Login.getPort(), new PacketHandler_Login(), PacketHandler.getSocketAcceptorConfig());
+        server_login.run();
     }
 
     public static final void shutdown() {

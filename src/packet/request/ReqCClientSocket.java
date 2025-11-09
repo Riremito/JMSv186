@@ -33,7 +33,7 @@ import database.ExtraDB;
 import database.query.DQ_Accounts;
 import debug.DebugLogger;
 import server.network.MaplePacket;
-import server.server.Server_Game;
+import server.server.ServerOdinGame;
 import handling.world.CharacterIdChannelPair;
 import handling.world.CharacterTransfer;
 import handling.world.MapleMessengerCharacter;
@@ -154,7 +154,7 @@ public class ReqCClientSocket {
     // CClientSocket::OnCenterMigrateInResult
     public static boolean EnterGameServer(MapleClient c, int character_id) {
         // ログイン or CH変更
-        Server_Game channel = c.getChannelServer();
+        ServerOdinGame channel = c.getChannelServer();
         CharacterTransfer transfer = channel.getPlayerStorage().getPendingCharacter(character_id);
         MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, c, true) : MapleCharacter.ReconstructChr(transfer, c, true);
         ExtraDB.loadData(chr);
@@ -334,7 +334,7 @@ public class ReqCClientSocket {
             chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
             return;
         }
-        final Server_Game ch = Server_Game.getInstance(c.getChannel());
+        final ServerOdinGame ch = ServerOdinGame.getInstance(c.getChannel());
         chr.changeRemoval();
         if (chr.getMessenger() != null) {
             MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(chr);

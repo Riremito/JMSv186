@@ -63,7 +63,7 @@ import server.events.MapleSnowball;
 import server.network.PacketHandler_Game;
 import server.network.PacketHandler;
 
-public class Server_Game implements Serializable {
+public class ServerOdinGame implements Serializable {
 
     public static long serverStartTime;
     private int expRate, mesoRate, dropRate, cashRate;
@@ -75,7 +75,7 @@ public class Server_Game implements Serializable {
     private IoAcceptor acceptor;
     private final MapleMapFactory mapFactory;
     private EventScriptManager eventSM;
-    private static final Map<Integer, Server_Game> instances = new HashMap<Integer, Server_Game>();
+    private static final Map<Integer, ServerOdinGame> instances = new HashMap<Integer, ServerOdinGame>();
     private final Map<String, MapleSquad> mapleSquads = new HashMap<String, MapleSquad>();
     private final Map<Integer, HiredMerchant> merchants = new HashMap<Integer, HiredMerchant>();
     private final Map<Integer, PlayerNPC> playerNPCs = new HashMap<Integer, PlayerNPC>();
@@ -84,7 +84,7 @@ public class Server_Game implements Serializable {
     private int eventmap = -1;
     private final Map<MapleEventType, MapleEvent> events = new EnumMap<MapleEventType, MapleEvent>(MapleEventType.class);
 
-    private Server_Game(int channel) {
+    private ServerOdinGame(int channel) {
         this.channel = channel;
         mapFactory = new MapleMapFactory();
         mapFactory.setChannel(channel);
@@ -173,7 +173,7 @@ public class Server_Game implements Serializable {
 
         //temporary while we dont have !addchannel
         instances.remove(channel);
-        Server_Login.removeChannel(channel);
+        ServerOdinLogin.removeChannel(channel);
         setFinishShutdown();
 //        if (threadToNotify != null) {
 //            synchronized (threadToNotify) {
@@ -194,17 +194,17 @@ public class Server_Game implements Serializable {
         return mapFactory;
     }
 
-    public static final Server_Game newInstance(int channel) {
-        return new Server_Game(channel);
+    public static final ServerOdinGame newInstance(int channel) {
+        return new ServerOdinGame(channel);
     }
 
-    public static final Server_Game getInstance(final int channel) {
+    public static final ServerOdinGame getInstance(final int channel) {
         return instances.get(channel);
     }
 
     // 接続人数
     public static int getPopulation(int channel) {
-        Server_Game ch = instances.get(channel);
+        ServerOdinGame ch = instances.get(channel);
         if (ch == null) {
             return 1000;
         }
@@ -267,10 +267,10 @@ public class Server_Game implements Serializable {
 
     public final void setChannel(final int channel) {
         instances.put(channel, this);
-        Server_Login.addChannel(channel);
+        ServerOdinLogin.addChannel(channel);
     }
 
-    public static final Collection<Server_Game> getAllInstances() {
+    public static final Collection<ServerOdinGame> getAllInstances() {
         return Collections.unmodifiableCollection(instances.values());
     }
 
@@ -517,7 +517,7 @@ public class Server_Game implements Serializable {
 
     public static Map<Integer, Integer> getChannelLoad() {
         Map<Integer, Integer> ret = new HashMap<Integer, Integer>();
-        for (Server_Game cs : instances.values()) {
+        for (ServerOdinGame cs : instances.values()) {
             ret.put(cs.getChannel(), cs.getConnectedClients());
         }
         return ret;
