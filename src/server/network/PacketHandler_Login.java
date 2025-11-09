@@ -29,9 +29,9 @@ import packet.request.ReqCUser;
  *
  * @author Riremito
  */
-public class PH_Login extends PacketHandler implements IPacketHandler {
+public class PacketHandler_Login extends PacketHandler implements IPacketHandler {
 
-    public PH_Login() {
+    public PacketHandler_Login() {
         super(-1);
         this.server_name = "Login";
     }

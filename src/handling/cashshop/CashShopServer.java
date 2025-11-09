@@ -29,7 +29,7 @@ import org.apache.mina.common.SimpleByteBufferAllocator;
 import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import server.MTSStorage;
-import server.network.PH_CashShop;
+import server.network.PacketHandler_CashShop;
 import server.network.PacketHandler;
 
 public class CashShopServer {
@@ -49,7 +49,7 @@ public class CashShopServer {
 
         try {
             InetSocketadd = new InetSocketAddress(Property_Shop.getPort());
-            acceptor.bind(InetSocketadd, new PH_CashShop(), PacketHandler.getSocketAcceptorConfig());
+            acceptor.bind(InetSocketadd, new PacketHandler_CashShop(), PacketHandler.getSocketAcceptorConfig());
             DebugLogger.InfoLog("Port = " + Property_Shop.getPort());
         } catch (final Exception e) {
             DebugLogger.ErrorLog("Binding to port " + Property_Shop.getPort() + " failed");

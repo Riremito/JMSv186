@@ -41,9 +41,9 @@ import packet.request.Req_MapleTV;
  *
  * @author Riremito
  */
-public class PH_Game extends PacketHandler implements IPacketHandler {
+public class PacketHandler_Game extends PacketHandler implements IPacketHandler {
 
-    public PH_Game(int channel) {
+    public PacketHandler_Game(int channel) {
         super(channel);
         this.server_name = "Channel" + String.format("%02d", this.channel);
     }

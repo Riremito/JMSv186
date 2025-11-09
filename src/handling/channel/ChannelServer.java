@@ -60,7 +60,7 @@ import server.events.MapleFitness;
 import server.events.MapleOla;
 import server.events.MapleOxQuiz;
 import server.events.MapleSnowball;
-import server.network.PH_Game;
+import server.network.PacketHandler_Game;
 import server.network.PacketHandler;
 
 public class ChannelServer implements Serializable {
@@ -142,7 +142,7 @@ public class ChannelServer implements Serializable {
         loadEvents();
 
         try {
-            acceptor.bind(new InetSocketAddress(port), new PH_Game(channel), PacketHandler.getSocketAcceptorConfig());
+            acceptor.bind(new InetSocketAddress(port), new PacketHandler_Game(channel), PacketHandler.getSocketAcceptorConfig());
             DebugLogger.InfoLog("Channel " + channel + " Port = " + port);
             eventSM.init();
         } catch (IOException e) {

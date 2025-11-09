@@ -34,7 +34,7 @@ import org.apache.mina.common.SimpleByteBufferAllocator;
 import org.apache.mina.common.IoAcceptor;
 
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
-import server.network.PH_Login;
+import server.network.PacketHandler_Login;
 import server.network.PacketHandler;
 
 public class LoginServer {
@@ -93,7 +93,7 @@ public class LoginServer {
 
         try {
             InetSocketadd = new InetSocketAddress(Property_Login.getPort());
-            acceptor.bind(InetSocketadd, new PH_Login(), PacketHandler.getSocketAcceptorConfig());
+            acceptor.bind(InetSocketadd, new PacketHandler_Login(), PacketHandler.getSocketAcceptorConfig());
             DebugLogger.InfoLog("Port = " + Property_Login.getPort());
         } catch (IOException e) {
             DebugLogger.ErrorLog("Binding to port " + Property_Login.getPort() + " failed" + e);

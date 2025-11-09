@@ -30,9 +30,9 @@ import packet.request.ReqCUser;
  *
  * @author Riremito
  */
-public class PH_CashShop extends PacketHandler implements IPacketHandler {
+public class PacketHandler_CashShop extends PacketHandler implements IPacketHandler {
 
-    public PH_CashShop() {
+    public PacketHandler_CashShop() {
         super(-1);
         this.server_name = "CashShop";
     }
