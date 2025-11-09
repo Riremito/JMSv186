@@ -20,11 +20,14 @@ package server.network;
 
 import client.MapleClient;
 import config.Content;
+import config.Region;
 import debug.DebugLogger;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.codec.ProtocolDecoder;
+import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import packet.ClientPacket;
 import packet.response.ResCClientSocket;
@@ -40,12 +43,35 @@ public class PacketHandler extends IoHandlerAdapter {
     private static SocketAcceptorConfig cfg = null;
     private static MapleCodecFactory mcf = null;
     private static ProtocolCodecFilter pcf = null;
+    private static ProtocolEncoder encoder = null;
+    private static ProtocolDecoder decoder = null;
 
     public static SocketAcceptorConfig getSocketAcceptorConfig() {
         if (cfg != null) {
             return cfg;
         }
-        mcf = new MapleCodecFactory();
+
+        switch (Region.getRegion()) {
+            case KMSB: {
+                encoder = new PacketEncoder_KMSB();
+                decoder = new PacketDecoder_KMSB();
+                break;
+            }
+            case KMS:
+            case KMST:
+            case IMS: {
+                encoder = new PacketEncoder_KMS();
+                decoder = new PacketDecoder_KMS();
+                break;
+            }
+            default: {
+                encoder = new PacketEncoder();
+                decoder = new PacketDecoder();
+                break;
+            }
+        }
+
+        mcf = new MapleCodecFactory(encoder, decoder);
         pcf = new ProtocolCodecFilter(mcf);
         cfg = new SocketAcceptorConfig();
         cfg.getSessionConfig().setTcpNoDelay(true);
