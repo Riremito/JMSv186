@@ -3,11 +3,10 @@ package server;
 import java.sql.SQLException;
 
 import database.DatabaseConnection;
-import server.server.ServerOdinCashShop;
 import server.server.ServerOdinGame;
-import server.server.ServerOdinLogin;
 import handling.world.World;
 import server.Timer.*;
+import server.server.Server;
 
 public class ShutdownServer implements Runnable {
 
@@ -31,7 +30,11 @@ public class ShutdownServer implements Runnable {
             for (ServerOdinGame cs : ServerOdinGame.getAllInstances()) {
                 cs.setShutdown();
             }
-            ServerOdinLogin.shutdown();
+            // login, cashshop, game
+            for (Server server : Server.get()) {
+                server.shutdown();
+            }
+
             Integer[] chs = ServerOdinGame.getAllInstance().toArray(new Integer[0]);
 
             for (int i : chs) {
@@ -48,7 +51,6 @@ public class ShutdownServer implements Runnable {
                     e.printStackTrace();
                 }
             }
-            ServerOdinCashShop.shutdown();
             World.Guild.save();
             World.Alliance.save();
             World.Family.save();

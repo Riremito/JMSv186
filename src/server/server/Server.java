@@ -33,13 +33,21 @@ import org.apache.mina.transport.socket.nio.SocketAcceptor;
  */
 public class Server {
 
-    private static ArrayList<Server> server_list = new ArrayList<>();
+    protected static ArrayList<Server> server_list = new ArrayList<>();
     private static IoAcceptor server_io_acceptor = null;
 
-    public static Server add(String server_ip, int server_port, IoHandler ih, IoServiceConfig isc) {
-        Server server = new Server(server_ip, server_port, ih, isc);
+    public static ArrayList<Server> get() {
+        return server_list;
+    }
+
+    public static Server add(String server_name, String server_ip, int server_port, IoHandler ih, IoServiceConfig isc) {
+        Server server = new Server(server_name, server_ip, server_port, ih, isc);
         server_list.add(server);
         return server;
+    }
+
+    public static void add(Server server) {
+        server_list.add(server);
     }
 
     public static IoAcceptor getIoAcceptor() {
@@ -49,6 +57,7 @@ public class Server {
         return server_io_acceptor;
     }
 
+    private String server_name;
     private String server_ip;
     private int server_port;
     private IoHandler server_io_handler;
@@ -57,8 +66,10 @@ public class Server {
     //private IoAcceptor server_io_acceptor = null;
     private boolean finishedShutdown = true;
     private boolean adminOnly = false;
+    private boolean server_status = false; // online or not.
 
-    public Server(String server_ip, int server_port, IoHandler ih, IoServiceConfig isc) {
+    public Server(String server_name, String server_ip, int server_port, IoHandler ih, IoServiceConfig isc) {
+        this.server_name = server_name;
         this.server_ip = server_ip;
         this.server_port = server_port;
         this.server_io_handler = ih;
@@ -76,6 +87,7 @@ public class Server {
         }
 
         DebugLogger.InfoLog(this.server_inet_socket_address.getHostName() + ":" + this.server_inet_socket_address.getPort());
+        this.server_status = true;
         return true;
     }
 
@@ -83,12 +95,16 @@ public class Server {
         getIoAcceptor().unbind(this.server_inet_socket_address);
     }
 
-    public void setOn() {
-        this.finishedShutdown = false;
+    public String getName() {
+        return this.server_name;
+    }
+
+    public int getNumberOfSessions() {
+        return getIoAcceptor().getManagedSessions(this.server_inet_socket_address).size();
     }
 
     public boolean isShutdown() {
-        return finishedShutdown;
+        return !this.server_status;
     }
 
     public boolean isAdminOnly() {

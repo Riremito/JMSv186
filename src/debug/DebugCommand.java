@@ -62,6 +62,7 @@ import server.maps.MapleMap;
 import server.maps.MapleMapObject;
 import server.maps.MapleMapObjectType;
 import server.maps.SavedLocationType;
+import server.server.Server;
 import server.shops.HiredMerchant;
 
 /**
@@ -139,6 +140,13 @@ public class DebugCommand {
             case "/infomode": {
                 chr.SetInformation();
                 chr.DebugMsg("InfoMode = " + chr.GetInformation());
+                return true;
+            }
+            case "/server": {
+                for (Server server : Server.get()) {
+                    String msg = server.getName() + " : " + server.getNumberOfSessions();
+                    chr.DebugMsg(msg);
+                }
                 return true;
             }
             case "/ea":

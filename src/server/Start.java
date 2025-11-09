@@ -11,15 +11,18 @@ import data.client.DC_Exp;
 import server.server.ServerOdinGame;
 import handling.channel.MapleGuildRanking;
 import server.server.ServerOdinLogin;
-import server.server.ServerOdinCashShop;
 import handling.world.World;
 import java.sql.SQLException;
 import database.query.DQ_Accounts;
 import debug.DebugLogger;
 import handling.world.family.MapleFamilyBuff;
+import org.apache.mina.common.ByteBuffer;
+import org.apache.mina.common.SimpleByteBufferAllocator;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.network.MapleAESOFB;
+import server.server.Server_CashShop;
+import server.server.Server_Login;
 import test.ToolMan;
 
 public class Start {
@@ -92,7 +95,10 @@ public class Start {
         PingTimer.getInstance().start();
 
         DebugLogger.SetupLog("LOGIN_SERVER");
-        ServerOdinLogin.run_startup_configurations();
+        // ?_?
+        ByteBuffer.setUseDirectBuffers(false);
+        ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
+        Server_Login.init();
         RandomRewards.getInstance();
 
         MapleOxQuizFactory.getInstance().initialize();
@@ -103,7 +109,7 @@ public class Start {
         ServerOdinGame.startChannel_Main();
 
         DebugLogger.SetupLog("CASHSHOP_SERVER");
-        ServerOdinCashShop.run_startup_configurations();
+        Server_CashShop.init();
         MTSStorage.load();
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Shutdown()));
@@ -113,7 +119,6 @@ public class Start {
             e.printStackTrace();
         }
         World.registerRespawn();
-        ServerOdinLogin.setOn(); //now or later
         DebugLogger.SetupLog("RANKING");
         RankingWorker.getInstance().run();
         DebugLogger.SetupLog("DONE!");

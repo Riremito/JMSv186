@@ -21,26 +21,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package server.server;
 
 import config.property.Property_Dummy_World;
-import config.property.Property_Login;
 import config.property.Property_World;
-import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.mina.common.ByteBuffer;
-import org.apache.mina.common.SimpleByteBufferAllocator;
-import org.apache.mina.common.IoAcceptor;
-
-import server.network.PacketHandler_Login;
-import server.network.PacketHandler;
-
+// TODO : remove
 public class ServerOdinLogin {
 
-    private static InetSocketAddress InetSocketadd;
-    private static IoAcceptor acceptor;
+    private static Server_Login server_login = null;
+
+    public static void set(Server_Login server) {
+        server_login = server;
+    }
+
+    public static final boolean isAdminOnly() {
+        return server_login.isAdminOnly();
+    }
+
+    public static final boolean isShutdown() {
+        return server_login.isShutdown();
+    }
+
     private static Map<Integer, Integer> load = new HashMap<Integer, Integer>();
     private static int usersOn = 0;
-    private static boolean finishedShutdown = true, adminOnly = false;
 
     private static final int WolrdLimit = 20;
     public static int NumberOfWorld = 0;
@@ -81,26 +84,6 @@ public class ServerOdinLogin {
         load.remove(channel);
     }
 
-    public static final void run_startup_configurations() {
-        ByteBuffer.setUseDirectBuffers(false);
-        ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
-        Server server_login = Server.add("127.0.0.1", Property_Login.getPort(), new PacketHandler_Login(), PacketHandler.getSocketAcceptorConfig());
-        server_login.run();
-    }
-
-    public static final void shutdown() {
-        if (finishedShutdown) {
-            return;
-        }
-        System.out.println("Shutting down login...");
-        acceptor.unbindAll();
-        finishedShutdown = true; //nothing. lol
-    }
-
-    public static final Map<Integer, Integer> getLoad() {
-        return load;
-    }
-
     public static void setLoad(final Map<Integer, Integer> load_, final int usersOn_) {
         load = load_;
         usersOn = usersOn_;
@@ -110,19 +93,4 @@ public class ServerOdinLogin {
         return usersOn;
     }
 
-    public static final int getNumberOfSessions() {
-        return acceptor.getManagedSessions(InetSocketadd).size();
-    }
-
-    public static final boolean isAdminOnly() {
-        return adminOnly;
-    }
-
-    public static final boolean isShutdown() {
-        return finishedShutdown;
-    }
-
-    public static final void setOn() {
-        finishedShutdown = false;
-    }
 }
