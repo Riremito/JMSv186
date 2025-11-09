@@ -20,7 +20,6 @@ package server.network;
 
 import config.ClientEdit;
 import config.Content;
-import config.Region;
 import debug.DebugLogger;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
@@ -55,15 +54,11 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
                 byte decryptedPacket[] = new byte[required_size];
                 bb.get(decryptedPacket, 0, required_size); // +required_size
                 if (!ClientEdit.PacketEncryptionRemoved.get()) {
-                    if (Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.IMS)) {
-                        aes_dec.kms_decrypt(decryptedPacket);
-                    } else {
-                        aes_dec.crypt(decryptedPacket);
-                        if (Content.CustomEncryption.get()) {
-                            MapleCustomEncryption.decryptData(decryptedPacket);
-                        }
-                        aes_dec.updateIv();
+                    aes_dec.crypt(decryptedPacket);
+                    if (Content.CustomEncryption.get()) {
+                        MapleCustomEncryption.decryptData(decryptedPacket);
                     }
+                    aes_dec.updateIv();
                 }
                 pdo.write(decryptedPacket);
                 // warning

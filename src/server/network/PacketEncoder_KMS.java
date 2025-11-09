@@ -19,8 +19,6 @@
 package server.network;
 
 import config.ClientEdit;
-import config.Content;
-import config.Region;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
@@ -48,15 +46,7 @@ public class PacketEncoder_KMS implements ProtocolEncoder {
         final byte[] packet = raw_server_packet.clone();
 
         if (!ClientEdit.PacketEncryptionRemoved.get()) {
-            if (Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.IMS)) {
-                aes_enc.kms_encrypt(packet);
-            } else {
-                if (Content.CustomEncryption.get()) {
-                    MapleCustomEncryption.encryptData(packet);
-                }
-                aes_enc.crypt(packet);
-                aes_enc.updateIv();
-            }
+            aes_enc.kms_encrypt(packet);
         }
 
         final byte[] encrypted_server_packet = new byte[header.length + packet.length];
