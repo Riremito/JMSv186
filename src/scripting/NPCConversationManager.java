@@ -53,7 +53,7 @@ import server.maps.AramiaFireWorks;
 import server.quest.MapleQuest;
 import tools.Pair;
 import server.MapleItemInformationProvider;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import handling.channel.MapleGuildRanking;
 import database.DatabaseConnection;
 import server.network.MaplePacket;
@@ -649,7 +649,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         }
         List<MapleCharacter> chars = new LinkedList<MapleCharacter>(); // creates an empty array full of shit..
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            for (ChannelServer channel : ChannelServer.getAllInstances()) {
+            for (Server_Game channel : Server_Game.getAllInstances()) {
                 MapleCharacter ch = channel.getPlayerStorage().getCharacterById(chr.getId());
                 if (ch != null) { // double check <3
                     chars.add(ch);
@@ -1215,7 +1215,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.getItemEffect(buff) != null && getPlayer().getGuildId() > 0) {
             final MapleStatEffect mse = ii.getItemEffect(buff);
-            for (ChannelServer cserv : ChannelServer.getAllInstances()) {
+            for (Server_Game cserv : Server_Game.getAllInstances()) {
                 for (MapleCharacter chr : cserv.getPlayerStorage().getAllCharacters()) {
                     if (chr.getGuildId() == getPlayer().getGuildId()) {
                         mse.applyTo(chr, chr, true, null, duration);

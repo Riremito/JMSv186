@@ -23,7 +23,7 @@ package server.maps;
 import java.awt.Point;
 
 import client.MapleClient;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import packet.ops.OpsTransferField;
 import packet.response.ResCField;
 import packet.response.wrapper.ResWrapper;
@@ -120,7 +120,7 @@ public class MapleGenericPortal implements MaplePortal {
                     return;
                 }
             } else if (getTargetMapId() != 999999999) {
-                final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(getTargetMapId());
+                final MapleMap to = Server_Game.getInstance(c.getChannel()).getMapFactory().getMap(getTargetMapId());
                 c.getPlayer().changeMapPortal(to, to.getPortal(getTarget()) == null ? to.getPortal(0) : to.getPortal(getTarget())); //late resolving makes this harder but prevents us from loading the whole world at once
             }
         }

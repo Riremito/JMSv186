@@ -3,9 +3,9 @@ package server;
 import java.sql.SQLException;
 
 import database.DatabaseConnection;
-import handling.cashshop.CashShopServer;
-import handling.channel.ChannelServer;
-import handling.login.LoginServer;
+import server.server.Server_CashShop;
+import server.server.Server_Game;
+import server.server.Server_Login;
 import handling.world.World;
 import server.Timer.*;
 
@@ -28,15 +28,15 @@ public class ShutdownServer implements Runnable {
         }
 
         try {
-            for (ChannelServer cs : ChannelServer.getAllInstances()) {
+            for (Server_Game cs : Server_Game.getAllInstances()) {
                 cs.setShutdown();
             }
-            LoginServer.shutdown();
-            Integer[] chs = ChannelServer.getAllInstance().toArray(new Integer[0]);
+            Server_Login.shutdown();
+            Integer[] chs = Server_Game.getAllInstance().toArray(new Integer[0]);
 
             for (int i : chs) {
                 try {
-                    ChannelServer cs = ChannelServer.getInstance(i);
+                    Server_Game cs = Server_Game.getInstance(i);
                     synchronized (this) {
                         cs.shutdown(this);
 //                        try {
@@ -48,7 +48,7 @@ public class ShutdownServer implements Runnable {
                     e.printStackTrace();
                 }
             }
-            CashShopServer.shutdown();
+            Server_CashShop.shutdown();
             World.Guild.save();
             World.Alliance.save();
             World.Family.save();

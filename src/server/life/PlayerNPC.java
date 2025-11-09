@@ -35,7 +35,7 @@ import client.MapleClient;
 import client.inventory.MapleInventoryType;
 import client.inventory.MaplePet;
 import database.DatabaseConnection;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import handling.world.World;
 import java.util.ArrayList;
 import packet.response.ResCNpcPool;
@@ -116,20 +116,20 @@ public class PlayerNPC extends MapleNPC {
 
     public static void updateByCharId(MapleCharacter chr) {
         if (World.Find.findChannel(chr.getId()) > 0) { //if character is in cserv
-            for (PlayerNPC npc : ChannelServer.getInstance(World.Find.findChannel(chr.getId())).getAllPlayerNPC()) {
+            for (PlayerNPC npc : Server_Game.getInstance(World.Find.findChannel(chr.getId())).getAllPlayerNPC()) {
                 npc.update(chr);
             }
         }
     }
 
     public void addToServer() {
-        for (ChannelServer cserv : ChannelServer.getAllInstances()) {
+        for (Server_Game cserv : Server_Game.getAllInstances()) {
             cserv.addPlayerNPC(this);
         }
     }
 
     public void removeFromServer() {
-        for (ChannelServer cserv : ChannelServer.getAllInstances()) {
+        for (Server_Game cserv : Server_Game.getAllInstances()) {
             cserv.removePlayerNPC(this);
         }
     }

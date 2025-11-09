@@ -22,7 +22,7 @@ import client.status.MonsterStatus;
 import client.status.MonsterStatusEffect;
 import config.ContentState;
 import constants.GameConstants;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import java.util.Arrays;
 import java.util.Collections;
 import provider.MapleData;
@@ -1105,7 +1105,7 @@ public class MapleStatEffect implements Serializable {
             if (moveTo == 999999999) {
                 target = applyto.getMap().getReturnMap();
             } else {
-                target = ChannelServer.getInstance(applyto.getClient().getChannel()).getMapFactory().getMap(moveTo);
+                target = Server_Game.getInstance(applyto.getClient().getChannel()).getMapFactory().getMap(moveTo);
             }
             applyto.changeMap(target, target.getPortal(0));
             return true;

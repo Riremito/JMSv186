@@ -22,7 +22,7 @@ package handling.world.guild;
 
 import client.MapleCharacter;
 import database.DatabaseConnection;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

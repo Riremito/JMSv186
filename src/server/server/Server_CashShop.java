@@ -18,7 +18,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package handling.cashshop;
+package server.server;
 
 import config.property.Property_Shop;
 import debug.DebugLogger;
@@ -32,7 +32,7 @@ import server.MTSStorage;
 import server.network.PacketHandler_CashShop;
 import server.network.PacketHandler;
 
-public class CashShopServer {
+public class Server_CashShop {
 
     private static InetSocketAddress InetSocketadd;
     private static IoAcceptor acceptor;

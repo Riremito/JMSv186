@@ -18,7 +18,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package handling.channel;
+package server.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -34,9 +34,9 @@ import client.MapleCharacter;
 import config.ContentCustom;
 import config.property.Property_World;
 import debug.DebugLogger;
+import handling.channel.PlayerStorage;
 import server.network.ByteArrayMaplePacket;
 import server.network.MaplePacket;
-import handling.login.LoginServer;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import scripting.EventScriptManager;
 import server.MapleSquad;
@@ -63,7 +63,7 @@ import server.events.MapleSnowball;
 import server.network.PacketHandler_Game;
 import server.network.PacketHandler;
 
-public class ChannelServer implements Serializable {
+public class Server_Game implements Serializable {
 
     public static long serverStartTime;
     private int expRate, mesoRate, dropRate, cashRate;
@@ -75,7 +75,7 @@ public class ChannelServer implements Serializable {
     private IoAcceptor acceptor;
     private final MapleMapFactory mapFactory;
     private EventScriptManager eventSM;
-    private static final Map<Integer, ChannelServer> instances = new HashMap<Integer, ChannelServer>();
+    private static final Map<Integer, Server_Game> instances = new HashMap<Integer, Server_Game>();
     private final Map<String, MapleSquad> mapleSquads = new HashMap<String, MapleSquad>();
     private final Map<Integer, HiredMerchant> merchants = new HashMap<Integer, HiredMerchant>();
     private final Map<Integer, PlayerNPC> playerNPCs = new HashMap<Integer, PlayerNPC>();
@@ -84,7 +84,7 @@ public class ChannelServer implements Serializable {
     private int eventmap = -1;
     private final Map<MapleEventType, MapleEvent> events = new EnumMap<MapleEventType, MapleEvent>(MapleEventType.class);
 
-    private ChannelServer(int channel) {
+    private Server_Game(int channel) {
         this.channel = channel;
         mapFactory = new MapleMapFactory();
         mapFactory.setChannel(channel);
@@ -173,7 +173,7 @@ public class ChannelServer implements Serializable {
 
         //temporary while we dont have !addchannel
         instances.remove(channel);
-        LoginServer.removeChannel(channel);
+        Server_Login.removeChannel(channel);
         setFinishShutdown();
 //        if (threadToNotify != null) {
 //            synchronized (threadToNotify) {
@@ -194,17 +194,17 @@ public class ChannelServer implements Serializable {
         return mapFactory;
     }
 
-    public static final ChannelServer newInstance(int channel) {
-        return new ChannelServer(channel);
+    public static final Server_Game newInstance(int channel) {
+        return new Server_Game(channel);
     }
 
-    public static final ChannelServer getInstance(final int channel) {
+    public static final Server_Game getInstance(final int channel) {
         return instances.get(channel);
     }
 
     // 接続人数
     public static int getPopulation(int channel) {
-        ChannelServer ch = instances.get(channel);
+        Server_Game ch = instances.get(channel);
         if (ch == null) {
             return 1000;
         }
@@ -267,10 +267,10 @@ public class ChannelServer implements Serializable {
 
     public final void setChannel(final int channel) {
         instances.put(channel, this);
-        LoginServer.addChannel(channel);
+        Server_Login.addChannel(channel);
     }
 
-    public static final Collection<ChannelServer> getAllInstances() {
+    public static final Collection<Server_Game> getAllInstances() {
         return Collections.unmodifiableCollection(instances.values());
     }
 
@@ -517,7 +517,7 @@ public class ChannelServer implements Serializable {
 
     public static Map<Integer, Integer> getChannelLoad() {
         Map<Integer, Integer> ret = new HashMap<Integer, Integer>();
-        for (ChannelServer cs : instances.values()) {
+        for (Server_Game cs : instances.values()) {
             ret.put(cs.getChannel(), cs.getConnectedClients());
         }
         return ret;

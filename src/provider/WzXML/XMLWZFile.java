@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package provider.WzXML;
 
 import debug.DebugLogger;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -73,7 +73,7 @@ public class XMLWZFile implements MapleDataProvider {
             fis = new FileInputStream(dataFile);
         } catch (FileNotFoundException e) {
             // Wz改変済みの場合は追加マップを開放
-            if (ChannelServer.IsCustom()) {
+            if (Server_Game.IsCustom()) {
                 try {
                     int dir_left = path.indexOf("/");
                     int dir_right = path.indexOf("/", dir_left + 1);

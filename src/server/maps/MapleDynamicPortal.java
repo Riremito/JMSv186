@@ -22,7 +22,7 @@ package server.maps;
 
 import client.MapleCharacter;
 import client.MapleClient;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import java.awt.Point;
 import packet.response.Res_JMS_CInstancePortalPool;
 
@@ -52,7 +52,7 @@ public class MapleDynamicPortal extends AbstractMapleMapObject {
 
     public final void warp(MapleCharacter chr) {
         int map_id_from = chr.getMapId();
-        MapleMap map_to = ChannelServer.getInstance(chr.getClient().getChannel()).getMapFactory().getMap(map_id);
+        MapleMap map_to = Server_Game.getInstance(chr.getClient().getChannel()).getMapFactory().getMap(map_id);
         MapleDynamicPortal dynamic_portal_to = map_to.findDynamicPortalLink(map_id_from);
 
         if (dynamic_portal_to != null) {

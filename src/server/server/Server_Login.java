@@ -18,7 +18,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package handling.login;
+package server.server;
 
 import config.property.Property_Dummy_World;
 import config.property.Property_Login;
@@ -37,7 +37,7 @@ import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import server.network.PacketHandler_Login;
 import server.network.PacketHandler;
 
-public class LoginServer {
+public class Server_Login {
 
     private static InetSocketAddress InetSocketadd;
     private static IoAcceptor acceptor;

@@ -38,7 +38,7 @@ import config.Version;
 import data.wz.DW_Mob;
 import data.wz.DW_Skill;
 import debug.DebugLogger;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import packet.ClientPacket;
 import packet.ops.OpsMapTransfer;
 import packet.response.ResCMobPool;
@@ -772,7 +772,7 @@ public class PlayerHandler {
     }
 
     public static final void ChangeMap(MapleClient c, int map_id) {
-        final MapleMap to = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(map_id);
+        final MapleMap to = Server_Game.getInstance(c.getChannel()).getMapFactory().getMap(map_id);
         c.getPlayer().changeMap(to, to.getPortal(0));
     }
 

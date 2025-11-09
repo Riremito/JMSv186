@@ -62,7 +62,7 @@ import data.wz.ids.DWI_Validation;
 import database.DatabaseConnection;
 import database.DatabaseException;
 import server.network.MaplePacket;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import handling.world.CharacterTransfer;
 import handling.world.MapleMessenger;
 import handling.world.MapleMessengerCharacter;
@@ -152,7 +152,7 @@ import database.query.DQ_Accounts;
 import debug.DebugLogger;
 import debug.DebugShop;
 import debug.IDebugMan;
-import handling.cashshop.CashShopServer;
+import server.server.Server_CashShop;
 import packet.response.wrapper.WrapCWvsContext;
 
 public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Serializable {
@@ -411,7 +411,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         ret.subcategory = ct.subcategory;
 
         if (isChannel) {
-            final MapleMapFactory mapFactory = ChannelServer.getInstance(client.getChannel()).getMapFactory();
+            final MapleMapFactory mapFactory = Server_Game.getInstance(client.getChannel()).getMapFactory();
             ret.map = mapFactory.getMap(ret.mapid);
             if (ret.map == null) { //char is on a map that doesn't exist warp it to henesys
                 ret.map = mapFactory.getMap(100000000);
@@ -573,7 +573,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             ret.jobRankMove = rs.getInt("jobRankMove");
             ret.marriageId = rs.getInt("marriageId");
             if (channelserver) {
-                MapleMapFactory mapFactory = ChannelServer.getInstance(client.getChannel()).getMapFactory();
+                MapleMapFactory mapFactory = Server_Game.getInstance(client.getChannel()).getMapFactory();
                 ret.map = mapFactory.getMap(ret.mapid);
                 if (ret.map == null) { //char is on a map that doesn't exist warp it to henesys
                     ret.map = mapFactory.getMap(100000000);
@@ -5120,7 +5120,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public void changeChannel(final int channel) {
-        final ChannelServer toch = ChannelServer.getInstance(channel);
+        final Server_Game toch = Server_Game.getInstance(channel);
 
         if (channel == client.getChannel() || toch == null || toch.isShutdown()) {
             client.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_GAMESVR_DISCONNECTED));
@@ -5128,7 +5128,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         }
         changeRemoval();
 
-        final ChannelServer ch = ChannelServer.getInstance(client.getChannel());
+        final Server_Game ch = Server_Game.getInstance(client.getChannel());
         if (getMessenger() != null) {
             World.Messenger.silentLeaveMessenger(getMessenger().getId(), new MapleMessengerCharacter(this));
         }
@@ -6036,7 +6036,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     }
 
     public boolean mapChangeDirect(int map_id) {
-        MapleMap map_to = ChannelServer.getInstance(client.getChannel()).getMapFactory().getMap(map_id);
+        MapleMap map_to = Server_Game.getInstance(client.getChannel()).getMapFactory().getMap(map_id);
         if (map_to == null) {
             return false;
         }
@@ -6173,7 +6173,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
         // fix---
         if (!fromCS) {
-            final ChannelServer ch = ChannelServer.getInstance(map == null ? client.getChannel() : map.getChannel());
+            final Server_Game ch = Server_Game.getInstance(map == null ? client.getChannel() : map.getChannel());
 
             try {
                 if (ch == null || clone || ch.isShutdown()) {
@@ -6243,7 +6243,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 FileoutputUtil.outputFileError(FileoutputUtil.Acc_Stuck, e);
             } finally {
                 if (RemoveInChannelServer && ch > 0) {
-                    CashShopServer.getPlayerStorage().deregisterPlayer(idz, namez);
+                    Server_CashShop.getPlayerStorage().deregisterPlayer(idz, namez);
                 }
             }
         }

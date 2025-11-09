@@ -19,7 +19,7 @@
 package server.network;
 
 import client.MapleClient;
-import handling.login.LoginServer;
+import server.server.Server_Login;
 import packet.ClientPacket;
 import packet.request.ReqCClientSocket;
 import packet.request.ReqCLogin;
@@ -38,7 +38,7 @@ public class PacketHandler_Login extends PacketHandler implements IPacketHandler
 
     @Override
     public boolean isShutdown() {
-        return LoginServer.isShutdown();
+        return Server_Login.isShutdown();
     }
 
     @Override

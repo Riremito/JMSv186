@@ -30,7 +30,7 @@ import config.Version;
 import constants.GameConstants;
 import debug.DebugLogger;
 import debug.DebugShop;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import handling.channel.handler.PlayerHandler;
 import handling.world.World;
 import java.util.ArrayList;
@@ -329,7 +329,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
     public static MapleCharacter findCharacterByName(String name_to) {
         int ch = World.Find.findChannel(name_to);
         if (ch != -1) {
-            MapleCharacter chr_to = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(name_to);
+            MapleCharacter chr_to = Server_Game.getInstance(ch).getPlayerStorage().getCharacterByName(name_to);
             return chr_to;
         }
 

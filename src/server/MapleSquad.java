@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import client.MapleCharacter;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -43,7 +43,7 @@ public class MapleSquad {
     }
 
     public MapleMap getBeginMap() {
-        return ChannelServer.getInstance(ch).getMapFactory().getMap(beginMapId);
+        return Server_Game.getInstance(ch).getMapFactory().getMap(beginMapId);
     }
 
     public void clear() {
@@ -55,13 +55,13 @@ public class MapleSquad {
         members.clear();
         bannedMembers.clear();
         leader = null;
-        ChannelServer.getInstance(ch).removeMapleSquad(type);
+        Server_Game.getInstance(ch).removeMapleSquad(type);
         this.status = 0;
 
     }
 
     public MapleCharacter getChar(String name) {
-        return ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(name);
+        return Server_Game.getInstance(ch).getPlayerStorage().getCharacterByName(name);
     }
 
     public long getTimeLeft() {

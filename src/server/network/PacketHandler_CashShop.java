@@ -19,7 +19,7 @@
 package server.network;
 
 import client.MapleClient;
-import handling.cashshop.CashShopServer;
+import server.server.Server_CashShop;
 import packet.ClientPacket;
 import packet.request.ReqCCashShop;
 import packet.request.ReqCClientSocket;
@@ -39,7 +39,7 @@ public class PacketHandler_CashShop extends PacketHandler implements IPacketHand
 
     @Override
     public boolean isShutdown() {
-        return CashShopServer.isShutdown();
+        return Server_CashShop.isShutdown();
     }
 
     @Override

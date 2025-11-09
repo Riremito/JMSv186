@@ -42,8 +42,8 @@ import data.client.DC_Exp;
 import debug.DebugLogger;
 import debug.DebugMan;
 import debug.DebugShop;
-import handling.cashshop.CashShopServer;
-import handling.channel.ChannelServer;
+import server.server.Server_CashShop;
+import server.server.Server_Game;
 import handling.channel.handler.AttackInfo;
 import handling.channel.handler.HiredMerchantHandler;
 import handling.channel.handler.InventoryHandler;
@@ -2394,11 +2394,11 @@ public class ReqCUser {
                 MapleCharacter chr_to = null;
                 // something wrong for cs
                 if (0 < ch) {
-                    chr_to = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(player_name);
+                    chr_to = Server_Game.getInstance(ch).getPlayerStorage().getCharacterByName(player_name);
                 } else if (ch == -10) {
-                    chr_to = CashShopServer.getPlayerStorage().getCharacterByName(player_name);
+                    chr_to = Server_CashShop.getPlayerStorage().getCharacterByName(player_name);
                 } else if (ch == -20) {
-                    chr_to = CashShopServer.getPlayerStorageMTS().getCharacterByName(player_name);
+                    chr_to = Server_CashShop.getPlayerStorageMTS().getCharacterByName(player_name);
                 }
                 chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Location, chr, player_name, null, chr_to));
                 return true;
@@ -2411,7 +2411,7 @@ public class ReqCUser {
                     chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Whisper, chr, name_to, message, null));
                     return false;
                 }
-                MapleCharacter chr_to = ChannelServer.getInstance(ch).getPlayerStorage().getCharacterByName(name_to);
+                MapleCharacter chr_to = Server_Game.getInstance(ch).getPlayerStorage().getCharacterByName(name_to);
                 if (chr_to == null) {
                     chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Whisper, chr, name_to, message, null));
                     return false;

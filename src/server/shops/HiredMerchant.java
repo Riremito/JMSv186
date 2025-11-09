@@ -26,7 +26,7 @@ import client.inventory.ItemFlag;
 import constants.GameConstants;
 import client.MapleCharacter;
 import client.MapleClient;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import java.util.LinkedList;
 import java.util.List;
 import packet.response.ResCEmployeePool;
@@ -133,7 +133,7 @@ public class HiredMerchant extends AbstractPlayerStore {
             saveItems();
         }
         if (remove) {
-            ChannelServer.getInstance(channel).removeMerchant(this);
+            Server_Game.getInstance(channel).removeMerchant(this);
             getMap().broadcastMessage(ResCEmployeePool.EmployeeLeaveField(this));
         }
         getMap().removeMapObject(this);

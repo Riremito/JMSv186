@@ -34,7 +34,7 @@ import data.wz.DW_String;
 import data.wz.ids.DWI_Random;
 import data.wz.ids.DWI_Validation;
 import data.wz.ids.DWI_LoadXML;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -576,7 +576,7 @@ public class DebugCommand {
             }
             case "/randommap": {
                 int mapid = DWI_LoadXML.getMap().getRandom();
-                MapleMap map = ChannelServer.getInstance(c.getChannel()).getMapFactory().getMap(mapid);
+                MapleMap map = Server_Game.getInstance(c.getChannel()).getMapFactory().getMap(mapid);
                 chr.changeMap(map, map.getPortal(0));
                 chr.DebugMsg("[RandomMap] " + map.getId() + " - " + map.getStreetName() + "_" + map.getMapName()); // MapName code is buggy.
                 return true;

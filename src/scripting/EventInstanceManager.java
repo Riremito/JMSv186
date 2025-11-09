@@ -31,7 +31,7 @@ import javax.script.ScriptException;
 
 import client.MapleCharacter;
 import client.MapleQuestStatus;
-import handling.channel.ChannelServer;
+import server.server.Server_Game;
 import handling.world.MapleParty;
 import handling.world.MaplePartyCharacter;
 import java.util.Collections;
@@ -198,7 +198,7 @@ public class EventInstanceManager {
 
     private boolean unregisterPlayer_NoLock(final MapleCharacter chr) {
         if (name.equals("CWKPQ")) { //hard code it because i said so
-            final MapleSquad squad = ChannelServer.getInstance(channel).getMapleSquad("CWKPQ");//so fkin hacky
+            final MapleSquad squad = Server_Game.getInstance(channel).getMapleSquad("CWKPQ");//so fkin hacky
             if (squad != null) {
                 squad.removeMember(chr.getName());
                 if (squad.getLeaderName().equals(chr.getName())) {
@@ -495,8 +495,8 @@ public class EventInstanceManager {
 
     }
 
-    public ChannelServer getChannelServer() {
-        return ChannelServer.getInstance(channel);
+    public Server_Game getChannelServer() {
+        return Server_Game.getInstance(channel);
     }
 
     public List<MapleMonster> getMobs() {

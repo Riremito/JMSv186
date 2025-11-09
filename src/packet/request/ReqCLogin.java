@@ -38,8 +38,8 @@ import database.query.DQ_Character_slots;
 import database.query.DQ_Characters;
 import debug.DebugLogger;
 import debug.DebugUser;
-import handling.channel.ChannelServer;
-import handling.login.LoginServer;
+import server.server.Server_Game;
+import server.server.Server_Login;
 import java.util.ArrayList;
 import java.util.Map;
 import packet.ClientPacket;
@@ -478,7 +478,7 @@ public class ReqCLogin {
 
     // JMS以外必要
     public static void OnCheckUserLimit(MapleClient c) {
-        int world_users = LoginServer.getUsersOn();
+        int world_users = Server_Login.getUsersOn();
         int world_max_users = Property_Login.getUserLimit();
         int world_status = 0;
 
@@ -498,7 +498,7 @@ public class ReqCLogin {
         // かえで
         c.SendPacket(ResCLogin.WorldInformation(0));
         // もみじ (サーバーを分離すると接続人数を取得するのが難しくなる)
-        c.SendPacket(ResCLogin.WorldInformation(1, false, LoginServer.WorldChannels[1]));
+        c.SendPacket(ResCLogin.WorldInformation(1, false, Server_Login.WorldChannels[1]));
         c.SendPacket(ResCLogin.WorldInformation(-1));
 
         if (ServerConfig.JMS186orLater()) {
@@ -514,7 +514,7 @@ public class ReqCLogin {
             return false;
         }
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
-        c.SendPacket(ResCLogin.SelectCharacterResult(LoginServer.WorldPort[c.getWorld()] + c.getChannel() - 1, character_id));
+        c.SendPacket(ResCLogin.SelectCharacterResult(Server_Login.WorldPort[c.getWorld()] + c.getChannel() - 1, character_id));
         return true;
     }
 
@@ -566,14 +566,14 @@ public class ReqCLogin {
     private static long lastUpdate = 0;
 
     public static void registerClient(final MapleClient c) {
-        if (LoginServer.isAdminOnly() && !c.isGameMaster()) {
+        if (Server_Login.isAdminOnly() && !c.isGameMaster()) {
             c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.INVALID_ADMIN_IP));
             return;
         }
         if (System.currentTimeMillis() - lastUpdate > 600000) {
             // Update once every 10 minutes
             lastUpdate = System.currentTimeMillis();
-            final Map<Integer, Integer> load = ChannelServer.getChannelLoad();
+            final Map<Integer, Integer> load = Server_Game.getChannelLoad();
             int usersOn = 0;
             if (load == null || load.size() <= 0) {
                 // In an unfortunate event that client logged in before load
@@ -586,7 +586,7 @@ public class ReqCLogin {
                 usersOn += entry.getValue();
                 load.put(entry.getKey(), Math.min(1200, (int) (entry.getValue() * loadFactor)));
             }
-            LoginServer.setLoad(load, usersOn);
+            Server_Login.setLoad(load, usersOn);
             lastUpdate = System.currentTimeMillis();
         }
         if (DQ_Accounts.finishLogin(c)) {
