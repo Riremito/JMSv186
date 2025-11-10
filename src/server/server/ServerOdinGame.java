@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.server;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,7 +31,6 @@ import java.util.Map;
 import client.MapleCharacter;
 import config.ContentCustom;
 import config.property.Property_World;
-import debug.DebugLogger;
 import handling.channel.PlayerStorage;
 import server.network.ByteArrayMaplePacket;
 import server.network.MaplePacket;
@@ -44,11 +41,6 @@ import server.maps.MapleMapFactory;
 import server.shops.HiredMerchant;
 import server.life.PlayerNPC;
 
-import org.apache.mina.common.ByteBuffer;
-import org.apache.mina.common.SimpleByteBufferAllocator;
-import org.apache.mina.common.IoAcceptor;
-import org.apache.mina.transport.socket.nio.SocketAcceptor;
-import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,22 +52,39 @@ import server.events.MapleFitness;
 import server.events.MapleOla;
 import server.events.MapleOxQuiz;
 import server.events.MapleSnowball;
-import server.network.PacketHandler_Game;
-import server.network.PacketHandler;
 
-public class ServerOdinGame implements Serializable {
+public class ServerOdinGame {
 
-    public static long serverStartTime;
+    private Server_Game server_game = null;
+    private static final Map<Integer, ServerOdinGame> instances = new HashMap<Integer, ServerOdinGame>();
+
+    public void set(Server_Game server) {
+        this.server_game = server;
+    }
+
+    public boolean isAdminOnly() {
+        return this.server_game.isAdminOnly();
+    }
+
+    public boolean isShutdown() {
+        return server_game.isShutdown();
+    }
+
+    public static Map<Integer, ServerOdinGame> getInstances() {
+        return instances;
+    }
+
+    public PlayerStorage getPlayerStorage() {
+        return this.server_game.getPlayerStorage();
+    }
+
     private int expRate, mesoRate, dropRate, cashRate;
     private short port = 8585;
     private int channel, running_MerchantID = 0, flags = 0;
     private String serverMessage, serverName;
-    private boolean shutdown = false, finishedShutdown = false, MegaphoneMuteState = false, adminOnly = false;
-    private PlayerStorage players;
-    private IoAcceptor acceptor;
+    private boolean MegaphoneMuteState = false;
     private final MapleMapFactory mapFactory;
     private EventScriptManager eventSM;
-    private static final Map<Integer, ServerOdinGame> instances = new HashMap<Integer, ServerOdinGame>();
     private final Map<String, MapleSquad> mapleSquads = new HashMap<String, MapleSquad>();
     private final Map<Integer, HiredMerchant> merchants = new HashMap<Integer, HiredMerchant>();
     private final Map<Integer, PlayerNPC> playerNPCs = new HashMap<Integer, PlayerNPC>();
@@ -114,80 +123,27 @@ public class ServerOdinGame implements Serializable {
         return ContentCustom.CC_WZ_MAP_ADDED.get();
     }
 
-    public final void run_startup_configurations() {
-        setChannel(channel); //instances.put
+    public final void run_startup_configurations(int port) {
+        setChannel(channel);
+        this.port = (short) port;
+        expRate = Property_World.getRateExp();
+        mesoRate = Property_World.getRateMeso();
+        dropRate = Property_World.getRateDrop();
+        serverMessage = Property_World.getMessage();
+        serverName = Property_World.getName();
+        flags = Property_World.getFlags();
+        //adminOnly = Property_World.getAdminOnly();
+
+        // 読み込み遅い
         try {
-
-            expRate = Property_World.getRateExp();
-            mesoRate = Property_World.getRateMeso();
-            dropRate = Property_World.getRateDrop();
-            serverMessage = Property_World.getMessage();
-            serverName = Property_World.getName();
-            flags = Property_World.getFlags();
-            adminOnly = Property_World.getAdminOnly();
-
             // 壊れている可能性あり
             eventSM = new EventScriptManager(this, Property_World.getEvents().split(","));
-
-            port = (short) (Property_World.getPort() + channel - 1);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        ByteBuffer.setUseDirectBuffers(false);
-        ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
-
-        acceptor = new SocketAcceptor();
-        players = new PlayerStorage(channel);
         loadEvents();
-
-        try {
-            acceptor.bind(new InetSocketAddress(port), new PacketHandler_Game(channel), PacketHandler.getSocketAcceptorConfig());
-            DebugLogger.InfoLog("Channel " + channel + " Port = " + port);
-            eventSM.init();
-        } catch (IOException e) {
-            DebugLogger.InfoLog("Binding to port " + port + " failed (ch: " + getChannel() + ")" + e);
-        }
-    }
-
-    public final void shutdown(Object threadToNotify) {
-        if (finishedShutdown) {
-            return;
-        }
-        broadcastPacket(ResWrapper.BroadCastMsgNoticeOld("This channel will now shut down."));
-        // dc all clients by hand so we get sessionClosed...
-        shutdown = true;
-
-        DebugLogger.InfoLog("Channel " + channel + ", Saving hired merchants...");
-
-        closeAllMerchant();
-
-        DebugLogger.InfoLog("Channel " + channel + ", Saving characters...");
-
-        getPlayerStorage().disconnectAll();
-
-        DebugLogger.InfoLog("Channel " + channel + ", Unbinding...");
-
-        acceptor.unbindAll();
-        acceptor = null;
-
-        //temporary while we dont have !addchannel
-        instances.remove(channel);
-        ServerOdinLogin.removeChannel(channel);
-        setFinishShutdown();
-//        if (threadToNotify != null) {
-//            synchronized (threadToNotify) {
-//                threadToNotify.notify();
-//            }
-//        }
-    }
-
-    public final void unbind() {
-        acceptor.unbindAll();
-    }
-
-    public final boolean hasFinishedShutdown() {
-        return finishedShutdown;
+        eventSM.init();
     }
 
     public final MapleMapFactory getMapFactory() {
@@ -213,13 +169,6 @@ public class ServerOdinGame implements Serializable {
 
     public final void addPlayer(final MapleCharacter chr) {
         getPlayerStorage().registerPlayer(chr);
-    }
-
-    public final PlayerStorage getPlayerStorage() {
-        if (players == null) { //wth
-            players = new PlayerStorage(channel); //wthhhh
-        }
-        return players;
     }
 
     public final void removePlayer(final MapleCharacter chr) {
@@ -278,10 +227,6 @@ public class ServerOdinGame implements Serializable {
         return port;
     }
 
-    public final boolean isShutdown() {
-        return shutdown;
-    }
-
     public final int getLoadedMaps() {
         return mapFactory.getLoadedMaps();
     }
@@ -310,14 +255,6 @@ public class ServerOdinGame implements Serializable {
 
     public final void setDropRate(final int dropRate) {
         this.dropRate = dropRate;
-    }
-
-    public static final void startChannel_Main() {
-        serverStartTime = System.currentTimeMillis();
-
-        for (int i = 0; i < Property_World.getChannels(); i++) {
-            newInstance(i + 1).run_startup_configurations();
-        }
     }
 
     public Map<String, MapleSquad> getAllSquads() {
@@ -491,20 +428,6 @@ public class ServerOdinGame implements Serializable {
 
     public static final Set<Integer> getChannelServer() {
         return new HashSet<Integer>(instances.keySet());
-    }
-
-    public final void setShutdown() {
-        this.shutdown = true;
-        DebugLogger.InfoLog("Channel " + channel + " has set to shutdown.");
-    }
-
-    public final void setFinishShutdown() {
-        this.finishedShutdown = true;
-        DebugLogger.InfoLog("Channel " + channel + " has finished shutdown.");
-    }
-
-    public final boolean isAdminOnly() {
-        return adminOnly;
     }
 
     public final static int getChannelCount() {

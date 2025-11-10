@@ -149,6 +149,10 @@ public class DebugCommand {
                 }
                 return true;
             }
+            case "/shutdown": {
+                // CTRL + C & Y
+                return true;
+            }
             case "/ea":
             case "/stuck":
             case "/unlock": {

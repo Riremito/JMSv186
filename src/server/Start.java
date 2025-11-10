@@ -8,7 +8,7 @@ import config.Region;
 import config.Version;
 import config.property.Property;
 import data.client.DC_Exp;
-import server.server.ServerOdinGame;
+import database.DatabaseConnection;
 import handling.channel.MapleGuildRanking;
 import server.server.ServerOdinLogin;
 import handling.world.World;
@@ -21,7 +21,9 @@ import org.apache.mina.common.SimpleByteBufferAllocator;
 import server.Timer.*;
 import server.events.MapleOxQuizFactory;
 import server.network.MapleAESOFB;
+import server.server.Server;
 import server.server.Server_CashShop;
+import server.server.Server_Game;
 import server.server.Server_Login;
 import test.ToolMan;
 
@@ -94,25 +96,19 @@ public class Start {
         BuffTimer.getInstance().start();
         PingTimer.getInstance().start();
 
-        DebugLogger.SetupLog("LOGIN_SERVER");
         // ?_?
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
         Server_Login.init();
-        RandomRewards.getInstance();
+        Server_CashShop.init();
+        Server_Game.init();
 
+        RandomRewards.getInstance();
         MapleOxQuizFactory.getInstance().initialize();
         MapleGuildRanking.getInstance().getRank();
         MapleFamilyBuff.getBuffEntry();
-
-        DebugLogger.SetupLog("GAME_SERVER");
-        ServerOdinGame.startChannel_Main();
-
-        DebugLogger.SetupLog("CASHSHOP_SERVER");
-        Server_CashShop.init();
         MTSStorage.load();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(new Shutdown()));
         try {
             SpeedRunner.getInstance().loadSpeedRuns();
         } catch (SQLException e) {
@@ -121,15 +117,33 @@ public class Start {
         World.registerRespawn();
         DebugLogger.SetupLog("RANKING");
         RankingWorker.getInstance().run();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(
+                () -> {
+                    DebugLogger.InfoLog("shutdown...");
+                    for (Server server : Server.get()) {
+                        server.shutdown();
+                    }
+                    World.Guild.save();
+                    World.Alliance.save();
+                    World.Family.save();
+                    try {
+                        DatabaseConnection.closeAll();
+                    } catch (SQLException ex) {
+                    }
+                    WorldTimer.getInstance().stop();
+                    MapTimer.getInstance().stop();
+                    MobTimer.getInstance().stop();
+                    BuffTimer.getInstance().stop();
+                    CloneTimer.getInstance().stop();
+                    EventTimer.getInstance().stop();
+                    EtcTimer.getInstance().stop();
+                    DebugLogger.InfoLog("shutdown OK!");
+                }
+        ));
+
         DebugLogger.SetupLog("DONE!");
         return;
     }
 
-    public static class Shutdown implements Runnable {
-
-        @Override
-        public void run() {
-            new Thread(ShutdownServer.getInstance()).start();
-        }
-    }
 }

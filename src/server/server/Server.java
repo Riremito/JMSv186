@@ -82,17 +82,22 @@ public class Server {
         try {
             getIoAcceptor().bind(this.server_inet_socket_address, this.server_io_handler, this.server_service_config);
         } catch (IOException e) {
-            DebugLogger.ErrorLog(this.server_ip + ":" + this.server_port + ", failed : " + e);
+            DebugLogger.ErrorLog("bind = " + this.server_ip + ":" + this.server_port + " (" + this.server_name + ")");
+            DebugLogger.ErrorLog(e.toString());
             return false;
         }
 
-        DebugLogger.InfoLog(this.server_inet_socket_address.getHostName() + ":" + this.server_inet_socket_address.getPort());
+        DebugLogger.InfoLog("bind = " + this.server_inet_socket_address.getHostName() + ":" + this.server_inet_socket_address.getPort() + " (" + this.server_name + ")");
         this.server_status = true;
         return true;
     }
 
     public void shutdown() {
-        getIoAcceptor().unbind(this.server_inet_socket_address);
+        DebugLogger.InfoLog("unbind = " + this.server_inet_socket_address.getHostName() + ":" + this.server_inet_socket_address.getPort() + " (" + this.server_name + ")");
+        if (this.server_status) {
+            getIoAcceptor().unbind(this.server_inet_socket_address);
+        }
+        this.server_status = false;
     }
 
     public String getName() {

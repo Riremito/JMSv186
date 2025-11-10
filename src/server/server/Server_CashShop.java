@@ -31,33 +31,33 @@ import server.network.PacketHandler_CashShop;
  * @author Riremito
  */
 public class Server_CashShop extends Server {
-    
+
     private PlayerStorage players;
     private PlayerStorage playersMTS;
-    
+
     public Server_CashShop(String server_name, String server_ip, int server_port, IoHandler ih, IoServiceConfig isc) {
         super(server_name, server_ip, server_port, ih, isc);
-        
+
         this.players = new PlayerStorage(-10);
         this.playersMTS = new PlayerStorage(-20);
     }
-    
+
     @Override
     public void shutdown() {
-        players.disconnectAll();
-        playersMTS.disconnectAll();
+        this.players.disconnectAll();
+        this.playersMTS.disconnectAll();
         MTSStorage.getInstance().saveBuyNow(true);
         super.shutdown();
     }
-    
+
     public PlayerStorage getPlayerStorage() {
         return this.players;
     }
-    
+
     public PlayerStorage getPlayerStorageMTS() {
         return this.playersMTS;
     }
-    
+
     public static boolean init() {
         Server_CashShop server = new Server_CashShop("CashShop", "127.0.0.1", Property_Shop.getPort(), new PacketHandler_CashShop(), PacketHandler.getSocketAcceptorConfig());
         Server.add(server);
