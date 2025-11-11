@@ -18,11 +18,11 @@
  */
 package packet.response.data;
 
-import client.MapleClient;
-import client.inventory.IItem;
+import odin.client.MapleClient;
+import odin.client.inventory.IItem;
 import data.client.DC_Date;
 import packet.ServerPacket;
-import server.CashItemFactory;
+import odin.server.CashItemFactory;
 
 /**
  *

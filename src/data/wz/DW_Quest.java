@@ -19,8 +19,8 @@
 package data.wz;
 
 import config.Content;
-import provider.MapleData;
-import provider.MapleDataProvider;
+import odin.provider.MapleData;
+import odin.provider.MapleDataProvider;
 
 /**
  *

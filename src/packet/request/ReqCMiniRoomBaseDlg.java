@@ -18,7 +18,7 @@
  */
 package packet.request;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import data.wz.ids.DWI_LoadXML;
 import debug.DebugLogger;
 import java.util.List;
@@ -29,10 +29,10 @@ import packet.ops.OpsMiniRoomType;
 import packet.response.ResCEmployeePool;
 import packet.response.ResCField;
 import packet.response.ResCMiniRoomBaseDlg;
-import server.maps.MapleMap;
-import server.maps.MapleMapObjectType;
-import server.shops.HiredMerchant;
-import tools.Pair;
+import odin.server.maps.MapleMap;
+import odin.server.maps.MapleMapObjectType;
+import odin.server.shops.HiredMerchant;
+import odin.tools.Pair;
 
 /**
  *

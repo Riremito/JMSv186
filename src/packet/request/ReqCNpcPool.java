@@ -18,13 +18,13 @@
  */
 package packet.request;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import packet.ClientPacket;
 import packet.request.parse.ParseCMovePath;
 import packet.response.ResCNpcPool;
-import server.life.MapleNPC;
-import server.maps.MapleMap;
+import odin.server.life.MapleNPC;
+import odin.server.maps.MapleMap;
 
 /**
  *

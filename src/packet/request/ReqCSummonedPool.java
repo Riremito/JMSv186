@@ -20,14 +20,14 @@
  */
 package packet.request;
 
-import client.ISkill;
-import client.MapleBuffStat;
-import client.MapleCharacter;
-import client.MapleClient;
-import client.SkillFactory;
-import client.SummonSkillEntry;
-import client.status.MonsterStatus;
-import client.status.MonsterStatusEffect;
+import odin.client.ISkill;
+import odin.client.MapleBuffStat;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
+import odin.client.SkillFactory;
+import odin.client.SummonSkillEntry;
+import odin.client.status.MonsterStatus;
+import odin.client.status.MonsterStatusEffect;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -40,12 +40,12 @@ import packet.ClientPacket;
 import packet.request.parse.ParseCMovePath;
 import packet.response.ResCMobPool;
 import packet.response.ResCSummonedPool;
-import server.MapleStatEffect;
-import server.life.MapleMonster;
-import server.life.SummonAttackEntry;
-import server.maps.MapleMap;
-import server.maps.MapleSummon;
-import server.maps.SummonMovementType;
+import odin.server.MapleStatEffect;
+import odin.server.life.MapleMonster;
+import odin.server.life.SummonAttackEntry;
+import odin.server.maps.MapleMap;
+import odin.server.maps.MapleSummon;
+import odin.server.maps.SummonMovementType;
 
 /**
  *

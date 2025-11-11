@@ -18,7 +18,7 @@
  */
 package packet.request.addon;
 
-import client.MapleClient;
+import odin.client.MapleClient;
 import config.Region;
 import config.Version;
 import config.property.Property_Login;

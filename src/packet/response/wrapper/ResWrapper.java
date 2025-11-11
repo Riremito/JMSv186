@@ -18,14 +18,14 @@
  */
 package packet.response.wrapper;
 
-import client.MapleCharacter;
-import client.MapleQuestStatus;
-import client.inventory.IItem;
-import client.inventory.MapleInventoryType;
-import client.inventory.MaplePet;
+import odin.client.MapleCharacter;
+import odin.client.MapleQuestStatus;
+import odin.client.inventory.IItem;
+import odin.client.inventory.MapleInventoryType;
+import odin.client.inventory.MaplePet;
 import config.Region;
 import config.Version;
-import constants.GameConstants;
+import odin.constants.GameConstants;
 import server.network.MaplePacket;
 import packet.ServerPacket;
 import packet.ops.OpsBroadcastMsg;
@@ -45,11 +45,11 @@ import packet.response.ResCStage;
 import packet.response.ResCWvsContext;
 import packet.response.struct.InvOp;
 import packet.response.struct.TestHelper;
-import server.Randomizer;
-import server.maps.MapleMap;
-import tools.HexTool;
-import tools.StringUtil;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.server.Randomizer;
+import odin.server.maps.MapleMap;
+import odin.tools.HexTool;
+import odin.tools.StringUtil;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

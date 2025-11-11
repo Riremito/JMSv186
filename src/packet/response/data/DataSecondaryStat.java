@@ -18,15 +18,15 @@
  */
 package packet.response.data;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
 import java.util.ArrayList;
 import packet.ServerPacket;
 import packet.ops.OpsSecondaryStat;
-import server.MapleStatEffect;
-import tools.Pair;
+import odin.server.MapleStatEffect;
+import odin.tools.Pair;
 
 /**
  *

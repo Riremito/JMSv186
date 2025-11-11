@@ -18,11 +18,11 @@
  */
 package data.wz;
 
-import client.ISkill;
-import client.MapleCharacter;
-import client.Skill;
-import static client.SkillFactory.getName;
-import client.SummonSkillEntry;
+import odin.client.ISkill;
+import odin.client.MapleCharacter;
+import odin.client.Skill;
+import static odin.client.SkillFactory.getName;
+import odin.client.SummonSkillEntry;
 import config.Content;
 import debug.DebugLogger;
 import java.awt.Point;
@@ -30,13 +30,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import provider.MapleData;
-import provider.MapleDataFileEntry;
-import provider.MapleDataProvider;
-import provider.MapleDataTool;
-import server.MapleCarnivalFactory;
-import server.life.MobSkill;
-import tools.Pair;
+import odin.provider.MapleData;
+import odin.provider.MapleDataFileEntry;
+import odin.provider.MapleDataProvider;
+import odin.provider.MapleDataTool;
+import odin.server.MapleCarnivalFactory;
+import odin.server.life.MobSkill;
+import odin.tools.Pair;
 
 /**
  *

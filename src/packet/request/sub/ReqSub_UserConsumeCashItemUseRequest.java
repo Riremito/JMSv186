@@ -18,21 +18,21 @@
  */
 package packet.request.sub;
 
-import client.MapleCharacter;
-import client.inventory.Equip;
-import client.inventory.IItem;
-import client.inventory.ItemFlag;
-import client.inventory.MapleInventoryType;
-import client.inventory.MaplePet;
+import odin.client.MapleCharacter;
+import odin.client.inventory.Equip;
+import odin.client.inventory.IItem;
+import odin.client.inventory.ItemFlag;
+import odin.client.inventory.MapleInventoryType;
+import odin.client.inventory.MaplePet;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import constants.GameConstants;
+import odin.constants.GameConstants;
 import debug.DebugLogger;
 import debug.DebugShop;
 import server.server.ServerOdinGame;
-import handling.channel.handler.PlayerHandler;
-import handling.world.World;
+import odin.handling.channel.handler.PlayerHandler;
+import odin.handling.world.World;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,10 +53,10 @@ import packet.response.ResCUser_Pet;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCWvsContext;
-import server.MapleItemInformationProvider;
-import server.maps.FieldLimitType;
-import server.maps.MapleMap;
-import server.shops.HiredMerchant;
+import odin.server.MapleItemInformationProvider;
+import odin.server.maps.FieldLimitType;
+import odin.server.maps.MapleMap;
+import odin.server.shops.HiredMerchant;
 
 /**
  *

@@ -18,11 +18,11 @@
  */
 package database.query;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import database.DatabaseConnection;
 import debug.DebugLogger;
-import handling.world.World;
+import odin.handling.world.World;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

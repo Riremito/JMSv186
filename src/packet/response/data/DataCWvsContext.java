@@ -18,8 +18,8 @@
  */
 package packet.response.data;
 
-import client.BuddylistEntry;
-import client.MapleCharacter;
+import odin.client.BuddylistEntry;
+import odin.client.MapleCharacter;
 import config.Region;
 import config.ServerConfig;
 import config.Version;

@@ -18,10 +18,10 @@
  */
 package packet.request;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import debug.DebugLogger;
-import handling.channel.handler.NPCHandler;
+import odin.handling.channel.handler.NPCHandler;
 import packet.ClientPacket;
 import packet.ops.OpsScriptMan;
 

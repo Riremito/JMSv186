@@ -28,30 +28,30 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import config.ContentCustom;
 import config.property.Property_World;
-import handling.channel.PlayerStorage;
+import odin.handling.channel.PlayerStorage;
 import server.network.ByteArrayMaplePacket;
 import server.network.MaplePacket;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import scripting.EventScriptManager;
-import server.MapleSquad;
-import server.maps.MapleMapFactory;
-import server.shops.HiredMerchant;
-import server.life.PlayerNPC;
+import odin.scripting.EventScriptManager;
+import odin.server.MapleSquad;
+import odin.server.maps.MapleMapFactory;
+import odin.server.shops.HiredMerchant;
+import odin.server.life.PlayerNPC;
 
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
 import packet.response.wrapper.ResWrapper;
-import server.events.MapleCoconut;
-import server.events.MapleEvent;
-import server.events.MapleEventType;
-import server.events.MapleFitness;
-import server.events.MapleOla;
-import server.events.MapleOxQuiz;
-import server.events.MapleSnowball;
+import odin.server.events.MapleCoconut;
+import odin.server.events.MapleEvent;
+import odin.server.events.MapleEventType;
+import odin.server.events.MapleFitness;
+import odin.server.events.MapleOla;
+import odin.server.events.MapleOxQuiz;
+import odin.server.events.MapleSnowball;
 
 public class ServerOdinGame {
 

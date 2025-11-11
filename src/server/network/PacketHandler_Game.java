@@ -18,7 +18,7 @@
  */
 package server.network;
 
-import client.MapleClient;
+import odin.client.MapleClient;
 import server.server.ServerOdinGame;
 import packet.ClientPacket;
 import packet.request.ReqCClientSocket;

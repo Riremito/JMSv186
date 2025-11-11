@@ -18,7 +18,7 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import config.Region;
 import config.Version;
 import server.network.MaplePacket;

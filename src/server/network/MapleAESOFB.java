@@ -33,9 +33,9 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import tools.BitTools;
-import tools.HexTool;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.tools.BitTools;
+import odin.tools.HexTool;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  * Provides a class for encrypting MapleStory packets with AES OFB encryption.

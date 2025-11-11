@@ -18,8 +18,8 @@
  */
 package packet.response;
 
-import client.inventory.IItem;
-import client.inventory.MapleInventoryType;
+import odin.client.inventory.IItem;
+import odin.client.inventory.MapleInventoryType;
 import config.Region;
 import config.ServerConfig;
 import config.Version;

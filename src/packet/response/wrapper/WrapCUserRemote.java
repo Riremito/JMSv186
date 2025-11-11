@@ -18,7 +18,7 @@
  */
 package packet.response.wrapper;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import server.network.MaplePacket;
 import packet.ops.OpsUserEffect;
 import packet.ops.arg.ArgUserEffect;

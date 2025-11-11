@@ -1,26 +1,26 @@
 package packet.response.struct;
 
 import packet.ServerPacket;
-import client.ISkill;
-import client.MapleCharacter;
-import client.MapleCoolDownValueHolder;
-import client.MapleQuestStatus;
-import client.SkillEntry;
-import client.inventory.MapleRing;
-import client.status.MonsterStatus;
-import client.status.MonsterStatusEffect;
+import odin.client.ISkill;
+import odin.client.MapleCharacter;
+import odin.client.MapleCoolDownValueHolder;
+import odin.client.MapleQuestStatus;
+import odin.client.SkillEntry;
+import odin.client.inventory.MapleRing;
+import odin.client.status.MonsterStatus;
+import odin.client.status.MonsterStatusEffect;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import constants.GameConstants;
+import odin.constants.GameConstants;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import server.life.MapleMonster;
-import server.shops.AbstractPlayerStore;
-import server.shops.IMaplePlayerShop;
-import tools.KoreanDateUtil;
-import tools.Pair;
+import odin.server.life.MapleMonster;
+import odin.server.shops.AbstractPlayerStore;
+import odin.server.shops.IMaplePlayerShop;
+import odin.tools.KoreanDateUtil;
+import odin.tools.Pair;
 
 public class Structure {
 

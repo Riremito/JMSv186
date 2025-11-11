@@ -18,8 +18,8 @@
  */
 package packet.response.struct;
 
-import client.inventory.IItem;
-import client.inventory.MapleInventoryType;
+import odin.client.inventory.IItem;
+import odin.client.inventory.MapleInventoryType;
 import java.util.ArrayList;
 
 /**

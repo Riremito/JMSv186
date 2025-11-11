@@ -1,22 +1,22 @@
 // Mob
 package packet.request;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
 import data.wz.DW_Skill;
 import debug.DebugLogger;
-import handling.channel.handler.MobHandler;
+import odin.handling.channel.handler.MobHandler;
 import packet.ClientPacket;
 import packet.request.parse.ParseCMovePath;
 import packet.response.ResCMobPool;
-import server.Randomizer;
-import server.life.MapleMonster;
-import server.life.MobSkill;
-import server.maps.MapleMap;
-import tools.Pair;
+import odin.server.Randomizer;
+import odin.server.life.MapleMonster;
+import odin.server.life.MobSkill;
+import odin.server.maps.MapleMap;
+import odin.tools.Pair;
 
 public class ReqCMobPool {
 

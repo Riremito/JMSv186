@@ -24,15 +24,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import provider.MapleData;
-import provider.MapleDataDirectoryEntry;
-import provider.MapleDataFileEntry;
-import provider.MapleDataProvider;
-import provider.MapleDataTool;
-import server.life.MapleMonster;
-import server.life.MobAttackInfo;
-import tools.Pair;
-import tools.StringUtil;
+import odin.provider.MapleData;
+import odin.provider.MapleDataDirectoryEntry;
+import odin.provider.MapleDataFileEntry;
+import odin.provider.MapleDataProvider;
+import odin.provider.MapleDataTool;
+import odin.server.life.MapleMonster;
+import odin.server.life.MobAttackInfo;
+import odin.tools.Pair;
+import odin.tools.StringUtil;
 
 /**
  *

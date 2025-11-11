@@ -18,8 +18,8 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import debug.DebugLogger;
 import server.network.MaplePacket;
 import java.util.List;
@@ -32,16 +32,16 @@ import packet.ops.OpsTransferField;
 import packet.ops.Ops_Whisper;
 import packet.ops.arg.ArgFieldEffect;
 import packet.response.struct.TestHelper;
-import server.maps.MapleMap;
-import server.maps.MapleNodes;
-import server.shops.AbstractPlayerStore;
-import server.shops.HiredMerchant;
-import server.shops.IMaplePlayerShop;
-import server.shops.MapleMiniGame;
-import server.shops.MaplePlayerShop;
-import server.shops.MaplePlayerShopItem;
-import tools.Pair;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.server.maps.MapleMap;
+import odin.server.maps.MapleNodes;
+import odin.server.shops.AbstractPlayerStore;
+import odin.server.shops.HiredMerchant;
+import odin.server.shops.IMaplePlayerShop;
+import odin.server.shops.MapleMiniGame;
+import odin.server.shops.MaplePlayerShop;
+import odin.server.shops.MaplePlayerShopItem;
+import odin.tools.Pair;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

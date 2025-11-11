@@ -1,12 +1,12 @@
 package packet.response;
 
-import client.MapleBeans;
-import client.MapleCharacter;
+import odin.client.MapleBeans;
+import odin.client.MapleCharacter;
 import server.network.MaplePacket;
-import handling.channel.handler.BeanGame;
+import odin.handling.channel.handler.BeanGame;
 import java.util.List;
 import packet.ServerPacket;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 // CField_Pachinko
 public class Res_JMS_CField_Pachinko {

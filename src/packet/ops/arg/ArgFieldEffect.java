@@ -19,7 +19,7 @@
 package packet.ops.arg;
 
 import packet.ops.OpsFieldEffect;
-import server.life.MapleMonster;
+import odin.server.life.MapleMonster;
 
 /**
  *

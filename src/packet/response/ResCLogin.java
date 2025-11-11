@@ -18,8 +18,8 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import config.Region;
 import config.ServerConfig;
 import config.Version;

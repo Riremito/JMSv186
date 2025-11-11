@@ -18,15 +18,15 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
-import client.SkillMacro;
+import odin.client.MapleCharacter;
+import odin.client.SkillMacro;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
 import server.network.MaplePacket;
 import java.util.Map;
 import packet.ServerPacket;
-import tools.Pair;
+import odin.tools.Pair;
 
 /**
  *

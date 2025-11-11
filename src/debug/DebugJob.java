@@ -20,14 +20,14 @@
  */
 package debug;
 
-import client.ISkill;
-import client.MapleCharacter;
-import client.PlayerStats;
-import client.SkillFactory;
+import odin.client.ISkill;
+import odin.client.MapleCharacter;
+import odin.client.PlayerStats;
+import odin.client.SkillFactory;
 import config.Version;
 import data.wz.ids.DWI_Validation;
 import java.util.ArrayList;
-import server.Randomizer;
+import odin.server.Randomizer;
 
 /**
  *

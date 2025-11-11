@@ -17,8 +17,8 @@
  */
 package packet.response.data;
 
-import client.inventory.Equip;
-import client.inventory.IItem;
+import odin.client.inventory.Equip;
+import odin.client.inventory.IItem;
 import config.Content;
 import config.Region;
 import config.ServerConfig;

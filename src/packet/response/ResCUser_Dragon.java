@@ -21,7 +21,7 @@ package packet.response;
 import server.network.MaplePacket;
 import packet.request.parse.ParseCMovePath;
 import packet.ServerPacket;
-import server.maps.MapleDragon;
+import odin.server.maps.MapleDragon;
 
 /**
  *

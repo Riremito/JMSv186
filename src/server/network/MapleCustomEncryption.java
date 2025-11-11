@@ -1,6 +1,6 @@
 package server.network;
 
-import tools.BitTools;
+import odin.tools.BitTools;
 
 public class MapleCustomEncryption {
 

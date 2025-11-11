@@ -18,7 +18,7 @@
  */
 package debug;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 
 /**
  *

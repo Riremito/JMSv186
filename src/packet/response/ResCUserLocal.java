@@ -18,7 +18,7 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import config.DeveloperMode;
 import config.Version;
 import server.network.MaplePacket;
@@ -28,7 +28,7 @@ import packet.ops.arg.ArgUserEffect;
 import packet.ops.OpsQuest;
 import packet.ops.OpsUserEffect;
 import packet.response.data.DataCUser;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

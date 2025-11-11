@@ -18,11 +18,11 @@
  */
 package packet.response.data;
 
-import client.MapleCharacter;
-import client.inventory.IItem;
-import client.inventory.Item;
-import client.inventory.MapleInventory;
-import client.inventory.MapleInventoryType;
+import odin.client.MapleCharacter;
+import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
+import odin.client.inventory.MapleInventory;
+import odin.client.inventory.MapleInventoryType;
 import config.Region;
 import config.ServerConfig;
 import config.Version;

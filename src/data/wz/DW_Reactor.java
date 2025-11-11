@@ -21,12 +21,12 @@ package data.wz;
 import config.Content;
 import java.util.HashMap;
 import java.util.Map;
-import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataTool;
-import server.maps.MapleReactorStats;
-import tools.Pair;
-import tools.StringUtil;
+import odin.provider.MapleData;
+import odin.provider.MapleDataProvider;
+import odin.provider.MapleDataTool;
+import odin.server.maps.MapleReactorStats;
+import odin.tools.Pair;
+import odin.tools.StringUtil;
 
 /**
  *

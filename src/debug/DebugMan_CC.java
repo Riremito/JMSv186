@@ -18,7 +18,7 @@
  */
 package debug;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import data.wz.ids.DWI_LoadXML;
 import java.util.ArrayList;
 

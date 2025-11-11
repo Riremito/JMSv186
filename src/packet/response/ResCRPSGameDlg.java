@@ -20,7 +20,7 @@ package packet.response;
 
 import server.network.MaplePacket;
 import packet.ServerPacket;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

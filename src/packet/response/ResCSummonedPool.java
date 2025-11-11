@@ -18,7 +18,7 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -27,9 +27,9 @@ import java.util.List;
 import packet.request.parse.ParseCMovePath;
 import packet.ServerPacket;
 import packet.response.data.DataAvatarLook;
-import server.life.SummonAttackEntry;
-import server.maps.MapleSummon;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.server.life.SummonAttackEntry;
+import odin.server.maps.MapleSummon;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

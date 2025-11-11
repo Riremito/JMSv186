@@ -18,17 +18,17 @@
  */
 package packet.response.wrapper;
 
-import client.inventory.IItem;
+import odin.client.inventory.IItem;
 import java.util.List;
 import packet.ServerPacket;
 import packet.ops.OpsITC;
 import packet.ops.arg.ArgITCNormalItemResult;
 import packet.response.ResCITC;
 import packet.response.struct.TestHelper;
-import server.MTSStorage;
+import odin.server.MTSStorage;
 import server.network.MaplePacket;
-import tools.KoreanDateUtil;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.tools.KoreanDateUtil;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

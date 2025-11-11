@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import server.network.MaplePacket;
 import packet.ServerPacket;
 import packet.ops.OpsScriptMan;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

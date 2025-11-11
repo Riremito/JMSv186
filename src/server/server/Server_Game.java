@@ -20,7 +20,7 @@ package server.server;
 
 import config.property.Property_World;
 import debug.DebugLogger;
-import handling.channel.PlayerStorage;
+import odin.handling.channel.PlayerStorage;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
 import packet.response.wrapper.ResWrapper;

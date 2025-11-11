@@ -18,11 +18,11 @@
  */
 package database.query;
 
-import client.LoginCrypto;
-import client.LoginCryptoLegacy;
-import client.MapleClient;
-import client.MapleClientState;
-import constants.GameConstants;
+import odin.client.LoginCrypto;
+import odin.client.LoginCryptoLegacy;
+import odin.client.MapleClient;
+import odin.client.MapleClientState;
+import odin.constants.GameConstants;
 import database.DatabaseConnection;
 import database.DatabaseException;
 import debug.DebugLogger;

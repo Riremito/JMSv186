@@ -18,7 +18,7 @@
  */
 package data.wz;
 
-import client.inventory.PetCommand;
+import odin.client.inventory.PetCommand;
 import config.Content;
 import debug.DebugLogger;
 import java.util.ArrayList;
@@ -26,13 +26,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import provider.MapleData;
-import provider.MapleDataDirectoryEntry;
-import provider.MapleDataFileEntry;
-import provider.MapleDataProvider;
-import provider.MapleDataTool;
-import server.StructPotentialItem;
-import tools.Pair;
+import odin.provider.MapleData;
+import odin.provider.MapleDataDirectoryEntry;
+import odin.provider.MapleDataFileEntry;
+import odin.provider.MapleDataProvider;
+import odin.provider.MapleDataTool;
+import odin.server.StructPotentialItem;
+import odin.tools.Pair;
 
 /**
  *

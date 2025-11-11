@@ -18,15 +18,15 @@
  */
 package debug;
 
-import client.ISkill;
-import client.MapleCharacter;
-import client.MapleClient;
-import client.SkillFactory;
-import client.inventory.Equip;
-import client.inventory.IItem;
-import client.inventory.MapleInventoryType;
+import odin.client.ISkill;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
+import odin.client.SkillFactory;
+import odin.client.inventory.Equip;
+import odin.client.inventory.IItem;
+import odin.client.inventory.MapleInventoryType;
 import config.property.Property_Packet;
-import constants.GameConstants;
+import odin.constants.GameConstants;
 import data.client.DC_Exp;
 import data.wz.DW_Item;
 import data.wz.DW_Skill;
@@ -45,25 +45,25 @@ import packet.response.ResCNpcPool;
 import packet.response.ResCUserLocal;
 import packet.response.Res_JMS_CInstancePortalPool;
 import packet.response.wrapper.ResWrapper;
-import provider.MapleData;
-import provider.MapleDataTool;
-import scripting.NPCScriptManager;
-import server.MapleItemInformationProvider;
-import server.life.MapleLifeFactory;
-import server.life.MapleMonster;
-import server.life.MapleMonsterInformationProvider;
-import server.life.MapleNPC;
-import server.life.MonsterDropEntry;
-import server.life.PlayerNPC;
-import server.life.Spawns;
-import server.maps.MapleDynamicPortal;
-import server.maps.MapleFoothold;
-import server.maps.MapleMap;
-import server.maps.MapleMapObject;
-import server.maps.MapleMapObjectType;
-import server.maps.SavedLocationType;
+import odin.provider.MapleData;
+import odin.provider.MapleDataTool;
+import odin.scripting.NPCScriptManager;
+import odin.server.MapleItemInformationProvider;
+import odin.server.life.MapleLifeFactory;
+import odin.server.life.MapleMonster;
+import odin.server.life.MapleMonsterInformationProvider;
+import odin.server.life.MapleNPC;
+import odin.server.life.MonsterDropEntry;
+import odin.server.life.PlayerNPC;
+import odin.server.life.Spawns;
+import odin.server.maps.MapleDynamicPortal;
+import odin.server.maps.MapleFoothold;
+import odin.server.maps.MapleMap;
+import odin.server.maps.MapleMapObject;
+import odin.server.maps.MapleMapObjectType;
+import odin.server.maps.SavedLocationType;
 import server.server.Server;
-import server.shops.HiredMerchant;
+import odin.server.shops.HiredMerchant;
 
 /**
  *
@@ -557,7 +557,7 @@ public class DebugCommand {
             case "/randomdrop": {
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 int itemid = DWI_LoadXML.getItem().getRandom();
-                IItem toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
+                IItem toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
                 chr.getMap().spawnItemDrop(c.getPlayer(), c.getPlayer(), toDrop, c.getPlayer().getPosition(), true, true);
                 String item_name = MapleItemInformationProvider.getInstance().getName(toDrop.getItemId());
                 if (item_name == null) {

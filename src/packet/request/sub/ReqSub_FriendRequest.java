@@ -18,17 +18,17 @@
  */
 package packet.request.sub;
 
-import client.BuddyList;
-import client.BuddylistEntry;
-import client.CharacterNameAndId;
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.BuddyList;
+import odin.client.BuddylistEntry;
+import odin.client.CharacterNameAndId;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import config.Region;
 import config.Version;
 import database.DatabaseConnection;
 import debug.DebugLogger;
 import server.server.ServerOdinGame;
-import handling.world.World;
+import odin.handling.world.World;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

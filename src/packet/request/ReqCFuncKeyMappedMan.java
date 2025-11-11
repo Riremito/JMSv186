@@ -18,9 +18,9 @@
  */
 package packet.request;
 
-import client.MapleCharacter;
-import client.MapleClient;
-import client.SkillMacro;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
+import odin.client.SkillMacro;
 import config.Region;
 import config.Version;
 import debug.DebugLogger;

@@ -18,13 +18,13 @@
  */
 package packet.request;
 
-import client.BuddylistEntry;
-import client.CharacterNameAndId;
-import client.MapleCharacter;
-import client.MapleClient;
-import client.MapleClientState;
-import client.MapleQuestStatus;
-import client.inventory.MaplePet;
+import odin.client.BuddylistEntry;
+import odin.client.CharacterNameAndId;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
+import odin.client.MapleClientState;
+import odin.client.MapleQuestStatus;
+import odin.client.inventory.MaplePet;
 import config.ContentState;
 import config.Region;
 import config.Version;
@@ -34,14 +34,14 @@ import database.query.DQ_Accounts;
 import debug.DebugLogger;
 import server.network.MaplePacket;
 import server.server.ServerOdinGame;
-import handling.world.CharacterIdChannelPair;
-import handling.world.CharacterTransfer;
-import handling.world.MapleMessengerCharacter;
-import handling.world.MaplePartyCharacter;
-import handling.world.PartyOperation;
-import handling.world.PlayerBuffStorage;
-import handling.world.World;
-import handling.world.guild.MapleGuild;
+import odin.handling.world.CharacterIdChannelPair;
+import odin.handling.world.CharacterTransfer;
+import odin.handling.world.MapleMessengerCharacter;
+import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.PartyOperation;
+import odin.handling.world.PlayerBuffStorage;
+import odin.handling.world.World;
+import odin.handling.world.guild.MapleGuild;
 import java.util.List;
 import packet.ClientPacket;
 import packet.ops.OpsTransferChannel;
@@ -53,8 +53,8 @@ import packet.response.ResCUser_Pet;
 import packet.response.ResCWvsContext;
 import packet.response.wrapper.ResWrapper;
 import packet.response.wrapper.WrapCWvsContext;
-import server.maps.FieldLimitType;
-import server.maps.MapleMap;
+import odin.server.maps.FieldLimitType;
+import odin.server.maps.MapleMap;
 
 /**
  *

@@ -18,16 +18,16 @@
  */
 package packet.request;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import debug.DebugLogger;
-import handling.channel.handler.BeanGame;
+import odin.handling.channel.handler.BeanGame;
 import packet.ClientPacket;
 import packet.ops.OpsContiMove;
 import packet.response.ResCField_ContiMove;
-import scripting.EventManager;
-import scripting.EventScriptManager;
-import server.maps.MapleMap;
+import odin.scripting.EventManager;
+import odin.scripting.EventScriptManager;
+import odin.server.maps.MapleMap;
 
 /**
  *

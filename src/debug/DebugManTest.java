@@ -18,8 +18,8 @@
  */
 package debug;
 
-import client.MapleCharacter;
-import server.maps.MapleMap;
+import odin.client.MapleCharacter;
+import odin.server.maps.MapleMap;
 
 /**
  *

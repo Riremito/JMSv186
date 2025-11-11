@@ -18,7 +18,7 @@
  */
 package server.network;
 
-import client.MapleClient;
+import odin.client.MapleClient;
 import config.Content;
 import config.Region;
 import debug.DebugLogger;
@@ -31,8 +31,8 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import packet.ClientPacket;
 import packet.response.ResCClientSocket;
-import server.Randomizer;
-import tools.FileoutputUtil;
+import odin.server.Randomizer;
+import odin.tools.FileoutputUtil;
 
 /**
  *

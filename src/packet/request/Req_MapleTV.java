@@ -18,15 +18,15 @@
  */
 package packet.request;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import java.util.ArrayList;
 import java.util.List;
 import packet.ClientPacket;
 import packet.ops.OpsMapleTV;
 import packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import packet.response.ResCMapleTVMan;
-import server.maps.MapleMap;
+import odin.server.maps.MapleMap;
 
 /**
  *

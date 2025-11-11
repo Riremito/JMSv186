@@ -18,14 +18,14 @@
  */
 package packet.request;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import config.ServerConfig;
-import constants.GameConstants;
+import odin.constants.GameConstants;
 import debug.DebugLogger;
 import packet.ClientPacket;
 import packet.ops.OpsShop;
-import server.MapleShop;
+import odin.server.MapleShop;
 
 /**
  *

@@ -18,7 +18,7 @@
  */
 package debug;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import config.DeveloperMode;
 import config.Region;
 import config.Version;
@@ -48,7 +48,7 @@ public class DebugLogger {
                 file.mkdir();
             }
 
-            fw = new FileWriter(LOG_DIR + LOG_FILE_NAME);
+            fw = new FileWriter(LOG_DIR + LOG_FILE_NAME, true);
             fw.write((getDate() + " Server Reboot - " + Region.getRegion() + " " + Version.getVersion() + "." + Version.getSubVersion() + "\r\n"));
             fw.flush();
         } catch (FileNotFoundException ex) {

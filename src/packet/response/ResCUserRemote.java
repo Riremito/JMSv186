@@ -18,25 +18,25 @@
  */
 package packet.response;
 
-import client.MapleBuffStat;
-import client.MapleCharacter;
-import client.MapleDisease;
-import client.inventory.MapleRing;
+import odin.client.MapleBuffStat;
+import odin.client.MapleCharacter;
+import odin.client.MapleDisease;
+import odin.client.inventory.MapleRing;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
 import server.network.MaplePacket;
-import handling.channel.handler.AttackInfo;
+import odin.handling.channel.handler.AttackInfo;
 import java.util.List;
 import packet.ServerPacket;
 import packet.ops.arg.ArgUserEffect;
 import packet.request.parse.ParseCMovePath;
 import packet.response.data.DataAvatarLook;
 import packet.response.data.DataCUser;
-import server.MapleStatEffect;
-import tools.AttackPair;
-import tools.Pair;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.server.MapleStatEffect;
+import odin.tools.AttackPair;
+import odin.tools.Pair;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

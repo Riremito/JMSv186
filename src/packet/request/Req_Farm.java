@@ -18,11 +18,11 @@
  */
 package packet.request;
 
-import client.MapleCharacter;
-import client.MapleClient;
-import handling.channel.handler.PlayerHandler;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
+import odin.handling.channel.handler.PlayerHandler;
 import packet.ClientPacket;
-import server.maps.MapleMap;
+import odin.server.maps.MapleMap;
 
 /**
  *

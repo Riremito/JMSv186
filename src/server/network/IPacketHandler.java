@@ -18,7 +18,7 @@
  */
 package server.network;
 
-import client.MapleClient;
+import odin.client.MapleClient;
 import packet.ClientPacket;
 
 /**

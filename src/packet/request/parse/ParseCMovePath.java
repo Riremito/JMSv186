@@ -18,15 +18,15 @@
  */
 package packet.request.parse;
 
-import client.inventory.MaplePet;
+import odin.client.inventory.MaplePet;
 import config.Region;
 import config.Version;
 import debug.DebugLogger;
 import java.awt.Point;
 import packet.ClientPacket;
 import packet.ops.OpsMovePathAttr;
-import server.life.AbstractLoadedMapleLife;
-import server.maps.AnimatedMapleMapObject;
+import odin.server.life.AbstractLoadedMapleLife;
+import odin.server.maps.AnimatedMapleMapObject;
 
 /**
  *

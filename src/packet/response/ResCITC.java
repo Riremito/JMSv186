@@ -18,7 +18,7 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import server.network.MaplePacket;
 import packet.ServerPacket;
 import static packet.ops.OpsITC.ITCRes_GetITCList_Failed;

@@ -18,13 +18,13 @@
  */
 package packet.request;
 
-import client.MapleClient;
+import odin.client.MapleClient;
 import config.Region;
 import config.Version;
 import debug.DebugLogger;
 import packet.ClientPacket;
-import scripting.ReactorScriptManager;
-import server.maps.MapleReactor;
+import odin.scripting.ReactorScriptManager;
+import odin.server.maps.MapleReactor;
 
 /**
  *

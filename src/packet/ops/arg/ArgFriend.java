@@ -18,7 +18,7 @@
  */
 package packet.ops.arg;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import packet.ops.OpsFriend;
 
 /**

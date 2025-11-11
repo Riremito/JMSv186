@@ -18,13 +18,13 @@
  */
 package packet.request;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import config.Region;
 import config.Version;
-import handling.channel.handler.InventoryHandler;
+import odin.handling.channel.handler.InventoryHandler;
 import packet.ClientPacket;
-import server.maps.MapleMap;
+import odin.server.maps.MapleMap;
 
 /**
  *

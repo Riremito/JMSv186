@@ -18,10 +18,10 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
-import client.MapleClient;
-import client.inventory.IItem;
-import client.inventory.MapleInventoryType;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
+import odin.client.inventory.IItem;
+import odin.client.inventory.MapleInventoryType;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -32,8 +32,8 @@ import packet.ops.OpsCashItem;
 import packet.ServerPacket;
 import packet.response.data.DataGW_CashItemInfo;
 import packet.response.data.DataGW_ItemSlotBase;
-import server.CashShop;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.server.CashShop;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

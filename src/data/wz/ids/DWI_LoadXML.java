@@ -24,12 +24,12 @@ import debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import provider.MapleData;
-import provider.MapleDataDirectoryEntry;
-import provider.MapleDataFileEntry;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
-import provider.MapleDataTool;
+import odin.provider.MapleData;
+import odin.provider.MapleDataDirectoryEntry;
+import odin.provider.MapleDataFileEntry;
+import odin.provider.MapleDataProvider;
+import odin.provider.MapleDataProviderFactory;
+import odin.provider.MapleDataTool;
 
 /**
  *

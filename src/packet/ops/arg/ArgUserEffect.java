@@ -18,8 +18,8 @@
  */
 package packet.ops.arg;
 
-import client.MapleCharacter;
-import handling.channel.handler.ItemMakerHandler;
+import odin.client.MapleCharacter;
+import odin.handling.channel.handler.ItemMakerHandler;
 import packet.ops.OpsUserEffect;
 
 /**

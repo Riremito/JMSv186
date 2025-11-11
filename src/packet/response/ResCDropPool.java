@@ -20,13 +20,13 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import config.Region;
 import config.Version;
 import server.network.MaplePacket;
 import java.awt.Point;
 import packet.ServerPacket;
-import server.maps.MapleMapItem;
+import odin.server.maps.MapleMapItem;
 
 /**
  *

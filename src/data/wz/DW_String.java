@@ -23,9 +23,9 @@ import data.wz.ids.DWI_Validation;
 import debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.List;
-import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataTool;
+import odin.provider.MapleData;
+import odin.provider.MapleDataProvider;
+import odin.provider.MapleDataTool;
 
 /**
  *

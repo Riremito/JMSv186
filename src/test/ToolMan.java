@@ -18,7 +18,7 @@
  */
 package test;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import server.server.ServerOdinGame;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
@@ -27,7 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import server.maps.MapleMap;
+import odin.server.maps.MapleMap;
 
 /**
  *

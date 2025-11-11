@@ -18,20 +18,20 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import constants.GameConstants;
-import constants.ServerConstants;
+import odin.constants.GameConstants;
+import odin.constants.ServerConstants;
 import server.network.MaplePacket;
 import packet.ServerPacket;
 import packet.response.data.DataCClientOptMan;
 import packet.response.data.DataCWvsContext;
 import packet.response.data.DataCharacterData;
 import packet.response.struct.TestHelper;
-import server.maps.MapleMap;
+import odin.server.maps.MapleMap;
 
 /**
  *

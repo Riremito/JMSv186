@@ -18,8 +18,8 @@
  */
 package packet.ops.arg;
 
-import client.MapleCharacter;
-import client.inventory.IItem;
+import odin.client.MapleCharacter;
+import odin.client.inventory.IItem;
 import java.util.List;
 import packet.ops.OpsBroadcastMsg;
 

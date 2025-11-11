@@ -18,12 +18,12 @@
  */
 package packet.request;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import packet.ClientPacket;
 import packet.request.parse.ParseCMovePath;
 import packet.response.ResCUser_Dragon;
-import server.maps.MapleDragon;
+import odin.server.maps.MapleDragon;
 
 /**
  *

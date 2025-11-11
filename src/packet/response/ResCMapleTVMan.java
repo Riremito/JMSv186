@@ -18,7 +18,7 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import java.util.List;
 import packet.ServerPacket;
 import packet.ops.OpsMapleTV;

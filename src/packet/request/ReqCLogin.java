@@ -18,12 +18,12 @@
  */
 package packet.request;
 
-import client.MapleCharacter;
-import client.MapleClient;
-import client.MapleClientState;
-import client.inventory.IItem;
-import client.inventory.MapleInventory;
-import client.inventory.MapleInventoryType;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
+import odin.client.MapleClientState;
+import odin.client.inventory.IItem;
+import odin.client.inventory.MapleInventory;
+import odin.client.inventory.MapleInventoryType;
 import config.Content;
 import config.ContentState;
 import config.DeveloperMode;
@@ -48,7 +48,7 @@ import packet.ops.OpsNewCharacter;
 import packet.response.ResCClientSocket;
 import packet.response.ResCLogin;
 import packet.response.ResCLogin.LoginResult;
-import server.MapleItemInformationProvider;
+import odin.server.MapleItemInformationProvider;
 
 /**
  *

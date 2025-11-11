@@ -20,7 +20,7 @@ package packet.response;
 
 import server.network.MaplePacket;
 import packet.ServerPacket;
-import server.maps.MapleDynamicPortal;
+import odin.server.maps.MapleDynamicPortal;
 
 /**
  *

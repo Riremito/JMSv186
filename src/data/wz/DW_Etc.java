@@ -24,12 +24,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataTool;
-import provider.WzXML.MapleDataType;
-import server.StructSetItem;
-import server.StructSetItem.SetItem;
+import odin.provider.MapleData;
+import odin.provider.MapleDataProvider;
+import odin.provider.MapleDataTool;
+import odin.provider.WzXML.MapleDataType;
+import odin.server.StructSetItem;
+import odin.server.StructSetItem.SetItem;
 
 /**
  *

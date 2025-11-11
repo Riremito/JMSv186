@@ -20,14 +20,14 @@
  */
 package packet.response.data;
 
-import client.MapleCharacter;
-import client.PlayerStats;
-import client.inventory.MaplePet;
+import odin.client.MapleCharacter;
+import odin.client.PlayerStats;
+import odin.client.inventory.MaplePet;
 import config.Content;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import constants.GameConstants;
+import odin.constants.GameConstants;
 import packet.ServerPacket;
 import packet.ops.OpsChangeStat;
 

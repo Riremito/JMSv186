@@ -18,13 +18,13 @@
  */
 package debug;
 
-import client.MapleCharacter;
-import client.inventory.Item;
-import client.inventory.MapleInventory;
-import client.inventory.MapleInventoryType;
+import odin.client.MapleCharacter;
+import odin.client.inventory.Item;
+import odin.client.inventory.MapleInventory;
+import odin.client.inventory.MapleInventoryType;
 import config.DeveloperMode;
 import data.wz.ids.DWI_Validation;
-import server.MapleItemInformationProvider;
+import odin.server.MapleItemInformationProvider;
 
 /**
  *

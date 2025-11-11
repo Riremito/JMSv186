@@ -18,7 +18,7 @@
  */
 package packet.response.wrapper;
 
-import handling.channel.handler.ItemMakerHandler;
+import odin.handling.channel.handler.ItemMakerHandler;
 import server.network.MaplePacket;
 import packet.ops.OpsUserEffect;
 import packet.ops.arg.ArgUserEffect;

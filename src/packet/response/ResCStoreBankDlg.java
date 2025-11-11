@@ -18,12 +18,12 @@
  */
 package packet.response;
 
-import client.inventory.IItem;
+import odin.client.inventory.IItem;
 import server.network.MaplePacket;
 import packet.ServerPacket;
 import packet.response.struct.TestHelper;
-import server.MerchItemPackage;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.server.MerchItemPackage;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

@@ -20,10 +20,10 @@ package data.wz;
 
 import config.Content;
 import debug.DebugLogger;
-import provider.MapleData;
-import provider.MapleDataDirectoryEntry;
-import provider.MapleDataFileEntry;
-import provider.MapleDataProvider;
+import odin.provider.MapleData;
+import odin.provider.MapleDataDirectoryEntry;
+import odin.provider.MapleDataFileEntry;
+import odin.provider.MapleDataProvider;
 
 /**
  *

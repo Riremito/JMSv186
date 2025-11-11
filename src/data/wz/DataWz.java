@@ -21,9 +21,9 @@ package data.wz;
 import config.property.Property_Java;
 import debug.DebugLogger;
 import java.io.File;
-import provider.MapleData;
-import provider.MapleDataProvider;
-import provider.MapleDataProviderFactory;
+import odin.provider.MapleData;
+import odin.provider.MapleDataProvider;
+import odin.provider.MapleDataProviderFactory;
 
 /**
  *

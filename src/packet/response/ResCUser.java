@@ -18,8 +18,8 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
-import client.inventory.IEquip;
+import odin.client.MapleCharacter;
+import odin.client.inventory.IEquip;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -27,7 +27,7 @@ import server.network.MaplePacket;
 import java.awt.Point;
 import packet.ServerPacket;
 import packet.response.struct.TestHelper;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

@@ -18,8 +18,8 @@
  */
 package packet.response;
 
-import client.status.MonsterStatus;
-import client.status.MonsterStatusEffect;
+import odin.client.status.MonsterStatus;
+import odin.client.status.MonsterStatusEffect;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
@@ -31,11 +31,11 @@ import java.util.Map;
 import packet.request.parse.ParseCMovePath;
 import packet.ServerPacket;
 import packet.response.struct.Structure;
-import server.life.MapleMonster;
-import server.life.MobSkill;
-import server.maps.MapleMap;
-import server.maps.MapleNodes;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.server.life.MapleMonster;
+import odin.server.life.MobSkill;
+import odin.server.maps.MapleMap;
+import odin.server.maps.MapleNodes;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

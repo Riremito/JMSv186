@@ -18,11 +18,11 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import server.network.MaplePacket;
 import packet.ServerPacket;
-import server.MapleCarnivalParty;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.server.MapleCarnivalParty;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

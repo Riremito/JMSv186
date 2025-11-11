@@ -18,9 +18,9 @@
  */
 package debug;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import data.wz.ids.DWI_Random;
-import server.maps.MapleMap;
+import odin.server.maps.MapleMap;
 
 /**
  *

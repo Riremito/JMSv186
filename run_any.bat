@@ -11,5 +11,5 @@ echo Version = %MS_REGION_NAME% %MS_VERSION%.%MS_SUBVERSION%
 echo XML Path = %WZ_XML_PATH%
 echo script Path = %SCRIPT_PATH%
 echo DatabaseName Path = %MS_REGION_NAME%_v%MS_VERSION%
-java -server -Driresaba.path.wz=%WZ_XML_PATH% -Driresaba.path.script=%SCRIPT_PATH% -Djavax.net.ssl.keyStore=filename.keystore -Djavax.net.ssl.keyStorePassword=passwd -Djavax.net.ssl.trustStore=filename.keystore -Djavax.net.ssl.trustStorePassword=passwd server.Start %MS_REGION_NAME% %MS_VERSION% %MS_SUBVERSION%
+java -server -Driresaba.path.wz=%WZ_XML_PATH% -Driresaba.path.script=%SCRIPT_PATH% -Djavax.net.ssl.keyStore=filename.keystore -Djavax.net.ssl.keyStorePassword=passwd -Djavax.net.ssl.trustStore=filename.keystore -Djavax.net.ssl.trustStorePassword=passwd tacos.Start %MS_REGION_NAME% %MS_VERSION% %MS_SUBVERSION%
 pause

@@ -18,7 +18,7 @@
  */
 package debug;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import java.util.ArrayList;
 import packet.ClientPacket;
 import packet.ops.OpsScriptMan;

@@ -18,14 +18,14 @@
  */
 package packet.request;
 
-import client.MapleCharacter;
-import client.MapleClient;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
 import packet.ClientPacket;
 import packet.response.ResCField_Coconut;
 import packet.response.wrapper.ResWrapper;
-import server.events.MapleCoconut;
-import server.events.MapleEventType;
-import server.maps.MapleMap;
+import odin.server.events.MapleCoconut;
+import odin.server.events.MapleEventType;
+import odin.server.maps.MapleMap;
 
 /**
  *

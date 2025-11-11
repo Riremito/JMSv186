@@ -21,7 +21,7 @@ package packet.response;
 import config.ServerConfig;
 import server.network.MaplePacket;
 import packet.ServerPacket;
-import server.maps.MapleMist;
+import odin.server.maps.MapleMist;
 
 /**
  *

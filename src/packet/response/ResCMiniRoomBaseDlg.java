@@ -18,12 +18,12 @@
  */
 package packet.response;
 
-import client.MapleCharacter;
-import client.MapleClient;
-import client.inventory.Equip;
-import client.inventory.IItem;
-import client.inventory.MapleInventoryType;
-import constants.GameConstants;
+import odin.client.MapleCharacter;
+import odin.client.MapleClient;
+import odin.client.inventory.Equip;
+import odin.client.inventory.IItem;
+import odin.client.inventory.MapleInventoryType;
+import odin.constants.GameConstants;
 import data.wz.ids.DWI_LoadXML;
 import java.util.List;
 import server.network.MaplePacket;
@@ -33,14 +33,14 @@ import packet.ops.OpsMiniRoomType;
 import packet.response.data.DataAvatarLook;
 import packet.response.data.DataGW_ItemSlotBase;
 import packet.response.struct.TestHelper;
-import server.MapleItemInformationProvider;
-import server.MapleTrade;
-import server.shops.AbstractPlayerStore;
-import server.shops.HiredMerchant;
-import server.shops.MaplePlayerShopItem;
-import tools.HexTool;
-import tools.Pair;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.server.MapleItemInformationProvider;
+import odin.server.MapleTrade;
+import odin.server.shops.AbstractPlayerStore;
+import odin.server.shops.HiredMerchant;
+import odin.server.shops.MaplePlayerShopItem;
+import odin.tools.HexTool;
+import odin.tools.Pair;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -155,7 +155,7 @@ public class ResCMiniRoomBaseDlg {
             for (int i = 0; i < sale_item_count; i++) {
                 MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
                 int itemid = DWI_LoadXML.getItem().getRandom();
-                IItem item_gen = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? miip.randomizeStats((Equip) miip.getEquipById(itemid)) : new client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
+                IItem item_gen = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? miip.randomizeStats((Equip) miip.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
 
                 sp.Encode2(1); // bundle
                 sp.Encode2(1); // quanty

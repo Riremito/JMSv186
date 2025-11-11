@@ -18,7 +18,7 @@
  */
 package packet.request;
 
-import client.MapleClient;
+import odin.client.MapleClient;
 import packet.ClientPacket;
 import packet.response.ResCParcelDlg;
 

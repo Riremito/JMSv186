@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package server.server;
 
-import handling.channel.PlayerStorage;
+import odin.handling.channel.PlayerStorage;
 
 // TODO : remove
 public class ServerOdinCashShop {

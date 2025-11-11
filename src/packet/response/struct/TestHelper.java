@@ -19,21 +19,21 @@
 package packet.response.struct;
 
 import packet.response.data.DataGW_ItemSlotBase;
-import client.MapleCharacter;
-import client.inventory.IEquip;
-import client.inventory.IItem;
-import client.inventory.MapleInventory;
-import client.inventory.MapleInventoryType;
+import odin.client.MapleCharacter;
+import odin.client.inventory.IEquip;
+import odin.client.inventory.IItem;
+import odin.client.inventory.MapleInventory;
+import odin.client.inventory.MapleInventoryType;
 import config.Region;
 import config.Version;
-import constants.GameConstants;
+import odin.constants.GameConstants;
 import debug.DebugLogger;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import server.shops.AbstractPlayerStore;
-import server.shops.IMaplePlayerShop;
-import tools.KoreanDateUtil;
-import tools.data.output.MaplePacketLittleEndianWriter;
+import odin.server.shops.AbstractPlayerStore;
+import odin.server.shops.IMaplePlayerShop;
+import odin.tools.KoreanDateUtil;
+import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *

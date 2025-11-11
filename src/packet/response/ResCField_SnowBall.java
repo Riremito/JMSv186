@@ -20,7 +20,7 @@ package packet.response;
 
 import server.network.MaplePacket;
 import packet.ServerPacket;
-import server.events.MapleSnowball;
+import odin.server.events.MapleSnowball;
 
 /**
  *

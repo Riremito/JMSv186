@@ -19,10 +19,10 @@
 package server.server;
 
 import config.property.Property_Shop;
-import handling.channel.PlayerStorage;
+import odin.handling.channel.PlayerStorage;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
-import server.MTSStorage;
+import odin.server.MTSStorage;
 import server.network.PacketHandler;
 import server.network.PacketHandler_CashShop;
 

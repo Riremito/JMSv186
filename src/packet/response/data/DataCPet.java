@@ -18,7 +18,7 @@
  */
 package packet.response.data;
 
-import client.inventory.MaplePet;
+import odin.client.inventory.MaplePet;
 import packet.ServerPacket;
 
 /**

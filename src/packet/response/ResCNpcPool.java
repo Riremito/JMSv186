@@ -25,8 +25,8 @@ import server.network.MaplePacket;
 import packet.ServerPacket;
 import packet.request.parse.ParseCMovePath;
 import packet.response.data.DataAvatarLook;
-import server.life.MapleNPC;
-import server.life.PlayerNPC;
+import odin.server.life.MapleNPC;
+import odin.server.life.PlayerNPC;
 
 /**
  *

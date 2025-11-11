@@ -21,7 +21,7 @@ package packet.response;
 import server.network.MaplePacket;
 import java.awt.Point;
 import packet.ServerPacket;
-import server.maps.MapleDoor;
+import odin.server.maps.MapleDoor;
 
 /**
  *

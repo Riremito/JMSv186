@@ -18,7 +18,7 @@
  */
 package database.query;
 
-import client.MapleClient;
+import odin.client.MapleClient;
 import database.DatabaseConnection;
 import debug.DebugLogger;
 import java.sql.Connection;

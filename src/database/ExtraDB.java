@@ -18,7 +18,7 @@
  */
 package database;
 
-import client.MapleCharacter;
+import odin.client.MapleCharacter;
 import debug.DebugLogger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

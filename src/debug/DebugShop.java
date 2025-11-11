@@ -18,13 +18,13 @@
  */
 package debug;
 
-import client.MapleCharacter;
-import client.inventory.IItem;
-import client.inventory.MapleInventoryType;
+import odin.client.MapleCharacter;
+import odin.client.inventory.IItem;
+import odin.client.inventory.MapleInventoryType;
 import config.Region;
 import config.ServerConfig;
 import config.Version;
-import constants.GameConstants;
+import odin.constants.GameConstants;
 import data.wz.DW_Item;
 import data.wz.ids.DWI_LoadXML;
 import data.wz.ids.DWI_Validation;
@@ -34,9 +34,9 @@ import packet.ClientPacket;
 import packet.ops.OpsShop;
 import packet.response.ResCShopDlg;
 import packet.response.wrapper.ResWrapper;
-import provider.MapleData;
-import server.MapleInventoryManipulator;
-import server.MapleItemInformationProvider;
+import odin.provider.MapleData;
+import odin.server.MapleInventoryManipulator;
+import odin.server.MapleItemInformationProvider;
 
 /**
  *

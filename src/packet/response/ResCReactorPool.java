@@ -20,7 +20,7 @@ package packet.response;
 
 import server.network.MaplePacket;
 import packet.ServerPacket;
-import server.maps.MapleReactor;
+import odin.server.maps.MapleReactor;
 
 /**
  *

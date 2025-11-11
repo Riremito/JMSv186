@@ -18,17 +18,17 @@
  */
 package packet.request.sub;
 
-import client.MapleCharacter;
-import client.MapleStat;
+import odin.client.MapleCharacter;
+import odin.client.MapleStat;
 import data.wz.ids.DWI_Validation;
 import data.wz.ids.DWI_LoadXML;
 import debug.DebugLogger;
 import java.awt.Point;
 import packet.ClientPacket;
 import packet.response.ResCNpcPool;
-import server.life.MapleLifeFactory;
-import server.life.MapleNPC;
-import server.maps.MapleMap;
+import odin.server.life.MapleLifeFactory;
+import odin.server.life.MapleNPC;
+import odin.server.maps.MapleMap;
 
 /**
  *
