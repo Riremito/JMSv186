@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world.guild;
 
 import odin.client.MapleCharacter;
-import database.DatabaseConnection;
-import server.server.ServerOdinGame;
+import tacos.database.DatabaseConnection;
+import tacos.server.ServerOdinGame;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

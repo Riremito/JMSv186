@@ -23,11 +23,11 @@ package odin.handling.channel.handler;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import server.network.MaplePacket;
+import tacos.network.MaplePacket;
 import odin.handling.world.World;
 import odin.handling.world.guild.MapleGuild;
-import packet.response.ResCWvsContext;
-import packet.response.wrapper.WrapCWvsContext;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.tools.data.input.SeekableLittleEndianAccessor;
 
 public class AllianceHandler {

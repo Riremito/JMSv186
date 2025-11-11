@@ -19,11 +19,11 @@ import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
-import data.wz.ids.DWI_Validation;
-import database.DatabaseConnection;
-import packet.ops.OpsShop;
-import packet.response.ResCShopDlg;
-import packet.response.wrapper.ResWrapper;
+import tacos.data.wz.ids.DWI_Validation;
+import tacos.database.DatabaseConnection;
+import tacos.packet.ops.OpsShop;
+import tacos.packet.response.ResCShopDlg;
+import tacos.packet.response.wrapper.ResWrapper;
 
 public class MapleShop {
 

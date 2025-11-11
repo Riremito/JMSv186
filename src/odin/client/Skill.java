@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client;
 
-import config.Version;
+import tacos.config.Version;
 import odin.constants.GameConstants;
 import java.util.ArrayList;
 import java.util.List;

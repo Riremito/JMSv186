@@ -35,11 +35,11 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
-import database.DatabaseConnection;
-import server.server.ServerOdinGame;
+import tacos.database.DatabaseConnection;
+import tacos.server.ServerOdinGame;
 import odin.handling.world.World;
 import java.util.ArrayList;
-import packet.response.ResCNpcPool;
+import tacos.packet.response.ResCNpcPool;
 
 public class PlayerNPC extends MapleNPC {
 

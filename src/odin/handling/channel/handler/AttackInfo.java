@@ -27,10 +27,10 @@ import odin.client.ISkill;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
 import odin.client.SkillFactory;
-import config.Region;
-import config.Version;
-import packet.ClientPacket;
-import packet.ServerPacket;
+import tacos.config.Region;
+import tacos.config.Version;
+import tacos.packet.ClientPacket;
+import tacos.packet.ServerPacket;
 import odin.server.MapleStatEffect;
 import odin.tools.AttackPair;
 

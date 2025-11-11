@@ -28,7 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.Serializable;
 
-import database.DatabaseConnection;
+import tacos.database.DatabaseConnection;
 import java.util.Comparator;
 import odin.server.MapleInventoryManipulator;
 

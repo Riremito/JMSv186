@@ -28,8 +28,8 @@ import java.sql.SQLException;
 import java.util.concurrent.ScheduledFuture;
 import java.io.Serializable;
 
-import database.DatabaseConnection;
-import packet.response.ResCWvsContext;
+import tacos.database.DatabaseConnection;
+import tacos.packet.response.ResCWvsContext;
 import odin.server.Randomizer;
 
 public class MapleMount implements Serializable {

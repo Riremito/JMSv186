@@ -19,7 +19,7 @@
 package test;
 
 import odin.client.MapleCharacter;
-import server.server.ServerOdinGame;
+import tacos.server.ServerOdinGame;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JComboBox;

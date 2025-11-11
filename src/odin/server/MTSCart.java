@@ -26,7 +26,7 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.ItemLoader;
 import odin.client.inventory.MapleInventoryType;
 import java.sql.Connection;
-import database.DatabaseConnection;
+import tacos.database.DatabaseConnection;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

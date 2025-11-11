@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import java.io.Serializable;
 
 
-import database.DatabaseConnection;
+import tacos.database.DatabaseConnection;
 import odin.tools.Pair;
 
 public class MapleKeyLayout implements Serializable {

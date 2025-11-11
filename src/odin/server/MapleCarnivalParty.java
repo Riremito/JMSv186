@@ -1,11 +1,11 @@
 package odin.server;
 
 import odin.client.MapleCharacter;
-import server.server.ServerOdinGame;
+import tacos.server.ServerOdinGame;
 import java.util.LinkedList;
 import java.util.List;
 import java.lang.ref.WeakReference;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
 
 /**

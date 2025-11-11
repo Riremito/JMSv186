@@ -26,10 +26,10 @@ import java.util.Iterator;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import server.network.MaplePacket;
+import tacos.network.MaplePacket;
 import odin.handling.world.World;
-import packet.response.ResCUserPool;
-import packet.response.ResCWvsContext;
+import tacos.packet.response.ResCUserPool;
+import tacos.packet.response.ResCWvsContext;
 import odin.tools.data.input.SeekableLittleEndianAccessor;
 
 public class GuildHandler {

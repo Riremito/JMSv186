@@ -38,8 +38,8 @@ import odin.client.MapleClient;
 import odin.client.inventory.MapleRing;
 import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleInventoryType;
-import database.DatabaseConnection;
-import packet.response.ResCCashShop;
+import tacos.database.DatabaseConnection;
+import tacos.packet.response.ResCCashShop;
 import odin.tools.Pair;
 
 public class CashShop implements Serializable {

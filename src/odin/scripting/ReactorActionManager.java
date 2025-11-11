@@ -31,7 +31,7 @@ import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
-import server.server.ServerOdinGame;
+import tacos.server.ServerOdinGame;
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.MapleItemInformationProvider;

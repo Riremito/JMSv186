@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.tools.data.output;
 
-import config.CodePage;
+import tacos.config.CodePage;
 import java.awt.Point;
 
 /**

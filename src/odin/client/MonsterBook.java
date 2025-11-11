@@ -30,13 +30,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.Serializable;
 
-import database.DatabaseConnection;
-import packet.ServerPacket;
-import packet.ops.OpsUserEffect;
-import packet.response.ResCWvsContext;
-import packet.response.wrapper.ResWrapper;
-import packet.response.wrapper.WrapCUserLocal;
-import packet.response.wrapper.WrapCUserRemote;
+import tacos.database.DatabaseConnection;
+import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsUserEffect;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.wrapper.WrapCUserLocal;
+import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleItemInformationProvider;
 import odin.tools.data.output.MaplePacketLittleEndianWriter;
 

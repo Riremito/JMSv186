@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import odin.client.MapleClient;
-import server.network.MaplePacket;
-import packet.response.ResCField;
-import packet.response.wrapper.ResWrapper;
+import tacos.network.MaplePacket;
+import tacos.packet.response.ResCField;
+import tacos.packet.response.wrapper.ResWrapper;
 
 public class MapleMapEffect {
 

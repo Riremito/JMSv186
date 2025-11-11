@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client;
 
-import data.wz.DW_Skill;
-import data.wz.DW_String;
+import tacos.data.wz.DW_Skill;
+import tacos.data.wz.DW_String;
 import java.util.Collection;
 import java.util.List;
 

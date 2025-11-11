@@ -1,6 +1,6 @@
 package odin.constants;
 
-import config.property.Property_Pachinko;
+import tacos.config.property.Property_Pachinko;
 
 public class BeansConstants {
 

@@ -29,7 +29,7 @@ import java.io.Serializable;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import database.DatabaseConnection;
+import tacos.database.DatabaseConnection;
 import odin.server.MapleItemInformationProvider;
 
 public class MaplePet implements Serializable {

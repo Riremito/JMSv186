@@ -29,14 +29,14 @@ import javax.script.Invocable;
 import javax.script.ScriptException;
 
 import odin.client.MapleCharacter;
-import debug.DebugLogger;
-import server.server.ServerOdinGame;
+import tacos.debug.DebugLogger;
+import tacos.server.ServerOdinGame;
 import odin.handling.world.MapleParty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import packet.response.ResCWvsContext;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleSquad;
 import odin.server.Randomizer;
 import odin.server.Timer.EventTimer;

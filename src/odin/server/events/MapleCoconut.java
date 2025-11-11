@@ -24,9 +24,9 @@ package odin.server.events;
 import odin.client.MapleCharacter;
 import java.util.LinkedList;
 import java.util.List;
-import packet.response.ResCField;
-import packet.response.ResCField_Coconut;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCField;
+import tacos.packet.response.ResCField_Coconut;
+import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.Timer.EventTimer;
 
 public class MapleCoconut extends MapleEvent {

@@ -26,9 +26,9 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import packet.response.ResCDropPool;
-import packet.response.ResCDropPool.EnterType;
-import packet.response.ResCDropPool.LeaveType;
+import tacos.packet.response.ResCDropPool;
+import tacos.packet.response.ResCDropPool.EnterType;
+import tacos.packet.response.ResCDropPool.LeaveType;
 
 public class MapleMapItem extends AbstractMapleMapObject {
 

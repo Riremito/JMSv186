@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.provider.WzXML;
 
-import debug.DebugLogger;
-import server.server.ServerOdinGame;
+import tacos.debug.DebugLogger;
+import tacos.server.ServerOdinGame;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

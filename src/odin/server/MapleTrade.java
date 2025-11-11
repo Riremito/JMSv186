@@ -11,10 +11,10 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.messages.CommandProcessor;
 import odin.constants.ServerConstants.CommandType;
 import java.lang.ref.WeakReference;
-import packet.response.ResCField;
-import packet.response.ResCMiniRoomBaseDlg;
-import packet.response.wrapper.ResWrapper;
-import packet.response.wrapper.WrapCWvsContext;
+import tacos.packet.response.ResCField;
+import tacos.packet.response.ResCMiniRoomBaseDlg;
+import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.wrapper.WrapCWvsContext;
 
 public class MapleTrade {
 

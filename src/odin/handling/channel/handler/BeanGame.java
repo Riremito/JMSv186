@@ -6,12 +6,12 @@ import odin.client.MapleBeans;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.constants.BeansConstants;
-import data.client.DC_Exp;
+import tacos.data.client.DC_Exp;
 import java.util.ArrayList;
 import java.util.List;
-import packet.ClientPacket;
-import packet.response.Res_JMS_CField_Pachinko;
-import packet.response.wrapper.WrapCWvsContext;
+import tacos.packet.ClientPacket;
+import tacos.packet.response.Res_JMS_CField_Pachinko;
+import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.Randomizer;
 
 public class BeanGame {

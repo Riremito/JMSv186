@@ -23,10 +23,10 @@ package odin.server.maps;
 import java.awt.Point;
 
 import odin.client.MapleCharacter;
-import server.network.MaplePacket;
-import server.server.ServerOdinGame;
+import tacos.network.MaplePacket;
+import tacos.server.ServerOdinGame;
 import odin.handling.world.MaplePartyCharacter;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.Randomizer;
 import odin.server.Timer.MapTimer;
 import odin.server.life.MapleLifeFactory;

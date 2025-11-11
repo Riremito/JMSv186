@@ -23,10 +23,10 @@ package odin.server.events;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleDisease;
-import data.wz.DW_Skill;
+import tacos.data.wz.DW_Skill;
 import java.util.concurrent.ScheduledFuture;
-import packet.response.ResCField_SnowBall;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCField_SnowBall;
+import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.Timer.EventTimer;
 import odin.server.maps.MapleMap;
 

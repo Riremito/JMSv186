@@ -31,8 +31,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.io.Serializable;
 
-import database.DatabaseConnection;
-import packet.response.wrapper.ResWrapper;
+import tacos.database.DatabaseConnection;
+import tacos.packet.response.wrapper.ResWrapper;
 
 public class BuddyList implements Serializable {
 

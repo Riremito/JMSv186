@@ -26,7 +26,7 @@ import java.io.Serializable;
 import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import database.DatabaseConnection;
+import tacos.database.DatabaseConnection;
 
 public class MapleCustomQuest extends MapleQuest implements Serializable {
 

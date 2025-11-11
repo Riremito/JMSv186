@@ -26,7 +26,7 @@ import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
 import odin.handling.world.World;
-import packet.response.ResCWvsContext;
+import tacos.packet.response.ResCWvsContext;
 import odin.tools.data.input.SeekableLittleEndianAccessor;
 
 public class PartyHandler {

@@ -35,8 +35,8 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 
 import odin.client.MapleClient;
-import config.property.Property_Java;
-import debug.DebugLogger;
+import tacos.config.property.Property_Java;
+import tacos.debug.DebugLogger;
 import odin.server.MaplePortal;
 import odin.tools.FileoutputUtil;
 

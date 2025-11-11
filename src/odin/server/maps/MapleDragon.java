@@ -28,7 +28,7 @@ package odin.server.maps;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import packet.response.ResCUser_Dragon;
+import tacos.packet.response.ResCUser_Dragon;
 
 public class MapleDragon extends AbstractAnimatedMapleMapObject {
 

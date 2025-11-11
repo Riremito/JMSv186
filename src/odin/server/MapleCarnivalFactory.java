@@ -1,7 +1,7 @@
 package odin.server;
 
 import odin.client.MapleDisease;
-import data.wz.DW_Skill;
+import tacos.data.wz.DW_Skill;
 import odin.server.life.MobSkill;
 
 public class MapleCarnivalFactory {

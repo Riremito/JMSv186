@@ -25,7 +25,7 @@ import odin.client.MapleCharacter;
 import odin.handling.world.MapleMessenger;
 import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.World;
-import packet.response.ResCUIMessenger;
+import tacos.packet.response.ResCUIMessenger;
 import odin.tools.data.input.SeekableLittleEndianAccessor;
 
 public class ChatHandler {

@@ -20,17 +20,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client;
 
-import config.DeveloperMode;
+import tacos.config.DeveloperMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.script.ScriptEngine;
-import database.ExtraDB;
-import database.query.DQ_Accounts;
-import database.query.DQ_Characters;
-import debug.DebugLogger;
-import server.network.MaplePacket;
-import server.server.ServerOdinGame;
+import tacos.database.ExtraDB;
+import tacos.database.query.DQ_Accounts;
+import tacos.database.query.DQ_Characters;
+import tacos.debug.DebugLogger;
+import tacos.network.MaplePacket;
+import tacos.server.ServerOdinGame;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

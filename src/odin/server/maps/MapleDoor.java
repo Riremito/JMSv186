@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import debug.DebugLogger;
+import tacos.debug.DebugLogger;
 import java.lang.ref.WeakReference;
-import packet.response.ResCTownPortalPool;
+import tacos.packet.response.ResCTownPortalPool;
 import odin.server.MaplePortal;
 import odin.server.Randomizer;
 

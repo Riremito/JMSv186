@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 
-import server.server.ServerOdinGame;
+import tacos.server.ServerOdinGame;
 import odin.tools.FileoutputUtil;
 
 /**

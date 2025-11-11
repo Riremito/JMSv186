@@ -22,7 +22,7 @@ package odin.server.maps;
 
 import java.awt.Rectangle;
 import odin.client.MapleClient;
-import packet.response.ResCReactorPool;
+import tacos.packet.response.ResCReactorPool;
 import odin.scripting.ReactorScriptManager;
 import odin.server.Timer.MapTimer;
 import odin.tools.Pair;

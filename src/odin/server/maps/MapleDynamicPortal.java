@@ -22,9 +22,9 @@ package odin.server.maps;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import server.server.ServerOdinGame;
+import tacos.server.ServerOdinGame;
 import java.awt.Point;
-import packet.response.Res_JMS_CInstancePortalPool;
+import tacos.packet.response.Res_JMS_CInstancePortalPool;
 
 /**
  *

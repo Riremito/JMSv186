@@ -18,14 +18,14 @@
  */
 package test;
 
-import config.Region;
-import config.Version;
-import debug.DebugLogger;
+import tacos.config.Region;
+import tacos.config.Version;
+import tacos.debug.DebugLogger;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import packet.ClientPacket;
-import packet.ServerPacket;
+import tacos.packet.ClientPacket;
+import tacos.packet.ServerPacket;
 
 /**
  *

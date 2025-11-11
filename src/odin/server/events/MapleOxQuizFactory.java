@@ -28,7 +28,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import database.DatabaseConnection;
+import tacos.database.DatabaseConnection;
 import java.util.Map.Entry;
 import odin.server.Randomizer;
 import odin.tools.Pair;

@@ -31,13 +31,13 @@ import javax.script.ScriptException;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
-import server.server.ServerOdinGame;
+import tacos.server.ServerOdinGame;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import java.util.Collections;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import packet.response.ResCField;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCField;
+import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleCarnivalParty;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;

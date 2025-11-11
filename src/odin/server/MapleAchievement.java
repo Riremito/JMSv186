@@ -22,7 +22,7 @@ package odin.server;
 
 import odin.client.MapleCharacter;
 import odin.handling.world.World;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.wrapper.ResWrapper;
 
 /**
  *

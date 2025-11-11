@@ -1,10 +1,10 @@
 package odin.server;
 
-import data.wz.DW_Etc;
+import tacos.data.wz.DW_Etc;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
-import database.DatabaseConnection;
+import tacos.database.DatabaseConnection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;

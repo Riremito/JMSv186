@@ -30,8 +30,8 @@ import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import odin.handling.world.family.MapleFamilyCharacter;
 import java.util.List;
-import packet.response.ResCWvsContext;
-import packet.response.wrapper.WrapCWvsContext;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.maps.FieldLimitType;
 import odin.tools.data.input.SeekableLittleEndianAccessor;
 

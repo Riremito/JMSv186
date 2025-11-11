@@ -20,10 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.life;
 
-import config.ContentCustom;
+import tacos.config.ContentCustom;
 import java.awt.Point;
 import java.util.concurrent.atomic.AtomicBoolean;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.wrapper.ResWrapper;
 
 import odin.server.Randomizer;
 import odin.server.maps.MapleMap;

@@ -20,16 +20,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.maps;
 
-import config.DeveloperMode;
-import config.property.Property_Java;
-import config.Region;
-import config.Version;
-import data.wz.DW_Map;
-import data.wz.DW_Reactor;
-import data.wz.DW_String;
-import data.wz.ids.DWI_Block;
-import data.wz.ids.DWI_Validation;
-import debug.DebugLogger;
+import tacos.config.DeveloperMode;
+import tacos.config.property.Property_Java;
+import tacos.config.Region;
+import tacos.config.Version;
+import tacos.data.wz.DW_Map;
+import tacos.data.wz.DW_Reactor;
+import tacos.data.wz.DW_String;
+import tacos.data.wz.ids.DWI_Block;
+import tacos.data.wz.ids.DWI_Validation;
+import tacos.debug.DebugLogger;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.HashMap;

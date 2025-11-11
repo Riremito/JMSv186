@@ -18,21 +18,21 @@
  */
 package tacos;
 
-import config.ClientEdit;
-import config.CodePage;
-import config.Content;
-import config.DeveloperMode;
-import config.Region;
-import config.Version;
-import config.property.Property;
-import data.client.DC_Exp;
-import database.DatabaseConnection;
+import tacos.config.ClientEdit;
+import tacos.config.CodePage;
+import tacos.config.Content;
+import tacos.config.DeveloperMode;
+import tacos.config.Region;
+import tacos.config.Version;
+import tacos.config.property.Property;
+import tacos.data.client.DC_Exp;
+import tacos.database.DatabaseConnection;
 import odin.handling.channel.MapleGuildRanking;
-import server.server.ServerOdinLogin;
+import tacos.server.ServerOdinLogin;
 import odin.handling.world.World;
 import java.sql.SQLException;
-import database.query.DQ_Accounts;
-import debug.DebugLogger;
+import tacos.database.query.DQ_Accounts;
+import tacos.debug.DebugLogger;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.server.MTSStorage;
 import odin.server.RandomRewards;
@@ -42,11 +42,11 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
 import odin.server.events.MapleOxQuizFactory;
-import server.network.MapleAESOFB;
-import server.server.Server;
-import server.server.Server_CashShop;
-import server.server.Server_Game;
-import server.server.Server_Login;
+import tacos.network.MapleAESOFB;
+import tacos.server.Server;
+import tacos.server.Server_CashShop;
+import tacos.server.Server_Game;
+import tacos.server.Server_Login;
 import test.ToolMan;
 
 /**
@@ -90,7 +90,7 @@ public class Start {
         DC_Exp.init();
         // update packet enum values
         DebugLogger.SetupLog("PACKET_OPS");
-        packet.ops.PacketOps.initAll();
+        tacos.packet.ops.PacketOps.initAll();
         // read properties
         DebugLogger.SetupLog("PROPERTIES");
         if (!Property.initAll()) {

@@ -22,11 +22,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.events;
 
 import odin.client.MapleCharacter;
-import server.network.MaplePacket;
-import server.server.ServerOdinGame;
+import tacos.network.MaplePacket;
+import tacos.server.ServerOdinGame;
 import odin.handling.world.World;
-import packet.response.ResCField;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCField;
+import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleInventoryManipulator;
 import odin.server.RandomRewards;
 import odin.server.Randomizer;

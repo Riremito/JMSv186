@@ -24,8 +24,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import database.DatabaseConnection;
-import debug.DebugLogger;
+import tacos.database.DatabaseConnection;
+import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;

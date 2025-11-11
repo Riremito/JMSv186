@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.life;
 
 import odin.client.MapleClient;
-import packet.response.ResCNpcPool;
+import tacos.packet.response.ResCNpcPool;
 import odin.server.MapleShopFactory;
 import odin.server.maps.MapleMapObjectType;
 

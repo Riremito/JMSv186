@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
-import database.DatabaseConnection;
+import tacos.database.DatabaseConnection;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;

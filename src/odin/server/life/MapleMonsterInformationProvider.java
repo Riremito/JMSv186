@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import odin.client.inventory.MapleInventoryType;
-import database.DatabaseConnection;
+import tacos.database.DatabaseConnection;
 
 public class MapleMonsterInformationProvider {
 

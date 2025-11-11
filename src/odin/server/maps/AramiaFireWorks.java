@@ -24,8 +24,8 @@ import java.awt.Point;
 
 import odin.client.MapleCharacter;
 import odin.handling.world.World;
-import packet.response.ResCReactorPool;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCReactorPool;
+import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.Timer.EventTimer;

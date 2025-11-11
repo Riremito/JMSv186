@@ -22,8 +22,8 @@ package odin.handling.channel.handler;
 
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
-import packet.response.ResCMobPool;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCMobPool;
+import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleInventoryManipulator;
 import odin.server.Randomizer;
 import odin.server.maps.MapleMap;

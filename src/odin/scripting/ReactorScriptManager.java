@@ -33,7 +33,7 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 
 import odin.client.MapleClient;
-import database.DatabaseConnection;
+import tacos.database.DatabaseConnection;
 import odin.server.maps.ReactorDropEntry;
 import odin.server.maps.MapleReactor;
 import odin.tools.FileoutputUtil;

@@ -1,6 +1,6 @@
 package odin.server;
 
-import database.DatabaseConnection;
+import tacos.database.DatabaseConnection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -23,7 +23,7 @@ package odin.server.shops;
 import java.util.List;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import server.network.MaplePacket;
+import tacos.network.MaplePacket;
 import odin.server.shops.AbstractPlayerStore.BoughtItem;
 import odin.tools.Pair;
 

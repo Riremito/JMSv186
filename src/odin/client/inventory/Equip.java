@@ -20,10 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.inventory;
 
-import config.Region;
-import config.Version;
+import tacos.config.Region;
+import tacos.config.Version;
 import odin.constants.GameConstants;
-import data.wz.ids.DWI_Random;
+import tacos.data.wz.ids.DWI_Random;
 import java.io.Serializable;
 import odin.server.Randomizer;
 

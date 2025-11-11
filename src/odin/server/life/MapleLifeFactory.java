@@ -20,9 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.life;
 
-import data.wz.DW_Etc;
-import data.wz.DW_Mob;
-import data.wz.DW_String;
+import tacos.data.wz.DW_Etc;
+import tacos.data.wz.DW_Mob;
+import tacos.data.wz.DW_String;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client;
 
-import packet.response.ResCRPSGameDlg;
+import tacos.packet.response.ResCRPSGameDlg;
 import odin.server.MapleInventoryManipulator;
 import odin.server.Randomizer;
 

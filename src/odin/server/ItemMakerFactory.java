@@ -1,6 +1,6 @@
 package odin.server;
 
-import data.wz.DW_Etc;
+import tacos.data.wz.DW_Etc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

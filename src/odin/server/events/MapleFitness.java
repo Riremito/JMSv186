@@ -23,8 +23,8 @@ package odin.server.events;
 
 import java.util.concurrent.ScheduledFuture;
 import odin.client.MapleCharacter;
-import packet.response.ResCField;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCField;
+import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.Timer.EventTimer;
 
 public class MapleFitness extends MapleEvent {

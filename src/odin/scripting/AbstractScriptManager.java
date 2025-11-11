@@ -29,7 +29,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import odin.client.MapleClient;
-import config.property.Property_Java;
+import tacos.config.property.Property_Java;
 import odin.tools.FileoutputUtil;
 
 /**

@@ -20,11 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.tools.data.output;
 
-import debug.DebugLogger;
+import tacos.debug.DebugLogger;
 import java.io.ByteArrayOutputStream;
 
-import server.network.ByteArrayMaplePacket;
-import server.network.MaplePacket;
+import tacos.network.ByteArrayMaplePacket;
+import tacos.network.MaplePacket;
 import odin.tools.HexTool;
 
 /**

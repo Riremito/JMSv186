@@ -18,12 +18,12 @@ import odin.client.inventory.MaplePet;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
-import config.Region;
-import config.Version;
-import packet.ops.OpsCashItem;
-import packet.response.ResCCashShop;
-import packet.response.wrapper.ResWrapper;
-import packet.response.wrapper.WrapCWvsContext;
+import tacos.config.Region;
+import tacos.config.Version;
+import tacos.packet.ops.OpsCashItem;
+import tacos.packet.response.ResCCashShop;
+import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.maps.AramiaFireWorks;
 
 public class MapleInventoryManipulator {

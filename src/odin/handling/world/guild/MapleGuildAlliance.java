@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.world.guild;
 
-import database.DatabaseConnection;
-import server.network.MaplePacket;
+import tacos.database.DatabaseConnection;
+import tacos.network.MaplePacket;
 import odin.handling.world.World;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,8 +31,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import packet.response.ResCWvsContext;
-import packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.wrapper.ResWrapper;
 
 public class MapleGuildAlliance implements java.io.Serializable {
 

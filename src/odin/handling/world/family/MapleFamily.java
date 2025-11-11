@@ -29,15 +29,15 @@ import java.util.Map;
 import java.util.Iterator;
 
 import odin.client.MapleCharacter;
-import database.DatabaseConnection;
-import server.network.MaplePacket;
+import tacos.database.DatabaseConnection;
+import tacos.network.MaplePacket;
 import odin.handling.world.World;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import packet.response.ResCWvsContext;
+import tacos.packet.response.ResCWvsContext;
 
 public class MapleFamily implements java.io.Serializable {
 

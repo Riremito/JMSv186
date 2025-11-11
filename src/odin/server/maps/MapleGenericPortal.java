@@ -23,11 +23,11 @@ package odin.server.maps;
 import java.awt.Point;
 
 import odin.client.MapleClient;
-import server.server.ServerOdinGame;
-import packet.ops.OpsTransferField;
-import packet.response.ResCField;
-import packet.response.wrapper.ResWrapper;
-import packet.response.wrapper.WrapCWvsContext;
+import tacos.server.ServerOdinGame;
+import tacos.packet.ops.OpsTransferField;
+import tacos.packet.response.ResCField;
+import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.scripting.PortalScriptManager;
 import odin.server.MaplePortal;
 

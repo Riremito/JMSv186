@@ -26,7 +26,7 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.ItemFlag;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import packet.response.ResCField;
+import tacos.packet.response.ResCField;
 import odin.server.MapleInventoryManipulator;
 
 public class MaplePlayerShop extends AbstractPlayerStore {

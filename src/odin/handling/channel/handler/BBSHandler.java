@@ -24,7 +24,7 @@ import odin.client.MapleClient;
 import odin.handling.world.World;
 import odin.handling.world.guild.MapleBBSThread;
 import java.util.List;
-import packet.response.ResCWvsContext;
+import tacos.packet.response.ResCWvsContext;
 import odin.tools.data.input.SeekableLittleEndianAccessor;
 
 public class BBSHandler {

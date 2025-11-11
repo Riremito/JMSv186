@@ -27,7 +27,7 @@ import java.sql.ResultSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import database.DatabaseConnection;
+import tacos.database.DatabaseConnection;
 import java.io.Serializable;
 
 public class MapleInventoryIdentifier implements Serializable {

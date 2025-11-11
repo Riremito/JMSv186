@@ -28,7 +28,7 @@ import java.util.List;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.MapleQuestStatus;
-import packet.response.ResCField;
+import tacos.packet.response.ResCField;
 import odin.server.quest.MapleQuest;
 
 public class MapleMiniGame extends AbstractPlayerStore {

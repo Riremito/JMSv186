@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) 2025 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
+package tacos.packet.ops.arg;
+
+import odin.client.MapleCharacter;
+import odin.handling.channel.handler.ItemMakerHandler;
+import tacos.packet.ops.OpsUserEffect;
+
+/**
+ *
+ * @author Riremito
+ */
+public class ArgUserEffect {
+
+    public OpsUserEffect ops = OpsUserEffect.UNKNOWN;
+    public MapleCharacter chr = null;
+    public int item_id = 0;
+    public int item_quantity = 0;
+    public int skill_id = 0;
+    public boolean skill_on = true;
+    public ItemMakerHandler.ItemMakerResult imr;
+}

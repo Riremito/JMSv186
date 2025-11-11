@@ -26,8 +26,8 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.ItemLoader;
 import odin.client.inventory.MapleInventoryType;
 import java.sql.Connection;
-import database.DatabaseConnection;
-import server.network.MaplePacket;
+import tacos.database.DatabaseConnection;
+import tacos.network.MaplePacket;
 import odin.constants.ServerConstants;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import packet.response.wrapper.WrapCITC;
+import tacos.packet.response.wrapper.WrapCITC;
 import odin.tools.Pair;
 
 public class MTSStorage {

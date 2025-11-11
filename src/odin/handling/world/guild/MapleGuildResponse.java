@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.world.guild;
 
-import server.network.MaplePacket;
-import packet.response.ResCWvsContext;
+import tacos.network.MaplePacket;
+import tacos.packet.response.ResCWvsContext;
 
 public enum MapleGuildResponse {
 

@@ -17,11 +17,11 @@ import odin.client.inventory.ItemLoader;
 import odin.client.inventory.IItem;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
-import database.DatabaseConnection;
-import database.DatabaseException;
+import tacos.database.DatabaseConnection;
+import tacos.database.DatabaseException;
 import java.util.EnumMap;
-import packet.request.ReqCTrunkDlg;
-import packet.response.ResCTrunkDlg;
+import tacos.packet.request.ReqCTrunkDlg;
+import tacos.packet.response.ResCTrunkDlg;
 import odin.tools.Pair;
 
 public class MapleStorage implements Serializable {
