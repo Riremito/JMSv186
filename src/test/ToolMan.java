@@ -18,9 +18,8 @@
  */
 package test;
 
-import client.MapleCharacter;
-import config.DebugConfig;
-import handling.channel.ChannelServer;
+import odin.client.MapleCharacter;
+import tacos.server.ServerOdinGame;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -28,7 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import server.maps.MapleMap;
+import odin.server.maps.MapleMap;
 
 /**
  *
@@ -45,9 +44,6 @@ public class ToolMan {
     static JTextField tf_level;
 
     public static void Open() {
-        if (!DebugConfig.open_debug_ui) {
-            return;
-        }
         JFrame f = new JFrame();
         f.setTitle("ToolMan");
         f.setSize(800, 600);
@@ -167,8 +163,8 @@ public class ToolMan {
             return null;
         }
         String target_name = (String) cb_character.getSelectedItem();
-        for (int i : ChannelServer.getAllInstance()) {
-            ChannelServer channel = ChannelServer.getInstance(i);
+        for (int i : ServerOdinGame.getAllInstance()) {
+            ServerOdinGame channel = ServerOdinGame.getInstance(i);
             if (channel != null) {
                 MapleCharacter c = channel.getPlayerStorage().getCharacterByName(target_name);
                 if (c != null) {
@@ -185,8 +181,8 @@ public class ToolMan {
             return false;
         }
         int mapid = Integer.parseInt(tf_mapid.getText());
-        for (int i : ChannelServer.getAllInstance()) {
-            ChannelServer ch = ChannelServer.getInstance(i);
+        for (int i : ServerOdinGame.getAllInstance()) {
+            ServerOdinGame ch = ServerOdinGame.getInstance(i);
             MapleMap map = ch.getMapFactory().getMap(mapid);
             c.changeMap(map, map.getPortal(0));
             return true;
@@ -196,8 +192,8 @@ public class ToolMan {
 
     // test
     private static void PanelTest() {
-        for (int i : ChannelServer.getAllInstance()) {
-            ChannelServer channel = ChannelServer.getInstance(i);
+        for (int i : ServerOdinGame.getAllInstance()) {
+            ServerOdinGame channel = ServerOdinGame.getInstance(i);
             if (channel != null) {
                 for (MapleCharacter chr : channel.getPlayerStorage().getAllCharacters()) {
                     if (chr != null) {
@@ -234,8 +230,8 @@ public class ToolMan {
 
     private static void UpdateCharacterListComboBox() {
         cb_character.removeAllItems();
-        for (int i : ChannelServer.getAllInstance()) {
-            ChannelServer channel = ChannelServer.getInstance(i);
+        for (int i : ServerOdinGame.getAllInstance()) {
+            ServerOdinGame channel = ServerOdinGame.getInstance(i);
             if (channel != null) {
                 for (MapleCharacter chr : channel.getPlayerStorage().getAllCharacters()) {
                     if (chr != null) {

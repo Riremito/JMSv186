@@ -10,8 +10,10 @@
 /scripts/
 /jms_wz/
 /jms_scripts/
+/thms_scripts/
 /bat/
 /build.xml
 /manifest.mf
 /wz_xml/
 /dump/
+/log/

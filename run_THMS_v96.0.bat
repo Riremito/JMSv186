@@ -1,0 +1,1 @@
+run_any.bat THMS 96 0
