@@ -6,7 +6,7 @@ import odin.client.MapleClient;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.data.wz.DW_Skill;
+import tacos.wz.data.SkillWz;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.handler.MobHandler;
 import tacos.packet.ClientPacket;
@@ -172,7 +172,7 @@ public class ReqCMobPool {
                 realskill = skillToUse.getLeft();
                 level = skillToUse.getRight();
                 // Skill ID and Level
-                final MobSkill mobSkill = DW_Skill.getMobSkillData(realskill, level);
+                final MobSkill mobSkill = SkillWz.getMobSkillData(realskill, level);
 
                 if (mobSkill != null && !mobSkill.checkCurrentBuff(chr, monster)) {
                     final long now = System.currentTimeMillis();

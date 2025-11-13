@@ -25,7 +25,7 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 
 import odin.client.MapleClient;
-import tacos.config.property.Property_Java;
+import tacos.property.Property_Java;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.Lock;
 import odin.server.quest.MapleQuest;

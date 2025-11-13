@@ -23,7 +23,7 @@ package odin.client.inventory;
 import tacos.config.Region;
 import tacos.config.Version;
 import odin.constants.GameConstants;
-import tacos.data.wz.ids.DWI_Random;
+import tacos.wz.ids.DWI_Random;
 import java.io.Serializable;
 import odin.server.Randomizer;
 

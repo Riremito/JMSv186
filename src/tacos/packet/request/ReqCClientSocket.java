@@ -28,7 +28,7 @@ import odin.client.inventory.MaplePet;
 import tacos.config.ContentState;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.config.property.Property_Shop;
+import tacos.property.Property_Shop;
 import tacos.database.ExtraDB;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;

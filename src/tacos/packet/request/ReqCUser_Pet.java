@@ -26,7 +26,7 @@ import odin.client.inventory.MaplePet;
 import odin.client.inventory.PetCommand;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.data.wz.DW_Item;
+import tacos.wz.data.ItemWz;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.handler.InventoryHandler;
 import odin.handling.world.MaplePartyCharacter;
@@ -236,7 +236,7 @@ public class ReqCUser_Pet {
         }
         slea.skip(5);
         final byte command = slea.readByte();
-        final PetCommand petCommand = DW_Item.getPetCommand(pet.getPetItemId(), (int) command);
+        final PetCommand petCommand = ItemWz.getPetCommand(pet.getPetItemId(), (int) command);
         boolean success = false;
         if (Randomizer.nextInt(99) <= petCommand.getProbability()) {
             success = true;

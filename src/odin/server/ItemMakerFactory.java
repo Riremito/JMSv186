@@ -1,6 +1,6 @@
 package odin.server;
 
-import tacos.data.wz.DW_Etc;
+import tacos.wz.data.EtcWz;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +26,7 @@ public class ItemMakerFactory {
         // 0 = Item upgrade crystals
         // 1 / 2/ 4/ 8 = Item creation
 
-        if (DW_Etc.getItemMake() == null) {
+        if (EtcWz.getItemMake() == null) {
             return;
         }
 
@@ -35,7 +35,7 @@ public class ItemMakerFactory {
         GemCreateEntry ret;
         ItemMakerCreateEntry imt;
 
-        for (MapleData dataType : DW_Etc.getItemMake().getChildren()) {
+        for (MapleData dataType : EtcWz.getItemMake().getChildren()) {
             int type = Integer.parseInt(dataType.getName());
             switch (type) {
                 case 0: { // Caching of gem

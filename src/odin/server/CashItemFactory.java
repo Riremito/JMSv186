@@ -1,6 +1,6 @@
 package odin.server;
 
-import tacos.data.wz.DW_Etc;
+import tacos.wz.data.EtcWz;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -32,7 +32,7 @@ public class CashItemFactory {
 
     public void initialize() {
         final List<Integer> itemids = new ArrayList<Integer>();
-        for (MapleData field : DW_Etc.getCommodity().getChildren()) {
+        for (MapleData field : EtcWz.getCommodity().getChildren()) {
             final int itemId = MapleDataTool.getIntConvert("ItemId", field, 0);
             final int SN = MapleDataTool.getIntConvert("SN", field, 0);
 
@@ -70,7 +70,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (MapleData field : DW_Etc.getCommodity().getChildren()) {
+        for (MapleData field : EtcWz.getCommodity().getChildren()) {
             int SN = MapleDataTool.getIntConvert("SN", field, 0);
 
             if (SN <= 0 || item_SN != SN) {
@@ -102,7 +102,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (MapleData field : DW_Etc.getCommodity().getChildren()) {
+        for (MapleData field : EtcWz.getCommodity().getChildren()) {
             int ItemId = MapleDataTool.getIntConvert("ItemId", field, 0);
             if (ItemId != itemid) {
                 continue;
@@ -130,10 +130,10 @@ public class CashItemFactory {
         }
         final List<CashItemInfo> packageItems = new ArrayList<CashItemInfo>();
 
-        if (DW_Etc.getCashPackage() == null || DW_Etc.getCashPackage().getChildByPath(itemId + "/SN") == null) {
+        if (EtcWz.getCashPackage() == null || EtcWz.getCashPackage().getChildByPath(itemId + "/SN") == null) {
             return null;
         }
-        for (MapleData d : DW_Etc.getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
+        for (MapleData d : EtcWz.getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
             packageItems.add(itemStats.get(Integer.valueOf(MapleDataTool.getIntConvert(d))));
         }
         itemPackage.put(itemId, packageItems);

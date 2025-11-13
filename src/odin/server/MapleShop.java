@@ -19,7 +19,7 @@ import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
-import tacos.data.wz.ids.DWI_Validation;
+import tacos.wz.ids.DWI_Validation;
 import tacos.database.DatabaseConnection;
 import tacos.packet.ops.OpsShop;
 import tacos.packet.response.ResCShopDlg;

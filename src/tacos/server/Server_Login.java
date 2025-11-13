@@ -18,7 +18,7 @@
  */
 package tacos.server;
 
-import tacos.config.property.Property_Login;
+import tacos.property.Property_Login;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
 import tacos.network.PacketHandler;

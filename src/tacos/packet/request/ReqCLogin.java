@@ -30,9 +30,9 @@ import tacos.config.DeveloperMode;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.config.property.Property_Login;
-import tacos.data.wz.DW_Etc;
-import tacos.data.wz.ids.DWI_Validation;
+import tacos.property.Property_Login;
+import tacos.wz.data.EtcWz;
+import tacos.wz.ids.DWI_Validation;
 import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_Character_slots;
 import tacos.database.query.DQ_Characters;
@@ -606,7 +606,7 @@ public class ReqCLogin {
         if ((Content.CharacterNameLength.getInt() - 1) < character_name.getBytes().length) {
             return false;
         }
-        if (DW_Etc.isForbiddenName(character_name)) {
+        if (EtcWz.isForbiddenName(character_name)) {
             return false;
         }
         // already registered

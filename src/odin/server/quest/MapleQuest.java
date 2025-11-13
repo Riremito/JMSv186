@@ -11,7 +11,7 @@ import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.data.wz.DW_Quest;
+import tacos.wz.data.QuestWz;
 import java.util.ArrayList;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.WrapCUserLocal;
@@ -54,8 +54,8 @@ public class MapleQuest implements Serializable {
      */
     private static boolean loadQuest(MapleQuest ret, int id) throws NullPointerException {
         // read reqs
-        final MapleData basedata1 = DW_Quest.getCheck().getChildByPath(String.valueOf(id));
-        final MapleData basedata2 = DW_Quest.getAct().getChildByPath(String.valueOf(id));
+        final MapleData basedata1 = QuestWz.getCheck().getChildByPath(String.valueOf(id));
+        final MapleData basedata2 = QuestWz.getAct().getChildByPath(String.valueOf(id));
 
         if (basedata1 == null || basedata2 == null) {
             return false;
@@ -119,7 +119,7 @@ public class MapleQuest implements Serializable {
             }
         }
 
-        final MapleData questInfo = DW_Quest.getQuestInfo().getChildByPath(String.valueOf(id));
+        final MapleData questInfo = QuestWz.getQuestInfo().getChildByPath(String.valueOf(id));
         if (questInfo != null) {
             ret.name = MapleDataTool.getString("name", questInfo, "");
             ret.autoStart = MapleDataTool.getInt("autoStart", questInfo, 0) == 1;
@@ -130,7 +130,7 @@ public class MapleQuest implements Serializable {
 
         // not in KMS55
         if (Version.GreaterOrEqual(Region.KMS, 65)) {
-            final MapleData pquestInfo = DW_Quest.getPQuest().getChildByPath(String.valueOf(id));
+            final MapleData pquestInfo = QuestWz.getPQuest().getChildByPath(String.valueOf(id));
             if (pquestInfo != null) {
                 for (MapleData d : pquestInfo.getChildByPath("rank")) {
                     List<Pair<String, Pair<String, Integer>>> pInfo = new ArrayList<Pair<String, Pair<String, Integer>>>();

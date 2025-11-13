@@ -16,10 +16,10 @@ import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.ContentCustom;
 import tacos.config.ContentState;
-import tacos.data.wz.DW_Character;
-import tacos.data.wz.DW_Etc;
-import tacos.data.wz.DW_Item;
-import tacos.data.wz.DW_String;
+import tacos.wz.data.CharacterWz;
+import tacos.wz.data.EtcWz;
+import tacos.wz.data.ItemWz;
+import tacos.wz.data.StringWz;
 import tacos.debug.DebugLogger;
 import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
@@ -63,11 +63,11 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Pair<Integer, List<Integer>>> questItems = new HashMap<Integer, Pair<Integer, List<Integer>>>();
 
     public final StructSetItem getSetItem(int setItemId) {
-        return DW_Etc.getSetItemInfoList().get(setItemId);
+        return EtcWz.getSetItemInfoList().get(setItemId);
     }
 
     public final List<StructPotentialItem> getPotentialInfo(int potId) {
-        return DW_Item.getItemOptionList().get(potId);
+        return ItemWz.getItemOptionList().get(potId);
     }
 
     public static final MapleItemInformationProvider getInstance() {
@@ -81,29 +81,29 @@ public class MapleItemInformationProvider {
         final List<Pair<Integer, String>> itemPairs = new ArrayList<Pair<Integer, String>>();
         MapleData itemsData;
 
-        for (final MapleData itemFolder : DW_String.getCash().getChildren()) {
+        for (final MapleData itemFolder : StringWz.getCash().getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        for (final MapleData itemFolder : DW_String.getConsume().getChildren()) {
+        for (final MapleData itemFolder : StringWz.getConsume().getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        for (final MapleData eqpType : DW_String.getEqp().getChildren()) {
+        for (final MapleData eqpType : StringWz.getEqp().getChildren()) {
             for (final MapleData itemFolder : eqpType.getChildren()) {
                 itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
             }
         }
 
-        for (final MapleData itemFolder : DW_String.getEtc().getChildren()) {
+        for (final MapleData itemFolder : StringWz.getEtc().getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        for (final MapleData itemFolder : DW_String.getIns().getChildren()) {
+        for (final MapleData itemFolder : StringWz.getIns().getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
-        for (final MapleData itemFolder : DW_String.getPet().getChildren()) {
+        for (final MapleData itemFolder : StringWz.getPet().getChildren()) {
             itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
         return itemPairs;
@@ -114,66 +114,66 @@ public class MapleItemInformationProvider {
         MapleData data;
 
         if (itemId >= 5010000) {
-            data = DW_String.getCash();
+            data = StringWz.getCash();
         } else if (itemId >= 2000000 && itemId < 3000000) {
-            data = DW_String.getConsume();
+            data = StringWz.getConsume();
         } else if ((itemId >= 1142000 && itemId < 1143000) || (itemId >= 1010000 && itemId < 1040000) || (itemId >= 1122000 && itemId < 1123000)) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Accessory";
         } else if (itemId >= 1000000 && itemId < 1010000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Cap";
         } else if (itemId >= 1102000 && itemId < 1103000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Cape";
         } else if (itemId >= 1040000 && itemId < 1050000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Coat";
         } else if (itemId >= 20000 && itemId < 22000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Face";
         } else if (itemId >= 1080000 && itemId < 1090000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Glove";
         } else if (itemId >= 30000 && itemId < 32000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Hair";
         } else if (itemId >= 1050000 && itemId < 1060000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Longcoat";
         } else if (itemId >= 1060000 && itemId < 1070000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Pants";
         } else if (itemId >= 1610000 && itemId < 1660000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Mechanic";
         } else if (itemId >= 1802000 && itemId < 1810000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "PetEquip";
         } else if (itemId >= 1920000 && itemId < 2000000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Dragon";
         } else if (itemId >= 1112000 && itemId < 1120000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Ring";
         } else if (itemId >= 1092000 && itemId < 1100000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Shield";
         } else if (itemId >= 1070000 && itemId < 1080000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Shoes";
         } else if (itemId >= 1900000 && itemId < 1920000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Taming";
         } else if (itemId >= 1300000 && itemId < 1800000) {
-            data = DW_String.getEqp();
+            data = StringWz.getEqp();
             cat = "Weapon";
         } else if (itemId >= 4000000 && itemId < 5000000) {
-            data = DW_String.getEtc();
+            data = StringWz.getEtc();
         } else if (itemId >= 3000000 && itemId < 4000000) {
-            data = DW_String.getIns();
+            data = StringWz.getIns();
         } else if (itemId >= 5000000 && itemId < 5010000) {
-            data = DW_String.getPet();
+            data = StringWz.getPet();
         } else {
             return null;
         }
@@ -187,13 +187,13 @@ public class MapleItemInformationProvider {
     protected final MapleData getItemData(int id) {
         //DebugLoadTime dlt = new DebugLoadTime("getItemData : " + id);
 
-        MapleData md_character = DW_Character.getItemData(id);
+        MapleData md_character = CharacterWz.getItemData(id);
         if (md_character != null) {
             //dlt.End();
             return md_character;
         }
 
-        MapleData md_item = DW_Item.getItemData(id);
+        MapleData md_item = ItemWz.getItemData(id);
         if (md_item != null) {
             //dlt.End();
             return md_item;

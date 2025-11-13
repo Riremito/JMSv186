@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import tacos.data.wz.ids.DWI_LoadXML;
+import tacos.wz.ids.DWI_LoadXML;
 import tacos.debug.DebugLogger;
 import java.util.List;
 import tacos.packet.ClientPacket;

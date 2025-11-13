@@ -21,7 +21,7 @@ package tacos.packet.request.addon;
 import odin.client.MapleClient;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.config.property.Property_Login;
+import tacos.property.Property_Login;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 

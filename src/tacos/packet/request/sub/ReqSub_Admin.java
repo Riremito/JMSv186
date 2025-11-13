@@ -20,8 +20,8 @@ package tacos.packet.request.sub;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleStat;
-import tacos.data.wz.ids.DWI_Validation;
-import tacos.data.wz.ids.DWI_LoadXML;
+import tacos.wz.ids.DWI_Validation;
+import tacos.wz.ids.DWI_LoadXML;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
 import tacos.packet.ClientPacket;

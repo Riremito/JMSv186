@@ -21,14 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import tacos.config.DeveloperMode;
-import tacos.config.property.Property_Java;
+import tacos.property.Property_Java;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.data.wz.DW_Map;
-import tacos.data.wz.DW_Reactor;
-import tacos.data.wz.DW_String;
-import tacos.data.wz.ids.DWI_Block;
-import tacos.data.wz.ids.DWI_Validation;
+import tacos.wz.data.MapWz;
+import tacos.wz.data.ReactorWz;
+import tacos.wz.data.StringWz;
+import tacos.wz.ids.DWI_Block;
+import tacos.wz.ids.DWI_Validation;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -89,19 +89,20 @@ public class MapleMapFactory {
 
                 MapleData mapData;
                 try {
-                    mapData = DW_Map.getWzRoot().getData(getMapName(mapid));
+                    mapData = MapWz.getWzRoot().getData(getMapName(mapid));
                 } catch (Exception e) {
                     // 存在しないMapIDが指定された場合は指定MapIDへ強制移動する
                     DebugLogger.ErrorLog("Invalid MapID = " + mapid);
                     mapid = DeveloperMode.DM_ERROR_MAP_ID.getInt();
                     omapid = Integer.valueOf(mapid);
-                    mapData = DW_Map.getWzRoot().getData(getMapName(mapid));
+                    mapData = MapWz.getWzRoot().getData(getMapName(mapid));
                 }
+                //MapleData mapData = source.getData(getMapName(mapid));
                 //MapleData mapData = source.getData(getMapName(mapid));
 
                 MapleData link = mapData.getChildByPath("info/link");
                 if (link != null) {
-                    mapData = DW_Map.getWzRoot().getData(getMapName(MapleDataTool.getIntConvert("info/link", mapData)));
+                    mapData = MapWz.getWzRoot().getData(getMapName(MapleDataTool.getIntConvert("info/link", mapData)));
                 }
 
                 float monsterRate = 0;
@@ -242,8 +243,8 @@ public class MapleMapFactory {
                 }
 
                 try {
-                    map.setMapName(MapleDataTool.getString("mapName", DW_String.getMap().getChildByPath(getMapStringName(omapid)), ""));
-                    map.setStreetName(MapleDataTool.getString("streetName", DW_String.getMap().getChildByPath(getMapStringName(omapid)), ""));
+                    map.setMapName(MapleDataTool.getString("mapName", StringWz.getMap().getChildByPath(getMapStringName(omapid)), ""));
+                    map.setStreetName(MapleDataTool.getString("streetName", StringWz.getMap().getChildByPath(getMapStringName(omapid)), ""));
                 } catch (Exception e) {
                     map.setMapName("");
                     map.setStreetName("");
@@ -296,10 +297,10 @@ public class MapleMapFactory {
         if (isInstanceMapLoaded(instanceid)) {
             return getInstanceMap(instanceid);
         }
-        MapleData mapData = DW_Map.getWzRoot().getData(getMapName(mapid));
+        MapleData mapData = MapWz.getWzRoot().getData(getMapName(mapid));
         MapleData link = mapData.getChildByPath("info/link");
         if (link != null) {
-            mapData = DW_Map.getWzRoot().getData(getMapName(MapleDataTool.getIntConvert("info/link", mapData)));
+            mapData = MapWz.getWzRoot().getData(getMapName(MapleDataTool.getIntConvert("info/link", mapData)));
         }
 
         float monsterRate = 0;
@@ -393,8 +394,8 @@ public class MapleMapFactory {
             }
         }
         try {
-            map.setMapName(MapleDataTool.getString("mapName", DW_String.getMap().getChildByPath(getMapStringName(mapid)), ""));
-            map.setStreetName(MapleDataTool.getString("streetName", DW_String.getMap().getChildByPath(getMapStringName(mapid)), ""));
+            map.setMapName(MapleDataTool.getString("mapName", StringWz.getMap().getChildByPath(getMapStringName(mapid)), ""));
+            map.setStreetName(MapleDataTool.getString("streetName", StringWz.getMap().getChildByPath(getMapStringName(mapid)), ""));
         } catch (Exception e) {
             map.setMapName("");
             map.setStreetName("");
@@ -468,7 +469,7 @@ public class MapleMapFactory {
     }
 
     private final MapleReactor loadReactor(final MapleData reactor, final String id, final byte FacingDirection) {
-        final MapleReactorStats stats = DW_Reactor.getReactor(Integer.parseInt(id));
+        final MapleReactorStats stats = ReactorWz.getReactor(Integer.parseInt(id));
         final MapleReactor myReactor = new MapleReactor(stats, Integer.parseInt(id));
 
         stats.setFacingDirection(FacingDirection);

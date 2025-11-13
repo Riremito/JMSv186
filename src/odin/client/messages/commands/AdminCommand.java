@@ -11,9 +11,9 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.messages.CommandProcessorUtil;
-import tacos.config.property.Property_Java;
+import tacos.property.Property_Java;
 import odin.constants.GameConstants;
-import tacos.data.wz.DW_Skill;
+import tacos.wz.data.SkillWz;
 import tacos.debug.DebugLogger;
 import tacos.server.ServerOdinGame;
 import java.io.FileNotFoundException;
@@ -271,13 +271,13 @@ public class AdminCommand {
                 victim.setChair(0);
                 victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
                 victim.getMap().broadcastMessage(victim, ResCUserRemote.SetActivePortableChair(c.getPlayer().getId(), 0), false);
-                victim.giveDebuff(dis, DW_Skill.getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 3, 1)));
+                victim.giveDebuff(dis, SkillWz.getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 3, 1)));
             } else {
                 for (MapleCharacter victim : c.getPlayer().getMap().getCharactersThreadsafe()) {
                     victim.setChair(0);
                     victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
                     victim.getMap().broadcastMessage(victim, ResCUserRemote.SetActivePortableChair(c.getPlayer().getId(), 0), false);
-                    victim.giveDebuff(dis, DW_Skill.getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 2, 1)));
+                    victim.giveDebuff(dis, SkillWz.getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 2, 1)));
                 }
             }
             return 1;

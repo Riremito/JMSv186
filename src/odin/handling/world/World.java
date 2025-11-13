@@ -23,7 +23,7 @@ import odin.client.MapleCoolDownValueHolder;
 import odin.client.MapleDiseaseValueHolder;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
-import tacos.data.wz.DW_Item;
+import tacos.wz.data.ItemWz;
 import tacos.database.DatabaseConnection;
 import tacos.database.query.DQ_Characters;
 import tacos.network.MaplePacket;
@@ -1397,7 +1397,7 @@ public class World {
                             return;
                         }
                     }
-                    int newFullness = pet.getFullness() - DW_Item.getHunger(pet.getPetItemId());
+                    int newFullness = pet.getFullness() - ItemWz.getHunger(pet.getPetItemId());
                     if (newFullness <= 5) {
                         pet.setFullness(15);
                         chr.unequipPet(pet, true, true);

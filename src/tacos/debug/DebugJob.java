@@ -25,7 +25,7 @@ import odin.client.MapleCharacter;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
 import tacos.config.Version;
-import tacos.data.wz.ids.DWI_Validation;
+import tacos.wz.ids.DWI_Validation;
 import java.util.ArrayList;
 import odin.server.Randomizer;
 

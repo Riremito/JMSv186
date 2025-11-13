@@ -23,7 +23,7 @@ import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import odin.constants.GameConstants;
-import tacos.data.client.DC_Date;
+import tacos.shared.SharedDate;
 import tacos.debug.DebugShop;
 import tacos.network.MaplePacket;
 import java.util.List;
@@ -137,7 +137,7 @@ public class ResCShopDlg {
             if (Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 131)) {
                 sp.Encode4(0);
                 sp.Encode8(0);
-                sp.Encode8(DC_Date.getMagicalExpirationDate());
+                sp.Encode8(SharedDate.getMagicalExpirationDate());
                 sp.Encode4(0);
                 sp.Encode1(0);
                 sp.Encode4(0);

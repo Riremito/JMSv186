@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client;
 
-import tacos.data.wz.DW_Skill;
-import tacos.data.wz.DW_String;
+import tacos.wz.data.SkillWz;
+import tacos.wz.data.StringWz;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,11 +32,11 @@ import odin.tools.StringUtil;
 public class SkillFactory {
 
     public static final ISkill getSkill(final int id) {
-        return DW_Skill.getSkill().get(Integer.valueOf(id));
+        return SkillWz.getSkill().get(Integer.valueOf(id));
     }
 
     public static final List<Integer> getSkillsByJob(final int jobId) {
-        return DW_Skill.getSkillsByJob().get(jobId);
+        return SkillWz.getSkillsByJob().get(jobId);
     }
 
     public static final String getSkillName(final int id) {
@@ -50,7 +50,7 @@ public class SkillFactory {
     public static final String getName(final int id) {
         String strId = Integer.toString(id);
         strId = StringUtil.getLeftPaddedStr(strId, '0', 7);
-        MapleData skillroot = DW_String.getSkill().getChildByPath(strId);
+        MapleData skillroot = StringWz.getSkill().getChildByPath(strId);
         if (skillroot != null) {
             return MapleDataTool.getString(skillroot.getChildByPath("name"), "");
         }
@@ -58,10 +58,10 @@ public class SkillFactory {
     }
 
     public static final SummonSkillEntry getSummonData(final int skillid) {
-        return DW_Skill.getSummonSkillInformation().get(skillid);
+        return SkillWz.getSummonSkillInformation().get(skillid);
     }
 
     public static final Collection<ISkill> getAllSkills() {
-        return DW_Skill.getSkill().values();
+        return SkillWz.getSkill().values();
     }
 }

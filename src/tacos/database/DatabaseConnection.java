@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tacos.database;
 
-import tacos.config.property.Property_Database;
+import tacos.property.Property_Database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;

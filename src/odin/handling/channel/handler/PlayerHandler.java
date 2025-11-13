@@ -35,8 +35,8 @@ import tacos.config.ContentState;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.data.wz.DW_Mob;
-import tacos.data.wz.DW_Skill;
+import tacos.wz.data.MobWz;
+import tacos.wz.data.SkillWz;
 import tacos.debug.DebugLogger;
 import tacos.server.ServerOdinGame;
 import tacos.packet.ClientPacket;
@@ -163,7 +163,7 @@ public class PlayerHandler {
                 return;
             }
             if (type != -1) { // Bump damage
-                final MobAttackInfo attackInfo = DW_Mob.getMobAttackInfo(attacker, type);
+                final MobAttackInfo attackInfo = MobWz.getMobAttackInfo(attacker, type);
                 if (attackInfo != null) {
                     if (attackInfo.isDeadlyAttack()) {
                         isDeadlyAttack = true;
@@ -171,7 +171,7 @@ public class PlayerHandler {
                     } else {
                         mpattack += attackInfo.getMpBurn();
                     }
-                    final MobSkill skill = DW_Skill.getMobSkillData(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
+                    final MobSkill skill = SkillWz.getMobSkillData(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
                     if (skill != null && (damage == -1 || damage > 0)) {
                         //skill.applyEffect(chr, attacker, false);
                     }
@@ -193,7 +193,7 @@ public class PlayerHandler {
             //if (slea.available() == 3) {
             byte level = cp.Decode1();
             if (level > 0) {
-                final MobSkill skill = DW_Skill.getMobSkillData(cp.Decode2(), level);
+                final MobSkill skill = SkillWz.getMobSkillData(cp.Decode2(), level);
                 if (skill != null) {
                     //skill.applyEffect(chr, attacker, false);
                 }

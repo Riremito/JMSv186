@@ -18,7 +18,7 @@
  */
 package tacos.server;
 
-import tacos.config.property.Property_Shop;
+import tacos.property.Property_Shop;
 import odin.handling.channel.PlayerStorage;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;

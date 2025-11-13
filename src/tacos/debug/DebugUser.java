@@ -23,7 +23,7 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.DeveloperMode;
-import tacos.data.wz.ids.DWI_Validation;
+import tacos.wz.ids.DWI_Validation;
 import odin.server.MapleItemInformationProvider;
 
 /**

@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.provider;
 
-import tacos.config.property.Property_Java;
+import tacos.property.Property_Java;
 import java.io.File;
 import odin.provider.WzXML.XMLWZFile;
 

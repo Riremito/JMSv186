@@ -24,8 +24,8 @@ import tacos.config.Content;
 import tacos.config.DeveloperMode;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.config.property.Property;
-import tacos.data.client.DC_Exp;
+import tacos.property.Property;
+import tacos.shared.SharedExpTable;
 import tacos.database.DatabaseConnection;
 import odin.handling.channel.MapleGuildRanking;
 import tacos.server.ServerOdinLogin;
@@ -87,7 +87,7 @@ public class Start {
         ClientEdit.init();
         // update exp table
         DebugLogger.SetupLog("EXP_TABLE");
-        DC_Exp.init();
+        SharedExpTable.init();
         // update packet enum values
         DebugLogger.SetupLog("PACKET_OPS");
         tacos.packet.ops.PacketOps.initAll();

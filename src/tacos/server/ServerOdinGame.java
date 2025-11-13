@@ -30,7 +30,7 @@ import java.util.Map;
 
 import odin.client.MapleCharacter;
 import tacos.config.ContentCustom;
-import tacos.config.property.Property_World;
+import tacos.property.Property_World;
 import odin.handling.channel.PlayerStorage;
 import tacos.network.ByteArrayMaplePacket;
 import tacos.network.MaplePacket;

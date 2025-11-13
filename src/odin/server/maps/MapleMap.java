@@ -47,9 +47,9 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
-import tacos.data.wz.DW_Reactor;
-import tacos.data.wz.DW_String;
-import tacos.data.wz.DW_String.DropMonsterBook;
+import tacos.wz.data.ReactorWz;
+import tacos.wz.data.StringWz;
+import tacos.wz.data.StringWz.DropMonsterBook;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
@@ -527,12 +527,12 @@ public final class MapleMap {
             dropped_count++;
         }
 
-        if (!DW_String.checkBookAvailable()) {
+        if (!StringWz.checkBookAvailable()) {
             return dropped_count;
         }
 
         // load from monster book
-        DropMonsterBook book_info = DW_String.getMonseterBookDrop(mob.getId());
+        DropMonsterBook book_info = StringWz.getMonseterBookDrop(mob.getId());
         for (int item_id : book_info.drop_ids) {
             int type = item_id / 1000000;
             // 装備 3%
@@ -3106,7 +3106,7 @@ public final class MapleMap {
             }
         }
         if (guardz != null) {
-            final MapleReactorStats stats = DW_Reactor.getReactor(9980000 + team);
+            final MapleReactorStats stats = ReactorWz.getReactor(9980000 + team);
             final MapleReactor my = new MapleReactor(stats, 9980000 + team);
             stats.setFacingDirection((byte) 0); //always
             my.setPosition(guardz);

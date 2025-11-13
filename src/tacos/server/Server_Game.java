@@ -18,7 +18,7 @@
  */
 package tacos.server;
 
-import tacos.config.property.Property_World;
+import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.PlayerStorage;
 import org.apache.mina.common.IoHandler;

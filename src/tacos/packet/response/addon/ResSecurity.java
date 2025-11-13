@@ -19,7 +19,7 @@
 package tacos.packet.response.addon;
 
 import odin.client.MapleClient;
-import tacos.config.property.Property_Login;
+import tacos.property.Property_Login;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 

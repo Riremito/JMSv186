@@ -20,7 +20,7 @@ package tacos.packet.response.data;
 
 import odin.client.MapleClient;
 import odin.client.inventory.IItem;
-import tacos.data.client.DC_Date;
+import tacos.shared.SharedDate;
 import tacos.packet.ServerPacket;
 import odin.server.CashItemFactory;
 
@@ -39,7 +39,7 @@ public class DataGW_CashItemInfo {
         sp.Encode4(0); // first?
         sp.Encode2(item.getQuantity());
         sp.EncodeBuffer(item.getOwner(), 13);
-        sp.Encode8(DC_Date.getMagicalExpirationDate());
+        sp.Encode8(SharedDate.getMagicalExpirationDate());
         sp.Encode8(CashItemFactory.getInstance().getItemSN(item.getItemId()));
         return sp.get().getBytes();
 

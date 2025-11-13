@@ -31,7 +31,7 @@ import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import odin.constants.GameConstants;
-import tacos.data.client.DC_Date;
+import tacos.shared.SharedDate;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import odin.handling.channel.MapleGuildRanking;
@@ -160,7 +160,7 @@ public class ResCWvsContext {
         sp.Encode4(level);
         sp.Encode4(masterlevel);
         if (ServerConfig.JMS164orLater()) {
-            sp.Encode8(DC_Date.getMagicalExpirationDate());
+            sp.Encode8(SharedDate.getMagicalExpirationDate());
         }
         sp.Encode1(4);
         return sp.get();

@@ -24,7 +24,7 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
-import tacos.data.wz.ids.DWI_LoadXML;
+import tacos.wz.ids.DWI_LoadXML;
 import java.util.List;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;

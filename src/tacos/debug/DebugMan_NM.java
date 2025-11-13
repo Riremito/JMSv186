@@ -19,7 +19,7 @@
 package tacos.debug;
 
 import odin.client.MapleCharacter;
-import tacos.data.wz.ids.DWI_Random;
+import tacos.wz.ids.DWI_Random;
 import odin.server.maps.MapleMap;
 
 /**

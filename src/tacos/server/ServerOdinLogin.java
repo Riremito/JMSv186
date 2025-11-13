@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tacos.server;
 
-import tacos.config.property.Property_Dummy_World;
-import tacos.config.property.Property_World;
+import tacos.property.Property_Dummy_World;
+import tacos.property.Property_World;
 import java.util.HashMap;
 import java.util.Map;
 

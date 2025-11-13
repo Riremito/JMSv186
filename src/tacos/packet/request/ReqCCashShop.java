@@ -24,8 +24,8 @@ import odin.client.MapleClientState;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
-import tacos.data.client.DC_Date;
-import tacos.data.wz.ids.DWI_Validation;
+import tacos.shared.SharedDate;
+import tacos.wz.ids.DWI_Validation;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
 import tacos.server.ServerOdinCashShop;
@@ -163,7 +163,7 @@ public class ReqCCashShop {
     private static void updateFreeCouponDate(MapleCharacter chr) {
         IItem item = chr.getCashInventory().findItem(FREE_COUPON_ITEM_ID);
         if (item != null) {
-            chr.SendPacket(ResCCashShop.FreeCouponDialog(true, DC_Date.getMagicalExpirationDate()));
+            chr.SendPacket(ResCCashShop.FreeCouponDialog(true, SharedDate.getMagicalExpirationDate()));
         } else {
             chr.SendPacket(ResCCashShop.FreeCouponDialog(false, 0));
         }

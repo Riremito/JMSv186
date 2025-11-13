@@ -20,9 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.life;
 
-import tacos.data.wz.DW_Etc;
-import tacos.data.wz.DW_Mob;
-import tacos.data.wz.DW_String;
+import tacos.wz.data.EtcWz;
+import tacos.wz.data.MobWz;
+import tacos.wz.data.StringWz;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,13 +58,13 @@ public class MapleLifeFactory {
         if (NPCLoc.containsKey(npcid)) {
             return NPCLoc.get(npcid);
         }
-        final int map = MapleDataTool.getIntConvert(Integer.toString(npcid) + "/0", DW_Etc.getNpcLocation(), -1);
+        final int map = MapleDataTool.getIntConvert(Integer.toString(npcid) + "/0", EtcWz.getNpcLocation(), -1);
         NPCLoc.put(npcid, map);
         return map;
     }
 
     public static final List<Integer> getQuestCount(final int id) {
-        return DW_Mob.getQuestCountGroup().get(id);
+        return MobWz.getQuestCountGroup().get(id);
     }
 
     // fix broken MP mob
@@ -87,7 +87,7 @@ public class MapleLifeFactory {
         MapleMonsterStats stats = monsterStats.get(Integer.valueOf(mid));
 
         if (stats == null) {
-            MapleData monsterData = DW_Mob.getWzRoot().getData(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
+            MapleData monsterData = MobWz.getWzRoot().getData(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
             if (monsterData == null) {
                 return null;
             }
@@ -108,7 +108,7 @@ public class MapleLifeFactory {
             stats.setExplosiveReward(MapleDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
             stats.setFfaLoot(MapleDataTool.getIntConvert("publicReward", monsterInfoData, 0) > 0);
             stats.setUndead(MapleDataTool.getIntConvert("undead", monsterInfoData, 0) > 0);
-            stats.setName(MapleDataTool.getString(mid + "/name", DW_String.getMob(), "MISSINGNO"));
+            stats.setName(MapleDataTool.getString(mid + "/name", StringWz.getMob(), "MISSINGNO"));
             stats.setBuffToGive(MapleDataTool.getIntConvert("buff", monsterInfoData, -1));
             stats.setFriendly(MapleDataTool.getIntConvert("damagedByMob", monsterInfoData, 0) > 0);
             stats.setExplosiveReward(MapleDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
@@ -179,7 +179,7 @@ public class MapleLifeFactory {
             // Other data which isn;t in the mob, but might in the linked data
             final int link = MapleDataTool.getIntConvert("link", monsterInfoData, 0);
             if (link != 0) { // Store another copy, for faster processing.
-                monsterData = DW_Mob.getWzRoot().getData(StringUtil.getLeftPaddedStr(link + ".img", '0', 11));
+                monsterData = MobWz.getWzRoot().getData(StringUtil.getLeftPaddedStr(link + ".img", '0', 11));
             }
 
             for (MapleData idata : monsterData) {
@@ -239,7 +239,7 @@ public class MapleLifeFactory {
     public static MapleNPC getNPC(final int nid) {
         String name = npcNames.get(nid);
         if (name == null) {
-            name = MapleDataTool.getString(nid + "/name", DW_String.getNpc(), "MISSINGNO");
+            name = MapleDataTool.getString(nid + "/name", StringWz.getNpc(), "MISSINGNO");
             npcNames.put(nid, name);
         }
         if (name.indexOf("Maple TV") != -1) {

@@ -23,7 +23,7 @@ import tacos.config.Content;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.data.client.DC_Date;
+import tacos.shared.SharedDate;
 import tacos.packet.ServerPacket;
 
 /**
@@ -256,7 +256,7 @@ public class DataGW_ItemSlotBase {
                 data.Encode2(item.getPet().getCloseness()); // nTameness_CS
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
                 // 魔法の効力期限, Windows時間
-                data.Encode8(DC_Date.getMagicalExpirationDate()); // dateDead
+                data.Encode8(SharedDate.getMagicalExpirationDate()); // dateDead
                 data.Encode2(0); // nPetAttribute_CS
                 data.Encode2(item.getPet().getFlags()); // usPetSkill_CS
 
@@ -603,7 +603,7 @@ public class DataGW_ItemSlotBase {
             data.Encode8(item.getUniqueId());
         }
 
-        data.Encode8(DC_Date.getNoExpirationDate());
+        data.Encode8(SharedDate.getNoExpirationDate());
 
         if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode4(0);

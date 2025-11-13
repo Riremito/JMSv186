@@ -23,7 +23,7 @@ package odin.server.events;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleDisease;
-import tacos.data.wz.DW_Skill;
+import tacos.wz.data.SkillWz;
 import java.util.concurrent.ScheduledFuture;
 import tacos.packet.response.ResCField_SnowBall;
 import tacos.packet.response.wrapper.ResWrapper;
@@ -243,7 +243,7 @@ public class MapleSnowball extends MapleEvent {
                             }, 10000);
                             for (MapleCharacter chrz : chr.getMap().getCharactersThreadsafe()) {
                                 if ((ball.getTeam() == 0 && chr.getPosition().y < -80) || (ball.getTeam() == 1 && chr.getPosition().y > -80)) {
-                                    chrz.giveDebuff(MapleDisease.SEDUCE, DW_Skill.getMobSkillData(128, 1)); //go left
+                                    chrz.giveDebuff(MapleDisease.SEDUCE, SkillWz.getMobSkillData(128, 1)); //go left
                                 }
                             }
                         }

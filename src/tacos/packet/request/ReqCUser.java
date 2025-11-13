@@ -38,7 +38,7 @@ import tacos.config.ServerConfig;
 import tacos.config.Version;
 import odin.constants.GameConstants;
 import odin.constants.ServerConstants;
-import tacos.data.client.DC_Exp;
+import tacos.shared.SharedExpTable;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugMan;
 import tacos.debug.DebugShop;
@@ -2454,7 +2454,7 @@ public class ReqCUser {
     }
 
     private static boolean OnUserTempExpUseRequest(MapleCharacter chr) {
-        int exp_table = DC_Exp.getExpNeededForLevel(chr.getLevel());
+        int exp_table = SharedExpTable.getExpNeededForLevel(chr.getLevel());
         int exp_current = chr.getExp();
         int exp_temp = chr.getGashaEXP();
 

@@ -57,8 +57,8 @@ import tacos.config.DeveloperMode;
 import tacos.config.Region;
 import tacos.config.Version;
 import odin.constants.ServerConstants;
-import tacos.data.client.DC_Exp;
-import tacos.data.wz.ids.DWI_Validation;
+import tacos.shared.SharedExpTable;
+import tacos.wz.ids.DWI_Validation;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
 import tacos.network.MaplePacket;
@@ -147,7 +147,7 @@ import odin.server.maps.MapleFoothold;
 import odin.tools.ConcurrentEnumMap;
 import odin.tools.FileoutputUtil;
 import tacos.network.MockIOSession;
-import tacos.data.wz.ids.DWI_Dafault;
+import tacos.wz.ids.DWI_Dafault;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
@@ -1631,7 +1631,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     }
                     case 1: // EXP
                     {
-                        final int required_exp = DC_Exp.getExpNeededForLevel(level);
+                        final int required_exp = SharedExpTable.getExpNeededForLevel(level);
                         int caught_exp = Randomizer.rand(required_exp / ((3 - bait_level) * 100), required_exp / ((3 - bait_level) * 10));
                         if (caught_exp == 0) {
                             caught_exp += 1;
@@ -2684,7 +2684,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 client.getSession().write(ResCUserLocal.useCharm((byte) charms, (byte) 0));
             } else {
                 float diepercentage = 0.0f;
-                int expforlevel = DC_Exp.getExpNeededForLevel(level);
+                int expforlevel = SharedExpTable.getExpNeededForLevel(level);
                 if (map.isTown() || FieldLimitType.RegularExpLoss.check(map.getFieldLimit())) {
                     diepercentage = 0.01f;
                 } else {
@@ -2819,7 +2819,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
     public void gainExp(final int total, final boolean show, final boolean inChat, final boolean white) {
         try {
             int prevexp = getExp();
-            int needed = DC_Exp.getExpNeededForLevel(level);
+            int needed = SharedExpTable.getExpNeededForLevel(level);
             if (level >= 200 || (GameConstants.isKOC(job) && level >= 120)) {
                 if (exp + total > needed) {
                     setExp(needed);
@@ -2832,7 +2832,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     exp += total;
                     levelUp();
                     leveled = true;
-                    needed = DC_Exp.getExpNeededForLevel(level);
+                    needed = SharedExpTable.getExpNeededForLevel(level);
                     if (exp > needed) {
                         setExp(needed);
                     }
@@ -2892,7 +2892,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (gain > 0 && total < gain) { //just in case
             total = Integer.MAX_VALUE;
         }
-        int needed = DC_Exp.getExpNeededForLevel(level);
+        int needed = SharedExpTable.getExpNeededForLevel(level);
         if (level >= 200 || (GameConstants.isKOC(job) && level >= 120)) {
             if (exp + total > needed) {
                 setExp(needed);
@@ -2905,7 +2905,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 exp += total;
                 levelUp();
                 leveled = true;
-                needed = DC_Exp.getExpNeededForLevel(level);
+                needed = SharedExpTable.getExpNeededForLevel(level);
                 if (exp > needed) {
                     setExp(needed);
                 }
@@ -2919,7 +2919,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (gain != 0) {
             if (exp < 0) { // After adding, and negative
                 if (gain > 0) {
-                    setExp(DC_Exp.getExpNeededForLevel(level));
+                    setExp(SharedExpTable.getExpNeededForLevel(level));
                 } else if (gain < 0) {
                     setExp(0);
                 }
@@ -3352,9 +3352,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
             maxmp += Randomizer.rand(50, 100);
         }
         maxmp += stats.getTotalInt() / 10;
-        exp -= DC_Exp.getExpNeededForLevel(level);
-        if (DC_Exp.getExpNeededForLevel(level + 1) < exp) {
-            exp = DC_Exp.getExpNeededForLevel(level + 1) - 1;
+        exp -= SharedExpTable.getExpNeededForLevel(level);
+        if (SharedExpTable.getExpNeededForLevel(level + 1) < exp) {
+            exp = SharedExpTable.getExpNeededForLevel(level + 1) - 1;
         }
         if (exp < 0) {
             exp = 0;
