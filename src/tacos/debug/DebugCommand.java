@@ -64,6 +64,7 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.SavedLocationType;
 import tacos.server.Server;
 import odin.server.shops.HiredMerchant;
+import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 /**
  *
@@ -307,6 +308,10 @@ public class DebugCommand {
                     chr.SendPacket(ResCEmployeePool.EmployeeEnterField(hm));
                     hms.add(hm);
                 }
+                return true;
+            }
+            case "/mg": {
+                chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticOmokTest(chr));
                 return true;
             }
             case "/pnpc": {

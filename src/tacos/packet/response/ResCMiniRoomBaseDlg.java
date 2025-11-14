@@ -41,6 +41,8 @@ import odin.server.shops.MaplePlayerShopItem;
 import odin.tools.HexTool;
 import odin.tools.Pair;
 import odin.tools.data.output.MaplePacketLittleEndianWriter;
+import tacos.config.Region;
+import tacos.config.Version;
 
 /**
  *
@@ -75,6 +77,8 @@ public class ResCMiniRoomBaseDlg {
             }
         }
         sp.Encode1(-1); // visiter slot end
+
+        // CEntrustedShopDlg::OnEnterResult
         {
             sp.Encode2(0);
             sp.EncodeStr(hm.getOwnerName());
@@ -99,6 +103,55 @@ public class ResCMiniRoomBaseDlg {
                 sp.Encode2(mpsi.item.getQuantity()); // quanty
                 sp.Encode4(mpsi.price); // price
                 sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(mpsi.item));
+            }
+        }
+        return sp.get();
+    }
+
+    // CMiniRoomBaseDlg::OnEnterResultStatic
+    public static MaplePacket EnterResultStaticOmokTest(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+        byte m_nMyPosition = 0;
+        sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
+        // CMiniRoomBaseDlg::OnEnterResultBase
+        sp.Encode1(OpsMiniRoomType.MR_OmokRoom.get());
+        sp.Encode1(2); // m_nMaxUsers
+        sp.Encode1(m_nMyPosition); // m_nMyPosition
+        int visitors = 1;
+        // VisitorSlot
+        for (int visitor_index = 0; visitor_index < visitors; visitor_index++) {
+            boolean isEmployer = false;
+            sp.Encode1(visitor_index);
+            // CMiniRoomBaseDlg::DecodeAvatar
+            sp.EncodeBuffer(DataAvatarLook.Encode(chr)); // CMiniRoomBaseDlg::DecodeAvatar
+            sp.EncodeStr(chr.getName());
+            if (!isEmployer) {
+                // not in JMS.
+                if (Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 95)) {
+                    sp.Encode2(chr.getJob()); // m_anJobCode[i]
+                }
+            }
+
+        }
+        sp.Encode1(-1); // visiter slot end
+        // COmokDlg::OnEnterResult
+        {
+            sp.Encode1(0);
+            // GW_MiniGameRecord::Decode
+            {
+                if (Version.GreaterOrEqual(Region.THMS, 87)) {
+                    sp.EncodeZeroBytes(24);
+                } else {
+                    sp.EncodeZeroBytes(20);
+                }
+            }
+            sp.Encode1(-1);
+            sp.EncodeStr("minigame test"); // m_sTitle
+            sp.Encode1(0); // m_nGameKind
+            boolean m_bTournament = false;
+            sp.Encode1(m_bTournament ? 1 : 0); // m_bTournament
+            if (m_bTournament) {
+                sp.Encode1(0); // m_nRound
             }
         }
         return sp.get();
