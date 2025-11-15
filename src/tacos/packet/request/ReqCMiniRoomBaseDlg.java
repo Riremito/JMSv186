@@ -18,8 +18,8 @@
  */
 package tacos.packet.request;
 
+import java.util.Arrays;
 import odin.client.MapleCharacter;
-import tacos.wz.ids.DWI_LoadXML;
 import tacos.debug.DebugLogger;
 import java.util.List;
 import odin.client.inventory.IItem;
@@ -29,17 +29,18 @@ import odin.constants.GameConstants;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleTrade;
+import odin.server.maps.FieldLimitType;
 import tacos.packet.ClientPacket;
-import tacos.packet.ops.OpsEntrustedShop;
 import tacos.packet.ops.OpsMiniRoomProtocol;
-import tacos.packet.ops.OpsMiniRoomType;
 import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import odin.server.maps.MapleMap;
+import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.IMaplePlayerShop;
 import odin.server.shops.MapleMiniGame;
+import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
 import odin.tools.Pair;
 import tacos.packet.response.wrapper.WrapCWvsContext;
@@ -55,6 +56,8 @@ public class ReqCMiniRoomBaseDlg {
 
         switch (OpsMiniRoomProtocol.find(protocol_req)) {
             case MRP_Create: {
+                // new code.
+                /*
                 byte miniroom_type = cp.Decode1();
                 if (OpsMiniRoomType.find(miniroom_type) == OpsMiniRoomType.MR_EntrustedShop) {
                     String title = cp.DecodeStr();
@@ -78,6 +81,88 @@ public class ReqCMiniRoomBaseDlg {
                     return true;
                 }
                 return false;
+                 */
+                // old code
+
+                final byte createType = cp.Decode1();
+                if (createType == 3) { // trade
+                    MapleTrade.startTrade(chr, false);
+                    return true;
+                }
+                if (createType == 6) {
+                    // 未使用の可能性あり
+                    int unk1 = cp.Decode4();
+                    // 交換窓のID
+                    final int tradeid = cp.Decode4();
+                    MapleTrade.startTrade(chr, true);
+                    return true;
+                }
+                if (createType == 1 || createType == 2 || createType == 4 || createType == 5) { // shop
+                    /*
+                    if (createType == 4 && !chr.isAdmin()) { //not hired merch... blocked playershop
+                        c.getSession().write(MaplePacketCreator.enableActions());
+                        return;
+                    }
+                     */
+                    if (chr.getMap().getMapObjectsInRange(chr.getPosition(), 20000, Arrays.asList(MapleMapObjectType.SHOP, MapleMapObjectType.HIRED_MERCHANT)).isEmpty()) {
+                        if (createType == 1 || createType == 2) {
+                            if (FieldLimitType.Minigames.check(chr.getMap().getFieldLimit())) {
+                                chr.dropMessage(1, "You may not use minigames here.");
+                                chr.SendPacket(WrapCWvsContext.updateStat());
+                                return true;
+                            }
+                        }
+                    } else {
+                        chr.dropMessage(1, "You may not establish a store here.");
+                        chr.SendPacket(WrapCWvsContext.updateStat());
+                        return true;
+                    }
+                    final String desc = cp.DecodeStr();
+                    String pass = "";
+                    byte unk2 = cp.Decode1();
+                    if (unk2 > 0 && (createType == 1 || createType == 2)) {
+                        pass = cp.DecodeStr();
+                    }
+                    // たぶんなんかがおかしい
+                    // ごもく @007F 00 02 04 00 63 61 72 64 00 02
+                    // 神経衰弱 @007F 00 02 01 00 66 00 [01] 最後の1バイトがサイズ
+                    if (createType == 1 || createType == 2) {
+                        final int piece = cp.Decode1();
+                        final int itemId = createType == 1 ? (4080000 + piece) : 4080100;
+                        if (!chr.haveItem(itemId) || (chr.getMapId() >= 910000001 && chr.getMapId() <= 910000022)) {
+                            return true;
+                        }
+                        MapleMiniGame game = new MapleMiniGame(chr, itemId, desc, pass, createType); //itemid
+                        game.setPieceType(piece);
+                        chr.setPlayerShop(game);
+                        game.setAvailable(true);
+                        game.setOpen(true);
+                        game.send(chr.getClient());
+                        chr.getMap().addMapObject(game);
+                        game.update();
+                    } else {
+                        short item_slot = cp.Decode2();
+                        int item_id = cp.Decode4();
+                        IItem shop = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
+
+                        if (shop == null || shop.getQuantity() <= 0 || shop.getItemId() != item_id || chr.getMapId() < 910000001 || chr.getMapId() > 910000022) {
+                            return true;
+                        }
+                        if (createType == 4) {
+                            MaplePlayerShop mps = new MaplePlayerShop(chr, shop.getItemId(), desc);
+                            chr.setPlayerShop(mps);
+                            chr.getMap().addMapObject(mps);
+                            chr.SendPacket(ResCMiniRoomBaseDlg.getPlayerStore(chr, true));
+                        } else {
+                            final HiredMerchant merch = new HiredMerchant(chr, shop.getItemId(), desc);
+                            chr.setPlayerShop(merch);
+                            chr.setRemoteStore(merch);
+                            chr.getMap().addMapObject(merch);
+                            chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merch, true));
+                        }
+                    }
+                }
+                return true;
             }
             case MRP_Invite: {
                 int character_id = cp.Decode4();
@@ -89,6 +174,13 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MRP_Enter: {
+                // 交換
+                if (chr.getTrade() != null && chr.getTrade().getPartner() != null) {
+                    MapleTrade.visitTrade(chr, chr.getTrade().getPartner().getChr(), chr.getTrade().getPartner().IsPointTrading());
+                    return true;
+                }
+                // new code
+                /*
                 int miniroom_id = cp.Decode4();
                 byte unk = cp.Decode1();
 
@@ -99,6 +191,82 @@ public class ReqCMiniRoomBaseDlg {
                 }
                 //hm.addVisitor(chr);
                 chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStatic(hm, chr));
+                 */
+                // old code
+                {
+                    final int obid = cp.Decode4();
+                    MapleMapObject ob = chr.getMap().getMapObject(obid, MapleMapObjectType.HIRED_MERCHANT);
+                    if (ob == null) {
+                        ob = chr.getMap().getMapObject(obid, MapleMapObjectType.SHOP);
+                    }
+
+                    if (ob instanceof IMaplePlayerShop && chr.getPlayerShop() == null) {
+                        final IMaplePlayerShop ips = (IMaplePlayerShop) ob;
+
+                        if (ob instanceof HiredMerchant) {
+                            final HiredMerchant merchant = (HiredMerchant) ips;
+                            if (merchant.isOwner(chr)) {
+                                merchant.setOpen(false);
+                                // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
+                                //merchant.removeAllVisitors((byte) 17, (byte) 0);
+                                List<Pair<Byte, MapleCharacter>> visitors = ips.getVisitors();
+                                for (int i = 0; i < visitors.size(); i++) {
+                                    visitors.get(i).getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
+                                    System.out.println("slot = " + i + "char = " + visitors.get(i).getRight().getName());
+                                    visitors.get(i).getRight().setPlayerShop(null);
+                                    ips.removeVisitor(visitors.get(i).getRight());
+                                }
+
+                                chr.setPlayerShop(ips);
+                                chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
+                            } else {
+                                if (!merchant.isOpen() || !merchant.isAvailable()) {
+                                    // パケットでこのメッセージが出せそう
+                                    chr.dropMessage(1, "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。test");
+                                    //c.getSession().write(PlayerShopPacket.MaintenanceHiredMerchant(1));
+                                } else {
+                                    if (ips.getFreeSlot() == -1) {
+                                        chr.dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
+                                    } else if (merchant.isInBlackList(chr.getName())) {
+                                        chr.dropMessage(1, "You have been banned from this store.");
+                                    } else {
+                                        chr.setPlayerShop(ips);
+                                        merchant.addVisitor(chr);
+                                        chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
+                                    }
+                                }
+                            }
+                        } else {
+                            if (ips instanceof MaplePlayerShop && ((MaplePlayerShop) ips).isBanned(chr.getName())) {
+                                chr.dropMessage(1, "You have been banned from this store.");
+                                return true;
+                            } else {
+                                if (ips.getFreeSlot() < 0 || ips.getVisitorSlot(chr) > -1 || !ips.isOpen() || !ips.isAvailable()) {
+                                    chr.SendPacket(ResCMiniRoomBaseDlg.getMiniGameFull());
+                                } else {
+                                    byte unk1 = cp.Decode1();
+                                    if (unk1 > 0) { //a password has been entered
+                                        String pass = cp.DecodeStr();
+                                        if (!pass.equals(ips.getPassword())) {
+                                            chr.dropMessage(1, "The password you entered is incorrect.");
+                                            return true;
+                                        }
+                                    } else if (ips.getPassword().length() > 0) {
+                                        chr.dropMessage(1, "The password you entered is incorrect.");
+                                        return true;
+                                    }
+                                    chr.setPlayerShop(ips);
+                                    ips.addVisitor(chr);
+                                    if (ips instanceof MapleMiniGame) {
+                                        ((MapleMiniGame) ips).send(chr.getClient());
+                                    } else {
+                                        chr.SendPacket(ResCMiniRoomBaseDlg.getPlayerStore(chr, false));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 return true;
             }
             case MRP_Chat: {
@@ -143,6 +311,25 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MRP_Balloon: {
+                final IMaplePlayerShop shop = chr.getPlayerShop();
+                if (shop != null && shop.isOwner(chr) && shop.getShopType() < 3) {
+                    if (chr.getMap().allowPersonalShop()) {
+
+                        if (shop.getShopType() == 1) {
+                            final HiredMerchant merchant = (HiredMerchant) shop;
+                            merchant.setStoreid(chr.getClient().getChannelServer().addMerchant(merchant));
+                            merchant.setOpen(true);
+                            merchant.setAvailable(true);
+                            chr.getMap().broadcastMessage(ResCEmployeePool.EmployeeEnterField(merchant));
+                            chr.setPlayerShop(null);
+
+                        } else if (shop.getShopType() == 2) {
+                            shop.setOpen(true);
+                            shop.setAvailable(true);
+                            shop.update();
+                        }
+                    }
+                }
                 return true;
             }
             case TRP_PutItem: {
