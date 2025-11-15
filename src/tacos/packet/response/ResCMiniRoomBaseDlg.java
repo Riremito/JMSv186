@@ -32,7 +32,6 @@ import tacos.packet.ops.OpsMiniRoomProtocol;
 import tacos.packet.ops.OpsMiniRoomType;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
-import tacos.packet.response.struct.TestHelper;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleTrade;
 import odin.server.shops.AbstractPlayerStore;
@@ -43,7 +42,6 @@ import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
 import odin.tools.HexTool;
 import odin.tools.Pair;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 import tacos.config.Region;
 import tacos.config.Version;
 
@@ -222,133 +220,132 @@ public class ResCMiniRoomBaseDlg {
     }
 
     public static MaplePacket getTradeInvite(MapleCharacter c, boolean isPointTrade) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(2);
-        mplew.write(isPointTrade ? 6 : 3);
-        mplew.writeMapleAsciiString(c.getName());
-        mplew.writeInt(0); // Trade ID
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(2);
+        sp.Encode1(isPointTrade ? 6 : 3);
+        sp.EncodeStr(c.getName());
+        sp.Encode4(0); // Trade ID
+        return sp.get();
     }
 
     public static MaplePacket getTradePartnerAdd(MapleCharacter c) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(4);
-        mplew.write(1);
-        TestHelper.addCharLook(mplew, c, false);
-        mplew.writeMapleAsciiString(c.getName());
-        mplew.writeShort(c.getJob());
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(4);
+        sp.Encode1(1);
+        sp.EncodeBuffer(DataAvatarLook.Encode(c));
+        sp.EncodeStr(c.getName());
+        sp.Encode2(c.getJob());
+        return sp.get();
     }
 
     public static MaplePacket getPlayerShopNewVisitor(MapleCharacter c, int slot) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(HexTool.getByteArrayFromHexString("04 0" + slot));
-        TestHelper.addCharLook(mplew, c, false);
-        mplew.writeMapleAsciiString(c.getName());
-        mplew.writeShort(c.getJob());
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.EncodeBuffer(HexTool.getByteArrayFromHexString("04 0" + slot));
+        sp.EncodeBuffer(DataAvatarLook.Encode(c));
+        sp.EncodeStr(c.getName());
+        sp.Encode2(c.getJob());
+        return sp.get();
     }
 
     public static MaplePacket getTradeItemAdd(byte number, IItem item) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        //mplew.write(0xE);
-        mplew.write(13);
-        mplew.write(number);
-        TestHelper.addItemInfo(mplew, item, false, false, true);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(13);
+        sp.Encode1(number);
+        sp.Encode1(item.getPosition());
+        sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+        return sp.get();
     }
 
     public static MaplePacket getTradeConfirmation() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        //mplew.write(0x10); //or 7? what
-        mplew.write(15);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(15);
+        return sp.get();
     }
 
     public static MaplePacket TradeMessage(final byte UserSlot, final byte message) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(10);
-        mplew.write(UserSlot);
-        mplew.write(message);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(10);
+        sp.Encode1(UserSlot);
+        sp.Encode1(message);
         //0x02 = cancelled
         //0x07 = success [tax is automated]
         //0x08 = unsuccessful
         //0x09 = "You cannot make the trade because there are some items which you cannot carry more than one."
         //0x0A = "You cannot make the trade because the other person's on a different map."
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static MaplePacket getPlayerShopRemoveVisitor(int slot) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(HexTool.getByteArrayFromHexString("0A 0" + slot));
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.EncodeBuffer(HexTool.getByteArrayFromHexString("0A 0" + slot));
+        return sp.get();
     }
 
     public static MaplePacket getTradeStart(MapleClient c, MapleTrade trade, byte number, boolean isPointTrade) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(5);
-        mplew.write(isPointTrade ? 6 : 3);
-        mplew.write(2);
-        mplew.write(number);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(5);
+        sp.Encode1(isPointTrade ? 6 : 3);
+        sp.Encode1(2);
+        sp.Encode1(number);
         if (number == 1) {
-            mplew.write(0);
-            TestHelper.addCharLook(mplew, trade.getPartner().getChr(), false);
-            mplew.writeMapleAsciiString(trade.getPartner().getChr().getName());
-            mplew.writeShort(trade.getPartner().getChr().getJob());
+            sp.Encode1(0);
+            sp.EncodeBuffer(DataAvatarLook.Encode(trade.getPartner().getChr()));
+            sp.EncodeStr(trade.getPartner().getChr().getName());
+            sp.Encode2(trade.getPartner().getChr().getJob());
         }
-        mplew.write(number);
-        TestHelper.addCharLook(mplew, c.getPlayer(), false);
-        mplew.writeMapleAsciiString(c.getPlayer().getName());
-        mplew.writeShort(c.getPlayer().getJob());
-        mplew.write(255);
-        return mplew.getPacket();
+        sp.Encode1(number);
+        sp.EncodeBuffer(DataAvatarLook.Encode(c.getPlayer()));
+        sp.EncodeStr(c.getPlayer().getName());
+        sp.Encode2(c.getPlayer().getJob());
+        sp.Encode1(255);
+        return sp.get();
     }
 
     public static MaplePacket getTradeCancel(final byte UserSlot, final int unsuccessful) {
         //0 = canceled 1 = invent space 2 = pickuprestricted
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(10);
-        mplew.write(UserSlot);
-        mplew.write(unsuccessful == 0 ? 2 : (unsuccessful == 1 ? 8 : 9));
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(10);
+        sp.Encode1(UserSlot);
+        sp.Encode1(unsuccessful == 0 ? 2 : (unsuccessful == 1 ? 8 : 9));
+        return sp.get();
     }
 
     public static MaplePacket getTradeMesoSet(byte number, int meso) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        //mplew.write(0xF);
-        mplew.write(14);
-        mplew.write(number);
-        mplew.writeInt(meso);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        //sp.Encode1(0xF);
+        sp.Encode1(14);
+        sp.Encode1(number);
+        sp.Encode4(meso);
+        return sp.get();
     }
 
     public static final MaplePacket shopBlockPlayer(final byte slot) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(10);
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(10);
         // キャラクターの場所を正しく指定しないとD/C
-        mplew.write(slot);
+        sp.Encode1(slot);
         // 強制退場されました。
-        mplew.write(5);
-        return mplew.getPacket();
+        sp.Encode1(5);
+        return sp.get();
     }
 
     public static final MaplePacket shopErrorMessage(final int error, final int type) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(10);
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(10);
         // 退場する人の番号 0 = 開いている人
-        mplew.write(type);
+        sp.Encode1(type);
         /*
         商店を閉じる理由
         0   =   なし
@@ -367,381 +364,383 @@ public class ResCMiniRoomBaseDlg {
         13  =   なし
         14  =   品物は売れ切れです。
          */
-        mplew.write(error);
-        return mplew.getPacket();
+        sp.Encode1(error);
+        return sp.get();
     }
 
     public static final MaplePacket MerchantBlackListView(final List<String> blackList) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(44); // 45
-        mplew.writeShort(blackList.size());
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(44); // 45
+        sp.Encode2(blackList.size());
         for (int i = 0; i < blackList.size(); i++) {
             if (blackList.get(i) != null) {
-                mplew.writeMapleAsciiString(blackList.get(i));
+                sp.EncodeStr(blackList.get(i));
             }
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static final MaplePacket MerchantVisitorView(List<String> visitor) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(43); // 44
-        mplew.writeShort(visitor.size());
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(43); // 44
+        sp.Encode2(visitor.size());
         for (String visit : visitor) {
-            mplew.writeMapleAsciiString(visit);
-            mplew.writeInt(1); /////for the lul
+            sp.EncodeStr(visit);
+            sp.Encode4(1); /////for the lul
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static MaplePacket getMiniGameRequestTie() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(48);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(48);
+        return sp.get();
     }
 
     public static MaplePacket getMatchCardSelect(int turn, int slot, int firstslot, int type) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(65);
-        mplew.write(turn);
-        mplew.write(slot);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(65);
+        sp.Encode1(turn);
+        sp.Encode1(slot);
         if (turn == 0) {
-            mplew.write(firstslot);
-            mplew.write(type);
+            sp.Encode1(firstslot);
+            sp.Encode1(type);
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static MaplePacket getMiniGameExitAfter(boolean ready) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(ready ? 53 : 54);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(ready ? 53 : 54);
+        return sp.get();
     }
 
     public static final MaplePacket shopMessage(final int type) {
         // show when closed the shop
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
         // 0x28 = All of your belongings are moved successfully.
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(type);
-        mplew.write(0);
-        return mplew.getPacket();
+
+        sp.Encode1(type);
+        sp.Encode1(0);
+        return sp.get();
     }
 
     public static final MaplePacket getHiredMerch(final MapleCharacter chr, final HiredMerchant merch, final boolean firstTime) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(5);
-        mplew.write(5);
-        mplew.write(4);
-        mplew.writeShort(merch.getVisitorSlot(chr));
-        mplew.writeInt(merch.getItemId());
-        mplew.writeMapleAsciiString("\u96c7\u7528\u5546\u4eba");
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(5);
+        sp.Encode1(5);
+        sp.Encode1(4);
+        sp.Encode2(merch.getVisitorSlot(chr));
+        sp.Encode4(merch.getItemId());
+        sp.EncodeStr("\u96c7\u7528\u5546\u4eba");
         for (final Pair<Byte, MapleCharacter> storechr : merch.getVisitors()) {
-            mplew.write(storechr.left);
-            TestHelper.addCharLook(mplew, storechr.right, false);
-            mplew.writeMapleAsciiString(storechr.right.getName());
-            mplew.writeShort(storechr.right.getJob());
+            sp.Encode1(storechr.left);
+            sp.EncodeBuffer(DataAvatarLook.Encode(storechr.right));
+            sp.EncodeStr(storechr.right.getName());
+            sp.Encode2(storechr.right.getJob());
         }
-        mplew.write(-1);
-        mplew.writeShort(0);
-        mplew.writeMapleAsciiString(merch.getOwnerName());
+        sp.Encode1(-1);
+        sp.Encode2(0);
+        sp.EncodeStr(merch.getOwnerName());
         if (merch.isOwner(chr)) {
-            mplew.writeInt(merch.getTimeLeft());
-            mplew.write(firstTime ? 1 : 0);
-            mplew.write(merch.getBoughtItems().size());
+            sp.Encode4(merch.getTimeLeft());
+            sp.Encode1(firstTime ? 1 : 0);
+            sp.Encode1(merch.getBoughtItems().size());
             for (AbstractPlayerStore.BoughtItem SoldItem : merch.getBoughtItems()) {
-                mplew.writeInt(SoldItem.id);
-                mplew.writeShort(SoldItem.quantity); // number of purchased
-                mplew.writeInt(SoldItem.totalPrice); // total price
-                mplew.writeMapleAsciiString(SoldItem.buyer); // name of the buyer
+                sp.Encode4(SoldItem.id);
+                sp.Encode2(SoldItem.quantity); // number of purchased
+                sp.Encode4(SoldItem.totalPrice); // total price
+                sp.EncodeStr(SoldItem.buyer); // name of the buyer
             }
-            mplew.writeInt(merch.getMeso());
+            sp.Encode4(merch.getMeso());
         }
-        mplew.writeMapleAsciiString(merch.getDescription());
-        mplew.write(10);
-        mplew.writeInt(merch.getMeso()); // meso
-        mplew.write(merch.getItems().size());
+        sp.EncodeStr(merch.getDescription());
+        sp.Encode1(10);
+        sp.Encode4(merch.getMeso()); // meso
+        sp.Encode1(merch.getItems().size());
         for (final MaplePlayerShopItem item : merch.getItems()) {
-            mplew.writeShort(item.bundles);
-            mplew.writeShort(item.item.getQuantity());
-            mplew.writeInt(item.price);
-            TestHelper.addItemInfo(mplew, item.item, true, true);
+            sp.Encode2(item.bundles);
+            sp.Encode2(item.item.getQuantity());
+            sp.Encode4(item.price);
+            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item.item));
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static final MaplePacket shopVisitorAdd(final MapleCharacter chr, final int slot) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(4);
-        mplew.write(slot);
-        TestHelper.addCharLook(mplew, chr, false);
-        mplew.writeMapleAsciiString(chr.getName());
-        mplew.writeShort(chr.getJob());
-        return mplew.getPacket();
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(4);
+        sp.Encode1(slot);
+        sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+        sp.EncodeStr(chr.getName());
+        sp.Encode2(chr.getJob());
+        return sp.get();
     }
 
     // 雇用商人 整理中 (他人用)
     public static MaplePacket MaintenanceHiredMerchant(int slot) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
         // UIを閉じる
-        mplew.write(10);
+        sp.Encode1(10);
         // キャラクターを指定
-        mplew.write(slot);
+        sp.Encode1(slot);
         // UI閉じるときのメッセージ（何も表示しない設定)
-        mplew.write(17);
-        return mplew.getPacket();
+        sp.Encode1(17);
+        return sp.get();
     }
 
     public static MaplePacket getMiniGame(MapleClient c, MapleMiniGame minigame) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(5);
-        mplew.write(minigame.getGameType());
-        mplew.write(minigame.getMaxSize());
-        mplew.writeShort(minigame.getVisitorSlot(c.getPlayer()));
-        TestHelper.addCharLook(mplew, minigame.getMCOwner(), false);
-        mplew.writeMapleAsciiString(minigame.getOwnerName());
-        mplew.writeShort(minigame.getMCOwner().getJob());
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(5);
+        sp.Encode1(minigame.getGameType());
+        sp.Encode1(minigame.getMaxSize());
+        sp.Encode2(minigame.getVisitorSlot(c.getPlayer()));
+        sp.EncodeBuffer(DataAvatarLook.Encode(minigame.getMCOwner()));
+        sp.EncodeStr(minigame.getOwnerName());
+        sp.Encode2(minigame.getMCOwner().getJob());
         for (Pair<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
-            mplew.write(visitorz.getLeft());
-            TestHelper.addCharLook(mplew, visitorz.getRight(), false);
-            mplew.writeMapleAsciiString(visitorz.getRight().getName());
-            mplew.writeShort(visitorz.getRight().getJob());
+            sp.Encode1(visitorz.getLeft());
+            sp.EncodeBuffer(DataAvatarLook.Encode(visitorz.getRight()));
+            sp.EncodeStr(visitorz.getRight().getName());
+            sp.Encode2(visitorz.getRight().getJob());
         }
-        mplew.write(-1);
-        mplew.write(0);
-        addGameInfo(mplew, minigame.getMCOwner(), minigame);
+        sp.Encode1(-1);
+        sp.Encode1(0);
+        sp.EncodeBuffer(addGameInfo(minigame.getMCOwner(), minigame));
         for (Pair<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
-            mplew.write(visitorz.getLeft());
-            addGameInfo(mplew, visitorz.getRight(), minigame);
+            sp.Encode1(visitorz.getLeft());
+            sp.EncodeBuffer(addGameInfo(visitorz.getRight(), minigame));
         }
-        mplew.write(-1);
-        mplew.writeMapleAsciiString(minigame.getDescription());
-        mplew.writeShort(minigame.getPieceType());
-        return mplew.getPacket();
+        sp.Encode1(-1);
+        sp.EncodeStr(minigame.getDescription());
+        sp.Encode2(minigame.getPieceType());
+        return sp.get();
     }
 
     public static MaplePacket getMiniGameFull() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.writeShort(5);
-        mplew.write(2);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode2(5);
+        sp.Encode1(2);
+        return sp.get();
     }
 
     public static final MaplePacket shopChat(final String message, final int slot) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(6);
-        mplew.write(8);
-        mplew.write(slot);
-        mplew.writeMapleAsciiString(message);
-        return mplew.getPacket();
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(6);
+        sp.Encode1(8);
+        sp.Encode1(slot);
+        sp.EncodeStr(message);
+        return sp.get();
     }
 
     public static final MaplePacket getPlayerStore(final MapleCharacter chr, final boolean firstTime) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
         IMaplePlayerShop ips = chr.getPlayerShop();
         switch (ips.getShopType()) {
             case 2:
-                mplew.write(5);
-                mplew.write(4);
-                mplew.write(4);
+                sp.Encode1(5);
+                sp.Encode1(4);
+                sp.Encode1(4);
                 break;
             case 3:
-                mplew.write(5);
-                mplew.write(2);
-                mplew.write(2);
+                sp.Encode1(5);
+                sp.Encode1(2);
+                sp.Encode1(2);
                 break;
             case 4:
-                mplew.write(5);
-                mplew.write(1);
-                mplew.write(2);
+                sp.Encode1(5);
+                sp.Encode1(1);
+                sp.Encode1(2);
                 break;
         }
-        mplew.writeShort(ips.getVisitorSlot(chr));
-        TestHelper.addCharLook(mplew, ((MaplePlayerShop) ips).getMCOwner(), false);
-        mplew.writeMapleAsciiString(ips.getOwnerName());
-        mplew.writeShort(((MaplePlayerShop) ips).getMCOwner().getJob());
+        sp.Encode2(ips.getVisitorSlot(chr));
+        sp.EncodeBuffer(DataAvatarLook.Encode(((MaplePlayerShop) ips).getMCOwner()));
+        sp.EncodeStr(ips.getOwnerName());
+        sp.Encode2(((MaplePlayerShop) ips).getMCOwner().getJob());
         for (final Pair<Byte, MapleCharacter> storechr : ips.getVisitors()) {
-            mplew.write(storechr.left);
-            TestHelper.addCharLook(mplew, storechr.right, false);
-            mplew.writeMapleAsciiString(storechr.right.getName());
-            mplew.writeShort(storechr.right.getJob());
+            sp.Encode1(storechr.left);
+            sp.EncodeBuffer(DataAvatarLook.Encode(storechr.right));
+            sp.EncodeStr(storechr.right.getName());
+            sp.Encode2(storechr.right.getJob());
         }
-        mplew.write(255);
-        mplew.writeMapleAsciiString(ips.getDescription());
-        mplew.write(10);
-        mplew.write(ips.getItems().size());
+        sp.Encode1(255);
+        sp.EncodeStr(ips.getDescription());
+        sp.Encode1(10);
+        sp.Encode1(ips.getItems().size());
         for (final MaplePlayerShopItem item : ips.getItems()) {
-            mplew.writeShort(item.bundles);
-            mplew.writeShort(item.item.getQuantity());
-            mplew.writeInt(item.price);
-            TestHelper.addItemInfo(mplew, item.item, true, true);
+            sp.Encode2(item.bundles);
+            sp.Encode2(item.item.getQuantity());
+            sp.Encode4(item.price);
+            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item.item));
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static final MaplePacket Merchant_Buy_Error(final byte message) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
         // 2 = You have not enough meso
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(24);
-        mplew.write(message);
-        return mplew.getPacket();
+
+        sp.Encode1(24);
+        sp.Encode1(message);
+        return sp.get();
     }
 
     public static MaplePacket getMiniGameClose(byte number) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(10);
-        mplew.write(1);
-        mplew.write(number);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(10);
+        sp.Encode1(1);
+        sp.Encode1(number);
+        return sp.get();
     }
 
     public static final MaplePacket shopItemUpdate(final IMaplePlayerShop shop) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(22); // 0x17
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(22); // 0x17
         if (shop.getShopType() == 1) {
-            mplew.writeInt(0);
+            sp.Encode4(0);
         }
-        mplew.write(shop.getItems().size());
+        sp.Encode1(shop.getItems().size());
         for (final MaplePlayerShopItem item : shop.getItems()) {
-            mplew.writeShort(item.bundles);
-            mplew.writeShort(item.item.getQuantity());
-            mplew.writeInt(item.price);
-            TestHelper.addItemInfo(mplew, item.item, true, true);
+            sp.Encode2(item.bundles);
+            sp.Encode2(item.item.getQuantity());
+            sp.Encode4(item.price);
+            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item.item));
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static final MaplePacket shopVisitorLeave(final byte slot) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(10);
-        mplew.write(slot);
-        return mplew.getPacket();
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(10);
+        sp.Encode1(slot);
+        return sp.get();
     }
 
     public static MaplePacket getMiniGameSkip(int slot) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(60);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(60);
         //owner = 1 visitor = 0?
-        mplew.write(slot);
-        return mplew.getPacket();
+        sp.Encode1(slot);
+        return sp.get();
     }
 
     public static MaplePacket getMiniGameResult(MapleMiniGame game, int type, int x) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(59);
-        mplew.write(type); //lose = 0, tie = 1, win = 2
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(59);
+        sp.Encode1(type); //lose = 0, tie = 1, win = 2
         game.setPoints(x, type);
         if (type != 0) {
             game.setPoints(x == 1 ? 0 : 1, type == 2 ? 0 : 1);
         }
         if (type != 1) {
             if (type == 0) {
-                mplew.write(x == 1 ? 0 : 1); //who did it?
+                sp.Encode1(x == 1 ? 0 : 1); //who did it?
             } else {
-                mplew.write(x);
+                sp.Encode1(x);
             }
         }
-        addGameInfo(mplew, game.getMCOwner(), game);
+        sp.EncodeBuffer(addGameInfo(game.getMCOwner(), game));
         for (Pair<Byte, MapleCharacter> visitorz : game.getVisitors()) {
-            addGameInfo(mplew, visitorz.right, game);
+            sp.EncodeBuffer(addGameInfo(visitorz.right, game));
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static MaplePacket getMatchCardStart(MapleMiniGame game, int loser) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(58);
-        mplew.write(loser == 1 ? 0 : 1);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(58);
+        sp.Encode1(loser == 1 ? 0 : 1);
         int times = game.getPieceType() == 1 ? 20 : (game.getPieceType() == 2 ? 30 : 12);
-        mplew.write(times);
+        sp.Encode1(times);
         for (int i = 1; i <= times; i++) {
-            mplew.writeInt(game.getCardId(i));
+            sp.Encode4(game.getCardId(i));
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static MaplePacket getMiniGameDenyTie() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(49);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(49);
+        return sp.get();
     }
 
     // 雇用商人 閉店
     public static MaplePacket CloseHiredMerchant() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
         // UIを閉じる
-        mplew.write(10);
+        sp.Encode1(10);
         // 自分のキャラクターを指定
-        mplew.write(0);
+        sp.Encode1(0);
         // UI閉じるときのメッセージ（何も表示しない設定)
-        mplew.write(20);
-        return mplew.getPacket();
+        sp.Encode1(20);
+        return sp.get();
     }
 
     public static MaplePacket getMiniGameMoveOmok(int move1, int move2, int move3) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(61);
-        mplew.writeInt(move1);
-        mplew.writeInt(move2);
-        mplew.write(move3);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(61);
+        sp.Encode4(move1);
+        sp.Encode4(move2);
+        sp.Encode1(move3);
+        return sp.get();
     }
 
     public static MaplePacket getMiniGameNewVisitor(MapleCharacter c, int slot, MapleMiniGame game) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(4);
-        mplew.write(slot);
-        TestHelper.addCharLook(mplew, c, false);
-        mplew.writeMapleAsciiString(c.getName());
-        mplew.writeShort(c.getJob());
-        addGameInfo(mplew, c, game);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(4);
+        sp.Encode1(slot);
+        sp.EncodeBuffer(DataAvatarLook.Encode(c));
+        sp.EncodeStr(c.getName());
+        sp.Encode2(c.getJob());
+        sp.EncodeBuffer(addGameInfo(c, game));
+        return sp.get();
     }
 
     public static MaplePacket getMiniGameStart(int loser) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(58);
-        mplew.write(loser == 1 ? 0 : 1);
-        return mplew.getPacket();
-    }
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-    public static void addGameInfo(MaplePacketLittleEndianWriter mplew, MapleCharacter chr, MapleMiniGame game) {
-        mplew.writeInt(game.getGameType()); // start of visitor; unknown
-        mplew.writeInt(game.getWins(chr));
-        mplew.writeInt(game.getTies(chr));
-        mplew.writeInt(game.getLosses(chr));
-        mplew.writeInt(game.getScore(chr)); // points
+        sp.Encode1(58);
+        sp.Encode1(loser == 1 ? 0 : 1);
+        return sp.get();
     }
 
     public static MaplePacket getMiniGameReady(boolean ready) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MiniRoom.get());
-        mplew.write(ready ? 55 : 56);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+
+        sp.Encode1(ready ? 55 : 56);
+        return sp.get();
+    }
+
+    public static byte[] addGameInfo(MapleCharacter chr, MapleMiniGame game) {
+        ServerPacket data = new ServerPacket();
+        data.Encode4(game.getGameType()); // start of visitor; unknown
+        data.Encode4(game.getWins(chr));
+        data.Encode4(game.getTies(chr));
+        data.Encode4(game.getLosses(chr));
+        data.Encode4(game.getScore(chr)); // points
+        return data.get().getBytes();
     }
 
 }
