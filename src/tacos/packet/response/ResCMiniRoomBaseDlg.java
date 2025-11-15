@@ -222,7 +222,7 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getTradeInvite(MapleCharacter c, boolean isPointTrade) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(2);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Invite.get());
         sp.Encode1(isPointTrade ? 6 : 3);
         sp.EncodeStr(c.getName());
         sp.Encode4(0); // Trade ID
@@ -232,7 +232,7 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getTradePartnerAdd(MapleCharacter c) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(4);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Enter.get());
         sp.Encode1(1);
         sp.EncodeBuffer(DataAvatarLook.Encode(c));
         sp.EncodeStr(c.getName());
@@ -253,7 +253,7 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getTradeItemAdd(byte number, IItem item) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(13);
+        sp.Encode1(OpsMiniRoomProtocol.TRP_PutItem.get());
         sp.Encode1(number);
         sp.Encode1(item.getPosition());
         sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
@@ -263,14 +263,14 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getTradeConfirmation() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(15);
+        sp.Encode1(OpsMiniRoomProtocol.TRP_Trade.get());
         return sp.get();
     }
 
     public static MaplePacket TradeMessage(final byte UserSlot, final byte message) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(10);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
         sp.Encode1(UserSlot);
         sp.Encode1(message);
         //0x02 = cancelled
@@ -291,7 +291,7 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getTradeStart(MapleClient c, MapleTrade trade, byte number, boolean isPointTrade) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(5);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
         sp.Encode1(isPointTrade ? 6 : 3);
         sp.Encode1(2);
         sp.Encode1(number);
@@ -313,7 +313,7 @@ public class ResCMiniRoomBaseDlg {
         //0 = canceled 1 = invent space 2 = pickuprestricted
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(10);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
         sp.Encode1(UserSlot);
         sp.Encode1(unsuccessful == 0 ? 2 : (unsuccessful == 1 ? 8 : 9));
         return sp.get();
@@ -322,17 +322,16 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getTradeMesoSet(byte number, int meso) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        //sp.Encode1(0xF);
-        sp.Encode1(14);
+        sp.Encode1(OpsMiniRoomProtocol.TRP_PutMoney.get());
         sp.Encode1(number);
         sp.Encode4(meso);
         return sp.get();
     }
 
-    public static final MaplePacket shopBlockPlayer(final byte slot) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+    public static MaplePacket shopBlockPlayer(final byte slot) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(10);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
         // キャラクターの場所を正しく指定しないとD/C
         sp.Encode1(slot);
         // 強制退場されました。
@@ -340,10 +339,10 @@ public class ResCMiniRoomBaseDlg {
         return sp.get();
     }
 
-    public static final MaplePacket shopErrorMessage(final int error, final int type) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+    public static MaplePacket shopErrorMessage(final int error, final int type) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(10);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
         // 退場する人の番号 0 = 開いている人
         sp.Encode1(type);
         /*
@@ -368,10 +367,10 @@ public class ResCMiniRoomBaseDlg {
         return sp.get();
     }
 
-    public static final MaplePacket MerchantBlackListView(final List<String> blackList) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+    public static MaplePacket MerchantBlackListView(final List<String> blackList) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(44); // 45
+        sp.Encode1(OpsMiniRoomProtocol.ESP_DeliverBlackList.get());
         sp.Encode2(blackList.size());
         for (int i = 0; i < blackList.size(); i++) {
             if (blackList.get(i) != null) {
@@ -381,10 +380,10 @@ public class ResCMiniRoomBaseDlg {
         return sp.get();
     }
 
-    public static final MaplePacket MerchantVisitorView(List<String> visitor) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+    public static MaplePacket MerchantVisitorView(List<String> visitor) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(43); // 44
+        sp.Encode1(OpsMiniRoomProtocol.ESP_DeliverVisitList.get());
         sp.Encode2(visitor.size());
         for (String visit : visitor) {
             sp.EncodeStr(visit);
@@ -396,14 +395,14 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getMiniGameRequestTie() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(48);
+        sp.Encode1(OpsMiniRoomProtocol.MGRP_TieResult.get());
         return sp.get();
     }
 
     public static MaplePacket getMatchCardSelect(int turn, int slot, int firstslot, int type) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(65);
+        sp.Encode1(OpsMiniRoomProtocol.MGP_TurnUpCard.get());
         sp.Encode1(turn);
         sp.Encode1(slot);
         if (turn == 0) {
@@ -416,7 +415,7 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getMiniGameExitAfter(boolean ready) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(ready ? 53 : 54);
+        sp.Encode1(ready ? OpsMiniRoomProtocol.MGRP_LeaveEngage.get() : OpsMiniRoomProtocol.MGRP_LeaveEngageCancel.get());
         return sp.get();
     }
 
@@ -425,7 +424,7 @@ public class ResCMiniRoomBaseDlg {
         final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
         // 0x28 = All of your belongings are moved successfully.
 
-        sp.Encode1(type);
+        sp.Encode1(type); // hard coded.
         sp.Encode1(0);
         return sp.get();
     }
@@ -500,7 +499,7 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getMiniGame(MapleClient c, MapleMiniGame minigame) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(5);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
         sp.Encode1(minigame.getGameType());
         sp.Encode1(minigame.getMaxSize());
         sp.Encode2(minigame.getVisitorSlot(c.getPlayer()));
@@ -515,10 +514,10 @@ public class ResCMiniRoomBaseDlg {
         }
         sp.Encode1(-1);
         sp.Encode1(0);
-        sp.EncodeBuffer(addGameInfo(minigame.getMCOwner(), minigame));
+        sp.EncodeBuffer(GW_MiniGameRecord_Encode(minigame.getMCOwner(), minigame));
         for (Pair<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
             sp.Encode1(visitorz.getLeft());
-            sp.EncodeBuffer(addGameInfo(visitorz.getRight(), minigame));
+            sp.EncodeBuffer(GW_MiniGameRecord_Encode(visitorz.getRight(), minigame));
         }
         sp.Encode1(-1);
         sp.EncodeStr(minigame.getDescription());
@@ -529,15 +528,16 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getMiniGameFull() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode2(5);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
+        sp.Encode1(0);
         sp.Encode1(2);
         return sp.get();
     }
 
     public static final MaplePacket shopChat(final String message, final int slot) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(6);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Chat.get());
         sp.Encode1(8);
         sp.Encode1(slot);
         sp.EncodeStr(message);
@@ -545,26 +545,27 @@ public class ResCMiniRoomBaseDlg {
     }
 
     public static final MaplePacket getPlayerStore(final MapleCharacter chr, final boolean firstTime) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
         IMaplePlayerShop ips = chr.getPlayerShop();
         switch (ips.getShopType()) {
             case 2:
-                sp.Encode1(5);
-                sp.Encode1(4);
+                sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
+                sp.Encode1(OpsMiniRoomType.MR_PersonalShop.get());
                 sp.Encode1(4);
                 break;
             case 3:
-                sp.Encode1(5);
-                sp.Encode1(2);
+                sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
+                sp.Encode1(OpsMiniRoomType.MR_MemoryGameRoom.get());
                 sp.Encode1(2);
                 break;
             case 4:
-                sp.Encode1(5);
-                sp.Encode1(1);
+                sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
+                sp.Encode1(OpsMiniRoomType.MR_OmokRoom.get());
                 sp.Encode1(2);
                 break;
         }
+
         sp.Encode2(ips.getVisitorSlot(chr));
         sp.EncodeBuffer(DataAvatarLook.Encode(((MaplePlayerShop) ips).getMCOwner()));
         sp.EncodeStr(ips.getOwnerName());
@@ -575,7 +576,7 @@ public class ResCMiniRoomBaseDlg {
             sp.EncodeStr(storechr.right.getName());
             sp.Encode2(storechr.right.getJob());
         }
-        sp.Encode1(255);
+        sp.Encode1(-1);
         sp.EncodeStr(ips.getDescription());
         sp.Encode1(10);
         sp.Encode1(ips.getItems().size());
@@ -589,10 +590,10 @@ public class ResCMiniRoomBaseDlg {
     }
 
     public static final MaplePacket Merchant_Buy_Error(final byte message) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
         // 2 = You have not enough meso
 
-        sp.Encode1(24);
+        sp.Encode1(OpsMiniRoomProtocol.PSP_MoveItemToInventory.get());
         sp.Encode1(message);
         return sp.get();
     }
@@ -600,16 +601,16 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getMiniGameClose(byte number) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(10);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
         sp.Encode1(1);
         sp.Encode1(number);
         return sp.get();
     }
 
     public static final MaplePacket shopItemUpdate(final IMaplePlayerShop shop) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(22); // 0x17
+        sp.Encode1(OpsMiniRoomProtocol.PSP_Refresh.get());
         if (shop.getShopType() == 1) {
             sp.Encode4(0);
         }
@@ -624,9 +625,9 @@ public class ResCMiniRoomBaseDlg {
     }
 
     public static final MaplePacket shopVisitorLeave(final byte slot) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(10);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
         sp.Encode1(slot);
         return sp.get();
     }
@@ -634,7 +635,7 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getMiniGameSkip(int slot) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(60);
+        sp.Encode1(OpsMiniRoomProtocol.MGRP_TimeOver.get());
         //owner = 1 visitor = 0?
         sp.Encode1(slot);
         return sp.get();
@@ -643,7 +644,7 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getMiniGameResult(MapleMiniGame game, int type, int x) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(59);
+        sp.Encode1(OpsMiniRoomProtocol.MGRP_GameResult.get());
         sp.Encode1(type); //lose = 0, tie = 1, win = 2
         game.setPoints(x, type);
         if (type != 0) {
@@ -656,9 +657,9 @@ public class ResCMiniRoomBaseDlg {
                 sp.Encode1(x);
             }
         }
-        sp.EncodeBuffer(addGameInfo(game.getMCOwner(), game));
+        sp.EncodeBuffer(GW_MiniGameRecord_Encode(game.getMCOwner(), game));
         for (Pair<Byte, MapleCharacter> visitorz : game.getVisitors()) {
-            sp.EncodeBuffer(addGameInfo(visitorz.right, game));
+            sp.EncodeBuffer(GW_MiniGameRecord_Encode(visitorz.right, game));
         }
         return sp.get();
     }
@@ -666,7 +667,7 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getMatchCardStart(MapleMiniGame game, int loser) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(58);
+        sp.Encode1(OpsMiniRoomProtocol.MGRP_Start.get());
         sp.Encode1(loser == 1 ? 0 : 1);
         int times = game.getPieceType() == 1 ? 20 : (game.getPieceType() == 2 ? 30 : 12);
         sp.Encode1(times);
@@ -679,16 +680,16 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getMiniGameDenyTie() {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(49);
+        sp.Encode1(OpsMiniRoomProtocol.MGRP_GiveUpRequest.get());
         return sp.get();
     }
 
     // 雇用商人 閉店
     public static MaplePacket CloseHiredMerchant() {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
         // UIを閉じる
-        sp.Encode1(10);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
         // 自分のキャラクターを指定
         sp.Encode1(0);
         // UI閉じるときのメッセージ（何も表示しない設定)
@@ -699,7 +700,7 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getMiniGameMoveOmok(int move1, int move2, int move3) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(61);
+        sp.Encode1(OpsMiniRoomProtocol.ORP_PutStoneChecker.get());
         sp.Encode4(move1);
         sp.Encode4(move2);
         sp.Encode1(move3);
@@ -709,19 +710,19 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getMiniGameNewVisitor(MapleCharacter c, int slot, MapleMiniGame game) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(4);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Enter.get());
         sp.Encode1(slot);
         sp.EncodeBuffer(DataAvatarLook.Encode(c));
         sp.EncodeStr(c.getName());
         sp.Encode2(c.getJob());
-        sp.EncodeBuffer(addGameInfo(c, game));
+        sp.EncodeBuffer(GW_MiniGameRecord_Encode(c, game));
         return sp.get();
     }
 
     public static MaplePacket getMiniGameStart(int loser) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(58);
+        sp.Encode1(OpsMiniRoomProtocol.MGRP_Start.get());
         sp.Encode1(loser == 1 ? 0 : 1);
         return sp.get();
     }
@@ -729,17 +730,21 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getMiniGameReady(boolean ready) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniRoom);
 
-        sp.Encode1(ready ? 55 : 56);
+        sp.Encode1(ready ? OpsMiniRoomProtocol.MGRP_Ready.get() : OpsMiniRoomProtocol.MGRP_CancelReady.get());
         return sp.get();
     }
 
-    public static byte[] addGameInfo(MapleCharacter chr, MapleMiniGame game) {
+    // GW_MiniGameRecord::Decode
+    public static byte[] GW_MiniGameRecord_Encode(MapleCharacter chr, MapleMiniGame game) {
         ServerPacket data = new ServerPacket();
-        data.Encode4(game.getGameType()); // start of visitor; unknown
+        data.Encode4(game.getGameType());
         data.Encode4(game.getWins(chr));
         data.Encode4(game.getTies(chr));
         data.Encode4(game.getLosses(chr));
         data.Encode4(game.getScore(chr)); // points
+        if (Version.GreaterOrEqual(Region.THMS, 87)) {
+            data.Encode4(0);
+        }
         return data.get().getBytes();
     }
 
