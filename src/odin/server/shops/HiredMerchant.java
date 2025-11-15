@@ -35,6 +35,7 @@ import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleInventoryManipulator;
 import odin.server.Timer.EtcTimer;
 import odin.server.maps.MapleMapObjectType;
+import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 public class HiredMerchant extends AbstractPlayerStore {
 
@@ -180,10 +181,10 @@ public class HiredMerchant extends AbstractPlayerStore {
     }
 
     public final void sendBlackList(final MapleClient c) {
-        c.getSession().write(ResCField.MerchantBlackListView(blacklist));
+        c.getSession().write(ResCMiniRoomBaseDlg.MerchantBlackListView(blacklist));
     }
 
     public final void sendVisitor(final MapleClient c) {
-        c.getSession().write(ResCField.MerchantVisitorView(visitors));
+        c.getSession().write(ResCMiniRoomBaseDlg.MerchantVisitorView(visitors));
     }
 }

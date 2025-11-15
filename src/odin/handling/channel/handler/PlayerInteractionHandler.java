@@ -45,6 +45,7 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.MapleMiniGame;
 import odin.tools.Pair;
 import odin.tools.data.input.SeekableLittleEndianAccessor;
+import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 public class PlayerInteractionHandler {
 
@@ -157,13 +158,13 @@ public class PlayerInteractionHandler {
                             MaplePlayerShop mps = new MaplePlayerShop(chr, shop.getItemId(), desc);
                             chr.setPlayerShop(mps);
                             chr.getMap().addMapObject(mps);
-                            c.getSession().write(ResCField.getPlayerStore(chr, true));
+                            c.getSession().write(ResCMiniRoomBaseDlg.getPlayerStore(chr, true));
                         } else {
                             final HiredMerchant merch = new HiredMerchant(chr, shop.getItemId(), desc);
                             chr.setPlayerShop(merch);
                             chr.setRemoteStore(merch);
                             chr.getMap().addMapObject(merch);
-                            c.getSession().write(ResCField.getHiredMerch(chr, merch, true));
+                            c.getSession().write(ResCMiniRoomBaseDlg.getHiredMerch(chr, merch, true));
                         }
                     }
                 }
@@ -198,14 +199,14 @@ public class PlayerInteractionHandler {
                                 //merchant.removeAllVisitors((byte) 17, (byte) 0);
                                 List<Pair<Byte, MapleCharacter>> visitors = ips.getVisitors();
                                 for (int i = 0; i < visitors.size(); i++) {
-                                    visitors.get(i).getRight().getClient().getSession().write(ResCField.MaintenanceHiredMerchant((byte) i + 1));
+                                    visitors.get(i).getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
                                     System.out.println("slot = " + i + "char = " + visitors.get(i).getRight().getName());
                                     visitors.get(i).getRight().setPlayerShop(null);
                                     ips.removeVisitor(visitors.get(i).getRight());
                                 }
 
                                 chr.setPlayerShop(ips);
-                                c.getSession().write(ResCField.getHiredMerch(chr, merchant, false));
+                                c.getSession().write(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
                             } else {
                                 if (!merchant.isOpen() || !merchant.isAvailable()) {
                                     // パケットでこのメッセージが出せそう
@@ -219,7 +220,7 @@ public class PlayerInteractionHandler {
                                     } else {
                                         chr.setPlayerShop(ips);
                                         merchant.addVisitor(chr);
-                                        c.getSession().write(ResCField.getHiredMerch(chr, merchant, false));
+                                        c.getSession().write(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
                                     }
                                 }
                             }
@@ -229,7 +230,7 @@ public class PlayerInteractionHandler {
                                 return;
                             } else {
                                 if (ips.getFreeSlot() < 0 || ips.getVisitorSlot(chr) > -1 || !ips.isOpen() || !ips.isAvailable()) {
-                                    c.getSession().write(ResCField.getMiniGameFull());
+                                    c.getSession().write(ResCMiniRoomBaseDlg.getMiniGameFull());
                                 } else {
                                     if (slea.available() > 0 && slea.readByte() > 0) { //a password has been entered
                                         String pass = slea.readMapleAsciiString();
@@ -246,7 +247,7 @@ public class PlayerInteractionHandler {
                                     if (ips instanceof MapleMiniGame) {
                                         ((MapleMiniGame) ips).send(c);
                                     } else {
-                                        c.getSession().write(ResCField.getPlayerStore(chr, false));
+                                        c.getSession().write(ResCMiniRoomBaseDlg.getPlayerStore(chr, false));
                                     }
                                 }
                             }
@@ -261,7 +262,7 @@ public class PlayerInteractionHandler {
                     chr.getTrade().chat(slea.readMapleAsciiString());
                 } else if (chr.getPlayerShop() != null) {
                     final IMaplePlayerShop ips = chr.getPlayerShop();
-                    ips.broadcastToVisitors(ResCField.shopChat(chr.getName() + " : " + slea.readMapleAsciiString(), ips.getVisitorSlot(chr)));
+                    ips.broadcastToVisitors(ResCMiniRoomBaseDlg.shopChat(chr.getName() + " : " + slea.readMapleAsciiString(), ips.getVisitorSlot(chr)));
                 }
                 break;
             }
@@ -391,7 +392,7 @@ public class PlayerInteractionHandler {
                             sellItem.setQuantity(perBundle);
                             shop.addItem(new MaplePlayerShopItem(sellItem, bundles, price));
                         }
-                        c.getSession().write(ResCField.shopItemUpdate(shop));
+                        c.getSession().write(ResCMiniRoomBaseDlg.shopItemUpdate(shop));
                     }
                 }
                 break;
@@ -422,7 +423,7 @@ public class PlayerInteractionHandler {
                     return;
                 }
                 shop.buy(c, item, quantity);
-                shop.broadcastToVisitors(ResCField.shopItemUpdate(shop));
+                shop.broadcastToVisitors(ResCMiniRoomBaseDlg.shopItemUpdate(shop));
                 break;
             }
             case PLAYER_SHOP_REMOVE_ITEM:
@@ -450,7 +451,7 @@ public class PlayerInteractionHandler {
                         }
                     }
                 }
-                c.getSession().write(ResCField.shopItemUpdate(shop));
+                c.getSession().write(ResCMiniRoomBaseDlg.shopItemUpdate(shop));
                 break;
             }
             // 営業許可証 追放
@@ -464,7 +465,7 @@ public class PlayerInteractionHandler {
                 if (ips != null) {
                     for (Pair<Byte, MapleCharacter> visitors : ips.getVisitors()) {
                         if (visitors.getRight().getName().equals(visitor_name)) {
-                            visitors.getRight().getClient().getSession().write(ResCField.shopBlockPlayer(visitor_slot));
+                            visitors.getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.shopBlockPlayer(visitor_slot));
                             visitors.getRight().setPlayerShop(null);
                             ips.removeVisitor(visitors.getRight());
                             break;
@@ -492,11 +493,11 @@ public class PlayerInteractionHandler {
                         }
                     }
                     if (chr.getMeso() + imps.getMeso() < 0) {
-                        c.getSession().write(ResCField.shopItemUpdate(imps));
+                        c.getSession().write(ResCMiniRoomBaseDlg.shopItemUpdate(imps));
                     } else {
                         chr.gainMeso(imps.getMeso(), false);
                         imps.setMeso(0);
-                        c.getSession().write(ResCField.shopItemUpdate(imps));
+                        c.getSession().write(ResCMiniRoomBaseDlg.shopItemUpdate(imps));
                     }
                 }
                 break;
@@ -505,7 +506,7 @@ public class PlayerInteractionHandler {
             case HIREDMERCHANT_ORGANISE_CLOSE: {
                 // "イベントリに空きがないとアイテムはストアーバンクNPCのプレドリックのところで探すべきです。閉店しますか？" と聞かれてOKを押した場合の処理
                 // ダイアログを出さずに閉じる処理が必要となる
-                c.getSession().write(ResCField.CloseHiredMerchant());
+                c.getSession().write(ResCMiniRoomBaseDlg.CloseHiredMerchant());
 
                 final IMaplePlayerShop ips = chr.getPlayerShop();
                 if (!ips.isAvailable() || ips.isOwner(chr)) {
@@ -569,7 +570,7 @@ public class PlayerInteractionHandler {
                     if (game.isOpen()) {
                         break;
                     }
-                    game.broadcastToVisitors(ResCField.getMiniGameResult(game, 0, game.getVisitorSlot(chr)));
+                    game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(game, 0, game.getVisitorSlot(chr)));
                     game.nextLoser();
                     game.setOpen(true);
                     game.update();
@@ -596,7 +597,7 @@ public class PlayerInteractionHandler {
                     MapleMiniGame game = (MapleMiniGame) ips;
                     if (!game.isOwner(chr) && game.isOpen()) {
                         game.setReady(game.getVisitorSlot(chr));
-                        game.broadcastToVisitors(ResCField.getMiniGameReady(game.isReady(game.getVisitorSlot(chr))));
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameReady(game.isReady(game.getVisitorSlot(chr))));
                     }
                 }
                 break;
@@ -614,9 +615,9 @@ public class PlayerInteractionHandler {
                         game.setGameType();
                         game.shuffleList();
                         if (game.getGameType() == 1) {
-                            game.broadcastToVisitors(ResCField.getMiniGameStart(game.getLoser()));
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameStart(game.getLoser()));
                         } else {
-                            game.broadcastToVisitors(ResCField.getMatchCardStart(game, game.getLoser()));
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardStart(game, game.getLoser()));
                         }
                         game.setOpen(false);
                         game.update();
@@ -632,9 +633,9 @@ public class PlayerInteractionHandler {
                         break;
                     }
                     if (game.isOwner(chr)) {
-                        game.broadcastToVisitors(ResCField.getMiniGameRequestTie(), false);
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameRequestTie(), false);
                     } else {
-                        game.getMCOwner().getClient().getSession().write(ResCField.getMiniGameRequestTie());
+                        game.getMCOwner().getClient().getSession().write(ResCMiniRoomBaseDlg.getMiniGameRequestTie());
                     }
                     game.setRequestedTie(game.getVisitorSlot(chr));
                 }
@@ -649,13 +650,13 @@ public class PlayerInteractionHandler {
                     }
                     if (game.getRequestedTie() > -1 && game.getRequestedTie() != game.getVisitorSlot(chr)) {
                         if (slea.readByte() > 0) {
-                            game.broadcastToVisitors(ResCField.getMiniGameResult(game, 1, game.getRequestedTie()));
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(game, 1, game.getRequestedTie()));
                             game.nextLoser();
                             game.setOpen(true);
                             game.update();
                             game.checkExitAfterGame();
                         } else {
-                            game.broadcastToVisitors(ResCField.getMiniGameDenyTie());
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameDenyTie());
                         }
                         game.setRequestedTie(-1);
                     }
@@ -669,7 +670,7 @@ public class PlayerInteractionHandler {
                     if (game.isOpen()) {
                         break;
                     }
-                    ips.broadcastToVisitors(ResCField.getMiniGameSkip(ips.getVisitorSlot(chr)));
+                    ips.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameSkip(ips.getVisitorSlot(chr)));
                     game.nextLoser();
                 }
                 break;
@@ -698,17 +699,17 @@ public class PlayerInteractionHandler {
                     if (turn == 1) {
                         game.setFirstSlot(slot);
                         if (game.isOwner(chr)) {
-                            game.broadcastToVisitors(ResCField.getMatchCardSelect(turn, slot, fs, turn), false);
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, turn), false);
                         } else {
-                            game.getMCOwner().getClient().getSession().write(ResCField.getMatchCardSelect(turn, slot, fs, turn));
+                            game.getMCOwner().getClient().getSession().write(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, turn));
                         }
                         game.setTurn(0); //2nd turn nao
                         return;
                     } else if (fs > 0 && game.getCardId(fs + 1) == game.getCardId(slot + 1)) {
-                        game.broadcastToVisitors(ResCField.getMatchCardSelect(turn, slot, fs, game.isOwner(chr) ? 2 : 3));
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, game.isOwner(chr) ? 2 : 3));
                         game.setPoints(game.getVisitorSlot(chr)); //correct.. so still same loser. diff turn tho
                     } else {
-                        game.broadcastToVisitors(ResCField.getMatchCardSelect(turn, slot, fs, game.isOwner(chr) ? 0 : 1));
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, game.isOwner(chr) ? 0 : 1));
                         game.nextLoser();//wrong haha
 
                     }
@@ -727,7 +728,7 @@ public class PlayerInteractionHandler {
                         break;
                     }
                     game.setExitAfter(chr);
-                    game.broadcastToVisitors(ResCField.getMiniGameExitAfter(game.isExitAfter(chr)));
+                    game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameExitAfter(game.isExitAfter(chr)));
                 }
                 break;
             }

@@ -138,13 +138,13 @@ public class ReqCMiniRoomBaseDlg {
         // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
         List<Pair<Byte, MapleCharacter>> visitors = merchant.getVisitors();
         for (int i = 0; i < visitors.size(); i++) {
-            visitors.get(i).getRight().getClient().getSession().write(ResCField.MaintenanceHiredMerchant((byte) i + 1));
+            visitors.get(i).getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
             visitors.get(i).getRight().setPlayerShop(null);
             merchant.removeVisitor(visitors.get(i).getRight());
         }
 
         chr.setPlayerShop(merchant);
-        chr.SendPacket(ResCField.getHiredMerch(chr, merchant, false));
+        chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
         return true;
     }
 

@@ -116,7 +116,7 @@ public class MapleTrade {
         if (!CommandProcessor.processCommand(chr.get().getClient(), message, CommandType.TRADE)) {
             chr.get().dropMessage(-2, chr.get().getName() + " : " + message);
             if (partner != null) {
-                partner.getChr().getClient().getSession().write(ResCField.shopChat(chr.get().getName() + " : " + message, 1));
+                partner.getChr().getClient().getSession().write(ResCMiniRoomBaseDlg.shopChat(chr.get().getName() + " : " + message, 1));
             }
         }
     }

@@ -28,6 +28,7 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.packet.response.ResCField;
 import odin.server.MapleInventoryManipulator;
+import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 public class MaplePlayerShop extends AbstractPlayerStore {
 
@@ -72,7 +73,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
                 c.getPlayer().dropMessage(1, "You do not have enough mesos.");
                 //}
             }
-            getMCOwner().getClient().getSession().write(ResCField.shopItemUpdate(this));
+            getMCOwner().getClient().getSession().write(ResCMiniRoomBaseDlg.shopItemUpdate(this));
         }
     }
 
@@ -100,7 +101,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
             }
         }
 
-        owner.getClient().getSession().write(ResCField.shopErrorMessage(reason, 0));
+        owner.getClient().getSession().write(ResCMiniRoomBaseDlg.shopErrorMessage(reason, 0));
         owner.setPlayerShop(null);
         update();
     }
@@ -112,7 +113,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
         for (int i = 0; i < 3; i++) {
             MapleCharacter chr = getVisitor(i);
             if (chr.getName().equals(name)) {
-                chr.getClient().getSession().write(ResCField.shopErrorMessage(5, 1));
+                chr.getClient().getSession().write(ResCMiniRoomBaseDlg.shopErrorMessage(5, 1));
                 chr.setPlayerShop(null);
                 removeVisitor(chr);
             }

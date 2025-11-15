@@ -46,6 +46,7 @@ import odin.server.maps.AbstractMapleMapObject;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
 import odin.tools.Pair;
+import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 public abstract class AbstractPlayerStore extends AbstractMapleMapObject implements IMaplePlayerShop {
 
@@ -200,9 +201,9 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         int i = getFreeSlot();
         if (i > 0) {
             if (getShopType() >= 3) {
-                broadcastToVisitors(ResCField.getMiniGameNewVisitor(visitor, i, (MapleMiniGame) this));
+                broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameNewVisitor(visitor, i, (MapleMiniGame) this));
             } else {
-                broadcastToVisitors(ResCField.shopVisitorAdd(visitor, i));
+                broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorAdd(visitor, i));
             }
             chrs[i - 1] = new WeakReference<MapleCharacter>(visitor);
             if (!isOwner(visitor)) {
@@ -219,7 +220,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         final byte slot = getVisitorSlot(visitor);
         boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > 0) {
-            broadcastToVisitors(ResCField.shopVisitorLeave(slot), slot);
+            broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
             chrs[slot - 1] = new WeakReference<MapleCharacter>(null);
             if (shouldUpdate) {
                 update();
@@ -246,9 +247,9 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
             MapleCharacter visitor = getVisitor(i);
             if (visitor != null) {
                 if (type != -1) {
-                    visitor.getClient().getSession().write(ResCField.shopErrorMessage(error, type));
+                    visitor.getClient().getSession().write(ResCMiniRoomBaseDlg.shopErrorMessage(error, type));
                 }
-                broadcastToVisitors(ResCField.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
+                broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
                 visitor.setPlayerShop(null);
                 chrs[i] = new WeakReference<MapleCharacter>(null);
             }

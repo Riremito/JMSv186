@@ -152,6 +152,7 @@ import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
 import tacos.debug.IDebugMan;
+import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.ServerOdinCashShop;
 import tacos.packet.response.wrapper.WrapCWvsContext;
 
@@ -4594,7 +4595,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         if (type == -1) {
             client.getSession().write(ResCWvsContext.getTopMsg(message));
         } else if (type == -2) {
-            client.getSession().write(ResCField.shopChat(message, 0)); //0 or what
+            client.getSession().write(ResCMiniRoomBaseDlg.shopChat(message, 0)); //0 or what
         } else {
             client.SendPacket(ResWrapper.BroadCastMsg_SN(type, message));
         }
