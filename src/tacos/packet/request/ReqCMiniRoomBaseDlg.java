@@ -25,6 +25,7 @@ import java.util.List;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
+import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleTrade;
 import tacos.packet.ClientPacket;
@@ -38,6 +39,7 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.IMaplePlayerShop;
 import odin.server.shops.MapleMiniGame;
+import odin.server.shops.MaplePlayerShopItem;
 import odin.tools.Pair;
 
 /**
@@ -183,6 +185,104 @@ public class ReqCMiniRoomBaseDlg {
                 MapleTrade.completeTrade(chr);
                 return true;
             }
+            case PSP_MoveItemToInventory:
+            case ESP_MoveItemToInventory: {
+                int slot = cp.Decode2();
+                final IMaplePlayerShop shop = chr.getPlayerShop();
+                if (shop == null || !shop.isOwner(chr) || shop instanceof MapleMiniGame || shop.getItems().size() <= 0 || shop.getItems().size() <= slot || slot < 0) {
+                    return true;
+                }
+                final MaplePlayerShopItem item = shop.getItems().get(slot);
+
+                if (item != null) {
+                    if (item.bundles > 0) {
+                        IItem item_get = item.item.copy();
+                        long check = item.bundles * item.item.getQuantity();
+                        if (check <= 0 || check > 32767) {
+                            return true;
+                        }
+                        item_get.setQuantity((short) check);
+                        if (MapleInventoryManipulator.checkSpace(chr.getClient(), item_get.getItemId(), item_get.getQuantity(), item_get.getOwner())) {
+                            MapleInventoryManipulator.addFromDrop(chr.getClient(), item_get, false);
+                            item.bundles = 0;
+                            shop.removeFromSlot(slot);
+                        }
+                    }
+                }
+                chr.SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(shop));
+                return true;
+            }
+            case PSP_Ban: {
+                // 営業許可証 追放
+                byte visitor_slot = cp.Decode1();
+                String visitor_name = cp.DecodeStr();
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null) {
+                    for (Pair<Byte, MapleCharacter> visitors : ips.getVisitors()) {
+                        if (visitors.getRight().getName().equals(visitor_name)) {
+                            visitors.getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.shopBlockPlayer(visitor_slot));
+                            visitors.getRight().setPlayerShop(null);
+                            ips.removeVisitor(visitors.getRight());
+                            return true;
+                        }
+                    }
+                }
+                return true;
+            }
+            case ESP_GoOut: {
+                // 雇用商人 "商店から出る" 間違ってるかも?
+                // ?_?
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null) {
+                    ips.setOpen(true);
+                }
+                return true;
+            }
+            case ESP_ArrangeItem: {
+                final IMaplePlayerShop imps = chr.getPlayerShop();
+                if (imps != null && imps.isOwner(chr) && !(imps instanceof MapleMiniGame)) {
+                    for (int i = 0; i < imps.getItems().size(); i++) {
+                        if (imps.getItems().get(i).bundles == 0) {
+                            imps.getItems().remove(i);
+                        }
+                    }
+                    if (chr.getMeso() + imps.getMeso() < 0) {
+                        chr.SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(imps));
+                    } else {
+                        chr.gainMeso(imps.getMeso(), false);
+                        imps.setMeso(0);
+                        chr.SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(imps));
+                    }
+                }
+                return true;
+            }
+            case ESP_WithdrawAll: {
+                // 雇用商人 "商店とクローズ"
+                // "イベントリに空きがないとアイテムはストアーバンクNPCのプレドリックのところで探すべきです。閉店しますか？" と聞かれてOKを押した場合の処理
+                // ダイアログを出さずに閉じる処理が必要となる
+                chr.SendPacket(ResCMiniRoomBaseDlg.CloseHiredMerchant());
+
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (!ips.isAvailable() || ips.isOwner(chr)) {
+
+                    // アイテム回収
+                    for (MaplePlayerShopItem items : ips.getItems()) {
+                        if (items.bundles > 0) {
+                            IItem newItem = items.item.copy();
+                            newItem.setQuantity((short) (items.bundles * newItem.getQuantity()));
+                            if (MapleInventoryManipulator.addFromDrop(chr.getClient(), newItem, false)) {
+                                items.bundles = 0;
+                            }
+                        }
+                    }
+
+                    ips.closeShop(false, true, 20);
+                }
+
+                chr.setPlayerShop(null);
+                chr.setRemoteStore(null);
+                return true;
+            }
             case ESP_AdminChangeTitle: {
                 // GMが右クリックした場合の雇用商人の名前を替えますか？でOKを押したときに送信されるデータ
                 // @007F 2A [BC 7D 00 00 (ID)]
@@ -224,6 +324,69 @@ public class ReqCMiniRoomBaseDlg {
                 }
                 String character_name = cp.DecodeStr(); // sName
                 merchant.removeBlackList(character_name);
+                return true;
+            }
+            case MGRP_TieRequest: {
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null && ips instanceof MapleMiniGame) {
+                    MapleMiniGame game = (MapleMiniGame) ips;
+                    if (game.isOpen()) {
+                        return true;
+                    }
+                    if (game.isOwner(chr)) {
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameRequestTie(), false);
+                    } else {
+                        game.getMCOwner().getClient().getSession().write(ResCMiniRoomBaseDlg.getMiniGameRequestTie());
+                    }
+                    game.setRequestedTie(game.getVisitorSlot(chr));
+                }
+                return true;
+            }
+            case MGRP_TieResult: {
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null && ips instanceof MapleMiniGame) {
+                    MapleMiniGame game = (MapleMiniGame) ips;
+                    if (game.isOpen()) {
+                        return true;
+                    }
+                    if (game.getRequestedTie() > -1 && game.getRequestedTie() != game.getVisitorSlot(chr)) {
+                        byte unk1 = cp.Decode1();
+                        if (unk1 > 0) {
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(game, 1, game.getRequestedTie()));
+                            game.nextLoser();
+                            game.setOpen(true);
+                            game.update();
+                            game.checkExitAfterGame();
+                        } else {
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameDenyTie());
+                        }
+                        game.setRequestedTie(-1);
+                    }
+                }
+                return true;
+            }
+            case MGRP_GiveUpRequest: {
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null && ips instanceof MapleMiniGame) {
+                    MapleMiniGame game = (MapleMiniGame) ips;
+                    if (game.isOpen()) {
+                        return true;
+                    }
+                    game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(game, 0, game.getVisitorSlot(chr)));
+                    game.nextLoser();
+                    game.setOpen(true);
+                    game.update();
+                    game.checkExitAfterGame();
+                }
+                return true;
+            }
+            case MGRP_GiveUpResult: {
+                return true;
+            }
+            case MGRP_RetreatRequest: {
+                return true;
+            }
+            case MGRP_RetreatResult: {
                 return true;
             }
             case MGRP_LeaveEngage:
