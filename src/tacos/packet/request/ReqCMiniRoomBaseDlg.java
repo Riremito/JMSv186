@@ -37,6 +37,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.IMaplePlayerShop;
+import odin.server.shops.MapleMiniGame;
 import odin.tools.Pair;
 
 /**
@@ -223,6 +224,132 @@ public class ReqCMiniRoomBaseDlg {
                 }
                 String character_name = cp.DecodeStr(); // sName
                 merchant.removeBlackList(character_name);
+                return true;
+            }
+            case MGRP_LeaveEngage:
+            case MGRP_LeaveEngageCancel: {
+                IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips == null || !(ips instanceof MapleMiniGame)) {
+                    DebugLogger.ErrorLog("OnMiniRoom : MGRP_LeaveEngage, ips");
+                    return true;
+                }
+                MapleMiniGame game = (MapleMiniGame) ips;
+                if (game.isOpen()) {
+                    DebugLogger.ErrorLog("OnMiniRoom : MGRP_LeaveEngage, game");
+                    return true;
+                }
+                game.setExitAfter(chr);
+                game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameExitAfter(game.isExitAfter(chr)));
+                return true;
+            }
+            case MGRP_Ready:
+            case MGRP_CancelReady: {
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null && ips instanceof MapleMiniGame) {
+                    MapleMiniGame game = (MapleMiniGame) ips;
+                    if (!game.isOwner(chr) && game.isOpen()) {
+                        game.setReady(game.getVisitorSlot(chr));
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameReady(game.isReady(game.getVisitorSlot(chr))));
+                    }
+                }
+                return true;
+            }
+            case MGRP_Ban: {
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null && ips instanceof MapleMiniGame) {
+                    if (!((MapleMiniGame) ips).isOpen()) {
+                        return true;
+                    }
+                    // 5 = 強制退場されました。
+                    ips.removeAllVisitors(5, 1);
+                }
+                return true;
+            }
+            case MGRP_Start: {
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null && ips instanceof MapleMiniGame) {
+                    MapleMiniGame game = (MapleMiniGame) ips;
+                    if (game.isOwner(chr) && game.isOpen()) {
+                        for (int i = 1; i < ips.getSize(); i++) {
+                            if (!game.isReady(i)) {
+                                return true;
+                            }
+                        }
+                        game.setGameType();
+                        game.shuffleList();
+                        if (game.getGameType() == 1) {
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameStart(game.getLoser()));
+                        } else {
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardStart(game, game.getLoser()));
+                        }
+                        game.setOpen(false);
+                        game.update();
+                    }
+                }
+                return true;
+            }
+            case MGRP_GameResult: {
+                return true;
+            }
+            case MGRP_TimeOver: {
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null && ips instanceof MapleMiniGame) {
+                    MapleMiniGame game = (MapleMiniGame) ips;
+                    if (game.isOpen()) {
+                        return true;
+                    }
+                    ips.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameSkip(ips.getVisitorSlot(chr)));
+                    game.nextLoser();
+                }
+                return true;
+            }
+            case ORP_PutStoneChecker: {
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null && ips instanceof MapleMiniGame) {
+                    MapleMiniGame game = (MapleMiniGame) ips;
+                    if (game.isOpen()) {
+                        return true;
+                    }
+                    int unk1 = cp.Decode4();
+                    int unk2 = cp.Decode4();
+                    byte unk3 = cp.Decode1();
+                    game.setPiece(unk1, unk2, unk3, chr);
+                }
+                return true;
+            }
+            case MGP_TurnUpCard: {
+                final IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips != null && ips instanceof MapleMiniGame) {
+                    MapleMiniGame game = (MapleMiniGame) ips;
+                    if (game.isOpen()) {
+                        break;
+                    }
+                    final int slot = cp.Decode1();
+                    final int turn = game.getTurn();
+                    final int fs = game.getFirstSlot();
+                    if (turn == 1) {
+                        game.setFirstSlot(slot);
+                        if (game.isOwner(chr)) {
+                            game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, turn), false);
+                        } else {
+                            game.getMCOwner().getClient().getSession().write(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, turn));
+                        }
+                        game.setTurn(0); //2nd turn nao
+                        return true;
+                    } else if (fs > 0 && game.getCardId(fs + 1) == game.getCardId(slot + 1)) {
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, game.isOwner(chr) ? 2 : 3));
+                        game.setPoints(game.getVisitorSlot(chr)); //correct.. so still same loser. diff turn tho
+                    } else {
+                        game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, game.isOwner(chr) ? 0 : 1));
+                        game.nextLoser();//wrong haha
+
+                    }
+                    game.setTurn(1);
+                    game.setFirstSlot(0);
+                }
+                return true;
+            }
+            case MGP_MatchCard: {
                 return true;
             }
             default: {

@@ -148,6 +148,45 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             ESP_DeleteBlackList.set(-1);
             return;
         }
+        if (Version.GreaterOrEqual(Region.JMS, 186)) {
+            MRP_Create.set(0);
+            MRP_CreateResult.set(1);
+            MRP_Invite.set(2);
+            MRP_InviteResult.set(3);
+            MRP_Enter.set(4);
+            MRP_EnterResult.set(5);
+            MRP_Chat.set(6);
+            MRP_GameMessage.set(7);
+            MRP_UserChat.set(8);
+            MRP_Avatar.set(9);
+            MRP_Leave.set(10);
+
+            TRP_PutItem.set(13);
+            TRP_PutMoney.set(14);
+            TRP_Trade.set(15);
+
+            ESP_AdminChangeTitle.set(42);
+            ESP_DeliverVisitList.set(43);
+            ESP_DeliverBlackList.set(44);
+            ESP_AddBlackList.set(45);
+            ESP_DeleteBlackList.set(46);
+
+            MGRP_LeaveEngage.set(53);
+            MGRP_LeaveEngageCancel.set(54);
+            MGRP_Ready.set(55);
+            MGRP_CancelReady.set(56);
+            MGRP_Ban.set(57);
+            MGRP_Start.set(58);
+            MGRP_GameResult.set(59);
+            MGRP_TimeOver.set(60);
+            ORP_PutStoneChecker.set(61);
+            ORP_InvalidStonePosition.set(62);
+            ORP_InvalidStonePosition_Normal.set(63);
+            ORP_InvalidStonePosition_By33.set(64);
+            MGP_TurnUpCard.set(65);
+            MGP_MatchCard.set(66);
+            return;
+        }
     }
 
 }
