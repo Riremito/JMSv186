@@ -18,7 +18,6 @@
  */
 package tacos.packet.request;
 
-import java.util.Arrays;
 import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
 import java.util.List;
@@ -29,7 +28,6 @@ import odin.constants.GameConstants;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleTrade;
-import odin.server.maps.FieldLimitType;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMiniRoomProtocol;
 import tacos.packet.response.ResCEmployeePool;
@@ -43,6 +41,7 @@ import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
 import odin.tools.Pair;
+import tacos.packet.ops.OpsMiniRoomType;
 import tacos.packet.response.wrapper.WrapCWvsContext;
 
 /**
@@ -84,55 +83,23 @@ public class ReqCMiniRoomBaseDlg {
                  */
                 // old code
 
-                final byte createType = cp.Decode1();
-                if (createType == 3) { // trade
-                    MapleTrade.startTrade(chr, false);
-                    return true;
-                }
-                if (createType == 6) {
-                    // 未使用の可能性あり
-                    int unk1 = cp.Decode4();
-                    // 交換窓のID
-                    final int tradeid = cp.Decode4();
-                    MapleTrade.startTrade(chr, true);
-                    return true;
-                }
-                if (createType == 1 || createType == 2 || createType == 4 || createType == 5) { // shop
-                    /*
-                    if (createType == 4 && !chr.isAdmin()) { //not hired merch... blocked playershop
-                        c.getSession().write(MaplePacketCreator.enableActions());
-                        return;
-                    }
-                     */
-                    if (chr.getMap().getMapObjectsInRange(chr.getPosition(), 20000, Arrays.asList(MapleMapObjectType.SHOP, MapleMapObjectType.HIRED_MERCHANT)).isEmpty()) {
-                        if (createType == 1 || createType == 2) {
-                            if (FieldLimitType.Minigames.check(chr.getMap().getFieldLimit())) {
-                                chr.dropMessage(1, "You may not use minigames here.");
-                                chr.SendPacket(WrapCWvsContext.updateStat());
-                                return true;
-                            }
+                byte miniroom_type = cp.Decode1();
+
+                switch (OpsMiniRoomType.find(miniroom_type)) {
+                    case MR_OmokRoom:
+                    case MR_MemoryGameRoom: {
+                        String desc = cp.DecodeStr();
+                        String pass = "";
+                        byte unk2 = cp.Decode1();
+                        if (unk2 > 0) {
+                            pass = cp.DecodeStr();
                         }
-                    } else {
-                        chr.dropMessage(1, "You may not establish a store here.");
-                        chr.SendPacket(WrapCWvsContext.updateStat());
-                        return true;
-                    }
-                    final String desc = cp.DecodeStr();
-                    String pass = "";
-                    byte unk2 = cp.Decode1();
-                    if (unk2 > 0 && (createType == 1 || createType == 2)) {
-                        pass = cp.DecodeStr();
-                    }
-                    // たぶんなんかがおかしい
-                    // ごもく @007F 00 02 04 00 63 61 72 64 00 02
-                    // 神経衰弱 @007F 00 02 01 00 66 00 [01] 最後の1バイトがサイズ
-                    if (createType == 1 || createType == 2) {
                         final int piece = cp.Decode1();
-                        final int itemId = createType == 1 ? (4080000 + piece) : 4080100;
+                        final int itemId = miniroom_type == 1 ? (4080000 + piece) : 4080100;
                         if (!chr.haveItem(itemId) || (chr.getMapId() >= 910000001 && chr.getMapId() <= 910000022)) {
                             return true;
                         }
-                        MapleMiniGame game = new MapleMiniGame(chr, itemId, desc, pass, createType); //itemid
+                        MapleMiniGame game = new MapleMiniGame(chr, itemId, desc, pass, miniroom_type); //itemid
                         game.setPieceType(piece);
                         chr.setPlayerShop(game);
                         game.setAvailable(true);
@@ -140,7 +107,15 @@ public class ReqCMiniRoomBaseDlg {
                         game.send(chr.getClient());
                         chr.getMap().addMapObject(game);
                         game.update();
-                    } else {
+                        return true;
+                    }
+                    case MR_TradingRoom: {
+                        MapleTrade.startTrade(chr, false);
+                        return true;
+                    }
+                    case MR_PersonalShop: {
+                        String desc = cp.DecodeStr();
+                        byte unk2 = cp.Decode1();
                         short item_slot = cp.Decode2();
                         int item_id = cp.Decode4();
                         IItem shop = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
@@ -148,18 +123,41 @@ public class ReqCMiniRoomBaseDlg {
                         if (shop == null || shop.getQuantity() <= 0 || shop.getItemId() != item_id || chr.getMapId() < 910000001 || chr.getMapId() > 910000022) {
                             return true;
                         }
-                        if (createType == 4) {
-                            MaplePlayerShop mps = new MaplePlayerShop(chr, shop.getItemId(), desc);
-                            chr.setPlayerShop(mps);
-                            chr.getMap().addMapObject(mps);
-                            chr.SendPacket(ResCMiniRoomBaseDlg.getPlayerStore(chr, true));
-                        } else {
-                            final HiredMerchant merch = new HiredMerchant(chr, shop.getItemId(), desc);
-                            chr.setPlayerShop(merch);
-                            chr.setRemoteStore(merch);
-                            chr.getMap().addMapObject(merch);
-                            chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merch, true));
+
+                        MaplePlayerShop mps = new MaplePlayerShop(chr, shop.getItemId(), desc);
+                        chr.setPlayerShop(mps);
+                        chr.getMap().addMapObject(mps);
+                        chr.SendPacket(ResCMiniRoomBaseDlg.getPlayerStore(chr, true));
+                        return true;
+                    }
+                    case MR_EntrustedShop: {
+                        String desc = cp.DecodeStr();
+                        byte unk2 = cp.Decode1();
+                        short item_slot = cp.Decode2();
+                        int item_id = cp.Decode4();
+                        IItem shop = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
+
+                        if (shop == null || shop.getQuantity() <= 0 || shop.getItemId() != item_id || chr.getMapId() < 910000001 || chr.getMapId() > 910000022) {
+                            return true;
                         }
+
+                        HiredMerchant merch = new HiredMerchant(chr, shop.getItemId(), desc);
+                        chr.setPlayerShop(merch);
+                        chr.setRemoteStore(merch);
+                        chr.getMap().addMapObject(merch);
+                        chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merch, true));
+                        return true;
+                    }
+                    case MR_CashTradingRoom: {
+                        // 未使用の可能性あり
+                        int unk1 = cp.Decode4();
+                        // 交換窓のID
+                        int tradeid = cp.Decode4();
+                        MapleTrade.startTrade(chr, true);
+                        return true;
+                    }
+                    default: {
+                        break;
                     }
                 }
                 return true;
@@ -194,10 +192,10 @@ public class ReqCMiniRoomBaseDlg {
                  */
                 // old code
                 {
-                    final int obid = cp.Decode4();
-                    MapleMapObject ob = chr.getMap().getMapObject(obid, MapleMapObjectType.HIRED_MERCHANT);
+                    int miniroom_id = cp.Decode4();
+                    MapleMapObject ob = chr.getMap().getMapObject(miniroom_id, MapleMapObjectType.HIRED_MERCHANT);
                     if (ob == null) {
-                        ob = chr.getMap().getMapObject(obid, MapleMapObjectType.SHOP);
+                        ob = chr.getMap().getMapObject(miniroom_id, MapleMapObjectType.SHOP);
                     }
 
                     if (ob instanceof IMaplePlayerShop && chr.getPlayerShop() == null) {
