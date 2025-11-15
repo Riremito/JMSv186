@@ -22,16 +22,21 @@ import odin.client.MapleCharacter;
 import tacos.wz.ids.DWI_LoadXML;
 import tacos.debug.DebugLogger;
 import java.util.List;
+import odin.client.inventory.IItem;
+import odin.client.inventory.MapleInventoryType;
+import odin.constants.GameConstants;
+import odin.server.MapleItemInformationProvider;
+import odin.server.MapleTrade;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsEntrustedShop;
 import tacos.packet.ops.OpsMiniRoomProtocol;
 import tacos.packet.ops.OpsMiniRoomType;
 import tacos.packet.response.ResCEmployeePool;
-import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
+import odin.server.shops.IMaplePlayerShop;
 import odin.tools.Pair;
 
 /**
@@ -70,6 +75,12 @@ public class ReqCMiniRoomBaseDlg {
                 return false;
             }
             case MRP_Invite: {
+                int character_id = cp.Decode4();
+                MapleTrade.inviteTrade(chr, chr.getMap().getCharacterById(character_id));
+                return true;
+            }
+            case MRP_InviteResult: {
+                MapleTrade.declineTrade(chr);
                 return true;
             }
             case MRP_Enter: {
@@ -86,6 +97,18 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MRP_Chat: {
+                int unk = cp.Decode4();
+                String message = cp.DecodeStr();
+                if (chr.getTrade() != null) {
+                    chr.getTrade().chat(message);
+                    return true;
+                }
+                if (chr.getPlayerShop() != null) {
+                    IMaplePlayerShop ips = chr.getPlayerShop();
+                    ips.broadcastToVisitors(ResCMiniRoomBaseDlg.shopChat(chr.getName() + " : " + message, ips.getVisitorSlot(chr)));
+                    return true;
+                }
+                DebugLogger.ErrorLog("OnMiniRoom : MRP_Chat, not  coded.");
                 return true;
             }
             case MRP_GameMessage: {
@@ -98,9 +121,108 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MRP_Leave: {
+                if (chr.getTrade() != null) {
+                    MapleTrade.cancelTrade(chr.getTrade(), chr.getClient());
+                    return true;
+                }
+                IMaplePlayerShop ips = chr.getPlayerShop();
+                if (ips == null) {
+                    return true;
+                }
+                if (!ips.isAvailable() || (ips.isOwner(chr) && ips.getShopType() != 1)) {
+                    ips.closeShop(false, ips.isAvailable(), 3);
+                } else {
+                    ips.removeVisitor(chr);
+                }
+                chr.setPlayerShop(null);
                 return true;
             }
             case MRP_Balloon: {
+                return true;
+            }
+            case TRP_PutItem: {
+                MapleTrade trade = chr.getTrade();
+                if (trade == null) {
+                    DebugLogger.ErrorLog("OnMiniRoom : TRP_PutItem, trade");
+                    return true;
+                }
+
+                byte item_type = cp.Decode1();
+                short item_slot = cp.Decode2();
+                short quantity = cp.Decode2();
+                byte targetSlot = cp.Decode1();
+
+                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                MapleInventoryType ivType = MapleInventoryType.getByType(item_type);
+                IItem item = chr.getInventory(ivType).getItem(item_slot);
+
+                if (item == null) {
+                    DebugLogger.ErrorLog("OnMiniRoom : TRP_PutItem, item");
+                    return true;
+                }
+
+                if ((quantity <= item.getQuantity() && quantity >= 0) || GameConstants.isThrowingStar(item.getItemId()) || GameConstants.isBullet(item.getItemId())) {
+                    chr.getTrade().setItems(chr.getClient(), item, targetSlot, quantity);
+                }
+                return true;
+            }
+            case TRP_PutMoney: {
+                MapleTrade trade = chr.getTrade();
+                if (trade == null) {
+                    return true;
+                }
+                int mesos = cp.Decode4();
+                trade.setMeso(mesos);
+                return true;
+            }
+            case TRP_Trade: {
+                if (chr.getTrade() == null) {
+                    return true;
+                }
+                MapleTrade.completeTrade(chr);
+                return true;
+            }
+            case ESP_AdminChangeTitle: {
+                // GMが右クリックした場合の雇用商人の名前を替えますか？でOKを押したときに送信されるデータ
+                // @007F 2A [BC 7D 00 00 (ID)]
+                return true;
+            }
+            case ESP_DeliverVisitList: {
+                HiredMerchant merchant = chr.getMyHiredMerchant();
+                if (merchant == null) {
+                    DebugLogger.ErrorLog("OnMiniRoom : ESP_DeliverVisitList");
+                    return true;
+                }
+                merchant.sendVisitor(chr);
+                return true;
+            }
+            case ESP_DeliverBlackList: {
+                HiredMerchant merchant = chr.getMyHiredMerchant();
+                if (merchant == null) {
+                    DebugLogger.ErrorLog("OnMiniRoom : ESP_DeliverBlackList");
+                    return true;
+                }
+                merchant.sendBlackList(chr);
+                return true;
+            }
+            case ESP_AddBlackList: {
+                HiredMerchant merchant = chr.getMyHiredMerchant();
+                if (merchant == null) {
+                    DebugLogger.ErrorLog("OnMiniRoom : ESP_AddBlackList");
+                    return true;
+                }
+                String character_name = cp.DecodeStr(); // sName
+                merchant.addBlackList(character_name);
+                return true;
+            }
+            case ESP_DeleteBlackList: {
+                HiredMerchant merchant = chr.getMyHiredMerchant();
+                if (merchant == null) {
+                    DebugLogger.ErrorLog("OnMiniRoom : ESP_DeleteBlackList");
+                    return true;
+                }
+                String character_name = cp.DecodeStr(); // sName
+                merchant.removeBlackList(character_name);
                 return true;
             }
             default: {
@@ -108,7 +230,6 @@ public class ReqCMiniRoomBaseDlg {
             }
         }
 
-        //PlayerInteractionHandler.PlayerInteraction(p, chr.getClient(), chr);
         DebugLogger.ErrorLog("OnMiniRoom : not coded = " + protocol_req);
         return false;
     }

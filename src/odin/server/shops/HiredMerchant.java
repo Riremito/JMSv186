@@ -30,7 +30,6 @@ import tacos.server.ServerOdinGame;
 import java.util.LinkedList;
 import java.util.List;
 import tacos.packet.response.ResCEmployeePool;
-import tacos.packet.response.ResCField;
 import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleInventoryManipulator;
 import odin.server.Timer.EtcTimer;
@@ -180,11 +179,11 @@ public class HiredMerchant extends AbstractPlayerStore {
         blacklist.remove(bl);
     }
 
-    public final void sendBlackList(final MapleClient c) {
-        c.getSession().write(ResCMiniRoomBaseDlg.MerchantBlackListView(blacklist));
+    public final void sendBlackList(MapleCharacter chr) {
+        chr.SendPacket(ResCMiniRoomBaseDlg.MerchantBlackListView(blacklist));
     }
 
-    public final void sendVisitor(final MapleClient c) {
-        c.getSession().write(ResCMiniRoomBaseDlg.MerchantVisitorView(visitors));
+    public final void sendVisitor(MapleCharacter chr) {
+        chr.SendPacket(ResCMiniRoomBaseDlg.MerchantVisitorView(visitors));
     }
 }

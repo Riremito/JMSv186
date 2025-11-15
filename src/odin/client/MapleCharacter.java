@@ -144,6 +144,7 @@ import odin.server.life.PlayerNPC;
 import odin.server.maps.Event_PyramidSubway;
 import odin.server.maps.MapleDragon;
 import odin.server.maps.MapleFoothold;
+import odin.server.shops.HiredMerchant;
 import odin.tools.ConcurrentEnumMap;
 import odin.tools.FileoutputUtil;
 import tacos.network.MockIOSession;
@@ -4644,6 +4645,20 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public IMaplePlayerShop getPlayerShop() {
         return playerShop;
+    }
+
+    public HiredMerchant getMyHiredMerchant() {
+        if (playerShop == null) {
+            return null;
+        }
+        if (playerShop.getShopType() != 1) {
+            return null;
+        }
+        if (!playerShop.isOwner(this)) {
+            return null;
+        }
+
+        return (HiredMerchant) playerShop;
     }
 
     public void setPlayerShop(IMaplePlayerShop playerShop) {

@@ -40,7 +40,6 @@ import tacos.network.MaplePacket;
 import tacos.server.ServerOdinGame;
 import java.util.ArrayList;
 import tacos.packet.response.ResCEmployeePool;
-import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCUser;
 import odin.server.maps.AbstractMapleMapObject;
 import odin.server.maps.MapleMap;
