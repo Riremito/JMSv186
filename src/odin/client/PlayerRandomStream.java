@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client;
 
 import odin.server.Randomizer;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
+import tacos.packet.ServerPacket;
 
 public class PlayerRandomStream {
 
@@ -110,15 +110,19 @@ public class PlayerRandomStream {
         return (v8 ^ v9 ^ v10) & 0xffffffffL;
     }
 
-    public final void connectData(final MaplePacketLittleEndianWriter mplew) {
+    public final byte[] connectData() {
+        ServerPacket data = new ServerPacket();
+
         long v5 = CRand32__Random();
         long s2 = CRand32__Random();
         long v6 = CRand32__Random();
 
         CRand32__Seed(v5, s2, v6);
 
-        mplew.writeInt((int) v5);
-        mplew.writeInt((int) s2);
-        mplew.writeInt((int) v6);
+        data.Encode4((int) v5);
+        data.Encode4((int) s2);
+        data.Encode4((int) v6);
+
+        return data.get().getBytes();
     }
 }

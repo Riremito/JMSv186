@@ -38,7 +38,6 @@ import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleItemInformationProvider;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 public class MonsterBook implements Serializable {
 
@@ -132,13 +131,17 @@ public class MonsterBook implements Serializable {
         }
     }
 
-    public final void addCardPacket(final MaplePacketLittleEndianWriter mplew) {
-        mplew.writeShort(cards.size());
+    public final byte[] addCardPacket() {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode2(cards.size());
 
         for (Entry<Integer, Integer> all : cards.entrySet()) {
-            mplew.writeShort(GameConstants.getCardShortId(all.getKey())); // Id
-            mplew.write(all.getValue()); // Level
+            data.Encode2(GameConstants.getCardShortId(all.getKey())); // Id
+            data.Encode1(all.getValue()); // Level
         }
+
+        return data.get().getBytes();
     }
 
     // addCharInfoPacket

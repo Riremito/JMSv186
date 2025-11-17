@@ -153,6 +153,7 @@ import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
 import tacos.debug.IDebugMan;
+import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.ServerOdinCashShop;
 import tacos.packet.response.wrapper.WrapCWvsContext;
@@ -1407,12 +1408,16 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
         return CRand;
     }
 
-    public final void QuestInfoPacket(final odin.tools.data.output.MaplePacketLittleEndianWriter mplew) {
-        mplew.writeShort(questinfo.size());
+    public final byte[] QuestInfoPacket() {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode2(questinfo.size());
         for (final Entry<Integer, String> q : questinfo.entrySet()) {
-            mplew.writeShort(q.getKey());
-            mplew.writeMapleAsciiString(q.getValue() == null ? "" : q.getValue());
+            data.Encode2(q.getKey());
+            data.EncodeStr(q.getValue() == null ? "" : q.getValue());
         }
+
+        return data.get().getBytes();
     }
 
     public final void updateInfoQuest(final int questid, final String data) {
