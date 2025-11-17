@@ -29,7 +29,6 @@ import tacos.packet.ServerPacket;
 import tacos.packet.response.data.DataAvatarLook;
 import odin.server.life.SummonAttackEntry;
 import odin.server.maps.MapleSummon;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -39,14 +38,16 @@ public class ResCSummonedPool {
 
     public static MaplePacket spawnSummon(MapleSummon summon, boolean animated) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedEnterField);
+
         sp.Encode4(summon.getOwnerId());
-        if (ServerConfig.JMS164orLater()) {
+        if (ServerConfig.JMS147orLater()) {
             sp.Encode4(summon.getObjectId());
         }
         sp.Encode4(summon.getSkill());
         if (ServerConfig.JMS186orLater()) {
             sp.Encode1(summon.getOwnerLevel() - 1);
         }
+
         sp.Encode1(summon.getSkillLevel());
         sp.Encode2((short) summon.getPosition().x);
         sp.Encode2((short) summon.getPosition().y);
@@ -67,6 +68,7 @@ public class ResCSummonedPool {
 
     public static MaplePacket removeSummon(MapleSummon summon, boolean animated) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedLeaveField);
+
         sp.Encode4(summon.getOwnerId());
         if (Version.LessOrEqual(Region.JMS, 131)) {
             sp.Encode4(summon.getSkill());
@@ -77,11 +79,27 @@ public class ResCSummonedPool {
         return sp.get();
     }
 
+    public static MaplePacket moveSummon(MapleSummon summon, ParseCMovePath data) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedMove);
+
+        sp.Encode4(summon.getOwnerId());
+        // very old summon type
+        if (Version.LessOrEqual(Region.JMS, 131)) {
+            sp.Encode4(summon.getSkill());
+        } else {
+            sp.Encode4(summon.getObjectId());
+        }
+
+        sp.EncodeBuffer(data.get()); // unused data in the end?
+        return sp.get();
+    }
+
     // v131 broken
-    public static MaplePacket summonAttack(final int cid, final int summonSkillId, final byte animation, final List<SummonAttackEntry> allDamage, final int level) {
+    public static MaplePacket summonAttack(MapleSummon summon, byte animation, List<SummonAttackEntry> allDamage, int level) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedAttack);
-        sp.Encode4(cid);
-        sp.Encode4(summonSkillId);
+
+        sp.Encode4(summon.getOwnerId());
+        sp.Encode4(summon.getSkill());
         if (ServerConfig.JMS164orLater()) {
             sp.Encode1(level - 1); //? guess
         }
@@ -99,38 +117,31 @@ public class ResCSummonedPool {
         return sp.get();
     }
 
-    public static MaplePacket moveSummon(MapleSummon summon, ParseCMovePath data) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedMove);
+    public static MaplePacket summonSkill(MapleSummon summon,/*int cid, int summonSkillId*/ int newStance) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedSkill);
+        /*
+            // JMS147
+            Header(@007B); // 0046F5FB
+            Encode4(#111); // 007A8D87
+            Encode4(#100017); // 0077E3BB
+            Encode1(#8); // 00674ADA
+         */
         sp.Encode4(summon.getOwnerId());
-        // very old summon type
-        if (Version.LessOrEqual(Region.JMS, 131)) {
-            sp.Encode4(summon.getSkill());
-        } else {
-            sp.Encode4(summon.getObjectId());
-        }
-
-        sp.EncodeBuffer(data.get());
+        sp.Encode4(summon.getObjectId());
+        sp.Encode1(newStance); // not stance?
         return sp.get();
     }
 
-    public static MaplePacket damageSummon(int cid, int summonSkillId, int damage, int unkByte, int monsterIdFrom) {
+    public static MaplePacket damageSummon(MapleSummon summon, int damage, int unkByte, int monsterIdFrom) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SummonedHit);
-        sp.Encode4(cid);
-        sp.Encode4(summonSkillId);
+
+        sp.Encode4(summon.getOwnerId());
+        sp.Encode4(summon.getSkill());
         sp.Encode1(unkByte);
         sp.Encode4(damage);
         sp.Encode4(monsterIdFrom);
         sp.Encode1(0);
         return sp.get();
-    }
-
-    public static MaplePacket summonSkill(int cid, int summonSkillId, int newStance) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_SummonedSkill.get());
-        mplew.writeInt(cid);
-        mplew.writeInt(summonSkillId);
-        mplew.write(newStance);
-        return mplew.getPacket();
     }
 
 }

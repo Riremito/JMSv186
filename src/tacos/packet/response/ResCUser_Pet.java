@@ -26,7 +26,6 @@ import tacos.network.MaplePacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.data.DataCPet;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -173,19 +172,21 @@ public class ResCUser_Pet {
         return sp.get();
     }
 
-    public static final MaplePacket commandResponse(final int cid, final byte command, final int slot, final boolean success, final boolean food) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_PetActionCommand.get());
-        mplew.writeInt(cid);
-        mplew.writeInt(slot);
-        mplew.write(command == 1 ? 1 : 0);
-        mplew.write(command);
+    public static MaplePacket commandResponse(final int cid, final byte command, final int slot, final boolean success, final boolean food) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetActionCommand);
+
+        sp.Encode4(cid);
+        sp.Encode4(slot);
+        sp.Encode1(command == 1 ? 1 : 0);
+        sp.Encode1(command);
+
         if (command == 1) {
-            mplew.write(0);
+            sp.Encode1(0);
         } else {
-            mplew.writeShort(success ? 1 : 0);
+            sp.Encode2(success ? 1 : 0);
         }
-        return mplew.getPacket();
+
+        return sp.get();
     }
 
 }

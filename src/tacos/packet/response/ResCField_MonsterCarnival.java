@@ -22,7 +22,6 @@ import odin.client.MapleCharacter;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.MapleCarnivalParty;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -31,51 +30,51 @@ import odin.tools.data.output.MaplePacketLittleEndianWriter;
 public class ResCField_MonsterCarnival {
 
     public static MaplePacket CPUpdate(boolean party, int curCP, int totalCP, int team) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        if (!party) {
-            mplew.writeShort(ServerPacket.Header.LP_MCarnivalPersonalCP.get());
-        } else {
-            mplew.writeShort(ServerPacket.Header.LP_MCarnivalTeamCP.get());
-            mplew.write(team);
+        // ?_?
+        ServerPacket sp = new ServerPacket((party) ? ServerPacket.Header.LP_MCarnivalTeamCP : ServerPacket.Header.LP_MCarnivalPersonalCP);
+
+        if (party) {
+            sp.Encode1(team);
         }
-        mplew.writeShort(curCP);
-        mplew.writeShort(totalCP);
-        return mplew.getPacket();
+
+        sp.Encode2(curCP);
+        sp.Encode2(totalCP);
+        return sp.get();
     }
 
     public static MaplePacket playerSummoned(String name, int tab, int number) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MCarnivalResultSuccess.get());
-        mplew.write(tab);
-        mplew.write(number);
-        mplew.writeMapleAsciiString(name);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MCarnivalResultSuccess);
+
+        sp.Encode1(tab);
+        sp.Encode1(number);
+        sp.EncodeStr(name);
+        return sp.get();
     }
 
     public static MaplePacket startMonsterCarnival(final MapleCharacter chr, final int enemyavailable, final int enemytotal) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MCarnivalEnter.get());
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MCarnivalEnter);
+
         final MapleCarnivalParty friendly = chr.getCarnivalParty();
-        mplew.write(friendly.getTeam());
-        mplew.writeShort(chr.getAvailableCP());
-        mplew.writeShort(chr.getTotalCP());
-        mplew.writeShort(friendly.getAvailableCP());
-        mplew.writeShort(friendly.getTotalCP());
-        mplew.writeShort(enemyavailable);
-        mplew.writeShort(enemytotal);
-        mplew.writeLong(0);
-        mplew.writeShort(0);
-        return mplew.getPacket();
+        sp.Encode1(friendly.getTeam());
+        sp.Encode2(chr.getAvailableCP());
+        sp.Encode2(chr.getTotalCP());
+        sp.Encode2(friendly.getAvailableCP());
+        sp.Encode2(friendly.getTotalCP());
+        sp.Encode2(enemyavailable);
+        sp.Encode2(enemytotal);
+        sp.Encode8(0);
+        sp.Encode2(0);
+        return sp.get();
     }
 
+    //CPQ
     public static MaplePacket playerDiedMessage(String name, int lostCP, int team) {
-        //CPQ
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MCarnivalDeath.get());
-        mplew.write(team); //team
-        mplew.writeMapleAsciiString(name);
-        mplew.write(lostCP);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MCarnivalDeath);
+
+        sp.Encode1(team); //team
+        sp.EncodeStr(name);
+        sp.Encode1(lostCP);
+        return sp.get();
     }
-    
+
 }

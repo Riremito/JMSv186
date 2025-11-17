@@ -35,7 +35,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import odin.tools.BitTools;
 import odin.tools.HexTool;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  * Provides a class for encrypting MapleStory packets with AES OFB encryption.
@@ -287,6 +286,7 @@ public class MapleAESOFB {
         return packetLength;
     }
 
+    /*
     public byte[] getPacketHeader_v414(int length) {
         MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
         int uSeqSnd = ((iv[2] & 0xFF) | (iv[3] << 8)) & 0xFFFF;
@@ -301,7 +301,7 @@ public class MapleAESOFB {
         }
         return mplew.getPacket().getBytes();
     }
-
+     */
     public boolean checkPacket(byte[] packet) {
         // x64
         if (Region.IsJMS() && 414 <= Version.getVersion()) {

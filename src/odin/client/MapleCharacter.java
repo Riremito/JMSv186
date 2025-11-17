@@ -1574,7 +1574,7 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                 } else {
                     addHP(-bloodEffect.getX());
                     client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillSpecial, bloodEffect.getSourceId()));
-                    map.broadcastMessage(MapleCharacter.this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillSpecial, MapleCharacter.this, bloodEffect.getSourceId()), false);
+                    //map.broadcastMessage(MapleCharacter.this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillSpecial, MapleCharacter.this, bloodEffect.getSourceId()), false);
                 }
             }
         }, 4000, 4000);
@@ -4442,9 +4442,9 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
                     if (berserkLvl == 0 || remhppercentage >= berserkLvl + 10) {
                         addHP(healEffect.getHp());
                     }
-                    client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, 1321007));
-                    map.broadcastMessage(ResCSummonedPool.summonSkill(getId(), 1321007, 5));
-                    map.broadcastMessage(MapleCharacter.this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, MapleCharacter.this, 1321007), false);
+                    //client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, 1321007));
+                    //map.broadcastMessage(ResCSummonedPool.summonSkill(getId(), 1321007, 5));
+                    //map.broadcastMessage(MapleCharacter.this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, MapleCharacter.this, 1321007), false);
                 }
             }, healInterval, healInterval);
         }
@@ -4457,10 +4457,10 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
                 @Override
                 public void run() {
-                    buffEffect.applyTo(MapleCharacter.this);
-                    client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, 1321007));
-                    map.broadcastMessage(ResCSummonedPool.summonSkill(getId(), 1321007, Randomizer.nextInt(3) + 6));
-                    map.broadcastMessage(MapleCharacter.this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, MapleCharacter.this, 1321007), false);
+                    //buffEffect.applyTo(MapleCharacter.this);
+                    //client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, 1321007));
+                    //map.broadcastMessage(ResCSummonedPool.summonSkill(getId(), 1321007, Randomizer.nextInt(3) + 6));
+                    //map.broadcastMessage(MapleCharacter.this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, MapleCharacter.this, 1321007), false);
                 }
             }, buffInterval, buffInterval);
         }

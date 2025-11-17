@@ -35,7 +35,6 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -373,12 +372,12 @@ public class ResCMobPool {
     }
 
     public static MaplePacket catchMonster(int mobid, int itemid, byte success) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MobEffectByItem.get());
-        mplew.writeInt(mobid);
-        mplew.writeInt(itemid);
-        mplew.write(success);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobEffectByItem);
+
+        sp.Encode4(mobid);
+        sp.Encode4(itemid);
+        sp.Encode1(success);
+        return sp.get();
     }
 
     public static final MaplePacket getNodeProperties(final MapleMonster objectid, final MapleMap map) {
@@ -386,33 +385,35 @@ public class ResCMobPool {
         if (objectid.getNodePacket() != null) {
             return objectid.getNodePacket();
         }
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MobRequestResultEscortInfo.get());
-        mplew.writeInt(objectid.getObjectId()); //?
-        mplew.writeInt(map.getNodes().size());
-        mplew.writeInt(objectid.getPosition().x);
-        mplew.writeInt(objectid.getPosition().y);
+
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobRequestResultEscortInfo);
+
+        sp.Encode4(objectid.getObjectId()); //?
+        sp.Encode4(map.getNodes().size());
+        sp.Encode4(objectid.getPosition().x);
+        sp.Encode4(objectid.getPosition().y);
         for (MapleNodes.MapleNodeInfo mni : map.getNodes()) {
-            mplew.writeInt(mni.x);
-            mplew.writeInt(mni.y);
-            mplew.writeInt(mni.attr);
+            sp.Encode4(mni.x);
+            sp.Encode4(mni.y);
+            sp.Encode4(mni.attr);
             if (mni.attr == 2) {
                 //msg
-                mplew.writeInt(500); //? talkMonster
+                sp.Encode4(500); //? talkMonster
             }
         }
-        mplew.writeZeroBytes(6);
-        objectid.setNodePacket(mplew.getPacket());
+
+        sp.EncodeZeroBytes(6);
+        objectid.setNodePacket(sp.get());
         return objectid.getNodePacket();
     }
 
+    // Monster Magnet
     public static MaplePacket showMagnet(int mobid, byte success) {
-        // Monster Magnet
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MobCatchEffect.get());
-        mplew.writeInt(mobid);
-        mplew.write(success);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobCatchEffect);
+
+        sp.Encode4(mobid);
+        sp.Encode1(success);
+        return sp.get();
     }
 
 }

@@ -20,7 +20,6 @@ package tacos.packet.response;
 
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -29,20 +28,21 @@ import odin.tools.data.output.MaplePacketLittleEndianWriter;
 public class ResCField_AriantArena {
 
     public static MaplePacket showAriantScoreBoard() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ShowArenaResult.get());
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ShowArenaResult);
+
+        return sp.get();
     }
 
     public static MaplePacket updateAriantPQRanking(String name, int score, boolean empty) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ArenaScore.get());
-        mplew.write(empty ? 0 : 1);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ArenaScore);
+
+        sp.Encode1(empty ? 0 : 1);
         if (!empty) {
-            mplew.writeMapleAsciiString(name);
-            mplew.writeInt(score);
+            sp.EncodeStr(name);
+            sp.Encode4(score);
         }
-        return mplew.getPacket();
+
+        return sp.get();
     }
 
 }

@@ -56,7 +56,6 @@ import odin.server.MapleItemInformationProvider;
 import tacos.server.ServerOdinGame;
 import odin.handling.channel.MapleGuildRanking;
 import tacos.database.DatabaseConnection;
-import tacos.network.MaplePacket;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.World;
@@ -82,7 +81,6 @@ import odin.server.SpeedRunner;
 import odin.server.maps.SpeedRunType;
 import odin.server.Timer.CloneTimer;
 import odin.server.maps.Event_PyramidSubway;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 public class NPCConversationManager extends AbstractPlayerInteraction {
 
@@ -132,16 +130,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void BroadcastPacket(byte[] packet) {
         World.Broadcast.broadcastMessage(packet);
-    }
-
-    // そのうち消す
-    public void DebugPacket(MaplePacket packet) {
-        c.getSession().write(packet);
-    }
-
-    // そのうち消す
-    public MaplePacketLittleEndianWriter getOutPacket() {
-        return new MaplePacketLittleEndianWriter();
     }
 
     public void Broadcast(String text) {

@@ -20,7 +20,6 @@ package tacos.packet.response;
 
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -29,33 +28,30 @@ import odin.tools.data.output.MaplePacketLittleEndianWriter;
 public class ResCRPSGameDlg {
 
     public static MaplePacket getRPSMode(byte mode, int mesos, int selection, int answer) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_RPSGame.get());
-        mplew.write(mode);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_RPSGame);
+
+        sp.Encode1(mode);
         switch (mode) {
-            case 6:
-                {
-                    //not enough mesos
-                    if (mesos != -1) {
-                        mplew.writeInt(mesos);
-                    }
-                    break;
+            case 6: {
+                //not enough mesos
+                if (mesos != -1) {
+                    sp.Encode4(mesos);
                 }
-            case 8:
-                {
-                    //open (npc)
-                    mplew.writeInt(9000019);
-                    break;
-                }
-            case 11:
-                {
-                    //selection vs answer
-                    mplew.write(selection);
-                    mplew.write(answer); // FF = lose, or if selection = answer then lose ???
-                    break;
-                }
+                break;
+            }
+            case 8: {
+                //open (npc)
+                sp.Encode4(9000019);
+                break;
+            }
+            case 11: {
+                //selection vs answer
+                sp.Encode1(selection);
+                sp.Encode1(answer); // FF = lose, or if selection = answer then lose ???
+                break;
+            }
         }
-        return mplew.getPacket();
+        return sp.get();
     }
-    
+
 }

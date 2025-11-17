@@ -44,12 +44,11 @@ import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.struct.InvOp;
-import tacos.packet.response.struct.TestHelper;
 import odin.server.Randomizer;
 import odin.server.maps.MapleMap;
 import odin.tools.HexTool;
 import odin.tools.StringUtil;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
+import tacos.packet.response.data.DataGW_ItemSlotBase;
 
 /**
  *
@@ -149,25 +148,27 @@ public class ResWrapper {
     }
 
     public static MaplePacket updateSpecialItemUse(IItem item, byte invType, short pos) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.get());
-        mplew.write(0); // could be from drop
-        mplew.write(2); // always 2
-        mplew.write(3); // quantity > 0 (?)
-        mplew.write(invType); // Inventory type
-        mplew.writeShort(pos); // item slot
-        mplew.write(0);
-        mplew.write(invType);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_InventoryOperation);
+
+        sp.Encode1(0); // could be from drop
+        sp.Encode1(2); // always 2
+        sp.Encode1(3); // quantity > 0 (?)
+        sp.Encode1(invType); // Inventory type
+        sp.Encode2(pos); // item slot
+        sp.Encode1(0);
+        sp.Encode1(invType);
         if (item.getType() == 1) {
-            mplew.writeShort(pos);
+            sp.Encode2(pos);
         } else {
-            mplew.write(pos);
+            sp.Encode1(pos);
         }
-        TestHelper.addItemInfo(mplew, item, true, true);
+
+        sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+
         if (item.getPosition() < 0) {
-            mplew.write(2); //?
+            sp.Encode1(2); //?
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     // 装着時交換不可など

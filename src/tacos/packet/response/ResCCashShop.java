@@ -33,7 +33,6 @@ import tacos.packet.ServerPacket;
 import tacos.packet.response.data.DataGW_CashItemInfo;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 import odin.server.CashShop;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -456,10 +455,10 @@ public class ResCCashShop {
     }
 
     public static MaplePacket cashItemExpired(int uniqueid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_CashShopCashItemResult.get());
-        mplew.write(113); //use to be 5d
-        mplew.writeLong(uniqueid);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CashShopCashItemResult);
+
+        sp.Encode1(113); //use to be 5d
+        sp.Encode8(uniqueid);
+        return sp.get();
     }
 }

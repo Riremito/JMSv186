@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsScriptMan;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -148,15 +147,15 @@ public class ResCScriptMan {
     }
 
     public static MaplePacket getEvanTutorial(String data) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ScriptMessage.get());
-        mplew.writeInt(8);
-        mplew.write(0);
-        mplew.write(1);
-        mplew.write(1);
-        mplew.write(1);
-        mplew.writeMapleAsciiString(data);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ScriptMessage);
+
+        sp.Encode4(8);
+        sp.Encode1(0);
+        sp.Encode1(1);
+        sp.Encode1(1);
+        sp.Encode1(1);
+        sp.EncodeStr(data);
+        return sp.get();
     }
 
 }
