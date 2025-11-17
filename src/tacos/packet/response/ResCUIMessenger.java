@@ -21,8 +21,7 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
-import tacos.packet.response.struct.TestHelper;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
+import tacos.packet.response.data.DataAvatarLook;
 
 /**
  *
@@ -31,69 +30,69 @@ import odin.tools.data.output.MaplePacketLittleEndianWriter;
 public class ResCUIMessenger {
 
     public static MaplePacket removeMessengerPlayer(int position) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
-        mplew.write(2);
-        mplew.write(position);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+
+        sp.Encode1(2);
+        sp.Encode1(position);
+        return sp.get();
     }
 
     public static MaplePacket messengerInvite(String from, int messengerid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
-        mplew.write(3);
-        mplew.writeMapleAsciiString(from);
-        mplew.write(0);
-        mplew.writeInt(messengerid);
-        mplew.write(0);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+
+        sp.Encode1(3);
+        sp.EncodeStr(from);
+        sp.Encode1(0);
+        sp.Encode4(messengerid);
+        sp.Encode1(0);
+        return sp.get();
     }
 
     public static MaplePacket updateMessengerPlayer(String from, MapleCharacter chr, int position, int channel) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
-        mplew.write(7);
-        mplew.write(position);
-        TestHelper.addCharLook(mplew, chr, true);
-        mplew.writeMapleAsciiString(from);
-        mplew.writeShort(channel);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+
+        sp.Encode1(7);
+        sp.Encode1(position);
+        sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+        sp.EncodeStr(from);
+        sp.Encode2(channel);
+        return sp.get();
     }
 
     public static MaplePacket addMessengerPlayer(String from, MapleCharacter chr, int position, int channel) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
-        mplew.write(0);
-        mplew.write(position);
-        TestHelper.addCharLook(mplew, chr, true);
-        mplew.writeMapleAsciiString(from);
-        mplew.writeShort(channel);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+
+        sp.Encode1(0);
+        sp.Encode1(position);
+        sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+        sp.EncodeStr(from);
+        sp.Encode2(channel);
+        return sp.get();
     }
 
     public static MaplePacket messengerNote(String text, int mode, int mode2) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
-        mplew.write(mode);
-        mplew.writeMapleAsciiString(text);
-        mplew.write(mode2);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+
+        sp.Encode1(mode);
+        sp.EncodeStr(text);
+        sp.Encode1(mode2);
+        return sp.get();
     }
 
     public static MaplePacket messengerChat(String text) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
-        mplew.write(6);
-        mplew.writeMapleAsciiString(text);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+
+        sp.Encode1(6);
+        sp.EncodeStr(text);
+        return sp.get();
     }
 
     public static MaplePacket joinMessenger(int position) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Messenger.get());
-        mplew.write(1);
-        mplew.write(position);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+
+        sp.Encode1(1);
+        sp.Encode1(position);
+        return sp.get();
     }
-    
+
 }

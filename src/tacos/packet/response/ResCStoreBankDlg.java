@@ -21,9 +21,8 @@ package tacos.packet.response;
 import odin.client.inventory.IItem;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
-import tacos.packet.response.struct.TestHelper;
 import odin.server.MerchItemPackage;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
+import tacos.packet.response.data.DataGW_ItemSlotBase;
 
 /**
  *
@@ -32,57 +31,57 @@ import odin.tools.data.output.MaplePacketLittleEndianWriter;
 public class ResCStoreBankDlg {
 
     public static final MaplePacket merchItemStore(final byte op) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_StoreBankResult);
+
         // [28 01] [22 01] - Invalid Asiasoft Passport
         // [28 01] [22 00] - Open Asiasoft pin typing
-        mplew.writeShort(ServerPacket.Header.LP_StoreBankResult.get());
-        mplew.write(op);
+        sp.Encode1(op);
         switch (op) {
             case 36:
-                mplew.writeZeroBytes(8);
+                sp.Encode8(0);
                 break;
             default:
-                mplew.write(0);
+                sp.Encode1(0);
                 break;
         }
-        return mplew.getPacket();
+
+        return sp.get();
     }
 
     public static final MaplePacket merchItem_Message(final byte op) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_StoreBankGetAllResult.get());
-        mplew.write(op);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_StoreBankGetAllResult);
+
+        sp.Encode1(op);
+        return sp.get();
     }
 
-    //BELOW ARE UNUSED PLEASE RECONSIDER.
     public static final MaplePacket sendHiredMerchantMessage(final byte type) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_StoreBankGetAllResult);
+
         // 07 = send title box
         // 09 = Please pick up your items from Fredrick and then try again.
         // 0A = Your another character is using the item now. Please close the shop with that character or empty your store bank.
         // 0B = You cannot open it now.
         // 0F = Please retrieve your items from Fredrick.
-        mplew.writeShort(ServerPacket.Header.LP_StoreBankGetAllResult.get());
-        mplew.write(type);
-        return mplew.getPacket();
+        sp.Encode1(type);
+        return sp.get();
     }
 
     public static final MaplePacket merchItemStore_ItemData(final MerchItemPackage pack) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_StoreBankResult.get());
-        mplew.write(35);
-        mplew.writeInt(9030000); // Fredrick
-        mplew.writeInt(32272); // pack.getPackageid()
-        mplew.writeZeroBytes(5);
-        mplew.writeInt(pack.getMesos());
-        mplew.write(0);
-        mplew.write(pack.getItems().size());
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_StoreBankResult);
+
+        sp.Encode1(35);
+        sp.Encode4(9030000); // Fredrick
+        sp.Encode4(32272); // pack.getPackageid()
+        sp.EncodeZeroBytes(5);
+        sp.Encode4(pack.getMesos());
+        sp.Encode1(0);
+        sp.Encode1(pack.getItems().size());
         for (final IItem item : pack.getItems()) {
-            TestHelper.addItemInfo(mplew, item, true, true);
+            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
         }
-        mplew.writeZeroBytes(3);
-        return mplew.getPacket();
+        sp.EncodeZeroBytes(3);
+        return sp.get();
     }
-    
+
 }

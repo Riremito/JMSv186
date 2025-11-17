@@ -26,8 +26,7 @@ import tacos.config.Version;
 import tacos.network.MaplePacket;
 import java.awt.Point;
 import tacos.packet.ServerPacket;
-import tacos.packet.response.struct.TestHelper;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
+import tacos.packet.response.struct.Structure;
 
 /**
  *
@@ -73,28 +72,12 @@ public class ResCUser {
     }
 
     // CUser::OnMiniRoomBalloon
-    public static final MaplePacket sendPlayerShopBox(final MapleCharacter c) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserMiniRoomBalloon.get());
-        mplew.writeInt(c.getId());
-        TestHelper.addAnnounceBox(mplew, c);
-        return mplew.getPacket();
-    }
+    public static MaplePacket sendPlayerShopBox(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserMiniRoomBalloon);
 
-    public static final MaplePacket addCharBox(final MapleCharacter c, final int type) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserMiniRoomBalloon.get());
-        mplew.writeInt(c.getId());
-        TestHelper.addAnnounceBox(mplew, c);
-        return mplew.getPacket();
-    }
-
-    public static final MaplePacket removeCharBox(final MapleCharacter c) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserMiniRoomBalloon.get());
-        mplew.writeInt(c.getId());
-        mplew.write(0);
-        return mplew.getPacket();
+        sp.Encode4(chr.getId());
+        sp.EncodeBuffer(Structure.AnnounceBox(chr));
+        return sp.get();
     }
 
     // CUser::SetConsumeItemEffect
@@ -161,19 +144,20 @@ public class ResCUser {
     // CUser::OnTeslaTriangle
     // CUser::OnFollowCharacter
     public static MaplePacket followEffect(int initiator, int replier, Point toMap) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserFollowCharacter.get());
-        mplew.writeInt(initiator);
-        mplew.writeInt(replier);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserFollowCharacter);
+
+        sp.Encode4(initiator);
+        sp.Encode4(replier);
         if (replier == 0) {
             //cancel
-            mplew.write(toMap == null ? 0 : 1); //1 -> x (int) y (int) to change map
+            sp.Encode1(toMap == null ? 0 : 1); //1 -> x (int) y (int) to change map
             if (toMap != null) {
-                mplew.writeInt(toMap.x);
-                mplew.writeInt(toMap.y);
+                sp.Encode4(toMap.x);
+                sp.Encode4(toMap.y);
             }
         }
-        return mplew.getPacket();
+
+        return sp.get();
     }
 
     // CUser::OnShowPQReward

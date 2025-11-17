@@ -30,8 +30,6 @@ import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import odin.server.shops.AbstractPlayerStore;
-import odin.server.shops.IMaplePlayerShop;
 import odin.tools.KoreanDateUtil;
 import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
@@ -215,29 +213,6 @@ public class TestHelper {
                     mplew.write(52);
                 }
             }
-        }
-    }
-
-    public static final void addInteraction(final MaplePacketLittleEndianWriter mplew, IMaplePlayerShop shop) {
-        mplew.write(shop.getGameType());
-        mplew.writeInt(((AbstractPlayerStore) shop).getObjectId());
-        mplew.writeMapleAsciiString(shop.getDescription());
-        if (shop.getShopType() != 1) {
-            mplew.write(shop.getPassword().length() > 0 ? 1 : 0); //password = false
-        }
-        mplew.write(shop.getItemId() % 10);
-        mplew.write(shop.getSize()); //current size
-        mplew.write(shop.getMaxSize()); //full slots... 4 = 4-1=3 = has slots, 1-1=0 = no slots
-        if (shop.getShopType() != 1) {
-            mplew.write(shop.isOpen() ? 0 : 1);
-        }
-    }
-
-    public static final void addAnnounceBox(final MaplePacketLittleEndianWriter mplew, final MapleCharacter chr) {
-        if (chr.getPlayerShop() != null && chr.getPlayerShop().isOwner(chr) && chr.getPlayerShop().getShopType() != 1 && chr.getPlayerShop().isAvailable()) {
-            addInteraction(mplew, chr.getPlayerShop());
-        } else {
-            mplew.write(0);
         }
     }
 
