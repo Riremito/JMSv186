@@ -34,20 +34,20 @@ import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleMapObjectType;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
+import tacos.packet.ClientPacket;
 
 public class PlayersHandler {
 
-    public static void Note(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        final byte type = slea.readByte();
+    public static void Note(ClientPacket cp, final MapleCharacter chr) {
+        final byte type = cp.Decode1();
 
         switch (type) {
             case 0:
-                String name = slea.readMapleAsciiString();
-                String msg = slea.readMapleAsciiString();
-                boolean fame = slea.readByte() > 0;
-                slea.readInt(); //0?
-                IItem itemz = chr.getCashInventory().findByCashId(slea.readLong());
+                String name = cp.DecodeStr();
+                String msg = cp.DecodeStr();
+                boolean fame = cp.Decode1() > 0;
+                cp.Decode4(); //0?
+                IItem itemz = chr.getCashInventory().findByCashId(cp.Decode8());
                 if (itemz == null || !itemz.getGiftFrom().equalsIgnoreCase(name) || !chr.getCashInventory().canSendNote(itemz.getUniqueId())) {
                     return;
                 }
@@ -59,12 +59,13 @@ public class PlayersHandler {
                 }
                 break;
             case 1:
-                final byte num = slea.readByte();
-                slea.skip(2);
+                final byte num = cp.Decode1();
+                //slea.skip(2);
+                cp.Decode2(); // ?_?
 
                 for (int i = 0; i < num; i++) {
-                    final int id = slea.readInt();
-                    chr.deleteNote(id, slea.readByte() > 0 ? 1 : 0);
+                    final int id = cp.Decode4();
+                    chr.deleteNote(id, cp.Decode1() > 0 ? 1 : 0);
                 }
                 break;
             default:
@@ -102,15 +103,15 @@ public class PlayersHandler {
         }
     }
 
-    public static void TransformPlayer(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static void TransformPlayer(ClientPacket cp, final MapleClient c, final MapleCharacter chr) {
         // D9 A4 FD 00
         // 11 00
         // A0 C0 21 00
         // 07 00 64 66 62 64 66 62 64
-        chr.updateTick(slea.readInt());
-        final byte slot = (byte) slea.readShort();
-        final int itemId = slea.readInt();
-        final String target = slea.readMapleAsciiString().toLowerCase();
+        chr.updateTick(cp.Decode4());
+        final byte slot = (byte) cp.Decode2();
+        final int itemId = cp.Decode4();
+        final String target = cp.DecodeStr().toLowerCase();
 
         final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
 
@@ -131,9 +132,9 @@ public class PlayersHandler {
         }
     }
 
-    public static void FollowRequest(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        MapleCharacter tt = c.getPlayer().getMap().getCharacterById(slea.readInt());
-        if (slea.readByte() > 0) {
+    public static void FollowRequest(ClientPacket cp, final MapleClient c) {
+        MapleCharacter tt = c.getPlayer().getMap().getCharacterById(cp.Decode4());
+        if (cp.Decode1() > 0) {
             //1 when changing map
             tt = c.getPlayer().getMap().getCharacterById(c.getPlayer().getFollowId());
             if (tt != null && tt.getFollowId() == c.getPlayer().getId()) {
@@ -144,7 +145,7 @@ public class PlayersHandler {
             }
             return;
         }
-        if (slea.readByte() > 0) { //cancelling follow
+        if (cp.Decode1() > 0) { //cancelling follow
             tt = c.getPlayer().getMap().getCharacterById(c.getPlayer().getFollowId());
             if (tt != null && tt.getFollowId() == c.getPlayer().getId() && c.getPlayer().isFollowOn()) {
                 c.getPlayer().checkFollow();
@@ -163,11 +164,11 @@ public class PlayersHandler {
         }
     }
 
-    public static void FollowReply(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        if (c.getPlayer().getFollowId() > 0 && c.getPlayer().getFollowId() == slea.readInt()) {
+    public static void FollowReply(ClientPacket cp, final MapleClient c) {
+        if (c.getPlayer().getFollowId() > 0 && c.getPlayer().getFollowId() == cp.Decode4()) {
             MapleCharacter tt = c.getPlayer().getMap().getCharacterById(c.getPlayer().getFollowId());
             if (tt != null && tt.getPosition().distanceSq(c.getPlayer().getPosition()) < 10000 && tt.getFollowId() == 0 && tt.getId() != c.getPlayer().getId()) { //estimate, should less
-                boolean accepted = slea.readByte() > 0;
+                boolean accepted = cp.Decode1() > 0;
                 if (accepted) {
                     tt.setFollowId(c.getPlayer().getId());
                     tt.setFollowOn(true);
@@ -192,11 +193,11 @@ public class PlayersHandler {
         }
     }
 
-    public static void RingAction(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final byte mode = slea.readByte();
+    public static void RingAction(ClientPacket cp, final MapleClient c) {
+        final byte mode = cp.Decode1();
         if (mode == 0) {
-            final String name = slea.readMapleAsciiString();
-            final int itemid = slea.readInt();
+            final String name = cp.DecodeStr();
+            final int itemid = cp.Decode4();
             final int newItemId = 1112300 + (itemid - 2240004);
             final MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
             int errcode = 0;
@@ -226,9 +227,9 @@ public class PlayersHandler {
         } else if (mode == 1) {
             c.getPlayer().setMarriageItemId(0);
         } else if (mode == 2) { //accept/deny proposal
-            final boolean accepted = slea.readByte() > 0;
-            final String name = slea.readMapleAsciiString();
-            final int id = slea.readInt();
+            final boolean accepted = cp.Decode1() > 0;
+            final String name = cp.DecodeStr();
+            final int id = cp.Decode4();
             final MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
             if (c.getPlayer().getMarriageId() > 0 || chr == null || chr.getId() != id || chr.getMarriageItemId() <= 0 || !chr.haveItem(chr.getMarriageItemId(), 1) || chr.getMarriageId() > 0) {
                 c.getSession().write(ResCWvsContext.sendEngagement((byte) 0x1D, 0, null, null));
@@ -254,7 +255,7 @@ public class PlayersHandler {
             c.getSession().write(WrapCWvsContext.updateStat());
             chr.setMarriageItemId(0);
         } else if (mode == 3) { //drop, only works for ETC
-            final int itemId = slea.readInt();
+            final int itemId = cp.Decode4();
             final MapleInventoryType type = GameConstants.getInventoryType(itemId);
             final IItem item = c.getPlayer().getInventory(type).findById(itemId);
             if (item != null && type == MapleInventoryType.ETC && itemId / 10000 == 421) {

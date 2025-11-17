@@ -50,7 +50,6 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
 
 /**
  *
@@ -224,8 +223,8 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static final void PetCommand(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        final int petIndex = slea.readInt();
+    public static final void PetCommand(ClientPacket cp, final MapleClient c, final MapleCharacter chr) {
+        final int petIndex = cp.Decode4();
         /*chr.getPetIndex(slea.readInt());*/
         if (petIndex == -1) {
             return;
@@ -234,8 +233,9 @@ public class ReqCUser_Pet {
         if (pet == null) {
             return;
         }
-        slea.skip(5);
-        final byte command = slea.readByte();
+        //slea.skip(5);
+        cp.DecodeBuffer(5); // ?_?
+        final byte command = cp.Decode1();
         final PetCommand petCommand = ItemWz.getPetCommand(pet.getPetItemId(), (int) command);
         boolean success = false;
         if (Randomizer.nextInt(99) <= petCommand.getProbability()) {
