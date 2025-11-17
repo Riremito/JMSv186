@@ -18,19 +18,14 @@
  */
 package tacos.packet.response.struct;
 
-import tacos.packet.response.data.DataGW_ItemSlotBase;
 import odin.client.MapleCharacter;
-import odin.client.inventory.IEquip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
 import tacos.config.Version;
-import odin.constants.GameConstants;
-import tacos.debug.DebugLogger;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import odin.tools.KoreanDateUtil;
 import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
@@ -95,124 +90,6 @@ public class TestHelper {
         mplew.writeInt(0);
         if (Version.GreaterOrEqual(Region.JMS, 164)) {
             mplew.writeLong(0);
-        }
-    }
-
-    public static final void addExpirationTime(final MaplePacketLittleEndianWriter mplew, final long time) {
-        mplew.write(0);
-        mplew.writeShort(1408); // 80 05
-        if (time != -1) {
-            mplew.writeInt(KoreanDateUtil.getItemTimestamp(time));
-            mplew.write(1);
-        } else {
-            mplew.writeInt(400967355);
-            mplew.write(2);
-        }
-    }
-
-    public static final void addItemInfo(final MaplePacketLittleEndianWriter mplew, final IItem item, final boolean zeroPosition, final boolean leaveOut) {
-        if (zeroPosition && leaveOut) {
-            mplew.write(DataGW_ItemSlotBase.Encode(item));
-            return;
-        }
-        DebugLogger.ErrorLog("!!! addItemInfo, old");
-        addItemInfo(mplew, item, zeroPosition, leaveOut, false);
-    }
-
-    public static final void addItemInfo(final MaplePacketLittleEndianWriter mplew, final IItem item, final boolean zeroPosition, final boolean leaveOut, final boolean trade) {
-        short pos = item.getPosition();
-        if (zeroPosition) {
-            if (!leaveOut) {
-                mplew.write(0);
-            }
-        } else {
-            if (pos <= -1) {
-                pos *= -1;
-                if (pos > 100 && pos < 1000) {
-                    pos -= 100;
-                }
-            }
-            if (!trade && item.getType() == 1) {
-                mplew.writeShort(pos);
-            } else {
-                mplew.write(pos);
-            }
-        }
-        mplew.write(item.getPet() != null ? 3 : item.getType());
-        mplew.writeInt(item.getItemId());
-        boolean hasUniqueId = item.getUniqueId() > 0;
-        //marriage rings arent cash items so dont have uniqueids, but we assign them anyway for the sake of rings
-        mplew.write(hasUniqueId ? 1 : 0);
-        if (hasUniqueId) {
-            mplew.writeLong(item.getUniqueId());
-        }
-        if (item.getPet() != null) {
-            // Pet
-            //addPetItemInfo(mplew, item, item.getPet());
-        } else {
-            addExpirationTime(mplew, item.getExpiration());
-            if (item.getType() == 1) {
-                final IEquip equip = (IEquip) item;
-                mplew.write(equip.getUpgradeSlots());
-                mplew.write(equip.getLevel());
-                //                mplew.write(0);
-                mplew.writeShort(equip.getStr());
-                mplew.writeShort(equip.getDex());
-                mplew.writeShort(equip.getInt());
-                mplew.writeShort(equip.getLuk());
-                mplew.writeShort(equip.getHp());
-                mplew.writeShort(equip.getMp());
-                mplew.writeShort(equip.getWatk());
-                mplew.writeShort(equip.getMatk());
-                mplew.writeShort(equip.getWdef());
-                mplew.writeShort(equip.getMdef());
-                mplew.writeShort(equip.getAcc());
-                mplew.writeShort(equip.getAvoid());
-                mplew.writeShort(equip.getHands());
-                mplew.writeShort(equip.getSpeed());
-                mplew.writeShort(equip.getJump());
-                mplew.writeMapleAsciiString(equip.getOwner());
-                // ポイントアイテムの一度も装備していないことを確認するためのフラグ
-                if (hasUniqueId) {
-                    // ポイントアイテム交換可能
-                    mplew.writeShort(16);
-                } else {
-                    mplew.writeShort(equip.getFlag());
-                }
-                mplew.write(0);
-                mplew.write(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // Item level
-                if (hasUniqueId) {
-                    mplew.write(unk1);
-                } else {
-                    mplew.writeShort(0);
-                    mplew.writeShort(equip.getExpPercentage() * 4); // Item Exp... 98% = 25%
-                }
-                mplew.writeInt(equip.getDurability());
-                mplew.writeInt(equip.getViciousHammer());
-                if (!hasUniqueId) {
-                    mplew.write(equip.getHidden()); //7 = unique for the lulz
-                    mplew.write(equip.getEnhance());
-                    mplew.writeShort(equip.getPotential1()); //potential stuff 1. total damage
-                    mplew.writeShort(equip.getPotential2()); //potential stuff 2. critical rate
-                    mplew.writeShort(equip.getPotential3()); //potential stuff 3. all stats
-                }
-                mplew.writeShort(equip.getHpR());
-                mplew.writeShort(equip.getMpR());
-                mplew.writeLong(0); //some tracking ID
-                mplew.write(unk1);
-                mplew.write(unk2);
-                mplew.writeInt(-1);
-            } else {
-                mplew.writeShort(item.getQuantity());
-                mplew.writeMapleAsciiString(item.getOwner());
-                mplew.writeShort(item.getFlag());
-                if (GameConstants.isThrowingStar(item.getItemId()) || GameConstants.isBullet(item.getItemId())) {
-                    mplew.writeInt(2);
-                    mplew.writeShort(84);
-                    mplew.write(0);
-                    mplew.write(52);
-                }
-            }
         }
     }
 

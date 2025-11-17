@@ -24,11 +24,10 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsITC;
 import tacos.packet.ops.arg.ArgITCNormalItemResult;
 import tacos.packet.response.ResCITC;
-import tacos.packet.response.struct.TestHelper;
 import odin.server.MTSStorage;
 import tacos.network.MaplePacket;
 import odin.tools.KoreanDateUtil;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
+import tacos.packet.response.data.DataGW_ItemSlotBase;
 
 /**
  *
@@ -52,24 +51,24 @@ public class WrapCITC {
     }
 
     public static final MaplePacket addToCartMessage(boolean fail, boolean remove) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+
         if (remove) {
             if (fail) {
-                mplew.write(44);
-                mplew.writeInt(-1);
+                sp.Encode1(44);
+                sp.Encode4(-1);
             } else {
-                mplew.write(43);
+                sp.Encode1(43);
             }
         } else {
             if (fail) {
-                mplew.write(42);
-                mplew.writeInt(-1);
+                sp.Encode1(42);
+                sp.Encode4(-1);
             } else {
-                mplew.write(41);
+                sp.Encode1(41);
             }
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static final MaplePacket getMTSConfirmCancel() {
@@ -80,62 +79,66 @@ public class WrapCITC {
     }
 
     public static final MaplePacket sendMTS(final List<MTSStorage.MTSItemInfo> items, final int tab, final int type, final int page, final int pages) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
-        mplew.write(21); //operation
-        mplew.writeInt(pages * 10); //total items
-        mplew.writeInt(items.size()); //number of items on this page
-        mplew.writeInt(tab);
-        mplew.writeInt(type);
-        mplew.writeInt(page);
-        mplew.write(1);
-        mplew.write(1);
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+
+        sp.Encode1(21); //operation
+        sp.Encode4(pages * 10); //total items
+        sp.Encode4(items.size()); //number of items on this page
+        sp.Encode4(tab);
+        sp.Encode4(type);
+        sp.Encode4(page);
+        sp.Encode1(1);
+        sp.Encode1(1);
         for (MTSStorage.MTSItemInfo item : items) {
-            addMTSItemInfo(mplew, item);
+            sp.EncodeBuffer(addMTSItemInfo(item));
         }
-        mplew.write(0); //0 or 1?
-        return mplew.getPacket();
+        sp.Encode1(0); //0 or 1?
+        return sp.get();
     }
 
-    public static final void addMTSItemInfo(final MaplePacketLittleEndianWriter mplew, final MTSStorage.MTSItemInfo item) {
-        TestHelper.addItemInfo(mplew, item.getItem(), true, true);
-        mplew.writeInt(item.getId()); //id
-        mplew.writeInt(item.getTaxes()); //this + below = price
-        mplew.writeInt(item.getPrice()); //price
-        mplew.writeLong(0);
-        mplew.writeInt(KoreanDateUtil.getQuestTimestamp(item.getEndingDate()));
-        mplew.writeInt(KoreanDateUtil.getQuestTimestamp(item.getEndingDate()));
-        mplew.writeMapleAsciiString(item.getSeller()); //account name (what was nexon thinking?)
-        mplew.writeMapleAsciiString(item.getSeller()); //char name
-        mplew.writeZeroBytes(28);
+    public static byte[] addMTSItemInfo(MTSStorage.MTSItemInfo item) {
+        ServerPacket data = new ServerPacket();
+
+        data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item.getItem()));
+        data.Encode4(item.getId()); //id
+        data.Encode4(item.getTaxes()); //this + below = price
+        data.Encode4(item.getPrice()); //price
+        data.Encode8(0);
+        data.Encode4(KoreanDateUtil.getQuestTimestamp(item.getEndingDate()));
+        data.Encode4(KoreanDateUtil.getQuestTimestamp(item.getEndingDate()));
+        data.EncodeStr(item.getSeller()); //account name (what was nexon thinking?)
+        data.EncodeStr(item.getSeller()); //char name
+        data.EncodeZeroBytes(28);
+
+        return data.get().getBytes();
     }
 
     public static final MaplePacket getMTSWantedListingOver(final int nx, final int items) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
-        mplew.write(61);
-        mplew.writeInt(nx);
-        mplew.writeInt(items);
-        return mplew.getPacket();
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+
+        sp.Encode1(61);
+        sp.Encode4(nx);
+        sp.Encode4(items);
+        return sp.get();
     }
 
     public static final MaplePacket getTransferInventory(final List<IItem> items, final boolean changed) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
-        mplew.write(33);
-        mplew.writeInt(items.size());
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+
+        sp.Encode1(33);
+        sp.Encode4(items.size());
         int i = 0;
         for (IItem item : items) {
-            TestHelper.addItemInfo(mplew, item, true, true);
-            mplew.writeInt(Integer.MAX_VALUE - i); //fake ID
-            mplew.writeInt(110);
-            mplew.writeInt(1011); //fake
-            mplew.writeZeroBytes(48);
+            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+            sp.Encode4(Integer.MAX_VALUE - i); //fake ID
+            sp.Encode4(110);
+            sp.Encode4(1011); //fake
+            sp.EncodeZeroBytes(48);
             i++;
         }
-        mplew.writeInt(-47 + i - 1);
-        mplew.write(changed ? 1 : 0);
-        return mplew.getPacket();
+        sp.Encode4(-47 + i - 1);
+        sp.Encode1(changed ? 1 : 0);
+        return sp.get();
     }
 
     public static final MaplePacket getMTSConfirmBuy() {
@@ -146,12 +149,12 @@ public class WrapCITC {
     }
 
     public static final MaplePacket getMTSConfirmTransfer(final int quantity, final int pos) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
-        mplew.write(39);
-        mplew.writeInt(quantity);
-        mplew.writeInt(pos);
-        return mplew.getPacket();
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+
+        sp.Encode1(39);
+        sp.Encode4(quantity);
+        sp.Encode4(pos);
+        return sp.get();
     }
 
     public static final MaplePacket getMTSFailBuy() {
@@ -163,14 +166,14 @@ public class WrapCITC {
     }
 
     public static final MaplePacket getNotYetSoldInv(final List<MTSStorage.MTSItemInfo> items) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ITCNormalItemResult.get());
-        mplew.write(35);
-        mplew.writeInt(items.size());
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+
+        sp.Encode1(35);
+        sp.Encode4(items.size());
         for (MTSStorage.MTSItemInfo item : items) {
-            WrapCITC.addMTSItemInfo(mplew, item);
+            sp.EncodeBuffer(addMTSItemInfo(item));
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static final MaplePacket getMTSFailSell() {
