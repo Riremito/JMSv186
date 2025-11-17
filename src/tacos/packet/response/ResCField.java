@@ -31,7 +31,6 @@ import tacos.packet.ops.Ops_Whisper;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -142,86 +141,87 @@ public class ResCField {
     }
 
     public static MaplePacket showOXQuiz(int questionSet, int questionId, boolean askQuestion) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Quiz.get());
-        mplew.write(askQuestion ? 1 : 0);
-        mplew.write(questionSet);
-        mplew.writeShort(questionId);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Quiz);
+
+        sp.Encode1(askQuestion ? 1 : 0);
+        sp.Encode1(questionSet);
+        sp.Encode2(questionId);
+        return sp.get();
     }
 
     public static MaplePacket showChaosHorntailShrine(boolean spawned, int time) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_HontaleTimer.get());
-        mplew.write(spawned ? 1 : 0);
-        mplew.writeInt(time);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_HontaleTimer);
+
+        sp.Encode1(spawned ? 1 : 0);
+        sp.Encode4(time);
+        return sp.get();
     }
 
     public static MaplePacket showChaosZakumShrine(boolean spawned, int time) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ChaosZakumTimer.get());
-        mplew.write(spawned ? 1 : 0);
-        mplew.writeInt(time);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ChaosZakumTimer);
+
+        sp.Encode1(spawned ? 1 : 0);
+        sp.Encode4(time);
+        return sp.get();
     }
 
     public static MaplePacket stopClock() {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_DestroyClock.get());
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DestroyClock);
+
+        return sp.get();
     }
 
     public static MaplePacket showHorntailShrine(boolean spawned, int time) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_HontailTimer.get());
-        mplew.write(spawned ? 1 : 0);
-        mplew.writeInt(time);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_HontailTimer);
+
+        sp.Encode1(spawned ? 1 : 0);
+        sp.Encode4(time);
+        return sp.get();
     }
 
     public static MaplePacket showZakumShrine(boolean spawned, int time) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_ZakumTimer.get());
-        mplew.write(spawned ? 1 : 0);
-        mplew.writeInt(time);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ZakumTimer);
+
+        sp.Encode1(spawned ? 1 : 0);
+        sp.Encode4(time);
+        return sp.get();
     }
 
     public static MaplePacket showEquipEffect() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FieldSpecificData.get());
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FieldSpecificData);
+
+        return sp.get();
     }
 
     public static MaplePacket showEquipEffect(int team) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FieldSpecificData.get());
-        mplew.writeShort(team);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FieldSpecificData);
+
+        sp.Encode2(team);
+        return sp.get();
     }
 
     public static final MaplePacket getUpdateEnvironment(final MapleMap map) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FieldObstacleOnOffStatus.get());
-        mplew.writeInt(map.getEnvironment().size());
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FieldObstacleOnOffStatus);
+
+        sp.Encode4(map.getEnvironment().size());
         for (Map.Entry<String, Integer> mp : map.getEnvironment().entrySet()) {
-            mplew.writeMapleAsciiString(mp.getKey());
-            mplew.writeInt(mp.getValue());
+            sp.EncodeStr(mp.getKey());
+            sp.Encode4(mp.getValue());
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static MaplePacket environmentMove(String env, int mode) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FieldObstacleOnOff.get());
-        mplew.writeMapleAsciiString(env);
-        mplew.writeInt(mode);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FieldObstacleOnOff);
+
+        sp.EncodeStr(env);
+        sp.Encode4(mode);
+        return sp.get();
     }
 
     public static MaplePacket getClockTime(int hour, int min, int sec) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Clock);
+
         sp.Encode1(1); // station clock
         sp.Encode1(hour);
         sp.Encode1(min);
@@ -231,6 +231,7 @@ public class ResCField {
 
     public static MaplePacket getClock(int time) {
         ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Clock);
+
         sp.Encode1(2); // timer
         sp.Encode4(time);
         return sp.get();
@@ -306,41 +307,41 @@ public class ResCField {
     }
 
     public static final MaplePacket getMovingPlatforms(final MapleMap map) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_FootHoldInfo.get());
-        mplew.writeInt(map.getPlatforms().size());
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FootHoldInfo);
+
+        sp.Encode4(map.getPlatforms().size());
         for (MapleNodes.MaplePlatform mp : map.getPlatforms()) {
-            mplew.writeMapleAsciiString(mp.name);
-            mplew.writeInt(mp.start);
-            mplew.writeInt(mp.SN.size());
+            sp.EncodeStr(mp.name);
+            sp.Encode4(mp.start);
+            sp.Encode4(mp.SN.size());
             for (int x = 0; x < mp.SN.size(); x++) {
-                mplew.writeInt(mp.SN.get(x));
+                sp.Encode4(mp.SN.get(x));
             }
-            mplew.writeInt(mp.speed);
-            mplew.writeInt(mp.x1);
-            mplew.writeInt(mp.x2);
-            mplew.writeInt(mp.y1);
-            mplew.writeInt(mp.y2);
-            mplew.writeInt(mp.x1); //?
-            mplew.writeInt(mp.y1);
-            mplew.writeShort(mp.r);
+            sp.Encode4(mp.speed);
+            sp.Encode4(mp.x1);
+            sp.Encode4(mp.x2);
+            sp.Encode4(mp.y1);
+            sp.Encode4(mp.y2);
+            sp.Encode4(mp.x1); //?
+            sp.Encode4(mp.y1);
+            sp.Encode2(mp.r);
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     public static MaplePacket showEventInstructions() {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_Desc.get());
-        mplew.write(0);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Desc);
+
+        sp.Encode1(0);
+        return sp.get();
     }
 
     public static MaplePacket GameMaster_Func(int value) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_AdminResult.get());
-        mplew.write(value);
-        mplew.writeZeroBytes(17);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AdminResult);
+
+        sp.Encode1(value);
+        sp.EncodeZeroBytes(17);
+        return sp.get();
     }
 
 }
