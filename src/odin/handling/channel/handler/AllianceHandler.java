@@ -28,11 +28,11 @@ import odin.handling.world.World;
 import odin.handling.world.guild.MapleGuild;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.WrapCWvsContext;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
+import tacos.packet.ClientPacket;
 
 public class AllianceHandler {
 
-    public static final void HandleAlliance(final SeekableLittleEndianAccessor slea, final MapleClient c, boolean denied) {
+    public static final void HandleAlliance(ClientPacket cp, final MapleClient c, boolean denied) {
         if (c.getPlayer().getGuildId() <= 0) {
             c.getSession().write(WrapCWvsContext.updateStat());
             return;
@@ -43,7 +43,7 @@ public class AllianceHandler {
             return;
         }
         //System.out.println("Unhandled GuildAlliance \n" + slea.toString());
-        byte op = slea.readByte();
+        byte op = cp.Decode1();
         if (c.getPlayer().getGuildRank() != 1 && op != 1) { //only updating doesn't need guild leader
             return;
         }
@@ -78,7 +78,7 @@ public class AllianceHandler {
                 }
                 break;
             case 3: //invite
-                final int newGuild = World.Guild.getGuildLeader(slea.readMapleAsciiString());
+                final int newGuild = World.Guild.getGuildLeader(cp.DecodeStr());
                 if (newGuild > 0 && c.getPlayer().getAllianceRank() == 1 && leaderid == c.getPlayer().getId()) {
                     chr = c.getChannelServer().getPlayerStorage().getCharacterById(newGuild);
                     if (chr != null && chr.getGuildId() > 0 && World.Alliance.canInvite(gs.getAllianceId())) {
@@ -99,9 +99,9 @@ public class AllianceHandler {
             case 2: //leave; nothing
             case 6: //expel, guildid(int) -> allianceid(don't care, a/b check)
                 final int gid;
-                if (op == 6 && slea.available() >= 4) {
-                    gid = slea.readInt();
-                    if (slea.available() >= 4 && gs.getAllianceId() != slea.readInt()) {
+                if (op == 6/* && slea.available() >= 4*/) {
+                    gid = cp.Decode4();
+                    if (/*slea.available() >= 4 &&*/gs.getAllianceId() != cp.Decode4()) {
                         break;
                     }
                 } else {
@@ -115,7 +115,7 @@ public class AllianceHandler {
                 break;
             case 7: //change leader
                 if (c.getPlayer().getAllianceRank() == 1 && leaderid == c.getPlayer().getId()) {
-                    if (!World.Alliance.changeAllianceLeader(gs.getAllianceId(), slea.readInt())) {
+                    if (!World.Alliance.changeAllianceLeader(gs.getAllianceId(), cp.Decode4())) {
                         c.getPlayer().dropMessage(5, "An error occured when changing leader.");
                     }
                 }
@@ -124,21 +124,21 @@ public class AllianceHandler {
                 if (c.getPlayer().getAllianceRank() == 1 && leaderid == c.getPlayer().getId()) {
                     String[] ranks = new String[5];
                     for (int i = 0; i < 5; i++) {
-                        ranks[i] = slea.readMapleAsciiString();
+                        ranks[i] = cp.DecodeStr();
                     }
                     World.Alliance.updateAllianceRanks(gs.getAllianceId(), ranks);
                 }
                 break;
             case 9:
                 if (c.getPlayer().getAllianceRank() <= 2) {
-                    if (!World.Alliance.changeAllianceRank(gs.getAllianceId(), slea.readInt(), slea.readByte())) {
+                    if (!World.Alliance.changeAllianceRank(gs.getAllianceId(), cp.Decode4(), cp.Decode1())) {
                         c.getPlayer().dropMessage(5, "An error occured when changing rank.");
                     }
                 }
                 break;
             case 10: //notice update
                 if (c.getPlayer().getAllianceRank() <= 2) {
-                    final String notice = slea.readMapleAsciiString();
+                    final String notice = cp.DecodeStr();
                     if (notice.length() > 100) {
                         break;
                     }
@@ -146,7 +146,7 @@ public class AllianceHandler {
                 }
                 break;
             default:
-                System.out.println("Unhandled GuildAlliance op: " + op + ", \n" + slea.toString());
+                System.out.println("Unhandled GuildAlliance op: " + op + ", \n"/* + slea.toString()*/);
                 break;
         }
         //c.getSession().write(MaplePacketCreator.enableActions());
