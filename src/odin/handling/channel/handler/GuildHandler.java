@@ -30,7 +30,7 @@ import tacos.network.MaplePacket;
 import odin.handling.world.World;
 import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCWvsContext;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
+import tacos.packet.ClientPacket;
 
 public class GuildHandler {
 
@@ -41,7 +41,7 @@ public class GuildHandler {
         }
     }
 
-    private static final boolean isGuildNameAcceptable(final String name) {
+    private static boolean isGuildNameAcceptable(final String name) {
         if (name.getBytes().length < 3 || name.getBytes().length > 12) {
             return false;
         }
@@ -53,7 +53,7 @@ public class GuildHandler {
         return true;
     }
 
-    private static final void respawnPlayer(final MapleCharacter mc) {
+    private static void respawnPlayer(final MapleCharacter mc) {
         mc.getMap().broadcastMessage(mc, ResCUserPool.UserLeaveField(mc.getId()), false);
         mc.getMap().broadcastMessage(mc, ResCUserPool.UserEnterField(mc), false);
     }
@@ -82,7 +82,7 @@ public class GuildHandler {
     private static final java.util.List<Invited> invited = new java.util.LinkedList<Invited>();
     private static long nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
 
-    public static final void Guild(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static final void Guild(ClientPacket cp, final MapleClient c) {
         if (System.currentTimeMillis() >= nextPruneTime) {
             Iterator<Invited> itr = invited.iterator();
             Invited inv;
@@ -95,7 +95,7 @@ public class GuildHandler {
             nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
         }
 
-        switch (slea.readByte()) {
+        switch (cp.Decode1()) {
             case 0x02: // Create guild
                 if (c.getPlayer().getGuildId() > 0 || c.getPlayer().getMapId() != 200000301) {
                     c.getPlayer().dropMessage(1, "You cannot create a new Guild while in one.");
@@ -104,7 +104,7 @@ public class GuildHandler {
                     c.getPlayer().dropMessage(1, "You do not have enough mesos to create a Guild.");
                     return;
                 }
-                final String guildName = slea.readMapleAsciiString();
+                final String guildName = cp.DecodeStr();
 
                 if (!isGuildNameAcceptable(guildName)) {
                     c.getPlayer().dropMessage(1, "The Guild name you have chosen is not accepted.");
@@ -128,7 +128,7 @@ public class GuildHandler {
                 if (c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() > 2) { // 1 == guild master, 2 == jr
                     return;
                 }
-                String name = slea.readMapleAsciiString();
+                String name = cp.DecodeStr();
                 final MapleGuildResponse mgr = MapleGuild.sendInvite(c, name);
 
                 if (mgr != null) {
@@ -144,8 +144,8 @@ public class GuildHandler {
                 if (c.getPlayer().getGuildId() > 0) {
                     return;
                 }
-                guildId = slea.readInt();
-                int cid = slea.readInt();
+                guildId = cp.Decode4();
+                int cid = cp.Decode4();
 
                 if (cid != c.getPlayer().getId()) {
                     return;
@@ -180,8 +180,8 @@ public class GuildHandler {
                 }
                 break;
             case 0x07: // leaving
-                cid = slea.readInt();
-                name = slea.readMapleAsciiString();
+                cid = cp.Decode4();
+                name = cp.DecodeStr();
 
                 if (cid != c.getPlayer().getId() || !name.equals(c.getPlayer().getName()) || c.getPlayer().getGuildId() <= 0) {
                     return;
@@ -190,8 +190,8 @@ public class GuildHandler {
                 c.getSession().write(ResCWvsContext.showGuildInfo(null));
                 break;
             case 0x08: // Expel
-                cid = slea.readInt();
-                name = slea.readMapleAsciiString();
+                cid = cp.Decode4();
+                name = cp.DecodeStr();
 
                 if (c.getPlayer().getGuildRank() > 2 || c.getPlayer().getGuildId() <= 0) {
                     return;
@@ -204,14 +204,14 @@ public class GuildHandler {
                 }
                 String ranks[] = new String[5];
                 for (int i = 0; i < 5; i++) {
-                    ranks[i] = slea.readMapleAsciiString();
+                    ranks[i] = cp.DecodeStr();
                 }
 
                 World.Guild.changeRankTitle(c.getPlayer().getGuildId(), ranks);
                 break;
             case 0x0e: // Rank change
-                cid = slea.readInt();
-                byte newRank = slea.readByte();
+                cid = cp.Decode4();
+                byte newRank = cp.Decode1();
 
                 if ((newRank <= 1 || newRank > 5) || c.getPlayer().getGuildRank() > 2 || (newRank <= 2 && c.getPlayer().getGuildRank() != 1) || c.getPlayer().getGuildId() <= 0) {
                     return;
@@ -228,10 +228,10 @@ public class GuildHandler {
                     c.getPlayer().dropMessage(1, "You do not have enough mesos to create a Guild.");
                     return;
                 }
-                final short bg = slea.readShort();
-                final byte bgcolor = slea.readByte();
-                final short logo = slea.readShort();
-                final byte logocolor = slea.readByte();
+                final short bg = cp.Decode2();
+                final byte bgcolor = cp.Decode1();
+                final short logo = cp.Decode2();
+                final byte logocolor = cp.Decode1();
 
                 World.Guild.setGuildEmblem(c.getPlayer().getGuildId(), bg, bgcolor, logo, logocolor);
 
@@ -239,7 +239,7 @@ public class GuildHandler {
                 respawnPlayer(c.getPlayer());
                 break;
             case 0x10: // guild notice change
-                final String notice = slea.readMapleAsciiString();
+                final String notice = cp.DecodeStr();
                 if (notice.length() > 100 || c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() > 2) {
                     return;
                 }
