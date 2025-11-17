@@ -36,7 +36,6 @@ import tacos.packet.response.data.DataCUser;
 import odin.server.MapleStatEffect;
 import odin.tools.AttackPair;
 import odin.tools.Pair;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
 
 /**
  *
@@ -263,47 +262,49 @@ public class ResCUserRemote {
     // CUserRemote::OnResetTemporaryStat
     // CUserRemote::OnReceiveHP
     public static MaplePacket updatePartyMemberHP(int cid, int curhp, int maxhp) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserHP.get());
-        mplew.writeInt(cid);
-        mplew.writeInt(curhp);
-        mplew.writeInt(maxhp);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserHP);
+
+        sp.Encode4(cid);
+        sp.Encode4(curhp);
+        sp.Encode4(maxhp);
+        return sp.get();
     }
 
     public static MaplePacket cancelForeignDebuff(int cid, long mask, boolean first) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserTemporaryStatReset.get());
-        mplew.writeInt(cid);
-        mplew.writeLong(first ? mask : 0);
-        mplew.writeLong(first ? 0 : mask);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserTemporaryStatReset);
+
+        sp.Encode4(cid);
+        sp.Encode8(first ? mask : 0);
+        sp.Encode8(first ? 0 : mask);
+        return sp.get();
     }
 
     public static MaplePacket showMonsterRiding(int cid, List<Pair<MapleBuffStat, Integer>> statups, int itemId, int skillId) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserTemporaryStatSet.get());
-        mplew.writeInt(cid);
-        writeLongMask(mplew, statups);
-        mplew.writeShort(0);
-        mplew.writeInt(itemId);
-        mplew.writeInt(skillId);
-        mplew.writeInt(0);
-        mplew.writeShort(0);
-        mplew.write(0);
-        mplew.write(0);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserTemporaryStatSet);
+
+        sp.Encode4(cid);
+        sp.EncodeBuffer(writeLongMask(statups));
+        sp.Encode2(0);
+        sp.Encode4(itemId);
+        sp.Encode4(skillId);
+        sp.Encode4(0);
+        sp.Encode2(0);
+        sp.Encode1(0);
+        sp.Encode1(0);
+        return sp.get();
     }
 
     public static MaplePacket cancelForeignBuff(int cid, List<MapleBuffStat> statups) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserTemporaryStatReset.get());
-        mplew.writeInt(cid);
-        writeLongMaskFromList(mplew, statups);
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserTemporaryStatReset);
+
+        sp.Encode4(cid);
+        sp.EncodeBuffer(writeLongMaskFromList(statups));
+        return sp.get();
     }
 
-    static void writeLongMaskFromList(MaplePacketLittleEndianWriter mplew, List<MapleBuffStat> statups) {
+    public static byte[] writeLongMaskFromList(List<MapleBuffStat> statups) {
+        ServerPacket data = new ServerPacket();
+
         long firstmask = 0;
         long secondmask = 0;
         for (MapleBuffStat statup : statups) {
@@ -314,15 +315,20 @@ public class ResCUserRemote {
             }
         }
         if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            mplew.writeZeroBytes(4);
+            data.EncodeZeroBytes(4);
         }
         if (Version.GreaterOrEqual(Region.JMS, 164)) {
-            mplew.writeLong(firstmask);
+            data.Encode8(firstmask);
         }
-        mplew.writeLong(secondmask);
+
+        data.Encode8(secondmask);
+
+        return data.get().getBytes();
     }
 
-    static void writeLongMask(MaplePacketLittleEndianWriter mplew, List<Pair<MapleBuffStat, Integer>> statups) {
+    public static byte[] writeLongMask(List<Pair<MapleBuffStat, Integer>> statups) {
+        ServerPacket data = new ServerPacket();
+
         long firstmask = 0;
         long secondmask = 0;
         for (Pair<MapleBuffStat, Integer> statup : statups) {
@@ -333,47 +339,52 @@ public class ResCUserRemote {
             }
         }
         if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            mplew.writeZeroBytes(4);
+            data.EncodeZeroBytes(4);
         }
         if (Version.GreaterOrEqual(Region.JMS, 164)) {
-            mplew.writeLong(firstmask);
+            data.Encode8(firstmask);
         }
-        mplew.writeLong(secondmask);
+        data.Encode8(secondmask);
+
+        return data.get().getBytes();
     }
 
     public static MaplePacket giveForeignBuff(int cid, List<Pair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserTemporaryStatSet.get());
-        mplew.writeInt(cid);
-        writeLongMask(mplew, statups);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserTemporaryStatSet);
+
+        sp.Encode4(cid);
+        sp.EncodeBuffer(writeLongMask(statups));
         for (Pair<MapleBuffStat, Integer> statup : statups) {
-            mplew.writeShort(statup.getRight().shortValue());
+            sp.Encode2(statup.getRight().shortValue());
         }
-        mplew.writeShort(0); // same as give_buff
+        sp.Encode2(0); // same as give_buff
         if (effect.isMorph()) {
-            mplew.write(0);
+            sp.Encode1(0);
         }
-        mplew.write(0);
-        return mplew.getPacket();
+        sp.Encode1(0);
+        return sp.get();
     }
 
     public static MaplePacket giveForeignDebuff(int cid, final List<Pair<MapleDisease, Integer>> statups, int skillid, int level) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserTemporaryStatSet.get());
-        mplew.writeInt(cid);
-        writeLongDiseaseMask(mplew, statups);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserTemporaryStatSet);
+
+        sp.Encode4(cid);
+        sp.EncodeBuffer(writeLongDiseaseMask(statups));
+
         if (skillid == 125) {
-            mplew.writeShort(0);
+            sp.Encode2(0);
         }
-        mplew.writeShort(skillid);
-        mplew.writeShort(level);
-        mplew.writeShort(0); // same as give_buff
-        mplew.writeShort(900); //Delay
-        return mplew.getPacket();
+        sp.Encode2(skillid);
+        sp.Encode2(level);
+        sp.Encode2(0); // same as give_buff
+        sp.Encode2(900); //Delay
+        return sp.get();
     }
 
     // List<Pair<MapleDisease, Integer>>
-    static void writeLongDiseaseMask(MaplePacketLittleEndianWriter mplew, List<Pair<MapleDisease, Integer>> statups) {
+    public static byte[] writeLongDiseaseMask(List<Pair<MapleDisease, Integer>> statups) {
+        ServerPacket data = new ServerPacket();
+
         long firstmask = 0;
         long secondmask = 0;
         for (Pair<MapleDisease, Integer> statup : statups) {
@@ -384,98 +395,105 @@ public class ResCUserRemote {
             }
         }
         if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            mplew.writeZeroBytes(4);
+            data.EncodeZeroBytes(4);
         }
         if (Version.GreaterOrEqual(Region.JMS, 164)) {
-            mplew.writeLong(firstmask);
+            data.Encode8(firstmask);
         }
-        mplew.writeLong(secondmask);
+        data.Encode8(secondmask);
+
+        return data.get().getBytes();
     }
 
     public static MaplePacket giveForeignPirate(List<Pair<MapleBuffStat, Integer>> statups, int duration, int cid, int skillid) {
         final boolean infusion = skillid == 5121009 || skillid == 15111005;
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserTemporaryStatSet.get());
-        mplew.writeInt(cid);
-        ResCUserRemote.writeLongMask(mplew, statups);
-        mplew.writeShort(0);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserTemporaryStatSet);
+
+        sp.Encode4(cid);
+        sp.EncodeBuffer(writeLongMask(statups));
+
+        sp.Encode2(0);
         for (Pair<MapleBuffStat, Integer> stat : statups) {
-            mplew.writeInt(stat.getRight().intValue());
-            mplew.writeLong(skillid);
-            mplew.writeZeroBytes(infusion ? 7 : 1);
-            mplew.writeShort(duration); //duration... seconds
+            sp.Encode4(stat.getRight().intValue());
+            sp.Encode8(skillid);
+            sp.EncodeZeroBytes(infusion ? 7 : 1);
+            sp.Encode2(duration); //duration... seconds
         }
-        mplew.writeShort(infusion ? 600 : 0);
-        return mplew.getPacket();
+        sp.Encode2(infusion ? 600 : 0);
+        return sp.get();
     }
 
     public static MaplePacket giveEnergyChargeTest(int cid, int bar, int bufflength) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserTemporaryStatSet.get());
-        mplew.writeInt(cid);
-        mplew.writeLong(MapleBuffStat.ENERGY_CHARGE.getValue());
-        mplew.writeLong(0);
-        mplew.writeShort(0);
-        mplew.writeInt(0);
-        mplew.writeInt(1555445060); //?
-        mplew.writeShort(0);
-        mplew.writeInt(Math.min(bar, 10000)); // 0 = no bar, 10000 = full bar
-        mplew.writeLong(0); //skillid, but its 0 here
-        mplew.write(0);
-        mplew.writeInt(bar >= 10000 ? bufflength : 0); //short - bufflength...50
-        return mplew.getPacket();
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserTemporaryStatSet);
+
+        sp.Encode4(cid);
+        sp.Encode8(MapleBuffStat.ENERGY_CHARGE.getValue());
+        sp.Encode8(0);
+        sp.Encode2(0);
+        sp.Encode4(0);
+        sp.Encode4(1555445060); //?
+        sp.Encode2(0);
+        sp.Encode4(Math.min(bar, 10000)); // 0 = no bar, 10000 = full bar
+        sp.Encode8(0); //skillid, but its 0 here
+        sp.Encode1(0);
+        sp.Encode4(bar >= 10000 ? bufflength : 0); //short - bufflength...50
+        return sp.get();
     }
 
     public static final MaplePacket showPetLevelUp(final MapleCharacter chr, final int index) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.get());
-        mplew.writeInt(chr.getId());
-        mplew.write(4);
-        mplew.write(0);
-        mplew.writeInt(index);
-        return mplew.getPacket();
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectRemote);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(4);
+        sp.Encode1(0);
+        sp.Encode4(index);
+        return sp.get();
     }
 
     public static MaplePacket showRewardItemAnimation(int itemId, String effect, int from_playerid) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.get());
-        mplew.writeInt(from_playerid);
-        mplew.write(15);
-        mplew.writeInt(itemId);
-        mplew.write(effect != null && effect.length() > 0 ? 1 : 0);
+        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectRemote);
+
+        sp.Encode4(from_playerid);
+        sp.Encode1(15);
+        sp.Encode4(itemId);
+        sp.Encode1(effect != null && effect.length() > 0 ? 1 : 0);
         if (effect != null && effect.length() > 0) {
-            mplew.writeMapleAsciiString(effect);
+            sp.EncodeStr(effect);
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     //its likely that durability items use this
     public static final MaplePacket showHpHealed(final int cid, final int amount) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.get());
-        mplew.writeInt(cid);
-        mplew.write(10); //Type
-        mplew.writeInt(amount);
-        return mplew.getPacket();
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectRemote);
+
+        sp.Encode4(cid);
+        sp.Encode1(10); //Type
+        sp.Encode4(amount);
+        return sp.get();
     }
 
     public static final MaplePacket ItemMakerResultTo(MapleCharacter chr, boolean is_success) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_UserEffectRemote.get());
-        mplew.writeInt(chr.getId());
-        mplew.write(17);
-        mplew.writeInt(is_success ? 0 : 1);
-        return mplew.getPacket();
+        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectRemote);
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(17);
+        sp.Encode4(is_success ? 0 : 1);
+        return sp.get();
     }
 
-    public static void addRingInfo(MaplePacketLittleEndianWriter mplew, List<MapleRing> rings) {
-        mplew.write(rings.size());
+    public static byte[] addRingInfo(List<MapleRing> rings) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode1(rings.size());
         for (MapleRing ring : rings) {
-            mplew.writeInt(1);
-            mplew.writeLong(ring.getRingId());
-            mplew.writeLong(ring.getPartnerRingId());
-            mplew.writeInt(ring.getItemId());
+            data.Encode4(1);
+            data.Encode8(ring.getRingId());
+            data.Encode8(ring.getPartnerRingId());
+            data.Encode4(ring.getItemId());
         }
+
+        return data.get().getBytes();
     }
 
 }

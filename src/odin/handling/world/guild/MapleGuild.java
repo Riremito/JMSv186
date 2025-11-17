@@ -50,7 +50,7 @@ import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
+import tacos.packet.ServerPacket;
 
 public class MapleGuild implements java.io.Serializable {
 
@@ -762,24 +762,27 @@ public class MapleGuild implements java.io.Serializable {
         }
     }
 
-    public final void addMemberData(final MaplePacketLittleEndianWriter mplew) {
-        mplew.write(members.size());
+    public final byte[] addMemberData() {
+        ServerPacket sp = new ServerPacket();
+
+        sp.Encode1(members.size());
 
         for (final MapleGuildCharacter mgc : members) {
-            mplew.writeInt(mgc.getId());
+            sp.Encode4(mgc.getId());
         }
         for (final MapleGuildCharacter mgc : members) {
-            mplew.writeAsciiString(mgc.getName(), 13);
-            mplew.writeInt(mgc.getJobId());
-            mplew.writeInt(mgc.getLevel());
-            mplew.writeInt(mgc.getGuildRank());
-            mplew.writeInt(mgc.isOnline() ? 1 : 0);
-            mplew.writeInt(signature);
+            sp.EncodeBuffer(mgc.getName(), 13);
+            sp.Encode4(mgc.getJobId());
+            sp.Encode4(mgc.getLevel());
+            sp.Encode4(mgc.getGuildRank());
+            sp.Encode4(mgc.isOnline() ? 1 : 0);
+            sp.Encode4(signature);
 
             if (Version.GreaterOrEqual(Region.JMS, 164)) {
-                mplew.writeInt(mgc.getAllianceRank());
+                sp.Encode4(mgc.getAllianceRank());
             }
         }
+        return sp.get().getBytes();
     }
 
     // null indicates successful invitation being sent
