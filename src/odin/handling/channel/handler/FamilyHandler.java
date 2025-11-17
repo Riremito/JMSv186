@@ -33,23 +33,23 @@ import java.util.List;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.maps.FieldLimitType;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
+import tacos.packet.ClientPacket;
 
 public class FamilyHandler {
 
-    public static final void RequestFamily(final SeekableLittleEndianAccessor slea, MapleClient c) {
-        MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
+    public static final void RequestFamily(ClientPacket cp, MapleClient c) {
+        MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
         if (chr != null) {
             c.getSession().write(ResCWvsContext.getFamilyPedigree(chr));
         }
     }
 
-    public static final void OpenFamily(final SeekableLittleEndianAccessor slea, MapleClient c) {
+    public static final void OpenFamily(ClientPacket cp, MapleClient c) {
         c.getSession().write(ResCWvsContext.getFamilyInfo(c.getPlayer()));
     }
 
-    public static final void UseFamily(final SeekableLittleEndianAccessor slea, MapleClient c) {
-        int type = slea.readInt();
+    public static final void UseFamily(ClientPacket cp, MapleClient c) {
+        int type = cp.Decode4();
         MapleFamilyBuffEntry entry = MapleFamilyBuff.getBuffEntry(type);
         if (entry == null) {
             return;
@@ -61,7 +61,7 @@ public class FamilyHandler {
         MapleCharacter victim = null;
         switch (type) {
             case 0: //teleport: need add check for if not a safe place
-                victim = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
+                victim = c.getChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
                 if (FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                     success = false;
@@ -76,7 +76,7 @@ public class FamilyHandler {
                 }
                 break;
             case 1: // TODO give a check to the player being forced somewhere else..
-                victim = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
+                victim = c.getChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
                 if (FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                 } else if (victim == null || (victim.isGM() && !c.getPlayer().isGM())) {
@@ -143,11 +143,11 @@ public class FamilyHandler {
         }
     }
 
-    public static final void FamilyOperation(final SeekableLittleEndianAccessor slea, MapleClient c) {
+    public static final void FamilyOperation(ClientPacket cp, MapleClient c) {
         if (c.getPlayer() == null) {
             return;
         }
-        MapleCharacter addChr = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
+        MapleCharacter addChr = c.getChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
         if (addChr == null) {
             c.getPlayer().dropMessage(1, "The name you requested is incorrect or he/she is currently not logged in.");
         } else if (addChr.getFamilyId() == c.getPlayer().getFamilyId() && addChr.getFamilyId() > 0) {
@@ -172,23 +172,23 @@ public class FamilyHandler {
         c.getSession().write(WrapCWvsContext.updateStat());
     }
 
-    public static final void FamilyPrecept(final SeekableLittleEndianAccessor slea, MapleClient c) {
+    public static final void FamilyPrecept(ClientPacket cp, MapleClient c) {
         MapleFamily fam = World.Family.getFamily(c.getPlayer().getFamilyId());
         if (fam == null || fam.getLeaderId() != c.getPlayer().getId()) {
             return;
         }
-        fam.setNotice(slea.readMapleAsciiString());
+        fam.setNotice(cp.DecodeStr());
     }
 
-    public static final void FamilySummon(final SeekableLittleEndianAccessor slea, MapleClient c) {
+    public static final void FamilySummon(ClientPacket cp, MapleClient c) {
         int TYPE = 1; //the type of the summon request.
         MapleFamilyBuffEntry cost = MapleFamilyBuff.getBuffEntry(TYPE);
-        MapleCharacter tt = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
+        MapleCharacter tt = c.getChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
         if (c.getPlayer().getFamilyId() > 0 && tt != null && tt.getFamilyId() == c.getPlayer().getFamilyId() && !FieldLimitType.VipRock.check(tt.getMap().getFieldLimit())
                 && !FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) && c.getPlayer().isAlive() && tt.isAlive() && tt.canUseFamilyBuff(cost)
                 && c.getPlayer().getTeleportName().equals(tt.getName()) && tt.getCurrentRep() > cost.rep && c.getPlayer().getEventInstance() == null && tt.getEventInstance() == null) {
             //whew lots of checks
-            boolean accepted = slea.readByte() > 0;
+            boolean accepted = cp.Decode1() > 0;
             if (accepted) {
                 c.getPlayer().changeMap(tt.getMap(), tt.getMap().getPortal(0));
                 tt.setCurrentRep(tt.getCurrentRep() - cost.rep);
@@ -203,8 +203,8 @@ public class FamilyHandler {
         c.getPlayer().setTeleportName("");
     }
 
-    public static final void DeleteJunior(final SeekableLittleEndianAccessor slea, MapleClient c) {
-        int juniorid = slea.readInt();
+    public static final void DeleteJunior(ClientPacket cp, MapleClient c) {
+        int juniorid = cp.Decode4();
         if (c.getPlayer().getFamilyId() <= 0 || juniorid <= 0 || (c.getPlayer().getJunior1() != juniorid && c.getPlayer().getJunior2() != juniorid)) {
             return;
         }
@@ -235,7 +235,7 @@ public class FamilyHandler {
         c.getSession().write(WrapCWvsContext.updateStat());
     }
 
-    public static final void DeleteSenior(final SeekableLittleEndianAccessor slea, MapleClient c) {
+    public static final void DeleteSenior(ClientPacket cp, MapleClient c) {
         if (c.getPlayer().getFamilyId() <= 0 || c.getPlayer().getSeniorId() <= 0) {
             return;
         }
@@ -266,12 +266,12 @@ public class FamilyHandler {
         c.getSession().write(WrapCWvsContext.updateStat());
     }
 
-    public static final void AcceptFamily(SeekableLittleEndianAccessor slea, MapleClient c) {
-        MapleCharacter inviter = c.getPlayer().getMap().getCharacterById(slea.readInt());
+    public static final void AcceptFamily(ClientPacket cp, MapleClient c) {
+        MapleCharacter inviter = c.getPlayer().getMap().getCharacterById(cp.Decode4());
         if (inviter != null && c.getPlayer().getSeniorId() == 0 && (c.getPlayer().isGM() || !inviter.isHidden())
-                && inviter.getLevel() - 20 < c.getPlayer().getLevel() && inviter.getLevel() >= 10 && inviter.getName().equals(slea.readMapleAsciiString()) && inviter.getNoJuniors() < 2
+                && inviter.getLevel() - 20 < c.getPlayer().getLevel() && inviter.getLevel() >= 10 && inviter.getName().equals(cp.DecodeStr()) && inviter.getNoJuniors() < 2
                 /*&& inviter.getFamily().getGens() < 1000*/ && c.getPlayer().getLevel() >= 10) {
-            boolean accepted = slea.readByte() > 0;
+            boolean accepted = cp.Decode1() > 0;
             inviter.getClient().getSession().write(ResCWvsContext.sendFamilyJoinResponse(accepted, c.getPlayer().getName()));
             if (accepted) {
                 //c.getSession().write(FamilyPacket.sendFamilyMessage(0));
