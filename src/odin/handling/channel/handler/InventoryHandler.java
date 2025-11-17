@@ -45,7 +45,6 @@ import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.LeaveType;
-import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
@@ -67,7 +66,6 @@ import odin.server.maps.MapleMist;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.IMaplePlayerShop;
 import odin.tools.Pair;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 public class InventoryHandler {
@@ -113,10 +111,10 @@ public class InventoryHandler {
         return 0;
     }
 
-    public static final void UseScriptedNPCItem(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
-        c.getPlayer().updateTick(slea.readInt());
-        final byte slot = (byte) slea.readShort();
-        final int itemId = slea.readInt();
+    public static final void UseScriptedNPCItem(ClientPacket cp, final MapleClient c, final MapleCharacter chr) {
+        c.getPlayer().updateTick(cp.Decode4());
+        final byte slot = (byte) cp.Decode2();
+        final int itemId = cp.Decode4();
         final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
         long expiration_days = 0;
         int mountid = 0;
@@ -380,12 +378,12 @@ public class InventoryHandler {
         return reward;
     }
 
-    public static final void UseCashItem(final SeekableLittleEndianAccessor slea, final MapleClient c, ClientPacket op) {
+    public static final void UseCashItem(ClientPacket cp, final MapleClient c, ClientPacket op) {
         if (ServerConfig.JMS164orLater()) {
-            c.getPlayer().updateTick(slea.readInt());
+            c.getPlayer().updateTick(cp.Decode4());
         }
-        final short slot = slea.readShort();
-        final int itemId = slea.readInt();
+        final short slot = cp.Decode2();
+        final int itemId = cp.Decode4();
 
         final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.CASH).getItem(slot);
         if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1) {
@@ -398,8 +396,8 @@ public class InventoryHandler {
         switch (itemId) {
             case 5050000: { // AP Reset
                 List<Pair<MapleStat, Integer>> statupdate = new ArrayList<Pair<MapleStat, Integer>>(2);
-                final int apto = slea.readInt();
-                final int apfrom = slea.readInt();
+                final int apto = cp.Decode4();
+                final int apfrom = cp.Decode4();
 
                 if (apto == apfrom) {
                     break; // Hack
@@ -711,8 +709,8 @@ public class InventoryHandler {
                 if (itemId < 5050005 && GameConstants.isEvan(c.getPlayer().getJob())) {
                     break;
                 } //well i dont really care other than this o.o
-                int skill1 = slea.readInt();
-                int skill2 = slea.readInt();
+                int skill1 = cp.Decode4();
+                int skill2 = cp.Decode4();
                 for (int i : GameConstants.blockedSkills) {
                     if (skill1 == i) {
                         c.getPlayer().dropMessage(1, "You may not add this skill.");
@@ -753,8 +751,8 @@ public class InventoryHandler {
             }
             case 5520001: //p.karma
             case 5520000: { // Karma
-                final MapleInventoryType type = MapleInventoryType.getByType((byte) slea.readInt());
-                final IItem item = c.getPlayer().getInventory(type).getItem((byte) slea.readInt());
+                final MapleInventoryType type = MapleInventoryType.getByType((byte) cp.Decode4());
+                final IItem item = c.getPlayer().getInventory(type).getItem((byte) cp.Decode4());
 
                 if (item != null && !ItemFlag.KARMA_EQ.check(item.getFlag()) && !ItemFlag.KARMA_USE.check(item.getFlag())) {
                     if ((itemId == 5520000 && MapleItemInformationProvider.getInstance().isKarmaEnabled(item.getItemId())) || (itemId == 5520001 && MapleItemInformationProvider.getInstance().isPKarmaEnabled(item.getItemId()))) {
@@ -785,8 +783,8 @@ public class InventoryHandler {
             }
             case 5090100: // Wedding Invitation Card
             case 5090000: { // Note
-                final String sendTo = slea.readMapleAsciiString();
-                final String msg = slea.readMapleAsciiString();
+                final String sendTo = cp.DecodeStr();
+                final String msg = cp.DecodeStr();
                 c.getPlayer().sendNote(sendTo, msg);
                 used = true;
                 break;
@@ -812,11 +810,11 @@ public class InventoryHandler {
                     break;
                 }
                 if (!c.getChannelServer().getMegaphoneMuteState()) {
-                    final String text = slea.readMapleAsciiString();
+                    final String text = cp.DecodeStr();
                     if (text.length() > 55) {
                         break;
                     }
-                    final boolean ear = slea.readByte() != 0;
+                    final boolean ear = cp.Decode1() != 0;
                     World.Broadcast.broadcastSmega(ResCWvsContext.getAvatarMega(c.getPlayer(), c.getChannel(), itemId, text, ear).getBytes());
                     used = true;
                 } else {
@@ -829,7 +827,7 @@ public class InventoryHandler {
                     UseRewardItem(slot, itemId, c, c.getPlayer());// this too
                 } else {
                     System.out.println("Unhandled CS item : " + itemId);
-                    System.out.println(slea.toString(true));
+                    //System.out.println(slea.toString(true));
                 }
                 break;
             }

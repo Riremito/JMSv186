@@ -45,7 +45,6 @@ import odin.scripting.NPCConversationManager;
 import odin.server.MapleItemInformationProvider;
 import odin.tools.ArrayMap;
 import odin.tools.Pair;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
 
 public class NPCHandler {
 
@@ -229,11 +228,11 @@ public class NPCHandler {
         }
     }
 
-    public static final void repair(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        if (c.getPlayer().getMapId() != 240000000 || slea.available() < 4) { //leafre for now
+    public static final void repair(ClientPacket cp, final MapleClient c) {
+        if (c.getPlayer().getMapId() != 240000000/* || slea.available() < 4*/) { //leafre for now
             return;
         }
-        final int position = slea.readInt(); //who knows why this is a int
+        final int position = cp.Decode4(); //who knows why this is a int
         final MapleInventoryType type = position < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP;
         final IItem item = c.getPlayer().getInventory(type).getItem((byte) position);
         if (item == null) {
@@ -297,14 +296,14 @@ public class NPCHandler {
         }
     }
 
-    public static final void RPSGame(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        if (slea.available() == 0 || !c.getPlayer().getMap().containsNPC(9000019)) {
+    public static final void RPSGame(ClientPacket cp, final MapleClient c) {
+        if (/*slea.available() == 0 || */!c.getPlayer().getMap().containsNPC(9000019)) {
             if (c.getPlayer().getRPS() != null) {
                 c.getPlayer().getRPS().dispose(c);
             }
             return;
         }
-        final byte mode = slea.readByte();
+        final byte mode = cp.Decode1();
         switch (mode) {
             case 0: //start game
             case 5: //retry
@@ -318,7 +317,7 @@ public class NPCHandler {
                 }
                 break;
             case 1: //answer
-                if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().answer(c, slea.readByte())) {
+                if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().answer(c, cp.Decode1())) {
                     c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;

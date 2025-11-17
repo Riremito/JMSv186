@@ -26,18 +26,18 @@ import odin.handling.world.MapleMessenger;
 import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.World;
 import tacos.packet.response.ResCUIMessenger;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
+import tacos.packet.ClientPacket;
 
 public class ChatHandler {
 
-    public static final void Messenger(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static final void Messenger(ClientPacket cp, final MapleClient c) {
         String input;
         MapleMessenger messenger = c.getPlayer().getMessenger();
 
-        switch (slea.readByte()) {
+        switch (cp.Decode1()) {
             case 0x00: // open
                 if (messenger == null) {
-                    int messengerid = slea.readInt();
+                    int messengerid = cp.Decode4();
                     if (messengerid == 0) { // create
                         c.getPlayer().setMessenger(World.Messenger.createMessenger(new MapleMessengerCharacter(c.getPlayer())));
                     } else { // join
@@ -66,7 +66,7 @@ public class ChatHandler {
                     if (position <= -1 || position >= 4) {
                         return;
                     }
-                    input = slea.readMapleAsciiString();
+                    input = cp.DecodeStr();
                     final MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(input);
 
                     if (target != null) {
@@ -90,7 +90,7 @@ public class ChatHandler {
                 }
                 break;
             case 0x05: // decline
-                final String targeted = slea.readMapleAsciiString();
+                final String targeted = cp.DecodeStr();
                 final MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(targeted);
                 if (target != null) { // This channel
                     if (target.getMessenger() != null) {
@@ -104,7 +104,7 @@ public class ChatHandler {
                 break;
             case 0x06: // message
                 if (messenger != null) {
-                    World.Messenger.messengerChat(messenger.getId(), slea.readMapleAsciiString(), c.getPlayer().getName());
+                    World.Messenger.messengerChat(messenger.getId(), cp.DecodeStr(), c.getPlayer().getName());
 
                 }
                 break;
