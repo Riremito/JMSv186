@@ -60,7 +60,7 @@ public class PartyHandler {
 
     }
 
-    public static final void PartyOperatopn(ClientPacket cp, final MapleClient c) {
+    public static final void PartyOperation(ClientPacket cp, final MapleClient c) {
         final int operation = cp.Decode1();
         MapleParty party = c.getPlayer().getParty();
         MaplePartyCharacter partyplayer = new MaplePartyCharacter(c.getPlayer());

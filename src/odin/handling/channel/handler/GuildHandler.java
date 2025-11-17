@@ -34,7 +34,10 @@ import tacos.packet.ClientPacket;
 
 public class GuildHandler {
 
-    public static final void DenyGuildRequest(final String from, final MapleClient c) {
+    public static final void DenyGuildRequest(ClientPacket cp, final MapleClient c) {
+        byte unk1 = cp.Decode1();
+        String from = cp.DecodeStr();
+
         final MapleCharacter cfrom = c.getChannelServer().getPlayerStorage().getCharacterByName(from);
         if (cfrom != null) {
             cfrom.getClient().getSession().write(ResCWvsContext.denyGuildInvitation(c.getPlayer().getName()));

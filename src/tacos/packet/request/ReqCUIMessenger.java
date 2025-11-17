@@ -20,6 +20,7 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
+import odin.handling.channel.handler.ChatHandler;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleMap;
 
@@ -40,9 +41,9 @@ public class ReqCUIMessenger {
             return true;
         }
 
-        //ChatHandler.Messenger(p, c);
         switch (header) {
             case CP_Messenger: {
+                ChatHandler.Messenger(cp, c);
                 return true;
             }
             default: {

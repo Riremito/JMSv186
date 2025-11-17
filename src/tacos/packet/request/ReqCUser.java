@@ -58,6 +58,11 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import odin.handling.channel.handler.AllianceHandler;
+import odin.handling.channel.handler.BBSHandler;
+import odin.handling.channel.handler.FamilyHandler;
+import odin.handling.channel.handler.GuildHandler;
+import odin.handling.channel.handler.PartyHandler;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsChatGroup;
@@ -318,7 +323,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserScriptItemUseRequest: {
-                //InventoryHandler.UseScriptedNPCItem(p, c, c.getPlayer());
+                InventoryHandler.UseScriptedNPCItem(cp, c, chr);
                 return true;
             }
             case CP_UserConsumeCashItemUseRequest: {
@@ -498,16 +503,16 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserRepairDurability: {
-                //NPCHandler.repair(p, c);
+                NPCHandler.repair(cp, c);
                 return true;
             }
 
             case CP_UserFollowCharacterRequest: {
-                //PlayersHandler.FollowRequest(p, c);
+                PlayersHandler.FollowRequest(cp, c);
                 return true;
             }
             case CP_UserFollowCharacterWithdraw: {
-                //PlayersHandler.FollowReply(p, c);
+                PlayersHandler.FollowReply(cp, c);
                 return true;
             }
             case CP_GroupMessage: {
@@ -526,20 +531,19 @@ public class ReqCUser {
                 return ReqCMiniRoomBaseDlg.OnMiniRoom(map, chr, cp);
             }
             case CP_PartyRequest: {
-                //PartyHandler.PartyOperatopn(p, c);
+                PartyHandler.PartyOperation(cp, c);
                 return true;
             }
             case CP_PartyResult: {
-                //PartyHandler.DenyPartyRequest(p, c);
+                PartyHandler.DenyPartyRequest(cp, c);
                 return true;
             }
             case CP_GuildRequest: {
-                //GuildHandler.Guild(p, c);
+                GuildHandler.Guild(cp, c);
                 return true;
             }
             case CP_GuildResult: {
-                //p.skip(1);
-                //GuildHandler.DenyGuildRequest(p.readMapleAsciiString(), c);
+                GuildHandler.DenyGuildRequest(cp, c);
                 return true;
             }
             case CP_Admin: {
@@ -556,8 +560,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_MemoRequest: {
-                // c
-                //PlayersHandler.Note(p, c.getPlayer());
+                PlayersHandler.Note(cp, chr);
                 return true;
             }
             case CP_EnterTownPortalRequest: {
@@ -571,20 +574,20 @@ public class ReqCUser {
                 return ReqCRPSGameDlg.OnPacket(c, header, cp);
             }
             case CP_MarriageRequest: {
-                //PlayersHandler.RingAction(p, c);
+                PlayersHandler.RingAction(cp, c);
                 return true;
             }
 
             case CP_AllianceRequest: {
-                //AllianceHandler.HandleAlliance(p, c, false);
+                AllianceHandler.HandleAlliance(cp, c, false);
                 return true;
             }
             case CP_AllianceResult: {
-                //AllianceHandler.HandleAlliance(p, c, true);
+                AllianceHandler.HandleAlliance(cp, c, true);
                 return true;
             }
             case CP_GuildBBS: {
-                //BBSHandler.BBSOperatopn(p, c);
+                BBSHandler.BBSOperation(cp, c);
                 return true;
             }
             case CP_JMS_InstancePortalEnter: {
@@ -721,39 +724,39 @@ public class ReqCUser {
 
         switch (header) {
             case CP_FamilyChartRequest: {
-                //FamilyHandler.RequestFamily(p, c);
+                FamilyHandler.RequestFamily(cp, c);
                 return true;
             }
             case CP_FamilyInfoRequest: {
-                //FamilyHandler.OpenFamily(p, c);
+                FamilyHandler.OpenFamily(cp, c);
                 return true;
             }
             case CP_FamilyRegisterJunior: {
-                //FamilyHandler.FamilyOperation(p, c);
+                FamilyHandler.FamilyOperation(cp, c);
                 return true;
             }
             case CP_FamilyUnregisterJunior: {
-                //FamilyHandler.DeleteJunior(p, c);
+                FamilyHandler.DeleteJunior(cp, c);
                 return true;
             }
             case CP_FamilyUnregisterParent: {
-                //FamilyHandler.DeleteSenior(p, c);
+                FamilyHandler.DeleteSenior(cp, c);
                 return true;
             }
             case CP_FamilyJoinResult: {
-                //FamilyHandler.AcceptFamily(p, c);
+                FamilyHandler.AcceptFamily(cp, c);
                 return true;
             }
             case CP_FamilyUsePrivilege: {
-                //FamilyHandler.UseFamily(p, c);
+                FamilyHandler.UseFamily(cp, c);
                 return true;
             }
             case CP_FamilySetPrecept: {
-                //FamilyHandler.FamilyPrecept(p, c);
+                FamilyHandler.FamilyPrecept(cp, c);
                 return true;
             }
             case CP_FamilySummonResult: {
-                //FamilyHandler.FamilySummon(p, c);
+                FamilyHandler.FamilySummon(cp, c);
                 return true;
             }
             default: {
