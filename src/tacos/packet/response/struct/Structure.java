@@ -591,32 +591,34 @@ public class Structure {
 
     // addAnnounceBox
     public static final byte[] AnnounceBox(MapleCharacter chr) {
-        ServerPacket p = new ServerPacket();
+        ServerPacket data = new ServerPacket();
+
         if (chr.getPlayerShop() != null && chr.getPlayerShop().isOwner(chr) && chr.getPlayerShop().getShopType() != 1 && chr.getPlayerShop().isAvailable()) {
-            p.EncodeBuffer(Interaction(chr.getPlayerShop()));
+            data.EncodeBuffer(Interaction(chr.getPlayerShop()));
         } else {
-            p.Encode1(0);
+            data.Encode1(0);
         }
 
-        return p.get().getBytes();
+        return data.get().getBytes();
     }
 
     // addInteraction
     public static final byte[] Interaction(IMaplePlayerShop shop) {
-        ServerPacket p = new ServerPacket();
-        p.Encode1(shop.getGameType());
-        p.Encode4(((AbstractPlayerStore) shop).getObjectId());
-        p.EncodeStr(shop.getDescription());
+        ServerPacket data = new ServerPacket();
+
+        data.Encode1(shop.getGameType());
+        data.Encode4(((AbstractPlayerStore) shop).getObjectId());
+        data.EncodeStr(shop.getDescription());
         if (shop.getShopType() != 1) {
-            p.Encode1(shop.getPassword().length() > 0 ? 1 : 0); //password = false
+            data.Encode1(shop.getPassword().length() > 0 ? 1 : 0); //password = false
         }
-        p.Encode1(shop.getItemId() % 10);
-        p.Encode1(shop.getSize()); //current size
-        p.Encode1(shop.getMaxSize()); //full slots... 4 = 4-1=3 = has slots, 1-1=0 = no slots
+        data.Encode1(shop.getItemId() % 10);
+        data.Encode1(shop.getSize()); //current size
+        data.Encode1(shop.getMaxSize()); //full slots... 4 = 4-1=3 = has slots, 1-1=0 = no slots
         if (shop.getShopType() != 1) {
-            p.Encode1(shop.isOpen() ? 0 : 1);
+            data.Encode1(shop.isOpen() ? 0 : 1);
         }
 
-        return p.get().getBytes();
+        return data.get().getBytes();
     }
 }

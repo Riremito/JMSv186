@@ -22,7 +22,7 @@ package tacos.packet;
  *
  * @author Riremito
  */
-public enum ServerPacketHeader implements IHeader {
+public enum ServerPacketHeader implements IPacketHeader {
     // CClientSocket::ProcessPacket, CLogin::OnPacket
     LP_BEGIN_SOCKET,
     LP_CheckPasswordResult,

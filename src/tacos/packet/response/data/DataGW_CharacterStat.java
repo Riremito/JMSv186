@@ -416,12 +416,12 @@ public class DataGW_CharacterStat {
 
     // DecodeBuffer size 0x0C
     public static byte[] EncodePachinko(MapleCharacter chr) {
-        ServerPacket p = new ServerPacket();
+        ServerPacket data = new ServerPacket();
 
-        p.Encode4(chr.getId());
-        p.Encode4(chr.getTama());
-        p.Encode4(0);
-        return p.get().getBytes();
+        data.Encode4(chr.getId());
+        data.Encode4(chr.getTama());
+        data.Encode4(0);
+        return data.get().getBytes();
     }
 
     // GW_CharacterStat::DecodeChangeStat

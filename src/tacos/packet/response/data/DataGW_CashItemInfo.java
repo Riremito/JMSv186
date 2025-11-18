@@ -32,16 +32,17 @@ public class DataGW_CashItemInfo {
 
     // addCashItemInfo
     public static byte[] Encode(IItem item, MapleClient c) {
-        ServerPacket sp = new ServerPacket();
-        sp.Encode8(item.getUniqueId());
-        sp.Encode8(c.getId());
-        sp.Encode4(item.getItemId());
-        sp.Encode4(0); // first?
-        sp.Encode2(item.getQuantity());
-        sp.EncodeBuffer(item.getOwner(), 13);
-        sp.Encode8(SharedDate.getMagicalExpirationDate());
-        sp.Encode8(CashItemFactory.getInstance().getItemSN(item.getItemId()));
-        return sp.get().getBytes();
+        ServerPacket data = new ServerPacket();
+
+        data.Encode8(item.getUniqueId());
+        data.Encode8(c.getId());
+        data.Encode4(item.getItemId());
+        data.Encode4(0); // first?
+        data.Encode2(item.getQuantity());
+        data.EncodeBuffer(item.getOwner(), 13);
+        data.Encode8(SharedDate.getMagicalExpirationDate());
+        data.Encode8(CashItemFactory.getInstance().getItemSN(item.getItemId()));
+        return data.get().getBytes();
 
     }
 }

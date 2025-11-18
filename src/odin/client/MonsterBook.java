@@ -146,13 +146,14 @@ public class MonsterBook implements Serializable {
 
     // addCharInfoPacket
     public final byte[] MonsterBookInfo(final int bookcover) {
-        ServerPacket p = new ServerPacket();
-        p.Encode4(BookLevel);
-        p.Encode4(NormalCard);
-        p.Encode4(SpecialCard);
-        p.Encode4(NormalCard + SpecialCard);
-        p.Encode4(MapleItemInformationProvider.getInstance().getCardMobId(bookcover));
-        return p.get().getBytes();
+        ServerPacket data = new ServerPacket();
+
+        data.Encode4(BookLevel);
+        data.Encode4(NormalCard);
+        data.Encode4(SpecialCard);
+        data.Encode4(NormalCard + SpecialCard);
+        data.Encode4(MapleItemInformationProvider.getInstance().getCardMobId(bookcover));
+        return data.get().getBytes();
     }
 
     public final void updateCard(final MapleClient c, final int cardid) {

@@ -24,6 +24,10 @@ import tacos.network.ByteArrayMaplePacket;
 import tacos.network.MaplePacket;
 import java.util.ArrayList;
 
+/**
+ *
+ * @author Riremito
+ */
 public class ServerPacket {
 
     // Encoder

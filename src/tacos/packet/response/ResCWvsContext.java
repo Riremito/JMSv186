@@ -965,54 +965,54 @@ public class ResCWvsContext {
     }
 
     private static byte[] addPartyStatus(int forchannel, MapleParty party, boolean leaving) {
-        ServerPacket sp = new ServerPacket();
+        ServerPacket data = new ServerPacket();
 
         List<MaplePartyCharacter> partymembers = new ArrayList<>(party.getMembers());
         while (partymembers.size() < 6) {
             partymembers.add(new MaplePartyCharacter());
         }
         for (MaplePartyCharacter partychar : partymembers) {
-            sp.Encode4(partychar.getId());
+            data.Encode4(partychar.getId());
         }
         for (MaplePartyCharacter partychar : partymembers) {
-            sp.EncodeBuffer(partychar.getName(), 13);
+            data.EncodeBuffer(partychar.getName(), 13);
         }
         for (MaplePartyCharacter partychar : partymembers) {
-            sp.Encode4(partychar.getJobId());
+            data.Encode4(partychar.getJobId());
         }
         for (MaplePartyCharacter partychar : partymembers) {
-            sp.Encode4(partychar.getLevel());
+            data.Encode4(partychar.getLevel());
         }
         for (MaplePartyCharacter partychar : partymembers) {
             if (partychar.isOnline()) {
-                sp.Encode4(partychar.getChannel() - 1);
+                data.Encode4(partychar.getChannel() - 1);
             } else {
-                sp.Encode4(-2);
+                data.Encode4(-2);
             }
         }
-        sp.Encode4(party.getLeader().getId());
+        data.Encode4(party.getLeader().getId());
         for (MaplePartyCharacter partychar : partymembers) {
             if (partychar.getChannel() == forchannel) {
-                sp.Encode4(partychar.getMapid());
+                data.Encode4(partychar.getMapid());
             } else {
-                sp.Encode4(0);
+                data.Encode4(0);
             }
         }
         for (MaplePartyCharacter partychar : partymembers) {
             if (partychar.getChannel() == forchannel && !leaving) {
-                sp.Encode4(partychar.getDoorTown());
-                sp.Encode4(partychar.getDoorTarget());
-                sp.Encode4(partychar.getDoorSkill());
-                sp.Encode4(partychar.getDoorPosition().x);
-                sp.Encode4(partychar.getDoorPosition().y);
+                data.Encode4(partychar.getDoorTown());
+                data.Encode4(partychar.getDoorTarget());
+                data.Encode4(partychar.getDoorSkill());
+                data.Encode4(partychar.getDoorPosition().x);
+                data.Encode4(partychar.getDoorPosition().y);
             } else {
-                sp.Encode4(leaving ? 999999999 : 0);
-                sp.Encode8(leaving ? 999999999 : 0);
-                sp.Encode8(leaving ? -1 : 0);
+                data.Encode4(leaving ? 999999999 : 0);
+                data.Encode8(leaving ? 999999999 : 0);
+                data.Encode8(leaving ? -1 : 0);
             }
         }
 
-        return sp.get().getBytes();
+        return data.get().getBytes();
     }
 
     public static MaplePacket changeCover(int cardid) {

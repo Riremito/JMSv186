@@ -24,8 +24,8 @@ import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacket;
-import tacos.packet.IHeader;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.IPacketHeader;
 
 /**
  *
@@ -74,7 +74,7 @@ public class Property_Packet {
         init();
     }
 
-    public static int parseHeader(String[] vars, IHeader ip[]) {
+    public static int parseHeader(String[] vars, IPacketHeader[] iph) {
         int base = -1;
         int offset = 0;
         switch (vars.length) {
@@ -102,7 +102,7 @@ public class Property_Packet {
                 if ("@FFFF".length() <= vars[0].length() && vars[0].charAt(0) == '@') {
                     base = Integer.parseInt(vars[0].substring(1), 16);
                 } else {
-                    for (IHeader base_header : ip) {
+                    for (IPacketHeader base_header : iph) {
                         // not work if the enum name is defined above the current value.
                         if (base_header.name().equals(vars[0])) {
                             base = base_header.get();

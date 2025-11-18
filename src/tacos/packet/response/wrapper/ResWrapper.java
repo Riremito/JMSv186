@@ -594,12 +594,13 @@ public class ResWrapper {
     }
 
     public static MaplePacket getNPCTalkNum(int npc, String talk, int def, int min, int max) {
-        ServerPacket sp = new ServerPacket();
-        sp.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKNUMBER, (byte) 0, talk, false, false).getBytes());
-        sp.Encode4(def);
-        sp.Encode4(min);
-        sp.Encode4(max);
-        return sp.get();
+        ServerPacket data = new ServerPacket();
+
+        data.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKNUMBER, (byte) 0, talk, false, false).getBytes());
+        data.Encode4(def);
+        data.Encode4(min);
+        data.Encode4(max);
+        return data.get();
     }
 
     public static final MaplePacket getMapSelection(final int npcid, final String sel) {
@@ -607,13 +608,16 @@ public class ResWrapper {
     }
 
     public static MaplePacket getNPCTalkStyle(int npc, String talk, int... args) {
-        ServerPacket sp = new ServerPacket();
-        sp.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKAVATAR, (byte) 0, talk, false, false).getBytes());
-        sp.Encode1(args.length);
+        ServerPacket data = new ServerPacket();
+
+        data.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKAVATAR, (byte) 0, talk, false, false).getBytes());
+        data.Encode1(args.length);
+
         for (int i = 0; i < args.length; i++) {
-            sp.Encode4(args[i]);
+            data.Encode4(args[i]);
         }
-        return sp.get();
+
+        return data.get();
     }
 
     public static MaplePacket showItemUnavailable() {

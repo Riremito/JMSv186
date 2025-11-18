@@ -16,12 +16,15 @@
  *
  *
  */
-// クライアント側から送信されるパケットのヘッダの定義
 package tacos.packet;
 
 import tacos.config.CodePage;
 import tacos.config.Content;
 
+/**
+ *
+ * @author Riremito
+ */
 public class ClientPacket {
 
     private byte[] packet;

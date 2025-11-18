@@ -763,26 +763,26 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public final byte[] addMemberData() {
-        ServerPacket sp = new ServerPacket();
+        ServerPacket data = new ServerPacket();
 
-        sp.Encode1(members.size());
+        data.Encode1(members.size());
 
         for (final MapleGuildCharacter mgc : members) {
-            sp.Encode4(mgc.getId());
+            data.Encode4(mgc.getId());
         }
         for (final MapleGuildCharacter mgc : members) {
-            sp.EncodeBuffer(mgc.getName(), 13);
-            sp.Encode4(mgc.getJobId());
-            sp.Encode4(mgc.getLevel());
-            sp.Encode4(mgc.getGuildRank());
-            sp.Encode4(mgc.isOnline() ? 1 : 0);
-            sp.Encode4(signature);
+            data.EncodeBuffer(mgc.getName(), 13);
+            data.Encode4(mgc.getJobId());
+            data.Encode4(mgc.getLevel());
+            data.Encode4(mgc.getGuildRank());
+            data.Encode4(mgc.isOnline() ? 1 : 0);
+            data.Encode4(signature);
 
             if (Version.GreaterOrEqual(Region.JMS, 164)) {
-                sp.Encode4(mgc.getAllianceRank());
+                data.Encode4(mgc.getAllianceRank());
             }
         }
-        return sp.get().getBytes();
+        return data.get().getBytes();
     }
 
     // null indicates successful invitation being sent

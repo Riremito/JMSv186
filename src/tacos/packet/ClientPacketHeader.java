@@ -22,7 +22,7 @@ package tacos.packet;
  *
  * @author Riremito
  */
-public enum ClientPacketHeader implements IHeader {
+public enum ClientPacketHeader implements IPacketHeader {
     // 独自仕様
     CP_CUSTOM_,
     CP_CUSTOM_WZ_HASH,
@@ -409,6 +409,7 @@ public enum ClientPacketHeader implements IHeader {
         this.value = val;
     }
 
+    // enum range check by ordinal number
     public boolean between(ClientPacketHeader low, ClientPacketHeader high) {
         if (low.ordinal() <= ordinal() && ordinal() <= high.ordinal()) {
             return true;

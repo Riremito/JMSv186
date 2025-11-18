@@ -22,11 +22,12 @@ package tacos.packet;
  *
  * @author Riremito
  */
-public interface IHeader {
+public interface IPacketHeader {
 
     public int get();
 
     public void set(int val);
 
+    // for enum
     public String name();
 }
