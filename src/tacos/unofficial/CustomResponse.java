@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.packet.response.addon;
+package tacos.unofficial;
 
 import odin.client.MapleClient;
 import tacos.property.Property_Login;
@@ -28,35 +28,38 @@ import tacos.packet.ServerPacketHeader;
  *
  * @author Riremito
  */
-public class ResSecurity {
+public class CustomResponse {
 
-    public static boolean Test(MapleClient c) {
+    public static boolean Test(MapleClient client) {
         if (Property_Login.getAntiCheat()) {
-            c.SendPacket(ResSecurity.Hash());
-            c.SendPacket(ResSecurity.Scan(0x008625B5, (short) 3)); // damage hack check
+            client.SendPacket(CustomResponse.GetWzHash("Skill.wz"));
+            client.SendPacket(CustomResponse.GetMemoryHash(0x008625B5, 3)); // damage hack check
             byte mem[] = {(byte) 0x90, (byte) 0x90, (byte) 0x90};
-            c.SendPacket(ResSecurity.Patch(0x00BCCA45, mem));
+            client.SendPacket(CustomResponse.SetPatch(0x00BCCA45, mem));
         }
         return true;
     }
 
-    public static MaplePacket Scan(int address, short size) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CUSTOM_MEMORY_SCAN);
-        sp.Encode4(address);
-        sp.Encode2(size);
-        return sp.get();
-    }
-
-    public static MaplePacket Hash() {
+    public static MaplePacket GetWzHash(String wz_name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CUSTOM_WZ_HASH);
-        sp.EncodeStr("Skill.wz");
+
+        sp.EncodeStr(wz_name);
         return sp.get();
     }
 
-    public static MaplePacket Patch(int address, byte[] memory) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CUSTOM_CLIENT_PATCH);
+    public static MaplePacket GetMemoryHash(int address, int size) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CUSTOM_MEMORY_SCAN);
+
         sp.Encode4(address);
-        sp.Encode2((short) memory.length);
+        sp.Encode4(size);
+        return sp.get();
+    }
+
+    public static MaplePacket SetPatch(int address, byte[] memory) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CUSTOM_CLIENT_PATCH);
+
+        sp.Encode4(address);
+        sp.Encode4(memory.length);
         sp.EncodeBuffer(memory);
         return sp.get();
     }
