@@ -25,6 +25,7 @@ import tacos.config.Version;
 import tacos.network.MaplePacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataCPet;
 
 /**
@@ -80,7 +81,7 @@ public class ResCUser_Pet {
 
     // showPet
     public static MaplePacket Activated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
-        ServerPacket sp = new ServerPacket((transfer_field || Version.LessOrEqual(Region.JMS, 131)) ? ServerPacket.Header.LP_PetTransferField : ServerPacket.Header.LP_PetActivated);
+        ServerPacket sp = new ServerPacket((transfer_field || Version.LessOrEqual(Region.JMS, 131)) ? ServerPacketHeader.LP_PetTransferField : ServerPacketHeader.LP_PetActivated);
         sp.Encode4(chr.getId());
 
         if (Version.Equal(Region.JMS, 147)) {
@@ -134,7 +135,7 @@ public class ResCUser_Pet {
     }
 
     public static final MaplePacket PetMove(MapleCharacter chr, MaplePet pet, ParseCMovePath data) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetMove);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetMove);
 
         sp.Encode4(chr.getId());
 
@@ -149,7 +150,7 @@ public class ResCUser_Pet {
     }
 
     public static final MaplePacket petChat(MapleCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetAction);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetAction);
         sp.Encode4(chr.getId());
         sp.Encode4(pet_index);
         sp.Encode1(nType);
@@ -160,7 +161,7 @@ public class ResCUser_Pet {
     }
 
     public static MaplePacket PetNameChanged(MapleCharacter chr, MaplePet pet, String pet_name) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetNameChanged);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetNameChanged);
 
         sp.Encode4(chr.getId());
         if (Version.LessOrEqual(Region.JMS, 147)) {
@@ -173,7 +174,7 @@ public class ResCUser_Pet {
     }
 
     public static MaplePacket commandResponse(final int cid, final byte command, final int slot, final boolean success, final boolean food) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PetActionCommand);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetActionCommand);
 
         sp.Encode4(cid);
         sp.Encode4(slot);

@@ -32,6 +32,7 @@ import tacos.packet.response.data.DataCWvsContext;
 import tacos.packet.response.data.DataCharacterData;
 import tacos.packet.response.struct.TestHelper;
 import odin.server.maps.MapleMap;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -42,7 +43,7 @@ public class ResCStage {
 
     // CStage::OnSetField
     public static final MaplePacket SetField(MapleCharacter chr, boolean loggedin, MapleMap to, int spawnPoint) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetField);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
         // JMS184orLater
         if (((Region.IsJMS() || Region.IsCMS() || Region.IsGMS()) && ServerConfig.JMS186orLater())
                 || Version.GreaterOrEqual(Region.EMS, 89)) {
@@ -157,7 +158,7 @@ public class ResCStage {
 
     // 分割版
     public static final MaplePacket SetField_JMS_302(MapleCharacter chr, int part, boolean loggedin, MapleMap to, int spawnPoint, long datamask_2) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetField);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
         // 分割, 1 -> 2の順で送信
         sp.Encode4(part);
         // main
@@ -217,7 +218,7 @@ public class ResCStage {
 
     // CStage::OnSetITC
     public static final MaplePacket SetITC(final MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetITC);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetITC);
         sp.EncodeBuffer(DataCharacterData.Encode(chr));
         // CITC::LoadData
         {
@@ -236,7 +237,7 @@ public class ResCStage {
 
     // CStage::OnSetCashShop
     public static MaplePacket SetCashShop(MapleClient c) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetCashShop);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetCashShop);
         sp.EncodeBuffer(DataCharacterData.Encode(c.getPlayer()));
         // CCashShop::LoadData
         {

@@ -20,6 +20,7 @@ package tacos.packet.response;
 
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -28,7 +29,7 @@ import tacos.packet.ServerPacket;
 public class ResCRPSGameDlg {
 
     public static MaplePacket getRPSMode(byte mode, int mesos, int selection, int answer) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_RPSGame);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_RPSGame);
 
         sp.Encode1(mode);
         switch (mode) {

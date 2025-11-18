@@ -22,6 +22,7 @@ import tacos.config.ServerConfig;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleMist;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -32,7 +33,7 @@ public class ResCAffectedAreaPool {
     // CAffectedAreaPool::OnAffectedAreaCreated
     // CAffectedArea::MakeEnterFieldPacket
     public static MaplePacket spawnMist(MapleMist mist) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AffectedAreaCreated);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AffectedAreaCreated);
 
         sp.Encode4(mist.getObjectId()); // m_dwID
         sp.Encode4(mist.isMobMist() ? 0 : (mist.isPoisonMist() != 0 ? 1 : 2)); // m_bMobSkill
@@ -61,7 +62,7 @@ public class ResCAffectedAreaPool {
     // CAffectedAreaPool::OnAffectedAreaRemoved
     // CAffectedArea::MakeLeaveFieldPacket
     public static MaplePacket removeMist(MapleMist mist) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AffectedAreaRemoved);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AffectedAreaRemoved);
 
         sp.Encode4(mist.getObjectId()); // m_dwID
         return sp.get();

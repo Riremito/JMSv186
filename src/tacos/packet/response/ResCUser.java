@@ -26,6 +26,7 @@ import tacos.config.Version;
 import tacos.network.MaplePacket;
 import java.awt.Point;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.struct.Structure;
 
 /**
@@ -37,7 +38,7 @@ public class ResCUser {
 
     // CUser::OnChat
     public static MaplePacket UserChat(MapleCharacter chr, String message, boolean bOnlyBalloon) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserChat);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserChat);
 
         sp.Encode4(chr.getId());
         sp.Encode1(chr.isGM() ? 1 : 0);
@@ -56,7 +57,7 @@ public class ResCUser {
 
     // CUser::OnADBoard
     public static MaplePacket UserADBoard(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserADBoard);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserADBoard);
 
         String message = chr.getADBoard();
         boolean open = (message != null);
@@ -73,7 +74,7 @@ public class ResCUser {
 
     // CUser::OnMiniRoomBalloon
     public static MaplePacket sendPlayerShopBox(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserMiniRoomBalloon);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMiniRoomBalloon);
 
         sp.Encode4(chr.getId());
         sp.EncodeBuffer(Structure.AnnounceBox(chr));
@@ -83,7 +84,7 @@ public class ResCUser {
     // CUser::SetConsumeItemEffect
     // CUser::ShowItemUpgradeEffect
     public static MaplePacket getScrollEffect(int chr, IEquip.ScrollResult scrollSuccess, boolean legendarySpirit) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemUpgradeEffect);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUpgradeEffect);
         sp.Encode4(chr);
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             /*
@@ -123,7 +124,7 @@ public class ResCUser {
     // CUser::ShowItemOptionUpgradeEffect
     // CUser::ShowItemReleaseEffect
     public static MaplePacket UserItemReleaseEffect(MapleCharacter chr, short equip_item_slot) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemReleaseEffect);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemReleaseEffect);
         sp.Encode4(chr.getId());
         sp.Encode2(equip_item_slot);
         return sp.get();
@@ -131,7 +132,7 @@ public class ResCUser {
 
     // CUser::ShowItemUnreleaseEffect
     public static MaplePacket UserItemUnreleaseEffect(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserItemUnreleaseEffect);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUnreleaseEffect);
         sp.Encode4(chr.getId());
         sp.Encode1(1);
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
@@ -144,7 +145,7 @@ public class ResCUser {
     // CUser::OnTeslaTriangle
     // CUser::OnFollowCharacter
     public static MaplePacket followEffect(int initiator, int replier, Point toMap) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserFollowCharacter);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserFollowCharacter);
 
         sp.Encode4(initiator);
         sp.Encode4(replier);
@@ -163,7 +164,7 @@ public class ResCUser {
     // CUser::OnShowPQReward
     // JMS
     public static MaplePacket fishingCaught(int chrid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Fishing_Caught);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Fishing_Caught);
         sp.Encode4(chrid);
         return sp.get();
     }

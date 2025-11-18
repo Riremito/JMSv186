@@ -22,6 +22,7 @@ import odin.client.MapleClient;
 import tacos.property.Property_Login;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -40,20 +41,20 @@ public class ResSecurity {
     }
 
     public static MaplePacket Scan(int address, short size) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CUSTOM_MEMORY_SCAN);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CUSTOM_MEMORY_SCAN);
         sp.Encode4(address);
         sp.Encode2(size);
         return sp.get();
     }
 
     public static MaplePacket Hash() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CUSTOM_WZ_HASH);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CUSTOM_WZ_HASH);
         sp.EncodeStr("Skill.wz");
         return sp.get();
     }
 
     public static MaplePacket Patch(int address, byte[] memory) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CUSTOM_CLIENT_PATCH);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CUSTOM_CLIENT_PATCH);
         sp.Encode4(address);
         sp.Encode2((short) memory.length);
         sp.EncodeBuffer(memory);

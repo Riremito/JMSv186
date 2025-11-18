@@ -27,6 +27,7 @@ import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsScriptMan;
 
 /**
@@ -43,7 +44,7 @@ public class ResCScriptMan {
     }
 
     public static MaplePacket ScriptMessage(int npcid, OpsScriptMan smt, byte param, String text, boolean prev, boolean next, ArrayList<Integer> ids) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ScriptMessage);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ScriptMessage);
         sp.Encode1(4); // nSpeakerTypeID, not used
         sp.Encode4(npcid); // nSpeakerTemplateID, npcid
         sp.Encode1(smt.get()); // nMsgType
@@ -147,7 +148,7 @@ public class ResCScriptMan {
     }
 
     public static MaplePacket getEvanTutorial(String data) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ScriptMessage);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ScriptMessage);
 
         sp.Encode4(8);
         sp.Encode1(0);

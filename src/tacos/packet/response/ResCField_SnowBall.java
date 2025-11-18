@@ -21,6 +21,7 @@ package tacos.packet.response;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.events.MapleSnowball;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -29,7 +30,7 @@ import odin.server.events.MapleSnowball;
 public class ResCField_SnowBall {
 
     public static MaplePacket SnowBallState(int m_nState, MapleSnowball.MapleSnowballs ball1, MapleSnowball.MapleSnowballs ball2) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SnowBallState);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallState);
         sp.Encode1(m_nState); // 0 = normal, 1 = rolls from start to end, 2 = down disappear, 3 = up disappear, 4 = move
         sp.Encode4(ball1 == null ? 0 : (ball1.getSnowmanHP() / 75)); // m_aSnowMan[0].m_nHP
         sp.Encode4(ball2 == null ? 0 : (ball2.getSnowmanHP() / 75)); // m_aSnowMan[1].m_nHP
@@ -47,7 +48,7 @@ public class ResCField_SnowBall {
     }
 
     public static MaplePacket SnowBallHit(int nTarget, int nDamage, int unused, int tDelay) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SnowBallHit);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallHit);
         sp.Encode1(nTarget); // nTarget
         sp.Encode2(nDamage); // nDamage
         sp.Encode2(tDelay); // tDelay
@@ -55,14 +56,14 @@ public class ResCField_SnowBall {
     }
 
     public static MaplePacket SnowBallMsg(int team, int message) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SnowBallMsg);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallMsg);
         sp.Encode1(team); // 0 is down, 1 is up
         sp.Encode1(message);
         return sp.get();
     }
 
     public static MaplePacket SnowBallTouch() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SnowBallTouch);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallTouch);
         return sp.get();
     }
 

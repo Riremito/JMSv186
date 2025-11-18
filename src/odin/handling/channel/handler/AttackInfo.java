@@ -29,10 +29,10 @@ import odin.client.MapleCharacter;
 import odin.client.SkillFactory;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.packet.ServerPacket;
 import odin.server.MapleStatEffect;
 import odin.tools.AttackPair;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ServerPacketHeader;
 
 public class AttackInfo {
 
@@ -62,25 +62,25 @@ public class AttackInfo {
     public short pnCashItemPos;
     public int nShootRange0a;
 
-    public ServerPacket.Header GetHeader() {
+    public ServerPacketHeader GetHeader() {
         switch (AttackHeader) {
             case CP_UserMeleeAttack: {
-                return ServerPacket.Header.LP_UserMeleeAttack;
+                return ServerPacketHeader.LP_UserMeleeAttack;
             }
             case CP_UserShootAttack: {
-                return ServerPacket.Header.LP_UserShootAttack;
+                return ServerPacketHeader.LP_UserShootAttack;
             }
             case CP_UserMagicAttack: {
-                return ServerPacket.Header.LP_UserMagicAttack;
+                return ServerPacketHeader.LP_UserMagicAttack;
             }
             case CP_UserBodyAttack: {
-                return ServerPacket.Header.LP_UserBodyAttack;
+                return ServerPacketHeader.LP_UserBodyAttack;
             }
             default: {
                 break;
             }
         }
-        return ServerPacket.Header.UNKNOWN;
+        return ServerPacketHeader.UNKNOWN;
     }
 
     // hit count per mob

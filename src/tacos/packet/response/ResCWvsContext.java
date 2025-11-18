@@ -75,6 +75,7 @@ import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.tools.Pair;
+import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataAvatarLook;
 
 /**
@@ -85,7 +86,7 @@ public class ResCWvsContext {
 
     // CWvsContext::OnInventoryOperation
     public static MaplePacket InventoryOperation(boolean unlock, InvOp io) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_InventoryOperation);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_InventoryOperation);
         sp.Encode1(unlock ? 1 : 0);// m_bExclRequestSent, unlock
         sp.Encode1((io == null) ? 0 : io.get().size());
 
@@ -148,7 +149,7 @@ public class ResCWvsContext {
 
     // CWvsContext::OnChangeSkillRecordResult
     public static final MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ChangeSkillRecordResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChangeSkillRecordResult);
         sp.Encode1(1);
         if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode1(0);
@@ -166,7 +167,7 @@ public class ResCWvsContext {
 
     // CWvsContext::OnTemporaryStatSet
     public static final MaplePacket TemporaryStatSet(MapleStatEffect effect) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
         sp.EncodeBuffer(DataSecondaryStat.EncodeForLocal(effect));
         sp.Encode2(0); // delay
         if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
@@ -177,7 +178,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket cancelBuff(List<MapleBuffStat> statups, MapleStatEffect mse) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatReset);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
         int buff_mask[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
         ArrayList<Pair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
         for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
@@ -221,7 +222,7 @@ public class ResCWvsContext {
     // CWvsContext::OnInventoryGrow
     // CWvsContext::OnStatChanged
     public static final MaplePacket StatChanged(MapleCharacter chr, int unlock, int statmask) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_StatChanged);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StatChanged);
         // 0 = lock   -> do not clear lock flag
         // 1 = unlock -> clear lock flag
         sp.Encode1(unlock); // CWvsContext->bExclRequestSent
@@ -250,12 +251,12 @@ public class ResCWvsContext {
 
     // CWvsContext::OnForcedStatReset
     public static final MaplePacket ForcedStatReset() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ForcedStatReset);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ForcedStatReset);
         return sp.get();
     }
 
     public static final MaplePacket Message(ArgMessage ma) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Message);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Message);
         sp.Encode1(ma.mt.get());
         switch (ma.mt) {
             case MS_DropPickUpMessage: {
@@ -450,7 +451,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket GatherItemResult(byte type) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GatherItemResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GatherItemResult);
 
         sp.Encode1(0); // unused
         sp.Encode1(type);
@@ -458,7 +459,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket SortItemResult(byte type) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SortItemResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SortItemResult);
 
         sp.Encode1(0); // unused
         sp.Encode1(type);
@@ -466,7 +467,7 @@ public class ResCWvsContext {
     }
 
     public static final MaplePacket CharacterInfo(MapleCharacter player, boolean isSelf) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CharacterInfo);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CharacterInfo);
         boolean pet_summoned = false;
         for (final MaplePet pet : player.getPets()) {
             if (pet.getSummoned()) {
@@ -612,7 +613,7 @@ public class ResCWvsContext {
 
     // CWvsContext::OnBroadcastMsg
     public static MaplePacket BroadcastMsg(ArgBroadcastMsg bma) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_BroadcastMsg);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BroadcastMsg);
         sp.Encode1(bma.bm.get());
 
         switch (bma.bm) {
@@ -700,7 +701,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket showNotes(ResultSet notes, int count) throws SQLException {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MemoResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MemoResult);
 
         sp.Encode1(3);
         sp.Encode1(count);
@@ -716,20 +717,20 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket fishingUpdate(byte type, int id) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Fishing_BoardUpdate);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Fishing_BoardUpdate);
         sp.Encode1(type);
         sp.Encode4(id);
         return sp.get();
     }
 
     public static MaplePacket getTopMsg(String msg) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ScriptProgressMessage);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ScriptProgressMessage);
         sp.EncodeStr(msg);
         return sp.get();
     }
 
     public static MaplePacket MapTransferResult(MapleCharacter chr, OpsMapTransfer ops_res, boolean vip) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MapTransferResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapTransferResult);
         sp.Encode1(ops_res.get());
         sp.Encode1(vip ? 1 : 0);
 
@@ -751,7 +752,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket cancelDebuff(long mask, boolean first) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatReset);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
 
         if (Version.GreaterOrEqual(Region.JMS, 194)) {
             sp.EncodeZeroBytes(4);
@@ -763,7 +764,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket cancelHoming() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatReset);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
 
         if (Version.GreaterOrEqual(Region.JMS, 194)) {
             sp.EncodeZeroBytes(4);
@@ -774,7 +775,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket updateMount(MapleCharacter chr, boolean levelup) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetTamingMobInfo);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetTamingMobInfo);
 
         sp.Encode4(chr.getId());
         sp.Encode4(chr.getMount().getLevel());
@@ -785,7 +786,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket mountInfo(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetTamingMobInfo);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetTamingMobInfo);
 
         sp.Encode4(chr.getId());
         sp.Encode1(1);
@@ -796,7 +797,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket giveDebuff(final List<Pair<MapleDisease, Integer>> statups, int skillid, int level, int duration) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
 
         sp.EncodeBuffer(ResCUserRemote.writeLongDiseaseMask(statups));
         for (Pair<MapleDisease, Integer> statup : statups) {
@@ -813,7 +814,7 @@ public class ResCWvsContext {
 
     public static MaplePacket givePirate(List<Pair<MapleBuffStat, Integer>> statups, int duration, int skillid) {
         final boolean infusion = skillid == 5121009 || skillid == 15111005;
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
 
         sp.EncodeBuffer(ResCUserRemote.writeLongMask(statups));
         sp.Encode2(0);
@@ -831,7 +832,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket giveMount(int buffid, int skillid, List<Pair<MapleBuffStat, Integer>> statups) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
 
         sp.EncodeBuffer(ResCUserRemote.writeLongMask(statups));
         sp.Encode2(0);
@@ -845,7 +846,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket giveEnergyChargeTest(int bar, int bufflength) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
 
         sp.Encode8(MapleBuffStat.ENERGY_CHARGE.getValue());
         sp.Encode8(0);
@@ -861,7 +862,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket giveHoming(int skillid, int mobid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TemporaryStatSet);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
 
         if (Version.GreaterOrEqual(Region.JMS, 194)) {
             sp.EncodeZeroBytes(4);
@@ -884,14 +885,14 @@ public class ResCWvsContext {
          * 16: Already have joined a party.
          * 17: The party you're trying to join is already in full capacity.
          * 19: Unable to find the requested character in this channel.*/
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PartyResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
 
         sp.Encode1(message);
         return sp.get();
     }
 
     public static MaplePacket partyStatusMessage(int message, String charname) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PartyResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
 
         sp.Encode1(message); // 23: 'Char' have denied request to the party.
         sp.EncodeStr(charname);
@@ -899,7 +900,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket updateParty(int forChannel, MapleParty party, PartyOperation op, MaplePartyCharacter target) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PartyResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
 
         switch (op) {
             case DISBAND:
@@ -941,7 +942,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket partyInvite(MapleCharacter from) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PartyResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
 
         sp.Encode1(4);
         sp.Encode4(from.getParty().getId());
@@ -953,7 +954,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket partyCreated(int partyid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PartyResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
 
         sp.Encode1(8);
         sp.Encode4(partyid);
@@ -1015,13 +1016,13 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket changeCover(int cardid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MonsterBookSetCover);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MonsterBookSetCover);
         sp.Encode4(cardid);
         return sp.get();
     }
 
     public static MaplePacket addCard(boolean full, int cardid, int level) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MonsterBookSetCard);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MonsterBookSetCard);
         sp.Encode1(full ? 0 : 1);
         if (!full) {
             sp.Encode4(cardid);
@@ -1031,7 +1032,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket guildNotice(int gid, String notice) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(68);
         sp.Encode4(gid);
@@ -1041,7 +1042,7 @@ public class ResCWvsContext {
 
     //someone leaving, mode == 0x2c for leaving, 0x2f for expelled
     public static MaplePacket memberLeft(MapleGuildCharacter mgc, boolean bExpelled) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(bExpelled ? 47 : 44);
         sp.Encode4(mgc.getGuildId());
@@ -1074,7 +1075,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket changeAlliance(MapleGuildAlliance alliance, final boolean in) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(1);
         sp.Encode1(in ? 1 : 0);
@@ -1102,7 +1103,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket guildMemberLevelJobUpdate(MapleGuildCharacter mgc) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(60);
         sp.Encode4(mgc.getGuildId());
@@ -1113,7 +1114,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket allianceMemberOnline(int alliance, int gid, int id, boolean online) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(14);
         sp.Encode4(alliance);
@@ -1124,7 +1125,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket changeGuildInAlliance(MapleGuildAlliance alliance, MapleGuild guild, final boolean add) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(4);
         sp.Encode4(add ? alliance.getId() : 0);
@@ -1139,7 +1140,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket disbandAlliance(int alliance) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(29);
         sp.Encode4(alliance);
@@ -1147,7 +1148,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket newGuildMember(MapleGuildCharacter mgc) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(39);
         sp.Encode4(mgc.getGuildId());
@@ -1163,7 +1164,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket updateAllianceRank(int allianceid, MapleGuildCharacter mgc) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(27);
         sp.Encode4(allianceid);
@@ -1173,7 +1174,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket getGuildAlliance(MapleGuildAlliance alliance) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(13);
         if (alliance == null) {
@@ -1196,7 +1197,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket guildMemberOnline(int gid, int cid, boolean bOnline) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(61);
         sp.Encode4(gid);
@@ -1206,7 +1207,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket changeAllianceLeader(int allianceid, int newLeader, int oldLeader) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(2);
         sp.Encode4(allianceid);
@@ -1216,7 +1217,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket showGuildRanks(int npcid, List<MapleGuildRanking.GuildRankingInfo> all) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(73);
         sp.Encode4(npcid);
@@ -1233,7 +1234,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket denyGuildInvitation(String charname) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(55);
         sp.EncodeStr(charname);
@@ -1241,7 +1242,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket showGuildInfo(MapleCharacter c) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(26); //signature for showing guild info
         if (c == null || c.getMGC() == null) {
@@ -1261,7 +1262,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket guildEmblemChange(int gid, short bg, byte bgcolor, short logo, byte logocolor) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(66);
         sp.Encode4(gid);
@@ -1294,7 +1295,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket guildDisband(int gid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(50);
         sp.Encode4(gid);
@@ -1303,7 +1304,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket getAllianceInfo(MapleGuildAlliance alliance) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(12);
         sp.Encode1(alliance == null ? 0 : 1); //in an alliance
@@ -1314,7 +1315,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket updateAllianceLeader(int allianceid, int newLeader, int oldLeader) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(25);
         sp.Encode4(allianceid);
@@ -1324,7 +1325,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket addGuildToAlliance(MapleGuildAlliance alliance, MapleGuild newGuild) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(18);
         sp.EncodeBuffer(addAllianceInfo(alliance));
@@ -1335,7 +1336,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket updateAlliance(MapleGuildCharacter mgc, int allianceid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(24);
         sp.Encode4(allianceid);
@@ -1347,7 +1348,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket sendAllianceInvite(String allianceName, MapleCharacter inviter) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(3);
         sp.Encode4(inviter.getGuildId());
@@ -1370,7 +1371,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket showThread(MapleBBSThread thread) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildBBS);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildBBS);
 
         sp.Encode1(7);
         sp.Encode4(thread.localthreadID);
@@ -1390,7 +1391,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket BBSThreadList(final List<MapleBBSThread> bbs, int start) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildBBS);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildBBS);
 
         sp.Encode1(6);
         if (bbs == null) {
@@ -1430,7 +1431,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket createGuildAlliance(MapleGuildAlliance alliance) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(15);
         sp.EncodeBuffer(addAllianceInfo(alliance));
@@ -1449,7 +1450,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket rankTitleChange(int gid, String[] ranks) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(62);
         sp.Encode4(gid);
@@ -1460,14 +1461,14 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket genericGuildMessage(byte code) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(code);
         return sp.get();
     }
 
     public static MaplePacket removeGuildFromAlliance(MapleGuildAlliance alliance, MapleGuild expelledGuild, boolean expelled) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(16);
         sp.EncodeBuffer(addAllianceInfo(alliance));
@@ -1477,7 +1478,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket guildCapacityChange(int gid, int capacity) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(58);
         sp.Encode4(gid);
@@ -1486,7 +1487,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket updateGP(int gid, int GP) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(72);
         sp.Encode4(gid);
@@ -1495,7 +1496,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket getAllianceUpdate(MapleGuildAlliance alliance) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(23);
         sp.EncodeBuffer(addAllianceInfo(alliance));
@@ -1503,7 +1504,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket guildInvite(int gid, String charName, int levelFrom, int jobFrom) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(5);
         sp.Encode4(gid);
@@ -1514,7 +1515,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket changeRank(MapleGuildCharacter mgc) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GuildResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(64);
         sp.Encode4(mgc.getGuildId());
@@ -1524,7 +1525,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket changeAllianceRank(int allianceid, MapleGuildCharacter player) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AllianceResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(5);
         sp.Encode4(allianceid);
@@ -1534,7 +1535,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket sendFamilyJoinResponse(boolean accepted, String added) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FamilyJoinRequestResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyJoinRequestResult);
 
         sp.Encode1(accepted ? 1 : 0);
         sp.EncodeStr(added);
@@ -1542,7 +1543,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket changeRep(int r) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FamilyFamousPointIncResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyFamousPointIncResult);
 
         sp.Encode4(r);
         sp.Encode4(0);
@@ -1550,7 +1551,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket sendFamilyInvite(int cid, int otherLevel, int otherJob, String inviter) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FamilyJoinRequest);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyJoinRequest);
 
         sp.Encode4(cid); //the inviter
         sp.Encode4(otherLevel);
@@ -1577,7 +1578,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket familyLoggedIn(boolean online, String name) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FamilyNotifyLoginOrLogout);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyNotifyLoginOrLogout);
 
         sp.Encode1(online ? 1 : 0);
         sp.EncodeStr(name);
@@ -1585,7 +1586,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket familySummonRequest(String name, String mapname) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FamilySummonRequest);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilySummonRequest);
 
         sp.EncodeStr(name);
         sp.EncodeStr(mapname);
@@ -1597,7 +1598,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket getFamilyData() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FamilyPrivilegeList);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyPrivilegeList);
 
         List<MapleFamilyBuff.MapleFamilyBuffEntry> entries = MapleFamilyBuff.getBuffEntry();
         sp.Encode4(entries.size()); // Number of events
@@ -1612,7 +1613,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket familyBuff(int type, int buffnr, int amount, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FamilySetPrivilege);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilySetPrivilege);
 
         sp.Encode1(type);
         if (type >= 2 && type <= 4) {
@@ -1627,7 +1628,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket getFamilyPedigree(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FamilyChartResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyChartResult);
 
         sp.Encode4(chr.getId());
         MapleFamily family = World.Family.getFamily(chr.getFamilyId());
@@ -1730,7 +1731,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket getFamilyInfo(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FamilyInfoResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyInfoResult);
 
         sp.Encode4(chr.getCurrentRep()); //rep
         sp.Encode4(chr.getTotalRep()); // total rep
@@ -1756,7 +1757,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket getSeniorMessage(String name) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FamilyJoinAccepted);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyJoinAccepted);
 
         sp.EncodeStr(name);
         return sp.get();
@@ -1764,7 +1765,7 @@ public class ResCWvsContext {
 
     // CWvsContext::OnFriendResult
     public static MaplePacket FriendResult(ArgFriend frs) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FriendResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FriendResult);
         sp.Encode1(frs.flag.get());
         switch (frs.flag) {
             case FriendRes_LoadFriend_Done:
@@ -1845,7 +1846,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket ShopScannerResult(OpsShopScanner ops) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ShopScannerResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShopScannerResult);
 
         sp.Encode1(ops.get());
         switch (ops) {
@@ -1879,7 +1880,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket EntrustedShopCheckResult(OpsEntrustedShop ops_res) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_EntrustedShopCheckResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EntrustedShopCheckResult);
 
         sp.Encode1(ops_res.get());
 
@@ -1919,7 +1920,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket SkillLearnItemResult(MapleCharacter chr, boolean bIsMaterbook, boolean bUsed, boolean bSucceed) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SkillLearnItemResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillLearnItemResult);
 
         if (Version.GreaterOrEqual(Region.JMS, 186) || Version.PostBB()) {
             sp.Encode1(1); // bOnExclRequest
@@ -1935,7 +1936,7 @@ public class ResCWvsContext {
     }
 
     public static final MaplePacket getSlotUpdate(byte invType, byte newSlots) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_InventoryGrow);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_InventoryGrow);
 
         sp.Encode1(invType);
         sp.Encode1(newSlots);
@@ -1943,14 +1944,14 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket followRequest(int chrid) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetPassenserRequest);
+        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetPassenserRequest);
 
         sp.Encode4(chrid);
         return sp.get();
     }
 
     public static MaplePacket SuccessInUseGachaponBox(int box_item_id) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SuccessInUseGachaponBox);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SuccessInUseGachaponBox);
         sp.Encode4(box_item_id);
         return sp.get();
     }
@@ -1969,7 +1970,7 @@ public class ResCWvsContext {
     }
 
     public static final MaplePacket temporaryStats(final List<Pair<MapleStat.Temp, Integer>> stats) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ForcedStatSet);
+        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ForcedStatSet);
 
         //str 0x1, dex 0x2, int 0x4, luk 0x8
         //level 0x10 = 255
@@ -2023,7 +2024,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket sendLevelup(boolean family, int level, String name) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_NotifyLevelUp);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyLevelUp);
 
         sp.Encode1(family ? 1 : 2);
         sp.Encode4(level);
@@ -2032,7 +2033,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket sendJobup(boolean family, int jobid, String name) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_NotifyJobChange);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyJobChange);
 
         sp.Encode1(family ? 1 : 0);
         sp.Encode4(jobid); //or is this a short
@@ -2041,7 +2042,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket sendMarriage(boolean family, String name) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_NotifyWedding);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyWedding);
 
         sp.Encode1(family ? 1 : 0);
         sp.EncodeStr(name);
@@ -2049,7 +2050,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket giveFameResponse(int mode, String charname, int newfame) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GivePopularityResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GivePopularityResult);
 
         sp.Encode1(0);
         sp.EncodeStr(charname);
@@ -2067,14 +2068,14 @@ public class ResCWvsContext {
          * 4: can't raise or drop fame for this character for this month anymore.<br>
          * 5: received fame, use receiveFame()<br>
          * 6: level of fame neither has been raised nor dropped due to an unexpected error*/
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GivePopularityResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GivePopularityResult);
 
         sp.Encode1(status);
         return sp.get();
     }
 
     public static MaplePacket receiveFame(int mode, String charnameFrom) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GivePopularityResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GivePopularityResult);
 
         sp.Encode1(5);
         sp.EncodeStr(charnameFrom);
@@ -2103,7 +2104,7 @@ public class ResCWvsContext {
         // 1F = The reservation has been cancelled. Try again later.
         // 20 = You cannot cancel the wedding after reservation.
         // 22 = The invitation card is ineffective.
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MarriageResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MarriageResult);
 
         sp.Encode1(msg); // 1103 custom quest
         switch (msg) {
@@ -2123,7 +2124,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket sendEngagementRequest(String name, int cid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MarriageRequest);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MarriageRequest);
 
         sp.Encode1(0); //mode, 0 = engage, 1 = cancel, 2 = answer.. etc
         sp.EncodeStr(name); // name
@@ -2132,7 +2133,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket getPeanutResult(int itemId, short quantity, int itemId2, short quantity2) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_IncubatorResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_IncubatorResult);
 
         sp.Encode4(itemId);
         sp.Encode2(quantity);
@@ -2144,21 +2145,21 @@ public class ResCWvsContext {
 
     public static MaplePacket SetWeekEventMessage(String text) {
         // not in KMS31
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetWeekEventMessage);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetWeekEventMessage);
         sp.Encode1(-1);
         sp.EncodeStr(text);
         return sp.get();
     }
 
     public static MaplePacket getShowQuestCompletion(int id) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_QuestClear);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_QuestClear);
 
         sp.Encode2(id);
         return sp.get();
     }
 
     public static MaplePacket getAvatarMega(MapleCharacter chr, int channel, int itemId, String message, boolean ear) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AvatarMegaphoneUpdateMessage);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AvatarMegaphoneUpdateMessage);
 
         sp.Encode4(itemId);
         sp.EncodeStr(chr.getName());
@@ -2170,7 +2171,7 @@ public class ResCWvsContext {
     }
 
     public static MaplePacket fairyPendantMessage(int type, int percent) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_BonusExpRateChanged);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BonusExpRateChanged);
 
         sp.Encode2(21); // 0x15
         sp.Encode4(0); // idk
@@ -2181,17 +2182,17 @@ public class ResCWvsContext {
     }
 
     public static final MaplePacket sendString(final int type, String object, final String amount) {
-        ServerPacket.Header header = ServerPacket.Header.UNKNOWN;
+        ServerPacketHeader header = ServerPacketHeader.UNKNOWN;
 
         switch (type) {
             case 1:
-                header = ServerPacket.Header.LP_SessionValue;
+                header = ServerPacketHeader.LP_SessionValue;
                 break;
             case 2:
-                header = ServerPacket.Header.LP_PartyValue;
+                header = ServerPacketHeader.LP_PartyValue;
                 break;
             case 3:
-                header = ServerPacket.Header.LP_FieldSetVariable;
+                header = ServerPacketHeader.LP_FieldSetVariable;
                 break;
             default: {
                 break;
@@ -2207,14 +2208,14 @@ public class ResCWvsContext {
 
     // 0x005E @005E 00, ミニマップ点滅, 再読み込みかも?
     public static MaplePacket ReloadMiniMap() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MiniMapOnOff);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniMapOnOff);
         sp.Encode1((byte) 0);
         return sp.get();
     }
 
     // パチンコ情報の更新
     public static MaplePacket PachinkoResult(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_PachinkoResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoResult);
         // 12 bytes
         {
             sp.Encode4(chr.getId()); // キャラクターID (実質不要)

@@ -20,6 +20,7 @@ package tacos.packet.response;
 
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsContiMove;
 
 /**
@@ -29,14 +30,14 @@ import tacos.packet.ops.OpsContiMove;
 public class ResCField_ContiMove {
 
     public static MaplePacket ContiMove(OpsContiMove ops1, OpsContiMove ops2) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CONTIMOVE);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CONTIMOVE);
         sp.Encode1(ops1.get());
         sp.Encode1(ops2.get());
         return sp.get();
     }
 
     public static MaplePacket ContiState(OpsContiMove ops) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CONTISTATE);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CONTISTATE);
         sp.Encode1(ops.get());
         sp.Encode1(0); // 0 or 1, CShip::AppearShip
         return sp.get();

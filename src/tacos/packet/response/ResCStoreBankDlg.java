@@ -22,6 +22,7 @@ import odin.client.inventory.IItem;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.MerchItemPackage;
+import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 
 /**
@@ -31,7 +32,7 @@ import tacos.packet.response.data.DataGW_ItemSlotBase;
 public class ResCStoreBankDlg {
 
     public static final MaplePacket merchItemStore(final byte op) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_StoreBankResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
 
         // [28 01] [22 01] - Invalid Asiasoft Passport
         // [28 01] [22 00] - Open Asiasoft pin typing
@@ -49,14 +50,14 @@ public class ResCStoreBankDlg {
     }
 
     public static final MaplePacket merchItem_Message(final byte op) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_StoreBankGetAllResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankGetAllResult);
 
         sp.Encode1(op);
         return sp.get();
     }
 
     public static final MaplePacket sendHiredMerchantMessage(final byte type) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_StoreBankGetAllResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankGetAllResult);
 
         // 07 = send title box
         // 09 = Please pick up your items from Fredrick and then try again.
@@ -68,7 +69,7 @@ public class ResCStoreBankDlg {
     }
 
     public static final MaplePacket merchItemStore_ItemData(final MerchItemPackage pack) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_StoreBankResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
 
         sp.Encode1(35);
         sp.Encode4(9030000); // Fredrick

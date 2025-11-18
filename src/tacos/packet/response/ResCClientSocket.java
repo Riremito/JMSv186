@@ -26,6 +26,7 @@ import tacos.network.MaplePacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -111,7 +112,7 @@ public class ResCClientSocket {
 
     // CClientSocket::OnAuthenMessage
     public static final MaplePacket AuthenMessage() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AuthenMessage);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AuthenMessage);
         sp.Encode4(1); // id
         sp.Encode1(1);
         return sp.get();
@@ -121,7 +122,7 @@ public class ResCClientSocket {
     // プレミアムクーポン itemid 5420007
     // CClientSocket::OnAuthenCodeChanged
     public static final MaplePacket AuthenCodeChanged() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AuthenCodeChanged);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AuthenCodeChanged);
         sp.Encode1(2); // Open UI
         sp.Encode4(1);
         return sp.get();
@@ -130,7 +131,7 @@ public class ResCClientSocket {
     // CClientSocket::OnMigrateCommand
     // getChannelChange
     public static final MaplePacket MigrateCommand(final int port) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MigrateCommand);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MigrateCommand);
         sp.Encode1(1);
         sp.Encode4((int) GameServerIP); // IP, 127.0.0.1
         sp.Encode2(port);
@@ -143,7 +144,7 @@ public class ResCClientSocket {
 
     // CClientSocket::OnAliveReq
     public static final MaplePacket AliveReq() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AliveReq);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AliveReq);
         return sp.get();
     }
 }

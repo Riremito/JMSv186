@@ -26,6 +26,7 @@ import tacos.config.Version;
 import tacos.network.MaplePacket;
 import java.util.Collection;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsTrunk;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 
@@ -38,7 +39,7 @@ public class ResCTrunkDlg {
     // アイテムを入れる
     // storeStorage
     public static MaplePacket ItemIn(byte slots, MapleInventoryType type, Collection<IItem> items) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TrunkResult);
         sp.Encode1(OpsTrunk.TrunkRes_PutSuccess.get());
         sp.Encode1(slots);
         sp.Encode2(type.getBitfieldEncoding());
@@ -54,7 +55,7 @@ public class ResCTrunkDlg {
     }
 
     public static MaplePacket Error(OpsTrunk ops) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TrunkResult);
         sp.Encode1(ops.get());
         return sp.get();
     }
@@ -62,7 +63,7 @@ public class ResCTrunkDlg {
     // アイテムを取り出す
     // takeOutStorage
     public static MaplePacket ItemOut(byte slots, MapleInventoryType type, Collection<IItem> items) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TrunkResult);
         sp.Encode1(OpsTrunk.TrunkRes_GetSuccess.get());
         sp.Encode1(slots);
         sp.Encode2(type.getBitfieldEncoding());
@@ -79,7 +80,7 @@ public class ResCTrunkDlg {
 
     // メルの出し入れ
     public static MaplePacket MesoInOut(byte slots, int meso) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TrunkResult);
         sp.Encode1(OpsTrunk.TrunkRes_PutSuccess.get());
         sp.Encode1(slots);
         sp.Encode2(2);
@@ -94,7 +95,7 @@ public class ResCTrunkDlg {
     // 倉庫を開く
     // getStorage
     public static MaplePacket Open(int npcId, byte slots, Collection<IItem> items, int meso) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TrunkResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TrunkResult);
         if (Version.LessOrEqual(Region.KMS, 31)) {
             // may be other operation uses different header value
         } else {

@@ -22,6 +22,7 @@ import odin.client.MapleCharacter;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.MapleCarnivalParty;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -31,7 +32,7 @@ public class ResCField_MonsterCarnival {
 
     public static MaplePacket CPUpdate(boolean party, int curCP, int totalCP, int team) {
         // ?_?
-        ServerPacket sp = new ServerPacket((party) ? ServerPacket.Header.LP_MCarnivalTeamCP : ServerPacket.Header.LP_MCarnivalPersonalCP);
+        ServerPacket sp = new ServerPacket((party) ? ServerPacketHeader.LP_MCarnivalTeamCP : ServerPacketHeader.LP_MCarnivalPersonalCP);
 
         if (party) {
             sp.Encode1(team);
@@ -43,7 +44,7 @@ public class ResCField_MonsterCarnival {
     }
 
     public static MaplePacket playerSummoned(String name, int tab, int number) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MCarnivalResultSuccess);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalResultSuccess);
 
         sp.Encode1(tab);
         sp.Encode1(number);
@@ -52,7 +53,7 @@ public class ResCField_MonsterCarnival {
     }
 
     public static MaplePacket startMonsterCarnival(final MapleCharacter chr, final int enemyavailable, final int enemytotal) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MCarnivalEnter);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalEnter);
 
         final MapleCarnivalParty friendly = chr.getCarnivalParty();
         sp.Encode1(friendly.getTeam());
@@ -69,7 +70,7 @@ public class ResCField_MonsterCarnival {
 
     //CPQ
     public static MaplePacket playerDiedMessage(String name, int lostCP, int team) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MCarnivalDeath);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalDeath);
 
         sp.Encode1(team); //team
         sp.EncodeStr(name);

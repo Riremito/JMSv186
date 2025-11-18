@@ -20,6 +20,7 @@ package tacos.packet.response;
 
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -96,7 +97,7 @@ public class ResCParcelDlg {
 
     // 宅配
     public static MaplePacket Open(boolean isQuick, boolean isNPC) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_Parcel);
+        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_Parcel);
         // 0x3B or 0x40
         if (isQuick) {
             // 速達のUI
@@ -113,7 +114,7 @@ public class ResCParcelDlg {
     }
 
     public static MaplePacket Send() {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_Parcel);
+        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_Parcel);
         p.Encode1((byte) Action.SEND.Get());
         return p.get();
     }

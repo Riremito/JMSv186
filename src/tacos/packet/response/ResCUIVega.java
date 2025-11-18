@@ -20,6 +20,7 @@ package tacos.packet.response;
 
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -66,7 +67,7 @@ public class ResCUIVega {
 
     // ベガの呪文書の結果
     public static MaplePacket Result(boolean isSuccess) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_VegaResult);
+        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_VegaResult);
         // 成功可否
         p.Encode1((byte) (isSuccess ? Action.SUCCESS.Get() : Action.FAILURE.Get()));
         return p.get();
@@ -74,7 +75,7 @@ public class ResCUIVega {
 
     // ベガの呪文書開始
     public static MaplePacket Start() {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_VegaResult);
+        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_VegaResult);
         // 0x3E or 0x40
         p.Encode1(Action.START.Get());
         return p.get();

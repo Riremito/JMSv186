@@ -27,6 +27,7 @@ import tacos.packet.response.ResCITC;
 import odin.server.MTSStorage;
 import tacos.network.MaplePacket;
 import odin.tools.KoreanDateUtil;
+import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 
 /**
@@ -51,7 +52,7 @@ public class WrapCITC {
     }
 
     public static final MaplePacket addToCartMessage(boolean fail, boolean remove) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         if (remove) {
             if (fail) {
@@ -79,7 +80,7 @@ public class WrapCITC {
     }
 
     public static final MaplePacket sendMTS(final List<MTSStorage.MTSItemInfo> items, final int tab, final int type, final int page, final int pages) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         sp.Encode1(21); //operation
         sp.Encode4(pages * 10); //total items
@@ -114,7 +115,7 @@ public class WrapCITC {
     }
 
     public static final MaplePacket getMTSWantedListingOver(final int nx, final int items) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         sp.Encode1(61);
         sp.Encode4(nx);
@@ -123,7 +124,7 @@ public class WrapCITC {
     }
 
     public static final MaplePacket getTransferInventory(final List<IItem> items, final boolean changed) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         sp.Encode1(33);
         sp.Encode4(items.size());
@@ -149,7 +150,7 @@ public class WrapCITC {
     }
 
     public static final MaplePacket getMTSConfirmTransfer(final int quantity, final int pos) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         sp.Encode1(39);
         sp.Encode4(quantity);
@@ -166,7 +167,7 @@ public class WrapCITC {
     }
 
     public static final MaplePacket getNotYetSoldInv(final List<MTSStorage.MTSItemInfo> items) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         sp.Encode1(35);
         sp.Encode4(items.size());

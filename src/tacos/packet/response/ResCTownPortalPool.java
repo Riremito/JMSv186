@@ -22,6 +22,7 @@ import tacos.network.MaplePacket;
 import java.awt.Point;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleDoor;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -32,7 +33,7 @@ public class ResCTownPortalPool {
     // spawnPortal
     // CWvsContext::OnTownPortal
     public static MaplePacket setMysticDoorInfo(MapleDoor door) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TownPortal);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TownPortal);
 
         if (door == null) {
             sp.Encode4(999999999);
@@ -54,7 +55,7 @@ public class ResCTownPortalPool {
 
     // spawnDoor
     public static final MaplePacket spawnDoor(MapleDoor door, boolean isTown) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TownPortalCreated);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TownPortalCreated);
         sp.Encode1(isTown ? 1 : 0);
         sp.Encode4(door.getOwnerId());
         sp.Encode2((short) door.getPosition().x);
@@ -64,7 +65,7 @@ public class ResCTownPortalPool {
 
     // removeDoor
     public static MaplePacket removeDoor(MapleDoor door) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TownPortalRemoved);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TownPortalRemoved);
         sp.Encode1(1);
         sp.Encode4(door.getOwnerId());
         return sp.get();
@@ -72,7 +73,7 @@ public class ResCTownPortalPool {
 
     // partyPortal
     public static MaplePacket partyPortal(MapleDoor door) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PartyResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
         sp.Encode1(40);
         sp.Encode1(door.getTownPortal().getMysticDoorId()); // number
         sp.Encode4(door.getMapId());

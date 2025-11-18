@@ -48,6 +48,7 @@ import odin.server.Randomizer;
 import odin.server.maps.MapleMap;
 import odin.tools.HexTool;
 import odin.tools.StringUtil;
+import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 
 /**
@@ -148,7 +149,7 @@ public class ResWrapper {
     }
 
     public static MaplePacket updateSpecialItemUse(IItem item, byte invType, short pos) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_InventoryOperation);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_InventoryOperation);
 
         sp.Encode1(0); // could be from drop
         sp.Encode1(2); // always 2

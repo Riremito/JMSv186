@@ -25,6 +25,7 @@ import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacket;
 import tacos.packet.IHeader;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -39,9 +40,9 @@ public class Property_Packet {
 
         Property pr_sp = new Property(path_sp);
         if (pr_sp.open()) {
-            for (ServerPacket.Header header : ServerPacket.Header.values()) {
+            for (ServerPacketHeader header : ServerPacketHeader.values()) {
                 String[] vars = pr_sp.get(header.name(), "@FFFF").trim().split(" ");
-                header.set(parseHeader(vars, ServerPacket.Header.values()));
+                header.set(parseHeader(vars, ServerPacketHeader.values()));
             }
             retval++;
         }
@@ -63,7 +64,7 @@ public class Property_Packet {
 
     public static void reload() {
         // reset
-        for (ServerPacket.Header header : ServerPacket.Header.values()) {
+        for (ServerPacketHeader header : ServerPacketHeader.values()) {
             header.set(-1);
         }
         for (ClientPacketHeader header : ClientPacketHeader.values()) {

@@ -24,6 +24,7 @@ import tacos.config.Version;
 import tacos.network.MaplePacket;
 import java.awt.Point;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.arg.ArgUserEffect;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsUserEffect;
@@ -36,7 +37,7 @@ import tacos.packet.response.data.DataCUser;
 public class ResCUserLocal {
 
     public static MaplePacket SitResult(int id) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserSitResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSitResult);
         boolean is_cancel = (id == -1);
         sp.Encode1(is_cancel ? 0 : 1);
         if (!is_cancel) {
@@ -46,14 +47,14 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket Emotion(MapleCharacter chr, int expression) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEmotionLocal);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotionLocal);
 
         sp.EncodeBuffer(DataCUser.Emotion(expression));
         return sp.get();
     }
 
     public static MaplePacket EffectLocal(ArgUserEffect arg) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectLocal);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
         sp.EncodeBuffer(EffectData(arg));
         return sp.get();
     }
@@ -106,7 +107,7 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket showRewardItemAnimation(int itemId, String effect) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectLocal);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
         sp.Encode1(15);
         sp.Encode4(itemId);
@@ -118,7 +119,7 @@ public class ResCUserLocal {
     }
 
     public static final MaplePacket showOwnHpHealed(final int amount) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectLocal);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
         sp.Encode1(10); //Type
         sp.Encode4(amount);
@@ -126,7 +127,7 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket useWheel(byte charmsleft) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectLocal);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
         sp.Encode1(21);
         sp.Encode8(charmsleft);
@@ -134,7 +135,7 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket useCharm(byte charmsleft, byte daysleft) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectLocal);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
         sp.Encode1(6);
         sp.Encode1(1);
@@ -144,7 +145,7 @@ public class ResCUserLocal {
     }
 
     public static final MaplePacket ShowWZEffect(final String data) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectLocal);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
         sp.Encode1(19);
         sp.EncodeStr(data);
@@ -152,7 +153,7 @@ public class ResCUserLocal {
     }
 
     public static final MaplePacket showOwnPetLevelUp(final int index) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectLocal);
+        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
         sp.Encode1(4);
         sp.Encode1(0);
@@ -161,7 +162,7 @@ public class ResCUserLocal {
     }
 
     public static final MaplePacket AranTutInstructionalBalloon(final String data) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEffectLocal);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
         sp.Encode1(OpsUserEffect.UserEffect_AvatarOriented.get());
         sp.EncodeStr(data);
@@ -170,38 +171,38 @@ public class ResCUserLocal {
     }
 
     public static final MaplePacket Teleport(byte portal) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserTeleport);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTeleport);
         sp.Encode1(0); // set last teleported time by client side
         sp.Encode1(portal);
         return sp.get();
     }
 
     public static MaplePacket MesoGive_Succeeded(int mesos) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Succeeded);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MesoGive_Succeeded);
 
         sp.Encode4(mesos);
         return sp.get();
     }
 
     public static MaplePacket MesoGive_Failed() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MesoGive_Failed);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MesoGive_Failed);
         return sp.get();
     }
 
     public static MaplePacket RandomMesoBagSuccess(byte type, int mesos) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Random_Mesobag_Succeed);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Random_Mesobag_Succeed);
         sp.Encode1(type);
         sp.Encode4(mesos);
         return sp.get();
     }
 
     public static MaplePacket RandomMesoBagFailed() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Random_Mesobag_Failed);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Random_Mesobag_Failed);
         return sp.get();
     }
 
     public static MaplePacket updateQuestFinish(int quest, int npc, int nextquest) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserQuestResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserQuestResult);
         sp.Encode1(OpsQuest.QuestRes_Act_Success.get());
         sp.Encode2(quest);
         sp.Encode4(npc);
@@ -210,7 +211,7 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket updateQuestInfo(MapleCharacter c, int quest, int npc, OpsQuest oq) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserQuestResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserQuestResult);
         sp.Encode1(oq.get());
         sp.Encode2(quest);
         sp.Encode4(npc);
@@ -220,7 +221,7 @@ public class ResCUserLocal {
 
     // CUserLocal::OnBalloonMsg
     public static MaplePacket BalloonMsg(String hint, int width, int height) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserBalloonMsg);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserBalloonMsg);
 
         if (width < 1) {
             width = hint.length() * 10;
@@ -241,7 +242,7 @@ public class ResCUserLocal {
     }
 
     public static final MaplePacket sendRepairWindow(int npc) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserOpenUIWithOption);
+        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserOpenUIWithOption);
 
         sp.Encode4(34); //sending 0x21 here opens evan skill window o.o
         sp.Encode4(npc);
@@ -249,7 +250,7 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket IntroLock(boolean enable) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetDirectionMode);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetDirectionMode);
 
         sp.Encode1(enable ? 1 : 0);
         sp.Encode4(enable ? 1 : 0);
@@ -257,21 +258,21 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket IntroDisableUI(boolean enable) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SetStandAloneMode);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetStandAloneMode);
 
         sp.Encode1(enable ? 1 : 0);
         return sp.get();
     }
 
     public static MaplePacket summonHelper(boolean summon) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserHireTutor);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserHireTutor);
 
         sp.Encode1(summon ? 1 : 0);
         return sp.get();
     }
 
     public static MaplePacket summonMessage(int type) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserTutorMsg);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTutorMsg);
 
         sp.Encode1(1);
         sp.Encode4(type);
@@ -280,7 +281,7 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket summonMessage(String message) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserTutorMsg);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTutorMsg);
 
         sp.Encode1(0);
         sp.EncodeStr(message);
@@ -291,7 +292,7 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket testCombo(int value) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_IncCombo);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_IncCombo);
 
         sp.Encode4(value);
         return sp.get();
@@ -299,19 +300,19 @@ public class ResCUserLocal {
 
     // ポイントアイテムのパチンコ玉の充填 (玉ボックス)
     public static MaplePacket PachinkoBoxSuccess(int gain) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Pachinko_BoxSuccess);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Pachinko_BoxSuccess);
         sp.Encode4(gain); // パチンコ玉の数
         return sp.get();
     }
 
     // パチンコ玉の充填に失敗した場合のダイアログ (実質不要)
     public static MaplePacket PachinkoBoxFailure() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Pachinko_BoxFailure);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Pachinko_BoxFailure);
         return sp.get();
     }
 
     public static MaplePacket getPollReply(String message) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserNoticeMsg);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserNoticeMsg);
 
         sp.EncodeStr(message);
         return sp.get();
@@ -319,7 +320,7 @@ public class ResCUserLocal {
 
     // チャット欄へのテキスト表示
     public static final MaplePacket getFollowMessage(final String msg) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserChatMsg);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserChatMsg);
 
         /*
         // どのような内容のテキストでも問題なし
@@ -358,7 +359,7 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket moveFollow(Point otherStart, Point myStart, Point otherEnd/*, List<LifeMovementFragment> moves*/) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserPassiveMove);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserPassiveMove);
 
         sp.Encode2(otherStart.x);
         sp.Encode2(otherStart.y);
@@ -378,7 +379,7 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket getFollowMsg(int opcode) {
-        final ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserFollowCharacterFailed);
+        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserFollowCharacterFailed);
 
         /*
         0x00    原因不明の理由で自動追尾を申請できませんでした。
@@ -395,7 +396,7 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket PollQuestion(String questions[], String answers[][]) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_Poll_Question);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Poll_Question);
 
         sp.Encode4(questions.length); // number of questions, this may support only 1 question...
         for (int i = 0; i < questions.length; i++) {
@@ -410,7 +411,7 @@ public class ResCUserLocal {
     }
 
     public static MaplePacket SkillCooltimeSet(int skill_id, int cool_time) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_SkillCooltimeSet);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillCooltimeSet);
 
         sp.Encode4(skill_id);
 

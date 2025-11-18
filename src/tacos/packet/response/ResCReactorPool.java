@@ -21,6 +21,7 @@ package tacos.packet.response;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleReactor;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -30,7 +31,7 @@ public class ResCReactorPool {
 
     // triggerReactor
     public static MaplePacket Hit(MapleReactor reactor, int stance) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ReactorChangeState);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorChangeState);
         sp.Encode4(reactor.getObjectId());
         sp.Encode1(reactor.getState());
         sp.Encode2(reactor.getPosition().x);
@@ -43,7 +44,7 @@ public class ResCReactorPool {
 
     // spawnReactor
     public static MaplePacket Spawn(MapleReactor reactor) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ReactorEnterField);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorEnterField);
         sp.Encode4(reactor.getObjectId());
         sp.Encode4(reactor.getReactorId());
         sp.Encode1(reactor.getState());
@@ -56,7 +57,7 @@ public class ResCReactorPool {
 
     // destroyReactor
     public static MaplePacket Destroy(MapleReactor reactor) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ReactorLeaveField);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorLeaveField);
         sp.Encode4(reactor.getObjectId());
         sp.Encode1(reactor.getState());
         sp.Encode2(reactor.getPosition().x);

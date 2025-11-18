@@ -31,6 +31,7 @@ import tacos.packet.ops.Ops_Whisper;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -39,28 +40,28 @@ import odin.server.maps.MapleNodes;
 public class ResCField {
 
     public static MaplePacket TransferFieldReqIgnored(OpsTransferField ops) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TransferFieldReqIgnored);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TransferFieldReqIgnored);
 
         sp.Encode1(ops.get());
         return sp.get();
     }
 
     public static MaplePacket TransferChannelReqIgnored(OpsTransferChannel ops) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_TransferChannelReqIgnored);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TransferChannelReqIgnored);
 
         sp.Encode1(ops.get());
         return sp.get();
     }
 
     public static MaplePacket MobSummonItemUseResult(boolean result) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_MobSummonItemUseResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSummonItemUseResult);
 
         sp.Encode1(result ? 1 : 0);
         return sp.get();
     }
 
     public static MaplePacket PlayJukeBox(int item_id, String name) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_PlayJukeBox);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PlayJukeBox);
 
         sp.Encode4(item_id);
         sp.EncodeStr(name);
@@ -68,7 +69,7 @@ public class ResCField {
     }
 
     public static MaplePacket GroupMessage(OpsChatGroup ops, String name, String message) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_GroupMessage);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GroupMessage);
 
         sp.Encode1(ops.get());
         sp.EncodeStr(name);
@@ -79,7 +80,7 @@ public class ResCField {
     // environmentChange, musicChange, showEffect, playSound
     // ShowBossHP, trembleEffect
     public static MaplePacket FieldEffect(ArgFieldEffect st) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FieldEffect);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldEffect);
         sp.Encode1(st.flag.get());
         switch (st.flag) {
             case FieldEffect_Summon: {
@@ -141,7 +142,7 @@ public class ResCField {
     }
 
     public static MaplePacket showOXQuiz(int questionSet, int questionId, boolean askQuestion) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Quiz);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Quiz);
 
         sp.Encode1(askQuestion ? 1 : 0);
         sp.Encode1(questionSet);
@@ -150,7 +151,7 @@ public class ResCField {
     }
 
     public static MaplePacket showChaosHorntailShrine(boolean spawned, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_HontaleTimer);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontaleTimer);
 
         sp.Encode1(spawned ? 1 : 0);
         sp.Encode4(time);
@@ -158,7 +159,7 @@ public class ResCField {
     }
 
     public static MaplePacket showChaosZakumShrine(boolean spawned, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ChaosZakumTimer);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChaosZakumTimer);
 
         sp.Encode1(spawned ? 1 : 0);
         sp.Encode4(time);
@@ -166,13 +167,13 @@ public class ResCField {
     }
 
     public static MaplePacket stopClock() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DestroyClock);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DestroyClock);
 
         return sp.get();
     }
 
     public static MaplePacket showHorntailShrine(boolean spawned, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_HontailTimer);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontailTimer);
 
         sp.Encode1(spawned ? 1 : 0);
         sp.Encode4(time);
@@ -180,7 +181,7 @@ public class ResCField {
     }
 
     public static MaplePacket showZakumShrine(boolean spawned, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ZakumTimer);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ZakumTimer);
 
         sp.Encode1(spawned ? 1 : 0);
         sp.Encode4(time);
@@ -188,20 +189,20 @@ public class ResCField {
     }
 
     public static MaplePacket showEquipEffect() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FieldSpecificData);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldSpecificData);
 
         return sp.get();
     }
 
     public static MaplePacket showEquipEffect(int team) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FieldSpecificData);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldSpecificData);
 
         sp.Encode2(team);
         return sp.get();
     }
 
     public static final MaplePacket getUpdateEnvironment(final MapleMap map) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FieldObstacleOnOffStatus);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOffStatus);
 
         sp.Encode4(map.getEnvironment().size());
         for (Map.Entry<String, Integer> mp : map.getEnvironment().entrySet()) {
@@ -212,7 +213,7 @@ public class ResCField {
     }
 
     public static MaplePacket environmentMove(String env, int mode) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FieldObstacleOnOff);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOff);
 
         sp.EncodeStr(env);
         sp.Encode4(mode);
@@ -220,7 +221,7 @@ public class ResCField {
     }
 
     public static MaplePacket getClockTime(int hour, int min, int sec) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Clock);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Clock);
 
         sp.Encode1(1); // station clock
         sp.Encode1(hour);
@@ -230,7 +231,7 @@ public class ResCField {
     }
 
     public static MaplePacket getClock(int time) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Clock);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Clock);
 
         sp.Encode1(2); // timer
         sp.Encode4(time);
@@ -238,7 +239,7 @@ public class ResCField {
     }
 
     public static MaplePacket Whisper(Ops_Whisper req_res, Ops_Whisper loc_whis, MapleCharacter chr_from, String name_to, String message, MapleCharacter chr_to) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Whisper);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Whisper);
 
         sp.Encode1(req_res.get() | loc_whis.get());
         switch (req_res) {
@@ -296,7 +297,7 @@ public class ResCField {
 
     // CField::OnBlowWeather
     public static MaplePacket BlowWeather(String msg, int itemid, boolean active) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_BlowWeather);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BlowWeather);
 
         sp.Encode4(active ? itemid : 0);
         if (active && itemid != 0) {
@@ -307,7 +308,7 @@ public class ResCField {
     }
 
     public static final MaplePacket getMovingPlatforms(final MapleMap map) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_FootHoldInfo);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FootHoldInfo);
 
         sp.Encode4(map.getPlatforms().size());
         for (MapleNodes.MaplePlatform mp : map.getPlatforms()) {
@@ -330,14 +331,14 @@ public class ResCField {
     }
 
     public static MaplePacket showEventInstructions() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Desc);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Desc);
 
         sp.Encode1(0);
         return sp.get();
     }
 
     public static MaplePacket GameMaster_Func(int value) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_AdminResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AdminResult);
 
         sp.Encode1(value);
         sp.EncodeZeroBytes(17);

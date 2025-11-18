@@ -21,6 +21,7 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataAvatarLook;
 
 /**
@@ -30,7 +31,7 @@ import tacos.packet.response.data.DataAvatarLook;
 public class ResCUIMessenger {
 
     public static MaplePacket removeMessengerPlayer(int position) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
 
         sp.Encode1(2);
         sp.Encode1(position);
@@ -38,7 +39,7 @@ public class ResCUIMessenger {
     }
 
     public static MaplePacket messengerInvite(String from, int messengerid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
 
         sp.Encode1(3);
         sp.EncodeStr(from);
@@ -49,7 +50,7 @@ public class ResCUIMessenger {
     }
 
     public static MaplePacket updateMessengerPlayer(String from, MapleCharacter chr, int position, int channel) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
 
         sp.Encode1(7);
         sp.Encode1(position);
@@ -60,7 +61,7 @@ public class ResCUIMessenger {
     }
 
     public static MaplePacket addMessengerPlayer(String from, MapleCharacter chr, int position, int channel) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
 
         sp.Encode1(0);
         sp.Encode1(position);
@@ -71,7 +72,7 @@ public class ResCUIMessenger {
     }
 
     public static MaplePacket messengerNote(String text, int mode, int mode2) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
 
         sp.Encode1(mode);
         sp.EncodeStr(text);
@@ -80,7 +81,7 @@ public class ResCUIMessenger {
     }
 
     public static MaplePacket messengerChat(String text) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
 
         sp.Encode1(6);
         sp.EncodeStr(text);
@@ -88,7 +89,7 @@ public class ResCUIMessenger {
     }
 
     public static MaplePacket joinMessenger(int position) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_Messenger);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
 
         sp.Encode1(1);
         sp.Encode1(position);

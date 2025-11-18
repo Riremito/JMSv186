@@ -32,6 +32,7 @@ import tacos.packet.ops.OpsShop;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleShopItem;
 import odin.tools.BitTools;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -41,7 +42,7 @@ public class ResCShopDlg {
 
     // CShopDlg::OnPacket
     public static MaplePacket ShopResult(OpsShop ops, int level) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ShopResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShopResult);
 
         sp.Encode1(ops.get());
 
@@ -86,7 +87,7 @@ public class ResCShopDlg {
 
     // CShopDlg::OnPacket
     public static MaplePacket OpenShopDlg_DS(DebugShop ds) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_OpenShopDlg);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
 
         if (!Version.GreaterOrEqual(Region.EMS, 89)) {
             if (ServerConfig.JMS194orLater()) {
@@ -173,7 +174,7 @@ public class ResCShopDlg {
 
     public static MaplePacket OpenShopDlg(MapleClient c, int sid, List<MapleShopItem> items) {
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_OpenShopDlg);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
         if (ServerConfig.JMS194orLater()) {
             sp.Encode1(0);
         }
