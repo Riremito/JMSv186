@@ -33,6 +33,7 @@ import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCClientSocket;
 import odin.server.Randomizer;
 import odin.tools.FileoutputUtil;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -184,10 +185,10 @@ public class PacketHandler extends IoHandlerAdapter {
                 header_val = (short) (cp.Decode1() & 0xFF);
             }
 
-            ClientPacket.Header header = ClientPacket.ToHeader(header_val);
+            ClientPacketHeader header = ClientPacket.ToHeader(header_val);
 
             // not coded
-            if (header == ClientPacket.Header.UNKNOWN) {
+            if (header == ClientPacketHeader.UNKNOWN) {
                 DebugLogger.CPLog(cp);
                 return;
             }

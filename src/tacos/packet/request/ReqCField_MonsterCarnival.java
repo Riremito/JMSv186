@@ -31,6 +31,7 @@ import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import odin.tools.Pair;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -38,7 +39,7 @@ import odin.tools.Pair;
  */
 public class ReqCField_MonsterCarnival {
 
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return true;

@@ -42,6 +42,7 @@ import odin.server.CashItemFactory;
 import odin.server.CashItemInfo;
 import odin.server.MTSStorage;
 import odin.server.MapleInventoryManipulator;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -49,7 +50,7 @@ import odin.server.MapleInventoryManipulator;
  */
 public class ReqCCashShop {
 
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             DebugLogger.ErrorLog("character is not online (CS).");

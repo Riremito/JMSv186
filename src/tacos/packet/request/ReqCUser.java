@@ -100,6 +100,7 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
 import odin.tools.AttackPair;
 import odin.tools.Pair;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -107,7 +108,7 @@ import odin.tools.Pair;
  */
 public class ReqCUser {
 
-    public static boolean OnPacket_Login(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket_Login(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_UpdateScreenSetting: {
                 return true;
@@ -119,7 +120,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return true;
@@ -682,7 +683,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnPacket_CS_ITC(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket_CS_ITC(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_UpdateScreenSetting: {
                 return true;
@@ -711,7 +712,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnFamilyPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnFamilyPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return true;
@@ -818,7 +819,7 @@ public class ReqCUser {
     }
 
     // BMS CUser::OnAttack
-    public static final AttackInfo OnAttack(ClientPacket cp, ClientPacket.Header header, MapleCharacter chr) {
+    public static final AttackInfo OnAttack(ClientPacket cp, ClientPacketHeader header, MapleCharacter chr) {
         final AttackInfo attack = new AttackInfo();
 
         // attack type
@@ -886,7 +887,7 @@ public class ReqCUser {
         }
 
         if (Version.GreaterOrEqual(Region.KMS, 114) || ServerConfig.JMS194orLater()) {
-            if (attack.AttackHeader == ClientPacket.Header.CP_UserShootAttack) {
+            if (attack.AttackHeader == ClientPacketHeader.CP_UserShootAttack) {
                 cp.Decode1();
             }
         }
@@ -912,7 +913,7 @@ public class ReqCUser {
             cp.Decode4(); // dwID
         }
 
-        if (attack.AttackHeader == ClientPacket.Header.CP_UserShootAttack) {
+        if (attack.AttackHeader == ClientPacketHeader.CP_UserShootAttack) {
             attack.ProperBulletPosition = cp.Decode2();
             attack.pnCashItemPos = cp.Decode2();
             attack.nShootRange0a = cp.Decode1(); // nShootRange0a, GetShootRange0 func, is AOE or not, TT/ Avenger = 41, Showdown = 0
@@ -970,7 +971,7 @@ public class ReqCUser {
         }
 
         if (Version.GreaterOrEqual(Region.KMS, 65) || ServerConfig.JMS180orLater()) {
-            if (attack.AttackHeader == ClientPacket.Header.CP_UserShootAttack) {
+            if (attack.AttackHeader == ClientPacketHeader.CP_UserShootAttack) {
                 cp.Decode4(); // v292->CUser::CLife::IVecCtrlOwner::vfptr->GetPos?
             }
         }

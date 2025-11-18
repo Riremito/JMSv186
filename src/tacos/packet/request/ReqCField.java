@@ -28,6 +28,7 @@ import tacos.packet.response.ResCField_ContiMove;
 import odin.scripting.EventManager;
 import odin.scripting.EventScriptManager;
 import odin.server.maps.MapleMap;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -35,7 +36,7 @@ import odin.server.maps.MapleMap;
  */
 public class ReqCField {
 
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return true;

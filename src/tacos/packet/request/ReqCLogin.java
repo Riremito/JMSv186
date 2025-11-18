@@ -49,6 +49,7 @@ import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCLogin;
 import tacos.packet.response.ResCLogin.LoginResult;
 import odin.server.MapleItemInformationProvider;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -57,7 +58,7 @@ import odin.server.MapleItemInformationProvider;
 public class ReqCLogin {
 
     // CLogin::OnPacket
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_CheckPassword: {
                 // ログイン

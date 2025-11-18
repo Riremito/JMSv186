@@ -29,10 +29,10 @@ import odin.client.MapleCharacter;
 import odin.client.SkillFactory;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.packet.ClientPacket;
 import tacos.packet.ServerPacket;
 import odin.server.MapleStatEffect;
 import odin.tools.AttackPair;
+import tacos.packet.ClientPacketHeader;
 
 public class AttackInfo {
 
@@ -41,7 +41,7 @@ public class AttackInfo {
     public Point position;
     public boolean real = true;
 
-    public ClientPacket.Header AttackHeader;
+    public ClientPacketHeader AttackHeader;
     public int CharacterId;
     public int X;
     public int Y;

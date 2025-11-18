@@ -20,6 +20,7 @@ package tacos.network;
 
 import odin.client.MapleClient;
 import tacos.packet.ClientPacket;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -29,5 +30,5 @@ public interface IPacketHandler {
 
     public boolean isShutdown();
 
-    public boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception;
+    public boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) throws Exception;
 }

@@ -21,6 +21,7 @@ package tacos.network;
 import odin.client.MapleClient;
 import tacos.server.ServerOdinGame;
 import tacos.packet.ClientPacket;
+import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCClientSocket;
 import tacos.packet.request.ReqCDropPool;
 import tacos.packet.request.ReqCField;
@@ -54,56 +55,56 @@ public class PacketHandler_Game extends PacketHandler implements IPacketHandler 
     }
 
     @Override
-    public boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception {
+    public boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) throws Exception {
         // socket
-        if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_SOCKET, ClientPacketHeader.CP_END_SOCKET)) {
             return ReqCClientSocket.OnPacket(c, header, cp);
         }
         // user
-        if (header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_USER, ClientPacketHeader.CP_END_USER)) {
             // family
-            if (header.between(ClientPacket.Header.CP_FamilyChartRequest, ClientPacket.Header.CP_FamilySummonResult)) {
+            if (header.between(ClientPacketHeader.CP_FamilyChartRequest, ClientPacketHeader.CP_FamilySummonResult)) {
                 return ReqCUser.OnFamilyPacket(c, header, cp);
             }
             // pet
-            if (header.between(ClientPacket.Header.CP_BEGIN_PET, ClientPacket.Header.CP_END_PET)) {
+            if (header.between(ClientPacketHeader.CP_BEGIN_PET, ClientPacketHeader.CP_END_PET)) {
                 return ReqCUser_Pet.OnPetPacket(c, header, cp);
             }
             // summon
-            if (header.between(ClientPacket.Header.CP_BEGIN_SUMMONED, ClientPacket.Header.CP_END_SUMMONED)) {
+            if (header.between(ClientPacketHeader.CP_BEGIN_SUMMONED, ClientPacketHeader.CP_END_SUMMONED)) {
                 return ReqCSummonedPool.OnPacket(c, header, cp);
             }
             // dragon
-            if (header.between(ClientPacket.Header.CP_BEGIN_DRAGON, ClientPacket.Header.CP_END_DRAGON)) {
+            if (header.between(ClientPacketHeader.CP_BEGIN_DRAGON, ClientPacketHeader.CP_END_DRAGON)) {
                 return ReqCUser_Dragon.OnMove(c, header, cp);
             }
             return ReqCUser.OnPacket(c, header, cp);
         }
         // field
-        if (header.between(ClientPacket.Header.CP_BEGIN_FIELD, ClientPacket.Header.CP_END_FIELD)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_FIELD, ClientPacketHeader.CP_END_FIELD)) {
             // life
-            if (header.between(ClientPacket.Header.CP_BEGIN_LIFEPOOL, ClientPacket.Header.CP_END_LIFEPOOL)) {
+            if (header.between(ClientPacketHeader.CP_BEGIN_LIFEPOOL, ClientPacketHeader.CP_END_LIFEPOOL)) {
                 // mob
-                if (header.between(ClientPacket.Header.CP_BEGIN_MOB, ClientPacket.Header.CP_END_MOB)) {
+                if (header.between(ClientPacketHeader.CP_BEGIN_MOB, ClientPacketHeader.CP_END_MOB)) {
                     return ReqCMobPool.OnPacket(c, header, cp);
                 }
                 // npc
-                if (header.between(ClientPacket.Header.CP_BEGIN_NPC, ClientPacket.Header.CP_END_NPC)) {
+                if (header.between(ClientPacketHeader.CP_BEGIN_NPC, ClientPacketHeader.CP_END_NPC)) {
                     ReqCNpcPool.OnPacket(c, header, cp);
                     return true;
                 }
                 return false;
             }
             // drop
-            if (header.between(ClientPacket.Header.CP_BEGIN_DROPPOOL, ClientPacket.Header.CP_END_DROPPOOL)) {
+            if (header.between(ClientPacketHeader.CP_BEGIN_DROPPOOL, ClientPacketHeader.CP_END_DROPPOOL)) {
                 return ReqCDropPool.OnPacket(c, header, cp);
             }
             // reactor
-            if (header.between(ClientPacket.Header.CP_BEGIN_REACTORPOOL, ClientPacket.Header.CP_END_REACTORPOOL)) {
+            if (header.between(ClientPacketHeader.CP_BEGIN_REACTORPOOL, ClientPacketHeader.CP_END_REACTORPOOL)) {
                 return ReqCReactorPool.OnPacket(c, header, cp);
             }
             // event field
-            if (header.between(ClientPacket.Header.CP_BEGIN_EVENT_FIELD, ClientPacket.Header.CP_END_EVENT_FIELD)) {
+            if (header.between(ClientPacketHeader.CP_BEGIN_EVENT_FIELD, ClientPacketHeader.CP_END_EVENT_FIELD)) {
                 if (ReqCField_SnowBall.OnPacket(c, header, cp)) {
                     return true;
                 }
@@ -113,29 +114,29 @@ public class PacketHandler_Game extends PacketHandler implements IPacketHandler 
                 return false;
             }
             // monster carnival field
-            if (header.between(ClientPacket.Header.CP_BEGIN_MONSTER_CARNIVAL_FIELD, ClientPacket.Header.CP_END_MONSTER_CARNIVAL_FIELD)) {
+            if (header.between(ClientPacketHeader.CP_BEGIN_MONSTER_CARNIVAL_FIELD, ClientPacketHeader.CP_END_MONSTER_CARNIVAL_FIELD)) {
                 return ReqCField_MonsterCarnival.OnPacket(c, header, cp);
             }
-            if (header.between(ClientPacket.Header.CP_BEGIN_PARTY_MATCH, ClientPacket.Header.CP_END_PARTY_MATCH)) {
+            if (header.between(ClientPacketHeader.CP_BEGIN_PARTY_MATCH, ClientPacketHeader.CP_END_PARTY_MATCH)) {
                 return true;
             }
             return ReqCField.OnPacket(c, header, cp);
         }
-        if (header.between(ClientPacket.Header.CP_BEGIN_RAISE, ClientPacket.Header.CP_END_RAISE)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_RAISE, ClientPacketHeader.CP_END_RAISE)) {
             // 布製の人形などETCアイテムからUIを開くタイプの処理
             return true;
         }
-        if (header.between(ClientPacket.Header.CP_BEGIN_ITEMUPGRADE, ClientPacket.Header.CP_END_ITEMUPGRADE)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_ITEMUPGRADE, ClientPacketHeader.CP_END_ITEMUPGRADE)) {
             ReqCUIItemUpgrade.Accept(c, cp);
             return true;
         }
-        if (header.between(ClientPacket.Header.CP_BEGIN_BATTLERECORD, ClientPacket.Header.CP_END_BATTLERECORD)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_BATTLERECORD, ClientPacketHeader.CP_END_BATTLERECORD)) {
             return true;
         }
-        if (header.between(ClientPacket.Header.CP_BEGIN_MAPLETV, ClientPacket.Header.CP_END_MAPLETV)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_MAPLETV, ClientPacketHeader.CP_END_MAPLETV)) {
             return Req_MapleTV.OnPacket(c, header, cp);
         }
-        if (header.between(ClientPacket.Header.CP_BEGIN_CHARACTERSALE, ClientPacket.Header.CP_END_CHARACTERSALE)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_CHARACTERSALE, ClientPacketHeader.CP_END_CHARACTERSALE)) {
             return true;
         }
 

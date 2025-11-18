@@ -24,6 +24,7 @@ import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCUser_Dragon;
 import odin.server.maps.MapleDragon;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -32,7 +33,7 @@ import odin.server.maps.MapleDragon;
 public class ReqCUser_Dragon {
 
     // CDragon::OnMove
-    public static boolean OnMove(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnMove(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null || chr.isHidden()) {
             return false;

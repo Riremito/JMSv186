@@ -25,6 +25,7 @@ import tacos.config.Region;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
+import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsFuncKeyMapped;
 import tacos.packet.response.ResCFuncKeyMappedMan;
 
@@ -39,7 +40,7 @@ public class ReqCFuncKeyMappedMan {
         @008E : CP_FuncKeyMappedModified
         @00BF : CP_QuickslotKeyMappedModified
      */
-    public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
 
         if (chr == null) {

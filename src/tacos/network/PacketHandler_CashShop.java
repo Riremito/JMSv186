@@ -21,6 +21,7 @@ package tacos.network;
 import odin.client.MapleClient;
 import tacos.server.ServerOdinCashShop;
 import tacos.packet.ClientPacket;
+import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCCashShop;
 import tacos.packet.request.ReqCClientSocket;
 import tacos.packet.request.ReqCITC;
@@ -43,7 +44,7 @@ public class PacketHandler_CashShop extends PacketHandler implements IPacketHand
     }
 
     @Override
-    public boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception {
+    public boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) throws Exception {
         if (OnCashShopPacket(c, header, cp)) {
             return true;
         }
@@ -53,27 +54,27 @@ public class PacketHandler_CashShop extends PacketHandler implements IPacketHand
         return false;
     }
 
-    public boolean OnCashShopPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception {
-        if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
+    public boolean OnCashShopPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) throws Exception {
+        if (header.between(ClientPacketHeader.CP_BEGIN_SOCKET, ClientPacketHeader.CP_END_SOCKET)) {
             return ReqCClientSocket.OnPacket_CS_ITC(c, header, cp);
         }
-        if (header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_USER, ClientPacketHeader.CP_END_USER)) {
             return ReqCUser.OnPacket_CS_ITC(c, header, cp);
         }
-        if (header.between(ClientPacket.Header.CP_BEGIN_CASHSHOP, ClientPacket.Header.CP_END_CASHSHOP)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_CASHSHOP, ClientPacketHeader.CP_END_CASHSHOP)) {
             return ReqCCashShop.OnPacket(c, header, cp);
         }
         return false;
     }
 
-    public boolean OnITCPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception {
-        if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
+    public boolean OnITCPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) throws Exception {
+        if (header.between(ClientPacketHeader.CP_BEGIN_SOCKET, ClientPacketHeader.CP_END_SOCKET)) {
             return ReqCClientSocket.OnPacket_CS_ITC(c, header, cp);
         }
-        if (header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_USER, ClientPacketHeader.CP_END_USER)) {
             return ReqCUser.OnPacket_CS_ITC(c, header, cp);
         }
-        if (header.between(ClientPacket.Header.CP_BEGIN_ITC, ClientPacket.Header.CP_END_ITC)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_ITC, ClientPacketHeader.CP_END_ITC)) {
             return ReqCITC.OnPacket(c, header, cp);
         }
         return false;

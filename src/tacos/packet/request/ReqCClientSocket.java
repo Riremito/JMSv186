@@ -55,6 +55,7 @@ import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapleMap;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -63,7 +64,7 @@ import odin.server.maps.MapleMap;
 public class ReqCClientSocket {
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket_Login(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket_Login(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: {
                 OnMigrateIn(cp, c);
@@ -87,7 +88,7 @@ public class ReqCClientSocket {
     }
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: // Enter Game Server (Login)
             {
@@ -112,7 +113,7 @@ public class ReqCClientSocket {
     }
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket_CS_ITC(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket_CS_ITC(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: {
                 int character_id = cp.Decode4();

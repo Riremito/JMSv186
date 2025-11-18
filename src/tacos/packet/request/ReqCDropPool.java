@@ -25,6 +25,7 @@ import tacos.config.Version;
 import odin.handling.channel.handler.InventoryHandler;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleMap;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -32,7 +33,7 @@ import odin.server.maps.MapleMap;
  */
 public class ReqCDropPool {
 
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return false;

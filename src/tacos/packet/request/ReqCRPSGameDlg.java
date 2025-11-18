@@ -22,6 +22,7 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleMap;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -29,7 +30,7 @@ import odin.server.maps.MapleMap;
  */
 public class ReqCRPSGameDlg {
 
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return true;

@@ -24,6 +24,7 @@ import tacos.config.Version;
 import tacos.property.Property_Login;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -31,7 +32,7 @@ import tacos.packet.ClientPacket;
  */
 public class ReqSecurity {
 
-    public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, MapleClient c) {
         if (Property_Login.getAntiCheat()) {
             return false;
         }

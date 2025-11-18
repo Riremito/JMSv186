@@ -21,6 +21,7 @@ package tacos.network;
 import odin.client.MapleClient;
 import tacos.server.ServerOdinLogin;
 import tacos.packet.ClientPacket;
+import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCClientSocket;
 import tacos.packet.request.ReqCLogin;
 import tacos.packet.request.ReqCUser;
@@ -42,14 +43,14 @@ public class PacketHandler_Login extends PacketHandler implements IPacketHandler
     }
 
     @Override
-    public boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception {
-        if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
+    public boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) throws Exception {
+        if (header.between(ClientPacketHeader.CP_BEGIN_SOCKET, ClientPacketHeader.CP_END_SOCKET)) {
             if (ReqCClientSocket.OnPacket_Login(c, header, cp)) {
                 return true;
             }
             return ReqCLogin.OnPacket(c, header, cp);
         }
-        if (header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_USER, ClientPacketHeader.CP_END_USER)) {
             return ReqCUser.OnPacket_Login(c, header, cp);
         }
         return false;

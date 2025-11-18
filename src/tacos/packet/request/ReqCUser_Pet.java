@@ -50,6 +50,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -60,7 +61,7 @@ public class ReqCUser_Pet {
     private static final int EXCEPTION_LIST_MESO = 0x7FFFFFFF;
 
     // CUserPool::OnUserCommonPacket
-    public static boolean OnPetPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPetPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return true;
