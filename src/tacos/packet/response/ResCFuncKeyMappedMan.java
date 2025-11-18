@@ -21,7 +21,6 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import odin.client.SkillMacro;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
 import java.util.Map;

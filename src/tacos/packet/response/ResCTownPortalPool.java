@@ -19,7 +19,6 @@
 package tacos.packet.response;
 
 import tacos.network.MaplePacket;
-import java.awt.Point;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleDoor;
 import tacos.packet.ServerPacketHeader;
