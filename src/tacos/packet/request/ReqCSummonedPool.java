@@ -112,7 +112,7 @@ public class ReqCSummonedPool {
             }
         }
 
-        DebugLogger.ErrorLog("Not coded: " + cp.GetOpcodeName());
+        DebugLogger.ErrorLog("Not coded: " + header.name());
         return false;
     }
 

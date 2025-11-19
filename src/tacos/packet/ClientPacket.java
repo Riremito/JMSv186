@@ -36,45 +36,6 @@ public class ClientPacket {
         this.decoded = 0;
     }
 
-    public static ClientPacketHeader ToHeader(short w) {
-        for (final ClientPacketHeader h : ClientPacketHeader.values()) {
-            if (h.get() == w) {
-                return h;
-            }
-        }
-
-        return ClientPacketHeader.UNKNOWN;
-    }
-
-    public String get() {
-        String text = null;
-        if (Content.PacketHeaderSize.getInt() == 2) {
-            short header = (short) (((int) this.packet[0] & 0xFF) | ((int) (this.packet[1] & 0xFF) << 8));
-            text = String.format("@%04X", header);
-        } else {
-            text = String.format("@%02X", this.packet[0]);
-        }
-
-        for (int i = Content.PacketHeaderSize.getInt(); i < this.packet.length; i++) {
-            text += String.format(" %02X", this.packet[i]);
-        }
-
-        return text;
-    }
-
-    public String GetOpcodeName() {
-        if (this.packet.length < Content.PacketHeaderSize.getInt()) {
-            return ClientPacketHeader.UNKNOWN.toString();
-        }
-
-        if (Content.PacketHeaderSize.getInt() == 2) {
-            short header = (short) (((int) this.packet[0] & 0xFF) | ((int) (this.packet[1] & 0xFF) << 8));
-            return ToHeader(header).toString();
-        }
-
-        return ToHeader((short) (packet[0] & 0xFF)).toString();
-    }
-
     // check packet size.
     public boolean check() {
         if (this.packet.length < Content.PacketHeaderSize.getInt()) {
@@ -99,6 +60,23 @@ public class ClientPacket {
         this.header = ClientPacketHeader.find(header_value);
 
         return this.header;
+    }
+
+    // get packet buffer string.
+    public String getString() {
+        String text = null;
+        if (Content.PacketHeaderSize.getInt() == 2) {
+            short header = (short) (((int) this.packet[0] & 0xFF) | ((int) (this.packet[1] & 0xFF) << 8));
+            text = String.format("@%04X", header);
+        } else {
+            text = String.format("@%02X", this.packet[0]);
+        }
+
+        for (int i = Content.PacketHeaderSize.getInt(); i < this.packet.length; i++) {
+            text += String.format(" %02X", this.packet[i]);
+        }
+
+        return text;
     }
 
     /*

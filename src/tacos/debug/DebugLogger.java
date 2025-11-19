@@ -166,7 +166,7 @@ public class DebugLogger {
     }
 
     public static void CPLog(ClientPacket cp) {
-        Log("ClientPacket", cp.GetOpcodeName() + "\n" + cp.get());
+        Log("ClientPacket", cp.getHeader().name() + "\n" + cp.getString());
     }
 
     private static void Log(String log_type, String log_text) {

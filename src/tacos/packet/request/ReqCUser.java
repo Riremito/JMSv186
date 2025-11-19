@@ -984,7 +984,7 @@ public class ReqCUser {
 
         if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
             if (allDamageNumbers != null) {
-                DebugLogger.DebugLog(cp.GetOpcodeName() + ": damage = " + allDamageNumbers);
+                DebugLogger.DebugLog(header.name() + ": damage = " + allDamageNumbers);
             }
         }
 
@@ -1002,7 +1002,7 @@ public class ReqCUser {
                 damage = cp.Decode4();
 
                 if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                    DebugLogger.DebugLog(cp.GetOpcodeName() + ": damage = " + damage);
+                    DebugLogger.DebugLog(cp.getHeader().name() + ": damage = " + damage);
                 }
                 ret.allDamage.add(new AttackPair(Integer.valueOf(damage), null));
                 cp.Decode1();
@@ -1026,7 +1026,7 @@ public class ReqCUser {
                 damage = cp.Decode4();
 
                 if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                    DebugLogger.DebugLog(cp.GetOpcodeName() + ": damage = " + damage);
+                    DebugLogger.DebugLog(cp.getHeader().name() + ": damage = " + damage);
                 }
                 allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false)); //m.e. never crits
             }
@@ -1044,7 +1044,7 @@ public class ReqCUser {
             damage = cp.Decode4();
 
             if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                DebugLogger.DebugLog(cp.GetOpcodeName() + ": damage = " + damage);
+                DebugLogger.DebugLog(cp.getHeader().name() + ": damage = " + damage);
             }
             ret.allDamage.add(new AttackPair(Integer.valueOf(damage), null));
             cp.Decode2();
