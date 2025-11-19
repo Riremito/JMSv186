@@ -26,8 +26,8 @@ public interface IPacketHeader {
 
     public int get();
 
-    public void set(int val);
+    public void set(int value);
 
-    // for enum
+    // this works for getting enum name, you do not need to override this yourself.
     public String name();
 }

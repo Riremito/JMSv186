@@ -628,11 +628,11 @@ public enum ServerPacketHeader implements IPacketHeader {
 
     private int value;
 
-    ServerPacketHeader(int val) {
-        this.value = val;
+    private ServerPacketHeader(int value) {
+        this.value = value;
     }
 
-    ServerPacketHeader() {
+    private ServerPacketHeader() {
         this.value = -1;
     }
 
@@ -642,8 +642,8 @@ public enum ServerPacketHeader implements IPacketHeader {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
 }

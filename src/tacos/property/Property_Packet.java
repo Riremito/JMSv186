@@ -21,9 +21,7 @@ package tacos.property;
 import tacos.config.Region;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
-import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
-import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.IPacketHeader;
 

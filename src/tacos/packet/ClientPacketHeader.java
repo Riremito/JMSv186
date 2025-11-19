@@ -23,15 +23,8 @@ package tacos.packet;
  * @author Riremito
  */
 public enum ClientPacketHeader implements IPacketHeader {
-    // 独自仕様
-    CP_CUSTOM_,
-    CP_CUSTOM_WZ_HASH,
-    CP_CUSTOM_MEMORY_SCAN,
-    // v414.1 test
-    //CP_TEST1(0x66),
-    //CP_TEST2(0xA3),
-    // Names from v95 PDB
-    // ログインサーバー
+    // do not change the order of this list.
+    // if you want to add new header, please add it between BEGIN and END tags.
     CP_BEGIN_SOCKET,
     CP_CheckPassword, // LOGIN_PASSWORD
     CP_Check2ndPassword, // v188 test
@@ -78,7 +71,6 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_JMS_SafetyPassword,
     CP_JMS_GetMapLogin, // 名称不明, ログイン画面に到達
     CP_END_SOCKET,
-    // ゲームサーバー
     CP_BEGIN_USER,
     CP_UserTransferFieldRequest, // CHANGE_MAP
     CP_UserTransferChannelRequest, // CHANGE_CHANNEL
@@ -322,7 +314,6 @@ public enum ClientPacketHeader implements IPacketHeader {
     BEANS_UPDATE,
     CP_JMS_PachinkoPrizes,
     CP_END_FIELD,
-    // ポイントショップ
     CP_BEGIN_CASHSHOP,
     CP_CashShopChargeParamRequest,
     CP_CashShopQueryCashRequest,
@@ -339,7 +330,6 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_CheckSSN2OnCreateNewCharacter,
     CP_CheckSPWOnCreateNewCharacter,
     CP_FirstSSNOnCreateNewCharacter,
-    // 多分絵具とかアイテム集める系のUI
     CP_BEGIN_RAISE,
     CP_RaiseRefesh,
     CP_RaiseUIState,
@@ -352,7 +342,6 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_RequestClassCompetitionAuthKey,
     CP_RequestWebBoardAuthKey,
     CP_BEGIN_ITEMUPGRADE,
-    // ビシャスのハンマー
     CP_GoldHammerRequest,
     CP_GoldHammerComplete,
     CP_ItemUpgradeComplete,
@@ -364,7 +353,6 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_MapleTVSendMessageRequest,
     CP_MapleTVUpdateViewCount,
     CP_END_MAPLETV,
-    // MTS
     CP_BEGIN_ITC,
     CP_ITCChargeParamRequest,
     CP_ITCQueryCashRequest,
@@ -375,7 +363,6 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_END_CHARACTERSALE,
     CP_LogoutGiftSelect,
     CP_NO,
-    // JMS headers
     GM_COMMAND_MAPLETV, // Super Megaphone Exploitのパケット
     // old header names
     SOLOMON, // 名称不明
@@ -384,18 +371,22 @@ public enum ClientPacketHeader implements IPacketHeader {
     QUEST_ITEM, // 不明
     USE_ITEM_QUEST, // 多分Quest Value Addition Exploitのパケット
     // ヘッダに対応する処理の名前を定義
-    UNKNOWN_BEGIN,
-    UNKNOWN,
-    UNKNOWN_END;
+    // 独自仕様
+    CP_CUSTOM_,
+    CP_CUSTOM_WZ_HASH,
+    CP_CUSTOM_MEMORY_SCAN,
+    // v414.1 test
+    //CP_TEST1(0x66),
+    //CP_TEST2(0xA3),
+    UNKNOWN;
 
-    // 定義値の変更や取得
     private int value;
 
-    ClientPacketHeader(int val) {
-        this.value = val;
+    private ClientPacketHeader(int value) {
+        this.value = value;
     }
 
-    ClientPacketHeader() {
+    private ClientPacketHeader() {
         this.value = -1;
     }
 
@@ -405,13 +396,14 @@ public enum ClientPacketHeader implements IPacketHeader {
     }
 
     @Override
-    public void set(int val) {
-        this.value = val;
+    public void set(int value) {
+        this.value = value;
     }
 
     // enum range check by ordinal number
-    public boolean between(ClientPacketHeader low, ClientPacketHeader high) {
-        if (low.ordinal() <= ordinal() && ordinal() <= high.ordinal()) {
+    public boolean between(ClientPacketHeader cp_begin, ClientPacketHeader cp_end) {
+        // use enum ordinal number for checking header range.
+        if (cp_begin.ordinal() <= ordinal() && ordinal() <= cp_end.ordinal()) {
             return true;
         }
         return false;
