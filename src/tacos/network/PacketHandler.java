@@ -19,7 +19,6 @@
 package tacos.network;
 
 import odin.client.MapleClient;
-import tacos.config.Content;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import org.apache.mina.common.IdleStatus;
@@ -168,34 +167,23 @@ public class PacketHandler extends IoHandlerAdapter {
         log(session, "messageReceived.");
         try {
             ClientPacket cp = new ClientPacket((byte[]) message);
-            if (cp.getSize() < Content.PacketHeaderSize.getInt()) {
+            if (!cp.check()) {
+                log(session, "messageReceived : invalid packet size.");
                 return;
             }
+
             // client
-            MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-            if (c.isMigrating()) {
+            MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+            if (client.isMigrating()) {
                 log(session, "messageReceived : Migrating.");
                 return;
             }
 
-            short header_val = 0;
-            if (Content.PacketHeaderSize.getInt() == 2) {
-                header_val = cp.Decode2();
-            } else {
-                header_val = (short) (cp.Decode1() & 0xFF);
-            }
-
-            ClientPacketHeader header = ClientPacket.ToHeader(header_val);
-
-            // not coded
-            if (header == ClientPacketHeader.UNKNOWN) {
-                DebugLogger.CPLog(cp);
-                return;
-            }
-
-            if (!((IPacketHandler) this).OnPacket(c, header, cp)) {
+            ClientPacketHeader header = cp.DecodeHeader();
+            if (!((IPacketHandler) this).OnPacket(client, header, cp)) {
                 DebugLogger.CPLog(cp);
             }
+
         } catch (Exception e) {
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
             e.printStackTrace();

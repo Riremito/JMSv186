@@ -67,7 +67,7 @@ public class ParseCMovePath {
 
     private int getTailDataSize(ClientPacket cp) {
         // ignore bytes : last Encode1 + unknown bytes (Post-BB)
-        switch (cp.GetOpcode()) {
+        switch (cp.getHeader()) {
             case CP_UserMove: {
                 if (Version.LessOrEqual(Region.KMS, 31)) {
                     return (1 + 9);

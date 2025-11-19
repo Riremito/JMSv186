@@ -400,6 +400,15 @@ public enum ClientPacketHeader implements IPacketHeader {
         this.value = value;
     }
 
+    public static ClientPacketHeader find(int value) {
+        for (ClientPacketHeader cph : values()) {
+            if (cph.get() == value) {
+                return cph;
+            }
+        }
+        return UNKNOWN;
+    }
+
     // enum range check by ordinal number
     public boolean between(ClientPacketHeader cp_begin, ClientPacketHeader cp_end) {
         // use enum ordinal number for checking header range.

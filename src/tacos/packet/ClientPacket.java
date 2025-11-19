@@ -27,17 +27,13 @@ import tacos.config.Content;
  */
 public class ClientPacket {
 
-    private byte[] packet;
-    private int decoded;
+    private byte[] packet = null;
+    private int decoded = 0;
+    private ClientPacketHeader header = ClientPacketHeader.UNKNOWN;
 
-    // MapleのInPacketのDecodeのように送信されたパケットを再度Decodeする
-    public ClientPacket(byte[] b) {
-        packet = b;
-        decoded = 0;
-    }
-
-    public int getSize() {
-        return packet.length;
+    public ClientPacket(byte[] packet) {
+        this.packet = packet;
+        this.decoded = 0;
     }
 
     public static ClientPacketHeader ToHeader(short w) {
@@ -53,47 +49,63 @@ public class ClientPacket {
     public String get() {
         String text = null;
         if (Content.PacketHeaderSize.getInt() == 2) {
-            short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));
+            short header = (short) (((int) this.packet[0] & 0xFF) | ((int) (this.packet[1] & 0xFF) << 8));
             text = String.format("@%04X", header);
         } else {
-            text = String.format("@%02X", packet[0]);
+            text = String.format("@%02X", this.packet[0]);
         }
 
-        for (int i = Content.PacketHeaderSize.getInt(); i < packet.length; i++) {
-            text += String.format(" %02X", packet[i]);
+        for (int i = Content.PacketHeaderSize.getInt(); i < this.packet.length; i++) {
+            text += String.format(" %02X", this.packet[i]);
         }
 
         return text;
     }
 
     public String GetOpcodeName() {
-        if (packet.length < Content.PacketHeaderSize.getInt()) {
+        if (this.packet.length < Content.PacketHeaderSize.getInt()) {
             return ClientPacketHeader.UNKNOWN.toString();
         }
 
         if (Content.PacketHeaderSize.getInt() == 2) {
-            short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));
+            short header = (short) (((int) this.packet[0] & 0xFF) | ((int) (this.packet[1] & 0xFF) << 8));
             return ToHeader(header).toString();
         }
 
         return ToHeader((short) (packet[0] & 0xFF)).toString();
     }
 
-    public ClientPacketHeader GetOpcode() {
-        if (packet.length < Content.PacketHeaderSize.getInt()) {
-            return ClientPacketHeader.UNKNOWN;
+    // check packet size.
+    public boolean check() {
+        if (this.packet.length < Content.PacketHeaderSize.getInt()) {
+            return false;
         }
-
-        if (Content.PacketHeaderSize.getInt() == 2) {
-            short header = (short) (((int) packet[0] & 0xFF) | ((int) (packet[1] & 0xFF) << 8));
-            return ToHeader(header);
-        }
-
-        return ToHeader((short) (packet[0] & 0xFF));
+        return true;
     }
 
+    // get decoded header.
+    public ClientPacketHeader getHeader() {
+        return this.header;
+    }
+
+    // decode header.
+    public ClientPacketHeader DecodeHeader() {
+        if (this.decoded != 0) {
+            // warning.
+            return this.header;
+        }
+
+        short header_value = (Content.PacketHeaderSize.getInt() == 2) ? Decode2() : Decode1();
+        this.header = ClientPacketHeader.find(header_value);
+
+        return this.header;
+    }
+
+    /*
+        CInPacket class functions.
+     */
     public byte Decode1() {
-        return (byte) packet[decoded++];
+        return (byte) this.packet[this.decoded++];
     }
 
     public short Decode2() {
@@ -106,17 +118,6 @@ public class ClientPacket {
 
     public long Decode8() {
         return (long) (((long) Decode4() & 0xFFFFFFFF) | (((long) Decode4() & 0xFFFFFFFF) << 32));
-    }
-
-    public byte[] DecodeBuffer() {
-        int length = Decode2();
-        byte[] buffer = new byte[length];
-
-        for (int i = 0; i < length; i++) {
-            buffer[i] = Decode1();
-        }
-
-        return buffer;
     }
 
     public byte[] DecodeBuffer(int size) {
@@ -140,8 +141,12 @@ public class ClientPacket {
         return new String(buffer, CodePage.getCodePage());
     }
 
+    /*
+        functions below are not good for source code.
+     */
+    // decode all remaining data.
     public byte[] DecodeAll() {
-        int length = packet.length - decoded;
+        int length = this.packet.length - this.decoded;
         byte[] buffer = new byte[length];
 
         for (int i = 0; i < length; i++) {
@@ -151,16 +156,18 @@ public class ClientPacket {
         return buffer;
     }
 
+    // read data from the end.
     public boolean setBackCursor(int cur) {
         if (getRemainingSize() + cur < 0) {
             return false;
         }
-        this.decoded = packet.length + cur;
+        this.decoded = this.packet.length + cur;
         return true;
     }
 
+    // get remaining data size.
     public int getRemainingSize() {
-        return packet.length - decoded;
+        return packet.length - this.decoded;
     }
 
 }
