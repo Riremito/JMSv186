@@ -30,43 +30,77 @@ import java.util.ArrayList;
  */
 public class ServerPacket {
 
-    // Encoder
     private ArrayList<Byte> packet = new ArrayList<>();
     private int encoded = 0;
 
     public ServerPacket(ServerPacketHeader header) {
-        short w = (short) header.get();
+        short header_value = (short) header.get();
 
-        packet.add((byte) (w & 0xFF));
+        this.packet.add((byte) (header_value & 0xFF));
+        this.encoded += 1;
+
         if (Content.PacketHeaderSize.getInt() == 2) {
-            packet.add((byte) ((w >> 8) & 0xFF));
+            this.packet.add((byte) ((header_value >> 8) & 0xFF));
+            this.encoded += 1;
         }
-        encoded += Content.PacketHeaderSize.getInt();
     }
 
-    public ServerPacket(short w) {
-        packet.add((byte) (w & 0xFF));
-        packet.add((byte) ((w >> 8) & 0xFF));
-        encoded += 2;
+    // for hello packet.
+    public ServerPacket(short header_value) {
+        this.packet.add((byte) (header_value & 0xFF));
+        this.packet.add((byte) ((header_value >> 8) & 0xFF));
+        this.encoded += 2;
     }
 
+    // for data.
+    public ServerPacket() {
+        // do nothing.
+    }
+
+    // make hello packet buffer.
     public boolean setHello() {
-        if (encoded < 2) {
+        if (this.encoded < 2) {
             return false;
         }
-        int data_size = encoded - 2;
-        packet.set(0, (byte) (data_size & 0xFF));
-        packet.set(1, (byte) ((data_size >> 8) & 0xFF));
+
+        int data_size = this.encoded - 2;
+        this.packet.set(0, (byte) (data_size & 0xFF));
+        this.packet.set(1, (byte) ((data_size >> 8) & 0xFF));
         return true;
     }
 
-    public void Encode1(byte b) {
-        packet.add(b);
-        encoded += 1;
+    // TODO : fix return value to byte[]
+    public MaplePacket get() {
+        byte[] b = new byte[this.encoded];
+        for (int i = 0; i < this.encoded; i++) {
+            b[i] = this.packet.get(i);
+        }
+
+        return new ByteArrayMaplePacket(b);
     }
 
-    public ServerPacket() {
-        // データ構造用
+    public String getString() {
+        String text = null;
+        if (Content.PacketHeaderSize.getInt() == 2) {
+            short header = (short) (((short) this.packet.get(0) & 0xFF) | ((short) this.packet.get(1) & 0xFF << 8));
+            text = String.format("@%04X", header);
+        } else {
+            text = String.format("@%02X", this.packet.get(0));
+        }
+
+        for (int i = Content.PacketHeaderSize.getInt(); i < this.encoded; i++) {
+            text += String.format(" %02X", this.packet.get(i));
+        }
+
+        return text;
+    }
+
+    /*
+        COutPacket class functions.
+     */
+    public void Encode1(byte b) {
+        this.packet.add(b);
+        this.encoded += 1;
     }
 
     public void Encode2(short w) {
@@ -97,12 +131,36 @@ public class ServerPacket {
         }
     }
 
+    public void EncodeBuffer(byte[] b, int size) {
+        for (int i = 0; i < b.length; i++) {
+            Encode1(b[i]);
+        }
+        for (int i = 0; i < (size - b.length); i++) {
+            Encode1(0);
+        }
+    }
+
+    /*
+        supports other type input.
+     */
+    public void Encode1(int b) {
+        this.packet.add((byte) b);
+        this.encoded += 1;
+    }
+
+    public void Encode2(int w) {
+        Encode1((byte) ((short) w & 0xFF));
+        Encode1((byte) (((short) w >> 8) & 0xFF));
+    }
+
+    // encode all bytes.
     public void EncodeBuffer(byte[] b) {
         for (int i = 0; i < b.length; i++) {
             Encode1(b[i]);
         }
     }
 
+    // encode fixed size string.
     public void EncodeBuffer(String str, int size) {
         byte[] b = str.getBytes(CodePage.getCodePage());
         for (int i = 0; i < b.length; i++) {
@@ -113,74 +171,10 @@ public class ServerPacket {
         }
     }
 
-    public void EncodeBuffer(byte[] b, int size) {
-        for (int i = 0; i < b.length; i++) {
-            Encode1(b[i]);
-        }
-        for (int i = 0; i < (size - b.length); i++) {
-            Encode1(0);
-        }
-    }
-
-    public static ServerPacketHeader ToHeader(short w) {
-        for (final ServerPacketHeader h : ServerPacketHeader.values()) {
-            if (h.get() == w) {
-                return h;
-            }
-        }
-
-        return ServerPacketHeader.UNKNOWN;
-    }
-
-    public String Packet() {
-        byte[] b = new byte[encoded];
-        for (int i = 0; i < encoded; i++) {
-            b[i] = packet.get(i);
-        }
-
-        String text = null;
-
-        if (Content.PacketHeaderSize.getInt() == 2) {
-            short header = (short) (((short) b[0] & 0xFF) | ((short) b[1] & 0xFF << 8));
-            text = String.format("@%04X", header);
-        } else {
-            text = String.format("@%02X", b[0]);
-        }
-
-        for (int i = Content.PacketHeaderSize.getInt(); i < encoded; i++) {
-            text += String.format(" %02X", b[i]);
-        }
-
-        return text;
-    }
-
-    public String getOpcodeName() {
-        if (encoded < Content.PacketHeaderSize.getInt()) {
-            return ServerPacketHeader.UNKNOWN.toString();
-        }
-
-        short header = (short) (((short) packet.get(0) & 0xFF) | ((short) packet.get(1) & 0xFF << 8));
-        return ToHeader(header).toString();
-    }
-
-    public MaplePacket get() {
-        byte[] b = new byte[encoded];
-        for (int i = 0; i < encoded; i++) {
-            b[i] = packet.get(i);
-        }
-        return new ByteArrayMaplePacket(b);
-    }
-
-    public void Encode1(int b) {
-        packet.add((byte) b);
-        encoded += 1;
-    }
-
-    public void Encode2(int w) {
-        Encode1((byte) ((short) w & 0xFF));
-        Encode1((byte) (((short) w >> 8) & 0xFF));
-    }
-
+    /*
+        functions below are not good for source code.
+     */
+    // padding.
     public void EncodeZeroBytes(int length) {
         for (int i = 0; i < length; i++) {
             Encode1(0);
