@@ -23,6 +23,7 @@ import tacos.debug.DebugLogger;
 import odin.handling.channel.PlayerStorage;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
+import tacos.constants.TacosConstants;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.network.PacketHandler;
 import tacos.network.PacketHandler_Game;
@@ -64,7 +65,7 @@ public class Server_Game extends Server {
             int channel_port = Property_World.getPort() + i;
             String channel_name = Property_World.getName() + "-" + channel;
             ServerOdinGame odin_game = ServerOdinGame.newInstance(channel);
-            Server_Game server = new Server_Game(channel_name, "127.0.0.1", channel_port, new PacketHandler_Game(channel), PacketHandler.getSocketAcceptorConfig());
+            Server_Game server = new Server_Game(channel_name, TacosConstants.SERVER_LOCAL_IP, channel_port, new PacketHandler_Game(channel), PacketHandler.getSocketAcceptorConfig());
             server.world = 0;
             server.channel = channel;
             server.players = new PlayerStorage(channel);

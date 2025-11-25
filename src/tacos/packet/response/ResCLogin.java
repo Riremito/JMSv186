@@ -33,6 +33,7 @@ import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCharacterData;
 import tacos.packet.response.data.DataGW_CharacterStat;
+import tacos.tools.TacosTools;
 
 /**
  *
@@ -47,7 +48,7 @@ public class ResCLogin {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectCharacterResult);
         sp.Encode1(0);
         sp.Encode1(0);
-        sp.Encode4((int) ResCClientSocket.getGameServerIP());
+        sp.Encode4(TacosTools.getGameServerIP());
         sp.Encode2(port);
         sp.Encode4(clientId);
         sp.Encode1(0);

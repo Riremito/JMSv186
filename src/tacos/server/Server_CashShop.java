@@ -23,6 +23,7 @@ import odin.handling.channel.PlayerStorage;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
 import odin.server.MTSStorage;
+import tacos.constants.TacosConstants;
 import tacos.network.PacketHandler;
 import tacos.network.PacketHandler_CashShop;
 
@@ -59,7 +60,7 @@ public class Server_CashShop extends Server {
     }
 
     public static boolean init() {
-        Server_CashShop server = new Server_CashShop("CashShop", "127.0.0.1", Property_Shop.getPort(), new PacketHandler_CashShop(), PacketHandler.getSocketAcceptorConfig());
+        Server_CashShop server = new Server_CashShop("CashShop", TacosConstants.SERVER_LOCAL_IP, Property_Shop.getPort(), new PacketHandler_CashShop(), PacketHandler.getSocketAcceptorConfig());
         Server.add(server);
         server.run();
         ServerOdinCashShop.set(server);

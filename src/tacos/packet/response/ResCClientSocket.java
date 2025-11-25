@@ -21,38 +21,16 @@ package tacos.packet.response;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
+import tacos.tools.TacosTools;
 
 /**
  *
  * @author Riremito
  */
 public class ResCClientSocket {
-
-    public static long GameServerIP = 0;
-
-    public static long getGameServerIP() {
-        if (GameServerIP != 0) {
-            return GameServerIP;
-        }
-        if (Version.GreaterOrEqual(Region.GMS, 116)) {
-            GameServerIP = 0x34621F08; // 8.31.98.52, CClientSocket::Connect
-            return GameServerIP;
-        }
-        try {
-            byte[] ip_bytes = InetAddress.getByName("127.0.0.1").getAddress();
-            GameServerIP = ip_bytes[0] | (ip_bytes[1] << 8) | (ip_bytes[2] << 16) | (ip_bytes[3] << 24);
-        } catch (UnknownHostException ex) {
-            GameServerIP = 16777343; // 127.0.0.1
-            DebugLogger.ErrorLog("GameServerIP set to 127.0.0.1");
-        }
-        return GameServerIP;
-    }
 
     // サーバーのバージョン情報
     public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
@@ -133,7 +111,7 @@ public class ResCClientSocket {
     public static final MaplePacket MigrateCommand(final int port) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MigrateCommand);
         sp.Encode1(1);
-        sp.Encode4((int) GameServerIP); // IP, 127.0.0.1
+        sp.Encode4(TacosTools.getGameServerIP());
         sp.Encode2(port);
 
         if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.KMST, 391) || ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
