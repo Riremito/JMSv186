@@ -178,7 +178,7 @@ public class DataGW_ItemSlotBase {
                 }
                 // ビシャスのハンマー
                 if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 73) || Region.IsBMS()) {
-                    if (!Region.IsKMS() || Version.GreaterOrEqual(Region.KMS, 95)) {
+                    if (!Region.IsKMS() || Version.GreaterOrEqual(Region.KMS, 95) || Version.Equal(Region.KMST, 391)) {
                         data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                     }
                 }
