@@ -18,6 +18,7 @@
  */
 package tacos.network;
 
+import java.util.concurrent.ThreadPoolExecutor;
 import odin.client.MapleClient;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
@@ -32,6 +33,7 @@ import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCClientSocket;
 import odin.server.Randomizer;
 import odin.tools.FileoutputUtil;
+import org.apache.mina.common.ExecutorThreadModel;
 import tacos.packet.ClientPacketHeader;
 
 /**
@@ -76,6 +78,13 @@ public class PacketHandler extends IoHandlerAdapter {
         cfg = new SocketAcceptorConfig();
         cfg.getSessionConfig().setTcpNoDelay(true);
         cfg.setDisconnectOnUnbind(true);
+        // java uses thread for all packets.
+        // this settings change it to single thread. and all channel work under same thread.
+        ExecutorThreadModel threadModel = ExecutorThreadModel.getInstance("client");
+        ThreadPoolExecutor eventExecutor = (ThreadPoolExecutor) threadModel.getExecutor();
+        eventExecutor.setCorePoolSize(1);
+        eventExecutor.setMaximumPoolSize(1);
+        cfg.setThreadModel(threadModel);
         cfg.getFilterChain().addLast("codec", pcf);
         return cfg;
     }

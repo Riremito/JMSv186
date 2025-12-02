@@ -125,6 +125,11 @@ public class DebugCommand {
                 chr.DebugMsg3("YELLOW.");
                 return true;
             }
+            case "/threadid": {
+                Thread thread = Thread.currentThread();
+                chr.DebugMsg("thread id = " + thread.getId());
+                return true;
+            }
             case "/reload": {
                 // PacketHeader設定再読み込み
                 Property_Packet.reload();
