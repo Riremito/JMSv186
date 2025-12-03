@@ -49,7 +49,7 @@ public class DebugLogger {
             }
 
             fw = new FileWriter(LOG_DIR + LOG_FILE_NAME, true);
-            fw.write((getDate() + " Server Reboot - " + Region.getRegion() + " " + Version.getVersion() + "." + Version.getSubVersion() + "\r\n"));
+            fw.write(("[" + getDateString() + "]" + " Server Reboot - " + Region.getRegion() + " " + Version.getVersion() + "." + Version.getSubVersion() + "\r\n"));
             fw.flush();
         } catch (FileNotFoundException ex) {
             ExceptionLog("DebugLogger - open");
@@ -77,7 +77,7 @@ public class DebugLogger {
             if (!DeveloperMode.DM_LOG_DEV.get()) {
                 return false;
             }
-            fw.write(getDate() + "[DEV]" + text + "\r\n");
+            fw.write("[" + getDateString() + "]" + "[DEV]" + text + "\r\n");
             fw.flush();
             return true;
         } catch (IOException ex) {
@@ -85,10 +85,6 @@ public class DebugLogger {
         }
 
         return false;
-    }
-
-    private static String getDate() {
-        return new SimpleDateFormat("[yyyy/MM/dd HH:mm:ss]").format(new Date());
     }
 
     public static boolean DebugLog(String log_text) {
@@ -174,8 +170,16 @@ public class DebugLogger {
     }
 
     private static void Log(String log_text) {
-        // [Date][DEBUG] xxxx
-        System.out.println(getDate() + log_text);
+        // [YYYY/MM/DD HH:MM:ss][ThreadID][TYPE] xxxx
+        System.out.println("[" + getDateString() + "]" + "[" + getThreadId() + "]" + log_text);
+    }
+
+    public static String getDateString() {
+        return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+    }
+
+    public static long getThreadId() {
+        return Thread.currentThread().getId();
     }
 
 }

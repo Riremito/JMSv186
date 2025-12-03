@@ -126,8 +126,7 @@ public class DebugCommand {
                 return true;
             }
             case "/threadid": {
-                Thread thread = Thread.currentThread();
-                chr.DebugMsg("thread id = " + thread.getId());
+                chr.DebugMsg("thread id = " + DebugLogger.getThreadId());
                 return true;
             }
             case "/reload": {
