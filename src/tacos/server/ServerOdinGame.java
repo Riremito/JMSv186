@@ -198,10 +198,6 @@ public class ServerOdinGame {
         getPlayerStorage().broadcastSmegaPacket(data);
     }
 
-    public final void broadcastGMPacket(final MaplePacket data) {
-        getPlayerStorage().broadcastGMPacket(data);
-    }
-
     public final int getExpRate() {
         return expRate;
     }
@@ -458,7 +454,4 @@ public class ServerOdinGame {
         broadcastSmegaPacket(new ByteArrayMaplePacket(message));
     }
 
-    public void broadcastGMMessage(byte[] message) {
-        broadcastGMPacket(new ByteArrayMaplePacket(message));
-    }
 }

@@ -26,7 +26,6 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.ItemFlag;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.packet.response.ResCField;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 

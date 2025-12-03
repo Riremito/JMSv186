@@ -814,32 +814,9 @@ public class World {
             }
         }
 
-        public static void broadcastGMMessage(byte[] message) {
-            for (ServerOdinGame cs : ServerOdinGame.getAllInstances()) {
-                cs.broadcastGMMessage(message);
-            }
-        }
-
         public static void broadcastMessage(byte[] message) {
             for (ServerOdinGame cs : ServerOdinGame.getAllInstances()) {
                 cs.broadcastMessage(message);
-            }
-        }
-
-        public static void sendPacket(List<Integer> targetIds, MaplePacket packet, int exception) {
-            MapleCharacter c;
-            for (int i : targetIds) {
-                if (i == exception) {
-                    continue;
-                }
-                int ch = Find.findChannel(i);
-                if (ch < 0) {
-                    continue;
-                }
-                c = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterById(i);
-                if (c != null) {
-                    c.getClient().getSession().write(packet);
-                }
             }
         }
 

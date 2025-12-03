@@ -448,16 +448,6 @@ public class AdminCommand {
         }
     }
 
-    public static class RemoveDrops extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            c.getPlayer().dropMessage(5, "Cleared " + c.getPlayer().getMap().getNumItems() + " drops");
-            c.getPlayer().getMap().removeDrops();
-            return 1;
-        }
-    }
-
     public static class ExpRate extends CommandExecute {
 
         @Override

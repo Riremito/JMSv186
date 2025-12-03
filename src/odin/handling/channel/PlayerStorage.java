@@ -245,23 +245,6 @@ public class PlayerStorage {
         }
     }
 
-    public final void broadcastGMPacket(final MaplePacket data) {
-        rL.lock();
-        try {
-            final Iterator<MapleCharacter> itr = nameToChar.values().iterator();
-            MapleCharacter chr;
-            while (itr.hasNext()) {
-                chr = itr.next();
-
-                if (chr.getClient().isLoggedIn() && chr.isGM()) {
-                    chr.getClient().getSession().write(data);
-                }
-            }
-        } finally {
-            rL.unlock();
-        }
-    }
-
     public class PersistingTask implements Runnable {
 
         @Override
