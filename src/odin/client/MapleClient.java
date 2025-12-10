@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client;
 
+import tacos.constants.MapleClientState;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

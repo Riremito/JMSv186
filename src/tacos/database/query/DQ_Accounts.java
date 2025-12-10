@@ -21,7 +21,7 @@ package tacos.database.query;
 import odin.client.LoginCrypto;
 import odin.client.LoginCryptoLegacy;
 import odin.client.MapleClient;
-import odin.client.MapleClientState;
+import tacos.constants.MapleClientState;
 import odin.constants.GameConstants;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;

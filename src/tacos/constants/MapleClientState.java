@@ -16,7 +16,7 @@
  *
  *
  */
-package odin.client;
+package tacos.constants;
 
 /**
  *

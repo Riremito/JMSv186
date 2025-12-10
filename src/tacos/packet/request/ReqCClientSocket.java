@@ -22,7 +22,7 @@ import odin.client.BuddylistEntry;
 import odin.client.CharacterNameAndId;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.client.MapleClientState;
+import tacos.constants.MapleClientState;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.MaplePet;
 import tacos.config.ContentState;
