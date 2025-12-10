@@ -74,6 +74,10 @@ public class ServerOdinGame {
         return instances;
     }
 
+    public MapleMapFactory getMapFactory() {
+        return this.server_game.getMapFactory();
+    }
+
     public PlayerStorage getPlayerStorage() {
         return this.server_game.getPlayerStorage();
     }
@@ -83,7 +87,6 @@ public class ServerOdinGame {
     private int channel, running_MerchantID = 0, flags = 0;
     private String serverMessage, serverName;
     private boolean MegaphoneMuteState = false;
-    private final MapleMapFactory mapFactory;
     private EventScriptManager eventSM;
     private final Map<String, MapleSquad> mapleSquads = new HashMap<String, MapleSquad>();
     private final Map<Integer, HiredMerchant> merchants = new HashMap<Integer, HiredMerchant>();
@@ -95,8 +98,6 @@ public class ServerOdinGame {
 
     private ServerOdinGame(int channel) {
         this.channel = channel;
-        mapFactory = new MapleMapFactory();
-        mapFactory.setChannel(channel);
     }
 
     public static Set<Integer> getAllInstance() {
@@ -144,10 +145,6 @@ public class ServerOdinGame {
 
         loadEvents();
         eventSM.init();
-    }
-
-    public final MapleMapFactory getMapFactory() {
-        return mapFactory;
     }
 
     public static final ServerOdinGame newInstance(int channel) {
@@ -221,10 +218,6 @@ public class ServerOdinGame {
 
     public final int getPort() {
         return port;
-    }
-
-    public final int getLoadedMaps() {
-        return mapFactory.getLoadedMaps();
     }
 
     public final EventScriptManager getEventSM() {

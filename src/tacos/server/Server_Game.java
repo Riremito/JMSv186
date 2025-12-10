@@ -21,6 +21,7 @@ package tacos.server;
 import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.PlayerStorage;
+import odin.server.maps.MapleMapFactory;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
 import tacos.constants.TacosConstants;
@@ -36,10 +37,12 @@ public class Server_Game extends Server {
 
     private int world;
     private int channel;
+    private MapleMapFactory mapFactory = null;
     private PlayerStorage players;
 
     public Server_Game(String server_name, String server_ip, int server_port, IoHandler ih, IoServiceConfig isc) {
         super(server_name, server_ip, server_port, ih, isc);
+        this.mapFactory = new MapleMapFactory();
     }
 
     @Override
@@ -55,6 +58,10 @@ public class Server_Game extends Server {
         super.shutdown();
     }
 
+    public MapleMapFactory getMapFactory() {
+        return this.mapFactory;
+    }
+
     public PlayerStorage getPlayerStorage() {
         return this.players;
     }
@@ -68,6 +75,7 @@ public class Server_Game extends Server {
             Server_Game server = new Server_Game(channel_name, TacosConstants.SERVER_LOCAL_IP, channel_port, new PacketHandler_Game(channel), PacketHandler.getSocketAcceptorConfig());
             server.world = 0;
             server.channel = channel;
+            server.mapFactory.setChannel(channel);
             server.players = new PlayerStorage(channel);
             Server.add(server);
             server.run();

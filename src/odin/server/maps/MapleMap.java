@@ -107,8 +107,9 @@ import odin.server.maps.MapleNodes.MapleNodeInfo;
 import odin.server.maps.MapleNodes.MaplePlatform;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import odin.tools.Pair;
+import tacos.server.map.TacosMap;
 
-public final class MapleMap {
+public final class MapleMap extends TacosMap {
 
     /*
      * Holds mappings of OID -> MapleMapObject separated by MapleMapObjectType.
