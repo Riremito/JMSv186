@@ -52,7 +52,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.io.Serializable;
 
 import tacos.config.DeveloperMode;
 import tacos.config.Region;
@@ -122,12 +121,10 @@ import odin.server.RandomRewards;
 import odin.server.MapleCarnivalParty;
 import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleMonster;
-import odin.server.maps.AbstractAnimatedMapleMapObject;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapFactory;
 import odin.server.maps.MapleMapObject;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleSummon;
 import odin.server.maps.FieldLimitType;
 import odin.server.maps.SavedLocationType;
@@ -148,6 +145,7 @@ import odin.server.maps.MapleFoothold;
 import odin.server.shops.HiredMerchant;
 import odin.tools.ConcurrentEnumMap;
 import odin.tools.FileoutputUtil;
+import tacos.client.TacosCharacter;
 import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.database.query.DQ_Accounts;
@@ -159,9 +157,8 @@ import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.ServerOdinCashShop;
 import tacos.packet.response.wrapper.WrapCWvsContext;
 
-public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Serializable {
+public class MapleCharacter extends TacosCharacter {
 
-    private static final long serialVersionUID = 845748950829L;
     private String name, chalktext, BlessOfFairy_Origin;
     private long lastCombo, lastfametime, keydown_skill;
     private byte dojoRecord, gmLevel, gender, initialSpawnPoint, skinColor, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
@@ -3860,11 +3857,6 @@ public class MapleCharacter extends AbstractAnimatedMapleMapObject implements Se
 
     public void setItemEffect(int itemEffect) {
         this.itemEffect = itemEffect;
-    }
-
-    @Override
-    public MapleMapObjectType getType() {
-        return MapleMapObjectType.PLAYER;
     }
 
     public int getFamilyId() {
