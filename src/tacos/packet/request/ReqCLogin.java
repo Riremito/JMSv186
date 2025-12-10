@@ -552,7 +552,7 @@ public class ReqCLogin {
         }
         // GM test
         if (startwith_GM) {
-            c.setGameMaster();
+            c.setGameMaster(true);
         }
         if (loginok != 0) {
             c.SendPacket(ResCLogin.CheckPasswordResult(c, loginok));

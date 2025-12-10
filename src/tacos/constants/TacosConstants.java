@@ -35,4 +35,7 @@ public class TacosConstants {
     public static final String FAKE_GLOBAL_IP_GMS116 = "8.31.98.52";
     public static final int FAKE_GLOBAL_IP_GMS116_VALUE = 0x34621F08; // 8.31.98.52
 
+    // def
+    public static final int DEFAULT_CHARSLOT = 6;
+
 }

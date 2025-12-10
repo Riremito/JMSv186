@@ -178,7 +178,10 @@ public class DQ_Accounts {
                 }
 
                 // secondPassword, salt2
-                c.setAccountData(accId, gameMaster, gender);
+                // set account info
+                c.setId(accId);
+                c.setGameMaster(gameMaster);
+                c.setGender(gender);
 
                 ps.close();
 
