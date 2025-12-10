@@ -29,19 +29,18 @@ import tacos.database.ExtraDB;
 import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_Characters;
 import tacos.debug.DebugLogger;
-import tacos.network.MaplePacket;
 import tacos.server.ServerOdinGame;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.mina.common.IoSession;
+import tacos.client.TacosClient;
 
-public class MapleClient {
+public class MapleClient extends TacosClient {
 
     public static final String CLIENT_KEY = "CLIENT";
     public static final int DEFAULT_CHARSLOT = 6;
 
-    private final IoSession session;
     private boolean migrating = false;
     private String nexon_id = null;
     private String maple_id = null;
@@ -59,7 +58,7 @@ public class MapleClient {
     private MapleCharacter player = null;
 
     public MapleClient(IoSession session) {
-        this.session = session;
+        super(session);
     }
 
     public boolean setAccountData(int id, boolean gameMaster, byte gender) {
@@ -67,10 +66,6 @@ public class MapleClient {
         this.gameMaster = gameMaster;
         this.gender = gender;
         return true;
-    }
-
-    public IoSession getSession() {
-        return this.session;
     }
 
     public boolean isMigrating() {
@@ -85,11 +80,7 @@ public class MapleClient {
     public void loginFailed(String text) {
         DebugLogger.ErrorLog("loginFailed : " + text);
         this.player = null;
-        this.session.close();
-    }
-
-    public void SendPacket(MaplePacket packet) {
-        this.session.write(packet);
+        getSession().close();
     }
 
     public void setId(int id) {
@@ -146,10 +137,6 @@ public class MapleClient {
 
     public void setGender(byte gender) {
         this.gender = gender;
-    }
-
-    public String getSessionIPAddress() {
-        return session.getRemoteAddress().toString().split(":")[0];
     }
 
     public boolean isLoggedIn() {
@@ -297,7 +284,7 @@ public class MapleClient {
         if (alive_diff <= -1 || 3 <= alive_diff) {
             if (!DeveloperMode.DM_NO_ALIVE_CHECK.get()) {
                 DebugLogger.DebugLog("Ping DC : " + alive_req + ", " + alive_res);
-                session.close();
+                getSession().close();
                 return false;
             }
         }
