@@ -1024,7 +1024,7 @@ public class InventoryHandler {
                 List<MapleMapObject> objects;
                 switch (OWL_ID) {
                     case 0:
-                        objects = mapp.getAllHiredMerchantsThreadsafe();
+                        objects = mapp.getAllHiredMerchants();
                         for (MapleMapObject ob : objects) {
                             if (ob instanceof IMaplePlayerShop) {
                                 final IMaplePlayerShop ips = (IMaplePlayerShop) ob;
@@ -1039,7 +1039,7 @@ public class InventoryHandler {
                         }
                         break;
                     case 1:
-                        objects = mapp.getAllHiredMerchantsThreadsafe();
+                        objects = mapp.getAllHiredMerchants();
                         for (MapleMapObject ob : objects) {
                             if (ob instanceof IMaplePlayerShop) {
                                 final IMaplePlayerShop ips = (IMaplePlayerShop) ob;

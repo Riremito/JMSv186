@@ -115,7 +115,7 @@ public class MapleDoor extends AbstractMapleMapObject {
             }
         }
         // already used
-        for (final MapleMapObject obj : map_town.getAllDoorsThreadsafe()) {
+        for (final MapleMapObject obj : map_town.getAllDoors()) {
             MapleDoor door = (MapleDoor) obj;
             freePortals.remove(door.getTownPortal());
         }

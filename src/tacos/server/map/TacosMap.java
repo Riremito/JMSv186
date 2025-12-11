@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,11 +33,16 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.client.MapleCharacter;
 import odin.server.MapleSquad;
+import odin.server.life.MapleMonster;
+import odin.server.life.MapleNPC;
 import odin.server.life.Spawns;
 import odin.server.maps.MapleMapEffect;
+import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleNodes;
+import odin.server.maps.MapleReactor;
+import odin.server.maps.MapleSummon;
 import odin.tools.Pair;
 import tacos.server.ServerOdinGame;
 
@@ -228,6 +234,179 @@ public class TacosMap extends TacosMapData {
 
     public void setSoaring(boolean soaring) {
         this.soaring = soaring;
+    }
+
+    // object
+    public List<MapleMapObject> getMapObjects(MapleMapObjectType type) {
+        List<MapleMapObject> mmos = new ArrayList<>();
+        for (MapleMapObject mmo : this.mapobjects.get(type).values()) {
+            mmos.add(mmo);
+        }
+        return mmos;
+    }
+
+    public MapleMapObject getMapObject(int oid, MapleMapObjectType type) {
+        return this.mapobjects.get(type).get(oid);
+    }
+
+    public void addMapObject(MapleMapObject mapobject) {
+        this.runningOid++;
+        mapobject.setObjectId(this.runningOid);
+        this.mapobjects.get(mapobject.getType()).put(this.runningOid, mapobject);
+
+    }
+
+    public void removeMapObject(MapleMapObject obj) {
+        this.mapobjects.get(obj.getType()).remove(obj.getObjectId());
+    }
+
+    public MapleSummon getSummonByOid(int oid) {
+        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.SUMMON);
+        if (mmo == null) {
+            return null;
+        }
+        return (MapleSummon) mmo;
+    }
+
+    public List<MapleMonster> getAllMonsters() {
+        ArrayList<MapleMonster> ret = new ArrayList<>();
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
+            ret.add((MapleMonster) mmo);
+        }
+        return ret;
+    }
+
+    public MapleMonster getMonsterById(int id) {
+        MapleMonster ret = null;
+        Iterator<MapleMapObject> itr = this.mapobjects.get(MapleMapObjectType.MONSTER).values().iterator();
+        while (itr.hasNext()) {
+            MapleMonster n = (MapleMonster) itr.next();
+            if (n.getId() == id) {
+                ret = n;
+                break;
+            }
+        }
+        return ret;
+    }
+
+    public int countMonsterById(int id) {
+        int ret = 0;
+        Iterator<MapleMapObject> itr = this.mapobjects.get(MapleMapObjectType.MONSTER).values().iterator();
+        while (itr.hasNext()) {
+            MapleMonster n = (MapleMonster) itr.next();
+            if (n.getId() == id) {
+                ret++;
+            }
+        }
+        return ret;
+    }
+
+    public MapleMonster getMonsterByOid(int oid) {
+        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.MONSTER);
+        if (mmo == null) {
+            return null;
+        }
+        return (MapleMonster) mmo;
+    }
+
+    public int getNumMonsters() {
+        return mapobjects.get(MapleMapObjectType.MONSTER).size();
+
+    }
+
+    public List<MapleNPC> getAllNPCs() {
+        ArrayList<MapleNPC> ret = new ArrayList<>();
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
+            ret.add((MapleNPC) mmo);
+        }
+        return ret;
+    }
+
+    public boolean containsNPC(int npcid) {
+        Iterator<MapleMapObject> itr = this.mapobjects.get(MapleMapObjectType.NPC).values().iterator();
+        while (itr.hasNext()) {
+            MapleNPC n = (MapleNPC) itr.next();
+            if (n.getId() == npcid) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public MapleNPC getNPCById(int id) {
+        Iterator<MapleMapObject> itr = this.mapobjects.get(MapleMapObjectType.NPC).values().iterator();
+        while (itr.hasNext()) {
+            MapleNPC n = (MapleNPC) itr.next();
+            if (n.getId() == id) {
+                return n;
+            }
+        }
+        return null;
+    }
+
+    public MapleNPC getNPCByOid(int oid) {
+        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.NPC);
+        if (mmo == null) {
+            return null;
+        }
+        return (MapleNPC) mmo;
+    }
+
+    public List<MapleMapObject> getAllHiredMerchants() {
+        ArrayList<MapleMapObject> ret = new ArrayList<>();
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
+            ret.add(mmo);
+        }
+        return ret;
+    }
+
+    public List<MapleMapItem> getAllItems() {
+        ArrayList<MapleMapItem> ret = new ArrayList<>();
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
+            ret.add((MapleMapItem) mmo);
+        }
+        return ret;
+    }
+
+    public int getItemsSize() {
+        return this.mapobjects.get(MapleMapObjectType.ITEM).size();
+    }
+
+    public List<MapleMapObject> getAllDoors() {
+        ArrayList<MapleMapObject> ret = new ArrayList<>();
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
+            ret.add(mmo);
+        }
+        return ret;
+    }
+
+    public List<MapleReactor> getAllReactors() {
+        ArrayList<MapleReactor> ret = new ArrayList<>();
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+            ret.add((MapleReactor) mmo);
+        }
+        return ret;
+    }
+
+    public MapleReactor getReactorById(int id) {
+        MapleReactor ret = null;
+        Iterator<MapleMapObject> itr = this.mapobjects.get(MapleMapObjectType.REACTOR).values().iterator();
+        while (itr.hasNext()) {
+            MapleReactor n = (MapleReactor) itr.next();
+            if (n.getReactorId() == id) {
+                ret = n;
+                break;
+            }
+        }
+        return ret;
+    }
+
+    public MapleReactor getReactorByOid(int oid) {
+        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.REACTOR);
+        if (mmo == null) {
+            return null;
+        }
+        return (MapleReactor) mmo;
     }
 
     // unused

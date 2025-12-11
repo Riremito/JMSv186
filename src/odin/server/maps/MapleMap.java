@@ -134,17 +134,6 @@ public final class MapleMap extends TacosMap {
         return -1;
     }
 
-    public final void addMapObject(final MapleMapObject mapobject) {
-        mutex.lock();
-        try {
-            runningOid++;
-            mapobject.setObjectId(runningOid);
-            mapobjects.get(mapobject.getType()).put(runningOid, mapobject);
-        } finally {
-            mutex.unlock();
-        }
-    }
-
     private void spawnAndAddRangedMapObject(final MapleMapObject mapobject, final DelayedPacketCreation packetbakery, final SpawnCondition condition) {
         mutex.lock();
         try {
@@ -165,15 +154,6 @@ public final class MapleMap extends TacosMap {
         } finally {
             mutex.unlock();
 //            charactersLock.readLock().unlock();
-        }
-    }
-
-    public final void removeMapObject(final MapleMapObject obj) {
-        mutex.lock();
-        try {
-            mapobjects.get(obj.getType()).remove(Integer.valueOf(obj.getObjectId()));
-        } finally {
-            mutex.unlock();
         }
     }
 
@@ -554,7 +534,7 @@ public final class MapleMap extends TacosMap {
             }
         } else if (mobid >= 8800003 && mobid <= 8800010) {
             boolean makeZakReal = true;
-            final Collection<MapleMonster> monsters = getAllMonstersThreadsafe();
+            final Collection<MapleMonster> monsters = getAllMonsters();
 
             for (final MapleMonster mons : monsters) {
                 if (mons.getId() >= 8800003 && mons.getId() <= 8800010) {
@@ -575,7 +555,7 @@ public final class MapleMap extends TacosMap {
             }
         } else if (mobid >= 8800103 && mobid <= 8800110) {
             boolean makeZakReal = true;
-            final Collection<MapleMonster> monsters = getAllMonstersThreadsafe();
+            final Collection<MapleMonster> monsters = getAllMonsters();
 
             for (final MapleMonster mons : monsters) {
                 if (mons.getId() >= 8800103 && mons.getId() <= 8800110) {
@@ -605,14 +585,14 @@ public final class MapleMap extends TacosMap {
 
         }
         if (mobid == 8820008) { //wipe out statues and respawn
-            for (final MapleMapObject mmo : getAllMonstersThreadsafe()) {
+            for (final MapleMapObject mmo : getAllMonsters()) {
                 MapleMonster mons = (MapleMonster) mmo;
                 if (mons.getLinkOid() != monster.getObjectId()) {
                     killMonster(mons, chr, false, false, animation);
                 }
             }
         } else if (mobid >= 8820010 && mobid <= 8820014) {
-            for (final MapleMapObject mmo : getAllMonstersThreadsafe()) {
+            for (final MapleMapObject mmo : getAllMonsters()) {
                 MapleMonster mons = (MapleMonster) mmo;
                 if (mons.getId() != 8820000 && mons.getObjectId() != monster.getObjectId() && mons.getLinkOid() != monster.getObjectId()) {
                     killMonster(mons, chr, false, false, animation);
@@ -633,60 +613,8 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public List<MapleReactor> getAllReactorsThreadsafe() {
-        ArrayList<MapleReactor> ret = new ArrayList<MapleReactor>();
-        mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().lock();
-        try {
-            for (MapleMapObject mmo : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-                ret.add((MapleReactor) mmo);
-            }
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().unlock();
-        }
-        return ret;
-    }
-
-    public List<MapleMapObject> getAllDoorsThreadsafe() {
-        ArrayList<MapleMapObject> ret = new ArrayList<MapleMapObject>();
-        mapobjectlocks.get(MapleMapObjectType.DOOR).readLock().lock();
-        try {
-            for (MapleMapObject mmo : mapobjects.get(MapleMapObjectType.DOOR).values()) {
-                ret.add(mmo);
-            }
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.DOOR).readLock().unlock();
-        }
-        return ret;
-    }
-
-    public List<MapleMapObject> getAllHiredMerchantsThreadsafe() {
-        ArrayList<MapleMapObject> ret = new ArrayList<MapleMapObject>();
-        mapobjectlocks.get(MapleMapObjectType.HIRED_MERCHANT).readLock().lock();
-        try {
-            for (MapleMapObject mmo : mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
-                ret.add(mmo);
-            }
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.HIRED_MERCHANT).readLock().unlock();
-        }
-        return ret;
-    }
-
-    public List<MapleMonster> getAllMonstersThreadsafe() {
-        ArrayList<MapleMonster> ret = new ArrayList<MapleMonster>();
-        mapobjectlocks.get(MapleMapObjectType.MONSTER).readLock().lock();
-        try {
-            for (MapleMapObject mmo : mapobjects.get(MapleMapObjectType.MONSTER).values()) {
-                ret.add((MapleMonster) mmo);
-            }
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.MONSTER).readLock().unlock();
-        }
-        return ret;
-    }
-
     public final void killAllMonsters(final boolean animate) {
-        for (final MapleMapObject monstermo : getAllMonstersThreadsafe()) {
+        for (final MapleMapObject monstermo : getAllMonsters()) {
             final MapleMonster monster = (MapleMonster) monstermo;
             spawnedMonstersOnMap.decrementAndGet();
             monster.setHp(0);
@@ -696,7 +624,7 @@ public final class MapleMap extends TacosMap {
     }
 
     public final void killMonster(final int monsId) {
-        for (final MapleMapObject mmo : getAllMonstersThreadsafe()) {
+        for (final MapleMapObject mmo : getAllMonsters()) {
             if (((MapleMonster) mmo).getId() == monsId) {
                 spawnedMonstersOnMap.decrementAndGet();
                 removeMapObject(mmo);
@@ -864,142 +792,6 @@ public final class MapleMap extends TacosMap {
                 newController.controlMonster(monster, false);
             }
         }
-    }
-
-    public final MapleMapObject getMapObject(final int oid, MapleMapObjectType type) {
-        return mapobjects.get(type).get(oid);
-    }
-
-    public final boolean containsNPC(int npcid) {
-        mapobjectlocks.get(MapleMapObjectType.NPC).readLock().lock();
-        try {
-            Iterator<MapleMapObject> itr = mapobjects.get(MapleMapObjectType.NPC).values().iterator();
-            while (itr.hasNext()) {
-                MapleNPC n = (MapleNPC) itr.next();
-                if (n.getId() == npcid) {
-                    return true;
-                }
-            }
-            return false;
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.NPC).readLock().unlock();
-        }
-    }
-
-    public MapleNPC getNPCById(int id) {
-        mapobjectlocks.get(MapleMapObjectType.NPC).readLock().lock();
-        try {
-            Iterator<MapleMapObject> itr = mapobjects.get(MapleMapObjectType.NPC).values().iterator();
-            while (itr.hasNext()) {
-                MapleNPC n = (MapleNPC) itr.next();
-                if (n.getId() == id) {
-                    return n;
-                }
-            }
-            return null;
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.NPC).readLock().unlock();
-        }
-    }
-
-    public MapleMonster getMonsterById(int id) {
-        mapobjectlocks.get(MapleMapObjectType.MONSTER).readLock().lock();
-        try {
-            MapleMonster ret = null;
-            Iterator<MapleMapObject> itr = mapobjects.get(MapleMapObjectType.MONSTER).values().iterator();
-            while (itr.hasNext()) {
-                MapleMonster n = (MapleMonster) itr.next();
-                if (n.getId() == id) {
-                    ret = n;
-                    break;
-                }
-            }
-            return ret;
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.MONSTER).readLock().unlock();
-        }
-    }
-
-    public int countMonsterById(int id) {
-        mapobjectlocks.get(MapleMapObjectType.MONSTER).readLock().lock();
-        try {
-            int ret = 0;
-            Iterator<MapleMapObject> itr = mapobjects.get(MapleMapObjectType.MONSTER).values().iterator();
-            while (itr.hasNext()) {
-                MapleMonster n = (MapleMonster) itr.next();
-                if (n.getId() == id) {
-                    ret++;
-                }
-            }
-            return ret;
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.MONSTER).readLock().unlock();
-        }
-    }
-
-    public MapleReactor getReactorById(int id) {
-        mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().lock();
-        try {
-            MapleReactor ret = null;
-            Iterator<MapleMapObject> itr = mapobjects.get(MapleMapObjectType.REACTOR).values().iterator();
-            while (itr.hasNext()) {
-                MapleReactor n = (MapleReactor) itr.next();
-                if (n.getReactorId() == id) {
-                    ret = n;
-                    break;
-                }
-            }
-            return ret;
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().unlock();
-        }
-    }
-
-    /**
-     * returns a monster with the given oid, if no such monster exists returns
-     * null
-     *
-     * @param oid
-     * @return
-     */
-    public final MapleMonster getMonsterByOid(final int oid) {
-        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.MONSTER);
-        if (mmo == null) {
-            return null;
-        }
-        return (MapleMonster) mmo;
-    }
-
-    public final MapleSummon getSummonByOid(final int oid) {
-        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.SUMMON);
-        if (mmo == null) {
-            return null;
-        }
-        return (MapleSummon) mmo;
-    }
-
-    public final MapleNPC getNPCByOid(final int oid) {
-        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.NPC);
-        if (mmo == null) {
-            return null;
-        }
-        return (MapleNPC) mmo;
-    }
-
-    public List<MapleMapObject> getMapObjects(MapleMapObjectType type) {
-        List<MapleMapObject> mmos = new ArrayList<>();
-        for (MapleMapObject mmo : mapobjects.get(type).values()) {
-            mmos.add(mmo);
-        }
-        return mmos;
-    }
-
-    public final MapleReactor getReactorByOid(final int oid) {
-        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.REACTOR);
-        if (mmo == null) {
-            return null;
-        }
-        return (MapleReactor) mmo;
     }
 
     public final MapleReactor getReactorByName(final String name) {
@@ -1483,25 +1275,8 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public int getItemsSize() {
-        return mapobjects.get(MapleMapObjectType.ITEM).size();
-    }
-
-    public List<MapleMapItem> getAllItemsThreadsafe() {
-        ArrayList<MapleMapItem> ret = new ArrayList<MapleMapItem>();
-        mapobjectlocks.get(MapleMapObjectType.ITEM).readLock().lock();
-        try {
-            for (MapleMapObject mmo : mapobjects.get(MapleMapObjectType.ITEM).values()) {
-                ret.add((MapleMapItem) mmo);
-            }
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.ITEM).readLock().unlock();
-        }
-        return ret;
-    }
-
     public final void returnEverLastItem(final MapleCharacter chr) {
-        for (final MapleMapObject o : getAllItemsThreadsafe()) {
+        for (final MapleMapObject o : getAllItems()) {
             final MapleMapItem item = ((MapleMapItem) o);
             if (item.getOwner() == chr.getId()) {
                 item.setPickedUp(true);
@@ -1716,15 +1491,6 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public int getNumMonsters() {
-        mapobjectlocks.get(MapleMapObjectType.MONSTER).readLock().lock();
-        try {
-            return mapobjects.get(MapleMapObjectType.MONSTER).size();
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.MONSTER).readLock().unlock();
-        }
-    }
-
     public void doShrine(final boolean spawned) { //false = entering map, true = defeated
         if (squadSchedule != null) {
             cancelSquadSchedule();
@@ -1755,7 +1521,7 @@ public final class MapleMap extends TacosMap {
             }
             final MapleMap returnMapz = returnMapa;
             if (!spawned) { //no monsters yet; inforce timer to spawn it quickly
-                final List<MapleMonster> monsterz = getAllMonstersThreadsafe();
+                final List<MapleMonster> monsterz = getAllMonsters();
                 final List<Integer> monsteridz = new ArrayList<Integer>();
                 for (MapleMapObject m : monsterz) {
                     monsteridz.add(m.getObjectId());
@@ -1766,7 +1532,7 @@ public final class MapleMap extends TacosMap {
                         final MapleSquad sqnow = MapleMap.this.getSquadByMap();
                         if (MapleMap.this.getCharactersSize() > 0 && MapleMap.this.getNumMonsters() == monsterz.size() && sqnow != null && sqnow.getStatus() == 2 && sqnow.getLeaderName().equals(leaderName) && MapleMap.this.getEMByMap().getProperty("state").equals(state)) {
                             boolean passed = monsterz.isEmpty();
-                            for (MapleMapObject m : MapleMap.this.getAllMonstersThreadsafe()) {
+                            for (MapleMapObject m : MapleMap.this.getAllMonsters()) {
                                 for (int i : monsteridz) {
                                     if (m.getObjectId() == i) {
                                         passed = true;
@@ -2047,7 +1813,7 @@ public final class MapleMap extends TacosMap {
         if (c == null || c.isClone()) {
             return;
         }
-        for (final MapleMapObject o : this.getAllMonstersThreadsafe()) {
+        for (final MapleMapObject o : this.getAllMonsters()) {
             updateMonsterController((MapleMonster) o);
         }
         for (final MapleMapObject o : getMapObjectsInRange(c.getPosition(), GameConstants.maxViewRangeSq(), GameConstants.rangedMapobjectTypes)) {
@@ -2507,21 +2273,8 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public List<MapleNPC> getAllNPCsThreadsafe() {
-        ArrayList<MapleNPC> ret = new ArrayList<MapleNPC>();
-        mapobjectlocks.get(MapleMapObjectType.NPC).readLock().lock();
-        try {
-            for (MapleMapObject mmo : mapobjects.get(MapleMapObjectType.NPC).values()) {
-                ret.add((MapleNPC) mmo);
-            }
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.NPC).readLock().unlock();
-        }
-        return ret;
-    }
-
     public final void resetNPCs() {
-        List<MapleNPC> npcs = getAllNPCsThreadsafe();
+        List<MapleNPC> npcs = getAllNPCs();
         for (MapleNPC npc : npcs) {
             if (npc.isCustom()) {
                 broadcastMessage(ResCNpcPool.NpcEnterField(npc, false));
@@ -2550,7 +2303,7 @@ public final class MapleMap extends TacosMap {
     }
 
     public final void removeDrops() {
-        List<MapleMapItem> items = this.getAllItemsThreadsafe();
+        List<MapleMapItem> items = this.getAllItems();
         for (MapleMapItem i : items) {
             i.expire(this);
         }
@@ -2610,7 +2363,7 @@ public final class MapleMap extends TacosMap {
             return false;
         }
         Point guardz = null;
-        final List<MapleReactor> react = getAllReactorsThreadsafe();
+        final List<MapleReactor> react = getAllReactors();
         for (Pair<Point, Integer> guard : nodes.getGuardians()) {
             if (guard.right == team || guard.right == -1) {
                 boolean found = false;
@@ -2637,7 +2390,7 @@ public final class MapleMap extends TacosMap {
             //with num. -> guardians in factory
             spawnReactor(my);
             final MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
-            for (MapleMonster mons : getAllMonstersThreadsafe()) {
+            for (MapleMonster mons : getAllMonsters()) {
                 if (mons.getCarnivalTeam() == team) {
                     skil.getSkill().applyEffect(null, mons, false);
                 }

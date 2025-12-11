@@ -471,7 +471,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         sponge = new WeakReference<MapleMonster>(null);
         if (oldSponge != null && oldSponge.isAlive()) {
             boolean set = true;
-            for (MapleMapObject mon : map.getAllMonstersThreadsafe()) {
+            for (MapleMapObject mon : map.getAllMonsters()) {
                 MapleMonster mons = (MapleMonster) mon;
                 if (mons.getObjectId() != oldSponge.getObjectId() && mons.getObjectId() != this.getObjectId() && (mons.getSponge() == oldSponge || mons.getLinkOid() == oldSponge.getObjectId())) { //sponge was this, please update
                     set = false;
@@ -529,7 +529,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 }
                 if (spongy != null) {
                     map.spawnRevives(spongy, this.getObjectId());
-                    for (MapleMapObject mon : map.getAllMonstersThreadsafe()) {
+                    for (MapleMapObject mon : map.getAllMonsters()) {
                         MapleMonster mons = (MapleMonster) mon;
                         if (mons.getObjectId() != spongy.getObjectId() && (mons.getSponge() == this || mons.getLinkOid() == this.getObjectId())) { //sponge was this, please update
                             mons.setSponge(spongy);

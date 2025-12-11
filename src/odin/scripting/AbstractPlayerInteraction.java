@@ -361,7 +361,7 @@ public abstract class AbstractPlayerInteraction {
         MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
         MapleReactor react;
 
-        for (final MapleMapObject remo : map.getAllReactorsThreadsafe()) {
+        for (final MapleMapObject remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
             if (react.getReactorId() == id) {
                 react.forceStartReactor(c);
@@ -374,7 +374,7 @@ public abstract class AbstractPlayerInteraction {
         MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
         MapleReactor react;
 
-        for (final MapleMapObject remo : map.getAllReactorsThreadsafe()) {
+        for (final MapleMapObject remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
             if (react.getReactorId() == id) {
                 react.hitReactor(c);
@@ -387,7 +387,7 @@ public abstract class AbstractPlayerInteraction {
         MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
         MapleReactor react;
 
-        for (final MapleMapObject remo : map.getAllReactorsThreadsafe()) {
+        for (final MapleMapObject remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
             if (react.getReactorId() == id) {
                 react.hitReactor(c);
@@ -796,7 +796,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final boolean haveMonster(final int mobid) {
-        for (MapleMapObject obj : c.getPlayer().getMap().getAllMonstersThreadsafe()) {
+        for (MapleMapObject obj : c.getPlayer().getMap().getAllMonsters()) {
             final MapleMonster mob = (MapleMonster) obj;
             if (mob.getId() == mobid) {
                 return true;
@@ -1007,7 +1007,7 @@ public abstract class AbstractPlayerInteraction {
 
     public boolean isAllReactorState(final int reactorId, final int state) {
         boolean ret = false;
-        for (MapleReactor r : getMap().getAllReactorsThreadsafe()) {
+        for (MapleReactor r : getMap().getAllReactors()) {
             if (r.getReactorId() == reactorId) {
                 ret = r.getState() == state;
             }

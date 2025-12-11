@@ -1331,7 +1331,7 @@ public class World {
 
     public static void handleMap(final MapleMap map, final int numTimes, final int size) {
         if (map.getItemsSize() > 0) {
-            for (MapleMapItem item : map.getAllItemsThreadsafe()) {
+            for (MapleMapItem item : map.getAllItems()) {
                 if (item.shouldExpire()) {
                     item.expire(map);
                 } else if (item.shouldFFA()) {

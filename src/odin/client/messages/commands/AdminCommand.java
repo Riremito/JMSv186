@@ -793,7 +793,7 @@ public class AdminCommand {
 
         @Override
         public int execute(MapleClient c, String[] splitted) {
-            for (MapleMapObject reactor1l : c.getPlayer().getMap().getAllNPCsThreadsafe()) {
+            for (MapleMapObject reactor1l : c.getPlayer().getMap().getAllNPCs()) {
                 MapleNPC reactor2l = (MapleNPC) reactor1l;
                 c.getPlayer().dropMessage(5, "NPC: oID: " + reactor2l.getObjectId() + " npcID: " + reactor2l.getId() + " Position: " + reactor2l.getPosition().toString() + " Name: " + reactor2l.getName());
             }
@@ -805,7 +805,7 @@ public class AdminCommand {
 
         @Override
         public int execute(MapleClient c, String[] splitted) {
-            for (MapleMapObject reactor1l : c.getPlayer().getMap().getAllReactorsThreadsafe()) {
+            for (MapleMapObject reactor1l : c.getPlayer().getMap().getAllReactors()) {
                 MapleReactor reactor2l = (MapleReactor) reactor1l;
                 c.getPlayer().dropMessage(5, "Reactor: oID: " + reactor2l.getObjectId() + " reactorID: " + reactor2l.getReactorId() + " Position: " + reactor2l.getPosition().toString() + " State: " + reactor2l.getState() + " Name: " + reactor2l.getName());
             }
