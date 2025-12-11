@@ -95,7 +95,6 @@ import odin.server.Timer.MapTimer;
 import odin.server.events.MapleEvent;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import odin.tools.Pair;
-import tacos.constants.TacosConstants;
 import tacos.server.map.TacosMap;
 
 public final class MapleMap extends TacosMap {
@@ -1626,14 +1625,6 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public final void broadcastMessage(final MaplePacket packet) {
-        broadcastMessage(null, packet, Double.POSITIVE_INFINITY, null);
-    }
-
-    public final void broadcastMessage(final MapleCharacter source, final MaplePacket packet, final boolean repeatToSource) {
-        broadcastMessage(repeatToSource ? null : source, packet, Double.POSITIVE_INFINITY, source.getPosition());
-    }
-
     public final void broadcastMessageClone(final MapleCharacter source, final MaplePacket packet) {
         int clone_delay = 1000;
         MapTimer.getInstance().schedule(new Runnable() {
@@ -1654,33 +1645,36 @@ public final class MapleMap extends TacosMap {
         }, delay);
     }
 
+    // self and other players in range.
     public void broadcastMessage(MaplePacket packet, Point rangedFrom) {
-        broadcastMessage(null, packet, TacosConstants.maxViewRangeSq(), rangedFrom);
+        broadcastMessageInternal(null, packet, rangedFrom, false);
     }
 
-    public void broadcastMessage(MapleCharacter source, MaplePacket packet, Point rangedFrom) {
-        broadcastMessage(source, packet, TacosConstants.maxViewRangeSq(), rangedFrom);
+    // other players in range.
+    public void broadcastMessageTo(MapleCharacter source, MaplePacket packet, Point rangedFrom) {
+        broadcastMessageInternal(source, packet, rangedFrom, false);
     }
 
-    private void broadcastMessage(MapleCharacter source, MaplePacket packet, double rangeSq, Point rangedFrom) {
-        mutex.lock();
-        try {
-            final Iterator<MapleCharacter> ltr = characters.iterator();
-            MapleCharacter chr;
-            while (ltr.hasNext()) {
-                chr = ltr.next();
-                if (chr != source) {
-                    if (rangeSq < Double.POSITIVE_INFINITY) {
-                        if (rangedFrom.distanceSq(chr.getPosition()) <= rangeSq) {
-                            chr.getClient().getSession().write(packet);
-                        }
-                    } else {
-                        chr.getClient().getSession().write(packet);
-                    }
+    // self and other players.
+    public void broadcastMessage(MaplePacket packet) {
+        broadcastMessageInternal(null, packet, null, true);
+    }
+
+    // self and other players, or other players.
+    public void broadcastMessage(MapleCharacter source, MaplePacket packet, boolean repeatToSource) {
+        broadcastMessageInternal(repeatToSource ? null : source, packet, source.getPosition(), true);
+    }
+
+    private void broadcastMessageInternal(MapleCharacter source, MaplePacket packet, Point rangedFrom, boolean ignoreRange) {
+        Iterator<MapleCharacter> ltr = characters.iterator();
+        MapleCharacter chr;
+        while (ltr.hasNext()) {
+            chr = ltr.next();
+            if (chr != source) {
+                if (ignoreRange || rangedFrom.distanceSq(chr.getPosition()) <= chr.getViewRangeSq()) {
+                    chr.SendPacket(packet);
                 }
             }
-        } finally {
-            mutex.unlock();
         }
     }
 

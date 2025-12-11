@@ -2410,6 +2410,7 @@ public class MapleCharacter extends TacosCharacter {
                 //Debug.DebugLog("stance : " + getStance() + " -> " + OpsMovePathAttr.MPA_NORMAL.get());
                 setStance(OpsMovePathAttr.MPA_NORMAL.get());
                 setPosition(pos);
+                setFH(0);
                 to.addPlayer(this);
                 stats.relocHeal();
             }

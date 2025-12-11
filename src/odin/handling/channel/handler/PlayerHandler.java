@@ -206,7 +206,7 @@ public class PlayerHandler {
                     bouncedamage = Math.min(bouncedamage, attacker.getMobMaxHp() / 10);
                     attacker.damage(chr, bouncedamage, true);
                     damage -= bouncedamage;
-                    chr.getMap().broadcastMessage(chr, ResCMobPool.Damage(attacker, bouncedamage), chr.getPosition());
+                    chr.getMap().broadcastMessageTo(chr, ResCMobPool.Damage(attacker, bouncedamage), chr.getPosition());
                     is_pg = true;
                 }
             }
@@ -566,7 +566,7 @@ public class PlayerHandler {
             }
         }
         chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
+        chr.getMap().broadcastMessageTo(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttack(attack, skill, c.getPlayer(), attackCount, maxdamage, effect, mirror ? AttackType.NON_RANGED_WITH_MIRROR : AttackType.NON_RANGED);
 
         // クローン : 攻撃
@@ -696,7 +696,7 @@ public class PlayerHandler {
             }
         }
         chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
+        chr.getMap().broadcastMessageTo(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttack(attack, skill, chr, bulletCount, basedamage, effect, ShadowPartner != null ? AttackType.RANGED_WITH_SHADOWPARTNER : AttackType.RANGED);
 
         // クローン : 攻撃
@@ -730,7 +730,7 @@ public class PlayerHandler {
             chr.addCooldown(attack.skill, System.currentTimeMillis(), effect.getCooldown() * 1000);
         }
         chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
+        chr.getMap().broadcastMessageTo(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttackMagic(attack, skill, c.getPlayer(), effect);
 
         // クローン : 攻撃

@@ -156,7 +156,7 @@ public class ReqCMobPool {
 
         final MapleMap map = chr.getMap();
         map.moveMonster(monster, monster.getPosition());
-        map.broadcastMessage(chr, ResCMobPool.moveMonster(bNextAttackPossible, bLeft, mob_skill, monster.getObjectId(), move_path), monster.getPosition());
+        map.broadcastMessageTo(chr, ResCMobPool.moveMonster(bNextAttackPossible, bLeft, mob_skill, monster.getObjectId(), move_path), monster.getPosition());
         return true;
     }
 

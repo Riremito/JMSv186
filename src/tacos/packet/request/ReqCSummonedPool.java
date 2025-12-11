@@ -126,7 +126,7 @@ public class ReqCSummonedPool {
             move_path.update(summon);
         }
 
-        chr.getMap().broadcastMessage(chr, ResCSummonedPool.moveSummon(summon, move_path), summon.getPosition());
+        chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.moveSummon(summon, move_path), summon.getPosition());
         return true;
     }
 
@@ -201,7 +201,7 @@ public class ReqCSummonedPool {
         }
 
         if (!summon.isChangedMap()) {
-            map.broadcastMessage(chr, ResCSummonedPool.summonAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
+            map.broadcastMessageTo(chr, ResCSummonedPool.summonAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
         }
         final ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());
         final MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
@@ -251,7 +251,7 @@ public class ReqCSummonedPool {
                 if (summon.getHP() <= 0) {
                     chr.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
                 }
-                chr.getMap().broadcastMessage(chr, ResCSummonedPool.damageSummon(summon, damage, unkByte, monsterIdFrom), summon.getPosition());
+                chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.damageSummon(summon, damage, unkByte, monsterIdFrom), summon.getPosition());
                 break;
             }
         }

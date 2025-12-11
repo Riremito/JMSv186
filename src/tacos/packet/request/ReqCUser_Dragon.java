@@ -50,7 +50,7 @@ public class ReqCUser_Dragon {
             move_path.update(dragon);
         }
 
-        chr.getMap().broadcastMessage(chr, ResCUser_Dragon.moveDragon(dragon, move_path), chr.getPosition());
+        chr.getMap().broadcastMessageTo(chr, ResCUser_Dragon.moveDragon(dragon, move_path), chr.getPosition());
         return true;
     }
 
