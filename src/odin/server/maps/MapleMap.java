@@ -58,7 +58,6 @@ import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.World;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -82,7 +81,6 @@ import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleItemInformationProvider;
-import odin.server.MaplePortal;
 import odin.server.MapleStatEffect;
 import odin.server.Randomizer;
 import odin.server.MapleInventoryManipulator;
@@ -116,69 +114,45 @@ public final class MapleMap extends TacosMap {
      * Please acquire the appropriate lock when reading and writing to the LinkedHashMaps.
      * The MapObjectType Maps themselves do not need to synchronized in any way since they should never be modified.
      */
-    private final Map<MapleMapObjectType, LinkedHashMap<Integer, MapleMapObject>> mapobjects;
-    private final Map<MapleMapObjectType, ReentrantReadWriteLock> mapobjectlocks;
     private final List<MapleCharacter> characters = new ArrayList<MapleCharacter>();
     private final ReentrantReadWriteLock charactersLock = new ReentrantReadWriteLock();
     private int runningOid = 100000;
     private final Lock runningOidLock = new ReentrantLock();
     private final List<Spawns> monsterSpawn = new ArrayList<Spawns>();
     private final AtomicInteger spawnedMonstersOnMap = new AtomicInteger(0);
-    private final Map<Integer, MaplePortal> portals = new HashMap<Integer, MaplePortal>();
-    private MapleFootholdTree footholds = null;
-    private float monsterRate, recoveryRate;
     private MapleMapEffect mapEffect;
-    private byte channel;
-    private short decHP = 0, createMobInterval = 9000;
-    private int consumeItemCoolTime = 0, protectItem = 0, decHPInterval = 10000, mapid, returnMapId, timeLimit,
-            fieldLimit, maxRegularSpawn = 0, fixedMob, forcedReturnMap = 999999999,
-            lvForceMove = 0, lvLimit = 0, permanentWeather = 0;
-    private boolean town, clock, personalShop, everlast = false, dropsDisabled = false, gDropsDisabled = false,
+    private short createMobInterval = 9000;
+    private int consumeItemCoolTime = 0,
+            maxRegularSpawn = 0, fixedMob,
+            lvLimit = 0, permanentWeather = 0;
+    private boolean personalShop, everlast = false, dropsDisabled = false, gDropsDisabled = false,
             soaring = false, squadTimer = false, isSpawns = true;
-    private String mapName, streetName, onUserEnter, onFirstUserEnter, speedRunLeader = "", squad = "";
+    private String onUserEnter, onFirstUserEnter, speedRunLeader = "", squad = "";
     private List<Integer> dced = new ArrayList<Integer>();
     private ScheduledFuture<?> squadSchedule;
-    private long speedRunStart = 0, lastSpawnTime = 0, lastHurtTime = 0;
+    private long speedRunStart = 0, lastSpawnTime = 0;
     private MapleNodes nodes;
     private Map<String, Integer> environment = new LinkedHashMap<String, Integer>();
     private final Lock mutex = new ReentrantLock();
 
-    public MapleMap(final int mapid, final int channel, final int returnMapId, final float monsterRate) {
-        this.mapid = mapid;
-        this.channel = (byte) channel;
-        this.returnMapId = returnMapId;
-        if (this.returnMapId == 999999999) {
-            this.returnMapId = mapid;
-        }
-        this.monsterRate = monsterRate;
-        EnumMap<MapleMapObjectType, LinkedHashMap<Integer, MapleMapObject>> objsMap = new EnumMap<MapleMapObjectType, LinkedHashMap<Integer, MapleMapObject>>(MapleMapObjectType.class);
-        EnumMap<MapleMapObjectType, ReentrantReadWriteLock> objlockmap = new EnumMap<MapleMapObjectType, ReentrantReadWriteLock>(MapleMapObjectType.class);
-        for (MapleMapObjectType type : MapleMapObjectType.values()) {
-            objsMap.put(type, new LinkedHashMap<Integer, MapleMapObject>());
-            objlockmap.put(type, new ReentrantReadWriteLock());
-        }
-        mapobjects = Collections.unmodifiableMap(objsMap);
-        mapobjectlocks = Collections.unmodifiableMap(objlockmap);
+    public MapleMap(int mapid, int channel, int returnMapId, float monsterRate) {
+        super(mapid, channel, returnMapId, monsterRate);
+    }
+
+    public final MapleMap getReturnMap() {
+        return ServerOdinGame.getInstance(channel).getMapFactory().getMap(returnMapId);
+    }
+
+    public final MapleMap getForcedReturnMap() {
+        return ServerOdinGame.getInstance(channel).getMapFactory().getMap(forcedReturnMap);
     }
 
     public final void setSpawns(final boolean fm) {
         this.isSpawns = fm;
     }
 
-    public final boolean getSpawns() {
-        return isSpawns;
-    }
-
     public final void setFixedMob(int fm) {
         this.fixedMob = fm;
-    }
-
-    public final void setForceMove(int fm) {
-        this.lvForceMove = fm;
-    }
-
-    public final void setReturnMapId(int rmi) {
-        this.returnMapId = rmi;
     }
 
     public final void setSoaring(boolean b) {
@@ -189,64 +163,8 @@ public final class MapleMap extends TacosMap {
         return soaring;
     }
 
-    public final int getId() {
-        return mapid;
-    }
-
-    public final MapleMap getReturnMap() {
-        return ServerOdinGame.getInstance(channel).getMapFactory().getMap(returnMapId);
-    }
-
-    public final int getReturnMapId() {
-        return returnMapId;
-    }
-
-    public final int getForcedReturnId() {
-        return forcedReturnMap;
-    }
-
-    public final MapleMap getForcedReturnMap() {
-        return ServerOdinGame.getInstance(channel).getMapFactory().getMap(forcedReturnMap);
-    }
-
-    public final void setForcedReturnMap(final int map) {
-        this.forcedReturnMap = map;
-    }
-
-    public final float getRecoveryRate() {
-        return recoveryRate;
-    }
-
-    public final void setRecoveryRate(final float recoveryRate) {
-        this.recoveryRate = recoveryRate;
-    }
-
-    public final int getFieldLimit() {
-        return fieldLimit;
-    }
-
-    public final void setFieldLimit(final int fieldLimit) {
-        this.fieldLimit = fieldLimit;
-    }
-
     public final void setCreateMobInterval(final short createMobInterval) {
         this.createMobInterval = createMobInterval;
-    }
-
-    public final void setTimeLimit(final int timeLimit) {
-        this.timeLimit = timeLimit;
-    }
-
-    public final void setMapName(final String mapName) {
-        this.mapName = mapName;
-    }
-
-    public final String getMapName() {
-        return mapName;
-    }
-
-    public final String getStreetName() {
-        return streetName;
     }
 
     public final void setFirstUserEnter(final String onFirstUserEnter) {
@@ -257,22 +175,6 @@ public final class MapleMap extends TacosMap {
         this.onUserEnter = onUserEnter;
     }
 
-    public final boolean hasClock() {
-        return clock;
-    }
-
-    public final void setClock(final boolean hasClock) {
-        this.clock = hasClock;
-    }
-
-    public final boolean isTown() {
-        return town;
-    }
-
-    public final void setTown(final boolean town) {
-        this.town = town;
-    }
-
     public final boolean allowPersonalShop() {
         return personalShop;
     }
@@ -281,43 +183,12 @@ public final class MapleMap extends TacosMap {
         this.personalShop = personalShop;
     }
 
-    public final void setStreetName(final String streetName) {
-        this.streetName = streetName;
-    }
-
     public final void setEverlast(final boolean everlast) {
         this.everlast = everlast;
     }
 
     public final boolean getEverlast() {
         return everlast;
-    }
-
-    public final int getHPDec() {
-        return decHP;
-    }
-
-    public final void setHPDec(final int delta) {
-        if (delta > 0 || mapid == 749040100) { //pmd
-            lastHurtTime = System.currentTimeMillis(); //start it up
-        }
-        decHP = (short) delta;
-    }
-
-    public final int getHPDecInterval() {
-        return decHPInterval;
-    }
-
-    public final void setHPDecInterval(final int delta) {
-        decHPInterval = delta;
-    }
-
-    public final int getHPDecProtect() {
-        return protectItem;
-    }
-
-    public final void setHPDecProtect(final int delta) {
-        this.protectItem = delta;
     }
 
     public final int getCurrentPartyId() {
@@ -2352,37 +2223,6 @@ public final class MapleMap extends TacosMap {
         return character;
     }
 
-    public final void addPortal(final MaplePortal myPortal) {
-        portals.put(myPortal.getId(), myPortal);
-    }
-
-    public final MaplePortal getPortal(final String portalname) {
-        for (final MaplePortal port : portals.values()) {
-            if (port.getName().equals(portalname)) {
-                return port;
-            }
-        }
-        return null;
-    }
-
-    public final MaplePortal getPortal(final int portalid) {
-        return portals.get(portalid);
-    }
-
-    public final void resetPortals() {
-        for (final MaplePortal port : portals.values()) {
-            port.setPortalState(true);
-        }
-    }
-
-    public final void setFootholds(final MapleFootholdTree footholds) {
-        this.footholds = footholds;
-    }
-
-    public final MapleFootholdTree getFootholds() {
-        return footholds;
-    }
-
     public final void loadMonsterRate(final boolean first) {
         final int spawnSize = monsterSpawn.size();
         maxRegularSpawn = Math.round(spawnSize * monsterRate);
@@ -2587,19 +2427,6 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public MaplePortal findClosestSpawnpoint(Point from) {
-        MaplePortal closest = null;
-        double distance, shortestDistance = Double.POSITIVE_INFINITY;
-        for (MaplePortal portal : portals.values()) {
-            distance = portal.getPosition().distanceSq(from);
-            if (portal.getType() >= 0 && portal.getType() <= 2 && distance < shortestDistance && portal.getTargetMapId() == 999999999) {
-                closest = portal;
-                shortestDistance = distance;
-            }
-        }
-        return closest;
-    }
-
     public int characterSize() {
         return characters.size();
     }
@@ -2620,10 +2447,6 @@ public final class MapleMap extends TacosMap {
             charactersLock.readLock().unlock();
         }
         return ret;
-    }
-
-    public Collection<MaplePortal> getPortals() {
-        return Collections.unmodifiableCollection(portals.values());
     }
 
     public int getSpawnedMonstersOnMap() {
@@ -2943,10 +2766,6 @@ public final class MapleMap extends TacosMap {
 
     }
 
-    public int getChannel() {
-        return channel;
-    }
-
     public int getConsumeItemCoolTime() {
         return consumeItemCoolTime;
     }
@@ -3037,14 +2856,6 @@ public final class MapleMap extends TacosMap {
     public final boolean canSpawn() {
         // 即沸き
         return lastSpawnTime == 0 || (lastSpawnTime > 0 && isSpawns && lastSpawnTime + createMobInterval < System.currentTimeMillis());
-    }
-
-    public final boolean canHurt() {
-        if (lastHurtTime > 0 && lastHurtTime + decHPInterval < System.currentTimeMillis()) {
-            lastHurtTime = System.currentTimeMillis();
-            return true;
-        }
-        return false;
     }
 
     public List<Spawns> getMonsterSpawn() {
