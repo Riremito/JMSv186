@@ -2399,12 +2399,11 @@ public class MapleCharacter extends TacosCharacter {
                 client.SendPacket(ResCStage.SetField_JMS_302(this, 2, false, null, 0, 0));
                 //client.getPlayer().UpdateStat(true);
             }
-
+            map.removePlayer(this);
             //Debug.DebugLog(getName() + " Enter Map = " + to.getId());
+            to.spawnPlayers(this);
             to.spawnMerchant(this); // show merchant
             to.spawnDynamicPortal(this); // show dynamic portal;
-
-            map.removePlayer(this);
             if (!clone && client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {
                 map = to;
                 //Debug.DebugLog("stance : " + getStance() + " -> " + OpsMovePathAttr.MPA_NORMAL.get());
@@ -3591,6 +3590,7 @@ public class MapleCharacter extends TacosCharacter {
             if (followid > 0) {
                 client.getSession().write(ResCUser.followEffect(followinitiator ? id : followid, followinitiator ? followid : id, null));
             }
+            return;
         }
     }
 

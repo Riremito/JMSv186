@@ -322,6 +322,12 @@ public class TacosMap extends TacosMapData {
         return character;
     }
 
+    public void spawnPlayers(MapleCharacter chr) {
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.PLAYER).values()) {
+            ((MapleCharacter) obj).sendSpawnData(chr.getClient());
+        }
+    }
+
     public MapleSummon getSummonByOid(int oid) {
         MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.SUMMON);
         if (mmo == null) {
