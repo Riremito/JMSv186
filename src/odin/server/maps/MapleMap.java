@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -692,63 +691,6 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    /*
-     * command to reset all item-reactors in a map to state 0 for GM/NPC use - not tested (broken reactors get removed
-     * from mapobjects when destroyed) Should create instances for multiple copies of non-respawning reactors...
-     */
-    public final void resetReactors() {
-        setReactorState((byte) 0);
-    }
-
-    public final void setReactorState() {
-        setReactorState((byte) 1);
-    }
-
-    public final void setReactorState(final byte state) {
-        mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().lock();
-        try {
-            for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-                ((MapleReactor) obj).forceHitReactor((byte) state);
-            }
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().unlock();
-        }
-    }
-
-    /*
-     * command to shuffle the positions of all reactors in a map for PQ purposes (such as ZPQ/LMPQ)
-     */
-    public final void shuffleReactors() {
-        shuffleReactors(0, 9999999); //all
-    }
-
-    public final void shuffleReactors(int first, int last) {
-        List<Point> points = new ArrayList<Point>();
-        mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().lock();
-        try {
-            for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-                MapleReactor mr = (MapleReactor) obj;
-                if (mr.getReactorId() >= first && mr.getReactorId() <= last) {
-                    points.add(mr.getPosition());
-                }
-            }
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().unlock();
-        }
-        Collections.shuffle(points);
-        mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().lock();
-        try {
-            for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-                MapleReactor mr = (MapleReactor) obj;
-                if (mr.getReactorId() >= first && mr.getReactorId() <= last) {
-                    mr.setPosition(points.remove(points.size() - 1));
-                }
-            }
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().unlock();
-        }
-    }
-
     /**
      * Automagically finds a new controller for the given monster from the chars
      * on the map...
@@ -791,21 +733,6 @@ public final class MapleMap extends TacosMap {
             } else {
                 newController.controlMonster(monster, false);
             }
-        }
-    }
-
-    public final MapleReactor getReactorByName(final String name) {
-        mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().lock();
-        try {
-            for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-                MapleReactor mr = ((MapleReactor) obj);
-                if (mr.getName().equalsIgnoreCase(name)) {
-                    return mr;
-                }
-            }
-            return null;
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().unlock();
         }
     }
 
@@ -1178,37 +1105,9 @@ public final class MapleMap extends TacosMap {
         activateItemReactors(mdrop, chr.getClient());
     }
 
-    public final void spawnRandDrop() {
-        if (mapid != 910000000 || channel != 1) {
-            return; //fm, ch1
-        }
-
-        mapobjectlocks.get(MapleMapObjectType.ITEM).readLock().lock();
-        try {
-            for (MapleMapObject o : mapobjects.get(MapleMapObjectType.ITEM).values()) {
-                if (((MapleMapItem) o).isRandDrop()) {
-                    return;
-                }
-            }
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.ITEM).readLock().unlock();
-        }
-        MapTimer.getInstance().schedule(new Runnable() {
-
-            public void run() {
-                final Point pos = new Point(Randomizer.nextInt(800) + 531, -806);
-                final int theItem = Randomizer.nextInt(1000);
-                int itemid = 0;
-                if (theItem < 950) { //0-949 = normal, 950-989 = rare, 990-999 = super
-                    itemid = GameConstants.normalDrops[Randomizer.nextInt(GameConstants.normalDrops.length)];
-                } else if (theItem < 990) {
-                    itemid = GameConstants.rareDrops[Randomizer.nextInt(GameConstants.rareDrops.length)];
-                } else {
-                    itemid = GameConstants.superDrops[Randomizer.nextInt(GameConstants.superDrops.length)];
-                }
-                spawnAutoDrop(itemid, pos);
-            }
-        }, 20000);
+    public void spawnRandDrop() {
+        // removed random code.
+        return;
     }
 
     public final void spawnAutoDrop(final int itemid, final Point pos) {
@@ -1247,31 +1146,6 @@ public final class MapleMap extends TacosMap {
         if (!everlast) {
             drop.registerExpire(120000);
             activateItemReactors(drop, owner.getClient());
-        }
-    }
-
-    private void activateItemReactors(final MapleMapItem drop, final MapleClient c) {
-        final IItem item = drop.getItem();
-
-        mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().lock();
-        try {
-            for (final MapleMapObject o : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-                final MapleReactor react = (MapleReactor) o;
-
-                if (react.getReactorType() == 100) {
-                    if (GameConstants.isCustomReactItem(react.getReactorId(), item.getItemId(), react.getReactItem().getLeft()) && react.getReactItem().getRight() == item.getQuantity()) {
-                        if (react.getArea().contains(drop.getPosition())) {
-                            if (!react.isTimerActive()) {
-                                MapTimer.getInstance().schedule(new ActivateItemReactor(drop, react, c), 5000);
-                                react.setTimerActive(true);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().unlock();
         }
     }
 
@@ -1827,84 +1701,6 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public final List<MapleMapObject> getMapObjectsInRange(final Point from, final double rangeSq) {
-        final List<MapleMapObject> ret = new ArrayList<MapleMapObject>();
-        for (MapleMapObjectType type : MapleMapObjectType.values()) {
-            mutex.lock();
-            try {
-                Iterator<MapleMapObject> itr = mapobjects.get(type).values().iterator();
-                while (itr.hasNext()) {
-                    MapleMapObject mmo = itr.next();
-                    if (from.distanceSq(mmo.getPosition()) <= rangeSq) {
-                        ret.add(mmo);
-                    }
-                }
-            } finally {
-                mutex.unlock();
-            }
-        }
-        return ret;
-    }
-
-    public final List<MapleMapObject> getMapObjectsInRange(final Point from, final double rangeSq, final List<MapleMapObjectType> MapObject_types) {
-        final List<MapleMapObject> ret = new ArrayList<MapleMapObject>();
-        for (MapleMapObjectType type : MapObject_types) {
-            mutex.lock();
-            try {
-                final Iterator<MapleMapObject> ltr = mapobjects.get(type).values().iterator();
-                MapleMapObject obj;
-                while (ltr.hasNext()) {
-                    obj = ltr.next();
-                    if (from.distanceSq(obj.getPosition()) <= rangeSq) {
-                        ret.add(obj);
-                    }
-                }
-            } finally {
-                mutex.unlock();
-            }
-        }
-        return ret;
-    }
-
-    public final List<MapleMapObject> getMapObjectsInRect(final Rectangle box, final List<MapleMapObjectType> MapObject_types) {
-        final List<MapleMapObject> ret = new ArrayList<MapleMapObject>();
-        for (MapleMapObjectType type : MapObject_types) {
-            mutex.lock();
-            try {
-                final Iterator<MapleMapObject> ltr = mapobjects.get(type).values().iterator();
-                MapleMapObject obj;
-                while (ltr.hasNext()) {
-                    obj = ltr.next();
-                    if (box.contains(obj.getPosition())) {
-                        ret.add(obj);
-                    }
-                }
-            } finally {
-                mutex.unlock();
-            }
-        }
-        return ret;
-    }
-
-    public final List<MapleCharacter> getPlayersInRectAndInList(final Rectangle box, final List<MapleCharacter> chrList) {
-        final List<MapleCharacter> character = new LinkedList<MapleCharacter>();
-
-        charactersLock.readLock().lock();
-        try {
-            final Iterator<MapleCharacter> ltr = characters.iterator();
-            MapleCharacter a;
-            while (ltr.hasNext()) {
-                a = ltr.next();
-                if (chrList.contains(a) && box.contains(a.getPosition())) {
-                    character.add(a);
-                }
-            }
-        } finally {
-            charactersLock.readLock().unlock();
-        }
-        return character;
-    }
-
     public final void loadMonsterRate(final boolean first) {
         final int spawnSize = monsterSpawn.size();
         maxRegularSpawn = Math.round(spawnSize * monsterRate);
@@ -2041,41 +1837,6 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public void spawnMerchant(MapleCharacter chr) {
-        for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
-            obj.sendSpawnData(chr.getClient());
-        }
-    }
-
-    public void spawnDynamicPortal(MapleCharacter chr) {
-        for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
-            ((MapleDynamicPortal) obj).sendSpawnPacket(chr.getClient());
-        }
-    }
-
-    public MapleDynamicPortal findDynamicPortal(int portal_id) {
-        for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
-            MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
-            if (dynamic_portal.getObjectId() == portal_id) {
-                return dynamic_portal;
-            }
-        }
-        return null;
-    }
-
-    public MapleDynamicPortal findDynamicPortalLink(int map_id_to) {
-        DebugLogger.InfoLog("findDynamicPortalLink map_id_to" + map_id_to);
-        for (MapleMapObject obj : mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
-            MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
-
-            DebugLogger.InfoLog("findDynamicPortalLink obj_to" + dynamic_portal.getMapID());
-            if (dynamic_portal.getMapID() == map_id_to) {
-                return dynamic_portal;
-            }
-        }
-        return null;
-    }
-
     public void moveMonster(MapleMonster monster, Point reportedPos) {
         monster.setPosition(reportedPos);
         mutex.lock();
@@ -2170,6 +1931,31 @@ public final class MapleMap extends TacosMap {
             } else {
                 reactor.setTimerActive(false);
             }
+        }
+    }
+
+    private void activateItemReactors(final MapleMapItem drop, final MapleClient c) {
+        final IItem item = drop.getItem();
+
+        mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().lock();
+        try {
+            for (final MapleMapObject o : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+                final MapleReactor react = (MapleReactor) o;
+
+                if (react.getReactorType() == 100) {
+                    if (GameConstants.isCustomReactItem(react.getReactorId(), item.getItemId(), react.getReactItem().getLeft()) && react.getReactItem().getRight() == item.getQuantity()) {
+                        if (react.getArea().contains(drop.getPosition())) {
+                            if (!react.isTimerActive()) {
+                                MapTimer.getInstance().schedule(new ActivateItemReactor(drop, react, c), 5000);
+                                react.setTimerActive(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } finally {
+            mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().unlock();
         }
     }
 

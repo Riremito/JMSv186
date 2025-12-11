@@ -18,12 +18,15 @@
  */
 package tacos.server.map;
 
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -36,6 +39,7 @@ import odin.server.MapleSquad;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.life.Spawns;
+import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMapEffect;
 import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
@@ -44,6 +48,7 @@ import odin.server.maps.MapleNodes;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleSummon;
 import odin.tools.Pair;
+import tacos.debug.DebugLogger;
 import tacos.server.ServerOdinGame;
 
 /**
@@ -260,6 +265,63 @@ public class TacosMap extends TacosMapData {
         this.mapobjects.get(obj.getType()).remove(obj.getObjectId());
     }
 
+    public List<MapleMapObject> getMapObjectsInRange(Point from, double rangeSq) {
+        List<MapleMapObject> ret = new ArrayList<>();
+        for (MapleMapObjectType type : MapleMapObjectType.values()) {
+            Iterator<MapleMapObject> itr = this.mapobjects.get(type).values().iterator();
+            while (itr.hasNext()) {
+                MapleMapObject mmo = itr.next();
+                if (from.distanceSq(mmo.getPosition()) <= rangeSq) {
+                    ret.add(mmo);
+                }
+            }
+        }
+        return ret;
+    }
+
+    public List<MapleMapObject> getMapObjectsInRange(Point from, double rangeSq, List<MapleMapObjectType> MapObject_types) {
+        List<MapleMapObject> ret = new ArrayList<>();
+        for (MapleMapObjectType type : MapObject_types) {
+            Iterator<MapleMapObject> ltr = this.mapobjects.get(type).values().iterator();
+            MapleMapObject obj;
+            while (ltr.hasNext()) {
+                obj = ltr.next();
+                if (from.distanceSq(obj.getPosition()) <= rangeSq) {
+                    ret.add(obj);
+                }
+            }
+        }
+        return ret;
+    }
+
+    public List<MapleMapObject> getMapObjectsInRect(Rectangle box, List<MapleMapObjectType> MapObject_types) {
+        List<MapleMapObject> ret = new ArrayList<>();
+        for (MapleMapObjectType type : MapObject_types) {
+            Iterator<MapleMapObject> ltr = this.mapobjects.get(type).values().iterator();
+            MapleMapObject obj;
+            while (ltr.hasNext()) {
+                obj = ltr.next();
+                if (box.contains(obj.getPosition())) {
+                    ret.add(obj);
+                }
+            }
+        }
+        return ret;
+    }
+
+    public List<MapleCharacter> getPlayersInRectAndInList(Rectangle box, List<MapleCharacter> chrList) {
+        List<MapleCharacter> character = new LinkedList<>();
+        Iterator<MapleCharacter> ltr = this.characters.iterator();
+        MapleCharacter a;
+        while (ltr.hasNext()) {
+            a = ltr.next();
+            if (chrList.contains(a) && box.contains(a.getPosition())) {
+                character.add(a);
+            }
+        }
+        return character;
+    }
+
     public MapleSummon getSummonByOid(int oid) {
         MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.SUMMON);
         if (mmo == null) {
@@ -360,6 +422,12 @@ public class TacosMap extends TacosMapData {
         return ret;
     }
 
+    public void spawnMerchant(MapleCharacter chr) {
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
+            obj.sendSpawnData(chr.getClient());
+        }
+    }
+
     public List<MapleMapItem> getAllItems() {
         ArrayList<MapleMapItem> ret = new ArrayList<>();
         for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
@@ -407,6 +475,81 @@ public class TacosMap extends TacosMapData {
             return null;
         }
         return (MapleReactor) mmo;
+    }
+
+    public MapleReactor getReactorByName(final String name) {
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+            MapleReactor mr = ((MapleReactor) obj);
+            if (mr.getName().equalsIgnoreCase(name)) {
+                return mr;
+            }
+        }
+        return null;
+    }
+
+    public void resetReactors() {
+        setReactorState((byte) 0);
+    }
+
+    // unused
+    public void setReactorState() {
+        setReactorState((byte) 1);
+    }
+
+    public void setReactorState(byte state) {
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+            ((MapleReactor) obj).forceHitReactor((byte) state);
+        }
+    }
+
+    public void shuffleReactors() {
+        shuffleReactors(0, 9999999); //all
+    }
+
+    public void shuffleReactors(int first, int last) {
+        List<Point> points = new ArrayList<>();
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+            MapleReactor mr = (MapleReactor) obj;
+            if (mr.getReactorId() >= first && mr.getReactorId() <= last) {
+                points.add(mr.getPosition());
+            }
+        }
+        Collections.shuffle(points);
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+            MapleReactor mr = (MapleReactor) obj;
+            if (mr.getReactorId() >= first && mr.getReactorId() <= last) {
+                mr.setPosition(points.remove(points.size() - 1));
+            }
+        }
+    }
+
+    public void spawnDynamicPortal(MapleCharacter chr) {
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+            ((MapleDynamicPortal) obj).sendSpawnPacket(chr.getClient());
+        }
+    }
+
+    public MapleDynamicPortal findDynamicPortal(int portal_id) {
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+            MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
+            if (dynamic_portal.getObjectId() == portal_id) {
+                return dynamic_portal;
+            }
+        }
+        return null;
+    }
+
+    public MapleDynamicPortal findDynamicPortalLink(int map_id_to) {
+        DebugLogger.InfoLog("findDynamicPortalLink map_id_to" + map_id_to);
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+            MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
+
+            DebugLogger.InfoLog("findDynamicPortalLink obj_to" + dynamic_portal.getMapID());
+            if (dynamic_portal.getMapID() == map_id_to) {
+                return dynamic_portal;
+            }
+        }
+        return null;
     }
 
     // unused
