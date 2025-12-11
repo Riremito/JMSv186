@@ -28,6 +28,22 @@ import odin.server.maps.MapleMapObjectType;
  */
 public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
+    private int viewRange = 1600;
+    private int viewRangeSq = 1600 * 1600;
+
+    public int getViewRange() {
+        return this.viewRange;
+    }
+
+    public void setViewRange(int viewRange) {
+        this.viewRange = viewRange;
+        this.viewRangeSq = viewRange * viewRange;
+    }
+
+    public int getViewRangeSq() {
+        return this.viewRangeSq;
+    }
+
     @Override
     public MapleMapObjectType getType() {
         return MapleMapObjectType.PLAYER;

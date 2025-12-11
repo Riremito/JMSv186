@@ -72,10 +72,6 @@ public class GameConstants {
         return 60 + (level * 5);
     }
 
-    public static int maxViewRangeSq() {
-        return 800000; // 800 * 800
-    }
-
     public static boolean isJobFamily(final int baseJob, final int currentJob) {
         return currentJob >= baseJob && currentJob / 100 == baseJob / 100;
     }

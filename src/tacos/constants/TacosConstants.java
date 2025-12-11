@@ -38,4 +38,8 @@ public class TacosConstants {
     // def
     public static final int DEFAULT_CHARSLOT = 6;
 
+    public static int maxViewRangeSq() {
+        return 1600 * 1600;
+    }
+
 }

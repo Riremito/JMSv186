@@ -95,6 +95,7 @@ import odin.server.Timer.MapTimer;
 import odin.server.events.MapleEvent;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import odin.tools.Pair;
+import tacos.constants.TacosConstants;
 import tacos.server.map.TacosMap;
 
 public final class MapleMap extends TacosMap {
@@ -144,7 +145,7 @@ public final class MapleMap extends TacosMap {
             while (itr.hasNext()) {
                 chr = itr.next();
                 if (condition == null || condition.canSpawn(chr)) {
-                    if (!chr.isClone() && chr.getPosition().distanceSq(mapobject.getPosition()) <= GameConstants.maxViewRangeSq()) {
+                    if (!chr.isClone() && chr.getPosition().distanceSq(mapobject.getPosition()) <= chr.getViewRangeSq()) {
                         packetbakery.sendPackets(chr.getClient());
                         chr.addVisibleMapObject(mapobject);
                     }
@@ -1653,15 +1654,15 @@ public final class MapleMap extends TacosMap {
         }, delay);
     }
 
-    public final void broadcastMessage(final MaplePacket packet, final Point rangedFrom) {
-        broadcastMessage(null, packet, GameConstants.maxViewRangeSq(), rangedFrom);
+    public void broadcastMessage(MaplePacket packet, Point rangedFrom) {
+        broadcastMessage(null, packet, TacosConstants.maxViewRangeSq(), rangedFrom);
     }
 
-    public final void broadcastMessage(final MapleCharacter source, final MaplePacket packet, final Point rangedFrom) {
-        broadcastMessage(source, packet, GameConstants.maxViewRangeSq(), rangedFrom);
+    public void broadcastMessage(MapleCharacter source, MaplePacket packet, Point rangedFrom) {
+        broadcastMessage(source, packet, TacosConstants.maxViewRangeSq(), rangedFrom);
     }
 
-    private void broadcastMessage(final MapleCharacter source, final MaplePacket packet, final double rangeSq, final Point rangedFrom) {
+    private void broadcastMessage(MapleCharacter source, MaplePacket packet, double rangeSq, Point rangedFrom) {
         mutex.lock();
         try {
             final Iterator<MapleCharacter> ltr = characters.iterator();
@@ -1683,21 +1684,21 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    private void sendObjectPlacement(final MapleCharacter c) {
-        if (c == null || c.isClone()) {
+    private void sendObjectPlacement(MapleCharacter chr) {
+        if (chr == null || chr.isClone()) {
             return;
         }
         for (final MapleMapObject o : this.getAllMonsters()) {
             updateMonsterController((MapleMonster) o);
         }
-        for (final MapleMapObject o : getMapObjectsInRange(c.getPosition(), GameConstants.maxViewRangeSq(), GameConstants.rangedMapobjectTypes)) {
+        for (final MapleMapObject o : getMapObjectsInRange(chr.getPosition(), chr.getViewRangeSq(), GameConstants.rangedMapobjectTypes)) {
             if (o.getType() == MapleMapObjectType.REACTOR) {
                 if (!((MapleReactor) o).isAlive()) {
                     continue;
                 }
             }
-            o.sendSpawnData(c.getClient());
-            c.addVisibleMapObject(o);
+            o.sendSpawnData(chr.getClient());
+            chr.addVisibleMapObject(o);
         }
     }
 
@@ -1825,12 +1826,12 @@ public final class MapleMap extends TacosMap {
 
         //Debug.DebugLog("CharXY = " + chr.getPosition());
         if (!chr.isMapObjectVisible(mo)) { // monster entered view range
-            if (mo.getType() == MapleMapObjectType.SUMMON || mo.getPosition().distanceSq(chr.getPosition()) <= GameConstants.maxViewRangeSq()) {
+            if (mo.getType() == MapleMapObjectType.SUMMON || mo.getPosition().distanceSq(chr.getPosition()) <= chr.getViewRangeSq()) {
                 chr.addVisibleMapObject(mo);
                 mo.sendSpawnData(chr.getClient());
             }
         } else { // monster left view range
-            if (mo.getType() != MapleMapObjectType.SUMMON && mo.getPosition().distanceSq(chr.getPosition()) > GameConstants.maxViewRangeSq()) {
+            if (mo.getType() != MapleMapObjectType.SUMMON && mo.getPosition().distanceSq(chr.getPosition()) > chr.getViewRangeSq()) {
                 chr.removeVisibleMapObject(mo);
                 mo.sendDestroyData(chr.getClient());
             }
@@ -1862,7 +1863,7 @@ public final class MapleMap extends TacosMap {
             }
         }
         // 表示可能範囲のNPC等を表示
-        for (MapleMapObject mo : getMapObjectsInRange(player.getPosition(), GameConstants.maxViewRangeSq())) {
+        for (MapleMapObject mo : getMapObjectsInRange(player.getPosition(), player.getViewRangeSq())) {
             if (!player.isMapObjectVisible(mo) && mo.getObjectId() != player.getObjectId()) {
                 mo.sendSpawnData(player.getClient());
                 player.addVisibleMapObject(mo);
