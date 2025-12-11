@@ -29,12 +29,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
 import java.util.Calendar;
-
 import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
@@ -58,9 +54,6 @@ import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.World;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.LinkedHashMap;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.EnterType;
@@ -101,8 +94,6 @@ import odin.server.MapleSquad;
 import odin.server.SpeedRunner;
 import odin.server.Timer.MapTimer;
 import odin.server.events.MapleEvent;
-import odin.server.maps.MapleNodes.MapleNodeInfo;
-import odin.server.maps.MapleNodes.MaplePlatform;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import odin.tools.Pair;
 import tacos.server.map.TacosMap;
@@ -114,27 +105,6 @@ public final class MapleMap extends TacosMap {
      * Please acquire the appropriate lock when reading and writing to the LinkedHashMaps.
      * The MapObjectType Maps themselves do not need to synchronized in any way since they should never be modified.
      */
-    private final List<MapleCharacter> characters = new ArrayList<MapleCharacter>();
-    private final ReentrantReadWriteLock charactersLock = new ReentrantReadWriteLock();
-    private int runningOid = 100000;
-    private final Lock runningOidLock = new ReentrantLock();
-    private final List<Spawns> monsterSpawn = new ArrayList<Spawns>();
-    private final AtomicInteger spawnedMonstersOnMap = new AtomicInteger(0);
-    private MapleMapEffect mapEffect;
-    private short createMobInterval = 9000;
-    private int consumeItemCoolTime = 0,
-            maxRegularSpawn = 0, fixedMob,
-            lvLimit = 0, permanentWeather = 0;
-    private boolean personalShop, everlast = false, dropsDisabled = false, gDropsDisabled = false,
-            soaring = false, squadTimer = false, isSpawns = true;
-    private String onUserEnter, onFirstUserEnter, speedRunLeader = "", squad = "";
-    private List<Integer> dced = new ArrayList<Integer>();
-    private ScheduledFuture<?> squadSchedule;
-    private long speedRunStart = 0, lastSpawnTime = 0;
-    private MapleNodes nodes;
-    private Map<String, Integer> environment = new LinkedHashMap<String, Integer>();
-    private final Lock mutex = new ReentrantLock();
-
     public MapleMap(int mapid, int channel, int returnMapId, float monsterRate) {
         super(mapid, channel, returnMapId, monsterRate);
     }
@@ -145,50 +115,6 @@ public final class MapleMap extends TacosMap {
 
     public final MapleMap getForcedReturnMap() {
         return ServerOdinGame.getInstance(channel).getMapFactory().getMap(forcedReturnMap);
-    }
-
-    public final void setSpawns(final boolean fm) {
-        this.isSpawns = fm;
-    }
-
-    public final void setFixedMob(int fm) {
-        this.fixedMob = fm;
-    }
-
-    public final void setSoaring(boolean b) {
-        this.soaring = b;
-    }
-
-    public final boolean canSoar() {
-        return soaring;
-    }
-
-    public final void setCreateMobInterval(final short createMobInterval) {
-        this.createMobInterval = createMobInterval;
-    }
-
-    public final void setFirstUserEnter(final String onFirstUserEnter) {
-        this.onFirstUserEnter = onFirstUserEnter;
-    }
-
-    public final void setUserEnter(final String onUserEnter) {
-        this.onUserEnter = onUserEnter;
-    }
-
-    public final boolean allowPersonalShop() {
-        return personalShop;
-    }
-
-    public final void setPersonalShop(final boolean personalShop) {
-        this.personalShop = personalShop;
-    }
-
-    public final void setEverlast(final boolean everlast) {
-        this.everlast = everlast;
-    }
-
-    public final boolean getEverlast() {
-        return everlast;
     }
 
     public final int getCurrentPartyId() {
@@ -278,7 +204,7 @@ public final class MapleMap extends TacosMap {
     }
 
     private int dropFromMonster(final MapleCharacter chr, final MapleMonster mob) {
-        if (mob == null || chr == null || ServerOdinGame.getInstance(channel) == null || dropsDisabled || mob.dropsDisabled() || chr.getPyramidSubway() != null) { //no drops in pyramid ok? no cash either
+        if (mob == null || chr == null || ServerOdinGame.getInstance(channel) == null || mob.dropsDisabled() || chr.getPyramidSubway() != null) { //no drops in pyramid ok? no cash either
             return -1;
         }
 
@@ -1779,9 +1705,6 @@ public final class MapleMap extends TacosMap {
             chr.dropMessage(5, "Use @joyce to collect your Item Of Appreciation once you're level 10! Use @help for commands. Good luck and have fun!");
 
         }
-        if (permanentWeather > 0) {
-            chr.getClient().getSession().write(ResCField.BlowWeather("", permanentWeather, false)); //snow, no msg
-        }
         if (getPlatforms().size() > 0) {
             chr.getClient().getSession().write(ResCField.getMovingPlatforms(this));
         }
@@ -1957,13 +1880,6 @@ public final class MapleMap extends TacosMap {
                 return null;
         }
         return ServerOdinGame.getInstance(channel).getMapleSquad(zz);
-    }
-
-    public final MapleSquad getSquadBegin() {
-        if (squad.length() > 0) {
-            return ServerOdinGame.getInstance(channel).getMapleSquad(squad);
-        }
-        return null;
     }
 
     public final EventManager getEMByMap() {
@@ -2554,24 +2470,6 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public void addDisconnected(int id) {
-        dced.add(Integer.valueOf(id));
-    }
-
-    public void resetDisconnected() {
-        dced.clear();
-    }
-
-    public void startSpeedRun(String leader) {
-        speedRunStart = System.currentTimeMillis();
-        speedRunLeader = leader;
-    }
-
-    public void endSpeedRun() {
-        speedRunStart = 0;
-        speedRunLeader = "";
-    }
-
     public void getRankAndAdd(String leader, String time, SpeedRunType type, long timz, Collection<String> squad) {
         try {
             //Pair<String, Map<Integer, String>>
@@ -2642,21 +2540,12 @@ public final class MapleMap extends TacosMap {
         removeDrops();
         resetNPCs();
         resetSpawns();
-        resetDisconnected();
         endSpeedRun();
         cancelSquadSchedule();
         resetPortals();
         environment.clear();
         if (respawn) {
             respawn(true);
-        }
-    }
-
-    public final void cancelSquadSchedule() {
-        squadTimer = false;
-        if (squadSchedule != null) {
-            squadSchedule.cancel(false);
-            squadSchedule = null;
         }
     }
 
@@ -2761,19 +2650,6 @@ public final class MapleMap extends TacosMap {
         return getCharactersSize() % 2 != 0;
     }
 
-    public void setSquad(String s) {
-        this.squad = s;
-
-    }
-
-    public int getConsumeItemCoolTime() {
-        return consumeItemCoolTime;
-    }
-
-    public void setConsumeItemCoolTime(int ciit) {
-        this.consumeItemCoolTime = ciit;
-    }
-
     public void checkStates(final String chr) {
         final MapleSquad sqd = getSquadByMap();
         final EventManager em = getEMByMap();
@@ -2808,57 +2684,4 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public void setNodes(final MapleNodes mn) {
-        this.nodes = mn;
-    }
-
-    public final List<MaplePlatform> getPlatforms() {
-        return nodes.getPlatforms();
-    }
-
-    public Collection<MapleNodeInfo> getNodes() {
-        return nodes.getNodes();
-    }
-
-    public MapleNodeInfo getNode(final int index) {
-        return nodes.getNode(index);
-    }
-
-    public final void changeEnvironment(final String ms, final int type) {
-        broadcastMessage(ResWrapper.environmentChange(ms, type));
-    }
-
-    public final void toggleEnvironment(final String ms) {
-        if (environment.containsKey(ms)) {
-            moveEnvironment(ms, environment.get(ms) == 1 ? 2 : 1);
-        } else {
-            moveEnvironment(ms, 1);
-        }
-    }
-
-    public final void moveEnvironment(final String ms, final int type) {
-        broadcastMessage(ResCField.environmentMove(ms, type));
-        environment.put(ms, type);
-    }
-
-    public final Map<String, Integer> getEnvironment() {
-        return environment;
-    }
-
-    public final List<Pair<Integer, Integer>> getMobsToSpawn() {
-        return nodes.getMobsToSpawn();
-    }
-
-    public final List<Integer> getSkillIds() {
-        return nodes.getSkillIds();
-    }
-
-    public final boolean canSpawn() {
-        // 即沸き
-        return lastSpawnTime == 0 || (lastSpawnTime > 0 && isSpawns && lastSpawnTime + createMobInterval < System.currentTimeMillis());
-    }
-
-    public List<Spawns> getMonsterSpawn() {
-        return monsterSpawn;
-    }
 }

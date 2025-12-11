@@ -6148,14 +6148,6 @@ public class MapleCharacter extends TacosCharacter {
                 this.getEventInstance().playerDisconnected(this, this.getId());
             }
             if (this.getMap() != null) {
-                switch (this.getMapId()) {
-                    case 541010100: //latanica
-                    case 541020800: //scar/targa
-                    case 551030200: //krexel
-                    case 220080001: //pap
-                        this.getMap().addDisconnected(this.getId());
-                        break;
-                }
                 this.getMap().removePlayer(this);
             }
 

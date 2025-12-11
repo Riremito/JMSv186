@@ -227,7 +227,7 @@ public class MapleMapFactory {
                 }
 
                 MasterMonster.addAreaBossSpawn(map);
-                map.setCreateMobInterval((short) MapleDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 9000));
+                map.setCreateMobInterval(MapleDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 9000));
                 map.loadMonsterRate(true);
                 map.setNodes(loadNodes(mapid, mapData));
 
@@ -379,7 +379,7 @@ public class MapleMapFactory {
             }
         }
         MasterMonster.addAreaBossSpawn(map);
-        map.setCreateMobInterval((short) MapleDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 9000));
+        map.setCreateMobInterval(MapleDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 9000));
         map.loadMonsterRate(true);
         map.setNodes(loadNodes(mapid, mapData));
 
