@@ -5012,7 +5012,7 @@ public class MapleCharacter extends TacosCharacter {
         if (movedMobs.containsKey(mobid)) {
             movedMobs.put(mobid, movedMobs.get(mobid) + 1);
             if (movedMobs.get(mobid) > 30) { //trying to move not null monster = broadcast dead
-                for (MapleCharacter chr : getMap().getCharactersThreadsafe()) { //also broadcast to others
+                for (MapleCharacter chr : getMap().getCharacters()) { //also broadcast to others
                     if (chr.getMoveMobs().containsKey(mobid)) { //they also tried to move this mob
                         chr.getClient().SendPacket(ResCMobPool.Kill(mobid, 1));
                         chr.getMoveMobs().remove(mobid);
@@ -5453,10 +5453,10 @@ public class MapleCharacter extends TacosCharacter {
 
     public void removeDoor() {
         final MapleDoor door = getDoors().iterator().next();
-        for (final MapleCharacter chr : door.getTarget().getCharactersThreadsafe()) {
+        for (final MapleCharacter chr : door.getTarget().getCharacters()) {
             door.sendDestroyData(chr.getClient());
         }
-        for (final MapleCharacter chr : door.getTown().getCharactersThreadsafe()) {
+        for (final MapleCharacter chr : door.getTown().getCharacters()) {
             door.sendDestroyData(chr.getClient());
         }
         for (final MapleDoor destroyDoor : getDoors()) {

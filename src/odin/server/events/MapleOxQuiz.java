@@ -92,7 +92,7 @@ public class MapleOxQuiz extends MapleEvent {
 
             public void run() {
                 int number = 0;
-                for (MapleCharacter mc : toSend.getCharactersThreadsafe()) {
+                for (MapleCharacter mc : toSend.getCharacters()) {
                     if (mc.isGM() || !mc.isAlive()) {
                         number++;
                     }
@@ -100,7 +100,7 @@ public class MapleOxQuiz extends MapleEvent {
                 if (toSend.getCharactersSize() - number <= 1 || timesAsked == 10) {
                     toSend.broadcastMessage(ResWrapper.BroadCastMsgNotice("The event has ended"));
                     unreset();
-                    for (MapleCharacter chr : toSend.getCharactersThreadsafe()) {
+                    for (MapleCharacter chr : toSend.getCharacters()) {
                         if (chr != null && !chr.isGM() && chr.isAlive()) {
                             chr.canTalk(true);
                             chr.finishAchievement(19);
@@ -123,7 +123,7 @@ public class MapleOxQuiz extends MapleEvent {
                     public void run() {
                         toSend.broadcastMessage(ResCField.showOXQuiz(question.getKey().left, question.getKey().right, false));
                         timesAsked++;
-                        for (MapleCharacter chr : toSend.getCharactersThreadsafe()) {
+                        for (MapleCharacter chr : toSend.getCharacters()) {
                             if (chr != null && !chr.isGM() && chr.isAlive()) { // make sure they aren't null... maybe something can happen in 12 seconds.
                                 if (!isCorrectAnswer(chr, question.getValue().getAnswer())) {
                                     chr.getStat().setHp((short) 0);

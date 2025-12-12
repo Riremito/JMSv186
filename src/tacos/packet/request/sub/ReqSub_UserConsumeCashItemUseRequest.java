@@ -133,7 +133,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
 
                 final int buff = miip.getStateChangeItem(cash_item_id);
                 if (buff != 0) {
-                    for (MapleCharacter mChar : map.getCharactersThreadsafe()) {
+                    for (MapleCharacter mChar : map.getCharacters()) {
                         miip.getItemEffect(buff).applyTo(mChar);
                     }
                 }

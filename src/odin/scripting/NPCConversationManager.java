@@ -623,7 +623,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public int partyMembersInMap() {
         int inMap = 0;
-        for (MapleCharacter char2 : getPlayer().getMap().getCharactersThreadsafe()) {
+        for (MapleCharacter char2 : getPlayer().getMap().getCharacters()) {
             if (char2.getParty() == getPlayer().getParty()) {
                 inMap++;
             }

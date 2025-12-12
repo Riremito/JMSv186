@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import odin.server.MaplePortal;
+import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleFootholdTree;
 
 /**
@@ -34,7 +35,7 @@ public class TacosMapData {
 
     protected int mapid;
     protected int returnMapId;
-    protected MapleFootholdTree footholds = null;
+    private MapleFootholdTree footholds = null;
     protected int fieldLimit;
     protected int timeLimit;
     protected int decHPInterval = 10000;
@@ -70,6 +71,32 @@ public class TacosMapData {
 
     public void setFootholds(MapleFootholdTree footholds) {
         this.footholds = footholds;
+    }
+
+    public Point calcPointBelow(Point initial) {
+        MapleFoothold fh_below = this.footholds.findBelow(initial);
+        if (fh_below == null) {
+            return null;
+        }
+        int dropY = fh_below.getY1();
+        if (!fh_below.isWall() && fh_below.getY1() != fh_below.getY2()) {
+            double s1 = Math.abs(fh_below.getY2() - fh_below.getY1());
+            double s2 = Math.abs(fh_below.getX2() - fh_below.getX1());
+            if (fh_below.getY2() < fh_below.getY1()) {
+                dropY = fh_below.getY1() - (int) (Math.cos(Math.atan(s2 / s1)) * (Math.abs(initial.x - fh_below.getX1()) / Math.cos(Math.atan(s1 / s2))));
+            } else {
+                dropY = fh_below.getY1() + (int) (Math.cos(Math.atan(s2 / s1)) * (Math.abs(initial.x - fh_below.getX1()) / Math.cos(Math.atan(s1 / s2))));
+            }
+        }
+        return new Point(initial.x, dropY);
+    }
+
+    public Point calcDropPos(Point initial, Point fallback) {
+        Point ret = calcPointBelow(new Point(initial.x, initial.y - 50));
+        if (ret == null) {
+            return fallback;
+        }
+        return ret;
     }
 
     public MaplePortal getPortal(String portalname) {

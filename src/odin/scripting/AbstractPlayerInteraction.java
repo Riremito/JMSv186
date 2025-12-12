@@ -168,7 +168,7 @@ public abstract class AbstractPlayerInteraction {
 
     public final void warpMap(final int mapid, final int portal) {
         final MapleMap map = getMap(mapid);
-        for (MapleCharacter chr : c.getPlayer().getMap().getCharactersThreadsafe()) {
+        for (MapleCharacter chr : c.getPlayer().getMap().getCharacters()) {
             chr.changeMap(map, map.getPortal(portal));
         }
     }
@@ -530,10 +530,6 @@ public abstract class AbstractPlayerInteraction {
 
     public final MapleParty getParty() {
         return c.getPlayer().getParty();
-    }
-
-    public final int getCurrentPartyId(int mapid) {
-        return getMap(mapid).getCurrentPartyId();
     }
 
     public final boolean isLeader() {

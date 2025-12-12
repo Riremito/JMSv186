@@ -203,7 +203,7 @@ public class MapleSnowball extends MapleEvent {
                             }
                             chr.getMap().broadcastMessage(ResWrapper.BroadCastMsgNotice("Congratulations! Team " + (team == 0 ? "Story" : "Maple") + " has won the Snowball Event!"));
 
-                            for (MapleCharacter chrz : chr.getMap().getCharactersThreadsafe()) {
+                            for (MapleCharacter chrz : chr.getMap().getCharacters()) {
                                 if ((team == 0 && chrz.getPosition().y > -80) || (team == 1 && chrz.getPosition().y <= -80)) { //winner
                                     sb.givePrize(chrz);
                                 }
@@ -241,7 +241,7 @@ public class MapleSnowball extends MapleEvent {
                                     oBall.broadcast(map, 5);
                                 }
                             }, 10000);
-                            for (MapleCharacter chrz : chr.getMap().getCharactersThreadsafe()) {
+                            for (MapleCharacter chrz : chr.getMap().getCharacters()) {
                                 if ((ball.getTeam() == 0 && chr.getPosition().y < -80) || (ball.getTeam() == 1 && chr.getPosition().y > -80)) {
                                     chrz.giveDebuff(MapleDisease.SEDUCE, SkillWz.getMobSkillData(128, 1)); //go left
                                 }

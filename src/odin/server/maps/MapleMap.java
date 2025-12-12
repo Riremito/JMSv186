@@ -84,7 +84,6 @@ import odin.server.life.SpawnPoint;
 import odin.server.life.SpawnPointAreaBoss;
 import odin.server.life.MonsterDropEntry;
 import odin.server.life.MapleMonsterInformationProvider;
-import odin.tools.FileoutputUtil;
 import odin.tools.StringUtil;
 import odin.scripting.EventManager;
 import odin.server.MapleCarnivalFactory;
@@ -116,23 +115,6 @@ public final class MapleMap extends TacosMap {
         return ServerOdinGame.getInstance(channel).getMapFactory().getMap(forcedReturnMap);
     }
 
-    public final int getCurrentPartyId() {
-        charactersLock.readLock().lock();
-        try {
-            final Iterator<MapleCharacter> ltr = characters.iterator();
-            MapleCharacter chr;
-            while (ltr.hasNext()) {
-                chr = ltr.next();
-                if (chr.getPartyId() != -1) {
-                    return chr.getPartyId();
-                }
-            }
-        } finally {
-            charactersLock.readLock().unlock();
-        }
-        return -1;
-    }
-
     private void spawnAndAddRangedMapObject(final MapleMapObject mapobject, final DelayedPacketCreation packetbakery, final SpawnCondition condition) {
         mutex.lock();
         try {
@@ -154,32 +136,6 @@ public final class MapleMap extends TacosMap {
             mutex.unlock();
 //            charactersLock.readLock().unlock();
         }
-    }
-
-    public final Point calcPointBelow(final Point initial) {
-        final MapleFoothold fh = footholds.findBelow(initial);
-        if (fh == null) {
-            return null;
-        }
-        int dropY = fh.getY1();
-        if (!fh.isWall() && fh.getY1() != fh.getY2()) {
-            final double s1 = Math.abs(fh.getY2() - fh.getY1());
-            final double s2 = Math.abs(fh.getX2() - fh.getX1());
-            if (fh.getY2() < fh.getY1()) {
-                dropY = fh.getY1() - (int) (Math.cos(Math.atan(s2 / s1)) * (Math.abs(initial.x - fh.getX1()) / Math.cos(Math.atan(s1 / s2))));
-            } else {
-                dropY = fh.getY1() + (int) (Math.cos(Math.atan(s2 / s1)) * (Math.abs(initial.x - fh.getX1()) / Math.cos(Math.atan(s1 / s2))));
-            }
-        }
-        return new Point(initial.x, dropY);
-    }
-
-    public final Point calcDropPos(final Point initial, final Point fallback) {
-        final Point ret = calcPointBelow(new Point(initial.x, initial.y - 50));
-        if (ret == null) {
-            return fallback;
-        }
-        return ret;
     }
 
     private int dropFromMonster(final MapleCharacter chr, final MapleMonster mob) {
@@ -405,10 +361,9 @@ public final class MapleMap extends TacosMap {
         if (mobid == 8810018) { // Horntail
             World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！").getBytes());
             if (mapid == 240060200) {
-                for (MapleCharacter c : getCharactersThreadsafe()) {
+                for (MapleCharacter c : getCharacters()) {
                     c.finishAchievement(16);
                 }
-                FileoutputUtil.log(FileoutputUtil.Horntail_Log, MapDebug_Log());
                 if (speedRunStart > 0) {
                     type = SpeedRunType.Horntail;
                 }
@@ -418,10 +373,9 @@ public final class MapleMap extends TacosMap {
             }
         } else if (mobid == 8810122 && mapid == 240060201) { // Horntail
             World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice("To the crew that have finally conquered Chaos Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!").getBytes());
-            for (MapleCharacter c : getCharactersThreadsafe()) {
+            for (MapleCharacter c : getCharacters()) {
                 c.finishAchievement(24);
             }
-            FileoutputUtil.log(FileoutputUtil.Horntail_Log, MapDebug_Log());
             if (speedRunStart > 0) {
                 type = SpeedRunType.ChaosHT;
             }
@@ -495,7 +449,7 @@ public final class MapleMap extends TacosMap {
         } else if (mobid == 8820001) {
             World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice("不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！").getBytes());
             if (mapid == 270050100) {
-                for (MapleCharacter c : getCharactersThreadsafe()) {
+                for (MapleCharacter c : getCharacters()) {
                     c.finishAchievement(17);
                 }
                 if (speedRunStart > 0) {
@@ -504,14 +458,12 @@ public final class MapleMap extends TacosMap {
                 if (sqd != null) {
                     doShrine(true);
                 }
-                FileoutputUtil.log(FileoutputUtil.Pinkbean_Log, MapDebug_Log());
             }
         } else if (mobid == 8800002) {
             if (mapid == 280030000) {
-                for (MapleCharacter c : getCharactersThreadsafe()) {
+                for (MapleCharacter c : getCharacters()) {
                     c.finishAchievement(15);
                 }
-                FileoutputUtil.log(FileoutputUtil.Zakum_Log, MapDebug_Log());
                 if (speedRunStart > 0) {
                     type = SpeedRunType.Zakum;
                 }
@@ -520,10 +472,9 @@ public final class MapleMap extends TacosMap {
                 }
             }
         } else if (mobid == 8800102 && mapid == 280030001) {
-            for (MapleCharacter c : getCharactersThreadsafe()) {
+            for (MapleCharacter c : getCharacters()) {
                 c.finishAchievement(23);
             }
-            FileoutputUtil.log(FileoutputUtil.Zakum_Log, MapDebug_Log());
             if (speedRunStart > 0) {
                 type = SpeedRunType.Chaos_Zakum;
             }
@@ -631,24 +582,6 @@ public final class MapleMap extends TacosMap {
                 break;
             }
         }
-    }
-
-    private String MapDebug_Log() {
-        final StringBuilder sb = new StringBuilder("Defeat time : ");
-        sb.append(FileoutputUtil.CurrentReadable_Time());
-
-        sb.append(" | Mapid : ").append(this.mapid);
-
-        charactersLock.readLock().lock();
-        try {
-            sb.append(" Users [").append(characters.size()).append("] | ");
-            for (MapleCharacter mc : characters) {
-                sb.append(mc.getName()).append(", ");
-            }
-        } finally {
-            charactersLock.readLock().unlock();
-        }
-        return sb.toString();
     }
 
     public final void destroyReactor(final int oid) {
@@ -1427,7 +1360,7 @@ public final class MapleMap extends TacosMap {
                                 } else {
                                     packet = ResCField.showHorntailShrine(spawned, 0); //chaoshorntail message is weird
                                 }
-                                for (MapleCharacter chr : MapleMap.this.getCharactersThreadsafe()) { //warp all in map
+                                for (MapleCharacter chr : MapleMap.this.getCharacters()) { //warp all in map
                                     chr.getClient().getSession().write(packet);
                                     chr.changeMap(returnMapz, returnMapz.getPortal(0)); //hopefully event will still take care of everything once warp out
                                 }
@@ -1454,7 +1387,7 @@ public final class MapleMap extends TacosMap {
                             } else {
                                 packet = ResCField.showHorntailShrine(spawned, 0); //chaoshorntail message is weird
                             }
-                            for (MapleCharacter chr : MapleMap.this.getCharactersThreadsafe()) { //warp all in map
+                            for (MapleCharacter chr : MapleMap.this.getCharacters()) { //warp all in map
                                 chr.getClient().getSession().write(packet);
                                 chr.changeMap(returnMapz, returnMapz.getPortal(0)); //hopefully event will still take care of everything once warp out
                             }
@@ -1645,39 +1578,6 @@ public final class MapleMap extends TacosMap {
         }, delay);
     }
 
-    // self and other players in range.
-    public void broadcastMessage(MaplePacket packet, Point rangedFrom) {
-        broadcastMessageInternal(null, packet, rangedFrom, false);
-    }
-
-    // other players in range.
-    public void broadcastMessageTo(MapleCharacter source, MaplePacket packet, Point rangedFrom) {
-        broadcastMessageInternal(source, packet, rangedFrom, false);
-    }
-
-    // self and other players.
-    public void broadcastMessage(MaplePacket packet) {
-        broadcastMessageInternal(null, packet, null, true);
-    }
-
-    // self and other players, or other players.
-    public void broadcastMessage(MapleCharacter source, MaplePacket packet, boolean repeatToSource) {
-        broadcastMessageInternal(repeatToSource ? null : source, packet, source.getPosition(), true);
-    }
-
-    private void broadcastMessageInternal(MapleCharacter source, MaplePacket packet, Point rangedFrom, boolean ignoreRange) {
-        Iterator<MapleCharacter> ltr = characters.iterator();
-        MapleCharacter chr;
-        while (ltr.hasNext()) {
-            chr = ltr.next();
-            if (chr != source) {
-                if (ignoreRange || rangedFrom.distanceSq(chr.getPosition()) <= chr.getViewRangeSq()) {
-                    chr.SendPacket(packet);
-                }
-            }
-        }
-    }
-
     private void sendObjectPlacement(MapleCharacter chr) {
         if (chr == null || chr.isClone()) {
             return;
@@ -1785,34 +1685,6 @@ public final class MapleMap extends TacosMap {
         monsterSpawn.add(new SpawnPointAreaBoss(monster, pos1, pos2, pos3, mobTime, msg));
     }
 
-    public final List<MapleCharacter> getCharactersThreadsafe() {
-        final List<MapleCharacter> chars = new ArrayList<MapleCharacter>();
-
-        charactersLock.readLock().lock();
-        try {
-            for (MapleCharacter mc : characters) {
-                chars.add(mc);
-            }
-        } finally {
-            charactersLock.readLock().unlock();
-        }
-        return chars;
-    }
-
-    public final MapleCharacter getCharacterById(final int id) {
-        charactersLock.readLock().lock();
-        try {
-            for (MapleCharacter mc : characters) {
-                if (mc.getId() == id) {
-                    return mc;
-                }
-            }
-        } finally {
-            charactersLock.readLock().unlock();
-        }
-        return null;
-    }
-
     public final void updateMapObjectVisibility(final MapleCharacter chr, final MapleMapObject mo) {
         if (chr == null || chr.isClone()) {
             return;
@@ -1863,28 +1735,6 @@ public final class MapleMap extends TacosMap {
                 player.addVisibleMapObject(mo);
             }
         }
-    }
-
-    public int characterSize() {
-        return characters.size();
-    }
-
-    public final int getCharactersSize() {
-        int ret = 0;
-        charactersLock.readLock().lock();
-        try {
-            final Iterator<MapleCharacter> ltr = characters.iterator();
-            MapleCharacter chr;
-            while (ltr.hasNext()) {
-                chr = ltr.next();
-                if (!chr.isClone()) {
-                    ret++;
-                }
-            }
-        } finally {
-            charactersLock.readLock().unlock();
-        }
-        return ret;
     }
 
     public int getSpawnedMonstersOnMap() {
@@ -2003,7 +1853,7 @@ public final class MapleMap extends TacosMap {
 
     public String getSnowballPortal() {
         int[] teamss = new int[2];
-        for (MapleCharacter chr : getCharactersThreadsafe()) {
+        for (MapleCharacter chr : getCharacters()) {
             if (chr.getPosition().y > -80) {
                 teamss[0]++;
             } else {

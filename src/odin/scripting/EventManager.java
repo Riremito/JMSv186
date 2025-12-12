@@ -299,7 +299,7 @@ public class EventManager {
     public void warpAllPlayer(int from, int to) {
         final MapleMap tomap = getMapFactory().getMap(to);
         final MapleMap frommap = getMapFactory().getMap(from);
-        List<MapleCharacter> list = frommap.getCharactersThreadsafe();
+        List<MapleCharacter> list = frommap.getCharacters();
         if (tomap != null && frommap != null && list != null && frommap.getCharactersSize() > 0) {
             for (MapleMapObject mmo : list) {
                 ((MapleCharacter) mmo).changeMap(tomap, tomap.getPortal(0));

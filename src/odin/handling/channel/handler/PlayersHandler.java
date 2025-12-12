@@ -121,7 +121,7 @@ public class PlayersHandler {
         }
         switch (itemId) {
             case 2212000:
-                for (final MapleCharacter search_chr : c.getPlayer().getMap().getCharactersThreadsafe()) {
+                for (final MapleCharacter search_chr : c.getPlayer().getMap().getCharacters()) {
                     if (search_chr.getName().toLowerCase().equals(target)) {
                         MapleItemInformationProvider.getInstance().getItemEffect(2210023).applyTo(search_chr);
                         search_chr.dropMessage(6, chr.getName() + " has played a prank on you!");

@@ -1002,14 +1002,14 @@ public class MapleStatEffect implements Serializable {
         } else if (cp != 0 && applyto.getCarnivalParty() != null) {
             applyto.getCarnivalParty().addCP(applyto, cp);
             applyto.CPUpdate(false, applyto.getAvailableCP(), applyto.getTotalCP(), 0);
-            for (MapleCharacter chr : applyto.getMap().getCharactersThreadsafe()) {
+            for (MapleCharacter chr : applyto.getMap().getCharacters()) {
                 chr.CPUpdate(true, applyto.getCarnivalParty().getAvailableCP(), applyto.getCarnivalParty().getTotalCP(), applyto.getCarnivalParty().getTeam());
             }
         } else if (nuffSkill != 0 && applyto.getParty() != null) {
             final MCSkill skil = MapleCarnivalFactory.getInstance().getSkill(nuffSkill);
             if (skil != null) {
                 final MapleDisease dis = skil.getDisease();
-                for (MapleCharacter chr : applyto.getMap().getCharactersThreadsafe()) {
+                for (MapleCharacter chr : applyto.getMap().getCharacters()) {
                     if (chr.getParty() == null || (chr.getParty().getId() != applyto.getParty().getId())) {
                         if (skil.targetsAll || Randomizer.nextBoolean()) {
                             if (dis == null) {
@@ -1121,14 +1121,14 @@ public class MapleStatEffect implements Serializable {
         if (isSoulStone()) {
             if (applyfrom.getParty() != null) {
                 int membrs = 0;
-                for (MapleCharacter chr : applyfrom.getMap().getCharactersThreadsafe()) {
+                for (MapleCharacter chr : applyfrom.getMap().getCharacters()) {
                     if (chr.getParty() != null && chr.getParty().equals(applyfrom.getParty()) && chr.isAlive()) {
                         membrs++;
                     }
                 }
                 List<MapleCharacter> awarded = new ArrayList<MapleCharacter>();
                 while (awarded.size() < Math.min(membrs, y)) {
-                    for (MapleCharacter chr : applyfrom.getMap().getCharactersThreadsafe()) {
+                    for (MapleCharacter chr : applyfrom.getMap().getCharacters()) {
                         if (chr.isAlive() && chr.getParty().equals(applyfrom.getParty()) && !awarded.contains(chr) && Randomizer.nextInt(y) == 0) {
                             awarded.add(chr);
                         }

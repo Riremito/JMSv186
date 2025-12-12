@@ -49,6 +49,7 @@ import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleSummon;
 import odin.tools.Pair;
 import tacos.debug.DebugLogger;
+import tacos.network.MaplePacket;
 import tacos.server.ServerOdinGame;
 
 /**
@@ -322,6 +323,40 @@ public class TacosMap extends TacosMapData {
         return character;
     }
 
+    public List<MapleCharacter> getCharacters() {
+        List<MapleCharacter> chars = new ArrayList<>();
+        for (MapleCharacter mc : this.characters) {
+            chars.add(mc);
+        }
+        return chars;
+    }
+
+    public MapleCharacter getCharacterById(int id) {
+        for (MapleCharacter mc : this.characters) {
+            if (mc.getId() == id) {
+                return mc;
+            }
+        }
+        return null;
+    }
+
+    public int characterSize() {
+        return this.characters.size();
+    }
+
+    public int getCharactersSize() {
+        int ret = 0;
+        final Iterator<MapleCharacter> ltr = characters.iterator();
+        MapleCharacter chr;
+        while (ltr.hasNext()) {
+            chr = ltr.next();
+            if (!chr.isClone()) {
+                ret++;
+            }
+        }
+        return ret;
+    }
+
     public void spawnPlayers(MapleCharacter chr) {
         for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.PLAYER).values()) {
             ((MapleCharacter) obj).sendSpawnData(chr.getClient());
@@ -556,6 +591,39 @@ public class TacosMap extends TacosMapData {
             }
         }
         return null;
+    }
+
+    // self and other players in range.
+    public void broadcastMessage(MaplePacket packet, Point rangedFrom) {
+        broadcastMessageInternal(null, packet, rangedFrom, false);
+    }
+
+    // other players in range.
+    public void broadcastMessageTo(MapleCharacter source, MaplePacket packet, Point rangedFrom) {
+        broadcastMessageInternal(source, packet, rangedFrom, false);
+    }
+
+    // self and other players.
+    public void broadcastMessage(MaplePacket packet) {
+        broadcastMessageInternal(null, packet, null, true);
+    }
+
+    // self and other players, or other players.
+    public void broadcastMessage(MapleCharacter source, MaplePacket packet, boolean repeatToSource) {
+        broadcastMessageInternal(repeatToSource ? null : source, packet, source.getPosition(), true);
+    }
+
+    private void broadcastMessageInternal(MapleCharacter source, MaplePacket packet, Point rangedFrom, boolean ignoreRange) {
+        Iterator<MapleCharacter> ltr = characters.iterator();
+        MapleCharacter chr;
+        while (ltr.hasNext()) {
+            chr = ltr.next();
+            if (chr != source) {
+                if (ignoreRange || rangedFrom.distanceSq(chr.getPosition()) <= chr.getViewRangeSq()) {
+                    chr.SendPacket(packet);
+                }
+            }
+        }
     }
 
     // unused

@@ -1344,7 +1344,7 @@ public class World {
                 map.respawn(false);
             }
             boolean hurt = map.canHurt();
-            for (MapleCharacter chr : map.getCharactersThreadsafe()) {
+            for (MapleCharacter chr : map.getCharacters()) {
                 handleCooldowns(chr, numTimes, hurt);
             }
         }
