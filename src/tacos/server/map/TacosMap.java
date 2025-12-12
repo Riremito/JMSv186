@@ -259,7 +259,36 @@ public class TacosMap extends TacosMapData {
         this.runningOid++;
         mapobject.setObjectId(this.runningOid);
         this.mapobjects.get(mapobject.getType()).put(this.runningOid, mapobject);
+    }
 
+    public void spawnRangedMapObject(MapleMapObject mapobject, MaplePacket packet) {
+        for (MapleCharacter player : this.characters) {
+            if (player.isClone()) {
+                continue;
+            }
+            if (player.getViewRangeSq() < player.getPosition().distanceSq(mapobject.getPosition())) {
+                continue;
+            }
+            // visible object
+            player.addVisibleMapObject(mapobject);
+            // send spawn packet
+            if (packet == null) {
+                continue;
+            }
+            if (mapobject.getType() == MapleMapObjectType.SUMMON) {
+                MapleSummon summon = (MapleSummon) mapobject;
+                if (summon.isChangedMap() && summon.getOwnerId() != player.getId()) {
+                    continue;
+                }
+            }
+            if (mapobject.getType() == MapleMapObjectType.ITEM) {
+                MapleMapItem mitem = (MapleMapItem) mapobject;
+                if (0 < mitem.getQuest() && player.getQuestStatus(mitem.getQuest()) != 1) {
+                    continue;
+                }
+            }
+            player.SendPacket(packet);
+        }
     }
 
     public void removeMapObject(MapleMapObject obj) {

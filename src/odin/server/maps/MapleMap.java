@@ -49,7 +49,6 @@ import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.server.ServerOdinGame;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.World;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -71,7 +70,6 @@ import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.Randomizer;
@@ -113,29 +111,6 @@ public final class MapleMap extends TacosMap {
 
     public final MapleMap getForcedReturnMap() {
         return ServerOdinGame.getInstance(channel).getMapFactory().getMap(forcedReturnMap);
-    }
-
-    private void spawnAndAddRangedMapObject(final MapleMapObject mapobject, final DelayedPacketCreation packetbakery, final SpawnCondition condition) {
-        mutex.lock();
-        try {
-            runningOid++;
-            mapobject.setObjectId(runningOid);
-            mapobjects.get(mapobject.getType()).put(runningOid, mapobject);
-            final Iterator<MapleCharacter> itr = characters.iterator();
-            MapleCharacter chr;
-            while (itr.hasNext()) {
-                chr = itr.next();
-                if (condition == null || condition.canSpawn(chr)) {
-                    if (!chr.isClone() && chr.getPosition().distanceSq(mapobject.getPosition()) <= chr.getViewRangeSq()) {
-                        packetbakery.sendPackets(chr.getClient());
-                        chr.addVisibleMapObject(mapobject);
-                    }
-                }
-            }
-        } finally {
-            mutex.unlock();
-//            charactersLock.readLock().unlock();
-        }
     }
 
     private int dropFromMonster(final MapleCharacter chr, final MapleMonster mob) {
@@ -781,83 +756,48 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public final void spawnRevives(final MapleMonster monster, final int oid) {
+    public void spawnRevives(MapleMonster monster, int oid) {
         monster.setMap(this);
         checkRemoveAfter(monster);
         monster.setLinkOid(oid);
-        spawnAndAddRangedMapObject(monster, new DelayedPacketCreation() {
-            @Override
-            public final void sendPackets(MapleClient c) {
-                c.SendPacket(ResCMobPool.Spawn(monster, -3, 0, oid)); // TODO effect
-            }
-        }, null);
+        addMapObject(monster);
+        spawnRangedMapObject(monster, ResCMobPool.Spawn(monster, -3, 0, oid));
         updateMonsterController(monster);
-
         spawnedMonstersOnMap.incrementAndGet();
     }
 
-    public final void spawnMonster(final MapleMonster monster, final int spawnType) {
+    public void spawnMonster(MapleMonster monster, int spawnType) {
         monster.setMap(this);
         checkRemoveAfter(monster);
-
-        spawnAndAddRangedMapObject(monster, new DelayedPacketCreation() {
-
-            public final void sendPackets(MapleClient c) {
-                c.SendPacket(ResCMobPool.Spawn(monster, spawnType, 0, 0));
-            }
-        }, null);
+        addMapObject(monster);
+        spawnRangedMapObject(monster, ResCMobPool.Spawn(monster, spawnType, 0, 0));
         updateMonsterController(monster);
-
         spawnedMonstersOnMap.incrementAndGet();
     }
 
-    public final int spawnMonsterWithEffect(final MapleMonster monster, final int effect, Point pos) {
-        try {
-            monster.setMap(this);
-            monster.setPosition(pos);
-
-            spawnAndAddRangedMapObject(monster, new DelayedPacketCreation() {
-
-                @Override
-                public final void sendPackets(MapleClient c) {
-                    c.SendPacket(ResCMobPool.Spawn(monster, -2, effect, 0));
-                }
-            }, null);
-            updateMonsterController(monster);
-
-            spawnedMonstersOnMap.incrementAndGet();
-            return monster.getObjectId();
-        } catch (Exception e) {
-            return -1;
-        }
+    public int spawnMonsterWithEffect(MapleMonster monster, int effect, Point pos) {
+        monster.setMap(this);
+        monster.setPosition(pos);
+        addMapObject(monster);
+        spawnRangedMapObject(monster, ResCMobPool.Spawn(monster, -2, effect, 0));
+        updateMonsterController(monster);
+        spawnedMonstersOnMap.incrementAndGet();
+        return monster.getObjectId();
     }
 
-    public final void spawnFakeMonster(final MapleMonster monster) {
+    public void spawnFakeMonster(MapleMonster monster) {
         monster.setMap(this);
         monster.setFake(true);
-
-        spawnAndAddRangedMapObject(monster, new DelayedPacketCreation() {
-
-            @Override
-            public final void sendPackets(MapleClient c) {
-                c.SendPacket(ResCMobPool.Spawn(monster, -4, 0, 0));
-            }
-        }, null);
+        addMapObject(monster);
+        spawnRangedMapObject(monster, ResCMobPool.Spawn(monster, -4, 0, 0));
         updateMonsterController(monster);
-
         spawnedMonstersOnMap.incrementAndGet();
     }
 
-    public final void spawnReactor(final MapleReactor reactor) {
+    public void spawnReactor(MapleReactor reactor) {
         reactor.setMap(this);
-
-        spawnAndAddRangedMapObject(reactor, new DelayedPacketCreation() {
-
-            @Override
-            public final void sendPackets(MapleClient c) {
-                c.SendPacket(ResCReactorPool.Spawn(reactor));
-            }
-        }, null);
+        addMapObject(reactor);
+        spawnRangedMapObject(reactor, ResCReactorPool.Spawn(reactor));
     }
 
     private void respawnReactor(final MapleReactor reactor) {
@@ -866,66 +806,31 @@ public final class MapleMap extends TacosMap {
         spawnReactor(reactor);
     }
 
-    public final void spawnDoor(final MapleDoor door) {
+    public void spawnDoor(final MapleDoor door) {
         DebugLogger.DebugLog("Spawn Door : " + door.getMapId());
-        spawnAndAddRangedMapObject(door, new DelayedPacketCreation() {
-
-            public final void sendPackets(MapleClient c) {
-                //c.getSession().write(MysticDoorResponse.spawnDoor(door.getOwner().getId(), door.getPosition(), false));
-                if (door.getOwner().getParty() != null && (door.getOwner() == c.getPlayer() || door.getOwner().getParty().containsMembers(new MaplePartyCharacter(c.getPlayer())))) {
-                    //c.getSession().write(PartyResponse.partyPortal(door.getTown().getId(), door.getTarget().getId(), door.getSkill(), door.getTargetPosition()));
-                }
-                //c.getSession().write(MysticDoorResponse.setMysticDoorInfo(door));
-                c.getSession().write(WrapCWvsContext.updateStat());
-            }
-        }, new SpawnCondition() {
-
-            public final boolean canSpawn(final MapleCharacter chr) {
-                return door.getTarget().getId() == chr.getMapId() || door.getOwnerId() == chr.getId() || (door.getOwner() != null && door.getOwner().getParty() != null && door.getOwner().getParty().getMemberById(chr.getId()) != null);
-            }
-        });
+        addMapObject(door);
+        spawnRangedMapObject(door, null);
     }
 
-    public final void spawnDynamicPortal(MapleDynamicPortal dynamic_portal) {
-        spawnAndAddRangedMapObject(dynamic_portal, new DelayedPacketCreation() {
-            @Override
-            public final void sendPackets(MapleClient c) {
-                c.SendPacket(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
-            }
-        }, null);
+    public void spawnDynamicPortal(MapleDynamicPortal dynamic_portal) {
+        addMapObject(dynamic_portal);
+        spawnRangedMapObject(dynamic_portal, Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
     }
 
-    public final void spawnSummon(final MapleSummon summon) {
+    public void spawnSummon(MapleSummon summon) {
         summon.updateMap(this);
-        spawnAndAddRangedMapObject(summon, new DelayedPacketCreation() {
-
-            @Override
-            public void sendPackets(MapleClient c) {
-                if (!summon.isChangedMap() || summon.getOwnerId() == c.getPlayer().getId()) {
-                    c.getSession().write(ResCSummonedPool.spawnSummon(summon, true));
-                }
-            }
-        }, null);
+        addMapObject(summon);
+        spawnRangedMapObject(summon, ResCSummonedPool.spawnSummon(summon, true));
     }
 
-    public final void spawnDragon(final MapleDragon summon) {
-        spawnAndAddRangedMapObject(summon, new DelayedPacketCreation() {
-
-            @Override
-            public void sendPackets(MapleClient c) {
-                c.getSession().write(ResCUser_Dragon.spawnDragon(summon));
-            }
-        }, null);
+    public void spawnDragon(MapleDragon dragon) {
+        addMapObject(dragon);
+        spawnRangedMapObject(dragon, ResCUser_Dragon.spawnDragon(dragon));
     }
 
-    public final void spawnMist(final MapleMist mist, final int duration, boolean fake) {
-        spawnAndAddRangedMapObject(mist, new DelayedPacketCreation() {
-
-            @Override
-            public void sendPackets(MapleClient c) {
-                mist.sendSpawnData(c);
-            }
-        }, null);
+    public void spawnMist(MapleMist mist, int duration, boolean fake) {
+        addMapObject(mist);
+        spawnRangedMapObject(mist, ResCAffectedAreaPool.spawnMist(mist));
 
         final MapTimer tMan = MapTimer.getInstance();
         final ScheduledFuture<?> poisonSchedule;
@@ -982,17 +887,12 @@ public final class MapleMap extends TacosMap {
         broadcastMessage(ResCDropPool.DropEnterField(drop, EnterType.SPAWN, droppos, dropper.getPosition()), drop.getPosition());
     }
 
-    public final void spawnMesoDrop(final int meso, final Point position, final MapleMapObject dropper, final MapleCharacter owner, final boolean playerDrop, final byte droptype) {
-        final Point droppos = calcDropPos(position, position);
-        final MapleMapItem mdrop = new MapleMapItem(meso, droppos, dropper, owner, droptype, playerDrop);
+    public void spawnMesoDrop(int meso, Point position, MapleMapObject dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
+        Point droppos = calcDropPos(position, position);
+        MapleMapItem mdrop = new MapleMapItem(meso, droppos, dropper, owner, droptype, playerDrop);
+        addMapObject(mdrop);
+        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, EnterType.ANIMATION, droppos, dropper.getPosition()));
 
-        spawnAndAddRangedMapObject(mdrop, new DelayedPacketCreation() {
-
-            @Override
-            public void sendPackets(MapleClient c) {
-                c.SendPacket(ResCDropPool.DropEnterField(mdrop, EnterType.ANIMATION, droppos, dropper.getPosition()));
-            }
-        }, null);
         if (!everlast) {
             mdrop.registerExpire(120000);
             if (droptype == 0 || droptype == 1) {
@@ -1001,36 +901,20 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public final void spawnMobMesoDrop(final int meso, final Point position, final MapleMapObject dropper, final MapleCharacter owner, final boolean playerDrop, final byte droptype) {
-        final MapleMapItem mdrop = new MapleMapItem(meso, position, dropper, owner, droptype, playerDrop);
-
-        spawnAndAddRangedMapObject(mdrop, new DelayedPacketCreation() {
-
-            @Override
-            public void sendPackets(MapleClient c) {
-                c.SendPacket(ResCDropPool.DropEnterField(mdrop, EnterType.ANIMATION, position, dropper.getPosition()));
-            }
-        }, null);
-
+    public void spawnMobMesoDrop(int meso, Point position, MapleMapObject dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
+        MapleMapItem mdrop = new MapleMapItem(meso, position, dropper, owner, droptype, playerDrop);
+        addMapObject(mdrop);
+        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, EnterType.ANIMATION, position, dropper.getPosition()));
         mdrop.registerExpire(120000);
         if (droptype == 0 || droptype == 1) {
             mdrop.registerFFA(30000);
         }
     }
 
-    public final void spawnMobDrop(final IItem idrop, final Point dropPos, final MapleMonster mob, final MapleCharacter chr, final byte droptype, final short questid) {
-        final MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, mob, chr, droptype, false, questid);
-
-        spawnAndAddRangedMapObject(mdrop, new DelayedPacketCreation() {
-
-            @Override
-            public void sendPackets(MapleClient c) {
-                if (questid <= 0 || c.getPlayer().getQuestStatus(questid) == 1) {
-                    c.SendPacket(ResCDropPool.DropEnterField(mdrop, EnterType.ANIMATION, dropPos, mob.getPosition(), mob.getObjectId()));
-                }
-            }
-        }, null);
-
+    public void spawnMobDrop(IItem idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short questid) {
+        MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, mob, chr, droptype, false, questid);
+        addMapObject(mdrop);
+        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, EnterType.ANIMATION, dropPos, mob.getPosition(), mob.getObjectId()));
         mdrop.registerExpire(120000);
         if (droptype == 0 || droptype == 1) {
             mdrop.registerFFA(30000);
@@ -1043,39 +927,27 @@ public final class MapleMap extends TacosMap {
         return;
     }
 
-    public final void spawnAutoDrop(final int itemid, final Point pos) {
+    public void spawnAutoDrop(int itemid, Point pos) {
         IItem idrop = null;
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) {
             idrop = ii.randomizeStats((Equip) ii.getEquipById(itemid));
         } else {
             idrop = new Item(itemid, (byte) 0, (short) 1, (byte) 0);
         }
-        final MapleMapItem mdrop = new MapleMapItem(pos, idrop);
-        spawnAndAddRangedMapObject(mdrop, new DelayedPacketCreation() {
-
-            @Override
-            public void sendPackets(MapleClient c) {
-                c.SendPacket(ResCDropPool.DropEnterField(mdrop, EnterType.ANIMATION, pos, pos));
-            }
-        }, null);
+        MapleMapItem mdrop = new MapleMapItem(pos, idrop);
+        addMapObject(mdrop);
+        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, EnterType.ANIMATION, pos, pos));
         broadcastMessage(ResCDropPool.DropEnterField(mdrop, EnterType.PICK_UP_ENABLED, pos, pos));
         mdrop.registerExpire(120000);
     }
 
-    public final void spawnItemDrop(final MapleMapObject dropper, final MapleCharacter owner, final IItem item, Point pos, final boolean ffaDrop, final boolean playerDrop) {
-        final Point droppos = calcDropPos(pos, pos);
-        final MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) 2, playerDrop);
-
-        spawnAndAddRangedMapObject(drop, new DelayedPacketCreation() {
-
-            @Override
-            public void sendPackets(MapleClient c) {
-                c.SendPacket(ResCDropPool.DropEnterField(drop, EnterType.ANIMATION, droppos, dropper.getPosition()));
-            }
-        }, null);
+    public void spawnItemDrop(MapleMapObject dropper, MapleCharacter owner, IItem item, Point pos, boolean ffaDrop, boolean playerDrop) {
+        Point droppos = calcDropPos(pos, pos);
+        MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) 2, playerDrop);
+        addMapObject(drop);
+        spawnRangedMapObject(drop, ResCDropPool.DropEnterField(drop, EnterType.ANIMATION, droppos, dropper.getPosition()));
         broadcastMessage(ResCDropPool.DropEnterField(drop, EnterType.PICK_UP_ENABLED, droppos, dropper.getPosition())); // enable pick up for new players
-
         if (!everlast) {
             drop.registerExpire(120000);
             activateItemReactors(drop, owner.getClient());
@@ -1839,16 +1711,6 @@ public final class MapleMap extends TacosMap {
                 }
             }
         }
-    }
-
-    private static interface DelayedPacketCreation {
-
-        void sendPackets(MapleClient c);
-    }
-
-    private static interface SpawnCondition {
-
-        boolean canSpawn(MapleCharacter chr);
     }
 
     public String getSnowballPortal() {
