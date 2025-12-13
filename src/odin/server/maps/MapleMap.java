@@ -96,20 +96,15 @@ import tacos.server.map.TacosMap;
 
 public final class MapleMap extends TacosMap {
 
-    /*
-     * Holds mappings of OID -> MapleMapObject separated by MapleMapObjectType.
-     * Please acquire the appropriate lock when reading and writing to the LinkedHashMaps.
-     * The MapObjectType Maps themselves do not need to synchronized in any way since they should never be modified.
-     */
     public MapleMap(int mapid, int channel, int returnMapId, float monsterRate) {
         super(mapid, channel, returnMapId, monsterRate);
     }
 
-    public final MapleMap getReturnMap() {
+    public MapleMap getReturnMap() {
         return ServerOdinGame.getInstance(channel).getMapFactory().getMap(returnMapId);
     }
 
-    public final MapleMap getForcedReturnMap() {
+    public MapleMap getForcedReturnMap() {
         return ServerOdinGame.getInstance(channel).getMapFactory().getMap(forcedReturnMap);
     }
 
@@ -1555,38 +1550,6 @@ public final class MapleMap extends TacosMap {
             }
         }
         monsterSpawn.add(new SpawnPointAreaBoss(monster, pos1, pos2, pos3, mobTime, msg));
-    }
-
-    public final void updateMapObjectVisibility(final MapleCharacter chr, final MapleMapObject mo) {
-        if (chr == null || chr.isClone()) {
-            return;
-        }
-
-        //Debug.DebugLog("CharXY = " + chr.getPosition());
-        if (!chr.isMapObjectVisible(mo)) { // monster entered view range
-            if (mo.getType() == MapleMapObjectType.SUMMON || mo.getPosition().distanceSq(chr.getPosition()) <= chr.getViewRangeSq()) {
-                chr.addVisibleMapObject(mo);
-                mo.sendSpawnData(chr.getClient());
-            }
-        } else { // monster left view range
-            if (mo.getType() != MapleMapObjectType.SUMMON && mo.getPosition().distanceSq(chr.getPosition()) > chr.getViewRangeSq()) {
-                chr.removeVisibleMapObject(mo);
-                mo.sendDestroyData(chr.getClient());
-            }
-        }
-    }
-
-    public void moveMonster(MapleMonster monster, Point reportedPos) {
-        monster.setPosition(reportedPos);
-        mutex.lock();
-        try {
-            final Iterator<MapleCharacter> ltr = characters.iterator();
-            while (ltr.hasNext()) {
-                updateMapObjectVisibility(ltr.next(), monster);
-            }
-        } finally {
-            mutex.unlock();
-        }
     }
 
     public void movePlayer(final MapleCharacter player, final Point newPosition) {

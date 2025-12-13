@@ -291,6 +291,38 @@ public class TacosMap extends TacosMapData {
         }
     }
 
+    public void updateMapObject(MapleMapObject mapobject) {
+        for (MapleCharacter player : this.characters) {
+            if (player.isClone()) {
+                continue;
+            }
+            updateMapObjectVisibility(player, mapobject);
+        }
+    }
+
+    public boolean updateMapObjectVisibility(MapleCharacter player, MapleMapObject mapobject) {
+        if (player == null || player.isClone()) {
+            return false;
+        }
+
+        boolean already_visible = player.isMapObjectVisible(mapobject);
+        // hide
+        if (mapobject.getType() != MapleMapObjectType.SUMMON && player.getViewRangeSq() < player.getPosition().distanceSq(mapobject.getPosition())) {
+            if (already_visible) {
+                player.removeVisibleMapObject(mapobject);
+                mapobject.sendDestroyData(player.getClient()); // packet
+            }
+            return true;
+        }
+        // show
+        if (!already_visible) {
+            player.addVisibleMapObject(mapobject);
+            mapobject.sendSpawnData(player.getClient()); // packet
+        }
+
+        return true;
+    }
+
     public void removeMapObject(MapleMapObject obj) {
         this.mapobjects.get(obj.getType()).remove(obj.getObjectId());
     }
@@ -443,7 +475,6 @@ public class TacosMap extends TacosMapData {
 
     public int getNumMonsters() {
         return mapobjects.get(MapleMapObjectType.MONSTER).size();
-
     }
 
     public List<MapleNPC> getAllNPCs() {
