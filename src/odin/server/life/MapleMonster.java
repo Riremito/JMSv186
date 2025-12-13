@@ -459,7 +459,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (killer != null && stats.isBoss()) {
             killer.finishAchievement(18);
         }
-        spawnRevives(getMap());
+        spawnRevives();
         if (eventInstance != null) {
             eventInstance.unregisterMonster(this);
             eventInstance = null;
@@ -496,7 +496,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         return v1;
     }
 
-    public final void spawnRevives(final MapleMap map) {
+    public void spawnRevives() {
+        // chaos zakum
         final List<Integer> toSpawn = stats.getRevives();
 
         if (toSpawn == null) {

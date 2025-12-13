@@ -35,10 +35,20 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.client.MapleCharacter;
+import odin.client.inventory.Equip;
+import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
+import odin.client.inventory.MapleInventoryType;
+import odin.constants.GameConstants;
+import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
+import odin.server.Timer.MapTimer;
+import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.life.Spawns;
+import odin.server.maps.MapleDoor;
+import odin.server.maps.MapleDragon;
 import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMapEffect;
 import odin.server.maps.MapleMapItem;
@@ -50,6 +60,13 @@ import odin.server.maps.MapleSummon;
 import odin.tools.Pair;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
+import tacos.packet.response.ResCDropPool;
+import tacos.packet.response.ResCMobPool;
+import tacos.packet.response.ResCNpcPool;
+import tacos.packet.response.ResCReactorPool;
+import tacos.packet.response.ResCSummonedPool;
+import tacos.packet.response.ResCUser_Dragon;
+import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.server.ServerOdinGame;
 
 /**
@@ -444,12 +461,22 @@ public class TacosMap extends TacosMapData {
         }
     }
 
+    public void spawnDragon(MapleDragon dragon) {
+        addMapObject(dragon);
+        spawnRangedMapObject(dragon, ResCUser_Dragon.spawnDragon(dragon));
+    }
+
     public MapleSummon getSummonByOid(int oid) {
         MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.SUMMON);
         if (mmo == null) {
             return null;
         }
         return (MapleSummon) mmo;
+    }
+
+    public void spawnSummon(MapleSummon summon) {
+        addMapObject(summon);
+        spawnRangedMapObject(summon, ResCSummonedPool.spawnSummon(summon, true));
     }
 
     public List<MapleMonster> getAllMonsters() {
@@ -497,6 +524,130 @@ public class TacosMap extends TacosMapData {
         return mapobjects.get(MapleMapObjectType.MONSTER).size();
     }
 
+    public int getSpawnedMonstersOnMap() {
+        return this.spawnedMonstersOnMap.get();
+    }
+
+    public boolean updateMonsterController(MapleMonster monster) {
+        if (!monster.isAlive()) {
+            return false;
+        }
+
+        if (monster.getController() != null) {
+            if (monster.getController().getMap() != this) {
+                monster.getController().stopControllingMonster(monster);
+            } else { // Everything is fine :)
+                return false;
+            }
+        }
+
+        int mincontrolled = -1;
+        MapleCharacter newController = null;
+
+        Iterator<MapleCharacter> ltr = this.characters.iterator();
+        MapleCharacter chr;
+        while (ltr.hasNext()) {
+            chr = ltr.next();
+            if (!chr.isHidden() && !chr.isClone() && (chr.getControlledSize() < mincontrolled || mincontrolled == -1)) {
+                mincontrolled = chr.getControlledSize();
+                newController = chr;
+            }
+        }
+        if (newController != null) {
+            if (monster.isFirstAttack()) {
+                newController.controlMonster(monster, true);
+                monster.setControllerHasAggro(true);
+                monster.setControllerKnowsAboutAggro(true);
+            } else {
+                newController.controlMonster(monster, false);
+            }
+        }
+
+        return true;
+    }
+
+    public void removeMonster(MapleMonster monster) {
+        this.spawnedMonstersOnMap.decrementAndGet();
+        broadcastMessage(ResCMobPool.Kill(monster, 0));
+        removeMapObject(monster);
+    }
+
+    public void killMonster(MapleMonster monster) {
+        this.spawnedMonstersOnMap.decrementAndGet();
+        monster.setHp(0);
+        monster.spawnRevives();
+        broadcastMessage(ResCMobPool.Kill(monster, 1));
+        removeMapObject(monster);
+    }
+
+    public void killAllMonsters(boolean animate) {
+        for (MapleMapObject monstermo : getAllMonsters()) {
+            MapleMonster monster = (MapleMonster) monstermo;
+            this.spawnedMonstersOnMap.decrementAndGet();
+            monster.setHp(0);
+            broadcastMessage(ResCMobPool.Kill(monster, animate ? 1 : 0));
+            removeMapObject(monster);
+        }
+    }
+
+    public boolean killMonster(int monsId) {
+        for (MapleMapObject mmo : getAllMonsters()) {
+            if (((MapleMonster) mmo).getId() == monsId) {
+                this.spawnedMonstersOnMap.decrementAndGet();
+                removeMapObject(mmo);
+                broadcastMessage(ResCMobPool.Kill((MapleMonster) mmo, 1));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void checkRemoveAfter(MapleMonster monster) {
+        int ra = monster.getStats().getRemoveAfter();
+
+        if (ra > 0) {
+            MapTimer.getInstance().schedule(() -> {
+                if (monster == getMapObject(monster.getObjectId(), monster.getType())) {
+                    killMonster(monster);
+                }
+            }, ra * 1000);
+        }
+    }
+
+    public void spawnRevives(MapleMonster monster, int oid) {
+        checkRemoveAfter(monster);
+        monster.setLinkOid(oid);
+        addMapObject(monster);
+        spawnRangedMapObject(monster, ResCMobPool.Spawn(monster, -3, 0, oid));
+        updateMonsterController(monster);
+        this.spawnedMonstersOnMap.incrementAndGet();
+    }
+
+    public void spawnMonster(MapleMonster monster, int spawnType) {
+        checkRemoveAfter(monster);
+        addMapObject(monster);
+        spawnRangedMapObject(monster, ResCMobPool.Spawn(monster, spawnType, 0, 0));
+        updateMonsterController(monster);
+        this.spawnedMonstersOnMap.incrementAndGet();
+    }
+
+    public int spawnMonsterWithEffect(MapleMonster monster, int effect, Point pos) {
+        monster.setPosition(pos);
+        addMapObject(monster);
+        spawnRangedMapObject(monster, ResCMobPool.Spawn(monster, -2, effect, 0));
+        updateMonsterController(monster);
+        this.spawnedMonstersOnMap.incrementAndGet();
+        return monster.getObjectId();
+    }
+
+    public void spawnFakeMonster(MapleMonster monster) {
+        monster.setFake(true);
+        addMapObject(monster);
+        spawnRangedMapObject(monster, ResCMobPool.Spawn(monster, -4, 0, 0));
+        updateMonsterController(monster);
+        this.spawnedMonstersOnMap.incrementAndGet();
+    }
+
     public List<MapleNPC> getAllNPCs() {
         ArrayList<MapleNPC> ret = new ArrayList<>();
         for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
@@ -535,6 +686,39 @@ public class TacosMap extends TacosMapData {
         return (MapleNPC) mmo;
     }
 
+    public void spawnNpc(int id, Point pos) {
+        MapleNPC npc = MapleLifeFactory.getNPC(id);
+        npc.setPosition(pos);
+        npc.setCy(pos.y);
+        npc.setRx0(pos.x + 50);
+        npc.setRx1(pos.x - 50);
+        npc.setFh(getFootholds().findBelow(pos).getId());
+        npc.setCustom(true);
+        addMapObject(npc);
+        broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
+    }
+
+    public void removeNpc(int npcid) {
+        Iterator<MapleMapObject> itr = mapobjects.get(MapleMapObjectType.NPC).values().iterator();
+        while (itr.hasNext()) {
+            MapleNPC npc = (MapleNPC) itr.next();
+            if (npc.isCustom() && npc.getId() == npcid) {
+                broadcastMessage(ResCNpcPool.NpcLeaveField(npc));
+                itr.remove();
+            }
+        }
+    }
+
+    public void resetNPCs() {
+        List<MapleNPC> npcs = getAllNPCs();
+        for (MapleNPC npc : npcs) {
+            if (npc.isCustom()) {
+                broadcastMessage(ResCNpcPool.NpcEnterField(npc, false));
+                removeMapObject(npc);
+            }
+        }
+    }
+
     public List<MapleMapObject> getAllHiredMerchants() {
         ArrayList<MapleMapObject> ret = new ArrayList<>();
         for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
@@ -561,12 +745,91 @@ public class TacosMap extends TacosMapData {
         return this.mapobjects.get(MapleMapObjectType.ITEM).size();
     }
 
+    public void spawnMesoDrop(int meso, Point position, MapleMapObject dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
+        Point droppos = calcDropPos(position, position);
+        MapleMapItem mdrop = new MapleMapItem(meso, droppos, dropper, owner, droptype, playerDrop);
+        addMapObject(mdrop);
+        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, droppos, dropper.getPosition()));
+
+        if (!this.everlast) {
+            mdrop.registerExpire(120000);
+            if (droptype == 0 || droptype == 1) {
+                mdrop.registerFFA(30000);
+            }
+        }
+    }
+
+    public void spawnMobMesoDrop(int meso, Point position, MapleMapObject dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
+        MapleMapItem mdrop = new MapleMapItem(meso, position, dropper, owner, droptype, playerDrop);
+        addMapObject(mdrop);
+        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, position, dropper.getPosition()));
+        mdrop.registerExpire(120000);
+        if (droptype == 0 || droptype == 1) {
+            mdrop.registerFFA(30000);
+        }
+    }
+
+    public void spawnAutoDrop(int itemid, Point pos) {
+        IItem idrop = null;
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        if (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) {
+            idrop = ii.randomizeStats((Equip) ii.getEquipById(itemid));
+        } else {
+            idrop = new Item(itemid, (byte) 0, (short) 1, (byte) 0);
+        }
+        MapleMapItem mdrop = new MapleMapItem(pos, idrop);
+        addMapObject(mdrop);
+        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, pos, pos));
+        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.PICK_UP_ENABLED, pos, pos));
+        mdrop.registerExpire(120000);
+    }
+
     public List<MapleMapObject> getAllDoors() {
         ArrayList<MapleMapObject> ret = new ArrayList<>();
         for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
             ret.add(mmo);
         }
         return ret;
+    }
+
+    public void spawnDoor(MapleDoor door) {
+        DebugLogger.DebugLog("Spawn Door : " + door.getMapId());
+        addMapObject(door);
+        spawnRangedMapObject(door, null);
+    }
+
+    public void spawnDynamicPortal(MapleCharacter chr) {
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+            ((MapleDynamicPortal) obj).sendSpawnPacket(chr.getClient());
+        }
+    }
+
+    public MapleDynamicPortal findDynamicPortal(int portal_id) {
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+            MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
+            if (dynamic_portal.getObjectId() == portal_id) {
+                return dynamic_portal;
+            }
+        }
+        return null;
+    }
+
+    public MapleDynamicPortal findDynamicPortalLink(int map_id_to) {
+        DebugLogger.InfoLog("findDynamicPortalLink map_id_to" + map_id_to);
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+            MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
+
+            DebugLogger.InfoLog("findDynamicPortalLink obj_to" + dynamic_portal.getMapID());
+            if (dynamic_portal.getMapID() == map_id_to) {
+                return dynamic_portal;
+            }
+        }
+        return null;
+    }
+
+    public void spawnDynamicPortal(MapleDynamicPortal dynamic_portal) {
+        addMapObject(dynamic_portal);
+        spawnRangedMapObject(dynamic_portal, Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
     }
 
     public List<MapleReactor> getAllReactors() {
@@ -644,33 +907,50 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    public void spawnDynamicPortal(MapleCharacter chr) {
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
-            ((MapleDynamicPortal) obj).sendSpawnPacket(chr.getClient());
+    public void spawnReactor(MapleReactor reactor) {
+        addMapObject(reactor);
+        spawnRangedMapObject(reactor, ResCReactorPool.Spawn(reactor));
+    }
+
+    public void respawnReactor(MapleReactor reactor) {
+        reactor.setState((byte) 0);
+        reactor.setAlive(true);
+        spawnReactor(reactor);
+    }
+
+    public void destroyReactor(int oid) {
+        MapleReactor reactor = getReactorByOid(oid);
+        broadcastMessage(ResCReactorPool.Destroy(reactor));
+        reactor.setAlive(false);
+        removeMapObject(reactor);
+        reactor.setTimerActive(false);
+
+        if (reactor.getDelay() > 0) {
+            MapTimer.getInstance().schedule(new Runnable() {
+
+                @Override
+                public final void run() {
+                    respawnReactor(reactor);
+                }
+            }, reactor.getDelay());
         }
     }
 
-    public MapleDynamicPortal findDynamicPortal(int portal_id) {
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
-            MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
-            if (dynamic_portal.getObjectId() == portal_id) {
-                return dynamic_portal;
+    public void reloadReactors() {
+        List<MapleReactor> toSpawn = new ArrayList<>();
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+            final MapleReactor reactor = (MapleReactor) obj;
+            broadcastMessage(ResCReactorPool.Destroy(reactor));
+            reactor.setAlive(false);
+            reactor.setTimerActive(false);
+            toSpawn.add(reactor);
+        }
+        for (MapleReactor r : toSpawn) {
+            removeMapObject(r);
+            if (r.getReactorId() != 9980000 && r.getReactorId() != 9980001) { //guardians cpq
+                respawnReactor(r);
             }
         }
-        return null;
-    }
-
-    public MapleDynamicPortal findDynamicPortalLink(int map_id_to) {
-        DebugLogger.InfoLog("findDynamicPortalLink map_id_to" + map_id_to);
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
-            MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
-
-            DebugLogger.InfoLog("findDynamicPortalLink obj_to" + dynamic_portal.getMapID());
-            if (dynamic_portal.getMapID() == map_id_to) {
-                return dynamic_portal;
-            }
-        }
-        return null;
     }
 
     // self and other players in range.
