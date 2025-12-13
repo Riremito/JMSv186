@@ -79,7 +79,6 @@ import odin.server.life.MapleNPC;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.Spawns;
 import odin.server.life.SpawnPoint;
-import odin.server.life.SpawnPointAreaBoss;
 import odin.server.life.MonsterDropEntry;
 import odin.server.life.MapleMonsterInformationProvider;
 import odin.tools.StringUtil;
@@ -1508,68 +1507,6 @@ public final class MapleMap extends TacosMap {
             monsterSpawn.add(sp);
         }
         return sp;
-    }
-
-    public final void addAreaMonsterSpawn(final MapleMonster monster, Point pos1, Point pos2, Point pos3, final int mobTime, final String msg) {
-        pos1 = calcPointBelow(pos1);
-        pos2 = calcPointBelow(pos2);
-        pos3 = calcPointBelow(pos3);
-        if (pos1 != null) {
-            pos1.y -= 1;
-        }
-        if (pos2 != null) {
-            pos2.y -= 1;
-        }
-        if (pos3 != null) {
-            pos3.y -= 1;
-        }
-        if (pos1 == null && pos2 == null && pos3 == null) {
-            System.out.println("WARNING: mapid " + mapid + ", monster " + monster.getId() + " could not be spawned.");
-
-            return;
-        } else if (pos1 != null) {
-            if (pos2 == null) {
-                pos2 = new Point(pos1);
-            }
-            if (pos3 == null) {
-                pos3 = new Point(pos1);
-            }
-        } else if (pos2 != null) {
-            if (pos1 == null) {
-                pos1 = new Point(pos2);
-            }
-            if (pos3 == null) {
-                pos3 = new Point(pos2);
-            }
-        } else if (pos3 != null) {
-            if (pos1 == null) {
-                pos1 = new Point(pos3);
-            }
-            if (pos2 == null) {
-                pos2 = new Point(pos3);
-            }
-        }
-        monsterSpawn.add(new SpawnPointAreaBoss(monster, pos1, pos2, pos3, mobTime, msg));
-    }
-
-    public void movePlayer(final MapleCharacter player, final Point newPosition) {
-        player.setPosition(newPosition);
-        final Collection<MapleMapObject> visibleObjects = player.getVisibleMapObjects();
-        final MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[visibleObjects.size()]);
-        for (MapleMapObject mo : visibleObjectsNow) {
-            if (getMapObject(mo.getObjectId(), mo.getType()) == mo) {
-                updateMapObjectVisibility(player, mo);
-            } else {
-                player.removeVisibleMapObject(mo);
-            }
-        }
-        // 表示可能範囲のNPC等を表示
-        for (MapleMapObject mo : getMapObjectsInRange(player.getPosition(), player.getViewRangeSq())) {
-            if (!player.isMapObjectVisible(mo) && mo.getObjectId() != player.getObjectId()) {
-                mo.sendSpawnData(player.getClient());
-                player.addVisibleMapObject(mo);
-            }
-        }
     }
 
     public int getSpawnedMonstersOnMap() {

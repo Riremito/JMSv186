@@ -20,6 +20,8 @@ package tacos.server.map;
 
 import java.awt.Point;
 import odin.server.life.MapleLifeFactory;
+import odin.server.life.MapleMonster;
+import odin.server.life.SpawnPointAreaBoss;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
 import tacos.wz.ids.DWI_Validation;
@@ -241,7 +243,49 @@ public class MasterMonster {
             return false;
         }
 
-        map.addAreaMonsterSpawn(MapleLifeFactory.getMonster(monsterid), pos1, pos2, pos3, mobtime, msg);
+        addAreaMonsterSpawn(map, MapleLifeFactory.getMonster(monsterid), pos1, pos2, pos3, mobtime, msg);
         return true;
+    }
+
+    public static void addAreaMonsterSpawn(MapleMap map, MapleMonster monster, Point pos1, Point pos2, Point pos3, int mobTime, String msg) {
+        pos1 = map.calcPointBelow(pos1);
+        pos2 = map.calcPointBelow(pos2);
+        pos3 = map.calcPointBelow(pos3);
+        if (pos1 != null) {
+            pos1.y -= 1;
+        }
+        if (pos2 != null) {
+            pos2.y -= 1;
+        }
+        if (pos3 != null) {
+            pos3.y -= 1;
+        }
+        if (pos1 == null && pos2 == null && pos3 == null) {
+            System.out.println("WARNING: mapid " + map.getId() + ", monster " + monster.getId() + " could not be spawned.");
+
+            return;
+        } else if (pos1 != null) {
+            if (pos2 == null) {
+                pos2 = new Point(pos1);
+            }
+            if (pos3 == null) {
+                pos3 = new Point(pos1);
+            }
+        } else if (pos2 != null) {
+            if (pos1 == null) {
+                pos1 = new Point(pos2);
+            }
+            if (pos3 == null) {
+                pos3 = new Point(pos2);
+            }
+        } else if (pos3 != null) {
+            if (pos1 == null) {
+                pos1 = new Point(pos3);
+            }
+            if (pos2 == null) {
+                pos2 = new Point(pos3);
+            }
+        }
+        map.getMonsterSpawn().add(new SpawnPointAreaBoss(monster, pos1, pos2, pos3, mobTime, msg));
     }
 }

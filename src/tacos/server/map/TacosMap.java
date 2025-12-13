@@ -418,6 +418,26 @@ public class TacosMap extends TacosMapData {
         return ret;
     }
 
+    public void movePlayer(MapleCharacter player, Point newPosition) {
+        player.setPosition(newPosition);
+        Collection<MapleMapObject> visibleObjects = player.getVisibleMapObjects();
+        MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[visibleObjects.size()]);
+        for (MapleMapObject mo : visibleObjectsNow) {
+            if (getMapObject(mo.getObjectId(), mo.getType()) == mo) {
+                updateMapObjectVisibility(player, mo);
+            } else {
+                player.removeVisibleMapObject(mo);
+            }
+        }
+        // 表示可能範囲のNPC等を表示
+        for (MapleMapObject mo : getMapObjectsInRange(player.getPosition(), player.getViewRangeSq())) {
+            if (!player.isMapObjectVisible(mo) && mo.getObjectId() != player.getObjectId()) {
+                mo.sendSpawnData(player.getClient());
+                player.addVisibleMapObject(mo);
+            }
+        }
+    }
+
     public void spawnPlayers(MapleCharacter chr) {
         for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.PLAYER).values()) {
             ((MapleCharacter) obj).sendSpawnData(chr.getClient());
