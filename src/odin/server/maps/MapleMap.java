@@ -42,8 +42,6 @@ import odin.client.inventory.MaplePet;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
 import tacos.wz.data.ReactorWz;
-import tacos.wz.data.StringWz;
-import tacos.wz.data.StringWz.DropMonsterBook;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
@@ -86,6 +84,7 @@ import odin.server.events.MapleEvent;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import odin.tools.Pair;
 import tacos.server.map.TacosMap;
+import tacos.unofficial.CustomMonsterBookDrop;
 
 public final class MapleMap extends TacosMap {
 
@@ -144,15 +143,12 @@ public final class MapleMap extends TacosMap {
         super.spawnReactor(reactor);
     }
 
-    private int dropFromMonster(final MapleCharacter chr, final MapleMonster mob) {
-        if (mob == null || chr == null || ServerOdinGame.getInstance(channel) == null || mob.dropsDisabled() || chr.getPyramidSubway() != null) { //no drops in pyramid ok? no cash either
+    // test
+    public int dropFromMonster(MapleCharacter chr, MapleMonster mob) {
+        if (mob == null || chr == null || ServerOdinGame.getInstance(channel) == null || mob.dropsDisabled() || chr.getPyramidSubway() != null) {
             return -1;
         }
 
-        //We choose not to readLock for this.
-        //This will not affect the internal state, and we don't want to
-        //introduce unneccessary locking, especially since this function
-        //is probably used quite often.
         if (mapobjects.get(MapleMapObjectType.ITEM).size() >= 225) {
             removeDrops();
         }
@@ -228,72 +224,8 @@ public final class MapleMap extends TacosMap {
         if (dropEntry.size() != 0) {
             return dropped_count;
         }
-        int meso_value = (Randomizer.nextInt(100) < 50) ? 0 : 10 + Randomizer.nextInt(150);
 
-        if (droptype == 3) {
-            pos.x = (mobpos + (dropped_count % 2 == 0 ? (40 * (dropped_count + 1) / 2) : -(40 * (dropped_count / 2))));
-        } else {
-            pos.x = (mobpos + ((dropped_count % 2 == 0) ? (25 * (dropped_count + 1) / 2) : -(25 * (dropped_count / 2))));
-        }
-
-        if (0 < meso_value) {
-            spawnMobMesoDrop(meso_value, calcDropPos(pos, mob.getPosition()), mob, chr, false, droptype);
-            dropped_count++;
-        }
-
-        if (!StringWz.checkBookAvailable()) {
-            return dropped_count;
-        }
-
-        // load from monster book
-        DropMonsterBook book_info = StringWz.getMonseterBookDrop(mob.getId());
-        for (int item_id : book_info.drop_ids) {
-            int type = item_id / 1000000;
-            // 装備 3%
-            if (type == 1) {
-                if (!(Randomizer.nextInt(100) < 3)) {
-                    continue;
-                }
-            }
-            // 消費 5%
-            if (type == 2) {
-                if (!(Randomizer.nextInt(100) < 5)) {
-                    continue;
-                }
-            }
-            // Setup 5%
-            if (type == 3) {
-                if (!(Randomizer.nextInt(100) < 5)) {
-                    continue;
-                }
-            }
-            // ETC 50%
-            if (type == 4) {
-                if (book_info.drop_ids.get(0) == item_id) {
-                    if (!(Randomizer.nextInt(100) < 50)) {
-                        continue;
-                    }
-                } else {
-                    // ETC 5%
-                    if (!(Randomizer.nextInt(100) < 5)) {
-                        continue;
-                    }
-                }
-            }
-            if (GameConstants.getInventoryType(item_id) == MapleInventoryType.EQUIP) {
-                idrop = ii.randomizeStats((Equip) ii.getEquipById(item_id));
-            } else {
-                idrop = new Item(item_id, (byte) 0, (short) 1, (byte) 0);
-            }
-            if (droptype == 3) {
-                pos.x = (mobpos + (dropped_count % 2 == 0 ? (40 * (dropped_count + 1) / 2) : -(40 * (dropped_count / 2))));
-            } else {
-                pos.x = (mobpos + ((dropped_count % 2 == 0) ? (25 * (dropped_count + 1) / 2) : -(25 * (dropped_count / 2))));
-            }
-            spawnMobDrop(idrop, calcDropPos(pos, mob.getPosition()), mob, chr, droptype, (short) 0);
-            dropped_count++;
-        }
-
+        dropped_count += CustomMonsterBookDrop.dropFromMonsterBook(chr, mob);
         return dropped_count;
     }
 
