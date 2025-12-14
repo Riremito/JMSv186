@@ -30,14 +30,11 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.concurrent.ScheduledFuture;
 import java.util.Calendar;
-import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
-import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
@@ -65,14 +62,11 @@ import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
-import odin.server.Randomizer;
 import odin.server.MapleInventoryManipulator;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.Spawns;
 import odin.server.life.SpawnPoint;
-import odin.server.life.MonsterDropEntry;
-import odin.server.life.MapleMonsterInformationProvider;
 import odin.tools.StringUtil;
 import odin.scripting.EventManager;
 import odin.server.MapleCarnivalFactory;
@@ -84,7 +78,6 @@ import odin.server.events.MapleEvent;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import odin.tools.Pair;
 import tacos.server.map.TacosMap;
-import tacos.unofficial.CustomMonsterBookDrop;
 
 public final class MapleMap extends TacosMap {
 
@@ -143,90 +136,17 @@ public final class MapleMap extends TacosMap {
         super.spawnReactor(reactor);
     }
 
-    // test
-    public int dropFromMonster(MapleCharacter chr, MapleMonster mob) {
-        if (mob == null || chr == null || ServerOdinGame.getInstance(channel) == null || mob.dropsDisabled() || chr.getPyramidSubway() != null) {
+    @Override
+    public int dropFromMonster(MapleCharacter player, MapleMonster monster) {
+        if (monster == null || player == null || ServerOdinGame.getInstance(channel) == null || monster.dropsDisabled() || player.getPyramidSubway() != null) {
             return -1;
         }
-
-        if (mapobjects.get(MapleMapObjectType.ITEM).size() >= 225) {
+        // clear drops
+        if (getItemsSize() >= 225) {
             removeDrops();
         }
-
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        final byte droptype = (byte) (mob.getStats().isExplosiveReward() ? 3 : mob.getStats().isFfaLoot() ? 2 : chr.getParty() != null ? 1 : 0);
-        final int mobpos = mob.getPosition().x, cmServerrate = ServerOdinGame.getInstance(channel).getMesoRate(), chServerrate = ServerOdinGame.getInstance(channel).getDropRate();
-        IItem idrop;
-        byte d = 1;
-        Point pos = new Point(0, mob.getPosition().y);
-        double showdown = 100.0;
-        final MonsterStatusEffect mse = mob.getBuff(MonsterStatus.SHOWDOWN);
-        if (mse != null) {
-            showdown += mse.getX();
-        }
-
-        final MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
-        final List<MonsterDropEntry> dropEntry = mi.retrieveDrop(mob.getId());
-        Collections.shuffle(dropEntry);
-
-        final boolean forced_drop = mob.getStats().isBoss();
-
-        int dropped_count = 0;
-
-        // この辺でドロップ確定させるMobのIDのチェック処理を入れる
-        for (final MonsterDropEntry de : dropEntry) {
-            if (de.itemId == mob.getStolen()) {
-                continue;
-            }
-
-            // モンスターカード
-            if (GameConstants.isMonsterCard(de.itemId)) {
-                if (chr.getMonsterBook().getLevel(de.itemId) >= 5) {
-                    continue;
-                }
-            }
-
-            // ボスは無条件でドロップ確定, 通常Mobはx/1000の確率でDBの値を参照してドロップする
-            if (forced_drop || (Math.floor(Math.random() * 1000) < (int) (de.chance * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0) * (showdown / 100.0)))) {
-                if (droptype == 3) {
-                    pos.x = (mobpos + (d % 2 == 0 ? (40 * (d + 1) / 2) : -(40 * (d / 2))));
-                } else {
-                    pos.x = (mobpos + ((d % 2 == 0) ? (25 * (d + 1) / 2) : -(25 * (d / 2))));
-                }
-                // メル
-                if (de.itemId == 0) {
-                    int mesos = de.Minimum;
-                    if (de.Maximum > de.Minimum) {
-                        mesos = Randomizer.nextInt(de.Maximum - de.Minimum) + de.Minimum;
-                    }
-
-                    if (mesos > 0) {
-                        spawnMobMesoDrop((int) (mesos * (chr.getStat().mesoBuff / 100.0) * chr.getDropMod() * cmServerrate), calcDropPos(pos, mob.getPosition()), mob, chr, false, droptype);
-                        dropped_count++;
-                    }
-                } else {
-                    // 装備
-                    if (GameConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {
-                        idrop = ii.randomizeStats((Equip) ii.getEquipById(de.itemId));
-                    } else {
-                        // 通常アイテム
-                        final int range = Math.abs(de.Maximum - de.Minimum);
-                        idrop = new Item(de.itemId, (byte) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(range <= 0 ? 1 : range) + de.Minimum : 1), (byte) 0);
-                    }
-                    spawnMobDrop(idrop, calcDropPos(pos, mob.getPosition()), mob, chr, droptype, de.questid);
-                    dropped_count++;
-                }
-                d++;
-            }
-        }
-
-        // drop data in DB
-        if (dropEntry.size() != 0) {
-            return dropped_count;
-        }
-
-        dropped_count += CustomMonsterBookDrop.dropFromMonsterBook(chr, mob);
-        return dropped_count;
+        // drop database, drop monseter book
+        return super.dropFromMonster(player, monster);
     }
 
     public final void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops, final boolean second, byte animation) {

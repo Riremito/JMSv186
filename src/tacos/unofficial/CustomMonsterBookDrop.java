@@ -31,6 +31,7 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
+import tacos.server.map.MonsterDrop;
 import tacos.wz.data.StringWz;
 import tacos.wz.data.StringWz.DropMonsterBook;
 
@@ -88,14 +89,14 @@ public class CustomMonsterBookDrop {
             // Consume
             case 2: {
                 // Scroll
-                if (type_sub == 204) {
+                if (type_sub == 204 || type_sub == 228 || type_sub == 229) {
                     if (rand < DROP_PROB_CONSUME_SCROLL) {
                         return true;
                     }
                     return false;
                 }
                 // Star
-                if (type_sub == 207) {
+                if (type_sub == 207 || type_sub == 233) {
                     if (rand < DROP_PROB_CONSUME_STAR) {
                         return true;
                     }
@@ -151,7 +152,7 @@ public class CustomMonsterBookDrop {
             int level = monster.getStats().getLevel();
             int base_meso = 5 + (level * 5);
             int meso_value = base_meso + Randomizer.nextInt((base_meso / 10));
-            Point drop_pos = getDropPosition(monster, drop_type, dropped_count);
+            Point drop_pos = MonsterDrop.getDropPosition(monster, drop_type, dropped_count);
             map.spawnMobMesoDrop(meso_value, map.calcDropPos(drop_pos, monster.getPosition()), monster, player, false, drop_type);
             dropped_count++;
         }
@@ -163,7 +164,7 @@ public class CustomMonsterBookDrop {
         CustomMonsterBookDrop cmbd = new CustomMonsterBookDrop(monster);
         for (int item_id : cmbd.getDropItems()) {
             IItem idrop = (GameConstants.getInventoryType(item_id) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(item_id)) : new Item(item_id, (byte) 0, (short) 1, (byte) 0);
-            Point drop_pos = getDropPosition(monster, drop_type, dropped_count);
+            Point drop_pos = MonsterDrop.getDropPosition(monster, drop_type, dropped_count);
 
             map.spawnMobDrop(idrop, map.calcDropPos(drop_pos, monster.getPosition()), monster, player, drop_type, (short) 0);
             dropped_count++;
@@ -171,15 +172,4 @@ public class CustomMonsterBookDrop {
         return dropped_count;
     }
 
-    public static Point getDropPosition(MapleMonster monster, int drop_type, int dropped_count) {
-        Point drop_pos = monster.getPosition();
-
-        if (drop_type == 3) {
-            drop_pos.x += (dropped_count % 2 == 0) ? (40 * (dropped_count + 1) / 2) : -(40 * (dropped_count / 2));
-            return drop_pos;
-        }
-
-        drop_pos.x += (dropped_count % 2 == 0) ? (25 * (dropped_count + 1) / 2) : -(25 * (dropped_count / 2));
-        return drop_pos;
-    }
 }

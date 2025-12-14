@@ -68,6 +68,7 @@ import tacos.packet.response.ResCSummonedPool;
 import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.server.ServerOdinGame;
+import tacos.unofficial.CustomMonsterBookDrop;
 
 /**
  *
@@ -782,6 +783,17 @@ public class TacosMap extends TacosMapData {
         spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, pos, pos));
         broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.PICK_UP_ENABLED, pos, pos));
         mdrop.registerExpire(120000);
+    }
+
+    public int dropFromMonster(MapleCharacter player, MapleMonster monster) {
+        // drop database
+        int dropped_count = MonsterDrop.dropFromDatabase(this.channel, player, monster);
+        if (0 < dropped_count) {
+            return dropped_count;
+        }
+        // drop monster book
+        dropped_count += CustomMonsterBookDrop.dropFromMonsterBook(player, monster);
+        return dropped_count;
     }
 
     public List<MapleMapObject> getAllDoors() {
