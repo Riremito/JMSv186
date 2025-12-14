@@ -37,6 +37,7 @@ public class GameConstants {
             MapleMapObjectType.MONSTER,
             MapleMapObjectType.DOOR,
             MapleMapObjectType.REACTOR,
+            MapleMapObjectType.DRAGON,
             MapleMapObjectType.SUMMON,
             MapleMapObjectType.NPC,
             MapleMapObjectType.MIST));

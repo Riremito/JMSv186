@@ -2543,7 +2543,7 @@ public class MapleCharacter extends TacosCharacter {
             guildUpdate();
             familyUpdate();
             if (dragon != null) {
-                map.broadcastMessage(ResCUser_Dragon.removeDragon(this.id));
+                map.broadcastMessage(ResCUser_Dragon.removeDragon(dragon));
                 map.removeMapObject(dragon);
                 dragon = null;
             }

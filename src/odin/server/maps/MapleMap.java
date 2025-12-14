@@ -749,6 +749,9 @@ public final class MapleMap extends TacosMap {
             if (chr.getDragon() == null) {
                 chr.makeDragon();
             }
+            chr.getDragon().setFH(0);
+            chr.getDragon().setStance(0);
+            chr.getDragon().setPosition(chr.getPosition());
             spawnDragon(chr.getDragon());
             if (!chr.isClone()) {
                 updateMapObjectVisibility(chr, chr.getDragon());
