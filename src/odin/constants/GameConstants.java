@@ -54,7 +54,6 @@ public class GameConstants {
         9102328, 9102329, 9102330, 9102331, 9102332, 9102333}; //miracle cube and stuff
 
     public static final int[] blockedSkills = {4341003};
-    public static final String MASTER = "%&HYGEomgLOL";
     public static final String[] RESERVED = {"Rental"};
 
     public static int getMountExpNeededForLevel(final int level) {

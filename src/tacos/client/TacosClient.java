@@ -34,6 +34,8 @@ public class TacosClient extends BaseClient {
     private int id = 0;
     private String nexon_id = null;
     private String maple_id = null;
+    private String password2_hash = null;
+    private String password2_salt = null;
     private boolean gameMaster;
     private byte gender = 0;
     private int charslots = TacosConstants.DEFAULT_CHARSLOT;
@@ -74,6 +76,14 @@ public class TacosClient extends BaseClient {
     public void setMapleId(String maple_id) {
         this.maple_id = maple_id;
         setNexonId(maple_id); // test
+    }
+
+    public void setPassword2Hash(String password2_hash) {
+        this.password2_hash = password2_hash;
+    }
+
+    public void setPassword2Salt(String password2_salt) {
+        this.password2_salt = password2_salt;
     }
 
     public boolean isGameMaster() {
