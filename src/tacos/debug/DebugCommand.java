@@ -64,6 +64,7 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.SavedLocationType;
 import tacos.server.Server;
 import odin.server.shops.HiredMerchant;
+import tacos.database.query.DQ_Accounts;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 /**
@@ -156,6 +157,14 @@ public class DebugCommand {
             }
             case "/shutdown": {
                 // CTRL + C & Y
+                return true;
+            }
+            case "/resetpassword": {
+                if (splitted.length < 3) {
+                    return true;
+                }
+                DQ_Accounts.resetPassword(splitted[1], splitted[2]);
+                chr.DebugMsg("Password Reset = " + splitted[1]);
                 return true;
             }
             case "/ea":

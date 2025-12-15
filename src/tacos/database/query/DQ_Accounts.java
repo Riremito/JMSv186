@@ -180,6 +180,42 @@ public class DQ_Accounts {
         return false;
     }
 
+    public static boolean updatePassword(MapleClient client, String password) {
+        Connection con = DatabaseConnection.getConnection();
+        PreparedStatement pss;
+        try {
+            pss = con.prepareStatement("UPDATE `" + DB_TABLE_NAME + "` SET `password` = ?, `salt` = ? WHERE id = ?");
+            String password1_salt = getSalt();
+            pss.setString(1, getSHA256(password + password1_salt));
+            pss.setString(2, password1_salt);
+            pss.setInt(3, client.getId());
+            pss.executeUpdate();
+            pss.close();
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "updatePassword");
+        }
+        return false;
+    }
+
+    public static boolean resetPassword(String maple_id, String password) {
+        Connection con = DatabaseConnection.getConnection();
+        PreparedStatement pss;
+        try {
+            pss = con.prepareStatement("UPDATE `" + DB_TABLE_NAME + "` SET `password` = ?, `salt` = ? WHERE name = ?");
+            String password1_salt = getSalt();
+            pss.setString(1, getSHA256(password + password1_salt));
+            pss.setString(2, password1_salt);
+            pss.setString(3, maple_id);
+            pss.executeUpdate();
+            pss.close();
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "resetPassword");
+        }
+        return false;
+    }
+
     public static int login(MapleClient client, String maple_id, String password) {
         int loginok = 5;
         try {
@@ -220,16 +256,7 @@ public class DQ_Accounts {
                             loginok = 0;
                             if (password1_salt == null) {
                                 // set salt
-                                PreparedStatement pss = con.prepareStatement("UPDATE `" + DB_TABLE_NAME + "` SET `password` = ?, `salt` = ? WHERE id = ?");
-                                try {
-                                    String salt_db = getSalt();
-                                    pss.setString(1, getSHA256(password + salt_db));
-                                    pss.setString(2, salt_db);
-                                    pss.setInt(3, accId);
-                                    pss.executeUpdate();
-                                } finally {
-                                    pss.close();
-                                }
+                                updatePassword(client, password);
                             }
                         } else {
                             client.setLoggedIn(false);
