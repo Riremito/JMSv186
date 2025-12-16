@@ -48,6 +48,19 @@ public enum OpsMessage {
     UNKNOWN(-1);
 
     public static void init() {
+        if (Version.LessOrEqual(Region.JMS, 147)) {
+            OpsMessage.MS_DropPickUpMessage.set(0);
+            OpsMessage.MS_QuestRecordMessage.set(1);
+            OpsMessage.MS_CashItemExpireMessage.set(2);
+            OpsMessage.MS_IncEXPMessage.set(3);
+            OpsMessage.MS_IncPOPMessage.set(4);
+            OpsMessage.MS_IncMoneyMessage.set(5);
+            OpsMessage.MS_IncGPMessage.set(6);
+            OpsMessage.MS_GiveBuffMessage.set(7);
+            OpsMessage.MS_GeneralItemExpireMessage.set(8);
+            OpsMessage.MS_SystemMessage.set(9);
+            return;
+        }
         if (Version.LessOrEqual(Region.KMS, 84)) {
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);
