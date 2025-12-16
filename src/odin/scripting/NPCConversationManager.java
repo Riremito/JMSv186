@@ -81,6 +81,7 @@ import odin.server.SpeedRunner;
 import odin.server.maps.SpeedRunType;
 import odin.server.Timer.CloneTimer;
 import odin.server.maps.Event_PyramidSubway;
+import tacos.packet.response.ResCScriptMan;
 
 public class NPCConversationManager extends AbstractPlayerInteraction {
 
@@ -168,7 +169,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 01", (byte) 0));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, true));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -180,7 +181,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 01", type));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, type, text, false, true));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -192,7 +193,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 00", (byte) 0));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, true, false));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -204,7 +205,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 00", type));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) type, text, true, false));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -216,7 +217,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 01", (byte) 0));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, true, true));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -236,7 +237,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "01 01", type));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, type, text, true, true));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -248,7 +249,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 00", (byte) 0));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, false));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -260,7 +261,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 00", type));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, false));
         lastMsg = OpsScriptMan.SM_SAY.get();
     }
 
@@ -273,7 +274,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        c.SendPacket(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKYESNO, text, "", (byte) 0));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKYESNO, (byte) 0, text, false, false));
         lastMsg = OpsScriptMan.SM_ASKYESNO.get();
     }
 
@@ -285,7 +286,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimpleS(text, type);
             return;
         }
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKYESNO, text, "", type));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKYESNO, type, text, false, false));
         lastMsg = OpsScriptMan.SM_ASKYESNO.get();
     }
 
@@ -306,7 +307,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKACCEPT, text, "", (byte) 0));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKACCEPT, (byte) 0, text, false, false));
         lastMsg = OpsScriptMan.SM_ASKACCEPT.get();
     }
 
@@ -318,7 +319,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKACCEPT, text, "", (byte) 0));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKACCEPT, (byte) 0, text, false, false));
         lastMsg = OpsScriptMan.SM_ASKACCEPT.get();
     }
 
@@ -339,7 +340,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKMENU, text, "", (byte) 0));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKMENU, (byte) 0, text, false, false));
         lastMsg = OpsScriptMan.SM_ASKMENU.get();
     }
 
@@ -352,7 +353,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             return;
         }
 
-        c.getSession().write(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_ASKMENU, text, "", (byte) type));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKMENU, (byte) type, text, false, false));
         lastMsg = OpsScriptMan.SM_ASKMENU.get();
     }
 
@@ -384,7 +385,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        c.getSession().write(ResWrapper.getNPCTalkText(npc, text));
+        c.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKTEXT, (byte) 0, text, false, false));
         lastMsg = OpsScriptMan.SM_ASKTEXT.get();
     }
 

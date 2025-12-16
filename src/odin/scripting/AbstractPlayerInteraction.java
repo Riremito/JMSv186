@@ -1037,7 +1037,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public void sendNPCText(final String text, final int npc) {
-        getMap().broadcastMessage(ResWrapper.getNPCTalk(npc, OpsScriptMan.SM_SAY, text, "00 00", (byte) 0));
+        getMap().broadcastMessage(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, false));
     }
 
     public boolean getTempFlag(final int flag) {

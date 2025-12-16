@@ -40,7 +40,6 @@ import odin.server.shops.IMaplePlayerShop;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
-import odin.tools.HexTool;
 import odin.tools.Pair;
 import tacos.config.Region;
 import tacos.config.Version;
@@ -246,7 +245,8 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getPlayerShopNewVisitor(MapleCharacter c, int slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
-        sp.EncodeBuffer(HexTool.getByteArrayFromHexString("04 0" + slot));
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Enter.get());
+        sp.Encode1(slot);
         sp.EncodeBuffer(DataAvatarLook.Encode(c));
         sp.EncodeStr(c.getName());
         if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
@@ -289,7 +289,8 @@ public class ResCMiniRoomBaseDlg {
     public static MaplePacket getPlayerShopRemoveVisitor(int slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
-        sp.EncodeBuffer(HexTool.getByteArrayFromHexString("0A 0" + slot));
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
+        sp.Encode1(slot);
         return sp.get();
     }
 

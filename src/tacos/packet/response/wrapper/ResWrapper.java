@@ -46,7 +46,6 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.struct.InvOp;
 import odin.server.Randomizer;
 import odin.server.maps.MapleMap;
-import odin.tools.HexTool;
 import odin.tools.StringUtil;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
@@ -572,25 +571,6 @@ public class ResWrapper {
             return ResCStage.SetField_JMS_302(chr, 1, false, to, spawnPoint, 0);
         }
         return ResCStage.SetField(chr, false, to, spawnPoint);
-    }
-
-    public static MaplePacket getNPCTalkText(int npc, String talk) {
-        return ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKTEXT, (byte) 0, talk, false, false);
-    }
-
-    public static MaplePacket getNPCTalk(int npc, OpsScriptMan smt, String talk, String endBytes, byte type) {
-        byte[] ebb = HexTool.getByteArrayFromHexString(endBytes);
-        boolean prev = false;
-        boolean next = false;
-        if (ebb.length == 2) {
-            if (ebb[0] == 1) {
-                prev = true;
-            }
-            if (ebb[0] == 2) {
-                next = true;
-            }
-        }
-        return ResCScriptMan.ScriptMessage(npc, smt, type, talk, prev, next);
     }
 
     public static MaplePacket getNPCTalkNum(int npc, String talk, int def, int min, int max) {

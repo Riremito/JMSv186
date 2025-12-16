@@ -34,7 +34,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import odin.tools.BitTools;
-import odin.tools.HexTool;
 
 /**
  * Provides a class for encrypting MapleStory packets with AES OFB encryption.
@@ -322,11 +321,6 @@ public class MapleAESOFB {
             funnyShit(oldIv[x], in);
         }
         return in;
-    }
-
-    @Override
-    public String toString() {
-        return "IV: " + HexTool.toString(this.iv);
     }
 
     public static final void funnyShit(byte inputByte, byte[] in) {
