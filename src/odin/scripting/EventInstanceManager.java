@@ -503,15 +503,6 @@ public class EventInstanceManager {
         return mobs;
     }
 
-    public final void giveAchievement(final int type) {
-        if (disposed) {
-            return;
-        }
-        for (MapleCharacter chr : getPlayers()) {
-            chr.finishAchievement(type);
-        }
-    }
-
     // from script
     public final void broadcastPlayerMsg(final int type, final String msg) {
         if (disposed) {

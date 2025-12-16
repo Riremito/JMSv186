@@ -110,7 +110,6 @@ import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.scripting.EventInstanceManager;
 import odin.scripting.NPCScriptManager;
-import odin.server.MapleAchievements;
 import odin.server.MaplePortal;
 import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
@@ -200,7 +199,6 @@ public class MapleCharacter extends TacosCharacter {
     private MapleStorage storage;
     private transient MapleTrade trade;
     private MapleMount mount;
-    private List<Integer> finishedAchievements = new ArrayList<Integer>();
     private MapleMessenger messenger;
     private byte[] petStore;
     private transient IMaplePlayerShop playerShop;
@@ -467,9 +465,6 @@ public class MapleCharacter extends TacosCharacter {
         for (final Map.Entry<Integer, SkillEntry> qs : ct.Skills.entrySet()) {
             ret.skills.put(SkillFactory.getSkill(qs.getKey()), qs.getValue());
         }
-        for (final Integer zz : ct.finishedAchievements) {
-            ret.finishedAchievements.add(zz);
-        }
         ret.monsterbook = new MonsterBook(ct.mbook);
         ret.inventory = (MapleInventory[]) ct.inventorys;
         ret.BlessOfFairy_Origin = ct.BlessOfFairy;
@@ -603,13 +598,6 @@ public class MapleCharacter extends TacosCharacter {
                 }
                 rs.close();
                 ps.close();
-                ps = con.prepareStatement("SELECT * FROM achievements WHERE accountid = ?");
-                ps.setInt(1, ret.accountid);
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    ret.finishedAchievements.add(rs.getInt("achievementid"));
-                }
-
             }
             rs.close();
             ps.close();
@@ -1273,14 +1261,6 @@ public class MapleCharacter extends TacosCharacter {
             ps = con.prepareStatement("DELETE FROM achievements WHERE accountid = ?");
             ps.setInt(1, accountid);
             ps.executeUpdate();
-            ps.close();
-            ps = con.prepareStatement("INSERT INTO achievements(charid, achievementid, accountid) VALUES(?, ?, ?)");
-            for (Integer achid : finishedAchievements) {
-                ps.setInt(1, id);
-                ps.setInt(2, achid);
-                ps.setInt(3, accountid);
-                ps.executeUpdate();
-            }
             ps.close();
 
             deleteWhereCharacterId(con, "DELETE FROM buddies WHERE characterid = ? AND pending = 0");
@@ -2351,9 +2331,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public void addFame(int famechange) {
         this.fame += famechange;
-        if (this.fame >= 50) {
-            finishAchievement(7);
-        }
     }
 
     public void changeMapBanish(final int mapid, final String portal, final String msg) {
@@ -3367,19 +3344,6 @@ public class MapleCharacter extends TacosCharacter {
         level += 1;
 
         int level = getLevel();
-
-        if (level == 30) {
-            finishAchievement(2);
-        }
-        if (level == 70) {
-            finishAchievement(3);
-        }
-        if (level == 120) {
-            finishAchievement(4);
-        }
-        if (level == 200) {
-            finishAchievement(5);
-        }
         if (level == 200/* && !isGM()*/) {
             final StringBuilder sb = new StringBuilder("[お祝い] ");
             final IItem medal = getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
@@ -4726,42 +4690,6 @@ public class MapleCharacter extends TacosCharacter {
         client.getSession().write(ResCField_MonsterCarnival.playerDiedMessage(name, lostCP, team));
     }
 
-    public void setAchievementFinished(int id) {
-        if (!finishedAchievements.contains(id)) {
-            finishedAchievements.add(id);
-        }
-    }
-
-    public boolean achievementFinished(int achievementid) {
-        return finishedAchievements.contains(achievementid);
-    }
-
-    public void finishAchievement(int id) {
-        if (clone) {
-            return;
-        }
-        if (!achievementFinished(id)) {
-            if (isAlive()) {
-                MapleAchievements.getInstance().getById(id).finishAchievement(this);
-            }
-        }
-    }
-
-    public List<Integer> getFinishedAchievements() {
-        return finishedAchievements;
-    }
-
-    public void modifyAchievementCSPoints(int type, int quantity) {
-        switch (type) {
-            case 1:
-                nexonPoint += quantity;
-                break;
-            case 2:
-                maplePoint += quantity;
-                break;
-        }
-    }
-
     public boolean getCanTalk() {
         return this.canTalk;
     }
@@ -4784,9 +4712,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public void setPoints(int p) {
         this.points = p;
-        if (this.points >= 1) {
-            finishAchievement(1);
-        }
     }
 
     public int getPoints() {

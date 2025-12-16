@@ -140,7 +140,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Serializable {
      * Class constructor
      */
     public ArrayMap() {
-        list = new ArrayList<Entry<K, V>>();
+        list = new ArrayList<>();
     }
 
     /**
