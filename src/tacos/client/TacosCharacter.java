@@ -18,10 +18,17 @@
  */
 package tacos.client;
 
+import java.awt.Point;
+import odin.client.MapleCharacter;
 import odin.client.MapleClient;
+import odin.server.MaplePortal;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
+import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
+import tacos.config.Region;
+import tacos.config.Version;
 import tacos.network.MaplePacket;
+import tacos.packet.response.ResCStage;
 
 /**
  *
@@ -30,6 +37,7 @@ import tacos.network.MaplePacket;
 public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     protected MapleClient client;
+    protected MapleMap map;
     private int viewRange = 1600;
     private int viewRangeSq = 1600 * 1600;
 
@@ -63,6 +71,30 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     @Override
     public void sendDestroyData(MapleClient client) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    // enter game server.
+    protected void sendSetField(MapleCharacter mchr) {
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            SendPacket(ResCStage.SetField_JMS_302(mchr, 1, true, null, 0, 0));
+            SendPacket(ResCStage.SetField_JMS_302(mchr, 2, true, null, 0, -1));
+            return;
+        }
+
+        SendPacket(ResCStage.SetField(mchr, true, null, 0));
+    }
+
+    // change map.
+    protected void sendSetField(MapleCharacter mchr, MapleMap to, Point pos, MaplePortal pto) {
+        int portal_id = (pto != null) ? pto.getId() : 0x81;
+
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            SendPacket(ResCStage.SetField_JMS_302(mchr, 1, false, to, portal_id, 0));
+            SendPacket(ResCStage.SetField_JMS_302(mchr, 2, false, null, 0, 0));
+            return;
+        }
+
+        SendPacket(ResCStage.SetField(mchr, false, to, portal_id));
     }
 
 }

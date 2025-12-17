@@ -151,7 +151,6 @@ import tacos.debug.IDebugMan;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
-import tacos.packet.response.ResCStage;
 import tacos.server.ServerOdinCashShop;
 import tacos.packet.response.wrapper.WrapCWvsContext;
 
@@ -190,7 +189,6 @@ public class MapleCharacter extends TacosCharacter {
     private MonsterBook monsterbook;
     private PlayerStats stats;
     private transient PlayerRandomStream CRand;
-    private transient MapleMap map;
     private transient MapleShop shop;
     private transient MapleDragon dragon;
     private transient RockPaperScissors rps;
@@ -2352,11 +2350,20 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void changeMap(MapleMap to, MaplePortal pto) {
-        changeMapInternal(to, pto.getPosition(), null);
+        changeMapInternal(to, pto.getPosition(), pto);
     }
 
     public void changeMapPortal(MapleMap to, MaplePortal pto) {
         changeMapInternal(to, pto.getPosition(), pto);
+    }
+
+    public void sendSetField() {
+        super.sendSetField(this);
+    }
+
+    @Override
+    public void sendSetField(MapleCharacter mchr, MapleMap to, Point pos, MaplePortal pto) {
+        super.sendSetField(this, to, pos, pto);
     }
 
     public void changeMapInternal(MapleMap to, Point pos, MaplePortal pto) {
@@ -2373,15 +2380,7 @@ public class MapleCharacter extends TacosCharacter {
         boolean pyramid_check = getPyramidSubway() != null;
 
         if (map.getId() == nowmapid) {
-            int portal_id = (pto != null) ? pto.getId() : 0x81;
-
-            if (Version.GreaterOrEqual(Region.JMS, 302)) {
-                SendPacket(ResCStage.SetField_JMS_302(this, 1, false, to, portal_id, 0));
-                SendPacket(ResCStage.SetField_JMS_302(this, 2, false, null, 0, 0));
-            } else {
-                SendPacket(ResCStage.SetField(this, false, to, portal_id));
-            }
-
+            sendSetField(this, to, pos, pto);
             map.removePlayer(this);
             to.spawnPlayers(this);
             to.spawnMerchant(this); // show merchant

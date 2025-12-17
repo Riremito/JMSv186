@@ -48,7 +48,6 @@ import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCFuncKeyMappedMan;
-import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
@@ -235,14 +234,8 @@ public class ReqCClientSocket {
         if (pendingBuddyRequest != null) {
             chr.getBuddylist().put(new BuddylistEntry(pendingBuddyRequest.getName(), pendingBuddyRequest.getId(), "マイ友未指定", -1, false, pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
         }
-        // [update character data in client by packet]
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            // 分割 SetField
-            chr.SendPacket(ResCStage.SetField_JMS_302(chr, 1, true, null, 0, 0));
-            chr.SendPacket(ResCStage.SetField_JMS_302(chr, 2, true, null, 0, -1));
-        } else {
-            chr.SendPacket(ResCStage.SetField(chr, true, null, 0));
-        }
+
+        chr.sendSetField();
         // initialize
         chr.SendPacket(WrapCWvsContext.updateInv()); // TWMS148 gets weird stat without sending this.
         chr.SendPacket(ResCWvsContext.ForcedStatReset());
