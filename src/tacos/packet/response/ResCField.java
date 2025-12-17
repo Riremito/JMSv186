@@ -29,9 +29,9 @@ import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsTransferField;
 import tacos.packet.ops.Ops_Whisper;
 import tacos.packet.ops.arg.ArgFieldEffect;
-import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
 import tacos.packet.ServerPacketHeader;
+import tacos.server.map.TacosMap;
 
 /**
  *
@@ -201,7 +201,7 @@ public class ResCField {
         return sp.get();
     }
 
-    public static final MaplePacket getUpdateEnvironment(final MapleMap map) {
+    public static final MaplePacket getUpdateEnvironment(TacosMap map) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOffStatus);
 
         sp.Encode4(map.getEnvironment().size());
@@ -307,7 +307,7 @@ public class ResCField {
         return sp.get();
     }
 
-    public static final MaplePacket getMovingPlatforms(final MapleMap map) {
+    public static final MaplePacket getMovingPlatforms(TacosMap map) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FootHoldInfo);
 
         sp.Encode4(map.getPlatforms().size());

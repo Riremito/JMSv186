@@ -26,8 +26,8 @@ import tacos.packet.response.wrapper.ResWrapper;
 
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
-import odin.server.maps.MapleMap;
 import odin.server.maps.MapleReactor;
+import tacos.server.map.TacosMap;
 
 public class SpawnPoint extends Spawns {
 
@@ -99,7 +99,7 @@ public class SpawnPoint extends Spawns {
     }
 
     @Override
-    public final MapleMonster spawnMonster(final MapleMap map) {
+    public final MapleMonster spawnMonster(TacosMap map) {
         final MapleMonster mob = new MapleMonster(monster);
         mob.setPosition(pos);
         mob.setCarnivalTeam(carnivalTeam);

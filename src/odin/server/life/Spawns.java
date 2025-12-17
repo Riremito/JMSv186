@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.life;
 
 import java.awt.Point;
-import odin.server.maps.MapleMap;
+import tacos.server.map.TacosMap;
 
 public abstract class Spawns {
 
@@ -33,7 +33,7 @@ public abstract class Spawns {
 
     public abstract int getCarnivalId();
 
-    public abstract MapleMonster spawnMonster(MapleMap map);
+    public abstract MapleMonster spawnMonster(TacosMap map);
 
     public abstract int getMobTime();
 

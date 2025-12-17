@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.EnterType;
 import tacos.packet.response.ResCDropPool.LeaveType;
+import tacos.server.map.TacosMap;
 
 public class MapleMapItem extends AbstractMapleMapObject {
 
@@ -170,7 +171,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
         return !pickedUp && type < 2 && nextFFA > 0 && nextFFA < System.currentTimeMillis();
     }
 
-    public void expire(final MapleMap map) {
+    public void expire(TacosMap map) {
         pickedUp = true;
         map.broadcastMessage(ResCDropPool.DropLeaveField(this, LeaveType.EXPIRED));
         map.removeMapObject(this);

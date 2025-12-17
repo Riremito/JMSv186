@@ -21,6 +21,7 @@ package tacos.server.map;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -34,22 +35,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
+import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
+import odin.handling.world.PartyOperation;
+import odin.scripting.EventManager;
+import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
+import odin.server.MapleStatEffect;
 import odin.server.Timer.MapTimer;
+import odin.server.events.MapleEvent;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.life.Spawns;
+import odin.server.maps.FieldLimitType;
+import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleDragon;
 import odin.server.maps.MapleDynamicPortal;
+import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapEffect;
 import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
@@ -57,16 +68,22 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleNodes;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleSummon;
+import odin.server.maps.SummonMovementType;
 import odin.tools.Pair;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.packet.response.ResCDropPool;
+import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.ResCSummonedPool;
+import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCUser_Dragon;
+import tacos.packet.response.ResCUser_Pet;
+import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
+import tacos.packet.response.wrapper.ResWrapper;
 import tacos.server.ServerOdinGame;
 import tacos.unofficial.CustomMonsterBookDrop;
 
@@ -459,6 +476,207 @@ public class TacosMap extends TacosMapData {
     public void spawnPlayers(MapleCharacter chr) {
         for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.PLAYER).values()) {
             ((MapleCharacter) obj).sendSpawnData(chr.getClient());
+        }
+    }
+
+    public final void addPlayer(final MapleCharacter chr) {
+        mutex.lock();
+        try {
+            characters.add(chr);
+            mapobjects.get(MapleMapObjectType.PLAYER).put(chr.getObjectId(), chr);
+        } finally {
+            mutex.unlock();
+        }
+        if (mapid == 109080000 || mapid == 109080001 || mapid == 109080002 || mapid == 109080003) {
+            chr.setCoconutTeam(getAndSwitchTeam() ? 0 : 1);
+        }
+        if (!chr.isHidden()) {
+            broadcastMessage(chr, ResCUserPool.UserEnterField(chr), false);
+            if (chr.isGM() && speedRunStart > 0) {
+                endSpeedRun();
+                broadcastMessage(ResWrapper.BroadCastMsgEvent("The speed run has ended."));
+            }
+        }
+        if (!chr.isClone()) {
+            if (!onFirstUserEnter.equals("")) {
+                if (getCharactersSize() == 1) {
+                    MapScriptMethods.startScript_FirstUser(chr.getClient(), onFirstUserEnter);
+                }
+            }
+            sendObjectPlacement(chr);
+
+            // 多分不要
+            // chr.getClient().getSession().write(UserPacket.spawnPlayerMapobject(chr));
+            if (!onUserEnter.equals("")) {
+                MapScriptMethods.startScript_User(chr.getClient(), onUserEnter);
+            }
+            switch (mapid) {
+                case 109080000: // coconut shit
+                case 109080001:
+                case 109080002:
+                case 109080003:
+                    chr.getClient().getSession().write(ResCField.showEquipEffect(chr.getCoconutTeam()));
+                    break;
+                case 809000101:
+                case 809000201:
+                    chr.getClient().getSession().write(ResCField.showEquipEffect());
+                    break;
+            }
+        }
+        for (final MaplePet pet : chr.getPets()) {
+            if (pet.getSummoned()) {
+                broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
+            }
+        }
+        if (chr.getParty() != null && !chr.isClone()) {
+            chr.silentPartyUpdate();
+            chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannel(), chr.getParty(), PartyOperation.SILENT_UPDATE, null));
+            chr.updatePartyMemberHP();
+            chr.receivePartyMemberHP();
+        }
+        final MapleStatEffect stat = chr.getStatForBuff(MapleBuffStat.SUMMON);
+        if (stat != null && !chr.isClone()) {
+            final MapleSummon summon = chr.getSummons().get(stat.getSourceId());
+            summon.setPosition(chr.getPosition());
+            try {
+                summon.setFh(getFootholds().findBelow(chr.getPosition()).getId());
+            } catch (NullPointerException e) {
+                summon.setFh(0); //lol, it can be fixed by movement
+            }
+            chr.addVisibleMapObject(summon);
+            this.spawnSummon(summon);
+        }
+        if (mapEffect != null) {
+            mapEffect.sendStartData(chr.getClient());
+        }
+        if (timeLimit > 0 && getForcedReturnMap() != null && !chr.isClone()) {
+            chr.startMapTimeLimitTask(timeLimit, getForcedReturnMap());
+        }
+        if (chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {
+            if (FieldLimitType.Mount.check(fieldLimit)) {
+                chr.cancelBuffStats(MapleBuffStat.MONSTER_RIDING);
+            }
+        }
+        if (!chr.isClone()) {
+            if (chr.getEventInstance() != null && chr.getEventInstance().isTimerStarted() && !chr.isClone()) {
+                chr.getClient().getSession().write(ResCField.getClock((int) (chr.getEventInstance().getTimeLeft() / 1000)));
+            }
+            if (hasClock()) {
+                final Calendar cal = Calendar.getInstance();
+                chr.getClient().getSession().write((ResCField.getClockTime(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND))));
+            }
+            if (chr.getCarnivalParty() != null && chr.getEventInstance() != null) {
+                chr.getEventInstance().onMapLoad(chr);
+            }
+            MapleEvent.mapLoad(chr, channel);
+            if (getSquadBegin() != null && getSquadBegin().getTimeLeft() > 0 && getSquadBegin().getStatus() == 1) {
+                chr.getClient().getSession().write(ResCField.getClock((int) (getSquadBegin().getTimeLeft() / 1000)));
+            }
+            if (mapid / 1000 != 105100 && mapid / 100 != 8020003 && mapid / 100 != 8020008) { //no boss_balrog/2095/coreblaze/auf. but coreblaze/auf does AFTER
+                final MapleSquad sqd = getSquadByMap(); //for all squads
+                if (!squadTimer && sqd != null && chr.getName().equals(sqd.getLeaderName()) && !chr.isClone()) {
+                    //leader? display
+                    doShrine(false);
+                    squadTimer = true;
+                }
+            }
+            if (getNumMonsters() > 0 && (mapid == 280030001 || mapid == 240060201 || mapid == 280030000 || mapid == 240060200 || mapid == 220080001 || mapid == 541020800 || mapid == 541010100)) {
+                String music = "Bgm09/TimeAttack";
+                switch (mapid) {
+                    case 240060200:
+                    case 240060201:
+                        music = "Bgm14/HonTale";
+                        break;
+                    case 280030000:
+                    case 280030001:
+                        music = "Bgm06/FinalFight";
+                        break;
+                }
+                chr.getClient().getSession().write(ResWrapper.musicChange(music));
+                //maybe timer too for zak/ht
+            }
+            if (mapid == 914000000) {
+                chr.getClient().getSession().write(ResCWvsContext.temporaryStats_Aran());
+            } else if (mapid == 105100300 && chr.getLevel() >= 91) {
+                chr.getClient().getSession().write(ResCWvsContext.temporaryStats_Balrog(chr));
+            } else if (mapid == 140090000 || mapid == 105100301 || mapid == 105100401 || mapid == 105100100) {
+                chr.getClient().getSession().write(ResCWvsContext.ForcedStatReset());
+            }
+        }
+        if (GameConstants.isEvan(chr.getJob()) && chr.getJob() >= 2200 && chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) == null) {
+            if (chr.getDragon() == null) {
+                chr.makeDragon();
+            }
+            chr.getDragon().setFH(0);
+            chr.getDragon().setStance(0);
+            chr.getDragon().setPosition(chr.getPosition());
+            spawnDragon(chr.getDragon());
+            if (!chr.isClone()) {
+                updateMapObjectVisibility(chr, chr.getDragon());
+            }
+        }
+        if ((mapid == 10000 && chr.getJob() == 0) || (mapid == 130030000 && chr.getJob() == 1000) || (mapid == 914000000 && chr.getJob() == 2000) || (mapid == 900010000 && chr.getJob() == 2001)) {
+            chr.getClient().getSession().write(ResCField.BlowWeather("Welcome to " + chr.getClient().getChannelServer().getServerName() + "!", 5122000, true));
+            chr.dropMessage(1, "Welcome to " + chr.getClient().getChannelServer().getServerName() + ", " + chr.getName() + " ! \r\nUse @joyce to collect your Item Of Appreciation once you're level 10! \r\nUse @help for commands. \r\nGood luck and have fun!");
+            chr.dropMessage(5, "Your EXP Rate will be set to " + GameConstants.getExpRate_Below10(chr.getJob()) + "x until you reach level 10.");
+            chr.dropMessage(5, "Use @joyce to collect your Item Of Appreciation once you're level 10! Use @help for commands. Good luck and have fun!");
+
+        }
+        if (getPlatforms().size() > 0) {
+            chr.getClient().getSession().write(ResCField.getMovingPlatforms(this));
+        }
+        if (environment.size() > 0) {
+            chr.getClient().getSession().write(ResCField.getUpdateEnvironment(this));
+        }
+        if (isTown()) {
+            chr.cancelEffectFromBuffStat(MapleBuffStat.RAINING_MINES);
+        }
+    }
+
+    public final void removePlayer(final MapleCharacter chr) {
+        //log.warn("[dc] [level2] Player {} leaves map {}", new Object[] { chr.getName(), mapid });
+        if (everlast) {
+            returnEverLastItem(chr);
+        }
+        mutex.lock();
+        try {
+            characters.remove(chr);
+        } finally {
+            mutex.unlock();
+        }
+        removeMapObject(chr);
+        chr.checkFollow();
+        broadcastMessage(ResCUserPool.UserLeaveField(chr.getId()));
+        if (!chr.isClone()) {
+            for (final MapleMonster monster : chr.getControlledMonsters()) {
+                monster.setController(null);
+                monster.setControllerHasAggro(false);
+                monster.setControllerKnowsAboutAggro(false);
+                updateMonsterController(monster);
+            }
+            chr.leaveMap();
+            checkStates(chr.getName());
+            if (mapid == 109020001) {
+                chr.canTalk(true);
+            }
+        }
+        chr.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
+        chr.cancelEffectFromBuffStat(MapleBuffStat.REAPER);
+        boolean cancelSummons = false;
+        for (final MapleSummon summon : chr.getSummons().values()) {
+            if (summon.getMovementType() == SummonMovementType.STATIONARY || summon.getMovementType() == SummonMovementType.CIRCLE_STATIONARY || summon.getMovementType() == SummonMovementType.WALK_STATIONARY) {
+                cancelSummons = true;
+            } else {
+                summon.setChangedMap(true);
+                removeMapObject(summon);
+            }
+        }
+        if (cancelSummons) {
+            chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
+
+        }
+        if (chr.getDragon() != null) {
+            removeMapObject(chr.getDragon());
         }
     }
 
@@ -998,9 +1216,425 @@ public class TacosMap extends TacosMapData {
         }
     }
 
+    // unknown code
+    private void sendObjectPlacement(MapleCharacter chr) {
+        if (chr == null || chr.isClone()) {
+            return;
+        }
+        for (final MapleMapObject o : this.getAllMonsters()) {
+            updateMonsterController((MapleMonster) o);
+        }
+        for (final MapleMapObject o : getMapObjectsInRange(chr.getPosition(), chr.getViewRangeSq(), GameConstants.rangedMapobjectTypes)) {
+            if (o.getType() == MapleMapObjectType.REACTOR) {
+                if (!((MapleReactor) o).isAlive()) {
+                    continue;
+                }
+            }
+            o.sendSpawnData(chr.getClient());
+            chr.addVisibleMapObject(o);
+        }
+    }
+
+    public boolean getAndSwitchTeam() {
+        return getCharactersSize() % 2 != 0;
+    }
+
+    public void doShrine(final boolean spawned) { //false = entering map, true = defeated
+        if (squadSchedule != null) {
+            cancelSquadSchedule();
+        }
+        final int mode = (mapid == 280030000 ? 1 : (mapid == 280030001 ? 2 : (mapid == 240060200 || mapid == 240060201 ? 3 : 0)));
+        //chaos_horntail message for horntail too because it looks nicer
+        final MapleSquad sqd = getSquadByMap();
+        final EventManager em = getEMByMap();
+        if (sqd != null && em != null && getCharactersSize() > 0) {
+            final String leaderName = sqd.getLeaderName();
+            final String state = em.getProperty("state");
+            final Runnable run;
+            MapleMap returnMapa = getForcedReturnMap();
+            if (returnMapa == null || returnMapa.getId() == mapid) {
+                returnMapa = getReturnMap();
+            }
+            if (mode == 1) { //zakum
+                broadcastMessage(ResCField.showZakumShrine(spawned, 5));
+            } else if (mode == 2) { //chaoszakum
+                broadcastMessage(ResCField.showChaosZakumShrine(spawned, 5));
+            } else if (mode == 3) { //ht/chaosht
+                broadcastMessage(ResCField.showChaosHorntailShrine(spawned, 5));
+            } else {
+                broadcastMessage(ResCField.showHorntailShrine(spawned, 5));
+            }
+            if (mode == 1 || spawned) { //both of these together dont go well
+                broadcastMessage(ResCField.getClock(300)); //5 min
+            }
+            final MapleMap returnMapz = returnMapa;
+            if (!spawned) { //no monsters yet; inforce timer to spawn it quickly
+                final List<MapleMonster> monsterz = getAllMonsters();
+                final List<Integer> monsteridz = new ArrayList<Integer>();
+                for (MapleMapObject m : monsterz) {
+                    monsteridz.add(m.getObjectId());
+                }
+                run = new Runnable() {
+
+                    public void run() {
+                        final MapleSquad sqnow = getSquadByMap();
+                        if (getCharactersSize() > 0 && getNumMonsters() == monsterz.size() && sqnow != null && sqnow.getStatus() == 2 && sqnow.getLeaderName().equals(leaderName) && getEMByMap().getProperty("state").equals(state)) {
+                            boolean passed = monsterz.isEmpty();
+                            for (MapleMapObject m : getAllMonsters()) {
+                                for (int i : monsteridz) {
+                                    if (m.getObjectId() == i) {
+                                        passed = true;
+                                        break;
+                                    }
+                                }
+                                if (passed) {
+                                    break;
+                                } //even one of the monsters is the same
+                            }
+                            if (passed) {
+                                //are we still the same squad? are monsters still == 0?
+                                MaplePacket packet;
+                                if (mode == 1) { //zakum
+                                    packet = ResCField.showZakumShrine(spawned, 0);
+                                } else if (mode == 2) { //chaoszakum
+                                    packet = ResCField.showChaosZakumShrine(spawned, 0);
+                                } else {
+                                    packet = ResCField.showHorntailShrine(spawned, 0); //chaoshorntail message is weird
+                                }
+                                for (MapleCharacter chr : getCharacters()) { //warp all in map
+                                    chr.getClient().getSession().write(packet);
+                                    chr.changeMap(returnMapz, returnMapz.getPortal(0)); //hopefully event will still take care of everything once warp out
+                                }
+                                checkStates("");
+                                resetFully();
+                            }
+                        }
+
+                    }
+                };
+            } else { //inforce timer to gtfo
+                run = new Runnable() {
+
+                    public void run() {
+                        MapleSquad sqnow = getSquadByMap();
+                        //we dont need to stop clock here because they're getting warped out anyway
+                        if (getCharactersSize() > 0 && sqnow != null && sqnow.getStatus() == 2 && sqnow.getLeaderName().equals(leaderName) && getEMByMap().getProperty("state").equals(state)) {
+                            //are we still the same squad? monsters however don't count
+                            MaplePacket packet;
+                            if (mode == 1) { //zakum
+                                packet = ResCField.showZakumShrine(spawned, 0);
+                            } else if (mode == 2) { //chaoszakum
+                                packet = ResCField.showChaosZakumShrine(spawned, 0);
+                            } else {
+                                packet = ResCField.showHorntailShrine(spawned, 0); //chaoshorntail message is weird
+                            }
+                            for (MapleCharacter chr : getCharacters()) { //warp all in map
+                                chr.getClient().getSession().write(packet);
+                                chr.changeMap(returnMapz, returnMapz.getPortal(0)); //hopefully event will still take care of everything once warp out
+                            }
+                            checkStates("");
+                            resetFully();
+                        }
+                    }
+                };
+            }
+            squadSchedule = MapTimer.getInstance().schedule(run, 300000); //5 mins
+        }
+    }
+
+    public void returnEverLastItem(final MapleCharacter chr) {
+        for (final MapleMapObject o : getAllItems()) {
+            final MapleMapItem item = ((MapleMapItem) o);
+            if (item.getOwner() == chr.getId()) {
+                item.setPickedUp(true);
+
+                DebugLogger.DebugLog("PICKUP REVER");
+                broadcastMessage(ResCDropPool.DropLeaveField(item, ResCDropPool.LeaveType.PICK_UP, chr, 0), item.getPosition());
+                if (item.getMeso() > 0) {
+                    chr.gainMeso(item.getMeso(), false);
+                } else {
+                    MapleInventoryManipulator.addFromDrop(chr.getClient(), item.getItem(), false);
+                }
+                removeMapObject(item);
+            }
+        }
+        spawnRandDrop();
+    }
+
+    public void spawnRandDrop() {
+        // removed random code.
+        return;
+    }
+
+    public void checkStates(final String chr) {
+        final MapleSquad sqd = getSquadByMap();
+        final EventManager em = getEMByMap();
+        final int size = getCharactersSize();
+        if (sqd != null) {
+            sqd.removeMember(chr);
+            if (em != null) {
+                if (sqd.getLeaderName().equals(chr)) {
+                    em.setProperty("leader", "false");
+                }
+                if (chr.equals("") || size == 0) {
+                    sqd.clear();
+                    em.setProperty("state", "0");
+                    em.setProperty("leader", "true");
+                    cancelSquadSchedule();
+                }
+            }
+        }
+        if (em != null && em.getProperty("state") != null) {
+            if (size == 0) {
+                em.setProperty("state", "0");
+                if (em.getProperty("leader") != null) {
+                    em.setProperty("leader", "true");
+                }
+            }
+        }
+        if (speedRunStart > 0 && speedRunLeader.equalsIgnoreCase(chr)) {
+            if (size > 0) {
+                broadcastMessage(ResWrapper.BroadCastMsgEvent("The leader is not in the map! Your speedrun has failed"));
+            }
+            endSpeedRun();
+        }
+    }
+
+    public MapleSquad getSquadByMap() {
+        String zz = null;
+        switch (mapid) {
+            case 105100400:
+            case 105100300:
+                zz = "BossBalrog";
+                break;
+            case 280030000:
+                zz = "ZAK";
+                break;
+            case 280030001:
+                zz = "ChaosZak";
+                break;
+            case 240060200:
+                zz = "Horntail";
+                break;
+            case 240060201:
+                zz = "ChaosHT";
+                break;
+            case 270050100:
+                zz = "PinkBean";
+                break;
+            case 802000111:
+                zz = "nmm_squad";
+                break;
+            case 802000211:
+                zz = "VERGAMOT";
+                break;
+            case 802000311:
+                zz = "2095_tokyo";
+                break;
+            case 802000411:
+                zz = "Dunas";
+                break;
+            case 802000611:
+                zz = "Nibergen_squad";
+                break;
+            case 802000711:
+                zz = "dunas2";
+                break;
+            case 802000801:
+            case 802000802:
+            case 802000803:
+                zz = "Core_Blaze";
+                break;
+            case 802000821:
+                zz = "Aufheben";
+                break;
+            default:
+                return null;
+        }
+        return ServerOdinGame.getInstance(channel).getMapleSquad(zz);
+    }
+
+    public EventManager getEMByMap() {
+        String em = null;
+        switch (mapid) {
+            case 105100400:
+                em = "BossBalrog_EASY";
+                break;
+            case 105100300:
+                em = "BossBalrog_NORMAL";
+                break;
+            case 280030000:
+                em = "ZakumBattle";
+                break;
+            case 240060200:
+                em = "HorntailBattle";
+                break;
+            case 280030001:
+                em = "ChaosZakum";
+                break;
+            case 240060201:
+                em = "ChaosHorntail";
+                break;
+            case 270050100:
+                em = "PinkBeanBattle";
+                break;
+            case 802000111:
+                em = "NamelessMagicMonster";
+                break;
+            case 802000211:
+                em = "Vergamot";
+                break;
+            case 802000311:
+                em = "2095_tokyo";
+                break;
+            case 802000411:
+                em = "Dunas";
+                break;
+            case 802000611:
+                em = "Nibergen";
+                break;
+            case 802000711:
+                em = "Dunas2";
+                break;
+            case 802000801:
+            case 802000802:
+            case 802000803:
+                em = "CoreBlaze";
+                break;
+            case 802000821:
+                em = "Aufhaven";
+                break;
+            default:
+                return null;
+        }
+        return ServerOdinGame.getInstance(channel).getEventSM().getEventManager(em);
+    }
+
+    public void resetFully() {
+        resetFully(true);
+    }
+
+    public void resetFully(boolean respawn) {
+        killAllMonsters(false);
+        reloadReactors();
+        removeDrops();
+        resetNPCs();
+        resetSpawns();
+        endSpeedRun();
+        cancelSquadSchedule();
+        resetPortals();
+        environment.clear();
+        if (respawn) {
+            respawn(true);
+        }
+    }
+
+    public void removeDrops() {
+        List<MapleMapItem> items = getAllItems();
+        for (MapleMapItem i : items) {
+            i.expire(this);
+        }
+    }
+
+    public void resetSpawns() {
+        boolean changed = false;
+        Iterator<Spawns> sss = monsterSpawn.iterator();
+        while (sss.hasNext()) {
+            if (sss.next().getCarnivalId() > -1) {
+                sss.remove();
+                changed = true;
+            }
+        }
+        setSpawns(true);
+        if (changed) {
+            loadMonsterRate(true);
+        }
+    }
+
+    public void loadMonsterRate(boolean first) {
+        final int spawnSize = monsterSpawn.size();
+        maxRegularSpawn = Math.round(spawnSize * monsterRate);
+        if (maxRegularSpawn < 2) {
+            maxRegularSpawn = 2;
+        } else if (maxRegularSpawn > spawnSize) {
+            maxRegularSpawn = spawnSize - (spawnSize / 15);
+        }
+        if (fixedMob > 0) {
+            maxRegularSpawn = fixedMob;
+        }
+        Collection<Spawns> newSpawn = new LinkedList<Spawns>();
+        Collection<Spawns> newBossSpawn = new LinkedList<Spawns>();
+        for (final Spawns s : monsterSpawn) {
+            if (s.getCarnivalTeam() >= 2) {
+                continue; // Remove carnival spawned mobs
+            }
+            if (s.getMonster().getStats().isBoss()) {
+                newBossSpawn.add(s);
+            } else {
+                newSpawn.add(s);
+            }
+        }
+        monsterSpawn.clear();
+        monsterSpawn.addAll(newBossSpawn);
+        monsterSpawn.addAll(newSpawn);
+
+        if (first && spawnSize > 0) {
+            lastSpawnTime = 0; // 即沸き
+            if (GameConstants.isForceRespawn(mapid)) {
+                createMobInterval = 15000;
+            }
+        }
+    }
+
+    public void respawn(boolean force) {
+        lastSpawnTime = System.currentTimeMillis();
+        if (force) { //cpq quick hack
+            final int numShouldSpawn = monsterSpawn.size() - spawnedMonstersOnMap.get();
+
+            if (numShouldSpawn > 0) {
+                int spawned = 0;
+
+                for (Spawns spawnPoint : monsterSpawn) {
+                    spawnPoint.spawnMonster(this);
+                    spawned++;
+                    if (spawned >= numShouldSpawn) {
+                        break;
+                    }
+                }
+            }
+        } else {
+            final int numShouldSpawn = maxRegularSpawn - spawnedMonstersOnMap.get();
+            if (numShouldSpawn > 0) {
+                int spawned = 0;
+
+                final List<Spawns> randomSpawn = new ArrayList<Spawns>(monsterSpawn);
+                Collections.shuffle(randomSpawn);
+
+                for (Spawns spawnPoint : randomSpawn) {
+                    if (spawnPoint.shouldSpawn() || GameConstants.isForceRespawn(mapid)) {
+                        spawnPoint.spawnMonster(this);
+                        spawned++;
+                    }
+                    if (spawned >= numShouldSpawn) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     // unused
     public boolean canSoar() {
         return this.soaring;
+    }
+
+    // compatbility
+    public MapleMap getReturnMap() {
+        return ServerOdinGame.getInstance(channel).getMapFactory().getMap(returnMapId);
+    }
+
+    public MapleMap getForcedReturnMap() {
+        return ServerOdinGame.getInstance(channel).getMapFactory().getMap(forcedReturnMap);
     }
 
 }
