@@ -23,8 +23,6 @@ import odin.client.MapleQuestStatus;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
-import tacos.config.Region;
-import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
@@ -41,11 +39,9 @@ import tacos.packet.ops.OpsQuestRecordMessage;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCScriptMan;
-import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.struct.InvOp;
 import odin.server.Randomizer;
-import odin.server.maps.MapleMap;
 import odin.tools.StringUtil;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
@@ -558,19 +554,6 @@ public class ResWrapper {
         ArgFriend frs = new ArgFriend();
         frs.flag = flag;
         return ResCWvsContext.FriendResult(frs);
-    }
-
-    // プレイヤー情報の初期化
-    public static final MaplePacket getCharInfo(final MapleCharacter chr) {
-        return ResCStage.SetField(chr, true, null, 0);
-    }
-
-    // マップ移動
-    public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            return ResCStage.SetField_JMS_302(chr, 1, false, to, spawnPoint, 0);
-        }
-        return ResCStage.SetField(chr, false, to, spawnPoint);
     }
 
     public static MaplePacket getNPCTalkNum(int npc, String talk, int def, int min, int max) {

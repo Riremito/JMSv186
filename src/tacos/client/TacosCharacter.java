@@ -21,6 +21,7 @@ package tacos.client;
 import odin.client.MapleClient;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
 import odin.server.maps.MapleMapObjectType;
+import tacos.network.MaplePacket;
 
 /**
  *
@@ -28,8 +29,13 @@ import odin.server.maps.MapleMapObjectType;
  */
 public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
+    protected MapleClient client;
     private int viewRange = 1600;
     private int viewRangeSq = 1600 * 1600;
+
+    public void SendPacket(MaplePacket packet) {
+        client.SendPacket(packet);
+    }
 
     public int getViewRange() {
         return this.viewRange;

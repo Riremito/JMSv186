@@ -61,7 +61,6 @@ import tacos.shared.SharedExpTable;
 import tacos.wz.ids.DWI_Validation;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
-import tacos.network.MaplePacket;
 import tacos.server.ServerOdinGame;
 import odin.handling.world.CharacterTransfer;
 import odin.handling.world.MapleMessenger;
@@ -83,7 +82,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsChangeStat;
-import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsUserEffect;
@@ -99,7 +97,6 @@ import tacos.packet.response.ResCUser_Pet.DeActivatedMsg;
 import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCScriptMan;
-import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCSummonedPool;
 import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
@@ -152,7 +149,9 @@ import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
 import tacos.debug.IDebugMan;
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
+import tacos.packet.response.ResCStage;
 import tacos.server.ServerOdinCashShop;
 import tacos.packet.response.wrapper.WrapCWvsContext;
 
@@ -189,7 +188,6 @@ public class MapleCharacter extends TacosCharacter {
     private transient MapleCarnivalParty carnivalParty;
     private BuddyList buddylist;
     private MonsterBook monsterbook;
-    private MapleClient client;
     private PlayerStats stats;
     private transient PlayerRandomStream CRand;
     private transient MapleMap map;
@@ -2333,57 +2331,63 @@ public class MapleCharacter extends TacosCharacter {
         this.fame += famechange;
     }
 
-    public void changeMapBanish(final int mapid, final String portal, final String msg) {
+    public void changeMapBanish(int mapid, String portal, String msg) {
         dropMessage(5, msg);
-        final MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
         changeMap(map, map.getPortal(portal));
     }
 
     // old
-    public void changeMap(final MapleMap to, final Point pos) {
-        changeMapInternal(to, pos, ResWrapper.getWarpToMap(to, 0x81, this), null);
+    public void changeMap(MapleMap to, Point pos) {
+        changeMapInternal(to, pos, null);
     }
 
     public void enterTownPortal(MapleDoor door) {
         SendPacket(ResCTownPortalPool.setMysticDoorInfo(door));
         SendPacket(ResCTownPortalPool.removeDoor(door));
-        changeMapInternal(door.getLink().getMap(), door.getLink().getPosition(), ResWrapper.getWarpToMap(door.getLink().getMap(), (byte) door.getTownPortal().getId(), this), null);
+        changeMapInternal(door.getLink().getMap(), door.getLink().getPosition(), door.getTownPortal());
         SendPacket(ResCTownPortalPool.removeDoor(door.getLink()));
         SendPacket(ResCTownPortalPool.spawnDoor(door.getLink(), false));
         SendPacket(ResCTownPortalPool.setMysticDoorInfo(door.getLink()));
     }
 
-    public void changeMap(final MapleMap to, final MaplePortal pto) {
-        changeMapInternal(to, pto.getPosition(), ResWrapper.getWarpToMap(to, pto.getId(), this), null);
+    public void changeMap(MapleMap to, MaplePortal pto) {
+        changeMapInternal(to, pto.getPosition(), null);
     }
 
-    public void changeMapPortal(final MapleMap to, final MaplePortal pto) {
-        changeMapInternal(to, pto.getPosition(), ResWrapper.getWarpToMap(to, pto.getId(), this), pto);
+    public void changeMapPortal(MapleMap to, MaplePortal pto) {
+        changeMapInternal(to, pto.getPosition(), pto);
     }
 
-    private void changeMapInternal(final MapleMap to, final Point pos, MaplePacket warpPacket, final MaplePortal pto) {
+    public void changeMapInternal(MapleMap to, Point pos, MaplePortal pto) {
         if (to == null) {
             return;
         }
-        final int nowmapid = map.getId();
-        if (eventInstance != null) {
-            eventInstance.changedMap(this, to.getId());
+
+        int nowmapid = map.getId();
+
+        if (getEventInstance() != null) {
+            getEventInstance().changedMap(this, to.getId());
         }
-        final boolean pyramid = pyramidSubway != null;
+
+        boolean pyramid_check = getPyramidSubway() != null;
+
         if (map.getId() == nowmapid) {
-            client.SendPacket(warpPacket);
+            int portal_id = (pto != null) ? pto.getId() : 0x81;
+
             if (Version.GreaterOrEqual(Region.JMS, 302)) {
-                client.SendPacket(ResCStage.SetField_JMS_302(this, 2, false, null, 0, 0));
-                //client.getPlayer().UpdateStat(true);
+                SendPacket(ResCStage.SetField_JMS_302(this, 1, false, to, portal_id, 0));
+                SendPacket(ResCStage.SetField_JMS_302(this, 2, false, null, 0, 0));
+            } else {
+                SendPacket(ResCStage.SetField(this, false, to, portal_id));
             }
+
             map.removePlayer(this);
-            //Debug.DebugLog(getName() + " Enter Map = " + to.getId());
             to.spawnPlayers(this);
             to.spawnMerchant(this); // show merchant
             to.spawnDynamicPortal(this); // show dynamic portal;
             if (!clone && client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {
-                map = to;
-                //Debug.DebugLog("stance : " + getStance() + " -> " + OpsMovePathAttr.MPA_NORMAL.get());
+                setMap(to);
                 setStance(OpsMovePathAttr.MPA_NORMAL.get());
                 setPosition(pos);
                 setFH(0);
@@ -2391,8 +2395,11 @@ public class MapleCharacter extends TacosCharacter {
                 stats.relocHeal();
             }
         }
-        if (pyramid && pyramidSubway != null) { //checks if they had pyramid before AND after changing
-            pyramidSubway.onChangeMap(this, to.getId());
+
+        if (pyramid_check) {
+            if (getPyramidSubway() != null) {
+                getPyramidSubway().onChangeMap(this, to.getId());
+            }
         }
         // マップ移動時にDBへ反映する
         saveToDB(false, false);
@@ -5562,10 +5569,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public IMaplePlayerShop getRemoteStore() {
         return this.remoteStore;
-    }
-
-    public void SendPacket(MaplePacket packet) {
-        getClient().getSession().write(packet);
     }
 
     public void setPetAutoHPItem(int item_id) {

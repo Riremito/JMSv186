@@ -241,7 +241,7 @@ public class ReqCClientSocket {
             chr.SendPacket(ResCStage.SetField_JMS_302(chr, 1, true, null, 0, 0));
             chr.SendPacket(ResCStage.SetField_JMS_302(chr, 2, true, null, 0, -1));
         } else {
-            chr.SendPacket(ResWrapper.getCharInfo(chr));
+            chr.SendPacket(ResCStage.SetField(chr, true, null, 0));
         }
         // initialize
         chr.SendPacket(WrapCWvsContext.updateInv()); // TWMS148 gets weird stat without sending this.
