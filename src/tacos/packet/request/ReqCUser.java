@@ -704,6 +704,12 @@ public class ReqCUser {
                 ReqCCashShop.LeaveCS(c, chr);
                 return true;
             }
+            // アバターランダムボックスのオープン処理
+            case CP_CashGachaponOpenRequest: {
+                long box_SN = cp.Decode8();
+                ReqCCashShop.OnGachaponOpen(c, box_SN);
+                return true;
+            }
             default: {
                 break;
             }

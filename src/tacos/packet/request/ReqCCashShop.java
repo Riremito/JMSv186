@@ -58,12 +58,6 @@ public class ReqCCashShop {
         }
 
         switch (header) {
-            // アバターランダムボックスのオープン処理
-            case CP_CashGachaponOpenRequest: {
-                // TODO : rename or move
-                long box_SN = cp.Decode8();
-                return OnGachaponOpen(c, box_SN);
-            }
             case CP_CashShopChargeParamRequest: {
                 chr.SendPacket(ResCCashShop.CashShopChargeParamResult(chr));
                 return true;
@@ -545,7 +539,7 @@ public class ReqCCashShop {
         return true;
     }
 
-    private static boolean OnGachaponOpen(MapleClient c, long box_SN) {
+    public static boolean OnGachaponOpen(MapleClient c, long box_SN) {
         MapleCharacter chr = c.getPlayer();
 
         if (chr == null) {
