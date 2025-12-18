@@ -149,7 +149,6 @@ import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
 import tacos.debug.IDebugMan;
 import tacos.packet.ServerPacket;
-import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.ServerOdinCashShop;
 import tacos.packet.response.wrapper.WrapCWvsContext;
@@ -158,10 +157,10 @@ public class MapleCharacter extends TacosCharacter {
 
     private String name, chalktext, BlessOfFairy_Origin;
     private long lastCombo, lastfametime, keydown_skill;
-    private byte dojoRecord, gmLevel, gender, initialSpawnPoint, skinColor, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
+    private byte dojoRecord, gmLevel, gender, skinColor, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
     private int subcategory;
     private int level, mulung_energy, combo, availableCP, totalCP, fame, hpApUsed, job, remainingAp;
-    private int accountid, id, meso, exp, hair, face, mapid, bookCover, dojo,
+    private int accountid, id, meso, exp, hair, face, bookCover, dojo,
             guildid = 0, fallcounter = 0, maplePoint, nexonPoint, chair, itemEffect, points, vpoints,
             rank = 1, rankMove = 0, jobRank = 1, jobRankMove = 0, marriageId, marriageItemId = 0,
             currentrep, totalrep, linkMid = 0, coconutteam = 0, followid = 0, battleshipHP = 0;
@@ -384,7 +383,7 @@ public class MapleCharacter extends TacosCharacter {
         ret.face = ct.face;
         ret.accountid = ct.accountid;
         ret.mapid = ct.mapid;
-        ret.initialSpawnPoint = ct.initialSpawnPoint;
+        ret.nPortal = ct.nPortal;
         ret.world = ct.world;
         ret.bookCover = ct.mBookCover;
         ret.dojo = ct.dojo;
@@ -415,11 +414,11 @@ public class MapleCharacter extends TacosCharacter {
                     ret.map = ret.map.getForcedReturnMap();
                 }
             }
-            MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
+            MaplePortal portal = ret.map.getPortal(ret.nPortal);
             if (portal == null) {
                 portal = ret.map.getPortal(0);
             }
-            ret.initialSpawnPoint = (byte) portal.getId();
+            ret.nPortal = portal.getId();
             ret.setFH(0);
             ret.setPosition(portal.getPosition());
 
@@ -545,7 +544,7 @@ public class MapleCharacter extends TacosCharacter {
 
             ret.accountid = rs.getInt("accountid");
             ret.mapid = rs.getInt("map");
-            ret.initialSpawnPoint = rs.getByte("spawnpoint");
+            ret.nPortal = rs.getByte("spawnpoint");
             ret.world = rs.getByte("world");
             ret.guildid = rs.getInt("guildid");
             ret.guildrank = rs.getByte("guildrank");
@@ -570,11 +569,11 @@ public class MapleCharacter extends TacosCharacter {
                 if (ret.map == null) { //char is on a map that doesn't exist warp it to henesys
                     ret.map = mapFactory.getMap(100000000);
                 }
-                MaplePortal portal = ret.map.getPortal(ret.initialSpawnPoint);
+                MaplePortal portal = ret.map.getPortal(ret.nPortal);
                 if (portal == null) {
                     portal = ret.map.getPortal(0);
                 }
-                ret.initialSpawnPoint = (byte) portal.getId();
+                ret.nPortal = portal.getId();
                 ret.setFH(0);
                 ret.setPosition(portal.getPosition());
 
@@ -2068,27 +2067,8 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public MapleMap getMap() {
-        return map;
-    }
-
     public MonsterBook getMonsterBook() {
         return monsterbook;
-    }
-
-    public void setMap(MapleMap newmap) {
-        this.map = newmap;
-    }
-
-    public void setMap(int PmapId) {
-        this.mapid = PmapId;
-    }
-
-    public int getMapId() {
-        if (map != null) {
-            return map.getId();
-        }
-        return mapid;
     }
 
     public boolean checkSpecificMap(int map_id_base, int map_id_range) {
@@ -2107,10 +2087,6 @@ public class MapleCharacter extends TacosCharacter {
         }
 
         return true;
-    }
-
-    public byte getInitialSpawnpoint() {
-        return initialSpawnPoint;
     }
 
     public int getId() {
@@ -2335,8 +2311,8 @@ public class MapleCharacter extends TacosCharacter {
         changeMap(map, map.getPortal(portal));
     }
 
-    // old
-    public void changeMap(MapleMap to, Point pos) {
+    // unofficial usage.
+    public void changeMapDynamicPortal(MapleMap to, Point pos) {
         changeMapInternal(to, pos, null);
     }
 
@@ -2366,38 +2342,35 @@ public class MapleCharacter extends TacosCharacter {
         super.sendSetField(this, to, pos, pto);
     }
 
-    public void changeMapInternal(MapleMap to, Point pos, MaplePortal pto) {
-        if (to == null) {
+    public void changeMapInternal(MapleMap map_to, Point pos, MaplePortal portal_to) {
+        if (map_to == null) {
             return;
         }
 
-        int nowmapid = map.getId();
+        int map_id_prev = map.getId();
 
         if (getEventInstance() != null) {
-            getEventInstance().changedMap(this, to.getId());
+            getEventInstance().changedMap(this, map_to.getId());
         }
 
         boolean pyramid_check = getPyramidSubway() != null;
+        boolean map_id_check = map.getId() == map_id_prev;
 
-        if (map.getId() == nowmapid) {
-            sendSetField(this, to, pos, pto);
-            map.removePlayer(this);
-            to.spawnPlayers(this);
-            to.spawnMerchant(this); // show merchant
-            to.spawnDynamicPortal(this); // show dynamic portal;
-            if (!clone && client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null) {
-                setMap(to);
-                setStance(OpsMovePathAttr.MPA_NORMAL.get());
-                setPosition(pos);
-                setFH(0);
-                to.addPlayer(this);
-                stats.relocHeal();
-            }
+        if (map_id_check) {
+            MapleMap map_from = map;
+            map_from.removePlayer(this);
+            sendSetField(this, map_to, pos, portal_to);
+            updateMap(map_to, portal_to);
+            map_to.addPlayer(this);
+            map_to.spawnPlayers(this);
+            map_to.spawnMerchant(this); // show merchant
+            map_to.spawnDynamicPortal(this); // show dynamic portal;
+            stats.relocHeal();
         }
 
         if (pyramid_check) {
             if (getPyramidSubway() != null) {
-                getPyramidSubway().onChangeMap(this, to.getId());
+                getPyramidSubway().onChangeMap(this, map_to.getId());
             }
         }
         // マップ移動時にDBへ反映する

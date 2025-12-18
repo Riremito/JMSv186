@@ -117,7 +117,7 @@ public class DataGW_CharacterStat {
             data.Encode4(chr.getGashaEXP());
             data.Encode8(0);
             data.Encode4(chr.getMapId());
-            data.Encode1(chr.getInitialSpawnpoint());
+            data.Encode1(chr.getPortal());
             data.Encode2(chr.getSubcategory());
             if (GameConstants.is_demonslayer(chr.getJob())) {
                 data.Encode4(0);
@@ -169,7 +169,7 @@ public class DataGW_CharacterStat {
             data.Encode4(chr.getGashaEXP());
             data.Encode8(0);
             data.Encode4(chr.getMapId());
-            data.Encode1(chr.getInitialSpawnpoint());
+            data.Encode1(chr.getPortal());
             data.Encode2(chr.getSubcategory());
             if (GameConstants.is_demonslayer(chr.getJob())) {
                 data.Encode4(0);
@@ -212,7 +212,7 @@ public class DataGW_CharacterStat {
                 data.Encode4(0);
             }
             data.Encode4(chr.getMapId());
-            data.Encode1(chr.getInitialSpawnpoint());
+            data.Encode1(chr.getPortal());
             if (Version.GreaterOrEqual(Region.GMS, 111)) {
                 data.Encode4(0);
             }
@@ -323,20 +323,20 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
 
-        data.Encode4(chr.getExp());
-        data.Encode2(chr.getFame());
+        data.Encode4(chr.getExp()); // nEXP
+        data.Encode2(chr.getFame()); // nPOP
 
         if ((Region.IsJMS() || Region.IsCMS() || Region.IsTHMS() || Region.IsTWMS() || Region.IsGMS() || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB()))
                 && ServerConfig.JMS146orLater()) {
-            data.Encode4(chr.getGashaEXP()); // Gachapon exp
+            data.Encode4(chr.getGashaEXP()); // nTempEXP
         }
 
         if (Version.GreaterOrEqual(Region.TWMS, 121) || Region.IsCMS() || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB())) {
             data.Encode8(0);
         }
 
-        data.Encode4(chr.getMapId()); // current map id
-        data.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
+        data.Encode4(chr.getMapId()); // dwPosMap
+        data.Encode1(chr.getPortal()); // nPortal
 
         if (Region.IsVMS()) {
             return data.get().getBytes();

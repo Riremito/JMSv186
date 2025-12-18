@@ -28,6 +28,7 @@ import odin.server.maps.MapleMapObjectType;
 import tacos.config.Region;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
+import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.response.ResCStage;
 
 /**
@@ -38,6 +39,8 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     protected MapleClient client;
     protected MapleMap map;
+    protected int mapid;
+    protected int nPortal;
     private int viewRange = 1600;
     private int viewRangeSq = 1600 * 1600;
 
@@ -97,4 +100,34 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         SendPacket(ResCStage.SetField(mchr, false, to, portal_id));
     }
 
+    public MapleMap getMap() {
+        return this.map;
+    }
+
+    private void setMap(MapleMap map) {
+        this.map = map;
+    }
+
+    public int getPortal() {
+        return this.nPortal;
+    }
+
+    public void setPortal(int nPortal) {
+        this.nPortal = nPortal;
+    }
+
+    public void updateMap(MapleMap map_to, MaplePortal portal_to) {
+        setMap(map_to);
+        setPortal(portal_to.getId()); // spawn point
+        setPosition(portal_to.getPosition()); // spawn point xy (server side), some version could not control spawn xy by packet.
+        setFH(0); // foothold id is 0 while character is in the air.
+        setStance(OpsMovePathAttr.MPA_NORMAL.get()); // default state (?)
+    }
+
+    public int getMapId() {
+        if (this.map != null) {
+            return this.map.getId();
+        }
+        return this.mapid;
+    }
 }

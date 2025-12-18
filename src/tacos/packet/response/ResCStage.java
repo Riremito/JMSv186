@@ -42,7 +42,7 @@ import tacos.packet.ServerPacketHeader;
 public class ResCStage {
 
     // CStage::OnSetField
-    public static final MaplePacket SetField(MapleCharacter chr, boolean loggedin, MapleMap to, int spawnPoint) {
+    public static final MaplePacket SetField(MapleCharacter chr, boolean bCharacterData, MapleMap to, int spawnPoint) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
         // JMS184orLater
         if (((Region.IsJMS() || Region.IsCMS() || Region.IsGMS()) && ServerConfig.JMS186orLater())
@@ -76,11 +76,11 @@ public class ResCStage {
         if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode4(0);
         }
-        sp.Encode1(loggedin ? 1 : 0); // bCharacterData, 1 = all data, 0 = map change
+        sp.Encode1(bCharacterData ? 1 : 0); // bCharacterData, 1 = all data, 0 = map change
         if (ServerConfig.JMS146orLater()) {
             sp.Encode2(0); // nNotifierCheck
         }
-        if (loggedin) {
+        if (bCharacterData) {
             // [chr.CRand().connectData(mplew);]
             {
                 sp.Encode4(0);
@@ -103,16 +103,16 @@ public class ResCStage {
             }
         } else {
             if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
-                sp.Encode1(0);
+                sp.Encode1(0); // clear stat, call CWvsContext::OnRevive
             }
             // KMS118 only
             if (Version.Equal(Region.KMS, 118)) {
                 sp.Encode1(0);
             }
-            sp.Encode4(to.getId()); // characterStat._ZtlSecureTear_dwPosMap_CS
-            sp.Encode1(spawnPoint); // characterStat.nPortal
+            sp.Encode4(to.getId()); // dwPosMap
+            sp.Encode1(spawnPoint); // nPortal
             if (Version.PreBB()) {
-                sp.Encode2(chr.getStat().getHp());
+                sp.Encode2(chr.getStat().getHp()); // nHP_CS
             } else {
                 sp.Encode4(chr.getStat().getHp());
             }
@@ -135,7 +135,7 @@ public class ResCStage {
             sp.Encode1(0);
         }
         // サーバーの時間?
-        sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
+        sp.Encode8(TestHelper.getTime(System.currentTimeMillis())); // ftServer
         if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode4(100); // nMobStatAdjustRate
         }
@@ -157,7 +157,7 @@ public class ResCStage {
     }
 
     // 分割版
-    public static final MaplePacket SetField_JMS_302(MapleCharacter chr, int part, boolean loggedin, MapleMap to, int spawnPoint, long datamask_2) {
+    public static final MaplePacket SetField_JMS_302(MapleCharacter chr, int part, boolean bCharacterData, MapleMap to, int spawnPoint, long datamask_2) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
         // 分割, 1 -> 2の順で送信
         sp.Encode4(part);
@@ -171,10 +171,10 @@ public class ResCStage {
             sp.Encode4(0);
             sp.Encode1(chr.getPortalCount());
             sp.Encode4(0);
-            sp.Encode1(loggedin ? 1 : 0); // 1 = all data, 0 = map change
+            sp.Encode1(bCharacterData ? 1 : 0); // 1 = all data, 0 = map change
             sp.Encode2(0); // not 0, EncodeStr, EncodeStr x count
             // logged in
-            if (loggedin) {
+            if (bCharacterData) {
                 sp.Encode4(0); // seed x3
                 sp.Encode4(0);
                 sp.Encode4(0);

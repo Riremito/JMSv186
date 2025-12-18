@@ -44,7 +44,8 @@ public class CharacterTransfer {
             mount_itemid, mount_exp, points, vpoints, marriageId,
             familyid, seniorid, junior1, junior2, currentrep, totalrep, battleshipHP,
             tama;
-    public byte channel, dojoRecord, gender, gmLevel, guildrank, alliancerank, clonez, fairyExp, buddysize, world, initialSpawnPoint, skinColor, mount_level, mount_Fatigue;
+    public byte channel, dojoRecord, gender, gmLevel, guildrank, alliancerank, clonez, fairyExp, buddysize, world, skinColor, mount_level, mount_Fatigue;
+    public int nPortal;
     public int subcategory;
     public long lastfametime, TranferTime;
     public String name, accountname, BlessOfFairy, chalkboard;
@@ -94,7 +95,7 @@ public class CharacterTransfer {
         this.hair = chr.getHair();
         this.face = chr.getFace();
         this.mapid = chr.getMapId();
-        this.initialSpawnPoint = chr.getInitialSpawnpoint();
+        this.nPortal = chr.getPortal();
         this.marriageId = chr.getMarriageId();
         this.world = chr.getWorld();
         this.guildid = chr.getGuildId();
