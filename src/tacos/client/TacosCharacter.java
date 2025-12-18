@@ -42,13 +42,13 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     protected MapleClient client;
     protected MapleMap map;
-    protected int mapid;
+    protected int dwPosMap;
     protected int nPortal;
     private int viewRange = 1600;
     private int viewRangeSq = 1600 * 1600;
 
     public void SendPacket(MaplePacket packet) {
-        client.SendPacket(packet);
+        this.client.SendPacket(packet);
     }
 
     public int getViewRange() {
@@ -98,16 +98,25 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         this.map = map;
     }
 
+    public int getPosMap() {
+        return this.dwPosMap;
+    }
+
+    private void setPosMap(int dwPosMap) {
+        this.dwPosMap = dwPosMap;
+    }
+
     public int getPortal() {
         return this.nPortal;
     }
 
-    public void setPortal(int nPortal) {
+    private void setPortal(int nPortal) {
         this.nPortal = nPortal;
     }
 
     public void updateMap(MapleMap map_to, MaplePortal portal_to) {
         setMap(map_to);
+        setPosMap(map_to.getId());
         setPortal(portal_to.getId()); // spawn point
         setPosition(portal_to.getPosition()); // spawn point xy (server side), some version could not control spawn xy by packet.
         setFH(0); // foothold id is 0 while character is in the air.
@@ -137,10 +146,11 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         updateMap(map_to, portal_to);
     }
 
+    // old code.
     public int getMapId() {
         if (this.map != null) {
             return this.map.getId();
         }
-        return this.mapid;
+        return this.dwPosMap;
     }
 }

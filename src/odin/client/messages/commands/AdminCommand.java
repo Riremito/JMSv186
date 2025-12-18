@@ -763,7 +763,7 @@ public class AdminCommand {
                 c.getPlayer().getMap().broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
 
                 // ファイルへ追記
-                try (FileWriter fw = new FileWriter(Property_Java.getDir_Scripts() + "map/temp/" + c.getPlayer().getMapId() + ".txt", true)) {
+                try (FileWriter fw = new FileWriter(Property_Java.getDir_Scripts() + "map/temp/" + c.getPlayer().getPosMap() + ".txt", true)) {
                     PrintWriter pw = new PrintWriter(fw);
                     pw.println(npcId + "," + c.getPlayer().getPosition().x + "," + c.getPlayer().getPosition().y + "," + c.getPlayer().getMap().getFootholds().findBelow(c.getPlayer().getPosition()).getId());
                     pw.flush();

@@ -39,12 +39,13 @@ import java.util.List;
 public class CharacterTransfer {
 
     public int characterid, accountid, exp,
-            meso, hair, face, mapid, guildid,
+            meso, hair, face, guildid,
             partyid, messengerid, mBookCover, dojo, nexonPoint, maplePoint,
             mount_itemid, mount_exp, points, vpoints, marriageId,
             familyid, seniorid, junior1, junior2, currentrep, totalrep, battleshipHP,
             tama;
     public byte channel, dojoRecord, gender, gmLevel, guildrank, alliancerank, clonez, fairyExp, buddysize, world, skinColor, mount_level, mount_Fatigue;
+    public int dwPosMap;
     public int nPortal;
     public int subcategory;
     public long lastfametime, TranferTime;
@@ -94,7 +95,7 @@ public class CharacterTransfer {
         this.job = chr.getJob();
         this.hair = chr.getHair();
         this.face = chr.getFace();
-        this.mapid = chr.getMapId();
+        this.dwPosMap = chr.getPosMap();
         this.nPortal = chr.getPortal();
         this.marriageId = chr.getMarriageId();
         this.world = chr.getWorld();

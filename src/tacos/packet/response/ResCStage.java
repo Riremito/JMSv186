@@ -108,7 +108,7 @@ public class ResCStage {
             if (Version.Equal(Region.KMS, 118)) {
                 sp.Encode1(0);
             }
-            sp.Encode4(chr.getMapId()); // dwPosMap
+            sp.Encode4(chr.getPosMap()); // dwPosMap
             sp.Encode1(chr.getPortal()); // nPortal
             if (Version.PreBB()) {
                 sp.Encode2(chr.getStat().getHp()); // nHP_CS
@@ -185,7 +185,7 @@ public class ResCStage {
                 sp.EncodeBuffer(DataCWvsContext.LogoutGiftConfig());
             } else {
                 sp.Encode1(0);
-                sp.Encode4(chr.getMapId());
+                sp.Encode4(chr.getPosMap());
                 sp.Encode1(chr.getPortal());
                 sp.Encode4(chr.getStat().getHp());
                 sp.Encode1(0); // not 0, 0059E9C0

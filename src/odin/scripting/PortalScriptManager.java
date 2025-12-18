@@ -91,7 +91,7 @@ public class PortalScriptManager {
     public boolean executePortalScript(MaplePortal portal, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         PortalScript script = getPortalScript(portal.getScriptName());
-        String text = "Portal Script = " + portal.getScriptName() + ", MapID = " + chr.getMapId();
+        String text = "Portal Script = " + portal.getScriptName() + ", MapID = " + chr.getPosMap();
 
         chr.DebugMsg(text);
 

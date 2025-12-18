@@ -381,7 +381,7 @@ public class MapleCharacter extends TacosCharacter {
         ret.hair = ct.hair;
         ret.face = ct.face;
         ret.accountid = ct.accountid;
-        ret.mapid = ct.mapid;
+        ret.dwPosMap = ct.dwPosMap;
         ret.nPortal = ct.nPortal;
         ret.world = ct.world;
         ret.bookCover = ct.mBookCover;
@@ -404,7 +404,7 @@ public class MapleCharacter extends TacosCharacter {
         ret.subcategory = ct.subcategory;
 
         if (isChannel) {
-            ret.updateMapById(ret.mapid, ret.nPortal);
+            ret.updateMapById(ret.dwPosMap, ret.nPortal);
 
             final int messengerid = ct.messengerid;
             if (messengerid > 0) {
@@ -527,7 +527,7 @@ public class MapleCharacter extends TacosCharacter {
             ret.setFace(face_id);
 
             ret.accountid = rs.getInt("accountid");
-            ret.mapid = rs.getInt("map");
+            ret.dwPosMap = rs.getInt("map");
             ret.nPortal = rs.getByte("spawnpoint");
             ret.world = rs.getByte("world");
             ret.guildid = rs.getInt("guildid");
@@ -549,7 +549,7 @@ public class MapleCharacter extends TacosCharacter {
             ret.marriageId = rs.getInt("marriageId");
 
             if (channelserver) {
-                ret.updateMapById(ret.mapid, ret.nPortal);
+                ret.updateMapById(ret.dwPosMap, ret.nPortal);
 
                 int partyid = rs.getInt("party");
                 if (partyid >= 0) {
@@ -1071,7 +1071,7 @@ public class MapleCharacter extends TacosCharacter {
                     ps.setInt(20, stats.getHp() < 1 ? map.getReturnMapId() : map.getId());
                 }
             } else {
-                ps.setInt(20, mapid);
+                ps.setInt(20, dwPosMap);
             }
             ps.setInt(21, meso);
             ps.setInt(22, hpApUsed);
@@ -5786,7 +5786,7 @@ public class MapleCharacter extends TacosCharacter {
         ret.CRand = new PlayerRandomStream();
         ret.gmLevel = gmLevel;
         ret.gender = gender;
-        ret.mapid = map.getId();
+        ret.dwPosMap = map.getId();
         ret.map = map;
         ret.setStance(getStance());
         ret.chair = chair;

@@ -266,7 +266,7 @@ public class ResCField {
                     // same channel
                     if (chr_to.getClient().getChannel() == chr_from.getClient().getChannel()) {
                         sp.Encode1(OpsLocationResult.LR_GameSvr.get());
-                        sp.Encode4(chr_to.getMapId());
+                        sp.Encode4(chr_to.getPosMap());
                         break;
                     }
                     // different channel

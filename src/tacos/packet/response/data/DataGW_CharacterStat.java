@@ -116,7 +116,7 @@ public class DataGW_CharacterStat {
             data.Encode4(chr.getFame());
             data.Encode4(chr.getGashaEXP());
             data.Encode8(0);
-            data.Encode4(chr.getMapId());
+            data.Encode4(chr.getPosMap());
             data.Encode1(chr.getPortal());
             data.Encode2(chr.getSubcategory());
             if (GameConstants.is_demonslayer(chr.getJob())) {
@@ -168,7 +168,7 @@ public class DataGW_CharacterStat {
             data.Encode4(chr.getFame());
             data.Encode4(chr.getGashaEXP());
             data.Encode8(0);
-            data.Encode4(chr.getMapId());
+            data.Encode4(chr.getPosMap());
             data.Encode1(chr.getPortal());
             data.Encode2(chr.getSubcategory());
             if (GameConstants.is_demonslayer(chr.getJob())) {
@@ -211,7 +211,7 @@ public class DataGW_CharacterStat {
             if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.Equal(Region.JMST, 110)) {
                 data.Encode4(0);
             }
-            data.Encode4(chr.getMapId());
+            data.Encode4(chr.getPosMap());
             data.Encode1(chr.getPortal());
             if (Version.GreaterOrEqual(Region.GMS, 111)) {
                 data.Encode4(0);
@@ -335,7 +335,7 @@ public class DataGW_CharacterStat {
             data.Encode8(0);
         }
 
-        data.Encode4(chr.getMapId()); // dwPosMap
+        data.Encode4(chr.getPosMap()); // dwPosMap
         data.Encode1(chr.getPortal()); // nPortal
 
         if (Region.IsVMS()) {

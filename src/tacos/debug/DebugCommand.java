@@ -512,7 +512,7 @@ public class DebugCommand {
                 return true;
             }
             case "/prevmap": {
-                int index = DWI_Random.getMapIndex(c.getPlayer().getMapId());
+                int index = DWI_Random.getMapIndex(chr.getPosMap());
                 int map_id = DWI_Random.getMapByIndex(index - 1);
 
                 if (map_id <= 0) {
@@ -523,7 +523,7 @@ public class DebugCommand {
                 return true;
             }
             case "/nextmap": {
-                int index = DWI_Random.getMapIndex(c.getPlayer().getMapId());
+                int index = DWI_Random.getMapIndex(chr.getPosMap());
                 int map_id = DWI_Random.getMapByIndex(index + 1);
 
                 if (map_id <= 0) {
@@ -635,7 +635,7 @@ public class DebugCommand {
                 MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
                 chr.getMap().addMapObject(dynamic_portal);
                 chr.getMap().broadcastMessage(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
-                chr.DebugMsg("[AddPortal] " + chr.getMapId() + " -> " + map_id_to);
+                chr.DebugMsg("[AddPortal] " + chr.getPosMap() + " -> " + map_id_to);
                 return true;
             }
             case "/slot": {

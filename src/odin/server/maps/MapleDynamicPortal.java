@@ -52,7 +52,7 @@ public class MapleDynamicPortal extends AbstractMapleMapObject {
 
     // test
     public final void warp(MapleCharacter chr) {
-        int map_id_from = chr.getMapId();
+        int map_id_from = chr.getPosMap();
         MapleMap map_to = ServerOdinGame.getInstance(chr.getClient().getChannel()).getMapFactory().getMap(map_id);
         MapleDynamicPortal dynamic_portal_to = map_to.findDynamicPortalLink(map_id_from);
 
