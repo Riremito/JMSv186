@@ -119,7 +119,6 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapFactory;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleSummon;
 import odin.server.maps.FieldLimitType;
@@ -405,22 +404,7 @@ public class MapleCharacter extends TacosCharacter {
         ret.subcategory = ct.subcategory;
 
         if (isChannel) {
-            final MapleMapFactory mapFactory = ServerOdinGame.getInstance(client.getChannel()).getMapFactory();
-            ret.map = mapFactory.getMap(ret.mapid);
-            if (ret.map == null) { //char is on a map that doesn't exist warp it to henesys
-                ret.map = mapFactory.getMap(100000000);
-            } else {
-                if (ret.map.getForcedReturnId() != 999999999) {
-                    ret.map = ret.map.getForcedReturnMap();
-                }
-            }
-            MaplePortal portal = ret.map.getPortal(ret.nPortal);
-            if (portal == null) {
-                portal = ret.map.getPortal(0);
-            }
-            ret.nPortal = portal.getId();
-            ret.setFH(0);
-            ret.setPosition(portal.getPosition());
+            ret.updateMapById(ret.mapid, ret.nPortal);
 
             final int messengerid = ct.messengerid;
             if (messengerid > 0) {
@@ -563,19 +547,9 @@ public class MapleCharacter extends TacosCharacter {
             ret.jobRank = rs.getInt("jobRank");
             ret.jobRankMove = rs.getInt("jobRankMove");
             ret.marriageId = rs.getInt("marriageId");
+
             if (channelserver) {
-                MapleMapFactory mapFactory = ServerOdinGame.getInstance(client.getChannel()).getMapFactory();
-                ret.map = mapFactory.getMap(ret.mapid);
-                if (ret.map == null) { //char is on a map that doesn't exist warp it to henesys
-                    ret.map = mapFactory.getMap(100000000);
-                }
-                MaplePortal portal = ret.map.getPortal(ret.nPortal);
-                if (portal == null) {
-                    portal = ret.map.getPortal(0);
-                }
-                ret.nPortal = portal.getId();
-                ret.setFH(0);
-                ret.setPosition(portal.getPosition());
+                ret.updateMapById(ret.mapid, ret.nPortal);
 
                 int partyid = rs.getInt("party");
                 if (partyid >= 0) {

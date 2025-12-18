@@ -24,12 +24,16 @@ import odin.client.MapleClient;
 import odin.server.MaplePortal;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
 import odin.server.maps.MapleMap;
+import odin.server.maps.MapleMapFactory;
 import odin.server.maps.MapleMapObjectType;
 import tacos.config.Region;
 import tacos.config.Version;
+import tacos.constants.TacosConstants;
+import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.response.ResCStage;
+import tacos.server.ServerOdinGame;
 
 /**
  *
@@ -122,6 +126,29 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         setPosition(portal_to.getPosition()); // spawn point xy (server side), some version could not control spawn xy by packet.
         setFH(0); // foothold id is 0 while character is in the air.
         setStance(OpsMovePathAttr.MPA_NORMAL.get()); // default state (?)
+    }
+
+    public void updateMapById(int map_id, int portal_id) {
+        MapleMapFactory mapFactory = ServerOdinGame.getInstance(client.getChannel()).getMapFactory();
+        MapleMap map_to = mapFactory.getMap(map_id);
+
+        if (map_to != null) {
+            int forced_return_map_id = map_to.getForcedReturnId();
+            if (forced_return_map_id != TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
+                map_to = map_to.getForcedReturnMap();
+            }
+        }
+        if (map_to == null) {
+            map_to = mapFactory.getMap(TacosConstants.DEFALT_RETURN_MAP_ID); // return to default map.
+            DebugLogger.ErrorLog("updateMapById : invalid map = " + map_id);
+        }
+        MaplePortal portal_to = map_to.getPortal(portal_id);
+        if (portal_to == null) {
+            portal_to = map_to.getPortal(0);
+            DebugLogger.ErrorLog("updateMapById : invalid portal = " + portal_id);
+        }
+
+        updateMap(map_to, portal_to);
     }
 
     public int getMapId() {

@@ -26,6 +26,7 @@ import java.util.Map;
 import odin.server.MaplePortal;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleFootholdTree;
+import tacos.constants.TacosConstants;
 
 /**
  *
@@ -52,7 +53,7 @@ public class TacosMapData {
     public TacosMapData(int mapid, int returnMapId) {
         this.mapid = mapid;
         this.returnMapId = returnMapId;
-        if (this.returnMapId == 999999999) {
+        if (this.returnMapId == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
             this.returnMapId = mapid;
         }
     }

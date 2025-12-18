@@ -37,5 +37,7 @@ public class TacosConstants {
 
     // def
     public static final int DEFAULT_CHARSLOT = 6;
+    public static final int DEFAULT_FORCED_RETURN_MAP_ID = 999999999;
+    public static final int DEFALT_RETURN_MAP_ID = 100000000;
 
 }
