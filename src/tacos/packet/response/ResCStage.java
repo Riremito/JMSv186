@@ -31,7 +31,6 @@ import tacos.packet.response.data.DataCClientOptMan;
 import tacos.packet.response.data.DataCWvsContext;
 import tacos.packet.response.data.DataCharacterData;
 import tacos.packet.response.struct.TestHelper;
-import odin.server.maps.MapleMap;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -42,7 +41,7 @@ import tacos.packet.ServerPacketHeader;
 public class ResCStage {
 
     // CStage::OnSetField
-    public static final MaplePacket SetField(MapleCharacter chr, boolean bCharacterData, MapleMap to, int spawnPoint) {
+    public static final MaplePacket SetField(MapleCharacter chr, boolean bCharacterData) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
         // JMS184orLater
         if (((Region.IsJMS() || Region.IsCMS() || Region.IsGMS()) && ServerConfig.JMS186orLater())
@@ -109,8 +108,8 @@ public class ResCStage {
             if (Version.Equal(Region.KMS, 118)) {
                 sp.Encode1(0);
             }
-            sp.Encode4(to.getId()); // dwPosMap
-            sp.Encode1(spawnPoint); // nPortal
+            sp.Encode4(chr.getMapId()); // dwPosMap
+            sp.Encode1(chr.getPortal()); // nPortal
             if (Version.PreBB()) {
                 sp.Encode2(chr.getStat().getHp()); // nHP_CS
             } else {
@@ -157,7 +156,7 @@ public class ResCStage {
     }
 
     // 分割版
-    public static final MaplePacket SetField_JMS_302(MapleCharacter chr, int part, boolean bCharacterData, MapleMap to, int spawnPoint, long datamask_2) {
+    public static final MaplePacket SetField_JMS_302(MapleCharacter chr, int part, boolean bCharacterData, long datamask_2) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
         // 分割, 1 -> 2の順で送信
         sp.Encode4(part);
@@ -186,8 +185,8 @@ public class ResCStage {
                 sp.EncodeBuffer(DataCWvsContext.LogoutGiftConfig());
             } else {
                 sp.Encode1(0);
-                sp.Encode4(to.getId());
-                sp.Encode1(spawnPoint);
+                sp.Encode4(chr.getMapId());
+                sp.Encode1(chr.getPortal());
                 sp.Encode4(chr.getStat().getHp());
                 sp.Encode1(0); // not 0, 0059E9C0
             }

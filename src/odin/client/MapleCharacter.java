@@ -2307,13 +2307,8 @@ public class MapleCharacter extends TacosCharacter {
         changeMapInternal(to, pto.getPosition(), pto);
     }
 
-    public void sendSetField() {
-        super.sendSetField(this);
-    }
-
-    @Override
-    public void sendSetField(MapleCharacter mchr, MapleMap to, Point pos, MaplePortal pto) {
-        super.sendSetField(this, to, pos, pto);
+    public void sendSetField(boolean bCharacterData) {
+        super.sendSetField(this, bCharacterData);
     }
 
     public void changeMapInternal(MapleMap map_to, Point pos, MaplePortal portal_to) {
@@ -2333,8 +2328,8 @@ public class MapleCharacter extends TacosCharacter {
         if (map_id_check) {
             MapleMap map_from = map;
             map_from.removePlayer(this);
-            sendSetField(this, map_to, pos, portal_to);
             updateMap(map_to, portal_to);
+            sendSetField(this, false);
             map_to.addPlayer(this);
             map_to.spawnPlayers(this);
             map_to.spawnMerchant(this); // show merchant

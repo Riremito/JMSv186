@@ -18,7 +18,6 @@
  */
 package tacos.client;
 
-import java.awt.Point;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.server.MaplePortal;
@@ -81,27 +80,14 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     // enter game server.
-    protected void sendSetField(MapleCharacter mchr) {
+    protected void sendSetField(MapleCharacter mchr, boolean bCharacterData) {
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            SendPacket(ResCStage.SetField_JMS_302(mchr, 1, true, null, 0, 0));
-            SendPacket(ResCStage.SetField_JMS_302(mchr, 2, true, null, 0, -1));
+            SendPacket(ResCStage.SetField_JMS_302(mchr, 1, bCharacterData, 0));
+            SendPacket(ResCStage.SetField_JMS_302(mchr, 2, bCharacterData, -1));
             return;
         }
 
-        SendPacket(ResCStage.SetField(mchr, true, null, 0));
-    }
-
-    // change map.
-    protected void sendSetField(MapleCharacter mchr, MapleMap to, Point pos, MaplePortal pto) {
-        int portal_id = (pto != null) ? pto.getId() : 0x81;
-
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            SendPacket(ResCStage.SetField_JMS_302(mchr, 1, false, to, portal_id, 0));
-            SendPacket(ResCStage.SetField_JMS_302(mchr, 2, false, null, 0, 0));
-            return;
-        }
-
-        SendPacket(ResCStage.SetField(mchr, false, to, portal_id));
+        SendPacket(ResCStage.SetField(mchr, bCharacterData));
     }
 
     public MapleMap getMap() {

@@ -235,7 +235,7 @@ public class ReqCClientSocket {
             chr.getBuddylist().put(new BuddylistEntry(pendingBuddyRequest.getName(), pendingBuddyRequest.getId(), "マイ友未指定", -1, false, pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
         }
 
-        chr.sendSetField();
+        chr.sendSetField(true);
         // initialize
         chr.SendPacket(WrapCWvsContext.updateInv()); // TWMS148 gets weird stat without sending this.
         chr.SendPacket(ResCWvsContext.ForcedStatReset());
