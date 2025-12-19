@@ -18,7 +18,6 @@
  */
 package tacos.client;
 
-import odin.client.MapleCharacter;
 import odin.client.inventory.MaplePet;
 import tacos.packet.ops.OpsChangeStat;
 
@@ -52,7 +51,7 @@ public class TacosLastStat {
     private long pet3;
     private int gasha_exp;
 
-    public TacosLastStat(MapleCharacter chr) {
+    public TacosLastStat(TacosCharacter chr) {
         this.statmask = 0;
         this.skin = chr.getSkinColor();
         this.face = chr.getFace();
@@ -92,7 +91,7 @@ public class TacosLastStat {
         }
     }
 
-    public void update(MapleCharacter chr) {
+    public void update(TacosCharacter chr) {
         if (this.skin != chr.getSkinColor()) {
             this.skin = chr.getSkinColor();
             this.statmask |= OpsChangeStat.CS_SKIN.get();

@@ -159,20 +159,19 @@ public class MapleCharacter extends TacosCharacter {
 
     private String name, chalktext, BlessOfFairy_Origin;
     private long lastCombo, lastfametime, keydown_skill;
-    private byte dojoRecord, gmLevel, gender, skinColor, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
+    private byte dojoRecord, gmLevel, gender, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
     private int subcategory;
-    private int level, mulung_energy, combo, availableCP, totalCP, fame, hpApUsed, job, remainingAp;
-    private int accountid, id, meso, exp, hair, face, bookCover, dojo,
+    private int mulung_energy, combo, availableCP, totalCP, hpApUsed;
+    private int accountid, id, bookCover, dojo,
             guildid = 0, fallcounter = 0, maplePoint, nexonPoint, chair, itemEffect, points, vpoints,
             rank = 1, rankMove = 0, jobRank = 1, jobRankMove = 0, marriageId, marriageItemId = 0,
             currentrep, totalrep, linkMid = 0, coconutteam = 0, followid = 0, battleshipHP = 0;
     private Point old = new Point(0, 0);
     private boolean smega, hidden, hasSummon = false;
-    private int[] wishlist, rocks, savedLocations, regrocks, remainingSp = new int[10];
+    private int[] wishlist, rocks, savedLocations, regrocks;
     private transient AtomicInteger inst;
     private List<Integer> lastmonthfameids;
     private List<MapleDoor> doors;
-    private List<MaplePet> pets;
     private transient Set<MapleMonster> controlled;
     private transient Set<MapleMapObject> visibleMapObjects;
 //    private transient ReentrantReadWriteLock visibleMapObjectsLock;
@@ -188,7 +187,6 @@ public class MapleCharacter extends TacosCharacter {
     private transient MapleCarnivalParty carnivalParty;
     private BuddyList buddylist;
     private MonsterBook monsterbook;
-    private PlayerStats stats;
     private transient PlayerRandomStream CRand;
     private transient MapleShop shop;
     private transient MapleDragon dragon;
@@ -226,7 +224,6 @@ public class MapleCharacter extends TacosCharacter {
     private IMaplePlayerShop remoteStore = null;
     // ポータルカウント
     private int portal_count = 1;
-    private int gashaEXP = 0;
     private int last_skill_up_id = 0;
     // ペット回復薬
     private int pet_auto_hp_item_id = 0;
@@ -1349,10 +1346,6 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public final PlayerStats getStat() {
-        return stats;
-    }
-
     public final PlayerRandomStream CRand() {
         return CRand;
     }
@@ -2077,14 +2070,6 @@ public class MapleCharacter extends TacosCharacter {
         return this.BlessOfFairy_Origin;
     }
 
-    public final int getLevel() {
-        return level;
-    }
-
-    public final int getFame() {
-        return fame;
-    }
-
     public final int getDojo() {
         return dojo;
     }
@@ -2103,22 +2088,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public final void setClient(final MapleClient client) {
         this.client = client;
-    }
-
-    public int getExp() {
-        return exp;
-    }
-
-    public int getGashaEXP() {
-        return gashaEXP;
-    }
-
-    public int getRemainingAp() {
-        return remainingAp;
-    }
-
-    public int getRemainingSp() {
-        return remainingSp[GameConstants.getSkillBook(job)]; //default
     }
 
     public int getRemainingSp(final int skillbook) {
@@ -2151,10 +2120,6 @@ public class MapleCharacter extends TacosCharacter {
         this.hpApUsed = hpApUsed;
     }
 
-    public byte getSkinColor() {
-        return skinColor;
-    }
-
     public void setSkinColor(byte skinColor) {
         if (!DWI_Validation.isValidSkinID(skinColor)) {
             DebugLogger.ErrorLog("Invalid skin id : " + skinColor);
@@ -2165,20 +2130,8 @@ public class MapleCharacter extends TacosCharacter {
         this.skinColor = skinColor;
     }
 
-    public int getJob() {
-        return job;
-    }
-
     public byte getGender() {
         return gender;
-    }
-
-    public int getHair() {
-        return hair;
-    }
-
-    public int getFace() {
-        return face;
     }
 
     public void setName(String name) {
@@ -3027,10 +2980,6 @@ public class MapleCharacter extends TacosCharacter {
         this.shop = shop;
     }
 
-    public int getMeso() {
-        return meso;
-    }
-
     // 初期化用
     public void setMeso(int val) {
         meso = val;
@@ -3519,22 +3468,6 @@ public class MapleCharacter extends TacosCharacter {
             cloneUpdate();
             map.broadcastMessageClone(getClone(), ResCUserRemote.AvatarModified(getClone(), 1));
         }
-    }
-
-    public final MaplePet getPet(final int index) {
-        if (3 <= index) {
-            return null;
-        }
-        byte count = 0;
-        for (final MaplePet pet : pets) {
-            if (pet.getSummoned()) {
-                if (count == index) {
-                    return pet;
-                }
-                count++;
-            }
-        }
-        return null;
     }
 
     public MaplePet getPetByUniqueId(long ped_uid) {

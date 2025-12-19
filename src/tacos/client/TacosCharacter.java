@@ -18,8 +18,12 @@
  */
 package tacos.client;
 
+import java.util.List;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
+import odin.client.PlayerStats;
+import odin.client.inventory.MaplePet;
+import odin.constants.GameConstants;
 import odin.server.MaplePortal;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
 import odin.server.maps.MapleMap;
@@ -151,11 +155,11 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     // stat
     public void sendStatChanged(MapleCharacter mchr, boolean unlock) {
         if (this.laststat == null) {
-            this.laststat = new TacosLastStat(mchr);
+            this.laststat = new TacosLastStat(this);
             return;
         }
 
-        this.laststat.update(mchr);
+        this.laststat.update(this);
 
         SendPacket(ResCWvsContext.StatChanged(mchr, unlock ? 1 : 0, this.laststat.getStatMask()));
         if (this.laststat.getStatMask() != 0) {
@@ -163,6 +167,85 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         }
 
         this.laststat.clearStatMask();
+    }
+
+    protected byte skinColor;
+    protected int face;
+    protected int hair;
+    protected int level;
+    protected int job;
+    protected PlayerStats stats;
+    protected int remainingAp;
+    protected int[] remainingSp = new int[10];
+    protected int exp;
+    protected int fame;
+    protected int meso;
+    protected int gashaEXP = 0;
+    protected List<MaplePet> pets;
+
+    public byte getSkinColor() {
+        return this.skinColor;
+    }
+
+    public int getFace() {
+        return this.face;
+    }
+
+    public int getHair() {
+        return this.hair;
+    }
+
+    public int getLevel() {
+        return this.level;
+    }
+
+    public int getJob() {
+        return this.job;
+    }
+
+    public PlayerStats getStat() {
+        return this.stats;
+    }
+
+    public int getRemainingAp() {
+        return this.remainingAp;
+    }
+
+    public int getRemainingSp() {
+        // default
+        return this.remainingSp[GameConstants.getSkillBook(this.job)];
+    }
+
+    public int getExp() {
+        return this.exp;
+    }
+
+    public int getFame() {
+        return this.fame;
+    }
+
+    public int getMeso() {
+        return this.meso;
+    }
+
+    public int getGashaEXP() {
+        return this.gashaEXP;
+    }
+
+    public MaplePet getPet(int index) {
+        if (3 <= index) {
+            return null;
+        }
+        byte count = 0;
+        for (MaplePet pet : this.pets) {
+            if (pet.getSummoned()) {
+                if (count == index) {
+                    return pet;
+                }
+                count++;
+            }
+        }
+        return null;
     }
 
     // old code.
