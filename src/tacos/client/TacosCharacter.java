@@ -32,6 +32,7 @@ import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.response.ResCStage;
+import tacos.packet.response.ResCWvsContext;
 import tacos.server.ServerOdinGame;
 
 /**
@@ -44,6 +45,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     protected MapleMap map;
     protected int dwPosMap;
     protected int nPortal;
+    private TacosLastStat laststat = null;
     private int viewRange = 1600;
     private int viewRangeSq = 1600 * 1600;
 
@@ -144,6 +146,23 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         }
 
         updateMap(map_to, portal_to);
+    }
+
+    // stat
+    public void sendStatChanged(MapleCharacter mchr, boolean unlock) {
+        if (this.laststat == null) {
+            this.laststat = new TacosLastStat(mchr);
+            return;
+        }
+
+        this.laststat.update(mchr);
+
+        SendPacket(ResCWvsContext.StatChanged(mchr, unlock ? 1 : 0, this.laststat.getStatMask()));
+        if (this.laststat.getStatMask() != 0) {
+            mchr.equipChanged();
+        }
+
+        this.laststat.clearStatMask();
     }
 
     // old code.

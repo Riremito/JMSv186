@@ -81,7 +81,6 @@ import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
 import tacos.packet.ops.OpsBodyPart;
-import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsUserEffect;
@@ -154,6 +153,10 @@ import tacos.packet.response.wrapper.WrapCWvsContext;
 
 public class MapleCharacter extends TacosCharacter {
 
+    public void UpdateStat(boolean unlock) {
+        super.sendStatChanged(this, unlock);
+    }
+
     private String name, chalktext, BlessOfFairy_Origin;
     private long lastCombo, lastfametime, keydown_skill;
     private byte dojoRecord, gmLevel, gender, skinColor, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
@@ -224,7 +227,6 @@ public class MapleCharacter extends TacosCharacter {
     // ポータルカウント
     private int portal_count = 1;
     private int gashaEXP = 0;
-    private LastStat laststat = null;
     private int last_skill_up_id = 0;
     // ペット回復薬
     private int pet_auto_hp_item_id = 0;
@@ -5540,211 +5542,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public int getPetAutoCureItem() {
         return this.pet_auto_cure_item_id;
-    }
-
-    private class LastStat {
-
-        int statmask; // for updating client side stat
-        int skin;
-        int face;
-        int hair;
-        long pet1;
-        int level;
-        int job;
-        int stat_str;
-        int stat_dex;
-        int stat_int;
-        int stat_luk;
-        int stat_hp;
-        int stat_maxhp;
-        int stat_mp;
-        int stat_maxmp;
-        int ap;
-        int sp;
-        int exp;
-        int fame;
-        int meso;
-        long pet2;
-        long pet3;
-        int gasha_exp;
-
-        LastStat(MapleCharacter chr) {
-            this.statmask = 0;
-            this.skin = getSkinColor();
-            this.face = getFace();
-            this.hair = getHair();
-            this.pet1 = 0;
-            this.level = getLevel();
-            this.job = getJob();
-            this.stat_str = getStat().getStr();
-            this.stat_dex = getStat().getDex();
-            this.stat_int = getStat().getInt();
-            this.stat_luk = getStat().getLuk();
-            this.stat_hp = getStat().getHp();
-            this.stat_maxhp = getStat().getMaxHp();
-            this.stat_mp = getStat().getMp();
-            this.stat_maxmp = getStat().getMaxMp();
-            this.ap = getRemainingAp();
-            this.sp = getRemainingSp();
-            this.exp = getExp();
-            this.fame = getFame();
-            this.meso = getMeso();
-            this.pet2 = 0;
-            this.pet3 = 0;
-            this.gasha_exp = getGashaEXP();
-
-            // pet
-            MaplePet pet = chr.getPet(0);
-            if (pet != null && pet.getSummoned()) {
-                this.pet1 = pet.getUniqueId();
-            }
-            pet = chr.getPet(1);
-            if (pet != null && pet.getSummoned()) {
-                this.pet2 = pet.getUniqueId();
-            }
-            pet = chr.getPet(2);
-            if (pet != null && pet.getSummoned()) {
-                this.pet3 = pet.getUniqueId();
-            }
-        }
-
-        void Update(MapleCharacter chr) {
-            if (this.skin != getSkinColor()) {
-                this.skin = getSkinColor();
-                this.statmask |= OpsChangeStat.CS_SKIN.get();
-            }
-            if (this.face != getFace()) {
-                this.face = getFace();
-                this.statmask |= OpsChangeStat.CS_FACE.get();
-            }
-            if (this.hair != getHair()) {
-                this.hair = getHair();
-                this.statmask |= OpsChangeStat.CS_HAIR.get();
-            }
-            if (this.level != getLevel()) {
-                this.level = getLevel();
-                this.statmask |= OpsChangeStat.CS_LEV.get();
-            }
-            if (this.job != getJob()) {
-                this.job = getJob();
-                this.statmask |= OpsChangeStat.CS_JOB.get();
-            }
-            if (this.stat_str != getStat().getStr()) {
-                this.stat_str = getStat().getStr();
-                this.statmask |= OpsChangeStat.CS_STR.get();
-            }
-            if (this.stat_dex != getStat().getDex()) {
-                this.stat_dex = getStat().getDex();
-                this.statmask |= OpsChangeStat.CS_DEX.get();
-            }
-            if (this.stat_int != getStat().getInt()) {
-                this.stat_int = getStat().getInt();
-                this.statmask |= OpsChangeStat.CS_INT.get();
-            }
-            if (this.stat_luk != getStat().getLuk()) {
-                this.stat_luk = getStat().getLuk();
-                this.statmask |= OpsChangeStat.CS_LUK.get();
-            }
-            if (this.stat_hp != getStat().getHp()) {
-                this.stat_hp = getStat().getHp();
-                this.statmask |= OpsChangeStat.CS_HP.get();
-            }
-            if (this.stat_maxhp != getStat().getMaxHp()) {
-                this.stat_maxhp = getStat().getMaxHp();
-                this.statmask |= OpsChangeStat.CS_MHP.get();
-            }
-            if (this.stat_mp != getStat().getMp()) {
-                this.stat_mp = getStat().getMp();
-                this.statmask |= OpsChangeStat.CS_MP.get();
-            }
-            if (this.stat_maxmp != getStat().getMaxMp()) {
-                this.stat_maxmp = getStat().getMaxMp();
-                this.statmask |= OpsChangeStat.CS_MMP.get();
-            }
-            if (this.ap != getRemainingAp()) {
-                this.ap = getRemainingAp();
-                this.statmask |= OpsChangeStat.CS_AP.get();
-            }
-            if (this.sp != getRemainingSp()) {
-                this.sp = getRemainingSp();
-                this.statmask |= OpsChangeStat.CS_SP.get();
-            }
-            if (this.exp != getExp()) {
-                this.exp = getExp();
-                this.statmask |= OpsChangeStat.CS_EXP.get();
-            }
-            if (this.fame != getFame()) {
-                this.fame = getFame();
-                this.statmask |= OpsChangeStat.CS_POP.get();
-            }
-            if (this.meso != getMeso()) {
-                this.meso = getMeso();
-                this.statmask |= OpsChangeStat.CS_MONEY.get();
-            }
-            // v188 ここから+1
-            //this.pet2;
-            //this.pet3;
-            if (this.gasha_exp != getGashaEXP()) {
-                this.gasha_exp = getGashaEXP();
-                this.statmask |= OpsChangeStat.CS_TEMPEXP.get();
-            }
-            // pet
-            MaplePet new_pet1 = chr.getPet(0);
-            MaplePet new_pet2 = chr.getPet(1);
-            MaplePet new_pet3 = chr.getPet(2);
-            long new_pet1_val = (new_pet1 != null && new_pet1.getSummoned()) ? new_pet1.getUniqueId() : 0;
-            long new_pet2_val = (new_pet2 != null && new_pet2.getSummoned()) ? new_pet2.getUniqueId() : 0;
-            long new_pet3_val = (new_pet3 != null && new_pet3.getSummoned()) ? new_pet3.getUniqueId() : 0;
-
-            if (this.pet1 != new_pet1_val) {
-                this.pet1 = new_pet1_val;
-                this.statmask |= OpsChangeStat.CS_PETSN.get();
-            }
-            if (this.pet2 != new_pet2_val) {
-                this.pet2 = new_pet2_val;
-                this.statmask |= OpsChangeStat.CS_PETSN2.get();
-            }
-            if (this.pet3 != new_pet3_val) {
-                this.pet3 = new_pet3_val;
-                this.statmask |= OpsChangeStat.CS_PETSN3.get();
-            }
-        }
-
-        int GetStatMask() {
-            return this.statmask;
-        }
-
-        void ClearStatMask() {
-            this.statmask = 0;
-        }
-    }
-
-    public void UpdateStat(boolean unlock) {
-        if (laststat == null) {
-            laststat = new LastStat(this);
-            return;
-        }
-
-        laststat.Update(this);
-
-        SendPacket(ResCWvsContext.StatChanged(this, unlock ? 1 : 0, GetStatMask()));
-        if (GetStatMask() != 0) {
-            equipChanged();
-        }
-        ClearStatMask();
-    }
-
-    public int GetStatMask() {
-        if (laststat == null) {
-            return 0;
-        }
-        return laststat.GetStatMask();
-    }
-
-    void ClearStatMask() {
-        if (laststat != null) {
-            laststat.ClearStatMask();
-        }
     }
 
     // クローン
