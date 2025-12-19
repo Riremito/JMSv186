@@ -157,6 +157,14 @@ public class MapleCharacter extends TacosCharacter {
         super.sendStatChanged(this, unlock);
     }
 
+    public void sendStatChanged() {
+        super.sendStatChanged(this, false);
+    }
+
+    public void sendStatChanged(boolean unlock) {
+        super.sendStatChanged(this, unlock);
+    }
+
     private String name, chalktext, BlessOfFairy_Origin;
     private long lastCombo, lastfametime, keydown_skill;
     private byte dojoRecord, gmLevel, gender, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
@@ -2022,18 +2030,13 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void enforceMaxHpMp() {
-        List<Pair<MapleStat, Integer>> statups = new ArrayList<Pair<MapleStat, Integer>>(2);
         if (stats.getMp() > stats.getCurrentMaxMp()) {
             stats.setMp(stats.getMp());
-            statups.add(new Pair<MapleStat, Integer>(MapleStat.MP, Integer.valueOf(stats.getMp())));
         }
         if (stats.getHp() > stats.getCurrentMaxHp()) {
             stats.setHp(stats.getHp());
-            statups.add(new Pair<MapleStat, Integer>(MapleStat.HP, Integer.valueOf(stats.getHp())));
         }
-        if (statups.size() > 0) {
-            client.getPlayer().UpdateStat(false);
-        }
+        sendStatChanged();
     }
 
     public MonsterBook getMonsterBook() {
@@ -2343,8 +2346,7 @@ public class MapleCharacter extends TacosCharacter {
                     dropMessage(5, "The baby Dragon hatched and appears to have something to tell you. Click the baby Dragon to start a conversation.");
                 }
             }
-            client.getPlayer().UpdateStat(false);
-            updateSingleStat(MapleStat.JOB, newJob);
+            sendStatChanged();
 
             int maxhp = stats.getMaxHp(), maxmp = stats.getMaxMp();
 
@@ -2411,13 +2413,8 @@ public class MapleCharacter extends TacosCharacter {
             stats.setMaxMp((short) maxmp);
             stats.setHp((short) maxhp);
             stats.setMp((short) maxmp);
-            List<Pair<MapleStat, Integer>> statup = new ArrayList<Pair<MapleStat, Integer>>(4);
-            statup.add(new Pair<MapleStat, Integer>(MapleStat.MAXHP, Integer.valueOf(maxhp)));
-            statup.add(new Pair<MapleStat, Integer>(MapleStat.MAXMP, Integer.valueOf(maxmp)));
-            statup.add(new Pair<MapleStat, Integer>(MapleStat.HP, Integer.valueOf(maxhp)));
-            statup.add(new Pair<MapleStat, Integer>(MapleStat.MP, Integer.valueOf(maxmp)));
             stats.recalcLocalStats();
-            client.getPlayer().UpdateStat(false);
+            sendStatChanged();
             map.broadcastMessage(this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_JobChanged, this), false);
             silentPartyUpdate();
             guildUpdate();
@@ -2468,7 +2465,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public void gainAp(short ap) {
         this.remainingAp += ap;
-        updateSingleStat(MapleStat.AVAILABLEAP, this.remainingAp);
+        sendStatChanged();
     }
 
     public void gainSP(int sp) {
@@ -2487,8 +2484,8 @@ public class MapleCharacter extends TacosCharacter {
         for (int i = 0; i < remainingSp.length; i++) {
             this.remainingSp[i] = 0;
         }
-        client.getPlayer().UpdateStat(false);
         gainAp((short) -this.remainingAp);
+        sendStatChanged();
     }
 
     public void changeSkillLevel(final ISkill skill, byte newLevel, byte newMasterlevel) { //1 month
@@ -2588,7 +2585,9 @@ public class MapleCharacter extends TacosCharacter {
                 this.exp = v10;
             }
         }
-        this.updateSingleStat(MapleStat.EXP, this.exp);
+
+        sendStatChanged();
+
         if (!stats.checkEquipDurabilitys(this, -100)) { //i guess this is how it works ?
             dropMessage(5, "An item has run out of durability but has no inventory room to go to.");
         } //lol
@@ -2639,66 +2638,22 @@ public class MapleCharacter extends TacosCharacter {
         getMap().broadcastMessage(this, ResCUserRemote.showHpHealed(getId(), delta), false);
     }
 
-    /**
-     * Convenience function which adds the supplied parameter to the current hp
-     * then directly does a updateSingleStat.
-     *
-     * @see MapleCharacter#setHp(int)
-     * @param delta
-     */
     public void addHP(int delta) {
         if (stats.setHp(stats.getHp() + delta)) {
-            updateSingleStat(MapleStat.HP, stats.getHp());
+            sendStatChanged();
         }
     }
 
-    /**
-     * Convenience function which adds the supplied parameter to the current mp
-     * then directly does a updateSingleStat.
-     *
-     * @see MapleCharacter#setMp(int)
-     * @param delta
-     */
     public void addMP(int delta) {
         if (stats.setMp(stats.getMp() + delta)) {
-            updateSingleStat(MapleStat.MP, stats.getMp());
+            sendStatChanged();
         }
     }
 
     public void addMPHP(int hpDiff, int mpDiff) {
-        List<Pair<MapleStat, Integer>> statups = new ArrayList<Pair<MapleStat, Integer>>();
-
-        if (stats.setHp(stats.getHp() + hpDiff)) {
-            statups.add(new Pair<MapleStat, Integer>(MapleStat.HP, Integer.valueOf(stats.getHp())));
-        }
-        if (stats.setMp(stats.getMp() + mpDiff)) {
-            statups.add(new Pair<MapleStat, Integer>(MapleStat.MP, Integer.valueOf(stats.getMp())));
-        }
-        if (statups.size() > 0) {
-            client.getPlayer().UpdateStat(false);
-        }
-    }
-
-    public void updateSingleStat(MapleStat stat, int newval) {
-        updateSingleStat(stat, newval, false);
-    }
-
-    /**
-     * Updates a single stat of this MapleCharacter for the client. This method
-     * only creates and sends an update packet, it does not update the stat
-     * stored in this MapleCharacter instance.
-     *
-     * @param stat
-     * @param newval
-     * @param itemReaction
-     */
-    public void updateSingleStat(MapleStat stat, int newval, boolean itemReaction) {
-        if (stat == MapleStat.AVAILABLESP) {
-            client.getPlayer().UpdateStat(itemReaction);
-            return;
-        }
-        Pair<MapleStat, Integer> statpair = new Pair<MapleStat, Integer>(stat, Integer.valueOf(newval));
-        client.getPlayer().UpdateStat(itemReaction);
+        stats.setHp(stats.getHp() + hpDiff);
+        stats.setMp(stats.getMp() + mpDiff);
+        sendStatChanged();
     }
 
     public void gainExp(final int total, final boolean show, final boolean inChat, final boolean white) {
@@ -2736,7 +2691,7 @@ public class MapleCharacter extends TacosCharacter {
                         setExp(0);
                     }
                 }
-                updateSingleStat(MapleStat.EXP, getExp());
+                sendStatChanged();
                 if (show) { // still show the expgain even if it's not there
                     client.SendPacket(ResWrapper.GainEXP_Others(total, inChat, white));
                 }
@@ -2809,7 +2764,7 @@ public class MapleCharacter extends TacosCharacter {
                     setExp(0);
                 }
             }
-            updateSingleStat(MapleStat.EXP, getExp());
+            sendStatChanged();
             if (show) { // still show the expgain even if it's not there
                 client.SendPacket(ResWrapper.GainEXP_Monster(gain, white, partyinc, Class_Bonus_EXP, Equipment_Bonus_EXP, Premium_Bonus_EXP));
             }
@@ -3258,15 +3213,6 @@ public class MapleCharacter extends TacosCharacter {
         maxhp = (short) Math.min(30000, Math.abs(maxhp));
         maxmp = (short) Math.min(30000, Math.abs(maxmp));
 
-        final List<Pair<MapleStat, Integer>> statup = new ArrayList<Pair<MapleStat, Integer>>(8);
-
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.MAXHP, maxhp));
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.MAXMP, maxmp));
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.HP, maxhp));
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.MP, maxmp));
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.EXP, exp));
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.LEVEL, (int) level));
-
         if (isGM() || (job != 0 && job != 1000 && job != 2000 && job != 2001 && job != 3000)) { // Not Beginner, Nobless and Legend
             remainingSp[GameConstants.getSkillBook(this.job)] += 3;
             client.getPlayer().UpdateStat(false);
@@ -3274,18 +3220,14 @@ public class MapleCharacter extends TacosCharacter {
             if (level <= 10) {
                 stats.setStr((short) (stats.getStr() + remainingAp));
                 remainingAp = 0;
-
-                statup.add(new Pair<MapleStat, Integer>(MapleStat.STR, (int) stats.getStr()));
             }
         }
-
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.AVAILABLEAP, (int) remainingAp));
 
         stats.setMaxHp((short) maxhp);
         stats.setMaxMp((short) maxmp);
         stats.setHp((short) maxhp);
         stats.setMp((short) maxmp);
-        client.getPlayer().UpdateStat(false);
+        sendStatChanged();
         map.broadcastMessage(this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_LevelUp, this), false);
         stats.recalcLocalStats();
         silentPartyUpdate();
@@ -4143,7 +4085,7 @@ public class MapleCharacter extends TacosCharacter {
             if (rs.next()) {
                 if (rs.getInt("gift") == fame && fame > 0) { //not exploited! hurray
                     addFame(fame);
-                    updateSingleStat(MapleStat.FAME, getFame());
+                    sendStatChanged();
                     client.SendPacket(ResWrapper.getShowFameGain(fame));
                 }
             }
@@ -4862,7 +4804,6 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void resetStats(final int str, final int dex, final int int_, final int luk) {
-        List<Pair<MapleStat, Integer>> stat = new ArrayList<Pair<MapleStat, Integer>>(2);
         int total = stats.getStr() + stats.getDex() + stats.getLuk() + stats.getInt() + getRemainingAp();
 
         total -= str;
@@ -4878,13 +4819,7 @@ public class MapleCharacter extends TacosCharacter {
         stats.setLuk((short) luk);
 
         setRemainingAp((short) total);
-
-        stat.add(new Pair<MapleStat, Integer>(MapleStat.STR, str));
-        stat.add(new Pair<MapleStat, Integer>(MapleStat.DEX, dex));
-        stat.add(new Pair<MapleStat, Integer>(MapleStat.INT, int_));
-        stat.add(new Pair<MapleStat, Integer>(MapleStat.LUK, luk));
-        stat.add(new Pair<MapleStat, Integer>(MapleStat.AVAILABLEAP, total));
-        client.getPlayer().UpdateStat(false);
+        sendStatChanged();
     }
 
     public Event_PyramidSubway getPyramidSubway() {

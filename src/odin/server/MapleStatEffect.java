@@ -12,7 +12,6 @@ import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import odin.client.MapleCoolDownValueHolder;
 import odin.client.MapleDisease;
-import odin.client.MapleStat;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
 import odin.client.inventory.IItem;
@@ -38,7 +37,6 @@ import tacos.packet.response.ResCTownPortalPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import tacos.packet.response.wrapper.WrapCWvsContext;
@@ -958,7 +956,6 @@ public class MapleStatEffect implements Serializable {
             }
             mpchange += ((toDecreaseHP / 100) * getY());
         }
-        final List<Pair<MapleStat, Integer>> hpmpupdate = new ArrayList<Pair<MapleStat, Integer>>(2);
         if (hpchange != 0) {
             if (hpchange < 0 && (-hpchange) > stat.getHp() && !applyto.hasDisease(MapleDisease.ZOMBIFY)) {
                 return false;
@@ -971,12 +968,9 @@ public class MapleStatEffect implements Serializable {
             }
             //short converting needs math.min cuz of overflow
             stat.setMp(stat.getMp() + mpchange);
-
-            hpmpupdate.add(new Pair<MapleStat, Integer>(MapleStat.MP, Integer.valueOf(stat.getMp())));
         }
-        hpmpupdate.add(new Pair<MapleStat, Integer>(MapleStat.HP, Integer.valueOf(stat.getHp())));
 
-        applyto.getClient().getPlayer().UpdateStat(true);
+        applyto.sendStatChanged(true);
 
         if (expinc != 0) {
             applyto.gainExp(expinc, true, true, false);

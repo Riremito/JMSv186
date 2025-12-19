@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.sql.Connection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -41,7 +40,6 @@ import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.SkillFactory;
 import odin.client.SkillEntry;
-import odin.client.MapleStat;
 import odin.server.MapleCarnivalParty;
 import odin.server.Randomizer;
 import odin.server.MapleInventoryManipulator;
@@ -399,20 +397,17 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
     public void setHair(int hair) {
         getPlayer().setHair(hair);
-        getPlayer().updateSingleStat(MapleStat.HAIR, hair);
-        getPlayer().equipChanged();
+        getPlayer().sendStatChanged();
     }
 
     public void setFace(int face) {
         getPlayer().setFace(face);
-        getPlayer().updateSingleStat(MapleStat.FACE, face);
-        getPlayer().equipChanged();
+        getPlayer().sendStatChanged();
     }
 
     public void setSkin(int color) {
         getPlayer().setSkinColor((byte) color);
-        getPlayer().updateSingleStat(MapleStat.SKIN, color);
-        getPlayer().equipChanged();
+        getPlayer().sendStatChanged();
     }
 
     public int setRandomAvatar(int ticket, int... args_all) {
@@ -424,15 +419,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         int args = args_all[Randomizer.nextInt(args_all.length)];
         if (args < 100) {
             c.getPlayer().setSkinColor((byte) args);
-            c.getPlayer().updateSingleStat(MapleStat.SKIN, args);
         } else if (args < 30000) {
             c.getPlayer().setFace(args);
-            c.getPlayer().updateSingleStat(MapleStat.FACE, args);
         } else {
             c.getPlayer().setHair(args);
-            c.getPlayer().updateSingleStat(MapleStat.HAIR, args);
         }
-        c.getPlayer().equipChanged();
+
+        getPlayer().sendStatChanged();
 
         return 1;
     }
@@ -445,15 +438,13 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
 
         if (args < 100) {
             c.getPlayer().setSkinColor((byte) args);
-            c.getPlayer().updateSingleStat(MapleStat.SKIN, args);
         } else if (args < 30000) {
             c.getPlayer().setFace(args);
-            c.getPlayer().updateSingleStat(MapleStat.FACE, args);
         } else {
             c.getPlayer().setHair(args);
-            c.getPlayer().updateSingleStat(MapleStat.HAIR, args);
         }
-        c.getPlayer().equipChanged();
+
+        getPlayer().sendStatChanged();
 
         return 1;
     }
@@ -1044,27 +1035,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void maxStats() {
-        List<Pair<MapleStat, Integer>> statup = new ArrayList<Pair<MapleStat, Integer>>(2);
         c.getPlayer().getStat().setStr((short) 32767);
         c.getPlayer().getStat().setDex((short) 32767);
         c.getPlayer().getStat().setInt((short) 32767);
         c.getPlayer().getStat().setLuk((short) 32767);
-
         c.getPlayer().getStat().setMaxHp((short) 30000);
         c.getPlayer().getStat().setMaxMp((short) 30000);
         c.getPlayer().getStat().setHp((short) 30000);
         c.getPlayer().getStat().setMp((short) 30000);
-
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.STR, Integer.valueOf(32767)));
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.DEX, Integer.valueOf(32767)));
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.LUK, Integer.valueOf(32767)));
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.INT, Integer.valueOf(32767)));
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.HP, Integer.valueOf(30000)));
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.MAXHP, Integer.valueOf(30000)));
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.MP, Integer.valueOf(30000)));
-        statup.add(new Pair<MapleStat, Integer>(MapleStat.MAXMP, Integer.valueOf(30000)));
-
-        c.getPlayer().UpdateStat(false);
+        getPlayer().sendStatChanged();
     }
 
     public Pair<String, Map<Integer, String>> getSpeedRun(String typ) {

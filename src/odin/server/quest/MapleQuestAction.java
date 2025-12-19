@@ -30,7 +30,6 @@ import odin.client.inventory.InventoryException;
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
-import odin.client.MapleStat;
 import odin.client.SkillFactory;
 import java.util.ArrayList;
 import java.util.List;
@@ -217,7 +216,7 @@ public class MapleQuestAction implements Serializable {
                 }
                 final int fameGain = MapleDataTool.getInt(data, 0);
                 c.addFame(fameGain);
-                c.updateSingleStat(MapleStat.FAME, c.getFame());
+                c.sendStatChanged();
                 c.SendPacket(ResWrapper.getShowFameGain(fameGain));
                 break;
             case buffItemID:
@@ -457,7 +456,7 @@ public class MapleQuestAction implements Serializable {
             case pop: {
                 final int fameGain = MapleDataTool.getInt(data, 0);
                 c.addFame(fameGain);
-                c.updateSingleStat(MapleStat.FAME, c.getFame());
+                c.sendStatChanged();
                 c.SendPacket(ResWrapper.getShowFameGain(fameGain));
                 break;
             }

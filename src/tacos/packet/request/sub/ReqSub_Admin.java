@@ -19,7 +19,6 @@
 package tacos.packet.request.sub;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleStat;
 import tacos.wz.ids.DWI_Validation;
 import tacos.wz.ids.DWI_LoadXML;
 import tacos.debug.DebugLogger;
@@ -29,6 +28,7 @@ import tacos.packet.response.ResCNpcPool;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
+import tacos.packet.ops.OpsChangeStat;
 
 /**
  *
@@ -137,28 +137,28 @@ public class ReqSub_Admin {
             case 0x21: {
                 int point = cp.Decode4();
 
-                UpdateStat(chr, MapleStat.STR, point);
+                setStat(chr, OpsChangeStat.CS_STR, point);
                 return true;
             }
             // /dex
             case 0x22: {
                 int point = cp.Decode4();
 
-                UpdateStat(chr, MapleStat.DEX, point);
+                setStat(chr, OpsChangeStat.CS_DEX, point);
                 return true;
             }
             // /int
             case 0x23: {
                 int point = cp.Decode4();
 
-                UpdateStat(chr, MapleStat.INT, point);
+                setStat(chr, OpsChangeStat.CS_INT, point);
                 return true;
             }
             // /luk
             case 0x24: {
                 int point = cp.Decode4();
 
-                UpdateStat(chr, MapleStat.LUK, point);
+                setStat(chr, OpsChangeStat.CS_LUK, point);
                 return true;
             }
             // /mmon test
@@ -235,26 +235,26 @@ public class ReqSub_Admin {
         chr.gainSP((short) point);
     }
 
-    private static boolean UpdateStat(MapleCharacter chr, MapleStat stat, int point) {
+    private static boolean setStat(MapleCharacter chr, OpsChangeStat ops, int point) {
         if (point < 4 || 30000 < point) {
             return false;
         }
 
-        switch (stat) {
-            case STR: {
-                chr.getStat().setStr((short) point);
+        switch (ops) {
+            case CS_STR: {
+                chr.getStat().setStr(point);
                 break;
             }
-            case DEX: {
-                chr.getStat().setDex((short) point);
+            case CS_DEX: {
+                chr.getStat().setDex(point);
                 break;
             }
-            case INT: {
-                chr.getStat().setInt((short) point);
+            case CS_INT: {
+                chr.getStat().setInt(point);
                 break;
             }
-            case LUK: {
-                chr.getStat().setLuk((short) point);
+            case CS_LUK: {
+                chr.getStat().setLuk(point);
                 break;
             }
             default: {
@@ -262,7 +262,7 @@ public class ReqSub_Admin {
             }
         }
 
-        chr.UpdateStat(true);
+        chr.sendStatChanged(true);
         return true;
     }
 

@@ -24,7 +24,6 @@ import odin.client.inventory.IItem;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.MapleStat;
 import odin.constants.GameConstants;
 import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
@@ -86,7 +85,7 @@ public class PlayersHandler {
             case OK:
                 if (Math.abs(target.getFame() + famechange) <= 30000) {
                     target.addFame(famechange);
-                    target.updateSingleStat(MapleStat.FAME, target.getFame());
+                    target.sendStatChanged();
                 }
                 //if (!chr.isGM()) {
                 chr.hasGivenFame(target);

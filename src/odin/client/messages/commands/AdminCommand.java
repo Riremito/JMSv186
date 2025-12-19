@@ -5,7 +5,6 @@ import odin.client.MapleCharacter;
 import odin.constants.ServerConstants.PlayerGMRank;
 import odin.client.MapleClient;
 import odin.client.MapleDisease;
-import odin.client.MapleStat;
 import odin.client.SkillFactory;
 import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
@@ -106,8 +105,7 @@ public class AdminCommand {
                 if (player.allowedToTarget(victim)) {
                     victim.getStat().setHp((short) 0);
                     victim.getStat().setMp((short) 0);
-                    victim.updateSingleStat(MapleStat.HP, 0);
-                    victim.updateSingleStat(MapleStat.MP, 0);
+                    victim.sendStatChanged();
                 }
             }
             return 1;

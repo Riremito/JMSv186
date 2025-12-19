@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.events;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleStat;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import tacos.packet.response.ResCField;
@@ -126,7 +125,7 @@ public class MapleOxQuiz extends MapleEvent {
                             if (chr != null && !chr.isGM() && chr.isAlive()) { // make sure they aren't null... maybe something can happen in 12 seconds.
                                 if (!isCorrectAnswer(chr, question.getValue().getAnswer())) {
                                     chr.getStat().setHp((short) 0);
-                                    chr.updateSingleStat(MapleStat.HP, 0);
+                                    chr.sendStatChanged();
                                 } else {
                                     chr.gainExp(3000, true, true, false);
                                 }
