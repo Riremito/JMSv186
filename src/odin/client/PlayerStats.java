@@ -26,7 +26,6 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.Equip;
 import odin.client.inventory.IEquip;
 import odin.client.inventory.MapleWeaponType;
-import tacos.config.Version;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.List;
@@ -38,7 +37,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
-import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
@@ -1134,14 +1132,6 @@ public class PlayerStats implements Serializable {
         return maxbasedamage;
     }
 
-    public final float getHealHP() {
-        return shouldHealHP;
-    }
-
-    public final float getHealMP() {
-        return shouldHealMP;
-    }
-
     public final void relocHeal() {
         final MapleCharacter chra = chr.get();
         if (chra == null) {
@@ -1221,25 +1211,4 @@ public class PlayerStats implements Serializable {
         return skillID;
     }
 
-    public final void connectData(ServerPacket p) {
-        p.Encode2(str);
-        p.Encode2(dex);
-        p.Encode2(int_);
-        p.Encode2(luk);
-
-        // BB前
-        if (Version.PreBB()) {
-            p.Encode2(hp);
-            p.Encode2(maxhp);
-            p.Encode2(mp);
-            p.Encode2(maxmp);
-            return;
-        }
-
-        // BB後
-        p.Encode4(hp);
-        p.Encode4(maxhp);
-        p.Encode4(mp);
-        p.Encode4(maxmp);
-    }
 }
