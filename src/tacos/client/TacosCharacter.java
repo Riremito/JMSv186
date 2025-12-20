@@ -52,6 +52,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     private TacosLastStat laststat = null;
     private int viewRange = 1600;
     private int viewRangeSq = 1600 * 1600;
+    private TacosForcedStat forcedStat = new TacosForcedStat();
 
     public void SendPacket(MaplePacket packet) {
         this.client.SendPacket(packet);
@@ -68,6 +69,32 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public int getViewRangeSq() {
         return this.viewRangeSq;
+    }
+
+    public TacosForcedStat getForcedStat() {
+        return this.forcedStat;
+    }
+
+    public void setForcedStatBalorg() {
+        int offset = 1 + (this.level - 90) / 20;
+        this.forcedStat.setSTR(this.stats.getTotalStr() / offset);
+        this.forcedStat.setDEX(this.stats.getTotalDex() / offset);
+        this.forcedStat.setINT(this.stats.getTotalInt() / offset);
+        this.forcedStat.setLUK(this.stats.getTotalLuk() / offset);
+        this.forcedStat.setPAD(this.stats.getTotalWatk() / offset);
+        this.forcedStat.setMAD(this.stats.getTotalMagic() / offset);
+    }
+
+    public void setForcedStatAran() {
+        this.forcedStat.setSTR(999);
+        this.forcedStat.setDEX(999);
+        this.forcedStat.setINT(999);
+        this.forcedStat.setLUK(999);
+        this.forcedStat.setPAD(255);
+        this.forcedStat.setACC(999);
+        this.forcedStat.setEVA(999);
+        this.forcedStat.setSpeed(140);
+        this.forcedStat.setJump(120);
     }
 
     @Override

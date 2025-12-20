@@ -596,11 +596,14 @@ public class TacosMap extends TacosMapData {
                 //maybe timer too for zak/ht
             }
             if (mapid == 914000000) {
-                chr.getClient().getSession().write(ResCWvsContext.temporaryStats_Aran());
+                chr.setForcedStatAran();
+                chr.SendPacket(ResCWvsContext.ForcedStatSet(chr));
             } else if (mapid == 105100300 && chr.getLevel() >= 91) {
-                chr.getClient().getSession().write(ResCWvsContext.temporaryStats_Balrog(chr));
+                chr.setForcedStatBalorg();
+                chr.SendPacket(ResCWvsContext.ForcedStatSet(chr));
             } else if (mapid == 140090000 || mapid == 105100301 || mapid == 105100401 || mapid == 105100100) {
-                chr.getClient().getSession().write(ResCWvsContext.ForcedStatReset());
+                chr.getForcedStat().reset();
+                chr.SendPacket(ResCWvsContext.ForcedStatReset());
             }
         }
         if (GameConstants.isEvan(chr.getJob()) && chr.getJob() >= 2200 && chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) == null) {

@@ -22,7 +22,6 @@ import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import odin.client.MapleDisease;
 import odin.client.MapleQuestStatus;
-import odin.client.MapleStat;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
@@ -50,8 +49,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBodyPart;
@@ -75,8 +72,10 @@ import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.tools.Pair;
+import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataAvatarLook;
+import tacos.packet.response.data.DataForcedStat;
 
 /**
  *
@@ -147,21 +146,33 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    // CWvsContext::OnChangeSkillRecordResult
-    public static final MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChangeSkillRecordResult);
-        sp.Encode1(1);
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
-            sp.Encode1(0);
+    // CWvsContext::OnInventoryGrow
+    // CWvsContext::OnStatChanged
+    public static final MaplePacket StatChanged(MapleCharacter chr, int unlock, int statmask) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StatChanged);
+        // 0 = lock   -> do not clear lock flag
+        // 1 = unlock -> clear lock flag
+        sp.Encode1(unlock); // CWvsContext->bExclRequestSent
+        if ((Region.IsEMS() && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.Between(Region.TWMS, 74, 93)) {
+            sp.Encode1(0); // EMS v55
         }
-        sp.Encode2(1);
-        sp.Encode4(skillid);
-        sp.Encode4(level);
-        sp.Encode4(masterlevel);
-        if (ServerConfig.JMS164orLater()) {
-            sp.Encode8(SharedDate.getMagicalExpirationDate());
+        sp.EncodeBuffer(DataGW_CharacterStat.EncodeChangeStat(chr, statmask));
+        if (Version.PreBB()) {
+            if (Region.IsJMS()) {
+                // Pet
+                if ((statmask & OpsChangeStat.CS_PETSN.get()) > 0) {
+                    int v5 = 0; // CVecCtrlUser::AddMovementInfo
+                    sp.Encode1(v5);
+                }
+            }
+            if (Version.GreaterOrEqual(Region.GMS, 91)) {
+                sp.Encode1(0); // not 0 -> Encode1
+            }
+        } else {
+            // v188+
+            sp.Encode1(0); // not 0 -> Encode1
+            sp.Encode1(0); // not 0 -> Encode4, Encode4
         }
-        sp.Encode1(4);
         return sp.get();
     }
 
@@ -214,38 +225,11 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    // warpper
-    public static MaplePacket giveBuff(int buffid, int bufflength, List<Pair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
-        return TemporaryStatSet(effect);
-    }
+    // CWvsContext::OnForcedStatSet
+    public static MaplePacket ForcedStatSet(TacosCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ForcedStatSet);
 
-    // CWvsContext::OnInventoryGrow
-    // CWvsContext::OnStatChanged
-    public static final MaplePacket StatChanged(MapleCharacter chr, int unlock, int statmask) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StatChanged);
-        // 0 = lock   -> do not clear lock flag
-        // 1 = unlock -> clear lock flag
-        sp.Encode1(unlock); // CWvsContext->bExclRequestSent
-        if ((Region.IsEMS() && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.Between(Region.TWMS, 74, 93)) {
-            sp.Encode1(0); // EMS v55
-        }
-        sp.EncodeBuffer(DataGW_CharacterStat.EncodeChangeStat(chr, statmask));
-        if (Version.PreBB()) {
-            if (Region.IsJMS()) {
-                // Pet
-                if ((statmask & OpsChangeStat.CS_PETSN.get()) > 0) {
-                    int v5 = 0; // CVecCtrlUser::AddMovementInfo
-                    sp.Encode1(v5);
-                }
-            }
-            if (Version.GreaterOrEqual(Region.GMS, 91)) {
-                sp.Encode1(0); // not 0 -> Encode1
-            }
-        } else {
-            // v188+
-            sp.Encode1(0); // not 0 -> Encode1
-            sp.Encode1(0); // not 0 -> Encode4, Encode4
-        }
+        sp.EncodeBuffer(DataForcedStat.Encode(chr));
         return sp.get();
     }
 
@@ -253,6 +237,29 @@ public class ResCWvsContext {
     public static final MaplePacket ForcedStatReset() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ForcedStatReset);
         return sp.get();
+    }
+
+    // CWvsContext::OnChangeSkillRecordResult
+    public static final MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChangeSkillRecordResult);
+        sp.Encode1(1);
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+            sp.Encode1(0);
+        }
+        sp.Encode2(1);
+        sp.Encode4(skillid);
+        sp.Encode4(level);
+        sp.Encode4(masterlevel);
+        if (ServerConfig.JMS164orLater()) {
+            sp.Encode8(SharedDate.getMagicalExpirationDate());
+        }
+        sp.Encode1(4);
+        return sp.get();
+    }
+
+    // warpper
+    public static MaplePacket giveBuff(int buffid, int bufflength, List<Pair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
+        return TemporaryStatSet(effect);
     }
 
     public static final MaplePacket Message(ArgMessage ma) {
@@ -1954,73 +1961,6 @@ public class ResCWvsContext {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SuccessInUseGachaponBox);
         sp.Encode4(box_item_id);
         return sp.get();
-    }
-
-    public static final MaplePacket temporaryStats_Balrog(final MapleCharacter chr) {
-        final List<Pair<MapleStat.Temp, Integer>> stats = new ArrayList<Pair<MapleStat.Temp, Integer>>();
-        int offset = 1 + (chr.getLevel() - 90) / 20;
-        //every 20 levels above 90, +1
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.STR, chr.getStat().getTotalStr() / offset));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.DEX, chr.getStat().getTotalDex() / offset));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.INT, chr.getStat().getTotalInt() / offset));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.LUK, chr.getStat().getTotalLuk() / offset));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.WATK, chr.getStat().getTotalWatk() / offset));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.MATK, chr.getStat().getTotalMagic() / offset));
-        return temporaryStats(stats);
-    }
-
-    public static final MaplePacket temporaryStats(final List<Pair<MapleStat.Temp, Integer>> stats) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ForcedStatSet);
-
-        //str 0x1, dex 0x2, int 0x4, luk 0x8
-        //level 0x10 = 255
-        //0x100 = 999
-        //0x200 = 999
-        //0x400 = 120
-        //0x800 = 140
-        int updateMask = 0;
-        for (final Pair<MapleStat.Temp, Integer> statupdate : stats) {
-            updateMask |= statupdate.getLeft().getValue();
-        }
-        List<Pair<MapleStat.Temp, Integer>> mystats = stats;
-        if (mystats.size() > 1) {
-            Collections.sort(mystats, new Comparator<Pair<MapleStat.Temp, Integer>>() {
-                @Override
-                public int compare(final Pair<MapleStat.Temp, Integer> o1, final Pair<MapleStat.Temp, Integer> o2) {
-                    int val1 = o1.getLeft().getValue();
-                    int val2 = o2.getLeft().getValue();
-                    return val1 < val2 ? -1 : (val1 == val2 ? 0 : 1);
-                }
-            });
-        }
-        sp.Encode4(updateMask);
-        Integer value;
-        for (final Pair<MapleStat.Temp, Integer> statupdate : mystats) {
-            value = statupdate.getLeft().getValue();
-            if (value >= 1) {
-                if (value <= 512) {
-                    //level 0x10 - is this really short or some other? (FF 00)
-                    sp.Encode2(statupdate.getRight().shortValue());
-                } else {
-                    sp.Encode1(statupdate.getRight().byteValue());
-                }
-            }
-        }
-        return sp.get();
-    }
-
-    public static final MaplePacket temporaryStats_Aran() {
-        final List<Pair<MapleStat.Temp, Integer>> stats = new ArrayList<Pair<MapleStat.Temp, Integer>>();
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.STR, 999));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.DEX, 999));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.INT, 999));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.LUK, 999));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.WATK, 255));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.ACC, 999));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.AVOID, 999));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.SPEED, 140));
-        stats.add(new Pair<MapleStat.Temp, Integer>(MapleStat.Temp.JUMP, 120));
-        return temporaryStats(stats);
     }
 
     public static MaplePacket sendLevelup(boolean family, int level, String name) {
