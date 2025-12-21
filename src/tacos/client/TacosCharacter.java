@@ -21,6 +21,8 @@ package tacos.client;
 import java.util.List;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
+import odin.client.MapleKeyLayout;
+import odin.client.MonsterBook;
 import odin.client.PlayerStats;
 import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
@@ -53,6 +55,8 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     private int viewRange = 1600;
     private int viewRangeSq = 1600 * 1600;
     private TacosForcedStat forcedStat = new TacosForcedStat();
+    protected MapleKeyLayout keylayout = null;
+    protected MonsterBook monsterbook = null;
 
     public void SendPacket(MaplePacket packet) {
         this.client.SendPacket(packet);
@@ -95,6 +99,22 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         this.forcedStat.setEVA(999);
         this.forcedStat.setSpeed(140);
         this.forcedStat.setJump(120);
+    }
+
+    public MapleKeyLayout getKeyLayout() {
+        return this.keylayout;
+    }
+
+    public void setKeyLayout(MapleKeyLayout keylayout) {
+        this.keylayout = keylayout;
+    }
+
+    public MonsterBook getMonsterBook() {
+        return this.monsterbook;
+    }
+
+    public void setMonsterBook(MonsterBook monsterbook) {
+        this.monsterbook = monsterbook;
     }
 
     @Override

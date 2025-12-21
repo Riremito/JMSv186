@@ -26,27 +26,23 @@ import java.util.HashMap;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.io.Serializable;
-
-
 import tacos.database.DatabaseConnection;
 import odin.tools.Pair;
 
-public class MapleKeyLayout implements Serializable {
+public class MapleKeyLayout {
 
-    private static final long serialVersionUID = 9179541993413738569L;
     private boolean changed = false;
     private Map<Integer, Pair<Byte, Integer>> keymap;
 
     public MapleKeyLayout() {
-        keymap = new HashMap<Integer, Pair<Byte, Integer>>();
+        keymap = new HashMap<>();
     }
 
     public MapleKeyLayout(Map<Integer, Pair<Byte, Integer>> keys) {
         keymap = keys;
     }
 
-    public final Map<Integer, Pair<Byte, Integer>> Layout() {
+    public Map<Integer, Pair<Byte, Integer>> Layout() {
         changed = true;
         return keymap;
     }
@@ -55,8 +51,8 @@ public class MapleKeyLayout implements Serializable {
         return keymap;
     }
 
-    public final void saveKeys(final int charid) throws SQLException {
-        if (!changed || keymap.size() == 0) {
+    public void saveKeys(int charid) throws SQLException {
+        if (!changed || keymap.isEmpty()) {
             return;
         }
         Connection con = DatabaseConnection.getConnection();

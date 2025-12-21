@@ -32,12 +32,15 @@ import odin.client.BuddylistEntry;
 import odin.client.CharacterNameAndId;
 import odin.client.inventory.MaplePet;
 import odin.server.quest.MapleQuest;
-import odin.tools.Pair;
 import java.util.ArrayList;
 import java.util.List;
+import odin.client.MapleKeyLayout;
+import odin.client.MonsterBook;
 
 public class CharacterTransfer {
 
+    public MapleKeyLayout keylayout = null;
+    public MonsterBook monsterbook = null;
     public int characterid, accountid, exp,
             meso, hair, face, guildid,
             partyid, messengerid, mBookCover, dojo, nexonPoint, maplePoint,
@@ -54,8 +57,6 @@ public class CharacterTransfer {
     public Object inventorys, skillmacro, storage, cs;
     public int[] savedlocation, wishlist, rocks, remainingSp, regrocks;
     public byte[] petStore;
-    public Map<Integer, Integer> mbook = new LinkedHashMap<>();
-    public Map<Integer, Pair<Byte, Integer>> keymap = new LinkedHashMap<>();
     public final List<Integer> famedcharacters = new ArrayList<>();
     public final Map<CharacterNameAndId, Boolean> buddies = new LinkedHashMap<>();
     public final Map<Integer, Object> Quest = new LinkedHashMap<>(); // Questid instead of MapleQuest, as it's huge. Cant be transporting MapleQuest.java
@@ -153,7 +154,7 @@ public class CharacterTransfer {
             this.Quest.put(qs.getKey().getId(), qs.getValue());
         }
 
-        this.mbook = chr.getMonsterBook().getCards();
+        this.monsterbook = chr.getMonsterBook();
         this.inventorys = chr.getInventorys();
 
         for (final Map.Entry<ISkill, SkillEntry> qs : chr.getSkills().entrySet()) {
@@ -163,7 +164,7 @@ public class CharacterTransfer {
         this.BlessOfFairy = chr.getBlessOfFairyOrigin();
         this.chalkboard = chr.getADBoard();
         this.skillmacro = chr.getMacros();
-        this.keymap = chr.getKeyLayout().Layout();
+        this.keylayout = chr.getKeyLayout();
         this.savedlocation = chr.getSavedLocations();
         this.wishlist = chr.getWishlist();
         this.rocks = chr.getRocks();

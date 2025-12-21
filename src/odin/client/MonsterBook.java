@@ -28,8 +28,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.io.Serializable;
-
 import tacos.database.DatabaseConnection;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsUserEffect;
@@ -39,9 +37,8 @@ import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleItemInformationProvider;
 
-public class MonsterBook implements Serializable {
+public class MonsterBook {
 
-    private static final long serialVersionUID = 7179541993413738569L;
     private boolean changed = false;
     private int SpecialCard = 0, NormalCard = 0, BookLevel = 1;
     private Map<Integer, Integer> cards;
@@ -64,20 +61,19 @@ public class MonsterBook implements Serializable {
         return cards;
     }
 
-    public final int getTotalCards() {
+    public int getTotalCards() {
         return SpecialCard + NormalCard;
     }
 
-    public final int getLevelByCard(final int cardid) {
+    public int getLevelByCard(int cardid) {
         return cards.get(cardid) == null ? 0 : cards.get(cardid);
     }
 
-    public final static MonsterBook loadCards(final int charid) throws SQLException {
+    public static MonsterBook loadCards(int charid) throws SQLException {
         final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM monsterbook WHERE charid = ? ORDER BY cardid ASC");
         ps.setInt(1, charid);
         final ResultSet rs = ps.executeQuery();
-        Map<Integer, Integer> cards = new LinkedHashMap<Integer, Integer>();
-        int cardid, level;
+        Map<Integer, Integer> cards = new LinkedHashMap<>();
 
         while (rs.next()) {
             cards.put(rs.getInt("cardid"), rs.getInt("level"));
@@ -87,8 +83,8 @@ public class MonsterBook implements Serializable {
         return new MonsterBook(cards);
     }
 
-    public final void saveCards(final int charid) throws SQLException {
-        if (!changed || cards.size() == 0) {
+    public void saveCards(int charid) throws SQLException {
+        if (!changed || cards.isEmpty()) {
             return;
         }
         final Connection con = DatabaseConnection.getConnection();
@@ -119,7 +115,7 @@ public class MonsterBook implements Serializable {
         ps.close();
     }
 
-    private final void calculateLevel() {
+    private void calculateLevel() {
         int Size = NormalCard + SpecialCard;
         BookLevel = 8;
 
@@ -131,7 +127,7 @@ public class MonsterBook implements Serializable {
         }
     }
 
-    public final byte[] addCardPacket() {
+    public byte[] addCardPacket() {
         ServerPacket data = new ServerPacket();
 
         data.Encode2(cards.size());
@@ -145,7 +141,7 @@ public class MonsterBook implements Serializable {
     }
 
     // addCharInfoPacket
-    public final byte[] MonsterBookInfo(final int bookcover) {
+    public byte[] MonsterBookInfo(int bookcover) {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(BookLevel);
@@ -156,18 +152,18 @@ public class MonsterBook implements Serializable {
         return data.get().getBytes();
     }
 
-    public final void updateCard(final MapleClient c, final int cardid) {
+    public void updateCard(MapleClient c, int cardid) {
         c.getSession().write(ResCWvsContext.changeCover(cardid));
     }
 
-    public final int getLevel(final int cardid) {
+    public int getLevel(int cardid) {
         if (cards.containsKey(cardid)) {
             return cards.get(cardid);
         }
         return 0;
     }
 
-    public final void addCard(final MapleClient c, final int cardid) {
+    public void addCard(MapleClient c, int cardid) {
         changed = true;
         c.getPlayer().getMap().broadcastMessage(c.getPlayer(), WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, c.getPlayer()), false);
 

@@ -194,7 +194,6 @@ public class MapleCharacter extends TacosCharacter {
     private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
     private transient MapleCarnivalParty carnivalParty;
     private BuddyList buddylist;
-    private MonsterBook monsterbook;
     private transient PlayerRandomStream CRand;
     private transient MapleShop shop;
     private transient MapleDragon dragon;
@@ -212,7 +211,6 @@ public class MapleCharacter extends TacosCharacter {
     private transient EventInstanceManager eventInstance;
     private MapleInventory[] inventory;
     private SkillMacro[] skillMacros = new SkillMacro[5];
-    private MapleKeyLayout keylayout;
     private transient ScheduledFuture<?> beholderHealingSchedule, beholderBuffSchedule, BerserkSchedule,
             dragonBloodSchedule, fairySchedule, mapTimeLimitTask, fishing;
     private long nextConsume = 0, pqStartTime = 0;
@@ -451,12 +449,12 @@ public class MapleCharacter extends TacosCharacter {
         for (final Map.Entry<Integer, SkillEntry> qs : ct.Skills.entrySet()) {
             ret.skills.put(SkillFactory.getSkill(qs.getKey()), qs.getValue());
         }
-        ret.monsterbook = new MonsterBook(ct.mbook);
+        ret.monsterbook = ct.monsterbook;
         ret.inventory = (MapleInventory[]) ct.inventorys;
         ret.BlessOfFairy_Origin = ct.BlessOfFairy;
         ret.skillMacros = (SkillMacro[]) ct.skillmacro;
         ret.petStore = ct.petStore;
-        ret.keylayout = new MapleKeyLayout(ct.keymap);
+        ret.setKeyLayout(ct.keylayout);
         ret.questinfo = ct.InfoQuest;
         ret.savedLocations = ct.savedlocation;
         ret.wishlist = ct.wishlist;
@@ -2039,10 +2037,6 @@ public class MapleCharacter extends TacosCharacter {
         sendStatChanged();
     }
 
-    public MonsterBook getMonsterBook() {
-        return monsterbook;
-    }
-
     public boolean checkSpecificMap(int map_id_base, int map_id_range) {
         int map_id = getMapId();
 
@@ -3560,10 +3554,6 @@ public class MapleCharacter extends TacosCharacter {
         } catch (SQLException e) {
             System.err.println("ERROR writing famelog for char " + getName() + " to " + to.getName() + e);
         }
-    }
-
-    public final MapleKeyLayout getKeyLayout() {
-        return this.keylayout;
     }
 
     public MapleParty getParty() {
