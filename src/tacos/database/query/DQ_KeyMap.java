@@ -106,7 +106,7 @@ public class DQ_KeyMap {
             for (Map.Entry<Integer, OdinPair<Byte, Integer>> keybinding : keymap.entrySet()) {
                 if (first) {
                     first = false;
-                    query.append("INSERT INTO keymap VALUES (");
+                    query.append("INSERT INTO " + DB_TABLE_NAME + " VALUES (");
                 } else {
                     query.append(",(");
                 }
