@@ -253,7 +253,7 @@ public class ReqCClientSocket {
             chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoCure(chr));
         }
         // keyboard
-        chr.SendPacket(ResCFuncKeyMappedMan.getKeymap(chr, false));
+        chr.SendPacket(ResCFuncKeyMappedMan.FuncKeyMappedInit(chr, false));
         chr.SendPacket(ResCFuncKeyMappedMan.getMacros(chr));
         // quest
         for (MapleQuestStatus status : chr.getStartedQuests()) {

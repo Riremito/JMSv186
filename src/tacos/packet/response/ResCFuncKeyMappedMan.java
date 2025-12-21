@@ -68,7 +68,7 @@ public class ResCFuncKeyMappedMan {
         return sp.get();
     }
 
-    public static MaplePacket getKeymap(MapleCharacter chr, boolean keymap_reset) {
+    public static MaplePacket FuncKeyMappedInit(MapleCharacter chr, boolean keymap_reset) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FuncKeyMappedInit);
 
         sp.Encode1(keymap_reset ? 1 : 0);

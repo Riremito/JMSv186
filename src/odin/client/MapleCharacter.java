@@ -54,8 +54,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import tacos.config.DeveloperMode;
-import tacos.config.Region;
-import tacos.config.Version;
 import odin.constants.ServerConstants;
 import tacos.shared.SharedExpTable;
 import tacos.wz.ids.DWI_Validation;
@@ -143,6 +141,7 @@ import tacos.client.TacosCharacter;
 import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.database.query.DQ_Accounts;
+import tacos.database.query.DQ_KeyMap;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
 import tacos.debug.IDebugMan;
@@ -170,7 +169,7 @@ public class MapleCharacter extends TacosCharacter {
     private byte dojoRecord, gmLevel, gender, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
     private int subcategory;
     private int mulung_energy, combo, availableCP, totalCP, hpApUsed;
-    private int accountid, id, bookCover, dojo,
+    private int accountid, bookCover, dojo,
             guildid = 0, fallcounter = 0, maplePoint, nexonPoint, chair, itemEffect, points, vpoints,
             rank = 1, rankMove = 0, jobRank = 1, jobRankMove = 0, marriageId, marriageItemId = 0,
             currentrep, totalrep, linkMid = 0, coconutteam = 0, followid = 0, battleshipHP = 0;
@@ -286,7 +285,6 @@ public class MapleCharacter extends TacosCharacter {
             clones[0] = new WeakReference<MapleCharacter>(null);
             inst = new AtomicInteger();
             inst.set(0); // 1 = NPC/ Quest, 2 = Duey, 3 = Hired Merch store, 4 = Storage
-            keylayout = new MapleKeyLayout();
             doors = new ArrayList<MapleDoor>();
             controlled = new LinkedHashSet<MapleMonster>();
             summons = new LinkedHashMap<Integer, MapleSummon>();
@@ -742,16 +740,7 @@ public class MapleCharacter extends TacosCharacter {
                 rs.close();
                 ps.close();
 
-                ps = con.prepareStatement("SELECT `key`,`type`,`action` FROM keymap WHERE characterid = ?");
-                ps.setInt(1, charid);
-                rs = ps.executeQuery();
-
-                final Map<Integer, Pair<Byte, Integer>> keyb = ret.keylayout.Layout();
-                while (rs.next()) {
-                    keyb.put(Integer.valueOf(rs.getInt("key")), new Pair<Byte, Integer>(rs.getByte("type"), rs.getInt("action")));
-                }
-                rs.close();
-                ps.close();
+                DQ_KeyMap.loadKeyMap(ret);
 
                 ps = con.prepareStatement("SELECT `locationtype`,`map` FROM savedlocations WHERE characterid = ?");
                 ps.setInt(1, charid);
@@ -978,25 +967,7 @@ public class MapleCharacter extends TacosCharacter {
             }
             ItemLoader.INVENTORY.saveItems(listing, con, chr.id);
 
-            int[] array1 = {2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 23, 25, 31, 34, 37, 38, 44, 45, 46, 50, 59, 60, 61, 62, 63, 64, 65, 8, 9, 24, 30, 10, 11, 12, 20, 33, 35, 39, 40, 47, 48, 49};
-            int[] array2 = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 4, 6, 6, 6, 6, 6, 6, 6, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4};
-            int[] array3 = {10, 12, 13, 18, 23, 28, 8, 5, 0, 4, 1, 9, 2, 17, 3, 20, 50, 52, 53, 7, 100, 101, 102, 103, 104, 105, 106, 19, 14, 24, 51, 15, 16, 22, 27, 25, 11, 26, 16, 54, 21, 6};
-
-            if (Region.IsTHMS() && Version.getVersion() == 87) {
-                array1 = new int[]{2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 23, 24, 25, 26, 27, 29, 31, 33, 34, 35, 37, 38, 39, 40, 41, 43, 44, 45, 46, 50, 56, 57, 59, 60, 61, 62, 63, 64, 65};
-                array2 = new int[]{4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 4, 4, 5, 5, 6, 6, 6, 6, 6, 6, 6};
-                array3 = new int[]{10, 12, 13, 18, 22, 27, 8, 5, 0, 4, 26, 1, 23, 19, 14, 15, 52, 2, 24, 17, 11, 3, 20, 25, 16, 21, 9, 50, 51, 6, 7, 53, 54, 100, 101, 102, 103, 104, 105, 106};
-            }
-
-            ps = con.prepareStatement("INSERT INTO keymap (characterid, `key`, `type`, `action`) VALUES (?, ?, ?, ?)");
-            ps.setInt(1, chr.id);
-            for (int i = 0; i < array1.length; i++) {
-                ps.setInt(2, array1[i]);
-                ps.setInt(3, array2[i]);
-                ps.setInt(4, array3[i]);
-                ps.execute();
-            }
-            ps.close();
+            DQ_KeyMap.setDefautKeyMap(chr);
 
             con.commit();
         } catch (Exception e) {
@@ -1264,7 +1235,7 @@ public class MapleCharacter extends TacosCharacter {
                 cs.save();
             }
             PlayerNPC.updateByCharId(this);
-            keylayout.saveKeys(id);
+            DQ_KeyMap.saveKeys(this);
             mount.saveMount(id);
             monsterbook.saveCards(id);
 
@@ -2053,10 +2024,6 @@ public class MapleCharacter extends TacosCharacter {
         }
 
         return true;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getName() {
@@ -3299,14 +3266,6 @@ public class MapleCharacter extends TacosCharacter {
         //    changeMap(map.getReturnMap(), map.getReturnMap().getPortal(0));
         //    dropMessage(-1, "You have been expelled from the map.");
         //}
-    }
-
-    public void changeKeybinding(int key, byte type, int action) {
-        if (type != 0) {
-            keylayout.Layout().put(Integer.valueOf(key), new Pair<Byte, Integer>(type, action));
-        } else {
-            keylayout.Layout().remove(Integer.valueOf(key));
-        }
     }
 
     public void updateMacros(int position, SkillMacro updateMacro) {

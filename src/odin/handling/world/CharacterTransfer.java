@@ -34,12 +34,12 @@ import odin.client.inventory.MaplePet;
 import odin.server.quest.MapleQuest;
 import java.util.ArrayList;
 import java.util.List;
-import odin.client.MapleKeyLayout;
 import odin.client.MonsterBook;
+import tacos.client.TacosKeyLayout;
 
 public class CharacterTransfer {
 
-    public MapleKeyLayout keylayout = null;
+    public TacosKeyLayout keylayout = null;
     public MonsterBook monsterbook = null;
     public int characterid, accountid, exp,
             meso, hair, face, guildid,

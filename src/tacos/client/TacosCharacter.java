@@ -21,7 +21,6 @@ package tacos.client;
 import java.util.List;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.client.MapleKeyLayout;
 import odin.client.MonsterBook;
 import odin.client.PlayerStats;
 import odin.client.inventory.MaplePet;
@@ -48,6 +47,7 @@ import tacos.server.ServerOdinGame;
 public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     protected MapleClient client;
+    protected int id;
     protected MapleMap map;
     protected int dwPosMap;
     protected int nPortal;
@@ -55,11 +55,15 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     private int viewRange = 1600;
     private int viewRangeSq = 1600 * 1600;
     private TacosForcedStat forcedStat = new TacosForcedStat();
-    protected MapleKeyLayout keylayout = null;
+    protected TacosKeyLayout keylayout = new TacosKeyLayout();
     protected MonsterBook monsterbook = null;
 
     public void SendPacket(MaplePacket packet) {
         this.client.SendPacket(packet);
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public int getViewRange() {
@@ -101,12 +105,20 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         this.forcedStat.setJump(120);
     }
 
-    public MapleKeyLayout getKeyLayout() {
+    public TacosKeyLayout getKeyLayout() {
         return this.keylayout;
     }
 
-    public void setKeyLayout(MapleKeyLayout keylayout) {
+    public void setKeyLayout(TacosKeyLayout keylayout) {
         this.keylayout = keylayout;
+    }
+
+    public void changeKeybinding(int key, byte type, int action) {
+        if (type != 0) {
+            this.keylayout.put(key, type, action);
+        } else {
+            this.keylayout.remove(key);
+        }
     }
 
     public MonsterBook getMonsterBook() {
