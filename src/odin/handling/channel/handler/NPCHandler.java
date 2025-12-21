@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
+import java.util.LinkedHashMap;
 import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
@@ -43,7 +44,6 @@ import odin.server.quest.MapleQuest;
 import odin.scripting.NPCScriptManager;
 import odin.scripting.NPCConversationManager;
 import odin.server.MapleItemInformationProvider;
-import odin.tools.ArrayMap;
 import tacos.odin.OdinPair;
 
 public class NPCHandler {
@@ -199,7 +199,7 @@ public class NPCHandler {
         int price = 0;
         Map<String, Integer> eqStats;
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        final Map<Equip, Integer> eqs = new ArrayMap<>();
+        final Map<Equip, Integer> eqs = new LinkedHashMap<>();
         final MapleInventoryType[] types = {MapleInventoryType.EQUIP, MapleInventoryType.EQUIPPED};
         for (MapleInventoryType type : types) {
             for (IItem item : c.getPlayer().getInventory(type)) {
