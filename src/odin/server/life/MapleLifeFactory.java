@@ -32,7 +32,7 @@ import java.util.Map;
 import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 import odin.provider.WzXML.MapleDataType;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import odin.tools.StringUtil;
 
 public class MapleLifeFactory {
@@ -166,9 +166,9 @@ public class MapleLifeFactory {
             final MapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
             if (monsterSkillData != null) {
                 int i = 0;
-                List<Pair<Integer, Integer>> skills = new ArrayList<Pair<Integer, Integer>>();
+                List<OdinPair<Integer, Integer>> skills = new ArrayList<OdinPair<Integer, Integer>>();
                 while (monsterSkillData.getChildByPath(Integer.toString(i)) != null) {
-                    skills.add(new Pair<Integer, Integer>(Integer.valueOf(MapleDataTool.getInt(i + "/skill", monsterSkillData, 0)), Integer.valueOf(MapleDataTool.getInt(i + "/level", monsterSkillData, 0))));
+                    skills.add(new OdinPair<Integer, Integer>(Integer.valueOf(MapleDataTool.getInt(i + "/skill", monsterSkillData, 0)), Integer.valueOf(MapleDataTool.getInt(i + "/level", monsterSkillData, 0))));
                     i++;
                 }
                 stats.setSkills(skills);

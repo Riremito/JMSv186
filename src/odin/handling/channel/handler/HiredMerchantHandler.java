@@ -42,7 +42,7 @@ import tacos.packet.response.ResCStoreBankDlg;
 import tacos.packet.response.ResCWvsContext;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MerchItemPackage;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class HiredMerchantHandler {
 
@@ -237,11 +237,11 @@ public class HiredMerchantHandler {
             ps.close();
             rs.close();
 
-            Map<Integer, Pair<IItem, MapleInventoryType>> items = ItemLoader.HIRED_MERCHANT.loadItems(false, packageid, accountid, charid);
+            Map<Integer, OdinPair<IItem, MapleInventoryType>> items = ItemLoader.HIRED_MERCHANT.loadItems(false, packageid, accountid, charid);
             if (items != null) {
                 List<IItem> iters = new ArrayList<IItem>();
-                for (Pair<IItem, MapleInventoryType> z : items.values()) {
-                    iters.add(z.left);
+                for (OdinPair<IItem, MapleInventoryType> z : items.values()) {
+                    iters.add(z.getLeft());
                 }
                 pack.setItems(iters);
             }

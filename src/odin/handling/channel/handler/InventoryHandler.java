@@ -63,7 +63,7 @@ import odin.scripting.NPCScriptManager;
 import odin.server.maps.MapleMist;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.IMaplePlayerShop;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 public class InventoryHandler {
@@ -74,7 +74,7 @@ public class InventoryHandler {
         if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId) {
             if (chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.USE).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.SETUP).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.ETC).getNextFreeSlot() > -1) {
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                final Pair<Integer, List<StructRewardItem>> rewards = ii.getRewardItem(itemId);
+                final OdinPair<Integer, List<StructRewardItem>> rewards = ii.getRewardItem(itemId);
 
                 if (rewards != null && rewards.getLeft() > 0) {
                     boolean rewarded = false;

@@ -23,10 +23,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
-import odin.tools.Pair;
 import tacos.client.TacosCharacter;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
+import tacos.odin.OdinPair;
 
 /**
  *
@@ -68,9 +68,9 @@ public class DQ_KeyMap {
             try (PreparedStatement ps = con.prepareStatement("SELECT `key`,`type`,`action` FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
                 ps.setInt(1, chr.getId());
                 try (ResultSet rs = ps.executeQuery()) {
-                    Map<Integer, Pair<Byte, Integer>> keymap = chr.getKeyLayout().get();
+                    Map<Integer, OdinPair<Byte, Integer>> keymap = chr.getKeyLayout().get();
                     while (rs.next()) {
-                        keymap.put(rs.getInt("key"), new Pair<>(rs.getByte("type"), rs.getInt("action")));
+                        keymap.put(rs.getInt("key"), new OdinPair<>(rs.getByte("type"), rs.getInt("action")));
                     }
                     return true;
                 }
@@ -87,7 +87,7 @@ public class DQ_KeyMap {
             return false;
         }
 
-        Map<Integer, Pair<Byte, Integer>> keymap = chr.getKeyLayout().get();
+        Map<Integer, OdinPair<Byte, Integer>> keymap = chr.getKeyLayout().get();
         if (keymap.isEmpty()) {
             return false;
         }
@@ -103,7 +103,7 @@ public class DQ_KeyMap {
             boolean first = true;
             StringBuilder query = new StringBuilder();
 
-            for (Map.Entry<Integer, Pair<Byte, Integer>> keybinding : keymap.entrySet()) {
+            for (Map.Entry<Integer, OdinPair<Byte, Integer>> keybinding : keymap.entrySet()) {
                 if (first) {
                     first = false;
                     query.append("INSERT INTO keymap VALUES (");
@@ -113,8 +113,8 @@ public class DQ_KeyMap {
                 query.append("DEFAULT,");
                 query.append(chr.getId()).append(",");
                 query.append(keybinding.getKey().intValue()).append(",");
-                query.append(keybinding.getValue().getLeft().byteValue()).append(",");
-                query.append(keybinding.getValue().getRight().intValue()).append(")");
+                query.append(keybinding.getValue().getKey()).append(",");
+                query.append(keybinding.getValue().getValue()).append(")");
             }
             ps = con.prepareStatement(query.toString());
             ps.execute();

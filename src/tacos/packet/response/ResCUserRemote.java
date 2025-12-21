@@ -35,7 +35,7 @@ import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCUser;
 import odin.server.MapleStatEffect;
 import odin.tools.AttackPair;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -75,8 +75,8 @@ public class ResCUserRemote {
                     if (attack.IsMesoExplosion()) {
                         sp.Encode1(oned.attack.size());
                     }
-                    for (Pair<Integer, Boolean> eachd : oned.attack) {
-                        sp.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
+                    for (OdinPair<Integer, Boolean> eachd : oned.attack) {
+                        sp.Encode4(eachd.getLeft() | ((eachd.getRight() ? 1 : 0) << 31));
                     }
                 }
             }
@@ -113,12 +113,12 @@ public class ResCUserRemote {
                 if (attack.IsMesoExplosion()) {
                     sp.Encode1(oned.attack.size());
                 }
-                for (Pair<Integer, Boolean> eachd : oned.attack) {
+                for (OdinPair<Integer, Boolean> eachd : oned.attack) {
                     if (Version.LessOrEqual(Region.JMS, 131)) {
-                        sp.Encode4(eachd.left.intValue() | ((eachd.right ? 1 : 0) << 31));
+                        sp.Encode4(eachd.getLeft() | ((eachd.getRight() ? 1 : 0) << 31));
                     } else {
-                        sp.Encode1(eachd.right ? 1 : 0);
-                        sp.Encode4(eachd.left.intValue());
+                        sp.Encode1(eachd.getRight() ? 1 : 0);
+                        sp.Encode4(eachd.getLeft());
                     }
                 }
             }
@@ -280,7 +280,7 @@ public class ResCUserRemote {
         return sp.get();
     }
 
-    public static MaplePacket showMonsterRiding(int cid, List<Pair<MapleBuffStat, Integer>> statups, int itemId, int skillId) {
+    public static MaplePacket showMonsterRiding(int cid, List<OdinPair<MapleBuffStat, Integer>> statups, int itemId, int skillId) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatSet);
 
         sp.Encode4(cid);
@@ -327,12 +327,12 @@ public class ResCUserRemote {
         return data.get().getBytes();
     }
 
-    public static byte[] writeLongMask(List<Pair<MapleBuffStat, Integer>> statups) {
+    public static byte[] writeLongMask(List<OdinPair<MapleBuffStat, Integer>> statups) {
         ServerPacket data = new ServerPacket();
 
         long firstmask = 0;
         long secondmask = 0;
-        for (Pair<MapleBuffStat, Integer> statup : statups) {
+        for (OdinPair<MapleBuffStat, Integer> statup : statups) {
             if (statup.getLeft().isFirst()) {
                 firstmask |= statup.getLeft().getValue();
             } else {
@@ -350,12 +350,12 @@ public class ResCUserRemote {
         return data.get().getBytes();
     }
 
-    public static MaplePacket giveForeignBuff(int cid, List<Pair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
+    public static MaplePacket giveForeignBuff(int cid, List<OdinPair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatSet);
 
         sp.Encode4(cid);
         sp.EncodeBuffer(writeLongMask(statups));
-        for (Pair<MapleBuffStat, Integer> statup : statups) {
+        for (OdinPair<MapleBuffStat, Integer> statup : statups) {
             sp.Encode2(statup.getRight().shortValue());
         }
         sp.Encode2(0); // same as give_buff
@@ -366,7 +366,7 @@ public class ResCUserRemote {
         return sp.get();
     }
 
-    public static MaplePacket giveForeignDebuff(int cid, final List<Pair<MapleDisease, Integer>> statups, int skillid, int level) {
+    public static MaplePacket giveForeignDebuff(int cid, final List<OdinPair<MapleDisease, Integer>> statups, int skillid, int level) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatSet);
 
         sp.Encode4(cid);
@@ -383,12 +383,12 @@ public class ResCUserRemote {
     }
 
     // List<Pair<MapleDisease, Integer>>
-    public static byte[] writeLongDiseaseMask(List<Pair<MapleDisease, Integer>> statups) {
+    public static byte[] writeLongDiseaseMask(List<OdinPair<MapleDisease, Integer>> statups) {
         ServerPacket data = new ServerPacket();
 
         long firstmask = 0;
         long secondmask = 0;
-        for (Pair<MapleDisease, Integer> statup : statups) {
+        for (OdinPair<MapleDisease, Integer> statup : statups) {
             if (statup.getLeft().isFirst()) {
                 firstmask |= statup.getLeft().getValue();
             } else {
@@ -406,7 +406,7 @@ public class ResCUserRemote {
         return data.get().getBytes();
     }
 
-    public static MaplePacket giveForeignPirate(List<Pair<MapleBuffStat, Integer>> statups, int duration, int cid, int skillid) {
+    public static MaplePacket giveForeignPirate(List<OdinPair<MapleBuffStat, Integer>> statups, int duration, int cid, int skillid) {
         final boolean infusion = skillid == 5121009 || skillid == 15111005;
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatSet);
 
@@ -414,7 +414,7 @@ public class ResCUserRemote {
         sp.EncodeBuffer(writeLongMask(statups));
 
         sp.Encode2(0);
-        for (Pair<MapleBuffStat, Integer> stat : statups) {
+        for (OdinPair<MapleBuffStat, Integer> stat : statups) {
             sp.Encode4(stat.getRight().intValue());
             sp.Encode8(skillid);
             sp.EncodeZeroBytes(infusion ? 7 : 1);

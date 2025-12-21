@@ -44,7 +44,7 @@ import tacos.packet.response.ResCUser;
 import odin.server.maps.AbstractMapleMapObject;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 public abstract class AbstractPlayerStore extends AbstractMapleMapObject implements IMaplePlayerShop {
@@ -159,7 +159,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
             final int packageid = rs.getInt(1);
             rs.close();
             ps.close();
-            List<Pair<IItem, MapleInventoryType>> iters = new ArrayList<Pair<IItem, MapleInventoryType>>();
+            List<OdinPair<IItem, MapleInventoryType>> iters = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
             IItem item;
             for (MaplePlayerShopItem pItems : items) {
                 if (pItems.item == null || pItems.bundles <= 0) {
@@ -170,7 +170,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
                 }
                 item = pItems.item.copy();
                 item.setQuantity((short) (item.getQuantity() * pItems.bundles));
-                iters.add(new Pair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
+                iters.add(new OdinPair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
             }
             ItemLoader.HIRED_MERCHANT.saveItems(iters, packageid, owneraccount, ownerId);
             return true;
@@ -280,11 +280,11 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     }
 
     @Override
-    public List<Pair<Byte, MapleCharacter>> getVisitors() {
-        List<Pair<Byte, MapleCharacter>> chrz = new LinkedList<Pair<Byte, MapleCharacter>>();
+    public List<OdinPair<Byte, MapleCharacter>> getVisitors() {
+        List<OdinPair<Byte, MapleCharacter>> chrz = new LinkedList<OdinPair<Byte, MapleCharacter>>();
         for (byte i = 0; i < chrs.length; i++) { //include owner or no
             if (chrs[i] != null && chrs[i].get() != null) {
-                chrz.add(new Pair<Byte, MapleCharacter>((byte) (i + 1), chrs[i].get()));
+                chrz.add(new OdinPair<Byte, MapleCharacter>((byte) (i + 1), chrs[i].get()));
             }
         }
         return chrz;

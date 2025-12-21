@@ -29,7 +29,7 @@ import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.Timer.EventTimer;
 import odin.server.events.MapleOxQuizFactory.MapleOxQuizEntry;
 import odin.server.maps.MapleMap;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class MapleOxQuiz extends MapleEvent {
 
@@ -109,8 +109,8 @@ public class MapleOxQuiz extends MapleEvent {
                     //prizes here
                     return;
                 }
-                final Entry<Pair<Integer, Integer>, MapleOxQuizEntry> question = MapleOxQuizFactory.getInstance().grabRandomQuestion();
-                toSend.broadcastMessage(ResCField.showOXQuiz(question.getKey().left, question.getKey().right, true));
+                final Entry<OdinPair<Integer, Integer>, MapleOxQuizEntry> question = MapleOxQuizFactory.getInstance().grabRandomQuestion();
+                toSend.broadcastMessage(ResCField.showOXQuiz(question.getKey().getLeft(), question.getKey().getRight(), true));
                 toSend.broadcastMessage(ResCField.getClock(12)); //quickly change to 12
                 if (oxSchedule != null) {
                     oxSchedule.cancel(false);
@@ -119,7 +119,7 @@ public class MapleOxQuiz extends MapleEvent {
 
                     @Override
                     public void run() {
-                        toSend.broadcastMessage(ResCField.showOXQuiz(question.getKey().left, question.getKey().right, false));
+                        toSend.broadcastMessage(ResCField.showOXQuiz(question.getKey().getLeft(), question.getKey().getRight(), false));
                         timesAsked++;
                         for (MapleCharacter chr : toSend.getCharacters()) {
                             if (chr != null && !chr.isGM() && chr.isAlive()) { // make sure they aren't null... maybe something can happen in 12 seconds.

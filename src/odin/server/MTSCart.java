@@ -33,7 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class MTSCart implements Serializable {
 
@@ -49,7 +49,7 @@ public class MTSCart implements Serializable {
 
     public MTSCart(int characterId) throws SQLException {
         this.characterId = characterId;
-        for (Pair<IItem, MapleInventoryType> item : ItemLoader.MTS_TRANSFER.loadItems(false, characterId).values()) {
+        for (OdinPair<IItem, MapleInventoryType> item : ItemLoader.MTS_TRANSFER.loadItems(false, characterId).values()) {
             transfer.add(item.getLeft());
         }
         loadCart();
@@ -115,10 +115,10 @@ public class MTSCart implements Serializable {
     }
 
     public void save() throws SQLException {
-        List<Pair<IItem, MapleInventoryType>> itemsWithType = new ArrayList<Pair<IItem, MapleInventoryType>>();
+        List<OdinPair<IItem, MapleInventoryType>> itemsWithType = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
 
         for (IItem item : getInventory()) {
-            itemsWithType.add(new Pair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
+            itemsWithType.add(new OdinPair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
         }
 
         ItemLoader.MTS_TRANSFER.saveItems(itemsWithType, characterId);

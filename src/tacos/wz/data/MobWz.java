@@ -32,7 +32,7 @@ import odin.provider.MapleDataProvider;
 import odin.provider.MapleDataTool;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobAttackInfo;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import odin.tools.StringUtil;
 
 /**
@@ -54,13 +54,13 @@ public class MobWz {
         return getWz().getWzRoot();
     }
 
-    private static Map<Pair<Integer, Integer>, MobAttackInfo> map_mobAttacks = null;
+    private static Map<OdinPair<Integer, Integer>, MobAttackInfo> map_mobAttacks = null;
 
     public static MobAttackInfo getMobAttackInfo(MapleMonster mob, int attack) {
         if (map_mobAttacks == null) {
             map_mobAttacks = new HashMap<>();
         }
-        MobAttackInfo mai_found = map_mobAttacks.get(new Pair<>(mob.getId(), attack));
+        MobAttackInfo mai_found = map_mobAttacks.get(new OdinPair<>(mob.getId(), attack));
         if (mai_found != null) {
             return mai_found;
         }
@@ -82,7 +82,7 @@ public class MobWz {
                 ret.setMpCon(MapleDataTool.getInt("conMP", attackData, 0));
             }
         }
-        map_mobAttacks.put(new Pair<>(mob.getId(), attack), ret);
+        map_mobAttacks.put(new OdinPair<>(mob.getId(), attack), ret);
         return ret;
     }
 

@@ -22,7 +22,7 @@ import tacos.database.DatabaseException;
 import java.util.EnumMap;
 import tacos.packet.request.ReqCTrunkDlg;
 import tacos.packet.response.ResCTrunkDlg;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class MapleStorage implements Serializable {
 
@@ -79,7 +79,7 @@ public class MapleStorage implements Serializable {
                 rs.close();
                 ps.close();
 
-                for (Pair<IItem, MapleInventoryType> mit : ItemLoader.STORAGE.loadItems(false, id).values()) {
+                for (OdinPair<IItem, MapleInventoryType> mit : ItemLoader.STORAGE.loadItems(false, id).values()) {
                     ret.items.add(mit.getLeft());
                 }
             } else {
@@ -108,9 +108,9 @@ public class MapleStorage implements Serializable {
             ps.executeUpdate();
             ps.close();
 
-            List<Pair<IItem, MapleInventoryType>> listing = new ArrayList<Pair<IItem, MapleInventoryType>>();
+            List<OdinPair<IItem, MapleInventoryType>> listing = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
             for (final IItem item : items) {
-                listing.add(new Pair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
+                listing.add(new OdinPair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
             }
             ItemLoader.STORAGE.saveItems(listing, accountId);
         } catch (SQLException ex) {

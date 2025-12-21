@@ -71,7 +71,7 @@ import tacos.packet.response.struct.TestHelper;
 import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataAvatarLook;
@@ -191,8 +191,8 @@ public class ResCWvsContext {
     public static MaplePacket cancelBuff(List<MapleBuffStat> statups, MapleStatEffect mse) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
         int buff_mask[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-        ArrayList<Pair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
-        for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
+        ArrayList<OdinPair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
+        for (OdinPair<OpsSecondaryStat, Integer> pss : pss_array) {
             buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
         }
         if (Version.GreaterOrEqual(Region.EMS, 89)) {
@@ -258,7 +258,7 @@ public class ResCWvsContext {
     }
 
     // warpper
-    public static MaplePacket giveBuff(int buffid, int bufflength, List<Pair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
+    public static MaplePacket giveBuff(int buffid, int bufflength, List<OdinPair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
         return TemporaryStatSet(effect);
     }
 
@@ -803,11 +803,11 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket giveDebuff(final List<Pair<MapleDisease, Integer>> statups, int skillid, int level, int duration) {
+    public static MaplePacket giveDebuff(final List<OdinPair<MapleDisease, Integer>> statups, int skillid, int level, int duration) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
 
         sp.EncodeBuffer(ResCUserRemote.writeLongDiseaseMask(statups));
-        for (Pair<MapleDisease, Integer> statup : statups) {
+        for (OdinPair<MapleDisease, Integer> statup : statups) {
             sp.Encode2(statup.getRight().shortValue());
             sp.Encode2(skillid);
             sp.Encode2(level);
@@ -819,13 +819,13 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket givePirate(List<Pair<MapleBuffStat, Integer>> statups, int duration, int skillid) {
+    public static MaplePacket givePirate(List<OdinPair<MapleBuffStat, Integer>> statups, int duration, int skillid) {
         final boolean infusion = skillid == 5121009 || skillid == 15111005;
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
 
         sp.EncodeBuffer(ResCUserRemote.writeLongMask(statups));
         sp.Encode2(0);
-        for (Pair<MapleBuffStat, Integer> stat : statups) {
+        for (OdinPair<MapleBuffStat, Integer> stat : statups) {
             sp.Encode4(stat.getRight().intValue());
             sp.Encode8(skillid);
             sp.EncodeZeroBytes(infusion ? 6 : 1);
@@ -838,7 +838,7 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket giveMount(int buffid, int skillid, List<Pair<MapleBuffStat, Integer>> statups) {
+    public static MaplePacket giveMount(int buffid, int skillid, List<OdinPair<MapleBuffStat, Integer>> statups) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
 
         sp.EncodeBuffer(ResCUserRemote.writeLongMask(statups));
@@ -1727,9 +1727,9 @@ public class ResCWvsContext {
                 }
             }
         }
-        List<Pair<Integer, Integer>> b = chr.usedBuffs();
+        List<OdinPair<Integer, Integer>> b = chr.usedBuffs();
         sp.Encode4(b.size());
-        for (Pair<Integer, Integer> ii : b) {
+        for (OdinPair<Integer, Integer> ii : b) {
             sp.Encode4(ii.getLeft()); //buffid
             sp.Encode4(ii.getRight()); //times used
         }
@@ -1754,9 +1754,9 @@ public class ResCWvsContext {
         } else {
             sp.Encode8(0);
         }
-        List<Pair<Integer, Integer>> b = chr.usedBuffs();
+        List<OdinPair<Integer, Integer>> b = chr.usedBuffs();
         sp.Encode4(b.size());
-        for (Pair<Integer, Integer> ii : b) {
+        for (OdinPair<Integer, Integer> ii : b) {
             sp.Encode4(ii.getLeft()); //buffid
             sp.Encode4(ii.getRight()); //times used
         }

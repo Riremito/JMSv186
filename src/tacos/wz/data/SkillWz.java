@@ -37,7 +37,7 @@ import odin.provider.MapleDataProvider;
 import odin.provider.MapleDataTool;
 import odin.server.MapleCarnivalFactory;
 import odin.server.life.MobSkill;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 /**
  *
@@ -152,7 +152,7 @@ public class SkillWz {
         return list;
     }
     // Mob
-    private static Map<Pair<Integer, Integer>, MobSkill> map_mobSkills = null;
+    private static Map<OdinPair<Integer, Integer>, MobSkill> map_mobSkills = null;
     private static MapleData img_MobSkill = null;
 
     private static MapleData getMobSkill() {
@@ -167,7 +167,7 @@ public class SkillWz {
             map_mobSkills = new HashMap<>();
         }
 
-        MobSkill ms_found = map_mobSkills.get(new Pair<>(skillId, level));
+        MobSkill ms_found = map_mobSkills.get(new OdinPair<>(skillId, level));
         if (ms_found != null) {
             return ms_found;
         }
@@ -215,7 +215,7 @@ public class SkillWz {
         ret.setLimit((short) MapleDataTool.getInt("limit", skillData, 0));
         ret.setLtRb(lt, rb);
 
-        map_mobSkills.put(new Pair<>(skillId, level), ret);
+        map_mobSkills.put(new OdinPair<>(skillId, level), ret);
 
         return ret;
     }

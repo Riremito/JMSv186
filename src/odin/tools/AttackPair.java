@@ -20,14 +20,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.tools;
 
+import tacos.odin.OdinPair;
 import java.util.List;
 
 public class AttackPair {
 
     public int objectid;
-    public List<Pair<Integer, Boolean>> attack;
+    public List<OdinPair<Integer, Boolean>> attack;
 
-    public AttackPair(int objectid, List<Pair<Integer, Boolean>> attack) {
+    public AttackPair(int objectid, List<OdinPair<Integer, Boolean>> attack) {
         this.objectid = objectid;
         this.attack = attack;
     }

@@ -16,7 +16,7 @@ import odin.server.Randomizer;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
 import odin.server.maps.MapleMap;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
 
 public class ReqCMobPool {
@@ -169,7 +169,7 @@ public class ReqCMobPool {
             boolean used = false;
 
             if (size > 0) {
-                final Pair<Integer, Integer> skillToUse = monster.getSkills().get((byte) Randomizer.nextInt(size));
+                final OdinPair<Integer, Integer> skillToUse = monster.getSkills().get((byte) Randomizer.nextInt(size));
                 realskill = skillToUse.getLeft();
                 level = skillToUse.getRight();
                 // Skill ID and Level

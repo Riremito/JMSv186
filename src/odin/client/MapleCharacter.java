@@ -123,7 +123,7 @@ import odin.server.maps.SavedLocationType;
 import odin.server.quest.MapleQuest;
 import odin.server.shops.IMaplePlayerShop;
 import odin.server.CashShop;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import odin.server.MapleCarnivalChallenge;
 import odin.server.MapleInventoryManipulator;
 import odin.server.Timer.BuffTimer;
@@ -626,7 +626,7 @@ public class MapleCharacter extends TacosCharacter {
                 ps.close();
                 rs.close();
 
-                for (Pair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(false, charid).values()) {
+                for (OdinPair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(false, charid).values()) {
                     if (!DWI_Validation.isValidItemID(mit.getLeft().getItemId())) {
                         DebugLogger.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
                         continue;
@@ -825,7 +825,7 @@ public class MapleCharacter extends TacosCharacter {
 
                 ret.stats.recalcLocalStats(true);
             } else { // Not channel server
-                for (Pair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(true, charid).values()) {
+                for (OdinPair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(true, charid).values()) {
                     ret.getInventory(mit.getRight()).addFromDB(mit.getLeft());
                 }
             }
@@ -959,10 +959,10 @@ public class MapleCharacter extends TacosCharacter {
             ps.execute();
             ps.close();
 
-            List<Pair<IItem, MapleInventoryType>> listing = new ArrayList<Pair<IItem, MapleInventoryType>>();
+            List<OdinPair<IItem, MapleInventoryType>> listing = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
             for (final MapleInventory iv : chr.inventory) {
                 for (final IItem item : iv.list()) {
-                    listing.add(new Pair<IItem, MapleInventoryType>(item, iv.getType()));
+                    listing.add(new OdinPair<IItem, MapleInventoryType>(item, iv.getType()));
                 }
             }
             ItemLoader.INVENTORY.saveItems(listing, con, chr.id);
@@ -1310,10 +1310,10 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void saveInventory(final Connection con) throws SQLException {
-        List<Pair<IItem, MapleInventoryType>> listing = new ArrayList<Pair<IItem, MapleInventoryType>>();
+        List<OdinPair<IItem, MapleInventoryType>> listing = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
         for (final MapleInventory iv : inventory) {
             for (final IItem item : iv.list()) {
-                listing.add(new Pair<IItem, MapleInventoryType>(item, iv.getType()));
+                listing.add(new OdinPair<IItem, MapleInventoryType>(item, iv.getType()));
             }
         }
         if (con != null) {
@@ -1593,7 +1593,7 @@ public class MapleCharacter extends TacosCharacter {
         registerEffect(effect, starttime, schedule, effect.getStatups());
     }
 
-    public void registerEffect(MapleStatEffect effect, long starttime, ScheduledFuture<?> schedule, List<Pair<MapleBuffStat, Integer>> statups) {
+    public void registerEffect(MapleStatEffect effect, long starttime, ScheduledFuture<?> schedule, List<OdinPair<MapleBuffStat, Integer>> statups) {
         if (effect.isHide()) {
             this.hidden = true;
             map.broadcastMessage(this, ResCUserPool.UserLeaveField(getId()), false);
@@ -1605,7 +1605,7 @@ public class MapleCharacter extends TacosCharacter {
             prepareBeholderEffect();
         }
         int clonez = 0;
-        for (Pair<MapleBuffStat, Integer> statup : statups) {
+        for (OdinPair<MapleBuffStat, Integer> statup : statups) {
             if (statup.getLeft() == MapleBuffStat.ILLUSION) {
                 clonez = statup.getRight();
             }
@@ -1693,13 +1693,13 @@ public class MapleCharacter extends TacosCharacter {
         cancelEffect(effect, overwrite, startTime, effect.getStatups());
     }
 
-    public void cancelEffect(final MapleStatEffect effect, final boolean overwrite, final long startTime, List<Pair<MapleBuffStat, Integer>> statups) {
+    public void cancelEffect(final MapleStatEffect effect, final boolean overwrite, final long startTime, List<OdinPair<MapleBuffStat, Integer>> statups) {
         List<MapleBuffStat> buffstats;
         if (!overwrite) {
             buffstats = getBuffStats(effect, startTime);
         } else {
             buffstats = new ArrayList<MapleBuffStat>(statups.size());
-            for (Pair<MapleBuffStat, Integer> statup : statups) {
+            for (OdinPair<MapleBuffStat, Integer> statup : statups) {
                 buffstats.add(statup.getLeft());
             }
         }
@@ -1955,7 +1955,7 @@ public class MapleCharacter extends TacosCharacter {
                     neworbcount++;
                 }
             }
-            List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.COMBO, neworbcount));
+            List<OdinPair<MapleBuffStat, Integer>> stat = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.COMBO, neworbcount));
             setBuffedValue(MapleBuffStat.COMBO, neworbcount);
             int duration = ceffect.getDuration();
             duration += (int) ((getBuffedStarttime(MapleBuffStat.COMBO) - System.currentTimeMillis()));
@@ -1984,7 +1984,7 @@ public class MapleCharacter extends TacosCharacter {
         if (ceffect == null) {
             return;
         }
-        List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.COMBO, 1));
+        List<OdinPair<MapleBuffStat, Integer>> stat = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.COMBO, 1));
         setBuffedValue(MapleBuffStat.COMBO, 1);
         int duration = ceffect.getDuration();
         duration += (int) ((getBuffedStarttime(MapleBuffStat.COMBO) - System.currentTimeMillis()));
@@ -2844,7 +2844,7 @@ public class MapleCharacter extends TacosCharacter {
         long expiration;
         final List<Integer> ret = new ArrayList<Integer>();
         final long currenttime = System.currentTimeMillis();
-        final List<Pair<MapleInventoryType, IItem>> toberemove = new ArrayList<Pair<MapleInventoryType, IItem>>(); // This is here to prevent deadlock.
+        final List<OdinPair<MapleInventoryType, IItem>> toberemove = new ArrayList<OdinPair<MapleInventoryType, IItem>>(); // This is here to prevent deadlock.
         final List<IItem> tobeunlock = new ArrayList<IItem>(); // This is here to prevent deadlock.
 
         for (final MapleInventoryType inv : MapleInventoryType.values()) {
@@ -2855,15 +2855,15 @@ public class MapleCharacter extends TacosCharacter {
                     if (ItemFlag.LOCK.check(item.getFlag())) {
                         tobeunlock.add(item);
                     } else if (currenttime > expiration) {
-                        toberemove.add(new Pair<MapleInventoryType, IItem>(inv, item));
+                        toberemove.add(new OdinPair<MapleInventoryType, IItem>(inv, item));
                     }
                 } else if (item.getItemId() == 5000054 && item.getPet() != null && item.getPet().getSecondsLeft() <= 0) {
-                    toberemove.add(new Pair<MapleInventoryType, IItem>(inv, item));
+                    toberemove.add(new OdinPair<MapleInventoryType, IItem>(inv, item));
                 }
             }
         }
         IItem item;
-        for (final Pair<MapleInventoryType, IItem> itemz : toberemove) {
+        for (final OdinPair<MapleInventoryType, IItem> itemz : toberemove) {
             item = itemz.getRight();
             ret.add(item.getItemId());
             getInventory(itemz.getLeft()).removeItem(item.getPosition(), item.getQuantity(), false);
@@ -3948,7 +3948,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void giveDebuff(final MapleDisease disease, int x, long duration, int skillid, int level) {
-        final List<Pair<MapleDisease, Integer>> debuff = Collections.singletonList(new Pair<MapleDisease, Integer>(disease, Integer.valueOf(x)));
+        final List<OdinPair<MapleDisease, Integer>> debuff = Collections.singletonList(new OdinPair<MapleDisease, Integer>(disease, Integer.valueOf(x)));
 
         if (!hasDisease(disease) && diseases.size() < 2) {
             if (!(disease == MapleDisease.SEDUCE || disease == MapleDisease.STUN)) {
@@ -4524,7 +4524,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     //TODO: more than one crush/friendship ring at a time
-    public Pair<List<MapleRing>, List<MapleRing>> getRings(boolean equip) {
+    public OdinPair<List<MapleRing>, List<MapleRing>> getRings(boolean equip) {
         MapleInventory iv = getInventory(MapleInventoryType.EQUIPPED);
         Collection<IItem> equippedC = iv.list();
         List<Item> equipped = new ArrayList<Item>(equippedC.size());
@@ -4573,7 +4573,7 @@ public class MapleCharacter extends TacosCharacter {
         }
         Collections.sort(frings, new MapleRing.RingComparator());
         Collections.sort(crings, new MapleRing.RingComparator());
-        return new Pair<List<MapleRing>, List<MapleRing>>(crings, frings);
+        return new OdinPair<List<MapleRing>, List<MapleRing>>(crings, frings);
     }
 
     public int findFH() {
@@ -5011,10 +5011,10 @@ public class MapleCharacter extends TacosCharacter {
             } else {
                 return;
             }
-            final List<Pair<String, Pair<String, Integer>>> questInfo = MapleQuest.getInstance(questid).getInfoByRank(newRank);
-            for (Pair<String, Pair<String, Integer>> q : questInfo) {
+            final List<OdinPair<String, OdinPair<String, Integer>>> questInfo = MapleQuest.getInstance(questid).getInfoByRank(newRank);
+            for (OdinPair<String, OdinPair<String, Integer>> q : questInfo) {
                 boolean found = false;
-                final String val = getOneInfo(questid, q.right.left);
+                final String val = getOneInfo(questid, q.getRight().getLeft());
                 if (val == null) {
                     return;
                 }
@@ -5024,12 +5024,12 @@ public class MapleCharacter extends TacosCharacter {
                 } catch (NumberFormatException e) {
                     return;
                 }
-                if (q.left.equals("less")) {
-                    found = vall < q.right.right;
-                } else if (q.left.equals("more")) {
-                    found = vall > q.right.right;
-                } else if (q.left.equals("equal")) {
-                    found = vall == q.right.right;
+                if (q.getLeft().equals("less")) {
+                    found = vall < q.getRight().getRight();
+                } else if (q.getLeft().equals("more")) {
+                    found = vall > q.getRight().getRight();
+                } else if (q.getLeft().equals("equal")) {
+                    found = vall == q.getRight().getRight();
                 }
                 if (!found) {
                     return;
@@ -5204,12 +5204,12 @@ public class MapleCharacter extends TacosCharacter {
         stat.setCustomData(String.valueOf(System.currentTimeMillis()));
     }
 
-    public List<Pair<Integer, Integer>> usedBuffs() {
+    public List<OdinPair<Integer, Integer>> usedBuffs() {
         //assume count = 1
-        List<Pair<Integer, Integer>> used = new ArrayList<Pair<Integer, Integer>>();
+        List<OdinPair<Integer, Integer>> used = new ArrayList<OdinPair<Integer, Integer>>();
         for (MapleFamilyBuffEntry buff : MapleFamilyBuff.getBuffEntry()) {
             if (!canUseFamilyBuff(buff)) {
-                used.add(new Pair<Integer, Integer>(buff.index, buff.count));
+                used.add(new OdinPair<Integer, Integer>(buff.index, buff.count));
             }
         }
         return used;

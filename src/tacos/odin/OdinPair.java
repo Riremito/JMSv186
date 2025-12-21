@@ -16,40 +16,26 @@
  *
  *
  */
-package tacos.client;
+package tacos.odin;
 
-import java.util.HashMap;
-import java.util.Map;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap;
 
 /**
  *
  * @author Riremito
  */
-public class TacosKeyLayout {
+public class OdinPair<K, V> extends AbstractMap.SimpleEntry {
 
-    private boolean changed = false;
-    private Map<Integer, OdinPair<Byte, Integer>> keymap = new HashMap<>();
-
-    public TacosKeyLayout() {
+    public OdinPair(K key, V value) {
+        super(key, value);
     }
 
-    public boolean isChanged() {
-        return this.changed;
+    public K getLeft() {
+        return (K) getKey();
     }
 
-    public Map<Integer, OdinPair<Byte, Integer>> get() {
-        return keymap;
-    }
-
-    public void put(int key, byte type, int action) {
-        this.keymap.put(key, new OdinPair<>(type, action));
-        this.changed = true;
-    }
-
-    public void remove(int key) {
-        this.keymap.remove(key);
-        this.changed = true;
+    public V getRight() {
+        return (V) getValue();
     }
 
 }

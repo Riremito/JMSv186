@@ -40,7 +40,7 @@ import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleInventoryType;
 import tacos.database.DatabaseConnection;
 import tacos.packet.response.ResCCashShop;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class CashShop implements Serializable {
 
@@ -68,7 +68,7 @@ public class CashShop implements Serializable {
             factory = ItemLoader.CASHSHOP_EXPLORER;
         }
 
-        for (Pair<IItem, MapleInventoryType> item : factory.loadItems(false, accountId).values()) {
+        for (OdinPair<IItem, MapleInventoryType> item : factory.loadItems(false, accountId).values()) {
             inventory.add(item.getLeft());
         }
     }
@@ -191,8 +191,8 @@ public class CashShop implements Serializable {
         }
     }
 
-    public List<Pair<IItem, String>> loadGifts() {
-        List<Pair<IItem, String>> gifts = new ArrayList<Pair<IItem, String>>();
+    public List<OdinPair<IItem, String>> loadGifts() {
+        List<OdinPair<IItem, String>> gifts = new ArrayList<OdinPair<IItem, String>>();
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM `gifts` WHERE `recipient` = ?");
@@ -202,7 +202,7 @@ public class CashShop implements Serializable {
             while (rs.next()) {
                 CashItemInfo cItem = CashItemFactory.getInstance().getItem(rs.getInt("sn"));
                 IItem item = toItem(cItem, rs.getInt("uniqueid"), rs.getString("from"));
-                gifts.add(new Pair<IItem, String>(item, rs.getString("message")));
+                gifts.add(new OdinPair<IItem, String>(item, rs.getString("message")));
                 uniqueids.add(item.getUniqueId());
                 List<CashItemInfo> packages = CashItemFactory.getInstance().getPackageItems(cItem.getId());
                 if (packages != null && packages.size() > 0) {
@@ -240,10 +240,10 @@ public class CashShop implements Serializable {
     }
 
     public void save() throws SQLException {
-        List<Pair<IItem, MapleInventoryType>> itemsWithType = new ArrayList<Pair<IItem, MapleInventoryType>>();
+        List<OdinPair<IItem, MapleInventoryType>> itemsWithType = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
 
         for (IItem item : inventory) {
-            itemsWithType.add(new Pair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
+            itemsWithType.add(new OdinPair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
         }
 
         factory.saveItems(itemsWithType, accountId);

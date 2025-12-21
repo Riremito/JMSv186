@@ -26,13 +26,12 @@ import odin.client.MapleCharacter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
-import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.MapleStatEffect.CancelEffectAction;
 import odin.server.Timer.BuffTimer;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class MapleFamilyBuff {
     //todo; read from somewhere
@@ -81,7 +80,7 @@ public class MapleFamilyBuff {
 
         public String name, desc;
         public int count, rep, type, index, questID, duration, effect;
-        public List<Pair<MapleBuffStat, Integer>> effects;
+        public List<OdinPair<MapleBuffStat, Integer>> effects;
 
         public MapleFamilyBuffEntry(int index, String name, String desc, int count, int rep, int type, int questID, int duration, int effect) {
             this.name = name;
@@ -106,21 +105,21 @@ public class MapleFamilyBuff {
             return 2022332; //custom
         }
 
-        public final List<Pair<MapleBuffStat, Integer>> getEffects() {
+        public final List<OdinPair<MapleBuffStat, Integer>> getEffects() {
             //custom
-            List<Pair<MapleBuffStat, Integer>> ret = new ArrayList<Pair<MapleBuffStat, Integer>>();
+            List<OdinPair<MapleBuffStat, Integer>> ret = new ArrayList<>();
             switch (type) {
                 case 2: //drop
-                    ret.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.DROP_RATE, effect));
-                    ret.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.MESO_RATE, effect));
+                    ret.add(new OdinPair<>(MapleBuffStat.DROP_RATE, effect));
+                    ret.add(new OdinPair<>(MapleBuffStat.MESO_RATE, effect));
                     break;
                 case 3: //exp
-                    ret.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.EXPRATE, effect));
+                    ret.add(new OdinPair<>(MapleBuffStat.EXPRATE, effect));
                     break;
                 case 4: //both
-                    ret.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.EXPRATE, effect));
-                    ret.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.DROP_RATE, effect));
-                    ret.add(new Pair<MapleBuffStat, Integer>(MapleBuffStat.MESO_RATE, effect));
+                    ret.add(new OdinPair<>(MapleBuffStat.EXPRATE, effect));
+                    ret.add(new OdinPair<>(MapleBuffStat.DROP_RATE, effect));
+                    ret.add(new OdinPair<>(MapleBuffStat.MESO_RATE, effect));
                     break;
             }
             return ret;

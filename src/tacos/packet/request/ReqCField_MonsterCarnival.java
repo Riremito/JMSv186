@@ -30,7 +30,7 @@ import odin.server.Randomizer;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
 
 /**
@@ -72,15 +72,15 @@ public class ReqCField_MonsterCarnival {
         final int num = cp.Decode4();
 
         if (tab == 0) {
-            final List<Pair<Integer, Integer>> mobs = chr.getMap().getMobsToSpawn();
-            if (num >= mobs.size() || chr.getAvailableCP() < mobs.get(num).right) {
+            final List<OdinPair<Integer, Integer>> mobs = chr.getMap().getMobsToSpawn();
+            if (num >= mobs.size() || chr.getAvailableCP() < mobs.get(num).getRight()) {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("You do not have the CP."));
                 chr.UpdateStat(true);
                 return;
             }
-            final MapleMonster mons = MapleLifeFactory.getMonster(mobs.get(num).left);
+            final MapleMonster mons = MapleLifeFactory.getMonster(mobs.get(num).getLeft());
             if (mons != null && chr.getMap().makeCarnivalSpawn(chr.getCarnivalParty().getTeam(), mons, num)) {
-                chr.getCarnivalParty().useCP(chr, mobs.get(num).right);
+                chr.getCarnivalParty().useCP(chr, mobs.get(num).getRight());
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);
                 for (MapleCharacter player : chr.getMap().getCharacters()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());

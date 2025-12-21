@@ -31,16 +31,16 @@ import java.sql.SQLException;
 import tacos.database.DatabaseConnection;
 import java.util.Map.Entry;
 import odin.server.Randomizer;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class MapleOxQuizFactory {
 
     private boolean initialized = false;
-    private Map<Pair<Integer, Integer>, MapleOxQuizEntry> questionCache;
+    private Map<OdinPair<Integer, Integer>, MapleOxQuizEntry> questionCache;
     private static MapleOxQuizFactory instance = new MapleOxQuizFactory();
 
     public MapleOxQuizFactory() {
-        questionCache = new HashMap<Pair<Integer, Integer>, MapleOxQuizEntry>();
+        questionCache = new HashMap<OdinPair<Integer, Integer>, MapleOxQuizEntry>();
     }
 
     public static MapleOxQuizFactory getInstance() {
@@ -51,10 +51,10 @@ public class MapleOxQuizFactory {
         return initialized;
     }
 
-    public Entry<Pair<Integer, Integer>, MapleOxQuizEntry> grabRandomQuestion() {
+    public Entry<OdinPair<Integer, Integer>, MapleOxQuizEntry> grabRandomQuestion() {
         final int size = questionCache.size();
         while (true) {
-            for (Entry<Pair<Integer, Integer>, MapleOxQuizEntry> oxquiz : questionCache.entrySet()) {
+            for (Entry<OdinPair<Integer, Integer>, MapleOxQuizEntry> oxquiz : questionCache.entrySet()) {
                 if (Randomizer.nextInt(size) == 0) {
                     return oxquiz;
                 }
@@ -72,7 +72,7 @@ public class MapleOxQuizFactory {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM wz_oxdata");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                questionCache.put(new Pair<Integer, Integer>(rs.getInt("questionset"), rs.getInt("questionid")), get(rs));
+                questionCache.put(new OdinPair<Integer, Integer>(rs.getInt("questionset"), rs.getInt("questionid")), get(rs));
             }
             rs.close();
             ps.close();
@@ -101,14 +101,14 @@ public class MapleOxQuizFactory {
     }
 
     public static MapleOxQuizEntry getOxEntry(int questionSet, int questionId) {
-        return getInstance().getOxQuizEntry(new Pair<Integer, Integer>(questionSet, questionId));
+        return getInstance().getOxQuizEntry(new OdinPair<Integer, Integer>(questionSet, questionId));
     }
 
-    public static MapleOxQuizEntry getOxEntry(Pair<Integer, Integer> pair) {
+    public static MapleOxQuizEntry getOxEntry(OdinPair<Integer, Integer> pair) {
         return getInstance().getOxQuizEntry(pair);
     }
 
-    public MapleOxQuizEntry getOxQuizEntry(Pair<Integer, Integer> pair) {
+    public MapleOxQuizEntry getOxQuizEntry(OdinPair<Integer, Integer> pair) {
         MapleOxQuizEntry mooe = questionCache.get(pair);
         if (mooe == null) {
             if (initialized) {

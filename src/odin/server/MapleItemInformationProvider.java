@@ -23,7 +23,7 @@ import tacos.wz.data.StringWz;
 import tacos.debug.DebugLogger;
 import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class MapleItemInformationProvider {
 
@@ -55,12 +55,12 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Boolean> blockPickupCache = new HashMap<Integer, Boolean>();
     protected final Map<Integer, List<Integer>> petsCanConsumeCache = new HashMap<Integer, List<Integer>>();
     protected final Map<Integer, Boolean> logoutExpireCache = new HashMap<Integer, Boolean>();
-    protected final Map<Integer, List<Pair<Integer, Integer>>> summonMobCache = new HashMap<Integer, List<Pair<Integer, Integer>>>();
-    protected final List<Pair<Integer, String>> itemNameCache = new ArrayList<Pair<Integer, String>>();
+    protected final Map<Integer, List<OdinPair<Integer, Integer>>> summonMobCache = new HashMap<Integer, List<OdinPair<Integer, Integer>>>();
+    protected final List<OdinPair<Integer, String>> itemNameCache = new ArrayList<OdinPair<Integer, String>>();
     protected final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<Integer, Map<Integer, Map<String, Integer>>>();
     protected final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<Integer, Map<Integer, List<Integer>>>();
-    protected final Map<Integer, Pair<Integer, List<StructRewardItem>>> RewardItem = new HashMap<Integer, Pair<Integer, List<StructRewardItem>>>();
-    protected final Map<Integer, Pair<Integer, List<Integer>>> questItems = new HashMap<Integer, Pair<Integer, List<Integer>>>();
+    protected final Map<Integer, OdinPair<Integer, List<StructRewardItem>>> RewardItem = new HashMap<Integer, OdinPair<Integer, List<StructRewardItem>>>();
+    protected final Map<Integer, OdinPair<Integer, List<Integer>>> questItems = new HashMap<Integer, OdinPair<Integer, List<Integer>>>();
 
     public final StructSetItem getSetItem(int setItemId) {
         return EtcWz.getSetItemInfoList().get(setItemId);
@@ -74,37 +74,37 @@ public class MapleItemInformationProvider {
         return instance;
     }
 
-    public final List<Pair<Integer, String>> getAllItems() {
+    public final List<OdinPair<Integer, String>> getAllItems() {
         if (itemNameCache.size() != 0) {
             return itemNameCache;
         }
-        final List<Pair<Integer, String>> itemPairs = new ArrayList<Pair<Integer, String>>();
+        final List<OdinPair<Integer, String>> itemPairs = new ArrayList<OdinPair<Integer, String>>();
         MapleData itemsData;
 
         for (final MapleData itemFolder : StringWz.getCash().getChildren()) {
-            itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
+            itemPairs.add(new OdinPair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
         for (final MapleData itemFolder : StringWz.getConsume().getChildren()) {
-            itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
+            itemPairs.add(new OdinPair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
         for (final MapleData eqpType : StringWz.getEqp().getChildren()) {
             for (final MapleData itemFolder : eqpType.getChildren()) {
-                itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
+                itemPairs.add(new OdinPair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
             }
         }
 
         for (final MapleData itemFolder : StringWz.getEtc().getChildren()) {
-            itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
+            itemPairs.add(new OdinPair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
         for (final MapleData itemFolder : StringWz.getIns().getChildren()) {
-            itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
+            itemPairs.add(new OdinPair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
 
         for (final MapleData itemFolder : StringWz.getPet().getChildren()) {
-            itemPairs.add(new Pair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
+            itemPairs.add(new OdinPair<Integer, String>(Integer.parseInt(itemFolder.getName()), MapleDataTool.getString("name", itemFolder, "NO-NAME")));
         }
         return itemPairs;
     }
@@ -944,7 +944,7 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
-    public final List<Pair<Integer, Integer>> getSummonMobs(final int itemId) {
+    public final List<OdinPair<Integer, Integer>> getSummonMobs(final int itemId) {
         if (summonMobCache.containsKey(Integer.valueOf(itemId))) {
             return summonMobCache.get(itemId);
         }
@@ -955,10 +955,10 @@ public class MapleItemInformationProvider {
         if (data == null) {
             return null;
         }
-        final List<Pair<Integer, Integer>> mobPairs = new ArrayList<Pair<Integer, Integer>>();
+        final List<OdinPair<Integer, Integer>> mobPairs = new ArrayList<OdinPair<Integer, Integer>>();
 
         for (final MapleData child : data.getChildren()) {
-            mobPairs.add(new Pair<Integer, Integer>(
+            mobPairs.add(new OdinPair<Integer, Integer>(
                     MapleDataTool.getIntConvert("id", child),
                     MapleDataTool.getIntConvert("prob", child)));
         }
@@ -1176,7 +1176,7 @@ public class MapleItemInformationProvider {
         return bRestricted;
     }
 
-    public final Pair<Integer, List<StructRewardItem>> getRewardItem(final int itemid) {
+    public final OdinPair<Integer, List<StructRewardItem>> getRewardItem(final int itemid) {
         if (RewardItem.containsKey(itemid)) {
             return RewardItem.get(itemid);
         }
@@ -1205,7 +1205,7 @@ public class MapleItemInformationProvider {
 
             all.add(struct);
         }
-        Pair<Integer, List<StructRewardItem>> toreturn = new Pair<Integer, List<StructRewardItem>>(totalprob, all);
+        OdinPair<Integer, List<StructRewardItem>> toreturn = new OdinPair<Integer, List<StructRewardItem>>(totalprob, all);
         RewardItem.put(itemid, toreturn);
         return toreturn;
     }
@@ -1279,7 +1279,7 @@ public class MapleItemInformationProvider {
         return questItem;
     }
 
-    public final Pair<Integer, List<Integer>> questItemInfo(final int itemId) {
+    public final OdinPair<Integer, List<Integer>> questItemInfo(final int itemId) {
         if (questItems.containsKey(itemId)) {
             return questItems.get(itemId);
         }
@@ -1294,7 +1294,7 @@ public class MapleItemInformationProvider {
         for (MapleData consume : itemD.getChildByPath("consumeItem")) {
             consumeItems.add(MapleDataTool.getInt(consume, 0));
         }
-        final Pair<Integer, List<Integer>> questItem = new Pair<Integer, List<Integer>>(MapleDataTool.getIntConvert("questId", itemD, 0), consumeItems);
+        final OdinPair<Integer, List<Integer>> questItem = new OdinPair<Integer, List<Integer>>(MapleDataTool.getIntConvert("questId", itemD, 0), consumeItems);
         questItems.put(itemId, questItem);
         return questItem;
     }

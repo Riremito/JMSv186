@@ -20,7 +20,7 @@ import odin.scripting.NPCScriptManager;
 import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 import odin.tools.FileoutputUtil;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class MapleQuest implements Serializable {
 
@@ -31,7 +31,7 @@ public class MapleQuest implements Serializable {
     protected List<MapleQuestRequirement> completeReqs;
     protected List<MapleQuestAction> startActs;
     protected List<MapleQuestAction> completeActs;
-    protected Map<String, List<Pair<String, Pair<String, Integer>>>> partyQuestInfo; //[rank, [more/less/equal, [property, value]]]
+    protected Map<String, List<OdinPair<String, OdinPair<String, Integer>>>> partyQuestInfo; //[rank, [more/less/equal, [property, value]]]
     protected Map<Integer, Integer> relevantMobs;
     private boolean autoStart = false;
     private boolean autoPreComplete = false;
@@ -45,7 +45,7 @@ public class MapleQuest implements Serializable {
         completeReqs = new LinkedList<MapleQuestRequirement>();
         startActs = new LinkedList<MapleQuestAction>();
         completeActs = new LinkedList<MapleQuestAction>();
-        partyQuestInfo = new LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>();
+        partyQuestInfo = new LinkedHashMap<String, List<OdinPair<String, OdinPair<String, Integer>>>>();
         this.id = id;
     }
 
@@ -133,11 +133,11 @@ public class MapleQuest implements Serializable {
             final MapleData pquestInfo = QuestWz.getPQuest().getChildByPath(String.valueOf(id));
             if (pquestInfo != null) {
                 for (MapleData d : pquestInfo.getChildByPath("rank")) {
-                    List<Pair<String, Pair<String, Integer>>> pInfo = new ArrayList<Pair<String, Pair<String, Integer>>>();
+                    List<OdinPair<String, OdinPair<String, Integer>>> pInfo = new ArrayList<OdinPair<String, OdinPair<String, Integer>>>();
                     //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
                     for (MapleData c : d) {
                         for (MapleData b : c) {
-                            pInfo.add(new Pair<String, Pair<String, Integer>>(c.getName(), new Pair<String, Integer>(b.getName(), MapleDataTool.getInt(b, 0))));
+                            pInfo.add(new OdinPair<String, OdinPair<String, Integer>>(c.getName(), new OdinPair<String, Integer>(b.getName(), MapleDataTool.getInt(b, 0))));
                         }
                     }
                     ret.partyQuestInfo.put(d.getName(), pInfo);
@@ -148,7 +148,7 @@ public class MapleQuest implements Serializable {
         return true;
     }
 
-    public List<Pair<String, Pair<String, Integer>>> getInfoByRank(final String rank) {
+    public List<OdinPair<String, OdinPair<String, Integer>>> getInfoByRank(final String rank) {
         return partyQuestInfo.get(rank);
     }
 

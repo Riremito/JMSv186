@@ -8,28 +8,28 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import odin.server.maps.SpeedRunType;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import odin.tools.StringUtil;
 
 public class SpeedRunner {
 
     private static SpeedRunner instance = new SpeedRunner();
-    private final Map<SpeedRunType, Pair<String, Map<Integer, String>>> speedRunData;
+    private final Map<SpeedRunType, OdinPair<String, Map<Integer, String>>> speedRunData;
 
     private SpeedRunner() {
-        speedRunData = new EnumMap<SpeedRunType, Pair<String, Map<Integer, String>>>(SpeedRunType.class);
+        speedRunData = new EnumMap<SpeedRunType, OdinPair<String, Map<Integer, String>>>(SpeedRunType.class);
     }
 
     public static final SpeedRunner getInstance() {
         return instance;
     }
 
-    public final Pair<String, Map<Integer, String>> getSpeedRunData(SpeedRunType type) {
+    public final OdinPair<String, Map<Integer, String>> getSpeedRunData(SpeedRunType type) {
         return speedRunData.get(type);
     }
 
-    public final void addSpeedRunData(SpeedRunType type, Pair<StringBuilder, Map<Integer, String>> mib) {
-        speedRunData.put(type, new Pair<String, Map<Integer, String>>(mib.getLeft().toString(), mib.getRight()));
+    public final void addSpeedRunData(SpeedRunType type, OdinPair<StringBuilder, Map<Integer, String>> mib) {
+        speedRunData.put(type, new OdinPair<String, Map<Integer, String>>(mib.getLeft().toString(), mib.getRight()));
     }
 
     public final void removeSpeedRunData(SpeedRunType type) {
@@ -62,11 +62,11 @@ public class SpeedRunner {
         rs.close();
         ps.close();
         if (changed) {
-            speedRunData.put(type, new Pair<String, Map<Integer, String>>(ret.toString(), rett));
+            speedRunData.put(type, new OdinPair<String, Map<Integer, String>>(ret.toString(), rett));
         }
     }
 
-    public final Pair<StringBuilder, Map<Integer, String>> addSpeedRunData(StringBuilder ret, Map<Integer, String> rett, String members, String leader, int rank, String timestring) {
+    public final OdinPair<StringBuilder, Map<Integer, String>> addSpeedRunData(StringBuilder ret, Map<Integer, String> rett, String members, String leader, int rank, String timestring) {
         StringBuilder rettt = new StringBuilder();
 
         String[] membrz = members.split(",");
@@ -95,6 +95,6 @@ public class SpeedRunner {
             ret.append("#l");
         }
         ret.append("\r\n");
-        return new Pair<StringBuilder, Map<Integer, String>>(ret, rett);
+        return new OdinPair<StringBuilder, Map<Integer, String>>(ret, rett);
     }
 }

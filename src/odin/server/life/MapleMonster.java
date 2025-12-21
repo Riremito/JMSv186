@@ -64,7 +64,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.tools.ConcurrentEnumMap;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
 
@@ -978,7 +978,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         return map;
     }
 
-    public final List<Pair<Integer, Integer>> getSkills() {
+    public final List<OdinPair<Integer, Integer>> getSkills() {
         return stats.getSkills();
     }
 

@@ -40,7 +40,7 @@ import odin.server.shops.IMaplePlayerShop;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import tacos.config.Region;
 import tacos.config.Version;
 import tacos.packet.ServerPacketHeader;
@@ -60,18 +60,18 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode1(OpsMiniRoomType.MR_EntrustedShop.get());
         sp.Encode1(hm.getMaxSize()); // m_nMaxUsers (max 8)
         sp.Encode1(m_nMyPosition); // m_nMyPosition
-        List<Pair<Byte, MapleCharacter>> visitors = hm.getVisitors();
+        List<OdinPair<Byte, MapleCharacter>> visitors = hm.getVisitors();
         // VisitorSlot
         for (int visitor_index = 0; visitor_index <= visitors.size(); visitor_index++) {
             boolean isEmployer = false;
-            sp.Encode1(visitor_index == 0 ? visitor_index : visitors.get(visitor_index).left); // first slot is employer
+            sp.Encode1(visitor_index == 0 ? visitor_index : visitors.get(visitor_index).getLeft()); // first slot is employer
             if (1 <= visitor_index) {
-                sp.EncodeBuffer(DataAvatarLook.Encode(visitors.get(visitor_index).right)); // CMiniRoomBaseDlg::DecodeAvatar
+                sp.EncodeBuffer(DataAvatarLook.Encode(visitors.get(visitor_index).getRight())); // CMiniRoomBaseDlg::DecodeAvatar
             } else {
                 sp.Encode4(hm.getItemId()); // dwTemplateID
                 isEmployer = true;
             }
-            sp.EncodeStr(isEmployer ? "Employer" : visitors.get(visitor_index).right.getName());
+            sp.EncodeStr(isEmployer ? "Employer" : visitors.get(visitor_index).getRight().getName());
             if (!isEmployer) {
                 // GMS95
                 //sp.Encode2(chr.getJob()); // m_anJobCode[i]
@@ -448,12 +448,12 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode2(merch.getVisitorSlot(chr));
         sp.Encode4(merch.getItemId());
         sp.EncodeStr("\u96c7\u7528\u5546\u4eba");
-        for (final Pair<Byte, MapleCharacter> storechr : merch.getVisitors()) {
-            sp.Encode1(storechr.left);
-            sp.EncodeBuffer(DataAvatarLook.Encode(storechr.right));
-            sp.EncodeStr(storechr.right.getName());
+        for (final OdinPair<Byte, MapleCharacter> storechr : merch.getVisitors()) {
+            sp.Encode1(storechr.getLeft());
+            sp.EncodeBuffer(DataAvatarLook.Encode(storechr.getRight()));
+            sp.EncodeStr(storechr.getRight().getName());
             if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
-                sp.Encode2(storechr.right.getJob());
+                sp.Encode2(storechr.getRight().getJob());
             }
         }
         sp.Encode1(-1);
@@ -522,7 +522,7 @@ public class ResCMiniRoomBaseDlg {
         if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
             sp.Encode2(minigame.getMCOwner().getJob());
         }
-        for (Pair<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
+        for (OdinPair<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
             sp.Encode1(visitorz.getLeft());
             sp.EncodeBuffer(DataAvatarLook.Encode(visitorz.getRight()));
             sp.EncodeStr(visitorz.getRight().getName());
@@ -533,7 +533,7 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode1(-1);
         sp.Encode1(0);
         sp.EncodeBuffer(GW_MiniGameRecord_Encode(minigame.getMCOwner(), minigame));
-        for (Pair<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
+        for (OdinPair<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
             sp.Encode1(visitorz.getLeft());
             sp.EncodeBuffer(GW_MiniGameRecord_Encode(visitorz.getRight(), minigame));
         }
@@ -590,12 +590,12 @@ public class ResCMiniRoomBaseDlg {
         if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
             sp.Encode2(((MaplePlayerShop) ips).getMCOwner().getJob());
         }
-        for (final Pair<Byte, MapleCharacter> storechr : ips.getVisitors()) {
-            sp.Encode1(storechr.left);
-            sp.EncodeBuffer(DataAvatarLook.Encode(storechr.right));
-            sp.EncodeStr(storechr.right.getName());
+        for (final OdinPair<Byte, MapleCharacter> storechr : ips.getVisitors()) {
+            sp.Encode1(storechr.getLeft());
+            sp.EncodeBuffer(DataAvatarLook.Encode(storechr.getRight()));
+            sp.EncodeStr(storechr.getRight().getName());
             if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
-                sp.Encode2(storechr.right.getJob());
+                sp.Encode2(storechr.getRight().getJob());
             }
         }
         sp.Encode1(-1);
@@ -680,8 +680,8 @@ public class ResCMiniRoomBaseDlg {
             }
         }
         sp.EncodeBuffer(GW_MiniGameRecord_Encode(game.getMCOwner(), game));
-        for (Pair<Byte, MapleCharacter> visitorz : game.getVisitors()) {
-            sp.EncodeBuffer(GW_MiniGameRecord_Encode(visitorz.right, game));
+        for (OdinPair<Byte, MapleCharacter> visitorz : game.getVisitors()) {
+            sp.EncodeBuffer(GW_MiniGameRecord_Encode(visitorz.getRight(), game));
         }
         return sp.get();
     }

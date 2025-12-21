@@ -24,8 +24,8 @@ import tacos.config.Region;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
 import java.util.Map;
+import tacos.odin.OdinPair;
 import tacos.packet.ServerPacket;
-import odin.tools.Pair;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -85,14 +85,14 @@ public class ResCFuncKeyMappedMan {
             }
 
             for (int i = 0; i < KEY_MAP_SIZE; i++) {
-                Map<Integer, Pair<Byte, Integer>> keymap = chr.getKeyLayout().get();
-                Pair<Byte, Integer> binding = keymap.get(i);
+                Map<Integer, OdinPair<Byte, Integer>> keymap = chr.getKeyLayout().get();
+                OdinPair<Byte, Integer> binding = keymap.get(i);
                 if (binding == null) {
                     sp.Encode1(0);
                     sp.Encode4(0);
                 } else {
-                    sp.Encode1(binding.getLeft());
-                    sp.Encode4(binding.getRight());
+                    sp.Encode1((byte) binding.getKey());
+                    sp.Encode4((int) binding.getValue());
                 }
             }
         }

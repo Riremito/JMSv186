@@ -36,7 +36,7 @@ import tacos.packet.response.struct.Structure;
 import odin.server.Randomizer;
 import odin.server.shops.AbstractPlayerStore;
 import odin.server.shops.IMaplePlayerShop;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 /**
  *
@@ -77,7 +77,7 @@ public class DataCUserRemote {
             data.Encode2(0);
             data.Encode1(0);
         }
-        List<Pair<Integer, Boolean>> buffvalue = new ArrayList<Pair<Integer, Boolean>>();
+        List<OdinPair<Integer, Boolean>> buffvalue = new ArrayList<OdinPair<Integer, Boolean>>();
         if (ServerConfig.JMS164orLater()) {
             long fbuffmask = 16646144L;
             if (chr.getBuffedValue(MapleBuffStat.SOARING) != null) {
@@ -103,7 +103,7 @@ public class DataCUserRemote {
         }
         if (chr.getBuffedValue(MapleBuffStat.COMBO) != null) {
             buffmask |= MapleBuffStat.COMBO.getValue();
-            buffvalue.add(new Pair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.COMBO).intValue()), false));
+            buffvalue.add(new OdinPair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.COMBO).intValue()), false));
         }
         if (chr.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null) {
             buffmask |= MapleBuffStat.SHADOWPARTNER.getValue();
@@ -119,7 +119,7 @@ public class DataCUserRemote {
         }
         if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
             buffmask |= MapleBuffStat.MORPH.getValue();
-            buffvalue.add(new Pair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.MORPH).intValue()), true));
+            buffvalue.add(new OdinPair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.MORPH).intValue()), true));
         }
         data.Encode8(buffmask);
         if (ServerConfig.JMS164orLater()) {
@@ -127,11 +127,11 @@ public class DataCUserRemote {
             if (ServerConfig.JMS194orLater()) {
                 data.Encode4(0);
             }
-            for (Pair<Integer, Boolean> i : buffvalue) {
-                if (i.right) {
-                    data.Encode2(i.left.shortValue());
+            for (OdinPair<Integer, Boolean> i : buffvalue) {
+                if (i.getRight()) {
+                    data.Encode2(i.getLeft().shortValue());
                 } else {
-                    data.Encode1(i.left.byteValue());
+                    data.Encode1(i.getLeft().byteValue());
                 }
             }
             final int CHAR_MAGIC_SPAWN = Randomizer.nextInt();

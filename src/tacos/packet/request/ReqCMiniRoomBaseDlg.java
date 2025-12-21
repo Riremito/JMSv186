@@ -40,7 +40,7 @@ import odin.server.shops.IMaplePlayerShop;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import tacos.packet.ops.OpsMiniRoomType;
 import tacos.packet.response.wrapper.WrapCWvsContext;
 
@@ -207,7 +207,7 @@ public class ReqCMiniRoomBaseDlg {
                                 merchant.setOpen(false);
                                 // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
                                 //merchant.removeAllVisitors((byte) 17, (byte) 0);
-                                List<Pair<Byte, MapleCharacter>> visitors = ips.getVisitors();
+                                List<OdinPair<Byte, MapleCharacter>> visitors = ips.getVisitors();
                                 for (int i = 0; i < visitors.size(); i++) {
                                     visitors.get(i).getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
                                     System.out.println("slot = " + i + "char = " + visitors.get(i).getRight().getName());
@@ -492,7 +492,7 @@ public class ReqCMiniRoomBaseDlg {
                 String visitor_name = cp.DecodeStr();
                 final IMaplePlayerShop ips = chr.getPlayerShop();
                 if (ips != null) {
-                    for (Pair<Byte, MapleCharacter> visitors : ips.getVisitors()) {
+                    for (OdinPair<Byte, MapleCharacter> visitors : ips.getVisitors()) {
                         if (visitors.getRight().getName().equals(visitor_name)) {
                             visitors.getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.shopBlockPlayer(visitor_slot));
                             visitors.getRight().setPlayerShop(null);
@@ -821,7 +821,7 @@ public class ReqCMiniRoomBaseDlg {
         merchant.setOpen(false);
 
         // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
-        List<Pair<Byte, MapleCharacter>> visitors = merchant.getVisitors();
+        List<OdinPair<Byte, MapleCharacter>> visitors = merchant.getVisitors();
         for (int i = 0; i < visitors.size(); i++) {
             visitors.get(i).getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
             visitors.get(i).getRight().setPlayerShop(null);

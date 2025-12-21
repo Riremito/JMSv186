@@ -8,7 +8,7 @@ import java.util.Map;
 
 import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class ItemMakerFactory {
 
@@ -104,8 +104,8 @@ public class ItemMakerFactory {
 
         private int reqLevel, reqMakerLevel;
         private int cost, quantity;
-        private List<Pair<Integer, Integer>> randomReward = new ArrayList<Pair<Integer, Integer>>();
-        private List<Pair<Integer, Integer>> reqRecipe = new ArrayList<Pair<Integer, Integer>>();
+        private List<OdinPair<Integer, Integer>> randomReward = new ArrayList<OdinPair<Integer, Integer>>();
+        private List<OdinPair<Integer, Integer>> reqRecipe = new ArrayList<OdinPair<Integer, Integer>>();
 
         public GemCreateEntry(int cost, int reqLevel, int reqMakerLevel, int quantity) {
             this.cost = cost;
@@ -118,11 +118,11 @@ public class ItemMakerFactory {
             return quantity;
         }
 
-        public List<Pair<Integer, Integer>> getRandomReward() {
+        public List<OdinPair<Integer, Integer>> getRandomReward() {
             return randomReward;
         }
 
-        public List<Pair<Integer, Integer>> getReqRecipes() {
+        public List<OdinPair<Integer, Integer>> getReqRecipes() {
             return reqRecipe;
         }
 
@@ -139,11 +139,11 @@ public class ItemMakerFactory {
         }
 
         protected void addRandomReward(int itemId, int prob) {
-            randomReward.add(new Pair<Integer, Integer>(itemId, prob));
+            randomReward.add(new OdinPair<Integer, Integer>(itemId, prob));
         }
 
         protected void addReqRecipe(int itemId, int count) {
-            reqRecipe.add(new Pair<Integer, Integer>(itemId, count));
+            reqRecipe.add(new OdinPair<Integer, Integer>(itemId, count));
         }
     }
 
@@ -152,7 +152,7 @@ public class ItemMakerFactory {
         private int reqLevel;
         private int cost, quantity, stimulator;
         private byte tuc, reqMakerLevel;
-        private List<Pair<Integer, Integer>> reqItems = new ArrayList<Pair<Integer, Integer>>(); // itemId / amount
+        private List<OdinPair<Integer, Integer>> reqItems = new ArrayList<OdinPair<Integer, Integer>>(); // itemId / amount
         private List<Integer> reqEquips = new ArrayList<Integer>();
 
         public ItemMakerCreateEntry(int cost, int reqLevel, byte reqMakerLevel, int quantity, byte tuc, int stimulator) {
@@ -172,7 +172,7 @@ public class ItemMakerFactory {
             return quantity;
         }
 
-        public List<Pair<Integer, Integer>> getReqItems() {
+        public List<OdinPair<Integer, Integer>> getReqItems() {
             return reqItems;
         }
 
@@ -197,7 +197,7 @@ public class ItemMakerFactory {
         }
 
         protected void addReqItem(int itemId, int amount) {
-            reqItems.add(new Pair<Integer, Integer>(itemId, amount));
+            reqItems.add(new OdinPair<Integer, Integer>(itemId, amount));
         }
     }
 }

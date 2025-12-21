@@ -26,7 +26,7 @@ import odin.provider.MapleData;
 import odin.provider.MapleDataProvider;
 import odin.provider.MapleDataTool;
 import odin.server.maps.MapleReactorStats;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import odin.tools.StringUtil;
 
 /**
@@ -85,10 +85,10 @@ public class ReactorWz {
             MapleData reactorInfoData_ = reactorD.getChildByPath("event");
             if (reactorInfoData_ != null && reactorInfoData_.getChildByPath("0") != null) {
                 MapleData reactorInfoData = reactorInfoData_.getChildByPath("0");
-                Pair<Integer, Integer> reactItem = null;
+                OdinPair<Integer, Integer> reactItem = null;
                 int type = MapleDataTool.getIntConvert("type", reactorInfoData);
                 if (type == 100) { //reactor waits for item
-                    reactItem = new Pair<>(MapleDataTool.getIntConvert("0", reactorInfoData), MapleDataTool.getIntConvert("1", reactorInfoData, 1));
+                    reactItem = new OdinPair<>(MapleDataTool.getIntConvert("0", reactorInfoData), MapleDataTool.getIntConvert("1", reactorInfoData, 1));
                     if (!areaSet) { //only set area of effect for item-triggered reactors once
                         stats.setTL(MapleDataTool.getPoint("lt", reactorInfoData));
                         stats.setBR(MapleDataTool.getPoint("rb", reactorInfoData));

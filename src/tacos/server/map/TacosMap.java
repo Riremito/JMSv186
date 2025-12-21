@@ -69,7 +69,7 @@ import odin.server.maps.MapleNodes;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleSummon;
 import odin.server.maps.SummonMovementType;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.packet.response.ResCDropPool;
@@ -197,7 +197,7 @@ public class TacosMap extends TacosMapData {
         return this.nodes.getNode(index);
     }
 
-    public List<Pair<Integer, Integer>> getMobsToSpawn() {
+    public List<OdinPair<Integer, Integer>> getMobsToSpawn() {
         return this.nodes.getMobsToSpawn();
     }
 

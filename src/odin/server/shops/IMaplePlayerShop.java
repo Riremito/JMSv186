@@ -25,7 +25,7 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.network.MaplePacket;
 import odin.server.shops.AbstractPlayerStore.BoughtItem;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public interface IMaplePlayerShop {
 
@@ -38,7 +38,7 @@ public interface IMaplePlayerShop {
 
     public String getDescription();
 
-    public List<Pair<Byte, MapleCharacter>> getVisitors();
+    public List<OdinPair<Byte, MapleCharacter>> getVisitors();
 
     public List<MaplePlayerShopItem> getItems();
 

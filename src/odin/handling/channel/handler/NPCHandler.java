@@ -44,7 +44,7 @@ import odin.scripting.NPCScriptManager;
 import odin.scripting.NPCConversationManager;
 import odin.server.MapleItemInformationProvider;
 import odin.tools.ArrayMap;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class NPCHandler {
 
@@ -274,7 +274,7 @@ public class NPCHandler {
 
         final MapleQuest quest = MapleQuest.getInstance(qid);
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        Pair<Integer, List<Integer>> questItemInfo = null;
+        OdinPair<Integer, List<Integer>> questItemInfo = null;
         boolean found = false;
         for (IItem i : chr.getInventory(MapleInventoryType.ETC)) {
             if (i.getItemId() / 10000 == 422) {

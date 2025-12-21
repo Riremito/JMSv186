@@ -25,7 +25,7 @@ import odin.client.MapleClient;
 import tacos.packet.response.ResCReactorPool;
 import odin.scripting.ReactorScriptManager;
 import odin.server.Timer.MapTimer;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class MapleReactor extends AbstractMapleMapObject {
 
@@ -100,7 +100,7 @@ public class MapleReactor extends AbstractMapleMapObject {
         return map;
     }
 
-    public Pair<Integer, Integer> getReactItem() {
+    public OdinPair<Integer, Integer> getReactItem() {
         return stats.getReactItem(state);
     }
 

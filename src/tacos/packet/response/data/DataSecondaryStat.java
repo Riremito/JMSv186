@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsSecondaryStat;
 import odin.server.MapleStatEffect;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 /**
  *
@@ -59,8 +59,8 @@ public class DataSecondaryStat {
         int buff_time = mse.getDuration();
         int[] buff_mask = {0, 0, 0, 0, 0, 0, 0, 0, 0};
         // test
-        ArrayList<Pair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
-        for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
+        ArrayList<OdinPair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
+        for (OdinPair<OpsSecondaryStat, Integer> pss : pss_array) {
             buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
         }
         if (Version.GreaterOrEqual(Region.EMS, 89)) {
@@ -93,7 +93,7 @@ public class DataSecondaryStat {
             for (int j = 0; j < 32; j++) {
                 if ((buff_mask[i] & (1 << j)) > 0) {
                     int effect = 0;
-                    for (Pair<OpsSecondaryStat, Integer> pss : pss_array) {
+                    for (OdinPair<OpsSecondaryStat, Integer> pss : pss_array) {
                         if (pss.getLeft().getN() == i && pss.getLeft().get() == j) {
                             effect = pss.getRight();
                         }

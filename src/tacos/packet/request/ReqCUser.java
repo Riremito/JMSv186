@@ -99,7 +99,7 @@ import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
 import odin.tools.AttackPair;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
 
 /**
@@ -938,7 +938,7 @@ public class ReqCUser {
         }
 
         int damage;
-        List<Pair<Integer, Boolean>> allDamageNumbers = null;
+        List<OdinPair<Integer, Boolean>> allDamageNumbers = null;
         attack.allDamage = new ArrayList<AttackPair>();
 
         if (attack.IsMesoExplosion()) { // Meso Explosion
@@ -959,12 +959,12 @@ public class ReqCUser {
             cp.Decode2(); // Mob Something
             cp.Decode2(); // v366->tDelay
 
-            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
+            allDamageNumbers = new ArrayList<OdinPair<Integer, Boolean>>();
 
             for (int j = 0; j < attack.GetDamagePerMob(); j++) {
                 damage = cp.Decode4(); // 366->aDamage[i]
 
-                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false));
+                allDamageNumbers.add(new OdinPair<Integer, Boolean>(Integer.valueOf(damage), false));
             }
 
             if (Version.LessOrEqual(Region.KMS, 65) || Version.Equal(Region.THMS, 87)) {
@@ -1018,7 +1018,7 @@ public class ReqCUser {
         }
 
         int oid;
-        List<Pair<Integer, Boolean>> allDamageNumbers;
+        List<OdinPair<Integer, Boolean>> allDamageNumbers;
 
         for (int i = 0; i < ret.GetMobCount(); i++) {
             oid = cp.Decode4();
@@ -1027,14 +1027,14 @@ public class ReqCUser {
             cp.Decode4();
             cp.Decode4();
             bullets = cp.Decode1();
-            allDamageNumbers = new ArrayList<Pair<Integer, Boolean>>();
+            allDamageNumbers = new ArrayList<OdinPair<Integer, Boolean>>();
             for (int j = 0; j < bullets; j++) {
                 damage = cp.Decode4();
 
                 if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
                     DebugLogger.DebugLog(cp.getHeader().name() + ": damage = " + damage);
                 }
-                allDamageNumbers.add(new Pair<Integer, Boolean>(Integer.valueOf(damage), false)); //m.e. never crits
+                allDamageNumbers.add(new OdinPair<Integer, Boolean>(Integer.valueOf(damage), false)); //m.e. never crits
             }
 
             if (ServerConfig.JMS186orLater()) {
@@ -2173,11 +2173,11 @@ public class ReqCUser {
         // used
         MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
         // spawn mobs
-        List<Pair<Integer, Integer>> summon_info = MapleItemInformationProvider.getInstance().getSummonMobs(item_id);
+        List<OdinPair<Integer, Integer>> summon_info = MapleItemInformationProvider.getInstance().getSummonMobs(item_id);
         if (summon_info == null) {
             return true;
         }
-        for (Pair<Integer, Integer> summon_data : summon_info) {
+        for (OdinPair<Integer, Integer> summon_data : summon_info) {
             if (Randomizer.nextInt(100) < summon_data.getRight()) {
                 MapleMonster monster = MapleLifeFactory.getMonster(summon_data.getLeft());
                 chr.getMap().spawnMonster_sSack(monster, chr.getPosition(), 0);

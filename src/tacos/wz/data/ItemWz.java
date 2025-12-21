@@ -33,7 +33,7 @@ import odin.provider.MapleDataFileEntry;
 import odin.provider.MapleDataProvider;
 import odin.provider.MapleDataTool;
 import odin.server.StructPotentialItem;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 /**
  *
@@ -319,14 +319,14 @@ public class ItemWz {
     }
 
     // Pet
-    private static Map<Pair<Integer, Integer>, PetCommand> map_petCommands = null;
+    private static Map<OdinPair<Integer, Integer>, PetCommand> map_petCommands = null;
     private static Map<Integer, Integer> map_petHunger = null;
 
     public static PetCommand getPetCommand(final int petId, final int skillId) {
         if (map_petCommands == null) {
             map_petCommands = new HashMap<>();
         }
-        PetCommand pc_found = map_petCommands.get(new Pair<>(petId, skillId));
+        PetCommand pc_found = map_petCommands.get(new OdinPair<>(petId, skillId));
         if (pc_found != null) {
             return pc_found;
         }
@@ -339,7 +339,7 @@ public class ItemWz {
             inc = MapleDataTool.getInt("interact/" + skillId + "/inc", skillData, 0);
         }
         PetCommand ret = new PetCommand(petId, skillId, prob, inc);
-        map_petCommands.put(new Pair<>(petId, skillId), ret);
+        map_petCommands.put(new OdinPair<>(petId, skillId), ret);
         return ret;
     }
 

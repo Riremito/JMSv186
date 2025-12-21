@@ -20,7 +20,7 @@ import odin.server.life.MapleMonster;
 import odin.server.shops.AbstractPlayerStore;
 import odin.server.shops.IMaplePlayerShop;
 import odin.tools.KoreanDateUtil;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class Structure {
 
@@ -380,7 +380,7 @@ public class Structure {
     // v165, v186
     public static final byte[] addRingInfo(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
-        Pair<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
+        OdinPair<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
         List<MapleRing> cRing = aRing.getLeft();
 
         data.Encode2(cRing.size());

@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class MapleNodes {
 
@@ -37,8 +37,8 @@ public class MapleNodes {
     private List<MaplePlatform> platforms;
     private List<MonsterPoint> monsterPoints;
     private List<Integer> skillIds;
-    private List<Pair<Integer, Integer>> mobsToSpawn;
-    private List<Pair<Point, Integer>> guardiansToSpawn;
+    private List<OdinPair<Integer, Integer>> mobsToSpawn;
+    private List<OdinPair<Point, Integer>> guardiansToSpawn;
     private int nodeStart = -1, nodeEnd = -1, mapid;
     private boolean firstHighest = true;
 
@@ -48,8 +48,8 @@ public class MapleNodes {
         platforms = new ArrayList<MaplePlatform>();
         skillIds = new ArrayList<Integer>();
         monsterPoints = new ArrayList<MonsterPoint>();
-        mobsToSpawn = new ArrayList<Pair<Integer, Integer>>();
-        guardiansToSpawn = new ArrayList<Pair<Point, Integer>>();
+        mobsToSpawn = new ArrayList<OdinPair<Integer, Integer>>();
+        guardiansToSpawn = new ArrayList<OdinPair<Point, Integer>>();
         this.mapid = mapid;
     }
 
@@ -204,18 +204,18 @@ public class MapleNodes {
     }
 
     public final void addMobSpawn(int mobId, int spendCP) {
-        this.mobsToSpawn.add(new Pair<Integer, Integer>(mobId, spendCP));
+        this.mobsToSpawn.add(new OdinPair<Integer, Integer>(mobId, spendCP));
     }
 
-    public final List<Pair<Integer, Integer>> getMobsToSpawn() {
+    public final List<OdinPair<Integer, Integer>> getMobsToSpawn() {
         return mobsToSpawn;
     }
 
     public final void addGuardianSpawn(Point guardian, int team) {
-        this.guardiansToSpawn.add(new Pair<Point, Integer>(guardian, team));
+        this.guardiansToSpawn.add(new OdinPair<Point, Integer>(guardian, team));
     }
 
-    public final List<Pair<Point, Integer>> getGuardians() {
+    public final List<OdinPair<Point, Integer>> getGuardians() {
         return guardiansToSpawn;
     }
 

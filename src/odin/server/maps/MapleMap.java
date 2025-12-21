@@ -61,7 +61,7 @@ import odin.server.MapleSquad;
 import odin.server.SpeedRunner;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapleNodes.MonsterPoint;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import tacos.server.map.TacosMap;
 
 public final class MapleMap extends TacosMap {
@@ -740,17 +740,17 @@ public final class MapleMap extends TacosMap {
         }
         Point guardz = null;
         final List<MapleReactor> react = getAllReactors();
-        for (Pair<Point, Integer> guard : nodes.getGuardians()) {
-            if (guard.right == team || guard.right == -1) {
+        for (OdinPair<Point, Integer> guard : nodes.getGuardians()) {
+            if (guard.getRight() == team || guard.getRight() == -1) {
                 boolean found = false;
                 for (MapleReactor r : react) {
-                    if (r.getPosition().x == guard.left.x && r.getPosition().y == guard.left.y && r.getState() < 5) {
+                    if (r.getPosition().x == guard.getLeft().x && r.getPosition().y == guard.getLeft().y && r.getState() < 5) {
                         found = true;
                         break; //already used
                     }
                 }
                 if (!found) {
-                    guardz = guard.left; //this point is safe for use.
+                    guardz = guard.getLeft(); //this point is safe for use.
                     break;
                 }
             }

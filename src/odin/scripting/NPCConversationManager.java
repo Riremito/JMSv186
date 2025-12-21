@@ -49,7 +49,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.Event_DojoAgent;
 import odin.server.maps.AramiaFireWorks;
 import odin.server.quest.MapleQuest;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 import odin.server.MapleItemInformationProvider;
 import tacos.server.ServerOdinGame;
 import odin.handling.channel.MapleGuildRanking;
@@ -1046,15 +1046,15 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         getPlayer().sendStatChanged();
     }
 
-    public Pair<String, Map<Integer, String>> getSpeedRun(String typ) {
+    public OdinPair<String, Map<Integer, String>> getSpeedRun(String typ) {
         final SpeedRunType type = SpeedRunType.valueOf(typ);
         if (SpeedRunner.getInstance().getSpeedRunData(type) != null) {
             return SpeedRunner.getInstance().getSpeedRunData(type);
         }
-        return new Pair<String, Map<Integer, String>>("", new HashMap<Integer, String>());
+        return new OdinPair<String, Map<Integer, String>>("", new HashMap<Integer, String>());
     }
 
-    public boolean getSR(Pair<String, Map<Integer, String>> ma, int sel) {
+    public boolean getSR(OdinPair<String, Map<Integer, String>> ma, int sel) {
         if (ma.getRight().get(sel) == null || ma.getRight().get(sel).length() <= 0) {
             dispose();
             return false;
