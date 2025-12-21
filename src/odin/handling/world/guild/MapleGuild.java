@@ -31,7 +31,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleCharacterUtil;
 import odin.client.MapleClient;
 import tacos.config.Region;
 import tacos.config.Version;
@@ -46,6 +45,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import tacos.database.query.DQ_Notes;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
@@ -578,7 +578,7 @@ public class MapleGuild implements java.io.Serializable {
                     if (mgc.isOnline()) {
                         World.Guild.setGuildAndRank(cid, 0, 5, 5);
                     } else {
-                        MapleCharacterUtil.sendNote(mgc.getName(), initiator.getName(), "You have been expelled from the guild.", 0);
+                        DQ_Notes.sendNote(mgc.getName(), initiator.getName(), "You have been expelled from the guild.", 0);
                         setOfflineGuildStatus((short) 0, (byte) 5, (byte) 5, cid);
                     }
                     members.remove(mgc);

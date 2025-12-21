@@ -142,6 +142,7 @@ import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_KeyMap;
+import tacos.database.query.DQ_Notes;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
 import tacos.debug.IDebugMan;
@@ -4005,7 +4006,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void sendNote(String to, String msg, int fame) {
-        MapleCharacterUtil.sendNote(to, getName(), msg, fame);
+        DQ_Notes.sendNote(to, getName(), msg, fame);
     }
 
     public void showNote() {

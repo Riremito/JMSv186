@@ -20,7 +20,6 @@ import odin.client.inventory.MapleInventoryType;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
 import java.util.EnumMap;
-import tacos.packet.request.ReqCTrunkDlg;
 import tacos.packet.response.ResCTrunkDlg;
 import tacos.odin.OdinPair;
 

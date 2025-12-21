@@ -11,7 +11,6 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.messages.CommandProcessor;
 import odin.constants.ServerConstants.CommandType;
 import java.lang.ref.WeakReference;
-import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCWvsContext;

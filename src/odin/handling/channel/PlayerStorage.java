@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 import java.util.Collections;
 import java.util.Collection;
-import odin.client.MapleCharacterUtil;
 import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
@@ -190,7 +189,7 @@ public class PlayerStorage {
             try {
                 final Iterator<MapleCharacter> itr = nameToChar.values().iterator();
                 while (itr.hasNext()) {
-                    sb.append(MapleCharacterUtil.makeMapleReadable(itr.next().getName()));
+                    sb.append(itr.next().getName());
                     sb.append(", ");
                 }
             } finally {
@@ -205,7 +204,7 @@ public class PlayerStorage {
                     chr = itr.next();
 
                     if (!chr.isGM()) {
-                        sb.append(MapleCharacterUtil.makeMapleReadable(chr.getName()));
+                        sb.append(chr.getName());
                         sb.append(", ");
                     }
                 }

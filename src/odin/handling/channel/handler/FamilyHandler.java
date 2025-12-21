@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import odin.client.MapleCharacterUtil;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.handling.world.MaplePartyCharacter;
@@ -33,6 +32,7 @@ import java.util.List;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.maps.FieldLimitType;
+import tacos.database.query.DQ_Notes;
 import tacos.packet.ClientPacket;
 
 public class FamilyHandler {
@@ -223,7 +223,7 @@ public class FamilyHandler {
         //if (!other.isOnline()) {
         MapleFamily.setOfflineFamilyStatus(other.getFamilyId(), other.getSeniorId(), other.getJunior1(), other.getJunior2(), other.getCurrentRep(), other.getTotalRep(), other.getId());
         //}
-        MapleCharacterUtil.sendNote(other.getName(), c.getPlayer().getName(), c.getPlayer().getName() + " has requested to sever ties with you, so the family relationship has ended.", 0);
+        DQ_Notes.sendNote(other.getName(), c.getPlayer().getName(), c.getPlayer().getName() + " has requested to sever ties with you, so the family relationship has ended.", 0);
         if (!fam.splitFamily(juniorid)) { //juniorid splits to make their own family. function should handle the rest
             if (!junior2) {
                 fam.resetGens(); //just lost a generation
@@ -254,7 +254,7 @@ public class FamilyHandler {
         MapleFamily.setOfflineFamilyStatus(mgc.getFamilyId(), mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
         //}
         c.getPlayer().saveFamilyStatus();
-        MapleCharacterUtil.sendNote(mgc.getName(), c.getPlayer().getName(), c.getPlayer().getName() + " has requested to sever ties with you, so the family relationship has ended.", 0);
+        DQ_Notes.sendNote(mgc.getName(), c.getPlayer().getName(), c.getPlayer().getName() + " has requested to sever ties with you, so the family relationship has ended.", 0);
         if (!fam.splitFamily(c.getPlayer().getId())) { //now, we're the family leader
             if (!junior2) {
                 fam.resetGens(); //just lost a generation

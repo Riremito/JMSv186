@@ -51,7 +51,6 @@ import odin.handling.channel.handler.ItemMakerHandler;
 import odin.handling.channel.handler.NPCHandler;
 import odin.handling.channel.handler.PlayerHandler;
 import odin.handling.channel.handler.PlayersHandler;
-import odin.handling.channel.handler.UserInterfaceHandler;
 import odin.handling.world.MapleParty;
 import odin.handling.world.World;
 import java.awt.Point;
@@ -63,6 +62,7 @@ import odin.handling.channel.handler.BBSHandler;
 import odin.handling.channel.handler.FamilyHandler;
 import odin.handling.channel.handler.GuildHandler;
 import odin.handling.channel.handler.PartyHandler;
+import odin.scripting.NPCScriptManager;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsChatGroup;
@@ -646,7 +646,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_TalkToTutor: {
-                UserInterfaceHandler.CygnusSummon_NPCRequest(c);
+                OnTalkToTutor(chr);
                 return true;
             }
             case CP_RequestIncCombo: {
@@ -2483,6 +2483,27 @@ public class ReqCUser {
 
         chr.UpdateStat(true);
         return true;
+    }
+
+    private static boolean OnTalkToTutor(MapleCharacter chr) {
+
+        int job_id = chr.getJob();
+
+        switch (job_id) {
+            case 1000: {
+                NPCScriptManager.getInstance().start(chr.getClient(), 1101008);
+                return true;
+            }
+            case 2000: {
+                NPCScriptManager.getInstance().start(chr.getClient(), 1202000);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return false;
     }
 
 }
