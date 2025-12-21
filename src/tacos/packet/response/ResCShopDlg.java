@@ -31,7 +31,6 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsShop;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleShopItem;
-import odin.tools.BitTools;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -173,51 +172,84 @@ public class ResCShopDlg {
     }
 
     public static MaplePacket OpenShopDlg(MapleClient c, int sid, List<MapleShopItem> items) {
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
-        if (ServerConfig.JMS194orLater()) {
-            sp.Encode1(0);
+
+        if (!Version.GreaterOrEqual(Region.EMS, 89)) {
+            if (ServerConfig.JMS194orLater()) {
+                sp.Encode1(0);
+            }
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 131)) {
             sp.Encode4(0);
         }
-        sp.Encode4(sid);
-        if (ServerConfig.JMS194orLater()) {
-            // 0 = normal shop, 1 is probably coin shop
-            sp.Encode1(0); // if 1, Encode1(size), Encode4, EncodeStr
+
+        sp.Encode4(sid); // m_dwNpcTemplateID
+
+        if (!Version.GreaterOrEqual(Region.EMS, 89)) {
+            if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 131)) {
+                sp.Encode1(0);
+            }
         }
+
         sp.Encode2(items.size()); // item count
         for (MapleShopItem item : items) {
             sp.Encode4(item.getItemId());
             sp.Encode4(item.getPrice());
-            if (ServerConfig.JMS180orLater()) {
+
+            if (Version.GreaterOrEqual(Region.GMS, 91)) {
+                sp.Encode1(0); // nDiscountRate
+            }
+
+            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode4(item.getReqItem()); // nTokenItemID
                 sp.Encode4(item.getReqItemQ()); // nTokenPrice
             }
+
             if (ServerConfig.JMS186orLater()) {
                 sp.Encode4(0); // nItemPeriod
             }
-            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84)) {
+
+            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode4(0); // nLevelLimited
             }
+
             if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode4(0);
                 sp.Encode1(0);
                 sp.Encode4(0);
             }
-            if (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId())) {
-                sp.Encode2(1); // stacksize o.o
-                if (ServerConfig.JMS146orLater()) {
-                    sp.Encode2(item.getBuyable());
-                }
+
+            if (Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 131)) {
+                sp.Encode4(0);
+                sp.Encode8(0);
+                sp.Encode8(SharedDate.getMagicalExpirationDate());
+                sp.Encode4(0);
+                sp.Encode1(0);
+                sp.Encode4(0);
+            }
+
+            // 207 || 233
+            if (GameConstants.isRechargable(item.getItemId())) {
+                sp.EncodeDouble(ii.getPrice(item.getItemId()));
             } else {
-                sp.EncodeZeroBytes(6);
-                sp.Encode2(BitTools.doubleToShortBits(ii.getPrice(item.getItemId())));
-                sp.Encode2(ii.getSlotMax(c, item.getItemId()));
+                sp.Encode2(1); // nQuantity
             }
-            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            if (ServerConfig.JMS146orLater()) {
+                sp.Encode2(ii.getSlotMax(c, item.getItemId())); // nMaxPerSlot
+            }
+            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 131)) {
                 sp.Encode1(0);
+            }
+            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 131)) {
                 sp.Encode4(0);
+            }
+            if (Version.GreaterOrEqual(Region.GMS, 131)) {
+                sp.Encode4(0);
+                sp.Encode4(0);
+                sp.Encode4(0);
+                sp.EncodeZeroBytes(32);
             }
         }
         return sp.get();

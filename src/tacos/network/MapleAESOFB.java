@@ -33,7 +33,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import odin.tools.BitTools;
 
 /**
  * Provides a class for encrypting MapleStory packets with AES OFB encryption.
@@ -155,6 +154,14 @@ public class MapleAESOFB {
         return newIv;
     }
 
+    public static byte[] multiplyBytes(byte[] in, int count, int mul) {
+        byte[] ret = new byte[count * mul];
+        for (int x = 0; x < count * mul; x++) {
+            ret[x] = in[x % count];
+        }
+        return ret;
+    }
+
     public byte[] crypt(byte[] data) {
         /*
         if (ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion()) {
@@ -168,7 +175,7 @@ public class MapleAESOFB {
         try {
             while (remaining > 0) {
                 // JMS v131-141 / others
-                byte[] myIv = Content.OldIV.get() ? oops(this.iv) : BitTools.multiplyBytes(this.iv, 4, 4);
+                byte[] myIv = Content.OldIV.get() ? oops(this.iv) : multiplyBytes(this.iv, 4, 4);
                 if (remaining < llength) {
                     llength = remaining;
                 }
@@ -233,7 +240,7 @@ public class MapleAESOFB {
                 b -= 4;
             }
             while (a > 0) {
-                byte[] d = BitTools.multiplyBytes(this.iv, 4, 4);
+                byte[] d = multiplyBytes(this.iv, 4, 4);
                 for (int e = c; e < (c + b); e++) {
                     if ((e - c) % d.length == 0) {
                         try {
