@@ -24,7 +24,6 @@ import java.awt.Point;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +31,6 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -43,7 +41,7 @@ import odin.tools.FileoutputUtil;
 import odin.provider.IMapleDataEntity;
 import odin.provider.IMapleData;
 
-public class XMLDomMapleData implements IMapleData, Serializable {
+public class XMLDomMapleData implements IMapleData {
 
     private Node node;
     private File imageDataDir;
@@ -59,12 +57,10 @@ public class XMLDomMapleData implements IMapleData, Serializable {
             Document document = documentBuilder.parse(fis);
             this.node = document.getFirstChild();
 
-        } catch (ParserConfigurationException e) {
+        } catch (ParserConfigurationException | IOException e) {
             throw new RuntimeException(e);
         } catch (SAXException e) {
             //throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         this.imageDataDir = imageDataDir;
     }
@@ -88,7 +84,7 @@ public class XMLDomMapleData implements IMapleData, Serializable {
                         foundChild = true;
                         break;
                     }
-                }catch (NullPointerException e) {
+                } catch (NullPointerException e) {
                     FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e); //ugh.
                 }
             }
@@ -147,32 +143,36 @@ public class XMLDomMapleData implements IMapleData, Serializable {
         return null;
     }
 
+    @Override
     public final MapleDataType getType() {
         final String nodeName = node.getNodeName();
-        if (nodeName.equals("imgdir")) {
-            return MapleDataType.PROPERTY;
-        } else if (nodeName.equals("canvas")) {
-            return MapleDataType.CANVAS;
-        } else if (nodeName.equals("convex")) {
-            return MapleDataType.CONVEX;
-        } else if (nodeName.equals("sound")) {
-            return MapleDataType.SOUND;
-        } else if (nodeName.equals("uol")) {
-            return MapleDataType.UOL;
-        } else if (nodeName.equals("double")) {
-            return MapleDataType.DOUBLE;
-        } else if (nodeName.equals("float")) {
-            return MapleDataType.FLOAT;
-        } else if (nodeName.equals("int")) {
-            return MapleDataType.INT;
-        } else if (nodeName.equals("short")) {
-            return MapleDataType.SHORT;
-        } else if (nodeName.equals("string")) {
-            return MapleDataType.STRING;
-        } else if (nodeName.equals("vector")) {
-            return MapleDataType.VECTOR;
-        } else if (nodeName.equals("null")) {
-            return MapleDataType.IMG_0x00;
+        switch (nodeName) {
+            case "imgdir":
+                return MapleDataType.PROPERTY;
+            case "canvas":
+                return MapleDataType.CANVAS;
+            case "convex":
+                return MapleDataType.CONVEX;
+            case "sound":
+                return MapleDataType.SOUND;
+            case "uol":
+                return MapleDataType.UOL;
+            case "double":
+                return MapleDataType.DOUBLE;
+            case "float":
+                return MapleDataType.FLOAT;
+            case "int":
+                return MapleDataType.INT;
+            case "short":
+                return MapleDataType.SHORT;
+            case "string":
+                return MapleDataType.STRING;
+            case "vector":
+                return MapleDataType.VECTOR;
+            case "null":
+                return MapleDataType.IMG_0x00;
+            default:
+                break;
         }
         return null;
     }
