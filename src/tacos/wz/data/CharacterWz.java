@@ -55,7 +55,7 @@ public class CharacterWz {
         for (IMapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
             for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
-                    IMapleData md_equip = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
+                    IMapleData md_equip = getWz().getData(mdde.getName() + "/" + mdfe.getName());
                     if (md_equip == null) {
                         DebugLogger.ErrorLog("getItemData : Invalid equip id = " + id);
                         return null;

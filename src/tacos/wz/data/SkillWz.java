@@ -157,7 +157,7 @@ public class SkillWz {
 
     private static IMapleData getMobSkill() {
         if (img_MobSkill == null) {
-            img_MobSkill = getWz().loadData("MobSkill.img");
+            img_MobSkill = getWz().getData("MobSkill.img");
         }
         return img_MobSkill;
     }
@@ -230,7 +230,7 @@ public class SkillWz {
         }
 
         map_MCSkill = new HashMap<>();
-        for (IMapleData md : getWz().loadData("MCSkill.img")) {
+        for (IMapleData md : getWz().getData("MCSkill.img")) {
             // THMS meme
             int mobSkillID = 0;
             try {
@@ -251,7 +251,7 @@ public class SkillWz {
         }
 
         map_MCGuardian = new HashMap<>();
-        for (IMapleData md : getWz().loadData("MCGuardian.img")) {
+        for (IMapleData md : getWz().getData("MCGuardian.img")) {
             map_MCGuardian.put(Integer.parseInt(md.getName()), new MapleCarnivalFactory.MCSkill(MapleDataTool.getInt("spendCP", md, 0), MapleDataTool.getInt("mobSkillID", md, 0), MapleDataTool.getInt("level", md, 0), true));
         }
         return map_MCGuardian;

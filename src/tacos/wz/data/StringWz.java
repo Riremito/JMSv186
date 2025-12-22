@@ -63,28 +63,28 @@ public class StringWz {
 
     public static IMapleData getMob() {
         if (img_Mob == null) {
-            img_Mob = getWz().loadData("Mob.img");
+            img_Mob = getWz().getData("Mob.img");
         }
         return img_Mob;
     }
 
     public static IMapleData getNpc() {
         if (img_Npc == null) {
-            img_Npc = getWz().loadData("Npc.img");
+            img_Npc = getWz().getData("Npc.img");
         }
         return img_Npc;
     }
 
     public static IMapleData getMap() {
         if (img_Map == null) {
-            img_Map = getWz().loadData("Map.img");
+            img_Map = getWz().getData("Map.img");
         }
         return img_Map;
     }
 
     public static IMapleData getSkill() {
         if (img_Skill == null) {
-            img_Skill = getWz().loadData("Skill.img");
+            img_Skill = getWz().getData("Skill.img");
         }
         return img_Skill;
     }
@@ -99,7 +99,7 @@ public class StringWz {
 
     public static IMapleData getItem() {
         if (img_Item == null) {
-            img_Item = getWz().loadData("Item.img");
+            img_Item = getWz().getData("Item.img");
         }
         return img_Item;
     }
@@ -107,7 +107,7 @@ public class StringWz {
     public static IMapleData getCash() {
         if (img_Cash == null) {
             if (getItem() == null) {
-                img_Cash = getWz().loadData("Cash.img");
+                img_Cash = getWz().getData("Cash.img");
                 img_Cash = checkSubDirectory(img_Cash, "Cash");
                 return img_Cash;
             }
@@ -119,7 +119,7 @@ public class StringWz {
     public static IMapleData getConsume() {
         if (img_Consume == null) {
             if (getItem() == null) {
-                img_Consume = getWz().loadData("Consume.img");
+                img_Consume = getWz().getData("Consume.img");
                 img_Consume = checkSubDirectory(img_Consume, "Con");
                 return img_Consume;
             }
@@ -131,7 +131,7 @@ public class StringWz {
     public static IMapleData getEqp() {
         if (img_Eqp == null) {
             if (getItem() == null) {
-                img_Eqp = getWz().loadData("Eqp.img");
+                img_Eqp = getWz().getData("Eqp.img");
                 img_Eqp = checkSubDirectory(img_Eqp, "Eqp");
                 return img_Eqp;
             }
@@ -143,7 +143,7 @@ public class StringWz {
     public static IMapleData getEtc() {
         if (img_Etc == null) {
             if (getItem() == null) {
-                img_Etc = getWz().loadData("Etc.img");
+                img_Etc = getWz().getData("Etc.img");
                 img_Etc = checkSubDirectory(img_Etc, "Etc");
                 return img_Etc;
             }
@@ -155,7 +155,7 @@ public class StringWz {
     public static IMapleData getIns() {
         if (img_Ins == null) {
             if (getItem() == null) {
-                img_Ins = getWz().loadData("Ins.img");
+                img_Ins = getWz().getData("Ins.img");
                 img_Ins = checkSubDirectory(img_Ins, "Ins");
                 return img_Ins;
             }
@@ -168,7 +168,7 @@ public class StringWz {
         if (img_Pet == null) {
             // please do not use old PetDialog.img (Pet.img)
             if (getItem() == null) {
-                img_Pet = getWz().loadData("Pet.img");
+                img_Pet = getWz().getData("Pet.img");
                 img_Pet = checkSubDirectory(img_Pet, "Pet");
                 return img_Pet;
             }
@@ -194,7 +194,7 @@ public class StringWz {
 
     public static IMapleData getMonsterBook() {
         if (img_MonsterBook == null) {
-            img_MonsterBook = getWz().loadData("MonsterBook.img");
+            img_MonsterBook = getWz().getData("MonsterBook.img");
             if (img_MonsterBook == null) {
                 bookAvailable = false;
             }

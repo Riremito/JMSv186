@@ -59,35 +59,35 @@ public class EtcWz {
 
     public static IMapleData getForbiddenName() {
         if (img_ForbiddenName == null) {
-            img_ForbiddenName = getWz().loadData("ForbiddenName.img");
+            img_ForbiddenName = getWz().getData("ForbiddenName.img");
         }
         return img_ForbiddenName;
     }
 
     public static IMapleData getNpcLocation() {
         if (img_NpcLocation == null) {
-            img_NpcLocation = getWz().loadData("NpcLocation.img");
+            img_NpcLocation = getWz().getData("NpcLocation.img");
         }
         return img_NpcLocation;
     }
 
     public static IMapleData getItemMake() {
         if (img_ItemMake == null) {
-            img_ItemMake = getWz().loadData("ItemMake.img");
+            img_ItemMake = getWz().getData("ItemMake.img");
         }
         return img_ItemMake;
     }
 
     public static IMapleData getCommodity() {
         if (img_Commodity == null) {
-            img_Commodity = getWz().loadData("Commodity.img");
+            img_Commodity = getWz().getData("Commodity.img");
         }
         return img_Commodity;
     }
 
     public static IMapleData getCashPackage() {
         if (img_CashPackage == null) {
-            img_CashPackage = getWz().loadData("CashPackage.img");
+            img_CashPackage = getWz().getData("CashPackage.img");
         }
         return img_CashPackage;
     }
@@ -121,7 +121,7 @@ public class EtcWz {
 
     public static IMapleData getSetItemInfo() {
         if (img_SetItemInfo == null) {
-            img_SetItemInfo = getWz().loadData("SetItemInfo.img");
+            img_SetItemInfo = getWz().getData("SetItemInfo.img");
         }
         return img_SetItemInfo;
     }

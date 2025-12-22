@@ -49,28 +49,28 @@ public class QuestWz {
 
     public static IMapleData getAct() {
         if (img_Act == null) {
-            img_Act = getWz().loadData("Act.img");
+            img_Act = getWz().getData("Act.img");
         }
         return img_Act;
     }
 
     public static IMapleData getCheck() {
         if (img_Check == null) {
-            img_Check = getWz().loadData("Check.img");
+            img_Check = getWz().getData("Check.img");
         }
         return img_Check;
     }
 
     public static IMapleData getQuestInfo() {
         if (img_QuestInfo == null) {
-            img_QuestInfo = getWz().loadData("QuestInfo.img");
+            img_QuestInfo = getWz().getData("QuestInfo.img");
         }
         return img_QuestInfo;
     }
 
     public static IMapleData getPQuest() {
         if (img_PQuest == null) {
-            img_PQuest = getWz().loadData("PQuest.img");
+            img_PQuest = getWz().getData("PQuest.img");
         }
         return img_PQuest;
     }

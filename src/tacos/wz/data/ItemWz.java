@@ -74,7 +74,7 @@ public class ItemWz {
         for (IMapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
             for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
-                    IMapleData md_item_sub_type = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
+                    IMapleData md_item_sub_type = getWz().getData(mdde.getName() + "/" + mdfe.getName());
                     if (md_item_sub_type == null) {
                         DebugLogger.ErrorLog("getItemData : Invalid item type = " + item_sub_type);
                         return null;
@@ -108,7 +108,7 @@ public class ItemWz {
         for (IMapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
             for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
-                    IMapleData md_item_sub_type = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
+                    IMapleData md_item_sub_type = getWz().getData(mdde.getName() + "/" + mdfe.getName());
                     if (md_item_sub_type == null) {
                         DebugLogger.ErrorLog("getItemImg : Invalid item type = " + item_sub_type);
                         return null;
@@ -133,7 +133,7 @@ public class ItemWz {
             if (mdde.getName().equals("Pet")) {
                 for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                     if (mdfe.getName().equals(target_img_name)) {
-                        IMapleData md_pet = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
+                        IMapleData md_pet = getWz().getData(mdde.getName() + "/" + mdfe.getName());
                         if (md_pet == null) {
                             DebugLogger.ErrorLog("getItemData_Pet : Invalid pet id 1 = " + id);
                             return null;
@@ -158,7 +158,7 @@ public class ItemWz {
 
     public static IMapleData getItemOption() {
         if (img_ItemOption == null) {
-            img_ItemOption = getWz().loadData("ItemOption.img");
+            img_ItemOption = getWz().getData("ItemOption.img");
         }
         return img_ItemOption;
     }
@@ -331,7 +331,7 @@ public class ItemWz {
             return pc_found;
         }
 
-        IMapleData skillData = getWz().loadData("Pet/" + petId + ".img");
+        IMapleData skillData = getWz().getData("Pet/" + petId + ".img");
         int prob = 0;
         int inc = 0;
         if (skillData != null) {
@@ -352,7 +352,7 @@ public class ItemWz {
             return found;
         }
 
-        IMapleData hungerData = getWz().loadData("Pet/" + petId + ".img").getChildByPath("info/hungry");
+        IMapleData hungerData = getWz().getData("Pet/" + petId + ".img").getChildByPath("info/hungry");
         Integer ret = MapleDataTool.getInt(hungerData, 1);
         map_petHunger.put(petId, ret);
         return ret;

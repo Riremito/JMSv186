@@ -187,9 +187,4 @@ public class TacosWz implements IMapleDataProvider {
         return this.rootForNavigation;
     }
 
-    public IMapleData loadData(String path) {
-        //DebugLogger.XmlLog("loadData = " + this.root_path + "/" + path);
-        return this.wz_root.getData(path);
-    }
-
 }
