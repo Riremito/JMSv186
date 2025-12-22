@@ -20,17 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.provider;
 
-import java.util.List;
+public interface IMapleDataFileEntry extends IMapleDataEntry {
 
-/**
- *
- * @author Matze
- */
-public interface MapleDataDirectoryEntry extends MapleDataEntry {
-
-    public List<MapleDataDirectoryEntry> getSubdirectories();
-
-    public List<MapleDataFileEntry> getFiles();
-
-    public MapleDataEntry getEntry(String name);
+    public void setOffset(int offset);
 }

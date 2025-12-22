@@ -33,8 +33,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import odin.provider.MapleData;
-import odin.provider.MapleDataEntity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -42,8 +40,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import odin.tools.FileoutputUtil;
+import odin.provider.IMapleDataEntity;
+import odin.provider.IMapleData;
 
-public class XMLDomMapleData implements MapleData, Serializable {
+public class XMLDomMapleData implements IMapleData, Serializable {
 
     private Node node;
     private File imageDataDir;
@@ -70,10 +70,10 @@ public class XMLDomMapleData implements MapleData, Serializable {
     }
 
     @Override
-    public MapleData getChildByPath(final String path) {
+    public IMapleData getChildByPath(final String path) {
         final String segments[] = path.split("/");
         if (segments[0].equals("..")) {
-            return ((MapleData) getParent()).getChildByPath(path.substring(path.indexOf("/") + 1));
+            return ((IMapleData) getParent()).getChildByPath(path.substring(path.indexOf("/") + 1));
         }
 
         Node myNode = node;
@@ -102,8 +102,8 @@ public class XMLDomMapleData implements MapleData, Serializable {
     }
 
     @Override
-    public List<MapleData> getChildren() {
-        final List<MapleData> ret = new ArrayList<>();
+    public List<IMapleData> getChildren() {
+        final List<IMapleData> ret = new ArrayList<>();
         final NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             final Node childNode = childNodes.item(i);
@@ -178,7 +178,7 @@ public class XMLDomMapleData implements MapleData, Serializable {
     }
 
     @Override
-    public MapleDataEntity getParent() {
+    public IMapleDataEntity getParent() {
         final Node parentNode = node.getParentNode();
         if (parentNode.getNodeType() == Node.DOCUMENT_NODE) {
             return null; // can't traverse outside the img file - TODO is this a problem?
@@ -194,7 +194,7 @@ public class XMLDomMapleData implements MapleData, Serializable {
     }
 
     @Override
-    public Iterator<MapleData> iterator() {
+    public Iterator<IMapleData> iterator() {
         return getChildren().iterator();
     }
 }

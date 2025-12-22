@@ -2,17 +2,17 @@ package odin.server;
 
 import java.awt.Point;
 
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 import odin.server.maps.MapleGenericPortal;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapPortal;
+import odin.provider.IMapleData;
 
 public class PortalFactory {
 
     private int nextDoorPortal = 0x80;
 
-    public MaplePortal makePortal(MapleMap map, int type, MapleData portal) {
+    public MaplePortal makePortal(MapleMap map, int type, IMapleData portal) {
         MapleGenericPortal ret = null;
         if (type == MaplePortal.MAP_PORTAL) {
             ret = new MapleMapPortal();
@@ -23,7 +23,7 @@ public class PortalFactory {
         return ret;
     }
 
-    private void loadPortal(MapleMap map, MapleGenericPortal myPortal, MapleData portal) {
+    private void loadPortal(MapleMap map, MapleGenericPortal myPortal, IMapleData portal) {
         myPortal.setName(MapleDataTool.getString(portal.getChildByPath("pn")));
         myPortal.setTarget(MapleDataTool.getString(portal.getChildByPath("tn")));
         myPortal.setTargetMapId(MapleDataTool.getInt(portal.getChildByPath("tm")));

@@ -20,18 +20,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.provider.WzXML;
 
-import odin.provider.MapleDataEntity;
-import odin.provider.MapleDataEntry;
+import odin.provider.IMapleDataEntity;
+import odin.provider.IMapleDataEntry;
 
-public class WZEntry implements MapleDataEntry {
+public class WZEntry implements IMapleDataEntry {
 
     private String name;
     private int size;
     private int checksum;
     private int offset;
-    private MapleDataEntity parent;
+    private IMapleDataEntity parent;
 
-    public WZEntry(String name, int size, int checksum, MapleDataEntity parent) {
+    public WZEntry(String name, int size, int checksum, IMapleDataEntity parent) {
         super();
         this.name = name;
         this.size = size;
@@ -60,7 +60,7 @@ public class WZEntry implements MapleDataEntry {
     }
 
     @Override
-    public MapleDataEntity getParent() {
+    public IMapleDataEntity getParent() {
         return parent;
     }
 }

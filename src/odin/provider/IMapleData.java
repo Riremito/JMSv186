@@ -20,9 +20,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.provider;
 
-public interface MapleDataEntity {
+import java.util.List;
 
+import odin.provider.WzXML.MapleDataType;
+
+public interface IMapleData extends IMapleDataEntity, Iterable<IMapleData> {
+
+    @Override
     public String getName();
 
-    public MapleDataEntity getParent();
+    public MapleDataType getType();
+
+    public List<IMapleData> getChildren();
+
+    public IMapleData getChildByPath(String path);
+
+    public Object getData();
 }

@@ -20,13 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.provider;
 
-import java.awt.image.BufferedImage;
+public interface IMapleDataProvider {
 
-public interface MapleCanvas {
+    IMapleData getData(String path);
 
-    int getHeight();
-
-    int getWidth();
-
-    BufferedImage getImage();
+    IMapleDataDirectoryEntry getRoot();
 }

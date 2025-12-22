@@ -25,12 +25,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import odin.provider.MapleData;
-import odin.provider.MapleDataProvider;
 import odin.provider.MapleDataTool;
 import odin.provider.WzXML.MapleDataType;
 import odin.server.StructSetItem;
 import odin.server.StructSetItem.SetItem;
+import odin.provider.IMapleData;
+import odin.provider.IMapleDataProvider;
 
 /**
  *
@@ -47,45 +47,45 @@ public class EtcWz {
         return wz;
     }
 
-    private static MapleDataProvider getWzRoot() {
+    private static IMapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
     }
 
-    private static MapleData img_ForbiddenName = null;
-    private static MapleData img_NpcLocation = null;
-    private static MapleData img_ItemMake = null;
-    private static MapleData img_Commodity = null;
-    private static MapleData img_CashPackage = null;
+    private static IMapleData img_ForbiddenName = null;
+    private static IMapleData img_NpcLocation = null;
+    private static IMapleData img_ItemMake = null;
+    private static IMapleData img_Commodity = null;
+    private static IMapleData img_CashPackage = null;
 
-    public static MapleData getForbiddenName() {
+    public static IMapleData getForbiddenName() {
         if (img_ForbiddenName == null) {
             img_ForbiddenName = getWz().loadData("ForbiddenName.img");
         }
         return img_ForbiddenName;
     }
 
-    public static MapleData getNpcLocation() {
+    public static IMapleData getNpcLocation() {
         if (img_NpcLocation == null) {
             img_NpcLocation = getWz().loadData("NpcLocation.img");
         }
         return img_NpcLocation;
     }
 
-    public static MapleData getItemMake() {
+    public static IMapleData getItemMake() {
         if (img_ItemMake == null) {
             img_ItemMake = getWz().loadData("ItemMake.img");
         }
         return img_ItemMake;
     }
 
-    public static MapleData getCommodity() {
+    public static IMapleData getCommodity() {
         if (img_Commodity == null) {
             img_Commodity = getWz().loadData("Commodity.img");
         }
         return img_Commodity;
     }
 
-    public static MapleData getCashPackage() {
+    public static IMapleData getCashPackage() {
         if (img_CashPackage == null) {
             img_CashPackage = getWz().loadData("CashPackage.img");
         }
@@ -100,7 +100,7 @@ public class EtcWz {
         }
 
         list_fn = new ArrayList<String>();
-        for (final MapleData data : getForbiddenName().getChildren()) {
+        for (final IMapleData data : getForbiddenName().getChildren()) {
             list_fn.add(MapleDataTool.getString(data));
         }
 
@@ -116,10 +116,10 @@ public class EtcWz {
         return false;
     }
 
-    private static MapleData img_SetItemInfo = null;
+    private static IMapleData img_SetItemInfo = null;
     private static Map<Integer, StructSetItem> map_SetItemInfo = null;
 
-    public static MapleData getSetItemInfo() {
+    public static IMapleData getSetItemInfo() {
         if (img_SetItemInfo == null) {
             img_SetItemInfo = getWz().loadData("SetItemInfo.img");
         }
@@ -137,18 +137,18 @@ public class EtcWz {
             return map_SetItemInfo;
         }
 
-        for (MapleData dat : getSetItemInfo()) {
+        for (IMapleData dat : getSetItemInfo()) {
             StructSetItem itemz = new StructSetItem();
             itemz.setItemID = Integer.parseInt(dat.getName());
             itemz.completeCount = MapleDataTool.getIntConvert("completeCount", dat, 0);
-            for (MapleData level : dat.getChildByPath("ItemID")) {
+            for (IMapleData level : dat.getChildByPath("ItemID")) {
                 if (level.getType() != MapleDataType.INT) {
                     DebugLogger.ErrorLog("SetItemInfo.img, " + dat.getName() + " error");
                     continue;
                 }
                 itemz.itemIDs.add(MapleDataTool.getIntConvert(level));
             }
-            for (MapleData level : dat.getChildByPath("Effect")) {
+            for (IMapleData level : dat.getChildByPath("Effect")) {
                 SetItem itez = new SetItem();
                 itez.incPDD = MapleDataTool.getIntConvert("incPDD", level, 0);
                 itez.incMDD = MapleDataTool.getIntConvert("incMDD", level, 0);

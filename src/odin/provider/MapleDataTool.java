@@ -28,11 +28,11 @@ import odin.CaltechEval;
 
 public class MapleDataTool {
 
-    public static String getString(MapleData data) {
+    public static String getString(IMapleData data) {
         return ((String) data.getData());
     }
 
-    public static String getString(MapleData data, String def) {
+    public static String getString(IMapleData data, String def) {
         if (data == null || data.getData() == null) {
             return def;
         } else {
@@ -40,53 +40,56 @@ public class MapleDataTool {
         }
     }
 
-    public static String getString(String path, MapleData data) {
+    public static String getString(String path, IMapleData data) {
         return getString(data.getChildByPath(path));
     }
 
-    public static String getString(String path, MapleData data, String def) {
+    public static String getString(String path, IMapleData data, String def) {
         return getString(data.getChildByPath(path), def);
     }
 
-    public static double getDouble(MapleData data) {
-        return ((Double) data.getData()).doubleValue();
+    public static double getDouble(IMapleData data) {
+        return ((Double) data.getData());
     }
 
-    public static float getFloat(MapleData data) {
-        return ((Float) data.getData()).floatValue();
+    public static float getFloat(IMapleData data) {
+        return ((Float) data.getData());
     }
 
-    public static float getFloat(MapleData data, float def) {
+    public static float getFloat(IMapleData data, float def) {
         if (data == null || data.getData() == null) {
             return def;
         } else {
-            return ((Float) data.getData()).floatValue();
+            return ((Float) data.getData());
         }
     }
 
-    public static int getInt(MapleData data) {
-        return ((Integer) data.getData()).intValue();
+    public static int getInt(IMapleData data) {
+        return ((Integer) data.getData());
     }
 
-    public static int getInt(MapleData data, int def) {
+    public static int getInt(IMapleData data, int def) {
         if (data == null || data.getData() == null) {
             return def;
         } else {
-            if (data.getType() == MapleDataType.STRING) {
-                return (int) Long.parseLong(getString(data));
-            } else if (data.getType() == MapleDataType.SHORT) {
-                return Integer.valueOf(((Short) data.getData()).shortValue());
-            } else {
-                return ((Integer) data.getData()).intValue();
+            if (null == data.getType()) {
+                return ((Integer) data.getData());
+            } else switch (data.getType()) {
+                case STRING:
+                    return (int) Long.parseLong(getString(data));
+                case SHORT:
+                    return Integer.valueOf(((Short) data.getData()));
+                default:
+                    return ((Integer) data.getData());
             }
         }
     }
 
-    public static int getInt(String path, MapleData data) {
+    public static int getInt(String path, IMapleData data) {
         return getInt(data.getChildByPath(path));
     }
 
-    public static int getIntConvert(MapleData data) {
+    public static int getIntConvert(IMapleData data) {
         if (data.getType() == MapleDataType.STRING) {
             return Integer.parseInt(getString(data));
         } else {
@@ -94,8 +97,8 @@ public class MapleDataTool {
         }
     }
 
-    public static int getIntConvert(String path, MapleData data) {
-        MapleData d = data.getChildByPath(path);
+    public static int getIntConvert(String path, IMapleData data) {
+        IMapleData d = data.getChildByPath(path);
         if (d.getType() == MapleDataType.STRING) {
             return Integer.parseInt(getString(d));
         } else {
@@ -103,15 +106,15 @@ public class MapleDataTool {
         }
     }
 
-    public static int getInt(String path, MapleData data, int def) {
+    public static int getInt(String path, IMapleData data, int def) {
         return getInt(data.getChildByPath(path), def);
     }
 
-    public static int getIntConvert(String path, MapleData data, int def) {
+    public static int getIntConvert(String path, IMapleData data, int def) {
         if (data == null) {
             return def;
         }
-        MapleData d = data.getChildByPath(path);
+        IMapleData d = data.getChildByPath(path);
         if (d == null) {
             return def;
         }
@@ -127,13 +130,13 @@ public class MapleDataTool {
     }
 
     // parseEval
-    public static int getInt(String path, MapleData source, int def, int common_level) {
+    public static int getInt(String path, IMapleData source, int def, int common_level) {
         // level dir OK
         if (common_level == 0) {
             return getInt(path, source, def);
         }
         // common dir
-        final MapleData data = source.getChildByPath(path);
+        final IMapleData data = source.getChildByPath(path);
         if (data == null) {
             return def;
         }
@@ -162,29 +165,29 @@ public class MapleDataTool {
         return (int) (new CaltechEval(d).evaluate());
     }
 
-    public static BufferedImage getImage(MapleData data) {
-        return ((MapleCanvas) data.getData()).getImage();
+    public static BufferedImage getImage(IMapleData data) {
+        return ((IMapleCanvas) data.getData()).getImage();
     }
 
-    public static Point getPoint(MapleData data) {
+    public static Point getPoint(IMapleData data) {
         return ((Point) data.getData());
     }
 
-    public static Point getPoint(String path, MapleData data) {
+    public static Point getPoint(String path, IMapleData data) {
         return getPoint(data.getChildByPath(path));
     }
 
-    public static Point getPoint(String path, MapleData data, Point def) {
-        final MapleData pointData = data.getChildByPath(path);
+    public static Point getPoint(String path, IMapleData data, Point def) {
+        final IMapleData pointData = data.getChildByPath(path);
         if (pointData == null) {
             return def;
         }
         return getPoint(pointData);
     }
 
-    public static String getFullDataPath(MapleData data) {
+    public static String getFullDataPath(IMapleData data) {
         String path = "";
-        MapleDataEntity myData = data;
+        IMapleDataEntity myData = data;
         while (myData != null) {
             path = myData.getName() + "/" + path;
             myData = myData.getParent();

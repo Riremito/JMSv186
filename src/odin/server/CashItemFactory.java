@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 import odin.server.CashItemInfo.CashModInfo;
+import odin.provider.IMapleData;
 
 public class CashItemFactory {
 
@@ -32,7 +32,7 @@ public class CashItemFactory {
 
     public void initialize() {
         final List<Integer> itemids = new ArrayList<Integer>();
-        for (MapleData field : EtcWz.getCommodity().getChildren()) {
+        for (IMapleData field : EtcWz.getCommodity().getChildren()) {
             final int itemId = MapleDataTool.getIntConvert("ItemId", field, 0);
             final int SN = MapleDataTool.getIntConvert("SN", field, 0);
 
@@ -70,7 +70,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (MapleData field : EtcWz.getCommodity().getChildren()) {
+        for (IMapleData field : EtcWz.getCommodity().getChildren()) {
             int SN = MapleDataTool.getIntConvert("SN", field, 0);
 
             if (SN <= 0 || item_SN != SN) {
@@ -102,7 +102,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (MapleData field : EtcWz.getCommodity().getChildren()) {
+        for (IMapleData field : EtcWz.getCommodity().getChildren()) {
             int ItemId = MapleDataTool.getIntConvert("ItemId", field, 0);
             if (ItemId != itemid) {
                 continue;
@@ -133,7 +133,7 @@ public class CashItemFactory {
         if (EtcWz.getCashPackage() == null || EtcWz.getCashPackage().getChildByPath(itemId + "/SN") == null) {
             return null;
         }
-        for (MapleData d : EtcWz.getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
+        for (IMapleData d : EtcWz.getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
             packageItems.add(itemStats.get(Integer.valueOf(MapleDataTool.getIntConvert(d))));
         }
         itemPackage.put(itemId, packageItems);

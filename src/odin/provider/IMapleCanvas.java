@@ -20,19 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.provider;
 
-import java.util.List;
+import java.awt.image.BufferedImage;
 
-import odin.provider.WzXML.MapleDataType;
+public interface IMapleCanvas {
 
-public interface MapleData extends MapleDataEntity, Iterable<MapleData> {
+    int getHeight();
 
-    public String getName();
+    int getWidth();
 
-    public MapleDataType getType();
-
-    public List<MapleData> getChildren();
-
-    public MapleData getChildByPath(String path);
-
-    public Object getData();
+    BufferedImage getImage();
 }

@@ -36,29 +36,29 @@ import java.util.List;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
+import odin.provider.IMapleData;
 
 public class MapleQuestAction implements Serializable {
 
     private static final long serialVersionUID = 9179541993413738569L;
     private MapleQuestActionType type;
-    private MapleData data;
+    private IMapleData data;
     private MapleQuest quest;
 
     /**
      * Creates a new instance of MapleQuestAction
      */
-    public MapleQuestAction(MapleQuestActionType type, MapleData data, MapleQuest quest) {
+    public MapleQuestAction(MapleQuestActionType type, IMapleData data, MapleQuest quest) {
         this.type = type;
         this.data = data;
         this.quest = quest;
     }
 
-    private static boolean canGetItem(MapleData item, MapleCharacter c) {
+    private static boolean canGetItem(IMapleData item, MapleCharacter c) {
         if (item.getChildByPath("gender") != null) {
             final int gender = MapleDataTool.getInt(item.getChildByPath("gender"));
             if (gender != 2 && gender != c.getGender()) {
@@ -94,7 +94,7 @@ public class MapleQuestAction implements Serializable {
         if (type == MapleQuestActionType.item) {
             int retitem;
 
-            for (final MapleData iEntry : data.getChildren()) {
+            for (final IMapleData iEntry : data.getChildren()) {
                 retitem = MapleDataTool.getInt(iEntry.getChildByPath("id"), -1);
                 if (retitem == itemid) {
                     if (!c.haveItem(retitem, 1, true, false)) {
@@ -120,8 +120,8 @@ public class MapleQuestAction implements Serializable {
             case item:
                 // first check for randomness in item selection
                 Map<Integer, Integer> props = new HashMap<Integer, Integer>();
-                MapleData prop;
-                for (MapleData iEntry : data.getChildren()) {
+                IMapleData prop;
+                for (IMapleData iEntry : data.getChildren()) {
                     prop = iEntry.getChildByPath("prop");
                     if (prop != null && MapleDataTool.getInt(prop) != -1 && canGetItem(iEntry, c)) {
                         for (int i = 0; i < MapleDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
@@ -134,7 +134,7 @@ public class MapleQuestAction implements Serializable {
                 if (props.size() > 0) {
                     selection = props.get(Randomizer.nextInt(props.size()));
                 }
-                for (MapleData iEntry : data.getChildren()) {
+                for (IMapleData iEntry : data.getChildren()) {
                     if (!canGetItem(iEntry, c)) {
                         continue;
                     }
@@ -185,7 +185,7 @@ public class MapleQuestAction implements Serializable {
                 c.gainMeso(MapleDataTool.getInt(data, 0), true, false, true);
                 break;
             case quest:
-                for (MapleData qEntry : data) {
+                for (IMapleData qEntry : data) {
                     c.updateQuest(
                             new MapleQuestStatus(MapleQuest.getInstance(MapleDataTool.getInt(qEntry.getChildByPath("id"))),
                                     (byte) MapleDataTool.getInt(qEntry.getChildByPath("state"), 0)));
@@ -193,13 +193,13 @@ public class MapleQuestAction implements Serializable {
                 break;
             case skill:
                 //TODO needs gain/lost message?
-                for (MapleData sEntry : data) {
+                for (IMapleData sEntry : data) {
                     final int skillid = MapleDataTool.getInt(sEntry.getChildByPath("id"));
                     int skillLevel = MapleDataTool.getInt(sEntry.getChildByPath("skillLevel"), 0);
                     int masterLevel = MapleDataTool.getInt(sEntry.getChildByPath("masterLevel"), 0);
                     final ISkill skillObject = SkillFactory.getSkill(skillid);
 
-                    for (MapleData applicableJob : sEntry.getChildByPath("job")) {
+                    for (IMapleData applicableJob : sEntry.getChildByPath("job")) {
                         if (skillObject.isBeginnerSkill() || c.getJob() == MapleDataTool.getInt(applicableJob)) {
                             c.changeSkillLevel(skillObject,
                                     (byte) Math.max(skillLevel, c.getSkillLevel(skillObject)),
@@ -240,11 +240,11 @@ public class MapleQuestAction implements Serializable {
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                for (MapleData iEntry : data.getChildren()) {
+                for (IMapleData iEntry : data.getChildren()) {
                     final int sp_val = MapleDataTool.getInt(iEntry.getChildByPath("sp_value"), 0);
                     if (iEntry.getChildByPath("job") != null) {
                         int finalJob = 0;
-                        for (MapleData jEntry : iEntry.getChildByPath("job").getChildren()) {
+                        for (IMapleData jEntry : iEntry.getChildByPath("job").getChildren()) {
                             final int job_val = MapleDataTool.getInt(jEntry, 0);
                             if (c.getJob() >= job_val && job_val > finalJob) {
                                 finalJob = job_val;
@@ -272,8 +272,8 @@ public class MapleQuestAction implements Serializable {
                 // first check for randomness in item selection
                 final Map<Integer, Integer> props = new HashMap<Integer, Integer>();
 
-                for (MapleData iEntry : data.getChildren()) {
-                    final MapleData prop = iEntry.getChildByPath("prop");
+                for (IMapleData iEntry : data.getChildren()) {
+                    final IMapleData prop = iEntry.getChildByPath("prop");
                     if (prop != null && MapleDataTool.getInt(prop) != -1 && canGetItem(iEntry, c)) {
                         for (int i = 0; i < MapleDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
                             props.put(props.size(), MapleDataTool.getInt(iEntry.getChildByPath("id")));
@@ -287,7 +287,7 @@ public class MapleQuestAction implements Serializable {
                 }
                 byte eq = 0, use = 0, setup = 0, etc = 0, cash = 0;
 
-                for (MapleData iEntry : data.getChildren()) {
+                for (IMapleData iEntry : data.getChildren()) {
                     if (!canGetItem(iEntry, c)) {
                         continue;
                     }
@@ -374,8 +374,8 @@ public class MapleQuestAction implements Serializable {
                 // first check for randomness in item selection
                 Map<Integer, Integer> props = new HashMap<Integer, Integer>();
 
-                for (MapleData iEntry : data.getChildren()) {
-                    final MapleData prop = iEntry.getChildByPath("prop");
+                for (IMapleData iEntry : data.getChildren()) {
+                    final IMapleData prop = iEntry.getChildByPath("prop");
                     if (prop != null && MapleDataTool.getInt(prop) != -1 && canGetItem(iEntry, c)) {
                         for (int i = 0; i < MapleDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
                             props.put(props.size(), MapleDataTool.getInt(iEntry.getChildByPath("id")));
@@ -387,7 +387,7 @@ public class MapleQuestAction implements Serializable {
                 if (props.size() > 0) {
                     selection = props.get(Randomizer.nextInt(props.size()));
                 }
-                for (MapleData iEntry : data.getChildren()) {
+                for (IMapleData iEntry : data.getChildren()) {
                     if (!canGetItem(iEntry, c)) {
                         continue;
                     }
@@ -428,7 +428,7 @@ public class MapleQuestAction implements Serializable {
                 break;
             }
             case quest: {
-                for (MapleData qEntry : data) {
+                for (IMapleData qEntry : data) {
                     c.updateQuest(
                             new MapleQuestStatus(MapleQuest.getInstance(MapleDataTool.getInt(qEntry.getChildByPath("id"))),
                                     (byte) MapleDataTool.getInt(qEntry.getChildByPath("state"), 0)));
@@ -436,13 +436,13 @@ public class MapleQuestAction implements Serializable {
                 break;
             }
             case skill: {
-                for (MapleData sEntry : data) {
+                for (IMapleData sEntry : data) {
                     final int skillid = MapleDataTool.getInt(sEntry.getChildByPath("id"));
                     int skillLevel = MapleDataTool.getInt(sEntry.getChildByPath("skillLevel"), 0);
                     int masterLevel = MapleDataTool.getInt(sEntry.getChildByPath("masterLevel"), 0);
                     final ISkill skillObject = SkillFactory.getSkill(skillid);
 
-                    for (MapleData applicableJob : sEntry.getChildByPath("job")) {
+                    for (IMapleData applicableJob : sEntry.getChildByPath("job")) {
                         if (skillObject.isBeginnerSkill() || c.getJob() == MapleDataTool.getInt(applicableJob)) {
                             c.changeSkillLevel(skillObject,
                                     (byte) Math.max(skillLevel, c.getSkillLevel(skillObject)),
@@ -474,11 +474,11 @@ public class MapleQuestAction implements Serializable {
                 break;
             }
             case sp: {
-                for (MapleData iEntry : data.getChildren()) {
+                for (IMapleData iEntry : data.getChildren()) {
                     final int sp_val = MapleDataTool.getInt(iEntry.getChildByPath("sp_value"), 0);
                     if (iEntry.getChildByPath("job") != null) {
                         int finalJob = 0;
-                        for (MapleData jEntry : iEntry.getChildByPath("job").getChildren()) {
+                        for (IMapleData jEntry : iEntry.getChildByPath("job").getChildren()) {
                             final int job_val = MapleDataTool.getInt(jEntry, 0);
                             if (c.getJob() >= job_val && job_val > finalJob) {
                                 finalJob = job_val;

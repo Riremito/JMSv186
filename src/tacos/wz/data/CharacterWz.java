@@ -21,10 +21,10 @@ package tacos.wz.data;
 import tacos.wz.TacosWz;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
-import odin.provider.MapleData;
-import odin.provider.MapleDataDirectoryEntry;
-import odin.provider.MapleDataFileEntry;
-import odin.provider.MapleDataProvider;
+import odin.provider.IMapleData;
+import odin.provider.IMapleDataDirectoryEntry;
+import odin.provider.IMapleDataFileEntry;
+import odin.provider.IMapleDataProvider;
 
 /**
  *
@@ -41,21 +41,21 @@ public class CharacterWz {
         return wz;
     }
 
-    private static MapleDataProvider getWzRoot() {
+    private static IMapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
     }
 
-    public static MapleData getItemData(int id) {
+    public static IMapleData getItemData(int id) {
         int item_type = id / 1000000;
         if (2 <= item_type) {
             return null;
         }
 
         String target_img_name = String.format("%08d.img", id);
-        for (MapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
-            for (MapleDataFileEntry mdfe : mdde.getFiles()) {
+        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
+            for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
-                    MapleData md_equip = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
+                    IMapleData md_equip = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
                     if (md_equip == null) {
                         DebugLogger.ErrorLog("getItemData : Invalid equip id = " + id);
                         return null;

@@ -27,13 +27,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import odin.provider.MapleData;
-import odin.provider.MapleDataDirectoryEntry;
-import odin.provider.MapleDataFileEntry;
-import odin.provider.MapleDataProvider;
 import odin.provider.MapleDataTool;
 import odin.server.StructPotentialItem;
 import tacos.odin.OdinPair;
+import odin.provider.IMapleData;
+import odin.provider.IMapleDataDirectoryEntry;
+import odin.provider.IMapleDataFileEntry;
+import odin.provider.IMapleDataProvider;
 
 /**
  *
@@ -50,13 +50,13 @@ public class ItemWz {
         return wz;
     }
 
-    public static MapleDataProvider getWzRoot() {
+    public static IMapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
     }
 
     private static final int item_sub_type_pet = 500;
 
-    public static MapleData getItemData(int id) {
+    public static IMapleData getItemData(int id) {
         int item_type = id / 1000000;
         if (item_type <= 1) {
             return null;
@@ -71,15 +71,15 @@ public class ItemWz {
         String target_img_name = String.format("%04d.img", item_sub_type);
         String target_dir_name = String.format("%08d", id);
 
-        for (MapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
-            for (MapleDataFileEntry mdfe : mdde.getFiles()) {
+        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
+            for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
-                    MapleData md_item_sub_type = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
+                    IMapleData md_item_sub_type = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
                     if (md_item_sub_type == null) {
                         DebugLogger.ErrorLog("getItemData : Invalid item type = " + item_sub_type);
                         return null;
                     }
-                    MapleData md_item = md_item_sub_type.getChildByPath(target_dir_name);
+                    IMapleData md_item = md_item_sub_type.getChildByPath(target_dir_name);
                     if (md_item == null) {
                         DebugLogger.ErrorLog("getItemData : Invalid item id = " + id);
                         return null;
@@ -93,7 +93,7 @@ public class ItemWz {
         return null;
     }
 
-    public static MapleData getItemImg(int item_sub_type) {
+    public static IMapleData getItemImg(int item_sub_type) {
         if (item_sub_type < 200) {
             return null;
         }
@@ -105,10 +105,10 @@ public class ItemWz {
 
         String target_img_name = String.format("%04d.img", item_sub_type);
 
-        for (MapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
-            for (MapleDataFileEntry mdfe : mdde.getFiles()) {
+        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
+            for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
-                    MapleData md_item_sub_type = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
+                    IMapleData md_item_sub_type = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
                     if (md_item_sub_type == null) {
                         DebugLogger.ErrorLog("getItemImg : Invalid item type = " + item_sub_type);
                         return null;
@@ -122,18 +122,18 @@ public class ItemWz {
         return null;
     }
 
-    public static MapleData getItemData_Pet(int id) {
+    public static IMapleData getItemData_Pet(int id) {
         int item_sub_type = id / 10000;
         if (item_sub_type != item_sub_type_pet) {
             return null;
         }
         String target_img_name = String.format("%d.img", id);
 
-        for (MapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
+        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
             if (mdde.getName().equals("Pet")) {
-                for (MapleDataFileEntry mdfe : mdde.getFiles()) {
+                for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                     if (mdfe.getName().equals(target_img_name)) {
-                        MapleData md_pet = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
+                        IMapleData md_pet = getWz().loadData(mdde.getName() + "/" + mdfe.getName());
                         if (md_pet == null) {
                             DebugLogger.ErrorLog("getItemData_Pet : Invalid pet id 1 = " + id);
                             return null;
@@ -149,14 +149,14 @@ public class ItemWz {
         return null;
     }
 
-    private static MapleData img_ItemOption = null;
+    private static IMapleData img_ItemOption = null;
     private static Map<Integer, List<StructPotentialItem>> map_ItemOption = null;
     private static ArrayList<Integer> list_RarePotential = null;
     private static ArrayList<Integer> list_EpicPotential = null;
     private static ArrayList<Integer> list_UniquePotential = null;
     private static ArrayList<Integer> list_LegendaryPotential = null;
 
-    public static MapleData getItemOption() {
+    public static IMapleData getItemOption() {
         if (img_ItemOption == null) {
             img_ItemOption = getWz().loadData("ItemOption.img");
         }
@@ -177,9 +177,9 @@ public class ItemWz {
             return map_ItemOption;
         }
 
-        for (MapleData dat : getItemOption()) {
+        for (IMapleData dat : getItemOption()) {
             List<StructPotentialItem> items = new LinkedList<StructPotentialItem>();
-            for (MapleData level : dat.getChildByPath("level")) {
+            for (IMapleData level : dat.getChildByPath("level")) {
                 StructPotentialItem item = new StructPotentialItem();
                 item.optionType = MapleDataTool.getIntConvert("info/optionType", dat, 0);
                 item.reqLevel = MapleDataTool.getIntConvert("info/reqLevel", dat, 0);
@@ -331,7 +331,7 @@ public class ItemWz {
             return pc_found;
         }
 
-        MapleData skillData = getWz().loadData("Pet/" + petId + ".img");
+        IMapleData skillData = getWz().loadData("Pet/" + petId + ".img");
         int prob = 0;
         int inc = 0;
         if (skillData != null) {
@@ -352,7 +352,7 @@ public class ItemWz {
             return found;
         }
 
-        MapleData hungerData = getWz().loadData("Pet/" + petId + ".img").getChildByPath("info/hungry");
+        IMapleData hungerData = getWz().loadData("Pet/" + petId + ".img").getChildByPath("info/hungry");
         Integer ret = MapleDataTool.getInt(hungerData, 1);
         map_petHunger.put(petId, ret);
         return ret;

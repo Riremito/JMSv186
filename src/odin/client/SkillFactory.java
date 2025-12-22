@@ -25,9 +25,9 @@ import tacos.wz.data.StringWz;
 import java.util.Collection;
 import java.util.List;
 
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 import odin.tools.StringUtil;
+import odin.provider.IMapleData;
 
 public class SkillFactory {
 
@@ -50,7 +50,7 @@ public class SkillFactory {
     public static final String getName(final int id) {
         String strId = Integer.toString(id);
         strId = StringUtil.getLeftPaddedStr(strId, '0', 7);
-        MapleData skillroot = StringWz.getSkill().getChildByPath(strId);
+        IMapleData skillroot = StringWz.getSkill().getChildByPath(strId);
         if (skillroot != null) {
             return MapleDataTool.getString(skillroot.getChildByPath("name"), "");
         }

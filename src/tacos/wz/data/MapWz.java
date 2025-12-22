@@ -20,7 +20,7 @@ package tacos.wz.data;
 
 import tacos.wz.TacosWz;
 import tacos.config.Content;
-import odin.provider.MapleDataProvider;
+import odin.provider.IMapleDataProvider;
 
 /**
  *
@@ -37,7 +37,7 @@ public class MapWz {
         return wz;
     }
 
-    public static MapleDataProvider getWzRoot() {
+    public static IMapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
     }
 }

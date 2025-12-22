@@ -27,11 +27,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import odin.provider.MapleData;
-import odin.provider.MapleDataDirectoryEntry;
-import odin.provider.MapleDataProvider;
+import odin.provider.IMapleData;
+import odin.provider.IMapleDataDirectoryEntry;
+import odin.provider.IMapleDataProvider;
 
-public class XMLWZFile implements MapleDataProvider {
+public class XMLWZFile implements IMapleDataProvider {
 
     private File root;
     private WZDirectoryEntry rootForNavigation;
@@ -58,7 +58,7 @@ public class XMLWZFile implements MapleDataProvider {
     }
 
     @Override
-    public MapleData getData(String path) {
+    public IMapleData getData(String path) {
         File dataFile = new File(root, path + ".xml");
         if (!dataFile.exists()) {
             DebugLogger.ErrorLog("Not Found : " + path + ".xml");
@@ -107,7 +107,7 @@ public class XMLWZFile implements MapleDataProvider {
     }
 
     @Override
-    public MapleDataDirectoryEntry getRoot() {
+    public IMapleDataDirectoryEntry getRoot() {
         return rootForNavigation;
     }
 }

@@ -45,7 +45,6 @@ import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 import odin.scripting.NPCScriptManager;
 import odin.server.MapleItemInformationProvider;
@@ -66,6 +65,7 @@ import tacos.server.Server;
 import odin.server.shops.HiredMerchant;
 import tacos.database.query.DQ_Accounts;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
+import odin.provider.IMapleData;
 
 /**
  *
@@ -256,9 +256,9 @@ public class DebugCommand {
             }
             case "/hm": {
                 List<Integer> ids = new ArrayList<>();
-                MapleData md_item_sub_type = ItemWz.getItemImg(503);
+                IMapleData md_item_sub_type = ItemWz.getItemImg(503);
                 if (md_item_sub_type != null) {
-                    for (MapleData md_item : md_item_sub_type.getChildren()) {
+                    for (IMapleData md_item : md_item_sub_type.getChildren()) {
                         int item_id = Integer.parseInt(md_item.getName());
                         ids.add(item_id);
                     }
@@ -854,7 +854,7 @@ public class DebugCommand {
             case "npc": {
                 if (list_NameData_Npc == null) {
                     list_NameData_Npc = new ArrayList<>();
-                    for (MapleData wz_data : StringWz.getNpc().getChildren()) {
+                    for (IMapleData wz_data : StringWz.getNpc().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -879,7 +879,7 @@ public class DebugCommand {
             case "mob": {
                 if (list_NameData_Mob == null) {
                     list_NameData_Mob = new ArrayList<>();
-                    for (MapleData wz_data : StringWz.getMob().getChildren()) {
+                    for (IMapleData wz_data : StringWz.getMob().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -904,8 +904,8 @@ public class DebugCommand {
             case "item": {
                 if (list_NameData_Item == null) {
                     list_NameData_Item = new ArrayList<>();
-                    for (MapleData wz_root : StringWz.getEqp().getChildren()) {
-                        for (MapleData wz_data : wz_root.getChildren()) {
+                    for (IMapleData wz_root : StringWz.getEqp().getChildren()) {
+                        for (IMapleData wz_data : wz_root.getChildren()) {
                             int id = Integer.parseInt(wz_data.getName());
                             String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                             NameData nd = new NameData();
@@ -915,7 +915,7 @@ public class DebugCommand {
                             list_NameData_Item.add(nd);
                         }
                     }
-                    for (MapleData wz_data : StringWz.getConsume().getChildren()) {
+                    for (IMapleData wz_data : StringWz.getConsume().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -924,7 +924,7 @@ public class DebugCommand {
                         nd.name = name;
                         list_NameData_Item.add(nd);
                     }
-                    for (MapleData wz_data : StringWz.getIns().getChildren()) {
+                    for (IMapleData wz_data : StringWz.getIns().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -933,7 +933,7 @@ public class DebugCommand {
                         nd.name = name;
                         list_NameData_Item.add(nd);
                     }
-                    for (MapleData wz_data : StringWz.getEtc().getChildren()) {
+                    for (IMapleData wz_data : StringWz.getEtc().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -942,7 +942,7 @@ public class DebugCommand {
                         nd.name = name;
                         list_NameData_Item.add(nd);
                     }
-                    for (MapleData wz_data : StringWz.getPet().getChildren()) {
+                    for (IMapleData wz_data : StringWz.getPet().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -951,7 +951,7 @@ public class DebugCommand {
                         nd.name = name;
                         list_NameData_Item.add(nd);
                     }
-                    for (MapleData wz_data : StringWz.getCash().getChildren()) {
+                    for (IMapleData wz_data : StringWz.getCash().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -975,8 +975,8 @@ public class DebugCommand {
             case "map": {
                 if (list_NameData_Map == null) {
                     list_NameData_Map = new ArrayList<>();
-                    for (MapleData wz_root : StringWz.getMap().getChildren()) {
-                        for (MapleData wz_data : wz_root.getChildren()) {
+                    for (IMapleData wz_root : StringWz.getMap().getChildren()) {
+                        for (IMapleData wz_data : wz_root.getChildren()) {
                             int id = Integer.parseInt(wz_data.getName());
                             String mapName = MapleDataTool.getString(wz_data.getChildByPath("mapName"), "");
                             String streetName = MapleDataTool.getString(wz_data.getChildByPath("streetName"), "");
@@ -1004,7 +1004,7 @@ public class DebugCommand {
             case "skill": {
                 if (list_NameData_Skill == null) {
                     list_NameData_Skill = new ArrayList<>();
-                    for (MapleData wz_data : StringWz.getSkill().getChildren()) {
+                    for (IMapleData wz_data : StringWz.getSkill().getChildren()) {
                         if (wz_data.getChildByPath("bookName") != null) {
                             continue;
                         }
@@ -1060,7 +1060,7 @@ public class DebugCommand {
         for (int i = 0; i < mob_ids.size(); i++) {
             int mob_id = mob_ids.get(i);
             int mob_count = mob_counts.get(i);
-            MapleData md_mob = StringWz.getMob().getChildByPath(Integer.toString(mob_id));
+            IMapleData md_mob = StringWz.getMob().getChildByPath(Integer.toString(mob_id));
             String mob_name = md_mob != null ? MapleDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
             if (!DWI_Validation.isValidMobID(mob_id)) {
                 chr.DebugMsg2("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");

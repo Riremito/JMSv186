@@ -29,11 +29,11 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 import odin.provider.WzXML.MapleDataType;
 import tacos.odin.OdinPair;
 import odin.tools.StringUtil;
+import odin.provider.IMapleData;
 
 public class MapleLifeFactory {
 
@@ -87,11 +87,11 @@ public class MapleLifeFactory {
         MapleMonsterStats stats = monsterStats.get(Integer.valueOf(mid));
 
         if (stats == null) {
-            MapleData monsterData = MobWz.getWzRoot().getData(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
+            IMapleData monsterData = MobWz.getWzRoot().getData(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
             if (monsterData == null) {
                 return null;
             }
-            MapleData monsterInfoData = monsterData.getChildByPath("info");
+            IMapleData monsterInfoData = monsterData.getChildByPath("info");
             stats = new MapleMonsterStats();
 
             stats.setHp(MapleDataTool.getIntConvert("maxHP", monsterInfoData));
@@ -121,14 +121,14 @@ public class MapleLifeFactory {
             stats.setMagicDefense((short) MapleDataTool.getIntConvert("MDDamage", monsterInfoData, 0));
             stats.setEva((short) MapleDataTool.getIntConvert("eva", monsterInfoData, 0));
             final boolean hideHP = MapleDataTool.getIntConvert("HPgaugeHide", monsterInfoData, 0) > 0 || MapleDataTool.getIntConvert("hideHP", monsterInfoData, 0) > 0;
-            final MapleData selfd = monsterInfoData.getChildByPath("selfDestruction");
+            final IMapleData selfd = monsterInfoData.getChildByPath("selfDestruction");
             if (selfd != null) {
                 stats.setSelfDHP(MapleDataTool.getIntConvert("hp", selfd, 0));
                 stats.setSelfD((byte) MapleDataTool.getIntConvert("action", selfd, -1));
             } else {
                 stats.setSelfD((byte) -1);
             }
-            final MapleData firstAttackData = monsterInfoData.getChildByPath("firstAttack");
+            final IMapleData firstAttackData = monsterInfoData.getChildByPath("firstAttack");
             if (firstAttackData != null) {
                 if (firstAttackData.getType() == MapleDataType.FLOAT) {
                     stats.setFirstAttack(Math.round(MapleDataTool.getFloat(firstAttackData)) > 0);
@@ -146,7 +146,7 @@ public class MapleLifeFactory {
                 }
             }
 
-            final MapleData banishData = monsterInfoData.getChildByPath("ban");
+            final IMapleData banishData = monsterInfoData.getChildByPath("ban");
             if (banishData != null) {
                 stats.setBanishInfo(new BanishInfo(
                         MapleDataTool.getString("banMsg", banishData),
@@ -154,16 +154,16 @@ public class MapleLifeFactory {
                         MapleDataTool.getString("banMap/0/portal", banishData, "sp")));
             }
 
-            final MapleData reviveInfo = monsterInfoData.getChildByPath("revive");
+            final IMapleData reviveInfo = monsterInfoData.getChildByPath("revive");
             if (reviveInfo != null) {
                 List<Integer> revives = new LinkedList<Integer>();
-                for (MapleData bdata : reviveInfo) {
+                for (IMapleData bdata : reviveInfo) {
                     revives.add(MapleDataTool.getInt(bdata));
                 }
                 stats.setRevives(revives);
             }
 
-            final MapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
+            final IMapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
             if (monsterSkillData != null) {
                 int i = 0;
                 List<OdinPair<Integer, Integer>> skills = new ArrayList<OdinPair<Integer, Integer>>();
@@ -182,7 +182,7 @@ public class MapleLifeFactory {
                 monsterData = MobWz.getWzRoot().getData(StringUtil.getLeftPaddedStr(link + ".img", '0', 11));
             }
 
-            for (MapleData idata : monsterData) {
+            for (IMapleData idata : monsterData) {
                 if (idata.getName().equals("fly")) {
                     stats.setFly(true);
                     stats.setMobile(true);

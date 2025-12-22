@@ -25,15 +25,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import odin.provider.MapleData;
-import odin.provider.MapleDataDirectoryEntry;
-import odin.provider.MapleDataFileEntry;
-import odin.provider.MapleDataProvider;
 import odin.provider.MapleDataTool;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobAttackInfo;
 import tacos.odin.OdinPair;
 import odin.tools.StringUtil;
+import odin.provider.IMapleData;
+import odin.provider.IMapleDataDirectoryEntry;
+import odin.provider.IMapleDataFileEntry;
+import odin.provider.IMapleDataProvider;
 
 /**
  *
@@ -50,7 +50,7 @@ public class MobWz {
         return wz;
     }
 
-    public static MapleDataProvider getWzRoot() {
+    public static IMapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
     }
 
@@ -66,14 +66,14 @@ public class MobWz {
         }
 
         MobAttackInfo ret = new MobAttackInfo();
-        MapleData mobData = getWzRoot().getData(StringUtil.getLeftPaddedStr(Integer.toString(mob.getId()) + ".img", '0', 11));
+        IMapleData mobData = getWzRoot().getData(StringUtil.getLeftPaddedStr(Integer.toString(mob.getId()) + ".img", '0', 11));
         if (mobData != null) {
-            MapleData infoData = mobData.getChildByPath("info/link");
+            IMapleData infoData = mobData.getChildByPath("info/link");
             if (infoData != null) {
                 String linkedmob = MapleDataTool.getString("info/link", mobData);
                 mobData = getWzRoot().getData(StringUtil.getLeftPaddedStr(linkedmob + ".img", '0', 11));
             }
-            final MapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
+            final IMapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
             if (attackData != null) {
                 ret.setDeadlyAttack(attackData.getChildByPath("deadlyAttack") != null);
                 ret.setMpBurn(MapleDataTool.getInt("mpBurn", attackData, 0));
@@ -93,14 +93,14 @@ public class MobWz {
             return map_QuestCountGroup;
         }
         map_QuestCountGroup = new HashMap<>();
-        for (MapleDataDirectoryEntry mapz : getWzRoot().getRoot().getSubdirectories()) {
+        for (IMapleDataDirectoryEntry mapz : getWzRoot().getRoot().getSubdirectories()) {
             if (mapz.getName().equals("QuestCountGroup")) {
-                for (MapleDataFileEntry entry : mapz.getFiles()) {
+                for (IMapleDataFileEntry entry : mapz.getFiles()) {
                     final int id = Integer.parseInt(entry.getName().substring(0, entry.getName().length() - 4));
-                    MapleData dat = getWzRoot().getData("QuestCountGroup/" + entry.getName());
+                    IMapleData dat = getWzRoot().getData("QuestCountGroup/" + entry.getName());
                     if (dat != null && dat.getChildByPath("info") != null) {
                         List<Integer> z = new ArrayList<Integer>();
-                        for (MapleData da : dat.getChildByPath("info")) {
+                        for (IMapleData da : dat.getChildByPath("info")) {
                             z.add(MapleDataTool.getInt(da, 0));
                         }
                         map_QuestCountGroup.put(id, z);

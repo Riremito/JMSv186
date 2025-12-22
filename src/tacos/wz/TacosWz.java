@@ -21,9 +21,9 @@ package tacos.wz;
 import tacos.property.Property_Java;
 import tacos.debug.DebugLogger;
 import java.io.File;
-import odin.provider.MapleData;
-import odin.provider.MapleDataProvider;
 import odin.provider.WzXML.XMLWZFile;
+import odin.provider.IMapleData;
+import odin.provider.IMapleDataProvider;
 
 /**
  *
@@ -31,14 +31,14 @@ import odin.provider.WzXML.XMLWZFile;
  */
 public class TacosWz {
 
-    private MapleDataProvider wz_root = null;
+    private IMapleDataProvider wz_root = null;
     private String name = null;
 
     public TacosWz(String name) {
         setWzRoot(name);
     }
 
-    public MapleDataProvider getWzRoot() {
+    public IMapleDataProvider getWzRoot() {
         return this.wz_root;
     }
 
@@ -54,7 +54,7 @@ public class TacosWz {
         }
     }
 
-    public MapleData loadData(String path) {
+    public IMapleData loadData(String path) {
         DebugLogger.XmlLog("loadData = " + this.name + "/" + path);
         return this.wz_root.getData(path);
     }

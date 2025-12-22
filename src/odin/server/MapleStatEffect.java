@@ -24,7 +24,6 @@ import odin.constants.GameConstants;
 import tacos.server.ServerOdinGame;
 import java.util.Arrays;
 import java.util.Collections;
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.SummonMovementType;
@@ -49,6 +48,7 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
 import odin.server.maps.MapleSummon;
 import tacos.odin.OdinPair;
+import odin.provider.IMapleData;
 
 public class MapleStatEffect implements Serializable {
 
@@ -67,16 +67,16 @@ public class MapleStatEffect implements Serializable {
     private List<MapleDisease> cureDebuffs;
     private ArrayList<OdinPair<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
 
-    public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level) {
+    public static final MapleStatEffect loadSkillEffectFromData(final IMapleData source, final int skillid, final boolean overtime, final byte level) {
         return loadFromData(source, skillid, true, overtime, level, 0);
     }
 
     // after bigbang
-    public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level, int common_level) {
+    public static final MapleStatEffect loadSkillEffectFromData(final IMapleData source, final int skillid, final boolean overtime, final byte level, int common_level) {
         return loadFromData(source, skillid, true, overtime, level, common_level);
     }
 
-    public static final MapleStatEffect loadItemEffectFromData(final MapleData source, final int itemid) {
+    public static final MapleStatEffect loadItemEffectFromData(final IMapleData source, final int itemid) {
         return loadFromData(source, itemid, false, false, (byte) 1, 0);
     }
 
@@ -230,7 +230,7 @@ public class MapleStatEffect implements Serializable {
         return true;
     }
 
-    private static MapleStatEffect loadFromData(final MapleData source, final int sourceid, final boolean skill, final boolean overTime, final byte level, int common_level) {
+    private static MapleStatEffect loadFromData(final IMapleData source, final int sourceid, final boolean skill, final boolean overTime, final byte level, int common_level) {
         final MapleStatEffect ret = new MapleStatEffect();
         ret.sourceid = sourceid;
         ret.skill = skill;
@@ -322,7 +322,7 @@ public class MapleStatEffect implements Serializable {
         }
         ret.cureDebuffs = cure;
 
-        final MapleData ltd = source.getChildByPath("lt");
+        final IMapleData ltd = source.getChildByPath("lt");
         if (ltd != null) {
             ret.lt = (Point) ltd.getData();
             ret.rb = (Point) source.getChildByPath("rb").getData();

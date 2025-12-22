@@ -20,17 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.provider;
 
-/**
- *
- * @author Matze
- */
-public interface MapleDataEntry extends MapleDataEntity {
+public interface IMapleDataEntity {
 
     public String getName();
 
-    public int getSize();
-
-    public int getChecksum();
-
-    public int getOffset();
+    public IMapleDataEntity getParent();
 }

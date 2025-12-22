@@ -13,10 +13,10 @@ import odin.client.MapleCharacter;
 import odin.client.inventory.MaplePet;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 
 import tacos.odin.OdinPair;
+import odin.provider.IMapleData;
 
 public class MapleQuestRequirement implements Serializable {
 
@@ -30,13 +30,13 @@ public class MapleQuestRequirement implements Serializable {
     /**
      * Creates a new instance of MapleQuestRequirement
      */
-    public MapleQuestRequirement(MapleQuest quest, MapleQuestRequirementType type, MapleData data) {
+    public MapleQuestRequirement(MapleQuest quest, MapleQuestRequirementType type, IMapleData data) {
         this.type = type;
         this.quest = quest;
 
         switch (type) {
             case job: {
-                final List<MapleData> child = data.getChildren();
+                final List<IMapleData> child = data.getChildren();
                 dataStore = new LinkedList<OdinPair<Integer, Integer>>();
 
                 for (int i = 0; i < child.size(); i++) {
@@ -45,33 +45,33 @@ public class MapleQuestRequirement implements Serializable {
                 break;
             }
             case skill: {
-                final List<MapleData> child = data.getChildren();
+                final List<IMapleData> child = data.getChildren();
                 dataStore = new LinkedList<OdinPair<Integer, Integer>>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
+                    final IMapleData childdata = child.get(i);
                     dataStore.add(new OdinPair<Integer, Integer>(MapleDataTool.getInt(childdata.getChildByPath("id"), 0),
                             MapleDataTool.getInt(childdata.getChildByPath("acquire"), 0)));
                 }
                 break;
             }
             case quest: {
-                final List<MapleData> child = data.getChildren();
+                final List<IMapleData> child = data.getChildren();
                 dataStore = new LinkedList<OdinPair<Integer, Integer>>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
+                    final IMapleData childdata = child.get(i);
                     dataStore.add(new OdinPair<Integer, Integer>(MapleDataTool.getInt(childdata.getChildByPath("id")),
                             MapleDataTool.getInt(childdata.getChildByPath("state"), 0)));
                 }
                 break;
             }
             case item: {
-                final List<MapleData> child = data.getChildren();
+                final List<IMapleData> child = data.getChildren();
                 dataStore = new LinkedList<OdinPair<Integer, Integer>>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
+                    final IMapleData childdata = child.get(i);
                     dataStore.add(new OdinPair<Integer, Integer>(MapleDataTool.getInt(childdata.getChildByPath("id")),
                             MapleDataTool.getInt(childdata.getChildByPath("count"), 0)));
                 }
@@ -93,18 +93,18 @@ public class MapleQuestRequirement implements Serializable {
                 break;
             }
             case mob: {
-                final List<MapleData> child = data.getChildren();
+                final List<IMapleData> child = data.getChildren();
                 dataStore = new LinkedList<OdinPair<Integer, Integer>>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
+                    final IMapleData childdata = child.get(i);
                     dataStore.add(new OdinPair<Integer, Integer>(MapleDataTool.getInt(childdata.getChildByPath("id"), 0),
                             MapleDataTool.getInt(childdata.getChildByPath("count"), 0)));
                 }
                 break;
             }
             case fieldEnter: {
-                final MapleData zeroField = data.getChildByPath("0");
+                final IMapleData zeroField = data.getChildByPath("0");
                 if (zeroField != null) {
                     intStore = MapleDataTool.getInt(zeroField);
                 } else {
@@ -113,11 +113,11 @@ public class MapleQuestRequirement implements Serializable {
                 break;
             }
             case mbcard: {
-                final List<MapleData> child = data.getChildren();
+                final List<IMapleData> child = data.getChildren();
                 dataStore = new LinkedList<OdinPair<Integer, Integer>>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
+                    final IMapleData childdata = child.get(i);
                     dataStore.add(new OdinPair<Integer, Integer>(MapleDataTool.getInt(childdata.getChildByPath("id"), 0),
                             MapleDataTool.getInt(childdata.getChildByPath("min"), 0)));
                 }
@@ -126,7 +126,7 @@ public class MapleQuestRequirement implements Serializable {
             case pet: {
                 dataStore = new LinkedList<OdinPair<Integer, Integer>>();
 
-                for (MapleData child : data) {
+                for (IMapleData child : data) {
                     dataStore.add(new OdinPair<Integer, Integer>(-1, MapleDataTool.getInt("id", child, 0)));
                 }
                 break;

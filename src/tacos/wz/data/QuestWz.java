@@ -20,8 +20,8 @@ package tacos.wz.data;
 
 import tacos.wz.TacosWz;
 import tacos.config.Content;
-import odin.provider.MapleData;
-import odin.provider.MapleDataProvider;
+import odin.provider.IMapleData;
+import odin.provider.IMapleDataProvider;
 
 /**
  *
@@ -38,37 +38,37 @@ public class QuestWz {
         return wz;
     }
 
-    private static MapleDataProvider getWzRoot() {
+    private static IMapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
     }
 
-    private static MapleData img_Act = null;
-    private static MapleData img_Check = null;
-    private static MapleData img_QuestInfo = null;
-    private static MapleData img_PQuest = null;
+    private static IMapleData img_Act = null;
+    private static IMapleData img_Check = null;
+    private static IMapleData img_QuestInfo = null;
+    private static IMapleData img_PQuest = null;
 
-    public static MapleData getAct() {
+    public static IMapleData getAct() {
         if (img_Act == null) {
             img_Act = getWz().loadData("Act.img");
         }
         return img_Act;
     }
 
-    public static MapleData getCheck() {
+    public static IMapleData getCheck() {
         if (img_Check == null) {
             img_Check = getWz().loadData("Check.img");
         }
         return img_Check;
     }
 
-    public static MapleData getQuestInfo() {
+    public static IMapleData getQuestInfo() {
         if (img_QuestInfo == null) {
             img_QuestInfo = getWz().loadData("QuestInfo.img");
         }
         return img_QuestInfo;
     }
 
-    public static MapleData getPQuest() {
+    public static IMapleData getPQuest() {
         if (img_PQuest == null) {
             img_PQuest = getWz().loadData("PQuest.img");
         }

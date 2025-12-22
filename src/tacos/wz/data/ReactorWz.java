@@ -22,12 +22,12 @@ import tacos.wz.TacosWz;
 import tacos.config.Content;
 import java.util.HashMap;
 import java.util.Map;
-import odin.provider.MapleData;
-import odin.provider.MapleDataProvider;
 import odin.provider.MapleDataTool;
 import odin.server.maps.MapleReactorStats;
 import tacos.odin.OdinPair;
 import odin.tools.StringUtil;
+import odin.provider.IMapleData;
+import odin.provider.IMapleDataProvider;
 
 /**
  *
@@ -44,7 +44,7 @@ public class ReactorWz {
         return wz;
     }
 
-    private static MapleDataProvider getWzRoot() {
+    private static IMapleDataProvider getWzRoot() {
         return getWz().getWzRoot();
     }
     private static Map<Integer, MapleReactorStats> map_reactorStats = null;
@@ -59,8 +59,8 @@ public class ReactorWz {
         }
 
         int infoId = rid;
-        MapleData reactorData = getWzRoot().getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
-        MapleData link = reactorData.getChildByPath("info/link");
+        IMapleData reactorData = getWzRoot().getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
+        IMapleData link = reactorData.getChildByPath("info/link");
         if (link != null) {
             infoId = MapleDataTool.getIntConvert("info/link", reactorData);
             MapleReactorStats mrs_link = map_reactorStats.get(infoId);
@@ -78,13 +78,13 @@ public class ReactorWz {
         boolean areaSet = false;
         boolean foundState = false;
         for (byte i = 0; true; i++) {
-            MapleData reactorD = reactorData.getChildByPath(String.valueOf(i));
+            IMapleData reactorD = reactorData.getChildByPath(String.valueOf(i));
             if (reactorD == null) {
                 break;
             }
-            MapleData reactorInfoData_ = reactorD.getChildByPath("event");
+            IMapleData reactorInfoData_ = reactorD.getChildByPath("event");
             if (reactorInfoData_ != null && reactorInfoData_.getChildByPath("0") != null) {
-                MapleData reactorInfoData = reactorInfoData_.getChildByPath("0");
+                IMapleData reactorInfoData = reactorInfoData_.getChildByPath("0");
                 OdinPair<Integer, Integer> reactItem = null;
                 int type = MapleDataTool.getIntConvert("type", reactorInfoData);
                 if (type == 100) { //reactor waits for item

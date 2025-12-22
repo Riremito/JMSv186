@@ -25,10 +25,10 @@ import odin.constants.GameConstants;
 import java.util.ArrayList;
 import java.util.List;
 
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 import odin.server.MapleStatEffect;
 import odin.server.life.Element;
+import odin.provider.IMapleData;
 
 public class Skill implements ISkill {
 
@@ -59,7 +59,7 @@ public class Skill implements ISkill {
         return name;
     }
 
-    public static final Skill loadFromData(final int id, final MapleData data) {
+    public static final Skill loadFromData(final int id, final IMapleData data) {
         Skill ret = new Skill(id);
 
         boolean isBuff = false;
@@ -73,15 +73,15 @@ public class Skill implements ISkill {
         ret.invisible = MapleDataTool.getInt("invisible", data, 0) > 0;
         ret.timeLimited = MapleDataTool.getInt("timeLimited", data, 0) > 0;
         ret.masterLevel = MapleDataTool.getInt("masterLevel", data, 0);
-        final MapleData effect = data.getChildByPath("effect");
+        final IMapleData effect = data.getChildByPath("effect");
         if (skillType != -1) {
             if (skillType == 2) {
                 isBuff = true;
             }
         } else {
-            final MapleData action_ = data.getChildByPath("action");
-            final MapleData hit = data.getChildByPath("hit");
-            final MapleData ball = data.getChildByPath("ball");
+            final IMapleData action_ = data.getChildByPath("action");
+            final IMapleData hit = data.getChildByPath("hit");
+            final IMapleData ball = data.getChildByPath("ball");
 
             boolean action = false;
             if (action_ == null) {
@@ -198,12 +198,12 @@ public class Skill implements ISkill {
         ret.chargeskill = data.getChildByPath("keydown") != null;
 
         if (Version.PreBB()) {
-            for (final MapleData level : data.getChildByPath("level")) {
+            for (final IMapleData level : data.getChildByPath("level")) {
                 ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
             }
         } else {
             // v188+
-            MapleData common = data.getChildByPath("common");
+            IMapleData common = data.getChildByPath("common");
             if (common != null) {
                 // after bigbang updates
                 int max_level = MapleDataTool.getInt("maxLevel", common, -1);
@@ -212,22 +212,22 @@ public class Skill implements ISkill {
                 }
             } else {
                 // old skills
-                for (final MapleData level : data.getChildByPath("level")) {
+                for (final IMapleData level : data.getChildByPath("level")) {
                     ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
                 }
             }
         }
 
-        final MapleData reqDataRoot = data.getChildByPath("req");
+        final IMapleData reqDataRoot = data.getChildByPath("req");
         if (reqDataRoot != null) {
-            for (final MapleData reqData : reqDataRoot.getChildren()) {
+            for (final IMapleData reqData : reqDataRoot.getChildren()) {
                 ret.requiredSkill = Integer.parseInt(reqData.getName());
                 ret.level = (byte) MapleDataTool.getInt(reqData, 1);
             }
         }
         ret.animationTime = 0;
         if (effect != null) {
-            for (final MapleData effectEntry : effect) {
+            for (final IMapleData effectEntry : effect) {
                 ret.animationTime += MapleDataTool.getIntConvert("delay", effectEntry, 0);
             }
         }

@@ -17,10 +17,10 @@ import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.scripting.NPCScriptManager;
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 import odin.tools.FileoutputUtil;
 import tacos.odin.OdinPair;
+import odin.provider.IMapleData;
 
 public class MapleQuest implements Serializable {
 
@@ -54,25 +54,25 @@ public class MapleQuest implements Serializable {
      */
     private static boolean loadQuest(MapleQuest ret, int id) throws NullPointerException {
         // read reqs
-        final MapleData basedata1 = QuestWz.getCheck().getChildByPath(String.valueOf(id));
-        final MapleData basedata2 = QuestWz.getAct().getChildByPath(String.valueOf(id));
+        final IMapleData basedata1 = QuestWz.getCheck().getChildByPath(String.valueOf(id));
+        final IMapleData basedata2 = QuestWz.getAct().getChildByPath(String.valueOf(id));
 
         if (basedata1 == null || basedata2 == null) {
             return false;
         }
         //-------------------------------------------------
-        final MapleData startReqData = basedata1.getChildByPath("0");
+        final IMapleData startReqData = basedata1.getChildByPath("0");
         if (startReqData != null) {
-            final List<MapleData> startC = startReqData.getChildren();
+            final List<IMapleData> startC = startReqData.getChildren();
             if (startC != null && startC.size() > 0) {
-                for (MapleData startReq : startC) {
+                for (IMapleData startReq : startC) {
                     final MapleQuestRequirementType type = MapleQuestRequirementType.getByWZName(startReq.getName());
                     if (type.equals(MapleQuestRequirementType.interval)) {
                         ret.repeatable = true;
                     }
                     final MapleQuestRequirement req = new MapleQuestRequirement(ret, type, startReq);
                     if (req.getType().equals(MapleQuestRequirementType.mob)) {
-                        for (MapleData mob : startReq.getChildren()) {
+                        for (IMapleData mob : startReq.getChildren()) {
                             ret.relevantMobs.put(
                                     MapleDataTool.getInt(mob.getChildByPath("id")),
                                     MapleDataTool.getInt(mob.getChildByPath("count"), 0));
@@ -83,14 +83,14 @@ public class MapleQuest implements Serializable {
             }
         }
         //-------------------------------------------------
-        final MapleData completeReqData = basedata1.getChildByPath("1");
+        final IMapleData completeReqData = basedata1.getChildByPath("1");
         if (completeReqData != null) {
-            final List<MapleData> completeC = completeReqData.getChildren();
+            final List<IMapleData> completeC = completeReqData.getChildren();
             if (completeC != null && completeC.size() > 0) {
-                for (MapleData completeReq : completeC) {
+                for (IMapleData completeReq : completeC) {
                     MapleQuestRequirement req = new MapleQuestRequirement(ret, MapleQuestRequirementType.getByWZName(completeReq.getName()), completeReq);
                     if (req.getType().equals(MapleQuestRequirementType.mob)) {
-                        for (MapleData mob : completeReq.getChildren()) {
+                        for (IMapleData mob : completeReq.getChildren()) {
                             ret.relevantMobs.put(
                                     MapleDataTool.getInt(mob.getChildByPath("id")),
                                     MapleDataTool.getInt(mob.getChildByPath("count"), 0));
@@ -103,23 +103,23 @@ public class MapleQuest implements Serializable {
             }
         }
         // read acts
-        final MapleData startActData = basedata2.getChildByPath("0");
+        final IMapleData startActData = basedata2.getChildByPath("0");
         if (startActData != null) {
-            final List<MapleData> startC = startActData.getChildren();
-            for (MapleData startAct : startC) {
+            final List<IMapleData> startC = startActData.getChildren();
+            for (IMapleData startAct : startC) {
                 ret.startActs.add(new MapleQuestAction(MapleQuestActionType.getByWZName(startAct.getName()), startAct, ret));
             }
         }
-        final MapleData completeActData = basedata2.getChildByPath("1");
+        final IMapleData completeActData = basedata2.getChildByPath("1");
 
         if (completeActData != null) {
-            final List<MapleData> completeC = completeActData.getChildren();
-            for (MapleData completeAct : completeC) {
+            final List<IMapleData> completeC = completeActData.getChildren();
+            for (IMapleData completeAct : completeC) {
                 ret.completeActs.add(new MapleQuestAction(MapleQuestActionType.getByWZName(completeAct.getName()), completeAct, ret));
             }
         }
 
-        final MapleData questInfo = QuestWz.getQuestInfo().getChildByPath(String.valueOf(id));
+        final IMapleData questInfo = QuestWz.getQuestInfo().getChildByPath(String.valueOf(id));
         if (questInfo != null) {
             ret.name = MapleDataTool.getString("name", questInfo, "");
             ret.autoStart = MapleDataTool.getInt("autoStart", questInfo, 0) == 1;
@@ -130,13 +130,13 @@ public class MapleQuest implements Serializable {
 
         // not in KMS55
         if (Version.GreaterOrEqual(Region.KMS, 65)) {
-            final MapleData pquestInfo = QuestWz.getPQuest().getChildByPath(String.valueOf(id));
+            final IMapleData pquestInfo = QuestWz.getPQuest().getChildByPath(String.valueOf(id));
             if (pquestInfo != null) {
-                for (MapleData d : pquestInfo.getChildByPath("rank")) {
+                for (IMapleData d : pquestInfo.getChildByPath("rank")) {
                     List<OdinPair<String, OdinPair<String, Integer>>> pInfo = new ArrayList<OdinPair<String, OdinPair<String, Integer>>>();
                     //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
-                    for (MapleData c : d) {
-                        for (MapleData b : c) {
+                    for (IMapleData c : d) {
+                        for (IMapleData b : c) {
                             pInfo.add(new OdinPair<String, OdinPair<String, Integer>>(c.getName(), new OdinPair<String, Integer>(b.getName(), MapleDataTool.getInt(b, 0))));
                         }
                     }
