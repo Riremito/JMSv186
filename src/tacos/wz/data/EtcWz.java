@@ -18,7 +18,7 @@
  */
 package tacos.wz.data;
 
-import tacos.wz.Wz;
+import tacos.wz.TacosWz;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
@@ -38,11 +38,11 @@ import odin.server.StructSetItem.SetItem;
  */
 public class EtcWz {
 
-    private static Wz wz = null;
+    private static TacosWz wz = null;
 
-    private static Wz getWz() {
+    private static TacosWz getWz() {
         if (wz == null) {
-            wz = new Wz(Content.Wz_SingleFile.get() ? "Data.wz/Etc" : "Etc.wz");
+            wz = new TacosWz(Content.Wz_SingleFile.get() ? "Data.wz/Etc" : "Etc.wz");
         }
         return wz;
     }

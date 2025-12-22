@@ -18,7 +18,7 @@
  */
 package tacos.wz.data;
 
-import tacos.wz.Wz;
+import tacos.wz.TacosWz;
 import tacos.config.Content;
 import odin.provider.MapleDataProvider;
 
@@ -28,11 +28,11 @@ import odin.provider.MapleDataProvider;
  */
 public class MapWz {
 
-    private static Wz wz = null;
+    private static TacosWz wz = null;
 
-    private static Wz getWz() {
+    private static TacosWz getWz() {
         if (wz == null) {
-            wz = new Wz(Content.Wz_SingleFile.get() ? "Data.wz/Map" : "Map.wz");
+            wz = new TacosWz(Content.Wz_SingleFile.get() ? "Data.wz/Map" : "Map.wz");
         }
         return wz;
     }

@@ -36,6 +36,7 @@ public class WZFileEntry extends WZEntry implements MapleDataFileEntry {
         return offset;
     }
 
+    @Override
     public void setOffset(int offset) {
         this.offset = offset;
     }

@@ -77,18 +77,18 @@ public class XMLDomMapleData implements MapleData, Serializable {
         }
 
         Node myNode = node;
-        for (int x = 0; x < segments.length; x++) {
+        for (String segment : segments) {
             NodeList childNodes = myNode.getChildNodes();
             boolean foundChild = false;
             for (int i = 0; i < childNodes.getLength(); i++) {
                 try {
                     final Node childNode = childNodes.item(i);
-                    if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segments[x])) {
+                    if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segment)) {
                         myNode = childNode;
                         foundChild = true;
                         break;
                     }
-                } catch (NullPointerException e) {
+                }catch (NullPointerException e) {
                     FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e); //ugh.
                 }
             }
@@ -103,7 +103,7 @@ public class XMLDomMapleData implements MapleData, Serializable {
 
     @Override
     public List<MapleData> getChildren() {
-        final List<MapleData> ret = new ArrayList<MapleData>();
+        final List<MapleData> ret = new ArrayList<>();
         final NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             final Node childNode = childNodes.item(i);
@@ -122,16 +122,16 @@ public class XMLDomMapleData implements MapleData, Serializable {
         final MapleDataType type = getType();
         switch (type) {
             case DOUBLE: {
-                return Double.valueOf(Double.parseDouble(attributes.getNamedItem("value").getNodeValue()));
+                return Double.parseDouble(attributes.getNamedItem("value").getNodeValue());
             }
             case FLOAT: {
-                return Float.valueOf(Float.parseFloat(attributes.getNamedItem("value").getNodeValue()));
+                return Float.parseFloat(attributes.getNamedItem("value").getNodeValue());
             }
             case INT: {
-                return Integer.valueOf(Integer.parseInt(attributes.getNamedItem("value").getNodeValue()));
+                return Integer.parseInt(attributes.getNamedItem("value").getNodeValue());
             }
             case SHORT: {
-                return Short.valueOf(Short.parseShort(attributes.getNamedItem("value").getNodeValue()));
+                return Short.parseShort(attributes.getNamedItem("value").getNodeValue());
             }
             case STRING:
             case UOL: {

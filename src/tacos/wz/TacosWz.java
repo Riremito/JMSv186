@@ -23,18 +23,18 @@ import tacos.debug.DebugLogger;
 import java.io.File;
 import odin.provider.MapleData;
 import odin.provider.MapleDataProvider;
-import odin.provider.MapleDataProviderFactory;
+import odin.provider.WzXML.XMLWZFile;
 
 /**
  *
  * @author Riremito
  */
-public class Wz {
+public class TacosWz {
 
     private MapleDataProvider wz_root = null;
     private String name = null;
 
-    public Wz(String name) {
+    public TacosWz(String name) {
         setWzRoot(name);
     }
 
@@ -45,11 +45,18 @@ public class Wz {
     private void setWzRoot(String name) {
         DebugLogger.XmlLog("setWzRoot = " + name);
         this.name = name;
-        this.wz_root = MapleDataProviderFactory.getDataProvider(new File(Property_Java.getDir_WzXml() + "/" + name));
+        File dir = new File(Property_Java.getDir_WzXml() + "/" + name);
+        this.wz_root = dir.exists() ? new XMLWZFile(dir) : null;
+        if (this.wz_root == null) {
+            DebugLogger.XmlLog("setWzRoot : wz_root is null, " + name);
+        } else {
+            DebugLogger.XmlLog("setWzRoot : wz_root = " + name);
+        }
     }
 
     public MapleData loadData(String path) {
         DebugLogger.XmlLog("loadData = " + this.name + "/" + path);
         return this.wz_root.getData(path);
     }
+
 }

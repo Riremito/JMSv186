@@ -18,7 +18,7 @@
  */
 package tacos.wz.data;
 
-import tacos.wz.Wz;
+import tacos.wz.TacosWz;
 import odin.client.inventory.PetCommand;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
@@ -41,11 +41,11 @@ import tacos.odin.OdinPair;
  */
 public class ItemWz {
 
-    private static Wz wz = null;
+    private static TacosWz wz = null;
 
-    private static Wz getWz() {
+    private static TacosWz getWz() {
         if (wz == null) {
-            wz = new Wz(Content.Wz_SingleFile.get() ? "Data.wz/Item" : "Item.wz");
+            wz = new TacosWz(Content.Wz_SingleFile.get() ? "Data.wz/Item" : "Item.wz");
         }
         return wz;
     }

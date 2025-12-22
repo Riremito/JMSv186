@@ -32,9 +32,9 @@ import odin.provider.MapleDataFileEntry;
 
 public class WZDirectoryEntry extends WZEntry implements MapleDataDirectoryEntry {
 
-    private List<MapleDataDirectoryEntry> subdirs = new ArrayList<MapleDataDirectoryEntry>();
-    private List<MapleDataFileEntry> files = new ArrayList<MapleDataFileEntry>();
-    private Map<String, MapleDataEntry> entries = new HashMap<String, MapleDataEntry>();
+    private List<MapleDataDirectoryEntry> subdirs = new ArrayList<>();
+    private List<MapleDataFileEntry> files = new ArrayList<>();
+    private Map<String, MapleDataEntry> entries = new HashMap<>();
 
     public WZDirectoryEntry(String name, int size, int checksum, MapleDataEntity parent) {
         super(name, size, checksum, parent);
@@ -54,14 +54,17 @@ public class WZDirectoryEntry extends WZEntry implements MapleDataDirectoryEntry
         entries.put(fileEntry.getName(), fileEntry);
     }
 
+    @Override
     public List<MapleDataDirectoryEntry> getSubdirectories() {
         return Collections.unmodifiableList(subdirs);
     }
 
+    @Override
     public List<MapleDataFileEntry> getFiles() {
         return Collections.unmodifiableList(files);
     }
 
+    @Override
     public MapleDataEntry getEntry(String name) {
         return entries.get(name);
     }

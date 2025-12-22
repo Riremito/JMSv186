@@ -28,8 +28,8 @@ import odin.provider.MapleData;
 import odin.provider.MapleDataDirectoryEntry;
 import odin.provider.MapleDataFileEntry;
 import odin.provider.MapleDataProvider;
-import odin.provider.MapleDataProviderFactory;
 import odin.provider.MapleDataTool;
+import tacos.wz.TacosWz;
 
 /**
  *
@@ -81,7 +81,7 @@ public class DWI_LoadXML {
     public static final ArrayList<Integer> reactorids = new ArrayList<Integer>();
 
     public static int LoadSkinXMLs(String path, String regex, ArrayList<Integer> list) {
-        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
+        MapleDataProvider wz = (new TacosWz(path)).getWzRoot();
         if (wz == null) {
             DebugLogger.ErrorLog("wz path: " + path);
             return 0;
@@ -112,7 +112,7 @@ public class DWI_LoadXML {
     }
 
     public static int LoadItemXMLs(String path, ArrayList<Integer> list) {
-        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
+        MapleDataProvider wz = (new TacosWz(path)).getWzRoot();
         if (wz == null) {
             DebugLogger.ErrorLog("wz path: " + path);
             return 0;
@@ -137,7 +137,7 @@ public class DWI_LoadXML {
     }
 
     public static int LoadXMLs(String path, String regex, ArrayList<Integer> list) {
-        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
+        MapleDataProvider wz = (new TacosWz(path)).getWzRoot();
         if (wz == null) {
             DebugLogger.ErrorLog("wz path: " + path);
             return 0;
@@ -170,7 +170,7 @@ public class DWI_LoadXML {
     }
 
     public static int LoadEquipXMLs(String path, ArrayList<Integer> list) {
-        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider(path);
+        MapleDataProvider wz = (new TacosWz(path)).getWzRoot();
         if (wz == null) {
             DebugLogger.ErrorLog("wz path: " + path);
             return 0;
@@ -192,7 +192,7 @@ public class DWI_LoadXML {
     }
 
     public static int LoadTownMaps() {
-        MapleDataProvider wz = MapleDataProviderFactory.getDataProvider("Map.wz/Map");
+        MapleDataProvider wz = (new TacosWz("Map.wz/Map")).getWzRoot();
         Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
         for (MapleDataDirectoryEntry map_dir : wz.getRoot().getSubdirectories()) {
             DebugLogger.DebugLog("dir = " + map_dir.getName());
@@ -200,7 +200,7 @@ public class DWI_LoadXML {
                 Matcher img_matcher = img_pattern.matcher(dir.getName());
                 if (img_matcher.matches()) {
                     int map_id = Integer.parseInt(img_matcher.group(1));
-                    MapleDataProvider map_root = MapleDataProviderFactory.getDataProvider("Map.wz/Map/" + map_dir.getName() + "/");
+                    MapleDataProvider map_root = (new TacosWz("Map.wz/Map/" + map_dir.getName() + "/")).getWzRoot();
                     MapleData map_data = map_root.getData(dir.getName());
                     if (MapleDataTool.getInt("info/town", map_data) != 0) {
                         int map_id_return = MapleDataTool.getInt("info/returnMap", map_data);

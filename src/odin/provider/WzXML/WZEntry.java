@@ -39,22 +39,27 @@ public class WZEntry implements MapleDataEntry {
         this.parent = parent;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public int getSize() {
         return size;
     }
 
+    @Override
     public int getChecksum() {
         return checksum;
     }
 
+    @Override
     public int getOffset() {
         return offset;
     }
 
+    @Override
     public MapleDataEntity getParent() {
         return parent;
     }
