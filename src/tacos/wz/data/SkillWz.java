@@ -87,7 +87,7 @@ public class SkillWz {
         int skillid;
         IMapleData summon_data;
         SummonSkillEntry sse;
-        for (IMapleDataFileEntry topDir : getWzRoot().getRoot().getFiles()) { // Loop thru jobs
+        for (IMapleDataFileEntry topDir : getWzRoot().getRootDirectory().getFiles()) { // Loop thru jobs
             if (topDir.getName().length() <= 8) {
                 for (IMapleData data : getWzRoot().getData(topDir.getName())) { // Loop thru each jobs
                     if (data.getName().equals("skill")) {

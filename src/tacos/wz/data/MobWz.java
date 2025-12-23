@@ -93,7 +93,7 @@ public class MobWz {
             return map_QuestCountGroup;
         }
         map_QuestCountGroup = new HashMap<>();
-        for (IMapleDataDirectoryEntry mapz : getWzRoot().getRoot().getSubdirectories()) {
+        for (IMapleDataDirectoryEntry mapz : getWzRoot().getRootDirectory().getSubDirectories()) {
             if (mapz.getName().equals("QuestCountGroup")) {
                 for (IMapleDataFileEntry entry : mapz.getFiles()) {
                     final int id = Integer.parseInt(entry.getName().substring(0, entry.getName().length() - 4));

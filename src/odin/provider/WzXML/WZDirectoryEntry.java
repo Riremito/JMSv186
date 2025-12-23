@@ -55,7 +55,7 @@ public class WZDirectoryEntry extends WZEntry implements IMapleDataDirectoryEntr
     }
 
     @Override
-    public List<IMapleDataDirectoryEntry> getSubdirectories() {
+    public List<IMapleDataDirectoryEntry> getSubDirectories() {
         return Collections.unmodifiableList(subdirs);
     }
 

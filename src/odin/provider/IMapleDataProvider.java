@@ -24,5 +24,5 @@ public interface IMapleDataProvider {
 
     IMapleData getData(String path);
 
-    IMapleDataDirectoryEntry getRoot();
+    IMapleDataDirectoryEntry getRootDirectory();
 }

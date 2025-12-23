@@ -24,40 +24,40 @@ import tacos.debug.DebugLogger;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataFileEntry;
-import odin.provider.IMapleDataProvider;
 
 /**
  *
  * @author Riremito
  */
-public class CharacterWz {
+public class CharacterWz extends TacosWz {
 
-    private static TacosWz wz = null;
+    private static CharacterWz wz = null;
 
-    private static TacosWz getWz() {
+    public static CharacterWz get() {
         if (wz == null) {
-            wz = new TacosWz(Content.Wz_SingleFile.get() ? "Data.wz/Character" : "Character.wz");
+            wz = new CharacterWz(Content.Wz_SingleFile.get() ? "Data.wz/Character" : "Character.wz");
         }
+
         return wz;
     }
 
-    private static IMapleDataProvider getWzRoot() {
-        return getWz().getWzRoot();
+    public CharacterWz(String path) {
+        super(path);
     }
 
-    public static IMapleData getItemData(int id) {
+    public IMapleData getItemData(int id) {
         int item_type = id / 1000000;
         if (2 <= item_type) {
             return null;
         }
 
         String target_img_name = String.format("%08d.img", id);
-        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
+        for (IMapleDataDirectoryEntry mdde : rootDirectory.getSubDirectories()) {
             for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
-                    IMapleData md_equip = getWz().getData(mdde.getName() + "/" + mdfe.getName());
+                    IMapleData md_equip = getData(mdde.getName() + "/" + mdfe.getName());
                     if (md_equip == null) {
-                        DebugLogger.ErrorLog("getItemData : Invalid equip id = " + id);
+                        DebugLogger.XmlLog("getItemData : invalid equip data, " + id);
                         return null;
                     }
                     return md_equip;
@@ -65,7 +65,7 @@ public class CharacterWz {
             }
         }
 
-        DebugLogger.ErrorLog("getItemData : err equip id " + id);
+        DebugLogger.XmlLog("getItemData : not found, " + id);
         return null;
     }
 }

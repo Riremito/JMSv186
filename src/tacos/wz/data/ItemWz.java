@@ -71,7 +71,7 @@ public class ItemWz {
         String target_img_name = String.format("%04d.img", item_sub_type);
         String target_dir_name = String.format("%08d", id);
 
-        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
+        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRootDirectory().getSubDirectories()) {
             for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
                     IMapleData md_item_sub_type = getWz().getData(mdde.getName() + "/" + mdfe.getName());
@@ -105,7 +105,7 @@ public class ItemWz {
 
         String target_img_name = String.format("%04d.img", item_sub_type);
 
-        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
+        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRootDirectory().getSubDirectories()) {
             for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
                     IMapleData md_item_sub_type = getWz().getData(mdde.getName() + "/" + mdfe.getName());
@@ -129,7 +129,7 @@ public class ItemWz {
         }
         String target_img_name = String.format("%d.img", id);
 
-        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRoot().getSubdirectories()) {
+        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRootDirectory().getSubDirectories()) {
             if (mdde.getName().equals("Pet")) {
                 for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                     if (mdfe.getName().equals(target_img_name)) {

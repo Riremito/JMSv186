@@ -44,9 +44,8 @@ public class TacosWz implements IMapleDataProvider {
     private static List<OdinPair<String, IMapleData>> xml_cache = new ArrayList<>();
     private IMapleDataProvider wz_root = null;
     private String root_path = null;
-
     private File root_dir;
-    private WZDirectoryEntry rootForNavigation;
+    protected WZDirectoryEntry rootDirectory;
 
     public TacosWz(String path) {
         this.root_path = path;
@@ -74,8 +73,8 @@ public class TacosWz implements IMapleDataProvider {
 
         this.wz_root = this;
         this.root_dir = file;
-        this.rootForNavigation = new WZDirectoryEntry(this.root_dir.getName(), 0, 0, null);
-        createEntry(this.root_dir, this.rootForNavigation);
+        this.rootDirectory = new WZDirectoryEntry(this.root_dir.getName(), 0, 0, null);
+        createEntry(this.root_dir, this.rootDirectory);
         return true;
     }
 
@@ -183,8 +182,8 @@ public class TacosWz implements IMapleDataProvider {
     }
 
     @Override
-    public IMapleDataDirectoryEntry getRoot() {
-        return this.rootForNavigation;
+    public IMapleDataDirectoryEntry getRootDirectory() {
+        return this.rootDirectory;
     }
 
 }

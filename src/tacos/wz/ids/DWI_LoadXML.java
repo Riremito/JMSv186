@@ -87,7 +87,7 @@ public class DWI_LoadXML {
             return 0;
         }
         Pattern pattern = Pattern.compile(regex);
-        for (IMapleDataFileEntry dir : wz.getRoot().getFiles()) {
+        for (IMapleDataFileEntry dir : wz.getRootDirectory().getFiles()) {
             Matcher matcher = pattern.matcher(dir.getName());
             if (matcher.matches()) {
                 int id = Integer.parseInt(matcher.group(1)) % 100;
@@ -119,7 +119,7 @@ public class DWI_LoadXML {
         }
         Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
         Pattern id_pattern = Pattern.compile("0*(\\d+)");
-        for (IMapleDataFileEntry dir : wz.getRoot().getFiles()) {
+        for (IMapleDataFileEntry dir : wz.getRootDirectory().getFiles()) {
             Matcher img_matcher = img_pattern.matcher(dir.getName());
             if (img_matcher.matches()) {
                 for (IMapleData data : wz.getData(dir.getName()).getChildren()) {
@@ -143,7 +143,7 @@ public class DWI_LoadXML {
             return 0;
         }
         Pattern pattern = Pattern.compile(regex);
-        for (IMapleDataFileEntry dir : wz.getRoot().getFiles()) {
+        for (IMapleDataFileEntry dir : wz.getRootDirectory().getFiles()) {
             Matcher matcher = pattern.matcher(dir.getName());
             if (matcher.matches()) {
                 int id = Integer.parseInt(matcher.group(1));
@@ -176,7 +176,7 @@ public class DWI_LoadXML {
             return 0;
         }
         Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
-        for (IMapleDataDirectoryEntry equip_dir : wz.getRoot().getSubdirectories()) {
+        for (IMapleDataDirectoryEntry equip_dir : wz.getRootDirectory().getSubDirectories()) {
             for (IMapleDataFileEntry dir : equip_dir.getFiles()) {
                 Matcher img_matcher = img_pattern.matcher(dir.getName());
                 if (img_matcher.matches()) {
@@ -194,7 +194,7 @@ public class DWI_LoadXML {
     public static int LoadTownMaps() {
         IMapleDataProvider wz = (new TacosWz("Map.wz/Map")).getWzRoot();
         Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
-        for (IMapleDataDirectoryEntry map_dir : wz.getRoot().getSubdirectories()) {
+        for (IMapleDataDirectoryEntry map_dir : wz.getRootDirectory().getSubDirectories()) {
             DebugLogger.DebugLog("dir = " + map_dir.getName());
             for (IMapleDataFileEntry dir : map_dir.getFiles()) {
                 Matcher img_matcher = img_pattern.matcher(dir.getName());

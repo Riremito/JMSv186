@@ -187,7 +187,7 @@ public class MapleItemInformationProvider {
     protected final IMapleData getItemData(int id) {
         //DebugLoadTime dlt = new DebugLoadTime("getItemData : " + id);
 
-        IMapleData md_character = CharacterWz.getItemData(id);
+        IMapleData md_character = CharacterWz.get().getItemData(id);
         if (md_character != null) {
             //dlt.End();
             return md_character;
