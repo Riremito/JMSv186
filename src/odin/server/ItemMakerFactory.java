@@ -26,7 +26,7 @@ public class ItemMakerFactory {
         // 0 = Item upgrade crystals
         // 1 / 2/ 4/ 8 = Item creation
 
-        if (EtcWz.getItemMake() == null) {
+        if (EtcWz.get().getItemMake() == null) {
             return;
         }
 
@@ -35,7 +35,7 @@ public class ItemMakerFactory {
         GemCreateEntry ret;
         ItemMakerCreateEntry imt;
 
-        for (IMapleData dataType : EtcWz.getItemMake().getChildren()) {
+        for (IMapleData dataType : EtcWz.get().getItemMake().getChildren()) {
             int type = Integer.parseInt(dataType.getName());
             switch (type) {
                 case 0: { // Caching of gem

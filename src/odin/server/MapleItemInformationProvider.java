@@ -63,7 +63,7 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, OdinPair<Integer, List<Integer>>> questItems = new HashMap<Integer, OdinPair<Integer, List<Integer>>>();
 
     public final StructSetItem getSetItem(int setItemId) {
-        return EtcWz.getSetItemInfoList().get(setItemId);
+        return EtcWz.get().getSetItemInfoList().get(setItemId);
     }
 
     public final List<StructPotentialItem> getPotentialInfo(int potId) {

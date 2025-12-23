@@ -607,7 +607,7 @@ public class ReqCLogin {
         if ((Content.CharacterNameLength.getInt() - 1) < character_name.getBytes().length) {
             return false;
         }
-        if (EtcWz.isForbiddenName(character_name)) {
+        if (EtcWz.get().isForbiddenName(character_name)) {
             return false;
         }
         // already registered

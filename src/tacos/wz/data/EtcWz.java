@@ -30,76 +30,59 @@ import odin.provider.WzXML.MapleDataType;
 import odin.server.StructSetItem;
 import odin.server.StructSetItem.SetItem;
 import odin.provider.IMapleData;
-import odin.provider.IMapleDataProvider;
 
 /**
  *
  * @author Riremito
  */
-public class EtcWz {
+public class EtcWz extends TacosWz {
 
-    private static TacosWz wz = null;
+    private static EtcWz wz = null;
 
-    private static TacosWz getWz() {
+    public static EtcWz get() {
         if (wz == null) {
-            wz = new TacosWz(Content.Wz_SingleFile.get() ? "Data.wz/Etc" : "Etc.wz");
+            wz = new EtcWz(Content.Wz_SingleFile.get() ? "Data.wz/Etc" : "Etc.wz");
         }
+
         return wz;
     }
 
-    private static IMapleDataProvider getWzRoot() {
-        return getWz().getWzRoot();
+    public EtcWz(String path) {
+        super(path);
     }
 
-    private static IMapleData img_ForbiddenName = null;
-    private static IMapleData img_NpcLocation = null;
-    private static IMapleData img_ItemMake = null;
-    private static IMapleData img_Commodity = null;
-    private static IMapleData img_CashPackage = null;
-
-    public static IMapleData getForbiddenName() {
-        if (img_ForbiddenName == null) {
-            img_ForbiddenName = getWz().getData("ForbiddenName.img");
-        }
-        return img_ForbiddenName;
+    public IMapleData getForbiddenName() {
+        return getData("ForbiddenName.img");
     }
 
-    public static IMapleData getNpcLocation() {
-        if (img_NpcLocation == null) {
-            img_NpcLocation = getWz().getData("NpcLocation.img");
-        }
-        return img_NpcLocation;
+    public IMapleData getNpcLocation() {
+        return getData("NpcLocation.img");
     }
 
-    public static IMapleData getItemMake() {
-        if (img_ItemMake == null) {
-            img_ItemMake = getWz().getData("ItemMake.img");
-        }
-        return img_ItemMake;
+    public IMapleData getItemMake() {
+        return getData("ItemMake.img");
     }
 
-    public static IMapleData getCommodity() {
-        if (img_Commodity == null) {
-            img_Commodity = getWz().getData("Commodity.img");
-        }
-        return img_Commodity;
+    public IMapleData getCommodity() {
+        return getData("Commodity.img");
     }
 
-    public static IMapleData getCashPackage() {
-        if (img_CashPackage == null) {
-            img_CashPackage = getWz().getData("CashPackage.img");
-        }
-        return img_CashPackage;
+    public IMapleData getCashPackage() {
+        return getData("CashPackage.img");
     }
 
-    private static List<String> list_fn = null;
+    public IMapleData getSetItemInfo() {
+        return getData("SetItemInfo.img");
+    }
 
-    private static List<String> getFN() {
+    private List<String> list_fn = null;
+
+    private List<String> getFN() {
         if (list_fn != null) {
             return list_fn;
         }
 
-        list_fn = new ArrayList<String>();
+        list_fn = new ArrayList<>();
         for (final IMapleData data : getForbiddenName().getChildren()) {
             list_fn.add(MapleDataTool.getString(data));
         }
@@ -107,7 +90,7 @@ public class EtcWz {
         return list_fn;
     }
 
-    public static boolean isForbiddenName(String character_name) {
+    public boolean isForbiddenName(String character_name) {
         for (final String forbidden_name : getFN()) {
             if (character_name.contains(forbidden_name)) {
                 return true;
@@ -116,17 +99,9 @@ public class EtcWz {
         return false;
     }
 
-    private static IMapleData img_SetItemInfo = null;
-    private static Map<Integer, StructSetItem> map_SetItemInfo = null;
+    private Map<Integer, StructSetItem> map_SetItemInfo = null;
 
-    public static IMapleData getSetItemInfo() {
-        if (img_SetItemInfo == null) {
-            img_SetItemInfo = getWz().getData("SetItemInfo.img");
-        }
-        return img_SetItemInfo;
-    }
-
-    public static Map<Integer, StructSetItem> getSetItemInfoList() {
+    public Map<Integer, StructSetItem> getSetItemInfoList() {
         if (map_SetItemInfo != null) {
             return map_SetItemInfo;
         }

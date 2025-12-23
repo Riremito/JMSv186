@@ -32,7 +32,7 @@ public class CashItemFactory {
 
     public void initialize() {
         final List<Integer> itemids = new ArrayList<Integer>();
-        for (IMapleData field : EtcWz.getCommodity().getChildren()) {
+        for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
             final int itemId = MapleDataTool.getIntConvert("ItemId", field, 0);
             final int SN = MapleDataTool.getIntConvert("SN", field, 0);
 
@@ -70,7 +70,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (IMapleData field : EtcWz.getCommodity().getChildren()) {
+        for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
             int SN = MapleDataTool.getIntConvert("SN", field, 0);
 
             if (SN <= 0 || item_SN != SN) {
@@ -102,7 +102,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (IMapleData field : EtcWz.getCommodity().getChildren()) {
+        for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
             int ItemId = MapleDataTool.getIntConvert("ItemId", field, 0);
             if (ItemId != itemid) {
                 continue;
@@ -128,13 +128,13 @@ public class CashItemFactory {
         if (itemPackage.get(itemId) != null) {
             return itemPackage.get(itemId);
         }
-        final List<CashItemInfo> packageItems = new ArrayList<CashItemInfo>();
+        final List<CashItemInfo> packageItems = new ArrayList<>();
 
-        if (EtcWz.getCashPackage() == null || EtcWz.getCashPackage().getChildByPath(itemId + "/SN") == null) {
+        if (EtcWz.get().getCashPackage() == null || EtcWz.get().getCashPackage().getChildByPath(itemId + "/SN") == null) {
             return null;
         }
-        for (IMapleData d : EtcWz.getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
-            packageItems.add(itemStats.get(Integer.valueOf(MapleDataTool.getIntConvert(d))));
+        for (IMapleData d : EtcWz.get().getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
+            packageItems.add(itemStats.get(MapleDataTool.getIntConvert(d)));
         }
         itemPackage.put(itemId, packageItems);
         return packageItems;

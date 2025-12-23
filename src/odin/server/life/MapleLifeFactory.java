@@ -58,7 +58,7 @@ public class MapleLifeFactory {
         if (NPCLoc.containsKey(npcid)) {
             return NPCLoc.get(npcid);
         }
-        final int map = MapleDataTool.getIntConvert(Integer.toString(npcid) + "/0", EtcWz.getNpcLocation(), -1);
+        final int map = MapleDataTool.getIntConvert(Integer.toString(npcid) + "/0", EtcWz.get().getNpcLocation(), -1);
         NPCLoc.put(npcid, map);
         return map;
     }
