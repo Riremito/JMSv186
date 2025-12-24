@@ -37,46 +37,46 @@ import odin.server.life.MobSkill;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataFileEntry;
-import odin.provider.IMapleDataProvider;
 
 /**
  *
  * @author Riremito
  */
-public class SkillWz {
+public class SkillWz extends TacosWz {
 
-    private static TacosWz wz = null;
+    private static SkillWz wz = null;
 
-    private static TacosWz getWz() {
+    public static SkillWz get() {
         if (wz == null) {
-            wz = new TacosWz(Content.Wz_SingleFile.get() ? "Data.wz/Skill" : "Skill.wz");
+            wz = new SkillWz(Content.Wz_SingleFile.get() ? "Data.wz/Skill" : "Skill.wz");
         }
+
         return wz;
     }
 
-    private static IMapleDataProvider getWzRoot() {
-        return getWz().getWzRoot();
+    public SkillWz(String path) {
+        super(path);
     }
 
-    private static Map<Integer, ISkill> map_Skill = null;
-    private static Map<Integer, List<Integer>> map_SkillsByJob = null;
-    private static Map<Integer, SummonSkillEntry> map_SummonSkillInformation = null;
+    private Map<Integer, ISkill> map_Skill = null;
+    private Map<Integer, List<Integer>> map_SkillsByJob = null;
+    private Map<Integer, SummonSkillEntry> map_SummonSkillInformation = null;
 
-    public static Map<Integer, List<Integer>> getSkillsByJob() {
+    public Map<Integer, List<Integer>> getSkillsByJob() {
         if (map_SkillsByJob == null) {
             getSkill();
         }
         return map_SkillsByJob;
     }
 
-    public static Map<Integer, SummonSkillEntry> getSummonSkillInformation() {
+    public Map<Integer, SummonSkillEntry> getSummonSkillInformation() {
         if (map_SummonSkillInformation == null) {
             getSkill();
         }
         return map_SummonSkillInformation;
     }
 
-    public static Map<Integer, ISkill> getSkill() {
+    public Map<Integer, ISkill> getSkill() {
         if (map_Skill != null) {
             return map_Skill;
         }
@@ -87,9 +87,9 @@ public class SkillWz {
         int skillid;
         IMapleData summon_data;
         SummonSkillEntry sse;
-        for (IMapleDataFileEntry topDir : getWzRoot().getRootDirectory().getFiles()) { // Loop thru jobs
+        for (IMapleDataFileEntry topDir : getRootDirectory().getFiles()) { // Loop thru jobs
             if (topDir.getName().length() <= 8) {
-                for (IMapleData data : getWzRoot().getData(topDir.getName())) { // Loop thru each jobs
+                for (IMapleData data : getData(topDir.getName())) { // Loop thru each jobs
                     if (data.getName().equals("skill")) {
                         for (IMapleData data2 : data) { // Loop thru each jobs
                             if (data2 != null) {
@@ -131,10 +131,10 @@ public class SkillWz {
     }
 
     // test
-    public static ArrayList<Integer> getBasicSkill(MapleCharacter chr, String job_img_name) {
-        ArrayList<Integer> list = new ArrayList<Integer>();
+    public ArrayList<Integer> getBasicSkill(MapleCharacter chr, String job_img_name) {
+        ArrayList<Integer> list = new ArrayList<>();
 
-        IMapleData md_job = getWzRoot().getData(job_img_name);
+        IMapleData md_job = getData(job_img_name);
         if (md_job == null) {
             return list;
         }
@@ -152,17 +152,13 @@ public class SkillWz {
         return list;
     }
     // Mob
-    private static Map<OdinPair<Integer, Integer>, MobSkill> map_mobSkills = null;
-    private static IMapleData img_MobSkill = null;
+    private Map<OdinPair<Integer, Integer>, MobSkill> map_mobSkills = null;
 
-    private static IMapleData getMobSkill() {
-        if (img_MobSkill == null) {
-            img_MobSkill = getWz().getData("MobSkill.img");
-        }
-        return img_MobSkill;
+    private IMapleData getMobSkill() {
+        return getData("MobSkill.img");
     }
 
-    public static MobSkill getMobSkillData(int skillId, int level) {
+    public MobSkill getMobSkillData(int skillId, int level) {
         if (map_mobSkills == null) {
             map_mobSkills = new HashMap<>();
         }
@@ -221,16 +217,16 @@ public class SkillWz {
     }
 
     // Monster Carnival
-    private static Map<Integer, MapleCarnivalFactory.MCSkill> map_MCSkill = null;
-    private static Map<Integer, MapleCarnivalFactory.MCSkill> map_MCGuardian = null;
+    private Map<Integer, MapleCarnivalFactory.MCSkill> map_MCSkill = null;
+    private Map<Integer, MapleCarnivalFactory.MCSkill> map_MCGuardian = null;
 
-    public static Map<Integer, MapleCarnivalFactory.MCSkill> getMCSkill() {
+    public Map<Integer, MapleCarnivalFactory.MCSkill> getMCSkill() {
         if (map_MCSkill != null) {
             return map_MCSkill;
         }
 
         map_MCSkill = new HashMap<>();
-        for (IMapleData md : getWz().getData("MCSkill.img")) {
+        for (IMapleData md : getData("MCSkill.img")) {
             // THMS meme
             int mobSkillID = 0;
             try {
@@ -245,13 +241,13 @@ public class SkillWz {
         return map_MCSkill;
     }
 
-    public static Map<Integer, MapleCarnivalFactory.MCSkill> getMCGuardian() {
+    public Map<Integer, MapleCarnivalFactory.MCSkill> getMCGuardian() {
         if (map_MCGuardian != null) {
             return map_MCGuardian;
         }
 
         map_MCGuardian = new HashMap<>();
-        for (IMapleData md : getWz().getData("MCGuardian.img")) {
+        for (IMapleData md : getData("MCGuardian.img")) {
             map_MCGuardian.put(Integer.parseInt(md.getName()), new MapleCarnivalFactory.MCSkill(MapleDataTool.getInt("spendCP", md, 0), MapleDataTool.getInt("mobSkillID", md, 0), MapleDataTool.getInt("level", md, 0), true));
         }
         return map_MCGuardian;

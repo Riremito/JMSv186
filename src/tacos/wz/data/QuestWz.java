@@ -21,58 +21,41 @@ package tacos.wz.data;
 import tacos.wz.TacosWz;
 import tacos.config.Content;
 import odin.provider.IMapleData;
-import odin.provider.IMapleDataProvider;
 
 /**
  *
  * @author Riremito
  */
-public class QuestWz {
+public class QuestWz extends TacosWz {
 
-    private static TacosWz wz = null;
+    private static QuestWz wz = null;
 
-    private static TacosWz getWz() {
+    public static QuestWz get() {
         if (wz == null) {
-            wz = new TacosWz(Content.Wz_SingleFile.get() ? "Data.wz/Quest" : "Quest.wz");
+            wz = new QuestWz(Content.Wz_SingleFile.get() ? "Data.wz/Quest" : "Quest.wz");
         }
+
         return wz;
     }
 
-    private static IMapleDataProvider getWzRoot() {
-        return getWz().getWzRoot();
+    public QuestWz(String path) {
+        super(path);
     }
 
-    private static IMapleData img_Act = null;
-    private static IMapleData img_Check = null;
-    private static IMapleData img_QuestInfo = null;
-    private static IMapleData img_PQuest = null;
-
-    public static IMapleData getAct() {
-        if (img_Act == null) {
-            img_Act = getWz().getData("Act.img");
-        }
-        return img_Act;
+    public IMapleData getAct() {
+        return getData("Act.img");
     }
 
-    public static IMapleData getCheck() {
-        if (img_Check == null) {
-            img_Check = getWz().getData("Check.img");
-        }
-        return img_Check;
+    public IMapleData getCheck() {
+        return getData("Check.img");
     }
 
-    public static IMapleData getQuestInfo() {
-        if (img_QuestInfo == null) {
-            img_QuestInfo = getWz().getData("QuestInfo.img");
-        }
-        return img_QuestInfo;
+    public IMapleData getQuestInfo() {
+        return getData("QuestInfo.img");
     }
 
-    public static IMapleData getPQuest() {
-        if (img_PQuest == null) {
-            img_PQuest = getWz().getData("PQuest.img");
-        }
-        return img_PQuest;
+    public IMapleData getPQuest() {
+        return getData("PQuest.img");
     }
 
 }

@@ -27,29 +27,30 @@ import odin.server.maps.MapleReactorStats;
 import tacos.odin.OdinPair;
 import odin.tools.StringUtil;
 import odin.provider.IMapleData;
-import odin.provider.IMapleDataProvider;
 
 /**
  *
  * @author Riremito
  */
-public class ReactorWz {
+public class ReactorWz extends TacosWz {
 
-    private static TacosWz wz = null;
+    private static ReactorWz wz = null;
 
-    private static TacosWz getWz() {
+    public static ReactorWz get() {
         if (wz == null) {
-            wz = new TacosWz(Content.Wz_SingleFile.get() ? "Data.wz/Reactor" : "Reactor.wz");
+            wz = new ReactorWz(Content.Wz_SingleFile.get() ? "Data.wz/Reactor" : "Reactor.wz");
         }
+
         return wz;
     }
 
-    private static IMapleDataProvider getWzRoot() {
-        return getWz().getWzRoot();
+    public ReactorWz(String path) {
+        super(path);
     }
-    private static Map<Integer, MapleReactorStats> map_reactorStats = null;
 
-    public static MapleReactorStats getReactor(int rid) {
+    private Map<Integer, MapleReactorStats> map_reactorStats = null;
+
+    public MapleReactorStats getReactor(int rid) {
         if (map_reactorStats == null) {
             map_reactorStats = new HashMap<>();
         }
@@ -59,7 +60,7 @@ public class ReactorWz {
         }
 
         int infoId = rid;
-        IMapleData reactorData = getWzRoot().getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
+        IMapleData reactorData = getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
         IMapleData link = reactorData.getChildByPath("info/link");
         if (link != null) {
             infoId = MapleDataTool.getIntConvert("info/link", reactorData);
@@ -71,7 +72,7 @@ public class ReactorWz {
         }
 
         MapleReactorStats stats = new MapleReactorStats();
-        reactorData = getWzRoot().getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
+        reactorData = getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
         if (reactorData == null) {
             return stats;
         }

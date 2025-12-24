@@ -1374,7 +1374,7 @@ public class World {
                             return;
                         }
                     }
-                    int newFullness = pet.getFullness() - ItemWz.getHunger(pet.getPetItemId());
+                    int newFullness = pet.getFullness() - ItemWz.get().getHunger(pet.getPetItemId());
                     if (newFullness <= 5) {
                         pet.setFullness(15);
                         chr.unequipPet(pet, true, true);

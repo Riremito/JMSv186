@@ -26,28 +26,28 @@ import java.util.ArrayList;
 import java.util.List;
 import odin.provider.MapleDataTool;
 import odin.provider.IMapleData;
-import odin.provider.IMapleDataProvider;
 
 /**
  *
  * @author Riremito
  */
-public class StringWz {
+public class StringWz extends TacosWz {
 
-    private static TacosWz wz = null;
+    private static StringWz wz = null;
 
-    private static TacosWz getWz() {
+    public static StringWz get() {
         if (wz == null) {
-            wz = new TacosWz(Content.Wz_SingleFile.get() ? "Data.wz/String" : "String.wz");
+            wz = new StringWz(Content.Wz_SingleFile.get() ? "Data.wz/String" : "String.wz");
         }
+
         return wz;
     }
 
-    private static IMapleDataProvider getWzRoot() {
-        return getWz().getWzRoot();
+    public StringWz(String path) {
+        super(path);
     }
 
-    private static IMapleData checkSubDirectory(IMapleData md, String dir_name) {
+    private IMapleData checkSubDirectory(IMapleData md, String dir_name) {
         IMapleData sub_dir = md.getChildByPath(dir_name);
         if (sub_dir != null) {
             DebugLogger.XmlLog("SubDir OK : " + dir_name);
@@ -56,58 +56,41 @@ public class StringWz {
         return md;
     }
 
-    private static IMapleData img_Mob = null;
-    private static IMapleData img_Npc = null;
-    private static IMapleData img_Map = null;
-    private static IMapleData img_Skill = null;
-
-    public static IMapleData getMob() {
-        if (img_Mob == null) {
-            img_Mob = getWz().getData("Mob.img");
-        }
-        return img_Mob;
+    public IMapleData getMob() {
+        return getData("Mob.img");
     }
 
-    public static IMapleData getNpc() {
-        if (img_Npc == null) {
-            img_Npc = getWz().getData("Npc.img");
-        }
-        return img_Npc;
+    public IMapleData getNpc() {
+        return getData("Npc.img");
     }
 
-    public static IMapleData getMap() {
-        if (img_Map == null) {
-            img_Map = getWz().getData("Map.img");
-        }
-        return img_Map;
+    public IMapleData getMap() {
+        return getData("Map.img");
     }
 
-    public static IMapleData getSkill() {
-        if (img_Skill == null) {
-            img_Skill = getWz().getData("Skill.img");
-        }
-        return img_Skill;
+    public IMapleData getSkill() {
+        return getData("Skill.img");
     }
 
-    private static IMapleData img_Item = null; // JMS131
-    private static IMapleData img_Cash = null;
-    private static IMapleData img_Consume = null;
-    private static IMapleData img_Eqp = null;
-    private static IMapleData img_Etc = null;
-    private static IMapleData img_Ins = null;
-    private static IMapleData img_Pet = null;
+    private IMapleData img_Item = null; // JMS131
+    private IMapleData img_Cash = null;
+    private IMapleData img_Consume = null;
+    private IMapleData img_Eqp = null;
+    private IMapleData img_Etc = null;
+    private IMapleData img_Ins = null;
+    private IMapleData img_Pet = null;
 
-    public static IMapleData getItem() {
+    public IMapleData getItem() {
         if (img_Item == null) {
-            img_Item = getWz().getData("Item.img");
+            img_Item = getData("Item.img");
         }
         return img_Item;
     }
 
-    public static IMapleData getCash() {
+    public IMapleData getCash() {
         if (img_Cash == null) {
             if (getItem() == null) {
-                img_Cash = getWz().getData("Cash.img");
+                img_Cash = getData("Cash.img");
                 img_Cash = checkSubDirectory(img_Cash, "Cash");
                 return img_Cash;
             }
@@ -116,10 +99,10 @@ public class StringWz {
         return img_Cash;
     }
 
-    public static IMapleData getConsume() {
+    public IMapleData getConsume() {
         if (img_Consume == null) {
             if (getItem() == null) {
-                img_Consume = getWz().getData("Consume.img");
+                img_Consume = getData("Consume.img");
                 img_Consume = checkSubDirectory(img_Consume, "Con");
                 return img_Consume;
             }
@@ -128,10 +111,10 @@ public class StringWz {
         return img_Consume;
     }
 
-    public static IMapleData getEqp() {
+    public IMapleData getEqp() {
         if (img_Eqp == null) {
             if (getItem() == null) {
-                img_Eqp = getWz().getData("Eqp.img");
+                img_Eqp = getData("Eqp.img");
                 img_Eqp = checkSubDirectory(img_Eqp, "Eqp");
                 return img_Eqp;
             }
@@ -140,10 +123,10 @@ public class StringWz {
         return img_Eqp;
     }
 
-    public static IMapleData getEtc() {
+    public IMapleData getEtc() {
         if (img_Etc == null) {
             if (getItem() == null) {
-                img_Etc = getWz().getData("Etc.img");
+                img_Etc = getData("Etc.img");
                 img_Etc = checkSubDirectory(img_Etc, "Etc");
                 return img_Etc;
             }
@@ -152,10 +135,10 @@ public class StringWz {
         return img_Etc;
     }
 
-    public static IMapleData getIns() {
+    public IMapleData getIns() {
         if (img_Ins == null) {
             if (getItem() == null) {
-                img_Ins = getWz().getData("Ins.img");
+                img_Ins = getData("Ins.img");
                 img_Ins = checkSubDirectory(img_Ins, "Ins");
                 return img_Ins;
             }
@@ -164,11 +147,11 @@ public class StringWz {
         return img_Ins;
     }
 
-    public static IMapleData getPet() {
+    public IMapleData getPet() {
         if (img_Pet == null) {
             // please do not use old PetDialog.img (Pet.img)
             if (getItem() == null) {
-                img_Pet = getWz().getData("Pet.img");
+                img_Pet = getData("Pet.img");
                 img_Pet = checkSubDirectory(img_Pet, "Pet");
                 return img_Pet;
             }
@@ -178,9 +161,9 @@ public class StringWz {
     }
 
     // MonsterBook
-    private static IMapleData img_MonsterBook = null;
-    private static List<DropMonsterBook> list_drop_monsterbook = null;
-    private static boolean bookAvailable = true;
+    private IMapleData img_MonsterBook = null;
+    private List<DropMonsterBook> list_drop_monsterbook = null;
+    private boolean bookAvailable = true;
 
     public static class DropMonsterBook {
 
@@ -188,13 +171,13 @@ public class StringWz {
         public List<Integer> drop_ids = new ArrayList<>();
     }
 
-    public static boolean checkBookAvailable() {
+    public boolean checkBookAvailable() {
         return bookAvailable;
     }
 
-    public static IMapleData getMonsterBook() {
+    public IMapleData getMonsterBook() {
         if (img_MonsterBook == null) {
-            img_MonsterBook = getWz().getData("MonsterBook.img");
+            img_MonsterBook = getData("MonsterBook.img");
             if (img_MonsterBook == null) {
                 bookAvailable = false;
             }
@@ -202,7 +185,7 @@ public class StringWz {
         return img_MonsterBook;
     }
 
-    public static DropMonsterBook getMonseterBookDrop(int mob_id) {
+    public DropMonsterBook getMonseterBookDrop(int mob_id) {
         if (list_drop_monsterbook == null) {
             list_drop_monsterbook = new ArrayList<>();
         }

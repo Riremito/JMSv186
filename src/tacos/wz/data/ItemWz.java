@@ -33,30 +33,29 @@ import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataFileEntry;
-import odin.provider.IMapleDataProvider;
 
 /**
  *
  * @author Riremito
  */
-public class ItemWz {
+public class ItemWz extends TacosWz {
 
-    private static TacosWz wz = null;
+    private static ItemWz wz = null;
+    private static final int item_sub_type_pet = 500;
 
-    private static TacosWz getWz() {
+    public static ItemWz get() {
         if (wz == null) {
-            wz = new TacosWz(Content.Wz_SingleFile.get() ? "Data.wz/Item" : "Item.wz");
+            wz = new ItemWz(Content.Wz_SingleFile.get() ? "Data.wz/Item" : "Item.wz");
         }
+
         return wz;
     }
 
-    public static IMapleDataProvider getWzRoot() {
-        return getWz().getWzRoot();
+    public ItemWz(String path) {
+        super(path);
     }
 
-    private static final int item_sub_type_pet = 500;
-
-    public static IMapleData getItemData(int id) {
+    public IMapleData getItemData(int id) {
         int item_type = id / 1000000;
         if (item_type <= 1) {
             return null;
@@ -71,10 +70,10 @@ public class ItemWz {
         String target_img_name = String.format("%04d.img", item_sub_type);
         String target_dir_name = String.format("%08d", id);
 
-        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRootDirectory().getSubDirectories()) {
+        for (IMapleDataDirectoryEntry mdde : getRootDirectory().getSubDirectories()) {
             for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
-                    IMapleData md_item_sub_type = getWz().getData(mdde.getName() + "/" + mdfe.getName());
+                    IMapleData md_item_sub_type = getData(mdde.getName() + "/" + mdfe.getName());
                     if (md_item_sub_type == null) {
                         DebugLogger.ErrorLog("getItemData : Invalid item type = " + item_sub_type);
                         return null;
@@ -93,7 +92,7 @@ public class ItemWz {
         return null;
     }
 
-    public static IMapleData getItemImg(int item_sub_type) {
+    public IMapleData getItemImg(int item_sub_type) {
         if (item_sub_type < 200) {
             return null;
         }
@@ -105,10 +104,10 @@ public class ItemWz {
 
         String target_img_name = String.format("%04d.img", item_sub_type);
 
-        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRootDirectory().getSubDirectories()) {
+        for (IMapleDataDirectoryEntry mdde : getRootDirectory().getSubDirectories()) {
             for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
-                    IMapleData md_item_sub_type = getWz().getData(mdde.getName() + "/" + mdfe.getName());
+                    IMapleData md_item_sub_type = getData(mdde.getName() + "/" + mdfe.getName());
                     if (md_item_sub_type == null) {
                         DebugLogger.ErrorLog("getItemImg : Invalid item type = " + item_sub_type);
                         return null;
@@ -122,18 +121,18 @@ public class ItemWz {
         return null;
     }
 
-    public static IMapleData getItemData_Pet(int id) {
+    public IMapleData getItemData_Pet(int id) {
         int item_sub_type = id / 10000;
         if (item_sub_type != item_sub_type_pet) {
             return null;
         }
         String target_img_name = String.format("%d.img", id);
 
-        for (IMapleDataDirectoryEntry mdde : getWzRoot().getRootDirectory().getSubDirectories()) {
+        for (IMapleDataDirectoryEntry mdde : getRootDirectory().getSubDirectories()) {
             if (mdde.getName().equals("Pet")) {
                 for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
                     if (mdfe.getName().equals(target_img_name)) {
-                        IMapleData md_pet = getWz().getData(mdde.getName() + "/" + mdfe.getName());
+                        IMapleData md_pet = getData(mdde.getName() + "/" + mdfe.getName());
                         if (md_pet == null) {
                             DebugLogger.ErrorLog("getItemData_Pet : Invalid pet id 1 = " + id);
                             return null;
@@ -149,36 +148,32 @@ public class ItemWz {
         return null;
     }
 
-    private static IMapleData img_ItemOption = null;
-    private static Map<Integer, List<StructPotentialItem>> map_ItemOption = null;
-    private static ArrayList<Integer> list_RarePotential = null;
-    private static ArrayList<Integer> list_EpicPotential = null;
-    private static ArrayList<Integer> list_UniquePotential = null;
-    private static ArrayList<Integer> list_LegendaryPotential = null;
+    Map<Integer, List<StructPotentialItem>> map_ItemOption = null;
+    ArrayList<Integer> list_RarePotential = null;
+    ArrayList<Integer> list_EpicPotential = null;
+    ArrayList<Integer> list_UniquePotential = null;
+    ArrayList<Integer> list_LegendaryPotential = null;
 
-    public static IMapleData getItemOption() {
-        if (img_ItemOption == null) {
-            img_ItemOption = getWz().getData("ItemOption.img");
-        }
-        return img_ItemOption;
+    public IMapleData getItemOption() {
+        return getData("ItemOption.img");
     }
 
-    public static Map<Integer, List<StructPotentialItem>> getItemOptionList() {
+    public Map<Integer, List<StructPotentialItem>> getItemOptionList() {
         if (map_ItemOption != null) {
             return map_ItemOption;
         }
         map_ItemOption = new HashMap<>();
-        list_RarePotential = new ArrayList<Integer>();
-        list_EpicPotential = new ArrayList<Integer>();
-        list_UniquePotential = new ArrayList<Integer>();
-        list_LegendaryPotential = new ArrayList<Integer>();
+        list_RarePotential = new ArrayList<>();
+        list_EpicPotential = new ArrayList<>();
+        list_UniquePotential = new ArrayList<>();
+        list_LegendaryPotential = new ArrayList<>();
 
         if (getItemOption() == null) {
             return map_ItemOption;
         }
 
         for (IMapleData dat : getItemOption()) {
-            List<StructPotentialItem> items = new LinkedList<StructPotentialItem>();
+            List<StructPotentialItem> items = new LinkedList<>();
             for (IMapleData level : dat.getChildByPath("level")) {
                 StructPotentialItem item = new StructPotentialItem();
                 item.optionType = MapleDataTool.getIntConvert("info/optionType", dat, 0);
@@ -286,7 +281,7 @@ public class ItemWz {
         return map_ItemOption;
     }
 
-    public static ArrayList<Integer> getRarePotential() {
+    public ArrayList<Integer> getRarePotential() {
         if (list_RarePotential != null) {
             return list_RarePotential;
         }
@@ -294,7 +289,7 @@ public class ItemWz {
         return list_RarePotential;
     }
 
-    public static ArrayList<Integer> getEpicPotential() {
+    public ArrayList<Integer> getEpicPotential() {
         if (list_EpicPotential != null) {
             return list_EpicPotential;
         }
@@ -302,7 +297,7 @@ public class ItemWz {
         return list_EpicPotential;
     }
 
-    public static ArrayList<Integer> getUniquePotential() {
+    public ArrayList<Integer> getUniquePotential() {
         if (list_UniquePotential != null) {
             return list_UniquePotential;
         }
@@ -310,7 +305,7 @@ public class ItemWz {
         return list_UniquePotential;
     }
 
-    public static ArrayList<Integer> getLegendaryPotential() {
+    public ArrayList<Integer> getLegendaryPotential() {
         if (list_LegendaryPotential != null) {
             return list_LegendaryPotential;
         }
@@ -319,10 +314,10 @@ public class ItemWz {
     }
 
     // Pet
-    private static Map<OdinPair<Integer, Integer>, PetCommand> map_petCommands = null;
-    private static Map<Integer, Integer> map_petHunger = null;
+    private Map<OdinPair<Integer, Integer>, PetCommand> map_petCommands = null;
+    private Map<Integer, Integer> map_petHunger = null;
 
-    public static PetCommand getPetCommand(final int petId, final int skillId) {
+    public PetCommand getPetCommand(final int petId, final int skillId) {
         if (map_petCommands == null) {
             map_petCommands = new HashMap<>();
         }
@@ -331,7 +326,7 @@ public class ItemWz {
             return pc_found;
         }
 
-        IMapleData skillData = getWz().getData("Pet/" + petId + ".img");
+        IMapleData skillData = getData("Pet/" + petId + ".img");
         int prob = 0;
         int inc = 0;
         if (skillData != null) {
@@ -343,7 +338,7 @@ public class ItemWz {
         return ret;
     }
 
-    public static int getHunger(final int petId) {
+    public int getHunger(final int petId) {
         if (map_petHunger == null) {
             map_petHunger = new HashMap<>();
         }
@@ -352,7 +347,7 @@ public class ItemWz {
             return found;
         }
 
-        IMapleData hungerData = getWz().getData("Pet/" + petId + ".img").getChildByPath("info/hungry");
+        IMapleData hungerData = getData("Pet/" + petId + ".img").getChildByPath("info/hungry");
         Integer ret = MapleDataTool.getInt(hungerData, 1);
         map_petHunger.put(petId, ret);
         return ret;

@@ -173,7 +173,7 @@ public class ReqCMobPool {
                 realskill = skillToUse.getLeft();
                 level = skillToUse.getRight();
                 // Skill ID and Level
-                final MobSkill mobSkill = SkillWz.getMobSkillData(realskill, level);
+                final MobSkill mobSkill = SkillWz.get().getMobSkillData(realskill, level);
 
                 if (mobSkill != null && !mobSkill.checkCurrentBuff(chr, monster)) {
                     final long now = System.currentTimeMillis();

@@ -243,7 +243,7 @@ public class MapleSnowball extends MapleEvent {
                             }, 10000);
                             for (MapleCharacter chrz : chr.getMap().getCharacters()) {
                                 if ((ball.getTeam() == 0 && chr.getPosition().y < -80) || (ball.getTeam() == 1 && chr.getPosition().y > -80)) {
-                                    chrz.giveDebuff(MapleDisease.SEDUCE, SkillWz.getMobSkillData(128, 1)); //go left
+                                    chrz.giveDebuff(MapleDisease.SEDUCE, SkillWz.get().getMobSkillData(128, 1)); //go left
                                 }
                             }
                         }

@@ -190,7 +190,7 @@ public class DebugShop {
     public boolean setRechargeAll(int item_recharge_price) {
         int item_sub_types[] = {207, 233};
         for (int item_sub_type : item_sub_types) {
-            IMapleData md_item_sub_type = ItemWz.getItemImg(item_sub_type);
+            IMapleData md_item_sub_type = ItemWz.get().getItemImg(item_sub_type);
             if (md_item_sub_type != null) {
                 for (IMapleData md_item : md_item_sub_type.getChildren()) {
                     int item_id = Integer.parseInt(md_item.getName());
@@ -203,7 +203,7 @@ public class DebugShop {
 
     public boolean setItemTest(int item_sub_type) {
         int item_count = 0;
-        IMapleData md_item_sub_type = ItemWz.getItemImg(item_sub_type);
+        IMapleData md_item_sub_type = ItemWz.get().getItemImg(item_sub_type);
         if (md_item_sub_type != null) {
             for (IMapleData md_item : md_item_sub_type.getChildren()) {
                 int item_id = Integer.parseInt(md_item.getName());

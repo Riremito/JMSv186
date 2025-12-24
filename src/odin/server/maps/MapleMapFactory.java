@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.locks.ReentrantLock;
@@ -60,8 +59,8 @@ import odin.provider.IMapleData;
 
 public class MapleMapFactory {
 
-    private final Map<Integer, MapleMap> maps = new HashMap<Integer, MapleMap>();
-    private final Map<Integer, MapleMap> instanceMap = new HashMap<Integer, MapleMap>();
+    private final Map<Integer, MapleMap> maps = new HashMap<>();
+    private final Map<Integer, MapleMap> instanceMap = new HashMap<>();
     private static final Map<Integer, MapleNodes> mapInfos = new HashMap<Integer, MapleNodes>();
     private final ReentrantLock lock = new ReentrantLock(true);
     private int channel;
@@ -76,7 +75,7 @@ public class MapleMapFactory {
     }
 
     public final MapleMap getMap(int mapid, final boolean respawns, final boolean npcs, final boolean reactors) {
-        Integer omapid = Integer.valueOf(mapid);
+        Integer omapid = mapid;
         MapleMap map = maps.get(omapid);
         if (map == null) {
             lock.lock();
@@ -90,27 +89,27 @@ public class MapleMapFactory {
 
                 IMapleData mapData;
                 try {
-                    mapData = MapWz.getWzRoot().getData(getMapName(mapid));
+                    mapData = MapWz.get().getData(getMapName(mapid));
                 } catch (Exception e) {
                     // 存在しないMapIDが指定された場合は指定MapIDへ強制移動する
                     DebugLogger.ErrorLog("Invalid MapID = " + mapid);
                     mapid = DeveloperMode.DM_ERROR_MAP_ID.getInt();
-                    omapid = Integer.valueOf(mapid);
-                    mapData = MapWz.getWzRoot().getData(getMapName(mapid));
+                    omapid = mapid;
+                    mapData = MapWz.get().getData(getMapName(mapid));
                 }
                 //MapleData mapData = source.getData(getMapName(mapid));
                 //MapleData mapData = source.getData(getMapName(mapid));
 
                 IMapleData link = mapData.getChildByPath("info/link");
                 if (link != null) {
-                    mapData = MapWz.getWzRoot().getData(getMapName(MapleDataTool.getIntConvert("info/link", mapData)));
+                    mapData = MapWz.get().getData(getMapName(MapleDataTool.getIntConvert("info/link", mapData)));
                 }
 
                 float monsterRate = 0;
                 if (respawns) {
                     IMapleData mobRate = mapData.getChildByPath("info/mobRate");
                     if (mobRate != null) {
-                        monsterRate = ((Float) mobRate.getData()).floatValue();
+                        monsterRate = ((Float) mobRate.getData());
                     }
                 }
                 map = new MapleMap(mapid, channel, MapleDataTool.getInt("info/returnMap", mapData), monsterRate);
@@ -244,8 +243,8 @@ public class MapleMapFactory {
                 }
 
                 try {
-                    map.setMapName(MapleDataTool.getString("mapName", StringWz.getMap().getChildByPath(getMapStringName(omapid)), ""));
-                    map.setStreetName(MapleDataTool.getString("streetName", StringWz.getMap().getChildByPath(getMapStringName(omapid)), ""));
+                    map.setMapName(MapleDataTool.getString("mapName", StringWz.get().getMap().getChildByPath(getMapStringName(omapid)), ""));
+                    map.setStreetName(MapleDataTool.getString("streetName", StringWz.get().getMap().getChildByPath(getMapStringName(omapid)), ""));
                 } catch (Exception e) {
                     map.setMapName("");
                     map.setStreetName("");
@@ -298,17 +297,17 @@ public class MapleMapFactory {
         if (isInstanceMapLoaded(instanceid)) {
             return getInstanceMap(instanceid);
         }
-        IMapleData mapData = MapWz.getWzRoot().getData(getMapName(mapid));
+        IMapleData mapData = MapWz.get().getData(getMapName(mapid));
         IMapleData link = mapData.getChildByPath("info/link");
         if (link != null) {
-            mapData = MapWz.getWzRoot().getData(getMapName(MapleDataTool.getIntConvert("info/link", mapData)));
+            mapData = MapWz.get().getData(getMapName(MapleDataTool.getIntConvert("info/link", mapData)));
         }
 
         float monsterRate = 0;
         if (respawns) {
             IMapleData mobRate = mapData.getChildByPath("info/mobRate");
             if (mobRate != null) {
-                monsterRate = ((Float) mobRate.getData()).floatValue();
+                monsterRate = ((Float) mobRate.getData());
             }
         }
         MapleMap map = new MapleMap(mapid, channel, MapleDataTool.getInt("info/returnMap", mapData), monsterRate);
@@ -317,7 +316,7 @@ public class MapleMapFactory {
         for (IMapleData portal : mapData.getChildByPath("portal")) {
             map.addPortal(portalFactory.makePortal(map, MapleDataTool.getInt(portal.getChildByPath("pt")), portal));
         }
-        List<MapleFoothold> allFootholds = new LinkedList<MapleFoothold>();
+        List<MapleFoothold> allFootholds = new LinkedList<>();
         Point lBound = new Point();
         Point uBound = new Point();
         for (IMapleData footRoot : mapData.getChildByPath("foothold")) {
@@ -395,8 +394,8 @@ public class MapleMapFactory {
             }
         }
         try {
-            map.setMapName(MapleDataTool.getString("mapName", StringWz.getMap().getChildByPath(getMapStringName(mapid)), ""));
-            map.setStreetName(MapleDataTool.getString("streetName", StringWz.getMap().getChildByPath(getMapStringName(mapid)), ""));
+            map.setMapName(MapleDataTool.getString("mapName", StringWz.get().getMap().getChildByPath(getMapStringName(mapid)), ""));
+            map.setStreetName(MapleDataTool.getString("streetName", StringWz.get().getMap().getChildByPath(getMapStringName(mapid)), ""));
         } catch (Exception e) {
             map.setMapName("");
             map.setStreetName("");
@@ -469,8 +468,8 @@ public class MapleMapFactory {
         return myLife;
     }
 
-    private final MapleReactor loadReactor(final IMapleData reactor, final String id, final byte FacingDirection) {
-        final MapleReactorStats stats = ReactorWz.getReactor(Integer.parseInt(id));
+    private MapleReactor loadReactor(final IMapleData reactor, final String id, final byte FacingDirection) {
+        final MapleReactorStats stats = ReactorWz.get().getReactor(Integer.parseInt(id));
         final MapleReactor myReactor = new MapleReactor(stats, Integer.parseInt(id));
 
         stats.setFacingDirection(FacingDirection);
@@ -554,7 +553,7 @@ public class MapleMapFactory {
                             nodeInfo.setNodeEnd(MapleDataTool.getInt(node, 0));
                             continue;
                         }
-                        List<Integer> edges = new ArrayList<Integer>();
+                        List<Integer> edges = new ArrayList<>();
                         if (node.getChildByPath("edge") != null) {
                             for (IMapleData edge : node.getChildByPath("edge")) {
                                 edges.add(MapleDataTool.getInt(edge, -1));
@@ -581,7 +580,7 @@ public class MapleMapFactory {
                         if (sn_count <= 0 || speed <= 0 || name.equals("")) {
                             continue;
                         }
-                        final List<Integer> SN = new ArrayList<Integer>();
+                        final List<Integer> SN = new ArrayList<>();
                         for (int x = 0; x < sn_count; x++) {
                             SN.add(MapleDataTool.getIntConvert("SN" + x, node, 0));
                         }

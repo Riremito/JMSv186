@@ -237,7 +237,7 @@ public class ReqCUser_Pet {
         //slea.skip(5);
         cp.DecodeBuffer(5); // ?_?
         final byte command = cp.Decode1();
-        final PetCommand petCommand = ItemWz.getPetCommand(pet.getPetItemId(), (int) command);
+        final PetCommand petCommand = ItemWz.get().getPetCommand(pet.getPetItemId(), (int) command);
         boolean success = false;
         if (Randomizer.nextInt(99) <= petCommand.getProbability()) {
             success = true;

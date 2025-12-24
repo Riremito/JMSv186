@@ -269,13 +269,13 @@ public class AdminCommand {
                 victim.setChair(0);
                 victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
                 victim.getMap().broadcastMessage(victim, ResCUserRemote.SetActivePortableChair(c.getPlayer().getId(), 0), false);
-                victim.giveDebuff(dis, SkillWz.getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 3, 1)));
+                victim.giveDebuff(dis, SkillWz.get().getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 3, 1)));
             } else {
                 for (MapleCharacter victim : c.getPlayer().getMap().getCharacters()) {
                     victim.setChair(0);
                     victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
                     victim.getMap().broadcastMessage(victim, ResCUserRemote.SetActivePortableChair(c.getPlayer().getId(), 0), false);
-                    victim.giveDebuff(dis, SkillWz.getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 2, 1)));
+                    victim.giveDebuff(dis, SkillWz.get().getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 2, 1)));
                 }
             }
             return 1;

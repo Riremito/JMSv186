@@ -40,12 +40,12 @@ public class MapleQuest implements Serializable {
     protected String name = "";
 
     protected MapleQuest(final int id) {
-        relevantMobs = new LinkedHashMap<Integer, Integer>();
-        startReqs = new LinkedList<MapleQuestRequirement>();
-        completeReqs = new LinkedList<MapleQuestRequirement>();
-        startActs = new LinkedList<MapleQuestAction>();
-        completeActs = new LinkedList<MapleQuestAction>();
-        partyQuestInfo = new LinkedHashMap<String, List<OdinPair<String, OdinPair<String, Integer>>>>();
+        relevantMobs = new LinkedHashMap<>();
+        startReqs = new LinkedList<>();
+        completeReqs = new LinkedList<>();
+        startActs = new LinkedList<>();
+        completeActs = new LinkedList<>();
+        partyQuestInfo = new LinkedHashMap<>();
         this.id = id;
     }
 
@@ -54,8 +54,8 @@ public class MapleQuest implements Serializable {
      */
     private static boolean loadQuest(MapleQuest ret, int id) throws NullPointerException {
         // read reqs
-        final IMapleData basedata1 = QuestWz.getCheck().getChildByPath(String.valueOf(id));
-        final IMapleData basedata2 = QuestWz.getAct().getChildByPath(String.valueOf(id));
+        final IMapleData basedata1 = QuestWz.get().getCheck().getChildByPath(String.valueOf(id));
+        final IMapleData basedata2 = QuestWz.get().getAct().getChildByPath(String.valueOf(id));
 
         if (basedata1 == null || basedata2 == null) {
             return false;
@@ -119,7 +119,7 @@ public class MapleQuest implements Serializable {
             }
         }
 
-        final IMapleData questInfo = QuestWz.getQuestInfo().getChildByPath(String.valueOf(id));
+        final IMapleData questInfo = QuestWz.get().getQuestInfo().getChildByPath(String.valueOf(id));
         if (questInfo != null) {
             ret.name = MapleDataTool.getString("name", questInfo, "");
             ret.autoStart = MapleDataTool.getInt("autoStart", questInfo, 0) == 1;
@@ -130,7 +130,7 @@ public class MapleQuest implements Serializable {
 
         // not in KMS55
         if (Version.GreaterOrEqual(Region.KMS, 65)) {
-            final IMapleData pquestInfo = QuestWz.getPQuest().getChildByPath(String.valueOf(id));
+            final IMapleData pquestInfo = QuestWz.get().getPQuest().getChildByPath(String.valueOf(id));
             if (pquestInfo != null) {
                 for (IMapleData d : pquestInfo.getChildByPath("rank")) {
                     List<OdinPair<String, OdinPair<String, Integer>>> pInfo = new ArrayList<OdinPair<String, OdinPair<String, Integer>>>();

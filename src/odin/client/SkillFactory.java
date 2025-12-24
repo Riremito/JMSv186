@@ -32,11 +32,11 @@ import odin.provider.IMapleData;
 public class SkillFactory {
 
     public static final ISkill getSkill(final int id) {
-        return SkillWz.getSkill().get(Integer.valueOf(id));
+        return SkillWz.get().getSkill().get(id);
     }
 
     public static final List<Integer> getSkillsByJob(final int jobId) {
-        return SkillWz.getSkillsByJob().get(jobId);
+        return SkillWz.get().getSkillsByJob().get(jobId);
     }
 
     public static final String getSkillName(final int id) {
@@ -50,7 +50,7 @@ public class SkillFactory {
     public static final String getName(final int id) {
         String strId = Integer.toString(id);
         strId = StringUtil.getLeftPaddedStr(strId, '0', 7);
-        IMapleData skillroot = StringWz.getSkill().getChildByPath(strId);
+        IMapleData skillroot = StringWz.get().getSkill().getChildByPath(strId);
         if (skillroot != null) {
             return MapleDataTool.getString(skillroot.getChildByPath("name"), "");
         }
@@ -58,10 +58,10 @@ public class SkillFactory {
     }
 
     public static final SummonSkillEntry getSummonData(final int skillid) {
-        return SkillWz.getSummonSkillInformation().get(skillid);
+        return SkillWz.get().getSummonSkillInformation().get(skillid);
     }
 
     public static final Collection<ISkill> getAllSkills() {
-        return SkillWz.getSkill().values();
+        return SkillWz.get().getSkill().values();
     }
 }

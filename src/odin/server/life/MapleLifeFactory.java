@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-
 import odin.provider.MapleDataTool;
 import odin.provider.WzXML.MapleDataType;
 import tacos.odin.OdinPair;
@@ -64,7 +63,7 @@ public class MapleLifeFactory {
     }
 
     public static final List<Integer> getQuestCount(final int id) {
-        return MobWz.getQuestCountGroup().get(id);
+        return MobWz.get().getQuestCountGroup().get(id);
     }
 
     // fix broken MP mob
@@ -84,10 +83,10 @@ public class MapleLifeFactory {
     }
 
     public static MapleMonster getMonster(int mid) {
-        MapleMonsterStats stats = monsterStats.get(Integer.valueOf(mid));
+        MapleMonsterStats stats = monsterStats.get(mid);
 
         if (stats == null) {
-            IMapleData monsterData = MobWz.getWzRoot().getData(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
+            IMapleData monsterData = MobWz.get().getData(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
             if (monsterData == null) {
                 return null;
             }
@@ -108,7 +107,7 @@ public class MapleLifeFactory {
             stats.setExplosiveReward(MapleDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
             stats.setFfaLoot(MapleDataTool.getIntConvert("publicReward", monsterInfoData, 0) > 0);
             stats.setUndead(MapleDataTool.getIntConvert("undead", monsterInfoData, 0) > 0);
-            stats.setName(MapleDataTool.getString(mid + "/name", StringWz.getMob(), "MISSINGNO"));
+            stats.setName(MapleDataTool.getString(mid + "/name", StringWz.get().getMob(), "MISSINGNO"));
             stats.setBuffToGive(MapleDataTool.getIntConvert("buff", monsterInfoData, -1));
             stats.setFriendly(MapleDataTool.getIntConvert("damagedByMob", monsterInfoData, 0) > 0);
             stats.setExplosiveReward(MapleDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
@@ -156,7 +155,7 @@ public class MapleLifeFactory {
 
             final IMapleData reviveInfo = monsterInfoData.getChildByPath("revive");
             if (reviveInfo != null) {
-                List<Integer> revives = new LinkedList<Integer>();
+                List<Integer> revives = new LinkedList<>();
                 for (IMapleData bdata : reviveInfo) {
                     revives.add(MapleDataTool.getInt(bdata));
                 }
@@ -166,9 +165,9 @@ public class MapleLifeFactory {
             final IMapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
             if (monsterSkillData != null) {
                 int i = 0;
-                List<OdinPair<Integer, Integer>> skills = new ArrayList<OdinPair<Integer, Integer>>();
+                List<OdinPair<Integer, Integer>> skills = new ArrayList<>();
                 while (monsterSkillData.getChildByPath(Integer.toString(i)) != null) {
-                    skills.add(new OdinPair<Integer, Integer>(Integer.valueOf(MapleDataTool.getInt(i + "/skill", monsterSkillData, 0)), Integer.valueOf(MapleDataTool.getInt(i + "/level", monsterSkillData, 0))));
+                    skills.add(new OdinPair<>(MapleDataTool.getInt(i + "/skill", monsterSkillData, 0), MapleDataTool.getInt(i + "/level", monsterSkillData, 0)));
                     i++;
                 }
                 stats.setSkills(skills);
@@ -179,7 +178,7 @@ public class MapleLifeFactory {
             // Other data which isn;t in the mob, but might in the linked data
             final int link = MapleDataTool.getIntConvert("link", monsterInfoData, 0);
             if (link != 0) { // Store another copy, for faster processing.
-                monsterData = MobWz.getWzRoot().getData(StringUtil.getLeftPaddedStr(link + ".img", '0', 11));
+                monsterData = MobWz.get().getData(StringUtil.getLeftPaddedStr(link + ".img", '0', 11));
             }
 
             for (IMapleData idata : monsterData) {
@@ -204,7 +203,7 @@ public class MapleLifeFactory {
             }
             stats.setHPDisplayType(hpdisplaytype);
 
-            monsterStats.put(Integer.valueOf(mid), stats);
+            monsterStats.put(mid, stats);
         }
         return new MapleMonster(mid, stats);
     }
@@ -239,10 +238,10 @@ public class MapleLifeFactory {
     public static MapleNPC getNPC(final int nid) {
         String name = npcNames.get(nid);
         if (name == null) {
-            name = MapleDataTool.getString(nid + "/name", StringWz.getNpc(), "MISSINGNO");
+            name = MapleDataTool.getString(nid + "/name", StringWz.get().getNpc(), "MISSINGNO");
             npcNames.put(nid, name);
         }
-        if (name.indexOf("Maple TV") != -1) {
+        if (name.contains("Maple TV")) {
             return null;
         }
         return new MapleNPC(nid, name);

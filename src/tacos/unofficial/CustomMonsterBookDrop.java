@@ -53,7 +53,7 @@ public class CustomMonsterBookDrop {
     private DropMonsterBook book_info = null;
 
     public CustomMonsterBookDrop(MapleMonster monster) {
-        this.book_info = StringWz.getMonseterBookDrop(monster.getId());
+        this.book_info = StringWz.get().getMonseterBookDrop(monster.getId());
     }
 
     public List<Integer> getDropItems() {
@@ -157,7 +157,7 @@ public class CustomMonsterBookDrop {
             dropped_count++;
         }
 
-        if (!StringWz.checkBookAvailable()) {
+        if (!StringWz.get().checkBookAvailable()) {
             return dropped_count;
         }
 

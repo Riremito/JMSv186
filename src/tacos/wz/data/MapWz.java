@@ -20,24 +20,25 @@ package tacos.wz.data;
 
 import tacos.wz.TacosWz;
 import tacos.config.Content;
-import odin.provider.IMapleDataProvider;
 
 /**
  *
  * @author Riremito
  */
-public class MapWz {
+public class MapWz extends TacosWz {
 
-    private static TacosWz wz = null;
+    private static MapWz wz = null;
 
-    private static TacosWz getWz() {
+    public static MapWz get() {
         if (wz == null) {
-            wz = new TacosWz(Content.Wz_SingleFile.get() ? "Data.wz/Map" : "Map.wz");
+            wz = new MapWz(Content.Wz_SingleFile.get() ? "Data.wz/Map" : "Map.wz");
         }
+
         return wz;
     }
 
-    public static IMapleDataProvider getWzRoot() {
-        return getWz().getWzRoot();
+    public MapWz(String path) {
+        super(path);
     }
+
 }

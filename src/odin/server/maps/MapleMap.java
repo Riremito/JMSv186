@@ -756,7 +756,7 @@ public final class MapleMap extends TacosMap {
             }
         }
         if (guardz != null) {
-            final MapleReactorStats stats = ReactorWz.getReactor(9980000 + team);
+            final MapleReactorStats stats = ReactorWz.get().getReactor(9980000 + team);
             final MapleReactor my = new MapleReactor(stats, 9980000 + team);
             stats.setFacingDirection((byte) 0); //always
             my.setPosition(guardz);

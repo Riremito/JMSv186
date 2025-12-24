@@ -69,7 +69,7 @@ public class TacosWz implements IMapleDataProvider {
             return false;
         }
 
-        DebugLogger.XmlLog("setWzRoot : path = " + this.root_path);
+        DebugLogger.XmlLog("setWzRoot : " + this.root_path);
 
         this.wz_root = this;
         this.root_dir = file;
@@ -139,14 +139,15 @@ public class TacosWz implements IMapleDataProvider {
 
     @Override
     public IMapleData getData(String data_path) {
+        String full_path = this.root_path + "/" + data_path;
         // data is already loaded.
-        IMapleData md_cache = getXmlCache(data_path);
+        IMapleData md_cache = getXmlCache(full_path);
         if (md_cache != null) {
             //DebugLogger.XmlLog("getData : cached, " + path);
             return md_cache;
         }
         // new data.
-        DebugLogger.XmlLog("getData : " + data_path);
+        DebugLogger.XmlLog("getData : " + full_path);
 
         File dataFile = new File(this.root_dir, data_path + ".xml");
         if (!dataFile.exists()) {
@@ -166,7 +167,7 @@ public class TacosWz implements IMapleDataProvider {
 
         // not found.
         if (fis == null) {
-            addXmlCache(data_path, null);
+            addXmlCache(full_path, null);
             return null;
         }
 
@@ -177,7 +178,7 @@ public class TacosWz implements IMapleDataProvider {
         } catch (IOException ex) {
         }
 
-        addXmlCache(data_path, domMapleData);
+        addXmlCache(full_path, domMapleData);
         return domMapleData;
     }
 

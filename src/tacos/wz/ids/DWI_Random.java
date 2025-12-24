@@ -41,16 +41,16 @@ public class DWI_Random {
     public static int getRandomPotential(int rank) {
         Random rand = new Random();
         if (rank == 1) {
-            return ItemWz.getRarePotential().get(rand.nextInt(ItemWz.getRarePotential().size()));
+            return ItemWz.get().getRarePotential().get(rand.nextInt(ItemWz.get().getRarePotential().size()));
         }
         if (rank == 2) {
-            return ItemWz.getEpicPotential().get(rand.nextInt(ItemWz.getEpicPotential().size()));
+            return ItemWz.get().getEpicPotential().get(rand.nextInt(ItemWz.get().getEpicPotential().size()));
         }
         if (rank == 3) {
-            return ItemWz.getUniquePotential().get(rand.nextInt(ItemWz.getUniquePotential().size()));
+            return ItemWz.get().getUniquePotential().get(rand.nextInt(ItemWz.get().getUniquePotential().size()));
         }
         if (rank == 4) {
-            return ItemWz.getLegendaryPotential().get(rand.nextInt(ItemWz.getLegendaryPotential().size()));
+            return ItemWz.get().getLegendaryPotential().get(rand.nextInt(ItemWz.get().getLegendaryPotential().size()));
         }
         return 0;
     }

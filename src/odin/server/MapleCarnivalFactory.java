@@ -13,11 +13,11 @@ public class MapleCarnivalFactory {
     }
 
     public MCSkill getSkill(final int id) {
-        return SkillWz.getMCSkill().get(id);
+        return SkillWz.get().getMCSkill().get(id);
     }
 
     public MCSkill getGuardian(final int id) {
-        return SkillWz.getMCGuardian().get(id);
+        return SkillWz.get().getMCGuardian().get(id);
     }
 
     public static class MCSkill {
@@ -33,7 +33,7 @@ public class MapleCarnivalFactory {
         }
 
         public MobSkill getSkill() {
-            return SkillWz.getMobSkillData(skillid, 1); //level?
+            return SkillWz.get().getMobSkillData(skillid, 1); //level?
         }
 
         public MapleDisease getDisease() {
