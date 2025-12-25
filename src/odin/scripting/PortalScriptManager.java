@@ -37,8 +37,8 @@ import javax.script.ScriptEngineManager;
 import odin.client.MapleClient;
 import tacos.property.Property_Java;
 import tacos.debug.DebugLogger;
-import odin.server.MaplePortal;
 import odin.tools.FileoutputUtil;
+import tacos.server.map.TacosPortal;
 
 public class PortalScriptManager {
 
@@ -88,7 +88,7 @@ public class PortalScriptManager {
         return script;
     }
 
-    public boolean executePortalScript(MaplePortal portal, MapleClient c) {
+    public boolean executePortalScript(TacosPortal portal, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         PortalScript script = getPortalScript(portal.getScriptName());
         String text = "Portal Script = " + portal.getScriptName() + ", MapID = " + chr.getPosMap();

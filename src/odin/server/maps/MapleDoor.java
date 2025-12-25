@@ -28,14 +28,14 @@ import odin.client.MapleClient;
 import tacos.debug.DebugLogger;
 import java.lang.ref.WeakReference;
 import tacos.packet.response.ResCTownPortalPool;
-import odin.server.MaplePortal;
 import odin.server.Randomizer;
+import tacos.server.map.TacosPortal;
 
 public class MapleDoor extends AbstractMapleMapObject {
 
     private WeakReference<MapleCharacter> owner;
     private MapleMap map_town;
-    private MaplePortal townPortal;
+    private TacosPortal townPortal;
     private MapleMap map_field;
     private int skillId, ownerId;
     private boolean is_town_door;
@@ -105,11 +105,11 @@ public class MapleDoor extends AbstractMapleMapObject {
         return map_field.getId();
     }
 
-    private MaplePortal getFreePortal() {
-        final List<MaplePortal> freePortals = new ArrayList<>();
+    private TacosPortal getFreePortal() {
+        final List<TacosPortal> freePortals = new ArrayList<>();
 
-        for (final MaplePortal port : map_town.getPortals()) {
-            if (port.getType() == MaplePortal.DOOR_PORTAL) {
+        for (final TacosPortal port : map_town.getPortals()) {
+            if (port.getType() == TacosPortal.DOOR_PORTAL) {
                 freePortals.add(port);
                 DebugLogger.DebugLog("MYSTIC = " + (byte) port.getId());
             }
@@ -161,7 +161,7 @@ public class MapleDoor extends AbstractMapleMapObject {
         return map_town;
     }
 
-    public final MaplePortal getTownPortal() {
+    public final TacosPortal getTownPortal() {
         return townPortal;
     }
 

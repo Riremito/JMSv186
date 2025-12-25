@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import odin.server.MaplePortal;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleFootholdTree;
 import tacos.constants.TacosConstants;
@@ -45,7 +44,7 @@ public class TacosMapData {
     private int protectItem = 0;
     private int decHP = 0;
     private int lvForceMove = 0;
-    private Map<Integer, MaplePortal> portals = new HashMap<>();
+    private Map<Integer, TacosPortal> portals = new HashMap<>();
     private boolean town;
     private boolean clock;
     private String mapName, streetName;
@@ -100,8 +99,8 @@ public class TacosMapData {
         return ret;
     }
 
-    public MaplePortal getPortal(String portalname) {
-        for (MaplePortal port : this.portals.values()) {
+    public TacosPortal getPortal(String portalname) {
+        for (TacosPortal port : this.portals.values()) {
             if (port.getName().equals(portalname)) {
                 return port;
             }
@@ -109,28 +108,28 @@ public class TacosMapData {
         return null;
     }
 
-    public MaplePortal getPortal(int portalid) {
+    public TacosPortal getPortal(int portalid) {
         return this.portals.get(portalid);
     }
 
-    public Collection<MaplePortal> getPortals() {
+    public Collection<TacosPortal> getPortals() {
         return Collections.unmodifiableCollection(portals.values());
     }
 
-    public void addPortal(MaplePortal myPortal) {
+    public void addPortal(TacosPortal myPortal) {
         this.portals.put(myPortal.getId(), myPortal);
     }
 
     public void resetPortals() {
-        for (MaplePortal port : this.portals.values()) {
+        for (TacosPortal port : this.portals.values()) {
             port.setPortalState(true);
         }
     }
 
-    public MaplePortal findClosestSpawnpoint(Point from) {
-        MaplePortal closest = null;
+    public TacosPortal findClosestSpawnpoint(Point from) {
+        TacosPortal closest = null;
         double distance, shortestDistance = Double.POSITIVE_INFINITY;
-        for (MaplePortal portal : this.portals.values()) {
+        for (TacosPortal portal : this.portals.values()) {
             distance = portal.getPosition().distanceSq(from);
             if (portal.getType() >= 0 && portal.getType() <= 2 && distance < shortestDistance && portal.getTargetMapId() == 999999999) {
                 closest = portal;

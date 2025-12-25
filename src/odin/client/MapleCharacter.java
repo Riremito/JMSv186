@@ -104,7 +104,6 @@ import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.scripting.EventInstanceManager;
 import odin.scripting.NPCScriptManager;
-import odin.server.MaplePortal;
 import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.MapleStorage;
@@ -149,6 +148,7 @@ import tacos.debug.IDebugMan;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.ServerOdinCashShop;
+import tacos.server.map.TacosPortal;
 
 public class MapleCharacter extends TacosCharacter {
 
@@ -1050,7 +1050,7 @@ public class MapleCharacter extends TacosCharacter {
             if (map == null) {
                 ps.setByte(23, (byte) 0);
             } else {
-                final MaplePortal closest = map.findClosestSpawnpoint(getPosition());
+                final TacosPortal closest = map.findClosestSpawnpoint(getPosition());
                 ps.setByte(23, (byte) (closest != null ? closest.getId() : 0));
             }
             ps.setInt(24, party != null ? party.getId() : -1);
@@ -2214,11 +2214,11 @@ public class MapleCharacter extends TacosCharacter {
         SendPacket(ResCTownPortalPool.setMysticDoorInfo(door.getLink()));
     }
 
-    public void changeMap(MapleMap to, MaplePortal pto) {
+    public void changeMap(MapleMap to, TacosPortal pto) {
         changeMapInternal(to, pto.getPosition(), pto);
     }
 
-    public void changeMapPortal(MapleMap to, MaplePortal pto) {
+    public void changeMapPortal(MapleMap to, TacosPortal pto) {
         changeMapInternal(to, pto.getPosition(), pto);
     }
 
@@ -2226,7 +2226,7 @@ public class MapleCharacter extends TacosCharacter {
         super.sendSetField(this, bCharacterData);
     }
 
-    public void changeMapInternal(MapleMap map_to, Point pos, MaplePortal portal_to) {
+    public void changeMapInternal(MapleMap map_to, Point pos, TacosPortal portal_to) {
         if (map_to == null) {
             return;
         }
@@ -5545,14 +5545,14 @@ public class MapleCharacter extends TacosCharacter {
         if (map == null) {
             return false;
         }
-        MaplePortal portal = map.getPortal(portal_name);
+        TacosPortal portal = map.getPortal(portal_name);
         if (portal == null) {
             return false;
         }
-
         DebugMsg("mapChangePortal : map = " + map.getId() + ", portal = \"" + portal_name + "\"" + " -> " + portal.getTargetMapId());
-        // TODO : error handling
-        portal.enterPortal(client);
+        if (!portal.enterPortal(client)) {
+            return false;
+        }
         return true;
     }
 

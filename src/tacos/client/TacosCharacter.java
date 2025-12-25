@@ -25,7 +25,6 @@ import odin.client.MonsterBook;
 import odin.client.PlayerStats;
 import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
-import odin.server.MaplePortal;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapFactory;
@@ -39,6 +38,7 @@ import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCWvsContext;
 import tacos.server.ServerOdinGame;
+import tacos.server.map.TacosPortal;
 
 /**
  *
@@ -179,7 +179,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         this.nPortal = nPortal;
     }
 
-    public void updateMap(MapleMap map_to, MaplePortal portal_to) {
+    public void updateMap(MapleMap map_to, TacosPortal portal_to) {
         setMap(map_to);
         setPosMap(map_to.getId());
         setPortal(portal_to.getId()); // spawn point
@@ -202,7 +202,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             map_to = mapFactory.getMap(TacosConstants.DEFALT_RETURN_MAP_ID); // return to default map.
             DebugLogger.ErrorLog("updateMapById : invalid map = " + map_id);
         }
-        MaplePortal portal_to = map_to.getPortal(portal_id);
+        TacosPortal portal_to = map_to.getPortal(portal_id);
         if (portal_to == null) {
             portal_to = map_to.getPortal(0);
             DebugLogger.ErrorLog("updateMapById : invalid portal = " + portal_id);

@@ -36,7 +36,6 @@ import odin.scripting.PortalScriptManager;
 import odin.scripting.ReactorScriptManager;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
-import odin.server.MaplePortal;
 import odin.server.MapleShopFactory;
 import odin.server.MapleSquad;
 import odin.server.life.MapleLifeFactory;
@@ -50,6 +49,7 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleReactor;
 import odin.server.quest.MapleQuest;
 import odin.tools.StringUtil;
+import tacos.server.map.TacosPortal;
 
 /**
  *
@@ -371,7 +371,7 @@ public class AdminCommand {
 
         @Override
         public int execute(MapleClient c, String[] splitted) {
-            MaplePortal portal = c.getPlayer().getMap().findClosestSpawnpoint(c.getPlayer().getPosition());
+            TacosPortal portal = c.getPlayer().getMap().findClosestSpawnpoint(c.getPlayer().getPosition());
             c.getPlayer().dropMessage(6, portal.getName() + " id: " + portal.getId() + " script: " + portal.getScriptName());
 
             return 1;
@@ -815,7 +815,7 @@ public class AdminCommand {
 
         @Override
         public int execute(MapleClient c, String[] splitted) {
-            for (MaplePortal portal : c.getPlayer().getMap().getPortals()) {
+            for (TacosPortal portal : c.getPlayer().getMap().getPortals()) {
                 c.getPlayer().dropMessage(5, "Portal: ID: " + portal.getId() + " script: " + portal.getScriptName() + " name: " + portal.getName() + " pos: " + portal.getPosition().x + "," + portal.getPosition().y + " target: " + portal.getTargetMapId() + " / " + portal.getTarget());
             }
             return 1;

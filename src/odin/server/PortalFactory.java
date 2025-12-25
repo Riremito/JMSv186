@@ -3,21 +3,21 @@ package odin.server;
 import java.awt.Point;
 
 import odin.provider.MapleDataTool;
-import odin.server.maps.MapleGenericPortal;
 import odin.server.maps.MapleMap;
 import odin.provider.IMapleData;
+import tacos.server.map.TacosPortal;
 
 public class PortalFactory {
 
     private int nextDoorPortal = 0x80;
 
-    public MaplePortal makePortal(MapleMap map, int type, IMapleData portal) {
-        MapleGenericPortal ret = new MapleGenericPortal(type);
+    public TacosPortal makePortal(MapleMap map, int type, IMapleData portal) {
+        TacosPortal ret = new TacosPortal(type);
         loadPortal(map, ret, portal);
         return ret;
     }
 
-    private void loadPortal(MapleMap map, MapleGenericPortal myPortal, IMapleData portal) {
+    private void loadPortal(MapleMap map, TacosPortal myPortal, IMapleData portal) {
         myPortal.setName(MapleDataTool.getString(portal.getChildByPath("pn")));
         myPortal.setTarget(MapleDataTool.getString(portal.getChildByPath("tn")));
         myPortal.setTargetMapId(MapleDataTool.getInt(portal.getChildByPath("tm")));
@@ -28,7 +28,7 @@ public class PortalFactory {
         }
         myPortal.setScriptName(script);
 
-        if (myPortal.getType() == MaplePortal.DOOR_PORTAL) {
+        if (myPortal.getType() == TacosPortal.DOOR_PORTAL) {
             myPortal.setId(nextDoorPortal);
             nextDoorPortal++;
         } else {

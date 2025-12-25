@@ -21,18 +21,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.scripting;
 
 import odin.client.MapleClient;
-import odin.server.MaplePortal;
+import tacos.server.map.TacosPortal;
 
 public class PortalPlayerInteraction extends AbstractPlayerInteraction {
 
-    private final MaplePortal portal;
+    private final TacosPortal portal;
 
-    public PortalPlayerInteraction(final MapleClient c, final MaplePortal portal) {
+    public PortalPlayerInteraction(final MapleClient c, final TacosPortal portal) {
         super(c);
         this.portal = portal;
     }
 
-    public final MaplePortal getPortal() {
+    public final TacosPortal getPortal() {
         return portal;
     }
 

@@ -132,7 +132,9 @@ public class ReqCUser {
 
         switch (header) {
             case CP_UserTransferFieldRequest: {
-                OnUserTransferFieldRequest(chr, cp);
+                if (!OnUserTransferFieldRequest(chr, cp)) {
+                    chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
+                }
                 return true;
             }
             case CP_UserTransferChannelRequest: {
@@ -458,7 +460,9 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserPortalScriptRequest: {
-                OnUserPortalScriptRequest(chr, cp);
+                if (!OnUserPortalScriptRequest(chr, cp)) {
+                    chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
+                }
                 return true;
             }
             case CP_UserPortalTeleportRequest: {
@@ -789,9 +793,10 @@ public class ReqCUser {
 
         if (isPortal) {
             // map_id is -1. (in JMS.)
-            if (chr.mapChangePortal(map_id, portal_name)) {
-                return true;
+            if (!chr.mapChangePortal(map_id, portal_name)) {
+                return false;
             }
+            return true;
         } else {
             if (!chr.isAlive()) {
                 // revive
@@ -811,8 +816,6 @@ public class ReqCUser {
             }
         }
 
-        DebugLogger.ErrorLog("OnUserTransferFieldRequest : map_to = " + map_id + ", portal = \"" + portal_name + "\"");
-        chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
         return false;
     }
 
@@ -2010,7 +2013,6 @@ public class ReqCUser {
         short chr_y = cp.Decode2();
         //chr.DebugMsg("OnUserPortalScriptRequest : map = " + chr.getMap().getId() + ", portal = \"" + portal_name + "\"");
         if (!chr.mapChangePortal(chr.getMap().getId(), portal_name)) {
-            //chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
             return false;
         }
         return true;
