@@ -35,6 +35,7 @@ import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCUser;
 import odin.server.MapleStatEffect;
 import odin.tools.AttackPair;
+import tacos.client.TacosCharacter;
 import tacos.odin.OdinPair;
 import tacos.packet.ServerPacketHeader;
 
@@ -229,7 +230,7 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnAvatarModified
-    public static MaplePacket AvatarModified(MapleCharacter chr, int flag) {
+    public static MaplePacket AvatarModified(TacosCharacter chr, int flag) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserAvatarModified);
 
         sp.Encode4(chr.getId());

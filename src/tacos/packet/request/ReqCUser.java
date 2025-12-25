@@ -782,41 +782,17 @@ public class ReqCUser {
         short unk1 = isKMS95orLater ? cp.Decode2() : 0; // ?_?
         int unk2 = isKMS95orLater ? cp.Decode4() : 0; // 0
         byte portal_count = cp.Decode1();
-        int map_id = cp.Decode4(); // -1 = use portal, 0 = revivie, id = /map command.
+        int map_id_to = cp.Decode4(); // -1 = use portal, 0 = revivie, id = /map command.
         int gms111_checksum = Version.GreaterOrEqual(Region.GMS, 111) ? cp.Decode4() : 0;
         String portal_name = cp.DecodeStr();
         boolean isPortal = !portal_name.equals("");
         short x = isPortal ? cp.Decode2() : 0;
         short y = isPortal ? cp.Decode2() : 0;
         byte unk3 = cp.Decode1();
-        byte unk4 = cp.Decode1(); // revive_type -> JMS302 = 4 bytes
+        byte revive_type = cp.Decode1(); // revive_type -> JMS302 = 4 bytes
 
-        if (isPortal) {
-            // map_id is -1. (in JMS.)
-            if (!chr.mapChangePortal(map_id, portal_name)) {
-                return false;
-            }
-            return true;
-        } else {
-            if (!chr.isAlive()) {
-                // revive
-                if (map_id == 0) {
-                    final MapleMap to = (unk4 > 0) ? chr.getMap() : chr.getMap().getReturnMap();
-                    chr.changeMap(to, to.getPortal(0));
-                    chr.getStat().setHp(chr.getStat().getMaxHp());
-                    chr.sendStatChanged(true);
-                    return true;
-                }
-                // hack?
-            } else {
-                if (chr.mapChangeDirect(map_id)) {
-                    return true;
-                }
-                // error?
-            }
-        }
-
-        return false;
+        // map_id is -1. (in JMS.)
+        return chr.usePortal(isPortal, map_id_to, portal_name, revive_type);
     }
 
     public static void OnTransferChannelRequest(ClientPacket cp, MapleCharacter chr) {
@@ -2011,11 +1987,8 @@ public class ReqCUser {
         String portal_name = cp.DecodeStr();
         short chr_x = cp.Decode2();
         short chr_y = cp.Decode2();
-        //chr.DebugMsg("OnUserPortalScriptRequest : map = " + chr.getMap().getId() + ", portal = \"" + portal_name + "\"");
-        if (!chr.mapChangePortal(chr.getMap().getId(), portal_name)) {
-            return false;
-        }
-        return true;
+
+        return chr.usePortalScript(portal_name);
     }
 
     public static boolean OnUserPortalTeleportRequest(MapleCharacter chr, ClientPacket cp) {
@@ -2026,8 +1999,7 @@ public class ReqCUser {
         short portal_to_x = cp.Decode2();
         short portal_to_y = cp.Decode2();
 
-        //chr.DebugMsg("OnUserPortalTeleportRequest : map = " + chr.getMap().getId() + ", portal = \"" + portal_name + "\"");
-        return true;
+        return chr.usePortalTeleport(portal_name);
     }
 
     public static boolean OnUserMapTransferRequest(MapleCharacter chr, ClientPacket cp) {

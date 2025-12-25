@@ -28,6 +28,7 @@ import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import odin.constants.GameConstants;
+import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsChangeStat;
 
@@ -426,7 +427,7 @@ public class DataGW_CharacterStat {
 
     // GW_CharacterStat::DecodeChangeStat
     // GW_CharacterStat::EncodeChangeStat
-    public static byte[] EncodeChangeStat(MapleCharacter chr, int statmask) {
+    public static byte[] EncodeChangeStat(TacosCharacter chr, int statmask) {
         ServerPacket data = new ServerPacket();
 
         if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) | Version.GreaterOrEqual(Region.GMS, 111)) {

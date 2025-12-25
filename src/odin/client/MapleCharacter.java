@@ -61,7 +61,6 @@ import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
 import tacos.server.ServerOdinGame;
 import odin.handling.world.CharacterTransfer;
-import odin.handling.world.MapleMessenger;
 import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
@@ -152,17 +151,9 @@ import tacos.server.map.TacosPortal;
 
 public class MapleCharacter extends TacosCharacter {
 
-    public void sendStatChanged() {
-        super.sendStatChanged(this, false);
-    }
-
-    public void sendStatChanged(boolean unlock) {
-        super.sendStatChanged(this, unlock);
-    }
-
-    private String name, chalktext, BlessOfFairy_Origin;
+    private String chalktext, BlessOfFairy_Origin;
     private long lastCombo, lastfametime, keydown_skill;
-    private byte dojoRecord, gmLevel, gender, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
+    private byte dojoRecord, gmLevel, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
     private int subcategory;
     private int mulung_energy, combo, availableCP, totalCP, hpApUsed;
     private int accountid, bookCover, dojo,
@@ -196,7 +187,6 @@ public class MapleCharacter extends TacosCharacter {
     private MapleStorage storage;
     private transient MapleTrade trade;
     private MapleMount mount;
-    private MapleMessenger messenger;
     private byte[] petStore;
     private transient IMaplePlayerShop playerShop;
     private MapleParty party;
@@ -204,7 +194,6 @@ public class MapleCharacter extends TacosCharacter {
     private MapleGuildCharacter mgc;
     private MapleFamilyCharacter mfc;
     private transient EventInstanceManager eventInstance;
-    private MapleInventory[] inventory;
     private SkillMacro[] skillMacros = new SkillMacro[5];
     private transient ScheduledFuture<?> beholderHealingSchedule, beholderBuffSchedule, BerserkSchedule,
             dragonBloodSchedule, fairySchedule, mapTimeLimitTask, fishing;
@@ -232,11 +221,6 @@ public class MapleCharacter extends TacosCharacter {
     private int pet_auto_cure_item_id = 0;
     // foothold
     private int foothold_id = 0;
-    // クローン
-    private boolean clone = false;
-    private boolean cloning = false;
-    private transient WeakReference<MapleCharacter>[] clones;
-    private MapleCharacter clone_parent = null;
 
     public int getLastSkillUp() {
         return last_skill_up_id;
@@ -2022,10 +2006,6 @@ public class MapleCharacter extends TacosCharacter {
         return true;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public final String getBlessOfFairyOrigin() {
         return this.BlessOfFairy_Origin;
     }
@@ -2050,24 +2030,6 @@ public class MapleCharacter extends TacosCharacter {
         this.client = client;
     }
 
-    public int getRemainingSp(final int skillbook) {
-        return remainingSp[skillbook];
-    }
-
-    public int[] getRemainingSps() {
-        return remainingSp;
-    }
-
-    public int getRemainingSpSize() {
-        int ret = 0;
-        for (int i = 0; i < remainingSp.length; i++) {
-            if (remainingSp[i] > 0) {
-                ret++;
-            }
-        }
-        return ret;
-    }
-
     public int getHpApUsed() {
         return hpApUsed;
     }
@@ -2088,10 +2050,6 @@ public class MapleCharacter extends TacosCharacter {
         }
 
         this.skinColor = skinColor;
-    }
-
-    public byte getGender() {
-        return gender;
     }
 
     public void setName(String name) {
@@ -2165,10 +2123,6 @@ public class MapleCharacter extends TacosCharacter {
         this.remainingSp[skillbook] = remainingSp;
     }
 
-    public void setGender(byte gender) {
-        this.gender = gender;
-    }
-
     public void setJob(int job) {
         if (!DWI_Validation.isValidJobID(job)) {
             DebugLogger.ErrorLog("Invalid job id : " + job);
@@ -2212,10 +2166,6 @@ public class MapleCharacter extends TacosCharacter {
         SendPacket(ResCTownPortalPool.removeDoor(door.getLink()));
         SendPacket(ResCTownPortalPool.spawnDoor(door.getLink(), false));
         SendPacket(ResCTownPortalPool.setMysticDoorInfo(door.getLink()));
-    }
-
-    public void changeMap(MapleMap to, TacosPortal pto) {
-        changeMapInternal(to, pto.getPosition(), pto);
     }
 
     public void changeMapPortal(MapleMap to, TacosPortal pto) {
@@ -2770,10 +2720,6 @@ public class MapleCharacter extends TacosCharacter {
         return gmLevel >= level;
     }
 
-    public final MapleInventory getInventory(MapleInventoryType type) {
-        return inventory[type.ordinal()];
-    }
-
     // removeFromSlot like
     private boolean useItemDone(MapleInventoryType type, IItem item_used, short item_quantity) {
         boolean isRecharge = GameConstants.isRechargable(item_used.getItemId());
@@ -3314,10 +3260,6 @@ public class MapleCharacter extends TacosCharacter {
         return Collections.unmodifiableCollection(visibleMapObjects);
     }
 
-    public boolean isAlive() {
-        return stats.getHp() > 0;
-    }
-
     @Override
     public void sendDestroyData(MapleClient client) {
         client.getSession().write(ResCUserPool.UserLeaveField(this.getObjectId()));
@@ -3345,19 +3287,6 @@ public class MapleCharacter extends TacosCharacter {
                 client.getSession().write(ResCUser.followEffect(followinitiator ? id : followid, followinitiator ? followid : id, null));
             }
             return;
-        }
-    }
-
-    public final void equipChanged() {
-        map.broadcastMessage(this, ResCUserRemote.AvatarModified(this, 1), false);
-        stats.recalcLocalStats();
-        if (getMessenger() != null) {
-            World.Messenger.updateMessenger(getMessenger().getId(), getName(), client.getChannel());
-        }
-
-        if (isCloning()) {
-            cloneUpdate();
-            map.broadcastMessageClone(getClone(), ResCUserRemote.AvatarModified(getClone(), 1));
         }
     }
 
@@ -3869,14 +3798,6 @@ public class MapleCharacter extends TacosCharacter {
         client.getSession().write(ResWrapper.updateBuddyCapacity(capacity));
     }
 
-    public MapleMessenger getMessenger() {
-        return messenger;
-    }
-
-    public void setMessenger(MapleMessenger messenger) {
-        this.messenger = messenger;
-    }
-
     public void addCooldown(int skillId, long startTime, long length) {
         if (DeveloperMode.DM_SKILL_COOL_TIME.getInt() != 0) {
             startTime = Math.min(startTime, DeveloperMode.DM_SKILL_COOL_TIME.getInt());
@@ -4349,31 +4270,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public boolean GetInformation() {
         return Information;
-    }
-
-    // 青文字
-    public void DebugMsg(String text) {
-        SendPacket(ResWrapper.BroadCastMsgNotice(text));
-    }
-
-    // 青文字 & アイテム表示
-    public void DebugMsgItem(String text, int item_id) {
-        SendPacket(ResWrapper.BroadCastMsgNoticeItem(text, item_id));
-    }
-
-    // ピンク
-    public void DebugMsg2(String text) {
-        SendPacket(ResWrapper.BroadCastMsgEvent(text));
-    }
-
-    // 黄色
-    public void DebugMsg3(String text) {
-        SendPacket(ResCWvsContext.SetWeekEventMessage(text));
-    }
-
-    public void Notice(String text) {
-        DebugLogger.DebugLog("Notice");
-        client.getSession().write(ResWrapper.BroadCastMsgEvent(text));
     }
 
     public IMaplePlayerShop getPlayerShop() {
@@ -5358,18 +5254,6 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // クローン
-    public boolean isClone() {
-        return clone;
-    }
-
-    public void setClone(boolean c) {
-        this.clone = c;
-    }
-
-    public WeakReference<MapleCharacter>[] getClones() {
-        return clones;
-    }
-
     public MapleCharacter cloneCopy() {
         MapleClient cs = new MapleClient(new MockIOSession());
 
@@ -5481,26 +5365,6 @@ public class MapleCharacter extends TacosCharacter {
         return true;
     }
 
-    public boolean isCloning() {
-        return cloning;
-    }
-
-    public MapleCharacter getClone() {
-        return clones[0].get();
-    }
-
-    public boolean cloneUpdate() {
-        if (clone) {
-            return false;
-        }
-
-        clones[0].get().getInventory(MapleInventoryType.EQUIPPED).resetForClone();
-        for (IItem equip : getInventory(MapleInventoryType.EQUIPPED)) {
-            clones[0].get().getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
-        }
-        return true;
-    }
-
     private IDebugMan debugMan = null;
 
     public IDebugMan getDebugMan() {
@@ -5526,33 +5390,6 @@ public class MapleCharacter extends TacosCharacter {
             return false;
         }
         this.debugShop = debugShop;
-        return true;
-    }
-
-    public boolean mapChangeDirect(int map_id) {
-        MapleMap map_to = ServerOdinGame.getInstance(client.getChannel()).getMapFactory().getMap(map_id);
-        if (map_to == null) {
-            return false;
-        }
-
-        DebugMsg("mapChangeDirect : map = " + map.getId() + " -> " + map_to.getId());
-        // TODO : error handling
-        changeMap(map_to, map_to.getPortal(0));
-        return true;
-    }
-
-    public boolean mapChangePortal(int map_id, String portal_name) {
-        if (map == null) {
-            return false;
-        }
-        TacosPortal portal = map.getPortal(portal_name);
-        if (portal == null) {
-            return false;
-        }
-        DebugMsg("mapChangePortal : map = " + map.getId() + ", portal = \"" + portal_name + "\"" + " -> " + portal.getTargetMapId());
-        if (!portal.enterPortal(client)) {
-            return false;
-        }
         return true;
     }
 

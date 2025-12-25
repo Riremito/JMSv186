@@ -147,7 +147,7 @@ public class ResCWvsContext {
 
     // CWvsContext::OnInventoryGrow
     // CWvsContext::OnStatChanged
-    public static final MaplePacket StatChanged(MapleCharacter chr, boolean unlock, int statmask) {
+    public static final MaplePacket StatChanged(TacosCharacter chr, boolean unlock, int statmask) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StatChanged);
         // 0 = lock   -> do not clear lock flag
         // 1 = unlock -> clear lock flag

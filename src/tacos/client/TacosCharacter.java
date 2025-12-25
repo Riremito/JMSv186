@@ -18,13 +18,19 @@
  */
 package tacos.client;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.MonsterBook;
 import odin.client.PlayerStats;
+import odin.client.inventory.IItem;
+import odin.client.inventory.MapleInventory;
+import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
+import odin.handling.world.MapleMessenger;
+import odin.handling.world.World;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapFactory;
@@ -36,7 +42,9 @@ import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.response.ResCStage;
+import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.wrapper.ResWrapper;
 import tacos.server.ServerOdinGame;
 import tacos.server.map.TacosPortal;
 
@@ -211,6 +219,64 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         updateMap(map_to, portal_to);
     }
 
+    public boolean usePortal(boolean isPortal, int map_id_to, String portal_name, int revive_type) {
+        return mapChangePortal(isPortal, map_id_to, portal_name, revive_type);
+    }
+
+    public boolean usePortalScript(String portal_name) {
+        return mapChangePortal(true, -1, portal_name, 0);
+    }
+
+    public boolean usePortalTeleport(String portal_name) {
+        // not coded.
+        return true;
+    }
+
+    public boolean mapChangePortal(boolean isPortal, int map_id_to, String portal_name, int revive_type) {
+        if (map == null) {
+            return false;
+        }
+        // use normal portal.
+        if (isPortal) {
+            TacosPortal portal = map.getPortal(portal_name);
+            if (portal == null) {
+                return false;
+            }
+            DebugMsg("mapChangePortal : map = " + map.getId() + ", portal = \"" + portal_name + "\"" + " -> " + portal.getTargetMapId());
+            if (!portal.enterPortal(client)) {
+                return false;
+            }
+            return true;
+        }
+        if (map_id_to == 0) {
+            if (!isAlive()) {
+
+            }
+        }
+        MapleMap map_to = null;
+        if (!isAlive()) {
+            // revive
+            if (map_id_to == 0) {
+                map_to = (revive_type > 0) ? getMap() : getMap().getReturnMap();
+                changeMap(map_to, map_to.getPortal(0));
+                getStat().setHp(getStat().getMaxHp());
+                getStat().setMp(getStat().getMaxMp());
+                sendStatChanged(true);
+                return true;
+            }
+            // hack?
+            return false;
+        }
+        // direct map change.
+        map_to = ServerOdinGame.getInstance(client.getChannel()).getMapFactory().getMap(map_id_to);
+        changeMap(map_to, map_to.getPortal(0));
+        return true;
+    }
+
+    public void changeMap(MapleMap to, TacosPortal pto) {
+        ((MapleCharacter) this).changeMapInternal(to, pto.getPosition(), pto);
+    }
+
     // unlock 1
     public void updateInv() {
         SendPacket(ResCWvsContext.InventoryOperation(true, null));
@@ -221,8 +287,12 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         SendPacket(ResCWvsContext.StatChanged(null, true, 0));
     }
 
+    public void sendStatChanged() {
+        sendStatChanged(false);
+    }
+
     // stat
-    public void sendStatChanged(MapleCharacter mchr, boolean unlock) {
+    public void sendStatChanged(boolean unlock) {
         if (this.laststat == null) {
             this.laststat = new TacosLastStat(this);
             return;
@@ -230,14 +300,15 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
         this.laststat.update(this);
 
-        SendPacket(ResCWvsContext.StatChanged(mchr, unlock, this.laststat.getStatMask()));
+        SendPacket(ResCWvsContext.StatChanged(this, unlock, this.laststat.getStatMask()));
         if (this.laststat.getStatMask() != 0) {
-            mchr.equipChanged();
+            equipChanged();
         }
 
         this.laststat.clearStatMask();
     }
 
+    protected byte gender;
     protected byte skinColor;
     protected int face;
     protected int hair;
@@ -251,6 +322,14 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     protected int meso;
     protected int gashaEXP = 0;
     protected List<MaplePet> pets;
+
+    public byte getGender() {
+        return gender;
+    }
+
+    public void setGender(byte gender) {
+        this.gender = gender;
+    }
 
     public byte getSkinColor() {
         return this.skinColor;
@@ -276,6 +355,10 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.stats;
     }
 
+    public boolean isAlive() {
+        return this.stats.getHp() > 0;
+    }
+
     public int getRemainingAp() {
         return this.remainingAp;
     }
@@ -283,6 +366,24 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     public int getRemainingSp() {
         // default
         return this.remainingSp[GameConstants.getSkillBook(this.job)];
+    }
+
+    public int getRemainingSp(int skillbook) {
+        return this.remainingSp[skillbook];
+    }
+
+    public int[] getRemainingSps() {
+        return this.remainingSp;
+    }
+
+    public int getRemainingSpSize() {
+        int ret = 0;
+        for (int i = 0; i < this.remainingSp.length; i++) {
+            if (this.remainingSp[i] > 0) {
+                ret++;
+            }
+        }
+        return ret;
     }
 
     public int getExp() {
@@ -315,6 +416,105 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             }
         }
         return null;
+    }
+
+    protected MapleInventory[] inventory;
+
+    public MapleInventory getInventory(MapleInventoryType type) {
+        return this.inventory[type.ordinal()];
+    }
+
+    public void equipChanged() {
+        this.map.broadcastMessage(this, ResCUserRemote.AvatarModified(this, 1), false);
+
+        this.stats.recalcLocalStats();
+        if (getMessenger() != null) {
+            World.Messenger.updateMessenger(getMessenger().getId(), getName(), this.client.getChannel());
+        }
+
+        if (isCloning()) {
+            cloneUpdate();
+            this.map.broadcastMessageClone(getClone(), ResCUserRemote.AvatarModified(getClone(), 1));
+        }
+    }
+
+    protected MapleMessenger messenger;
+
+    public MapleMessenger getMessenger() {
+        return this.messenger;
+    }
+
+    protected String name;
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setMessenger(MapleMessenger messenger) {
+        this.messenger = messenger;
+    }
+
+    // debug
+    // 青文字
+    public void DebugMsg(String text) {
+        SendPacket(ResWrapper.BroadCastMsgNotice(text));
+    }
+
+    // 青文字 & アイテム表示
+    public void DebugMsgItem(String text, int item_id) {
+        SendPacket(ResWrapper.BroadCastMsgNoticeItem(text, item_id));
+    }
+
+    // ピンク
+    public void DebugMsg2(String text) {
+        SendPacket(ResWrapper.BroadCastMsgEvent(text));
+    }
+
+    // 黄色
+    public void DebugMsg3(String text) {
+        SendPacket(ResCWvsContext.SetWeekEventMessage(text));
+    }
+
+    public void Notice(String text) {
+        SendPacket(ResWrapper.BroadCastMsgEvent(text));
+    }
+
+    // clone
+    protected boolean clone = false;
+    protected boolean cloning = false;
+    protected transient WeakReference<MapleCharacter>[] clones;
+    protected MapleCharacter clone_parent = null;
+
+    public boolean isClone() {
+        return this.clone;
+    }
+
+    public void setClone(boolean c) {
+        this.clone = c;
+    }
+
+    public boolean isCloning() {
+        return this.cloning;
+    }
+
+    public WeakReference<MapleCharacter>[] getClones() {
+        return this.clones;
+    }
+
+    public MapleCharacter getClone() {
+        return this.clones[0].get();
+    }
+
+    public boolean cloneUpdate() {
+        if (this.clone) {
+            return false;
+        }
+
+        this.clones[0].get().getInventory(MapleInventoryType.EQUIPPED).resetForClone();
+        for (IItem equip : getInventory(MapleInventoryType.EQUIPPED)) {
+            this.clones[0].get().getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
+        }
+        return true;
     }
 
     // old code.

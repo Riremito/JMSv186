@@ -69,6 +69,7 @@ import odin.server.maps.MapleNodes;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleSummon;
 import odin.server.maps.SummonMovementType;
+import tacos.client.TacosCharacter;
 import tacos.odin.OdinPair;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
@@ -1192,7 +1193,7 @@ public class TacosMap extends TacosMapData {
     }
 
     // other players in range.
-    public void broadcastMessageTo(MapleCharacter source, MaplePacket packet, Point rangedFrom) {
+    public void broadcastMessageTo(TacosCharacter source, MaplePacket packet, Point rangedFrom) {
         broadcastMessageInternal(source, packet, rangedFrom, false);
     }
 
@@ -1202,16 +1203,16 @@ public class TacosMap extends TacosMapData {
     }
 
     // self and other players, or other players.
-    public void broadcastMessage(MapleCharacter source, MaplePacket packet, boolean repeatToSource) {
+    public void broadcastMessage(TacosCharacter source, MaplePacket packet, boolean repeatToSource) {
         broadcastMessageInternal(repeatToSource ? null : source, packet, source.getPosition(), true);
     }
 
-    private void broadcastMessageInternal(MapleCharacter source, MaplePacket packet, Point rangedFrom, boolean ignoreRange) {
+    private void broadcastMessageInternal(TacosCharacter source, MaplePacket packet, Point rangedFrom, boolean ignoreRange) {
         Iterator<MapleCharacter> ltr = characters.iterator();
-        MapleCharacter chr;
+        TacosCharacter chr;
         while (ltr.hasNext()) {
             chr = ltr.next();
-            if (chr != source) {
+            if (chr.getId() != source.getId()) {
                 if (ignoreRange || rangedFrom.distanceSq(chr.getPosition()) <= chr.getViewRangeSq()) {
                     chr.SendPacket(packet);
                 }
