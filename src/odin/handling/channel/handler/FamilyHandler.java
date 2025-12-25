@@ -30,7 +30,6 @@ import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import odin.handling.world.family.MapleFamilyCharacter;
 import java.util.List;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.maps.FieldLimitType;
 import tacos.database.query.DQ_Notes;
 import tacos.packet.ClientPacket;
@@ -169,7 +168,8 @@ public class FamilyHandler {
         } else if (c.getPlayer().isGM() || !addChr.isGM()) {
             addChr.getClient().getSession().write(ResCWvsContext.sendFamilyInvite(c.getPlayer().getId(), c.getPlayer().getLevel(), c.getPlayer().getJob(), c.getPlayer().getName()));
         }
-        c.getSession().write(WrapCWvsContext.updateStat());
+        MapleCharacter chr = c.getPlayer();
+        chr.updateStat();
     }
 
     public static final void FamilyPrecept(ClientPacket cp, MapleClient c) {
@@ -232,7 +232,8 @@ public class FamilyHandler {
             fam.resetPedigree();
         }
         c.getPlayer().dropMessage(1, "Broke up with (" + other.getName() + ").\r\nFamily relationship has ended.");
-        c.getSession().write(WrapCWvsContext.updateStat());
+        MapleCharacter chr = c.getPlayer();
+        chr.updateStat();
     }
 
     public static final void DeleteSenior(ClientPacket cp, MapleClient c) {
@@ -263,7 +264,8 @@ public class FamilyHandler {
             fam.resetPedigree();
         }
         c.getPlayer().dropMessage(1, "Broke up with (" + mgc.getName() + ").\r\nFamily relationship has ended.");
-        c.getSession().write(WrapCWvsContext.updateStat());
+        MapleCharacter chr = c.getPlayer();
+        chr.updateStat();
     }
 
     public static final void AcceptFamily(ClientPacket cp, MapleClient c) {

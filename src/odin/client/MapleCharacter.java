@@ -149,13 +149,8 @@ import tacos.debug.IDebugMan;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.ServerOdinCashShop;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 
 public class MapleCharacter extends TacosCharacter {
-
-    public void UpdateStat(boolean unlock) {
-        super.sendStatChanged(this, unlock);
-    }
 
     public void sendStatChanged() {
         super.sendStatChanged(this, false);
@@ -2432,13 +2427,13 @@ public class MapleCharacter extends TacosCharacter {
 
     public void gainSP(int sp) {
         this.remainingSp[GameConstants.getSkillBook(job)] += sp; //default
-        client.getPlayer().UpdateStat(false);
+        sendStatChanged(false);
         client.getSession().write(ResWrapper.getSPMsg((byte) sp, (short) job));
     }
 
     public void gainSP(int sp, final int skillbook) {
         this.remainingSp[skillbook] += sp; //default
-        client.getPlayer().UpdateStat(false);
+        sendStatChanged(false);
         client.getSession().write(ResWrapper.getSPMsg((byte) sp, (short) job));
     }
 
@@ -2940,11 +2935,11 @@ public class MapleCharacter extends TacosCharacter {
 
     public boolean gainMeso(int gain, boolean show, boolean enableActions, boolean inChat) {
         if (meso + gain < 0) {
-            client.getSession().write(WrapCWvsContext.updateStat());
+            updateStat();
             return false;
         }
         meso += gain;
-        UpdateStat(enableActions);
+        sendStatChanged(enableActions);
         if (show) {
             client.SendPacket(ResWrapper.showMesoGain(gain, inChat));
         }
@@ -2953,7 +2948,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public boolean gainTama(int gain, boolean show) {
         if (tama + gain < 0) {
-            SendPacket(WrapCWvsContext.updateStat());
+            updateStat();
             return false;
         }
         gainTama(gain);
@@ -3177,7 +3172,7 @@ public class MapleCharacter extends TacosCharacter {
 
         if (isGM() || (job != 0 && job != 1000 && job != 2000 && job != 2001 && job != 3000)) { // Not Beginner, Nobless and Legend
             remainingSp[GameConstants.getSkillBook(this.job)] += 3;
-            client.getPlayer().UpdateStat(false);
+            sendStatChanged(false);
         } else {
             if (level <= 10) {
                 stats.setStr((short) (stats.getStr() + remainingAp));
@@ -3480,7 +3475,7 @@ public class MapleCharacter extends TacosCharacter {
             pet.saveToDb();
             map.broadcastMessage(this, ResCUser_Pet.Deactivated(this, pet, hunger ? DeActivatedMsg.PET_WENT_BACK_HOME : DeActivatedMsg.PET_NO_MSG), true);
             removePet(pet, shiftLeft);
-            UpdateStat(true);
+            sendStatChanged(true);
         }
     }
 
@@ -4705,7 +4700,7 @@ public class MapleCharacter extends TacosCharacter {
                 break;
             }
         }
-        client.getPlayer().UpdateStat(true);
+        sendStatChanged(true);
     }
 
     public void addMoveMob(int mobid) {
@@ -5565,24 +5560,24 @@ public class MapleCharacter extends TacosCharacter {
         IItem toUse = this.getInventory(MapleInventoryType.USE).getItem(item_slot);
 
         if (toUse == null || toUse.getItemId() != item_id || toUse.getQuantity() < 1) {
-            this.SendPacket(WrapCWvsContext.updateInv());
+            updateInv();
             return false;
         }
 
         long time = System.currentTimeMillis();
         if (this.getNextConsume() > time) {
             this.DebugMsg2("You may not use this item yet.");
-            this.SendPacket(WrapCWvsContext.updateInv());
+            updateInv();
             return false;
         }
 
         if (FieldLimitType.PotionUse.check(map.getFieldLimit())) {
-            this.SendPacket(WrapCWvsContext.updateInv());
+            updateInv();
             return false;
         }
 
         if (!MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyTo(this)) {
-            this.SendPacket(WrapCWvsContext.updateInv());
+            updateInv();
             return false;
         }
 

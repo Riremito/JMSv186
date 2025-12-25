@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.Res_JMS_CField_Pachinko;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.Randomizer;
 
 public class BeanGame {
@@ -69,13 +68,13 @@ public class BeanGame {
                 力度 = cp.Decode2();
                 //cp.Decode4();
                 chr.setBeansRange(力度 + 力度搞假A);
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 break;
             case 1://点开始的时候 确认打豆豆的力度
                 //01 E8 03
                 力度 = cp.Decode2();
                 chr.setBeansRange(力度 + 力度搞假A);
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 break;
             case 2://暂时没去注意这个 而且IDA里面也没有对应内容
                 //没存在的必要

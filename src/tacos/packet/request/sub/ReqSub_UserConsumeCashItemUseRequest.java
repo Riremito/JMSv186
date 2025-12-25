@@ -52,7 +52,6 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapleMap;
@@ -172,7 +171,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 533: // 速達
             {
                 chr.SendPacket(ResCParcelDlg.Open(true, false));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return true;
             }
             case 537: // 5370000
@@ -180,7 +179,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 String message = cp.DecodeStr();
                 chr.setADBoard(message);
                 map.broadcastMessage(ResCUser.UserADBoard(chr));
-                chr.SendPacket(WrapCWvsContext.updateInv());
+                chr.updateInv();
                 return true;
             }
             case 545: {
@@ -190,7 +189,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 ds.setRechargeAll();
                 ds.setRandomItems(3);
                 ds.start(chr);
-                chr.SendPacket(WrapCWvsContext.updateInv());
+                chr.updateInv();
                 return true;
             }
             case 557: // 5570000
@@ -526,7 +525,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             }
         }
 
-        chr.SendPacket(WrapCWvsContext.updateStat());
+        chr.updateStat();
         return false;
     }
 
@@ -545,7 +544,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 String pet_name = cp.DecodeStr();
 
                 if (pet == null) {
-                    chr.SendPacket(WrapCWvsContext.updateInv());
+                    chr.updateInv();
                     return false;
                 }
 

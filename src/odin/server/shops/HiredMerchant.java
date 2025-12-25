@@ -30,7 +30,6 @@ import tacos.server.ServerOdinGame;
 import java.util.LinkedList;
 import java.util.List;
 import tacos.packet.response.ResCEmployeePool;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleInventoryManipulator;
 import odin.server.Timer.EtcTimer;
 import odin.server.maps.MapleMapObjectType;
@@ -96,6 +95,7 @@ public class HiredMerchant extends AbstractPlayerStore {
 
     @Override
     public void buy(MapleClient c, int item, short quantity) {
+        MapleCharacter chr = c.getPlayer();
         final MaplePlayerShopItem pItem = items.get(item);
         final IItem shopItem = pItem.item;
         final IItem newItem = shopItem.copy();
@@ -120,7 +120,7 @@ public class HiredMerchant extends AbstractPlayerStore {
             saveItems();
         } else {
             c.getPlayer().dropMessage(1, "Your inventory is full.");
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
         }
     }
 

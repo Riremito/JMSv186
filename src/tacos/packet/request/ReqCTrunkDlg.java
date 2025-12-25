@@ -11,7 +11,6 @@ import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsTrunk;
 import tacos.packet.response.ResCTrunkDlg;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStorage;
@@ -90,7 +89,7 @@ public class ReqCTrunkDlg {
 
                 final byte flag = item.getFlag();
                 if (ii.isPickupRestricted(item.getItemId()) && storage.findById(item.getItemId()) != null) {
-                    c.getSession().write(WrapCWvsContext.updateStat());
+                    chr.updateInv();
                     return false;
                 }
 
@@ -101,7 +100,7 @@ public class ReqCTrunkDlg {
                         } else if (ItemFlag.KARMA_USE.check(flag)) {
                             item.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
                         } else {
-                            c.getSession().write(WrapCWvsContext.updateStat());
+                            chr.updateInv();
                             return false;
                         }
                     }

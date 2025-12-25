@@ -134,7 +134,7 @@ public class AdminCommand {
         @Override
         public int execute(MapleClient c, String[] splitted) {
             c.getPlayer().setRemainingSp(CommandProcessorUtil.getOptionalIntArg(splitted, 1, 1));
-            c.getPlayer().UpdateStat(false);
+            c.getPlayer().sendStatChanged(false);
             return 1;
         }
     }

@@ -60,7 +60,7 @@ public class DebugJob {
         stat.setDex(5);
         stat.setInt(4);
         stat.setLuk(4);
-        chr.UpdateStat(true);
+        chr.sendStatChanged(true);
     }
 
     public static boolean IsBeginnerJob(int job_id) {
@@ -379,7 +379,7 @@ public class DebugJob {
             LevelUpStat(chr);
             addStat(chr, player_stat, stat_main);
         }
-        chr.UpdateStat(true);
+        chr.sendStatChanged(true);
         return true;
     }
 
@@ -487,6 +487,6 @@ public class DebugJob {
         stat.setDex(level * 5);
         stat.setInt(level * 5);
         stat.setLuk(level * 5);
-        chr.UpdateStat(true);
+        chr.sendStatChanged(true);
     }
 }

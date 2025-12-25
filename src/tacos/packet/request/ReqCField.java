@@ -65,7 +65,7 @@ public class ReqCField {
                 return true;
             }
             case BEANS_UPDATE: {
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return true;
             }
             case CP_JMS_PachinkoPrizes: {

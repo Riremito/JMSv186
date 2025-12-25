@@ -44,7 +44,6 @@ import tacos.packet.ops.OpsMapTransfer;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
@@ -353,7 +352,7 @@ public class PlayerHandler {
     public static final void UseItemEffect(final int itemId, final MapleClient c, final MapleCharacter chr) {
         final IItem toUse = chr.getInventory(MapleInventoryType.CASH).findById(itemId);
         if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return;
         }
         if (itemId != 5510000) {
@@ -393,7 +392,7 @@ public class PlayerHandler {
 
         if (effect.getCooldown() > 0) {
             if (chr.skillisCooling(skillid)) {
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return;
             }
             if (skillid != 5221006) { // Battleship
@@ -422,7 +421,7 @@ public class PlayerHandler {
                 chr.getMap().broadcastMessage(chr, ResCUserRemote.showBuffeffect(chr.getId(), skillid, 1, slea.readByte()), chr.getPosition());
                 c.getSession().write(MaplePacketCreator.enableActions());
                  */
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 break;
             default:
                 if (pos == null) {
@@ -433,13 +432,13 @@ public class PlayerHandler {
                     if (!FieldLimitType.MysticDoor.check(chr.getMap().getFieldLimit())) {
                         effect.applyTo(chr, pos);
                     } else {
-                        chr.UpdateStat(true);
+                        chr.sendStatChanged(true);
                     }
                 } else {
                     final int mountid = MapleStatEffect.parseMountInfo(chr, skill.getId());
                     if (mountid != 0 && mountid != GameConstants.getMountItem(skill.getId()) && chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) == null && chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/) == null) {
                         if (!GameConstants.isMountItemAvailable(mountid, chr.getJob())) {
-                            chr.UpdateStat(true);
+                            chr.sendStatChanged(true);
                             return;
                         }
                     }
@@ -479,7 +478,7 @@ public class PlayerHandler {
 
             if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
                 if (chr.skillisCooling(attack.skill)) {
-                    c.getSession().write(WrapCWvsContext.updateStat());
+                    chr.updateStat();
                     DebugLogger.ErrorLog("closeRangeAttack : 4");
                     return;
                 }
@@ -606,7 +605,7 @@ public class PlayerHandler {
             }
             if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
                 if (chr.skillisCooling(attack.skill)) {
-                    c.getSession().write(WrapCWvsContext.updateStat());
+                    chr.updateStat();
                     DebugLogger.ErrorLog("rangedAttack : 2");
                     return;
                 }
@@ -722,7 +721,7 @@ public class PlayerHandler {
         }
         if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
             if (chr.skillisCooling(attack.skill)) {
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 DebugLogger.ErrorLog("MagicDamage : 2");
                 return;
             }
@@ -744,7 +743,7 @@ public class PlayerHandler {
 
     public static final void DropMeso(final int meso, final MapleCharacter chr) {
         if (!chr.isAlive() || (meso < 10 || meso > 50000) || (meso > chr.getMeso())) {
-            chr.getClient().getSession().write(WrapCWvsContext.updateStat());
+            chr.updateStat();
             return;
         }
         chr.gainMeso(-meso, false, true);

@@ -69,11 +69,6 @@ public class MapleMapFactory {
         return getMap(mapid, true, true, true);
     }
 
-    //backwards-compatible
-    public final MapleMap getMap(final int mapid, final boolean respawns, final boolean npcs) {
-        return getMap(mapid, respawns, npcs, true);
-    }
-
     public final MapleMap getMap(int mapid, final boolean respawns, final boolean npcs, final boolean reactors) {
         Integer omapid = mapid;
         MapleMap map = maps.get(omapid);
@@ -82,10 +77,8 @@ public class MapleMapFactory {
             try {
                 map = maps.get(omapid);
                 if (map != null) {
-                    DebugLogger.DebugLog("getMap : " + mapid + ", cached.");
                     return map;
                 }
-                DebugLogger.DebugLog("getMap : " + mapid + ", not cached.");
 
                 IMapleData mapData;
                 try {
@@ -421,20 +414,12 @@ public class MapleMapFactory {
         return map;
     }
 
-    public int getLoadedMaps() {
-        return maps.size();
-    }
-
     public boolean isMapLoaded(int mapId) {
         return maps.containsKey(mapId);
     }
 
     public boolean isInstanceMapLoaded(int instanceid) {
         return instanceMap.containsKey(instanceid);
-    }
-
-    public void clearLoadedMap() {
-        maps.clear();
     }
 
     public Collection<MapleMap> getAllMaps() {

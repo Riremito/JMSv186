@@ -65,7 +65,7 @@ public class ReqCField_MonsterCarnival {
 
     public static void OnMCarnivalRequest(MapleCharacter chr, ClientPacket cp) {
         if (chr.getCarnivalParty() == null) {
-            chr.UpdateStat(true);
+            chr.sendStatChanged(true);
             return;
         }
         final int tab = cp.Decode1();
@@ -75,7 +75,7 @@ public class ReqCField_MonsterCarnival {
             final List<OdinPair<Integer, Integer>> mobs = chr.getMap().getMobsToSpawn();
             if (num >= mobs.size() || chr.getAvailableCP() < mobs.get(num).getRight()) {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("You do not have the CP."));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return;
             }
             final MapleMonster mons = MapleLifeFactory.getMonster(mobs.get(num).getLeft());
@@ -86,23 +86,23 @@ public class ReqCField_MonsterCarnival {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                 }
                 chr.getMap().broadcastMessage(ResCField_MonsterCarnival.playerSummoned(chr.getName(), tab, num));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
             } else {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("You may no longer summon the monster."));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
             }
 
         } else if (tab == 1) { //debuff
             final List<Integer> skillid = chr.getMap().getSkillIds();
             if (num >= skillid.size()) {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("An error occurred."));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return;
             }
             final MapleCarnivalFactory.MCSkill skil = MapleCarnivalFactory.getInstance().getSkill(skillid.get(num)); //ugh wtf
             if (skil == null || chr.getAvailableCP() < skil.cpLoss) {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("You do not have the CP."));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return;
             }
             final MapleDisease dis = skil.getDisease();
@@ -132,16 +132,16 @@ public class ReqCField_MonsterCarnival {
                     //chr.dropMessage(5, "[" + (chr.getCarnivalParty().getTeam() == 0 ? "Red" : "Blue") + "] " + chr.getName() + " has used a skill. [" + dis.name() + "].");
                 }
                 chr.getMap().broadcastMessage(ResCField_MonsterCarnival.playerSummoned(chr.getName(), tab, num));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
             } else {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("An error occurred."));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
             }
         } else if (tab == 2) { //skill
             final MapleCarnivalFactory.MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
             if (skil == null || chr.getAvailableCP() < skil.cpLoss) {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("You do not have the CP."));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return;
             }
             if (chr.getMap().makeCarnivalReactor(chr.getCarnivalParty().getTeam(), num)) {
@@ -151,10 +151,10 @@ public class ReqCField_MonsterCarnival {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                 }
                 chr.getMap().broadcastMessage(ResCField_MonsterCarnival.playerSummoned(chr.getName(), tab, num));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
             } else {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("You may no longer summon the being."));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
             }
         }
 

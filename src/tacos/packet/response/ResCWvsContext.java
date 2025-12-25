@@ -68,7 +68,6 @@ import tacos.packet.response.data.DataGW_CharacterStat;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 import tacos.packet.response.struct.InvOp;
 import tacos.packet.response.struct.TestHelper;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import tacos.odin.OdinPair;
@@ -148,11 +147,11 @@ public class ResCWvsContext {
 
     // CWvsContext::OnInventoryGrow
     // CWvsContext::OnStatChanged
-    public static final MaplePacket StatChanged(MapleCharacter chr, int unlock, int statmask) {
+    public static final MaplePacket StatChanged(MapleCharacter chr, boolean unlock, int statmask) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StatChanged);
         // 0 = lock   -> do not clear lock flag
         // 1 = unlock -> clear lock flag
-        sp.Encode1(unlock); // CWvsContext->bExclRequestSent
+        sp.Encode1(unlock ? 1 : 0); // CWvsContext->bExclRequestSent
         if ((Region.IsEMS() && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.Between(Region.TWMS, 74, 93)) {
             sp.Encode1(0); // EMS v55
         }
@@ -1092,7 +1091,8 @@ public class ResCWvsContext {
         for (int i = 0; i < noGuilds; i++) {
             g[i] = World.Guild.getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
-                return WrapCWvsContext.updateStat();
+                //return WrapCWvsContext.updateStat();
+                return null;
             }
         }
         sp.Encode1(noGuilds);
@@ -1193,7 +1193,8 @@ public class ResCWvsContext {
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
             g[i] = World.Guild.getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
-                return WrapCWvsContext.updateStat();
+                //return WrapCWvsContext.updateStat();
+                return null;
             }
         }
         sp.Encode4(noGuilds);
@@ -1447,7 +1448,8 @@ public class ResCWvsContext {
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
             g[i] = World.Guild.getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
-                return WrapCWvsContext.updateStat();
+                //return WrapCWvsContext.updateStat();
+                return null;
             }
         }
         for (MapleGuild gg : g) {

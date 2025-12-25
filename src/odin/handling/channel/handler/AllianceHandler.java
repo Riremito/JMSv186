@@ -27,19 +27,19 @@ import tacos.network.MaplePacket;
 import odin.handling.world.World;
 import odin.handling.world.guild.MapleGuild;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import tacos.packet.ClientPacket;
 
 public class AllianceHandler {
 
     public static final void HandleAlliance(ClientPacket cp, final MapleClient c, boolean denied) {
+        MapleCharacter chr = c.getPlayer();
         if (c.getPlayer().getGuildId() <= 0) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateStat();
             return;
         }
         final MapleGuild gs = World.Guild.getGuild(c.getPlayer().getGuildId());
         if (gs == null) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateStat();
             return;
         }
         //System.out.println("Unhandled GuildAlliance \n" + slea.toString());
@@ -66,7 +66,6 @@ public class AllianceHandler {
             DenyInvite(c, gs);
             return;
         }
-        MapleCharacter chr;
         int inviteid;
         switch (op) {
             case 1: //load... must be in world op

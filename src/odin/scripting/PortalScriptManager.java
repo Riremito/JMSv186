@@ -43,14 +43,14 @@ import odin.tools.FileoutputUtil;
 public class PortalScriptManager {
 
     private static final PortalScriptManager instance = new PortalScriptManager();
-    private final Map<String, PortalScript> scripts = new HashMap<String, PortalScript>();
+    private final Map<String, PortalScript> scripts = new HashMap<>();
     private final static ScriptEngineFactory sef = new ScriptEngineManager().getEngineByName("nashorn").getFactory();
 
     public final static PortalScriptManager getInstance() {
         return instance;
     }
 
-    private final PortalScript getPortalScript(final String scriptName) {
+    private PortalScript getPortalScript(final String scriptName) {
         /*
         if (scripts.containsKey(scriptName)) {
             return scripts.get(scriptName);
@@ -113,4 +113,5 @@ public class PortalScriptManager {
     public final void clearScripts() {
         scripts.clear();
     }
+
 }

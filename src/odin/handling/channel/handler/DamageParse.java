@@ -38,7 +38,6 @@ import tacos.debug.DebugLogger;
 import java.util.Map;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.LeaveType;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleStatEffect;
 import odin.server.Randomizer;
 import odin.server.Timer.MapTimer;
@@ -62,7 +61,7 @@ public class DamageParse {
         }
         if (attack.skill != 0) {
             if (effect == null) {
-                player.getClient().getSession().write(WrapCWvsContext.updateStat());
+                player.updateStat();
                 DebugLogger.ErrorLog("applyAttack : 1");
                 return;
             }

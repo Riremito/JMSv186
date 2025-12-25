@@ -38,7 +38,6 @@ import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.Timer.BuffTimer;
 import odin.server.life.MapleMonster;
@@ -916,11 +915,11 @@ public class MapleStatEffect implements Serializable {
             //} else if (isSoaring() && !applyfrom.getMap().canSoar()) {
             //	return false;
         } else if (sourceid == 4341006 && applyfrom.getBuffedValue(MapleBuffStat.MIRROR_IMAGE) == null) {
-            applyfrom.getClient().getSession().write(WrapCWvsContext.updateStat());
+            applyfrom.updateStat();
             return false; //not working
         } else if (sourceid == 33101004 && applyfrom.getMap().isTown()) {
             applyfrom.dropMessage(5, "You may not use this skill in towns.");
-            applyfrom.getClient().getSession().write(WrapCWvsContext.updateStat());
+            applyfrom.updateStat();
             return false; //not supposed to
         }
         int hpchange = calcHPChange(applyfrom, primary);

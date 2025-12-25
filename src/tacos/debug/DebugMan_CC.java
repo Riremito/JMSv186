@@ -170,19 +170,19 @@ public class DebugMan_CC extends DebugMan implements IDebugMan {
                 if (avatar_type == AvatarType.SKIN.ordinal()) {
                     chr.DebugMsg("Skin : " + id);
                     chr.setSkinColor((byte) id);
-                    chr.UpdateStat(false);
+                    chr.sendStatChanged(false);
                     return false;
                 }
                 if (avatar_type == AvatarType.FACE.ordinal() || avatar_type == AvatarType.FACE_COLOR.ordinal()) {
                     chr.DebugMsg("Face : " + id);
                     chr.setFace(id);
-                    chr.UpdateStat(false);
+                    chr.sendStatChanged(false);
                     return false;
                 }
                 if (avatar_type == AvatarType.HAIR.ordinal() || avatar_type == AvatarType.HAIR_COLOR.ordinal()) {
                     chr.DebugMsg("Hair : " + id);
                     chr.setHair(id);
-                    chr.UpdateStat(false);
+                    chr.sendStatChanged(false);
                     return false;
                 }
                 return false;

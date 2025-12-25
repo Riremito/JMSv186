@@ -85,7 +85,6 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
@@ -305,7 +304,7 @@ public class ReqCUser {
                 int item_id = cp.Decode4();
                 boolean ret = OnUserMobSummonItemUseRequest(chr, item_slot, item_id);
                 chr.SendPacket(ResCField.MobSummonItemUseResult(ret));
-                chr.UpdateStat(true); // unlock is needed.
+                chr.sendStatChanged(true); // unlock is needed.
                 return true;
             }
             case CP_UserPetFoodItemUseRequest: {
@@ -329,13 +328,13 @@ public class ReqCUser {
             }
             case CP_UserConsumeCashItemUseRequest: {
                 if (!OnUserConsumeCashItemUseRequest(map, chr, cp)) {
-                    chr.SendPacket(WrapCWvsContext.updateInv());
+                    chr.updateInv();
                 }
                 return true;
             }
             case CP_UserDestroyPetItemRequest: {
                 // // 期限切れデンデン使用時のステータス更新とPointShopへ入場準備
-                chr.UpdateStat(true); // OK, CANCEL 有効化
+                chr.sendStatChanged(true); // OK, CANCEL 有効化
                 return true;
             }
             case CP_UserBridleItemUseRequest: {
@@ -362,7 +361,7 @@ public class ReqCUser {
                 int item_id = cp.Decode4(); // 2500000
 
                 // not coded.
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return true;
             }
             case CP_JMS_MONSTERBOOK_SET: {
@@ -371,7 +370,7 @@ public class ReqCUser {
                 int song_time = cp.Decode4(); // 2560000
 
                 // not coded.
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return true;
             }
             case CP_UserShopScannerItemUseRequest: {
@@ -495,7 +494,7 @@ public class ReqCUser {
                     chr.SendPacket(ResCWvsContext.SuccessInUseGachaponBox(item_id));
                     chr.SendPacket(WrapCUserLocal.getShowItemGain(reward, (short) 1, true));
                 } else {
-                    chr.UpdateStat(true);
+                    chr.sendStatChanged(true);
                 }
                 return true;
             }
@@ -597,7 +596,7 @@ public class ReqCUser {
                 // 749050200
                 MapleDynamicPortal dynamic_portal = chr.getMap().findDynamicPortal(portal_id);
                 if (dynamic_portal == null) {
-                    chr.UpdateStat(true);
+                    chr.sendStatChanged(true);
                     return true;
                 }
                 dynamic_portal.warp(chr);
@@ -613,7 +612,7 @@ public class ReqCUser {
                 MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(item_id, 749050200, x, y);
                 map.addMapObject(dynamic_portal);
                 map.broadcastMessage(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return true;
             }
             case CP_UserMigrateToITCRequest: {
@@ -642,7 +641,7 @@ public class ReqCUser {
                 int song_time = cp.Decode4(); // 113788
 
                 map.startJukebox(chr.getName(), item_id);
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return true;
             }
             case CP_TalkToTutor: {
@@ -800,7 +799,7 @@ public class ReqCUser {
                     final MapleMap to = (unk4 > 0) ? chr.getMap() : chr.getMap().getReturnMap();
                     chr.changeMap(to, to.getPortal(0));
                     chr.getStat().setHp(chr.getStat().getMaxHp());
-                    chr.UpdateStat(true);
+                    chr.sendStatChanged(true);
                     return true;
                 }
                 // hack?
@@ -820,7 +819,7 @@ public class ReqCUser {
     public static void OnTransferChannelRequest(ClientPacket cp, MapleCharacter chr) {
         int channel = cp.Decode1();
         if (!ReqCClientSocket.ChangeChannel(chr, channel)) {
-            chr.UpdateStat(true);
+            chr.sendStatChanged(true);
         }
     }
 
@@ -1167,7 +1166,7 @@ public class ReqCUser {
 
         chr.setChair(item_id);
         chr.getMap().broadcastMessage(chr, ResCUserRemote.SetActivePortableChair(chr.getId(), item_id), false);
-        chr.SendPacket(WrapCWvsContext.updateInv()); // ?_?
+        chr.updateInv();
         return true;
     }
 
@@ -1194,7 +1193,7 @@ public class ReqCUser {
         final MapleCharacter player = map.getCharacterById(m_dwCharacterId); // CUser::FindUser
 
         if (player == null) {
-            chr.SendPacket(WrapCWvsContext.updateStat());
+            chr.updateStat();
             return false;
         }
 
@@ -1296,7 +1295,7 @@ public class ReqCUser {
             chr.changeMap(target_map, target_map.getPortal(0));
             return true;
         }
-        chr.UpdateStat(true);
+        chr.sendStatChanged(true);
         return false;
     }
 
@@ -1308,7 +1307,7 @@ public class ReqCUser {
         if (MapleItemInformationProvider.getInstance().getItemEffect(item_used.getItemId()).applyReturnScroll(chr)) {
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
         } else {
-            chr.SendPacket(WrapCWvsContext.updateStat());
+            chr.updateInv();
         }
 
         return true;
@@ -1337,14 +1336,14 @@ public class ReqCUser {
         final byte oldSlots = (byte) toScroll.getUpgradeSlots();
         IItem scroll = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (scroll == null) {
-            chr.SendPacket(WrapCWvsContext.updateInv());
+            chr.updateInv();
             return false;
         }
         // 黄金つち (ビシャスのハンマー)
         if (scroll.getItemId() == 2470000) {
             final Equip toHammer = (Equip) toScroll;
             if (toHammer.getViciousHammer() >= 2 || toHammer.getUpgradeSlots() > 120) {
-                chr.SendPacket(WrapCWvsContext.updateInv());
+                chr.updateInv();
                 return false;
             }
             toHammer.setViciousHammer((byte) (toHammer.getViciousHammer() + 1));
@@ -1356,41 +1355,41 @@ public class ReqCUser {
         }
         if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
             if (toScroll.getUpgradeSlots() < 1) {
-                chr.SendPacket(WrapCWvsContext.updateInv());
+                chr.updateInv();
                 return false;
             }
         } else if (GameConstants.isEquipScroll(scroll.getItemId())) {
             if (toScroll.getUpgradeSlots() >= 1 || toScroll.getEnhance() >= 100 || vegas > 0 || ii.isCash(toScroll.getItemId())) {
-                chr.SendPacket(WrapCWvsContext.updateInv());
+                chr.updateInv();
                 return false;
             }
         } else if (GameConstants.isPotentialScroll(scroll.getItemId())) {
             if (toScroll.getHidden() >= 1 || (toScroll.getLevel() == 0 && toScroll.getUpgradeSlots() == 0) || vegas > 0 || ii.isCash(toScroll.getItemId())) {
-                chr.SendPacket(WrapCWvsContext.updateInv());
+                chr.updateInv();
                 return false;
             }
         }
         if (!GameConstants.canScroll(toScroll.getItemId()) && !GameConstants.isChaosScroll(toScroll.getItemId())) {
-            chr.SendPacket(WrapCWvsContext.updateInv());
+            chr.updateInv();
             return false;
         }
         if ((GameConstants.isCleanSlate(scroll.getItemId()) || GameConstants.isTablet(scroll.getItemId()) || GameConstants.isChaosScroll(scroll.getItemId())) && (vegas > 0 || ii.isCash(toScroll.getItemId()))) {
-            chr.SendPacket(WrapCWvsContext.updateInv());
+            chr.updateInv();
             return false;
         }
         if (GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() < 0) {
             //not a durability item
-            chr.SendPacket(WrapCWvsContext.updateInv());
+            chr.updateInv();
             return false;
         } else if (!GameConstants.isTablet(scroll.getItemId()) && toScroll.getDurability() >= 0) {
-            chr.SendPacket(WrapCWvsContext.updateInv());
+            chr.updateInv();
             return false;
         }
         IItem wscroll = null;
         // Anti cheat and validation
         List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
         if (scrollReqs.size() > 0 && !scrollReqs.contains(toScroll.getItemId())) {
-            chr.SendPacket(WrapCWvsContext.updateInv());
+            chr.updateInv();
             return false;
         }
         if (whiteScroll) {
@@ -1502,7 +1501,7 @@ public class ReqCUser {
         IItem toReveal = (equip_slot < 0) ? chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot) : chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
 
         if (magnify == null || toReveal == null) {
-            chr.SendPacket(WrapCWvsContext.updateInv());
+            chr.updateInv();
             return false;
         }
 
@@ -1520,7 +1519,7 @@ public class ReqCUser {
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
             //Debug.DebugLog("potential updated");
         } else {
-            chr.SendPacket(WrapCWvsContext.updateInv());
+            chr.updateInv();
             //Debug.ErrorLog("potential err 2");
             return false;
         }
@@ -1683,13 +1682,13 @@ public class ReqCUser {
                     stat.setMaxMp(maxmp);
                     break;
                 default: {
-                    chr.UpdateStat(true);
+                    chr.sendStatChanged(true);
                     return false;
                 }
             }
             chr.setRemainingAp((short) (chr.getRemainingAp() - 1));
         }
-        chr.UpdateStat(true);
+        chr.sendStatChanged(true);
 
         return true;
     }
@@ -1762,7 +1761,7 @@ public class ReqCUser {
                     playerst.setLuk((short) (playerst.getLuk() + amount));
                     break;
                 default:
-                    chr.UpdateStat(true);
+                    chr.sendStatChanged(true);
                     return false;
             }
             switch (SecondaryStat) {
@@ -1795,11 +1794,11 @@ public class ReqCUser {
                     playerst.setLuk((short) (playerst.getLuk() + amount2));
                     break;
                 default:
-                    chr.UpdateStat(true);
+                    chr.sendStatChanged(true);
                     return false;
             }
             chr.setRemainingAp((short) (chr.getRemainingAp() - (amount + amount2)));
-            chr.UpdateStat(true);
+            chr.sendStatChanged(true);
         }
 
         return true;
@@ -1945,12 +1944,12 @@ public class ReqCUser {
                 final int skillbook = GameConstants.getSkillBookForSkill(skill_id);
                 chr.setRemainingSp(chr.getRemainingSp(skillbook) - 1, skillbook);
             }
-            chr.UpdateStat(false);
+            chr.sendStatChanged(false);
             chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
             return true;
         }
         if ((remainingSp > 0 && curLevel + 1 <= maxlevel) && isBeginnerSkill) {
-            chr.UpdateStat(false);
+            chr.sendStatChanged(false);
             chr.changeSkillLevel(skill, (byte) (curLevel + 1), chr.getMasterLevel(skill));
             return true;
         }
@@ -2066,7 +2065,7 @@ public class ReqCUser {
         }
 
         chr.SendPacket(ResCWvsContext.GatherItemResult(slot_type));
-        chr.SendPacket(WrapCWvsContext.updateStat()); // 必要
+        chr.updateInv();
         return true;
     }
 
@@ -2105,7 +2104,7 @@ public class ReqCUser {
         }
 
         chr.SendPacket(ResCWvsContext.SortItemResult(slot_type));
-        chr.SendPacket(WrapCWvsContext.updateStat());
+        chr.updateInv();
         return true;
     }
 
@@ -2209,8 +2208,7 @@ public class ReqCUser {
             map.broadcastMessage(ResCWvsContext.updateMount(chr, levelup));
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
         }
-
-        chr.SendPacket(WrapCWvsContext.updateStat());
+        chr.updateInv();
         return true;
     }
 
@@ -2280,7 +2278,7 @@ public class ReqCUser {
             }
         }
 
-        chr.SendPacket(WrapCWvsContext.updateStat());
+        chr.updateInv();
         return true;
     }
 
@@ -2329,7 +2327,7 @@ public class ReqCUser {
         }
 
         map.broadcastMessage(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
-        chr.SendPacket(WrapCWvsContext.updateStat());
+        chr.updateInv();
         return true;
     }
 
@@ -2442,7 +2440,7 @@ public class ReqCUser {
     private static boolean OnUserExpUpItemUseRequest(MapleCharacter chr, short nPOS, int nItemID) {
         IItem item = chr.getInventory(MapleInventoryType.USE).getItem(nPOS);
         if (item == null || chr.getGashaEXP() > 0 || item.getItemId() != nItemID || (nItemID / 10000) != 237) {
-            chr.UpdateStat(true);
+            chr.sendStatChanged(true);
             return false;
         }
         // TODO : level check and save to DB.
@@ -2469,7 +2467,7 @@ public class ReqCUser {
         int exp_temp = chr.getGashaEXP();
 
         if (exp_temp <= 0) {
-            chr.UpdateStat(true);
+            chr.sendStatChanged(true);
             return false;
         }
 
@@ -2481,7 +2479,7 @@ public class ReqCUser {
             chr.gainExp(exp_table - exp_current, true, true, false);
         }
 
-        chr.UpdateStat(true);
+        chr.sendStatChanged(true);
         return true;
     }
 

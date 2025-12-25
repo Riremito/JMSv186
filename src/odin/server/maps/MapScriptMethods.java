@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
+import odin.client.MapleCharacter;
 
 import odin.client.MapleClient;
 import odin.client.MapleQuestStatus;
@@ -31,7 +32,6 @@ import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.scripting.EventManager;
 import odin.scripting.NPCScriptManager;
 import odin.server.Randomizer;
@@ -468,7 +468,8 @@ public class MapScriptMethods {
     }
 
     public static void startScript_User(MapleClient c, String scriptName) {
-        if (c.getPlayer() == null) {
+        MapleCharacter chr = c.getPlayer();
+        if (chr == null) {
             return;
         } //o_O
         String data = "";
@@ -534,7 +535,7 @@ public class MapScriptMethods {
             case evanTogether:
             case aranTutorAlone:
             case evanAlone: { //no idea
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 break;
             }
             case startEreb:
@@ -543,7 +544,7 @@ public class MapScriptMethods {
             case evanleaveD: {
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 break;
             }
             case dojang_Msg: {
@@ -593,7 +594,7 @@ public class MapScriptMethods {
                     case 900090004:
                         c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                         c.getSession().write(ResCUserLocal.IntroLock(false));
-                        c.getSession().write(WrapCWvsContext.updateStat());
+                        chr.updateStat();
                         final MapleMap mapto = c.getChannelServer().getMapFactory().getMap(900010000);
                         c.getPlayer().changeMap(mapto, mapto.getPortal(0));
                         return;
@@ -603,7 +604,7 @@ public class MapScriptMethods {
             case TD_MC_title: {
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "temaD/enter/mushCatle")));
                 break;
             }
@@ -611,7 +612,7 @@ public class MapScriptMethods {
                 if (c.getPlayer().getMapId() == 104000000) {
                     c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                     c.getSession().write(ResCUserLocal.IntroLock(false));
-                    c.getSession().write(WrapCWvsContext.updateStat());
+                    chr.updateStat();
                     c.getSession().write(ResWrapper.MapNameDisplay(c.getPlayer().getMapId()));
                 }
                 MedalQuest m = null;
@@ -672,7 +673,7 @@ public class MapScriptMethods {
             case go1020000:
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
             case go20000:
             case go30000:
             case go40000:
@@ -752,7 +753,7 @@ public class MapScriptMethods {
                 c.getSession().write(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 break;
             }
             case rienArrow: {

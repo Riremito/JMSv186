@@ -50,7 +50,7 @@ public class ReqSub_Admin {
             case 0x02: {
                 int exp = cp.Decode4();
                 chr.setExp(exp);
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return true;
             }
 

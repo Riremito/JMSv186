@@ -45,7 +45,7 @@ public class MapleDoor extends AbstractMapleMapObject {
 
     public MapleDoor(final MapleCharacter owner, final Point targetPosition, final int skillId) {
         super();
-        this.owner = new WeakReference<MapleCharacter>(owner);
+        this.owner = new WeakReference<>(owner);
         this.ownerId = owner.getId();
         this.map_field = owner.getMap();
         setPosition(targetPosition);
@@ -59,7 +59,7 @@ public class MapleDoor extends AbstractMapleMapObject {
 
     public MapleDoor(final MapleDoor origDoor) {
         super();
-        this.owner = new WeakReference<MapleCharacter>(origDoor.owner.get());
+        this.owner = new WeakReference<>(origDoor.owner.get());
         this.map_town = origDoor.map_town;
         this.townPortal = origDoor.townPortal;
         this.map_field = origDoor.map_field;
@@ -105,8 +105,8 @@ public class MapleDoor extends AbstractMapleMapObject {
         return map_field.getId();
     }
 
-    private final MaplePortal getFreePortal() {
-        final List<MaplePortal> freePortals = new ArrayList<MaplePortal>();
+    private MaplePortal getFreePortal() {
+        final List<MaplePortal> freePortals = new ArrayList<>();
 
         for (final MaplePortal port : map_town.getPortals()) {
             if (port.getType() == MaplePortal.DOOR_PORTAL) {

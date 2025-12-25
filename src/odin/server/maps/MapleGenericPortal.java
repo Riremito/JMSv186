@@ -21,12 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
+import odin.client.MapleCharacter;
 
 import odin.client.MapleClient;
 import tacos.server.ServerOdinGame;
 import tacos.packet.ops.OpsTransferField;
 import tacos.packet.response.ResCField;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.scripting.PortalScriptManager;
 import odin.server.MaplePortal;
 
@@ -124,7 +124,8 @@ public class MapleGenericPortal implements MaplePortal {
             }
         }
         if (c != null && c.getPlayer() != null && c.getPlayer().getMap() == currentmap) { // Character is still on the same map.
-            c.getSession().write(WrapCWvsContext.updateStat());
+            MapleCharacter chr = c.getPlayer();
+            chr.updateStat();
         }
     }
 

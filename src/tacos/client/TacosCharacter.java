@@ -211,6 +211,16 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         updateMap(map_to, portal_to);
     }
 
+    // unlock 1
+    public void updateInv() {
+        SendPacket(ResCWvsContext.InventoryOperation(true, null));
+    }
+
+    // unlock 2
+    public void updateStat() {
+        SendPacket(ResCWvsContext.StatChanged(null, true, 0));
+    }
+
     // stat
     public void sendStatChanged(MapleCharacter mchr, boolean unlock) {
         if (this.laststat == null) {
@@ -220,7 +230,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
         this.laststat.update(this);
 
-        SendPacket(ResCWvsContext.StatChanged(mchr, unlock ? 1 : 0, this.laststat.getStatMask()));
+        SendPacket(ResCWvsContext.StatChanged(mchr, unlock, this.laststat.getStatMask()));
         if (this.laststat.getStatMask() != 0) {
             mchr.equipChanged();
         }

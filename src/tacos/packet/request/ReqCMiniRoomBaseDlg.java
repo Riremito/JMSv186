@@ -42,7 +42,6 @@ import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
 import tacos.odin.OdinPair;
 import tacos.packet.ops.OpsMiniRoomType;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 
 /**
  *
@@ -403,12 +402,12 @@ public class ReqCMiniRoomBaseDlg {
                     if (ivItem.getQuantity() >= bundles_perbundle) {
                         final byte flag = ivItem.getFlag();
                         if (ItemFlag.UNTRADEABLE.check(flag) || ItemFlag.LOCK.check(flag)) {
-                            chr.SendPacket(WrapCWvsContext.updateStat());
+                            chr.updateStat();
                             return true;
                         }
                         if (ii.isDropRestricted(ivItem.getItemId()) || ii.isAccountShared(ivItem.getItemId())) {
                             if (!(ItemFlag.KARMA_EQ.check(flag) || ItemFlag.KARMA_USE.check(flag))) {
-                                chr.SendPacket(WrapCWvsContext.updateStat());
+                                chr.updateStat();
                                 return true;
                             }
                         }

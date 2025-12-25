@@ -135,7 +135,7 @@ public class DebugCommand {
                 Property_Packet.reload();
                 DebugLogger.InfoLog("Packet Header values are reloaded.");
                 chr.DebugMsg("Packet Header values are reloaded.");
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return true;
             }
             case "/debugmode": {
@@ -171,7 +171,7 @@ public class DebugCommand {
             case "/stuck":
             case "/unlock": {
                 // フリーズ解除
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return true;
             }
             case "/save": {
@@ -404,7 +404,7 @@ public class DebugCommand {
 
                 chr.getStat().setHp(new_hp);
                 chr.getStat().setMp(new_mp);
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
 
                 chr.DebugMsg("HP : " + chr.getStat().getHp() + " / " + chr.getStat().getMaxHp());
                 chr.DebugMsg("MP : " + chr.getStat().getMp() + " / " + chr.getStat().getMaxMp());
@@ -568,7 +568,7 @@ public class DebugCommand {
                 chr.setSkinColor((byte) (skinid % 100));
                 chr.setFace(faceid);
                 chr.setHair(hairid);
-                chr.UpdateStat(false);
+                chr.sendStatChanged(false);
                 chr.DebugMsg("[RandomBeauty] SkinID = " + skinid + ", FaceID = " + faceid + ", HairID = " + hairid);
                 return true;
             }

@@ -5,7 +5,6 @@ import java.awt.Point;
 import odin.provider.MapleDataTool;
 import odin.server.maps.MapleGenericPortal;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapPortal;
 import odin.provider.IMapleData;
 
 public class PortalFactory {
@@ -13,12 +12,7 @@ public class PortalFactory {
     private int nextDoorPortal = 0x80;
 
     public MaplePortal makePortal(MapleMap map, int type, IMapleData portal) {
-        MapleGenericPortal ret = null;
-        if (type == MaplePortal.MAP_PORTAL) {
-            ret = new MapleMapPortal();
-        } else {
-            ret = new MapleGenericPortal(type);
-        }
+        MapleGenericPortal ret = new MapleGenericPortal(type);
         loadPortal(map, ret, portal);
         return ret;
     }

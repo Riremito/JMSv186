@@ -41,7 +41,6 @@ import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
@@ -881,7 +880,7 @@ public class PlayerStats implements Serializable {
         for (Equip eqq : all) {
             if (eqq.getDurability() == 0) { //> 0 went to negative
                 if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
-                    chr.getClient().getSession().write(WrapCWvsContext.updateInv());
+                    chr.updateInv();
                     chr.getClient().getSession().write(ResWrapper.getShowInventoryFull());
                     return false;
                 }

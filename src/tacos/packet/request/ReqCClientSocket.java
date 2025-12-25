@@ -51,7 +51,6 @@ import tacos.packet.response.ResCFuncKeyMappedMan;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
@@ -237,7 +236,7 @@ public class ReqCClientSocket {
 
         chr.sendSetField(true);
         // initialize
-        chr.SendPacket(WrapCWvsContext.updateInv()); // TWMS148 gets weird stat without sending this.
+        chr.updateStat(); // TWMS148 gets weird stat without sending this.
         chr.SendPacket(ResCWvsContext.ForcedStatReset());
         // pet
         for (final MaplePet pet : chr.getPets()) {
@@ -280,7 +279,7 @@ public class ReqCClientSocket {
         // family
         chr.SendPacket(ResCWvsContext.getFamilyData());
         chr.SendPacket(ResCWvsContext.getFamilyInfo(chr));
-        chr.UpdateStat(true); // this gives you crash, if you did not send pet spawn packet in JMS131.
+        chr.sendStatChanged(true); // this gives you crash, if you did not send pet spawn packet in JMS131.
         //chr.showNote();
         chr.baseSkills(); // ?_?
         // 精霊のペンダント
