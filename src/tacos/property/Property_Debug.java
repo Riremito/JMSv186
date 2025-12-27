@@ -38,6 +38,7 @@ public class Property_Debug {
         // debug
         DeveloperMode.DM_LOG_DEBUG.set(conf.getBoolean("debug.show_debug_log"));
         DeveloperMode.DM_LOG_WZ.set(conf.getBoolean("debug.show_xml_log"));
+        DeveloperMode.DM_LOG_SCRIPT.set(conf.getBoolean("debug.show_script_log"));
         DeveloperMode.DM_LOG_ADMIN.set(conf.getBoolean("debug.show_admin_log"));
         DeveloperMode.DM_GM_ACCOUNT.set(conf.getBoolean("debug.gm_mode"));
         DeveloperMode.DM_FULL_ITEM_SET.set(conf.getBoolean("debug.starter_set"));

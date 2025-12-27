@@ -23,9 +23,9 @@ package odin.server.maps;
 import java.awt.Rectangle;
 import odin.client.MapleClient;
 import tacos.packet.response.ResCReactorPool;
-import odin.scripting.ReactorScriptManager;
 import odin.server.Timer.MapTimer;
 import tacos.odin.OdinPair;
+import tacos.script.TacosScriptReactor;
 
 public class MapleReactor extends AbstractMapleMapObject {
 
@@ -115,7 +115,7 @@ public class MapleReactor extends AbstractMapleMapObject {
     }
 
     public void forceStartReactor(MapleClient c) {
-        ReactorScriptManager.getInstance().act(c, this);
+        TacosScriptReactor.getInstance().act(c, this);
     }
 
     public void forceHitReactor(final byte newState) {
@@ -156,17 +156,17 @@ public class MapleReactor extends AbstractMapleMapObject {
                     } else { //item-triggered on final step
                         map.broadcastMessage(ResCReactorPool.Hit(this, stance));
                     }
-                    ReactorScriptManager.getInstance().act(c, this);
+                    TacosScriptReactor.getInstance().act(c, this);
                 } else { //reactor not broken yet
                     boolean done = false;
                     map.broadcastMessage(ResCReactorPool.Hit(this, stance)); //magatia is weird cause full beaker can be activated by gm hat o.o
                     if (state == stats.getNextState(state) || rid == 2618000 || rid == 2309000) { //current state = next state, looping reactor
-                        ReactorScriptManager.getInstance().act(c, this);
+                        TacosScriptReactor.getInstance().act(c, this);
                         done = true;
                     }
                     if (stats.getTimeOut(state) > 0) {
                         if (!done) {
-                            ReactorScriptManager.getInstance().act(c, this);
+                            TacosScriptReactor.getInstance().act(c, this);
                         }
                         scheduleSetState(state, oldState, stats.getTimeOut(state));
                     }

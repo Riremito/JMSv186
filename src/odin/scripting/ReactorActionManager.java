@@ -40,6 +40,7 @@ import odin.server.life.MapleLifeFactory;
 import odin.server.maps.ReactorDropEntry;
 import odin.server.maps.MapleReactor;
 import odin.server.life.MapleMonster;
+import tacos.script.TacosScriptReactor;
 
 public class ReactorActionManager extends AbstractPlayerInteraction {
 
@@ -60,8 +61,8 @@ public class ReactorActionManager extends AbstractPlayerInteraction {
     }
 
     public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso, int minItems) {
-        final List<ReactorDropEntry> chances = ReactorScriptManager.getInstance().getDrops(reactor.getReactorId());
-        final List<ReactorDropEntry> items = new LinkedList<ReactorDropEntry>();
+        List<ReactorDropEntry> chances = TacosScriptReactor.getInstance().getDrops(reactor.getReactorId());
+        List<ReactorDropEntry> items = new LinkedList<>();
 
         if (meso) {
             if (Math.random() < (1 / (double) mesoChance)) {

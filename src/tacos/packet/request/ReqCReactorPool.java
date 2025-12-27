@@ -23,9 +23,9 @@ import tacos.config.Region;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
-import odin.scripting.ReactorScriptManager;
 import odin.server.maps.MapleReactor;
 import tacos.packet.ClientPacketHeader;
+import tacos.script.TacosScriptReactor;
 
 /**
  *
@@ -73,7 +73,7 @@ public class ReqCReactorPool {
                     return false;
                 }
 
-                ReactorScriptManager.getInstance().act(c, reactor);
+                TacosScriptReactor.getInstance().act(c, reactor);
                 return true;
             }
             case CP_RequireFieldObstacleStatus: {

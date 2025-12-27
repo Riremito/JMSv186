@@ -153,6 +153,14 @@ public class DebugLogger {
         return true;
     }
 
+    public static boolean ScriptLog(String log_text) {
+        if (!DeveloperMode.DM_LOG_SCRIPT.get()) {
+            return false;
+        }
+        Log("SCRIPT", log_text);
+        return true;
+    }
+
     public static boolean AdminLog(String log_text) {
         if (!DeveloperMode.DM_LOG_ADMIN.get()) {
             return false;

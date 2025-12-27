@@ -23,6 +23,7 @@ import javax.script.ScriptEngine;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.scripting.PortalPlayerInteraction;
+import tacos.debug.DebugLogger;
 import tacos.server.map.TacosPortal;
 import tacos.odin.IOdinPortalScript;
 
@@ -51,13 +52,19 @@ public class TacosScriptPortal extends TacosScript {
         String text = "Portal Script = " + portal.getScriptName() + ", MapID = " + chr.getPosMap();
         chr.DebugMsg(text);
 
+        DebugLogger.ScriptLog(TacosScriptType.PORTAL.get() + portal.getScriptName());
+
         ScriptEngine engine = getScript(TacosScriptType.PORTAL.get() + portal.getScriptName());
         IOdinPortalScript script = ((Invocable) engine).getInterface(IOdinPortalScript.class);
+
+        if (script == null) {
+            DebugLogger.ErrorLog("portal_script : executePortalScript not found, " + portal.getScriptName());
+            return false;
+        }
 
         PortalPlayerInteraction ppi = new PortalPlayerInteraction(c, portal);
         script.enter(ppi);
         return true;
     }
-
 
 }

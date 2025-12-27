@@ -32,14 +32,12 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import odin.scripting.EventInstanceManager;
 import odin.scripting.EventManager;
-import odin.scripting.ReactorScriptManager;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleShopFactory;
 import odin.server.MapleSquad;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
-import odin.server.life.MapleMonsterInformationProvider;
 import odin.server.life.MapleNPC;
 import odin.server.life.OverrideMonsterStats;
 import odin.server.maps.MapleMap;
@@ -817,16 +815,6 @@ public class AdminCommand {
             for (TacosPortal portal : c.getPlayer().getMap().getPortals()) {
                 c.getPlayer().dropMessage(5, "Portal: ID: " + portal.getId() + " script: " + portal.getScriptName() + " name: " + portal.getName() + " pos: " + portal.getPosition().x + "," + portal.getPosition().y + " target: " + portal.getTargetMapId() + " / " + portal.getTarget());
             }
-            return 1;
-        }
-    }
-
-    public static class ReloadDrops extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            MapleMonsterInformationProvider.getInstance().clearDrops();
-            ReactorScriptManager.getInstance().clearDrops();
             return 1;
         }
     }
