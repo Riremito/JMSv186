@@ -46,7 +46,6 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.provider.MapleDataTool;
-import odin.scripting.NPCScriptManager;
 import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
@@ -66,6 +65,7 @@ import odin.server.shops.HiredMerchant;
 import tacos.database.query.DQ_Accounts;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import odin.provider.IMapleData;
+import tacos.script.TacosScriptNPC;
 
 /**
  *
@@ -684,7 +684,7 @@ public class DebugCommand {
         if (npc == null || npc.getName().equals("MISSINGNO")) {
             return false;
         }
-        NPCScriptManager.getInstance().start(c, npc_id, npc_script_id);
+        TacosScriptNPC.getInstance().start(c, npc_script_id, npc_id);
         return true;
     }
 

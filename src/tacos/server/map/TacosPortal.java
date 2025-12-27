@@ -21,9 +21,9 @@ package tacos.server.map;
 import java.awt.Point;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.scripting.PortalScriptManager;
 import odin.server.maps.MapleMap;
 import tacos.constants.TacosConstants;
+import tacos.script.TacosScriptPortal;
 import tacos.server.ServerOdinGame;
 
 /**
@@ -124,9 +124,12 @@ public class TacosPortal {
 
         // script portal
         if (this.scriptName != null) {
+            /*
             if (!PortalScriptManager.getInstance().executePortalScript(this, c)) {
                 return false;
             }
+             */
+            TacosScriptPortal.getInstance().executePortalScript(this, c);
             return true;
         }
         // normal portal

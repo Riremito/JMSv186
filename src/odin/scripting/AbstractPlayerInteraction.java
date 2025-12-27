@@ -63,6 +63,7 @@ import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import odin.server.events.MapleEvent;
 import odin.server.events.MapleEventType;
+import tacos.script.TacosScriptNPC;
 
 public abstract class AbstractPlayerInteraction {
 
@@ -780,11 +781,11 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final void openNpc(final int id) {
-        NPCScriptManager.getInstance().start(getClient(), id);
+        TacosScriptNPC.getInstance().start(getClient(), id);
     }
 
     public final void openNpc(final MapleClient cg, final int id) {
-        NPCScriptManager.getInstance().start(cg, id);
+        TacosScriptNPC.getInstance().start(cg, id);
     }
 
     public final int getMapId() {

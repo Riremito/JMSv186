@@ -1212,7 +1212,7 @@ public class TacosMap extends TacosMapData {
         TacosCharacter chr;
         while (ltr.hasNext()) {
             chr = ltr.next();
-            if (chr.getId() != source.getId()) {
+            if (source == null || chr.getId() != source.getId()) {
                 if (ignoreRange || rangedFrom.distanceSq(chr.getPosition()) <= chr.getViewRangeSq()) {
                     chr.SendPacket(packet);
                 }

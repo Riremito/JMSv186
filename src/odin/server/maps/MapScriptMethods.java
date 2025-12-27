@@ -33,7 +33,6 @@ import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.scripting.EventManager;
-import odin.scripting.NPCScriptManager;
 import odin.server.Randomizer;
 import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleLifeFactory;
@@ -41,6 +40,8 @@ import odin.server.life.MapleMonster;
 import odin.server.quest.MapleQuest;
 import odin.server.quest.MapleQuest.MedalQuest;
 import odin.tools.FileoutputUtil;
+import tacos.script.TacosScriptNPC;
+import tacos.script.TacosScriptQuest;
 
 public class MapScriptMethods {
 
@@ -482,16 +483,18 @@ public class MapScriptMethods {
             case shammos_Enter: { //nothing to go on inside the map
                 c.getSession().write(ResWrapper.sendPyramidEnergy("shammos_LastStage", String.valueOf((c.getPlayer().getMapId() % 1000) / 100)));
                 if (c.getPlayer().getEventInstance() != null && c.getPlayer().getMapId() == 921120500) {
-                    NPCScriptManager.getInstance().dispose(c); //only boss map.
-                    NPCScriptManager.getInstance().start(c, 2022006);
+                    TacosScriptNPC.getInstance().dispose(c);
+                    TacosScriptQuest.getInstance().dispose(c);
+                    TacosScriptNPC.getInstance().start(c, 2022006);
                 }
                 break;
             }
             case start_itemTake: { //nothing to go on inside the map
                 final EventManager em = c.getChannelServer().getEventSM().getEventManager("OrbisPQ");
                 if (em != null && em.getProperty("pre").equals("0")) {
-                    NPCScriptManager.getInstance().dispose(c);
-                    NPCScriptManager.getInstance().start(c, 2013001);
+                    TacosScriptNPC.getInstance().dispose(c);
+                    TacosScriptQuest.getInstance().dispose(c);
+                    TacosScriptNPC.getInstance().start(c, 2013001);
                 }
                 break;
             }

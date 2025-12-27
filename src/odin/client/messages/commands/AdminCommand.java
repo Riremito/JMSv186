@@ -32,7 +32,6 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import odin.scripting.EventInstanceManager;
 import odin.scripting.EventManager;
-import odin.scripting.PortalScriptManager;
 import odin.scripting.ReactorScriptManager;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
@@ -828,15 +827,6 @@ public class AdminCommand {
         public int execute(MapleClient c, String[] splitted) {
             MapleMonsterInformationProvider.getInstance().clearDrops();
             ReactorScriptManager.getInstance().clearDrops();
-            return 1;
-        }
-    }
-
-    public static class ReloadPortal extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            PortalScriptManager.getInstance().clearScripts();
             return 1;
         }
     }

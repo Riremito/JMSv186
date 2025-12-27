@@ -139,15 +139,15 @@ public class MapleClient extends TacosClient {
 
     private Map<String, ScriptEngine> engines = new HashMap<>();
 
-    public final void setScriptEngine(final String name, final ScriptEngine e) {
+    public void setScriptEngine(String name, final ScriptEngine e) {
         engines.put(name, e);
     }
 
-    public final ScriptEngine getScriptEngine(final String name) {
+    public ScriptEngine getScriptEngine(String name) {
         return engines.get(name);
     }
 
-    public final void removeScriptEngine(final String name) {
+    public void removeScriptEngine(String name) {
         engines.remove(name);
     }
 

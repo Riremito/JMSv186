@@ -62,7 +62,6 @@ import odin.handling.channel.handler.BBSHandler;
 import odin.handling.channel.handler.FamilyHandler;
 import odin.handling.channel.handler.GuildHandler;
 import odin.handling.channel.handler.PartyHandler;
-import odin.scripting.NPCScriptManager;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsChatGroup;
@@ -100,6 +99,7 @@ import odin.server.shops.HiredMerchant;
 import odin.tools.AttackPair;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
+import tacos.script.TacosScriptNPC;
 
 /**
  *
@@ -2463,11 +2463,11 @@ public class ReqCUser {
 
         switch (job_id) {
             case 1000: {
-                NPCScriptManager.getInstance().start(chr.getClient(), 1101008);
+                TacosScriptNPC.getInstance().start(chr.getClient(), 1101008);
                 return true;
             }
             case 2000: {
-                NPCScriptManager.getInstance().start(chr.getClient(), 1202000);
+                TacosScriptNPC.getInstance().start(chr.getClient(), 1202000);
                 return true;
             }
             default: {

@@ -80,6 +80,8 @@ import odin.server.maps.SpeedRunType;
 import odin.server.Timer.CloneTimer;
 import odin.server.maps.Event_PyramidSubway;
 import tacos.packet.response.ResCScriptMan;
+import tacos.script.TacosScriptNPC;
+import tacos.script.TacosScriptQuest;
 
 public class NPCConversationManager extends AbstractPlayerInteraction {
 
@@ -123,6 +125,10 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         return iv;
     }
 
+    public void setIv(Invocable iv) {
+        this.iv = iv;
+    }
+
     public void WorldMessage(String text) {
         World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice(text).getBytes());
     }
@@ -148,7 +154,8 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public void dispose() {
-        NPCScriptManager.getInstance().dispose(c);
+        TacosScriptNPC.getInstance().dispose(c);
+        TacosScriptQuest.getInstance().dispose(c);
     }
 
     public void askMapSelection(final String sel) {

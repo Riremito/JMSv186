@@ -41,10 +41,11 @@ import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleInventoryManipulator;
 import odin.server.life.MapleNPC;
 import odin.server.quest.MapleQuest;
-import odin.scripting.NPCScriptManager;
 import odin.scripting.NPCConversationManager;
 import odin.server.MapleItemInformationProvider;
 import tacos.odin.OdinPair;
+import tacos.script.TacosScriptNPC;
+import tacos.script.TacosScriptQuest;
 
 public class NPCHandler {
 
@@ -58,7 +59,7 @@ public class NPCHandler {
             return;
         }
         if (chr.getConversation() != 0) {
-            chr.dropMessage(-1, "You already are talking to an NPC. Use @ea if this is not intended.");
+            chr.DebugMsg("NPCTalk = err " + chr.getConversation());
             return;
         }
 
@@ -66,7 +67,7 @@ public class NPCHandler {
             chr.setConversation(1);
             npc.sendShop(c);
         } else {
-            NPCScriptManager.getInstance().start(c, npc.getId());
+            TacosScriptNPC.getInstance().start(c, npc.getId());
         }
     }
 
@@ -125,12 +126,12 @@ public class NPCHandler {
                 final int npc = cp.Decode4();
                 short pos_x = cp.Decode2();
                 short pos_y = cp.Decode2();
-                NPCScriptManager.getInstance().startQuest(c, npc, quest);
+                TacosScriptQuest.getInstance().startQuest(c, npc, quest);
                 break;
             }
             case 5: { // Scripted End Quest
                 final int npc = cp.Decode4();
-                NPCScriptManager.getInstance().endQuest(c, npc, quest, false);
+                TacosScriptQuest.getInstance().endQuest(c, npc, quest, false);
                 chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_QuestComplete));
                 chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_QuestComplete, chr), false);
                 break;
@@ -140,8 +141,8 @@ public class NPCHandler {
         chr.DebugMsg("Quest ID = " + quest + ", Action = " + action);
     }
 
-    public static final void NPCMoreTalk(MapleClient c, OpsScriptMan smt, byte action, int selection, String text) {
-        final NPCConversationManager cm = NPCScriptManager.getInstance().getCM(c);
+    public static final void NPCMoreTalk(MapleClient c, OpsScriptMan smt, int action, int selection, String text) {
+         NPCConversationManager cm = TacosScriptNPC.getInstance().getCM(c);
         byte lastMsg = (byte) smt.get();
 
         if (cm == null || c.getPlayer().getConversation() == 0 || cm.getLastMsg() != lastMsg) {
@@ -158,11 +159,11 @@ public class NPCHandler {
             if (action != 0) {
                 cm.setGetText(text);
                 if (cm.getType() == 0) {
-                    NPCScriptManager.getInstance().startQuest(c, action, lastMsg, -1);
+                    TacosScriptQuest.getInstance().startQuest(c, action, lastMsg, -1);
                 } else if (cm.getType() == 1) {
-                    NPCScriptManager.getInstance().endQuest(c, action, lastMsg, -1);
+                    TacosScriptQuest.getInstance().endQuest(c, action, lastMsg, -1);
                 } else {
-                    NPCScriptManager.getInstance().action(c, action, lastMsg, -1);
+                    TacosScriptNPC.getInstance().action(c, action, lastMsg, -1);
                 }
             } else {
                 cm.dispose();
@@ -177,11 +178,11 @@ public class NPCHandler {
 
         if (selection >= -1 && action != -1) {
             if (cm.getType() == 0) {
-                NPCScriptManager.getInstance().startQuest(c, action, lastMsg, selection);
+                TacosScriptQuest.getInstance().startQuest(c, action, lastMsg, selection);
             } else if (cm.getType() == 1) {
-                NPCScriptManager.getInstance().endQuest(c, action, lastMsg, selection);
+                TacosScriptQuest.getInstance().endQuest(c, action, lastMsg, selection);
             } else {
-                NPCScriptManager.getInstance().action(c, action, lastMsg, selection);
+                TacosScriptNPC.getInstance().action(c, action, lastMsg, selection);
             }
             return;
         }

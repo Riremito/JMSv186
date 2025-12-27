@@ -102,7 +102,6 @@ import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.scripting.EventInstanceManager;
-import odin.scripting.NPCScriptManager;
 import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.MapleStorage;
@@ -146,6 +145,8 @@ import tacos.debug.DebugShop;
 import tacos.debug.IDebugMan;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
+import tacos.script.TacosScriptNPC;
+import tacos.script.TacosScriptQuest;
 import tacos.server.ServerOdinCashShop;
 import tacos.server.map.TacosPortal;
 
@@ -5076,7 +5077,8 @@ public class MapleCharacter extends TacosCharacter {
         if (!getDoors().isEmpty()) {
             removeDoor();
         }
-        NPCScriptManager.getInstance().dispose(client);
+        TacosScriptNPC.getInstance().dispose(client);
+        TacosScriptQuest.getInstance().dispose(client);
     }
 
     public void updateTick(int newTick) {

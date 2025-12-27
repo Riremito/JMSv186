@@ -48,12 +48,12 @@ import odin.server.maps.SavedLocationType;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
-import odin.scripting.NPCScriptManager;
 import odin.server.maps.MapleMist;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.IMaplePlayerShop;
 import tacos.odin.OdinPair;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
+import tacos.script.TacosScriptNPC;
 
 public class InventoryHandler {
 
@@ -125,7 +125,7 @@ public class InventoryHandler {
                     } else {
                         MapleInventoryManipulator.addById(c, 2430007, (short) 1); // Blank Compass
                     }
-                    NPCScriptManager.getInstance().start(c, 2084001);
+                    TacosScriptNPC.getInstance().start(c, 2084001);
                     break;
                 }
                 case 2430008: // Gold Compass

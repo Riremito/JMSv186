@@ -16,11 +16,11 @@ import java.util.ArrayList;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
-import odin.scripting.NPCScriptManager;
 import odin.provider.MapleDataTool;
 import odin.tools.FileoutputUtil;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
+import tacos.script.TacosScriptQuest;
 
 public class MapleQuest implements Serializable {
 
@@ -229,7 +229,7 @@ public class MapleQuest implements Serializable {
             if (!customend) {
                 forceStart(c, npc, null);
             } else {
-                NPCScriptManager.getInstance().endQuest(c.getClient(), npc, getId(), true);
+                TacosScriptQuest.getInstance().endQuest(c.getClient(), npc, getId(), true);
             }
         }
     }
