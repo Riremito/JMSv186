@@ -47,12 +47,10 @@ public class TacosScriptPortal extends TacosScript {
 
     }
 
-    public boolean executePortalScript(TacosPortal portal, MapleClient c) {
+    public boolean enter(TacosPortal portal, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         String text = "Portal Script = " + portal.getScriptName() + ", MapID = " + chr.getPosMap();
         chr.DebugMsg(text);
-
-        DebugLogger.ScriptLog(TacosScriptType.PORTAL.get() + portal.getScriptName());
 
         ScriptEngine engine = getScript(TacosScriptType.PORTAL.get() + portal.getScriptName());
         IOdinPortalScript script = ((Invocable) engine).getInterface(IOdinPortalScript.class);

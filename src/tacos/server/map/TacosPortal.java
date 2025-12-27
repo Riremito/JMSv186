@@ -124,13 +124,7 @@ public class TacosPortal {
 
         // script portal
         if (this.scriptName != null) {
-            /*
-            if (!PortalScriptManager.getInstance().executePortalScript(this, c)) {
-                return false;
-            }
-             */
-            TacosScriptPortal.getInstance().executePortalScript(this, c);
-            return true;
+            return TacosScriptPortal.getInstance().enter(this, c);
         }
         // normal portal
         if (this.scriptName == null) {

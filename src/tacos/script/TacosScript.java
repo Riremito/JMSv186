@@ -50,11 +50,14 @@ public class TacosScript {
     protected ScriptEngine getScript(String script_name) {
         // cache
         if (this.script_cache.containsKey(script_name)) {
+            DebugLogger.ScriptLog("getScript : " + script_name + " (cache)");
             return this.script_cache.get(script_name);
         }
         // add to cache
         ScriptEngine script = loadScript(script_name);
         this.script_cache.put(script_name, script);
+
+        DebugLogger.ScriptLog("getScript : " + script_name);
         return script;
     }
 
@@ -67,13 +70,13 @@ public class TacosScript {
         try {
             engine.eval("load('nashorn:mozilla_compat.js');" + System.lineSeparator());
         } catch (ScriptException ex) {
-            DebugLogger.ErrorLog("Script : nashorn error");
+            DebugLogger.ErrorLog("loadScript : nashorn error");
             return null;
         }
         // open file.
         File scriptFile = new File(script_full_path);
         if (!scriptFile.exists()) {
-            DebugLogger.ErrorLog("Script : not found, " + script_name);
+            DebugLogger.ErrorLog("loadScript : not found, " + script_name);
             return null;
         }
         // read file.
@@ -82,14 +85,14 @@ public class TacosScript {
             fr = new FileReader(scriptFile);
             engine.eval(fr);
         } catch (FileNotFoundException | ScriptException ex) {
-            DebugLogger.ErrorLog("Script : script error, " + script_name);
+            DebugLogger.ErrorLog("loadScript : script error, " + script_name);
             return null;
         }
         // close file.
         try {
             fr.close();
         } catch (IOException ex) {
-            DebugLogger.ErrorLog("Script : close error, " + script_name);
+            DebugLogger.ErrorLog("loadScript : close error, " + script_name);
             return null;
         }
 
@@ -97,7 +100,7 @@ public class TacosScript {
     }
 
     public void clearScripts() {
-        script_cache.clear();
+        this.script_cache.clear();
     }
 
 }
