@@ -61,6 +61,7 @@ import odin.server.MapleSquad;
 import odin.server.SpeedRunner;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapleNodes.MonsterPoint;
+import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
 import tacos.server.map.TacosMap;
 
@@ -381,7 +382,13 @@ public final class MapleMap extends TacosMap {
         final Point pos = new Point(x, y);
         final MapleMonster mainb = MapleLifeFactory.getMonster(8800000);
         final Point spos = calcPointBelow(new Point(pos.x, pos.y));
+        MapleFoothold zakum_fh = getFootholds().findFootHold(70);
+        spos.x = zakum_fh.getX1() + (zakum_fh.getX2() - zakum_fh.getX1() / 2);
+        spos.y = zakum_fh.getY1();
+        DebugLogger.DebugLog("spawnZakum" + pos.toString() + " " + "-> " + spos.toString());
         mainb.setPosition(spos);
+        mainb.setFh(zakum_fh.getId());
+        mainb.setOriginFh(zakum_fh.getId());
         mainb.setFake(true);
         // Might be possible to use the map object for reference in future.
         spawnFakeMonster(mainb);
@@ -390,6 +397,8 @@ public final class MapleMap extends TacosMap {
         for (final int i : zakpart) {
             final MapleMonster part = MapleLifeFactory.getMonster(i);
             part.setPosition(spos);
+            part.setFh(zakum_fh.getId());
+            mainb.setOriginFh(zakum_fh.getId());
             spawnMonster(part, -2);
         }
         if (squadSchedule != null) {
