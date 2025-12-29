@@ -35,7 +35,6 @@ import odin.handling.channel.PlayerStorage;
 import tacos.network.ByteArrayMaplePacket;
 import tacos.network.MaplePacket;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import odin.scripting.EventScriptManager;
 import odin.server.MapleSquad;
 import odin.server.maps.MapleMapFactory;
 import odin.server.shops.HiredMerchant;
@@ -52,6 +51,7 @@ import odin.server.events.MapleFitness;
 import odin.server.events.MapleOla;
 import odin.server.events.MapleOxQuiz;
 import odin.server.events.MapleSnowball;
+import tacos.script.TacosScriptEvent;
 
 public class ServerOdinGame {
 
@@ -87,14 +87,12 @@ public class ServerOdinGame {
     private int channel, running_MerchantID = 0, flags = 0;
     private String serverMessage, serverName;
     private boolean MegaphoneMuteState = false;
-    private EventScriptManager eventSM;
     private final Map<String, MapleSquad> mapleSquads = new HashMap<String, MapleSquad>();
     private final Map<Integer, HiredMerchant> merchants = new HashMap<Integer, HiredMerchant>();
     private final Map<Integer, PlayerNPC> playerNPCs = new HashMap<Integer, PlayerNPC>();
     private final ReentrantReadWriteLock merchLock = new ReentrantReadWriteLock(); //merchant
     private final ReentrantReadWriteLock squadLock = new ReentrantReadWriteLock(); //squad
     private int eventmap = -1;
-    private final Map<MapleEventType, MapleEvent> events = new EnumMap<MapleEventType, MapleEvent>(MapleEventType.class);
 
     private ServerOdinGame(int channel) {
         this.channel = channel;
@@ -108,8 +106,15 @@ public class ServerOdinGame {
         return Property_World.getChannels();
     }
 
-    public final void loadEvents() {
-        if (events.size() != 0) {
+    // 独自仕様かどうか
+    public static boolean IsCustom() {
+        return ContentCustom.CC_WZ_MAP_ADDED.get();
+    }
+
+    private final Map<MapleEventType, MapleEvent> events = new EnumMap<>(MapleEventType.class);
+
+    public void loadEvents() {
+        if (!events.isEmpty()) {
             return;
         }
         events.put(MapleEventType.Coconut, new MapleCoconut(channel, MapleEventType.Coconut.mapids));
@@ -117,11 +122,6 @@ public class ServerOdinGame {
         events.put(MapleEventType.OlaOla, new MapleOla(channel, MapleEventType.OlaOla.mapids));
         events.put(MapleEventType.OxQuiz, new MapleOxQuiz(channel, MapleEventType.OxQuiz.mapids));
         events.put(MapleEventType.Snowball, new MapleSnowball(channel, MapleEventType.Snowball.mapids));
-    }
-
-    // 独自仕様かどうか
-    public static boolean IsCustom() {
-        return ContentCustom.CC_WZ_MAP_ADDED.get();
     }
 
     public final void run_startup_configurations(int port) {
@@ -135,16 +135,17 @@ public class ServerOdinGame {
         flags = Property_World.getFlags();
         //adminOnly = Property_World.getAdminOnly();
 
-        // 読み込み遅い
-        try {
-            // 壊れている可能性あり
-            eventSM = new EventScriptManager(this, Property_World.getEvents().split(","));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        for (String event_name : Property_World.getEvents().split(",")) {
+            TacosScriptEvent.getInstance().init(event_name, this.channel);
         }
-
         loadEvents();
-        eventSM.init();
+    }
+
+    public final void reloadEvents() {
+        for (String event_name : Property_World.getEvents().split(",")) {
+            TacosScriptEvent.getInstance().cancelSchedule(event_name, this.channel);
+            TacosScriptEvent.getInstance().init(event_name, this.channel);
+        }
     }
 
     public static final ServerOdinGame newInstance(int channel) {
@@ -218,16 +219,6 @@ public class ServerOdinGame {
 
     public final int getPort() {
         return port;
-    }
-
-    public final EventScriptManager getEventSM() {
-        return eventSM;
-    }
-
-    public final void reloadEvents() {
-        eventSM.cancel();
-        eventSM = new EventScriptManager(this, Property_World.getEvents().split(","));
-        eventSM.init();
     }
 
     public final int getMesoRate() {
@@ -380,7 +371,7 @@ public class ServerOdinGame {
         this.eventmap = ze;
     }
 
-    public MapleEvent getEvent(final MapleEventType t) {
+    public MapleEvent getEvent(MapleEventType t) {
         return events.get(t);
     }
 

@@ -55,23 +55,14 @@ public class EventManager {
     private static int eventChannel = 1;
     private Invocable iv;
     private int channel;
-    private Map<String, EventInstanceManager> instances = new WeakHashMap<String, EventInstanceManager>();
+    private Map<String, EventInstanceManager> instances = new WeakHashMap<>();
     private Properties props = new Properties();
     private String name;
 
-    public EventManager(ServerOdinGame cserv, Invocable iv, String name) {
+    public EventManager(int channel, Invocable iv, String name) {
         this.iv = iv;
-        this.channel = cserv.getChannel();
+        this.channel = channel;
         this.name = name;
-    }
-
-    public void cancel() {
-        try {
-            iv.invokeFunction("cancelSchedule", (Object) null);
-        } catch (Exception ex) {
-            System.out.println("Event name : " + name + ", method Name : cancelSchedule:\n" + ex);
-            FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Event name : " + name + ", method Name : cancelSchedule:\n" + ex);
-        }
     }
 
     public ScheduledFuture<?> schedule(final String methodName, long delay) {

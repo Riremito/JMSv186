@@ -47,6 +47,7 @@ import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapFactory;
 import odin.tools.FileoutputUtil;
+import tacos.script.TacosScriptEvent;
 
 public class EventInstanceManager {
 
@@ -517,7 +518,7 @@ public class EventInstanceManager {
         if (disposed) {
             return null;
         }
-        final int assignedid = getChannelServer().getEventSM().getNewInstanceMapId();
+        final int assignedid = TacosScriptEvent.getInstance().getNewInstanceMapId();
         mapIds.add(assignedid);
         isInstanced.add(true);
         return this.getMapFactory().CreateInstanceMap(mapid, true, true, true, assignedid);
@@ -527,7 +528,7 @@ public class EventInstanceManager {
         if (disposed) {
             return null;
         }
-        final int assignedid = getChannelServer().getEventSM().getNewInstanceMapId();
+        final int assignedid = TacosScriptEvent.getInstance().getNewInstanceMapId();
         mapIds.add(assignedid);
         isInstanced.add(true);
         return this.getMapFactory().CreateInstanceMap(mapid, false, false, false, assignedid);

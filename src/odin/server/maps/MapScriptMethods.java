@@ -40,6 +40,7 @@ import odin.server.life.MapleMonster;
 import odin.server.quest.MapleQuest;
 import odin.server.quest.MapleQuest.MedalQuest;
 import odin.tools.FileoutputUtil;
+import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 
@@ -322,7 +323,7 @@ public class MapScriptMethods {
                         c.getPlayer().getMap().startMapEffect("Destroy the Lord Pirate!", 5120020);
                         break;
                 }
-                final EventManager em = c.getChannelServer().getEventSM().getEventManager("Pirate");
+                EventManager em = TacosScriptEvent.getInstance().getEventManager("Pirate");
                 if (c.getPlayer().getMapId() == 925100500 && em != null && em.getProperty("stage5") != null) {
                     int mobId = Randomizer.nextBoolean() ? 9300107 : 9300119; //lord pirate
                     final int st = Integer.parseInt(em.getProperty("stage5"));
@@ -490,7 +491,7 @@ public class MapScriptMethods {
                 break;
             }
             case start_itemTake: { //nothing to go on inside the map
-                final EventManager em = c.getChannelServer().getEventSM().getEventManager("OrbisPQ");
+                EventManager em = TacosScriptEvent.getInstance().getEventManager("OrbisPQ");
                 if (em != null && em.getProperty("pre").equals("0")) {
                     TacosScriptNPC.getInstance().dispose(c);
                     TacosScriptQuest.getInstance().dispose(c);

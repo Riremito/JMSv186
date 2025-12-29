@@ -66,6 +66,9 @@ import tacos.database.query.DQ_Accounts;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import odin.provider.IMapleData;
 import tacos.script.TacosScriptNPC;
+import tacos.script.TacosScriptPortal;
+import tacos.script.TacosScriptQuest;
+import tacos.script.TacosScriptReactor;
 
 /**
  *
@@ -135,6 +138,12 @@ public class DebugCommand {
                 Property_Packet.reload();
                 DebugLogger.InfoLog("Packet Header values are reloaded.");
                 chr.DebugMsg("Packet Header values are reloaded.");
+                TacosScriptPortal.getInstance().clearScripts();
+                TacosScriptNPC.getInstance().clearScripts();
+                TacosScriptQuest.getInstance().clearScripts();
+                TacosScriptReactor.getInstance().clearScripts();
+                DebugLogger.InfoLog("script cache is cleared.");
+                chr.DebugMsg("script cache is cleared.");
                 chr.sendStatChanged(true);
                 return true;
             }

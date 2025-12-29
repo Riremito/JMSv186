@@ -63,6 +63,7 @@ import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import odin.server.events.MapleEvent;
 import odin.server.events.MapleEventType;
+import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
 
 public abstract class AbstractPlayerInteraction {
@@ -93,8 +94,8 @@ public abstract class AbstractPlayerInteraction {
         return c.getPlayer();
     }
 
-    public final EventManager getEventManager(final String event) {
-        return c.getChannelServer().getEventSM().getEventManager(event);
+    public EventManager getEventManager(String event) {
+        return TacosScriptEvent.getInstance().getEventManager(event);
     }
 
     public final EventInstanceManager getEventInstance() {

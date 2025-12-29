@@ -25,8 +25,6 @@ import odin.handling.channel.handler.BeanGame;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsContiMove;
 import tacos.packet.response.ResCField_ContiMove;
-import odin.scripting.EventManager;
-import odin.scripting.EventScriptManager;
 import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
 
@@ -79,8 +77,6 @@ public class ReqCField {
     }
 
     private static boolean OnContiState(MapleCharacter chr, int map_id) {
-        EventScriptManager esm = chr.getClient().getChannelServer().getEventSM();
-        EventManager em = null;
 
         switch (map_id) {
             case 101000300: // Ellinia Station >> Orbis

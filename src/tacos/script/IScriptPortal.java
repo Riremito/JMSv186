@@ -18,10 +18,14 @@
  */
 package tacos.script;
 
+import odin.scripting.PortalPlayerInteraction;
+
 /**
  *
  * @author Riremito
  */
 public interface IScriptPortal {
-    
+
+    public boolean enter(PortalPlayerInteraction ppi);
+
 }

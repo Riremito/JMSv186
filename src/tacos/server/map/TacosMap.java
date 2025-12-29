@@ -85,6 +85,7 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
+import tacos.script.TacosScriptEvent;
 import tacos.server.ServerOdinGame;
 import tacos.unofficial.CustomMonsterBookDrop;
 
@@ -1511,7 +1512,7 @@ public class TacosMap extends TacosMapData {
             default:
                 return null;
         }
-        return ServerOdinGame.getInstance(channel).getEventSM().getEventManager(em);
+        return TacosScriptEvent.getInstance().getEventManager(em);
     }
 
     public void resetFully() {

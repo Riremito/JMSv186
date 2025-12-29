@@ -25,7 +25,6 @@ import odin.client.MapleClient;
 import odin.scripting.PortalPlayerInteraction;
 import tacos.debug.DebugLogger;
 import tacos.server.map.TacosPortal;
-import tacos.odin.IOdinPortalScript;
 
 /**
  *
@@ -53,7 +52,7 @@ public class TacosScriptPortal extends TacosScript {
         chr.DebugMsg(text);
 
         ScriptEngine engine = getScript(TacosScriptType.PORTAL.get() + portal.getScriptName());
-        IOdinPortalScript script = ((Invocable) engine).getInterface(IOdinPortalScript.class);
+        IScriptPortal script = ((Invocable) engine).getInterface(IScriptPortal.class);
 
         if (script == null) {
             DebugLogger.ErrorLog("portal_script : executePortalScript not found, " + portal.getScriptName());
@@ -61,8 +60,7 @@ public class TacosScriptPortal extends TacosScript {
         }
 
         PortalPlayerInteraction ppi = new PortalPlayerInteraction(c, portal);
-        script.enter(ppi);
-        return true;
+        return script.enter(ppi);
     }
 
 }

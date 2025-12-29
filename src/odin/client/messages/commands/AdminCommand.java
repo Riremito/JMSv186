@@ -30,7 +30,6 @@ import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
-import odin.scripting.EventInstanceManager;
 import odin.scripting.EventManager;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
@@ -46,6 +45,7 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleReactor;
 import odin.server.quest.MapleQuest;
 import odin.tools.StringUtil;
+import tacos.script.TacosScriptEvent;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -529,55 +529,6 @@ public class AdminCommand {
         }
     }
 
-    public static class SetInstanceProperty extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            EventManager em = c.getChannelServer().getEventSM().getEventManager(splitted[1]);
-            if (em == null || em.getInstances().size() <= 0) {
-                c.getPlayer().dropMessage(5, "none");
-            } else {
-                em.setProperty(splitted[2], splitted[3]);
-                for (EventInstanceManager eim : em.getInstances()) {
-                    eim.setProperty(splitted[2], splitted[3]);
-                }
-            }
-            return 1;
-        }
-    }
-
-    public static class ListInstanceProperty extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            EventManager em = c.getChannelServer().getEventSM().getEventManager(splitted[1]);
-            if (em == null || em.getInstances().size() <= 0) {
-                c.getPlayer().dropMessage(5, "none");
-            } else {
-                for (EventInstanceManager eim : em.getInstances()) {
-                    c.getPlayer().dropMessage(5, "Event " + eim.getName() + ", eventManager: " + em.getName() + " iprops: " + eim.getProperty(splitted[2]) + ", eprops: " + em.getProperty(splitted[2]));
-                }
-            }
-            return 1;
-        }
-    }
-
-    public static class ListInstances extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            EventManager em = c.getChannelServer().getEventSM().getEventManager(StringUtil.joinStringFrom(splitted, 1));
-            if (em == null || em.getInstances().size() <= 0) {
-                c.getPlayer().dropMessage(5, "none");
-            } else {
-                for (EventInstanceManager eim : em.getInstances()) {
-                    c.getPlayer().dropMessage(5, "Event " + eim.getName() + ", charSize: " + eim.getPlayers().size() + ", dcedSize: " + eim.getDisconnected().size() + ", mobSize: " + eim.getMobs().size() + ", eventManager: " + em.getName() + ", timeLeft: " + eim.getTimeLeft() + ", iprops: " + eim.getProperties().toString() + ", eprops: " + em.getProperties().toString());
-                }
-            }
-            return 1;
-        }
-    }
-
     public static class LeaveInstance extends CommandExecute {
 
         @Override
@@ -598,7 +549,7 @@ public class AdminCommand {
             if (c.getPlayer().getEventInstance() != null) {
                 c.getPlayer().dropMessage(5, "You are in one");
             } else if (splitted.length > 2) {
-                EventManager em = c.getChannelServer().getEventSM().getEventManager(splitted[1]);
+                EventManager em = TacosScriptEvent.getInstance().getEventManager(splitted[1]);
                 if (em == null || em.getInstance(splitted[2]) == null) {
                     c.getPlayer().dropMessage(5, "Not exist");
                 } else {

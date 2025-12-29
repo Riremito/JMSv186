@@ -29,6 +29,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import odin.client.MapleClient;
+import odin.scripting.EventManager;
 import odin.scripting.NPCConversationManager;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Java;
@@ -43,6 +44,12 @@ public class TacosScript {
 
     public NPCConversationManager getCM(MapleClient c) {
         return cms.get(c);
+    }
+
+    protected Map<String, EventManager> ems = new HashMap<>();
+
+    public EventManager getEM(String event_name) {
+        return ems.get(event_name);
     }
 
     protected Map<String, ScriptEngine> script_cache = new HashMap<>();
