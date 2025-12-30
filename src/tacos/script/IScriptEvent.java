@@ -19,7 +19,7 @@
 package tacos.script;
 
 import odin.client.MapleCharacter;
-import odin.scripting.EventInstanceManager;
+import tacos.odin.OdinEventInstanceManager;
 
 /**
  *
@@ -29,31 +29,31 @@ public interface IScriptEvent {
 
     public boolean init();
 
-    public boolean monsterValue(EventInstanceManager eim, int mob_id);
+    public boolean monsterValue(OdinEventInstanceManager eim, int mob_id);
 
     public boolean setup();
 
-    public boolean playerEntry(EventInstanceManager eim, MapleCharacter player);
+    public boolean playerEntry(OdinEventInstanceManager eim, MapleCharacter player);
 
-    public boolean playerDead(EventInstanceManager eim, MapleCharacter player);
+    public boolean playerDead(OdinEventInstanceManager eim, MapleCharacter player);
 
-    public boolean playerRevive(EventInstanceManager eim, MapleCharacter player);
+    public boolean playerRevive(OdinEventInstanceManager eim, MapleCharacter player);
 
-    public boolean scheduledTimeout(EventInstanceManager eim);
+    public boolean scheduledTimeout(OdinEventInstanceManager eim);
 
-    public boolean changedMap(EventInstanceManager eim, MapleCharacter player, int map_id);
+    public boolean changedMap(OdinEventInstanceManager eim, MapleCharacter player, int map_id);
 
-    public boolean playerDisconnected(EventInstanceManager eim, MapleCharacter player);
+    public boolean playerDisconnected(OdinEventInstanceManager eim, MapleCharacter player);
 
-    public boolean leftParty(EventInstanceManager eim, MapleCharacter player);
+    public boolean leftParty(OdinEventInstanceManager eim, MapleCharacter player);
 
-    public boolean disbandParty(EventInstanceManager eim, MapleCharacter player);
+    public boolean disbandParty(OdinEventInstanceManager eim, MapleCharacter player);
 
-    public boolean playerExit(EventInstanceManager eim, MapleCharacter player);
+    public boolean playerExit(OdinEventInstanceManager eim, MapleCharacter player);
 
-    public boolean clearPQ(EventInstanceManager eim);
+    public boolean clearPQ(OdinEventInstanceManager eim);
 
-    public boolean allMonstersDead(EventInstanceManager eim);
+    public boolean allMonstersDead(OdinEventInstanceManager eim);
 
     public boolean cancelSchedule();
 

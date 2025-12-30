@@ -30,7 +30,6 @@ import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
-import odin.scripting.EventManager;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleShopFactory;
@@ -45,7 +44,6 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleReactor;
 import odin.server.quest.MapleQuest;
 import odin.tools.StringUtil;
-import tacos.script.TacosScriptEvent;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -526,40 +524,6 @@ public class AdminCommand {
                 squads.clear();
             }
             return 1;
-        }
-    }
-
-    public static class LeaveInstance extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            if (c.getPlayer().getEventInstance() == null) {
-                c.getPlayer().dropMessage(5, "You are not in one");
-            } else {
-                c.getPlayer().getEventInstance().unregisterPlayer(c.getPlayer());
-            }
-            return 1;
-        }
-    }
-
-    public static class StartInstance extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            if (c.getPlayer().getEventInstance() != null) {
-                c.getPlayer().dropMessage(5, "You are in one");
-            } else if (splitted.length > 2) {
-                EventManager em = TacosScriptEvent.getInstance().getEventManager(splitted[1]);
-                if (em == null || em.getInstance(splitted[2]) == null) {
-                    c.getPlayer().dropMessage(5, "Not exist");
-                } else {
-                    em.getInstance(splitted[2]).registerPlayer(c.getPlayer());
-                }
-            } else {
-                c.getPlayer().dropMessage(5, "!startinstance [eventmanager] [eventinstance]");
-            }
-            return 1;
-
         }
     }
 

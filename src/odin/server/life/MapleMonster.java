@@ -55,7 +55,7 @@ import tacos.packet.ops.arg.ArgFieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.wrapper.ResWrapper;
-import odin.scripting.EventInstanceManager;
+import tacos.odin.OdinEventInstanceManager;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.Timer.MobTimer;
@@ -79,7 +79,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private WeakReference<MapleCharacter> controller = new WeakReference<MapleCharacter>(null);
     private boolean fake, dropsDisabled, controllerHasAggro, controllerKnowsAboutAggro;
     private final Collection<AttackerEntry> attackers = new LinkedList<AttackerEntry>();
-    private EventInstanceManager eventInstance;
+    private OdinEventInstanceManager eventInstance;
     private MonsterListener listener = null;
     private MaplePacket reflectpack = null, nodepack = null;
     private final Map<MonsterStatus, MonsterStatusEffect> stati = new ConcurrentEnumMap<MonsterStatus, MonsterStatusEffect>(MonsterStatus.class);
@@ -291,14 +291,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             }
             if (hp > 0) {
                 hp -= rDamage;
-                if (eventInstance != null) {
-                    eventInstance.monsterDamaged(from, this, (int) rDamage);
-                } else {
-                    final EventInstanceManager em = from.getEventInstance();
-                    if (em != null) {
-                        em.monsterDamaged(from, this, (int) rDamage);
-                    }
-                }
                 if (sponge.get() == null/* && hp > 0*/) {
                     switch (stats.getHPDisplayType()) {
                         case 0:
@@ -360,14 +352,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     private final void giveExpToCharacter(final MapleCharacter attacker, int exp, final boolean highestDamage, final int numExpSharers, final byte pty, final byte Class_Bonus_EXP_PERCENT, final byte Premium_Bonus_EXP_PERCENT, final int lastskillID) {
         if (highestDamage) {
-            if (eventInstance != null) {
-                eventInstance.monsterKilled(attacker, this);
-            } else {
-                final EventInstanceManager em = attacker.getEventInstance();
-                if (em != null) {
-                    em.monsterKilled(attacker, this);
-                }
-            }
             highestDamageChar = attacker.getId();
         }
         if (exp > 0) {
@@ -429,10 +413,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
 
         spawnRevives();
-        if (eventInstance != null) {
-            eventInstance.unregisterMonster(this);
-            eventInstance = null;
-        }
         if (killer != null && killer.getPyramidSubway() != null) {
             killer.getPyramidSubway().onKill(killer);
         }
@@ -482,9 +462,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     final MapleMonster mob = MapleLifeFactory.getMonster(i);
 
                     mob.setPosition(getPosition());
-                    if (eventInstance != null) {
-                        eventInstance.registerMonster(mob);
-                    }
                     if (dropsDisabled()) {
                         mob.disableDrops();
                     }
@@ -522,9 +499,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     final MapleMonster mob = MapleLifeFactory.getMonster(i);
 
                     mob.setPosition(getPosition());
-                    if (eventInstance != null) {
-                        eventInstance.registerMonster(mob);
-                    }
                     if (dropsDisabled()) {
                         mob.disableDrops();
                     }
@@ -558,9 +532,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 for (final int i : toSpawn) {
                     final MapleMonster mob = MapleLifeFactory.getMonster(i);
 
-                    if (eventInstance != null) {
-                        eventInstance.registerMonster(mob);
-                    }
                     mob.setPosition(getPosition());
                     if (dropsDisabled()) {
                         mob.disableDrops();
@@ -720,11 +691,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         return MapleMapObjectType.MONSTER;
     }
 
-    public final EventInstanceManager getEventInstance() {
+    public final OdinEventInstanceManager getEventInstance() {
         return eventInstance;
     }
 
-    public final void setEventInstance(final EventInstanceManager eventInstance) {
+    public final void setEventInstance(final OdinEventInstanceManager eventInstance) {
         this.eventInstance = eventInstance;
     }
 

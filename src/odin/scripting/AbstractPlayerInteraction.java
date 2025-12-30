@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.scripting;
 
+import tacos.odin.OdinEventManager;
+import tacos.odin.OdinEventInstanceManager;
 import java.awt.Point;
 import java.util.List;
 
@@ -93,7 +95,7 @@ public abstract class AbstractPlayerInteraction {
         return c.getPlayer();
     }
 
-    public final EventInstanceManager getEventInstance() {
+    public final OdinEventInstanceManager getEventInstance() {
         return c.getPlayer().getEventInstance();
     }
 
@@ -187,7 +189,7 @@ public abstract class AbstractPlayerInteraction {
     }
 
     public final MapleMap getMap_Instanced(final int map) {
-        return c.getPlayer().getEventInstance() == null ? getMap(map) : c.getPlayer().getEventInstance().getMapInstance(map);
+        return getMap(map);
     }
 
     public void spawnMonster(final int id, final int qty) {
@@ -1028,20 +1030,11 @@ public abstract class AbstractPlayerInteraction {
         c.SendPacket(ResWrapper.BroadCastMsgEvent(message));
     }
 
-    public EventManager getEventManager(String event) {
+    public OdinEventManager getEventManager(String event) {
         return TacosScriptEvent.getInstance().getEventManager(event);
     }
 
-    public EventInstanceManager getDisconnected(String event) {
-        EventManager em = getEventManager(event);
-        if (em == null) {
-            return null;
-        }
-        for (EventInstanceManager eim : em.getInstances()) {
-            if (eim.isDisconnected(c.getPlayer()) && eim.getPlayerCount() > 0) {
-                return eim;
-            }
-        }
+    public OdinEventInstanceManager getDisconnected(String event) {
         return null;
     }
 

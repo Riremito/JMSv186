@@ -32,7 +32,6 @@ import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.wrapper.ResWrapper;
-import odin.scripting.EventManager;
 import odin.server.Randomizer;
 import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleLifeFactory;
@@ -40,7 +39,6 @@ import odin.server.life.MapleMonster;
 import odin.server.quest.MapleQuest;
 import odin.server.quest.MapleQuest.MedalQuest;
 import odin.tools.FileoutputUtil;
-import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 
@@ -323,24 +321,6 @@ public class MapScriptMethods {
                         c.getPlayer().getMap().startMapEffect("Destroy the Lord Pirate!", 5120020);
                         break;
                 }
-                EventManager em = TacosScriptEvent.getInstance().getEventManager("Pirate");
-                if (c.getPlayer().getMapId() == 925100500 && em != null && em.getProperty("stage5") != null) {
-                    int mobId = Randomizer.nextBoolean() ? 9300107 : 9300119; //lord pirate
-                    final int st = Integer.parseInt(em.getProperty("stage5"));
-                    switch (st) {
-                        case 1:
-                            mobId = Randomizer.nextBoolean() ? 9300119 : 9300105; //angry
-                            break;
-                        case 2:
-                            mobId = Randomizer.nextBoolean() ? 9300106 : 9300105; //enraged
-                            break;
-                    }
-                    final MapleMonster shammos = MapleLifeFactory.getMonster(mobId);
-                    if (c.getPlayer().getEventInstance() != null) {
-                        c.getPlayer().getEventInstance().registerMonster(shammos);
-                    }
-                    c.getPlayer().getMap().spawnMonsterOnGroundBelow(shammos, new Point(411, 236));
-                }
                 break;
             }
             case astaroth_summon: {
@@ -411,14 +391,6 @@ public class MapScriptMethods {
             case shammos_Fenter: {
                 if (c.getPlayer().getMapId() >= 921120100 && c.getPlayer().getMapId() < 921120500) {
                     final MapleMonster shammos = MapleLifeFactory.getMonster(9300275);
-                    if (c.getPlayer().getEventInstance() != null) {
-                        c.getPlayer().getEventInstance().registerMonster(shammos);
-                        if (c.getPlayer().getEventInstance().getProperty("HP") != null) {
-                            shammos.setHp(Long.parseLong(c.getPlayer().getEventInstance().getProperty("HP")));
-                        } else {
-                            c.getPlayer().getEventInstance().setProperty("HP", "50000");
-                        }
-                    }
                     c.getPlayer().getMap().spawnMonsterWithEffectBelow(shammos, new Point(c.getPlayer().getMap().getPortal(0).getPosition()), 12);
                     shammos.switchController(c.getPlayer(), false);
                     c.getSession().write(ResCMobPool.getNodeProperties(shammos, c.getPlayer().getMap()));
@@ -490,13 +462,7 @@ public class MapScriptMethods {
                 }
                 break;
             }
-            case start_itemTake: { //nothing to go on inside the map
-                EventManager em = TacosScriptEvent.getInstance().getEventManager("OrbisPQ");
-                if (em != null && em.getProperty("pre").equals("0")) {
-                    TacosScriptNPC.getInstance().dispose(c);
-                    TacosScriptQuest.getInstance().dispose(c);
-                    TacosScriptNPC.getInstance().start(c, 2013001);
-                }
+            case start_itemTake: {
                 break;
             }
             case PRaid_W_Enter: {

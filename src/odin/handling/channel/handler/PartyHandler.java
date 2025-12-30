@@ -84,17 +84,11 @@ public class PartyHandler {
                 if (party != null) { //are we in a party? o.O"
                     if (partyplayer.equals(party.getLeader())) { // disband
                         World.Party.updateParty(party.getId(), PartyOperation.DISBAND, partyplayer);
-                        if (c.getPlayer().getEventInstance() != null) {
-                            c.getPlayer().getEventInstance().disbandParty();
-                        }
                         if (c.getPlayer().getPyramidSubway() != null) {
                             c.getPlayer().getPyramidSubway().fail(c.getPlayer());
                         }
                     } else {
                         World.Party.updateParty(party.getId(), PartyOperation.LEAVE, partyplayer);
-                        if (c.getPlayer().getEventInstance() != null) {
-                            c.getPlayer().getEventInstance().leftParty(c.getPlayer());
-                        }
                         if (c.getPlayer().getPyramidSubway() != null) {
                             c.getPlayer().getPyramidSubway().fail(c.getPlayer());
                         }
@@ -144,14 +138,6 @@ public class PartyHandler {
                     final MaplePartyCharacter expelled = party.getMemberById(cp.Decode4());
                     if (expelled != null) {
                         World.Party.updateParty(party.getId(), PartyOperation.EXPEL, expelled);
-                        if (c.getPlayer().getEventInstance() != null) {
-                            /*if leader wants to boot someone, then the whole party gets expelled
-                            TODO: Find an easier way to get the character behind a MaplePartyCharacter
-                            possibly remove just the expellee.*/
-                            if (expelled.isOnline()) {
-                                c.getPlayer().getEventInstance().disbandParty();
-                            }
-                        }
                         if (c.getPlayer().getPyramidSubway() != null && expelled.isOnline()) {
                             c.getPlayer().getPyramidSubway().fail(c.getPlayer());
                         }

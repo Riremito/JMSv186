@@ -44,7 +44,7 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
 import odin.handling.world.PartyOperation;
-import odin.scripting.EventManager;
+import tacos.odin.OdinEventManager;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
@@ -564,15 +564,9 @@ public class TacosMap extends TacosMapData {
             }
         }
         if (!chr.isClone()) {
-            if (chr.getEventInstance() != null && chr.getEventInstance().isTimerStarted() && !chr.isClone()) {
-                chr.getClient().getSession().write(ResCField.getClock((int) (chr.getEventInstance().getTimeLeft() / 1000)));
-            }
             if (hasClock()) {
                 final Calendar cal = Calendar.getInstance();
                 chr.getClient().getSession().write((ResCField.getClockTime(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND))));
-            }
-            if (chr.getCarnivalParty() != null && chr.getEventInstance() != null) {
-                chr.getEventInstance().onMapLoad(chr);
             }
             if (getSquadBegin() != null && getSquadBegin().getTimeLeft() > 0 && getSquadBegin().getStatus() == 1) {
                 chr.getClient().getSession().write(ResCField.getClock((int) (getSquadBegin().getTimeLeft() / 1000)));
@@ -1254,10 +1248,9 @@ public class TacosMap extends TacosMapData {
         final int mode = (mapid == 280030000 ? 1 : (mapid == 280030001 ? 2 : (mapid == 240060200 || mapid == 240060201 ? 3 : 0)));
         //chaos_horntail message for horntail too because it looks nicer
         final MapleSquad sqd = getSquadByMap();
-        final EventManager em = getEMByMap();
+        final OdinEventManager em = getEMByMap();
         if (sqd != null && em != null && getCharactersSize() > 0) {
             final String leaderName = sqd.getLeaderName();
-            final String state = em.getProperty("state");
             final Runnable run;
             MapleMap returnMapa = getForcedReturnMap();
             if (returnMapa == null || returnMapa.getId() == mapid) {
@@ -1282,71 +1275,7 @@ public class TacosMap extends TacosMapData {
                 for (MapleMapObject m : monsterz) {
                     monsteridz.add(m.getObjectId());
                 }
-                run = new Runnable() {
-
-                    public void run() {
-                        final MapleSquad sqnow = getSquadByMap();
-                        if (getCharactersSize() > 0 && getNumMonsters() == monsterz.size() && sqnow != null && sqnow.getStatus() == 2 && sqnow.getLeaderName().equals(leaderName) && getEMByMap().getProperty("state").equals(state)) {
-                            boolean passed = monsterz.isEmpty();
-                            for (MapleMapObject m : getAllMonsters()) {
-                                for (int i : monsteridz) {
-                                    if (m.getObjectId() == i) {
-                                        passed = true;
-                                        break;
-                                    }
-                                }
-                                if (passed) {
-                                    break;
-                                } //even one of the monsters is the same
-                            }
-                            if (passed) {
-                                //are we still the same squad? are monsters still == 0?
-                                MaplePacket packet;
-                                if (mode == 1) { //zakum
-                                    packet = ResCField.showZakumShrine(spawned, 0);
-                                } else if (mode == 2) { //chaoszakum
-                                    packet = ResCField.showChaosZakumShrine(spawned, 0);
-                                } else {
-                                    packet = ResCField.showHorntailShrine(spawned, 0); //chaoshorntail message is weird
-                                }
-                                for (MapleCharacter chr : getCharacters()) { //warp all in map
-                                    chr.getClient().getSession().write(packet);
-                                    chr.changeMap(returnMapz, returnMapz.getPortal(0)); //hopefully event will still take care of everything once warp out
-                                }
-                                checkStates("");
-                                resetFully();
-                            }
-                        }
-
-                    }
-                };
-            } else { //inforce timer to gtfo
-                run = new Runnable() {
-
-                    public void run() {
-                        MapleSquad sqnow = getSquadByMap();
-                        //we dont need to stop clock here because they're getting warped out anyway
-                        if (getCharactersSize() > 0 && sqnow != null && sqnow.getStatus() == 2 && sqnow.getLeaderName().equals(leaderName) && getEMByMap().getProperty("state").equals(state)) {
-                            //are we still the same squad? monsters however don't count
-                            MaplePacket packet;
-                            if (mode == 1) { //zakum
-                                packet = ResCField.showZakumShrine(spawned, 0);
-                            } else if (mode == 2) { //chaoszakum
-                                packet = ResCField.showChaosZakumShrine(spawned, 0);
-                            } else {
-                                packet = ResCField.showHorntailShrine(spawned, 0); //chaoshorntail message is weird
-                            }
-                            for (MapleCharacter chr : getCharacters()) { //warp all in map
-                                chr.getClient().getSession().write(packet);
-                                chr.changeMap(returnMapz, returnMapz.getPortal(0)); //hopefully event will still take care of everything once warp out
-                            }
-                            checkStates("");
-                            resetFully();
-                        }
-                    }
-                };
             }
-            squadSchedule = MapTimer.getInstance().schedule(run, 300000); //5 mins
         }
     }
 
@@ -1375,31 +1304,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void checkStates(final String chr) {
-        final MapleSquad sqd = getSquadByMap();
-        final EventManager em = getEMByMap();
         final int size = getCharactersSize();
-        if (sqd != null) {
-            sqd.removeMember(chr);
-            if (em != null) {
-                if (sqd.getLeaderName().equals(chr)) {
-                    em.setProperty("leader", "false");
-                }
-                if (chr.equals("") || size == 0) {
-                    sqd.clear();
-                    em.setProperty("state", "0");
-                    em.setProperty("leader", "true");
-                    cancelSquadSchedule();
-                }
-            }
-        }
-        if (em != null && em.getProperty("state") != null) {
-            if (size == 0) {
-                em.setProperty("state", "0");
-                if (em.getProperty("leader") != null) {
-                    em.setProperty("leader", "true");
-                }
-            }
-        }
         if (speedRunStart > 0 && speedRunLeader.equalsIgnoreCase(chr)) {
             if (size > 0) {
                 broadcastMessage(ResWrapper.BroadCastMsgEvent("The leader is not in the map! Your speedrun has failed"));
@@ -1462,7 +1367,7 @@ public class TacosMap extends TacosMapData {
         return ServerOdinGame.getInstance(channel).getMapleSquad(zz);
     }
 
-    public EventManager getEMByMap() {
+    public OdinEventManager getEMByMap() {
         String em = null;
         switch (mapid) {
             case 105100400:

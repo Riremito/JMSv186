@@ -29,7 +29,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import odin.client.MapleClient;
-import odin.scripting.EventManager;
+import tacos.odin.OdinEventManager;
 import odin.scripting.NPCConversationManager;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Java;
@@ -46,9 +46,9 @@ public class TacosScript {
         return cms.get(c);
     }
 
-    protected Map<String, EventManager> ems = new HashMap<>();
+    protected Map<String, OdinEventManager> ems = new HashMap<>();
 
-    public EventManager getEM(String event_name) {
+    public OdinEventManager getEM(String event_name) {
         return ems.get(event_name);
     }
 

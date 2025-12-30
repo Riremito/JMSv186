@@ -101,7 +101,7 @@ import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
-import odin.scripting.EventInstanceManager;
+import tacos.odin.OdinEventInstanceManager;
 import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.MapleStorage;
@@ -194,7 +194,7 @@ public class MapleCharacter extends TacosCharacter {
     private boolean invincible = false, canTalk = true, followinitiator = false, followon = false;
     private MapleGuildCharacter mgc;
     private MapleFamilyCharacter mfc;
-    private transient EventInstanceManager eventInstance;
+    private transient OdinEventInstanceManager eventInstance;
     private SkillMacro[] skillMacros = new SkillMacro[5];
     private transient ScheduledFuture<?> beholderHealingSchedule, beholderBuffSchedule, BerserkSchedule,
             dragonBloodSchedule, fairySchedule, mapTimeLimitTask, fishing;
@@ -2184,10 +2184,6 @@ public class MapleCharacter extends TacosCharacter {
 
         int map_id_prev = map.getId();
 
-        if (getEventInstance() != null) {
-            getEventInstance().changedMap(this, map_to.getId());
-        }
-
         boolean pyramid_check = getPyramidSubway() != null;
         boolean map_id_check = map.getId() == map_id_prev;
 
@@ -2451,9 +2447,6 @@ public class MapleCharacter extends TacosCharacter {
             setStance(0);
             changeMap(getMap(), getMap().getPortal(0));
             return;
-        }
-        if (getEventInstance() != null) {
-            getEventInstance().playerKilled(this);
         }
         dispelSkill(0);
         cancelEffectFromBuffStat(MapleBuffStat.MORPH);
@@ -3469,11 +3462,11 @@ public class MapleCharacter extends TacosCharacter {
         this.trade = trade;
     }
 
-    public EventInstanceManager getEventInstance() {
+    public OdinEventInstanceManager getEventInstance() {
         return eventInstance;
     }
 
-    public void setEventInstance(EventInstanceManager eventInstance) {
+    public void setEventInstance(OdinEventInstanceManager eventInstance) {
         this.eventInstance = eventInstance;
     }
 
@@ -5463,9 +5456,6 @@ public class MapleCharacter extends TacosCharacter {
                 }
             }
             this.changeRemoval(true);
-            if (this.getEventInstance() != null) {
-                this.getEventInstance().playerDisconnected(this, this.getId());
-            }
             if (this.getMap() != null) {
                 this.getMap().removePlayer(this);
             }

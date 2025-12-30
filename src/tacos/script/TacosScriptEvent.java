@@ -21,7 +21,7 @@ package tacos.script;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import odin.scripting.EventManager;
+import tacos.odin.OdinEventManager;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_World;
 
@@ -58,8 +58,8 @@ public class TacosScriptEvent extends TacosScript {
         }
     }
 
-    public EventManager getEventManager(String event_name) {
-        EventManager em = ems.get(event_name);
+    public OdinEventManager getEventManager(String event_name) {
+        OdinEventManager em = ems.get(event_name);
         if (em == null) {
             DebugLogger.ErrorLog("event_script : get, " + event_name);
             return null;
@@ -84,7 +84,7 @@ public class TacosScriptEvent extends TacosScript {
         }
         DebugLogger.ScriptLog("event_script : init, " + event_name);
 
-        EventManager em = new EventManager(channel, (Invocable) engine, event_name);
+        OdinEventManager em = new OdinEventManager(channel, (Invocable) engine, event_name);
         ems.remove(event_name);
         ems.put(event_name, em);
         engine.put("em", em);
@@ -92,7 +92,7 @@ public class TacosScriptEvent extends TacosScript {
     }
 
     public boolean cancelSchedule(String event_name, int channel) {
-        EventManager em = ems.get(event_name);
+        OdinEventManager em = ems.get(event_name);
         if (em == null) {
             DebugLogger.ErrorLog("event_script : cancelSchedule, " + event_name);
             return false;

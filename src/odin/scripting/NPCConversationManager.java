@@ -728,13 +728,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean reAdd(String eim, String squad) {
-        EventInstanceManager eimz = getDisconnected(eim);
-        MapleSquad squadz = getSquad(squad);
-        if (eimz != null && squadz != null) {
-            squadz.reAddMember(getPlayer());
-            eimz.registerPlayer(getPlayer());
-            return true;
-        }
         return false;
     }
 
@@ -809,10 +802,6 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     }
 
     public boolean removePlayerFromInstance() {
-        if (c.getPlayer().getEventInstance() != null) {
-            c.getPlayer().getEventInstance().removePlayer(c.getPlayer());
-            return true;
-        }
         return false;
     }
 

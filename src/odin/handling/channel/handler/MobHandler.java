@@ -64,8 +64,6 @@ public class MobHandler {
             for (MapleCharacter chrz : map.getCharacters()) {
                 chrz.changeMap(mapp, mapp.getPortal(0));
             }
-        } else if (mobto.getId() == 9300275 && mobto.getEventInstance() != null) {
-            mobto.getEventInstance().setProperty("HP", String.valueOf(mobto.getHp()));
         }
     }
 
