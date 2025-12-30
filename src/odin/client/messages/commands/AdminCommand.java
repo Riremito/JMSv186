@@ -779,17 +779,6 @@ public class AdminCommand {
         }
     }
 
-    public static class ReloadEvents extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            for (ServerOdinGame instance : ServerOdinGame.getAllInstances()) {
-                instance.reloadEvents();
-            }
-            return 1;
-        }
-    }
-
     public static class ReloadQuests extends CommandExecute {
 
         @Override

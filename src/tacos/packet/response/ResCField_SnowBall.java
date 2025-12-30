@@ -20,7 +20,6 @@ package tacos.packet.response;
 
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
-import odin.server.events.MapleSnowball;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -29,7 +28,20 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCField_SnowBall {
 
-    public static MaplePacket SnowBallState(int m_nState, MapleSnowball.MapleSnowballs ball1, MapleSnowball.MapleSnowballs ball2) {
+    // fake
+    public static class MapleSnowballs {
+
+        public int getSnowmanHP() {
+            return 0;
+        }
+
+        public int getPosition() {
+            return 0;
+        }
+
+    }
+
+    public static MaplePacket SnowBallState(int m_nState, MapleSnowballs ball1, MapleSnowballs ball2) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SnowBallState);
         sp.Encode1(m_nState); // 0 = normal, 1 = rolls from start to end, 2 = down disappear, 3 = up disappear, 4 = move
         sp.Encode4(ball1 == null ? 0 : (ball1.getSnowmanHP() / 75)); // m_aSnowMan[0].m_nHP

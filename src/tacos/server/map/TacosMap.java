@@ -50,7 +50,6 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
 import odin.server.MapleStatEffect;
 import odin.server.Timer.MapTimer;
-import odin.server.events.MapleEvent;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
@@ -209,6 +208,11 @@ public class TacosMap extends TacosMapData {
 
     public Map<String, Integer> getEnvironment() {
         return this.environment;
+    }
+
+    // horntail test.
+    public void startSpeedRun() {
+        this.speedRunStart = System.currentTimeMillis();
     }
 
     public void startSpeedRun(String leader) {
@@ -570,7 +574,6 @@ public class TacosMap extends TacosMapData {
             if (chr.getCarnivalParty() != null && chr.getEventInstance() != null) {
                 chr.getEventInstance().onMapLoad(chr);
             }
-            MapleEvent.mapLoad(chr, channel);
             if (getSquadBegin() != null && getSquadBegin().getTimeLeft() > 0 && getSquadBegin().getStatus() == 1) {
                 chr.getClient().getSession().write(ResCField.getClock((int) (getSquadBegin().getTimeLeft() / 1000)));
             }

@@ -48,7 +48,6 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.Randomizer;
-import odin.server.events.MapleSnowball.MapleSnowballs;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobAttackInfo;
 import odin.server.life.MobSkill;
@@ -488,9 +487,6 @@ public class PlayerHandler {
         }
         attackCount *= (mirror ? 2 : 1);
         if (!energy) {
-            if ((chr.getMapId() == 109060000 || chr.getMapId() == 109060002 || chr.getMapId() == 109060004) && attack.skill == 0) {
-                MapleSnowballs.hitSnowball(chr);
-            }
             // handle combo orbconsume
             int numFinisherOrbs = 0;
             final Integer comboBuff = chr.getBuffedValue(MapleBuffStat.COMBO);

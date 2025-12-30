@@ -40,8 +40,6 @@ import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleSquad;
 import odin.server.Randomizer;
 import odin.server.Timer.EventTimer;
-import odin.server.events.MapleEvent;
-import odin.server.events.MapleEventType;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.OverrideMonsterStats;
@@ -209,16 +207,6 @@ public class EventManager {
         }
     }
 
-    public void startInstance(MapleCharacter character) {
-        try {
-            EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", (Object) null));
-            eim.registerPlayer(character);
-        } catch (Exception ex) {
-            System.out.println("Event name : " + name + ", method Name : setup-character:\n" + ex);
-            FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Event name : " + name + ", method Name : setup-character:\n" + ex);
-        }
-    }
-
     //PQ method: starts a PQ
     public void startInstance(MapleParty party, MapleMap map) {
         try {
@@ -336,34 +324,18 @@ public class EventManager {
         }
     }
 
-    public boolean scheduleRandomEvent() {
-        if (getChannel() != eventChannel) {
-            return false;
-        }
-        MapleEventType t = null;
-        while (t == null) {
-            for (MapleEventType x : MapleEventType.values()) {
-                if (Randomizer.nextInt(MapleEventType.values().length) == 0) {
-                    t = x;
-                    break;
-                }
-            }
-        }
-        final String msg = MapleEvent.scheduleEvent(t, getChannelServer());
-        if (msg.length() > 0) {
-            broadcastYellowMsg(msg);
-            return false;
-        }
-        schedule("seal", 120000);
-        return true;
-    }
-
-    public void sealEvent() {
-        MapleEvent.setEvent(getChannelServer(), true);
-        getChannelServer().broadcastPacket(ResWrapper.BroadCastMsgNoticeOld("Entries for the event are now closed!"));
-    }
-
     public void setWorldEvent() {
         eventChannel = Randomizer.nextInt(7) + 2; //2-8
+    }
+
+    // to fix
+    public void startInstance(MapleCharacter character) {
+        try {
+            EventInstanceManager eim = (EventInstanceManager) (iv.invokeFunction("setup", (Object) null));
+            eim.registerPlayer(character);
+        } catch (Exception ex) {
+            System.out.println("Event name : " + name + ", method Name : setup-character:\n" + ex);
+            FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Event name : " + name + ", method Name : setup-character:\n" + ex);
+        }
     }
 }

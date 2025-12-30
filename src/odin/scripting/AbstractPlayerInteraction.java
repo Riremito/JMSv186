@@ -51,6 +51,7 @@ import odin.server.quest.MapleQuest;
 import odin.client.inventory.MapleInventoryIdentifier;
 import tacos.debug.DebugLogger;
 import odin.handling.world.World;
+import tacos.odin.OdinMapleEvent;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import tacos.packet.ops.OpsScriptMan;
@@ -61,8 +62,6 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
-import odin.server.events.MapleEvent;
-import odin.server.events.MapleEventType;
 import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
 
@@ -92,10 +91,6 @@ public abstract class AbstractPlayerInteraction {
 
     public final MapleCharacter getPlayer() {
         return c.getPlayer();
-    }
-
-    public EventManager getEventManager(String event) {
-        return TacosScriptEvent.getInstance().getEventManager(event);
     }
 
     public final EventInstanceManager getEventInstance() {
@@ -278,10 +273,6 @@ public abstract class AbstractPlayerInteraction {
         return c.getPlayer().getName();
     }
 
-    public final boolean haveItem(final int itemid) {
-        return haveItem(itemid, 1);
-    }
-
     public final boolean haveItem(final int itemid, final int quantity) {
         return haveItem(itemid, quantity, false, true);
     }
@@ -309,10 +300,6 @@ public abstract class AbstractPlayerInteraction {
 
     public final MapleQuestStatus getQuestRecord(final int id) {
         return c.getPlayer().getQuestNAdd(MapleQuest.getInstance(id));
-    }
-
-    public final byte getQuestStatus(final int id) {
-        return c.getPlayer().getQuestStatus(id);
     }
 
     public final boolean isQuestActive(final int id) {
@@ -396,10 +383,6 @@ public abstract class AbstractPlayerInteraction {
                 break;
             }
         }
-    }
-
-    public final int getJob() {
-        return c.getPlayer().getJob();
     }
 
     public final void gainNX(final int amount) {
@@ -490,11 +473,6 @@ public abstract class AbstractPlayerInteraction {
     // npc/9201006.js
     public final void worldMessage(final int type, final String message) {
         World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgEvent(message).getBytes());
-    }
-
-    // default playerMessage and mapMessage to use type 5
-    public final void playerMessage(final String message) {
-        c.SendPacket(ResWrapper.BroadCastMsgEvent(message));
     }
 
     public final void mapMessage(final String message) {
@@ -823,10 +801,6 @@ public abstract class AbstractPlayerInteraction {
         getPlayer().changeSkillLevel(skil, level, skil.getMaxLevel());
     }
 
-    public final int getPlayerCount(final int mapid) {
-        return c.getChannelServer().getMapFactory().getMap(mapid).getCharactersSize();
-    }
-
     public final void dojo_getUp() {
         c.SendPacket(ResWrapper.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
         c.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
@@ -844,8 +818,8 @@ public abstract class AbstractPlayerInteraction {
         return c.getPlayer().getDojo();
     }
 
-    public final MapleEvent getEvent(final String loc) {
-        return c.getChannelServer().getEvent(MapleEventType.valueOf(loc));
+    public OdinMapleEvent getEvent(String loc) {
+        return null;
     }
 
     public final int getSavedLocation(final String loc) {
@@ -990,19 +964,6 @@ public abstract class AbstractPlayerInteraction {
         return getPlayer().itemQuantity(itemid);
     }
 
-    public EventInstanceManager getDisconnected(String event) {
-        EventManager em = getEventManager(event);
-        if (em == null) {
-            return null;
-        }
-        for (EventInstanceManager eim : em.getInstances()) {
-            if (eim.isDisconnected(c.getPlayer()) && eim.getPlayerCount() > 0) {
-                return eim;
-            }
-        }
-        return null;
-    }
-
     public boolean isAllReactorState(final int reactorId, final int state) {
         boolean ret = false;
         for (MapleReactor r : getMap().getAllReactors()) {
@@ -1045,4 +1006,43 @@ public abstract class AbstractPlayerInteraction {
     public boolean getTempFlag(final int flag) {
         return (c.getChannelServer().getTempFlag() & flag) == flag;
     }
+
+    // event script compatibility
+    public byte getQuestStatus(int id) {
+        return c.getPlayer().getQuestStatus(id);
+    }
+
+    public int getJob() {
+        return c.getPlayer().getJob();
+    }
+
+    public boolean haveItem(int itemid) {
+        return haveItem(itemid, 1);
+    }
+
+    public int getPlayerCount(int mapid) {
+        return c.getChannelServer().getMapFactory().getMap(mapid).getCharactersSize();
+    }
+
+    public void playerMessage(String message) {
+        c.SendPacket(ResWrapper.BroadCastMsgEvent(message));
+    }
+
+    public EventManager getEventManager(String event) {
+        return TacosScriptEvent.getInstance().getEventManager(event);
+    }
+
+    public EventInstanceManager getDisconnected(String event) {
+        EventManager em = getEventManager(event);
+        if (em == null) {
+            return null;
+        }
+        for (EventInstanceManager eim : em.getInstances()) {
+            if (eim.isDisconnected(c.getPlayer()) && eim.getPlayerCount() > 0) {
+                return eim;
+            }
+        }
+        return null;
+    }
+
 }

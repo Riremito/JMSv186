@@ -40,18 +40,9 @@ import odin.server.maps.MapleMapFactory;
 import odin.server.shops.HiredMerchant;
 import odin.server.life.PlayerNPC;
 
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
 import tacos.packet.response.wrapper.ResWrapper;
-import odin.server.events.MapleCoconut;
-import odin.server.events.MapleEvent;
-import odin.server.events.MapleEventType;
-import odin.server.events.MapleFitness;
-import odin.server.events.MapleOla;
-import odin.server.events.MapleOxQuiz;
-import odin.server.events.MapleSnowball;
-import tacos.script.TacosScriptEvent;
 
 public class ServerOdinGame {
 
@@ -111,19 +102,6 @@ public class ServerOdinGame {
         return ContentCustom.CC_WZ_MAP_ADDED.get();
     }
 
-    private final Map<MapleEventType, MapleEvent> events = new EnumMap<>(MapleEventType.class);
-
-    public void loadEvents() {
-        if (!events.isEmpty()) {
-            return;
-        }
-        events.put(MapleEventType.Coconut, new MapleCoconut(channel, MapleEventType.Coconut.mapids));
-        events.put(MapleEventType.Fitness, new MapleFitness(channel, MapleEventType.Fitness.mapids));
-        events.put(MapleEventType.OlaOla, new MapleOla(channel, MapleEventType.OlaOla.mapids));
-        events.put(MapleEventType.OxQuiz, new MapleOxQuiz(channel, MapleEventType.OxQuiz.mapids));
-        events.put(MapleEventType.Snowball, new MapleSnowball(channel, MapleEventType.Snowball.mapids));
-    }
-
     public final void run_startup_configurations(int port) {
         setChannel(channel);
         this.port = (short) port;
@@ -133,19 +111,6 @@ public class ServerOdinGame {
         serverMessage = Property_World.getMessage();
         serverName = Property_World.getName();
         flags = Property_World.getFlags();
-        //adminOnly = Property_World.getAdminOnly();
-
-        for (String event_name : Property_World.getEvents().split(",")) {
-            TacosScriptEvent.getInstance().init(event_name, this.channel);
-        }
-        loadEvents();
-    }
-
-    public final void reloadEvents() {
-        for (String event_name : Property_World.getEvents().split(",")) {
-            TacosScriptEvent.getInstance().cancelSchedule(event_name, this.channel);
-            TacosScriptEvent.getInstance().init(event_name, this.channel);
-        }
     }
 
     public static final ServerOdinGame newInstance(int channel) {
@@ -369,10 +334,6 @@ public class ServerOdinGame {
 
     public final void setEvent(final int ze) {
         this.eventmap = ze;
-    }
-
-    public MapleEvent getEvent(MapleEventType t) {
-        return events.get(t);
     }
 
     public final Collection<PlayerNPC> getAllPlayerNPC() {

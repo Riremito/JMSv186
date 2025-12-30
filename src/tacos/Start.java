@@ -41,7 +41,6 @@ import odin.server.SpeedRunner;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
-import odin.server.events.MapleOxQuizFactory;
 import tacos.network.MapleAESOFB;
 import tacos.server.Server;
 import tacos.server.Server_CashShop;
@@ -130,7 +129,6 @@ public class Start {
         Server_Game.init();
 
         RandomRewards.getInstance();
-        MapleOxQuizFactory.getInstance().initialize();
         MapleGuildRanking.getInstance().getRank();
         MapleFamilyBuff.getBuffEntry();
         MTSStorage.load();

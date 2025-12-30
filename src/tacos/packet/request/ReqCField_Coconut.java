@@ -23,8 +23,6 @@ import odin.client.MapleClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCField_Coconut;
 import tacos.packet.response.wrapper.ResWrapper;
-import odin.server.events.MapleCoconut;
-import odin.server.events.MapleEventType;
 import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
 
@@ -61,13 +59,93 @@ public class ReqCField_Coconut {
         return false;
     }
 
+    // fake
+    public static class MapleCoconut {
+
+        public MapleCoconuts getCoconut(int id) {
+            return null;
+        }
+
+        public int getStopped() {
+            return 0;
+        }
+
+        public void stopCoconut() {
+        }
+
+        public int getBombings() {
+            return 0;
+        }
+
+        public void bombCoconut() {
+        }
+
+        public int getFalling() {
+            return 0;
+        }
+
+        public void fallCoconut() {
+        }
+
+        public int getMapleScore() {
+            return 0;
+        }
+
+        public int getStoryScore() {
+            return 0;
+        }
+
+        public void addMapleScore() {
+        }
+
+        public void addStoryScore() {
+        }
+
+        public int[] getCoconutScore() {
+            return null;
+        }
+
+    }
+
+    public static class MapleCoconuts {
+
+        public boolean isHittable() {
+            return false;
+        }
+
+        public long getHitTime() {
+            return 0;
+        }
+
+        public int getHits() {
+            return 0;
+        }
+
+        public void setHittable(boolean v) {
+        }
+
+        public boolean isStopped() {
+            return false;
+        }
+
+        public void setStopped(boolean v) {
+        }
+
+        public void resetHits() {
+        }
+
+        public void hit() {
+        }
+
+    }
+
     private static void OnCoconutHit(MapleClient c, short nTarget, short nDelay) {
-        MapleCoconut map = (MapleCoconut) c.getChannelServer().getEvent(MapleEventType.Coconut);
+        MapleCoconut map = null;
         if (map == null) {
             return;
         }
         //System.out.println("Coconut1");
-        MapleCoconut.MapleCoconuts nut = map.getCoconut(nTarget);
+        MapleCoconuts nut = map.getCoconut(nTarget);
         if (nut == null || !nut.isHittable()) {
             return;
         }

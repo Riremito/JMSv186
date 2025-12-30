@@ -23,6 +23,7 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import odin.scripting.EventManager;
 import tacos.debug.DebugLogger;
+import tacos.property.Property_World;
 
 /**
  *
@@ -43,6 +44,18 @@ public class TacosScriptEvent extends TacosScript {
     // temporary written for s4nest.js.
     public TacosScriptEvent() {
 
+    }
+
+    public void loadAllEvents(int channel) {
+        for (String event_name : Property_World.getEvents().split(",")) {
+            TacosScriptEvent.getInstance().init(event_name, channel);
+        }
+    }
+
+    public void unloadAllEvents(int channel) {
+        for (String event_name : Property_World.getEvents().split(",")) {
+            TacosScriptEvent.getInstance().cancelSchedule(event_name, channel);
+        }
     }
 
     public EventManager getEventManager(String event_name) {
@@ -79,12 +92,12 @@ public class TacosScriptEvent extends TacosScript {
     }
 
     public boolean cancelSchedule(String event_name, int channel) {
-        String event_name_ch = event_name + "_" + channel;
         EventManager em = ems.get(event_name);
         if (em == null) {
             DebugLogger.ErrorLog("event_script : cancelSchedule, " + event_name);
             return false;
         }
+
         DebugLogger.ScriptLog("event_script : cancelSchedule, " + event_name);
         IScriptEvent script = ((Invocable) em.getIv()).getInterface(IScriptEvent.class);
         return script.cancelSchedule();
