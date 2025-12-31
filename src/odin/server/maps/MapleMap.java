@@ -378,27 +378,27 @@ public final class MapleMap extends TacosMap {
         return spawnMonsterWithEffect(mob, effect, spos);
     }
 
-    public final void spawnZakum(final int x, final int y) {
-        final Point pos = new Point(x, y);
-        final MapleMonster mainb = MapleLifeFactory.getMonster(8800000);
-        final Point spos = calcPointBelow(new Point(pos.x, pos.y));
-        MapleFoothold zakum_fh = getFootholds().findFootHold(70);
-        spos.x = zakum_fh.getX1() + (zakum_fh.getX2() - zakum_fh.getX1() / 2);
-        spos.y = zakum_fh.getY1();
-        DebugLogger.DebugLog("spawnZakum" + pos.toString() + " " + "-> " + spos.toString());
-        mainb.setPosition(spos);
-        mainb.setFh(zakum_fh.getId());
-        mainb.setOriginFh(zakum_fh.getId());
+    // 多分Reactorの中心座標とサイズが必要, Map上の座標を利用すると足場より下に設置されているように見えるので落下する
+    public void spawnZakum(MapleReactor zakum_reactor) {
+        MapleMonster mainb = MapleLifeFactory.getMonster(8800000);
+        int reactor_fh_id = getFootholds().findReactorFootId(zakum_reactor.getMobSpawnPoint());
+        Point zakum_pos = new Point(zakum_reactor.getMobSpawnPoint());
+        zakum_pos.y = getFootholds().findFootHold(reactor_fh_id).getY1() - 1;
+
+        DebugLogger.DebugLog("spawnZakum : fh = " + reactor_fh_id + ", " + zakum_pos);
+
+        mainb.setPosition(zakum_pos);
+        mainb.setFh(reactor_fh_id);
+        mainb.setOriginFh(reactor_fh_id);
         mainb.setFake(true);
-        // Might be possible to use the map object for reference in future.
+
         spawnFakeMonster(mainb);
-        final int[] zakpart = {8800003, 8800004, 8800005, 8800006, 8800007,
-            8800008, 8800009, 8800010};
-        for (final int i : zakpart) {
-            final MapleMonster part = MapleLifeFactory.getMonster(i);
-            part.setPosition(spos);
-            part.setFh(zakum_fh.getId());
-            mainb.setOriginFh(zakum_fh.getId());
+        int[] zakpart = {8800003, 8800004, 8800005, 8800006, 8800007, 8800008, 8800009, 8800010};
+        for (int i : zakpart) {
+            MapleMonster part = MapleLifeFactory.getMonster(i);
+            part.setPosition(zakum_pos);
+            part.setFh(reactor_fh_id);
+            mainb.setOriginFh(reactor_fh_id);
             spawnMonster(part, -2);
         }
         if (squadSchedule != null) {

@@ -1,5 +1,6 @@
 package odin.client.messages.commands;
 
+import java.awt.Point;
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
 import odin.constants.ServerConstants.PlayerGMRank;
@@ -38,13 +39,17 @@ import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.life.OverrideMonsterStats;
+import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleReactor;
+import odin.server.maps.MapleReactorStats;
 import odin.server.quest.MapleQuest;
 import odin.tools.StringUtil;
+import tacos.script.TacosScriptReactor;
 import tacos.server.map.TacosPortal;
+import tacos.wz.data.ReactorWz;
 
 /**
  *
@@ -373,6 +378,36 @@ public class AdminCommand {
         }
     }
 
+    public static class ReactorTest extends CommandExecute {
+
+        @Override
+        public int execute(MapleClient c, String[] splitted) {
+
+            MapleReactorStats reactorSt = ReactorWz.get().getReactor(Integer.parseInt(splitted[1]));
+            MapleReactor reactor = new MapleReactor(reactorSt, Integer.parseInt(splitted[1]));
+            reactor.setDelay(-1);
+
+            Point pos = new Point(c.getPlayer().getPosition());
+            int foothold_id = c.getPlayer().getFH();
+            if (foothold_id == 0) {
+                return 0;
+            }
+            MapleFoothold fh = c.getPlayer().getMap().getFootholds().findFootHold(foothold_id);
+            if (fh == null) {
+                return 0;
+            }
+            pos.y = fh.getY1() + ((reactorSt.getBR().y - reactorSt.getTL().y) / 2);
+
+            reactor.setPosition(pos);
+            // spawn
+            c.getPlayer().getMap().spawnReactor(reactor);
+            // hit
+            TacosScriptReactor.getInstance().act(c, reactor);
+            return 1;
+        }
+    }
+
+
     /*
     public static class TDrops extends CommandExecute {
 
@@ -382,20 +417,6 @@ public class AdminCommand {
             return 1;
         }
     }
-
-    public static class SReactor extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            MapleReactorStats reactorSt = MapleReactorFactory.getReactor(Integer.parseInt(splitted[1]));
-            MapleReactor reactor = new MapleReactor(reactorSt, Integer.parseInt(splitted[1]));
-            reactor.setDelay(-1);
-            reactor.setPosition(c.getPlayer().getPosition());
-            c.getPlayer().getMap().spawnReactor(reactor);
-            return 1;
-        }
-    }
-
     public static class HReactor extends CommandExecute {
 
         @Override

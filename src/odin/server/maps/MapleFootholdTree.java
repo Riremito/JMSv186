@@ -235,12 +235,46 @@ public class MapleFootholdTree {
     }
 
     public MapleFoothold findFootHold(int foothold_id) {
-        for (MapleFoothold fh : footholds) {
+        for (MapleFoothold fh : this.footholds) {
             if (fh.getId() == foothold_id) {
                 return fh;
             }
         }
         return null;
+    }
+
+    public int findReactorFootId(Point target_pos) {
+        //DebugLogger.DebugLog("findReactorFootId : " + target_pos);
+        MapleFoothold fh_ground = null;
+        for (MapleFoothold fh : this.footholds) {
+            // width 0
+            if (fh.getX1() == fh.getX2()) {
+                continue;
+            }
+            // check x coordinate
+            if (target_pos.x < fh.getX1() || fh.getX2() < target_pos.x) {
+                continue;
+            }
+            // check x coordinate
+            if (fh.getY1() < target_pos.y) {
+                continue;
+            }
+            //DebugLogger.DebugLog("findReactorFootId : " + fh.getId() + " =  " + fh.getY1());
+            // set first result
+            if (fh_ground == null) {
+                fh_ground = fh;
+                continue;
+            }
+            if (fh.getY1() <= fh_ground.getY1()) {
+                fh_ground = fh;
+            }
+        }
+        // ground fh
+        if (fh_ground != null) {
+            return fh_ground.getId();
+        }
+        // not foothold (flying)
+        return 0;
     }
 
     public List<MapleFoothold> getAll() {

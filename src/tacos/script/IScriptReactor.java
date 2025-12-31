@@ -24,6 +24,6 @@ package tacos.script;
  */
 public interface IScriptReactor {
 
-    public void act();
+    public boolean act();
 
 }

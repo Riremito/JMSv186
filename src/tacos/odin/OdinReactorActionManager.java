@@ -36,7 +36,6 @@ import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.life.MapleLifeFactory;
 import odin.server.maps.ReactorDropEntry;
 import odin.server.maps.MapleReactor;
 import odin.server.life.MapleMonster;
@@ -46,9 +45,13 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
 
     private MapleReactor reactor;
 
-    public OdinReactorActionManager(MapleClient c, MapleReactor reactor) {
-        super(c);
+    public OdinReactorActionManager(MapleClient client, MapleReactor reactor) {
+        super(client);
         this.reactor = reactor;
+    }
+
+    public void spawnZakum() {
+        this.reactor.getMap().spawnZakum(this.reactor);
     }
 
     // only used for meso = false, really. No minItems because meso is used to fill the gap
@@ -124,45 +127,11 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
     }
 
     public MapleReactor getReactor() {
-        return reactor;
+        return this.reactor;
     }
 
-    public void spawnZakum() {
-        reactor.getMap().spawnZakum(getPosition().x, getPosition().y);
-    }
-
-    public void spawnFakeMonster(int id) {
-        spawnFakeMonster(id, 1, getPosition());
-    }
-
-    // summon one monster, remote location
-    public void spawnFakeMonster(int id, int x, int y) {
-        spawnFakeMonster(id, 1, new Point(x, y));
-    }
-
-    // multiple monsters, reactor location
-    public void spawnFakeMonster(int id, int qty) {
-        spawnFakeMonster(id, qty, getPosition());
-    }
-
-    // multiple monsters, remote location
-    public void spawnFakeMonster(int id, int qty, int x, int y) {
-        spawnFakeMonster(id, qty, new Point(x, y));
-    }
-
-    // handler for all spawnFakeMonster
-    private void spawnFakeMonster(int id, int qty, Point pos) {
-        for (int i = 0; i < qty; i++) {
-            reactor.getMap().spawnFakeMonsterOnGroundBelow(MapleLifeFactory.getMonster(id), pos);
-        }
-    }
-
-    public void killAll() {
-        reactor.getMap().killAllMonsters(true);
-    }
-
-    public void killMonster(int monsId) {
-        reactor.getMap().killMonster(monsId);
+    public void killMonster(int mob_id) {
+        reactor.getMap().killMonster(mob_id);
     }
 
     // summon one monster on reactor location
@@ -177,12 +146,14 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
         spawnMonster(id, qty, getPosition());
     }
 
-    public void dispelAllMonsters(final int num) { //dispels all mobs, cpq
-        final MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
-        if (skil != null) {
-            for (MapleMonster mons : getMap().getAllMonsters()) {
-                mons.dispelSkill(skil.getSkill());
-            }
+    public boolean dispelAllMonsters(int num) {
+        MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
+        if (skil == null) {
+            return false;
         }
+        for (MapleMonster mons : getMap().getAllMonsters()) {
+            mons.dispelSkill(skil.getSkill());
+        }
+        return true;
     }
 }

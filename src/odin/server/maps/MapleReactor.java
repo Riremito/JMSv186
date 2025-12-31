@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.maps;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import odin.client.MapleClient;
 import tacos.packet.response.ResCReactorPool;
@@ -182,6 +183,13 @@ public class MapleReactor extends AbstractMapleMapObject {
         int origY = getPosition().y + stats.getTL().y;
 
         return new Rectangle(origX, origY, width, height);
+    }
+
+    public Point getMobSpawnPoint() {
+        Point pos = new Point(getPosition()); // reactor coordinate of map data.
+        int height = stats.getBR().y - stats.getTL().y;
+        pos.y -= height; // zakum correct spawn coordinate.
+        return pos;
     }
 
     public String getName() {

@@ -51,8 +51,8 @@ public class TacosScriptReactor extends TacosScript {
 
     }
 
-    public boolean act(MapleClient c, MapleReactor reactor) {
-        DebugMsg(c, TacosScriptType.REACOTR, reactor.getReactorId());
+    public boolean act(MapleClient client, MapleReactor reactor) {
+        DebugMsg(client, TacosScriptType.REACOTR, reactor.getReactorId());
 
         ScriptEngine engine = getScript(TacosScriptType.REACOTR.get() + reactor.getReactorId());
         if (engine == null) {
@@ -64,10 +64,9 @@ public class TacosScriptReactor extends TacosScript {
             return false;
         }
 
-        OdinReactorActionManager rm = new OdinReactorActionManager(c, reactor);
+        OdinReactorActionManager rm = new OdinReactorActionManager(client, reactor);
         engine.put("rm", rm);
-        script.act();
-        return true;
+        return script.act();
     }
 
     public List<ReactorDropEntry> getDrops(int reactor_id) {
