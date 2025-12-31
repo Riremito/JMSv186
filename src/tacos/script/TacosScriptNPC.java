@@ -49,16 +49,22 @@ public class TacosScriptNPC extends TacosScript {
     }
 
     public boolean start(MapleClient c, int npc_script_id, int npc_icon_id) {
+        DebugMsg(c, TacosScriptType.NPC, npc_script_id);
+
         String npc_script_path = TacosScriptType.NPC.get() + npc_script_id;
         clearScripts();
+
         ScriptEngine engine = getScript(npc_script_path);
+        if (engine == null) {
+            return false;
+        }
+
         OdinNPCConversationManager cm = new OdinNPCConversationManager(c, npc_icon_id, -1, (byte) -1, (Invocable) engine, npc_script_id);
         engine.put("cm", cm);
         cms.put(c, cm);
         IScriptNPC script = ((Invocable) engine).getInterface(IScriptNPC.class);
 
         if (script == null) {
-            DebugLogger.ErrorLog("npc_script : start not found, " + npc_script_id);
             return false;
         }
 

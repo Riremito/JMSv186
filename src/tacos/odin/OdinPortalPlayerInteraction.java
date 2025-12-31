@@ -25,38 +25,26 @@ import tacos.server.map.TacosPortal;
 
 public class OdinPortalPlayerInteraction extends OdinAbstractPlayerInteraction {
 
-    private final TacosPortal portal;
+    private TacosPortal portal;
 
-    public OdinPortalPlayerInteraction(final MapleClient c, final TacosPortal portal) {
-        super(c);
+    public OdinPortalPlayerInteraction(MapleClient client, TacosPortal portal) {
+        super(client);
         this.portal = portal;
     }
 
-    public final TacosPortal getPortal() {
-        return portal;
+    public TacosPortal getPortal() {
+        return this.portal;
     }
 
-    public final void inFreeMarket() {
-        if (getMapId() != 910000000) {
-            if (getPlayer().getLevel() >= 10) {
-                saveLocation("FREE_MARKET");
-                playPortalSE();
-                warp(910000000, "st00");
-            } else {
-                playerMessage(5, "You must be level 10 in order to be able to enter the FreeMarket.");
-            }
-        }
+    public void playPortalSE() {
+        // many scripts use this, do not remove this function.
     }
 
-    // summon one monster on reactor location
-    @Override
-    public void spawnMonster(int id) {
-        spawnMonster(id, 1, portal.getPosition());
-    }
-
-    // summon monsters on reactor location
     @Override
     public void spawnMonster(int id, int qty) {
+        // jnr6_act.js
+        // rnj6_act.js
         spawnMonster(id, qty, portal.getPosition());
     }
+
 }

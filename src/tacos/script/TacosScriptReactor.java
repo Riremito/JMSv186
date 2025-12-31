@@ -28,7 +28,6 @@ import tacos.odin.OdinReactorActionManager;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.ReactorDropEntry;
 import tacos.database.query.DQ_ReactorDrops;
-import tacos.debug.DebugLogger;
 
 /**
  *
@@ -53,11 +52,15 @@ public class TacosScriptReactor extends TacosScript {
     }
 
     public boolean act(MapleClient c, MapleReactor reactor) {
-        ScriptEngine engine = getScript(TacosScriptType.REACOTR.get() + reactor.getReactorId());
-        IScriptReactor script = ((Invocable) engine).getInterface(IScriptReactor.class);
+        DebugMsg(c, TacosScriptType.REACOTR, reactor.getReactorId());
 
+        ScriptEngine engine = getScript(TacosScriptType.REACOTR.get() + reactor.getReactorId());
+        if (engine == null) {
+            return false;
+        }
+
+        IScriptReactor script = ((Invocable) engine).getInterface(IScriptReactor.class);
         if (script == null) {
-            DebugLogger.ErrorLog("reactor_script : act not found, " + reactor.getReactorId());
             return false;
         }
 

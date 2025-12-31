@@ -46,16 +46,22 @@ public class TacosScriptQuest extends TacosScript {
     }
 
     public boolean startQuest(MapleClient c, int npc_id, int quest_script_id) {
+        DebugMsg(c, TacosScriptType.QUEST, quest_script_id);
+
         String quest_script_path = TacosScriptType.QUEST.get() + quest_script_id;
         clearScripts();
+
         ScriptEngine engine = getScript(quest_script_path);
+        if (engine == null) {
+            return false;
+        }
+
         OdinNPCConversationManager cm = new OdinNPCConversationManager(c, npc_id, quest_script_id, (byte) 0, (Invocable) engine);
         cms.put(c, cm);
         engine.put("qm", cm);
-        IScriptQuest script = ((Invocable) engine).getInterface(IScriptQuest.class);
 
+        IScriptQuest script = ((Invocable) engine).getInterface(IScriptQuest.class);
         if (script == null) {
-            DebugLogger.ErrorLog("quest_script : startQuest not found, " + quest_script_id);
             return false;
         }
 

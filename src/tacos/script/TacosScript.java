@@ -29,6 +29,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.odin.OdinEventManager;
 import tacos.odin.OdinNPCConversationManager;
 import tacos.debug.DebugLogger;
@@ -52,24 +53,35 @@ public class TacosScript {
         return ems.get(event_name);
     }
 
+    protected void DebugMsg(TacosClient client, TacosScriptType type, int script_id) {
+        client.getPlayer().DebugMsg("Script : " + type.get() + script_id + ".js");
+    }
+
+    protected void DebugMsg(TacosClient client, TacosScriptType type, String script_name) {
+        client.getPlayer().DebugMsg("Script : " + type.get() + script_name + ".js");
+    }
+
     protected Map<String, ScriptEngine> script_cache = new HashMap<>();
 
     protected ScriptEngine getScript(String script_name) {
+        ScriptEngine script = null;
+        String script_file_name = script_name + ".js";
         // cache
-        if (this.script_cache.containsKey(script_name)) {
-            DebugLogger.ScriptLog("getScript : " + script_name + " (cache)");
-            return this.script_cache.get(script_name);
+        if (this.script_cache.containsKey(script_file_name)) {
+            script = this.script_cache.get(script_file_name);
+            DebugLogger.ScriptLog("getScript : " + script_file_name + " (cache)" + ((script != null) ? "" : " = null"));
+            return script;
         }
         // add to cache
-        ScriptEngine script = loadScript(script_name);
-        this.script_cache.put(script_name, script);
+        script = loadScript(script_file_name);
+        this.script_cache.put(script_file_name, script);
 
-        DebugLogger.ScriptLog("getScript : " + script_name);
+        DebugLogger.ScriptLog("getScript : " + script_file_name + ((script != null) ? "" : " = null"));
         return script;
     }
 
-    protected ScriptEngine loadScript(String script_name) {
-        String script_full_path = Property_Java.getDir_Scripts() + script_name + ".js";
+    protected ScriptEngine loadScript(String script_file_name) {
+        String script_full_path = Property_Java.getDir_Scripts() + script_file_name;
         ScriptEngineManager sem = new ScriptEngineManager();
         ScriptEngine engine = sem.getEngineByName("nashorn");
 
@@ -83,7 +95,7 @@ public class TacosScript {
         // open file.
         File scriptFile = new File(script_full_path);
         if (!scriptFile.exists()) {
-            DebugLogger.ErrorLog("loadScript : not found, " + script_name);
+            DebugLogger.ErrorLog("loadScript : not found, " + script_file_name);
             return null;
         }
         // read file.
@@ -92,14 +104,14 @@ public class TacosScript {
             fr = new FileReader(scriptFile);
             engine.eval(fr);
         } catch (FileNotFoundException | ScriptException ex) {
-            DebugLogger.ErrorLog("loadScript : script error, " + script_name);
+            DebugLogger.ErrorLog("loadScript : script error, " + script_file_name);
             return null;
         }
         // close file.
         try {
             fr.close();
         } catch (IOException ex) {
-            DebugLogger.ErrorLog("loadScript : close error, " + script_name);
+            DebugLogger.ErrorLog("loadScript : close error, " + script_file_name);
             return null;
         }
 

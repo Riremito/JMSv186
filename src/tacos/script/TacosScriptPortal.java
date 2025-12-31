@@ -20,10 +20,8 @@ package tacos.script;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.odin.OdinPortalPlayerInteraction;
-import tacos.debug.DebugLogger;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -47,15 +45,15 @@ public class TacosScriptPortal extends TacosScript {
     }
 
     public boolean enter(TacosPortal portal, MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
-        String text = "Portal Script = " + portal.getScriptName() + ", MapID = " + chr.getPosMap();
-        chr.DebugMsg(text);
+        DebugMsg(c, TacosScriptType.PORTAL, portal.getScriptName());
 
         ScriptEngine engine = getScript(TacosScriptType.PORTAL.get() + portal.getScriptName());
-        IScriptPortal script = ((Invocable) engine).getInterface(IScriptPortal.class);
+        if (engine == null) {
+            return false;
+        }
 
+        IScriptPortal script = ((Invocable) engine).getInterface(IScriptPortal.class);
         if (script == null) {
-            DebugLogger.ErrorLog("portal_script : executePortalScript not found, " + portal.getScriptName());
             return false;
         }
 

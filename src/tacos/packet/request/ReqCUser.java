@@ -99,6 +99,7 @@ import odin.server.shops.HiredMerchant;
 import odin.tools.AttackPair;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ops.OpsUserEffect;
 import tacos.script.TacosScriptNPC;
 
 /**
@@ -460,6 +461,8 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserPortalScriptRequest: {
+                // play portal SE before character tries entering portal.
+                chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
                 if (!OnUserPortalScriptRequest(chr, cp)) {
                     chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
                 }

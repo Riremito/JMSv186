@@ -75,13 +75,17 @@ public class TacosScriptEvent extends TacosScript {
 
     public boolean init(String event_name, int channel) {
         ScriptEngine engine = getScript(TacosScriptType.EVENT.get() + event_name);
-        IScriptEvent script = ((Invocable) engine).getInterface(IScriptEvent.class);
-        String event_name_ch = event_name + "_" + channel;
-
-        if (script == null) {
-            DebugLogger.ErrorLog("event_script : load, " + event_name);
+        if (engine == null) {
             return false;
         }
+
+        IScriptEvent script = ((Invocable) engine).getInterface(IScriptEvent.class);
+        if (script == null) {
+            return false;
+        }
+
+        String event_name_ch = event_name + "_" + channel;
+
         DebugLogger.ScriptLog("event_script : init, " + event_name);
 
         OdinEventManager em = new OdinEventManager(channel, (Invocable) engine, event_name);

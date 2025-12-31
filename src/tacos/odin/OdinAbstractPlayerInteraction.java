@@ -65,73 +65,73 @@ import tacos.script.TacosScriptNPC;
 
 public abstract class OdinAbstractPlayerInteraction {
 
-    private MapleClient c;
+    protected MapleClient client;
 
-    public OdinAbstractPlayerInteraction(final MapleClient c) {
-        this.c = c;
+    public OdinAbstractPlayerInteraction(MapleClient c) {
+        this.client = c;
     }
 
     public final MapleClient getClient() {
-        return c;
+        return client;
     }
 
     public final MapleClient getC() {
-        return c;
+        return client;
     }
 
     public MapleCharacter getChar() {
-        return c.getPlayer();
+        return client.getPlayer();
     }
 
     public final ServerOdinGame getChannelServer() {
-        return c.getChannelServer();
+        return client.getChannelServer();
     }
 
     public final MapleCharacter getPlayer() {
-        return c.getPlayer();
+        return client.getPlayer();
     }
 
     public final OdinEventInstanceManager getEventInstance() {
-        return c.getPlayer().getEventInstance();
+        return client.getPlayer().getEventInstance();
     }
 
     public final void warp(final int map) {
         final MapleMap mapz = getWarpMap(map);
         try {
-            c.getPlayer().changeMap(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
+            client.getPlayer().changeMap(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
         } catch (Exception e) {
-            c.getPlayer().changeMap(mapz, mapz.getPortal(0));
+            client.getPlayer().changeMap(mapz, mapz.getPortal(0));
         }
     }
 
     public final void warp_Instanced(final int map) {
         final MapleMap mapz = getMap_Instanced(map);
         try {
-            c.getPlayer().changeMap(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
+            client.getPlayer().changeMap(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
         } catch (Exception e) {
-            c.getPlayer().changeMap(mapz, mapz.getPortal(0));
+            client.getPlayer().changeMap(mapz, mapz.getPortal(0));
         }
     }
 
     public final void warp(final int map, final int portal) {
         final MapleMap mapz = getWarpMap(map);
-        if (portal != 0 && map == c.getPlayer().getMapId()) { //test
-            final Point portalPos = new Point(c.getPlayer().getMap().getPortal(portal).getPosition());
+        if (portal != 0 && map == client.getPlayer().getMapId()) { //test
+            final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
-                c.getSession().write(ResCUserLocal.Teleport((byte) portal)); //until we get packet for far movement, this will do
-                c.getPlayer().checkFollow();
-                c.getPlayer().getMap().movePlayer(c.getPlayer(), portalPos);
+                client.getSession().write(ResCUserLocal.Teleport((byte) portal)); //until we get packet for far movement, this will do
+                client.getPlayer().checkFollow();
+                client.getPlayer().getMap().movePlayer(client.getPlayer(), portalPos);
             } else {
-                c.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+                client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
             }
         } else {
-            c.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+            client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
         }
     }
 
     public final void warpS(final int map, final int portal) {
         final MapleMap mapz = getWarpMap(map);
-        c.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+        client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
     }
 
     public final void warp(final int map, String portal) {
@@ -139,17 +139,17 @@ public abstract class OdinAbstractPlayerInteraction {
         if (map == 109060000 || map == 109060002 || map == 109060004) {
             portal = mapz.getSnowballPortal();
         }
-        if (map == c.getPlayer().getMapId()) { //test
-            final Point portalPos = new Point(c.getPlayer().getMap().getPortal(portal).getPosition());
+        if (map == client.getPlayer().getMapId()) { //test
+            final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
-                c.getPlayer().checkFollow();
-                c.getSession().write(ResCUserLocal.Teleport((byte) c.getPlayer().getMap().getPortal(portal).getId()));
-                c.getPlayer().getMap().movePlayer(c.getPlayer(), new Point(c.getPlayer().getMap().getPortal(portal).getPosition()));
+                client.getPlayer().checkFollow();
+                client.getSession().write(ResCUserLocal.Teleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
+                client.getPlayer().getMap().movePlayer(client.getPlayer(), new Point(client.getPlayer().getMap().getPortal(portal).getPosition()));
             } else {
-                c.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+                client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
             }
         } else {
-            c.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+            client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
         }
     }
 
@@ -158,26 +158,22 @@ public abstract class OdinAbstractPlayerInteraction {
         if (map == 109060000 || map == 109060002 || map == 109060004) {
             portal = mapz.getSnowballPortal();
         }
-        c.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+        client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
     }
 
     public final void warpMap(final int mapid, final int portal) {
         final MapleMap map = getMap(mapid);
-        for (MapleCharacter chr : c.getPlayer().getMap().getCharacters()) {
+        for (MapleCharacter chr : client.getPlayer().getMap().getCharacters()) {
             chr.changeMap(map, map.getPortal(portal));
         }
     }
 
-    public final void playPortalSE() {
-        c.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
-    }
-
     private final MapleMap getWarpMap(final int map) {
-        return ServerOdinGame.getInstance(c.getChannel()).getMapFactory().getMap(map);
+        return ServerOdinGame.getInstance(client.getChannel()).getMapFactory().getMap(map);
     }
 
     public final MapleMap getMap() {
-        return c.getPlayer().getMap();
+        return client.getPlayer().getMap();
     }
 
     public final MapleMap getMap(final int map) {
@@ -189,7 +185,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void spawnMonster(final int id, final int qty) {
-        spawnMob(id, qty, new Point(c.getPlayer().getPosition()));
+        spawnMob(id, qty, new Point(client.getPlayer().getPosition()));
     }
 
     public final void spawnMobOnMap(final int id, final int qty, final int x, final int y, final int map) {
@@ -208,67 +204,67 @@ public abstract class OdinAbstractPlayerInteraction {
 
     private final void spawnMob(final int id, final int qty, final Point pos) {
         for (int i = 0; i < qty; i++) {
-            c.getPlayer().getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(id), pos);
+            client.getPlayer().getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(id), pos);
         }
     }
 
     public final void killMob(int ids) {
-        c.getPlayer().getMap().killMonster(ids);
+        client.getPlayer().getMap().killMonster(ids);
     }
 
     public final void killAllMob() {
-        c.getPlayer().getMap().killAllMonsters(true);
+        client.getPlayer().getMap().killAllMonsters(true);
     }
 
     public final void addHP(final int delta) {
-        c.getPlayer().addHP(delta);
+        client.getPlayer().addHP(delta);
     }
 
     public final int getPlayerStat(final String type) {
         if (type.equals("LVL")) {
-            return c.getPlayer().getLevel();
+            return client.getPlayer().getLevel();
         } else if (type.equals("STR")) {
-            return c.getPlayer().getStat().getStr();
+            return client.getPlayer().getStat().getStr();
         } else if (type.equals("DEX")) {
-            return c.getPlayer().getStat().getDex();
+            return client.getPlayer().getStat().getDex();
         } else if (type.equals("INT")) {
-            return c.getPlayer().getStat().getInt();
+            return client.getPlayer().getStat().getInt();
         } else if (type.equals("LUK")) {
-            return c.getPlayer().getStat().getLuk();
+            return client.getPlayer().getStat().getLuk();
         } else if (type.equals("HP")) {
-            return c.getPlayer().getStat().getHp();
+            return client.getPlayer().getStat().getHp();
         } else if (type.equals("MP")) {
-            return c.getPlayer().getStat().getMp();
+            return client.getPlayer().getStat().getMp();
         } else if (type.equals("MAXHP")) {
-            return c.getPlayer().getStat().getMaxHp();
+            return client.getPlayer().getStat().getMaxHp();
         } else if (type.equals("MAXMP")) {
-            return c.getPlayer().getStat().getMaxMp();
+            return client.getPlayer().getStat().getMaxMp();
         } else if (type.equals("RAP")) {
-            return c.getPlayer().getRemainingAp();
+            return client.getPlayer().getRemainingAp();
         } else if (type.equals("RSP")) {
-            return c.getPlayer().getRemainingSp();
+            return client.getPlayer().getRemainingSp();
         } else if (type.equals("GID")) {
-            return c.getPlayer().getGuildId();
+            return client.getPlayer().getGuildId();
         } else if (type.equals("GRANK")) {
-            return c.getPlayer().getGuildRank();
+            return client.getPlayer().getGuildRank();
         } else if (type.equals("ARANK")) {
-            return c.getPlayer().getAllianceRank();
+            return client.getPlayer().getAllianceRank();
         } else if (type.equals("GM")) {
-            return c.getPlayer().isGM() ? 1 : 0;
+            return client.getPlayer().isGM() ? 1 : 0;
         } else if (type.equals("ADMIN")) {
-            return c.getPlayer().isAdmin() ? 1 : 0;
+            return client.getPlayer().isAdmin() ? 1 : 0;
         } else if (type.equals("GENDER")) {
-            return c.getPlayer().getGender();
+            return client.getPlayer().getGender();
         } else if (type.equals("FACE")) {
-            return c.getPlayer().getFace();
+            return client.getPlayer().getFace();
         } else if (type.equals("HAIR")) {
-            return c.getPlayer().getHair();
+            return client.getPlayer().getHair();
         }
         return -1;
     }
 
     public final String getName() {
-        return c.getPlayer().getName();
+        return client.getPlayer().getName();
     }
 
     public final boolean haveItem(final int itemid, final int quantity) {
@@ -276,12 +272,12 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final boolean haveItem(final int itemid, final int quantity, final boolean checkEquipped, final boolean greaterOrEquals) {
-        return c.getPlayer().haveItem(itemid, quantity, checkEquipped, greaterOrEquals);
+        return client.getPlayer().haveItem(itemid, quantity, checkEquipped, greaterOrEquals);
     }
 
     public final boolean canHold() {
         for (int i = 1; i <= 5; i++) {
-            if (c.getPlayer().getInventory(MapleInventoryType.getByType((byte) i)).getNextFreeSlot() <= -1) {
+            if (client.getPlayer().getInventory(MapleInventoryType.getByType((byte) i)).getNextFreeSlot() <= -1) {
                 return false;
             }
         }
@@ -289,15 +285,15 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final boolean canHold(final int itemid) {
-        return c.getPlayer().getInventory(GameConstants.getInventoryType(itemid)).getNextFreeSlot() > -1;
+        return client.getPlayer().getInventory(GameConstants.getInventoryType(itemid)).getNextFreeSlot() > -1;
     }
 
     public final boolean canHold(final int itemid, final int quantity) {
-        return MapleInventoryManipulator.checkSpace(c, itemid, quantity, "");
+        return MapleInventoryManipulator.checkSpace(client, itemid, quantity, "");
     }
 
     public final MapleQuestStatus getQuestRecord(final int id) {
-        return c.getPlayer().getQuestNAdd(MapleQuest.getInstance(id));
+        return client.getPlayer().getQuestNAdd(MapleQuest.getInstance(id));
     }
 
     public final boolean isQuestActive(final int id) {
@@ -309,19 +305,19 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void showQuestMsg(final String msg) {
-        c.SendPacket(ResWrapper.showQuestMsg(msg));
+        client.SendPacket(ResWrapper.showQuestMsg(msg));
     }
 
     public final void forceStartQuest(final int id, final String data) {
-        MapleQuest.getInstance(id).forceStart(c.getPlayer(), 0, data);
+        MapleQuest.getInstance(id).forceStart(client.getPlayer(), 0, data);
     }
 
     public final void forceStartQuest(final int id, final int data, final boolean filler) {
-        MapleQuest.getInstance(id).forceStart(c.getPlayer(), 0, filler ? String.valueOf(data) : null);
+        MapleQuest.getInstance(id).forceStart(client.getPlayer(), 0, filler ? String.valueOf(data) : null);
     }
 
     public void forceStartQuest(final int id) {
-        MapleQuest.getInstance(id).forceStart(c.getPlayer(), 0, null);
+        MapleQuest.getInstance(id).forceStart(client.getPlayer(), 0, null);
     }
 
     public void forceCompleteQuest(final int id) {
@@ -329,62 +325,62 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void spawnNpc(final int npcId) {
-        c.getPlayer().getMap().spawnNpc(npcId, c.getPlayer().getPosition());
+        client.getPlayer().getMap().spawnNpc(npcId, client.getPlayer().getPosition());
     }
 
     public final void spawnNpc(final int npcId, final int x, final int y) {
-        c.getPlayer().getMap().spawnNpc(npcId, new Point(x, y));
+        client.getPlayer().getMap().spawnNpc(npcId, new Point(x, y));
     }
 
     public final void spawnNpc(final int npcId, final Point pos) {
-        c.getPlayer().getMap().spawnNpc(npcId, pos);
+        client.getPlayer().getMap().spawnNpc(npcId, pos);
     }
 
     public final void removeNpc(final int mapid, final int npcId) {
-        c.getChannelServer().getMapFactory().getMap(mapid).removeNpc(npcId);
+        client.getChannelServer().getMapFactory().getMap(mapid).removeNpc(npcId);
     }
 
     public final void forceStartReactor(final int mapid, final int id) {
-        MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
         MapleReactor react;
 
         for (final MapleMapObject remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
             if (react.getReactorId() == id) {
-                react.forceStartReactor(c);
+                react.forceStartReactor(client);
                 break;
             }
         }
     }
 
     public final void destroyReactor(final int mapid, final int id) {
-        MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
         MapleReactor react;
 
         for (final MapleMapObject remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
             if (react.getReactorId() == id) {
-                react.hitReactor(c);
+                react.hitReactor(client);
                 break;
             }
         }
     }
 
     public final void hitReactor(final int mapid, final int id) {
-        MapleMap map = c.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
         MapleReactor react;
 
         for (final MapleMapObject remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
             if (react.getReactorId() == id) {
-                react.hitReactor(c);
+                react.hitReactor(client);
                 break;
             }
         }
     }
 
     public final void gainNX(final int amount) {
-        c.getPlayer().modifyCSPoints(1, amount, true);
+        client.getPlayer().modifyCSPoints(1, amount, true);
     }
 
     public final void gainItemPeriod(final int id, final short quantity, final int period) { //period is in days
@@ -406,7 +402,7 @@ public abstract class OdinAbstractPlayerInteraction {
     public final void Gashapon(final int id, final short quantity) {
         IItem item_info = gainItem(id, quantity, true, 0, -1, "");
         if (item_info != null) {
-            World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgGachaponAnnounce(c.getPlayer(), item_info).getBytes());
+            World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgGachaponAnnounce(client.getPlayer(), item_info).getBytes());
         }
     }
 
@@ -423,7 +419,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner) {
-        return gainItem(id, quantity, randomStats, period, slots, owner, c);
+        return gainItem(id, quantity, randomStats, period, slots, owner, client);
     }
 
     public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner, final MapleClient cg) {
@@ -474,7 +470,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void mapMessage(final String message) {
-        c.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent(message));
+        client.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent(message));
     }
 
     public final void guildMessage(final String message) {
@@ -483,12 +479,12 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void playerMessage(final int type, final String message) {
         DebugLogger.DebugLog("playerMessage is called.");
-        c.SendPacket(ResWrapper.BroadCastMsg_SN(type, message));
+        client.SendPacket(ResWrapper.BroadCastMsg_SN(type, message));
     }
 
     public final void mapMessage(final int type, final String message) {
         DebugLogger.DebugLog("mapMessage is called.");
-        c.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsg_SN(type, message));
+        client.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsg_SN(type, message));
     }
 
     public final void guildMessage(final int type, final String message) {
@@ -507,21 +503,21 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final MapleParty getParty() {
-        return c.getPlayer().getParty();
+        return client.getPlayer().getParty();
     }
 
     public final boolean isLeader() {
         if (getParty() == null) {
             return false;
         }
-        return getParty().getLeader().getId() == c.getPlayer().getId();
+        return getParty().getLeader().getId() == client.getPlayer().getId();
     }
 
     public final boolean isAllPartyMembersAllowedJob(final int job) {
-        if (c.getPlayer().getParty() == null) {
+        if (client.getPlayer().getParty() == null) {
             return false;
         }
-        for (final MaplePartyCharacter mem : c.getPlayer().getParty().getMembers()) {
+        for (final MaplePartyCharacter mem : client.getPlayer().getParty().getMembers()) {
             if (mem.getJobId() / 100 != job) {
                 return false;
             }
@@ -530,11 +526,11 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final boolean allMembersHere() {
-        if (c.getPlayer().getParty() == null) {
+        if (client.getPlayer().getParty() == null) {
             return false;
         }
-        for (final MaplePartyCharacter mem : c.getPlayer().getParty().getMembers()) {
-            final MapleCharacter chr = c.getPlayer().getMap().getCharacterById(mem.getId());
+        for (final MaplePartyCharacter mem : client.getPlayer().getParty().getMembers()) {
+            final MapleCharacter chr = client.getPlayer().getMap().getCharacterById(mem.getId());
             if (chr == null) {
                 return false;
             }
@@ -601,15 +597,15 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void gainMeso(int gain) {
-        c.getPlayer().gainMeso(gain, true, false, true);
+        client.getPlayer().gainMeso(gain, true, false, true);
     }
 
     public void gainExp(int gain) {
-        c.getPlayer().gainExp(gain, true, true, true);
+        client.getPlayer().gainExp(gain, true, true, true);
     }
 
     public void gainExpR(int gain) {
-        c.getPlayer().gainExp(gain * c.getChannelServer().getExpRate(), true, true, true);
+        client.getPlayer().gainExp(gain * client.getChannelServer().getExpRate(), true, true, true);
     }
 
     public final void givePartyItems(final int id, final short quantity, final List<MapleCharacter> party) {
@@ -643,19 +639,19 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void givePartyExp(final int amount, final List<MapleCharacter> party) {
         for (final MapleCharacter chr : party) {
-            chr.gainExp(amount * c.getChannelServer().getExpRate(), true, true, true);
+            chr.gainExp(amount * client.getChannelServer().getExpRate(), true, true, true);
         }
     }
 
     public final void givePartyExp(final int amount) {
         if (getPlayer().getParty() == null || getPlayer().getParty().getMembers().size() == 1) {
-            gainExp(amount * c.getChannelServer().getExpRate());
+            gainExp(amount * client.getChannelServer().getExpRate());
             return;
         }
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
             final MapleCharacter curChar = getMap().getCharacterById(chr.getId());
             if (curChar != null) {
-                curChar.gainExp(amount * c.getChannelServer().getExpRate(), true, true, true);
+                curChar.gainExp(amount * client.getChannelServer().getExpRate(), true, true, true);
             }
         }
     }
@@ -702,7 +698,7 @@ public abstract class OdinAbstractPlayerInteraction {
         for (final MapleCharacter chr : party) {
             final int possesed = chr.getInventory(GameConstants.getInventoryType(id)).countById(id);
             if (possesed > 0) {
-                MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(id), id, possesed, true, false);
+                MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(id), id, possesed, true, false);
                 chr.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, (short) -possesed, true));
             }
         }
@@ -716,24 +712,24 @@ public abstract class OdinAbstractPlayerInteraction {
         if (level <= 0) {
             return;
         }
-        SkillFactory.getSkill(skill).getEffect(level).applyTo(c.getPlayer());
+        SkillFactory.getSkill(skill).getEffect(level).applyTo(client.getPlayer());
     }
 
     public final void useItem(final int id) {
-        MapleItemInformationProvider.getInstance().getItemEffect(id).applyTo(c.getPlayer());
-        c.getSession().write(ResWrapper.getStatusMsg(id));
+        MapleItemInformationProvider.getInstance().getItemEffect(id).applyTo(client.getPlayer());
+        client.getSession().write(ResWrapper.getStatusMsg(id));
     }
 
     public final void cancelItem(final int id) {
-        c.getPlayer().cancelEffect(MapleItemInformationProvider.getInstance().getItemEffect(id), false, -1);
+        client.getPlayer().cancelEffect(MapleItemInformationProvider.getInstance().getItemEffect(id), false, -1);
     }
 
     public final int getMorphState() {
-        return c.getPlayer().getMorphState();
+        return client.getPlayer().getMorphState();
     }
 
     public final void removeAll(final int id) {
-        c.getPlayer().removeAll(id);
+        client.getPlayer().removeAll(id);
     }
 
     public final void gainCloseness(final int closeness, final int index) {
@@ -766,11 +762,11 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final int getMapId() {
-        return c.getPlayer().getMap().getId();
+        return client.getPlayer().getMap().getId();
     }
 
     public final boolean haveMonster(final int mobid) {
-        for (MapleMapObject obj : c.getPlayer().getMap().getAllMonsters()) {
+        for (MapleMapObject obj : client.getPlayer().getMap().getAllMonsters()) {
             final MapleMonster mob = (MapleMonster) obj;
             if (mob.getId() == mobid) {
                 return true;
@@ -780,11 +776,11 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final int getChannelNumber() {
-        return c.getChannel();
+        return client.getChannel();
     }
 
     public final int getMonsterCount(final int mapid) {
-        return c.getChannelServer().getMapFactory().getMap(mapid).getNumMonsters();
+        return client.getChannelServer().getMapFactory().getMap(mapid).getNumMonsters();
     }
 
     public final void teachSkill(final int id, final byte level, final byte masterlevel) {
@@ -800,20 +796,20 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void dojo_getUp() {
-        c.SendPacket(ResWrapper.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
-        c.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
-        c.SendPacket(ResCUserLocal.Teleport((byte) 6));
+        client.SendPacket(ResWrapper.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
+        client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
+        client.SendPacket(ResCUserLocal.Teleport((byte) 6));
     }
 
     public final boolean dojoAgent_NextMap(final boolean dojo, final boolean fromresting) {
         if (dojo) {
-            return Event_DojoAgent.warpNextMap(c.getPlayer(), fromresting);
+            return Event_DojoAgent.warpNextMap(client.getPlayer(), fromresting);
         }
-        return Event_DojoAgent.warpNextMap_Agent(c.getPlayer(), fromresting);
+        return Event_DojoAgent.warpNextMap_Agent(client.getPlayer(), fromresting);
     }
 
     public final int dojo_getPts() {
-        return c.getPlayer().getDojo();
+        return client.getPlayer().getDojo();
     }
 
     public OdinMapleEvent getEvent(String loc) {
@@ -821,7 +817,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final int getSavedLocation(final String loc) {
-        final Integer ret = c.getPlayer().getSavedLocation(SavedLocationType.fromString(loc));
+        final Integer ret = client.getPlayer().getSavedLocation(SavedLocationType.fromString(loc));
         if (ret == null || ret == -1) {
             return 100000000;
         }
@@ -829,46 +825,46 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void saveLocation(final String loc) {
-        c.getPlayer().saveLocation(SavedLocationType.fromString(loc));
+        client.getPlayer().saveLocation(SavedLocationType.fromString(loc));
     }
 
     public final void saveReturnLocation(final String loc) {
-        c.getPlayer().saveLocation(SavedLocationType.fromString(loc), c.getPlayer().getMap().getReturnMap().getId());
+        client.getPlayer().saveLocation(SavedLocationType.fromString(loc), client.getPlayer().getMap().getReturnMap().getId());
     }
 
     public final void clearSavedLocation(final String loc) {
-        c.getPlayer().clearSavedLocation(SavedLocationType.fromString(loc));
+        client.getPlayer().clearSavedLocation(SavedLocationType.fromString(loc));
     }
 
     public final void summonMsg(final String msg) {
-        if (!c.getPlayer().hasSummon()) {
+        if (!client.getPlayer().hasSummon()) {
             playerSummonHint(true);
         }
-        c.getSession().write(ResCUserLocal.summonMessage(msg));
+        client.getSession().write(ResCUserLocal.summonMessage(msg));
     }
 
     public final void summonMsg(final int type) {
-        if (!c.getPlayer().hasSummon()) {
+        if (!client.getPlayer().hasSummon()) {
             playerSummonHint(true);
         }
-        c.getSession().write(ResCUserLocal.summonMessage(type));
+        client.getSession().write(ResCUserLocal.summonMessage(type));
     }
 
     public final void showInstruction(final String msg, final int width, final int height) {
-        c.SendPacket(ResCUserLocal.BalloonMsg(msg, width, height));
+        client.SendPacket(ResCUserLocal.BalloonMsg(msg, width, height));
     }
 
     public final void playerSummonHint(final boolean summon) {
-        c.getPlayer().setHasSummon(summon);
-        c.getSession().write(ResCUserLocal.summonHelper(summon));
+        client.getPlayer().setHasSummon(summon);
+        client.getSession().write(ResCUserLocal.summonHelper(summon));
     }
 
     public final String getInfoQuest(final int id) {
-        return c.getPlayer().getInfoQuest(id);
+        return client.getPlayer().getInfoQuest(id);
     }
 
     public final void updateInfoQuest(final int id, final String data) {
-        c.getPlayer().updateInfoQuest(id, data);
+        client.getPlayer().updateInfoQuest(id, data);
     }
 
     public final boolean getEvanIntroState(final String data) {
@@ -880,32 +876,32 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void Aran_Start() {
-        c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "Aran/balloon")));
+        client.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "Aran/balloon")));
     }
 
     public final void evanTutorial(final String data, final int v1) {
-        c.getSession().write(ResCScriptMan.getEvanTutorial(data));
+        client.getSession().write(ResCScriptMan.getEvanTutorial(data));
     }
 
     public final void AranTutInstructionalBubble(final String data) {
-        c.getSession().write(ResCUserLocal.AranTutInstructionalBalloon(data));
+        client.getSession().write(ResCUserLocal.AranTutInstructionalBalloon(data));
     }
 
     public final void ShowWZEffect(final String data) {
-        c.getSession().write(ResCUserLocal.AranTutInstructionalBalloon(data));
+        client.getSession().write(ResCUserLocal.AranTutInstructionalBalloon(data));
     }
 
     public final void showWZEffect(final String data) {
-        c.getSession().write(ResCUserLocal.ShowWZEffect(data));
+        client.getSession().write(ResCUserLocal.ShowWZEffect(data));
     }
 
     public final void EarnTitleMsg(final String data) {
-        c.getSession().write(ResCWvsContext.getTopMsg(data));
+        client.getSession().write(ResCWvsContext.getTopMsg(data));
     }
 
     public final void MovieClipIntroUI(final boolean enabled) {
-        c.getSession().write(ResCUserLocal.IntroDisableUI(enabled));
-        c.getSession().write(ResCUserLocal.IntroLock(enabled));
+        client.getSession().write(ResCUserLocal.IntroDisableUI(enabled));
+        client.getSession().write(ResCUserLocal.IntroLock(enabled));
     }
 
     public MapleInventoryType getInvType(int i) {
@@ -930,14 +926,14 @@ public abstract class OdinAbstractPlayerInteraction {
             fullness = 100;
         }
         try {
-            MapleInventoryManipulator.addById(c, id, (short) 1, "", MaplePet.createPet(id, name, level, closeness, fullness, MapleInventoryIdentifier.getInstance(), id == 5000054 ? (int) period : 0), 45);
+            MapleInventoryManipulator.addById(client, id, (short) 1, "", MaplePet.createPet(id, name, level, closeness, fullness, MapleInventoryIdentifier.getInstance(), id == 5000054 ? (int) period : 0), 45);
         } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
     }
 
     public void removeSlot(int invType, byte slot, short quantity) {
-        MapleInventoryManipulator.removeFromSlot(c, getInvType(invType), slot, quantity, true);
+        MapleInventoryManipulator.removeFromSlot(client, getInvType(invType), slot, quantity, true);
     }
 
     public void gainGP(final int gp) {
@@ -1002,16 +998,16 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public boolean getTempFlag(final int flag) {
-        return (c.getChannelServer().getTempFlag() & flag) == flag;
+        return (client.getChannelServer().getTempFlag() & flag) == flag;
     }
 
     // event script compatibility
     public byte getQuestStatus(int id) {
-        return c.getPlayer().getQuestStatus(id);
+        return client.getPlayer().getQuestStatus(id);
     }
 
     public int getJob() {
-        return c.getPlayer().getJob();
+        return client.getPlayer().getJob();
     }
 
     public boolean haveItem(int itemid) {
@@ -1019,11 +1015,11 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public int getPlayerCount(int mapid) {
-        return c.getChannelServer().getMapFactory().getMap(mapid).getCharactersSize();
+        return client.getChannelServer().getMapFactory().getMap(mapid).getCharactersSize();
     }
 
     public void playerMessage(String message) {
-        c.SendPacket(ResWrapper.BroadCastMsgEvent(message));
+        client.SendPacket(ResWrapper.BroadCastMsgEvent(message));
     }
 
     public OdinEventManager getEventManager(String event) {
