@@ -21,7 +21,7 @@ package tacos.script;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import odin.client.MapleClient;
-import odin.scripting.NPCConversationManager;
+import tacos.odin.OdinNPCConversationManager;
 import odin.server.quest.MapleQuest;
 import tacos.debug.DebugLogger;
 
@@ -49,7 +49,7 @@ public class TacosScriptQuest extends TacosScript {
         String quest_script_path = TacosScriptType.QUEST.get() + quest_script_id;
         clearScripts();
         ScriptEngine engine = getScript(quest_script_path);
-        NPCConversationManager cm = new NPCConversationManager(c, npc_id, quest_script_id, (byte) 0, (Invocable) engine);
+        OdinNPCConversationManager cm = new OdinNPCConversationManager(c, npc_id, quest_script_id, (byte) 0, (Invocable) engine);
         cms.put(c, cm);
         engine.put("qm", cm);
         IScriptQuest script = ((Invocable) engine).getInterface(IScriptQuest.class);
@@ -65,7 +65,7 @@ public class TacosScriptQuest extends TacosScript {
     }
 
     public boolean startQuest(MapleClient c, int mode, int type, int selection) {
-        NPCConversationManager cm = cms.get(c);
+        OdinNPCConversationManager cm = cms.get(c);
 
         if (cm == null || -1 < cm.getLastMsg()) {
             return false;
@@ -88,7 +88,7 @@ public class TacosScriptQuest extends TacosScript {
         String quest_script_path = TacosScriptType.QUEST.get() + quest_script_id;
         clearScripts();
         ScriptEngine engine = getScript(quest_script_path);
-        NPCConversationManager cm = new NPCConversationManager(c, npc, quest_script_id, (byte) 1, (Invocable) engine);
+        OdinNPCConversationManager cm = new OdinNPCConversationManager(c, npc, quest_script_id, (byte) 1, (Invocable) engine);
         cms.put(c, cm);
         engine.put("qm", cm);
         IScriptQuest script = ((Invocable) engine).getInterface(IScriptQuest.class);
@@ -103,7 +103,7 @@ public class TacosScriptQuest extends TacosScript {
     }
 
     public boolean endQuest(MapleClient c, int mode, int type, int selection) {
-        NPCConversationManager cm = cms.get(c);
+        OdinNPCConversationManager cm = cms.get(c);
 
         if (cm == null || -1 < cm.getLastMsg()) {
             return false;
@@ -119,7 +119,7 @@ public class TacosScriptQuest extends TacosScript {
     }
 
     public boolean dispose(MapleClient c) {
-        NPCConversationManager npccm = cms.get(c);
+        OdinNPCConversationManager npccm = cms.get(c);
         if (npccm == null) {
             c.getPlayer().setConversation(0);
             return false;

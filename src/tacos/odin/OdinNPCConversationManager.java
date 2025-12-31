@@ -18,7 +18,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package odin.scripting;
+package tacos.odin;
 
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -49,7 +49,6 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.Event_DojoAgent;
 import odin.server.maps.AramiaFireWorks;
 import odin.server.quest.MapleQuest;
-import tacos.odin.OdinPair;
 import odin.server.MapleItemInformationProvider;
 import tacos.server.ServerOdinGame;
 import odin.handling.channel.MapleGuildRanking;
@@ -83,7 +82,7 @@ import tacos.packet.response.ResCScriptMan;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 
-public class NPCConversationManager extends AbstractPlayerInteraction {
+public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     private MapleClient c;
     private int npc, script_name, questid;
@@ -93,7 +92,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
     public boolean pendingDisposal = false;
     private Invocable iv;
 
-    public NPCConversationManager(MapleClient c, int npc, int questid, byte type, Invocable iv) {
+    public OdinNPCConversationManager(MapleClient c, int npc, int questid, byte type, Invocable iv) {
         super(c);
         this.c = c;
         this.npc = npc;
@@ -103,7 +102,7 @@ public class NPCConversationManager extends AbstractPlayerInteraction {
         this.script_name = npc;
     }
 
-    public NPCConversationManager(MapleClient c, int npc, int questid, byte type, Invocable iv, int sciprt_name) {
+    public OdinNPCConversationManager(MapleClient c, int npc, int questid, byte type, Invocable iv, int sciprt_name) {
         super(c);
         this.c = c;
         this.npc = npc;

@@ -30,7 +30,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import odin.client.MapleClient;
 import tacos.odin.OdinEventManager;
-import odin.scripting.NPCConversationManager;
+import tacos.odin.OdinNPCConversationManager;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Java;
 
@@ -40,9 +40,9 @@ import tacos.property.Property_Java;
  */
 public class TacosScript {
 
-    protected Map<MapleClient, NPCConversationManager> cms = new WeakHashMap<>();
+    protected Map<MapleClient, OdinNPCConversationManager> cms = new WeakHashMap<>();
 
-    public NPCConversationManager getCM(MapleClient c) {
+    public OdinNPCConversationManager getCM(MapleClient c) {
         return cms.get(c);
     }
 

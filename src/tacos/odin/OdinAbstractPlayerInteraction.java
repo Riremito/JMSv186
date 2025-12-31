@@ -18,13 +18,10 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package odin.scripting;
+package tacos.odin;
 
-import tacos.odin.OdinEventManager;
-import tacos.odin.OdinEventInstanceManager;
 import java.awt.Point;
 import java.util.List;
-
 import odin.client.inventory.Equip;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
@@ -53,7 +50,6 @@ import odin.server.quest.MapleQuest;
 import odin.client.inventory.MapleInventoryIdentifier;
 import tacos.debug.DebugLogger;
 import odin.handling.world.World;
-import tacos.odin.OdinMapleEvent;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import tacos.packet.ops.OpsScriptMan;
@@ -67,11 +63,11 @@ import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
 
-public abstract class AbstractPlayerInteraction {
+public abstract class OdinAbstractPlayerInteraction {
 
     private MapleClient c;
 
-    public AbstractPlayerInteraction(final MapleClient c) {
+    public OdinAbstractPlayerInteraction(final MapleClient c) {
         this.c = c;
     }
 

@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import odin.client.MapleClient;
-import odin.scripting.ReactorActionManager;
+import tacos.odin.OdinReactorActionManager;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.ReactorDropEntry;
 import tacos.database.query.DQ_ReactorDrops;
@@ -61,7 +61,7 @@ public class TacosScriptReactor extends TacosScript {
             return false;
         }
 
-        ReactorActionManager rm = new ReactorActionManager(c, reactor);
+        OdinReactorActionManager rm = new OdinReactorActionManager(c, reactor);
         engine.put("rm", rm);
         script.act();
         return true;

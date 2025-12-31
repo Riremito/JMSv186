@@ -21,7 +21,7 @@ package tacos.script;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import odin.client.MapleClient;
-import odin.scripting.NPCConversationManager;
+import tacos.odin.OdinNPCConversationManager;
 import tacos.debug.DebugLogger;
 
 /**
@@ -52,7 +52,7 @@ public class TacosScriptNPC extends TacosScript {
         String npc_script_path = TacosScriptType.NPC.get() + npc_script_id;
         clearScripts();
         ScriptEngine engine = getScript(npc_script_path);
-        NPCConversationManager cm = new NPCConversationManager(c, npc_icon_id, -1, (byte) -1, (Invocable) engine, npc_script_id);
+        OdinNPCConversationManager cm = new OdinNPCConversationManager(c, npc_icon_id, -1, (byte) -1, (Invocable) engine, npc_script_id);
         engine.put("cm", cm);
         cms.put(c, cm);
         IScriptNPC script = ((Invocable) engine).getInterface(IScriptNPC.class);
@@ -73,7 +73,7 @@ public class TacosScriptNPC extends TacosScript {
             DebugLogger.ErrorLog("npc_script : action 1");
             return false;
         }
-        NPCConversationManager cm = cms.get(c);
+        OdinNPCConversationManager cm = cms.get(c);
         if (cm == null || -1 < cm.getLastMsg()) {
             DebugLogger.ErrorLog("npc_script : action 2");
             return false;
@@ -88,7 +88,7 @@ public class TacosScriptNPC extends TacosScript {
     }
 
     public boolean dispose(MapleClient c) {
-        NPCConversationManager npccm = cms.get(c);
+        OdinNPCConversationManager npccm = cms.get(c);
         if (npccm == null) {
             c.getPlayer().setConversation(0);
             return false;

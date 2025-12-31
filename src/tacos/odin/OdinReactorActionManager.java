@@ -18,7 +18,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package odin.scripting;
+package tacos.odin;
 
 import java.awt.Point;
 import java.util.Iterator;
@@ -42,11 +42,11 @@ import odin.server.maps.MapleReactor;
 import odin.server.life.MapleMonster;
 import tacos.script.TacosScriptReactor;
 
-public class ReactorActionManager extends AbstractPlayerInteraction {
+public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
 
     private MapleReactor reactor;
 
-    public ReactorActionManager(MapleClient c, MapleReactor reactor) {
+    public OdinReactorActionManager(MapleClient c, MapleReactor reactor) {
         super(c);
         this.reactor = reactor;
     }

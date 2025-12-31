@@ -18,16 +18,16 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package odin.scripting;
+package tacos.odin;
 
 import odin.client.MapleClient;
 import tacos.server.map.TacosPortal;
 
-public class PortalPlayerInteraction extends AbstractPlayerInteraction {
+public class OdinPortalPlayerInteraction extends OdinAbstractPlayerInteraction {
 
     private final TacosPortal portal;
 
-    public PortalPlayerInteraction(final MapleClient c, final TacosPortal portal) {
+    public OdinPortalPlayerInteraction(final MapleClient c, final TacosPortal portal) {
         super(c);
         this.portal = portal;
     }

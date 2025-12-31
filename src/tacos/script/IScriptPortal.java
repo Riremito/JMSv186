@@ -18,7 +18,7 @@
  */
 package tacos.script;
 
-import odin.scripting.PortalPlayerInteraction;
+import tacos.odin.OdinPortalPlayerInteraction;
 
 /**
  *
@@ -26,6 +26,6 @@ import odin.scripting.PortalPlayerInteraction;
  */
 public interface IScriptPortal {
 
-    public boolean enter(PortalPlayerInteraction ppi);
+    public boolean enter(OdinPortalPlayerInteraction ppi);
 
 }

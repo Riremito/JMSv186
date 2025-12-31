@@ -41,7 +41,7 @@ import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleInventoryManipulator;
 import odin.server.life.MapleNPC;
 import odin.server.quest.MapleQuest;
-import odin.scripting.NPCConversationManager;
+import tacos.odin.OdinNPCConversationManager;
 import odin.server.MapleItemInformationProvider;
 import tacos.odin.OdinPair;
 import tacos.script.TacosScriptNPC;
@@ -142,7 +142,7 @@ public class NPCHandler {
     }
 
     public static final void NPCMoreTalk(MapleClient c, OpsScriptMan smt, int action, int selection, String text) {
-         NPCConversationManager cm = TacosScriptNPC.getInstance().getCM(c);
+         OdinNPCConversationManager cm = TacosScriptNPC.getInstance().getCM(c);
         byte lastMsg = (byte) smt.get();
 
         if (cm == null || c.getPlayer().getConversation() == 0 || cm.getLastMsg() != lastMsg) {

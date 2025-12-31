@@ -22,7 +22,7 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.scripting.PortalPlayerInteraction;
+import tacos.odin.OdinPortalPlayerInteraction;
 import tacos.debug.DebugLogger;
 import tacos.server.map.TacosPortal;
 
@@ -59,7 +59,7 @@ public class TacosScriptPortal extends TacosScript {
             return false;
         }
 
-        PortalPlayerInteraction ppi = new PortalPlayerInteraction(c, portal);
+        OdinPortalPlayerInteraction ppi = new OdinPortalPlayerInteraction(c, portal);
         return script.enter(ppi);
     }
 
