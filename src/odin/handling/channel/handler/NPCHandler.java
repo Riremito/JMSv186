@@ -142,7 +142,10 @@ public class NPCHandler {
     }
 
     public static final void NPCMoreTalk(MapleClient c, OpsScriptMan smt, int action, int selection, String text) {
-         OdinNPCConversationManager cm = TacosScriptNPC.getInstance().getCM(c);
+        OdinNPCConversationManager cm = TacosScriptNPC.getInstance().getCM(c);
+        if (cm == null) {
+            cm = TacosScriptQuest.getInstance().getCM(c);
+        }
         byte lastMsg = (byte) smt.get();
 
         if (cm == null || c.getPlayer().getConversation() == 0 || cm.getLastMsg() != lastMsg) {

@@ -44,7 +44,7 @@ public class OdinPortalPlayerInteraction extends OdinAbstractPlayerInteraction {
     public void spawnMonster(int id, int qty) {
         // jnr6_act.js
         // rnj6_act.js
-        spawnMonster(id, qty, portal.getPosition());
+        spawnMonster(id, qty, this.portal.getPosition());
     }
 
 }
