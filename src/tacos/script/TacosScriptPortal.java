@@ -18,9 +18,12 @@
  */
 package tacos.script;
 
+import java.util.regex.Pattern;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
+import odin.client.MapleCharacter;
 import odin.client.MapleClient;
+import tacos.debug.DebugLogger;
 import tacos.odin.OdinPortalPlayerInteraction;
 import tacos.server.map.TacosPortal;
 
@@ -47,6 +50,11 @@ public class TacosScriptPortal extends TacosScript {
     public boolean enter(TacosPortal portal, MapleClient c) {
         DebugMsg(c, TacosScriptType.PORTAL, portal.getScriptName());
 
+        if (enterHook(c.getPlayer(), portal)) {
+            DebugLogger.ScriptLog("enterHook : " + portal.getScriptName());
+            return true;
+        }
+
         ScriptEngine engine = getScript(TacosScriptType.PORTAL.get() + portal.getScriptName());
         if (engine == null) {
             return false;
@@ -59,6 +67,18 @@ public class TacosScriptPortal extends TacosScript {
 
         OdinPortalPlayerInteraction ppi = new OdinPortalPlayerInteraction(c, portal);
         return script.enter(ppi);
+    }
+
+    public boolean enterHook(MapleCharacter chr, TacosPortal portal) {
+        if (portal.getScriptName().equals("market00")) {
+            chr.getFreeMarketPortal().leave(chr);
+            return true;
+        }
+        if (Pattern.compile("market(J|)(\\d+)").matcher(portal.getScriptName()).matches()) {
+            chr.getFreeMarketPortal().enter(chr, portal);
+            return true;
+        }
+        return false;
     }
 
 }

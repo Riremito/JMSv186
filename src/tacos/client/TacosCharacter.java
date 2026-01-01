@@ -45,6 +45,7 @@ import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
+import tacos.script.portal.FreeMarketPortal;
 import tacos.server.ServerOdinGame;
 import tacos.server.map.TacosPortal;
 
@@ -65,6 +66,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     private TacosForcedStat forcedStat = new TacosForcedStat();
     protected TacosKeyLayout keylayout = new TacosKeyLayout();
     protected MonsterBook monsterbook = null;
+    private FreeMarketPortal portal_fm = new FreeMarketPortal();
 
     public void SendPacket(MaplePacket packet) {
         this.client.SendPacket(packet);
@@ -207,7 +209,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             }
         }
         if (map_to == null) {
-            map_to = mapFactory.getMap(TacosConstants.DEFALT_RETURN_MAP_ID); // return to default map.
+            map_to = mapFactory.getMap(TacosConstants.DEFAULT_RETURN_MAP_ID); // return to default map.
             DebugLogger.ErrorLog("updateMapById : invalid map = " + map_id);
         }
         TacosPortal portal_to = map_to.getPortal(portal_id);
@@ -477,6 +479,10 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public void Notice(String text) {
         SendPacket(ResWrapper.BroadCastMsgEvent(text));
+    }
+
+    public FreeMarketPortal getFreeMarketPortal() {
+        return this.portal_fm;
     }
 
     // clone

@@ -38,6 +38,8 @@ public class TacosConstants {
     // def
     public static final int DEFAULT_CHARSLOT = 6;
     public static final int DEFAULT_FORCED_RETURN_MAP_ID = 999999999;
-    public static final int DEFALT_RETURN_MAP_ID = 100000000;
+    public static final int DEFAULT_RETURN_MAP_ID = 100000000;
+    public static final int MAP_ID_PERION = 102000000;
+    public static final int MAP_ID_FREE_MARKET = 910000000;
 
 }
