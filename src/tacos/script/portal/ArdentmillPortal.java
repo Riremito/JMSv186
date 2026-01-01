@@ -24,10 +24,11 @@ import tacos.constants.TacosConstants;
  *
  * @author Riremito
  */
-public class FreeMarketPortal extends SharedPortal {
+public class ArdentmillPortal extends SharedPortal {
 
-    public FreeMarketPortal() {
-        super(TacosConstants.MAP_ID_FREE_MARKET, TacosConstants.PORTAL_FREE_MARKET);
+    //  meister ville, not a beer
+    public ArdentmillPortal() {
+        super(TacosConstants.MAP_ID_MEISTER_VILLE, TacosConstants.PORTAL_MEISTER_VILLE);
     }
 
 }

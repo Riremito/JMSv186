@@ -41,5 +41,8 @@ public class TacosConstants {
     public static final int DEFAULT_RETURN_MAP_ID = 100000000;
     public static final int MAP_ID_PERION = 102000000;
     public static final int MAP_ID_FREE_MARKET = 910000000;
+    public static final String PORTAL_FREE_MARKET = "out00";
+    public static final int MAP_ID_MEISTER_VILLE = 910001000;
+    public static final String PORTAL_MEISTER_VILLE = "st00";
 
 }

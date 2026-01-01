@@ -70,10 +70,22 @@ public class TacosScriptPortal extends TacosScript {
     }
 
     public boolean enterHook(MapleCharacter chr, TacosPortal portal) {
+        // Meister ville out
+        if (portal.getScriptName().equals("out_profession")) {
+            chr.getArdentmillPortal().leave(chr);
+            return true;
+        }
+        // Meister ville in
+        if (Pattern.compile("profession(\\d+)").matcher(portal.getScriptName()).matches()) {
+            chr.getArdentmillPortal().enter(chr, portal);
+            return true;
+        }
+        // FM out
         if (portal.getScriptName().equals("market00")) {
             chr.getFreeMarketPortal().leave(chr);
             return true;
         }
+        // FM in
         if (Pattern.compile("market(J|)(\\d+)").matcher(portal.getScriptName()).matches()) {
             chr.getFreeMarketPortal().enter(chr, portal);
             return true;
