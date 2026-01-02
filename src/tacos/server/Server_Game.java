@@ -42,7 +42,7 @@ public class Server_Game extends TacosServer {
     public Server_Game(String server_name, int world, int channel) {
         super(server_name);
         this.world = world;
-        this.channel = channel;
+        this.channel = channel; // from 1.
         this.mapFactory = new MapleMapFactory();
     }
 
@@ -56,6 +56,10 @@ public class Server_Game extends TacosServer {
         DebugLogger.InfoLog("Channel " + channel + ", Unbinding...");
         ServerOdinGame.getInstances().remove(channel);
         super.shutdown();
+    }
+
+    public int getChannel() {
+        return this.channel;
     }
 
     public int getWorld() {

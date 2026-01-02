@@ -18,6 +18,7 @@
  */
 package tacos.packet.response;
 
+import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.config.Region;
@@ -25,7 +26,6 @@ import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
 import tacos.server.ServerOdinGame;
-import tacos.server.ServerOdinLogin;
 import java.util.List;
 import java.util.Random;
 import tacos.packet.ServerPacket;
@@ -33,6 +33,8 @@ import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCharacterData;
 import tacos.packet.response.data.DataGW_CharacterStat;
+import tacos.property.Property_World;
+import tacos.server.Server_Game;
 import tacos.tools.TacosTools;
 
 /**
@@ -245,11 +247,11 @@ public class ResCLogin {
                             sp.Encode4(0);
                             sp.Encode1(1); // number of worlds
                             {
-                                sp.Encode1(ServerOdinLogin.WorldFlag[server_id]);
-                                sp.EncodeStr(ServerOdinLogin.WorldName[server_id]);
+                                sp.Encode1(Property_World.getFlags());
+                                sp.EncodeStr(Property_World.getName());
                                 sp.Encode1(ServerOdinGame.getChannels()); // number of  channels
                                 for (int i = 0; i < ServerOdinGame.getChannels(); i++) {
-                                    sp.EncodeStr(ServerOdinLogin.WorldName[server_id] + "-" + (i + 1));
+                                    sp.EncodeStr(Property_World.getName() + "-" + (i + 1));
                                     sp.Encode4(ServerOdinGame.getPopulation(i + 1) * 200);
                                     sp.Encode1(server_id); // serverId
                                     sp.Encode1(i); // channel
@@ -624,11 +626,7 @@ public class ResCLogin {
         return sp.get();
     }
 
-    public static MaplePacket WorldInformation(int world) {
-        return WorldInformation(world, true, 0);
-    }
-
-    public static MaplePacket WorldInformation(int world, boolean internalserver, int externalch) {
+    public static MaplePacket WorldInformation(int world, ArrayList<Server_Game> world_info) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WorldInformation);
 
         if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
@@ -646,11 +644,11 @@ public class ResCLogin {
         }
 
         // ワールド名
-        sp.EncodeStr(ServerOdinLogin.WorldName[world]);
+        sp.EncodeStr(Property_World.getName());
         // ワールドの旗
-        sp.Encode1(ServerOdinLogin.WorldFlag[world]);
+        sp.Encode1(Property_World.getFlags());
         // 吹き出し
-        sp.EncodeStr(Region.IsBMS() ? "" : ServerOdinLogin.WorldEvent[world]);
+        sp.EncodeStr(Region.IsBMS() ? "" : Property_World.getEvent());
 
         if (Version.LessOrEqual(Region.KMS, 1)) {
 
@@ -665,28 +663,25 @@ public class ResCLogin {
         }
 
         // チャンネル数
-        sp.Encode1(internalserver ? ServerOdinGame.getChannels() : externalch);
+        sp.Encode1(world_info.size());
         if (Region.IsCMS()) {
             sp.Encode4(500); // 0 causes 0 div
         }
         // チャンネル情報
-        for (int i = 0; i < (internalserver ? ServerOdinGame.getChannels() : externalch); i++) {
+        for (Server_Game game_server : world_info) {
             // チャンネル名
-            sp.EncodeStr(ServerOdinLogin.WorldName[world] + "-" + (i + 1));
+            sp.EncodeStr(game_server.getName());
             // 接続人数表示
-            if (internalserver && ServerOdinGame.getPopulation(i + 1) < 5) {
-                sp.Encode4(ServerOdinGame.getPopulation(i + 1) * 200);
-            } else {
-                sp.Encode4(1000);
-            }
+            sp.Encode4(game_server.getNumberOfSessions() * 200);
             // ワールドID
             sp.Encode1(world);
-            sp.Encode1(i); // channel
-            sp.Encode1(Region.check(Region.EMS) ? i % ServerOdinLogin.WorldLanguages[world] : 0); // language
+            sp.Encode1(game_server.getWorld()); // channel
+            sp.Encode1(Region.check(Region.EMS) ? (game_server.getChannel() - 1) % Property_World.getLanguages() : 0); // language
             if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode1(0);
             }
         }
+
         sp.Encode2(0);
         if (ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode4(0);

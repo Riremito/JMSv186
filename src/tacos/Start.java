@@ -28,7 +28,6 @@ import tacos.property.Property;
 import tacos.shared.SharedExpTable;
 import tacos.database.DatabaseConnection;
 import odin.handling.channel.MapleGuildRanking;
-import tacos.server.ServerOdinLogin;
 import odin.handling.world.World;
 import java.sql.SQLException;
 import java.util.List;
@@ -104,8 +103,6 @@ public class Start {
         // set codepage
         DebugLogger.SetupLog("CODEPAGE");
         CodePage.init();
-        // ログインサーバー上のゲームサーバー情報
-        ServerOdinLogin.SetWorldConfig(); // TODO : fix
         // database
         DQ_Accounts.resetLoginState();
         // 管理画面

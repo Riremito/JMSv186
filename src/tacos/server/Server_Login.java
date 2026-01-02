@@ -19,6 +19,8 @@
 package tacos.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Login;
 
@@ -29,6 +31,7 @@ import tacos.property.Property_Login;
 public class Server_Login extends TacosServer {
 
     private ArrayList<Server_Game> game_servers = new ArrayList<>();
+    private Map<Integer, ArrayList<Server_Game>> game_worlds = new HashMap<>();
 
     public Server_Login(String server_name) {
         super(server_name);
@@ -36,6 +39,21 @@ public class Server_Login extends TacosServer {
 
     public void addGameServer(Server_Game game_server) {
         this.game_servers.add(game_server);
+        int world_id = game_server.getWorld();
+        ArrayList<Server_Game> game_world = this.game_worlds.get(world_id);
+        if (game_world == null) {
+            game_world = new ArrayList<>();
+            this.game_worlds.put(world_id, game_world);
+        }
+        game_world.add(game_server);
+    }
+
+    public int getNumberOfWorlds() {
+        return this.game_worlds.size();
+    }
+
+    public ArrayList<Server_Game> getWorld(int world_id) {
+        return this.game_worlds.get(world_id);
     }
 
     public int getWolrdStatus(int world) {

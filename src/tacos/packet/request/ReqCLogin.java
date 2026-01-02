@@ -37,7 +37,6 @@ import tacos.database.query.DQ_Character_slots;
 import tacos.database.query.DQ_Characters;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugUser;
-import tacos.server.ServerOdinLogin;
 import java.util.ArrayList;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsBodyPart;
@@ -47,6 +46,7 @@ import tacos.packet.response.ResCLogin;
 import tacos.packet.response.ResCLogin.LoginResult;
 import odin.server.MapleItemInformationProvider;
 import tacos.packet.ClientPacketHeader;
+import tacos.property.Property_World;
 import tacos.server.Server_Login;
 
 /**
@@ -488,11 +488,10 @@ public class ReqCLogin {
     }
 
     public void OnWorldInfoRequest(MapleClient c) {
-        // かえで
-        c.SendPacket(ResCLogin.WorldInformation(0));
-        // もみじ (サーバーを分離すると接続人数を取得するのが難しくなる)
-        c.SendPacket(ResCLogin.WorldInformation(1, false, ServerOdinLogin.WorldChannels[1]));
-        c.SendPacket(ResCLogin.WorldInformation(-1));
+        for (int i = 0; i < this.login_server.getNumberOfWorlds(); i++) {
+            c.SendPacket(ResCLogin.WorldInformation(i, this.login_server.getWorld(i)));
+        }
+        c.SendPacket(ResCLogin.WorldInformation(-1, null));
 
         if (ServerConfig.JMS186orLater()) {
             c.SendPacket(ResCLogin.RecommendWorldMessage());
@@ -507,7 +506,7 @@ public class ReqCLogin {
             return false;
         }
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
-        c.SendPacket(ResCLogin.SelectCharacterResult(ServerOdinLogin.WorldPort[c.getWorld()] + c.getChannel() - 1, character_id));
+        c.SendPacket(ResCLogin.SelectCharacterResult(Property_World.getPort() + c.getChannel() - 1, character_id));
         return true;
     }
 
