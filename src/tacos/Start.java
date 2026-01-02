@@ -31,6 +31,7 @@ import odin.handling.channel.MapleGuildRanking;
 import tacos.server.ServerOdinLogin;
 import odin.handling.world.World;
 import java.sql.SQLException;
+import java.util.List;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
 import odin.handling.world.family.MapleFamilyBuff;
@@ -41,7 +42,10 @@ import odin.server.SpeedRunner;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
+import tacos.constants.TacosConstants;
 import tacos.network.MapleAESOFB;
+import tacos.network.PacketHandler_Login;
+import tacos.property.Property_Login;
 import tacos.server.TacosServer;
 import tacos.server.Server_CashShop;
 import tacos.server.Server_Game;
@@ -124,9 +128,18 @@ public class Start {
         // ?_?
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
-        Server_Login.init();
+        // login server
+        Server_Login login_server = new Server_Login("Login");
+        TacosServer.add(login_server);
+        login_server.run(TacosConstants.SERVER_LOCAL_IP, Property_Login.getPort(), new PacketHandler_Login(login_server));
+        // cashshop server
         Server_CashShop.init();
-        Server_Game.init();
+        // game servers
+        List<Server_Game> game_servers = Server_Game.init();
+        // for world list.
+        for (Server_Game game_server : game_servers) {
+            login_server.addGameServer(game_server);
+        }
 
         RandomRewards.getInstance();
         MapleGuildRanking.getInstance().getRank();

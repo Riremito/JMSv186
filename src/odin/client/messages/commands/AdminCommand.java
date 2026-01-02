@@ -462,27 +462,6 @@ public class AdminCommand {
         }
     }
 
-    public static class ExpRate extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            if (splitted.length > 1) {
-                final int rate = Integer.parseInt(splitted[1]);
-                if (splitted.length > 2 && splitted[2].equalsIgnoreCase("all")) {
-                    for (ServerOdinGame cserv : ServerOdinGame.getAllInstances()) {
-                        cserv.setExpRate(rate);
-                    }
-                } else {
-                    c.getChannelServer().setExpRate(rate);
-                }
-                c.getPlayer().dropMessage(6, "Exprate has been changed to " + rate + "x");
-            } else {
-                c.getPlayer().dropMessage(6, "Syntax: !exprate <number> [all]");
-            }
-            return 1;
-        }
-    }
-
     public static class DropRate extends CommandExecute {
 
         @Override

@@ -22,24 +22,9 @@ package tacos.server;
 
 import tacos.property.Property_Dummy_World;
 import tacos.property.Property_World;
-import java.util.HashMap;
-import java.util.Map;
 
 // TODO : remove
 public class ServerOdinLogin {
-
-    private static Server_Login server_login = null;
-
-    public static void set(Server_Login server) {
-        server_login = server;
-    }
-
-    public static final boolean isAdminOnly() {
-        return server_login.isAdminOnly();
-    }
-
-    private static Map<Integer, Integer> load = new HashMap<Integer, Integer>();
-    private static int usersOn = 0;
 
     private static final int WolrdLimit = 20;
     public static int NumberOfWorld = 0;
@@ -70,23 +55,6 @@ public class ServerOdinLogin {
         WorldMessage[NumberOfWorld] = Property_Dummy_World.getMessage();
         WorldFlag[NumberOfWorld] = Property_Dummy_World.getFlags();
         NumberOfWorld++;
-    }
-
-    public static final void addChannel(final int channel) {
-        load.put(channel, 0);
-    }
-
-    public static final void removeChannel(final int channel) {
-        load.remove(channel);
-    }
-
-    public static void setLoad(final Map<Integer, Integer> load_, final int usersOn_) {
-        load = load_;
-        usersOn = usersOn_;
-    }
-
-    public static final int getUsersOn() {
-        return usersOn;
     }
 
 }

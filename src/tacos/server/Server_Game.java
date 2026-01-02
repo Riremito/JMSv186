@@ -18,6 +18,8 @@
  */
 package tacos.server;
 
+import java.util.ArrayList;
+import java.util.List;
 import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.PlayerStorage;
@@ -37,8 +39,10 @@ public class Server_Game extends TacosServer {
     private MapleMapFactory mapFactory = null;
     private PlayerStorage players;
 
-    public Server_Game(String server_name) {
+    public Server_Game(String server_name, int world, int channel) {
         super(server_name);
+        this.world = world;
+        this.channel = channel;
         this.mapFactory = new MapleMapFactory();
     }
 
@@ -50,9 +54,12 @@ public class Server_Game extends TacosServer {
         DebugLogger.InfoLog("Channel " + channel + ", Saving characters...");
         getPlayerStorage().disconnectAll();
         DebugLogger.InfoLog("Channel " + channel + ", Unbinding...");
-        ServerOdinLogin.removeChannel(channel);
         ServerOdinGame.getInstances().remove(channel);
         super.shutdown();
+    }
+
+    public int getWorld() {
+        return this.world;
     }
 
     public MapleMapFactory getMapFactory() {
@@ -63,22 +70,23 @@ public class Server_Game extends TacosServer {
         return this.players;
     }
 
-    public static boolean init() {
+    public static List<Server_Game> init() {
+        List<Server_Game> game_servers = new ArrayList<>();
+        int world = 0;
         for (int i = 0; i < Property_World.getChannels(); i++) {
             int channel = i + 1;
             int channel_port = Property_World.getPort() + i;
             String channel_name = Property_World.getName() + "-" + channel;
             ServerOdinGame odin_game = ServerOdinGame.newInstance(channel);
-            Server_Game server = new Server_Game(channel_name);
-            server.world = 0;
-            server.channel = channel;
+            Server_Game server = new Server_Game(channel_name, world, channel);
             server.mapFactory.setChannel(channel);
             server.players = new PlayerStorage(channel);
             TacosServer.add(server);
             server.run(TacosConstants.SERVER_LOCAL_IP, channel_port, new PacketHandler_Game(server, channel));
             odin_game.set(server);
             odin_game.run_startup_configurations(channel_port);
+            game_servers.add(server);
         }
-        return true;
+        return game_servers;
     }
 }

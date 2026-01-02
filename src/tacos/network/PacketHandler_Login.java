@@ -24,7 +24,7 @@ import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCClientSocket;
 import tacos.packet.request.ReqCLogin;
 import tacos.packet.request.ReqCUser;
-import tacos.server.TacosServer;
+import tacos.server.Server_Login;
 
 /**
  *
@@ -32,8 +32,11 @@ import tacos.server.TacosServer;
  */
 public class PacketHandler_Login extends PacketHandler implements IPacketHandler {
 
-    public PacketHandler_Login(TacosServer server) {
-        super(server, -1);
+    private ReqCLogin rCLogin;
+
+    public PacketHandler_Login(Server_Login login_server) {
+        super(login_server, -1);
+        rCLogin = new ReqCLogin(login_server);
     }
 
     @Override
@@ -42,7 +45,7 @@ public class PacketHandler_Login extends PacketHandler implements IPacketHandler
             if (ReqCClientSocket.OnPacket_Login(c, header, cp)) {
                 return true;
             }
-            return ReqCLogin.OnPacket(c, header, cp);
+            return rCLogin.OnPacket(c, header, cp);
         }
         if (header.between(ClientPacketHeader.CP_BEGIN_USER, ClientPacketHeader.CP_END_USER)) {
             return ReqCUser.OnPacket_Login(c, header, cp);

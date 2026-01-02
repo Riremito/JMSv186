@@ -165,17 +165,12 @@ public class ServerOdinGame {
         return expRate;
     }
 
-    public final void setExpRate(final int expRate) {
-        this.expRate = expRate;
-    }
-
     public final int getChannel() {
         return channel;
     }
 
     public final void setChannel(final int channel) {
         instances.put(channel, this);
-        ServerOdinLogin.addChannel(channel);
     }
 
     public static final Collection<ServerOdinGame> getAllInstances() {

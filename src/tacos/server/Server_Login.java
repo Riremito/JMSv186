@@ -18,9 +18,9 @@
  */
 package tacos.server;
 
+import java.util.ArrayList;
+import tacos.debug.DebugLogger;
 import tacos.property.Property_Login;
-import tacos.constants.TacosConstants;
-import tacos.network.PacketHandler_Login;
 
 /**
  *
@@ -28,15 +28,44 @@ import tacos.network.PacketHandler_Login;
  */
 public class Server_Login extends TacosServer {
 
+    private ArrayList<Server_Game> game_servers = new ArrayList<>();
+
     public Server_Login(String server_name) {
         super(server_name);
     }
 
-    public static boolean init() {
-        Server_Login server = new Server_Login("Login");
-        TacosServer.add(server);
-        server.run(TacosConstants.SERVER_LOCAL_IP, Property_Login.getPort(), new PacketHandler_Login(server));
-        ServerOdinLogin.set(server);
-        return true;
+    public void addGameServer(Server_Game game_server) {
+        this.game_servers.add(game_server);
     }
+
+    public int getWolrdStatus(int world) {
+        // test
+        if (2 <= world) {
+            if (world == 2) {
+                return 1;
+            }
+            return 2;
+        }
+        int online_users = 0;
+        for (Server_Game game_server : this.game_servers) {
+            if (game_server.getWorld() == world) {
+                online_users += game_server.getNumberOfSessions();
+            }
+        }
+
+        int world_max_users = Property_Login.getUserLimit();
+        if (world_max_users <= online_users) {
+            DebugLogger.ErrorLog("getWolrdStatus : max users limit.");
+            return 2;
+        }
+
+        if ((world_max_users / 2) <= online_users) {
+            DebugLogger.ErrorLog("getWolrdStatus : too many users.");
+            return 1;
+        }
+
+        // OK
+        return 0;
+    }
+
 }
