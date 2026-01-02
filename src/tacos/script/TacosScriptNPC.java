@@ -68,7 +68,6 @@ public class TacosScriptNPC extends TacosScript {
             return false;
         }
 
-        c.setScriptEngine(npc_script_path, engine);
         c.getPlayer().setConversation(1);
         script.action(1, 0, 0);
         return true;
@@ -100,7 +99,6 @@ public class TacosScriptNPC extends TacosScript {
             return false;
         }
         cms.remove(c);
-        c.removeScriptEngine(TacosScriptType.NPC.get() + npccm.getScript());
         c.getPlayer().setConversation(0);
         return true;
     }

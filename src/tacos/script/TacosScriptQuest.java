@@ -65,7 +65,6 @@ public class TacosScriptQuest extends TacosScript {
             return false;
         }
 
-        c.setScriptEngine(quest_script_path, engine);
         c.getPlayer().setConversation(1);
         return startQuest(c, 1, 0, 0);
     }
@@ -131,7 +130,6 @@ public class TacosScriptQuest extends TacosScript {
             return false;
         }
         cms.remove(c);
-        c.removeScriptEngine(TacosScriptType.QUEST.get() + npccm.getQuest());
         c.getPlayer().setConversation(0);
         return true;
     }

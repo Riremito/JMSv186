@@ -21,17 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client;
 
 import tacos.constants.MapleClientState;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javax.script.ScriptEngine;
 import tacos.database.ExtraDB;
 import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_Characters;
 import tacos.server.ServerOdinGame;
 import java.util.ArrayList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import org.apache.mina.common.IoSession;
 import tacos.client.TacosClient;
 
@@ -128,27 +123,6 @@ public class MapleClient extends TacosClient {
             DQ_Accounts.updateLoginState(this, MapleClientState.LOGIN_NOTLOGGEDIN);
         }
         return true;
-    }
-
-    // TODO : remove, probably not needed.
-    private final Lock npc_mutex = new ReentrantLock();
-
-    public final Lock getNPCLock() {
-        return npc_mutex;
-    }
-
-    private Map<String, ScriptEngine> engines = new HashMap<>();
-
-    public void setScriptEngine(String name, final ScriptEngine e) {
-        engines.put(name, e);
-    }
-
-    public ScriptEngine getScriptEngine(String name) {
-        return engines.get(name);
-    }
-
-    public void removeScriptEngine(String name) {
-        engines.remove(name);
     }
 
 }
