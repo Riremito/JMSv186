@@ -38,10 +38,6 @@ public class ServerOdinLogin {
         return server_login.isAdminOnly();
     }
 
-    public static final boolean isShutdown() {
-        return server_login.isShutdown();
-    }
-
     private static Map<Integer, Integer> load = new HashMap<Integer, Integer>();
     private static int usersOn = 0;
 

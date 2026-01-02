@@ -22,26 +22,23 @@ import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.PlayerStorage;
 import odin.server.maps.MapleMapFactory;
-import org.apache.mina.common.IoHandler;
-import org.apache.mina.common.IoServiceConfig;
 import tacos.constants.TacosConstants;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.network.PacketHandler;
 import tacos.network.PacketHandler_Game;
 
 /**
  *
  * @author Riremito
  */
-public class Server_Game extends Server {
+public class Server_Game extends TacosServer {
 
     private int world;
     private int channel;
     private MapleMapFactory mapFactory = null;
     private PlayerStorage players;
 
-    public Server_Game(String server_name, String server_ip, int server_port, IoHandler ih, IoServiceConfig isc) {
-        super(server_name, server_ip, server_port, ih, isc);
+    public Server_Game(String server_name) {
+        super(server_name);
         this.mapFactory = new MapleMapFactory();
     }
 
@@ -72,13 +69,13 @@ public class Server_Game extends Server {
             int channel_port = Property_World.getPort() + i;
             String channel_name = Property_World.getName() + "-" + channel;
             ServerOdinGame odin_game = ServerOdinGame.newInstance(channel);
-            Server_Game server = new Server_Game(channel_name, TacosConstants.SERVER_LOCAL_IP, channel_port, new PacketHandler_Game(channel), PacketHandler.getSocketAcceptorConfig());
+            Server_Game server = new Server_Game(channel_name);
             server.world = 0;
             server.channel = channel;
             server.mapFactory.setChannel(channel);
             server.players = new PlayerStorage(channel);
-            Server.add(server);
-            server.run();
+            TacosServer.add(server);
+            server.run(TacosConstants.SERVER_LOCAL_IP, channel_port, new PacketHandler_Game(server, channel));
             odin_game.set(server);
             odin_game.run_startup_configurations(channel_port);
         }

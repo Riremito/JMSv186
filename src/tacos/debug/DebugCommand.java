@@ -60,7 +60,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.SavedLocationType;
-import tacos.server.Server;
+import tacos.server.TacosServer;
 import odin.server.shops.HiredMerchant;
 import tacos.database.query.DQ_Accounts;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
@@ -158,7 +158,7 @@ public class DebugCommand {
                 return true;
             }
             case "/server": {
-                for (Server server : Server.get()) {
+                for (TacosServer server : TacosServer.get()) {
                     String msg = server.getName() + " : " + server.getNumberOfSessions();
                     chr.DebugMsg(msg);
                 }

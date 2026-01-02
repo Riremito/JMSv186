@@ -20,24 +20,21 @@ package tacos.server;
 
 import tacos.property.Property_Shop;
 import odin.handling.channel.PlayerStorage;
-import org.apache.mina.common.IoHandler;
-import org.apache.mina.common.IoServiceConfig;
 import odin.server.MTSStorage;
 import tacos.constants.TacosConstants;
-import tacos.network.PacketHandler;
 import tacos.network.PacketHandler_CashShop;
 
 /**
  *
  * @author Riremito
  */
-public class Server_CashShop extends Server {
+public class Server_CashShop extends TacosServer {
 
     private PlayerStorage players;
     private PlayerStorage playersMTS;
 
-    public Server_CashShop(String server_name, String server_ip, int server_port, IoHandler ih, IoServiceConfig isc) {
-        super(server_name, server_ip, server_port, ih, isc);
+    public Server_CashShop(String server_name) {
+        super(server_name);
 
         this.players = new PlayerStorage(-10);
         this.playersMTS = new PlayerStorage(-20);
@@ -60,9 +57,9 @@ public class Server_CashShop extends Server {
     }
 
     public static boolean init() {
-        Server_CashShop server = new Server_CashShop("CashShop", TacosConstants.SERVER_LOCAL_IP, Property_Shop.getPort(), new PacketHandler_CashShop(), PacketHandler.getSocketAcceptorConfig());
-        Server.add(server);
-        server.run();
+        Server_CashShop server = new Server_CashShop("CashShop");
+        TacosServer.add(server);
+        server.run(TacosConstants.SERVER_LOCAL_IP, Property_Shop.getPort(), new PacketHandler_CashShop(server));
         ServerOdinCashShop.set(server);
         return true;
     }

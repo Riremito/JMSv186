@@ -42,7 +42,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
 import tacos.network.MapleAESOFB;
-import tacos.server.Server;
+import tacos.server.TacosServer;
 import tacos.server.Server_CashShop;
 import tacos.server.Server_Game;
 import tacos.server.Server_Login;
@@ -145,7 +145,7 @@ public class Start {
         Runtime.getRuntime().addShutdownHook(new Thread(
                 () -> {
                     DebugLogger.InfoLog("shutdown...");
-                    for (Server server : Server.get()) {
+                    for (TacosServer server : TacosServer.get()) {
                         server.shutdown();
                     }
                     World.Guild.save();

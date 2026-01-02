@@ -19,12 +19,12 @@
 package tacos.network;
 
 import odin.client.MapleClient;
-import tacos.server.ServerOdinLogin;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCClientSocket;
 import tacos.packet.request.ReqCLogin;
 import tacos.packet.request.ReqCUser;
+import tacos.server.TacosServer;
 
 /**
  *
@@ -32,14 +32,8 @@ import tacos.packet.request.ReqCUser;
  */
 public class PacketHandler_Login extends PacketHandler implements IPacketHandler {
 
-    public PacketHandler_Login() {
-        super(-1);
-        this.server_name = "Login";
-    }
-
-    @Override
-    public boolean isShutdown() {
-        return ServerOdinLogin.isShutdown();
+    public PacketHandler_Login(TacosServer server) {
+        super(server, -1);
     }
 
     @Override
@@ -55,4 +49,5 @@ public class PacketHandler_Login extends PacketHandler implements IPacketHandler
         }
         return false;
     }
+
 }

@@ -19,7 +19,6 @@
 package tacos.network;
 
 import odin.client.MapleClient;
-import tacos.server.ServerOdinGame;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCClientSocket;
@@ -37,6 +36,7 @@ import tacos.packet.request.ReqCUser;
 import tacos.packet.request.ReqCUser_Dragon;
 import tacos.packet.request.ReqCUser_Pet;
 import tacos.packet.request.Req_MapleTV;
+import tacos.server.TacosServer;
 
 /**
  *
@@ -44,14 +44,8 @@ import tacos.packet.request.Req_MapleTV;
  */
 public class PacketHandler_Game extends PacketHandler implements IPacketHandler {
 
-    public PacketHandler_Game(int channel) {
-        super(channel);
-        this.server_name = "Channel" + String.format("%02d", this.channel);
-    }
-
-    @Override
-    public boolean isShutdown() {
-        return ServerOdinGame.getInstance(this.channel).isShutdown();
+    public PacketHandler_Game(TacosServer server, int channel) {
+        super(server, channel);
     }
 
     @Override

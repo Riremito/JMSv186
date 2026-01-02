@@ -35,6 +35,7 @@ import odin.server.Randomizer;
 import odin.tools.FileoutputUtil;
 import org.apache.mina.common.ExecutorThreadModel;
 import tacos.packet.ClientPacketHeader;
+import tacos.server.TacosServer;
 
 /**
  *
@@ -89,15 +90,18 @@ public class PacketHandler extends IoHandlerAdapter {
         return cfg;
     }
 
+    private TacosServer server;
     protected String server_name;
     protected int channel = -1;
 
-    public PacketHandler(int channel) {
+    public PacketHandler(TacosServer server, int channel) {
+        this.server = server;
+        this.server_name = server.getName();
         this.channel = channel;
     }
 
-    public PacketHandler() {
-        this.channel = -1;
+    public TacosServer getServer() {
+        return this.server;
     }
 
     protected void log(IoSession session, String text) {
@@ -114,7 +118,7 @@ public class PacketHandler extends IoHandlerAdapter {
     @Override
     public void sessionOpened(final IoSession session) throws Exception {
         log(session, "sessionOpened.");
-        if (((IPacketHandler) this).isShutdown()) {
+        if (this.server.isShutdown()) {
             session.close();
             return;
         }

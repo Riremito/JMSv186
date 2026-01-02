@@ -19,26 +19,23 @@
 package tacos.server;
 
 import tacos.property.Property_Login;
-import org.apache.mina.common.IoHandler;
-import org.apache.mina.common.IoServiceConfig;
 import tacos.constants.TacosConstants;
-import tacos.network.PacketHandler;
 import tacos.network.PacketHandler_Login;
 
 /**
  *
  * @author Riremito
  */
-public class Server_Login extends Server {
+public class Server_Login extends TacosServer {
 
-    public Server_Login(String server_name, String server_ip, int server_port, IoHandler ih, IoServiceConfig isc) {
-        super(server_name, server_ip, server_port, ih, isc);
+    public Server_Login(String server_name) {
+        super(server_name);
     }
 
     public static boolean init() {
-        Server_Login server = new Server_Login("Login", TacosConstants.SERVER_LOCAL_IP, Property_Login.getPort(), new PacketHandler_Login(), PacketHandler.getSocketAcceptorConfig());
-        Server.add(server);
-        server.run();
+        Server_Login server = new Server_Login("Login");
+        TacosServer.add(server);
+        server.run(TacosConstants.SERVER_LOCAL_IP, Property_Login.getPort(), new PacketHandler_Login(server));
         ServerOdinLogin.set(server);
         return true;
     }

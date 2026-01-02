@@ -26,27 +26,22 @@ import org.apache.mina.common.IoAcceptor;
 import org.apache.mina.common.IoHandler;
 import org.apache.mina.common.IoServiceConfig;
 import org.apache.mina.transport.socket.nio.SocketAcceptor;
+import tacos.network.PacketHandler;
 
 /**
  *
  * @author Riremito
  */
-public class Server {
+public class TacosServer {
 
-    protected static ArrayList<Server> server_list = new ArrayList<>();
+    protected static ArrayList<TacosServer> server_list = new ArrayList<>();
     private static IoAcceptor server_io_acceptor = null;
 
-    public static ArrayList<Server> get() {
+    public static ArrayList<TacosServer> get() {
         return server_list;
     }
 
-    public static Server add(String server_name, String server_ip, int server_port, IoHandler ih, IoServiceConfig isc) {
-        Server server = new Server(server_name, server_ip, server_port, ih, isc);
-        server_list.add(server);
-        return server;
-    }
-
-    public static void add(Server server) {
+    public static void add(TacosServer server) {
         server_list.add(server);
     }
 
@@ -68,15 +63,15 @@ public class Server {
     private boolean adminOnly = false;
     private boolean server_status = false; // online or not.
 
-    public Server(String server_name, String server_ip, int server_port, IoHandler ih, IoServiceConfig isc) {
+    public TacosServer(String server_name) {
         this.server_name = server_name;
+    }
+
+    public boolean run(String server_ip, int server_port, IoHandler ih) {
         this.server_ip = server_ip;
         this.server_port = server_port;
         this.server_io_handler = ih;
-        this.server_service_config = isc;
-    }
-
-    public boolean run() {
+        this.server_service_config = PacketHandler.getSocketAcceptorConfig();
         this.server_inet_socket_address = new InetSocketAddress(this.server_ip, this.server_port);
 
         try {

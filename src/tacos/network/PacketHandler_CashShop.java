@@ -19,13 +19,13 @@
 package tacos.network;
 
 import odin.client.MapleClient;
-import tacos.server.ServerOdinCashShop;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCCashShop;
 import tacos.packet.request.ReqCClientSocket;
 import tacos.packet.request.ReqCITC;
 import tacos.packet.request.ReqCUser;
+import tacos.server.TacosServer;
 
 /**
  *
@@ -33,14 +33,8 @@ import tacos.packet.request.ReqCUser;
  */
 public class PacketHandler_CashShop extends PacketHandler implements IPacketHandler {
 
-    public PacketHandler_CashShop() {
-        super(-1);
-        this.server_name = "CashShop";
-    }
-
-    @Override
-    public boolean isShutdown() {
-        return ServerOdinCashShop.isShutdown();
+    public PacketHandler_CashShop(TacosServer server) {
+        super(server, -1);
     }
 
     @Override
