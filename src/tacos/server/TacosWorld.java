@@ -1,0 +1,89 @@
+/*
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
+package tacos.server;
+
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Riremito
+ */
+public class TacosWorld {
+
+    private static ArrayList<TacosWorld> worlds = new ArrayList<>();
+
+    public static ArrayList<TacosWorld> getWorlds() {
+        return worlds;
+    }
+
+    public static TacosWorld find(int id) {
+        for (TacosWorld world : worlds) {
+            if (world.getId() == id) {
+                return world;
+            }
+        }
+        return null;
+    }
+
+    public static void add(TacosWorld world) {
+        worlds.add(world);
+    }
+
+    private int id;
+    private String name;
+    private int flag;
+    private String event_desc;
+    private ArrayList<Server_Game> channels = new ArrayList<>();
+
+    public TacosWorld(int id, String name, int flag, String event_desc) {
+        this.id = id;
+        this.name = name;
+        this.flag = flag; // world flag icon.
+        this.event_desc = event_desc; // BMS24 does not support this.
+    }
+
+    public TacosWorld() {
+        // to do remove.
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public int getFlag() {
+        return this.flag;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getEvent() {
+        return this.event_desc;
+    }
+
+    public void addChannel(Server_Game channel) {
+        this.channels.add(channel);
+    }
+
+    public ArrayList<Server_Game> getChannels() {
+        return this.channels;
+    }
+
+}

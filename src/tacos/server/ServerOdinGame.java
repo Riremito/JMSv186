@@ -71,7 +71,7 @@ public class ServerOdinGame {
 
     private int expRate, mesoRate, dropRate, cashRate;
     private short port = 8585;
-    private int channel, running_MerchantID = 0, flags = 0;
+    private int channel, running_MerchantID = 0;
     private String serverMessage;
     private final Map<String, MapleSquad> mapleSquads = new HashMap<String, MapleSquad>();
     private final Map<Integer, HiredMerchant> merchants = new HashMap<Integer, HiredMerchant>();
@@ -104,7 +104,6 @@ public class ServerOdinGame {
         mesoRate = Property_World.getRateMeso();
         dropRate = Property_World.getRateDrop();
         serverMessage = Property_World.getMessage();
-        flags = Property_World.getFlags();
     }
 
     public static final ServerOdinGame newInstance(int channel) {

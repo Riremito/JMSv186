@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.config.Region;
@@ -35,6 +34,7 @@ import tacos.packet.response.data.DataCharacterData;
 import tacos.packet.response.data.DataGW_CharacterStat;
 import tacos.property.Property_World;
 import tacos.server.Server_Game;
+import tacos.server.TacosWorld;
 import tacos.tools.TacosTools;
 
 /**
@@ -626,17 +626,17 @@ public class ResCLogin {
         return sp.get();
     }
 
-    public static MaplePacket WorldInformation(int world, ArrayList<Server_Game> world_info) {
+    public static MaplePacket WorldInformation(TacosWorld world) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WorldInformation);
 
         if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
-            sp.Encode2(world);
+            sp.Encode2((world != null) ? world.getId() : -1);
         } else {
-            sp.Encode1(world);
+            sp.Encode1((world != null) ? world.getId() : -1);
         }
 
         // 終了
-        if (world == -1) {
+        if (world == null) {
             if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 116)) {
                 sp.Encode1(0);
             }
@@ -644,11 +644,11 @@ public class ResCLogin {
         }
 
         // ワールド名
-        sp.EncodeStr(Property_World.getName());
+        sp.EncodeStr(world.getName());
         // ワールドの旗
-        sp.Encode1(Property_World.getFlags());
+        sp.Encode1(world.getFlag());
         // 吹き出し
-        sp.EncodeStr(Region.IsBMS() ? "" : Property_World.getEvent());
+        sp.EncodeStr(Region.IsBMS() ? "" : world.getEvent());
 
         if (Version.LessOrEqual(Region.KMS, 1)) {
 
@@ -663,20 +663,20 @@ public class ResCLogin {
         }
 
         // チャンネル数
-        sp.Encode1(world_info.size());
+        sp.Encode1(world.getChannels().size());
         if (Region.IsCMS()) {
             sp.Encode4(500); // 0 causes 0 div
         }
         // チャンネル情報
-        for (Server_Game game_server : world_info) {
+        for (Server_Game channel : world.getChannels()) {
             // チャンネル名
-            sp.EncodeStr(game_server.getName());
+            sp.EncodeStr(channel.getName());
             // 接続人数表示
-            sp.Encode4(game_server.getNumberOfSessions() * 200);
+            sp.Encode4(channel.getNumberOfSessions() * 200);
             // ワールドID
-            sp.Encode1(world);
-            sp.Encode1(game_server.getWorld()); // channel
-            sp.Encode1(Region.check(Region.EMS) ? (game_server.getChannel() - 1) % Property_World.getLanguages() : 0); // language
+            sp.Encode1(world.getId());
+            sp.Encode1(channel.getWorld().getId()); // channel
+            sp.Encode1(channel.getLanguage()); // language
             if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode1(0);
             }

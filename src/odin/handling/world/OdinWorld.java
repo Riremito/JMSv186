@@ -48,8 +48,12 @@ import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.Timer.WorldTimer;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
+import tacos.server.TacosWorld;
 
-public class OdinWorld {
+public class OdinWorld extends TacosWorld {
+
+    public OdinWorld() {
+    }
 
     //Touch everything...
     public static void init() {

@@ -48,6 +48,7 @@ import odin.server.MapleItemInformationProvider;
 import tacos.packet.ClientPacketHeader;
 import tacos.property.Property_World;
 import tacos.server.Server_Login;
+import tacos.server.TacosWorld;
 
 /**
  *
@@ -488,10 +489,10 @@ public class ReqCLogin {
     }
 
     public void OnWorldInfoRequest(MapleClient c) {
-        for (int i = 0; i < this.login_server.getNumberOfWorlds(); i++) {
-            c.SendPacket(ResCLogin.WorldInformation(i, this.login_server.getWorld(i)));
+        for (TacosWorld world : TacosWorld.getWorlds()) {
+            c.SendPacket(ResCLogin.WorldInformation(world));
         }
-        c.SendPacket(ResCLogin.WorldInformation(-1, null));
+        c.SendPacket(ResCLogin.WorldInformation(null));
 
         if (ServerConfig.JMS186orLater()) {
             c.SendPacket(ResCLogin.RecommendWorldMessage());

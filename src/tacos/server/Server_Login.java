@@ -39,7 +39,7 @@ public class Server_Login extends TacosServer {
 
     public void addGameServer(Server_Game game_server) {
         this.game_servers.add(game_server);
-        int world_id = game_server.getWorld();
+        int world_id = game_server.getWorld().getId();
         ArrayList<Server_Game> game_world = this.game_worlds.get(world_id);
         if (game_world == null) {
             game_world = new ArrayList<>();
@@ -66,7 +66,7 @@ public class Server_Login extends TacosServer {
         }
         int online_users = 0;
         for (Server_Game game_server : this.game_servers) {
-            if (game_server.getWorld() == world) {
+            if (game_server.getWorld().getId() == world) {
                 online_users += game_server.getNumberOfSessions();
             }
         }

@@ -24,6 +24,7 @@ import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.PlayerStorage;
 import odin.server.maps.MapleMapFactory;
+import tacos.config.Region;
 import tacos.constants.TacosConstants;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.network.PacketHandler_Game;
@@ -34,15 +35,16 @@ import tacos.network.PacketHandler_Game;
  */
 public class Server_Game extends TacosServer {
 
-    private int world;
+    private TacosWorld world = null;
     private int channel;
+    private int language = 0;
     private MapleMapFactory mapFactory = null;
     private PlayerStorage players;
 
-    public Server_Game(String server_name, int world, int channel) {
+    public Server_Game(String server_name, int channel, int language) {
         super(server_name);
-        this.world = world;
         this.channel = channel; // from 1.
+        this.language = language; // EMS
         this.mapFactory = new MapleMapFactory();
     }
 
@@ -58,12 +60,20 @@ public class Server_Game extends TacosServer {
         super.shutdown();
     }
 
+    public TacosWorld getWorld() {
+        return this.world;
+    }
+
+    public void setWorld(TacosWorld world) {
+        this.world = world;
+    }
+
     public int getChannel() {
         return this.channel;
     }
 
-    public int getWorld() {
-        return this.world;
+    public int getLanguage() {
+        return this.language;
     }
 
     public MapleMapFactory getMapFactory() {
@@ -76,13 +86,16 @@ public class Server_Game extends TacosServer {
 
     public static List<Server_Game> init() {
         List<Server_Game> game_servers = new ArrayList<>();
-        int world = 0;
+        TacosWorld world = new TacosWorld(0, Property_World.getName(), Property_World.getFlags(), Property_World.getEvent());
+        TacosWorld.add(world);
+
         for (int i = 0; i < Property_World.getChannels(); i++) {
             int channel = i + 1;
             int channel_port = Property_World.getPort() + i;
             String channel_name = Property_World.getName() + "-" + channel;
             ServerOdinGame odin_game = ServerOdinGame.newInstance(channel);
-            Server_Game server = new Server_Game(channel_name, world, channel);
+            int language = Region.check(Region.EMS) ? i % Property_World.getLanguages() : 0;
+            Server_Game server = new Server_Game(channel_name, channel, language);
             server.mapFactory.setChannel(channel);
             server.players = new PlayerStorage(channel);
             TacosServer.add(server);
@@ -90,6 +103,8 @@ public class Server_Game extends TacosServer {
             odin_game.set(server);
             odin_game.run_startup_configurations(channel_port);
             game_servers.add(server);
+            server.setWorld(world);
+            world.addChannel(server);
         }
         return game_servers;
     }
