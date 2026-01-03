@@ -64,14 +64,14 @@ public class ReqSub_FriendRequest {
 
                 // fake data
                 if (name.equals(fakeFriend)) {
-                    BuddylistEntry be_fakefriend = new BuddylistEntry(name, chr.getId() + 1000, tag, chr.getClient().getChannel(), true, chr.getLevel(), chr.getJob());
+                    BuddylistEntry be_fakefriend = new BuddylistEntry(name, chr.getId() + 1000, tag, chr.getClient().getChannelId(), true, chr.getLevel(), chr.getJob());
                     chr.getBuddylist().put(be_fakefriend);
                 } else {
                     int ch = OdinWorld.Find.findChannel(name);
                     if (ch != -1) {
                         MapleCharacter chr_friend = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(name);
                         if (chr_friend != null) {
-                            BuddylistEntry be_friend = new BuddylistEntry(name, chr_friend.getId(), tag, chr_friend.getClient().getChannel(), true, chr_friend.getLevel(), chr_friend.getJob());
+                            BuddylistEntry be_friend = new BuddylistEntry(name, chr_friend.getId(), tag, chr_friend.getClient().getChannelId(), true, chr_friend.getLevel(), chr_friend.getJob());
                             chr.getBuddylist().put(be_friend);
                         }
                     } else {
@@ -154,7 +154,7 @@ public class ReqSub_FriendRequest {
                 if (charWithId != null) {
                     BuddyList.BuddyAddResult buddyAddResult = null;
                     if (channel > 0) {
-                        buddyAddResult = OdinWorld.Buddy.requestBuddyAdd(friend_name, c.getChannel(), c.getPlayer().getId(), c.getPlayer().getName(), c.getPlayer().getLevel(), c.getPlayer().getJob());
+                        buddyAddResult = OdinWorld.Buddy.requestBuddyAdd(friend_name, c.getChannelId(), c.getPlayer().getId(), c.getPlayer().getName(), c.getPlayer().getLevel(), c.getPlayer().getJob());
                     } else {
                         Connection con = DatabaseConnection.getConnection();
                         PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) as buddyCount FROM buddies WHERE characterid = ? AND pending = 0");
@@ -310,7 +310,7 @@ public class ReqSub_FriendRequest {
     private static final void notifyRemoteChannel(final MapleClient c, final int remoteChannel, final int otherCid, final String group, final BuddyList.BuddyOperation operation) {
         final MapleCharacter player = c.getPlayer();
         if (remoteChannel > 0) {
-            OdinWorld.Buddy.buddyChanged(otherCid, player.getId(), player.getName(), c.getChannel(), operation, player.getLevel(), player.getJob(), group);
+            OdinWorld.Buddy.buddyChanged(otherCid, player.getId(), player.getName(), c.getChannelId(), operation, player.getLevel(), player.getJob(), group);
         }
     }
 

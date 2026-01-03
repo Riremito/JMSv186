@@ -91,7 +91,7 @@ public class MapleClient extends TacosClient {
     }
 
     public final ServerOdinGame getChannelServer() {
-        return ServerOdinGame.getInstance(getChannel());
+        return ServerOdinGame.getInstance(getChannelId());
     }
 
     public boolean disconnect(boolean RemoveInChannelServer, boolean fromCS) {

@@ -789,7 +789,7 @@ public class InventoryHandler {
                     break;
                 }
                 final boolean ear = cp.Decode1() != 0;
-                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.getAvatarMega(c.getPlayer(), c.getChannel(), itemId, text, ear).getBytes());
+                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.getAvatarMega(c.getPlayer(), c.getChannelId(), itemId, text, ear).getBytes());
                 used = true;
                 break;
             }

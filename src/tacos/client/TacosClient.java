@@ -23,6 +23,9 @@ import org.apache.mina.common.IoSession;
 import tacos.config.DeveloperMode;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
+import tacos.server.Server_Game;
+import tacos.server.TacosServer;
+import tacos.server.TacosWorld;
 
 /**
  *
@@ -31,6 +34,7 @@ import tacos.debug.DebugLogger;
 public class TacosClient extends BaseClient {
 
     // account info
+    private TacosServer server;
     private int id = 0;
     private String nexon_id = null;
     private String maple_id = null;
@@ -44,13 +48,52 @@ public class TacosClient extends BaseClient {
     private int loginAttempt = 0;
     private boolean migrating = false;
     private int world = 0;
-    private int channel = 1;
+    private int selected_world = 0;
+    private int selected_channel = 1;
     // in game info
     private MapleCharacter player = null;
 
     public TacosClient(IoSession session) {
         super(session);
         this.logged_in = false;
+    }
+
+    public TacosServer getServer() {
+        return this.server;
+    }
+
+    public void setServer(TacosServer server) {
+        this.server = server;
+    }
+
+    public int getSelectedWorld() {
+        return this.selected_world;
+    }
+
+    public void setSelectedWorld(int selected_world) {
+        DebugLogger.DebugLog("setSelectedWorld : " + selected_world);
+        this.selected_world = selected_world;
+    }
+
+    public int getSelectedChannel() {
+        return this.selected_channel;
+    }
+
+    public void setSelectedChannel(int selected_channel) {
+        DebugLogger.DebugLog("setSelectedChannel : " + selected_channel);
+        this.selected_channel = selected_channel;
+    }
+
+    public TacosWorld getWorld() {
+        return ((Server_Game) this.server).getWorld();
+    }
+
+    public Server_Game getChannel() {
+        return (Server_Game) this.server;
+    }
+
+    public int getChannelId() {
+        return ((Server_Game) this.server).getChannel(); // from 1.
     }
 
     public void setId(int id) {
@@ -134,22 +177,6 @@ public class TacosClient extends BaseClient {
     public void setMigrating() {
         this.migrating = true;
         setPlayer(null);
-    }
-
-    public int getWorld() {
-        return this.world;
-    }
-
-    public void setWorld(final int world) {
-        this.world = world;
-    }
-
-    public int getChannel() {
-        return this.channel;
-    }
-
-    public void setChannel(final int channel) {
-        this.channel = channel;
     }
 
     public MapleCharacter getPlayer() {

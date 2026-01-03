@@ -1098,7 +1098,7 @@ public class MapleStatEffect implements Serializable {
             if (moveTo == 999999999) {
                 target = applyto.getMap().getReturnMap();
             } else {
-                target = ServerOdinGame.getInstance(applyto.getClient().getChannel()).getMapFactory().getMap(moveTo);
+                target = ServerOdinGame.getInstance(applyto.getClient().getChannelId()).getMapFactory().getMap(moveTo);
             }
             applyto.changeMap(target, target.getPortal(0));
             return true;

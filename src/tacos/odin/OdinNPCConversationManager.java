@@ -681,7 +681,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean registerSquad(String type, int minutes, String startText) {
-        final MapleSquad squad = new MapleSquad(c.getChannel(), type, c.getPlayer(), minutes * 60 * 1000);
+        final MapleSquad squad = new MapleSquad(c.getChannelId(), type, c.getPlayer(), minutes * 60 * 1000);
         final boolean ret = c.getChannelServer().addMapleSquad(squad, type);
         if (ret) {
             final MapleMap map = c.getPlayer().getMap();

@@ -46,7 +46,6 @@ import tacos.packet.response.ResCLogin;
 import tacos.packet.response.ResCLogin.LoginResult;
 import odin.server.MapleItemInformationProvider;
 import tacos.packet.ClientPacketHeader;
-import tacos.property.Property_World;
 import tacos.server.Server_Login;
 import tacos.server.TacosWorld;
 
@@ -355,7 +354,6 @@ public class ReqCLogin {
         }
 
         MapleCharacter newchar = MapleCharacter.getDefault(c);
-        newchar.setWorld((byte) c.getWorld());
         newchar.setFace(face_id);
         newchar.setHair(hair_id + hair_color);
         newchar.setGender(character_gender);
@@ -408,7 +406,7 @@ public class ReqCLogin {
         c.SendPacket(ResCLogin.CheckDuplicatedIDResult(character_name, isOK));
     }
 
-    public boolean OnSelectWorld(MapleClient c, ClientPacket cp) {
+    public boolean OnSelectWorld(MapleClient client, ClientPacket cp) {
         if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.EMS, 89) || Region.IsKMS() || Region.IsIMS() || Version.GreaterOrEqual(Region.TWMS, 148)) {
             byte unk = cp.Decode1();
         }
@@ -432,18 +430,18 @@ public class ReqCLogin {
 
         // もみじ(1)
         if (world == 1) {
-            c.SendPacket(ResCLogin.SelectWorldResult(c, ResCLogin.LoginResult.TOO_MANY_USERS));
+            client.SendPacket(ResCLogin.SelectWorldResult(client, ResCLogin.LoginResult.TOO_MANY_USERS));
             return false;
         }
         // 強制的にかえで(0)に書き換える
         if (world == 12) {
             world = 0;
         }
-
-        c.setWorld(world);
-        c.setChannel(channel + 1); // CHを数字で扱う
-        DQ_Character_slots.setCharacterSlots(c);
-        c.SendPacket(ResCLogin.SelectWorldResult(c, ResCLogin.LoginResult.SUCCESS));
+        // 選択中のワールドを設定
+        client.setSelectedWorld(world);
+        client.setSelectedChannel(channel);
+        DQ_Character_slots.setCharacterSlots(client);
+        client.SendPacket(ResCLogin.SelectWorldResult(client, ResCLogin.LoginResult.SUCCESS));
         return true;
     }
 
@@ -501,13 +499,13 @@ public class ReqCLogin {
 
     }
 
-    public boolean OnSelectCharacter(MapleClient c, int character_id) {
-        if (!c.checkCharacterId(character_id)) {
-            c.loginFailed("OnSelectCharacter");
+    public boolean OnSelectCharacter(MapleClient client, int character_id) {
+        if (!client.checkCharacterId(character_id)) {
+            client.loginFailed("OnSelectCharacter");
             return false;
         }
-        DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
-        c.SendPacket(ResCLogin.SelectCharacterResult(Property_World.getPort() + c.getChannel() - 1, character_id));
+        DQ_Accounts.updateLoginState(client, MapleClientState.LOGIN_SERVER_TRANSITION);
+        client.SendPacket(ResCLogin.SelectCharacterResult(client, character_id));
         return true;
     }
 

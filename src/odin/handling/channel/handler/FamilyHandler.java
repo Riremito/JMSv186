@@ -295,7 +295,7 @@ public class FamilyHandler {
                         MapleFamily.mergeFamily(fam, OdinWorld.Family.getFamily(old.getFamilyId()));
                     } else {
                         fam.addFamilyMember(c.getPlayer().getMFC());
-                        fam.setOnline(c.getPlayer().getId(), true, c.getChannel());
+                        fam.setOnline(c.getPlayer().getId(), true, c.getChannelId());
                         c.getPlayer().saveFamilyStatus();
                     }
                     if ((inviter.getNoJuniors() == 1 || old != null) && fam != null) {//just got their first junior whoopee
@@ -312,11 +312,11 @@ public class FamilyHandler {
                         inviter.setFamily(id, 0, c.getPlayer().getId(), 0); //load the family
                         c.getPlayer().setFamily(id, inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2());
                         MapleFamily fam = OdinWorld.Family.getFamily(id);
-                        fam.setOnline(inviter.getId(), true, inviter.getClient().getChannel());
+                        fam.setOnline(inviter.getId(), true, inviter.getClient().getChannelId());
                         if (old != null) { //has junior
                             MapleFamily.mergeFamily(fam, OdinWorld.Family.getFamily(old.getFamilyId()));
                         } else {
-                            fam.setOnline(c.getPlayer().getId(), true, c.getChannel());
+                            fam.setOnline(c.getPlayer().getId(), true, c.getChannelId());
                         }
                         fam.resetGens();
                         fam.resetDescendants();

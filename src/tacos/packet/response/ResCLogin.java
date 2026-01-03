@@ -44,15 +44,14 @@ import tacos.tools.TacosTools;
 public class ResCLogin {
 
     // ゲームサーバーへ接続
-    // getServerIP
     // CClientSocket::OnSelectCharacter
-    public static final MaplePacket SelectCharacterResult(final int port, final int clientId) {
+    public static MaplePacket SelectCharacterResult(MapleClient client, int character_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectCharacterResult);
         sp.Encode1(0);
         sp.Encode1(0);
         sp.Encode4(TacosTools.getGameServerIP());
-        sp.Encode2(port);
-        sp.Encode4(clientId);
+        sp.Encode2(Property_World.getPort() + client.getSelectedChannel());
+        sp.Encode4(character_id);
         sp.Encode1(0);
         sp.Encode4(0);
 

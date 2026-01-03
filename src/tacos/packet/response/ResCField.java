@@ -258,20 +258,20 @@ public class ResCField {
                         break;
                     }
                     // cs & itc
-                    if (chr_to.getClient().getChannel() < 0) {
+                    if (chr_to.getClient().getChannelId() < 0) {
                         sp.Encode1(OpsLocationResult.LR_ShopSvr.get());
                         sp.Encode4(0);
                         break;
                     }
                     // same channel
-                    if (chr_to.getClient().getChannel() == chr_from.getClient().getChannel()) {
+                    if (chr_to.getClient().getChannelId() == chr_from.getClient().getChannelId()) {
                         sp.Encode1(OpsLocationResult.LR_GameSvr.get());
                         sp.Encode4(chr_to.getPosMap());
                         break;
                     }
                     // different channel
                     sp.Encode1(OpsLocationResult.LR_OtherChannel.get());
-                    sp.Encode4(chr_to.getClient().getChannel());
+                    sp.Encode4(chr_to.getClient().getChannelId());
                     break;
                 }
                 break;
@@ -279,7 +279,7 @@ public class ResCField {
             case WP_Receive: {
                 if (loc_whis == Ops_Whisper.WP_Whisper) {
                     sp.EncodeStr(chr_from.getName()); // sender name
-                    sp.Encode1(chr_from.getClient().getChannel() - 1); // sender channel
+                    sp.Encode1(chr_from.getClient().getChannelId() - 1); // sender channel
                     sp.Encode1(0); // admin?
                     sp.EncodeStr(message); // sender message
                     break;

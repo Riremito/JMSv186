@@ -615,7 +615,7 @@ public class DebugCommand {
             }
             case "/randommap": {
                 int mapid = DWI_LoadXML.getMap().getRandom();
-                MapleMap map = ServerOdinGame.getInstance(c.getChannel()).getMapFactory().getMap(mapid);
+                MapleMap map = ServerOdinGame.getInstance(c.getChannelId()).getMapFactory().getMap(mapid);
                 chr.changeMap(map, map.getPortal(0));
                 chr.DebugMsg("[RandomMap] " + map.getId() + " - " + map.getStreetName() + "_" + map.getMapName()); // MapName code is buggy.
                 return true;

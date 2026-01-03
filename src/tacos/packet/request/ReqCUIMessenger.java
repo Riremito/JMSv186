@@ -74,7 +74,7 @@ public class ReqCUIMessenger {
                             final int position = messenger.getLowestPosition();
                             if (position > -1 && position < 4) {
                                 c.getPlayer().setMessenger(messenger);
-                                OdinWorld.Messenger.joinMessenger(messenger.getId(), new MapleMessengerCharacter(c.getPlayer()), c.getPlayer().getName(), c.getChannel());
+                                OdinWorld.Messenger.joinMessenger(messenger.getId(), new MapleMessengerCharacter(c.getPlayer()), c.getPlayer().getName(), c.getChannelId());
                             }
                         }
                     }
@@ -110,7 +110,7 @@ public class ReqCUIMessenger {
                         }
                     } else {
                         if (OdinWorld.isConnected(input)) {
-                            OdinWorld.Messenger.messengerInvite(c.getPlayer().getName(), messenger.getId(), input, c.getChannel(), c.getPlayer().isGM());
+                            OdinWorld.Messenger.messengerInvite(c.getPlayer().getName(), messenger.getId(), input, c.getChannelId(), c.getPlayer().isGM());
                         } else {
                             c.getSession().write(ResCUIMessenger.messengerNote(input, 4, 0));
                         }

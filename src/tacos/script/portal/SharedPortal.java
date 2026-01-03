@@ -43,7 +43,7 @@ public class SharedPortal {
     }
 
     private boolean usePortal(MapleCharacter chr, int map_id, String portal_name) {
-        MapleMap map_to = ServerOdinGame.getInstance(chr.getClient().getChannel()).getMapFactory().getMap(map_id);
+        MapleMap map_to = ServerOdinGame.getInstance(chr.getClient().getChannelId()).getMapFactory().getMap(map_id);
         if (map_to == null) {
             return false;
         }

@@ -767,7 +767,7 @@ public class PlayerHandler {
     }
 
     public static final void ChangeMap(MapleClient c, int map_id) {
-        final MapleMap to = ServerOdinGame.getInstance(c.getChannel()).getMapFactory().getMap(map_id);
+        final MapleMap to = ServerOdinGame.getInstance(c.getChannelId()).getMapFactory().getMap(map_id);
         c.getPlayer().changeMap(to, to.getPortal(0));
     }
 

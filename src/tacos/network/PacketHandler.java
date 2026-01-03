@@ -128,8 +128,8 @@ public class PacketHandler extends IoHandlerAdapter {
 
         MapleAESOFB aes_enc = new MapleAESOFB(serverSend, true, true);
         MapleAESOFB aes_dec = new MapleAESOFB(serverRecv, true, false);
-        final MapleClient client = new MapleClient(session);
-        client.setChannel(this.channel);
+        MapleClient client = new MapleClient(session);
+        client.setServer(this.server);
 
         session.setAttribute(MapleAESOFB.AES_ENC_KEY, null);
         session.write(ResCClientSocket.getHello(serverSend, serverRecv)); // send raw packet before server starts packet encryption.
@@ -143,7 +143,7 @@ public class PacketHandler extends IoHandlerAdapter {
     @Override
     public void sessionClosed(final IoSession session) throws Exception {
         log(session, "sessionClosed.");
-        final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
 
         if (client != null) {
             try {

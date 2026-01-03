@@ -51,12 +51,12 @@ public class Server_Game extends TacosServer {
     @Override
     public void shutdown() {
         getPlayerStorage().broadcastPacket(ResWrapper.BroadCastMsgNoticeOld("This channel will now shut down."));
-        DebugLogger.InfoLog("Channel " + channel + ", Saving hired merchants...");
-        ServerOdinGame.getInstance(channel).closeAllMerchant();
-        DebugLogger.InfoLog("Channel " + channel + ", Saving characters...");
+        DebugLogger.InfoLog("Channel " + this.channel + ", Saving hired merchants...");
+        ServerOdinGame.getInstance(this.channel).closeAllMerchant();
+        DebugLogger.InfoLog("Channel " + this.channel + ", Saving characters...");
         getPlayerStorage().disconnectAll();
-        DebugLogger.InfoLog("Channel " + channel + ", Unbinding...");
-        ServerOdinGame.getInstances().remove(channel);
+        DebugLogger.InfoLog("Channel " + this.channel + ", Unbinding...");
+        ServerOdinGame.getInstances().remove(this.channel);
         super.shutdown();
     }
 

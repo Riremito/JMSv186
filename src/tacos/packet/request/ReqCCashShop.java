@@ -111,6 +111,9 @@ public class ReqCCashShop {
         MapleCharacter chr = MapleCharacter.ReconstructChr(transfer, c, false);
         c.setPlayer(chr);
         c.setId(chr.getAccountID());
+        c.setSelectedWorld(transfer.world);
+        c.setSelectedChannel(transfer.channel);
+
         if (!DQ_Accounts.checkLoginIP(c)) {
             c.loginFailed("EnterCS 2."); // Remote hack
             return;
@@ -145,8 +148,8 @@ public class ReqCCashShop {
         ServerOdinCashShop.getPlayerStorage().deregisterPlayer(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
-            OdinWorld.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
-            c.SendPacket(ResCClientSocket.MigrateCommand(ServerOdinGame.getInstance(c.getChannel()).getPort()));
+            OdinWorld.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getSelectedChannel() + 1);
+            c.SendPacket(ResCClientSocket.MigrateCommand(ServerOdinGame.getInstance(c.getSelectedChannel() + 1).getPort()));
         } finally {
             chr.saveToDB(false, true);
             c.setMigrating();

@@ -41,13 +41,15 @@ public class CharacterTransfer {
 
     public TacosKeyLayout keylayout = null;
     public MonsterBook monsterbook = null;
+    public int world;
+    public int channel;
     public int characterid, accountid, exp,
             meso, hair, face, guildid,
             partyid, messengerid, mBookCover, dojo, nexonPoint, maplePoint,
             mount_itemid, mount_exp, points, vpoints, marriageId,
             familyid, seniorid, junior1, junior2, currentrep, totalrep, battleshipHP,
             tama;
-    public byte channel, dojoRecord, gender, gmLevel, guildrank, alliancerank, clonez, fairyExp, buddysize, world, skinColor, mount_level, mount_Fatigue;
+    public byte dojoRecord, gender, gmLevel, guildrank, alliancerank, clonez, fairyExp, buddysize, skinColor, mount_level, mount_Fatigue;
     public int dwPosMap;
     public int nPortal;
     public int subcategory;
@@ -70,7 +72,8 @@ public class CharacterTransfer {
         this.characterid = chr.getId();
         this.accountid = chr.getAccountID();
         this.accountname = chr.getClient().getMapleId();
-        this.channel = (byte) chr.getClient().getChannel();
+        this.world = chr.getWorld();
+        this.channel = chr.getChannel();
         this.nexonPoint = chr.getNexonPoint();
         this.maplePoint = chr.getMaplePoint();
         this.vpoints = chr.getVPoints();
@@ -99,7 +102,6 @@ public class CharacterTransfer {
         this.dwPosMap = chr.getPosMap();
         this.nPortal = chr.getPortal();
         this.marriageId = chr.getMarriageId();
-        this.world = chr.getWorld();
         this.guildid = chr.getGuildId();
         this.guildrank = (byte) chr.getGuildRank();
         this.alliancerank = (byte) chr.getAllianceRank();

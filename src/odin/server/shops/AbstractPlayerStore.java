@@ -67,7 +67,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         this.des = desc;
         this.pass = pass;
         this.map = owner.getMapId();
-        this.channel = owner.getClient().getChannel();
+        this.channel = owner.getClient().getChannelId();
         chrs = new WeakReference[slots];
         for (int i = 0; i < chrs.length; i++) {
             chrs[i] = new WeakReference<MapleCharacter>(null);

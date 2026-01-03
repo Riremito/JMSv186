@@ -44,7 +44,7 @@ public class DQ_Characters {
             Connection con = DatabaseConnection.getConnection();
             PreparedStatement ps = con.prepareStatement("SELECT id, name FROM " + DB_TABLE_NAME + " WHERE accountid = ? AND world = ?");
             ps.setInt(1, c.getId());
-            ps.setInt(2, c.getWorld());
+            ps.setInt(2, c.getSelectedWorld());
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

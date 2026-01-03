@@ -49,7 +49,7 @@ public class ResCStage {
             sp.EncodeBuffer(DataCClientOptMan.EncodeOpt()); // 2 bytes
         }
         // チャンネル
-        sp.Encode4(chr.getClient().getChannel() - 1); // m_nChannelID
+        sp.Encode4(chr.getClient().getChannelId() - 1); // m_nChannelID
         if (ServerConfig.KMS138orLater()
                 || (Region.IsJMS() && ServerConfig.JMS146orLater())
                 || Version.GreaterOrEqual(Region.EMS, 89)
@@ -164,7 +164,7 @@ public class ResCStage {
         if (part == 1) {
             // 008ABA10
             sp.EncodeBuffer(DataCClientOptMan.EncodeOpt());
-            sp.Encode4(chr.getClient().getChannel() - 1);
+            sp.Encode4(chr.getClient().getChannelId() - 1);
             sp.Encode1(0);
             sp.Encode1(0);
             sp.Encode4(0);

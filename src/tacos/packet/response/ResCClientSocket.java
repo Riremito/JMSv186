@@ -107,8 +107,7 @@ public class ResCClientSocket {
     }
 
     // CClientSocket::OnMigrateCommand
-    // getChannelChange
-    public static final MaplePacket MigrateCommand(final int port) {
+    public static MaplePacket MigrateCommand(int port) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MigrateCommand);
         sp.Encode1(1);
         sp.Encode4(TacosTools.getGameServerIP());

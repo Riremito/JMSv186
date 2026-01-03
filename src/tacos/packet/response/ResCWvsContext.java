@@ -656,7 +656,7 @@ public class ResCWvsContext {
             case BM_SKULLSPEAKER: // 5074000, ドクロ拡声器
             {
                 String text = ReqSub_UserConsumeCashItemUseRequest.MegaphoneGetSenderName(bma.chr) + " : " + bma.message;
-                int channel = bma.chr.getClient().getChannel() - 1;
+                int channel = bma.chr.getClient().getChannelId() - 1;
                 sp.EncodeStr(text);
                 sp.Encode1(channel);
                 sp.Encode1(bma.ear);
@@ -665,7 +665,7 @@ public class ResCWvsContext {
             case BM_ITEMSPEAKER: // 5076000, アイテム拡声器
             {
                 String text = ReqSub_UserConsumeCashItemUseRequest.MegaphoneGetSenderName(bma.chr) + " : " + bma.message;
-                int channel = bma.chr.getClient().getChannel() - 1;
+                int channel = bma.chr.getClient().getChannelId() - 1;
                 boolean show_item = bma.item != null;
                 sp.EncodeStr(text);
                 sp.Encode1(channel);
@@ -679,7 +679,7 @@ public class ResCWvsContext {
             case MEGAPHONE_TRIPLE: // 5077000, 三連拡声器
             {
                 String name = ReqSub_UserConsumeCashItemUseRequest.MegaphoneGetSenderName(bma.chr);
-                int channel = bma.chr.getClient().getChannel() - 1;
+                int channel = bma.chr.getClient().getChannelId() - 1;
                 String text1 = bma.messages.get(0); // ?_?
 
                 sp.EncodeStr(name + " : " + text1);

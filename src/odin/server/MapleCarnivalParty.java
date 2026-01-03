@@ -30,7 +30,7 @@ public class MapleCarnivalParty {
             mem.setCarnivalParty(this);
         }
         team = team1;
-        channel = owner.getClient().getChannel();
+        channel = owner.getClient().getChannelId();
     }
 
     public final MapleCharacter getLeader() {

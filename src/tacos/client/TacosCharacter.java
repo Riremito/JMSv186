@@ -58,6 +58,8 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     protected MapleClient client;
     protected int id;
+    protected int world = 0;
+    protected int channel = 0;
     protected MapleMap map;
     protected int dwPosMap;
     protected int nPortal;
@@ -76,6 +78,18 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public int getId() {
         return this.id;
+    }
+
+    public int getWorld() {
+        return this.world;
+    }
+
+    public int getChannel() {
+        return this.channel;
+    }
+
+    public void setChannel(int channel) {
+        this.channel = channel;
     }
 
     public int getViewRange() {
@@ -201,7 +215,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void updateMapById(int map_id, int portal_id) {
-        MapleMapFactory mapFactory = ServerOdinGame.getInstance(client.getChannel()).getMapFactory();
+        MapleMapFactory mapFactory = ServerOdinGame.getInstance(client.getChannelId()).getMapFactory();
         MapleMap map_to = mapFactory.getMap(map_id);
 
         if (map_to != null) {
@@ -272,7 +286,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             return false;
         }
         // direct map change.
-        map_to = ServerOdinGame.getInstance(client.getChannel()).getMapFactory().getMap(map_id_to);
+        map_to = ServerOdinGame.getInstance(client.getChannelId()).getMapFactory().getMap(map_id_to);
         changeMap(map_to, map_to.getPortal(0));
         return true;
     }
@@ -433,7 +447,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
         this.stats.recalcLocalStats();
         if (getMessenger() != null) {
-            OdinWorld.Messenger.updateMessenger(getMessenger().getId(), getName(), this.client.getChannel());
+            OdinWorld.Messenger.updateMessenger(getMessenger().getId(), getName(), this.client.getChannelId());
         }
 
         if (isCloning()) {

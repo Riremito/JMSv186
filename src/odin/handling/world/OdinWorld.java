@@ -208,7 +208,7 @@ public class OdinWorld extends TacosWorld {
                         } else {
                             chr.setParty(party);
                         }
-                        chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannel(), party, operation, target));
+                        chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), party, operation, target));
                     }
                 }
             }
@@ -219,7 +219,7 @@ public class OdinWorld extends TacosWorld {
                     if (ch > 0) {
                         MapleCharacter chr = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(target.getName());
                         if (chr != null) {
-                            chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannel(), party, operation, target));
+                            chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), party, operation, target));
                             chr.setParty(null);
                         }
                     }

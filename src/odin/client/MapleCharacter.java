@@ -154,7 +154,7 @@ public class MapleCharacter extends TacosCharacter {
 
     private String chalktext, BlessOfFairy_Origin;
     private long lastCombo, lastfametime, keydown_skill;
-    private byte dojoRecord, gmLevel, guildrank = 5, allianceRank = 5, world, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
+    private byte dojoRecord, gmLevel, guildrank = 5, allianceRank = 5, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
     private int subcategory;
     private int mulung_energy, combo, availableCP, totalCP, hpApUsed;
     private int accountid, bookCover, dojo,
@@ -332,9 +332,6 @@ public class MapleCharacter extends TacosCharacter {
     public final static MapleCharacter ReconstructChr(final CharacterTransfer ct, final MapleClient client, final boolean isChannel) {
         final MapleCharacter ret = new MapleCharacter(true); // Always true, it's change channel
         ret.client = client;
-        if (!isChannel) {
-            ret.client.setChannel(ct.channel);
-        }
         ret.id = ct.characterid;
         ret.name = ct.name;
         ret.level = ct.level;
@@ -827,7 +824,7 @@ public class MapleCharacter extends TacosCharacter {
         return ret;
     }
 
-    public static void saveNewCharToDB(final MapleCharacter chr) {
+    public static void saveNewCharToDB(MapleCharacter chr) {
         Connection con = DatabaseConnection.getConnection();
 
         PreparedStatement ps = null;
@@ -881,7 +878,7 @@ public class MapleCharacter extends TacosCharacter {
             ps.setInt(33, 0); //total reps
             ps.setInt(34, chr.getAccountID());
             ps.setString(35, chr.name);
-            ps.setByte(36, chr.world);
+            ps.setByte(36, (byte) chr.getClient().getSelectedWorld());
             ps.setInt(37, chr.tama);
             ps.executeUpdate();
 
@@ -2500,7 +2497,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public void updatePartyMemberHP() {
         if (party != null) {
-            final int channel = client.getChannel();
+            final int channel = client.getChannelId();
             for (MaplePartyCharacter partychar : party.getMembers()) {
                 if (partychar.getMapid() == getMapId() && partychar.getChannel() == channel) {
                     final MapleCharacter other = client.getChannelServer().getPlayerStorage().getCharacterByName(partychar.getName());
@@ -2516,7 +2513,7 @@ public class MapleCharacter extends TacosCharacter {
         if (party == null) {
             return;
         }
-        int channel = client.getChannel();
+        int channel = client.getChannelId();
         for (MaplePartyCharacter partychar : party.getMembers()) {
             if (partychar.getMapid() == getMapId() && partychar.getChannel() == channel) {
                 MapleCharacter other = client.getChannelServer().getPlayerStorage().getCharacterByName(partychar.getName());
@@ -3440,14 +3437,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public int getPartyId() {
         return (party != null ? party.getId() : -1);
-    }
-
-    public byte getWorld() {
-        return world;
-    }
-
-    public void setWorld(byte world) {
-        this.world = world;
     }
 
     public void setParty(MapleParty party) {
@@ -4715,13 +4704,13 @@ public class MapleCharacter extends TacosCharacter {
     public void changeChannel(final int channel) {
         final ServerOdinGame toch = ServerOdinGame.getInstance(channel);
 
-        if (channel == client.getChannel() || toch == null || toch.isShutdown()) {
+        if (channel == client.getChannelId() || toch == null || toch.isShutdown()) {
             client.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_GAMESVR_DISCONNECTED));
             return;
         }
         changeRemoval();
 
-        final ServerOdinGame ch = ServerOdinGame.getInstance(client.getChannel());
+        final ServerOdinGame ch = ServerOdinGame.getInstance(client.getChannelId());
         if (getMessenger() != null) {
             OdinWorld.Messenger.silentLeaveMessenger(getMessenger().getId(), new MapleMessengerCharacter(this));
         }
@@ -5309,7 +5298,6 @@ public class MapleCharacter extends TacosCharacter {
         ret.nexonPoint = nexonPoint;
         ret.maplePoint = maplePoint;
         ret.clone = true;
-        ret.client.setChannel(this.client.getChannel());
         while (map.getCharacterById(ret.id) != null || client.getChannelServer().getPlayerStorage().getCharacterById(ret.id) != null) {
             ret.id++;
         }
@@ -5488,7 +5476,7 @@ public class MapleCharacter extends TacosCharacter {
 
         // fix---
         if (!fromCS) {
-            final ServerOdinGame ch = ServerOdinGame.getInstance(map == null ? client.getChannel() : map.getChannel());
+            final ServerOdinGame ch = ServerOdinGame.getInstance(map == null ? client.getChannelId() : map.getChannel());
 
             try {
                 if (ch == null || clone || ch.isShutdown()) {
@@ -5514,9 +5502,9 @@ public class MapleCharacter extends TacosCharacter {
                 }
                 if (bl != null) {
                     if (!client.getServerTransition()) {
-                        OdinWorld.Buddy.loggedOff(namez, idz, client.getChannel(), bl.getBuddyIds(), gmLevel, hidden);
+                        OdinWorld.Buddy.loggedOff(namez, idz, client.getChannelId(), bl.getBuddyIds(), gmLevel, hidden);
                     } else { // Change channel
-                        OdinWorld.Buddy.loggedOn(namez, idz, client.getChannel(), bl.getBuddyIds(), gmLevel, hidden);
+                        OdinWorld.Buddy.loggedOn(namez, idz, client.getChannelId(), bl.getBuddyIds(), gmLevel, hidden);
                     }
                 }
                 if (gid > 0) {
@@ -5545,9 +5533,9 @@ public class MapleCharacter extends TacosCharacter {
                     OdinWorld.Party.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
                 }
                 if (!client.getServerTransition()) {
-                    OdinWorld.Buddy.loggedOff(namez, idz, client.getChannel(), bl.getBuddyIds(), gmLevel, hidden);
+                    OdinWorld.Buddy.loggedOff(namez, idz, client.getChannelId(), bl.getBuddyIds(), gmLevel, hidden);
                 } else { // Change channel
-                    OdinWorld.Buddy.loggedOn(namez, idz, client.getChannel(), bl.getBuddyIds(), gmLevel, hidden);
+                    OdinWorld.Buddy.loggedOn(namez, idz, client.getChannelId(), bl.getBuddyIds(), gmLevel, hidden);
                 }
                 if (gid > 0) {
                     OdinWorld.Guild.setGuildMemberOnline(chrg, false, -1);

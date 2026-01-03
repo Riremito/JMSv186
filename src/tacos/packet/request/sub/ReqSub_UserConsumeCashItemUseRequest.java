@@ -336,7 +336,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
     }
 
     public static boolean cashItem507_Megaphone(MapleCharacter chr, int cash_item_id, ClientPacket cp) {
-        byte channel = (byte) chr.getClient().getChannel();
+        byte channel = (byte) chr.getClient().getChannelId();
         switch (cash_item_id) {
             // メガホン
             case 5070000: {

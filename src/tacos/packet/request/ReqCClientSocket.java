@@ -159,6 +159,9 @@ public class ReqCClientSocket {
         ExtraDB.loadData(chr);
         c.setPlayer(chr);
         c.setId(chr.getAccountID());
+        if (transfer != null) {
+            chr.setChannel(transfer.channel);
+        }
 
         if (!DQ_Accounts.checkLoginIP(c)) {
             c.loginFailed("EnterGameServer 1."); // Remote hack
@@ -201,7 +204,7 @@ public class ReqCClientSocket {
             OdinWorld.Party.updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
         }
         // friend
-        OdinWorld.Buddy.loggedOn(chr.getName(), chr.getId(), c.getChannel(), chr.getBuddylist().getBuddyIds(), chr.getGMLevel(), chr.isHidden());
+        OdinWorld.Buddy.loggedOn(chr.getName(), chr.getId(), c.getChannelId(), chr.getBuddylist().getBuddyIds(), chr.getGMLevel(), chr.isHidden());
         for (CharacterIdChannelPair onlineBuddy : OdinWorld.Find.multiBuddyFind(chr.getId(), chr.getBuddylist().getBuddyIds())) {
             final BuddylistEntry ble = chr.getBuddylist().get(onlineBuddy.getCharacterId());
             ble.setChannel(onlineBuddy.getChannel());
@@ -210,7 +213,7 @@ public class ReqCClientSocket {
         // guild
         MapleGuild gs = null;
         if (0 < chr.getGuildId()) {
-            OdinWorld.Guild.setGuildMemberOnline(chr.getMGC(), true, c.getChannel());
+            OdinWorld.Guild.setGuildMemberOnline(chr.getMGC(), true, c.getChannelId());
             gs = OdinWorld.Guild.getGuild(chr.getGuildId());
             if (gs == null) {
                 chr.setGuildId(0);
@@ -221,12 +224,12 @@ public class ReqCClientSocket {
         }
         // family
         if (0 < chr.getFamilyId()) {
-            OdinWorld.Family.setFamilyMemberOnline(chr.getMFC(), true, c.getChannel());
+            OdinWorld.Family.setFamilyMemberOnline(chr.getMFC(), true, c.getChannelId());
         }
         // idk - 1
         if (chr.getMessenger() != null) {
             OdinWorld.Messenger.silentJoinMessenger(chr.getMessenger().getId(), new MapleMessengerCharacter(c.getPlayer()));
-            OdinWorld.Messenger.updateMessenger(chr.getMessenger().getId(), c.getPlayer().getName(), c.getChannel());
+            OdinWorld.Messenger.updateMessenger(chr.getMessenger().getId(), c.getPlayer().getName(), c.getChannelId());
         }
         // idk - 2
         CharacterNameAndId pendingBuddyRequest = chr.getBuddylist().pollPendingRequest();
@@ -327,7 +330,7 @@ public class ReqCClientSocket {
             chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
             return;
         }
-        final ServerOdinGame ch = ServerOdinGame.getInstance(c.getChannel());
+        final ServerOdinGame ch = ServerOdinGame.getInstance(c.getChannelId());
         chr.changeRemoval();
         if (chr.getMessenger() != null) {
             MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(chr);

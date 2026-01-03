@@ -34,54 +34,55 @@ public class DQ_Character_slots {
 
     public static final String DB_TABLE_NAME = "character_slots";
 
-    public static boolean setCharacterSlots(MapleClient c) {
-        int charslots = c.getCharSlots();
+    public static boolean setCharacterSlots(MapleClient client) {
+        int charslots = client.getCharSlots();
 
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE accid = ? AND worldid = ?");
-            ps.setInt(1, c.getId());
-            ps.setInt(2, c.getWorld());
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                charslots = rs.getInt("charslots");
-                c.setCharSlots(charslots); // set
-            } else {
-                PreparedStatement psu = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (accid, worldid, charslots) VALUES (?, ?, ?)");
-                psu.setInt(1, c.getId());
-                psu.setInt(2, c.getWorld());
-                psu.setInt(3, charslots);
-                psu.executeUpdate();
-                psu.close();
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE accid = ? AND worldid = ?")) {
+                ps.setInt(1, client.getId());
+                ps.setInt(2, client.getSelectedWorld());
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    charslots = rs.getInt("charslots");
+                    client.setCharSlots(charslots); // set
+                } else {
+                    try (PreparedStatement psu = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (accid, worldid, charslots) VALUES (?, ?, ?)")) {
+                        psu.setInt(1, client.getId());
+                        psu.setInt(2, client.getSelectedWorld());
+                        psu.setInt(3, charslots);
+                        psu.executeUpdate();
+                    }
+                }
+                rs.close();
             }
-            rs.close();
-            ps.close();
             return true;
         } catch (SQLException sqlE) {
-            DebugLogger.ExceptionLog("getCharacterSlots");
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "getCharacterSlots");
         }
 
         return false;
     }
 
-    public static boolean gainCharacterSlot(MapleClient c) {
-        if (c.getCharSlots() >= 15) {
+    public static boolean gainCharacterSlot(MapleClient client, int world_id) {
+        if (client.getCharSlots() >= 15) {
             return false;
         }
-        int charslots = c.getCharSlots() + 1;
+        int charslots = client.getCharSlots() + 1;
 
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET charslots = ? WHERE worldid = ? AND accid = ?");
-            ps.setInt(1, charslots);
-            ps.setInt(2, c.getWorld());
-            ps.setInt(3, c.getId());
-            ps.executeUpdate();
-            ps.close();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET charslots = ? WHERE worldid = ? AND accid = ?")) {
+                ps.setInt(1, charslots);
+                ps.setInt(2, world_id);
+                ps.setInt(3, client.getId());
+                ps.executeUpdate();
+            }
             return true;
         } catch (SQLException sqlE) {
-            DebugLogger.ExceptionLog("gainCharacterSlot");
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "gainCharacterSlot");
         }
         return false;
     }
+
 }

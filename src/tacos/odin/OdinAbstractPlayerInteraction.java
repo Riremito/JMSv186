@@ -169,7 +169,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     private final MapleMap getWarpMap(final int map) {
-        return ServerOdinGame.getInstance(client.getChannel()).getMapFactory().getMap(map);
+        return ServerOdinGame.getInstance(client.getChannelId()).getMapFactory().getMap(map);
     }
 
     public final MapleMap getMap() {
@@ -776,7 +776,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final int getChannelNumber() {
-        return client.getChannel();
+        return client.getChannelId();
     }
 
     public final int getMonsterCount(final int mapid) {
