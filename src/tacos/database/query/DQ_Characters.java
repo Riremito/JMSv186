@@ -22,7 +22,7 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -103,10 +103,10 @@ public class DQ_Characters {
                     DebugLogger.ErrorLog("deleteCharacter : 2");
                     return false;
                 }
-                World.Guild.deleteGuildCharacter(rs.getInt("guildid"), character_id);
+                OdinWorld.Guild.deleteGuildCharacter(rs.getInt("guildid"), character_id);
             }
             if (rs.getInt("familyid") > 0) {
-                World.Family.getFamily(rs.getInt("familyid")).leaveFamily(character_id);
+                OdinWorld.Family.getFamily(rs.getInt("familyid")).leaveFamily(character_id);
             }
             rs.close();
             ps.close();

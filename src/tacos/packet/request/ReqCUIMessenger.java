@@ -22,7 +22,7 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.handling.world.MapleMessenger;
 import odin.handling.world.MapleMessengerCharacter;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
@@ -67,14 +67,14 @@ public class ReqCUIMessenger {
                 if (messenger == null) {
                     int messengerid = cp.Decode4();
                     if (messengerid == 0) { // create
-                        c.getPlayer().setMessenger(World.Messenger.createMessenger(new MapleMessengerCharacter(c.getPlayer())));
+                        c.getPlayer().setMessenger(OdinWorld.Messenger.createMessenger(new MapleMessengerCharacter(c.getPlayer())));
                     } else { // join
-                        messenger = World.Messenger.getMessenger(messengerid);
+                        messenger = OdinWorld.Messenger.getMessenger(messengerid);
                         if (messenger != null) {
                             final int position = messenger.getLowestPosition();
                             if (position > -1 && position < 4) {
                                 c.getPlayer().setMessenger(messenger);
-                                World.Messenger.joinMessenger(messenger.getId(), new MapleMessengerCharacter(c.getPlayer()), c.getPlayer().getName(), c.getChannel());
+                                OdinWorld.Messenger.joinMessenger(messenger.getId(), new MapleMessengerCharacter(c.getPlayer()), c.getPlayer().getName(), c.getChannel());
                             }
                         }
                     }
@@ -83,7 +83,7 @@ public class ReqCUIMessenger {
             case 0x02: // exit
                 if (messenger != null) {
                     final MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(c.getPlayer());
-                    World.Messenger.leaveMessenger(messenger.getId(), messengerplayer);
+                    OdinWorld.Messenger.leaveMessenger(messenger.getId(), messengerplayer);
                     c.getPlayer().setMessenger(null);
                 }
                 break;
@@ -109,8 +109,8 @@ public class ReqCUIMessenger {
                             c.getSession().write(ResCUIMessenger.messengerChat(c.getPlayer().getName() + " : " + target.getName() + " is already using Maple Messenger."));
                         }
                     } else {
-                        if (World.isConnected(input)) {
-                            World.Messenger.messengerInvite(c.getPlayer().getName(), messenger.getId(), input, c.getChannel(), c.getPlayer().isGM());
+                        if (OdinWorld.isConnected(input)) {
+                            OdinWorld.Messenger.messengerInvite(c.getPlayer().getName(), messenger.getId(), input, c.getChannel(), c.getPlayer().isGM());
                         } else {
                             c.getSession().write(ResCUIMessenger.messengerNote(input, 4, 0));
                         }
@@ -126,13 +126,13 @@ public class ReqCUIMessenger {
                     }
                 } else { // Other channel
                     if (!c.getPlayer().isGM()) {
-                        World.Messenger.declineChat(targeted, c.getPlayer().getName());
+                        OdinWorld.Messenger.declineChat(targeted, c.getPlayer().getName());
                     }
                 }
                 break;
             case 0x06: // message
                 if (messenger != null) {
-                    World.Messenger.messengerChat(messenger.getId(), cp.DecodeStr(), c.getPlayer().getName());
+                    OdinWorld.Messenger.messengerChat(messenger.getId(), cp.DecodeStr(), c.getPlayer().getName());
 
                 }
                 break;

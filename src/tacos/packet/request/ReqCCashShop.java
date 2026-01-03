@@ -31,7 +31,7 @@ import tacos.debug.DebugLogger;
 import tacos.server.ServerOdinCashShop;
 import tacos.server.ServerOdinGame;
 import odin.handling.world.CharacterTransfer;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import java.util.ArrayList;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsCashItem;
@@ -118,7 +118,7 @@ public class ReqCCashShop {
         final MapleClientState state = DQ_Accounts.getLoginState(c);
         boolean allowLogin = false;
         if (state == MapleClientState.LOGIN_SERVER_TRANSITION || state == MapleClientState.CHANGE_CHANNEL) {
-            if (!World.isCharacterListConnected(c)) {
+            if (!OdinWorld.isCharacterListConnected(c)) {
                 allowLogin = true;
             }
         }
@@ -145,7 +145,7 @@ public class ReqCCashShop {
         ServerOdinCashShop.getPlayerStorage().deregisterPlayer(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
-            World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
+            OdinWorld.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
             c.SendPacket(ResCClientSocket.MigrateCommand(ServerOdinGame.getInstance(c.getChannel()).getPort()));
         } finally {
             chr.saveToDB(false, true);

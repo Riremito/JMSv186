@@ -36,7 +36,7 @@ import tacos.wz.data.ReactorWz;
 import tacos.database.DatabaseConnection;
 import tacos.network.MaplePacket;
 import tacos.server.ServerOdinGame;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import tacos.packet.ops.OpsUserEffect;
@@ -174,7 +174,7 @@ public final class MapleMap extends TacosMap {
         SpeedRunType type = SpeedRunType.NULL;
         final MapleSquad sqd = getSquadByMap();
         if (mobid == 8810018) { // Horntail
-            World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！").getBytes());
+            OdinWorld.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！").getBytes());
             if (mapid == 240060200) {
                 if (speedRunStart > 0) {
                     type = SpeedRunType.Horntail;
@@ -184,7 +184,7 @@ public final class MapleMap extends TacosMap {
                 }
             }
         } else if (mobid == 8810122 && mapid == 240060201) { // Horntail
-            World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice("To the crew that have finally conquered Chaos Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!").getBytes());
+            OdinWorld.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice("To the crew that have finally conquered Chaos Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!").getBytes());
             if (speedRunStart > 0) {
                 type = SpeedRunType.ChaosHT;
             }
@@ -256,7 +256,7 @@ public final class MapleMap extends TacosMap {
             }
             //INSERT HERE: 2095_tokyo
         } else if (mobid == 8820001) {
-            World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice("不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！").getBytes());
+            OdinWorld.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice("不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！").getBytes());
             if (mapid == 270050100) {
                 if (speedRunStart > 0) {
                     type = SpeedRunType.Pink_Bean;

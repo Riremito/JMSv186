@@ -35,7 +35,7 @@ import odin.constants.GameConstants;
 import odin.client.inventory.ItemLoader;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import java.util.Map;
 import tacos.packet.ops.OpsEntrustedShop;
 import tacos.packet.response.ResCStoreBankDlg;
@@ -57,7 +57,7 @@ public class HiredMerchantHandler {
                     c.getPlayer().dropMessage(1, "Please claim your items from Fredrick first.");
                     break;
                 case 0:
-                    boolean merch = World.hasMerchant(c.getPlayer().getAccountID());
+                    boolean merch = OdinWorld.hasMerchant(c.getPlayer().getAccountID());
                     if (!merch) {
 //		    c.getPlayer().dropMessage(1, "The Hired Merchant is temporary disabled until it's fixed.");
                         c.getSession().write(ResCWvsContext.EntrustedShopCheckResult(OpsEntrustedShop.EntrustedShopRes_OpenPossible));
@@ -104,7 +104,7 @@ public class HiredMerchantHandler {
         switch (operation) {
             case 20: {
                 final int conv = c.getPlayer().getConversation();
-                boolean merch = World.hasMerchant(c.getPlayer().getAccountID());
+                boolean merch = OdinWorld.hasMerchant(c.getPlayer().getAccountID());
                 if (merch) {
                     c.getPlayer().dropMessage(1, "Please close the existing store and try again.");
                     c.getPlayer().setConversation(0);

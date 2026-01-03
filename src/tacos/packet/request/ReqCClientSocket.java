@@ -40,7 +40,7 @@ import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
 import odin.handling.world.PlayerBuffStorage;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import java.util.List;
 import tacos.packet.ClientPacket;
@@ -168,7 +168,7 @@ public class ReqCClientSocket {
         switch (DQ_Accounts.getLoginState(c)) {
             case LOGIN_SERVER_TRANSITION:
             case CHANGE_CHANNEL: {
-                if (World.isCharacterListConnected(c)) {
+                if (OdinWorld.isCharacterListConnected(c)) {
                     c.loginFailed("EnterGameServer 2.");
                     return false;
                 }
@@ -198,11 +198,11 @@ public class ReqCClientSocket {
         chr.spawnSavedPets();
         // group            
         if (chr.getParty() != null) {
-            World.Party.updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
+            OdinWorld.Party.updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
         }
         // friend
-        World.Buddy.loggedOn(chr.getName(), chr.getId(), c.getChannel(), chr.getBuddylist().getBuddyIds(), chr.getGMLevel(), chr.isHidden());
-        for (CharacterIdChannelPair onlineBuddy : World.Find.multiBuddyFind(chr.getId(), chr.getBuddylist().getBuddyIds())) {
+        OdinWorld.Buddy.loggedOn(chr.getName(), chr.getId(), c.getChannel(), chr.getBuddylist().getBuddyIds(), chr.getGMLevel(), chr.isHidden());
+        for (CharacterIdChannelPair onlineBuddy : OdinWorld.Find.multiBuddyFind(chr.getId(), chr.getBuddylist().getBuddyIds())) {
             final BuddylistEntry ble = chr.getBuddylist().get(onlineBuddy.getCharacterId());
             ble.setChannel(onlineBuddy.getChannel());
             chr.getBuddylist().put(ble);
@@ -210,8 +210,8 @@ public class ReqCClientSocket {
         // guild
         MapleGuild gs = null;
         if (0 < chr.getGuildId()) {
-            World.Guild.setGuildMemberOnline(chr.getMGC(), true, c.getChannel());
-            gs = World.Guild.getGuild(chr.getGuildId());
+            OdinWorld.Guild.setGuildMemberOnline(chr.getMGC(), true, c.getChannel());
+            gs = OdinWorld.Guild.getGuild(chr.getGuildId());
             if (gs == null) {
                 chr.setGuildId(0);
                 chr.setGuildRank((byte) 5);
@@ -221,12 +221,12 @@ public class ReqCClientSocket {
         }
         // family
         if (0 < chr.getFamilyId()) {
-            World.Family.setFamilyMemberOnline(chr.getMFC(), true, c.getChannel());
+            OdinWorld.Family.setFamilyMemberOnline(chr.getMFC(), true, c.getChannel());
         }
         // idk - 1
         if (chr.getMessenger() != null) {
-            World.Messenger.silentJoinMessenger(chr.getMessenger().getId(), new MapleMessengerCharacter(c.getPlayer()));
-            World.Messenger.updateMessenger(chr.getMessenger().getId(), c.getPlayer().getName(), c.getChannel());
+            OdinWorld.Messenger.silentJoinMessenger(chr.getMessenger().getId(), new MapleMessengerCharacter(c.getPlayer()));
+            OdinWorld.Messenger.updateMessenger(chr.getMessenger().getId(), c.getPlayer().getName(), c.getChannel());
         }
         // idk - 2
         CharacterNameAndId pendingBuddyRequest = chr.getBuddylist().pollPendingRequest();
@@ -267,7 +267,7 @@ public class ReqCClientSocket {
         // guild
         if (0 < chr.getGuildId()) {
             chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
-            List<MaplePacket> packetList = World.Alliance.getAllianceInfo(gs.getAllianceId(), true);
+            List<MaplePacket> packetList = OdinWorld.Alliance.getAllianceInfo(gs.getAllianceId(), true);
             if (packetList != null) {
                 for (MaplePacket pack : packetList) {
                     if (pack != null) {
@@ -311,7 +311,7 @@ public class ReqCClientSocket {
             return true;
         }
 
-        DebugLogger.DebugLog("users = " + World.getConnected().get(0));
+        DebugLogger.DebugLog("users = " + OdinWorld.getConnected().get(0));
         return true;
     }
 
@@ -331,12 +331,12 @@ public class ReqCClientSocket {
         chr.changeRemoval();
         if (chr.getMessenger() != null) {
             MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(chr);
-            World.Messenger.leaveMessenger(chr.getMessenger().getId(), messengerplayer);
+            OdinWorld.Messenger.leaveMessenger(chr.getMessenger().getId(), messengerplayer);
         }
         PlayerBuffStorage.addBuffsToStorage(chr.getId(), chr.getAllBuffs());
         PlayerBuffStorage.addCooldownsToStorage(chr.getId(), chr.getCooldowns());
         PlayerBuffStorage.addDiseaseToStorage(chr.getId(), chr.getAllDiseases());
-        World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), mts ? -20 : -10);
+        OdinWorld.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), mts ? -20 : -10);
         ch.removePlayer(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
         c.SendPacket(ResCClientSocket.MigrateCommand(Property_Shop.getPort()));

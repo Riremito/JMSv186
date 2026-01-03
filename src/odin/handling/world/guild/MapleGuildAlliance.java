@@ -23,7 +23,7 @@ package odin.handling.world.guild;
 
 import tacos.database.DatabaseConnection;
 import tacos.network.MaplePacket;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -181,11 +181,11 @@ public class MapleGuildAlliance implements java.io.Serializable {
 
     public final void broadcast(final MaplePacket packet, final int exceptionId, final GAOp op, final boolean expelled) {
         if (op == GAOp.DISBAND) {
-            World.Alliance.setOldAlliance(exceptionId, expelled, allianceid); //-1 = alliance gone, exceptionId = guild left/expelled
+            OdinWorld.Alliance.setOldAlliance(exceptionId, expelled, allianceid); //-1 = alliance gone, exceptionId = guild left/expelled
         } else if (op == GAOp.NEWGUILD) {
-            World.Alliance.setNewAlliance(exceptionId, allianceid); //exceptionId = guild that just joined
+            OdinWorld.Alliance.setNewAlliance(exceptionId, allianceid); //exceptionId = guild that just joined
         } else {
-            World.Alliance.sendGuild(packet, exceptionId, allianceid); //exceptionId = guild to broadcast to only
+            OdinWorld.Alliance.sendGuild(packet, exceptionId, allianceid); //exceptionId = guild to broadcast to only
         }
 
     }
@@ -320,7 +320,7 @@ public class MapleGuildAlliance implements java.io.Serializable {
         int g = -1; //this shall be leader
         String leaderName = null;
         for (int i = 0; i < getNoGuilds(); i++) {
-            MapleGuild g_ = World.Guild.getGuild(guilds[i]);
+            MapleGuild g_ = OdinWorld.Guild.getGuild(guilds[i]);
             if (g_ != null) {
                 MapleGuildCharacter newLead = g_.getMGC(c);
                 MapleGuildCharacter oldLead = g_.getMGC(leaderid);
@@ -360,7 +360,7 @@ public class MapleGuildAlliance implements java.io.Serializable {
             return false;
         }
         for (int i = 0; i < getNoGuilds(); i++) {
-            MapleGuild g_ = World.Guild.getGuild(guilds[i]);
+            MapleGuild g_ = OdinWorld.Guild.getGuild(guilds[i]);
             if (g_ != null) {
                 MapleGuildCharacter chr = g_.getMGC(cid);
                 if (chr != null && chr.getAllianceRank() > 2) {

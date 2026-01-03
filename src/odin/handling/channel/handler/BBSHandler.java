@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import odin.client.MapleClient;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleBBSThread;
 import java.util.List;
 import tacos.packet.response.ResCWvsContext;
@@ -94,14 +94,14 @@ public class BBSHandler {
         if (c.getPlayer().getGuildId() <= 0) {
             return;
         }
-        c.getSession().write(ResCWvsContext.BBSThreadList(World.Guild.getBBS(c.getPlayer().getGuildId()), start));
+        c.getSession().write(ResCWvsContext.BBSThreadList(OdinWorld.Guild.getBBS(c.getPlayer().getGuildId()), start));
     }
 
     private static void newBBSReply(final MapleClient c, final int localthreadid, final String text) {
         if (c.getPlayer().getGuildId() <= 0) {
             return;
         }
-        World.Guild.addBBSReply(c.getPlayer().getGuildId(), localthreadid, text, c.getPlayer().getId());
+        OdinWorld.Guild.addBBSReply(c.getPlayer().getGuildId(), localthreadid, text, c.getPlayer().getId());
         displayThread(c, localthreadid);
     }
 
@@ -109,7 +109,7 @@ public class BBSHandler {
         if (c.getPlayer().getGuildId() <= 0) {
             return; // expelled while viewing?
         }
-        World.Guild.editBBSThread(c.getPlayer().getGuildId(), localthreadid, title, text, icon, c.getPlayer().getId(), c.getPlayer().getGuildRank());
+        OdinWorld.Guild.editBBSThread(c.getPlayer().getGuildId(), localthreadid, title, text, icon, c.getPlayer().getId(), c.getPlayer().getGuildRank());
         displayThread(c, localthreadid);
     }
 
@@ -117,14 +117,14 @@ public class BBSHandler {
         if (c.getPlayer().getGuildId() <= 0) {
             return; // expelled while viewing?
         }
-        displayThread(c, World.Guild.addBBSThread(c.getPlayer().getGuildId(), title, text, icon, bNotice, c.getPlayer().getId()));
+        displayThread(c, OdinWorld.Guild.addBBSThread(c.getPlayer().getGuildId(), title, text, icon, bNotice, c.getPlayer().getId()));
     }
 
     private static final void deleteBBSThread(final MapleClient c, final int localthreadid) {
         if (c.getPlayer().getGuildId() <= 0) {
             return;
         }
-        World.Guild.deleteBBSThread(c.getPlayer().getGuildId(), localthreadid, c.getPlayer().getId(), (int) c.getPlayer().getGuildRank());
+        OdinWorld.Guild.deleteBBSThread(c.getPlayer().getGuildId(), localthreadid, c.getPlayer().getId(), (int) c.getPlayer().getGuildRank());
     }
 
     private static void deleteBBSReply(final MapleClient c, final int localthreadid, final int replyid) {
@@ -132,7 +132,7 @@ public class BBSHandler {
             return;
         }
 
-        World.Guild.deleteBBSReply(c.getPlayer().getGuildId(), localthreadid, replyid, c.getPlayer().getId(), (int) c.getPlayer().getGuildRank());
+        OdinWorld.Guild.deleteBBSReply(c.getPlayer().getGuildId(), localthreadid, replyid, c.getPlayer().getId(), (int) c.getPlayer().getGuildRank());
         displayThread(c, localthreadid);
     }
 
@@ -140,7 +140,7 @@ public class BBSHandler {
         if (c.getPlayer().getGuildId() <= 0) {
             return;
         }
-        final List<MapleBBSThread> bbsList = World.Guild.getBBS(c.getPlayer().getGuildId());
+        final List<MapleBBSThread> bbsList = OdinWorld.Guild.getBBS(c.getPlayer().getGuildId());
         if (bbsList != null) {
             for (MapleBBSThread t : bbsList) {
                 if (t != null && t.localthreadID == localthreadid) {

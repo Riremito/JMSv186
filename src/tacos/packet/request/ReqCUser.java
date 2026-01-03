@@ -52,7 +52,7 @@ import odin.handling.channel.handler.NPCHandler;
 import odin.handling.channel.handler.PlayerHandler;
 import odin.handling.channel.handler.PlayersHandler;
 import odin.handling.world.MapleParty;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -2321,7 +2321,7 @@ public class ReqCUser {
 
         switch (OpsChatGroup.find(type)) {
             case CG_Friend: {
-                World.Buddy.buddyChat(recipients, chr.getId(), chr.getName(), chattext);
+                OdinWorld.Buddy.buddyChat(recipients, chr.getId(), chr.getName(), chattext);
                 return true;
             }
             case CG_Party: {
@@ -2329,7 +2329,7 @@ public class ReqCUser {
                 if (party != null) {
                     return true;
                 }
-                World.Party.partyChat(party.getId(), chattext, chr.getName());
+                OdinWorld.Party.partyChat(party.getId(), chattext, chr.getName());
                 return true;
             }
             case CG_Guild: {
@@ -2337,7 +2337,7 @@ public class ReqCUser {
                 if (guild_id <= 0) {
                     return true;
                 }
-                World.Guild.guildChat(guild_id, chr.getName(), chr.getId(), chattext);
+                OdinWorld.Guild.guildChat(guild_id, chr.getName(), chr.getId(), chattext);
                 return true;
             }
             case CG_Alliance: {
@@ -2345,7 +2345,7 @@ public class ReqCUser {
                 if (guild_id <= 0) {
                     return true;
                 }
-                World.Alliance.allianceChat(guild_id, chr.getName(), chr.getId(), chattext);
+                OdinWorld.Alliance.allianceChat(guild_id, chr.getName(), chr.getId(), chattext);
                 return true;
             }
             case CG_Couple: {
@@ -2374,7 +2374,7 @@ public class ReqCUser {
             case WP_Location: {
                 String player_name = cp.DecodeStr();
 
-                int ch = World.Find.findChannel(player_name);
+                int ch = OdinWorld.Find.findChannel(player_name);
                 DebugLogger.DebugLog("CH = " + ch);
                 MapleCharacter chr_to = null;
                 // something wrong for cs
@@ -2391,7 +2391,7 @@ public class ReqCUser {
             case WP_Whisper: {
                 String name_to = cp.DecodeStr();
                 String message = cp.DecodeStr();
-                int ch = World.Find.findChannel(name_to);
+                int ch = OdinWorld.Find.findChannel(name_to);
                 if (ch < 0) {
                     chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Whisper, chr, name_to, message, null));
                     return false;

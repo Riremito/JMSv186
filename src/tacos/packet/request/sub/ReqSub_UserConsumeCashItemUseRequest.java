@@ -32,7 +32,7 @@ import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
 import tacos.server.ServerOdinGame;
 import odin.handling.channel.handler.PlayerHandler;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -326,7 +326,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
     }
 
     public static MapleCharacter findCharacterByName(String name_to) {
-        int ch = World.Find.findChannel(name_to);
+        int ch = OdinWorld.Find.findChannel(name_to);
         if (ch != -1) {
             MapleCharacter chr_to = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(name_to);
             return chr_to;
@@ -359,7 +359,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.chr = chr;
                 bma.message = message;
                 bma.ear = ear;
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
                 return true;
             }
             // 高機能拡声器 (使えない)
@@ -376,7 +376,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.chr = chr;
                 bma.message = message;
                 bma.ear = ear;
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
                 return true;
             }
             // ドクロ拡声器
@@ -389,7 +389,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.chr = chr;
                 bma.message = message;
                 bma.ear = ear;
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
                 return true;
             }
             case 5075000: // メッセージ送信機 (MapleTV)
@@ -488,7 +488,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.message = message;
                 bma.ear = ear;
                 bma.item = item;
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
                 return true;
             }
             // 三連拡声器
@@ -517,7 +517,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.multi_line = true;
                 bma.messages = messages;
 
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
                 return true;
             }
             default: {

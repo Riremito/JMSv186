@@ -27,7 +27,7 @@ import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import odin.constants.GameConstants;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +60,7 @@ public class DataCUserRemote {
         // guild
         MapleGuild gs = null;
         if (0 < chr.getGuildId()) {
-            gs = World.Guild.getGuild(chr.getGuildId());
+            gs = OdinWorld.Guild.getGuild(chr.getGuildId());
         }
         if (gs != null) {
             // guild info
@@ -245,7 +245,7 @@ public class DataCUserRemote {
         MapleGuild guild = null;
         IMaplePlayerShop shop = chr.getPlayerShop();
         if (0 < chr.getGuildId()) {
-            guild = World.Guild.getGuild(chr.getGuildId());
+            guild = OdinWorld.Guild.getGuild(chr.getGuildId());
         }
         ServerPacket data = new ServerPacket();
         // CUserRemote::Init
@@ -321,7 +321,7 @@ public class DataCUserRemote {
         MapleGuild guild = null;
         IMaplePlayerShop shop = chr.getPlayerShop();
         if (0 < chr.getGuildId()) {
-            guild = World.Guild.getGuild(chr.getGuildId());
+            guild = OdinWorld.Guild.getGuild(chr.getGuildId());
         }
         ServerPacket data = new ServerPacket();
         // CUserRemote::Init

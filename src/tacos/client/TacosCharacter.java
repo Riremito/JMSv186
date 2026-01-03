@@ -30,7 +30,7 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
 import odin.handling.world.MapleMessenger;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapFactory;
@@ -433,7 +433,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
         this.stats.recalcLocalStats();
         if (getMessenger() != null) {
-            World.Messenger.updateMessenger(getMessenger().getId(), getName(), this.client.getChannel());
+            OdinWorld.Messenger.updateMessenger(getMessenger().getId(), getName(), this.client.getChannel());
         }
 
         if (isCloning()) {

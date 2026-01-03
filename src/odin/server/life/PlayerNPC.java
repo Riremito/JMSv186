@@ -37,7 +37,7 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import tacos.database.DatabaseConnection;
 import tacos.server.ServerOdinGame;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import java.util.ArrayList;
 import tacos.packet.response.ResCNpcPool;
 
@@ -115,8 +115,8 @@ public class PlayerNPC extends MapleNPC {
     }
 
     public static void updateByCharId(MapleCharacter chr) {
-        if (World.Find.findChannel(chr.getId()) > 0) { //if character is in cserv
-            for (PlayerNPC npc : ServerOdinGame.getInstance(World.Find.findChannel(chr.getId())).getAllPlayerNPC()) {
+        if (OdinWorld.Find.findChannel(chr.getId()) > 0) { //if character is in cserv
+            for (PlayerNPC npc : ServerOdinGame.getInstance(OdinWorld.Find.findChannel(chr.getId())).getAllPlayerNPC()) {
                 npc.update(chr);
             }
         }

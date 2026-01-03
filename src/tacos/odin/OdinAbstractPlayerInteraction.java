@@ -49,7 +49,7 @@ import odin.server.life.MapleLifeFactory;
 import odin.server.quest.MapleQuest;
 import odin.client.inventory.MapleInventoryIdentifier;
 import tacos.debug.DebugLogger;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import tacos.packet.ops.OpsScriptMan;
@@ -402,7 +402,7 @@ public abstract class OdinAbstractPlayerInteraction {
     public final void Gashapon(final int id, final short quantity) {
         IItem item_info = gainItem(id, quantity, true, 0, -1, "");
         if (item_info != null) {
-            World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgGachaponAnnounce(client.getPlayer(), item_info).getBytes());
+            OdinWorld.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgGachaponAnnounce(client.getPlayer(), item_info).getBytes());
         }
     }
 
@@ -466,7 +466,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     // npc/9201006.js
     public final void worldMessage(final int type, final String message) {
-        World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgEvent(message).getBytes());
+        OdinWorld.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgEvent(message).getBytes());
     }
 
     public final void mapMessage(final String message) {
@@ -474,7 +474,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void guildMessage(final String message) {
-        World.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.BroadCastMsgEvent(message));
+        OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.BroadCastMsgEvent(message));
     }
 
     public final void playerMessage(final int type, final String message) {
@@ -490,7 +490,7 @@ public abstract class OdinAbstractPlayerInteraction {
     public final void guildMessage(final int type, final String message) {
         DebugLogger.DebugLog("guildMessage is called.");
         if (getPlayer().getGuildId() > 0) {
-            World.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.BroadCastMsg_SN(type, message));
+            OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.BroadCastMsg_SN(type, message));
         }
     }
 
@@ -499,7 +499,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final MapleGuild getGuild(int guildid) {
-        return World.Guild.getGuild(guildid);
+        return OdinWorld.Guild.getGuild(guildid);
     }
 
     public final MapleParty getParty() {
@@ -940,14 +940,14 @@ public abstract class OdinAbstractPlayerInteraction {
         if (getPlayer().getGuildId() <= 0) {
             return;
         }
-        World.Guild.gainGP(getPlayer().getGuildId(), gp); //1 for
+        OdinWorld.Guild.gainGP(getPlayer().getGuildId(), gp); //1 for
     }
 
     public int getGP() {
         if (getPlayer().getGuildId() <= 0) {
             return 0;
         }
-        return World.Guild.getGP(getPlayer().getGuildId()); //1 for
+        return OdinWorld.Guild.getGP(getPlayer().getGuildId()); //1 for
     }
 
     public void showMapEffect(String path) {

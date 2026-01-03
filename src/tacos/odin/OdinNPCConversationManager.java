@@ -55,7 +55,7 @@ import odin.handling.channel.MapleGuildRanking;
 import tacos.database.DatabaseConnection;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.MapleCarnivalChallenge;
 import java.util.HashMap;
@@ -129,15 +129,15 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void WorldMessage(String text) {
-        World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice(text).getBytes());
+        OdinWorld.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice(text).getBytes());
     }
 
     public void BroadcastPacket(byte[] packet) {
-        World.Broadcast.broadcastMessage(packet);
+        OdinWorld.Broadcast.broadcastMessage(packet);
     }
 
     public void Broadcast(String text) {
-        World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice(text).getBytes());
+        OdinWorld.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice(text).getBytes());
     }
 
     public int getQuest() {
@@ -495,7 +495,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             }
             final byte rareness = GameConstants.gachaponRareItem(item.getItemId());
             if (rareness > 0) {
-                World.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgGachaponAnnounce(c.getPlayer(), item).getBytes());
+                OdinWorld.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgGachaponAnnounce(c.getPlayer(), item).getBytes());
             }
             return item.getItemId();
         } catch (Exception e) {
@@ -780,7 +780,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (gid <= 0 || c.getPlayer().getGuildRank() != 1) {
             return;
         }
-        World.Guild.disbandGuild(gid);
+        OdinWorld.Guild.disbandGuild(gid);
     }
 
     public void increaseGuildCapacity() {
@@ -792,7 +792,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (gid <= 0) {
             return;
         }
-        World.Guild.increaseGuildCapacity(gid);
+        OdinWorld.Guild.increaseGuildCapacity(gid);
         c.getPlayer().gainMeso(-5000000, true, false, true);
     }
 
@@ -1196,7 +1196,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             return false;
         }
         try {
-            return World.Alliance.createAlliance(alliancename, c.getPlayer().getId(), otherChar.getId(), c.getPlayer().getGuildId(), otherChar.getGuildId());
+            return OdinWorld.Alliance.createAlliance(alliancename, c.getPlayer().getId(), otherChar.getId(), c.getPlayer().getGuildId(), otherChar.getGuildId());
         } catch (Exception re) {
             re.printStackTrace();
             return false;
@@ -1205,9 +1205,9 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public boolean addCapacityToAlliance() {
         try {
-            final MapleGuild gs = World.Guild.getGuild(c.getPlayer().getGuildId());
+            final MapleGuild gs = OdinWorld.Guild.getGuild(c.getPlayer().getGuildId());
             if (gs != null && c.getPlayer().getGuildRank() == 1 && c.getPlayer().getAllianceRank() == 1) {
-                if (World.Alliance.getAllianceLeader(gs.getAllianceId()) == c.getPlayer().getId() && World.Alliance.changeAllianceCapacity(gs.getAllianceId())) {
+                if (OdinWorld.Alliance.getAllianceLeader(gs.getAllianceId()) == c.getPlayer().getId() && OdinWorld.Alliance.changeAllianceCapacity(gs.getAllianceId())) {
                     gainMeso(-MapleGuildAlliance.CHANGE_CAPACITY_COST);
                     return true;
                 }
@@ -1220,9 +1220,9 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public boolean disbandAlliance() {
         try {
-            final MapleGuild gs = World.Guild.getGuild(c.getPlayer().getGuildId());
+            final MapleGuild gs = OdinWorld.Guild.getGuild(c.getPlayer().getGuildId());
             if (gs != null && c.getPlayer().getGuildRank() == 1 && c.getPlayer().getAllianceRank() == 1) {
-                if (World.Alliance.getAllianceLeader(gs.getAllianceId()) == c.getPlayer().getId() && World.Alliance.disbandAlliance(gs.getAllianceId())) {
+                if (OdinWorld.Alliance.getAllianceLeader(gs.getAllianceId()) == c.getPlayer().getId() && OdinWorld.Alliance.disbandAlliance(gs.getAllianceId())) {
                     return true;
                 }
             }
@@ -1299,16 +1299,16 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                     sendNPCText(getPlayer().getName() + " and " + chr.getName() + ", I wish you two all the best on your AsteriaSEA journey together!", 9201002);
                     getMap().startExtendedMapEffect("You may now kiss the bride, " + getPlayer().getName() + "!", 5120006);
                     if (chr.getGuildId() > 0) {
-                        World.Guild.guildPacket(chr.getGuildId(), ResCWvsContext.sendMarriage(false, chr.getName()));
+                        OdinWorld.Guild.guildPacket(chr.getGuildId(), ResCWvsContext.sendMarriage(false, chr.getName()));
                     }
                     if (chr.getFamilyId() > 0) {
-                        World.Family.familyPacket(chr.getFamilyId(), ResCWvsContext.sendMarriage(true, chr.getName()), chr.getId());
+                        OdinWorld.Family.familyPacket(chr.getFamilyId(), ResCWvsContext.sendMarriage(true, chr.getName()), chr.getId());
                     }
                     if (getPlayer().getGuildId() > 0) {
-                        World.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.sendMarriage(false, getPlayer().getName()));
+                        OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.sendMarriage(false, getPlayer().getName()));
                     }
                     if (getPlayer().getFamilyId() > 0) {
-                        World.Family.familyPacket(getPlayer().getFamilyId(), ResCWvsContext.sendMarriage(true, chr.getName()), getPlayer().getId());
+                        OdinWorld.Family.familyPacket(getPlayer().getFamilyId(), ResCWvsContext.sendMarriage(true, chr.getName()), getPlayer().getId());
                     }
                 }
             }

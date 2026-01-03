@@ -23,7 +23,7 @@ package odin.handling.channel.handler;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.handling.world.MaplePartyCharacter;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
@@ -90,17 +90,17 @@ public class FamilyHandler {
                 }
                 return; //RETURN not break
             case 4: // 6 family members in pedigree online Drop Rate & Exp Rate + 100% 30 minutes
-                final MapleFamily fam = World.Family.getFamily(c.getPlayer().getFamilyId());
+                final MapleFamily fam = OdinWorld.Family.getFamily(c.getPlayer().getFamilyId());
                 List<MapleFamilyCharacter> chrs = fam.getMFC(c.getPlayer().getId()).getOnlineJuniors(fam);
                 if (chrs.size() < 7) {
                     success = false;
                 } else {
                     for (MapleFamilyCharacter chrz : chrs) {
-                        int chr = World.Find.findChannel(chrz.getId());
+                        int chr = OdinWorld.Find.findChannel(chrz.getId());
                         if (chr == -1) {
                             continue; //STOP WTF?! take reps though..
                         }
-                        MapleCharacter chrr = World.getStorage(chr).getCharacterById(chrz.getId());
+                        MapleCharacter chrr = OdinWorld.getStorage(chr).getCharacterById(chrz.getId());
                         entry.applyTo(chrr);
                         //chrr.getClient().getSession().write(FamilyPacket.familyBuff(entry.type, type, entry.effect, entry.duration*60000));
                     }
@@ -173,7 +173,7 @@ public class FamilyHandler {
     }
 
     public static final void FamilyPrecept(ClientPacket cp, MapleClient c) {
-        MapleFamily fam = World.Family.getFamily(c.getPlayer().getFamilyId());
+        MapleFamily fam = OdinWorld.Family.getFamily(c.getPlayer().getFamilyId());
         if (fam == null || fam.getLeaderId() != c.getPlayer().getId()) {
             return;
         }
@@ -209,7 +209,7 @@ public class FamilyHandler {
             return;
         }
         //junior is not required to be online.
-        final MapleFamily fam = World.Family.getFamily(c.getPlayer().getFamilyId());
+        final MapleFamily fam = OdinWorld.Family.getFamily(c.getPlayer().getFamilyId());
         final MapleFamilyCharacter other = fam.getMFC(juniorid);
         final MapleFamilyCharacter oth = c.getPlayer().getMFC();
         boolean junior2 = oth.getJunior2() == juniorid;
@@ -241,7 +241,7 @@ public class FamilyHandler {
             return;
         }
         //not required to be online
-        final MapleFamily fam = World.Family.getFamily(c.getPlayer().getFamilyId()); //this is old family
+        final MapleFamily fam = OdinWorld.Family.getFamily(c.getPlayer().getFamilyId()); //this is old family
         final MapleFamilyCharacter mgc = fam.getMFC(c.getPlayer().getSeniorId());
         final MapleFamilyCharacter mgc_ = c.getPlayer().getMFC();
         mgc_.setSeniorId(0);
@@ -281,7 +281,7 @@ public class FamilyHandler {
                 MapleFamilyCharacter old = c.getPlayer().getMFC();
                 if (inviter.getFamilyId() != 0) {
 
-                    MapleFamily fam = World.Family.getFamily(inviter.getFamilyId());
+                    MapleFamily fam = OdinWorld.Family.getFamily(inviter.getFamilyId());
                     //if old isn't null, don't set the familyid yet, mergeFamily will take care of it
                     c.getPlayer().setFamily(old == null ? inviter.getFamilyId() : old.getFamilyId(), inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2());
                     MapleFamilyCharacter mf = inviter.getMFC();
@@ -292,7 +292,7 @@ public class FamilyHandler {
                     }
                     inviter.saveFamilyStatus();
                     if (old != null) { //has junior
-                        MapleFamily.mergeFamily(fam, World.Family.getFamily(old.getFamilyId()));
+                        MapleFamily.mergeFamily(fam, OdinWorld.Family.getFamily(old.getFamilyId()));
                     } else {
                         fam.addFamilyMember(c.getPlayer().getMFC());
                         fam.setOnline(c.getPlayer().getId(), true, c.getChannel());
@@ -311,10 +311,10 @@ public class FamilyHandler {
                         MapleFamily.setOfflineFamilyStatus(id, inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2(), c.getPlayer().getCurrentRep(), c.getPlayer().getTotalRep(), c.getPlayer().getId());
                         inviter.setFamily(id, 0, c.getPlayer().getId(), 0); //load the family
                         c.getPlayer().setFamily(id, inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2());
-                        MapleFamily fam = World.Family.getFamily(id);
+                        MapleFamily fam = OdinWorld.Family.getFamily(id);
                         fam.setOnline(inviter.getId(), true, inviter.getClient().getChannel());
                         if (old != null) { //has junior
-                            MapleFamily.mergeFamily(fam, World.Family.getFamily(old.getFamilyId()));
+                            MapleFamily.mergeFamily(fam, OdinWorld.Family.getFamily(old.getFamilyId()));
                         } else {
                             fam.setOnline(c.getPlayer().getId(), true, c.getChannel());
                         }

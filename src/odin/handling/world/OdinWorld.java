@@ -49,16 +49,16 @@ import odin.server.Timer.WorldTimer;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
 
-public class World {
+public class OdinWorld {
 
     //Touch everything...
     public static void init() {
-        World.Find.findChannel(0);
-        World.Guild.lock.toString();
-        World.Alliance.lock.toString();
-        World.Family.lock.toString();
-        World.Messenger.getMessenger(0);
-        World.Party.getParty(0);
+        OdinWorld.Find.findChannel(0);
+        OdinWorld.Guild.lock.toString();
+        OdinWorld.Alliance.lock.toString();
+        OdinWorld.Family.lock.toString();
+        OdinWorld.Messenger.getMessenger(0);
+        OdinWorld.Party.getParty(0);
     }
 
     public static String getStatus() throws RemoteException {
