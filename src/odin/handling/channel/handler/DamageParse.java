@@ -225,9 +225,6 @@ public class DamageParse {
                         DebugLogger.ErrorLog("applyAttack : 11");
                         return;
                     }
-                    if (player.getClient().getChannelServer().isAdminOnly()) {
-                        player.dropMessage(-1, "Damage: " + eachd);
-                    }
                     totDamageToOneMonster += eachd;
                     //force the miss even if they dont miss. popular wz edit
                     if (monster.getId() == 9300021 && player.getPyramidSubway() != null) { //miss

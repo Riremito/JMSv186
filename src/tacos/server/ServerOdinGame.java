@@ -53,10 +53,6 @@ public class ServerOdinGame {
         this.server_game = server;
     }
 
-    public boolean isAdminOnly() {
-        return this.server_game.isAdminOnly();
-    }
-
     public boolean isShutdown() {
         return server_game.isShutdown();
     }
@@ -76,8 +72,7 @@ public class ServerOdinGame {
     private int expRate, mesoRate, dropRate, cashRate;
     private short port = 8585;
     private int channel, running_MerchantID = 0, flags = 0;
-    private String serverMessage, serverName;
-    private boolean MegaphoneMuteState = false;
+    private String serverMessage;
     private final Map<String, MapleSquad> mapleSquads = new HashMap<String, MapleSquad>();
     private final Map<Integer, HiredMerchant> merchants = new HashMap<Integer, HiredMerchant>();
     private final Map<Integer, PlayerNPC> playerNPCs = new HashMap<Integer, PlayerNPC>();
@@ -109,7 +104,6 @@ public class ServerOdinGame {
         mesoRate = Property_World.getRateMeso();
         dropRate = Property_World.getRateDrop();
         serverMessage = Property_World.getMessage();
-        serverName = Property_World.getName();
         flags = Property_World.getFlags();
     }
 
@@ -315,22 +309,6 @@ public class ServerOdinGame {
         return list;
     }
 
-    public final void toggleMegaphoneMuteState() {
-        this.MegaphoneMuteState = !this.MegaphoneMuteState;
-    }
-
-    public final boolean getMegaphoneMuteState() {
-        return MegaphoneMuteState;
-    }
-
-    public int getEvent() {
-        return eventmap;
-    }
-
-    public final void setEvent(final int ze) {
-        this.eventmap = ze;
-    }
-
     public final Collection<PlayerNPC> getAllPlayerNPC() {
         return playerNPCs.values();
     }
@@ -352,34 +330,6 @@ public class ServerOdinGame {
             playerNPCs.remove(npc.getId());
             getMapFactory().getMap(npc.getMapId()).removeMapObject(npc);
         }
-    }
-
-    public final String getServerName() {
-        return serverName;
-    }
-
-    public final void setServerName(final String sn) {
-        this.serverName = sn;
-    }
-
-    public static final Set<Integer> getChannelServer() {
-        return new HashSet<Integer>(instances.keySet());
-    }
-
-    public final static int getChannelCount() {
-        return instances.size();
-    }
-
-    public final int getTempFlag() {
-        return flags;
-    }
-
-    public static Map<Integer, Integer> getChannelLoad() {
-        Map<Integer, Integer> ret = new HashMap<Integer, Integer>();
-        for (ServerOdinGame cs : instances.values()) {
-            ret.put(cs.getChannel(), cs.getConnectedClients());
-        }
-        return ret;
     }
 
     public int getConnectedClients() {

@@ -997,10 +997,6 @@ public abstract class OdinAbstractPlayerInteraction {
         getMap().broadcastMessage(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, false));
     }
 
-    public boolean getTempFlag(final int flag) {
-        return (client.getChannelServer().getTempFlag() & flag) == flag;
-    }
-
     // event script compatibility
     public byte getQuestStatus(int id) {
         return client.getPlayer().getQuestStatus(id);

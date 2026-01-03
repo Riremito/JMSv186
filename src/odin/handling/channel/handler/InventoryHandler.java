@@ -784,17 +784,13 @@ public class InventoryHandler {
                     c.getPlayer().dropMessage(5, "Must be level 10 or higher.");
                     break;
                 }
-                if (!c.getChannelServer().getMegaphoneMuteState()) {
-                    final String text = cp.DecodeStr();
-                    if (text.length() > 55) {
-                        break;
-                    }
-                    final boolean ear = cp.Decode1() != 0;
-                    World.Broadcast.broadcastSmega(ResCWvsContext.getAvatarMega(c.getPlayer(), c.getChannel(), itemId, text, ear).getBytes());
-                    used = true;
-                } else {
-                    c.getPlayer().dropMessage(5, "The usage of Megaphone is currently disabled.");
+                final String text = cp.DecodeStr();
+                if (text.length() > 55) {
+                    break;
                 }
+                final boolean ear = cp.Decode1() != 0;
+                World.Broadcast.broadcastSmega(ResCWvsContext.getAvatarMega(c.getPlayer(), c.getChannel(), itemId, text, ear).getBytes());
+                used = true;
                 break;
             }
             default: {

@@ -95,12 +95,6 @@ public class World {
         return Find.findChannel(charName) > 0;
     }
 
-    public static void toggleMegaphoneMuteState() {
-        for (ServerOdinGame cs : ServerOdinGame.getAllInstances()) {
-            cs.toggleMegaphoneMuteState();
-        }
-    }
-
     public static void ChannelChange_Data(CharacterTransfer Data, int characterid, int toChannel) {
         getStorage(toChannel).registerPendingPlayer(Data, characterid);
     }
