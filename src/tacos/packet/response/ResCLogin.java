@@ -631,7 +631,7 @@ public class ResCLogin {
         if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode2((world != null) ? world.getId() : -1);
         } else {
-            sp.Encode1((world != null) ? world.getId() : -1);
+            sp.Encode1((world != null) ? world.getId() : -1); // nWorldID
         }
 
         // 終了
@@ -642,22 +642,17 @@ public class ResCLogin {
             return sp.get();
         }
 
-        // ワールド名
-        sp.EncodeStr(world.getName());
-        // ワールドの旗
-        sp.Encode1(world.getFlag());
-        // 吹き出し
-        sp.EncodeStr(Region.IsBMS() ? "" : world.getEvent());
+        sp.EncodeStr(world.getName()); // sName
+        sp.Encode1(0); // nWorldState
+        sp.EncodeStr(Region.IsBMS() ? "" : world.getEvent()); // sWorldEventDesc
 
         if (Version.LessOrEqual(Region.KMS, 1)) {
 
         } else {
-            // 経験値倍率?
-            sp.Encode2(100);
-            // ドロップ倍率?
-            sp.Encode2(100);
+            sp.Encode2(100); // nWorldEventEXP_WSE
+            sp.Encode2(100); // nWorldEventDrop_WSE
             if (Region.IsBMS() || Region.IsGMS()) {
-                sp.Encode1(0);
+                sp.Encode1(0); // nBlockCharCreation
             }
         }
 
@@ -669,19 +664,19 @@ public class ResCLogin {
         // チャンネル情報
         for (Server_Game channel : world.getChannels()) {
             // チャンネル名
-            sp.EncodeStr(channel.getName());
+            sp.EncodeStr(channel.getName()); // sName
             // 接続人数表示
-            sp.Encode4(channel.getNumberOfSessions() * 200);
+            sp.Encode4(channel.getNumberOfSessions() * 200); // nUserNo
             // ワールドID
-            sp.Encode1(world.getId());
-            sp.Encode1(channel.getWorld().getId()); // channel
-            sp.Encode1(channel.getLanguage()); // language
+            sp.Encode1(world.getId()); // nWorldID
+            sp.Encode1(channel.getWorld().getId()); // nChannelID
+            sp.Encode1(channel.getLanguage()); // bAdultChannel?
             if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode1(0);
             }
         }
 
-        sp.Encode2(0);
+        sp.Encode2(0); // m_nBalloonCount
         if (ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode4(0);
         }

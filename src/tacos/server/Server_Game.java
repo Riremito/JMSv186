@@ -28,6 +28,7 @@ import tacos.config.Region;
 import tacos.constants.TacosConstants;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.network.PacketHandler_Game;
+import tacos.property.Property_Dummy_World;
 
 /**
  *
@@ -106,6 +107,25 @@ public class Server_Game extends TacosServer {
             server.setWorld(world);
             world.addChannel(server);
         }
+
+        for (int i = 1; i <= 1; i++) {
+            createDummyWorld(i);
+        }
         return game_servers;
     }
+
+    public static void createDummyWorld(int dummy_world_id) {
+        TacosWorld dummy_world = new TacosWorld(dummy_world_id, Property_Dummy_World.getName(), Property_Dummy_World.getFlags(), Property_Dummy_World.getEvent());
+        TacosWorld.add(dummy_world);
+
+        for (int i = 0; i < Property_Dummy_World.getChannels(); i++) {
+            int channel = i + 1;
+            String channel_name = Property_Dummy_World.getName() + "-" + channel;
+            int language = Region.check(Region.EMS) ? i % Property_Dummy_World.getLanguages() : 0;
+            Server_Game server = new Server_Game(channel_name, channel, language);
+            server.setWorld(dummy_world);
+            dummy_world.addChannel(server);
+        }
+    }
+
 }
