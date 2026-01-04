@@ -51,7 +51,6 @@ import tacos.packet.response.ResCFuncKeyMappedMan;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
-import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
 
@@ -138,15 +137,6 @@ public class ReqCClientSocket {
         }
         int character_id = cp.Decode4();
         EnterGameServer(c, character_id);
-        return true;
-    }
-
-    public static final boolean ChangeChannel(MapleCharacter chr, int channel) {
-        if (!chr.isAlive() || chr.getEventInstance() != null || FieldLimitType.ChannelSwitch.check(chr.getMap().getFieldLimit())) {
-            return false;
-        }
-        ExtraDB.saveData(chr);
-        chr.changeChannel(channel + 1);
         return true;
     }
 

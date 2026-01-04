@@ -79,7 +79,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsQuest;
-import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.ReqCClientSocket;
 import tacos.packet.response.Res_JMS_CField_Pachinko;
@@ -4701,12 +4700,11 @@ public class MapleCharacter extends TacosCharacter {
         return jobRankMove;
     }
 
-    public void changeChannel(final int channel) {
+    public boolean changeChannel(final int channel) {
         final ServerOdinGame toch = ServerOdinGame.getInstance(channel);
 
         if (channel == client.getChannelId() || toch == null || toch.isShutdown()) {
-            client.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_GAMESVR_DISCONNECTED));
-            return;
+            return false;
         }
         changeRemoval();
 
@@ -4725,6 +4723,7 @@ public class MapleCharacter extends TacosCharacter {
         saveToDB(false, false);
         getMap().removePlayer(this);
         client.setMigrating();
+        return true;
     }
 
     public void expandInventory(byte type, int amount) {

@@ -97,8 +97,10 @@ import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
 import odin.tools.AttackPair;
+import tacos.database.ExtraDB;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.script.TacosScriptNPC;
 
@@ -133,13 +135,15 @@ public class ReqCUser {
 
         switch (header) {
             case CP_UserTransferFieldRequest: {
-                if (!OnUserTransferFieldRequest(chr, cp)) {
+                if (!OnUserTransferFieldRequest(cp, chr)) {
                     chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
                 }
                 return true;
             }
             case CP_UserTransferChannelRequest: {
-                OnTransferChannelRequest(cp, chr);
+                if (!OnTransferChannelRequest(cp, chr)) {
+                    chr.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_GAMESVR_DISCONNECTED));
+                }
                 return true;
             }
             case CP_UserMigrateToCashShopRequest: {
@@ -780,7 +784,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnUserTransferFieldRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserTransferFieldRequest(ClientPacket cp, MapleCharacter chr) {
         boolean isKMS95orLater = Version.GreaterOrEqual(Region.KMS, 95) || Region.check(Region.IMS) || Region.check(Region.MSEA); // not in KMST391
         short unk1 = isKMS95orLater ? cp.Decode2() : 0; // ?_?
         int unk2 = isKMS95orLater ? cp.Decode4() : 0; // 0
@@ -798,11 +802,15 @@ public class ReqCUser {
         return chr.usePortal(isPortal, map_id_to, portal_name, revive_type);
     }
 
-    public static void OnTransferChannelRequest(ClientPacket cp, MapleCharacter chr) {
-        int channel = cp.Decode1();
-        if (!ReqCClientSocket.ChangeChannel(chr, channel)) {
-            chr.sendStatChanged(true);
+    public static boolean OnTransferChannelRequest(ClientPacket cp, MapleCharacter chr) {
+        int channel = cp.Decode1(); // from 0.
+
+        if (!chr.isAlive() || chr.getEventInstance() != null || FieldLimitType.ChannelSwitch.check(chr.getMap().getFieldLimit())) {
+            return false;
         }
+
+        ExtraDB.saveData(chr);
+        return chr.changeChannel(channel + 1);
     }
 
     // BMS CUser::OnAttack
