@@ -816,7 +816,7 @@ public class ReqCUser {
     public static boolean OnUserTransferChannelRequest(ClientPacket cp, MapleCharacter chr) {
         int channel = cp.Decode1(); // from 0.
 
-        if (!chr.isAlive() || chr.getEventInstance() != null || FieldLimitType.ChannelSwitch.check(chr.getMap().getFieldLimit())) {
+        if (!chr.isAlive() || FieldLimitType.ChannelSwitch.check(chr.getMap().getFieldLimit())) {
             return false;
         }
 
@@ -827,13 +827,10 @@ public class ReqCUser {
     public static boolean OnUserMigrateToCashShopRequest(final MapleClient c, final MapleCharacter chr, final boolean mts) {
         // temporary off
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            //chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
-            chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
             return false;
         }
 
-        if (!chr.isAlive() || chr.getEventInstance() != null || c.getChannelServer() == null) {
-            chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
+        if (!chr.isAlive() || c.getChannelServer() == null) {
             return false;
         }
         final ServerOdinGame ch = ServerOdinGame.getInstance(c.getChannelId());

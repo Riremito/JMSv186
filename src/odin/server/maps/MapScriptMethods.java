@@ -455,7 +455,7 @@ public class MapScriptMethods {
             }
             case shammos_Enter: { //nothing to go on inside the map
                 c.getSession().write(ResWrapper.sendPyramidEnergy("shammos_LastStage", String.valueOf((c.getPlayer().getMapId() % 1000) / 100)));
-                if (c.getPlayer().getEventInstance() != null && c.getPlayer().getMapId() == 921120500) {
+                if (c.getPlayer().getMapId() == 921120500) {
                     TacosScriptNPC.getInstance().dispose(c);
                     TacosScriptQuest.getInstance().dispose(c);
                     TacosScriptNPC.getInstance().start(c, 2022006);

@@ -92,7 +92,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final OdinEventInstanceManager getEventInstance() {
-        return client.getPlayer().getEventInstance();
+        return null;
     }
 
     public final void warp(final int map) {

@@ -99,7 +99,6 @@ import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
-import tacos.odin.OdinEventInstanceManager;
 import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.MapleStorage;
@@ -193,7 +192,6 @@ public class MapleCharacter extends TacosCharacter {
     private boolean invincible = false, canTalk = true, followinitiator = false, followon = false;
     private MapleGuildCharacter mgc;
     private MapleFamilyCharacter mfc;
-    private transient OdinEventInstanceManager eventInstance;
     private SkillMacro[] skillMacros = new SkillMacro[5];
     private transient ScheduledFuture<?> beholderHealingSchedule, beholderBuffSchedule, BerserkSchedule,
             dragonBloodSchedule, fairySchedule, mapTimeLimitTask, fishing;
@@ -3448,14 +3446,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public void setTrade(MapleTrade trade) {
         this.trade = trade;
-    }
-
-    public OdinEventInstanceManager getEventInstance() {
-        return eventInstance;
-    }
-
-    public void setEventInstance(OdinEventInstanceManager eventInstance) {
-        this.eventInstance = eventInstance;
     }
 
     public void addDoor(MapleDoor door) {

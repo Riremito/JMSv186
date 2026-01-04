@@ -649,10 +649,8 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         MapleMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
             MapleCharacter curChar = c.getChannelServer().getPlayerStorage().getCharacterByName(chr.getName());
-            if ((curChar.getEventInstance() == null && getPlayer().getEventInstance() == null) || curChar.getEventInstance() == getPlayer().getEventInstance()) {
-                curChar.changeMap(target, target.getPortal(0));
-                curChar.gainExp(exp, true, false, true);
-            }
+            curChar.changeMap(target, target.getPortal(0));
+            curChar.gainExp(exp, true, false, true);
         }
     }
 
@@ -660,11 +658,9 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         MapleMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
             MapleCharacter curChar = c.getChannelServer().getPlayerStorage().getCharacterByName(chr.getName());
-            if ((curChar.getEventInstance() == null && getPlayer().getEventInstance() == null) || curChar.getEventInstance() == getPlayer().getEventInstance()) {
-                curChar.changeMap(target, target.getPortal(0));
-                curChar.gainExp(exp, true, false, true);
-                curChar.gainMeso(meso, true);
-            }
+            curChar.changeMap(target, target.getPortal(0));
+            curChar.gainExp(exp, true, false, true);
+            curChar.gainMeso(meso, true);
         }
     }
 
@@ -805,9 +801,6 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean isPlayerInstance() {
-        if (c.getPlayer().getEventInstance() != null) {
-            return true;
-        }
         return false;
     }
 
