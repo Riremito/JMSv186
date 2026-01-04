@@ -148,7 +148,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserTransferChannelRequest: {
-                if (!OnTransferChannelRequest(cp, chr)) {
+                if (!OnUserTransferChannelRequest(cp, chr)) {
                     chr.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_GAMESVR_DISCONNECTED));
                 }
                 return true;
@@ -160,15 +160,15 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMove: {
-                OnMove(cp, map, chr);
+                OnUserMove(cp, map, chr);
                 return true;
             }
             case CP_UserSitRequest: {
-                OnSitRequest(cp, chr);
+                OnUserSitRequest(cp, chr);
                 return true;
             }
             case CP_UserPortableChairSitRequest: {
-                OnPortableChairSitRequest(cp, chr);
+                OnUserPortableChairSitRequest(cp, chr);
                 return true;
             }
             case CP_UserMeleeAttack: {
@@ -813,7 +813,7 @@ public class ReqCUser {
         return chr.usePortal(isPortal, map_id_to, portal_name, revive_type);
     }
 
-    public static boolean OnTransferChannelRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserTransferChannelRequest(ClientPacket cp, MapleCharacter chr) {
         int channel = cp.Decode1(); // from 0.
 
         if (!chr.isAlive() || chr.getEventInstance() != null || FieldLimitType.ChannelSwitch.check(chr.getMap().getFieldLimit())) {
@@ -1092,7 +1092,7 @@ public class ReqCUser {
         return ret;
     }
 
-    public static boolean OnMove(ClientPacket cp, MapleMap map, MapleCharacter chr) {
+    public static boolean OnUserMove(ClientPacket cp, MapleMap map, MapleCharacter chr) {
         if (chr.isHidden()) {
             return false;
         }
@@ -1154,7 +1154,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnSitRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserSitRequest(ClientPacket cp, MapleCharacter chr) {
         short map_chair_id = cp.Decode2();
 
         boolean is_cancel = (map_chair_id == -1);
@@ -1172,7 +1172,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnPortableChairSitRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserPortableChairSitRequest(ClientPacket cp, MapleCharacter chr) {
         int item_id = cp.Decode4();
 
         IItem toUse = chr.getInventory(MapleInventoryType.SETUP).findById(item_id);
