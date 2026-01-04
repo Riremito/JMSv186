@@ -28,7 +28,6 @@ import odin.client.inventory.MaplePet;
 import tacos.config.ContentState;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.property.Property_Shop;
 import tacos.database.ExtraDB;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
@@ -44,9 +43,7 @@ import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import java.util.List;
 import tacos.packet.ClientPacket;
-import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.response.ResCClientSocket;
-import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCFuncKeyMappedMan;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
@@ -306,37 +303,6 @@ public class ReqCClientSocket {
 
         DebugLogger.DebugLog("users = " + OdinWorld.getConnected().get(0));
         return true;
-    }
-
-    public static final void EnterCS(final MapleClient c, final MapleCharacter chr, final boolean mts) {
-        // temporary off
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            //chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
-            chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
-            return;
-        }
-
-        if (!chr.isAlive() || chr.getEventInstance() != null || c.getChannelServer() == null) {
-            chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
-            return;
-        }
-        final ServerOdinGame ch = ServerOdinGame.getInstance(c.getChannelId());
-        chr.changeRemoval();
-        if (chr.getMessenger() != null) {
-            MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(chr);
-            OdinWorld.Messenger.leaveMessenger(chr.getMessenger().getId(), messengerplayer);
-        }
-        PlayerBuffStorage.addBuffsToStorage(chr.getId(), chr.getAllBuffs());
-        PlayerBuffStorage.addCooldownsToStorage(chr.getId(), chr.getCooldowns());
-        PlayerBuffStorage.addDiseaseToStorage(chr.getId(), chr.getAllDiseases());
-        OdinWorld.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), mts ? -20 : -10);
-        ch.removePlayer(chr);
-        DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
-        c.SendPacket(ResCClientSocket.MigrateCommand(Property_Shop.getPort()));
-        chr.saveToDB(false, false);
-        ExtraDB.saveData(chr);
-        chr.getMap().removePlayer(chr);
-        c.setMigrating();
     }
 
     // CClientSocket::OnMigrateOut

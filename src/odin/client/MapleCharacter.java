@@ -80,7 +80,6 @@ import java.util.HashMap;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsUserEffect;
-import tacos.packet.request.ReqCClientSocket;
 import tacos.packet.response.Res_JMS_CField_Pachinko;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.ResCUser_Dragon;
@@ -143,6 +142,7 @@ import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
 import tacos.debug.IDebugMan;
 import tacos.packet.ServerPacket;
+import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
@@ -5156,7 +5156,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public boolean EnterPointShop() {
-        ReqCClientSocket.EnterCS(client, this, false);
+        ReqCUser.OnUserMigrateToCashShopRequest(client, this, false);
         return true;
     }
 

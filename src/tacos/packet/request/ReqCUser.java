@@ -62,6 +62,9 @@ import odin.handling.channel.handler.BBSHandler;
 import odin.handling.channel.handler.FamilyHandler;
 import odin.handling.channel.handler.GuildHandler;
 import odin.handling.channel.handler.PartyHandler;
+import odin.handling.world.CharacterTransfer;
+import odin.handling.world.MapleMessengerCharacter;
+import odin.handling.world.PlayerBuffStorage;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsChatGroup;
@@ -97,11 +100,15 @@ import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
 import odin.tools.AttackPair;
+import tacos.constants.MapleClientState;
 import tacos.database.ExtraDB;
+import tacos.database.query.DQ_Accounts;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsUserEffect;
+import tacos.packet.response.ResCClientSocket;
+import tacos.property.Property_Shop;
 import tacos.script.TacosScriptNPC;
 
 /**
@@ -147,7 +154,9 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMigrateToCashShopRequest: {
-                ReqCClientSocket.EnterCS(c, chr, false);
+                if (!OnUserMigrateToCashShopRequest(c, chr, false)) {
+                    chr.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
+                }
                 return true;
             }
             case CP_UserMove: {
@@ -627,7 +636,9 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMigrateToITCRequest: {
-                ReqCClientSocket.EnterCS(c, chr, true);
+                if (!OnUserMigrateToCashShopRequest(c, chr, true)) {
+                    chr.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_ITCSVR_DISCONNECTED));
+                }
                 return true;
             }
             case CP_UserExpUpItemUseRequest: {
@@ -811,6 +822,38 @@ public class ReqCUser {
 
         ExtraDB.saveData(chr);
         return chr.changeChannel(channel + 1);
+    }
+
+    public static boolean OnUserMigrateToCashShopRequest(final MapleClient c, final MapleCharacter chr, final boolean mts) {
+        // temporary off
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            //chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
+            chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
+            return false;
+        }
+
+        if (!chr.isAlive() || chr.getEventInstance() != null || c.getChannelServer() == null) {
+            chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
+            return false;
+        }
+        final ServerOdinGame ch = ServerOdinGame.getInstance(c.getChannelId());
+        chr.changeRemoval();
+        if (chr.getMessenger() != null) {
+            MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(chr);
+            OdinWorld.Messenger.leaveMessenger(chr.getMessenger().getId(), messengerplayer);
+        }
+        PlayerBuffStorage.addBuffsToStorage(chr.getId(), chr.getAllBuffs());
+        PlayerBuffStorage.addCooldownsToStorage(chr.getId(), chr.getCooldowns());
+        PlayerBuffStorage.addDiseaseToStorage(chr.getId(), chr.getAllDiseases());
+        OdinWorld.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), mts ? -20 : -10);
+        ch.removePlayer(chr);
+        DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
+        c.SendPacket(ResCClientSocket.MigrateCommand(Property_Shop.getPort()));
+        chr.saveToDB(false, false);
+        ExtraDB.saveData(chr);
+        chr.getMap().removePlayer(chr);
+        c.setMigrating();
+        return true;
     }
 
     // BMS CUser::OnAttack
