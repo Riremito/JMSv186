@@ -140,7 +140,7 @@ public class ReqCClientSocket {
     // CClientSocket::OnCenterMigrateInResult
     public static boolean EnterGameServer(MapleClient c, int character_id) {
         // ログイン or CH変更
-        ServerOdinGame channel = c.getChannelServer();
+        ServerOdinGame channel = c.getOdinChannelServer();
         CharacterTransfer transfer = channel.getPlayerStorage().getPendingCharacter(character_id);
         MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, c, true) : MapleCharacter.ReconstructChr(transfer, c, true);
         ExtraDB.loadData(chr);

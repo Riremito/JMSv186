@@ -60,7 +60,7 @@ public class MobHandler {
                 }
             }
             map.broadcastMessage(ResWrapper.BroadCastMsgNotice("Your party has failed to protect the monster."));
-            final MapleMap mapp = chr.getClient().getChannelServer().getMapFactory().getMap(921120001);
+            final MapleMap mapp = chr.getClient().getOdinChannelServer().getMapFactory().getMap(921120001);
             for (MapleCharacter chrz : map.getCharacters()) {
                 chrz.changeMap(mapp, mapp.getPortal(0));
             }

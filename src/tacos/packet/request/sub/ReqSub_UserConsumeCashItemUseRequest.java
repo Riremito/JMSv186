@@ -86,13 +86,13 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     map_id = cp.Decode4();
                 } else {
                     String target_name = cp.DecodeStr();
-                    target_chr = chr.getClient().getChannelServer().getPlayerStorage().getCharacterByName(target_name);
+                    target_chr = chr.getClient().getOdinChannelServer().getPlayerStorage().getCharacterByName(target_name);
                     if (target_chr == null) {
                         return false;
                     }
                     map_id = target_chr.getMap().getId();
                 }
-                if (FieldLimitType.VipRock.check(chr.getClient().getChannelServer().getMapFactory().getMap(map_id).getFieldLimit())) {
+                if (FieldLimitType.VipRock.check(chr.getClient().getOdinChannelServer().getMapFactory().getMap(map_id).getFieldLimit())) {
                     return false;
                 }
                 item_use.run();
@@ -158,7 +158,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 523: {
                 // OnUserShopScannerItemUseRequest
                 int target_item_id = cp.Decode4();
-                final List<HiredMerchant> hms = chr.getClient().getChannelServer().searchMerchant(target_item_id);
+                final List<HiredMerchant> hms = chr.getClient().getOdinChannelServer().searchMerchant(target_item_id);
                 chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_SearchResult));
                 item_use.run();
                 return true;
@@ -346,7 +346,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.bm = OpsBroadcastMsg.BM_SPEAKERCHANNEL;
                 bma.chr = chr;
                 bma.message = message;
-                chr.getClient().getChannelServer().broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getClient().getOdinChannelServer().broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
                 return true;
             }
             // 拡声器

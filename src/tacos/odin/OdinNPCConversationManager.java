@@ -648,7 +648,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public void warpPartyWithExp(int mapId, int exp) {
         MapleMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            MapleCharacter curChar = c.getChannelServer().getPlayerStorage().getCharacterByName(chr.getName());
+            MapleCharacter curChar = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(chr.getName());
             curChar.changeMap(target, target.getPortal(0));
             curChar.gainExp(exp, true, false, true);
         }
@@ -657,7 +657,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public void warpPartyWithExpMeso(int mapId, int exp, int meso) {
         MapleMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            MapleCharacter curChar = c.getChannelServer().getPlayerStorage().getCharacterByName(chr.getName());
+            MapleCharacter curChar = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(chr.getName());
             curChar.changeMap(target, target.getPortal(0));
             curChar.gainExp(exp, true, false, true);
             curChar.gainMeso(meso, true);
@@ -665,11 +665,11 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public MapleSquad getSquad(String type) {
-        return c.getChannelServer().getMapleSquad(type);
+        return c.getOdinChannelServer().getMapleSquad(type);
     }
 
     public int getSquadAvailability(String type) {
-        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleSquad squad = c.getOdinChannelServer().getMapleSquad(type);
         if (squad == null) {
             return -1;
         }
@@ -678,7 +678,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public boolean registerSquad(String type, int minutes, String startText) {
         final MapleSquad squad = new MapleSquad(c.getChannelId(), type, c.getPlayer(), minutes * 60 * 1000);
-        final boolean ret = c.getChannelServer().addMapleSquad(squad, type);
+        final boolean ret = c.getOdinChannelServer().addMapleSquad(squad, type);
         if (ret) {
             final MapleMap map = c.getPlayer().getMap();
 
@@ -691,7 +691,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean getSquadList(String type, byte type_) {
-        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleSquad squad = c.getOdinChannelServer().getMapleSquad(type);
         if (squad == null) {
             return false;
         }
@@ -710,7 +710,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public byte isSquadLeader(String type) {
-        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleSquad squad = c.getOdinChannelServer().getMapleSquad(type);
         if (squad == null) {
             return -1;
         } else {
@@ -727,21 +727,21 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void banMember(String type, int pos) {
-        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleSquad squad = c.getOdinChannelServer().getMapleSquad(type);
         if (squad != null) {
             squad.banMember(pos);
         }
     }
 
     public void acceptMember(String type, int pos) {
-        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleSquad squad = c.getOdinChannelServer().getMapleSquad(type);
         if (squad != null) {
             squad.acceptMember(pos);
         }
     }
 
     public int addMember(String type, boolean join) {
-        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleSquad squad = c.getOdinChannelServer().getMapleSquad(type);
         if (squad != null) {
             return squad.addMember(c.getPlayer(), join);
         }
@@ -749,7 +749,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public byte isSquadMember(String type) {
-        final MapleSquad squad = c.getChannelServer().getMapleSquad(type);
+        final MapleSquad squad = c.getOdinChannelServer().getMapleSquad(type);
         if (squad == null) {
             return -1;
         } else {
@@ -1184,7 +1184,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public boolean createAlliance(String alliancename) {
         MapleParty pt = c.getPlayer().getParty();
-        MapleCharacter otherChar = c.getChannelServer().getPlayerStorage().getCharacterById(pt.getMemberByIndex(1).getId());
+        MapleCharacter otherChar = c.getOdinChannelServer().getPlayerStorage().getCharacterById(pt.getMemberByIndex(1).getId());
         if (otherChar == null || otherChar.getId() == c.getPlayer().getId()) {
             return false;
         }

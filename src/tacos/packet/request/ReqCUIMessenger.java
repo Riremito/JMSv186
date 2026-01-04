@@ -95,7 +95,7 @@ public class ReqCUIMessenger {
                         return;
                     }
                     input = cp.DecodeStr();
-                    final MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(input);
+                    final MapleCharacter target = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(input);
 
                     if (target != null) {
                         if (target.getMessenger() == null) {
@@ -119,7 +119,7 @@ public class ReqCUIMessenger {
                 break;
             case 0x05: // decline
                 final String targeted = cp.DecodeStr();
-                final MapleCharacter target = c.getChannelServer().getPlayerStorage().getCharacterByName(targeted);
+                final MapleCharacter target = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(targeted);
                 if (target != null) { // This channel
                     if (target.getMessenger() != null) {
                         target.getClient().getSession().write(ResCUIMessenger.messengerNote(c.getPlayer().getName(), 5, 0));

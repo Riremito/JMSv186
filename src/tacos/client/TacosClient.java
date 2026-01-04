@@ -23,7 +23,9 @@ import org.apache.mina.common.IoSession;
 import tacos.config.DeveloperMode;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
+import tacos.server.Server_CashShop;
 import tacos.server.Server_Game;
+import tacos.server.Server_Login;
 import tacos.server.TacosServer;
 import tacos.server.TacosWorld;
 
@@ -60,6 +62,18 @@ public class TacosClient extends BaseClient {
 
     public TacosServer getServer() {
         return this.server;
+    }
+
+    public Server_Login getLoginServer() {
+        return (Server_Login) this.server;
+    }
+
+    public Server_Game getChannelServer() {
+        return (Server_Game) this.server;
+    }
+
+    public Server_CashShop getCashShopServer() {
+        return (Server_CashShop) this.server;
     }
 
     public void setServer(TacosServer server) {

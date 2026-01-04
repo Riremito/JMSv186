@@ -48,6 +48,8 @@ import tacos.packet.response.wrapper.ResWrapper;
 import tacos.script.portal.ArdentmillPortal;
 import tacos.script.portal.FreeMarketPortal;
 import tacos.server.ServerOdinGame;
+import tacos.server.Server_CashShop;
+import tacos.server.Server_Game;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -78,6 +80,14 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public int getId() {
         return this.id;
+    }
+
+    public Server_Game getChannelServer() {
+        return this.client.getChannelServer();
+    }
+
+    public Server_CashShop getCashShopServer() {
+        return this.client.getCashShopServer();
     }
 
     public int getWorld() {

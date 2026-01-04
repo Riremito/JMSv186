@@ -78,7 +78,7 @@ public class DebugMan_NM extends DebugMan implements IDebugMan {
                 return false;
             }
             case 2: {
-                MapleMap map = chr.getClient().getChannelServer().getMapFactory().getMap(target_map_id);
+                MapleMap map = chr.getClient().getOdinChannelServer().getMapFactory().getMap(target_map_id);
                 chr.changeMap(map, map.getPortal(0));
                 return false;
             }

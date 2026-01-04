@@ -314,7 +314,7 @@ public class ReqCMiniRoomBaseDlg {
 
                         if (shop.getShopType() == 1) {
                             final HiredMerchant merchant = (HiredMerchant) shop;
-                            merchant.setStoreid(chr.getClient().getChannelServer().addMerchant(merchant));
+                            merchant.setStoreid(chr.getClient().getOdinChannelServer().addMerchant(merchant));
                             merchant.setOpen(true);
                             merchant.setAvailable(true);
                             chr.getMap().broadcastMessage(ResCEmployeePool.EmployeeEnterField(merchant));

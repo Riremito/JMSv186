@@ -315,7 +315,7 @@ public class Event_PyramidSubway {
         }
         int exp = 0;
         if (rank < 4) {
-            exp = (((kill * 2) + (cool * 10)) + pt) * c.getClient().getChannelServer().getExpRate();
+            exp = (((kill * 2) + (cool * 10)) + pt) * c.getClient().getOdinChannelServer().getExpRate();
             c.gainExp(exp, true, false, false);
         }
         c.getClient().getSession().write(ResWrapper.showEffect("killing/clear"));
@@ -326,9 +326,9 @@ public class Event_PyramidSubway {
     public final void fail(final MapleCharacter c) {
         final MapleMap map;
         if (type == -1) {
-            map = c.getClient().getChannelServer().getMapFactory().getMap(910320001);
+            map = c.getClient().getOdinChannelServer().getMapFactory().getMap(910320001);
         } else {
-            map = c.getClient().getChannelServer().getMapFactory().getMap(926010001 + type);
+            map = c.getClient().getOdinChannelServer().getMapFactory().getMap(926010001 + type);
         }
         changeMap(c, map, 1, 200, 2);
         dispose(c);
@@ -380,7 +380,7 @@ public class Event_PyramidSubway {
     public static boolean warpStartSubway(final MapleCharacter c) {
         final int mapid = 910320100;
 
-        final ServerOdinGame ch = c.getClient().getChannelServer();
+        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         for (int i = 0; i < 5; i++) {
             final MapleMap map = ch.getMapFactory().getMap(mapid + i);
             if (map.getCharactersSize() == 0) {
@@ -395,7 +395,7 @@ public class Event_PyramidSubway {
     public static boolean warpBonusSubway(final MapleCharacter c) {
         final int mapid = 910320010;
 
-        final ServerOdinGame ch = c.getClient().getChannelServer();
+        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         for (int i = 0; i < 20; i++) {
             final MapleMap map = ch.getMapFactory().getMap(mapid + i);
             if (map.getCharactersSize() == 0) {
@@ -413,7 +413,7 @@ public class Event_PyramidSubway {
 
         MapleMap map = c.getMap();
         clearMap(map, true);
-        final ServerOdinGame ch = c.getClient().getChannelServer();
+        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         if (thisStage >= 2) {
             map = ch.getMapFactory().getMap(910330001);
             changeMap(c, map, 1, 200, 1);
@@ -446,7 +446,7 @@ public class Event_PyramidSubway {
                 maxLevel = 200;
                 break;
         }
-        final ServerOdinGame ch = c.getClient().getChannelServer();
+        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         for (int i = 0; i < 5; i++) {
             final MapleMap map = ch.getMapFactory().getMap(mapid + i);
             if (map.getCharactersSize() == 0) {
@@ -461,7 +461,7 @@ public class Event_PyramidSubway {
     public static boolean warpBonusPyramid(final MapleCharacter c, final int difficulty) {
         final int mapid = 926010010 + (difficulty * 20);
 
-        final ServerOdinGame ch = c.getClient().getChannelServer();
+        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         for (int i = 0; i < 20; i++) {
             final MapleMap map = ch.getMapFactory().getMap(mapid + i);
             if (map.getCharactersSize() == 0) {
@@ -479,7 +479,7 @@ public class Event_PyramidSubway {
 
         MapleMap map = c.getMap();
         clearMap(map, true);
-        final ServerOdinGame ch = c.getClient().getChannelServer();
+        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         if (thisStage >= 4) {
             map = ch.getMapFactory().getMap(926020001 + difficulty);
             changeMap(c, map, 1, 200, 1);

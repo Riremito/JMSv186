@@ -63,7 +63,6 @@ import odin.handling.channel.handler.FamilyHandler;
 import odin.handling.channel.handler.GuildHandler;
 import odin.handling.channel.handler.PartyHandler;
 import odin.handling.world.CharacterTransfer;
-import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.PlayerBuffStorage;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsChangeStat;
@@ -824,26 +823,24 @@ public class ReqCUser {
         return chr.changeChannel(channel + 1);
     }
 
-    public static boolean OnUserMigrateToCashShopRequest(final MapleClient c, final MapleCharacter chr, final boolean mts) {
+    public static boolean OnUserMigrateToCashShopRequest(MapleClient c, MapleCharacter chr, boolean mts) {
         // temporary off
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             return false;
         }
-
-        if (!chr.isAlive() || c.getChannelServer() == null) {
+        if (!chr.isAlive()) {
             return false;
         }
-        final ServerOdinGame ch = ServerOdinGame.getInstance(c.getChannelId());
+
         chr.changeRemoval();
-        if (chr.getMessenger() != null) {
-            MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(chr);
-            OdinWorld.Messenger.leaveMessenger(chr.getMessenger().getId(), messengerplayer);
-        }
+
         PlayerBuffStorage.addBuffsToStorage(chr.getId(), chr.getAllBuffs());
         PlayerBuffStorage.addCooldownsToStorage(chr.getId(), chr.getCooldowns());
         PlayerBuffStorage.addDiseaseToStorage(chr.getId(), chr.getAllDiseases());
         OdinWorld.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), mts ? -20 : -10);
-        ch.removePlayer(chr);
+
+        chr.getChannelServer().getPlayerStorage().deregisterPlayer(chr);
+
         DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
         c.SendPacket(ResCClientSocket.MigrateCommand(Property_Shop.getPort()));
         chr.saveToDB(false, false);
@@ -1280,7 +1277,7 @@ public class ReqCUser {
             return false;
         }
         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, owl_item_id, 1, true, false);
-        final List<HiredMerchant> hms = chr.getClient().getChannelServer().searchMerchant(target_item_id);
+        final List<HiredMerchant> hms = chr.getClient().getOdinChannelServer().searchMerchant(target_item_id);
         // not coded.
         chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_SearchResult));
         return true;
@@ -1298,7 +1295,7 @@ public class ReqCUser {
                 int target_map_id = cp.Decode4();
                 for (int map_id : chr.getRegRocks()) {
                     if (map_id == target_map_id) {
-                        target_map = chr.getClient().getChannelServer().getMapFactory().getMap(target_map_id);
+                        target_map = chr.getClient().getOdinChannelServer().getMapFactory().getMap(target_map_id);
                         if (target_map != null) {
                             ops_res = OpsMapTransfer.MapTransferRes_Use;
                         }

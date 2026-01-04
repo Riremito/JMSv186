@@ -42,7 +42,7 @@ public class Event_DojoAgent {
         final int stage = 1;
         final int mapid = baseAgentMapId + (stage * 100);
 
-        final ServerOdinGame ch = c.getClient().getChannelServer();
+        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         for (int i = mapid; i < mapid + 15; i++) {
             final MapleMap map = ch.getMapFactory().getMap(i);
             if (map.getCharactersSize() == 0) {
@@ -67,7 +67,7 @@ public class Event_DojoAgent {
             clearMap(map, true);
             c.modifyCSPoints(1, 40, true);
         }
-        final ServerOdinGame ch = c.getClient().getChannelServer();
+        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         if (currentmap >= 970032700 && currentmap <= 970032800) {
             map = ch.getMapFactory().getMap(baseAgentMapId);
             c.changeMap(map, map.getPortal(0));
@@ -93,7 +93,7 @@ public class Event_DojoAgent {
         }
         int mapid = 925020000 + (stage * 100);
         boolean canenter = false;
-        final ServerOdinGame ch = c.getClient().getChannelServer();
+        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         for (int x = 0; x < 15; x++) { //15 maps each stage
             boolean canenterr = true;
             for (int i = 1; i < 39; i++) { //only 32 stages, but 38 maps
@@ -148,7 +148,7 @@ public class Event_DojoAgent {
             final int thisStage = (int) (temp - ((temp / 100) * 100));
             final int points = getDojoPoints(thisStage);
 
-            final ServerOdinGame ch = c.getClient().getChannelServer();
+            final ServerOdinGame ch = c.getClient().getOdinChannelServer();
             if (!fromResting) {
                 clearMap(currentmap, true);
                 if (c.getParty() != null && c.getParty().getMembers().size() > 1) {

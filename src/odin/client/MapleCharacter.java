@@ -146,6 +146,7 @@ import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.ServerOdinCashShop;
+import tacos.server.Server_Game;
 import tacos.server.map.TacosPortal;
 
 public class MapleCharacter extends TacosCharacter {
@@ -1698,7 +1699,7 @@ public class MapleCharacter extends TacosCharacter {
         // check if we are still logged in o.o
         if (!overwrite) {
             cancelPlayerBuffs(buffstats, effect);
-            if (effect.isHide() && client.getChannelServer().getPlayerStorage().getCharacterById(this.getId()) != null) { //Wow this is so fking hacky...
+            if (effect.isHide() && client.getOdinChannelServer().getPlayerStorage().getCharacterById(this.getId()) != null) { //Wow this is so fking hacky...
                 this.hidden = false;
                 map.broadcastMessage(this, ResCUserPool.UserEnterField(this), false);
 
@@ -1724,7 +1725,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     private void cancelPlayerBuffs(List<MapleBuffStat> buffstats, MapleStatEffect effect) {
-        boolean write = client.getChannelServer().getPlayerStorage().getCharacterById(getId()) != null;
+        boolean write = client.getOdinChannelServer().getPlayerStorage().getCharacterById(getId()) != null;
         if (buffstats.contains(MapleBuffStat.HOMING_BEACON)) {
             if (write) {
                 client.getSession().write(ResCWvsContext.cancelHoming());
@@ -2145,7 +2146,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public void changeMapBanish(int mapid, String portal, String msg) {
         dropMessage(5, msg);
-        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = client.getOdinChannelServer().getMapFactory().getMap(mapid);
         changeMap(map, map.getPortal(portal));
     }
 
@@ -2497,7 +2498,7 @@ public class MapleCharacter extends TacosCharacter {
             final int channel = client.getChannelId();
             for (MaplePartyCharacter partychar : party.getMembers()) {
                 if (partychar.getMapid() == getMapId() && partychar.getChannel() == channel) {
-                    final MapleCharacter other = client.getChannelServer().getPlayerStorage().getCharacterByName(partychar.getName());
+                    final MapleCharacter other = client.getOdinChannelServer().getPlayerStorage().getCharacterByName(partychar.getName());
                     if (other != null) {
                         other.getClient().getSession().write(ResCUserRemote.updatePartyMemberHP(getId(), stats.getHp(), stats.getCurrentMaxHp()));
                     }
@@ -2513,7 +2514,7 @@ public class MapleCharacter extends TacosCharacter {
         int channel = client.getChannelId();
         for (MaplePartyCharacter partychar : party.getMembers()) {
             if (partychar.getMapid() == getMapId() && partychar.getChannel() == channel) {
-                MapleCharacter other = client.getChannelServer().getPlayerStorage().getCharacterByName(partychar.getName());
+                MapleCharacter other = client.getOdinChannelServer().getPlayerStorage().getCharacterByName(partychar.getName());
                 if (other != null) {
                     client.getSession().write(ResCUserRemote.updatePartyMemberHP(other.getId(), other.getStat().getHp(), other.getStat().getCurrentMaxHp()));
                 }
@@ -4690,26 +4691,23 @@ public class MapleCharacter extends TacosCharacter {
         return jobRankMove;
     }
 
-    public boolean changeChannel(final int channel) {
-        final ServerOdinGame toch = ServerOdinGame.getInstance(channel);
-
-        if (channel == client.getChannelId() || toch == null || toch.isShutdown()) {
+    public boolean changeChannel(int channel) {
+        Server_Game ch_server = getChannelServer().getWorld().getChannelServer(channel);
+        if (ch_server == null || channel == client.getChannelId()) {
             return false;
         }
+
         changeRemoval();
 
-        final ServerOdinGame ch = ServerOdinGame.getInstance(client.getChannelId());
-        if (getMessenger() != null) {
-            OdinWorld.Messenger.silentLeaveMessenger(getMessenger().getId(), new MapleMessengerCharacter(this));
-        }
         PlayerBuffStorage.addBuffsToStorage(getId(), getAllBuffs());
         PlayerBuffStorage.addCooldownsToStorage(getId(), getCooldowns());
         PlayerBuffStorage.addDiseaseToStorage(getId(), getAllDiseases());
         OdinWorld.ChannelChange_Data(new CharacterTransfer(this), getId(), channel);
-        ch.removePlayer(this);
+
+        getChannelServer().getPlayerStorage().deregisterPlayer(this);
         DQ_Accounts.updateLoginState(client, MapleClientState.CHANGE_CHANNEL);
 
-        client.SendPacket(ResCClientSocket.MigrateCommand(toch.getPort()));
+        client.SendPacket(ResCClientSocket.MigrateCommand(ch_server.getPort()));
         saveToDB(false, false);
         getMap().removePlayer(this);
         client.setMigrating();
@@ -5023,6 +5021,9 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void changeRemoval() {
+        if (getMessenger() != null) {
+            OdinWorld.Messenger.silentLeaveMessenger(getMessenger().getId(), new MapleMessengerCharacter(this));
+        }
         changeRemoval(false);
     }
 
@@ -5287,7 +5288,7 @@ public class MapleCharacter extends TacosCharacter {
         ret.nexonPoint = nexonPoint;
         ret.maplePoint = maplePoint;
         ret.clone = true;
-        while (map.getCharacterById(ret.id) != null || client.getChannelServer().getPlayerStorage().getCharacterById(ret.id) != null) {
+        while (map.getCharacterById(ret.id) != null || client.getOdinChannelServer().getPlayerStorage().getCharacterById(ret.id) != null) {
             ret.id++;
         }
         ret.client.setPlayer(ret);

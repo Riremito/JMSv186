@@ -99,6 +99,14 @@ public class TacosServer {
         return this.server_name;
     }
 
+    public String getIP() {
+        return this.server_ip;
+    }
+
+    public int getPort() {
+        return this.server_port;
+    }
+
     public int getNumberOfSessions() {
         if (!this.server_status) {
             return 5; // 200 * 5 for world select.

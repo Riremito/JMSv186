@@ -79,7 +79,7 @@ public class AramiaFireWorks {
 
             @Override
             public final void run() {
-                startEvent(c.getClient().getChannelServer().getMapFactory().getMap(100000200));
+                startEvent(c.getClient().getOdinChannelServer().getMapFactory().getMap(100000200));
             }
         }, 10000);
     }
@@ -108,7 +108,7 @@ public class AramiaFireWorks {
     public final void giveSuns(final MapleCharacter c, final int kegs) {
         this.sunshines += kegs;
         //have to broadcast a Reactor?
-        final MapleMap map = c.getClient().getChannelServer().getMapFactory().getMap(555000000);
+        final MapleMap map = c.getClient().getOdinChannelServer().getMapFactory().getMap(555000000);
         final MapleReactor reactor = map.getReactorByName("XmasTree");
         for (int gogo = kegs + (MAX_SUN / 6); gogo > 0; gogo -= (MAX_SUN / 6)) {
             switch (reactor.getState()) {
@@ -147,7 +147,7 @@ public class AramiaFireWorks {
 
             @Override
             public final void run() {
-                startSun(c.getClient().getChannelServer().getMapFactory().getMap(970010000));
+                startSun(c.getClient().getOdinChannelServer().getMapFactory().getMap(970010000));
             }
         }, 10000);
     }
@@ -177,7 +177,7 @@ public class AramiaFireWorks {
     public final void giveDecs(final MapleCharacter c, final int kegs) {
         this.decorations += kegs;
         //have to broadcast a Reactor?
-        final MapleMap map = c.getClient().getChannelServer().getMapFactory().getMap(555000000);
+        final MapleMap map = c.getClient().getOdinChannelServer().getMapFactory().getMap(555000000);
         final MapleReactor reactor = map.getReactorByName("XmasTree");
         for (int gogo = kegs + (MAX_DEC / 6); gogo > 0; gogo -= (MAX_DEC / 6)) {
             switch (reactor.getState()) {
@@ -215,7 +215,7 @@ public class AramiaFireWorks {
 
             @Override
             public final void run() {
-                startDec(c.getClient().getChannelServer().getMapFactory().getMap(555000000));
+                startDec(c.getClient().getOdinChannelServer().getMapFactory().getMap(555000000));
             }
         }, 10000); //no msg
     }

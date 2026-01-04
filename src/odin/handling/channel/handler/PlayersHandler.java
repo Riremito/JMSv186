@@ -198,7 +198,7 @@ public class PlayersHandler {
             final String name = cp.DecodeStr();
             final int itemid = cp.Decode4();
             final int newItemId = 1112300 + (itemid - 2240004);
-            final MapleCharacter player = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
+            final MapleCharacter player = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(name);
             int errcode = 0;
             if (c.getPlayer().getMarriageId() > 0) {
                 errcode = 0x17;
@@ -229,7 +229,7 @@ public class PlayersHandler {
             final boolean accepted = cp.Decode1() > 0;
             final String name = cp.DecodeStr();
             final int id = cp.Decode4();
-            final MapleCharacter player = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
+            final MapleCharacter player = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(name);
             if (c.getPlayer().getMarriageId() > 0 || player == null || player.getId() != id || player.getMarriageItemId() <= 0 || !player.haveItem(player.getMarriageItemId(), 1) || player.getMarriageId() > 0) {
                 c.getSession().write(ResCWvsContext.sendEngagement((byte) 0x1D, 0, null, null));
                 chr.updateStat();

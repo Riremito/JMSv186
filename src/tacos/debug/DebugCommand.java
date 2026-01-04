@@ -622,7 +622,7 @@ public class DebugCommand {
             }
             // カスタムコマンド
             case "/wh": {
-                for (MapleCharacter victim : c.getChannelServer().getPlayerStorage().getAllCharacters()) {
+                for (MapleCharacter victim : c.getOdinChannelServer().getPlayerStorage().getAllCharacters()) {
                     if (victim != chr) {
                         victim.changeMap(chr.getMap(), chr.getMap().findClosestSpawnpoint(chr.getPosition()));
                     }
@@ -678,7 +678,7 @@ public class DebugCommand {
             return false;
         }
 
-        MapleMap map = chr.getClient().getChannelServer().getMapFactory().getMap(map_id);
+        MapleMap map = chr.getClient().getOdinChannelServer().getMapFactory().getMap(map_id);
         chr.changeMap(map, map.getPortal(0));
         return true;
     }

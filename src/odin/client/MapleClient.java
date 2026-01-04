@@ -90,7 +90,7 @@ public class MapleClient extends TacosClient {
         return getCharacterIds().size();
     }
 
-    public final ServerOdinGame getChannelServer() {
+    public ServerOdinGame getOdinChannelServer() {
         return ServerOdinGame.getInstance(getChannelId());
     }
 

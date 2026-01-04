@@ -86,4 +86,14 @@ public class TacosWorld {
         return this.channels;
     }
 
+    // from 1.
+    public Server_Game getChannelServer(int channel) {
+        for (Server_Game ch_server : this.channels) {
+            if (ch_server.getChannel() == channel) {
+                return ch_server;
+            }
+        }
+        return null;
+    }
+
 }
