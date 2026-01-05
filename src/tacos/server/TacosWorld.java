@@ -108,29 +108,29 @@ public class TacosWorld {
         return this.cashshop;
     }
 
-    public boolean addPlayer(MapleCharacter player) {
+    public boolean addMigratingPlayer(MapleCharacter player) {
         if (this.player_migrating.contains(player)) {
-            DebugLogger.DebugLog("addPlayer : NG.");
+            DebugLogger.DebugLog("addMigratingPlayer : NG.");
             return false;
         }
         this.player_migrating.add(player);
         return true;
     }
 
-    public MapleCharacter findPlayer(int character_id) {
+    public MapleCharacter findMigratingPlayer(int character_id) {
         for (MapleCharacter chr_mig : this.player_migrating) {
             if (chr_mig.getId() == character_id) {
                 return chr_mig;
             }
         }
-        DebugLogger.DebugLog("findPlayer : NG.");
+        DebugLogger.DebugLog("findMigratingPlayer : NG.");
         return null;
     }
 
-    public boolean removePlayer(MapleCharacter player) {
-        MapleCharacter chr_mig = findPlayer(player.getId());
+    public boolean removeMigratingPlayer(MapleCharacter player) {
+        MapleCharacter chr_mig = findMigratingPlayer(player.getId());
         if (chr_mig == null) {
-            DebugLogger.DebugLog("removePlayer : NG.");
+            DebugLogger.DebugLog("removeMigratingPlayer : NG.");
             return false;
         }
         this.player_migrating.remove(chr_mig);

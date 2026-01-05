@@ -95,7 +95,7 @@ public class ReqCCashShop {
 
     public static void EnterCS(int playerid, MapleClient c) {
         boolean mts = false;
-        MapleCharacter chr = c.getCashShop().getWorld().findPlayer(playerid);
+        MapleCharacter chr = c.getCashShop().getWorld().findMigratingPlayer(playerid);
         c.setMapleId(chr.getClient().getMapleId());
         c.setNexonId(chr.getClient().getNexonId());
         chr.setClient(c);
@@ -116,7 +116,7 @@ public class ReqCCashShop {
             return;
         }
 
-        chr.getClient().getCashShop().getWorld().removePlayer(chr); // xxx
+        chr.getClient().getCashShop().getWorld().removeMigratingPlayer(chr);
 
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         if (mts) {
@@ -131,7 +131,7 @@ public class ReqCCashShop {
     }
 
     public static void LeaveCS(MapleClient c, MapleCharacter chr) {
-        chr.getClient().getCashShop().getWorld().addPlayer(chr);
+        chr.getClient().getCashShop().getWorld().addMigratingPlayer(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
             chr.SendPacket(ResCClientSocket.MigrateCommand(chr.getClient().getCashShop().getWorld().getChannelServer(chr.getChannel())));

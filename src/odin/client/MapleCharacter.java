@@ -4571,7 +4571,7 @@ public class MapleCharacter extends TacosCharacter {
 
         changeRemoval();
 
-        getClient().getWorld().addPlayer(this);
+        getClient().getWorld().addMigratingPlayer(this);
         getChannelServer().getPlayerStorage().deregisterPlayer(this);
         DQ_Accounts.updateLoginState(client, MapleClientState.CHANGE_CHANNEL);
 

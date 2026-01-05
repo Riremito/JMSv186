@@ -37,7 +37,6 @@ import odin.handling.world.CharacterIdChannelPair;
 import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.PlayerBuffStorage;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import java.util.List;
@@ -140,7 +139,7 @@ public class ReqCClientSocket {
     public static boolean EnterGameServer(MapleClient c, int character_id) {
         // ログイン or CH変更
         ServerOdinGame channel = c.getOdinChannelServer();
-        MapleCharacter transfer = c.getWorld().findPlayer(character_id);
+        MapleCharacter transfer = c.getWorld().findMigratingPlayer(character_id);
         MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, c, true) : transfer;
         ExtraDB.loadData(chr);
         c.setPlayer(chr);
@@ -150,7 +149,7 @@ public class ReqCClientSocket {
         if (transfer != null) {
             c.setMapleId(transfer.getClient().getMapleId());
             c.setNexonId(transfer.getClient().getNexonId());
-            c.getWorld().removePlayer(transfer);
+            c.getWorld().removeMigratingPlayer(transfer);
         }
         chr.setClient(c);
 
@@ -179,11 +178,6 @@ public class ReqCClientSocket {
         // entering game server
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         channel.addPlayer(chr);
-        // [update character data in server]
-        // character
-        chr.silentGiveBuffs(PlayerBuffStorage.getBuffsFromStorage(chr.getId()));
-        chr.giveCoolDowns(PlayerBuffStorage.getCooldownsFromStorage(chr.getId()));
-        chr.giveSilentDebuff(PlayerBuffStorage.getDiseaseFromStorage(chr.getId()));
         // pet
         chr.spawnSavedPets();
         // group            

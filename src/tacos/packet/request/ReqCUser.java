@@ -832,7 +832,7 @@ public class ReqCUser {
         DebugLogger.DebugLog("OnUserMigrateToCashShopRequest : " + chr.getWorld() + ", " + chr.getChannel());
 
         chr.changeRemoval();
-        chr.getClient().getWorld().addPlayer(chr);
+        chr.getClient().getWorld().addMigratingPlayer(chr);
         chr.getChannelServer().getPlayerStorage().deregisterPlayer(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
         chr.SendPacket(ResCClientSocket.MigrateCommand(chr.getClient().getWorld().getCashShop()));
