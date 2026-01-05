@@ -30,6 +30,7 @@ import tacos.network.PacketHandler_CashShop;
  */
 public class Server_CashShop extends TacosServer {
 
+    private int world_id;
     private PlayerStorage players;
     private PlayerStorage playersMTS;
 
@@ -48,6 +49,10 @@ public class Server_CashShop extends TacosServer {
         super.shutdown();
     }
 
+    public TacosWorld getWorld() {
+        return TacosWorld.find(this.world_id);
+    }
+
     public PlayerStorage getPlayerStorage() {
         return this.players;
     }
@@ -61,6 +66,8 @@ public class Server_CashShop extends TacosServer {
         TacosServer.add(server);
         server.run(TacosConstants.SERVER_LOCAL_IP, Property_Shop.getPort(), new PacketHandler_CashShop(server));
         ServerOdinCashShop.set(server);
+        server.world_id = 0;
+        TacosWorld.find(server.world_id).setCashShop(server);
         return true;
     }
 }

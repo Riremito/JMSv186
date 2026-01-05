@@ -3,7 +3,6 @@ package odin.handling.world;
 import odin.client.BuddyList;
 import odin.client.BuddyList.BuddyAddResult;
 import odin.client.BuddyList.BuddyOperation;
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,14 +17,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.client.BuddylistEntry;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
 import odin.client.MapleCoolDownValueHolder;
 import odin.client.MapleDiseaseValueHolder;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import tacos.wz.data.ItemWz;
 import tacos.database.DatabaseConnection;
-import tacos.database.query.DQ_Characters;
 import tacos.network.MaplePacket;
 import tacos.server.ServerOdinCashShop;
 import tacos.server.ServerOdinGame;
@@ -65,53 +62,8 @@ public class OdinWorld extends TacosWorld {
         OdinWorld.Party.getParty(0);
     }
 
-    public static String getStatus() throws RemoteException {
-        StringBuilder ret = new StringBuilder();
-        int totalUsers = 0;
-        for (ServerOdinGame cs : ServerOdinGame.getAllInstances()) {
-            ret.append("Channel ");
-            ret.append(cs.getChannel());
-            ret.append(": ");
-            int channelUsers = cs.getConnectedClients();
-            totalUsers += channelUsers;
-            ret.append(channelUsers);
-            ret.append(" users\n");
-        }
-        ret.append("Total users online: ");
-        ret.append(totalUsers);
-        ret.append("\n");
-        return ret.toString();
-    }
-
-    public static Map<Integer, Integer> getConnected() {
-        Map<Integer, Integer> ret = new HashMap<Integer, Integer>();
-        int total = 0;
-        for (ServerOdinGame cs : ServerOdinGame.getAllInstances()) {
-            int curConnected = cs.getConnectedClients();
-            ret.put(cs.getChannel(), curConnected);
-            total += curConnected;
-        }
-        ret.put(0, total);
-        return ret;
-    }
-
     public static boolean isConnected(String charName) {
         return Find.findChannel(charName) > 0;
-    }
-
-    public static void ChannelChange_Data(CharacterTransfer Data, int characterid, int toChannel) {
-        getStorage(toChannel).registerPendingPlayer(Data, characterid);
-    }
-
-    public static boolean isCharacterListConnected(MapleClient c) {
-        for (ServerOdinGame cs : ServerOdinGame.getAllInstances()) {
-            for (int character_id : DQ_Characters.getCharatcerIds(c)) {
-                if (cs.getPlayerStorage().getCharacterById(character_id) != null) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public static boolean hasMerchant(int accountID) {

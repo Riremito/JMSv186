@@ -62,8 +62,6 @@ import odin.handling.channel.handler.BBSHandler;
 import odin.handling.channel.handler.FamilyHandler;
 import odin.handling.channel.handler.GuildHandler;
 import odin.handling.channel.handler.PartyHandler;
-import odin.handling.world.CharacterTransfer;
-import odin.handling.world.PlayerBuffStorage;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsChatGroup;
@@ -107,7 +105,6 @@ import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCClientSocket;
-import tacos.property.Property_Shop;
 import tacos.script.TacosScriptNPC;
 
 /**
@@ -832,17 +829,13 @@ public class ReqCUser {
             return false;
         }
 
+        DebugLogger.DebugLog("OnUserMigrateToCashShopRequest : " + chr.getWorld() + ", " + chr.getChannel());
+
         chr.changeRemoval();
-
-        PlayerBuffStorage.addBuffsToStorage(chr.getId(), chr.getAllBuffs());
-        PlayerBuffStorage.addCooldownsToStorage(chr.getId(), chr.getCooldowns());
-        PlayerBuffStorage.addDiseaseToStorage(chr.getId(), chr.getAllDiseases());
-        OdinWorld.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), mts ? -20 : -10);
-
+        chr.getClient().getWorld().addPlayer(chr);
         chr.getChannelServer().getPlayerStorage().deregisterPlayer(chr);
-
         DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
-        c.SendPacket(ResCClientSocket.MigrateCommand(Property_Shop.getPort()));
+        chr.SendPacket(ResCClientSocket.MigrateCommand(chr.getClient().getWorld().getCashShop()));
         chr.saveToDB(false, false);
         ExtraDB.saveData(chr);
         chr.getMap().removePlayer(chr);

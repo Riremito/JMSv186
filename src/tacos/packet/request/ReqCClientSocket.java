@@ -34,7 +34,6 @@ import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.server.ServerOdinGame;
 import odin.handling.world.CharacterIdChannelPair;
-import odin.handling.world.CharacterTransfer;
 import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
@@ -141,14 +140,19 @@ public class ReqCClientSocket {
     public static boolean EnterGameServer(MapleClient c, int character_id) {
         // ログイン or CH変更
         ServerOdinGame channel = c.getOdinChannelServer();
-        CharacterTransfer transfer = channel.getPlayerStorage().getPendingCharacter(character_id);
-        MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, c, true) : MapleCharacter.ReconstructChr(transfer, c, true);
+        MapleCharacter transfer = c.getWorld().findPlayer(character_id);
+        MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, c, true) : transfer;
         ExtraDB.loadData(chr);
         c.setPlayer(chr);
         c.setId(chr.getAccountID());
+        chr.setChannel(c.getChannelServer().getChannel());
+
         if (transfer != null) {
-            chr.setChannel(transfer.channel);
+            c.setMapleId(transfer.getClient().getMapleId());
+            c.setNexonId(transfer.getClient().getNexonId());
+            c.getWorld().removePlayer(transfer);
         }
+        chr.setClient(c);
 
         if (!DQ_Accounts.checkLoginIP(c)) {
             c.loginFailed("EnterGameServer 1."); // Remote hack
@@ -158,10 +162,6 @@ public class ReqCClientSocket {
         switch (DQ_Accounts.getLoginState(c)) {
             case LOGIN_SERVER_TRANSITION:
             case CHANGE_CHANNEL: {
-                if (OdinWorld.isCharacterListConnected(c)) {
-                    c.loginFailed("EnterGameServer 2.");
-                    return false;
-                }
                 // OK
                 if (transfer != null) {
                     DebugLogger.DebugLog(chr, "CC");
@@ -301,7 +301,6 @@ public class ReqCClientSocket {
             return true;
         }
 
-        DebugLogger.DebugLog("users = " + OdinWorld.getConnected().get(0));
         return true;
     }
 

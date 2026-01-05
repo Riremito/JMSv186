@@ -106,6 +106,10 @@ public class TacosClient extends BaseClient {
         return (Server_Game) this.server;
     }
 
+    public Server_CashShop getCashShop() {
+        return (Server_CashShop) this.server;
+    }
+
     public int getChannelId() {
         return ((Server_Game) this.server).getChannel(); // from 1.
     }

@@ -28,10 +28,6 @@ import tacos.shared.SharedDate;
 import tacos.wz.ids.DWI_Validation;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
-import tacos.server.ServerOdinCashShop;
-import tacos.server.ServerOdinGame;
-import odin.handling.world.CharacterTransfer;
-import odin.handling.world.OdinWorld;
 import java.util.ArrayList;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsCashItem;
@@ -97,22 +93,14 @@ public class ReqCCashShop {
         return false;
     }
 
-    public static void EnterCS(final int playerid, final MapleClient c) {
-        CharacterTransfer transfer = ServerOdinCashShop.getPlayerStorage().getPendingCharacter(playerid);
+    public static void EnterCS(int playerid, MapleClient c) {
         boolean mts = false;
-        if (transfer == null) {
-            transfer = ServerOdinCashShop.getPlayerStorageMTS().getPendingCharacter(playerid);
-            mts = true;
-            if (transfer == null) {
-                c.loginFailed("EnterCS 1.");
-                return;
-            }
-        }
-        MapleCharacter chr = MapleCharacter.ReconstructChr(transfer, c, false);
+        MapleCharacter chr = c.getCashShop().getWorld().findPlayer(playerid);
+        c.setMapleId(chr.getClient().getMapleId());
+        c.setNexonId(chr.getClient().getNexonId());
+        chr.setClient(c);
         c.setPlayer(chr);
         c.setId(chr.getAccountID());
-        c.setSelectedWorld(transfer.world);
-        c.setSelectedChannel(transfer.channel);
 
         if (!DQ_Accounts.checkLoginIP(c)) {
             c.loginFailed("EnterCS 2."); // Remote hack
@@ -121,35 +109,32 @@ public class ReqCCashShop {
         final MapleClientState state = DQ_Accounts.getLoginState(c);
         boolean allowLogin = false;
         if (state == MapleClientState.LOGIN_SERVER_TRANSITION || state == MapleClientState.CHANGE_CHANNEL) {
-            if (!OdinWorld.isCharacterListConnected(c)) {
-                allowLogin = true;
-            }
+            allowLogin = true;
         }
         if (!allowLogin) {
             c.loginFailed("EnterCS 3.");
             return;
         }
+
+        chr.getClient().getCashShop().getWorld().removePlayer(chr); // xxx
+
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         if (mts) {
-            ServerOdinCashShop.getPlayerStorageMTS().registerPlayer(chr);
             c.SendPacket(ResCStage.SetITC(chr));
             ReqCITC.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
         } else {
-            ServerOdinCashShop.getPlayerStorage().registerPlayer(chr);
-            c.SendPacket(ResCStage.SetCashShop(c));
-            c.SendPacket(ResCCashShop.CashShopQueryCashResult(c.getPlayer()));
-            c.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_LoadLocker_Done, c));
+            chr.SendPacket(ResCStage.SetCashShop(c));
+            chr.SendPacket(ResCCashShop.CashShopQueryCashResult(c.getPlayer()));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_LoadLocker_Done, c));
             updateFreeCouponDate(c.getPlayer());
         }
     }
 
     public static void LeaveCS(MapleClient c, MapleCharacter chr) {
-        ServerOdinCashShop.getPlayerStorageMTS().deregisterPlayer(chr);
-        ServerOdinCashShop.getPlayerStorage().deregisterPlayer(chr);
+        chr.getClient().getCashShop().getWorld().addPlayer(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
-            OdinWorld.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getSelectedChannel() + 1);
-            c.SendPacket(ResCClientSocket.MigrateCommand(ServerOdinGame.getInstance(c.getSelectedChannel() + 1).getPort()));
+            chr.SendPacket(ResCClientSocket.MigrateCommand(chr.getClient().getCashShop().getWorld().getChannelServer(chr.getChannel())));
         } finally {
             chr.saveToDB(false, true);
             c.setMigrating();

@@ -60,12 +60,10 @@ import tacos.wz.ids.DWI_Validation;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
 import tacos.server.ServerOdinGame;
-import odin.handling.world.CharacterTransfer;
 import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.PlayerBuffStorage;
 import odin.handling.world.PlayerBuffValueHolder;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.family.MapleFamily;
@@ -324,132 +322,6 @@ public class MapleCharacter extends TacosCharacter {
         } catch (SQLException e) {
             System.err.println("Error getting character default" + e);
         }
-        return ret;
-    }
-
-    public final static MapleCharacter ReconstructChr(final CharacterTransfer ct, final MapleClient client, final boolean isChannel) {
-        final MapleCharacter ret = new MapleCharacter(true); // Always true, it's change channel
-        ret.client = client;
-        ret.id = ct.characterid;
-        ret.name = ct.name;
-        ret.level = ct.level;
-        ret.fame = ct.fame;
-
-        ret.CRand = new PlayerRandomStream();
-
-        ret.stats.str = ct.str;
-        ret.stats.dex = ct.dex;
-        ret.stats.int_ = ct.int_;
-        ret.stats.luk = ct.luk;
-        ret.stats.maxhp = ct.maxhp;
-        ret.stats.maxmp = ct.maxmp;
-        ret.stats.hp = ct.hp;
-        ret.stats.mp = ct.mp;
-
-        ret.chalktext = ct.chalkboard;
-        ret.exp = ct.exp;
-        ret.hpApUsed = ct.hpApUsed;
-        ret.remainingSp = ct.remainingSp;
-        ret.remainingAp = ct.remainingAp;
-        ret.meso = ct.meso;
-        ret.tama = ct.tama;
-        ret.gmLevel = ct.gmLevel;
-        ret.skinColor = ct.skinColor;
-        ret.gender = ct.gender;
-        ret.job = ct.job;
-        ret.hair = ct.hair;
-        ret.face = ct.face;
-        ret.accountid = ct.accountid;
-        ret.dwPosMap = ct.dwPosMap;
-        ret.nPortal = ct.nPortal;
-        ret.world = ct.world;
-        ret.bookCover = ct.mBookCover;
-        ret.dojo = ct.dojo;
-        ret.dojoRecord = ct.dojoRecord;
-        ret.guildid = ct.guildid;
-        ret.guildrank = ct.guildrank;
-        ret.allianceRank = ct.alliancerank;
-        ret.points = ct.points;
-        ret.vpoints = ct.vpoints;
-        ret.fairyExp = ct.fairyExp;
-        ret.marriageId = ct.marriageId;
-        ret.currentrep = ct.currentrep;
-        ret.totalrep = ct.totalrep;
-        ret.makeMFC(ct.familyid, ct.seniorid, ct.junior1, ct.junior2);
-        if (ret.guildid > 0) {
-            ret.mgc = new MapleGuildCharacter(ret);
-        }
-        ret.buddylist = new BuddyList(ct.buddysize);
-        ret.subcategory = ct.subcategory;
-
-        if (isChannel) {
-            ret.updateMapById(ret.dwPosMap, ret.nPortal);
-
-            final int messengerid = ct.messengerid;
-            if (messengerid > 0) {
-                ret.messenger = OdinWorld.Messenger.getMessenger(messengerid);
-            }
-        } else {
-
-            ret.messenger = null;
-        }
-        int partyid = ct.partyid;
-        if (partyid >= 0) {
-            MapleParty party = OdinWorld.Party.getParty(partyid);
-            if (party != null && party.getMemberById(ret.id) != null) {
-                ret.party = party;
-            }
-        }
-
-        MapleQuestStatus queststatus;
-        MapleQuestStatus queststatus_from;
-        MapleQuest quest;
-        for (final Map.Entry<Integer, Object> qs : ct.Quest.entrySet()) {
-            quest = MapleQuest.getInstance(qs.getKey());
-            queststatus_from = (MapleQuestStatus) qs.getValue();
-
-            queststatus = new MapleQuestStatus(quest, queststatus_from.getStatus());
-            queststatus.setForfeited(queststatus_from.getForfeited());
-            queststatus.setCustomData(queststatus_from.getCustomData());
-            queststatus.setCompletionTime(queststatus_from.getCompletionTime());
-
-            if (queststatus_from.getMobKills() != null) {
-                for (final Map.Entry<Integer, Integer> mobkills : queststatus_from.getMobKills().entrySet()) {
-                    queststatus.setMobKills(mobkills.getKey(), mobkills.getValue());
-                }
-            }
-            ret.quests.put(quest, queststatus);
-        }
-        for (final Map.Entry<Integer, SkillEntry> qs : ct.Skills.entrySet()) {
-            ret.skills.put(SkillFactory.getSkill(qs.getKey()), qs.getValue());
-        }
-        ret.monsterbook = ct.monsterbook;
-        ret.inventory = (MapleInventory[]) ct.inventorys;
-        ret.BlessOfFairy_Origin = ct.BlessOfFairy;
-        ret.skillMacros = (SkillMacro[]) ct.skillmacro;
-        ret.petStore = ct.petStore;
-        ret.setKeyLayout(ct.keylayout);
-        ret.questinfo = ct.InfoQuest;
-        ret.savedLocations = ct.savedlocation;
-        ret.wishlist = ct.wishlist;
-        ret.rocks = ct.rocks;
-        ret.regrocks = ct.regrocks;
-        ret.buddylist.loadFromTransfer(ct.buddies);
-        // ret.lastfametime
-        // ret.lastmonthfameids
-        ret.keydown_skill = 0; // Keydown skill can't be brought over
-        ret.lastfametime = ct.lastfametime;
-        ret.lastmonthfameids = ct.famedcharacters;
-        ret.storage = (MapleStorage) ct.storage;
-        ret.cs = (CashShop) ct.cs;
-        client.setMapleId(ct.accountname);
-        ret.nexonPoint = ct.nexonPoint;
-        ret.maplePoint = ct.maplePoint;
-        ret.numClones = 0;
-        ret.mount = new MapleMount(ret, ct.mount_itemid, GameConstants.isKOC(ret.job) ? 10001004 : (GameConstants.isAran(ret.job) ? 20001004 : (GameConstants.isEvan(ret.job) ? 20011004 : 1004)), ct.mount_Fatigue, ct.mount_level, ct.mount_exp);
-
-        ret.stats.recalcLocalStats(true);
-
         return ret;
     }
 
@@ -4699,15 +4571,11 @@ public class MapleCharacter extends TacosCharacter {
 
         changeRemoval();
 
-        PlayerBuffStorage.addBuffsToStorage(getId(), getAllBuffs());
-        PlayerBuffStorage.addCooldownsToStorage(getId(), getCooldowns());
-        PlayerBuffStorage.addDiseaseToStorage(getId(), getAllDiseases());
-        OdinWorld.ChannelChange_Data(new CharacterTransfer(this), getId(), channel);
-
+        getClient().getWorld().addPlayer(this);
         getChannelServer().getPlayerStorage().deregisterPlayer(this);
         DQ_Accounts.updateLoginState(client, MapleClientState.CHANGE_CHANNEL);
 
-        client.SendPacket(ResCClientSocket.MigrateCommand(ch_server.getPort()));
+        client.SendPacket(ResCClientSocket.MigrateCommand(ch_server));
         saveToDB(false, false);
         getMap().removePlayer(this);
         client.setMigrating();

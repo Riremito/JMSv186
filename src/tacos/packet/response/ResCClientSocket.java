@@ -24,6 +24,7 @@ import tacos.config.Version;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
+import tacos.server.TacosServer;
 import tacos.tools.TacosTools;
 
 /**
@@ -107,11 +108,11 @@ public class ResCClientSocket {
     }
 
     // CClientSocket::OnMigrateCommand
-    public static MaplePacket MigrateCommand(int port) {
+    public static MaplePacket MigrateCommand(TacosServer server) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MigrateCommand);
         sp.Encode1(1);
         sp.Encode4(TacosTools.getGameServerIP());
-        sp.Encode2(port);
+        sp.Encode2(server.getPort());
 
         if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.KMST, 391) || ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode1(0);

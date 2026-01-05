@@ -19,6 +19,8 @@
 package tacos.server;
 
 import java.util.ArrayList;
+import odin.client.MapleCharacter;
+import tacos.debug.DebugLogger;
 
 /**
  *
@@ -50,6 +52,8 @@ public class TacosWorld {
     private int flag;
     private String event_desc;
     private ArrayList<Server_Game> channels = new ArrayList<>();
+    private Server_CashShop cashshop = null;
+    private ArrayList<MapleCharacter> player_migrating = new ArrayList<>();
 
     public TacosWorld(int id, String name, int flag, String event_desc) {
         this.id = id;
@@ -94,6 +98,43 @@ public class TacosWorld {
             }
         }
         return null;
+    }
+
+    public void setCashShop(Server_CashShop cashshop) {
+        this.cashshop = cashshop;
+    }
+
+    public Server_CashShop getCashShop() {
+        return this.cashshop;
+    }
+
+    public boolean addPlayer(MapleCharacter player) {
+        if (this.player_migrating.contains(player)) {
+            DebugLogger.DebugLog("addPlayer : NG.");
+            return false;
+        }
+        this.player_migrating.add(player);
+        return true;
+    }
+
+    public MapleCharacter findPlayer(int character_id) {
+        for (MapleCharacter chr_mig : this.player_migrating) {
+            if (chr_mig.getId() == character_id) {
+                return chr_mig;
+            }
+        }
+        DebugLogger.DebugLog("findPlayer : NG.");
+        return null;
+    }
+
+    public boolean removePlayer(MapleCharacter player) {
+        MapleCharacter chr_mig = findPlayer(player.getId());
+        if (chr_mig == null) {
+            DebugLogger.DebugLog("removePlayer : NG.");
+            return false;
+        }
+        this.player_migrating.remove(chr_mig);
+        return true;
     }
 
 }
