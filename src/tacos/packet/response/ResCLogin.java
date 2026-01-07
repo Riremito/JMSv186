@@ -34,6 +34,7 @@ import tacos.packet.response.data.DataCharacterData;
 import tacos.packet.response.data.DataGW_CharacterStat;
 import tacos.property.Property_World;
 import tacos.server.Server_Game;
+import tacos.server.TacosServer;
 import tacos.server.TacosWorld;
 import tacos.tools.TacosTools;
 
@@ -43,14 +44,13 @@ import tacos.tools.TacosTools;
  */
 public class ResCLogin {
 
-    // ゲームサーバーへ接続
     // CClientSocket::OnSelectCharacter
-    public static MaplePacket SelectCharacterResult(MapleClient client, int character_id) {
+    public static MaplePacket SelectCharacterResult(TacosServer game_server, int character_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectCharacterResult);
         sp.Encode1(0);
         sp.Encode1(0);
-        sp.Encode4(TacosTools.getGameServerIP());
-        sp.Encode2(Property_World.getPort() + client.getSelectedChannel());
+        sp.Encode4(TacosTools.getGameServerIP(game_server.getGlobalIP()));
+        sp.Encode2(game_server.getPort());
         sp.Encode4(character_id);
         sp.Encode1(0);
         sp.Encode4(0);

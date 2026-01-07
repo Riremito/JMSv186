@@ -128,6 +128,7 @@ public class Start {
         // login server
         Server_Login login_server = new Server_Login("Login");
         TacosServer.add(login_server);
+        login_server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
         login_server.run(TacosConstants.SERVER_LOCAL_IP, Property_Login.getPort(), new PacketHandler_Login(login_server));
         // game servers
         List<Server_Game> game_servers = Server_Game.init();

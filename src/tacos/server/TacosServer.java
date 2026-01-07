@@ -54,6 +54,7 @@ public class TacosServer {
 
     private String server_name;
     private String server_ip;
+    private String server_global_ip;
     private int server_port;
     private IoHandler server_io_handler;
     private IoServiceConfig server_service_config;
@@ -65,6 +66,10 @@ public class TacosServer {
 
     public TacosServer(String server_name) {
         this.server_name = server_name;
+    }
+
+    public void setGlobalIP(String server_global_ip) {
+        this.server_global_ip = server_global_ip;
     }
 
     public boolean run(String server_ip, int server_port, IoHandler ih) {
@@ -101,6 +106,10 @@ public class TacosServer {
 
     public String getIP() {
         return this.server_ip;
+    }
+
+    public String getGlobalIP() {
+        return this.server_global_ip;
     }
 
     public int getPort() {

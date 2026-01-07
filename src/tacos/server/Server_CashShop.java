@@ -64,6 +64,7 @@ public class Server_CashShop extends TacosServer {
     public static boolean init() {
         Server_CashShop server = new Server_CashShop("CashShop");
         TacosServer.add(server);
+        server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
         server.run(TacosConstants.SERVER_LOCAL_IP, Property_Shop.getPort(), new PacketHandler_CashShop(server));
         ServerOdinCashShop.set(server);
         server.world_id = 0;

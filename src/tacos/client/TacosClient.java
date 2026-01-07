@@ -23,6 +23,7 @@ import org.apache.mina.common.IoSession;
 import tacos.config.DeveloperMode;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
+import tacos.packet.response.ResCLogin;
 import tacos.server.Server_CashShop;
 import tacos.server.Server_Game;
 import tacos.server.Server_Login;
@@ -48,7 +49,6 @@ public class TacosClient extends BaseClient {
     // server info
     private boolean logged_in = false;
     private int loginAttempt = 0;
-    private boolean migrating = false;
     private int world = 0;
     private int selected_world = 0;
     private int selected_channel = 1;
@@ -112,6 +112,13 @@ public class TacosClient extends BaseClient {
 
     public int getChannelId() {
         return ((Server_Game) this.server).getChannel(); // from 1.
+    }
+
+    public void sendSelectCharacterResult(TacosServer game_server, int character_id) {
+        // send next server ip and port.
+        SendPacket(ResCLogin.SelectCharacterResult(game_server, character_id));
+        // stop sending/receiving packets.
+        closeSession();
     }
 
     public void setId(int id) {
@@ -186,15 +193,6 @@ public class TacosClient extends BaseClient {
 
     public void resetLoginAttempt() {
         this.loginAttempt = 0;
-    }
-
-    public boolean isMigrating() {
-        return this.migrating;
-    }
-
-    public void setMigrating() {
-        this.migrating = true;
-        setPlayer(null);
     }
 
     public MapleCharacter getPlayer() {

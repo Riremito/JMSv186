@@ -26,8 +26,6 @@ public class TacosConstants {
 
     // server setup.
     public static final String SERVER_LOCAL_IP = "127.0.0.1";
-
-    // game server info.
     public static final String SERVER_GLOBAL_IP = "127.0.0.1";
     public static final int SERVER_GLOBAL_IP_VALUE = 0x0100007F; // 127.0.0.1
 

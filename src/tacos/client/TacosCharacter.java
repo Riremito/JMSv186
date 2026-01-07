@@ -41,6 +41,7 @@ import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.packet.ops.OpsMovePathAttr;
+import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
@@ -50,6 +51,7 @@ import tacos.script.portal.FreeMarketPortal;
 import tacos.server.ServerOdinGame;
 import tacos.server.Server_CashShop;
 import tacos.server.Server_Game;
+import tacos.server.TacosServer;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -76,6 +78,14 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public void SendPacket(MaplePacket packet) {
         this.client.SendPacket(packet);
+    }
+
+    public void sendMigrateCommand(TacosServer server) {
+        // send next server ip and port.
+        SendPacket(ResCClientSocket.MigrateCommand(server));
+        // stop sending/receiving packets.
+        this.client.closeSession();
+        this.client.setPlayer(null);
     }
 
     public int getId() {

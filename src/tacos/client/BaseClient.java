@@ -42,6 +42,11 @@ public class BaseClient {
         this.session.write(packet);
     }
 
+    public void closeSession() {
+        this.session.suspendRead();
+        this.session.suspendWrite();
+    }
+
     public String getSessionIPAddress() {
         return this.session.getRemoteAddress().toString().split(":")[0];
     }

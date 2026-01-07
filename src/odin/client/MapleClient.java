@@ -111,7 +111,8 @@ public class MapleClient extends TacosClient {
             }
         }
         if (shutdown) {
-            setMigrating();
+            closeSession();
+            setPlayer(null);
             return true;
         }
         // dc

@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
-import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCStage;
 import odin.server.CashItemFactory;
 import odin.server.CashItemInfo;
@@ -134,10 +133,9 @@ public class ReqCCashShop {
         chr.getClient().getCashShop().getWorld().addMigratingPlayer(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
-            chr.SendPacket(ResCClientSocket.MigrateCommand(chr.getClient().getCashShop().getWorld().getChannelServer(chr.getChannel())));
+            chr.sendMigrateCommand(chr.getClient().getCashShop().getWorld().getChannelServer(chr.getChannel()));
         } finally {
             chr.saveToDB(false, true);
-            c.setMigrating();
         }
     }
 

@@ -187,11 +187,6 @@ public class PacketHandler extends IoHandlerAdapter {
 
             // client
             MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-            if (client.isMigrating()) {
-                log(session, "messageReceived : Migrating.");
-                return;
-            }
-
             ClientPacketHeader header = cp.DecodeHeader();
             if (!((IPacketHandler) this).OnPacket(client, header, cp)) {
                 DebugLogger.CPLog(cp);

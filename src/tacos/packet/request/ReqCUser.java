@@ -104,7 +104,6 @@ import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsUserEffect;
-import tacos.packet.response.ResCClientSocket;
 import tacos.script.TacosScriptNPC;
 
 /**
@@ -835,11 +834,10 @@ public class ReqCUser {
         chr.getClient().getWorld().addMigratingPlayer(chr);
         chr.getChannelServer().getPlayerStorage().deregisterPlayer(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
-        chr.SendPacket(ResCClientSocket.MigrateCommand(chr.getClient().getWorld().getCashShop()));
+        chr.sendMigrateCommand(chr.getClient().getWorld().getCashShop());
         chr.saveToDB(false, false);
         ExtraDB.saveData(chr);
         chr.getMap().removePlayer(chr);
-        c.setMigrating();
         return true;
     }
 

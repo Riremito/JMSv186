@@ -52,7 +52,7 @@ public class TacosTools {
 
     private static int GAME_SERVER_IP_VALUE_CACHE = 0;
 
-    public static int getGameServerIP() {
+    public static int getGameServerIP(String server_ip) {
         if (GAME_SERVER_IP_VALUE_CACHE != 0) {
             return GAME_SERVER_IP_VALUE_CACHE;
         }
@@ -68,7 +68,7 @@ public class TacosTools {
             return GAME_SERVER_IP_VALUE_CACHE;
         }
         // default mode.
-        GAME_SERVER_IP_VALUE_CACHE = getIPAddressValue(TacosConstants.SERVER_GLOBAL_IP);
+        GAME_SERVER_IP_VALUE_CACHE = getIPAddressValue(server_ip);
         return GAME_SERVER_IP_VALUE_CACHE;
     }
 }

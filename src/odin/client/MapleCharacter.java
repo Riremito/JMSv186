@@ -86,7 +86,6 @@ import tacos.packet.response.ResCField_MonsterCarnival;
 import tacos.packet.response.ResCTownPortalPool;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCUser_Pet.DeActivatedMsg;
-import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCSummonedPool;
@@ -4575,10 +4574,9 @@ public class MapleCharacter extends TacosCharacter {
         getChannelServer().getPlayerStorage().deregisterPlayer(this);
         DQ_Accounts.updateLoginState(client, MapleClientState.CHANGE_CHANNEL);
 
-        client.SendPacket(ResCClientSocket.MigrateCommand(ch_server));
+        sendMigrateCommand(ch_server);
         saveToDB(false, false);
         getMap().removePlayer(this);
-        client.setMigrating();
         return true;
     }
 
