@@ -45,6 +45,7 @@ public class BaseClient {
     public void closeSession() {
         this.session.suspendRead();
         this.session.suspendWrite();
+        // TODO : close session.
     }
 
     public String getSessionIPAddress() {
