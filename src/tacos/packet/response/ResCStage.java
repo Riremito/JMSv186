@@ -32,6 +32,7 @@ import tacos.packet.response.data.DataCWvsContext;
 import tacos.packet.response.data.DataCharacterData;
 import tacos.packet.response.struct.TestHelper;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.response.data.DataCS_COMMODITY;
 
 /**
  *
@@ -260,7 +261,7 @@ public class ResCStage {
                         sp.Encode4(0); // NotSaleCount
                     }
                 }
-                sp.EncodeBuffer(ResCCashShop.getModifiedData());
+                sp.EncodeBuffer(DataCS_COMMODITY.SetSaleInfo());
                 if (ServerConfig.JMS180orLater() && !Region.IsEMS()) { // X EMS v55
                     sp.Encode2(0); // non 0, Decode4, DecodeStr
                 }
@@ -269,7 +270,7 @@ public class ResCStage {
             sp.EncodeBuffer(ResCCashShop.getBestItems(), 1080);
             sp.Encode2(0); // CCashShop::DecodeStock
             sp.Encode2(0); // CCashShop::DecodeLimitGoods
-            if (Version.GreaterOrEqual(Region.GMS, 84)) {
+            if (Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode2(0);
             }
         }

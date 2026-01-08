@@ -81,27 +81,6 @@ public class ResCCashShop {
     LP_CashShopNoticeFreeCashItem
     LP_CashShopMemberShopResult
      */
-    public static byte[] getModifiedData() {
-        ServerPacket data = new ServerPacket();
-        //data.Encode2(0); // count
-        data.Encode2(1); // count
-        data.Encode4(50200133); // SN
-        // CS_COMMODITY::DecodeModifiedData
-        {
-            int flag = 0x01 | 0x02 | 0x04 | 0x0400;
-            if (ServerConfig.JMS147orLater() || Region.IsVMS() || Region.IsBMS() || Version.GreaterOrEqual(Region.GMS, 84)) {
-                data.Encode4(flag);
-            } else {
-                data.Encode2(flag);
-            }
-            data.Encode4(5062000); // 0x01 : itemid
-            data.Encode2(77); // 0x02 : count
-            data.Encode4(7777); // 0x04: price
-            data.Encode1(1); //0x0400 : OnSale
-        }
-        return data.get().getBytes();
-    }
-
     public static byte[] getDiscountRates() {
         ServerPacket data = new ServerPacket();
         data.Encode1(0); // count
