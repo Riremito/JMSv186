@@ -23,7 +23,6 @@ import odin.client.MapleClient;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
 import java.util.ArrayList;

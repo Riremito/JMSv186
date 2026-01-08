@@ -49,6 +49,7 @@ import tacos.server.TacosServer;
 import tacos.server.Server_CashShop;
 import tacos.server.Server_Game;
 import tacos.server.Server_Login;
+import tacos.server.Server_ITC;
 import test.ToolMan;
 
 /**
@@ -138,6 +139,8 @@ public class Start {
         }
         // cashshop server
         Server_CashShop.init();
+        // itc server
+        Server_ITC.init();
 
         RandomRewards.getInstance();
         MapleGuildRanking.getInstance().getRank();

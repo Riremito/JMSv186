@@ -40,6 +40,7 @@ import odin.handling.world.PartyOperation;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import java.util.List;
+import odin.server.MTSStorage;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCFuncKeyMappedMan;
@@ -48,6 +49,9 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ops.OpsCashItem;
+import tacos.packet.response.ResCCashShop;
+import tacos.packet.response.ResCStage;
 
 /**
  *
@@ -105,11 +109,31 @@ public class ReqCClientSocket {
     }
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket_CS_ITC(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_ITC(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: {
-                int character_id = cp.Decode4();
-                ReqCCashShop.EnterCS(character_id, c);
+                OnMigrateIn_ITC(cp, c);
+                return true;
+            }
+            case CP_AliveAck: {
+                c.recvPong();
+                return true;
+            }
+            case CP_SecurityPacket: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    // CClientSocket::ProcessPacket
+    public static boolean OnPacket_CS(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
+        switch (header) {
+            case CP_MigrateIn: {
+                OnMigrateIn_CS(cp, c);
                 return true;
             }
             case CP_AliveAck: {
@@ -132,6 +156,78 @@ public class ReqCClientSocket {
         }
         int character_id = cp.Decode4();
         EnterGameServer(c, character_id);
+        return true;
+    }
+
+    public static boolean OnMigrateIn_ITC(ClientPacket cp, MapleClient c) {
+        int character_id = cp.Decode4();
+        MapleCharacter chr = c.getITC().getWorld().findMigratingPlayer(character_id);
+        if (chr == null) {
+            c.loginFailed("OnMigrateIn_ITC 1.");
+            return false;
+        }
+        c.setMapleId(chr.getClient().getMapleId());
+        c.setNexonId(chr.getClient().getNexonId());
+        chr.setClient(c);
+        c.setPlayer(chr);
+        c.setId(chr.getAccountID());
+
+        if (!DQ_Accounts.checkLoginIP(c)) {
+            c.loginFailed("OnMigrateIn_ITC 2."); // Remote hack
+            return false;
+        }
+        final MapleClientState state = DQ_Accounts.getLoginState(c);
+        boolean allowLogin = false;
+        if (state == MapleClientState.LOGIN_SERVER_TRANSITION || state == MapleClientState.CHANGE_CHANNEL) {
+            allowLogin = true;
+        }
+        if (!allowLogin) {
+            c.loginFailed("OnMigrateIn_ITC 3.");
+            return false;
+        }
+
+        c.getITC().getWorld().removeMigratingPlayer(chr);
+
+        DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
+        chr.SendPacket(ResCStage.SetITC(chr));
+        ReqCITC.MTSUpdate(MTSStorage.getInstance().getCart(chr.getId()), c);
+        return true;
+    }
+
+    public static boolean OnMigrateIn_CS(ClientPacket cp, MapleClient c) {
+        int character_id = cp.Decode4();
+        MapleCharacter chr = c.getCashShop().getWorld().findMigratingPlayer(character_id);
+        if (chr == null) {
+            c.loginFailed("OnMigrateIn_CS 1.");
+            return false;
+        }
+        c.setMapleId(chr.getClient().getMapleId());
+        c.setNexonId(chr.getClient().getNexonId());
+        chr.setClient(c);
+        c.setPlayer(chr);
+        c.setId(chr.getAccountID());
+
+        if (!DQ_Accounts.checkLoginIP(c)) {
+            c.loginFailed("OnMigrateIn_CS 2."); // Remote hack
+            return false;
+        }
+        final MapleClientState state = DQ_Accounts.getLoginState(c);
+        boolean allowLogin = false;
+        if (state == MapleClientState.LOGIN_SERVER_TRANSITION || state == MapleClientState.CHANGE_CHANNEL) {
+            allowLogin = true;
+        }
+        if (!allowLogin) {
+            c.loginFailed("OnMigrateIn_CS 3.");
+            return false;
+        }
+
+        chr.getClient().getCashShop().getWorld().removeMigratingPlayer(chr);
+
+        DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
+        chr.SendPacket(ResCStage.SetCashShop(c));
+        chr.SendPacket(ResCCashShop.CashShopQueryCashResult(c.getPlayer()));
+        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_LoadLocker_Done, c));
+        ReqCCashShop.updateFreeCouponDate(c.getPlayer());
         return true;
     }
 

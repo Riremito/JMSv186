@@ -149,7 +149,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMigrateToCashShopRequest: {
-                if (!OnUserMigrateToCashShopRequest(c, chr, false)) {
+                if (!OnUserMigrateToCashShopRequest(c, chr)) {
                     chr.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
                 }
                 return true;
@@ -631,7 +631,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMigrateToITCRequest: {
-                if (!OnUserMigrateToCashShopRequest(c, chr, true)) {
+                if (!OnUserMigrateToITCRequest(c, chr)) {
                     chr.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_ITCSVR_DISCONNECTED));
                 }
                 return true;
@@ -699,7 +699,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnPacket_CS_ITC(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_ITC(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_UpdateScreenSetting: {
                 return true;
@@ -717,7 +717,36 @@ public class ReqCUser {
 
         switch (header) {
             case CP_UserTransferFieldRequest: {
-                ReqCCashShop.LeaveCS(c, chr);
+                OnUserTransferFieldRequest_ITC(chr);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean OnPacket_CS(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
+        switch (header) {
+            case CP_UpdateScreenSetting: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        MapleCharacter chr = c.getPlayer();
+
+        if (chr == null) {
+            DebugLogger.ErrorLog("character is not online.");
+            return false;
+        }
+
+        switch (header) {
+            case CP_UserTransferFieldRequest: {
+                OnUserTransferFieldRequest_CS(chr);
                 return true;
             }
             // アバターランダムボックスのオープン処理
@@ -808,6 +837,26 @@ public class ReqCUser {
         return chr.usePortal(isPortal, map_id_to, portal_name, revive_type);
     }
 
+    public static void OnUserTransferFieldRequest_ITC(MapleCharacter chr) {
+        chr.getClient().getITC().getWorld().addMigratingPlayer(chr);
+        DQ_Accounts.updateLoginState(chr.getClient(), MapleClientState.LOGIN_SERVER_TRANSITION);
+        try {
+            chr.sendMigrateCommand(chr.getClient().getITC().getWorld().getChannelServer(chr.getChannel()));
+        } finally {
+            chr.saveToDB(false, true);
+        }
+    }
+
+    public static void OnUserTransferFieldRequest_CS(MapleCharacter chr) {
+        chr.getClient().getCashShop().getWorld().addMigratingPlayer(chr);
+        DQ_Accounts.updateLoginState(chr.getClient(), MapleClientState.LOGIN_SERVER_TRANSITION);
+        try {
+            chr.sendMigrateCommand(chr.getClient().getCashShop().getWorld().getChannelServer(chr.getChannel()));
+        } finally {
+            chr.saveToDB(false, true);
+        }
+    }
+
     public static boolean OnUserTransferChannelRequest(ClientPacket cp, MapleCharacter chr) {
         int channel = cp.Decode1(); // from 0.
 
@@ -819,7 +868,7 @@ public class ReqCUser {
         return chr.changeChannel(channel + 1);
     }
 
-    public static boolean OnUserMigrateToCashShopRequest(MapleClient c, MapleCharacter chr, boolean mts) {
+    public static boolean OnUserMigrateToCashShopRequest(MapleClient c, MapleCharacter chr) {
         // temporary off
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             return false;
@@ -2448,6 +2497,28 @@ public class ReqCUser {
 
         DebugLogger.ErrorLog("OnWhisper : not coded " + operation);
         return false;
+    }
+
+    public static boolean OnUserMigrateToITCRequest(MapleClient c, MapleCharacter chr) {
+        // temporary off
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            return false;
+        }
+        if (!chr.isAlive()) {
+            return false;
+        }
+
+        DebugLogger.DebugLog("OnUserMigrateToITCRequest : " + chr.getWorld() + ", " + chr.getChannel());
+
+        chr.changeRemoval();
+        chr.getClient().getWorld().addMigratingPlayer(chr);
+        chr.getChannelServer().getPlayerStorage().deregisterPlayer(chr);
+        DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
+        chr.sendMigrateCommand(chr.getClient().getWorld().getITC());
+        chr.saveToDB(false, false);
+        ExtraDB.saveData(chr);
+        chr.getMap().removePlayer(chr);
+        return true;
     }
 
     private static boolean OnUserExpUpItemUseRequest(MapleCharacter chr, short nPOS, int nItemID) {

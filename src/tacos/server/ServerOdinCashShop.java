@@ -26,9 +26,14 @@ import odin.handling.channel.PlayerStorage;
 public class ServerOdinCashShop {
 
     private static Server_CashShop server_cs = null;
+    private static Server_ITC server_itc = null;
 
     public static void set(Server_CashShop server) {
         server_cs = server;
+    }
+
+    public static void setITC(Server_ITC server) {
+        server_itc = server;
     }
 
     public static final PlayerStorage getPlayerStorage() {
@@ -36,7 +41,7 @@ public class ServerOdinCashShop {
     }
 
     public static final PlayerStorage getPlayerStorageMTS() {
-        return server_cs.getPlayerStorageMTS();
+        return server_itc.getPlayerStorageMTS();
     }
 
     public static boolean isShutdown() {

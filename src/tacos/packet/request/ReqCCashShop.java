@@ -20,22 +20,18 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.constants.MapleClientState;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import tacos.shared.SharedDate;
 import tacos.wz.ids.DWI_Validation;
-import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
-import tacos.packet.response.ResCStage;
 import odin.server.CashItemFactory;
 import odin.server.CashItemInfo;
-import odin.server.MTSStorage;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.ClientPacketHeader;
 
@@ -92,56 +88,9 @@ public class ReqCCashShop {
         return false;
     }
 
-    public static void EnterCS(int playerid, MapleClient c) {
-        boolean mts = false;
-        MapleCharacter chr = c.getCashShop().getWorld().findMigratingPlayer(playerid);
-        c.setMapleId(chr.getClient().getMapleId());
-        c.setNexonId(chr.getClient().getNexonId());
-        chr.setClient(c);
-        c.setPlayer(chr);
-        c.setId(chr.getAccountID());
-
-        if (!DQ_Accounts.checkLoginIP(c)) {
-            c.loginFailed("EnterCS 2."); // Remote hack
-            return;
-        }
-        final MapleClientState state = DQ_Accounts.getLoginState(c);
-        boolean allowLogin = false;
-        if (state == MapleClientState.LOGIN_SERVER_TRANSITION || state == MapleClientState.CHANGE_CHANNEL) {
-            allowLogin = true;
-        }
-        if (!allowLogin) {
-            c.loginFailed("EnterCS 3.");
-            return;
-        }
-
-        chr.getClient().getCashShop().getWorld().removeMigratingPlayer(chr);
-
-        DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
-        if (mts) {
-            c.SendPacket(ResCStage.SetITC(chr));
-            ReqCITC.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
-        } else {
-            chr.SendPacket(ResCStage.SetCashShop(c));
-            chr.SendPacket(ResCCashShop.CashShopQueryCashResult(c.getPlayer()));
-            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_LoadLocker_Done, c));
-            updateFreeCouponDate(c.getPlayer());
-        }
-    }
-
-    public static void LeaveCS(MapleClient c, MapleCharacter chr) {
-        chr.getClient().getCashShop().getWorld().addMigratingPlayer(chr);
-        DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
-        try {
-            chr.sendMigrateCommand(chr.getClient().getCashShop().getWorld().getChannelServer(chr.getChannel()));
-        } finally {
-            chr.saveToDB(false, true);
-        }
-    }
-
     private static int FREE_COUPON_ITEM_ID = 5221000;
 
-    private static void updateFreeCouponDate(MapleCharacter chr) {
+    public static void updateFreeCouponDate(MapleCharacter chr) {
         IItem item = chr.getCashInventory().findItem(FREE_COUPON_ITEM_ID);
         if (item != null) {
             chr.SendPacket(ResCCashShop.FreeCouponDialog(true, SharedDate.getMagicalExpirationDate()));

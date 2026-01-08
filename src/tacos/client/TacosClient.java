@@ -26,6 +26,7 @@ import tacos.debug.DebugLogger;
 import tacos.packet.response.ResCLogin;
 import tacos.server.Server_CashShop;
 import tacos.server.Server_Game;
+import tacos.server.Server_ITC;
 import tacos.server.Server_Login;
 import tacos.server.TacosServer;
 import tacos.server.TacosWorld;
@@ -104,6 +105,10 @@ public class TacosClient extends BaseClient {
 
     public Server_Game getChannel() {
         return (Server_Game) this.server;
+    }
+
+    public Server_ITC getITC() {
+        return (Server_ITC) this.server;
     }
 
     public Server_CashShop getCashShop() {

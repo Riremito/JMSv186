@@ -53,6 +53,7 @@ public class TacosWorld {
     private String event_desc;
     private ArrayList<Server_Game> channels = new ArrayList<>();
     private Server_CashShop cashshop = null;
+    private Server_ITC itc = null;
     private ArrayList<MapleCharacter> player_migrating = new ArrayList<>();
 
     public TacosWorld(int id, String name, int flag, String event_desc) {
@@ -106,6 +107,14 @@ public class TacosWorld {
 
     public Server_CashShop getCashShop() {
         return this.cashshop;
+    }
+
+    public void setITC(Server_ITC itc) {
+        this.itc = itc;
+    }
+
+    public Server_ITC getITC() {
+        return this.itc;
     }
 
     public boolean addMigratingPlayer(MapleCharacter player) {

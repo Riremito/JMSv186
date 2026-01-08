@@ -5013,7 +5013,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public boolean EnterPointShop() {
-        ReqCUser.OnUserMigrateToCashShopRequest(client, this, false);
+        ReqCUser.OnUserMigrateToCashShopRequest(client, this);
         return true;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2026 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@ package tacos.network;
 import odin.client.MapleClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
-import tacos.packet.request.ReqCCashShop;
 import tacos.packet.request.ReqCClientSocket;
+import tacos.packet.request.ReqCITC;
 import tacos.packet.request.ReqCUser;
 import tacos.server.TacosServer;
 
@@ -30,22 +30,22 @@ import tacos.server.TacosServer;
  *
  * @author Riremito
  */
-public class PacketHandler_CashShop extends PacketHandler implements IPacketHandler {
+public class PacketHandler_ITC extends PacketHandler implements IPacketHandler {
 
-    public PacketHandler_CashShop(TacosServer server) {
+    public PacketHandler_ITC(TacosServer server) {
         super(server, -1);
     }
 
     @Override
     public boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) throws Exception {
         if (header.between(ClientPacketHeader.CP_BEGIN_SOCKET, ClientPacketHeader.CP_END_SOCKET)) {
-            return ReqCClientSocket.OnPacket_CS(c, header, cp);
+            return ReqCClientSocket.OnPacket_ITC(c, header, cp);
         }
         if (header.between(ClientPacketHeader.CP_BEGIN_USER, ClientPacketHeader.CP_END_USER)) {
-            return ReqCUser.OnPacket_CS(c, header, cp);
+            return ReqCUser.OnPacket_ITC(c, header, cp);
         }
-        if (header.between(ClientPacketHeader.CP_BEGIN_CASHSHOP, ClientPacketHeader.CP_END_CASHSHOP)) {
-            return ReqCCashShop.OnPacket(c, header, cp);
+        if (header.between(ClientPacketHeader.CP_BEGIN_ITC, ClientPacketHeader.CP_END_ITC)) {
+            return ReqCITC.OnPacket(c, header, cp);
         }
         return false;
     }
