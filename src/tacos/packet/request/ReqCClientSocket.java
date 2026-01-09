@@ -62,10 +62,6 @@ public class ReqCClientSocket {
     // CClientSocket::ProcessPacket
     public static boolean OnPacket_Login(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
-            case CP_MigrateIn: {
-                OnMigrateIn(cp, c);
-                return true;
-            }
             case CP_AliveAck: {
                 c.recvPong();
                 return true;
@@ -93,9 +89,6 @@ public class ReqCClientSocket {
             }
             case CP_AliveAck: {
                 c.recvPong();
-                return true;
-            }
-            case CP_ExceptionLog: {
                 return true;
             }
             case CP_SecurityPacket: {

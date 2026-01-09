@@ -29,10 +29,8 @@ import java.util.Collection;
 import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
-import odin.handling.world.CharacterTransfer;
 import odin.handling.world.OdinWorld;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import odin.server.Timer.PingTimer;
 
 public class PlayerStorage {
 
@@ -42,13 +40,10 @@ public class PlayerStorage {
     private final Lock rL2 = mutex2.readLock(), wL2 = mutex2.writeLock();
     private final Map<String, MapleCharacter> nameToChar = new HashMap<String, MapleCharacter>();
     private final Map<Integer, MapleCharacter> idToChar = new HashMap<Integer, MapleCharacter>();
-    private final Map<Integer, CharacterTransfer> PendingCharacter = new HashMap<Integer, CharacterTransfer>();
     private int channel;
 
     public PlayerStorage(int channel) {
         this.channel = channel;
-        // Prune once every 15 minutes
-        PingTimer.getInstance().schedule(new PersistingTask(), 900000);
     }
 
     public final Collection<MapleCharacter> getAllCharacters() {
@@ -69,15 +64,6 @@ public class PlayerStorage {
             wL.unlock();
         }
         OdinWorld.Find.register(chr.getId(), chr.getName(), channel);
-    }
-
-    public final void registerPendingPlayer(final CharacterTransfer chr, final int playerid) {
-        wL2.lock();
-        try {
-            PendingCharacter.put(playerid, chr);//new Pair(System.currentTimeMillis(), chr));
-        } finally {
-            wL2.unlock();
-        }
     }
 
     public final void deregisterPlayer(final MapleCharacter chr) {
@@ -102,29 +88,6 @@ public class PlayerStorage {
         OdinWorld.Find.forceDeregister(idz, namez);
     }
 
-    public final void deregisterPendingPlayer(final int charid) {
-        wL2.lock();
-        try {
-            PendingCharacter.remove(charid);
-        } finally {
-            wL2.unlock();
-        }
-    }
-
-    public final CharacterTransfer getPendingCharacter(final int charid) {
-        final CharacterTransfer toreturn;
-        rL2.lock();
-        try {
-            toreturn = PendingCharacter.get(charid);//.right;
-        } finally {
-            rL2.unlock();
-        }
-        if (toreturn != null) {
-            deregisterPendingPlayer(charid);
-        }
-        return toreturn;
-    }
-
     public final MapleCharacter getCharacterByName(final String name) {
         rL.lock();
         try {
@@ -134,15 +97,6 @@ public class PlayerStorage {
         }
     }
 
-    /*
-    public MapleCharacter getPendingCharacter(int id) {
-    for (MapleCharacter chr : pendingCharacter) {
-    if (chr.getId() == id) {
-    return chr;
-    }
-    }
-    return null;
-    }*/
     public final MapleCharacter getCharacterById(final int id) {
         rL.lock();
         try {
@@ -241,27 +195,6 @@ public class PlayerStorage {
             }
         } finally {
             rL.unlock();
-        }
-    }
-
-    public class PersistingTask implements Runnable {
-
-        @Override
-        public void run() {
-            wL2.lock();
-            try {
-                final long currenttime = System.currentTimeMillis();
-                final Iterator<Map.Entry<Integer, CharacterTransfer>> itr = PendingCharacter.entrySet().iterator();
-
-                while (itr.hasNext()) {
-                    if (currenttime - itr.next().getValue().TranferTime > 40000) { // 40 sec
-                        itr.remove();
-                    }
-                }
-                PingTimer.getInstance().schedule(new PersistingTask(), 900000);
-            } finally {
-                wL2.unlock();
-            }
         }
     }
 }

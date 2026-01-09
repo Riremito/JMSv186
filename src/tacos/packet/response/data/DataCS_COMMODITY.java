@@ -66,6 +66,11 @@ public class DataCS_COMMODITY {
             int nItemId = MapleDataTool.getIntConvert("ItemId", field, 0);
             int nSN = MapleDataTool.getIntConvert("SN", field, 0);
             int bOnSale = MapleDataTool.getIntConvert("OnSale", field, 0);
+            /*
+            if (nItemId / 1000000 == 1) {
+                continue;
+            }
+             */
             if (bOnSale != 0) {
                 CS_COMMODITY onsale = new CS_COMMODITY();
                 onsale.nSN = nSN;
