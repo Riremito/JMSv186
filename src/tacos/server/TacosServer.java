@@ -63,6 +63,7 @@ public class TacosServer {
     private boolean finishedShutdown = true;
     private boolean adminOnly = false;
     private boolean server_status = false; // online or not.
+    private TacosServerType server_type;
 
     public TacosServer(String server_name) {
         this.server_name = server_name;
@@ -129,6 +130,14 @@ public class TacosServer {
 
     public boolean isAdminOnly() {
         return this.adminOnly;
+    }
+
+    public TacosServerType getType() {
+        return this.server_type;
+    }
+
+    protected final void setType(TacosServerType server_type) {
+        this.server_type = server_type;
     }
 
 }

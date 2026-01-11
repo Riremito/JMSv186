@@ -44,7 +44,4 @@ public class ServerOdinCashShop {
         return server_itc.getPlayerStorageMTS();
     }
 
-    public static boolean isShutdown() {
-        return server_cs.isShutdown();
-    }
 }

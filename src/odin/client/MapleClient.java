@@ -112,13 +112,11 @@ public class MapleClient extends TacosClient {
         }
         if (shutdown) {
             closeSession();
-            setPlayer(null);
             return true;
         }
         // dc
         if (getPlayer() != null) {
             getPlayer().disconnect(RemoveInChannelServer, fromCS);
-            setPlayer(null);
         }
         if (!serverTransition) {
             DQ_Accounts.updateLoginState(this, MapleClientState.LOGIN_NOTLOGGEDIN);

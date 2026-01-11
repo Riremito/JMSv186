@@ -19,6 +19,7 @@
 package tacos.network;
 
 import java.util.concurrent.ThreadPoolExecutor;
+import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
@@ -148,6 +149,10 @@ public class PacketHandler extends IoHandlerAdapter {
         if (client != null) {
             try {
                 client.disconnect(true, false);
+                MapleCharacter chr = client.getPlayer();
+                if (chr != null) {
+                    client.setPlayer(null);
+                }
             } finally {
                 session.close();
                 session.removeAttribute(MapleClient.CLIENT_KEY);

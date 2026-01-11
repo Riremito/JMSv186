@@ -35,6 +35,7 @@ public class Server_Login extends TacosServer {
 
     public Server_Login(String server_name) {
         super(server_name);
+        setType(TacosServerType.LOGIN_SERVER);
     }
 
     public void addGameServer(Server_Game game_server) {

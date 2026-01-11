@@ -838,20 +838,20 @@ public class ReqCUser {
     }
 
     public static void OnUserTransferFieldRequest_ITC(MapleCharacter chr) {
-        chr.getClient().getITC().getWorld().addMigratingPlayer(chr);
+        chr.getWorld().addMigratingPlayer(chr);
         DQ_Accounts.updateLoginState(chr.getClient(), MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
-            chr.sendMigrateCommand(chr.getClient().getITC().getWorld().getChannelServer(chr.getChannel()));
+            chr.sendMigrateCommand(chr.getWorld().getChannelServer(chr.getChannelId()));
         } finally {
             chr.saveToDB(false, true);
         }
     }
 
     public static void OnUserTransferFieldRequest_CS(MapleCharacter chr) {
-        chr.getClient().getCashShop().getWorld().addMigratingPlayer(chr);
+        chr.getWorld().addMigratingPlayer(chr);
         DQ_Accounts.updateLoginState(chr.getClient(), MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
-            chr.sendMigrateCommand(chr.getClient().getCashShop().getWorld().getChannelServer(chr.getChannel()));
+            chr.sendMigrateCommand(chr.getWorld().getChannelServer(chr.getChannelId()));
         } finally {
             chr.saveToDB(false, true);
         }
@@ -877,13 +877,13 @@ public class ReqCUser {
             return false;
         }
 
-        DebugLogger.DebugLog("OnUserMigrateToCashShopRequest : " + chr.getWorld() + ", " + chr.getChannel());
+        DebugLogger.DebugLog("OnUserMigrateToCashShopRequest : " + chr.getWorldId() + ", " + chr.getChannelId());
 
         chr.changeRemoval();
-        chr.getClient().getWorld().addMigratingPlayer(chr);
+        chr.getWorld().addMigratingPlayer(chr);
         chr.getChannelServer().getPlayerStorage().deregisterPlayer(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
-        chr.sendMigrateCommand(chr.getClient().getWorld().getCashShop());
+        chr.sendMigrateCommand(chr.getWorld().getCashShop());
         chr.saveToDB(false, false);
         ExtraDB.saveData(chr);
         chr.getMap().removePlayer(chr);
@@ -2508,13 +2508,13 @@ public class ReqCUser {
             return false;
         }
 
-        DebugLogger.DebugLog("OnUserMigrateToITCRequest : " + chr.getWorld() + ", " + chr.getChannel());
+        DebugLogger.DebugLog("OnUserMigrateToITCRequest : " + chr.getWorldId() + ", " + chr.getChannelId());
 
         chr.changeRemoval();
-        chr.getClient().getWorld().addMigratingPlayer(chr);
+        chr.getWorld().addMigratingPlayer(chr);
         chr.getChannelServer().getPlayerStorage().deregisterPlayer(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
-        chr.sendMigrateCommand(chr.getClient().getWorld().getITC());
+        chr.sendMigrateCommand(chr.getWorld().getITC());
         chr.saveToDB(false, false);
         ExtraDB.saveData(chr);
         chr.getMap().removePlayer(chr);

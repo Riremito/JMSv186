@@ -24,9 +24,7 @@ import odin.client.inventory.MaplePet;
 import tacos.wz.data.ItemWz;
 import tacos.database.DatabaseConnection;
 import tacos.network.MaplePacket;
-import tacos.server.ServerOdinCashShop;
 import tacos.server.ServerOdinGame;
-import odin.handling.channel.PlayerStorage;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleBBSThread;
@@ -73,15 +71,6 @@ public class OdinWorld extends TacosWorld {
             }
         }
         return false;
-    }
-
-    public static PlayerStorage getStorage(int channel) {
-        if (channel == -20) {
-            return ServerOdinCashShop.getPlayerStorageMTS();
-        } else if (channel == -10) {
-            return ServerOdinCashShop.getPlayerStorage();
-        }
-        return ServerOdinGame.getInstance(channel).getPlayerStorage();
     }
 
     public static class Party {
@@ -735,7 +724,7 @@ public class OdinWorld extends TacosWorld {
                 // System.out.println("ERROR: cannot find player in given channel");
                 return;
             }
-            MapleCharacter mc = getStorage(ch).getCharacterById(cid);
+            MapleCharacter mc = null;
             if (mc == null) {
                 return;
             }
@@ -1223,7 +1212,7 @@ public class OdinWorld extends TacosWorld {
                 // System.out.println("ERROR: cannot find player in given channel");
                 return;
             }
-            MapleCharacter mc = getStorage(ch).getCharacterById(cid);
+            MapleCharacter mc = null;
             if (mc == null) {
                 return;
             }

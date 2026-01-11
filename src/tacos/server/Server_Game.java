@@ -44,6 +44,7 @@ public class Server_Game extends TacosServer {
 
     public Server_Game(String server_name, int channel, int language) {
         super(server_name);
+        setType(TacosServerType.GAME_SERVER);
         this.channel = channel; // from 1.
         this.language = language; // EMS
         this.mapFactory = new MapleMapFactory();

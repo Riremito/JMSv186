@@ -100,19 +100,24 @@ public class TacosClient extends BaseClient {
     }
 
     public TacosWorld getWorld() {
-        return ((Server_Game) this.server).getWorld();
-    }
-
-    public Server_Game getChannel() {
-        return (Server_Game) this.server;
-    }
-
-    public Server_ITC getITC() {
-        return (Server_ITC) this.server;
-    }
-
-    public Server_CashShop getCashShop() {
-        return (Server_CashShop) this.server;
+        switch (this.server.getType()) {
+            case LOGIN_SERVER: {
+                return null;
+            }
+            case GAME_SERVER: {
+                return ((Server_Game) this.server).getWorld();
+            }
+            case ITC_SERVER: {
+                return ((Server_ITC) this.server).getWorld();
+            }
+            case CASHSHOP_SERVER: {
+                return ((Server_CashShop) this.server).getWorld();
+            }
+            default: {
+                break;
+            }
+        }
+        return null;
     }
 
     public int getChannelId() {

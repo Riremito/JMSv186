@@ -142,7 +142,6 @@ import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
-import tacos.server.ServerOdinCashShop;
 import tacos.server.Server_Game;
 import tacos.server.map.TacosPortal;
 
@@ -379,7 +378,7 @@ public class MapleCharacter extends TacosCharacter {
             ret.accountid = rs.getInt("accountid");
             ret.dwPosMap = rs.getInt("map");
             ret.nPortal = rs.getByte("spawnpoint");
-            ret.world = rs.getByte("world");
+            ret.world_id = rs.getByte("world");
             ret.guildid = rs.getInt("guildid");
             ret.guildrank = rs.getByte("guildrank");
             ret.allianceRank = rs.getByte("allianceRank");
@@ -4563,14 +4562,14 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public boolean changeChannel(int channel) {
-        Server_Game ch_server = getChannelServer().getWorld().getChannelServer(channel);
+        Server_Game ch_server = getWorld().getChannelServer(channel);
         if (ch_server == null || channel == client.getChannelId()) {
             return false;
         }
 
         changeRemoval();
 
-        getClient().getWorld().addMigratingPlayer(this);
+        getWorld().addMigratingPlayer(this);
         getChannelServer().getPlayerStorage().deregisterPlayer(this);
         DQ_Accounts.updateLoginState(client, MapleClientState.CHANGE_CHANNEL);
 
@@ -5400,10 +5399,6 @@ public class MapleCharacter extends TacosCharacter {
             } catch (final Exception e) {
                 e.printStackTrace();
                 FileoutputUtil.outputFileError(FileoutputUtil.Acc_Stuck, e);
-            } finally {
-                if (RemoveInChannelServer && ch > 0) {
-                    ServerOdinCashShop.getPlayerStorage().deregisterPlayer(idz, namez);
-                }
             }
         }
 

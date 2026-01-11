@@ -35,6 +35,7 @@ public class Server_ITC extends TacosServer {
 
     public Server_ITC(String server_name) {
         super(server_name);
+        setType(TacosServerType.ITC_SERVER);
 
         this.playersMTS = new PlayerStorage(-20);
     }

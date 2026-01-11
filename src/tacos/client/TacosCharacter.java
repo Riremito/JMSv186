@@ -49,9 +49,9 @@ import tacos.packet.response.wrapper.ResWrapper;
 import tacos.script.portal.ArdentmillPortal;
 import tacos.script.portal.FreeMarketPortal;
 import tacos.server.ServerOdinGame;
-import tacos.server.Server_CashShop;
 import tacos.server.Server_Game;
 import tacos.server.TacosServer;
+import tacos.server.TacosWorld;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -62,8 +62,8 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     protected MapleClient client;
     protected int id;
-    protected int world = 0;
-    protected int channel = 0;
+    protected int world_id = 0;
+    protected int channel_id = 0;
     protected MapleMap map;
     protected int dwPosMap;
     protected int nPortal;
@@ -85,31 +85,30 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         SendPacket(ResCClientSocket.MigrateCommand(server));
         // stop sending/receiving packets.
         this.client.closeSession();
-        this.client.setPlayer(null);
     }
 
     public int getId() {
         return this.id;
     }
 
+    public TacosWorld getWorld() {
+        return this.client.getWorld();
+    }
+
     public Server_Game getChannelServer() {
         return this.client.getChannelServer();
     }
 
-    public Server_CashShop getCashShopServer() {
-        return this.client.getCashShopServer();
+    public int getWorldId() {
+        return this.world_id;
     }
 
-    public int getWorld() {
-        return this.world;
+    public int getChannelId() {
+        return this.channel_id;
     }
 
-    public int getChannel() {
-        return this.channel;
-    }
-
-    public void setChannel(int channel) {
-        this.channel = channel;
+    public void setChannelId(int channel) {
+        this.channel_id = channel;
     }
 
     public int getViewRange() {

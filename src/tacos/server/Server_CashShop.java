@@ -34,7 +34,7 @@ public class Server_CashShop extends TacosServer {
 
     public Server_CashShop(String server_name) {
         super(server_name);
-
+        setType(TacosServerType.CASHSHOP_SERVER);
         this.players = new PlayerStorage(-10);
     }
 

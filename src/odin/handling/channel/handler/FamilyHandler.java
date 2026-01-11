@@ -100,8 +100,10 @@ public class FamilyHandler {
                         if (chr == -1) {
                             continue; //STOP WTF?! take reps though..
                         }
-                        MapleCharacter chrr = OdinWorld.getStorage(chr).getCharacterById(chrz.getId());
-                        entry.applyTo(chrr);
+                        MapleCharacter chrr = null;
+                        if (chrr != null) {
+                            entry.applyTo(chrr);
+                        }
                         //chrr.getClient().getSession().write(FamilyPacket.familyBuff(entry.type, type, entry.effect, entry.duration*60000));
                     }
                 }

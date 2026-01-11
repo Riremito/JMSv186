@@ -82,8 +82,8 @@ public class ReqCClientSocket {
     // CClientSocket::ProcessPacket
     public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
-            case CP_MigrateIn: // Enter Game Server (Login)
-            {
+            case CP_MigrateIn: {
+                // enter game server, change channel, leave cs/mts.
                 OnMigrateIn(cp, c);
                 return true;
             }
@@ -105,6 +105,7 @@ public class ReqCClientSocket {
     public static boolean OnPacket_ITC(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: {
+                // enter mts.
                 OnMigrateIn_ITC(cp, c);
                 return true;
             }
@@ -126,6 +127,7 @@ public class ReqCClientSocket {
     public static boolean OnPacket_CS(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: {
+                // enter cashshop.
                 OnMigrateIn_CS(cp, c);
                 return true;
             }
@@ -155,7 +157,7 @@ public class ReqCClientSocket {
         ExtraDB.loadData(chr);
         c.setPlayer(chr);
         c.setId(chr.getAccountID());
-        chr.setChannel(c.getChannelServer().getChannel());
+        chr.setChannelId(c.getChannelServer().getChannel());
 
         if (transfer != null) {
             c.setMapleId(transfer.getClient().getMapleId());
@@ -305,12 +307,13 @@ public class ReqCClientSocket {
             // Change Channel OK
             return true;
         }
+
         return true;
     }
 
     public static boolean OnMigrateIn_ITC(ClientPacket cp, MapleClient c) {
         int character_id = cp.Decode4();
-        MapleCharacter chr = c.getITC().getWorld().findMigratingPlayer(character_id);
+        MapleCharacter chr = c.getWorld().findMigratingPlayer(character_id);
         if (chr == null) {
             c.loginFailed("OnMigrateIn_ITC 1.");
             return false;
@@ -335,7 +338,7 @@ public class ReqCClientSocket {
             return false;
         }
 
-        c.getITC().getWorld().removeMigratingPlayer(chr);
+        c.getWorld().removeMigratingPlayer(chr);
 
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         chr.SendPacket(ResCStage.SetITC(chr));
@@ -345,7 +348,7 @@ public class ReqCClientSocket {
 
     public static boolean OnMigrateIn_CS(ClientPacket cp, MapleClient c) {
         int character_id = cp.Decode4();
-        MapleCharacter chr = c.getCashShop().getWorld().findMigratingPlayer(character_id);
+        MapleCharacter chr = c.getWorld().findMigratingPlayer(character_id);
         if (chr == null) {
             c.loginFailed("OnMigrateIn_CS 1.");
             return false;
@@ -370,7 +373,7 @@ public class ReqCClientSocket {
             return false;
         }
 
-        chr.getClient().getCashShop().getWorld().removeMigratingPlayer(chr);
+        chr.getWorld().removeMigratingPlayer(chr);
 
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         chr.SendPacket(ResCStage.SetCashShop(c));
