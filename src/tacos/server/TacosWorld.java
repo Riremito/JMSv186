@@ -156,7 +156,7 @@ public class TacosWorld {
             }
         }
         // itc
-        player = this.itc.getPlayerStorageMTS().getCharacterByName(player_name);
+        player = this.itc.getPlayerStorage().getCharacterByName(player_name);
         if (player != null) {
             return player;
         }

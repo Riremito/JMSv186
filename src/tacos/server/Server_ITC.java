@@ -31,18 +31,18 @@ import tacos.property.Property_Shop;
 public class Server_ITC extends TacosServer {
 
     private int world_id;
-    private PlayerStorage playersMTS;
+    private PlayerStorage players;
 
     public Server_ITC(String server_name) {
         super(server_name);
         setType(TacosServerType.ITC_SERVER);
 
-        this.playersMTS = new PlayerStorage(-20);
+        this.players = new PlayerStorage(-20);
     }
 
     @Override
     public void shutdown() {
-        this.playersMTS.disconnectAll();
+        this.players.disconnectAll();
         MTSStorage.getInstance().saveBuyNow(true);
         super.shutdown();
     }
@@ -51,8 +51,8 @@ public class Server_ITC extends TacosServer {
         return TacosWorld.find(this.world_id);
     }
 
-    public PlayerStorage getPlayerStorageMTS() {
-        return this.playersMTS;
+    public PlayerStorage getPlayerStorage() {
+        return this.players;
     }
 
     public static boolean init() {

@@ -183,7 +183,7 @@ public class DebugCommand {
                 {
                     String msg = world.getITC().getName() + " : ";
                     String player_names = "";
-                    for (MapleCharacter player : world.getITC().getPlayerStorageMTS().getAllCharacters()) {
+                    for (MapleCharacter player : world.getITC().getPlayerStorage().getAllCharacters()) {
                         if (player_names.length() != 0) {
                             player_names += ", ";
                         }

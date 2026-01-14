@@ -837,7 +837,7 @@ public class ReqCUser {
 
     public static void OnUserTransferFieldRequest_ITC(MapleCharacter chr) {
         chr.getWorld().addMigratingPlayer(chr);
-        chr.getWorld().getITC().getPlayerStorageMTS().deregisterPlayer(chr);
+        chr.getWorld().getITC().getPlayerStorage().deregisterPlayer(chr);
         DQ_Accounts.updateLoginState(chr.getClient(), MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
             chr.sendMigrateCommand(chr.getWorld().getChannelServer(chr.getChannelId()));
