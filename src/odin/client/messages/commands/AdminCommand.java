@@ -462,48 +462,6 @@ public class AdminCommand {
         }
     }
 
-    public static class DropRate extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            if (splitted.length > 1) {
-                final int rate = Integer.parseInt(splitted[1]);
-                if (splitted.length > 2 && splitted[2].equalsIgnoreCase("all")) {
-                    for (ServerOdinGame cserv : ServerOdinGame.getAllInstances()) {
-                        cserv.setDropRate(rate);
-                    }
-                } else {
-                    c.getOdinChannelServer().setDropRate(rate);
-                }
-                c.getPlayer().dropMessage(6, "Drop Rate has been changed to " + rate + "x");
-            } else {
-                c.getPlayer().dropMessage(6, "Syntax: !droprate <number> [all]");
-            }
-            return 1;
-        }
-    }
-
-    public static class MesoRate extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            if (splitted.length > 1) {
-                final int rate = Integer.parseInt(splitted[1]);
-                if (splitted.length > 2 && splitted[2].equalsIgnoreCase("all")) {
-                    for (ServerOdinGame cserv : ServerOdinGame.getAllInstances()) {
-                        cserv.setMesoRate(rate);
-                    }
-                } else {
-                    c.getOdinChannelServer().setMesoRate(rate);
-                }
-                c.getPlayer().dropMessage(6, "Meso Rate has been changed to " + rate + "x");
-            } else {
-                c.getPlayer().dropMessage(6, "Syntax: !mesorate <number> [all]");
-            }
-            return 1;
-        }
-    }
-
     public static class ListSquads extends CommandExecute {
 
         @Override

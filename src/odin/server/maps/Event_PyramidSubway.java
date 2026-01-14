@@ -197,8 +197,8 @@ public class Event_PyramidSubway {
         }
     }
 
-    public final void succeed(final MapleCharacter c) {
-        final MapleQuestStatus record = c.getQuestNAdd(MapleQuest.getInstance(type == -1 ? 7662 : 7760));
+    public final void succeed(final MapleCharacter player) {
+        final MapleQuestStatus record = player.getQuestNAdd(MapleQuest.getInstance(type == -1 ? 7662 : 7760));
         String data = record.getCustomData();
         if (data == null) {
             record.setCustomData("0");
@@ -315,12 +315,12 @@ public class Event_PyramidSubway {
         }
         int exp = 0;
         if (rank < 4) {
-            exp = (((kill * 2) + (cool * 10)) + pt) * c.getClient().getOdinChannelServer().getExpRate();
-            c.gainExp(exp, true, false, false);
+            exp = (((kill * 2) + (cool * 10)) + pt) * player.getChannelServer().getExpRate();
+            player.gainExp(exp, true, false, false);
         }
-        c.getClient().getSession().write(ResWrapper.showEffect("killing/clear"));
-        c.getClient().getSession().write(ResCField_MassacreResult.sendPyramidResult(rank, exp));
-        dispose(c);
+        player.getClient().getSession().write(ResWrapper.showEffect("killing/clear"));
+        player.getClient().getSession().write(ResCField_MassacreResult.sendPyramidResult(rank, exp));
+        dispose(player);
     }
 
     public final void fail(final MapleCharacter c) {

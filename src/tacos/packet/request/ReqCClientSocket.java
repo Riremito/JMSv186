@@ -291,7 +291,7 @@ public class ReqCClientSocket {
             chr.SendPacket(ResCClientSocket.AuthenCodeChanged());
         }
         // 上部スライドメッセージ
-        chr.SendPacket(ResWrapper.BroadCastMsgSlide(channel.getServerMessage()));
+        chr.SendPacket(ResWrapper.BroadCastMsgSlide(chr.getChannelServer().getServerMessage()));
         // [other players]
         // your pet
         // [entering map]

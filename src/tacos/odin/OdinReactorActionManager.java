@@ -31,7 +31,6 @@ import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
-import tacos.server.ServerOdinGame;
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.MapleItemInformationProvider;
@@ -99,7 +98,7 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
         for (final ReactorDropEntry d : items) {
             if (d.itemId == 0) {
                 range = maxMeso - minMeso;
-                mesoDrop = Randomizer.nextInt(range) + minMeso * ServerOdinGame.getInstance(getClient().getChannelId()).getMesoRate();
+                mesoDrop = Randomizer.nextInt(range) + minMeso * getClient().getPlayer().getChannelServer().getMesoRate();
                 reactor.getMap().spawnMesoDrop(mesoDrop, dropPos, reactor, getPlayer(), false, (byte) 0);
             } else {
                 IItem drop;

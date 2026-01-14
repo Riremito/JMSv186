@@ -206,6 +206,17 @@ public class DebugCommand {
                 }
                 return true;
             }
+            case "/msg": {
+                Server_Game srv_channel = chr.getChannelServer();
+                if (splitted.length < 2) {
+                    srv_channel.setServerMessage("");
+                    srv_channel.broadcastPacket(ResWrapper.BroadCastMsgSlide(srv_channel.getServerMessage()));
+                    return true;
+                }
+                srv_channel.setServerMessage(splitted[1]);
+                srv_channel.broadcastPacket(ResWrapper.BroadCastMsgSlide(srv_channel.getServerMessage()));
+                return true;
+            }
             case "/shutdown": {
                 // CTRL + C & Y
                 return true;

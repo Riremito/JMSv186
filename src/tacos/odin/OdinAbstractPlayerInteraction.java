@@ -605,7 +605,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void gainExpR(int gain) {
-        client.getPlayer().gainExp(gain * client.getOdinChannelServer().getExpRate(), true, true, true);
+        client.getPlayer().gainExp(gain * client.getPlayer().getChannelServer().getExpRate(), true, true, true);
     }
 
     public final void givePartyItems(final int id, final short quantity, final List<MapleCharacter> party) {
@@ -639,19 +639,19 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void givePartyExp(final int amount, final List<MapleCharacter> party) {
         for (final MapleCharacter chr : party) {
-            chr.gainExp(amount * client.getOdinChannelServer().getExpRate(), true, true, true);
+            chr.gainExp(amount * chr.getChannelServer().getExpRate(), true, true, true);
         }
     }
 
     public final void givePartyExp(final int amount) {
         if (getPlayer().getParty() == null || getPlayer().getParty().getMembers().size() == 1) {
-            gainExp(amount * client.getOdinChannelServer().getExpRate());
+            gainExp(amount * client.getPlayer().getChannelServer().getExpRate());
             return;
         }
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
             final MapleCharacter curChar = getMap().getCharacterById(chr.getId());
             if (curChar != null) {
-                curChar.gainExp(amount * client.getOdinChannelServer().getExpRate(), true, true, true);
+                curChar.gainExp(amount * client.getPlayer().getChannelServer().getExpRate(), true, true, true);
             }
         }
     }

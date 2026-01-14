@@ -35,7 +35,6 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MapleMonsterInformationProvider;
 import odin.server.life.MonsterDropEntry;
 import odin.server.maps.MapleMap;
-import tacos.server.ServerOdinGame;
 
 /**
  *
@@ -52,8 +51,8 @@ public class MonsterDrop {
 
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         byte drop_type = (byte) (monster.getStats().isExplosiveReward() ? 3 : monster.getStats().isFfaLoot() ? 2 : player.getParty() != null ? 1 : 0);
-        int cmServerrate = ServerOdinGame.getInstance(channel).getMesoRate();
-        int chServerrate = ServerOdinGame.getInstance(channel).getDropRate();
+        int cmServerrate = player.getChannelServer().getMesoRate();
+        int chServerrate = player.getChannelServer().getDropRate();
 
         double showdown = 100.0;
         MonsterStatusEffect mse = monster.getBuff(MonsterStatus.SHOWDOWN);

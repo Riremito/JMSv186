@@ -42,7 +42,6 @@ import tacos.shared.SharedExpTable;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugMan;
 import tacos.debug.DebugShop;
-import tacos.server.ServerOdinGame;
 import odin.handling.channel.handler.AttackInfo;
 import odin.handling.channel.handler.HiredMerchantHandler;
 import odin.handling.channel.handler.InventoryHandler;
@@ -2466,12 +2465,7 @@ public class ReqCUser {
             case WP_Whisper: {
                 String name_to = cp.DecodeStr();
                 String message = cp.DecodeStr();
-                int ch = OdinWorld.Find.findChannel(name_to);
-                if (ch < 0) {
-                    chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Whisper, chr, name_to, message, null));
-                    return false;
-                }
-                MapleCharacter chr_to = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(name_to);
+                MapleCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to);;
                 if (chr_to == null) {
                     chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Whisper, chr, name_to, message, null));
                     return false;

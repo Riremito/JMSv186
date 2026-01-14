@@ -42,7 +42,6 @@ import odin.server.life.PlayerNPC;
 
 import java.util.HashSet;
 import java.util.Set;
-import tacos.packet.response.wrapper.ResWrapper;
 
 public class ServerOdinGame {
 
@@ -69,10 +68,7 @@ public class ServerOdinGame {
         return this.server_game.getPlayerStorage();
     }
 
-    private int expRate, mesoRate, dropRate, cashRate;
-    private short port = 8585;
     private int channel, running_MerchantID = 0;
-    private String serverMessage;
     private final Map<String, MapleSquad> mapleSquads = new HashMap<String, MapleSquad>();
     private final Map<Integer, HiredMerchant> merchants = new HashMap<Integer, HiredMerchant>();
     private final Map<Integer, PlayerNPC> playerNPCs = new HashMap<Integer, PlayerNPC>();
@@ -99,11 +95,6 @@ public class ServerOdinGame {
 
     public final void run_startup_configurations(int port) {
         setChannel(channel);
-        this.port = (short) port;
-        expRate = Property_World.getRateExp();
-        mesoRate = Property_World.getRateMeso();
-        dropRate = Property_World.getRateDrop();
-        serverMessage = Property_World.getMessage();
     }
 
     public static final ServerOdinGame newInstance(int channel) {
@@ -137,25 +128,12 @@ public class ServerOdinGame {
 
     }
 
-    public final String getServerMessage() {
-        return serverMessage;
-    }
-
-    public final void setServerMessage(final String newMessage) {
-        serverMessage = newMessage;
-        broadcastPacket(ResWrapper.BroadCastMsgSlide(serverMessage));
-    }
-
     public final void broadcastPacket(final MaplePacket data) {
         getPlayerStorage().broadcastPacket(data);
     }
 
     public final void broadcastSmegaPacket(final MaplePacket data) {
         getPlayerStorage().broadcastSmegaPacket(data);
-    }
-
-    public final int getExpRate() {
-        return expRate;
     }
 
     public final int getChannel() {
@@ -168,26 +146,6 @@ public class ServerOdinGame {
 
     public static final Collection<ServerOdinGame> getAllInstances() {
         return Collections.unmodifiableCollection(instances.values());
-    }
-
-    public final int getPort() {
-        return port;
-    }
-
-    public final int getMesoRate() {
-        return mesoRate;
-    }
-
-    public final void setMesoRate(final int mesoRate) {
-        this.mesoRate = mesoRate;
-    }
-
-    public final int getDropRate() {
-        return dropRate;
-    }
-
-    public final void setDropRate(final int dropRate) {
-        this.dropRate = dropRate;
     }
 
     public Map<String, MapleSquad> getAllSquads() {
@@ -329,10 +287,6 @@ public class ServerOdinGame {
             playerNPCs.remove(npc.getId());
             getMapFactory().getMap(npc.getMapId()).removeMapObject(npc);
         }
-    }
-
-    public int getConnectedClients() {
-        return getPlayerStorage().getConnectedClients();
     }
 
     public void broadcastMessage(byte[] message) {

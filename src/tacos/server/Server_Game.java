@@ -26,6 +26,7 @@ import odin.handling.channel.PlayerStorage;
 import odin.server.maps.MapleMapFactory;
 import tacos.config.Region;
 import tacos.constants.TacosConstants;
+import tacos.network.MaplePacket;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.network.PacketHandler_Game;
 import tacos.property.Property_Dummy_World;
@@ -41,6 +42,10 @@ public class Server_Game extends TacosServer {
     private int language = 0;
     private MapleMapFactory mapFactory = null;
     private PlayerStorage players;
+    private String serverMessage;
+    private int expRate;
+    private int mesoRate;
+    private int dropRate;
 
     public Server_Game(String server_name, int channel, int language) {
         super(server_name);
@@ -52,7 +57,7 @@ public class Server_Game extends TacosServer {
 
     @Override
     public void shutdown() {
-        getPlayerStorage().broadcastPacket(ResWrapper.BroadCastMsgNoticeOld("This channel will now shut down."));
+        broadcastPacket(ResWrapper.BroadCastMsgNoticeOld("This channel will now shut down."));
         DebugLogger.InfoLog("Channel " + this.channel + ", Saving hired merchants...");
         ServerOdinGame.getInstance(this.channel).closeAllMerchant();
         DebugLogger.InfoLog("Channel " + this.channel + ", Saving characters...");
@@ -60,6 +65,10 @@ public class Server_Game extends TacosServer {
         DebugLogger.InfoLog("Channel " + this.channel + ", Unbinding...");
         ServerOdinGame.getInstances().remove(this.channel);
         super.shutdown();
+    }
+
+    public void broadcastPacket(MaplePacket packet) {
+        getPlayerStorage().broadcastPacket(packet);
     }
 
     public TacosWorld getWorld() {
@@ -86,6 +95,26 @@ public class Server_Game extends TacosServer {
         return this.players;
     }
 
+    public String getServerMessage() {
+        return this.serverMessage;
+    }
+
+    public void setServerMessage(String newMessage) {
+        this.serverMessage = newMessage;
+    }
+
+    public final int getExpRate() {
+        return this.expRate;
+    }
+
+    public final int getMesoRate() {
+        return this.mesoRate;
+    }
+
+    public final int getDropRate() {
+        return this.dropRate;
+    }
+
     public static List<Server_Game> init() {
         List<Server_Game> game_servers = new ArrayList<>();
         TacosWorld world = new TacosWorld(0, Property_World.getName(), Property_World.getFlags(), Property_World.getEvent());
@@ -108,6 +137,11 @@ public class Server_Game extends TacosServer {
             game_servers.add(server);
             server.setWorld(world);
             world.addChannel(server);
+            // property
+            server.serverMessage = Property_World.getMessage();
+            server.expRate = Property_World.getRateExp();
+            server.mesoRate = Property_World.getRateMeso();
+            server.dropRate = Property_World.getRateDrop();
         }
 
         for (int i = 1; i <= 1; i++) {
