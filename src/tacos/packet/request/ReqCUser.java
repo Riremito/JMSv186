@@ -42,7 +42,6 @@ import tacos.shared.SharedExpTable;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugMan;
 import tacos.debug.DebugShop;
-import tacos.server.ServerOdinCashShop;
 import tacos.server.ServerOdinGame;
 import odin.handling.channel.handler.AttackInfo;
 import odin.handling.channel.handler.HiredMerchantHandler;
@@ -839,6 +838,7 @@ public class ReqCUser {
 
     public static void OnUserTransferFieldRequest_ITC(MapleCharacter chr) {
         chr.getWorld().addMigratingPlayer(chr);
+        chr.getWorld().getITC().getPlayerStorageMTS().deregisterPlayer(chr);
         DQ_Accounts.updateLoginState(chr.getClient(), MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
             chr.sendMigrateCommand(chr.getWorld().getChannelServer(chr.getChannelId()));
@@ -849,6 +849,7 @@ public class ReqCUser {
 
     public static void OnUserTransferFieldRequest_CS(MapleCharacter chr) {
         chr.getWorld().addMigratingPlayer(chr);
+        chr.getWorld().getCashShop().getPlayerStorage().deregisterPlayer(chr);
         DQ_Accounts.updateLoginState(chr.getClient(), MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
             chr.sendMigrateCommand(chr.getWorld().getChannelServer(chr.getChannelId()));
@@ -2458,18 +2459,7 @@ public class ReqCUser {
         switch (loc_whis) {
             case WP_Location: {
                 String player_name = cp.DecodeStr();
-
-                int ch = OdinWorld.Find.findChannel(player_name);
-                DebugLogger.DebugLog("CH = " + ch);
-                MapleCharacter chr_to = null;
-                // something wrong for cs
-                if (0 < ch) {
-                    chr_to = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(player_name);
-                } else if (ch == -10) {
-                    chr_to = ServerOdinCashShop.getPlayerStorage().getCharacterByName(player_name);
-                } else if (ch == -20) {
-                    chr_to = ServerOdinCashShop.getPlayerStorageMTS().getCharacterByName(player_name);
-                }
+                MapleCharacter chr_to = chr.getWorld().findOnlinePlayer(player_name);
                 chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Location, chr, player_name, null, chr_to));
                 return true;
             }

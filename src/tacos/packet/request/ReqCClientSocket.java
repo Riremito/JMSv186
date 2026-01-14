@@ -339,6 +339,7 @@ public class ReqCClientSocket {
         }
 
         c.getWorld().removeMigratingPlayer(chr);
+        c.getWorld().getITC().getPlayerStorageMTS().registerPlayer(chr);
 
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         chr.SendPacket(ResCStage.SetITC(chr));
@@ -374,6 +375,7 @@ public class ReqCClientSocket {
         }
 
         chr.getWorld().removeMigratingPlayer(chr);
+        c.getWorld().getCashShop().getPlayerStorage().registerPlayer(chr);
 
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         chr.SendPacket(ResCStage.SetCashShop(c));

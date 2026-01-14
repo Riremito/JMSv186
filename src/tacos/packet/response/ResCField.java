@@ -31,6 +31,7 @@ import tacos.packet.ops.Ops_Whisper;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import odin.server.maps.MapleNodes;
 import tacos.packet.ServerPacketHeader;
+import tacos.server.TacosServerType;
 import tacos.server.map.TacosMap;
 
 /**
@@ -258,13 +259,13 @@ public class ResCField {
                         break;
                     }
                     // cs & itc
-                    if (chr_to.getClient().getChannelId() < 0) {
+                    if (chr_to.getServerType() == TacosServerType.ITC_SERVER || chr_to.getServerType() == TacosServerType.CASHSHOP_SERVER) {
                         sp.Encode1(OpsLocationResult.LR_ShopSvr.get());
                         sp.Encode4(0);
                         break;
                     }
                     // same channel
-                    if (chr_to.getClient().getChannelId() == chr_from.getClient().getChannelId()) {
+                    if (chr_to.getChannelId() == chr_from.getChannelId()) {
                         sp.Encode1(OpsLocationResult.LR_GameSvr.get());
                         sp.Encode4(chr_to.getPosMap());
                         break;
@@ -279,7 +280,7 @@ public class ResCField {
             case WP_Receive: {
                 if (loc_whis == Ops_Whisper.WP_Whisper) {
                     sp.EncodeStr(chr_from.getName()); // sender name
-                    sp.Encode1(chr_from.getClient().getChannelId() - 1); // sender channel
+                    sp.Encode1(chr_from.getChannelId() - 1); // sender channel
                     sp.Encode1(0); // admin?
                     sp.EncodeStr(message); // sender message
                     break;

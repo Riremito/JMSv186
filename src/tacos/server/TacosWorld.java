@@ -146,4 +146,27 @@ public class TacosWorld {
         return true;
     }
 
+    public MapleCharacter findOnlinePlayer(String player_name) {
+        MapleCharacter player = null;
+        // channel servers
+        for (Server_Game ch_server : this.channels) {
+            player = ch_server.getPlayerStorage().getCharacterByName(player_name);
+            if (player != null) {
+                return player;
+            }
+        }
+        // itc
+        player = this.itc.getPlayerStorageMTS().getCharacterByName(player_name);
+        if (player != null) {
+            return player;
+        }
+        // cs
+        player = this.cashshop.getPlayerStorage().getCharacterByName(player_name);
+        if (player != null) {
+            return player;
+        }
+        // not found.
+        return player;
+    }
+
 }

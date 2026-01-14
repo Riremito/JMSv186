@@ -69,6 +69,8 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptPortal;
 import tacos.script.TacosScriptQuest;
 import tacos.script.TacosScriptReactor;
+import tacos.server.Server_Game;
+import tacos.server.TacosWorld;
 
 /**
  *
@@ -160,6 +162,46 @@ public class DebugCommand {
             case "/server": {
                 for (TacosServer server : TacosServer.get()) {
                     String msg = server.getName() + " : " + server.getNumberOfSessions();
+                    chr.DebugMsg(msg);
+                }
+                return true;
+            }
+            case "/players": {
+                TacosWorld world = chr.getWorld();
+                for (Server_Game srv_channel : world.getChannels()) {
+                    String msg = srv_channel.getName() + " : ";
+                    String player_names = "";
+                    for (MapleCharacter player : srv_channel.getPlayerStorage().getAllCharacters()) {
+                        if (player_names.length() != 0) {
+                            player_names += ", ";
+                        }
+                        player_names += player.getName();
+                    }
+                    msg += player_names;
+                    chr.DebugMsg(msg);
+                }
+                {
+                    String msg = world.getITC().getName() + " : ";
+                    String player_names = "";
+                    for (MapleCharacter player : world.getITC().getPlayerStorageMTS().getAllCharacters()) {
+                        if (player_names.length() != 0) {
+                            player_names += ", ";
+                        }
+                        player_names += player.getName();
+                    }
+                    msg += player_names;
+                    chr.DebugMsg(msg);
+                }
+                {
+                    String msg = world.getCashShop().getName() + " : ";
+                    String player_names = "";
+                    for (MapleCharacter player : world.getCashShop().getPlayerStorage().getAllCharacters()) {
+                        if (player_names.length() != 0) {
+                            player_names += ", ";
+                        }
+                        player_names += player.getName();
+                    }
+                    msg += player_names;
                     chr.DebugMsg(msg);
                 }
                 return true;

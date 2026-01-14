@@ -51,6 +51,7 @@ import tacos.script.portal.FreeMarketPortal;
 import tacos.server.ServerOdinGame;
 import tacos.server.Server_Game;
 import tacos.server.TacosServer;
+import tacos.server.TacosServerType;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosPortal;
 
@@ -93,6 +94,10 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public TacosWorld getWorld() {
         return this.client.getWorld();
+    }
+
+    public TacosServerType getServerType() {
+        return this.client.getServer().getType();
     }
 
     public Server_Game getChannelServer() {
