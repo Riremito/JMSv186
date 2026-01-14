@@ -60,7 +60,6 @@ public class Server_ITC extends TacosServer {
         TacosServer.add(server_itc);
         server_itc.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
         server_itc.run(TacosConstants.SERVER_LOCAL_IP, Property_Shop.getPort() + 1, new PacketHandler_ITC(server_itc));
-        ServerOdinCashShop.setITC(server_itc);
         server_itc.world_id = 0;
         TacosWorld.find(server_itc.world_id).setITC(server_itc);
         return true;
