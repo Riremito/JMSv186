@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import odin.client.MapleCharacter;
 import tacos.config.ContentCustom;
 import tacos.property.Property_World;
 import odin.handling.channel.PlayerStorage;
@@ -103,24 +102,6 @@ public class ServerOdinGame {
 
     public static final ServerOdinGame getInstance(final int channel) {
         return instances.get(channel);
-    }
-
-    // 接続人数
-    public static int getPopulation(int channel) {
-        ServerOdinGame ch = instances.get(channel);
-        if (ch == null) {
-            return 1000;
-        }
-        return ch.getPlayerStorage().getAllCharacters().size();
-    }
-
-    public final void addPlayer(final MapleCharacter chr) {
-        getPlayerStorage().registerPlayer(chr);
-    }
-
-    public final void removePlayer(final MapleCharacter chr) {
-        getPlayerStorage().deregisterPlayer(chr);
-
     }
 
     public final void removePlayer(final int idz, final String namez) {

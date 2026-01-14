@@ -23,7 +23,6 @@ package odin.server.maps;
 import java.awt.Point;
 
 import odin.client.MapleCharacter;
-import odin.handling.world.OdinWorld;
 import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleItemInformationProvider;
@@ -64,8 +63,8 @@ public class AramiaFireWorks {
         }
     }
 
-    private final void broadcastServer(final MapleCharacter c, final int itemid) {
-        OdinWorld.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNoticeItem("<Channel " + c.getClient().getChannelId() + "> " + c.getMap().getMapName() + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!", itemid).getBytes());
+    private void broadcastServer(MapleCharacter c, int itemid) {
+        c.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNoticeItem("<Channel " + c.getClient().getChannelId() + "> " + c.getMap().getMapName() + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!", itemid));
     }
 
     public final short getKegsPercentage() {

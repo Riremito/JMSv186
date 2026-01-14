@@ -32,7 +32,6 @@ import tacos.database.ExtraDB;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
-import tacos.server.ServerOdinGame;
 import odin.handling.world.CharacterIdChannelPair;
 import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.MaplePartyCharacter;
@@ -150,8 +149,6 @@ public class ReqCClientSocket {
             int unk1 = cp.Decode4();
         }
         int character_id = cp.Decode4();
-
-        ServerOdinGame channel = c.getOdinChannelServer();
         MapleCharacter transfer = c.getWorld().findMigratingPlayer(character_id);
         MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, c, true) : transfer;
         ExtraDB.loadData(chr);
@@ -170,6 +167,8 @@ public class ReqCClientSocket {
             c.loginFailed("OnMigrateIn 1."); // Remote hack
             return false;
         }
+
+        c.getChannelServer().getPlayerStorage().registerPlayer(chr);
 
         switch (DQ_Accounts.getLoginState(c)) {
             case LOGIN_SERVER_TRANSITION:
@@ -190,7 +189,6 @@ public class ReqCClientSocket {
 
         // entering game server
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
-        channel.addPlayer(chr);
         // pet
         chr.spawnSavedPets();
         // group            

@@ -24,7 +24,6 @@ import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
-import tacos.server.ServerOdinGame;
 import java.util.List;
 import java.util.Random;
 import tacos.packet.ServerPacket;
@@ -248,10 +247,11 @@ public class ResCLogin {
                             {
                                 sp.Encode1(Property_World.getFlags());
                                 sp.EncodeStr(Property_World.getName());
-                                sp.Encode1(ServerOdinGame.getChannels()); // number of  channels
-                                for (int i = 0; i < ServerOdinGame.getChannels(); i++) {
-                                    sp.EncodeStr(Property_World.getName() + "-" + (i + 1));
-                                    sp.Encode4(ServerOdinGame.getPopulation(i + 1) * 200);
+                                int world_id = 0;
+                                sp.Encode1(TacosWorld.find(world_id).getChannels().size()); // number of  channels
+                                for (int i = 0; i < TacosWorld.find(world_id).getChannels().size(); i++) {
+                                    sp.EncodeStr(TacosWorld.find(world_id).getChannels().get(i).getName());
+                                    sp.Encode4(TacosWorld.find(world_id).getChannels().get(i).getNumberOfSessions() * 200);
                                     sp.Encode1(server_id); // serverId
                                     sp.Encode1(i); // channel
                                     sp.Encode1(0);

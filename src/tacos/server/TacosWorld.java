@@ -21,6 +21,7 @@ package tacos.server;
 import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
+import tacos.network.MaplePacket;
 
 /**
  *
@@ -65,6 +66,12 @@ public class TacosWorld {
 
     public TacosWorld() {
         // to do remove.
+    }
+
+    public void broadcastPacket(MaplePacket packet) {
+        for (Server_Game ch_server : this.channels) {
+            ch_server.broadcastPacket(packet);
+        }
     }
 
     public int getId() {

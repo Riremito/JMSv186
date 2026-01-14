@@ -2970,7 +2970,7 @@ public class MapleCharacter extends TacosCharacter {
             }
             sb.append(getName());
             sb.append("様がレベル200になりました。おめでとうございます。");
-            OdinWorld.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgNotice(sb.toString()).getBytes());
+            getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice(sb.toString()));
         }
         maxhp = (short) Math.min(30000, Math.abs(maxhp));
         maxmp = (short) Math.min(30000, Math.abs(maxmp));

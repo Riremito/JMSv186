@@ -106,10 +106,6 @@ public class PlayerStorage {
         }
     }
 
-    public final int getConnectedClients() {
-        return idToChar.size();
-    }
-
     public final void disconnectAll() {
         disconnectAll(false);
     }
@@ -133,40 +129,6 @@ public class PlayerStorage {
         } finally {
             wL.unlock();
         }
-    }
-
-    public final String getOnlinePlayers(final boolean byGM) {
-        final StringBuilder sb = new StringBuilder();
-
-        if (byGM) {
-            rL.lock();
-            try {
-                final Iterator<MapleCharacter> itr = nameToChar.values().iterator();
-                while (itr.hasNext()) {
-                    sb.append(itr.next().getName());
-                    sb.append(", ");
-                }
-            } finally {
-                rL.unlock();
-            }
-        } else {
-            rL.lock();
-            try {
-                final Iterator<MapleCharacter> itr = nameToChar.values().iterator();
-                MapleCharacter chr;
-                while (itr.hasNext()) {
-                    chr = itr.next();
-
-                    if (!chr.isGM()) {
-                        sb.append(chr.getName());
-                        sb.append(", ");
-                    }
-                }
-            } finally {
-                rL.unlock();
-            }
-        }
-        return sb.toString();
     }
 
     public final void broadcastPacket(final MaplePacket data) {

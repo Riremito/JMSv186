@@ -67,8 +67,8 @@ public abstract class OdinAbstractPlayerInteraction {
 
     protected MapleClient client;
 
-    public OdinAbstractPlayerInteraction(MapleClient c) {
-        this.client = c;
+    public OdinAbstractPlayerInteraction(MapleClient client) {
+        this.client = client;
     }
 
     public final MapleClient getClient() {
@@ -402,7 +402,7 @@ public abstract class OdinAbstractPlayerInteraction {
     public final void Gashapon(final int id, final short quantity) {
         IItem item_info = gainItem(id, quantity, true, 0, -1, "");
         if (item_info != null) {
-            OdinWorld.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgGachaponAnnounce(client.getPlayer(), item_info).getBytes());
+            this.client.getWorld().broadcastPacket(ResWrapper.BroadCastMsgGachaponAnnounce(client.getPlayer(), item_info));
         }
     }
 
@@ -466,7 +466,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     // npc/9201006.js
     public final void worldMessage(final int type, final String message) {
-        OdinWorld.Broadcast.broadcastMessage(ResWrapper.BroadCastMsgEvent(message).getBytes());
+        this.client.getWorld().broadcastPacket(ResWrapper.BroadCastMsgEvent(message));
     }
 
     public final void mapMessage(final String message) {

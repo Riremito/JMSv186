@@ -753,12 +753,6 @@ public class OdinWorld extends TacosWorld {
             }
         }
 
-        public static void broadcastMessage(byte[] message) {
-            for (ServerOdinGame cs : ServerOdinGame.getAllInstances()) {
-                cs.broadcastMessage(message);
-            }
-        }
-
         public static void sendGuildPacket(int targetIds, MaplePacket packet, int exception, int guildid) {
             if (targetIds == exception) {
                 return;
