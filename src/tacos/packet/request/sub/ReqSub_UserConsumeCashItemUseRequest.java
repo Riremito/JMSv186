@@ -86,13 +86,13 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     map_id = cp.Decode4();
                 } else {
                     String target_name = cp.DecodeStr();
-                    target_chr = chr.getClient().getOdinChannelServer().getPlayerStorage().getCharacterByName(target_name);
+                    target_chr = chr.getClient().getChannelServer().getPlayerStorage().getCharacterByName(target_name);
                     if (target_chr == null) {
                         return false;
                     }
                     map_id = target_chr.getMap().getId();
                 }
-                if (FieldLimitType.VipRock.check(chr.getClient().getOdinChannelServer().getMapFactory().getMap(map_id).getFieldLimit())) {
+                if (FieldLimitType.VipRock.check(chr.getChannelServer().getMapFactory().getMap(map_id).getFieldLimit())) {
                     return false;
                 }
                 item_use.run();

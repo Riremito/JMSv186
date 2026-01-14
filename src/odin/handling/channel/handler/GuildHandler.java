@@ -38,7 +38,7 @@ public class GuildHandler {
         byte unk1 = cp.Decode1();
         String from = cp.DecodeStr();
 
-        final MapleCharacter cfrom = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(from);
+        final MapleCharacter cfrom = c.getChannelServer().getPlayerStorage().getCharacterByName(from);
         if (cfrom != null) {
             cfrom.getClient().getSession().write(ResCWvsContext.denyGuildInvitation(c.getPlayer().getName()));
         }

@@ -644,7 +644,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public void warpPartyWithExp(int mapId, int exp) {
         MapleMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            MapleCharacter curChar = client.getOdinChannelServer().getPlayerStorage().getCharacterByName(chr.getName());
+            MapleCharacter curChar = client.getChannelServer().getPlayerStorage().getCharacterByName(chr.getName());
             curChar.changeMap(target, target.getPortal(0));
             curChar.gainExp(exp, true, false, true);
         }
@@ -653,7 +653,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public void warpPartyWithExpMeso(int mapId, int exp, int meso) {
         MapleMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            MapleCharacter curChar = client.getOdinChannelServer().getPlayerStorage().getCharacterByName(chr.getName());
+            MapleCharacter curChar = client.getChannelServer().getPlayerStorage().getCharacterByName(chr.getName());
             curChar.changeMap(target, target.getPortal(0));
             curChar.gainExp(exp, true, false, true);
             curChar.gainMeso(meso, true);
@@ -1180,7 +1180,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public boolean createAlliance(String alliancename) {
         MapleParty pt = client.getPlayer().getParty();
-        MapleCharacter otherChar = client.getOdinChannelServer().getPlayerStorage().getCharacterById(pt.getMemberByIndex(1).getId());
+        MapleCharacter otherChar = client.getChannelServer().getPlayerStorage().getCharacterById(pt.getMemberByIndex(1).getId());
         if (otherChar == null || otherChar.getId() == client.getPlayer().getId()) {
             return false;
         }

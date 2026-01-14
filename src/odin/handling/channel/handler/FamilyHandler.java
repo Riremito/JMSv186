@@ -37,7 +37,7 @@ import tacos.packet.ClientPacket;
 public class FamilyHandler {
 
     public static final void RequestFamily(ClientPacket cp, MapleClient c) {
-        MapleCharacter chr = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
+        MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
         if (chr != null) {
             c.getSession().write(ResCWvsContext.getFamilyPedigree(chr));
         }
@@ -60,7 +60,7 @@ public class FamilyHandler {
         MapleCharacter victim = null;
         switch (type) {
             case 0: //teleport: need add check for if not a safe place
-                victim = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
+                victim = c.getChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
                 if (FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                     success = false;
@@ -75,7 +75,7 @@ public class FamilyHandler {
                 }
                 break;
             case 1: // TODO give a check to the player being forced somewhere else..
-                victim = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
+                victim = c.getChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
                 if (FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                 } else if (victim == null || (victim.isGM() && !c.getPlayer().isGM())) {
@@ -148,7 +148,7 @@ public class FamilyHandler {
         if (c.getPlayer() == null) {
             return;
         }
-        MapleCharacter addChr = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
+        MapleCharacter addChr = c.getChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
         if (addChr == null) {
             c.getPlayer().dropMessage(1, "The name you requested is incorrect or he/she is currently not logged in.");
         } else if (addChr.getFamilyId() == c.getPlayer().getFamilyId() && addChr.getFamilyId() > 0) {
@@ -185,7 +185,7 @@ public class FamilyHandler {
     public static final void FamilySummon(ClientPacket cp, MapleClient c) {
         int TYPE = 1; //the type of the summon request.
         MapleFamilyBuffEntry cost = MapleFamilyBuff.getBuffEntry(TYPE);
-        MapleCharacter tt = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
+        MapleCharacter tt = c.getChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
         if (c.getPlayer().getFamilyId() > 0 && tt != null && tt.getFamilyId() == c.getPlayer().getFamilyId() && !FieldLimitType.VipRock.check(tt.getMap().getFieldLimit())
                 && !FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) && c.getPlayer().isAlive() && tt.isAlive() && tt.canUseFamilyBuff(cost)
                 && c.getPlayer().getTeleportName().equals(tt.getName()) && tt.getCurrentRep() > cost.rep) {

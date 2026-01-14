@@ -71,14 +71,14 @@ public class AramiaFireWorks {
         return (short) ((kegs / MAX_KEGS) * 10000);
     }
 
-    private final void broadcastEvent(final MapleCharacter c) {
-        broadcastServer(c, KEG_ID);
+    private void broadcastEvent(MapleCharacter player) {
+        broadcastServer(player, KEG_ID);
         // Henesys Park
         EventTimer.getInstance().schedule(new Runnable() {
 
             @Override
             public final void run() {
-                startEvent(c.getClient().getOdinChannelServer().getMapFactory().getMap(100000200));
+                startEvent(player.getChannelServer().getMapFactory().getMap(100000200));
             }
         }, 10000);
     }
@@ -95,7 +95,7 @@ public class AramiaFireWorks {
         }, 5000);
     }
 
-    private final void spawnMonster(final MapleMap map) {
+    private void spawnMonster(MapleMap map) {
         Point pos;
 
         for (int i = 0; i < arrayMob.length; i++) {
@@ -104,10 +104,10 @@ public class AramiaFireWorks {
         }
     }
 
-    public final void giveSuns(final MapleCharacter c, final int kegs) {
+    public void giveSuns(MapleCharacter player, int kegs) {
         this.sunshines += kegs;
         //have to broadcast a Reactor?
-        final MapleMap map = c.getClient().getOdinChannelServer().getMapFactory().getMap(555000000);
+        final MapleMap map = player.getChannelServer().getMapFactory().getMap(555000000);
         final MapleReactor reactor = map.getReactorByName("XmasTree");
         for (int gogo = kegs + (MAX_SUN / 6); gogo > 0; gogo -= (MAX_SUN / 6)) {
             switch (reactor.getState()) {
@@ -131,7 +131,7 @@ public class AramiaFireWorks {
         }
         if (this.sunshines >= MAX_SUN) {
             this.sunshines = 0;
-            broadcastSun(c);
+            broadcastSun(player);
         }
     }
 
@@ -139,14 +139,14 @@ public class AramiaFireWorks {
         return (short) ((sunshines / MAX_SUN) * 10000);
     }
 
-    private final void broadcastSun(final MapleCharacter c) {
-        broadcastServer(c, SUN_ID);
+    private void broadcastSun(MapleCharacter player) {
+        broadcastServer(player, SUN_ID);
         // Henesys Park
         EventTimer.getInstance().schedule(new Runnable() {
 
             @Override
             public final void run() {
-                startSun(c.getClient().getOdinChannelServer().getMapFactory().getMap(970010000));
+                startSun(player.getChannelServer().getMapFactory().getMap(970010000));
             }
         }, 10000);
     }
@@ -173,10 +173,10 @@ public class AramiaFireWorks {
         }
     }
 
-    public final void giveDecs(final MapleCharacter c, final int kegs) {
+    public final void giveDecs(final MapleCharacter player, final int kegs) {
         this.decorations += kegs;
         //have to broadcast a Reactor?
-        final MapleMap map = c.getClient().getOdinChannelServer().getMapFactory().getMap(555000000);
+        final MapleMap map = player.getChannelServer().getMapFactory().getMap(555000000);
         final MapleReactor reactor = map.getReactorByName("XmasTree");
         for (int gogo = kegs + (MAX_DEC / 6); gogo > 0; gogo -= (MAX_DEC / 6)) {
             switch (reactor.getState()) {
@@ -200,7 +200,7 @@ public class AramiaFireWorks {
         }
         if (this.decorations >= MAX_DEC) {
             this.decorations = 0;
-            broadcastDec(c);
+            broadcastDec(player);
         }
     }
 
@@ -208,13 +208,13 @@ public class AramiaFireWorks {
         return (short) ((decorations / MAX_DEC) * 10000);
     }
 
-    private final void broadcastDec(final MapleCharacter c) {
-        broadcastServer(c, DEC_ID);
+    private void broadcastDec(MapleCharacter player) {
+        broadcastServer(player, DEC_ID);
         EventTimer.getInstance().schedule(new Runnable() {
 
             @Override
             public final void run() {
-                startDec(c.getClient().getOdinChannelServer().getMapFactory().getMap(555000000));
+                startDec(player.getChannelServer().getMapFactory().getMap(555000000));
             }
         }, 10000); //no msg
     }

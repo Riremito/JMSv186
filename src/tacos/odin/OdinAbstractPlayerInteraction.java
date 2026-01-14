@@ -337,11 +337,11 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void removeNpc(final int mapid, final int npcId) {
-        client.getOdinChannelServer().getMapFactory().getMap(mapid).removeNpc(npcId);
+        client.getChannelServer().getMapFactory().getMap(mapid).removeNpc(npcId);
     }
 
     public final void forceStartReactor(final int mapid, final int id) {
-        MapleMap map = client.getOdinChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
         MapleReactor react;
 
         for (final MapleMapObject remo : map.getAllReactors()) {
@@ -354,7 +354,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void destroyReactor(final int mapid, final int id) {
-        MapleMap map = client.getOdinChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
         MapleReactor react;
 
         for (final MapleMapObject remo : map.getAllReactors()) {
@@ -367,7 +367,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void hitReactor(final int mapid, final int id) {
-        MapleMap map = client.getOdinChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
         MapleReactor react;
 
         for (final MapleMapObject remo : map.getAllReactors()) {
@@ -780,7 +780,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final int getMonsterCount(final int mapid) {
-        return client.getOdinChannelServer().getMapFactory().getMap(mapid).getNumMonsters();
+        return client.getChannelServer().getMapFactory().getMap(mapid).getNumMonsters();
     }
 
     public final void teachSkill(final int id, final byte level, final byte masterlevel) {
@@ -1011,7 +1011,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public int getPlayerCount(int mapid) {
-        return client.getOdinChannelServer().getMapFactory().getMap(mapid).getCharactersSize();
+        return client.getChannelServer().getMapFactory().getMap(mapid).getCharactersSize();
     }
 
     public void playerMessage(String message) {

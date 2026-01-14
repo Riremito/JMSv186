@@ -134,7 +134,7 @@ public class InventoryHandler {
                     boolean warped = false;
 
                     for (int i = 390001000; i <= 390001004; i++) {
-                        map = c.getOdinChannelServer().getMapFactory().getMap(i);
+                        map = c.getChannelServer().getMapFactory().getMap(i);
 
                         if (map.getCharactersSize() == 0) {
                             chr.changeMap(map, map.getPortal(0));
@@ -861,7 +861,7 @@ public class InventoryHandler {
         chr.updateInv();
         if (c.getPlayer().getMapId() >= 910000000 && c.getPlayer().getMapId() <= 910000022 && c.getPlayer().getPlayerShop() == null) {
             if (map >= 910000001 && map <= 910000022) {
-                final MapleMap mapp = c.getOdinChannelServer().getMapFactory().getMap(map);
+                final MapleMap mapp = c.getChannelServer().getMapFactory().getMap(map);
                 c.getPlayer().changeMap(mapp, mapp.getPortal(0));
                 HiredMerchant merchant = null;
                 List<MapleMapObject> objects;

@@ -79,7 +79,7 @@ public class AllianceHandler {
             case 3: //invite
                 final int newGuild = OdinWorld.Guild.getGuildLeader(cp.DecodeStr());
                 if (newGuild > 0 && c.getPlayer().getAllianceRank() == 1 && leaderid == c.getPlayer().getId()) {
-                    chr = c.getOdinChannelServer().getPlayerStorage().getCharacterById(newGuild);
+                    chr = c.getChannelServer().getPlayerStorage().getCharacterById(newGuild);
                     if (chr != null && chr.getGuildId() > 0 && OdinWorld.Alliance.canInvite(gs.getAllianceId())) {
                         chr.getClient().getSession().write(ResCWvsContext.sendAllianceInvite(OdinWorld.Alliance.getAlliance(gs.getAllianceId()).getName(), c.getPlayer()));
                         OdinWorld.Guild.setInvitedId(chr.getGuildId(), gs.getAllianceId());
@@ -156,7 +156,7 @@ public class AllianceHandler {
         if (inviteid > 0) {
             final int newAlliance = OdinWorld.Alliance.getAllianceLeader(inviteid);
             if (newAlliance > 0) {
-                final MapleCharacter chr = c.getOdinChannelServer().getPlayerStorage().getCharacterById(newAlliance);
+                final MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterById(newAlliance);
                 if (chr != null) {
                     chr.dropMessage(5, gs.getName() + " Guild has rejected the Guild Union invitation.");
                 }

@@ -69,9 +69,9 @@ public class AdminCommand {
             MapleCharacter victim;
             if (splitted[1].charAt(0) == '-') {
                 level = StringUtil.countCharacters(splitted[1], 'f');
-                victim = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(splitted[2]);
+                victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[2]);
             } else {
-                victim = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
+                victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
             }
             if (level < 2 && victim != null) {
                 DebugLogger.InfoLog("command dc.");
@@ -98,7 +98,7 @@ public class AdminCommand {
             MapleCharacter victim = null;
             for (int i = 1; i < splitted.length; i++) {
                 try {
-                    victim = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(splitted[i]);
+                    victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[i]);
                 } catch (Exception e) {
                     c.getPlayer().dropMessage(6, "Player " + splitted[i] + " not found.");
                 }
@@ -116,7 +116,7 @@ public class AdminCommand {
 
         @Override
         public int execute(MapleClient c, String[] splitted) {
-            MapleCharacter victim = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
+            MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]);
             ISkill skill = SkillFactory.getSkill(Integer.parseInt(splitted[2]));
             byte level = (byte) CommandProcessorUtil.getOptionalIntArg(splitted, 3, 1);
             byte masterlevel = (byte) CommandProcessorUtil.getOptionalIntArg(splitted, 4, 1);
@@ -261,7 +261,7 @@ public class AdminCommand {
                 return 0;
             }
             if (splitted.length == 4) {
-                MapleCharacter victim = c.getOdinChannelServer().getPlayerStorage().getCharacterByName(splitted[2]);
+                MapleCharacter victim = c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[2]);
                 if (victim == null) {
                     c.getPlayer().dropMessage(5, "Not found.");
                     return 0;
@@ -353,7 +353,7 @@ public class AdminCommand {
 
         @Override
         public int execute(MapleClient c, String[] splitted) {
-            MapleQuest.getInstance(Integer.parseInt(splitted[2])).forceStart(c.getOdinChannelServer().getPlayerStorage().getCharacterByName(splitted[1]), Integer.parseInt(splitted[3]), splitted.length >= 4 ? splitted[4] : null);
+            MapleQuest.getInstance(Integer.parseInt(splitted[2])).forceStart(c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]), Integer.parseInt(splitted[3]), splitted.length >= 4 ? splitted[4] : null);
             return 1;
         }
     }
@@ -362,7 +362,7 @@ public class AdminCommand {
 
         @Override
         public int execute(MapleClient c, String[] splitted) {
-            MapleQuest.getInstance(Integer.parseInt(splitted[2])).forceComplete(c.getOdinChannelServer().getPlayerStorage().getCharacterByName(splitted[1]), Integer.parseInt(splitted[3]));
+            MapleQuest.getInstance(Integer.parseInt(splitted[2])).forceComplete(c.getChannelServer().getPlayerStorage().getCharacterByName(splitted[1]), Integer.parseInt(splitted[3]));
             return 1;
         }
     }
@@ -497,7 +497,7 @@ public class AdminCommand {
                 if (splitted.length <= 2) {
                     range = irange * irange;
                 } else {
-                    map = c.getOdinChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[2]));
+                    map = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[2]));
                 }
             }
             MapleMonster mob;
@@ -567,7 +567,7 @@ public class AdminCommand {
                 if (splitted.length <= 2) {
                     range = irange * irange;
                 } else {
-                    map = c.getOdinChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[2]));
+                    map = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[2]));
                 }
             }
             MapleMonster mob;
@@ -602,7 +602,7 @@ public class AdminCommand {
                 if (splitted.length <= 2) {
                     range = irange * irange;
                 } else {
-                    map = c.getOdinChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[2]));
+                    map = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[2]));
                 }
             }
             MapleMonster mob;

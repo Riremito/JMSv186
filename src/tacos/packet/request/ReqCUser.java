@@ -1335,7 +1335,7 @@ public class ReqCUser {
                 int target_map_id = cp.Decode4();
                 for (int map_id : chr.getRegRocks()) {
                     if (map_id == target_map_id) {
-                        target_map = chr.getClient().getOdinChannelServer().getMapFactory().getMap(target_map_id);
+                        target_map = chr.getChannelServer().getMapFactory().getMap(target_map_id);
                         if (target_map != null) {
                             ops_res = OpsMapTransfer.MapTransferRes_Use;
                         }
