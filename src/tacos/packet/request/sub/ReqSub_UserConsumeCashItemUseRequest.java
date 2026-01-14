@@ -346,7 +346,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.bm = OpsBroadcastMsg.BM_SPEAKERCHANNEL;
                 bma.chr = chr;
                 bma.message = message;
-                chr.getClient().getOdinChannelServer().broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getChannelServer().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
                 return true;
             }
             // 拡声器
@@ -359,7 +359,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.chr = chr;
                 bma.message = message;
                 bma.ear = ear;
-                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
                 return true;
             }
             // 高機能拡声器 (使えない)
@@ -376,7 +376,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.chr = chr;
                 bma.message = message;
                 bma.ear = ear;
-                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
                 return true;
             }
             // ドクロ拡声器
@@ -389,7 +389,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.chr = chr;
                 bma.message = message;
                 bma.ear = ear;
-                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
                 return true;
             }
             case 5075000: // メッセージ送信機 (MapleTV)
@@ -488,7 +488,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.message = message;
                 bma.ear = ear;
                 bma.item = item;
-                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
                 return true;
             }
             // 三連拡声器
@@ -517,7 +517,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.multi_line = true;
                 bma.messages = messages;
 
-                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
                 return true;
             }
             default: {

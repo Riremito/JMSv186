@@ -74,6 +74,12 @@ public class TacosWorld {
         }
     }
 
+    public void broadcastMegaphonePacket(MaplePacket packet) {
+        for (Server_Game ch_server : this.channels) {
+            ch_server.broadcastMegaphonePacket(packet);
+        }
+    }
+
     public int getId() {
         return this.id;
     }

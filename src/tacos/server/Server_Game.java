@@ -71,6 +71,10 @@ public class Server_Game extends TacosServer {
         getPlayerStorage().broadcastPacket(packet);
     }
 
+    public void broadcastMegaphonePacket(MaplePacket packet) {
+        getPlayerStorage().broadcastSmegaPacket(packet);
+    }
+
     public TacosWorld getWorld() {
         return this.world;
     }

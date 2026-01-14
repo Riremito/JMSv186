@@ -33,7 +33,6 @@ import odin.client.PlayerStats;
 import odin.constants.GameConstants;
 import odin.client.SkillFactory;
 import tacos.config.ServerConfig;
-import odin.handling.world.OdinWorld;
 import java.awt.Rectangle;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCUserLocal;
@@ -789,7 +788,7 @@ public class InventoryHandler {
                     break;
                 }
                 final boolean ear = cp.Decode1() != 0;
-                OdinWorld.Broadcast.broadcastSmega(ResCWvsContext.getAvatarMega(c.getPlayer(), c.getChannelId(), itemId, text, ear).getBytes());
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.getAvatarMega(c.getPlayer(), c.getChannelId(), itemId, text, ear));
                 used = true;
                 break;
             }

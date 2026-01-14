@@ -31,8 +31,6 @@ import java.util.Map;
 import tacos.config.ContentCustom;
 import tacos.property.Property_World;
 import odin.handling.channel.PlayerStorage;
-import tacos.network.ByteArrayMaplePacket;
-import tacos.network.MaplePacket;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.server.MapleSquad;
 import odin.server.maps.MapleMapFactory;
@@ -107,14 +105,6 @@ public class ServerOdinGame {
     public final void removePlayer(final int idz, final String namez) {
         getPlayerStorage().deregisterPlayer(idz, namez);
 
-    }
-
-    public final void broadcastPacket(final MaplePacket data) {
-        getPlayerStorage().broadcastPacket(data);
-    }
-
-    public final void broadcastSmegaPacket(final MaplePacket data) {
-        getPlayerStorage().broadcastSmegaPacket(data);
     }
 
     public final int getChannel() {
@@ -268,14 +258,6 @@ public class ServerOdinGame {
             playerNPCs.remove(npc.getId());
             getMapFactory().getMap(npc.getMapId()).removeMapObject(npc);
         }
-    }
-
-    public void broadcastMessage(byte[] message) {
-        broadcastPacket(new ByteArrayMaplePacket(message));
-    }
-
-    public void broadcastSmega(byte[] message) {
-        broadcastSmegaPacket(new ByteArrayMaplePacket(message));
     }
 
 }

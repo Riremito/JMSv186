@@ -747,12 +747,6 @@ public class OdinWorld extends TacosWorld {
 
     public static class Broadcast {
 
-        public static void broadcastSmega(byte[] message) {
-            for (ServerOdinGame cs : ServerOdinGame.getAllInstances()) {
-                cs.broadcastSmega(message);
-            }
-        }
-
         public static void sendGuildPacket(int targetIds, MaplePacket packet, int exception, int guildid) {
             if (targetIds == exception) {
                 return;

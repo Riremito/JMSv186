@@ -131,7 +131,7 @@ public class PlayerStorage {
         }
     }
 
-    public final void broadcastPacket(final MaplePacket data) {
+    public void broadcastPacket(MaplePacket data) {
         rL.lock();
         try {
             final Iterator<MapleCharacter> itr = nameToChar.values().iterator();
@@ -143,7 +143,7 @@ public class PlayerStorage {
         }
     }
 
-    public final void broadcastSmegaPacket(final MaplePacket data) {
+    public void broadcastSmegaPacket(MaplePacket data) {
         rL.lock();
         try {
             final Iterator<MapleCharacter> itr = nameToChar.values().iterator();
