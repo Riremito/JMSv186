@@ -35,7 +35,6 @@ import odin.client.status.MonsterStatusEffect;
 import tacos.wz.data.ReactorWz;
 import tacos.database.DatabaseConnection;
 import tacos.network.MaplePacket;
-import tacos.server.ServerOdinGame;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import tacos.packet.ops.OpsUserEffect;
@@ -108,7 +107,7 @@ public final class MapleMap extends TacosMap {
 
     @Override
     public int dropFromMonster(MapleCharacter player, MapleMonster monster) {
-        if (monster == null || player == null || ServerOdinGame.getInstance(channel) == null || monster.dropsDisabled() || player.getPyramidSubway() != null) {
+        if (monster == null || player == null || monster.dropsDisabled() || player.getPyramidSubway() != null) {
             return -1;
         }
         // clear drops

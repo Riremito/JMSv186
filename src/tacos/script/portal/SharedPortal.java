@@ -21,7 +21,6 @@ package tacos.script.portal;
 import odin.client.MapleCharacter;
 import odin.server.maps.MapleMap;
 import tacos.constants.TacosConstants;
-import tacos.server.ServerOdinGame;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -43,7 +42,7 @@ public class SharedPortal {
     }
 
     private boolean usePortal(MapleCharacter chr, int map_id, String portal_name) {
-        MapleMap map_to = ServerOdinGame.getInstance(chr.getClient().getChannelId()).getMapFactory().getMap(map_id);
+        MapleMap map_to = chr.getChannelServer().getMapFactory().getMap(map_id);
         if (map_to == null) {
             return false;
         }

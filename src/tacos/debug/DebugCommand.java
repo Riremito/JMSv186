@@ -34,7 +34,6 @@ import tacos.wz.data.StringWz;
 import tacos.wz.ids.DWI_Random;
 import tacos.wz.ids.DWI_Validation;
 import tacos.wz.ids.DWI_LoadXML;
-import tacos.server.ServerOdinGame;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -668,7 +667,7 @@ public class DebugCommand {
             }
             case "/randommap": {
                 int mapid = DWI_LoadXML.getMap().getRandom();
-                MapleMap map = ServerOdinGame.getInstance(c.getChannelId()).getMapFactory().getMap(mapid);
+                MapleMap map = chr.getChannelServer().getMapFactory().getMap(mapid);
                 chr.changeMap(map, map.getPortal(0));
                 chr.DebugMsg("[RandomMap] " + map.getId() + " - " + map.getStreetName() + "_" + map.getMapName()); // MapName code is buggy.
                 return true;

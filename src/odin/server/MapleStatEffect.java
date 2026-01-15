@@ -21,7 +21,6 @@ import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
 import tacos.config.ContentState;
 import odin.constants.GameConstants;
-import tacos.server.ServerOdinGame;
 import java.util.Arrays;
 import java.util.Collections;
 import odin.provider.MapleDataTool;
@@ -1098,7 +1097,7 @@ public class MapleStatEffect implements Serializable {
             if (moveTo == 999999999) {
                 target = applyto.getMap().getReturnMap();
             } else {
-                target = ServerOdinGame.getInstance(applyto.getClient().getChannelId()).getMapFactory().getMap(moveTo);
+                target = applyto.getChannelServer().getMapFactory().getMap(moveTo);
             }
             applyto.changeMap(target, target.getPortal(0));
             return true;

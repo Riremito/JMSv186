@@ -168,8 +168,8 @@ public abstract class OdinAbstractPlayerInteraction {
         }
     }
 
-    private final MapleMap getWarpMap(final int map) {
-        return ServerOdinGame.getInstance(client.getChannelId()).getMapFactory().getMap(map);
+    private MapleMap getWarpMap(final int map) {
+        return this.client.getChannelServer().getMapFactory().getMap(map);
     }
 
     public final MapleMap getMap() {

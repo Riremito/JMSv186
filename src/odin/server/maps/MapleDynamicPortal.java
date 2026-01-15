@@ -22,7 +22,6 @@ package odin.server.maps;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.server.ServerOdinGame;
 import java.awt.Point;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 
@@ -53,7 +52,7 @@ public class MapleDynamicPortal extends AbstractMapleMapObject {
     // test
     public final void warp(MapleCharacter chr) {
         int map_id_from = chr.getPosMap();
-        MapleMap map_to = ServerOdinGame.getInstance(chr.getClient().getChannelId()).getMapFactory().getMap(map_id);
+        MapleMap map_to = chr.getChannelServer().getMapFactory().getMap(map_id);
         MapleDynamicPortal dynamic_portal_to = map_to.findDynamicPortalLink(map_id_from);
 
         if (dynamic_portal_to != null) {

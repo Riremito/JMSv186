@@ -15,7 +15,6 @@ import tacos.property.Property_Java;
 import odin.constants.GameConstants;
 import tacos.wz.data.SkillWz;
 import tacos.debug.DebugLogger;
-import tacos.server.ServerOdinGame;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -766,26 +765,6 @@ public class AdminCommand {
         @Override
         public int execute(MapleClient c, String[] splitted) {
             c.getPlayer().getMap().broadcastMessage(ResCField.getClock(CommandProcessorUtil.getOptionalIntArg(splitted, 1, 60)));
-            return 1;
-        }
-    }
-
-    public static class ReloadMap extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            final int mapId = Integer.parseInt(splitted[1]);
-            for (ServerOdinGame cserv : ServerOdinGame.getAllInstances()) {
-                if (cserv.getMapFactory().isMapLoaded(mapId) && cserv.getMapFactory().getMap(mapId).getCharactersSize() > 0) {
-                    c.getPlayer().dropMessage(5, "There exists characters on channel " + cserv.getChannel());
-                    return 0;
-                }
-            }
-            for (ServerOdinGame cserv : ServerOdinGame.getAllInstances()) {
-                if (cserv.getMapFactory().isMapLoaded(mapId)) {
-                    cserv.getMapFactory().removeMap(mapId);
-                }
-            }
             return 1;
         }
     }

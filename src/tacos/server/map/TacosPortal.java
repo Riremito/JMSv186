@@ -24,7 +24,6 @@ import odin.client.MapleClient;
 import odin.server.maps.MapleMap;
 import tacos.constants.TacosConstants;
 import tacos.script.TacosScriptPortal;
-import tacos.server.ServerOdinGame;
 
 /**
  *
@@ -113,8 +112,8 @@ public class TacosPortal {
         this.portalState = ps;
     }
 
-    public boolean enterPortal(MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
+    public boolean enterPortal(MapleClient client) {
+        MapleCharacter chr = client.getPlayer();
 
         if (!this.portalState) {
             return false;
@@ -124,7 +123,7 @@ public class TacosPortal {
 
         // script portal
         if (this.scriptName != null) {
-            return TacosScriptPortal.getInstance().enter(this, c);
+            return TacosScriptPortal.getInstance().enter(this, client);
         }
         // normal portal
         if (this.scriptName == null) {
@@ -132,7 +131,7 @@ public class TacosPortal {
             if (this.targetmap == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
                 return false;
             }
-            MapleMap map_to = ServerOdinGame.getInstance(c.getChannelId()).getMapFactory().getMap(this.targetmap);
+            MapleMap map_to = chr.getChannelServer().getMapFactory().getMap(this.targetmap);
             TacosPortal portal_to = map_to.getPortal(this.target);
             // find portal failed.
             if (portal_to == null) {

@@ -43,7 +43,7 @@ public class MapleSquad {
     }
 
     public MapleMap getBeginMap() {
-        return ServerOdinGame.getInstance(ch).getMapFactory().getMap(beginMapId);
+        return this.leader.get().getChannelServer().getMapFactory().getMap(beginMapId);
     }
 
     public void clear() {
@@ -61,7 +61,7 @@ public class MapleSquad {
     }
 
     public MapleCharacter getChar(String name) {
-        return ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(name);
+        return this.leader.get().getChannelServer().getPlayerStorage().getCharacterByName(name);
     }
 
     public long getTimeLeft() {

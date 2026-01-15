@@ -27,16 +27,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import tacos.config.ContentCustom;
-import tacos.property.Property_World;
 import odin.handling.channel.PlayerStorage;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.server.MapleSquad;
 import odin.server.maps.MapleMapFactory;
 import odin.server.shops.HiredMerchant;
 import odin.server.life.PlayerNPC;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -66,9 +62,9 @@ public class ServerOdinGame {
     }
 
     private int channel, running_MerchantID = 0;
-    private final Map<String, MapleSquad> mapleSquads = new HashMap<String, MapleSquad>();
-    private final Map<Integer, HiredMerchant> merchants = new HashMap<Integer, HiredMerchant>();
-    private final Map<Integer, PlayerNPC> playerNPCs = new HashMap<Integer, PlayerNPC>();
+    private final Map<String, MapleSquad> mapleSquads = new HashMap<>();
+    private final Map<Integer, HiredMerchant> merchants = new HashMap<>();
+    private final Map<Integer, PlayerNPC> playerNPCs = new HashMap<>();
     private final ReentrantReadWriteLock merchLock = new ReentrantReadWriteLock(); //merchant
     private final ReentrantReadWriteLock squadLock = new ReentrantReadWriteLock(); //squad
     private int eventmap = -1;
@@ -78,16 +74,7 @@ public class ServerOdinGame {
     }
 
     public static Set<Integer> getAllInstance() {
-        return new HashSet<Integer>(instances.keySet());
-    }
-
-    public static int getChannels() {
-        return Property_World.getChannels();
-    }
-
-    // 独自仕様かどうか
-    public static boolean IsCustom() {
-        return ContentCustom.CC_WZ_MAP_ADDED.get();
+        return new HashSet<>(instances.keySet());
     }
 
     public final void run_startup_configurations(int port) {
@@ -220,7 +207,7 @@ public class ServerOdinGame {
     }
 
     public final List<HiredMerchant> searchMerchant(final int itemSearch) {
-        final List<HiredMerchant> list = new LinkedList<HiredMerchant>();
+        final List<HiredMerchant> list = new LinkedList<>();
         merchLock.readLock().lock();
         try {
             final Iterator itr = merchants.values().iterator();

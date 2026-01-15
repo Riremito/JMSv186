@@ -50,7 +50,6 @@ import odin.server.maps.Event_DojoAgent;
 import odin.server.maps.AramiaFireWorks;
 import odin.server.quest.MapleQuest;
 import odin.server.MapleItemInformationProvider;
-import tacos.server.ServerOdinGame;
 import odin.handling.channel.MapleGuildRanking;
 import tacos.database.DatabaseConnection;
 import odin.handling.world.MapleParty;
@@ -81,6 +80,7 @@ import odin.server.maps.Event_PyramidSubway;
 import tacos.packet.response.ResCScriptMan;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
+import tacos.server.Server_Game;
 
 public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
@@ -629,13 +629,11 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (getPlayer().getParty() == null) {
             return null;
         }
-        List<MapleCharacter> chars = new LinkedList<MapleCharacter>(); // creates an empty array full of shit..
+        List<MapleCharacter> chars = new LinkedList<>(); // creates an empty array full of shit..
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            for (ServerOdinGame channel : ServerOdinGame.getAllInstances()) {
-                MapleCharacter ch = channel.getPlayerStorage().getCharacterById(chr.getId());
-                if (ch != null) { // double check <3
-                    chars.add(ch);
-                }
+            MapleCharacter player = getPlayer().getWorld().findOnlinePlayerById(chr.getId(), false);
+            if (player != null) {
+                chars.add(player);
             }
         }
         return chars;
@@ -1167,8 +1165,8 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.getItemEffect(buff) != null && getPlayer().getGuildId() > 0) {
             final MapleStatEffect mse = ii.getItemEffect(buff);
-            for (ServerOdinGame cserv : ServerOdinGame.getAllInstances()) {
-                for (MapleCharacter chr : cserv.getPlayerStorage().getAllCharacters()) {
+            for (Server_Game srv_channel : this.client.getWorld().getChannels()) {
+                for (MapleCharacter chr : srv_channel.getPlayerStorage().getAllCharacters()) {
                     if (chr.getGuildId() == getPlayer().getGuildId()) {
                         mse.applyTo(chr, chr, true, null, duration);
                         chr.dropMessage(5, "Your guild has gotten a " + msg + " buff.");

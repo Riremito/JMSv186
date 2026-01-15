@@ -38,7 +38,6 @@ import tacos.config.Version;
 import tacos.wz.data.MobWz;
 import tacos.wz.data.SkillWz;
 import tacos.debug.DebugLogger;
-import tacos.server.ServerOdinGame;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMapTransfer;
 import tacos.packet.response.ResCMobPool;
@@ -766,9 +765,10 @@ public class PlayerHandler {
         }
     }
 
-    public static final void ChangeMap(MapleClient c, int map_id) {
-        final MapleMap to = ServerOdinGame.getInstance(c.getChannelId()).getMapFactory().getMap(map_id);
-        c.getPlayer().changeMap(to, to.getPortal(0));
+    public static void ChangeMap(MapleClient client, int map_id) {
+        MapleCharacter player = client.getPlayer();
+        MapleMap to = player.getChannelServer().getMapFactory().getMap(map_id);
+        player.changeMap(to, to.getPortal(0));
     }
 
 }

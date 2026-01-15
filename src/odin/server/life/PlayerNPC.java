@@ -43,7 +43,7 @@ import tacos.packet.response.ResCNpcPool;
 
 public class PlayerNPC extends MapleNPC {
 
-    private Map<Byte, Integer> equips = new HashMap<Byte, Integer>();
+    private Map<Byte, Integer> equips = new HashMap<>();
     private int mapid, face, hair, charId;
     private byte skin, gender;
     private int[] pets = new int[3];
@@ -96,7 +96,7 @@ public class PlayerNPC extends MapleNPC {
     }
 
     public static void loadAll() {
-        List<PlayerNPC> toAdd = new ArrayList<PlayerNPC>();
+        List<PlayerNPC> toAdd = new ArrayList<>();
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM playernpcs");
@@ -147,7 +147,7 @@ public class PlayerNPC extends MapleNPC {
         setGender(chr.getGender());
         setPets(chr.getPets());
 
-        equips = new HashMap<Byte, Integer>();
+        equips = new HashMap<>();
         for (IItem item : chr.getInventory(MapleInventoryType.EQUIPPED).list()) {
             if (item.getPosition() < -128) {
                 continue;

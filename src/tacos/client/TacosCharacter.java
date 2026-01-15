@@ -48,7 +48,6 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.script.portal.ArdentmillPortal;
 import tacos.script.portal.FreeMarketPortal;
-import tacos.server.ServerOdinGame;
 import tacos.server.Server_Game;
 import tacos.server.TacosServer;
 import tacos.server.TacosServerType;
@@ -239,7 +238,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void updateMapById(int map_id, int portal_id) {
-        MapleMapFactory mapFactory = ServerOdinGame.getInstance(client.getChannelId()).getMapFactory();
+        MapleMapFactory mapFactory = getChannelServer().getMapFactory();
         MapleMap map_to = mapFactory.getMap(map_id);
 
         if (map_to != null) {
@@ -310,7 +309,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             return false;
         }
         // direct map change.
-        map_to = ServerOdinGame.getInstance(client.getChannelId()).getMapFactory().getMap(map_id_to);
+        map_to = getChannelServer().getMapFactory().getMap(map_id_to);
         changeMap(map_to, map_to.getPortal(0));
         return true;
     }

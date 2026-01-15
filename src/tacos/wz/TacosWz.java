@@ -32,8 +32,8 @@ import odin.provider.IMapleDataProvider;
 import odin.provider.WzXML.WZDirectoryEntry;
 import odin.provider.WzXML.WZFileEntry;
 import odin.provider.WzXML.XMLDomMapleData;
+import tacos.config.ContentCustom;
 import tacos.odin.OdinPair;
-import tacos.server.ServerOdinGame;
 
 /**
  *
@@ -114,7 +114,7 @@ public class TacosWz implements IMapleDataProvider {
     }
 
     private FileInputStream getCustomData(String data_path) {
-        if (!ServerOdinGame.IsCustom()) {
+        if (!ContentCustom.CC_WZ_MAP_ADDED.get()) {
             return null;
         }
 
@@ -160,7 +160,7 @@ public class TacosWz implements IMapleDataProvider {
         try {
             fis = new FileInputStream(dataFile);
         } catch (FileNotFoundException ex) {
-            if (ServerOdinGame.IsCustom()) {
+            if (ContentCustom.CC_WZ_MAP_ADDED.get()) {
                 fis = getCustomData(data_path);
             }
         }

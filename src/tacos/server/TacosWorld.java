@@ -160,6 +160,10 @@ public class TacosWorld {
     }
 
     public MapleCharacter findOnlinePlayer(String player_name) {
+        return findOnlinePlayer(player_name, true);
+    }
+
+    public MapleCharacter findOnlinePlayer(String player_name, boolean cs_itc) {
         MapleCharacter player = null;
         // channel servers
         for (Server_Game ch_server : this.channels) {
@@ -168,6 +172,9 @@ public class TacosWorld {
                 return player;
             }
         }
+        if (!cs_itc) {
+            return player;
+        }
         // itc
         player = this.itc.getPlayerStorage().getCharacterByName(player_name);
         if (player != null) {
@@ -175,6 +182,36 @@ public class TacosWorld {
         }
         // cs
         player = this.cashshop.getPlayerStorage().getCharacterByName(player_name);
+        if (player != null) {
+            return player;
+        }
+        // not found.
+        return player;
+    }
+
+    public MapleCharacter findOnlinePlayerById(int player_id) {
+        return findOnlinePlayerById(player_id, true);
+    }
+
+    public MapleCharacter findOnlinePlayerById(int player_id, boolean cs_itc) {
+        MapleCharacter player = null;
+        // channel servers
+        for (Server_Game ch_server : this.channels) {
+            player = ch_server.getPlayerStorage().getCharacterById(player_id);
+            if (player != null) {
+                return player;
+            }
+        }
+        if (!cs_itc) {
+            return player;
+        }
+        // itc
+        player = this.itc.getPlayerStorage().getCharacterById(player_id);
+        if (player != null) {
+            return player;
+        }
+        // cs
+        player = this.cashshop.getPlayerStorage().getCharacterById(player_id);
         if (player != null) {
             return player;
         }
