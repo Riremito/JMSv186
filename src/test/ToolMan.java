@@ -19,7 +19,6 @@
 package test;
 
 import odin.client.MapleCharacter;
-import tacos.server.ServerOdinGame;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -28,6 +27,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import odin.server.maps.MapleMap;
+import tacos.server.TacosChannel;
+import tacos.server.TacosWorld;
 
 /**
  *
@@ -51,10 +52,10 @@ public class ToolMan {
         JPanel p = new JPanel();
         p.setLayout(null);
         {
-            JButton b = new JButton("\u66f4\u65b0");
+            JButton b = new JButton("更新");
             b.setBounds(10, 10, 80, 20);
             b.addActionListener((ActionEvent e) -> {
-                UpdateCharacterListComboBox();
+                updateCharacterListComboBox();
             });
             p.add(b);
         }
@@ -65,26 +66,26 @@ public class ToolMan {
             cb_character = c;
         }
         {
-            JButton b = new JButton("\u60c5\u5831\u53d6\u5f97");
+            JButton b = new JButton("情報取得");
             b.setBounds(10, 40, 100, 20);
             b.addActionListener((ActionEvent e) -> {
-                GetCharacterInfo();
+                getCharacterInfo();
             });
             p.add(b);
         }
         {
-            JTextArea a = new JTextArea("\u60c5\u5831", 10, 50);
+            JTextArea a = new JTextArea("", 10, 50);
             a.setBounds(10, 70, 360, 300);
             p.add(a);
             textarea_info = a;
         }
         {
             JTextField t = new JTextField();
-            JButton b = new JButton("\u30e1\u30eb\u8ffd\u52a0");
+            JButton b = new JButton("メル追加");
             t.setBounds(400, 70, 180, 20);
             b.setBounds(600, 70, 120, 20);
             b.addActionListener((ActionEvent e) -> {
-                GainMesos();
+                addMesos();
             });
             p.add(t);
             p.add(b);
@@ -92,7 +93,7 @@ public class ToolMan {
         }
         {
             JTextField t = new JTextField();
-            JButton b = new JButton("\u7389\u8ffd\u52a0");
+            JButton b = new JButton("玉追加");
             t.setBounds(400, 100, 180, 20);
             b.setBounds(600, 100, 120, 20);
             b.addActionListener((ActionEvent e) -> {
@@ -104,11 +105,11 @@ public class ToolMan {
         }
         {
             JTextField t = new JTextField("910000000");
-            JButton b = new JButton("\u30de\u30c3\u30d7\u79fb\u52d5");
+            JButton b = new JButton("マップ移動");
             t.setBounds(400, 130, 180, 20);
             b.setBounds(600, 130, 120, 20);
             b.addActionListener((ActionEvent e) -> {
-                MoveMap();
+                moveMap();
             });
             p.add(t);
             p.add(b);
@@ -116,7 +117,7 @@ public class ToolMan {
         }
         {
             JTextField t = new JTextField();
-            JButton b = new JButton("\u8ee2\u8077");
+            JButton b = new JButton("転職");
             t.setBounds(400, 160, 180, 20);
             b.setBounds(600, 160, 120, 20);
             b.addActionListener((ActionEvent e) -> {
@@ -128,11 +129,11 @@ public class ToolMan {
         }
         {
             JTextField t = new JTextField();
-            JButton b = new JButton("\u30ec\u30d9\u30eb");
+            JButton b = new JButton("レベル");
             t.setBounds(400, 190, 180, 20);
             b.setBounds(600, 190, 120, 20);
             b.addActionListener((ActionEvent e) -> {
-                LevelUp();
+                levelUp();
             });
             p.add(t);
             p.add(b);
@@ -143,100 +144,77 @@ public class ToolMan {
     }
 
     // 情報取得
-    private static boolean GetCharacterInfo() {
-        MapleCharacter c = GetLoggedInCharacter();
-        if (c == null) {
+    private static boolean getCharacterInfo() {
+        MapleCharacter player = getLoggedInCharacter();
+        if (player == null) {
             return false;
         }
         String text = "";
-        text += "\u30ad\u30e3\u30e9\u30af\u30bf\u30fc\u540d: " + c.getName() + "\n";
-        text += "\u30ec\u30d9\u30eb: " + c.getLevel() + "\n";
-        text += "\u30e1\u30eb: " + c.getMeso() + "\n";
-        text += "\u7389: " + c.getTama() + "\n";
+        text += "キャラクター名 : " + player.getName() + "\n";
+        text += "レベル : " + player.getLevel() + "\n";
+        text += "メル : " + player.getMeso() + "\n";
+        text += "玉 : " + player.getTama() + "\n";
         textarea_info.setText(text);
         return true;
     }
 
     // Comboboxで選択されたログイン中のキャラクター名からオブジェクトを取得
-    private static MapleCharacter GetLoggedInCharacter() {
+    private static MapleCharacter getLoggedInCharacter() {
         if (cb_character.getItemCount() == 0) {
             return null;
         }
         String target_name = (String) cb_character.getSelectedItem();
-        for (int i : ServerOdinGame.getAllInstance()) {
-            ServerOdinGame channel = ServerOdinGame.getInstance(i);
-            if (channel != null) {
-                MapleCharacter c = channel.getPlayerStorage().getCharacterByName(target_name);
-                if (c != null) {
-                    return c;
-                }
-            }
+        MapleCharacter player = TacosWorld.find(0).findOnlinePlayer(target_name);
+        if (player != null) {
+            return player;
         }
+
         return null;
     }
 
-    private static boolean MoveMap() {
-        MapleCharacter c = GetLoggedInCharacter();
-        if (c == null) {
+    private static boolean moveMap() {
+        MapleCharacter player = getLoggedInCharacter();
+        if (player == null) {
             return false;
         }
-        int mapid = Integer.parseInt(tf_mapid.getText());
-        for (int i : ServerOdinGame.getAllInstance()) {
-            ServerOdinGame ch = ServerOdinGame.getInstance(i);
-            MapleMap map = ch.getMapFactory().getMap(mapid);
-            c.changeMap(map, map.getPortal(0));
-            return true;
+        int map_id = Integer.parseInt(tf_mapid.getText());
+        MapleMap map_to = player.getChannelServer().getMapFactory().getMap(map_id);
+        if (map_to == null) {
+            return false;
         }
-        return false;
+        player.changeMap(map_to, map_to.getPortal(0));
+        return true;
     }
 
-    // test
-    private static void PanelTest() {
-        for (int i : ServerOdinGame.getAllInstance()) {
-            ServerOdinGame channel = ServerOdinGame.getInstance(i);
-            if (channel != null) {
-                for (MapleCharacter chr : channel.getPlayerStorage().getAllCharacters()) {
-                    if (chr != null) {
-                        MapleMap map = channel.getMapFactory().getMap(910000000);
-                        chr.changeMap(map, map.getPortal(0));
-                    }
-                }
-            }
-        }
-    }
-
-    private static boolean GainMesos() {
-        MapleCharacter c = GetLoggedInCharacter();
-        if (c == null) {
+    private static boolean addMesos() {
+        MapleCharacter player = getLoggedInCharacter();
+        if (player == null) {
             return false;
         }
         int mesos = Integer.parseInt(tf_mesos.getText());
-        c.gainMeso(mesos, true);
+        player.gainMeso(mesos, true);
         return false;
     }
 
-    private static boolean LevelUp() {
-        MapleCharacter c = GetLoggedInCharacter();
-        if (c == null) {
+    private static boolean levelUp() {
+        MapleCharacter player = getLoggedInCharacter();
+        if (player == null) {
             return false;
         }
         //int level = Integer.parseInt(tf_level.getText());
-        c.levelUp();
-        if (c.getExp() < 0) {
-            c.gainExp(-c.getExp(), false, false, true);
+        player.levelUp();
+        if (player.getExp() < 0) {
+            player.gainExp(-player.getExp(), false, false, true);
         }
         return false;
     }
 
-    private static void UpdateCharacterListComboBox() {
+    private static void updateCharacterListComboBox() {
         cb_character.removeAllItems();
-        for (int i : ServerOdinGame.getAllInstance()) {
-            ServerOdinGame channel = ServerOdinGame.getInstance(i);
-            if (channel != null) {
-                for (MapleCharacter chr : channel.getPlayerStorage().getAllCharacters()) {
-                    if (chr != null) {
-                        cb_character.addItem(chr.getName());
-                    }
+        for (TacosChannel channel : TacosWorld.find(0).getChannels()) {
+            for (MapleCharacter player : channel.getPlayerStorage().getAllCharacters()) {
+                if (player != null) {
+                    cb_character.addItem(player.getName());
                 }
             }
         }

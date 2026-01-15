@@ -24,9 +24,7 @@ import tacos.debug.DebugLogger;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
-import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 
 /**
