@@ -32,7 +32,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.server.MapleSquad;
 import odin.server.maps.MapleMapFactory;
 import odin.server.shops.HiredMerchant;
-import odin.server.life.PlayerNPC;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -64,7 +63,6 @@ public class ServerOdinGame {
     private int channel, running_MerchantID = 0;
     private final Map<String, MapleSquad> mapleSquads = new HashMap<>();
     private final Map<Integer, HiredMerchant> merchants = new HashMap<>();
-    private final Map<Integer, PlayerNPC> playerNPCs = new HashMap<>();
     private final ReentrantReadWriteLock merchLock = new ReentrantReadWriteLock(); //merchant
     private final ReentrantReadWriteLock squadLock = new ReentrantReadWriteLock(); //squad
     private int eventmap = -1;
@@ -222,29 +220,6 @@ public class ServerOdinGame {
             merchLock.readLock().unlock();
         }
         return list;
-    }
-
-    public final Collection<PlayerNPC> getAllPlayerNPC() {
-        return playerNPCs.values();
-    }
-
-    public final PlayerNPC getPlayerNPC(final int id) {
-        return playerNPCs.get(id);
-    }
-
-    public final void addPlayerNPC(final PlayerNPC npc) {
-        if (playerNPCs.containsKey(npc.getId())) {
-            removePlayerNPC(npc);
-        }
-        playerNPCs.put(npc.getId(), npc);
-        getMapFactory().getMap(npc.getMapId()).addMapObject(npc);
-    }
-
-    public final void removePlayerNPC(final PlayerNPC npc) {
-        if (playerNPCs.containsKey(npc.getId())) {
-            playerNPCs.remove(npc.getId());
-            getMapFactory().getMap(npc.getMapId()).removeMapObject(npc);
-        }
     }
 
 }

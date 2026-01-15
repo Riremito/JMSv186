@@ -389,7 +389,7 @@ public class DebugCommand {
                 return true;
             }
             case "/pnpc": {
-                PlayerNPC pnpc = new PlayerNPC(chr, 9901000, chr.getMap(), chr);
+                PlayerNPC pnpc = new PlayerNPC(chr, 9901000, chr.getMap());
                 pnpc.update(chr);
                 chr.getMap().addMapObject(pnpc);
                 pnpc.sendSpawnData(chr.getClient());

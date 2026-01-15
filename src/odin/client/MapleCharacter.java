@@ -121,7 +121,6 @@ import odin.server.Timer.BuffTimer;
 import odin.server.Timer.EtcTimer;
 import odin.server.Timer.MapTimer;
 import odin.server.life.MobSkill;
-import odin.server.life.PlayerNPC;
 import odin.server.maps.Event_PyramidSubway;
 import odin.server.maps.MapleDragon;
 import odin.server.maps.MapleFoothold;
@@ -1080,7 +1079,6 @@ public class MapleCharacter extends TacosCharacter {
             if (cs != null) {
                 cs.save();
             }
-            PlayerNPC.updateByCharId(this);
             DQ_KeyMap.saveKeys(this);
             mount.saveMount(id);
             monsterbook.saveCards(id);
