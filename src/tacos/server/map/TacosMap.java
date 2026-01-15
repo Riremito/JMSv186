@@ -1544,4 +1544,28 @@ public class TacosMap extends TacosMapData {
         return ServerOdinGame.getInstance(channel).getMapFactory().getMap(forcedReturnMap);
     }
 
+    public boolean updateMapItem() {
+        for (MapleMapItem item : getAllItems()) {
+            if (item.shouldExpire()) {
+                item.expire(this);
+                continue;
+            }
+            if (item.shouldFFA()) {
+                item.setDropType((byte) 2);
+            }
+        }
+        return true;
+    }
+
+    public boolean updateSpawn() {
+        if (!canSpawn()) {
+            return false;
+        }
+        if (this.characters.isEmpty()) {
+            return false;
+        }
+        respawn(false);
+        return true;
+    }
+
 }

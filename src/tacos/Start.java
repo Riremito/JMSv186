@@ -142,6 +142,8 @@ public class Start {
         TacosCashShop.init();
         // itc server
         TacosITC.init();
+        // map updates
+        TacosWorld.find(0).registerRespawn(); // TODO : fix
 
         RandomRewards.getInstance();
         MapleGuildRanking.getInstance().getRank();
@@ -153,7 +155,6 @@ public class Start {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        TacosWorld.registerRespawn();
         DebugLogger.SetupLog("RANKING");
         RankingWorker.getInstance().run();
 
