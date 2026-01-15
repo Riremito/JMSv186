@@ -46,8 +46,8 @@ import tacos.packet.response.ResCLogin;
 import tacos.packet.response.ResCLogin.LoginResult;
 import odin.server.MapleItemInformationProvider;
 import tacos.packet.ClientPacketHeader;
-import tacos.server.Server_Game;
-import tacos.server.Server_Login;
+import tacos.server.TacosChannel;
+import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
 
 /**
@@ -56,9 +56,9 @@ import tacos.server.TacosWorld;
  */
 public class ReqCLogin {
 
-    private Server_Login login_server;
+    private TacosLogin login_server;
 
-    public ReqCLogin(Server_Login login_server) {
+    public ReqCLogin(TacosLogin login_server) {
         this.login_server = login_server;
     }
 
@@ -505,7 +505,7 @@ public class ReqCLogin {
             client.loginFailed("OnSelectCharacter");
             return false;
         }
-        Server_Game game_server = TacosWorld.find(client.getSelectedWorld()).getChannelServer(client.getSelectedChannel() + 1);
+        TacosChannel game_server = TacosWorld.find(client.getSelectedWorld()).getChannelServer(client.getSelectedChannel() + 1);
         DQ_Accounts.updateLoginState(client, MapleClientState.LOGIN_SERVER_TRANSITION);
         client.sendSelectCharacterResult(game_server, character_id);
         return true;

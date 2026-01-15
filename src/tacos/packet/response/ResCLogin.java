@@ -32,7 +32,7 @@ import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCharacterData;
 import tacos.packet.response.data.DataGW_CharacterStat;
 import tacos.property.Property_World;
-import tacos.server.Server_Game;
+import tacos.server.TacosChannel;
 import tacos.server.TacosServer;
 import tacos.server.TacosWorld;
 import tacos.tools.TacosTools;
@@ -662,7 +662,7 @@ public class ResCLogin {
             sp.Encode4(500); // 0 causes 0 div
         }
         // チャンネル情報
-        for (Server_Game channel : world.getChannels()) {
+        for (TacosChannel channel : world.getChannels()) {
             // チャンネル名
             sp.EncodeStr(channel.getName()); // sName
             // 接続人数表示

@@ -142,7 +142,7 @@ import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
-import tacos.server.Server_Game;
+import tacos.server.TacosChannel;
 import tacos.server.map.TacosPortal;
 
 public class MapleCharacter extends TacosCharacter {
@@ -4562,7 +4562,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public boolean changeChannel(int channel) {
-        Server_Game ch_server = getWorld().getChannelServer(channel);
+        TacosChannel ch_server = getWorld().getChannelServer(channel);
         if (ch_server == null || channel == client.getChannelId()) {
             return false;
         }

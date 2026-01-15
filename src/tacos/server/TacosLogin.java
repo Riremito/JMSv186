@@ -28,20 +28,20 @@ import tacos.property.Property_Login;
  *
  * @author Riremito
  */
-public class Server_Login extends TacosServer {
+public class TacosLogin extends TacosServer {
 
-    private ArrayList<Server_Game> game_servers = new ArrayList<>();
-    private Map<Integer, ArrayList<Server_Game>> game_worlds = new HashMap<>();
+    private ArrayList<TacosChannel> game_servers = new ArrayList<>();
+    private Map<Integer, ArrayList<TacosChannel>> game_worlds = new HashMap<>();
 
-    public Server_Login(String server_name) {
+    public TacosLogin(String server_name) {
         super(server_name);
         setType(TacosServerType.LOGIN_SERVER);
     }
 
-    public void addGameServer(Server_Game game_server) {
+    public void addGameServer(TacosChannel game_server) {
         this.game_servers.add(game_server);
         int world_id = game_server.getWorld().getId();
-        ArrayList<Server_Game> game_world = this.game_worlds.get(world_id);
+        ArrayList<TacosChannel> game_world = this.game_worlds.get(world_id);
         if (game_world == null) {
             game_world = new ArrayList<>();
             this.game_worlds.put(world_id, game_world);
@@ -53,7 +53,7 @@ public class Server_Login extends TacosServer {
         return this.game_worlds.size();
     }
 
-    public ArrayList<Server_Game> getWorld(int world_id) {
+    public ArrayList<TacosChannel> getWorld(int world_id) {
         return this.game_worlds.get(world_id);
     }
 
@@ -66,7 +66,7 @@ public class Server_Login extends TacosServer {
             return 2;
         }
         int online_users = 0;
-        for (Server_Game game_server : this.game_servers) {
+        for (TacosChannel game_server : this.game_servers) {
             if (game_server.getWorld().getId() == world) {
                 online_users += game_server.getNumberOfSessions();
             }

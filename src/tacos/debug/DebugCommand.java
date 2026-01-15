@@ -68,7 +68,7 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptPortal;
 import tacos.script.TacosScriptQuest;
 import tacos.script.TacosScriptReactor;
-import tacos.server.Server_Game;
+import tacos.server.TacosChannel;
 import tacos.server.TacosWorld;
 
 /**
@@ -167,7 +167,7 @@ public class DebugCommand {
             }
             case "/players": {
                 TacosWorld world = chr.getWorld();
-                for (Server_Game srv_channel : world.getChannels()) {
+                for (TacosChannel srv_channel : world.getChannels()) {
                     String msg = srv_channel.getName() + " : ";
                     String player_names = "";
                     for (MapleCharacter player : srv_channel.getPlayerStorage().getAllCharacters()) {
@@ -206,7 +206,7 @@ public class DebugCommand {
                 return true;
             }
             case "/msg": {
-                Server_Game srv_channel = chr.getChannelServer();
+                TacosChannel srv_channel = chr.getChannelServer();
                 if (splitted.length < 2) {
                     srv_channel.setServerMessage("");
                     srv_channel.broadcastPacket(ResWrapper.BroadCastMsgSlide(srv_channel.getServerMessage()));

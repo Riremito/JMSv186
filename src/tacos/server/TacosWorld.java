@@ -52,9 +52,9 @@ public class TacosWorld {
     private String name;
     private int flag;
     private String event_desc;
-    private ArrayList<Server_Game> channels = new ArrayList<>();
-    private Server_CashShop cashshop = null;
-    private Server_ITC itc = null;
+    private ArrayList<TacosChannel> channels = new ArrayList<>();
+    private TacosCashShop cashshop = null;
+    private TacosITC itc = null;
     private ArrayList<MapleCharacter> player_migrating = new ArrayList<>();
 
     public TacosWorld(int id, String name, int flag, String event_desc) {
@@ -69,13 +69,13 @@ public class TacosWorld {
     }
 
     public void broadcastPacket(MaplePacket packet) {
-        for (Server_Game ch_server : this.channels) {
+        for (TacosChannel ch_server : this.channels) {
             ch_server.broadcastPacket(packet);
         }
     }
 
     public void broadcastMegaphonePacket(MaplePacket packet) {
-        for (Server_Game ch_server : this.channels) {
+        for (TacosChannel ch_server : this.channels) {
             ch_server.broadcastMegaphonePacket(packet);
         }
     }
@@ -96,17 +96,17 @@ public class TacosWorld {
         return this.event_desc;
     }
 
-    public void addChannel(Server_Game channel) {
+    public void addChannel(TacosChannel channel) {
         this.channels.add(channel);
     }
 
-    public ArrayList<Server_Game> getChannels() {
+    public ArrayList<TacosChannel> getChannels() {
         return this.channels;
     }
 
     // from 1.
-    public Server_Game getChannelServer(int channel) {
-        for (Server_Game ch_server : this.channels) {
+    public TacosChannel getChannelServer(int channel) {
+        for (TacosChannel ch_server : this.channels) {
             if (ch_server.getChannel() == channel) {
                 return ch_server;
             }
@@ -114,19 +114,19 @@ public class TacosWorld {
         return null;
     }
 
-    public void setCashShop(Server_CashShop cashshop) {
+    public void setCashShop(TacosCashShop cashshop) {
         this.cashshop = cashshop;
     }
 
-    public Server_CashShop getCashShop() {
+    public TacosCashShop getCashShop() {
         return this.cashshop;
     }
 
-    public void setITC(Server_ITC itc) {
+    public void setITC(TacosITC itc) {
         this.itc = itc;
     }
 
-    public Server_ITC getITC() {
+    public TacosITC getITC() {
         return this.itc;
     }
 
@@ -166,7 +166,7 @@ public class TacosWorld {
     public MapleCharacter findOnlinePlayer(String player_name, boolean cs_itc) {
         MapleCharacter player = null;
         // channel servers
-        for (Server_Game ch_server : this.channels) {
+        for (TacosChannel ch_server : this.channels) {
             player = ch_server.getPlayerStorage().getCharacterByName(player_name);
             if (player != null) {
                 return player;
@@ -196,7 +196,7 @@ public class TacosWorld {
     public MapleCharacter findOnlinePlayerById(int player_id, boolean cs_itc) {
         MapleCharacter player = null;
         // channel servers
-        for (Server_Game ch_server : this.channels) {
+        for (TacosChannel ch_server : this.channels) {
             player = ch_server.getPlayerStorage().getCharacterById(player_id);
             if (player != null) {
                 return player;

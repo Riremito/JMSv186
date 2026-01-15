@@ -24,10 +24,10 @@ import tacos.config.DeveloperMode;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.response.ResCLogin;
-import tacos.server.Server_CashShop;
-import tacos.server.Server_Game;
-import tacos.server.Server_ITC;
-import tacos.server.Server_Login;
+import tacos.server.TacosCashShop;
+import tacos.server.TacosChannel;
+import tacos.server.TacosITC;
+import tacos.server.TacosLogin;
 import tacos.server.TacosServer;
 import tacos.server.TacosWorld;
 
@@ -65,16 +65,16 @@ public class TacosClient extends BaseClient {
         return this.server;
     }
 
-    public Server_Login getLoginServer() {
-        return (Server_Login) this.server;
+    public TacosLogin getLoginServer() {
+        return (TacosLogin) this.server;
     }
 
-    public Server_Game getChannelServer() {
-        return (Server_Game) this.server;
+    public TacosChannel getChannelServer() {
+        return (TacosChannel) this.server;
     }
 
-    public Server_CashShop getCashShopServer() {
-        return (Server_CashShop) this.server;
+    public TacosCashShop getCashShopServer() {
+        return (TacosCashShop) this.server;
     }
 
     public void setServer(TacosServer server) {
@@ -105,13 +105,13 @@ public class TacosClient extends BaseClient {
                 return null;
             }
             case GAME_SERVER: {
-                return ((Server_Game) this.server).getWorld();
+                return ((TacosChannel) this.server).getWorld();
             }
             case ITC_SERVER: {
-                return ((Server_ITC) this.server).getWorld();
+                return ((TacosITC) this.server).getWorld();
             }
             case CASHSHOP_SERVER: {
-                return ((Server_CashShop) this.server).getWorld();
+                return ((TacosCashShop) this.server).getWorld();
             }
             default: {
                 break;
@@ -121,7 +121,7 @@ public class TacosClient extends BaseClient {
     }
 
     public int getChannelId() {
-        return ((Server_Game) this.server).getChannel(); // from 1.
+        return ((TacosChannel) this.server).getChannel(); // from 1.
     }
 
     public void sendSelectCharacterResult(TacosServer game_server, int character_id) {

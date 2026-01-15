@@ -80,7 +80,7 @@ import odin.server.maps.Event_PyramidSubway;
 import tacos.packet.response.ResCScriptMan;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
-import tacos.server.Server_Game;
+import tacos.server.TacosChannel;
 
 public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
@@ -1165,7 +1165,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.getItemEffect(buff) != null && getPlayer().getGuildId() > 0) {
             final MapleStatEffect mse = ii.getItemEffect(buff);
-            for (Server_Game srv_channel : this.client.getWorld().getChannels()) {
+            for (TacosChannel srv_channel : this.client.getWorld().getChannels()) {
                 for (MapleCharacter chr : srv_channel.getPlayerStorage().getAllCharacters()) {
                     if (chr.getGuildId() == getPlayer().getGuildId()) {
                         mse.applyTo(chr, chr, true, null, duration);

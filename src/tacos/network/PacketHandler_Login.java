@@ -24,7 +24,7 @@ import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCClientSocket;
 import tacos.packet.request.ReqCLogin;
 import tacos.packet.request.ReqCUser;
-import tacos.server.Server_Login;
+import tacos.server.TacosLogin;
 
 /**
  *
@@ -34,7 +34,7 @@ public class PacketHandler_Login extends PacketHandler implements IPacketHandler
 
     private ReqCLogin rCLogin;
 
-    public PacketHandler_Login(Server_Login login_server) {
+    public PacketHandler_Login(TacosLogin login_server) {
         super(login_server, -1);
         rCLogin = new ReqCLogin(login_server);
     }

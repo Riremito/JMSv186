@@ -38,10 +38,10 @@ import java.util.Set;
 
 public class ServerOdinGame {
 
-    private Server_Game server_game = null;
+    private TacosChannel server_game = null;
     private static final Map<Integer, ServerOdinGame> instances = new HashMap<Integer, ServerOdinGame>();
 
-    public void set(Server_Game server) {
+    public void set(TacosChannel server) {
         this.server_game = server;
     }
 

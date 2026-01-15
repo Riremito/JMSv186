@@ -35,7 +35,7 @@ import tacos.property.Property_Dummy_World;
  *
  * @author Riremito
  */
-public class Server_Game extends TacosServer {
+public class TacosChannel extends TacosServer {
 
     private TacosWorld world = null;
     private int channel;
@@ -47,7 +47,7 @@ public class Server_Game extends TacosServer {
     private int mesoRate;
     private int dropRate;
 
-    public Server_Game(String server_name, int channel, int language) {
+    public TacosChannel(String server_name, int channel, int language) {
         super(server_name);
         setType(TacosServerType.GAME_SERVER);
         this.channel = channel; // from 1.
@@ -119,8 +119,8 @@ public class Server_Game extends TacosServer {
         return this.dropRate;
     }
 
-    public static List<Server_Game> init() {
-        List<Server_Game> game_servers = new ArrayList<>();
+    public static List<TacosChannel> init() {
+        List<TacosChannel> game_servers = new ArrayList<>();
         TacosWorld world = new TacosWorld(0, Property_World.getName(), Property_World.getFlags(), Property_World.getEvent());
         TacosWorld.add(world);
 
@@ -130,7 +130,7 @@ public class Server_Game extends TacosServer {
             String channel_name = Property_World.getName() + "-" + channel;
             ServerOdinGame odin_game = ServerOdinGame.newInstance(channel);
             int language = Region.check(Region.EMS) ? i % Property_World.getLanguages() : 0;
-            Server_Game server = new Server_Game(channel_name, channel, language);
+            TacosChannel server = new TacosChannel(channel_name, channel, language);
             server.mapFactory.setChannel(channel);
             server.players = new PlayerStorage(channel);
             TacosServer.add(server);
@@ -162,7 +162,7 @@ public class Server_Game extends TacosServer {
             int channel = i + 1;
             String channel_name = Property_Dummy_World.getName() + "-" + channel;
             int language = Region.check(Region.EMS) ? i % Property_Dummy_World.getLanguages() : 0;
-            Server_Game server = new Server_Game(channel_name, channel, language);
+            TacosChannel server = new TacosChannel(channel_name, channel, language);
             server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
             server.setWorld(dummy_world);
             dummy_world.addChannel(server);

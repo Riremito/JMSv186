@@ -46,10 +46,10 @@ import tacos.network.MapleAESOFB;
 import tacos.network.PacketHandler_Login;
 import tacos.property.Property_Login;
 import tacos.server.TacosServer;
-import tacos.server.Server_CashShop;
-import tacos.server.Server_Game;
-import tacos.server.Server_Login;
-import tacos.server.Server_ITC;
+import tacos.server.TacosCashShop;
+import tacos.server.TacosChannel;
+import tacos.server.TacosLogin;
+import tacos.server.TacosITC;
 import test.ToolMan;
 
 /**
@@ -127,20 +127,20 @@ public class Start {
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
         // login server
-        Server_Login login_server = new Server_Login("Login");
+        TacosLogin login_server = new TacosLogin("Login");
         TacosServer.add(login_server);
         login_server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
         login_server.run(TacosConstants.SERVER_LOCAL_IP, Property_Login.getPort(), new PacketHandler_Login(login_server));
         // game servers
-        List<Server_Game> game_servers = Server_Game.init();
+        List<TacosChannel> game_servers = TacosChannel.init();
         // for world list.
-        for (Server_Game game_server : game_servers) {
+        for (TacosChannel game_server : game_servers) {
             login_server.addGameServer(game_server);
         }
         // cashshop server
-        Server_CashShop.init();
+        TacosCashShop.init();
         // itc server
-        Server_ITC.init();
+        TacosITC.init();
 
         RandomRewards.getInstance();
         MapleGuildRanking.getInstance().getRank();

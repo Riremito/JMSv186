@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Riremito
+ * Copyright (C) 2025 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,32 +18,29 @@
  */
 package tacos.server;
 
-import odin.handling.channel.PlayerStorage;
-import odin.server.MTSStorage;
-import tacos.constants.TacosConstants;
-import tacos.network.PacketHandler_ITC;
 import tacos.property.Property_Shop;
+import odin.handling.channel.PlayerStorage;
+import tacos.constants.TacosConstants;
+import tacos.network.PacketHandler_CashShop;
 
 /**
  *
  * @author Riremito
  */
-public class Server_ITC extends TacosServer {
+public class TacosCashShop extends TacosServer {
 
     private int world_id;
     private PlayerStorage players;
 
-    public Server_ITC(String server_name) {
+    public TacosCashShop(String server_name) {
         super(server_name);
-        setType(TacosServerType.ITC_SERVER);
-
-        this.players = new PlayerStorage(-20);
+        setType(TacosServerType.CASHSHOP_SERVER);
+        this.players = new PlayerStorage(-10);
     }
 
     @Override
     public void shutdown() {
         this.players.disconnectAll();
-        MTSStorage.getInstance().saveBuyNow(true);
         super.shutdown();
     }
 
@@ -56,12 +53,13 @@ public class Server_ITC extends TacosServer {
     }
 
     public static boolean init() {
-        Server_ITC server_itc = new Server_ITC("ITC");
-        TacosServer.add(server_itc);
-        server_itc.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
-        server_itc.run(TacosConstants.SERVER_LOCAL_IP, Property_Shop.getPort() + 1, new PacketHandler_ITC(server_itc));
-        server_itc.world_id = 0;
-        TacosWorld.find(server_itc.world_id).setITC(server_itc);
+        TacosCashShop server = new TacosCashShop("CashShop");
+        TacosServer.add(server);
+        server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
+        server.run(TacosConstants.SERVER_LOCAL_IP, Property_Shop.getPort(), new PacketHandler_CashShop(server));
+        server.world_id = 0;
+        TacosWorld.find(server.world_id).setCashShop(server);
         return true;
     }
+
 }

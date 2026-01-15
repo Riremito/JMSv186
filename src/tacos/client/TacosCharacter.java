@@ -48,7 +48,7 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.script.portal.ArdentmillPortal;
 import tacos.script.portal.FreeMarketPortal;
-import tacos.server.Server_Game;
+import tacos.server.TacosChannel;
 import tacos.server.TacosServer;
 import tacos.server.TacosServerType;
 import tacos.server.TacosWorld;
@@ -99,7 +99,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.client.getServer().getType();
     }
 
-    public Server_Game getChannelServer() {
+    public TacosChannel getChannelServer() {
         return this.client.getChannelServer();
     }
 
