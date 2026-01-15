@@ -162,6 +162,9 @@ public class ReqCClientSocket {
             c.getWorld().removeMigratingPlayer(transfer);
         }
         chr.setClient(c);
+        if (transfer != null) {
+            chr.updateMapById(chr.getPosMap(), chr.getPortal()); // new channel is required to update map.
+        }
 
         if (!DQ_Accounts.checkLoginIP(c)) {
             c.loginFailed("OnMigrateIn 1."); // Remote hack
