@@ -254,7 +254,10 @@ public class ReqSub_FriendRequest {
         final BuddyList buddylist = c.getPlayer().getBuddylist();
         final BuddylistEntry blz = buddylist.get(friend_id);
         if (blz != null && blz.isVisible()) {
-            notifyRemoteChannel(c, OdinWorld.Find.findChannel(friend_id), friend_id, blz.getGroup(), BuddyList.BuddyOperation.DELETED);
+            MapleCharacter player = c.getWorld().findOnlinePlayerById(friend_id, false);
+            if (player != null) {
+                notifyRemoteChannel(c, player.getChannelId(), friend_id, blz.getGroup(), BuddyList.BuddyOperation.DELETED);
+            }
         }
         buddylist.remove(friend_id);
         c.getSession().write(ResWrapper.updateBuddylist(c.getPlayer()));

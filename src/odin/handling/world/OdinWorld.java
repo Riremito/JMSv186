@@ -19,7 +19,6 @@ import odin.client.BuddylistEntry;
 import odin.client.MapleCharacter;
 import tacos.database.DatabaseConnection;
 import tacos.network.MaplePacket;
-import tacos.server.ServerOdinGame;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleBBSThread;
@@ -43,16 +42,11 @@ public class OdinWorld extends TacosWorld {
 
     //Touch everything...
     public static void init() {
-        OdinWorld.Find.findChannel(0);
         OdinWorld.Guild.lock.toString();
         OdinWorld.Alliance.lock.toString();
         OdinWorld.Family.lock.toString();
         OdinWorld.Messenger.getMessenger(0);
         OdinWorld.Party.getParty(0);
-    }
-
-    public static boolean isConnected(String charName) {
-        return Find.findChannel(charName) > 0;
     }
 
     public static class Party {
@@ -82,12 +76,9 @@ public class OdinWorld extends TacosWorld {
             }
 
             for (MaplePartyCharacter partychar : party.getMembers()) {
-                int ch = Find.findChannel(partychar.getName());
-                if (ch > 0) {
-                    MapleCharacter chr = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(partychar.getName());
-                    if (chr != null && !chr.getName().equalsIgnoreCase(namefrom)) { //Extra check just in case
-                        chr.SendPacket(ResCField.GroupMessage(OpsChatGroup.CG_Party, namefrom, chattext));
-                    }
+                MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(partychar.getName(), false);
+                if (chr != null && !chr.getName().equalsIgnoreCase(namefrom)) { //Extra check just in case
+                    chr.SendPacket(ResCField.GroupMessage(OpsChatGroup.CG_Party, namefrom, chattext));
                 }
             }
         }
@@ -122,30 +113,26 @@ public class OdinWorld extends TacosWorld {
             }
 
             for (MaplePartyCharacter partychar : party.getMembers()) {
-                int ch = Find.findChannel(partychar.getName());
-                if (ch > 0) {
-                    MapleCharacter chr = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(partychar.getName());
-                    if (chr != null) {
-                        if (operation == PartyOperation.DISBAND) {
-                            chr.setParty(null);
-                        } else {
-                            chr.setParty(party);
-                        }
-                        chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), party, operation, target));
+                MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(partychar.getName(), false);
+                if (chr != null) {
+                    if (operation == PartyOperation.DISBAND) {
+                        chr.setParty(null);
+                    } else {
+                        chr.setParty(party);
                     }
+                    chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), party, operation, target));
                 }
             }
             switch (operation) {
                 case LEAVE:
-                case EXPEL:
-                    int ch = Find.findChannel(target.getName());
-                    if (ch > 0) {
-                        MapleCharacter chr = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(target.getName());
-                        if (chr != null) {
-                            chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), party, operation, target));
-                            chr.setParty(null);
-                        }
+                case EXPEL: {
+                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(target.getName(), false);
+                    if (chr != null) {
+                        chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), party, operation, target));
+                        chr.setParty(null);
                     }
+                    break;
+                }
             }
         }
 
@@ -169,79 +156,67 @@ public class OdinWorld extends TacosWorld {
 
         public static void buddyChat(int[] recipientCharacterIds, int cidFrom, String nameFrom, String chattext) {
             for (int characterId : recipientCharacterIds) {
-                int ch = Find.findChannel(characterId);
-                if (ch > 0) {
-                    MapleCharacter chr = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterById(characterId);
-                    if (chr != null && chr.getBuddylist().containsVisible(cidFrom)) {
-                        chr.SendPacket(ResCField.GroupMessage(OpsChatGroup.CG_Friend, nameFrom, chattext));
-                    }
+                MapleCharacter chr = TacosWorld.find(0).findOnlinePlayerById(characterId, false);
+                if (chr != null && chr.getBuddylist().containsVisible(cidFrom)) {
+                    chr.SendPacket(ResCField.GroupMessage(OpsChatGroup.CG_Friend, nameFrom, chattext));
                 }
             }
         }
 
         private static void updateBuddies(int characterId, int channel, int[] buddies, boolean offline, int gmLevel, boolean isHidden) {
             for (int buddy : buddies) {
-                int ch = Find.findChannel(buddy);
-                if (ch > 0) {
-                    MapleCharacter chr = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterById(buddy);
-                    if (chr != null) {
-                        BuddylistEntry ble = chr.getBuddylist().get(characterId);
-                        if (ble != null && ble.isVisible()) {
-                            int mcChannel;
-                            if (offline || (isHidden && chr.getGMLevel() < gmLevel)) {
-                                ble.setChannel(-1);
-                                mcChannel = -1;
-                            } else {
-                                ble.setChannel(channel);
-                                mcChannel = channel - 1;
-                            }
-                            chr.getBuddylist().put(ble);
-                            chr.getClient().getSession().write(ResWrapper.updateBuddyChannel(ble.getCharacterId(), mcChannel));
+                MapleCharacter chr = TacosWorld.find(0).findOnlinePlayerById(buddy, false);
+                if (chr != null) {
+                    BuddylistEntry ble = chr.getBuddylist().get(characterId);
+                    if (ble != null && ble.isVisible()) {
+                        int mcChannel;
+                        if (offline || (isHidden && chr.getGMLevel() < gmLevel)) {
+                            ble.setChannel(-1);
+                            mcChannel = -1;
+                        } else {
+                            ble.setChannel(channel);
+                            mcChannel = channel - 1;
                         }
+                        chr.getBuddylist().put(ble);
+                        chr.getClient().getSession().write(ResWrapper.updateBuddyChannel(ble.getCharacterId(), mcChannel));
                     }
                 }
             }
         }
 
         public static void buddyChanged(int cid, int cidFrom, String name, int channel, BuddyOperation operation, int level, int job, String group) {
-            int ch = Find.findChannel(cid);
-            if (ch > 0) {
-                final MapleCharacter addChar = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterById(cid);
-                if (addChar != null) {
-                    final BuddyList buddylist = addChar.getBuddylist();
-                    switch (operation) {
-                        case ADDED:
-                            if (buddylist.contains(cidFrom)) {
-                                buddylist.put(new BuddylistEntry(name, cidFrom, group, channel, true, level, job));
-                                addChar.getClient().getSession().write(ResWrapper.updateBuddyChannel(cidFrom, channel - 1));
-                            }
-                            break;
-                        case DELETED:
-                            if (buddylist.contains(cidFrom)) {
-                                buddylist.put(new BuddylistEntry(name, cidFrom, group, -1, buddylist.get(cidFrom).isVisible(), level, job));
-                                addChar.getClient().getSession().write(ResWrapper.updateBuddyChannel(cidFrom, -1));
-                            }
-                            break;
-                    }
+            MapleCharacter addChar = TacosWorld.find(0).findOnlinePlayerById(cid, false);
+            if (addChar != null) {
+                final BuddyList buddylist = addChar.getBuddylist();
+                switch (operation) {
+                    case ADDED:
+                        if (buddylist.contains(cidFrom)) {
+                            buddylist.put(new BuddylistEntry(name, cidFrom, group, channel, true, level, job));
+                            addChar.getClient().getSession().write(ResWrapper.updateBuddyChannel(cidFrom, channel - 1));
+                        }
+                        break;
+                    case DELETED:
+                        if (buddylist.contains(cidFrom)) {
+                            buddylist.put(new BuddylistEntry(name, cidFrom, group, -1, buddylist.get(cidFrom).isVisible(), level, job));
+                            addChar.getClient().getSession().write(ResWrapper.updateBuddyChannel(cidFrom, -1));
+                        }
+                        break;
                 }
             }
         }
 
         public static BuddyAddResult requestBuddyAdd(String addName, int channelFrom, int cidFrom, String nameFrom, int levelFrom, int jobFrom) {
-            int ch = Find.findChannel(cidFrom);
-            if (ch > 0) {
-                final MapleCharacter addChar = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(addName);
-                if (addChar != null) {
-                    final BuddyList buddylist = addChar.getBuddylist();
-                    if (buddylist.isFull()) {
-                        return BuddyAddResult.BUDDYLIST_FULL;
-                    }
-                    if (!buddylist.contains(cidFrom)) {
-                        buddylist.addBuddyRequest(addChar.getClient(), cidFrom, nameFrom, channelFrom, levelFrom, jobFrom);
-                    } else {
-                        if (buddylist.containsVisible(cidFrom)) {
-                            return BuddyAddResult.ALREADY_ON_LIST;
-                        }
+            final MapleCharacter addChar = TacosWorld.find(0).findOnlinePlayer(addName, false);
+            if (addChar != null) {
+                final BuddyList buddylist = addChar.getBuddylist();
+                if (buddylist.isFull()) {
+                    return BuddyAddResult.BUDDYLIST_FULL;
+                }
+                if (!buddylist.contains(cidFrom)) {
+                    buddylist.addBuddyRequest(addChar.getClient(), cidFrom, nameFrom, channelFrom, levelFrom, jobFrom);
+                } else {
+                    if (buddylist.containsVisible(cidFrom)) {
+                        return BuddyAddResult.ALREADY_ON_LIST;
                     }
                 }
             }
@@ -274,15 +249,11 @@ public class OdinWorld extends TacosWorld {
         }
 
         public static void declineChat(String target, String namefrom) {
-            int ch = Find.findChannel(target);
-            if (ch > 0) {
-                ServerOdinGame cs = ServerOdinGame.getInstance(ch);
-                MapleCharacter chr = cs.getPlayerStorage().getCharacterByName(target);
-                if (chr != null) {
-                    MapleMessenger messenger = chr.getMessenger();
-                    if (messenger != null) {
-                        chr.getClient().getSession().write(ResCUIMessenger.messengerNote(namefrom, 5, 0));
-                    }
+            MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(target, false);
+            if (chr != null) {
+                MapleMessenger messenger = chr.getMessenger();
+                if (messenger != null) {
+                    chr.getClient().getSession().write(ResCUIMessenger.messengerNote(namefrom, 5, 0));
                 }
             }
         }
@@ -301,12 +272,9 @@ public class OdinWorld extends TacosWorld {
 
             for (MapleMessengerCharacter mmc : messenger.getMembers()) {
                 if (mmc != null) {
-                    int ch = Find.findChannel(mmc.getId());
-                    if (ch > 0) {
-                        MapleCharacter chr = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(mmc.getName());
-                        if (chr != null) {
-                            chr.getClient().getSession().write(ResCUIMessenger.removeMessengerPlayer(position));
-                        }
+                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(mmc.getName());
+                    if (chr != null) {
+                        chr.getClient().getSession().write(ResCUIMessenger.removeMessengerPlayer(position));
                     }
                 }
             }
@@ -334,13 +302,10 @@ public class OdinWorld extends TacosWorld {
 
             for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
                 if (messengerchar != null && !messengerchar.getName().equals(namefrom)) {
-                    int ch = Find.findChannel(messengerchar.getName());
-                    if (ch > 0) {
-                        MapleCharacter chr = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(messengerchar.getName());
-                        if (chr != null) {
-                            MapleCharacter from = ServerOdinGame.getInstance(fromchannel).getPlayerStorage().getCharacterByName(namefrom);
-                            chr.getClient().getSession().write(ResCUIMessenger.updateMessengerPlayer(namefrom, from, position, fromchannel - 1));
-                        }
+                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
+                    if (chr != null) {
+                        MapleCharacter from = TacosWorld.find(0).findOnlinePlayer(namefrom, false);
+                        chr.SendPacket(ResCUIMessenger.updateMessengerPlayer(namefrom, from, position, fromchannel - 1));
                     }
                 }
             }
@@ -356,17 +321,14 @@ public class OdinWorld extends TacosWorld {
             for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
                 if (messengerchar != null) {
                     int mposition = messenger.getPositionByName(messengerchar.getName());
-                    int ch = Find.findChannel(messengerchar.getName());
-                    if (ch > 0) {
-                        MapleCharacter chr = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(messengerchar.getName());
-                        if (chr != null) {
-                            if (!messengerchar.getName().equals(from)) {
-                                MapleCharacter fromCh = ServerOdinGame.getInstance(fromchannel).getPlayerStorage().getCharacterByName(from);
-                                chr.getClient().getSession().write(ResCUIMessenger.addMessengerPlayer(from, fromCh, position, fromchannel - 1));
-                                fromCh.getClient().getSession().write(ResCUIMessenger.addMessengerPlayer(chr.getName(), chr, mposition, messengerchar.getChannel() - 1));
-                            } else {
-                                chr.getClient().getSession().write(ResCUIMessenger.joinMessenger(mposition));
-                            }
+                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
+                    if (chr != null) {
+                        if (!messengerchar.getName().equals(from)) {
+                            MapleCharacter fromCh = TacosWorld.find(0).findOnlinePlayer(from);
+                            chr.SendPacket(ResCUIMessenger.addMessengerPlayer(from, fromCh, position, fromchannel - 1));
+                            fromCh.SendPacket(ResCUIMessenger.addMessengerPlayer(chr.getName(), chr, mposition, messengerchar.getChannel() - 1));
+                        } else {
+                            chr.SendPacket(ResCUIMessenger.joinMessenger(mposition));
                         }
                     }
                 }
@@ -381,43 +343,31 @@ public class OdinWorld extends TacosWorld {
 
             for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
                 if (messengerchar != null && !messengerchar.getName().equals(namefrom)) {
-                    int ch = Find.findChannel(messengerchar.getName());
-                    if (ch > 0) {
-                        MapleCharacter chr = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(messengerchar.getName());
-                        if (chr != null) {
-
-                            chr.getClient().getSession().write(ResCUIMessenger.messengerChat(chattext));
-                        }
+                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
+                    if (chr != null) {
+                        chr.SendPacket(ResCUIMessenger.messengerChat(chattext));
                     }
                 } //Whisp Monitor Code
                 else if (messengerchar != null) {
-                    int ch = Find.findChannel(messengerchar.getName());
-                    if (ch > 0) {
-                        MapleCharacter chr = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(messengerchar.getName());
-                    }
+                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
                 }
                 //
             }
         }
 
         public static void messengerInvite(String sender, int messengerid, String target, int fromchannel, boolean gm) {
-
-            if (isConnected(target)) {
-
-                int ch = Find.findChannel(target);
-                if (ch > 0) {
-                    MapleCharacter from = ServerOdinGame.getInstance(fromchannel).getPlayerStorage().getCharacterByName(sender);
-                    MapleCharacter targeter = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(target);
-                    if (targeter != null && targeter.getMessenger() == null) {
-                        if (!targeter.isGM() || gm) {
-                            targeter.getClient().getSession().write(ResCUIMessenger.messengerInvite(sender, messengerid));
-                            from.getClient().getSession().write(ResCUIMessenger.messengerNote(target, 4, 1));
-                        } else {
-                            from.getClient().getSession().write(ResCUIMessenger.messengerNote(target, 4, 0));
-                        }
+            if (TacosWorld.find(0).findOnlinePlayer(target, false) != null) {
+                MapleCharacter from = TacosWorld.find(0).findOnlinePlayer(sender, false);
+                MapleCharacter targeter = TacosWorld.find(0).findOnlinePlayer(target, false);
+                if (targeter != null && targeter.getMessenger() == null) {
+                    if (!targeter.isGM() || gm) {
+                        targeter.SendPacket(ResCUIMessenger.messengerInvite(sender, messengerid));
+                        from.SendPacket(ResCUIMessenger.messengerNote(target, 4, 1));
                     } else {
-                        from.getClient().getSession().write(ResCUIMessenger.messengerChat(sender + " : " + target + " is already using Maple Messenger"));
+                        from.SendPacket(ResCUIMessenger.messengerNote(target, 4, 0));
                     }
+                } else {
+                    from.SendPacket(ResCUIMessenger.messengerChat(sender + " : " + target + " is already using Maple Messenger"));
                 }
             }
 
@@ -701,12 +651,7 @@ public class OdinWorld extends TacosWorld {
         }
 
         public static void setGuildAndRank(int cid, int guildid, int rank, int alliancerank) {
-            int ch = Find.findChannel(cid);
-            if (ch == -1) {
-                // System.out.println("ERROR: cannot find player in given channel");
-                return;
-            }
-            MapleCharacter mc = null;
+            MapleCharacter mc = TacosWorld.find(0).findOnlinePlayerById(cid, false);
             if (mc == null) {
                 return;
             }
@@ -720,7 +665,7 @@ public class OdinWorld extends TacosWorld {
                 mc.setAllianceRank((byte) alliancerank);
                 mc.saveGuildStatus();
             }
-            if (bDifferentGuild && ch > 0) {
+            if (bDifferentGuild) {
                 mc.getMap().broadcastMessage(mc, ResCUserPool.UserLeaveField(cid), false);
                 mc.getMap().broadcastMessage(mc, ResCUserPool.UserEnterField(mc), false);
             }
@@ -733,11 +678,7 @@ public class OdinWorld extends TacosWorld {
             if (targetIds == exception) {
                 return;
             }
-            int ch = Find.findChannel(targetIds);
-            if (ch < 0) {
-                return;
-            }
-            final MapleCharacter c = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterById(targetIds);
+            final MapleCharacter c = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
             if (c != null && c.getGuildId() == guildid) {
                 c.getClient().getSession().write(packet);
             }
@@ -747,11 +688,7 @@ public class OdinWorld extends TacosWorld {
             if (targetIds == exception) {
                 return;
             }
-            int ch = Find.findChannel(targetIds);
-            if (ch < 0) {
-                return;
-            }
-            final MapleCharacter c = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterById(targetIds);
+            final MapleCharacter c = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
             if (c != null && c.getFamilyId() == guildid) {
                 c.getClient().getSession().write(packet);
             }
@@ -802,48 +739,12 @@ public class OdinWorld extends TacosWorld {
             }
         }
 
-        public static int findChannel(int id) {
-            Integer ret;
-            lock.readLock().lock();
-            try {
-                ret = idToChannel.get(id);
-            } finally {
-                lock.readLock().unlock();
-            }
-            if (ret != null) {
-                if (ret != -10 && ret != -20 && ServerOdinGame.getInstance(ret) == null) { //wha
-                    forceDeregister(id);
-                    return -1;
-                }
-                return ret;
-            }
-            return -1;
-        }
-
-        public static int findChannel(String st) {
-            Integer ret;
-            lock.readLock().lock();
-            try {
-                ret = nameToChannel.get(st.toLowerCase());
-            } finally {
-                lock.readLock().unlock();
-            }
-            if (ret != null) {
-                if (ret != -10 && ret != -20 && ServerOdinGame.getInstance(ret) == null) { //wha
-                    forceDeregister(st);
-                    return -1;
-                }
-                return ret;
-            }
-            return -1;
-        }
-
         public static CharacterIdChannelPair[] multiBuddyFind(int charIdFrom, int[] characterIds) {
             List<CharacterIdChannelPair> foundsChars = new ArrayList<CharacterIdChannelPair>(characterIds.length);
             for (int i : characterIds) {
-                int channel = findChannel(i);
-                if (channel > 0) {
-                    foundsChars.add(new CharacterIdChannelPair(i, channel));
+                MapleCharacter player = TacosWorld.find(0).findOnlinePlayerById(i, false);
+                if (player != null) {
+                    foundsChars.add(new CharacterIdChannelPair(i, player.getChannelId()));
                 }
             }
             Collections.sort(foundsChars);
@@ -1177,12 +1078,7 @@ public class OdinWorld extends TacosWorld {
         }
 
         public static void setFamily(int familyid, int seniorid, int junior1, int junior2, int currentrep, int totalrep, int cid) {
-            int ch = Find.findChannel(cid);
-            if (ch == -1) {
-                // System.out.println("ERROR: cannot find player in given channel");
-                return;
-            }
-            MapleCharacter mc = null;
+            MapleCharacter mc = TacosWorld.find(0).findOnlinePlayerById(cid, false);
             if (mc == null) {
                 return;
             }

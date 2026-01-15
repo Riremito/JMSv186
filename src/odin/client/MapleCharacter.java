@@ -5374,8 +5374,7 @@ public class MapleCharacter extends TacosCharacter {
                 }
             }
         } else {
-            final int ch = OdinWorld.Find.findChannel(idz);
-            if (ch > 0) {
+            if (getWorld().findOnlinePlayerById(idz, false) != null) {
                 disconnect(RemoveInChannelServer, false);//u lie
                 return false;
             }

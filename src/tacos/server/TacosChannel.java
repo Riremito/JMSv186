@@ -197,7 +197,6 @@ public class TacosChannel extends TacosServer {
             int channel = i + 1;
             int channel_port = Property_World.getPort() + i;
             String channel_name = Property_World.getName() + "-" + channel;
-            ServerOdinGame odin_game = ServerOdinGame.newInstance(channel);
             int language = Region.check(Region.EMS) ? i % Property_World.getLanguages() : 0;
             TacosChannel server = new TacosChannel(channel_name, channel, language);
             server.mapFactory.setChannel(channel);
@@ -205,8 +204,6 @@ public class TacosChannel extends TacosServer {
             TacosServer.add(server);
             server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
             server.run(TacosConstants.SERVER_LOCAL_IP, channel_port, new PacketHandler_Game(server, channel));
-            odin_game.set(server);
-            odin_game.run_startup_configurations(channel_port);
             game_servers.add(server);
             server.setWorld(world);
             world.addChannel(server);

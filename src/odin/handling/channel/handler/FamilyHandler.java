@@ -96,11 +96,7 @@ public class FamilyHandler {
                     success = false;
                 } else {
                     for (MapleFamilyCharacter chrz : chrs) {
-                        int chr = OdinWorld.Find.findChannel(chrz.getId());
-                        if (chr == -1) {
-                            continue; //STOP WTF?! take reps though..
-                        }
-                        MapleCharacter chrr = null;
+                        MapleCharacter chrr = c.getWorld().findOnlinePlayerById(chrz.getId());
                         if (chrr != null) {
                             entry.applyTo(chrr);
                         }

@@ -25,7 +25,6 @@ import java.util.List;
 import tacos.database.ExtraDB;
 import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_Characters;
-import tacos.server.ServerOdinGame;
 import java.util.ArrayList;
 import org.apache.mina.common.IoSession;
 import tacos.client.TacosClient;
@@ -88,10 +87,6 @@ public class MapleClient extends TacosClient {
 
     public int getCharaterCount() {
         return getCharacterIds().size();
-    }
-
-    public ServerOdinGame getOdinChannelServer() {
-        return ServerOdinGame.getInstance(getChannelId());
     }
 
     public boolean disconnect(boolean RemoveInChannelServer, boolean fromCS) {
