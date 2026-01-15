@@ -26,6 +26,7 @@ import java.util.Map;
 import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.PlayerStorage;
+import odin.server.MapleSquad;
 import odin.server.maps.MapleMapFactory;
 import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
@@ -162,6 +163,29 @@ public class TacosChannel extends TacosServer {
             }
         }
         return list;
+    }
+
+    // 遠征隊
+    private Map<String, MapleSquad> mapleSquads = new HashMap<>();
+
+    public MapleSquad getMapleSquad(String type) {
+        return this.mapleSquads.get(type.toLowerCase());
+    }
+
+    public boolean addMapleSquad(MapleSquad squad, String type) {
+        if (this.mapleSquads.containsKey(type.toLowerCase())) {
+            return false;
+        }
+        this.mapleSquads.put(type.toLowerCase(), squad);
+        return true;
+    }
+
+    public boolean removeMapleSquad(String type) {
+        if (this.mapleSquads.containsKey(type.toLowerCase())) {
+            this.mapleSquads.remove(type.toLowerCase());
+            return true;
+        }
+        return false;
     }
 
     // init

@@ -19,10 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.arg.ArgFieldEffect;
@@ -33,7 +30,6 @@ import tacos.packet.response.ResCUserRemote;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleShopFactory;
-import odin.server.MapleSquad;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
@@ -457,29 +453,6 @@ public class AdminCommand {
         @Override
         public int execute(MapleClient c, String[] splitted) {
             c.getPlayer().getMap().setReactorState(Byte.parseByte(splitted[1]));
-            return 1;
-        }
-    }
-
-    public static class ListSquads extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            for (Entry<String, MapleSquad> squads : c.getOdinChannelServer().getAllSquads().entrySet()) {
-                c.getPlayer().dropMessage(5, "TYPE: " + squads.getKey() + ", Leader: " + squads.getValue().getLeader().getName() + ", status: " + squads.getValue().getStatus() + ", numMembers: " + squads.getValue().getSquadSize() + ", numBanned: " + squads.getValue().getBannedMemberSize());
-            }
-            return 1;
-        }
-    }
-
-    public static class ClearSquads extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            final Collection<MapleSquad> squadz = new ArrayList<MapleSquad>(c.getOdinChannelServer().getAllSquads().values());
-            for (MapleSquad squads : squadz) {
-                squads.clear();
-            }
             return 1;
         }
     }

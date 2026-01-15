@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import odin.handling.channel.PlayerStorage;
-import odin.server.MapleSquad;
 import odin.server.maps.MapleMapFactory;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,7 +55,6 @@ public class ServerOdinGame {
     }
 
     private int channel;
-    private final Map<String, MapleSquad> mapleSquads = new HashMap<>();
 
     private ServerOdinGame(int channel) {
         this.channel = channel;
@@ -93,30 +91,6 @@ public class ServerOdinGame {
 
     public static Collection<ServerOdinGame> getAllInstances() {
         return Collections.unmodifiableCollection(instances.values());
-    }
-
-    public Map<String, MapleSquad> getAllSquads() {
-        return Collections.unmodifiableMap(mapleSquads);
-    }
-
-    public MapleSquad getMapleSquad(String type) {
-        return mapleSquads.get(type.toLowerCase());
-    }
-
-    public boolean addMapleSquad(MapleSquad squad, String type) {
-        if (!mapleSquads.containsKey(type.toLowerCase())) {
-            mapleSquads.put(type.toLowerCase(), squad);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean removeMapleSquad(String type) {
-        if (mapleSquads.containsKey(type.toLowerCase())) {
-            mapleSquads.remove(type.toLowerCase());
-            return true;
-        }
-        return false;
     }
 
 }

@@ -86,6 +86,7 @@ import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.script.TacosScriptEvent;
 import tacos.server.ServerOdinGame;
+import tacos.server.TacosWorld;
 import tacos.unofficial.CustomMonsterBookDrop;
 
 /**
@@ -227,7 +228,7 @@ public class TacosMap extends TacosMapData {
 
     public final MapleSquad getSquadBegin() {
         if (this.squad.length() > 0) {
-            return ServerOdinGame.getInstance(this.channel).getMapleSquad(this.squad);
+            return TacosWorld.find(0).getChannelServer(this.channel).getMapleSquad(this.squad); // TODO : fix
         }
         return null;
     }
@@ -1357,7 +1358,7 @@ public class TacosMap extends TacosMapData {
             default:
                 return null;
         }
-        return ServerOdinGame.getInstance(channel).getMapleSquad(zz);
+        return TacosWorld.find(0).getChannelServer(channel).getMapleSquad(zz);
     }
 
     public OdinEventManager getEMByMap() {
