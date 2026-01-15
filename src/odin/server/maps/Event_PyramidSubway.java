@@ -22,7 +22,6 @@ package odin.server.maps;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
-import tacos.server.ServerOdinGame;
 import odin.handling.world.MaplePartyCharacter;
 import java.awt.Point;
 import java.util.concurrent.ScheduledFuture;
@@ -377,61 +376,57 @@ public class Event_PyramidSubway {
         c.getClient().getSession().write(ResWrapper.sendPyramidEnergy(type, String.valueOf(amount)));
     }
 
-    public static boolean warpStartSubway(final MapleCharacter c) {
+    public static boolean warpStartSubway(MapleCharacter player) {
         final int mapid = 910320100;
-
-        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         for (int i = 0; i < 5; i++) {
-            final MapleMap map = ch.getMapFactory().getMap(mapid + i);
+            final MapleMap map = player.getChannelServer().getMapFactory().getMap(mapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                changeMap(c, map, 25, 30);
+                changeMap(player, map, 25, 30);
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean warpBonusSubway(final MapleCharacter c) {
+    public static boolean warpBonusSubway(MapleCharacter player) {
         final int mapid = 910320010;
 
-        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         for (int i = 0; i < 20; i++) {
-            final MapleMap map = ch.getMapFactory().getMap(mapid + i);
+            final MapleMap map = player.getChannelServer().getMapFactory().getMap(mapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                c.changeMap(map, map.getPortal(0));//solo
+                player.changeMap(map, map.getPortal(0));//solo
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean warpNextMap_Subway(final MapleCharacter c) {
-        final int currentmap = c.getMapId();
+    public static boolean warpNextMap_Subway(MapleCharacter player) {
+        final int currentmap = player.getMapId();
         final int thisStage = (currentmap - 910320100) / 100;
 
-        MapleMap map = c.getMap();
+        MapleMap map = player.getMap();
         clearMap(map, true);
-        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         if (thisStage >= 2) {
-            map = ch.getMapFactory().getMap(910330001);
-            changeMap(c, map, 1, 200, 1);
+            map = player.getChannelServer().getMapFactory().getMap(910330001);
+            changeMap(player, map, 1, 200, 1);
             return true;
         }
         final int nextmapid = 910320100 + ((thisStage + 1) * 100);
         for (int i = 0; i < 5; i++) {
-            map = ch.getMapFactory().getMap(nextmapid + i);
+            map = player.getChannelServer().getMapFactory().getMap(nextmapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                changeMap(c, map, 1, 200, 1); //any level because they could level
+                changeMap(player, map, 1, 200, 1); //any level because they could level
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean warpStartPyramid(final MapleCharacter c, final int difficulty) {
+    public static boolean warpStartPyramid(MapleCharacter player, final int difficulty) {
         final int mapid = 926010100 + (difficulty * 1000);
         int minLevel = 40, maxLevel = 60;
         switch (difficulty) {
@@ -446,51 +441,47 @@ public class Event_PyramidSubway {
                 maxLevel = 200;
                 break;
         }
-        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         for (int i = 0; i < 5; i++) {
-            final MapleMap map = ch.getMapFactory().getMap(mapid + i);
+            final MapleMap map = player.getChannelServer().getMapFactory().getMap(mapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                changeMap(c, map, minLevel, maxLevel);
+                changeMap(player, map, minLevel, maxLevel);
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean warpBonusPyramid(final MapleCharacter c, final int difficulty) {
+    public static boolean warpBonusPyramid(MapleCharacter player, int difficulty) {
         final int mapid = 926010010 + (difficulty * 20);
-
-        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         for (int i = 0; i < 20; i++) {
-            final MapleMap map = ch.getMapFactory().getMap(mapid + i);
+            final MapleMap map = player.getChannelServer().getMapFactory().getMap(mapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                c.changeMap(map, map.getPortal(0));//solo
+                player.changeMap(map, map.getPortal(0));//solo
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean warpNextMap_Pyramid(final MapleCharacter c, final int difficulty) {
-        final int currentmap = c.getMapId();
+    public static boolean warpNextMap_Pyramid(MapleCharacter player, int difficulty) {
+        final int currentmap = player.getMapId();
         final int thisStage = (currentmap - (926010100 + (difficulty * 1000))) / 100;
 
-        MapleMap map = c.getMap();
+        MapleMap map = player.getMap();
         clearMap(map, true);
-        final ServerOdinGame ch = c.getClient().getOdinChannelServer();
         if (thisStage >= 4) {
-            map = ch.getMapFactory().getMap(926020001 + difficulty);
-            changeMap(c, map, 1, 200, 1);
+            map = player.getChannelServer().getMapFactory().getMap(926020001 + difficulty);
+            changeMap(player, map, 1, 200, 1);
             return true;
         }
         final int nextmapid = 926010100 + ((thisStage + 1) * 100) + (difficulty * 1000);
         for (int i = 0; i < 5; i++) {
-            map = ch.getMapFactory().getMap(nextmapid + i);
+            map = player.getChannelServer().getMapFactory().getMap(nextmapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                changeMap(c, map, 1, 200, 1); //any level because they could level
+                changeMap(player, map, 1, 200, 1); //any level because they could level
                 return true;
             }
         }

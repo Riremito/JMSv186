@@ -59,7 +59,6 @@ import tacos.shared.SharedExpTable;
 import tacos.wz.ids.DWI_Validation;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
-import tacos.server.ServerOdinGame;
 import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
@@ -5329,10 +5328,10 @@ public class MapleCharacter extends TacosCharacter {
 
         // fix---
         if (!fromCS) {
-            final ServerOdinGame ch = ServerOdinGame.getInstance(map == null ? client.getChannelId() : map.getChannel());
+            TacosChannel srv_ch = getChannelServer();
 
             try {
-                if (ch == null || clone || ch.isShutdown()) {
+                if (srv_ch == null || clone || srv_ch.isShutdown()) {
                     return false;
                 }
                 if (messengerid > 0) {
@@ -5370,8 +5369,8 @@ public class MapleCharacter extends TacosCharacter {
                 e.printStackTrace();
                 FileoutputUtil.outputFileError(FileoutputUtil.Acc_Stuck, e);
             } finally {
-                if (RemoveInChannelServer && ch != null) {
-                    ch.removePlayer(idz, namez);
+                if (RemoveInChannelServer && srv_ch != null) {
+                    srv_ch.getPlayerStorage().deregisterPlayer(this);
                 }
             }
         } else {

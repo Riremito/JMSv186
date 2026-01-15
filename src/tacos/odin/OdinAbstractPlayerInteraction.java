@@ -32,7 +32,6 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.IItem;
-import tacos.server.ServerOdinGame;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.guild.MapleGuild;
@@ -62,6 +61,7 @@ import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
+import tacos.server.TacosChannel;
 
 public abstract class OdinAbstractPlayerInteraction {
 
@@ -83,8 +83,8 @@ public abstract class OdinAbstractPlayerInteraction {
         return client.getPlayer();
     }
 
-    public final ServerOdinGame getChannelServer() {
-        return client.getOdinChannelServer();
+    public TacosChannel getChannelServer() {
+        return client.getChannelServer();
     }
 
     public final MapleCharacter getPlayer() {

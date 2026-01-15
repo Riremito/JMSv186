@@ -85,7 +85,6 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.script.TacosScriptEvent;
-import tacos.server.ServerOdinGame;
 import tacos.server.TacosWorld;
 import tacos.unofficial.CustomMonsterBookDrop;
 
@@ -1537,11 +1536,11 @@ public class TacosMap extends TacosMapData {
 
     // compatbility
     public MapleMap getReturnMap() {
-        return ServerOdinGame.getInstance(channel).getMapFactory().getMap(returnMapId);
+        return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(returnMapId);
     }
 
     public MapleMap getForcedReturnMap() {
-        return ServerOdinGame.getInstance(channel).getMapFactory().getMap(forcedReturnMap);
+        return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(forcedReturnMap);
     }
 
     public boolean updateMapItem() {

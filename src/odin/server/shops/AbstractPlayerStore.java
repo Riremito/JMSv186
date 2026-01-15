@@ -37,7 +37,6 @@ import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.database.DatabaseConnection;
 import tacos.network.MaplePacket;
-import tacos.server.ServerOdinGame;
 import java.util.ArrayList;
 import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCUser;
@@ -46,6 +45,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
 import tacos.odin.OdinPair;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
+import tacos.server.TacosWorld;
 
 public abstract class AbstractPlayerStore extends AbstractMapleMapObject implements IMaplePlayerShop {
 
@@ -357,7 +357,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     }
 
     public MapleMap getMap() {
-        return ServerOdinGame.getInstance(channel).getMapFactory().getMap(map);
+        return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(map);
     }
 
     @Override

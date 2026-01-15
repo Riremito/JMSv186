@@ -20,12 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tacos.server;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import odin.handling.channel.PlayerStorage;
-import odin.server.maps.MapleMapFactory;
 
 public class ServerOdinGame {
 
@@ -34,14 +31,6 @@ public class ServerOdinGame {
 
     public void set(TacosChannel server) {
         this.server_game = server;
-    }
-
-    public boolean isShutdown() {
-        return server_game.isShutdown();
-    }
-
-    public MapleMapFactory getMapFactory() {
-        return this.server_game.getMapFactory();
     }
 
     public PlayerStorage getPlayerStorage() {
@@ -66,16 +55,8 @@ public class ServerOdinGame {
         return instances.get(channel);
     }
 
-    public void removePlayer(int idz, String namez) {
-        getPlayerStorage().deregisterPlayer(idz, namez);
-    }
-
     public void setChannel(int channel) {
         instances.put(channel, this);
-    }
-
-    public static Collection<ServerOdinGame> getAllInstances() {
-        return Collections.unmodifiableCollection(instances.values());
     }
 
 }

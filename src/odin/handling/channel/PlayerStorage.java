@@ -55,7 +55,7 @@ public class PlayerStorage {
         }
     }
 
-    public final void registerPlayer(final MapleCharacter chr) {
+    public void registerPlayer(MapleCharacter chr) {
         wL.lock();
         try {
             nameToChar.put(chr.getName().toLowerCase(), chr);
@@ -66,7 +66,7 @@ public class PlayerStorage {
         OdinWorld.Find.register(chr.getId(), chr.getName(), channel);
     }
 
-    public final void deregisterPlayer(final MapleCharacter chr) {
+    public void deregisterPlayer(MapleCharacter chr) {
         wL.lock();
         try {
             nameToChar.remove(chr.getName().toLowerCase());

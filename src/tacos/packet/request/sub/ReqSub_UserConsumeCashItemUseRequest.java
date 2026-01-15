@@ -30,9 +30,7 @@ import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
-import tacos.server.ServerOdinGame;
 import odin.handling.channel.handler.PlayerHandler;
-import odin.handling.world.OdinWorld;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -325,16 +323,6 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         return false;
     }
 
-    public static MapleCharacter findCharacterByName(String name_to) {
-        int ch = OdinWorld.Find.findChannel(name_to);
-        if (ch != -1) {
-            MapleCharacter chr_to = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(name_to);
-            return chr_to;
-        }
-
-        return null;
-    }
-
     public static boolean cashItem507_Megaphone(MapleCharacter chr, int cash_item_id, ClientPacket cp) {
         byte channel = (byte) chr.getClient().getChannelId();
         switch (cash_item_id) {
@@ -402,7 +390,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     messages.add(cp.DecodeStr());
                 }
 
-                MapleCharacter chr_to = name_to.equals("") ? null : findCharacterByName(name_to);
+                MapleCharacter chr_to = name_to.equals("") ? null : chr.getWorld().findOnlinePlayer(name_to, false);
                 chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage(nFlag, 0, chr, messages, chr_to));
                 return true;
             }
@@ -426,7 +414,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     messages.add(cp.DecodeStr());
                 }
 
-                MapleCharacter chr_to = findCharacterByName(name_to);
+                MapleCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to, false);
                 chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage((byte) 3, 2, chr, messages, chr_to));
                 return true;
             }
@@ -440,7 +428,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     messages.add(cp.DecodeStr());
                 }
 
-                MapleCharacter chr_to = name_to.equals("") ? null : findCharacterByName(name_to);
+                MapleCharacter chr_to = name_to.equals("") ? null : chr.getWorld().findOnlinePlayer(name_to, false);
                 chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage(nFlag, 0, chr, messages, chr_to));
                 return true;
             }
@@ -465,7 +453,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     messages.add(cp.DecodeStr());
                 }
 
-                MapleCharacter chr_to = findCharacterByName(name_to);
+                MapleCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to, false);
                 chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage((byte) 3, 2, chr, messages, chr_to));
                 return true;
             }
